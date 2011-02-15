@@ -5,3 +5,10 @@ target/
 .externalToolBuilders/
 maven-eclipse.xml
 .idea/
+*.iml
+*.ipr
+*.iws
+*.class
+out/
+Error_log/
+test-output/
