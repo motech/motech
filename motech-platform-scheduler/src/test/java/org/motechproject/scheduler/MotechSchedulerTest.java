@@ -9,6 +9,7 @@ import org.motechproject.model.SchedulableJob;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SimpleTrigger;
+import org.quartz.CronTrigger;
 import org.quartz.Trigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
@@ -19,7 +20,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -73,17 +76,69 @@ public class MotechSchedulerTest {
 
 
     @Test
+    public void rescheduleJobHappyPathTest() throws Exception{
+
+        MotechScheduledEvent scheduledEvent = new MotechScheduledEvent(uuidStr, null, null, null);
+        SchedulableJob schedulableJob = new SchedulableJob(scheduledEvent, "0 0 12 * * ?");
+
+        motechScheduler.scheduleJob(schedulableJob);
+
+        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
+
+        String newCronExpression = "0 0 10 * * ?";
+
+        motechScheduler.rescheduleJob(uuidStr, newCronExpression);
+        assertEquals(scheduledJobsNum, schedulerFactoryBean.getScheduler().getTriggerNames( MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
+
+        CronTrigger trigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger(uuidStr, MotechSchedulerServiceImpl.JOB_GROUP_NAME);
+        String triggerCronExpression = trigger.getCronExpression();
+
+        assertEquals(newCronExpression, triggerCronExpression);
+    }
+
+
+    @Test(expected = IllegalArgumentException.class)
+    public void rescheduleJobNullJobIdTest() {
+
+        motechScheduler.rescheduleJob(null, "");
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void rescheduleJobNullCronExpressionTest() {
+        motechScheduler.rescheduleJob("", null);
+    }
+
+    @Test(expected = MotechSchedulerException.class)
+    public void rescheduleJobInvalidCronExpressionTest() {
+
+        MotechScheduledEvent scheduledEvent = new MotechScheduledEvent(uuidStr, null, null, null);
+        SchedulableJob schedulableJob = new SchedulableJob(scheduledEvent, "0 0 12 * * ?");
+
+        motechScheduler.scheduleJob(schedulableJob);
+
+        motechScheduler.rescheduleJob(uuidStr, "?");
+    }
+
+    @Test(expected = MotechSchedulerException.class)
+    public void rescheduleNotExistingJobTest() {
+
+        motechScheduler.rescheduleJob("0", "?");
+    }
+
+
+    @Test
     public void scheduleRunOnceJobTest() throws Exception{
 
         //TODO
-        /*MotechScheduledEvent scheduledEvent = new MotechScheduledEvent(uuidStr, null, null, null);
-        RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(scheduledEvent, new Date());
+        MotechScheduledEvent scheduledEvent = new MotechScheduledEvent(uuidStr, null, null, null);
+      /**/  RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(scheduledEvent, new Date());
 
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 
         motechScheduler.scheduleRunOnceJob(schedulableJob);
 
-        assertEquals(scheduledJobsNum+1, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);*/
+        assertEquals(scheduledJobsNum+1, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
     }
 
     @Test(expected = IllegalArgumentException.class)

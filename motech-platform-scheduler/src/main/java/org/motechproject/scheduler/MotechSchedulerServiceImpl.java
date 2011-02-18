@@ -8,6 +8,7 @@ import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
+import javax.sound.midi.Track;
 import java.text.ParseException;
 import java.util.Date;
 
@@ -47,6 +48,56 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         scheduleJob(jobDetail, trigger);
 
+    }
+
+    @Override
+    public void updateScheduledJob(SchedulableJob schedulableJob) {
+        //TODO - implement
+    }
+
+    @Override
+    public void rescheduleJob(String jobId, String cronExpression) {
+
+        if (jobId == null ) {
+            throw new IllegalArgumentException("Job ID can not be null");
+        }
+
+        if (cronExpression == null) {
+            throw new IllegalArgumentException("Cron expression can not be null");
+        }
+
+        Scheduler scheduler = schedulerFactoryBean.getScheduler();
+
+        CronTrigger trigger;
+
+
+        try {
+            trigger = (CronTrigger) scheduler.getTrigger(jobId, JOB_GROUP_NAME);
+
+            if (trigger == null) {
+                throw new MotechSchedulerException("Can not reschedule the job: " + jobId + " The job does not exist (not scheduled)");
+            }
+
+        } catch (SchedulerException e) {
+            throw new MotechSchedulerException("Can not reschedule the job: " + jobId +
+                    ".\n Can not get a trigger associated with that job " + e.getMessage(), e);
+        } catch (ClassCastException e) {
+            throw new MotechSchedulerException("Can not reschedule the job: " + jobId +
+                    ".\n The trigger associated with that job is not a CronTrigger");
+        }
+
+        try {
+            trigger.setCronExpression(cronExpression);
+        } catch (ParseException e) {
+             throw new MotechSchedulerException("Can not reschedule the job: " + jobId + " Invalid Cron expression: " +
+                                                cronExpression);
+        }
+
+        try {
+            schedulerFactoryBean.getScheduler().rescheduleJob(jobId, JOB_GROUP_NAME, trigger);
+        } catch (SchedulerException e) {
+            throw new MotechSchedulerException("Can not reschedule the job: " + jobId + " " + e.getMessage(), e);
+        }
     }
 
     @Override

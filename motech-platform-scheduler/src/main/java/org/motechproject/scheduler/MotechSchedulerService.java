@@ -13,9 +13,13 @@ import org.motechproject.model.SchedulableJob;
  */
 public interface MotechSchedulerService {
 
-    void scheduleJob(SchedulableJob schedulableJob);
+    public void scheduleJob(SchedulableJob schedulableJob);
 
-    void scheduleRunOnceJob(RunOnceSchedulableJob schedulableJob);
+    public void updateScheduledJob(SchedulableJob schedulableJob);
 
-    void unscheduleJob(String jobId);
+    public void rescheduleJob(String jobId, String cronExpression);
+
+    public void scheduleRunOnceJob(RunOnceSchedulableJob schedulableJob);
+
+    public void unscheduleJob(String jobId);
 }
