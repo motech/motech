@@ -33,7 +33,7 @@ public class MotechScheduler {
 
 
 
-        MotechScheduledEvent scheduledEvent = new MotechScheduledEvent("1", "test", "1", null);
+        MotechScheduledEvent scheduledEvent = new MotechScheduledEvent("1", "test", null);
         SchedulableJob schedulableJob = new SchedulableJob(scheduledEvent, "* * * * ? *");
 
         schedulerService.scheduleJob(schedulableJob);
