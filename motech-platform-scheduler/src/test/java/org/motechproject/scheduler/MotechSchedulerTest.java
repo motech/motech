@@ -18,6 +18,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.UUID;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -130,9 +131,10 @@ public class MotechSchedulerTest {
     @Test
     public void scheduleRunOnceJobTest() throws Exception{
 
-        //TODO
-        MotechScheduledEvent scheduledEvent = new MotechScheduledEvent(uuidStr, null, null);
-      /**/  RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(scheduledEvent, new Date());
+        String uuidStr = UUID.randomUUID().toString();
+
+        MotechScheduledEvent scheduledEvent = new MotechScheduledEvent(uuidStr, "TestEvent", new HashMap<String, Object>());
+        RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(scheduledEvent, new Date());
 
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 

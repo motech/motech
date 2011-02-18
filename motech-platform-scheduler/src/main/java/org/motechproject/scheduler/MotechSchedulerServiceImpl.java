@@ -36,6 +36,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         String jobId = motechScheduledEvent.getJobId();
         JobDetail jobDetail = new JobDetail(jobId, JOB_GROUP_NAME, MotechScheduledJob.class);
+        putMotechScheduledEventDataToJobDataMap(jobDetail.getJobDataMap(), motechScheduledEvent);
 
         Trigger trigger = null;
 
@@ -126,10 +127,10 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         String jobId = motechScheduledEvent.getJobId();
         JobDetail jobDetail = new JobDetail(jobId, JOB_GROUP_NAME, MotechScheduledJob.class);
-
+        putMotechScheduledEventDataToJobDataMap(jobDetail.getJobDataMap(), motechScheduledEvent);
         Trigger trigger = null;
 
-        trigger = new SimpleTrigger(jobId, jobStartDate);
+        trigger = new SimpleTrigger(jobId, JOB_GROUP_NAME, jobStartDate);
 
         scheduleJob(jobDetail, trigger);
 
@@ -159,5 +160,10 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
                                                 jobDetail.toString() +"\n"+ trigger.toString() +
                                                 "\n" + e.getMessage(), e);
         }
+    }
+
+    private void putMotechScheduledEventDataToJobDataMap(JobDataMap jobDataMap, MotechScheduledEvent motechScheduledEvent) {
+        jobDataMap.putAll(motechScheduledEvent.getParameters());
+        jobDataMap.put(MotechScheduledEvent.EVENT_TYPE_KEY_NAME, motechScheduledEvent.getEventType());
     }
 }

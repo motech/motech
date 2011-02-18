@@ -4,7 +4,7 @@ import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.model.SchedulableJob;
 
 /**
- * Motech Scheduler Service Interface provides methods to schedule and unschedule a job
+ * Motech Scheduler Service Interface provides methods to schedule reschedule and unschedule a job
  *
  * User: Igor (iopushnyev@2paths.com)
  * Date: 16/02/11

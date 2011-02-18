@@ -39,6 +39,8 @@ public class SpringQuartzTest {
         String uuidStr = UUID.randomUUID().toString();
 
         JobDetail job = new JobDetail(uuidStr, groupName, MotechScheduledJob.class);
+        job.getJobDataMap().put("eventType", "PillReminder");
+        job.getJobDataMap().put("patientId", "001");
 
         Trigger trigger = new SimpleTrigger(uuidStr, groupName);
 
