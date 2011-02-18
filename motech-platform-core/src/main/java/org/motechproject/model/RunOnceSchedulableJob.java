@@ -12,7 +12,7 @@ import java.util.Date;
 public class RunOnceSchedulableJob {
 
     private MotechScheduledEvent motechScheduledEvent;
-    private Date stsrtDate;
+    private Date startDate;
 
     /**
      *
@@ -21,15 +21,15 @@ public class RunOnceSchedulableJob {
      */
     public RunOnceSchedulableJob(MotechScheduledEvent motechScheduledEvent, Date stsrtDate) {
         this.motechScheduledEvent = motechScheduledEvent;
-        this.stsrtDate = stsrtDate;
+        this.startDate = stsrtDate;
     }
 
     public MotechScheduledEvent getMotechScheduledEvent() {
         return motechScheduledEvent;
     }
 
-    public Date getStsrtDate() {
-        return stsrtDate;
+    public Date getStartDate() {
+        return startDate;
     }
 }
 

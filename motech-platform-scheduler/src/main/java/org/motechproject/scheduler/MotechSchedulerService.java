@@ -4,13 +4,15 @@ import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.model.SchedulableJob;
 
 /**
- * Created by IntelliJ IDEA.
- * User: az44
+ * Motech Scheduler Service Interface provides methods to schedule and unschedule a job
+ *
+ * User: Igor (iopushnyev@2paths.com)
  * Date: 16/02/11
- * Time: 2:51 PM
- * To change this template use File | Settings | File Templates.
+
+ *
  */
 public interface MotechSchedulerService {
+
     void scheduleJob(SchedulableJob schedulableJob);
 
     void scheduleRunOnceJob(RunOnceSchedulableJob schedulableJob);
