@@ -6,11 +6,7 @@ import org.motech.scheduler.exception.MotechSchedulerException;
 import org.motechproject.model.MotechScheduledEvent;
 import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.model.SchedulableJob;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SimpleTrigger;
-import org.quartz.CronTrigger;
-import org.quartz.Trigger;
+import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
@@ -45,7 +41,7 @@ public class MotechSchedulerTest {
     @Test
     public void scheduleTest() throws Exception{
 
-        MotechScheduledEvent scheduledEvent = new MotechScheduledEvent(uuidStr, null, null);
+        MotechScheduledEvent scheduledEvent = new MotechScheduledEvent(uuidStr, "testEvent", null);
         SchedulableJob schedulableJob = new SchedulableJob(scheduledEvent, "0 0 12 * * ?");
 
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
@@ -73,6 +69,35 @@ public class MotechSchedulerTest {
     @Test(expected = IllegalArgumentException.class)
     public void scheduleNullRuOnceJobTest() throws Exception{
         motechScheduler.scheduleRunOnceJob(null);
+    }
+
+
+    @Test
+    public void updateScheduledJobHappyPathTest() throws Exception {
+
+        MotechScheduledEvent scheduledEvent = new MotechScheduledEvent(uuidStr, "testEvent", null);
+        SchedulableJob schedulableJob = new SchedulableJob(scheduledEvent, "0 0 12 * * ?");
+
+        motechScheduler.scheduleJob(schedulableJob);
+
+        String patientIdKeyName = "patientId";
+        String patientId = "1";
+         HashMap<String, Object> params = new HashMap<String, Object>();
+         params.put(patientIdKeyName, patientId);
+
+        scheduledEvent = new MotechScheduledEvent(uuidStr, "testEvent", params);
+
+        motechScheduler.updateScheduledJob(scheduledEvent);
+
+        JobDataMap jobDataMap = schedulerFactoryBean.getScheduler().getJobDetail(uuidStr, MotechSchedulerServiceImpl.JOB_GROUP_NAME).getJobDataMap();
+
+        assertEquals(patientId, jobDataMap.getString(patientIdKeyName));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void updateScheduledJobNullTest() throws Exception {
+
+        motechScheduler.updateScheduledJob(null);
     }
 
 

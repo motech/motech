@@ -52,8 +52,43 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
     }
 
     @Override
-    public void updateScheduledJob(SchedulableJob schedulableJob) {
-        //TODO - implement
+    public void updateScheduledJob(MotechScheduledEvent motechScheduledEvent) {
+
+        if (motechScheduledEvent == null) {
+            throw new IllegalArgumentException("MotechScheduledEvent can not be null");
+        }
+
+        Scheduler scheduler = schedulerFactoryBean.getScheduler();
+        String jobId = motechScheduledEvent.getJobId();
+        Trigger trigger;
+
+
+
+        try {
+            trigger =  scheduler.getTrigger(jobId, JOB_GROUP_NAME);
+
+            if (trigger == null) {
+                throw new MotechSchedulerException("Can not update the job: " + jobId + " The job does not exist (not scheduled)");
+            }
+
+        } catch (SchedulerException e) {
+            throw new MotechSchedulerException("Can not update the job: " + jobId +
+                    ".\n Can not get a trigger associated with that job " + e.getMessage(), e);
+        }
+
+        try {
+            scheduler.deleteJob(jobId, JOB_GROUP_NAME);
+        } catch (SchedulerException e) {
+            throw new MotechSchedulerException("Can not update the job: " + jobId +
+                    ".\n Can not delete old instance of the job " + e.getMessage(), e);
+        }
+
+        JobDetail jobDetail = new JobDetail(jobId, JOB_GROUP_NAME, MotechScheduledJob.class);
+        putMotechScheduledEventDataToJobDataMap(jobDetail.getJobDataMap(), motechScheduledEvent);
+
+
+        scheduleJob(jobDetail, trigger);
+
     }
 
     @Override

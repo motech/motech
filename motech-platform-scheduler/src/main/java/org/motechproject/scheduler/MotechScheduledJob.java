@@ -16,6 +16,7 @@ public class MotechScheduledJob implements Job{
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         //TODO - implement properly
+
         System.out.println("job executed");
         JobDataMap data = jobExecutionContext.getJobDetail().getJobDataMap();
 

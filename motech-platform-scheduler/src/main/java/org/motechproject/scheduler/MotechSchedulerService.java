@@ -1,5 +1,6 @@
 package org.motechproject.scheduler;
 
+import org.motechproject.model.MotechScheduledEvent;
 import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.model.SchedulableJob;
 
@@ -15,7 +16,7 @@ public interface MotechSchedulerService {
 
     public void scheduleJob(SchedulableJob schedulableJob);
 
-    public void updateScheduledJob(SchedulableJob schedulableJob);
+    public void updateScheduledJob(MotechScheduledEvent motechScheduledEvent);
 
     public void rescheduleJob(String jobId, String cronExpression);
 
