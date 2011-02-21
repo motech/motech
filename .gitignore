@@ -12,3 +12,4 @@ maven-eclipse.xml
 out/
 Error_log/
 test-output/
+felix-cache/
