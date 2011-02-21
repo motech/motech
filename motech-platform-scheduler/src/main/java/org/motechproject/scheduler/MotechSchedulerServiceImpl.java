@@ -5,6 +5,8 @@ import org.motechproject.model.MotechScheduledEvent;
 import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.model.SchedulableJob;
 import org.quartz.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
@@ -19,11 +21,16 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
     public static final String JOB_GROUP_NAME = "default";
 
+    final Logger log = LoggerFactory.getLogger(MotechSchedulerServiceImpl.class);
+
+
     @Autowired
     private SchedulerFactoryBean schedulerFactoryBean;
 
     @Override
     public void scheduleJob(SchedulableJob schedulableJob) {
+
+        log.info("Scheduling the job: " + schedulableJob);
 
         if (schedulableJob == null ) {
             throw new IllegalArgumentException("SchedulableJob can not be null");
@@ -38,7 +45,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         JobDetail jobDetail = new JobDetail(jobId, JOB_GROUP_NAME, MotechScheduledJob.class);
         putMotechScheduledEventDataToJobDataMap(jobDetail.getJobDataMap(), motechScheduledEvent);
 
-        Trigger trigger = null;
+        Trigger trigger;
 
         try {
             trigger = new CronTrigger(jobId, JOB_GROUP_NAME, schedulableJob.getCronExpression());
@@ -53,6 +60,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
     @Override
     public void updateScheduledJob(MotechScheduledEvent motechScheduledEvent) {
+
+        log.info("Updating the scheduled job: " + motechScheduledEvent);
 
         if (motechScheduledEvent == null) {
             throw new IllegalArgumentException("MotechScheduledEvent can not be null");
@@ -93,6 +102,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
     @Override
     public void rescheduleJob(String jobId, String cronExpression) {
+
+        log.info("Rescheduling the Job: " + jobId + " new cron expression: " + cronExpression);
 
         if (jobId == null ) {
             throw new IllegalArgumentException("Job ID can not be null");
@@ -137,8 +148,9 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
     }
 
     @Override
-    public void
-    scheduleRunOnceJob(RunOnceSchedulableJob schedulableJob) {
+    public void  scheduleRunOnceJob(RunOnceSchedulableJob schedulableJob) {
+
+        log.info("Scheduling the Job: " + schedulableJob);
 
         if (schedulableJob == null ) {
             throw new IllegalArgumentException("SchedulableJob can not be null");
@@ -163,9 +175,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         String jobId = motechScheduledEvent.getJobId();
         JobDetail jobDetail = new JobDetail(jobId, JOB_GROUP_NAME, MotechScheduledJob.class);
         putMotechScheduledEventDataToJobDataMap(jobDetail.getJobDataMap(), motechScheduledEvent);
-        Trigger trigger = null;
 
-        trigger = new SimpleTrigger(jobId, JOB_GROUP_NAME, jobStartDate);
+        Trigger trigger = new SimpleTrigger(jobId, JOB_GROUP_NAME, jobStartDate);
 
         scheduleJob(jobDetail, trigger);
 
@@ -173,6 +184,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
     @Override
     public void unscheduleJob(String jobId) {
+
+        log.info("Unscheduling the Job: " + jobId);
 
         if (jobId == null) {
             throw new IllegalArgumentException("Scheduled Job ID can not be null");
