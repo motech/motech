@@ -7,10 +7,11 @@ import java.util.Set;
 
 import javax.servlet.ServletContext;
 
-import org.apache.log4j.Logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.launch.Framework;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -23,7 +24,7 @@ import org.springframework.web.context.WebApplicationContext;
  */
 public class OsgiFrameworkService implements ApplicationContextAware {
 
-	private static Logger logger = Logger.getLogger(OsgiFrameworkService.class);
+	private static Logger logger = LoggerFactory.getLogger(OsgiFrameworkService.class);
 	
 	private ApplicationContext applicationContext;
 	
