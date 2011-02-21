@@ -1,5 +1,6 @@
 package org.motechproject.model;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +16,9 @@ import java.util.Map;
  * Time: 1:43 PM
  *
  */
-public final class MotechScheduledEvent {
+public final class MotechScheduledEvent implements Serializable{
+
+    private static final long serialVersionUID = 1L;
 
     public static final String EVENT_TYPE_KEY_NAME = "eventType";
 
@@ -59,5 +62,36 @@ public final class MotechScheduledEvent {
             return Collections.emptyMap();
         }
         return Collections.unmodifiableMap(parameters);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MotechScheduledEvent that = (MotechScheduledEvent) o;
+
+        if (!eventType.equals(that.eventType)) return false;
+        if (!jobId.equals(that.jobId)) return false;
+        if (parameters != null ? !parameters.equals(that.parameters) : that.parameters != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = jobId.hashCode();
+        result = 31 * result + eventType.hashCode();
+        result = 31 * result + (parameters != null ? parameters.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "MotechScheduledEvent{" +
+                "jobId='" + jobId + '\'' +
+                ", eventType='" + eventType + '\'' +
+                ", parameters=" + parameters +
+                '}';
     }
 }

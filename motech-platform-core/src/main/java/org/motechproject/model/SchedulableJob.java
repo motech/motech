@@ -1,5 +1,6 @@
 package org.motechproject.model;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 /**
@@ -10,12 +11,23 @@ import java.util.HashMap;
  * Time: 1:43 PM
  *
  */
-public class SchedulableJob {
+public class SchedulableJob implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private MotechScheduledEvent motechScheduledEvent;
     private String cronExpression;
 
     public SchedulableJob(MotechScheduledEvent motechScheduledEvent, String cronExpression) {
+
+         if (motechScheduledEvent == null) {
+            throw new IllegalArgumentException("MotechScheduledEvent can not be null");
+        }
+
+        if (cronExpression == null || cronExpression.isEmpty()) {
+            throw new IllegalArgumentException("Cron Expression can not be null or empty");
+        }
+
         this.motechScheduledEvent = motechScheduledEvent;
         this.cronExpression = cronExpression;
     }
@@ -26,5 +38,33 @@ public class SchedulableJob {
 
     public String getCronExpression() {
         return cronExpression;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SchedulableJob that = (SchedulableJob) o;
+
+        if (!cronExpression.equals(that.cronExpression)) return false;
+        if (!motechScheduledEvent.equals(that.motechScheduledEvent)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = motechScheduledEvent.hashCode();
+        result = 31 * result + cronExpression.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "SchedulableJob{" +
+                "motechScheduledEvent=" + motechScheduledEvent +
+                ", cronExpression='" + cronExpression + '\'' +
+                '}';
     }
 }

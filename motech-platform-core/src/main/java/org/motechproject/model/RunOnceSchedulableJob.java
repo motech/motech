@@ -1,5 +1,6 @@
 package org.motechproject.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -12,7 +13,9 @@ import java.util.Date;
  * Time: 1:43 PM
  *
  */
-public final class RunOnceSchedulableJob {
+public final class RunOnceSchedulableJob implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private MotechScheduledEvent motechScheduledEvent;
     private Date startDate;
@@ -51,6 +54,34 @@ public final class RunOnceSchedulableJob {
 
     public Date getStartDate() {
         return startDate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RunOnceSchedulableJob that = (RunOnceSchedulableJob) o;
+
+        if (!motechScheduledEvent.equals(that.motechScheduledEvent)) return false;
+        if (!startDate.equals(that.startDate)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = motechScheduledEvent.hashCode();
+        result = 31 * result + startDate.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "RunOnceSchedulableJob{" +
+                "motechScheduledEvent=" + motechScheduledEvent +
+                ", startDate=" + startDate +
+                '}';
     }
 }
 
