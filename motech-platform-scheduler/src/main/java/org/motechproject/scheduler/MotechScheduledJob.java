@@ -11,7 +11,7 @@ import java.util.Set;
 /**
  *
  */
-public class MotechScheduledJob implements Job{
+public class MotechScheduledJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
