@@ -1,6 +1,5 @@
 package org.motechproject.scheduler;
 
-import org.motech.scheduler.exception.MotechSchedulerException;
 import org.motechproject.model.MotechScheduledEvent;
 import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.model.SchedulableJob;
@@ -10,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
-import javax.sound.midi.Track;
 import java.text.ParseException;
 import java.util.Date;
 

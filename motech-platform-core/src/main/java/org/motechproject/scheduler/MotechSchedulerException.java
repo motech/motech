@@ -1,4 +1,4 @@
-package org.motech.scheduler.exception;
+package org.motechproject.scheduler;
 
 /**
  *
