@@ -32,12 +32,14 @@ public class SchedulerGatewayIntegrationTest {
           MotechScheduledEvent scheduledEvent = new MotechScheduledEvent("test_1", "testEvent", null);
         SchedulableJob schedulableJob = new SchedulableJob(scheduledEvent, "0/5 0 * * * ?");
 
-         motechSchedulerGateway.scheduleJob(schedulableJob);
+         // In order to run the test uncomment the following code
+
+        /* motechSchedulerGateway.scheduleJob(schedulableJob);
 
          motechSchedulerGateway.unscheduleJob("test_1");
 
          RunOnceSchedulableJob runOnceSchedulableJob = new RunOnceSchedulableJob(scheduledEvent, new Date((new Date().getTime()+5000)));
 
-         motechSchedulerGateway.scheduleRunOnceJob(runOnceSchedulableJob);
+         motechSchedulerGateway.scheduleRunOnceJob(runOnceSchedulableJob);*/
     }
 }
