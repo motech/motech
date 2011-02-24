@@ -40,6 +40,7 @@
 
     <import resource="integrationCommon.xml"/>
     <import resource="schedulerInboundChannelAdapter.xml"/>
+    <import resource="schedulerFiredEventChannelAdapter.xml"/>
 
     <context:annotation-config/>
 

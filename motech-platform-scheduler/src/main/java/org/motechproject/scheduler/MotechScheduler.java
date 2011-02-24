@@ -56,28 +56,24 @@ public class MotechScheduler {
         // add a shutdown hook for the above context...
         ctx.registerShutdownHook();
 
-      /*  MotechScheduler motechScheduler = ctx.getBean(MotechScheduler.class);
-
-        motechScheduler.init();
-*/
+        // Initiate test
+       // MotechScheduler motechScheduler = ctx.getBean(MotechScheduler.class);
+       // motechScheduler.init();
     }
 
 
-    //The following code is for test purposes only
-     @Autowired
+    //The following code is for test purpose only
+    /* @Autowired
      private MotechSchedulerService schedulerService;
 
     private void init() {
 
-
         System.out.println("Initiating Quartz...");
         MotechScheduledEvent scheduledEvent = new MotechScheduledEvent("1", "test", null);
-        SchedulableJob schedulableJob = new SchedulableJob(scheduledEvent, "0/5 * 14 * * ?");
+        SchedulableJob schedulableJob = new SchedulableJob(scheduledEvent, "0/5 * * * * ?");
 
         schedulerService.scheduleJob(schedulableJob);
-
-
     }
-
+*/
 
 }
