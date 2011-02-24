@@ -7,6 +7,7 @@
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>motech-platform-omod</artifactId>
+	<name>Motech Platform OMOD</name>
 	
 	<dependencies>
 		<dependency>

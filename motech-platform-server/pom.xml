@@ -10,6 +10,7 @@
 	</parent>
 	<artifactId>motech-platform-server</artifactId>
 	<packaging>war</packaging>
+        <name>Motech Platform Server</name>
 
 	<dependencies>
 		<dependency>

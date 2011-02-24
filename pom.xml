@@ -6,6 +6,27 @@
 	<artifactId>motech-platform</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
+    <name>Motech Platform</name>
+
+	<repositories>
+		<repository>
+			<id>motech-repo</id>
+			<name>Motech Maven Repository</name>
+			<url>http://motech.rcg.usm.maine.edu/archiva/repository/all</url>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+	  <pluginRepository>
+	    <id>motech-repo</id>
+	    <name>Motech Maven Repository</name>
+	    <url>http://motech.rcg.usm.maine.edu/archiva/repository/all</url>
+	    <snapshots>
+	      <enabled>true</enabled>
+	    </snapshots>
+	  </pluginRepository>
+	  
+	</pluginRepositories>
 
 	<dependencies>
 		<dependency>
@@ -73,18 +94,39 @@
 					<downloadSources>true</downloadSources>
 				</configuration>
 			</plugin>
-		        <plugin>
-		          <groupId>com.mycila.maven-license-plugin</groupId>
-		          <artifactId>maven-license-plugin</artifactId>
-		          <version>1.9.0</version>
-		          <configuration>
-                            <header>header.txt</header>
-                            <strictCheck>true</strictCheck>
-                            <excludes>
-                              <exclude>**/jquery-autocomplete/**</exclude>
-                            </excludes>
-		          </configuration>
-		        </plugin>
+		    <plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<version>1.9.0</version>
+				<configuration>
+					<header>header.txt</header>
+					<strictCheck>true</strictCheck>
+					<excludes>
+						<exclude>**/jquery-autocomplete/**</exclude>
+					</excludes>
+				</configuration>
+		    </plugin>
+            <plugin> 
+				<groupId>org.apache.maven.plugins</groupId> 
+				<artifactId>maven-failsafe-plugin</artifactId> 
+				<version>2.7.2</version> 
+<!--
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>verify</id>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+				</executions> 
+-->
+            </plugin> 
 		</plugins>
 	</build>
 </project>
