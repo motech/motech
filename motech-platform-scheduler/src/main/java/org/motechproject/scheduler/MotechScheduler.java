@@ -24,16 +24,17 @@ public class MotechScheduler {
         // add a shutdown hook for the above context...
         ctx.registerShutdownHook();
 
-        MotechScheduler motechScheduler = ctx.getBean(MotechScheduler.class);
+      /*  MotechScheduler motechScheduler = ctx.getBean(MotechScheduler.class);
 
         motechScheduler.init();
-
+*/
     }
 
 
     //The following code is for test purposes only
      @Autowired
      private MotechSchedulerService schedulerService;
+
     private void init() {
 
 

@@ -32,6 +32,8 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
 	@Autowired
 	private Framework osgiFramework;
+	
+	private List<BundleLoader> bundleLoaders;
 
 	/**
 	 * Initialize and start the OSGi framework
@@ -51,10 +53,17 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 			ArrayList<Bundle> bundles = new ArrayList<Bundle>();
 			for (URL url : findBundles(servletContext)) {
 				logger.debug("Installing bundle [" + url + "]");
-				Bundle bundle = bundleContext.installBundle(url.toExternalForm());
+				Bundle bundle = bundleContext.installBundle(url.toExternalForm());								
 				bundles.add(bundle);
 			}
+
 			for (Bundle bundle : bundles) {
+				//custom bundle loaders 
+				if (bundleLoaders != null) {
+					for (BundleLoader loader : bundleLoaders) {
+						loader.loadBundle(bundle);
+					}
+				}
 				bundle.start();
 			}
 			
@@ -70,7 +79,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 	 * Stop the OSGi framework.
 	 */
 	public void stop() {
-		try {
+		try {			
 			if (osgiFramework != null) {
 				osgiFramework.stop();
 				logger.info("OSGi framework stopped");
@@ -109,6 +118,10 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
 	public void setOsgiFramework(Framework osgiFramework) {
 		this.osgiFramework = osgiFramework;
+	}	
+
+	public void setBundleLoaders(List<BundleLoader> bundleLoaders) {
+		this.bundleLoaders = bundleLoaders;
 	}	
 
 }

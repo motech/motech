@@ -36,6 +36,11 @@
 			<artifactId>spring-integration-jms</artifactId>
 			<version>2.0.3.RELEASE</version>
 		</dependency>
+        <dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-core</artifactId>
+			<version>5.4.2</version>
+		</dependency>
 	</dependencies>
 
 	<properties>
@@ -46,6 +51,7 @@
 		<module>motech-platform-core</module>
 		<module>motech-platform-omod</module>
 		<module>motech-platform-server</module>
+        <module>motech-platform-scheduler</module>
 	</modules>
 
 	<build>

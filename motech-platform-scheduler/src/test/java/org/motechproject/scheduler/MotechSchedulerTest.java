@@ -2,7 +2,6 @@ package org.motechproject.scheduler;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motech.scheduler.exception.MotechSchedulerException;
 import org.motechproject.model.MotechScheduledEvent;
 import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.model.SchedulableJob;
@@ -159,7 +158,7 @@ public class MotechSchedulerTest {
         String uuidStr = UUID.randomUUID().toString();
 
         MotechScheduledEvent scheduledEvent = new MotechScheduledEvent(uuidStr, "TestEvent", new HashMap<String, Object>());
-        RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(scheduledEvent, new Date());
+        RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(scheduledEvent, new Date((new Date()).getTime()+5000));
 
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 

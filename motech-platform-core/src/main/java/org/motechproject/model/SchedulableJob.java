@@ -6,6 +6,7 @@ import java.util.HashMap;
 /**
  * Schedulable Job - a data carrier class for a scheduled job that can be fired unlimited number of times
  *  as specified with the cron expression
+ *
  * User: Igor (iopushnyev@2paths.com)
  * Date: 16/02/11
  * Time: 1:43 PM
