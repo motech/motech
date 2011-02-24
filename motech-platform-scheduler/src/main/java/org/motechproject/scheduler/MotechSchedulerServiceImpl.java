@@ -60,6 +60,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
     @Override
     public void scheduleJob(SchedulableJob schedulableJob) {
 
+        //TODO - implement rescheduling if there is a scheduled job with the same job id
+
         log.info("Scheduling the job: " + schedulableJob);
 
         if (schedulableJob == null ) {
