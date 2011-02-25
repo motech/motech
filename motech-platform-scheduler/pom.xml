@@ -5,11 +5,11 @@
     <parent>
         <artifactId>motech-platform</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.1-SNAPSHOT</version>
     </parent>
     <artifactId>motech-scheduler</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
     <name>Motech Scheduler</name>
 
     <properties>
@@ -30,7 +30,7 @@
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-core</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
