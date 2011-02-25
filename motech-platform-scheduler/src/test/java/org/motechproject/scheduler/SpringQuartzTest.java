@@ -55,7 +55,7 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 // specifies the Spring configuration to load for this test fixture
-@ContextConfiguration(locations={"/applicationContext.xml"})
+@ContextConfiguration(locations={"/testApplicationContext.xml"})
 
 public class SpringQuartzTest {
 
