@@ -36,6 +36,7 @@ import org.motechproject.model.MotechScheduledEvent;
 import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Map;
@@ -53,32 +54,36 @@ public class MotechScheduledJob implements Job {
 
         log.info("executing...");
 
-        JobDetail jobDetail = jobExecutionContext.getJobDetail();
-        JobDataMap jobDataMap = jobDetail.getJobDataMap();
-
-
-        String jobId = jobDetail.getName();
-        String eventType = jobDataMap.getString(MotechScheduledEvent.EVENT_TYPE_KEY_NAME);
-        Map<String, Object> params = jobDataMap.getWrappedMap();
-        params.remove(MotechScheduledEvent.EVENT_TYPE_KEY_NAME);
-
-        MotechScheduledEvent motechScheduledEvent = new MotechScheduledEvent(jobId, eventType, params);
-
-        log.info("Sending Motech Event Message: " + motechScheduledEvent);
-
-        SchedulerContext schedulerContext;
         try {
-            schedulerContext = jobExecutionContext.getScheduler().getContext();
-        } catch (SchedulerException e) {
-            log.error("Can not execute job. Can not get Scheduler Context", e);
-            return;
+            JobDetail jobDetail = jobExecutionContext.getJobDetail();
+            JobDataMap jobDataMap = jobDetail.getJobDataMap();
+
+
+            String jobId = jobDetail.getName();
+            String eventType = jobDataMap.getString(MotechScheduledEvent.EVENT_TYPE_KEY_NAME);
+            Map<String, Object> params = jobDataMap.getWrappedMap();
+            params.remove(MotechScheduledEvent.EVENT_TYPE_KEY_NAME);
+
+            MotechScheduledEvent motechScheduledEvent = new MotechScheduledEvent(jobId, eventType, params);
+
+            log.info("Sending Motech Event Message: " + motechScheduledEvent);
+
+            SchedulerContext schedulerContext;
+            try {
+                schedulerContext = jobExecutionContext.getScheduler().getContext();
+            } catch (SchedulerException e) {
+                log.error("Can not execute job. Can not get Scheduler Context", e);
+                return;
+            }
+
+            ApplicationContext applicationContext = (ApplicationContext) schedulerContext.get("applicationContext");
+
+            SchedulerFireEventGateway schedulerFiredEventGateway =
+                    (SchedulerFireEventGateway) applicationContext.getBean("schedulerFireEventGateway");
+
+            schedulerFiredEventGateway.sendEventMessage(motechScheduledEvent);
+        } catch (Exception e) {
+            log.error("Job execution failed.", e);
         }
-
-        ApplicationContext applicationContext = (ApplicationContext) schedulerContext.get("applicationContext");
-
-        SchedulerFireEventGateway schedulerFiredEventGateway =
-                (SchedulerFireEventGateway) applicationContext.getBean("schedulerFireEventGateway");
-
-       schedulerFiredEventGateway.sendEventMessage(motechScheduledEvent);
     }
 }
