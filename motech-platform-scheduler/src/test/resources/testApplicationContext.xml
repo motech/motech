@@ -39,7 +39,7 @@
 
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
       <property name="configLocation">
-         <value>classpath:quartz.properties</value>
+         <value>classpath:testQuartz.properties</value>
       </property>
       <property name="applicationContextSchedulerContextKey">
       	<value>applicationContext</value>
