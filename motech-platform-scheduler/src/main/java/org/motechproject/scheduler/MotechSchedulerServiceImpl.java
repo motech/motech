@@ -60,17 +60,20 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
     @Override
     public void scheduleJob(SchedulableJob schedulableJob) {
 
-        //TODO - implement rescheduling if there is a scheduled job with the same job id
-
         log.info("Scheduling the job: " + schedulableJob);
 
         if (schedulableJob == null ) {
-            throw new IllegalArgumentException("SchedulableJob can not be null");
+
+            String errorMessage = "SchedulableJob can not be null";
+            log.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
         }
 
         MotechScheduledEvent motechScheduledEvent = schedulableJob.getMotechScheduledEvent();
         if (motechScheduledEvent == null) {
-            throw new IllegalArgumentException("Invalid SchedulableJob. MotechScheduledEvent of the SchedulableJob can not be null");
+            String errorMessage = "Invalid SchedulableJob. MotechScheduledEvent of the SchedulableJob can not be null";
+            log.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
         }
 
         String jobId = motechScheduledEvent.getJobId();
@@ -82,8 +85,25 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         try {
             trigger = new CronTrigger(jobId, JOB_GROUP_NAME, schedulableJob.getCronExpression());
         } catch (ParseException e) {
-            throw new MotechSchedulerException("Can not schedule the job: " + jobId + "\n invalid Cron expression: " +
-                                                schedulableJob.getCronExpression());
+            String errorMessage = "Can not schedule the job: " + jobId + "\n invalid Cron expression: " +
+                                                schedulableJob.getCronExpression();
+            log.error(errorMessage);
+            throw new MotechSchedulerException(errorMessage);
+        }
+
+        Scheduler scheduler = schedulerFactoryBean.getScheduler();
+        Trigger existingTrigger = null;
+        try {
+            existingTrigger = scheduler.getTrigger(jobId, JOB_GROUP_NAME);
+        } catch (SchedulerException e) {
+            String errorMessage = "Schedule or reschedule the job: " + jobId +
+                    ".\n  " + e.getMessage();
+            log.error(errorMessage, e);
+            throw new MotechSchedulerException(errorMessage);
+        }
+
+        if (existingTrigger != null) {
+            unscheduleJob(jobId);
         }
 
         scheduleJob(jobDetail, trigger);
@@ -96,7 +116,9 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         log.info("Updating the scheduled job: " + motechScheduledEvent);
 
         if (motechScheduledEvent == null) {
-            throw new IllegalArgumentException("MotechScheduledEvent can not be null");
+            String errorMessage = "MotechScheduledEvent can not be null";
+            log.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
         }
 
         Scheduler scheduler = schedulerFactoryBean.getScheduler();
@@ -109,19 +131,25 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             trigger =  scheduler.getTrigger(jobId, JOB_GROUP_NAME);
 
             if (trigger == null) {
-                throw new MotechSchedulerException("Can not update the job: " + jobId + " The job does not exist (not scheduled)");
+                String errorMessage = "Can not update the job: " + jobId + " The job does not exist (not scheduled)";
+                log.error(errorMessage);
+                throw new MotechSchedulerException(errorMessage);
             }
 
         } catch (SchedulerException e) {
-            throw new MotechSchedulerException("Can not update the job: " + jobId +
-                    ".\n Can not get a trigger associated with that job " + e.getMessage(), e);
+            String errorMessage = "Can not update the job: " + jobId +
+                    ".\n Can not get a trigger associated with that job " + e.getMessage();
+            log.error(errorMessage, e);
+            throw new MotechSchedulerException(errorMessage);
         }
 
         try {
             scheduler.deleteJob(jobId, JOB_GROUP_NAME);
         } catch (SchedulerException e) {
-            throw new MotechSchedulerException("Can not update the job: " + jobId +
-                    ".\n Can not delete old instance of the job " + e.getMessage(), e);
+            String errorMessage = "Can not update the job: " + jobId +
+                    ".\n Can not delete old instance of the job " + e.getMessage();
+            log.error(errorMessage, e);
+            throw new MotechSchedulerException(errorMessage);
         }
 
         JobDetail jobDetail = new JobDetail(jobId, JOB_GROUP_NAME, MotechScheduledJob.class);
@@ -138,11 +166,15 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         log.info("Rescheduling the Job: " + jobId + " new cron expression: " + cronExpression);
 
         if (jobId == null ) {
-            throw new IllegalArgumentException("Job ID can not be null");
+            String errorMessage = "Job ID can not be null";
+            log.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage );
         }
 
         if (cronExpression == null) {
-            throw new IllegalArgumentException("Cron expression can not be null");
+            String errorMessage = "Cron expression can not be null";
+            log.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
         }
 
         Scheduler scheduler = schedulerFactoryBean.getScheduler();
@@ -154,28 +186,38 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             trigger = (CronTrigger) scheduler.getTrigger(jobId, JOB_GROUP_NAME);
 
             if (trigger == null) {
-                throw new MotechSchedulerException("Can not reschedule the job: " + jobId + " The job does not exist (not scheduled)");
+                String errorMessage = "Can not reschedule the job: " + jobId + " The job does not exist (not scheduled)";
+                log.error(errorMessage);
+                throw new MotechSchedulerException();
             }
 
         } catch (SchedulerException e) {
-            throw new MotechSchedulerException("Can not reschedule the job: " + jobId +
-                    ".\n Can not get a trigger associated with that job " + e.getMessage(), e);
+            String errorMessage = "Can not reschedule the job: " + jobId +
+                    ".\n Can not get a trigger associated with that job " + e.getMessage();
+            log.error(errorMessage, e);
+            throw new MotechSchedulerException(errorMessage);
         } catch (ClassCastException e) {
-            throw new MotechSchedulerException("Can not reschedule the job: " + jobId +
-                    ".\n The trigger associated with that job is not a CronTrigger");
+            String errorMessage = "Can not reschedule the job: " + jobId +
+                    ".\n The trigger associated with that job is not a CronTrigger";
+            log.error(errorMessage);
+            throw new MotechSchedulerException();
         }
 
         try {
             trigger.setCronExpression(cronExpression);
         } catch (ParseException e) {
-             throw new MotechSchedulerException("Can not reschedule the job: " + jobId + " Invalid Cron expression: " +
-                                                cronExpression);
+            String errorMessage = "Can not reschedule the job: " + jobId + " Invalid Cron expression: " +
+                                                cronExpression;
+            log.error(errorMessage, e);
+             throw new MotechSchedulerException(errorMessage);
         }
 
         try {
             schedulerFactoryBean.getScheduler().rescheduleJob(jobId, JOB_GROUP_NAME, trigger);
         } catch (SchedulerException e) {
-            throw new MotechSchedulerException("Can not reschedule the job: " + jobId + " " + e.getMessage(), e);
+            String errorMessage = "Can not reschedule the job: " + jobId + " " + e.getMessage();
+            log.error(errorMessage, e);
+            throw new MotechSchedulerException(errorMessage);
         }
     }
 
@@ -185,23 +227,31 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         log.info("Scheduling the Job: " + schedulableJob);
 
         if (schedulableJob == null ) {
-            throw new IllegalArgumentException("SchedulableJob can not be null");
+            String errorMessage = "SchedulableJob can not be null";
+            log.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
         }
 
         MotechScheduledEvent motechScheduledEvent = schedulableJob.getMotechScheduledEvent();
         if (motechScheduledEvent == null) {
-            throw new IllegalArgumentException("Invalid SchedulableJob. MotechScheduledEvent of the SchedulableJob can not be null");
+            String errorMessage = "Invalid SchedulableJob. MotechScheduledEvent of the SchedulableJob can not be null";
+            log.error(errorMessage);
+            throw new IllegalArgumentException();
         }
 
         Date jobStartDate = schedulableJob.getStartDate();
         if (jobStartDate == null ) {
-             throw new IllegalArgumentException("Invalid RunOnceSchedulableJob. The job start date can not be null");
+            String errorMessage = "Invalid RunOnceSchedulableJob. The job start date can not be null";
+            log.error(errorMessage);
+             throw new IllegalArgumentException(errorMessage);
         }
         Date currentDate = new Date();
         if (jobStartDate.before(currentDate) ) {
-             throw new IllegalArgumentException("Invalid RunOnceSchedulableJob. The job start date can not be in the past. \n" +
+            String errorMessage = "Invalid RunOnceSchedulableJob. The job start date can not be in the past. \n" +
                                                 " Job start date: " + jobStartDate.toString() +
-                                                " Attempted to schedule at:" + currentDate.toString());
+                                                " Attempted to schedule at:" + currentDate.toString();
+            log.error(errorMessage);
+             throw new IllegalArgumentException();
         }
 
         String jobId = motechScheduledEvent.getJobId();
@@ -220,13 +270,17 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         log.info("Unscheduling the Job: " + jobId);
 
         if (jobId == null) {
-            throw new IllegalArgumentException("Scheduled Job ID can not be null");
+            String errorMessage = "Scheduled Job ID can not be null";
+            log.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
         }
 
         try {
             schedulerFactoryBean.getScheduler().unscheduleJob(jobId, JOB_GROUP_NAME);
         } catch (SchedulerException e) {
-            throw new MotechSchedulerException("Can not unschedule the job: " + jobId + " " + e.getMessage(), e);
+            String errorMessage = "Can not unschedule the job: " + jobId + " " + e.getMessage();
+            log.error(errorMessage, e);
+            throw new MotechSchedulerException(errorMessage);
         }
 
     }
@@ -236,9 +290,11 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
          try {
             schedulerFactoryBean.getScheduler().scheduleJob(jobDetail, trigger);
         } catch (SchedulerException e) {
-             throw new MotechSchedulerException("Can not schedule the job:\n " +
+             String errorMessage = "Can not schedule the job:\n " +
                                                 jobDetail.toString() +"\n"+ trigger.toString() +
-                                                "\n" + e.getMessage(), e);
+                                                "\n" + e.getMessage();
+             log.error(errorMessage, e);
+             throw new MotechSchedulerException(errorMessage);
         }
     }
 
