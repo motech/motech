@@ -10,5 +10,15 @@
     <name>Motech Platform Core</name>
     
     <dependencies>
-    </dependencies>     
+        <dependency>
+            <groupId>org.ektorp</groupId>
+            <artifactId>org.ektorp</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ektorp</groupId>
+            <artifactId>org.ektorp.spring</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+    </dependencies>
 </project>
