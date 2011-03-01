@@ -32,12 +32,8 @@
  */
 package org.motechproject.scheduler;
 
-import org.motechproject.model.MotechScheduledEvent;
-import org.motechproject.model.SchedulableJob;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.stereotype.Component;
 
 /**
  * Main class that can bootstrap a Motech Scheduler
