@@ -40,7 +40,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
+ * Main class that can bootstrap a Motech Scheduler
  *
+ * @author Igor (iopushnyev@2paths.com)
  */
 public class MotechScheduler {
 

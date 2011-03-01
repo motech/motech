@@ -37,21 +37,42 @@ import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.model.SchedulableJob;
 
 /**
+ * Motech Scheduler Gateway provides access to Motech Scheduler. A proxy for that interface will be generated at run-time.
  *
- * User: az44
+ * This interface should be injected into any class that needs access to Motech Scheduler for scheduling, unscheduling and
+ * rescheduling jobs/tasks.
+ *
+ * The interface is configured in the schedulerOutboundChannelAdapter.xml (motech-platform-core)
+ *
+ * For example of use see SchedulerGatewayIT (motech-platform-core)
+ *
+ * @author Igor (iopushnyev@2paths.com)
  * Date: 23/02/11
- * Time: 10:04 AM
  *
  */
 public interface MotechSchedulerGateway {
 
- public void scheduleJob(SchedulableJob schedulableJob);
+    /**
+     * Sends a message with the given SchedulableJob payload. The message directed to the channel specified in the
+     * a Spring Integration configuration file.
+     *
+     * @param schedulableJob
+     */
+    public void scheduleJob(SchedulableJob schedulableJob);
 
-    public void updateScheduledJob(MotechScheduledEvent motechScheduledEvent);
-
-    //public void rescheduleJob(String jobId, String cronExpression);
-
+    /**
+     * Sends a message with the given RunOnceSchedulableJob payload. The message directed to the channel specified in the
+     * a Spring Integration configuration file.
+     *
+     * @param schedulableJob
+     */
     public void scheduleRunOnceJob(RunOnceSchedulableJob schedulableJob);
 
+    /**
+     * Sends a message with the given jobID (String) payload. The message directed to the channel specified in the
+     * a Spring Integration configuration file.
+     *
+     * @param jobId
+     */
     public void unscheduleJob(String jobId);
 }

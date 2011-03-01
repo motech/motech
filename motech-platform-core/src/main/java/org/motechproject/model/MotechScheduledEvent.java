@@ -43,9 +43,8 @@ import java.util.Map;
  *
  * This class is immutable
  *
- * User:Igor (iopushnyev@2paths.com)
+ * @author Igor (iopushnyev@2paths.com)
  * Date: 16/02/11
- * Time: 1:43 PM
  *
  */
 public final class MotechScheduledEvent implements Serializable{

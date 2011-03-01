@@ -43,10 +43,8 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.*;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.UUID;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -81,6 +79,40 @@ public class MotechSchedulerTest {
 
         assertEquals(scheduledJobsNum+1, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
     }
+
+    @Test
+    public void scheduleExistingJobTest() throws Exception{
+
+        MotechScheduledEvent scheduledEvent = new MotechScheduledEvent(uuidStr, "testEvent", null);
+        SchedulableJob schedulableJob = new SchedulableJob(scheduledEvent, "0 0 12 * * ?");
+
+
+        Map<String, Object> newParameters = new HashMap<String, Object>();
+        newParameters.put("param1", "value1");
+
+        String newCronExpression = "0 0 0 * * ?";
+
+        MotechScheduledEvent newScheduledEvent = new MotechScheduledEvent(uuidStr, "testEvent", newParameters);
+        SchedulableJob newSchedulableJob = new SchedulableJob(newScheduledEvent, newCronExpression);
+
+        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
+
+        motechScheduler.scheduleJob(schedulableJob);
+        assertEquals(scheduledJobsNum+1, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
+
+
+        motechScheduler.scheduleJob(newSchedulableJob);
+
+        assertEquals(scheduledJobsNum+1, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
+
+        CronTrigger trigger =  (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger(uuidStr, MotechSchedulerServiceImpl.JOB_GROUP_NAME);
+        JobDetail jobDetail =  schedulerFactoryBean.getScheduler().getJobDetail(uuidStr, MotechSchedulerServiceImpl.JOB_GROUP_NAME);
+        JobDataMap jobDataMap = jobDetail.getJobDataMap();
+
+        assertEquals(newCronExpression, trigger.getCronExpression());
+        assertEquals(2, jobDataMap.size());
+    }
+
 
     @Test(expected = MotechSchedulerException.class)
     public void scheduleInvalidCronExprTest() throws Exception{
