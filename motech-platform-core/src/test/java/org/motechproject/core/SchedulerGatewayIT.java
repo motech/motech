@@ -48,10 +48,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 
 /**
+ * Motech Scheduler integration test
  *
- * User: az44
+ * @author Igor (iopushnyev@2paths.com)
  * Date: 23/02/11
- * Time: 11:00 AM
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)

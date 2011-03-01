@@ -45,7 +45,8 @@ import java.text.ParseException;
 import java.util.Date;
 
 /**
- *
+ * Motech Scheduler Service implementation
+ * @see MotechSchedulerService
  */
 public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
@@ -56,6 +57,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
     @Autowired
     private SchedulerFactoryBean schedulerFactoryBean;
+
 
     @Override
     public void scheduleJob(SchedulableJob schedulableJob) {
@@ -110,6 +112,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
     }
 
+
     @Override
     public void updateScheduledJob(MotechScheduledEvent motechScheduledEvent) {
 
@@ -159,6 +162,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         scheduleJob(jobDetail, trigger);
 
     }
+
 
     @Override
     public void rescheduleJob(String jobId, String cronExpression) {
