@@ -35,25 +35,17 @@
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:util="http://www.springframework.org/schema/util"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
-			http://www.springframework.org/schema/beans/spring-beans.xsd">
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/util
+			http://www.springframework.org/schema/util/spring-util.xsd">
 
-	<bean id="connectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
-		<property name="targetConnectionFactory">
-			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
-				<property name="brokerURL" value="tcp://localhost:61616"/>		
-			</bean>
-		</property>
-		<property name="sessionCacheSize" value="10"/>
-		<property name="cacheProducers" value="false"/>
-	</bean>
+    <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
 
-	<bean id="schedulerQueue" class="org.apache.activemq.command.ActiveMQQueue">
-		<constructor-arg value="queue.scheduler"/>
-	</bean>
+    <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean" />
 
-	<bean id="eventQueue" class="org.apache.activemq.command.ActiveMQQueue">
-		<constructor-arg value="queue.event"/>
-	</bean>
-
+    <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
+        <constructor-arg ref="httpClient"/>
+    </bean>
 </beans>
