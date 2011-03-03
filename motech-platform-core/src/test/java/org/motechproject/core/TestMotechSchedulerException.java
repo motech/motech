@@ -30,48 +30,35 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.scheduler;
+package org.motechproject.core;
 
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.junit.Test;
+import org.motechproject.scheduler.MotechSchedulerException;
+
+import static org.junit.Assert.assertEquals;
+
 
 /**
- * Main class that can bootstrap a Motech Scheduler
- *
- * @author Igor (iopushnyev@2paths.com)
+ * Created by IntelliJ IDEA.
+ * User: rob
+ * Date: 3/1/11
+ * Time: 1:34 PM
+ * To change this template use File | Settings | File Templates.
  */
-public class MotechScheduler {
+public class TestMotechSchedulerException
+{
+    @Test
+    public void newTest() throws Exception {
+        String msg = "message";
+        MotechSchedulerException ex = new MotechSchedulerException(msg);
+        assertEquals(msg, ex.getMessage());
 
+        ex = new MotechSchedulerException(msg, new Throwable());
+        assertEquals(msg, ex.getMessage());
 
-
-    public static void main(String[] args) {
-
-
-
-        AbstractApplicationContext ctx
-                = new ClassPathXmlApplicationContext(new String[]{"/applicationContext.xml"});
-
-        // add a shutdown hook for the above context...
-        ctx.registerShutdownHook();
-
-        // Initiate test
-       // MotechScheduler motechScheduler = ctx.getBean(MotechScheduler.class);
-       // motechScheduler.init();
+        Throwable t = new Throwable(msg);
+        msg = t.toString();
+        ex = new MotechSchedulerException(t);
+        assertEquals(msg, ex.getMessage());
     }
-
-
-    //The following code is for test purpose only
-    /* @Autowired
-     private MotechSchedulerService schedulerService;
-
-    private void init() {
-
-        System.out.println("Initiating Quartz...");
-        MotechScheduledEvent scheduledEvent = new MotechScheduledEvent("1", "test", null);
-        SchedulableJob schedulableJob = new SchedulableJob(scheduledEvent, "0/5 * * * * ?");
-
-        schedulerService.scheduleJob(schedulableJob);
-    }
-*/
-
 }

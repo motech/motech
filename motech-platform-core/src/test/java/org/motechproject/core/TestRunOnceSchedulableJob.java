@@ -34,30 +34,41 @@ package org.motechproject.core;
 
 import org.junit.Test;
 import org.motechproject.model.MotechScheduledEvent;
+import org.motechproject.model.RunOnceSchedulableJob;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by IntelliJ IDEA.
  * User: rob
- * Date: 2/28/11
- * Time: 10:35 AM
+ * Date: 3/1/11
+ * Time: 1:07 PM
  * To change this template use File | Settings | File Templates.
  */
-public class TestMotechScheduledEvent {
+public class TestRunOnceSchedulableJob
+{
     private String uuidStr = UUID.randomUUID().toString();
     private String uuidStr2 = UUID.randomUUID().toString();
 
     @Test
     public void newTest() throws Exception{
+        RunOnceSchedulableJob job;
         MotechScheduledEvent scheduledEvent;
+        scheduledEvent = new MotechScheduledEvent(uuidStr, "TestEvent", null);
+
+        Calendar cal = Calendar.getInstance();
+        Date currentDate = cal.getTime();
+        cal.add(Calendar.DATE, -1);
+        Date yesterday = cal.getTime();
+
         boolean exceptionThrown = false;
         try {
-            scheduledEvent = new MotechScheduledEvent(null, "testEvent", null);
+            job = new RunOnceSchedulableJob(null, currentDate);
         }
         catch (IllegalArgumentException e) {
             exceptionThrown = true;
@@ -66,7 +77,16 @@ public class TestMotechScheduledEvent {
 
         exceptionThrown = false;
         try {
-            scheduledEvent = new MotechScheduledEvent(uuidStr, null, null);
+            job = new RunOnceSchedulableJob(scheduledEvent, null);
+        }
+        catch (IllegalArgumentException e) {
+            exceptionThrown = true;
+        }
+        assertTrue(exceptionThrown);
+
+        exceptionThrown = false;
+        try {
+            job = new RunOnceSchedulableJob(scheduledEvent, yesterday);
         }
         catch (IllegalArgumentException e) {
             exceptionThrown = true;
@@ -75,45 +95,32 @@ public class TestMotechScheduledEvent {
     }
 
     @Test
-    public void testGetParameters() {
-        MotechScheduledEvent scheduledEvent = new MotechScheduledEvent(uuidStr, "testEvent", null);
-        Map<String, Object> params = scheduledEvent.getParameters();
-
-        assertNotNull("Expecting param object", params);
-
-        HashMap hashMap = new HashMap();
-        hashMap.put("One", new Integer(1));
-
-        MotechScheduledEvent nonNullParams = new MotechScheduledEvent(uuidStr, "testEvent", hashMap);
-        params = nonNullParams.getParameters();
-
-        assertTrue(params.equals(hashMap));
-        assertFalse(params == hashMap);
-    }
-
-    @Test
     public void equalsTest() throws Exception{
-        MotechScheduledEvent scheduledEvent = new MotechScheduledEvent(uuidStr, "testEvent", null);
-        MotechScheduledEvent scheduledEventSame = new MotechScheduledEvent(uuidStr, "testEvent", null);
-        MotechScheduledEvent scheduledEventDifferentJobId = new MotechScheduledEvent(uuidStr2, "testEvent", null);
-        MotechScheduledEvent scheduledEventDifferentEventType = new MotechScheduledEvent(uuidStr, "testEvent2", null);
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, +1);
+        Date date = cal.getTime();
 
-        HashMap hashMap = new HashMap();
-        hashMap.put("One", new Integer(1));
+        cal.add(Calendar.DATE, +1);
+        Date date2 = cal.getTime();
 
-        MotechScheduledEvent nonNullParams = new MotechScheduledEvent(uuidStr, "testEvent", hashMap);
-        MotechScheduledEvent nonNullParams2 = new MotechScheduledEvent(uuidStr, "testEvent", hashMap);
+        MotechScheduledEvent scheduledEvent1 = new MotechScheduledEvent(uuidStr, "testEvent", null);
+        MotechScheduledEvent scheduledEvent2 = new MotechScheduledEvent(uuidStr2, "testEvent", null);
 
-        assertTrue(scheduledEvent.equals(scheduledEvent));
-        assertTrue(scheduledEvent.equals(scheduledEventSame));
-        assertTrue(nonNullParams.equals(nonNullParams2));
+        RunOnceSchedulableJob job1 = new RunOnceSchedulableJob(scheduledEvent1, date);
+        RunOnceSchedulableJob job1Same = new RunOnceSchedulableJob(scheduledEvent1, date);
+        RunOnceSchedulableJob job2 = new RunOnceSchedulableJob(scheduledEvent2, date);
+        RunOnceSchedulableJob job3 = new RunOnceSchedulableJob(scheduledEvent1, date2);
 
-        assertFalse(scheduledEvent.equals(null));
-        assertFalse(scheduledEvent.equals(uuidStr));
-        assertFalse(scheduledEvent.equals(scheduledEventDifferentEventType));
-        assertFalse(scheduledEvent.equals(scheduledEventDifferentJobId));
+        assertTrue(job1.equals(job1));
+        assertTrue(job1.equals(job1Same));
 
-        assertFalse(scheduledEvent.equals(nonNullParams));
-        assertFalse(nonNullParams.equals(scheduledEvent));
+        assertFalse(job1.equals(null));
+        assertFalse(job1.equals(scheduledEvent1));
+
+        // Same date, different event
+        assertFalse(job1.equals(job2));
+
+        // Same event different date
+        assertFalse(job1.equals(job3));
     }
 }
