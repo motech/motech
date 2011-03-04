@@ -32,6 +32,12 @@
  */
 package org.motechproject.scheduler;
 
+import org.motechproject.model.MotechScheduledEvent;
+import org.motechproject.model.SchedulableJob;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -42,11 +48,18 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 public class MotechScheduler {
 
+    private final static Logger log = LoggerFactory.getLogger(MotechSchedulerServiceImpl.class);
 
+    private final static String SCHEDULE_TEST_INPUT_PARAM = "-t";
+    private final static String UNSCHEDULE_TEST_INPUT_PARAM = "-c";
 
+    private final static String TEST_EVENT_NAME = "testEvent";
+
+    /**
+     *
+     * @param args
+     */
     public static void main(String[] args) {
-
-
 
         AbstractApplicationContext ctx
                 = new ClassPathXmlApplicationContext(new String[]{"/applicationContext.xml"});
@@ -54,24 +67,48 @@ public class MotechScheduler {
         // add a shutdown hook for the above context...
         ctx.registerShutdownHook();
 
-        // Initiate test
-       // MotechScheduler motechScheduler = ctx.getBean(MotechScheduler.class);
-       // motechScheduler.init();
+        log.info("Motech Scheduler started...");
+
+        try {
+            if (args.length > 0) {
+                MotechScheduler motechScheduler = ctx.getBean(MotechScheduler.class);
+                if (SCHEDULE_TEST_INPUT_PARAM.equals(args[0])) {
+                    motechScheduler.scheduleTestEvent();
+                } else if (UNSCHEDULE_TEST_INPUT_PARAM.equals(args[0])) {
+                    motechScheduler.unscheduleTestEvent();
+                } else {
+                    log.warn("Unknown parameter: " + args[0] + "- ignored");
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error: ", e);
+        }
     }
 
 
-    //The following code is for test purpose only
-    /* @Autowired
+     @Autowired
      private MotechSchedulerService schedulerService;
 
-    private void init() {
+    private void scheduleTestEvent() {
 
-        System.out.println("Initiating Quartz...");
-        MotechScheduledEvent scheduledEvent = new MotechScheduledEvent("1", "test", null);
+        MotechScheduledEvent scheduledEvent = new MotechScheduledEvent(TEST_EVENT_NAME, "test", null);
         SchedulableJob schedulableJob = new SchedulableJob(scheduledEvent, "0/5 * * * * ?");
 
-        schedulerService.scheduleJob(schedulableJob);
+        try {
+            log.info("Scheduling test job: " + schedulableJob);
+            schedulerService.scheduleJob(schedulableJob);
+        } catch (Exception e) {
+            log.warn("Can not schedule test job. " + e.getMessage());
+        }
     }
-*/
+
+    private void unscheduleTestEvent() {
+        try {
+            log.info("Unscheduling the test job: " + TEST_EVENT_NAME);
+            schedulerService.unscheduleJob(TEST_EVENT_NAME);
+        } catch (Exception e) {
+            log.warn("Can not unschedule the test job: " + TEST_EVENT_NAME +" " + e.getMessage());
+        }
+    }
 
 }
