@@ -77,7 +77,7 @@ public class ScheduledEventListenerRegistry {
      */
     public List<ScheduledEventListener> getListeners(EventType type) {
         List<ScheduledEventListener> listeners =  null;
-        if (eventListeners.contains(type.getKey())) {
+        if (eventListeners.containsKey(type.getKey())) {
             listeners = eventListeners.get(type.getKey());
         }
 

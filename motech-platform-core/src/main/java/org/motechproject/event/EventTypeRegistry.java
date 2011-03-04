@@ -68,7 +68,7 @@ public class EventTypeRegistry {
      */
     public EventType getEventType(String key) {
         EventType type = null;
-        if (eventTypes.contains(key)) {
+        if (eventTypes.containsKey(key)) {
             type = eventTypes.get(key);
         }
 
