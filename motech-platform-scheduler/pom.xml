@@ -7,10 +7,10 @@
         <groupId>org.motechproject</groupId>
         <version>0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>motech-scheduler</artifactId>
+    <artifactId>motech-platform-scheduler</artifactId>
     <packaging>jar</packaging>
     <version>0.1-SNAPSHOT</version>
-    <name>Motech Scheduler</name>
+    <name>Motech Platform Scheduler</name>
 
     <properties>
         <spring.integration.version>2.0.2.BUILD-SNAPSHOT</spring.integration.version>
@@ -28,9 +28,9 @@
             <version>3.0.5.RELEASE</version>
         </dependency>
         <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>motech-platform-core</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-common</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

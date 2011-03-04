@@ -84,7 +84,7 @@
     </properties>
 
     <modules>
-        <module>motech-platform-core</module>
+        <module>motech-platform-common</module>
         <module>motech-platform-omod</module>
         <module>motech-platform-server</module>
         <module>motech-platform-scheduler</module>

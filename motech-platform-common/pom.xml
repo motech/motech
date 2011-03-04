@@ -6,8 +6,8 @@
         <groupId>org.motechproject</groupId>
         <version>0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>motech-platform-core</artifactId>
-    <name>Motech Platform Core</name>
+    <artifactId>motech-platform-common</artifactId>
+    <name>Motech Platform Common</name>
     
     <dependencies>
     </dependencies>
