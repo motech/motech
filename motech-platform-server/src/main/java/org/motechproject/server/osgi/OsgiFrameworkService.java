@@ -1,28 +1,28 @@
 /**
  * MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
- *
- * Copyright (c) 2010-11 The Trustees of Columbia University in the City of
- * New York and Grameen Foundation USA.  All rights reserved.
- *
+ * 
+ * Copyright (c) 2010-11 The Trustees of Columbia University in the City of New
+ * York and Grameen Foundation USA. All rights reserved.
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  * 1. Redistributions of source code must retain the above copyright notice,
  * this list of conditions and the following disclaimer.
- *
+ * 
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- *
- * 3. Neither the name of Grameen Foundation USA, Columbia University, or
- * their respective contributors may be used to endorse or promote products
- * derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY GRAMEEN FOUNDATION USA, COLUMBIA UNIVERSITY
- * AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING,
- * BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL GRAMEEN FOUNDATION
- * USA, COLUMBIA UNIVERSITY OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * 
+ * 3. Neither the name of Grameen Foundation USA, Columbia University, or their
+ * respective contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY GRAMEEN FOUNDATION USA, COLUMBIA UNIVERSITY AND
+ * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
+ * NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL GRAMEEN FOUNDATION USA,
+ * COLUMBIA UNIVERSITY OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
  * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
@@ -34,7 +34,9 @@ package org.motechproject.server.osgi;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
@@ -56,104 +58,136 @@ import org.springframework.web.context.WebApplicationContext;
  */
 public class OsgiFrameworkService implements ApplicationContextAware {
 
-	private static Logger logger = LoggerFactory.getLogger(OsgiFrameworkService.class);
-	
-	private ApplicationContext applicationContext;
-	
-	private String bundleFolder;
+    private static Logger logger = LoggerFactory.getLogger(OsgiFrameworkService.class);
 
-	@Autowired
-	private Framework osgiFramework;
-	
-	private List<BundleLoader> bundleLoaders;
+    private ApplicationContext applicationContext;
 
-	/**
-	 * Initialize and start the OSGi framework
-	 */
-	public void start() {
-		try {
-			ServletContext servletContext = ((WebApplicationContext)applicationContext).getServletContext();
-			
-			osgiFramework.init();
-			
-			BundleContext bundleContext = osgiFramework.getBundleContext();
-			
-			//This is mandatory for Felix http servlet bridge
-			servletContext.setAttribute(BundleContext.class.getName(), bundleContext);
+    private String bundleFolder;
 
-			//install bundles
-			ArrayList<Bundle> bundles = new ArrayList<Bundle>();
-			for (URL url : findBundles(servletContext)) {
-				logger.debug("Installing bundle [" + url + "]");
-				Bundle bundle = bundleContext.installBundle(url.toExternalForm());								
-				bundles.add(bundle);
-			}
+    @Autowired
+    private Framework osgiFramework;
 
-			for (Bundle bundle : bundles) {
-				//custom bundle loaders 
-				if (bundleLoaders != null) {
-					for (BundleLoader loader : bundleLoaders) {
-						loader.loadBundle(bundle);
-					}
-				}
-				bundle.start();
-			}
-			
-			osgiFramework.start();
-			logger.info("OSGi framework started");
-		} catch (Throwable e) {
-			logger.error("Failed to start OSGi framework", e);
-			throw new RuntimeException(e);
-		}
-	}
+    private List<BundleLoader> bundleLoaders;
+    
+    private Map<String, ClassLoader> bundleClassLoaderLookup = new HashMap<String, ClassLoader>();
+    
+    private static final String BUNDLE_ACTIVATOR_HEADER = "Bundle-Activator";
 
-	/**
-	 * Stop the OSGi framework.
-	 */
-	public void stop() {
-		try {			
-			if (osgiFramework != null) {
-				osgiFramework.stop();
-				logger.info("OSGi framework stopped");
-			}
-		} catch (Throwable e) {
-			logger.error("Error stopping OSGi framework", e);
-			throw new RuntimeException(e);
-		}
-	}
+    /**
+     * Initialize and start the OSGi framework
+     */
+    public void start() {
+        try {            
+            ServletContext servletContext = ((WebApplicationContext) applicationContext).getServletContext();
 
-	private List<URL> findBundles(ServletContext servletContext) throws Exception {
-		List<URL> list = new ArrayList<URL>();
-		@SuppressWarnings("unchecked")
-		Set<String> paths = servletContext.getResourcePaths(bundleFolder);
-		if (paths != null) {
-			for (String path : paths) {
-				if (path.endsWith(".jar")) {
-					URL url = servletContext.getResource(path);
-					if (url != null) {
-						list.add(url);
-					}
-				}
-			}
-		}
-		return list;
-	}
-	
-	@Override
-	public void setApplicationContext(ApplicationContext ctx) throws BeansException {
-		applicationContext = ctx;
-	}
+            osgiFramework.init();
 
-	public void setBundleFolder(String bundleFolder) {
-		this.bundleFolder = bundleFolder;
-	}
+            BundleContext bundleContext = osgiFramework.getBundleContext();
 
-	public void setOsgiFramework(Framework osgiFramework) {
-		this.osgiFramework = osgiFramework;
-	}	
+            // This is mandatory for Felix http servlet bridge
+            servletContext.setAttribute(BundleContext.class.getName(), bundleContext);
 
-	public void setBundleLoaders(List<BundleLoader> bundleLoaders) {
-		this.bundleLoaders = bundleLoaders;
-	}	
+            // install bundles
+            ArrayList<Bundle> bundles = new ArrayList<Bundle>();
+            for (URL url : findBundles(servletContext)) {
+                logger.debug("Installing bundle [" + url + "]");
+                Bundle bundle = bundleContext.installBundle(url.toExternalForm());
+                bundles.add(bundle);
+            }
+
+            for (Bundle bundle : bundles) {
+                // custom bundle loaders
+                if (bundleLoaders != null) {
+                    for (BundleLoader loader : bundleLoaders) {
+                        loader.loadBundle(bundle);
+                    }
+                }
+                bundle.start();
+                storeClassCloader(bundle);
+            }
+
+            osgiFramework.start();
+            logger.info("OSGi framework started");
+        } catch (Throwable e) {
+            logger.error("Failed to start OSGi framework", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Stop the OSGi framework.
+     */
+    public void stop() {
+        try {
+            if (osgiFramework != null) {
+                osgiFramework.stop();
+                logger.info("OSGi framework stopped");
+            }
+        } catch (Throwable e) {
+            logger.error("Error stopping OSGi framework", e);
+            throw new RuntimeException(e);
+        }
+    }
+    
+    /**
+     * The current OSGi (4.2) doesn't provide a standard way to retrieve the bundle ClassLoader.
+     * So we have to use this as a workaround. 
+     * 
+     * @param bundleSymbolicName
+     * @return The ClassLoader of the bundle
+     */
+    public ClassLoader getClassLoaderBySymbolicName(String bundleSymbolicName){
+        return bundleClassLoaderLookup.get(bundleSymbolicName);
+    }
+    
+    /**
+     * @param bundle
+     * @throws Exception
+     */
+    private void storeClassCloader(Bundle bundle) throws Exception {
+        String key = bundle.getSymbolicName();
+        String activator = (String)bundle.getHeaders().get(BUNDLE_ACTIVATOR_HEADER);
+        if (activator != null) {
+            @SuppressWarnings("rawtypes")
+            Class activatorClass = bundle.loadClass(activator);
+            if (activatorClass != null) {
+                bundleClassLoaderLookup.put(key, activatorClass.getClassLoader());
+            }
+        }
+    }
+
+    private List<URL> findBundles(ServletContext servletContext) throws Exception {
+        List<URL> list = new ArrayList<URL>();
+        @SuppressWarnings("unchecked")
+        Set<String> paths = servletContext.getResourcePaths(bundleFolder);
+        if (paths != null) {
+            for (String path : paths) {
+                if (path.endsWith(".jar")) {
+                    URL url = servletContext.getResource(path);
+                    if (url != null) {
+                        list.add(url);
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext ctx) throws BeansException {
+        applicationContext = ctx;
+    }
+
+    public void setBundleFolder(String bundleFolder) {
+        this.bundleFolder = bundleFolder;
+    }
+
+    public void setOsgiFramework(Framework osgiFramework) {
+        this.osgiFramework = osgiFramework;
+    }
+
+    public void setBundleLoaders(List<BundleLoader> bundleLoaders) {
+        this.bundleLoaders = bundleLoaders;
+    }
 
 }
