@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--
 
     MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
@@ -33,30 +33,23 @@
     EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -->
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:util="http://www.springframework.org/schema/util"
-	xmlns:context="http://www.springframework.org/schema/context"    
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
-			http://www.springframework.org/schema/beans/spring-beans.xsd
-			http://www.springframework.org/schema/util
-			http://www.springframework.org/schema/util/spring-util.xsd
-			http://www.springframework.org/schema/context
-			http://www.springframework.org/schema/context/spring-context.xsd">
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
-    <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
-    
-    <context:component-scan base-package="org.motechproject.dao" />
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
 
-    <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean" />
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %-5p [%c] %m%n" />
+		</layout>
+	</appender>
 
-    <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
-        <constructor-arg ref="httpClient"/>
-    </bean>
-        
-	<bean id="ruleDatabase" class="org.ektorp.impl.StdCouchDbConnector">
-		<constructor-arg value="rules" />
-		<constructor-arg ref="couchDbInstance" />
-	</bean>
+	<logger name="org.motechproject">
+		<level value="DEBUG" />
+	</logger>
 	
-</beans>
+	<root>
+		<priority value="WARN" />
+		<appender-ref ref="CONSOLE" />
+	</root>
+
+</log4j:configuration>
