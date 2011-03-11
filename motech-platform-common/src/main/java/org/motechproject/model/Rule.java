@@ -33,7 +33,8 @@
 package org.motechproject.model;
 
 
-public class Rule extends MotechBaseDataObject{
+
+public class Rule extends MotechAuditableDataObject{
 
     private static final long serialVersionUID = 1L;
     

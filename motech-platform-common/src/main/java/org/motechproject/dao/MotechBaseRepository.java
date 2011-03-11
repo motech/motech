@@ -32,8 +32,6 @@
  */
 package org.motechproject.dao;
 
-import java.util.Date;
-
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.CouchDbRepositorySupport;
 import org.motechproject.model.MotechBaseDataObject;
@@ -42,20 +40,6 @@ public abstract class MotechBaseRepository<T extends MotechBaseDataObject> exten
 
     protected MotechBaseRepository(Class<T> type, CouchDbConnector db) {
         super(type, db);
-    }
-
-    @Override
-    public void add(T entity) {
-        Date now = new Date();
-        entity.setDateCreated(now);
-        entity.setLastUpdated(now);
-        super.add(entity);
-    }
-
-    @Override
-    public void update(T entity) {
-        entity.setLastUpdated(new Date());
-        super.update(entity);
     }
 
 }

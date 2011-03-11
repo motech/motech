@@ -32,11 +32,37 @@
  */
 package org.motechproject.model;
 
-import org.ektorp.support.CouchDbDocument;
+import java.util.Set;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.ektorp.docref.DocumentReferences;
+import org.ektorp.docref.FetchType;
 
 
-public abstract class MotechBaseDataObject extends CouchDbDocument{
+public abstract class MotechAuditableDataObject extends MotechBaseDataObject{
 
     private static final long serialVersionUID = 1L;
+    
+    //the current version of ektorp (1.1) only supports @DocumentReferences on a Set
+    //Otherwise, a 1-to-1 relationship is enough 
+    @DocumentReferences(backReference = "dataObjectId", fetch = FetchType.LAZY, descendingSortOrder = true, orderBy = "lastUpdated")
+    private Set<Audit> audits;
+    
+    public Set<Audit> getAudits() {
+        return audits;
+    }
+    
+    public void setAudits(Set<Audit> audits) {
+        this.audits = audits;
+    }
+    
+    @JsonIgnore
+    public Audit getAudit(){
+        Audit audit = null;
+        if (audits != null && !audits.isEmpty()) {
+            audit = audits.iterator().next();
+        }
+        return audit;
+    }
     
 }

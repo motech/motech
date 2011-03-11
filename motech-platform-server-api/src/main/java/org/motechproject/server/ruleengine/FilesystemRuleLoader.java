@@ -44,8 +44,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Ricky Wang
  */
 public class FilesystemRuleLoader {
-    
-    private static Logger logger = LoggerFactory.getLogger(FilesystemRuleLoader.class);    
+
+    private static Logger logger = LoggerFactory.getLogger(FilesystemRuleLoader.class);
 
     // default rule folder
     private String ruleFolder = "/rules";
@@ -56,19 +56,21 @@ public class FilesystemRuleLoader {
     public void load() {
         File[] ruleFiles = new File(getClass().getResource(ruleFolder).getFile()).listFiles();
         for (File file : ruleFiles) {
-            try {
-                knowledgeBaseManager.addOrUpdateRule(file);
-            } catch (IOException e) {
-                logger.error("Failed to load the rule file [" + file.getName() + "]", e);
-                throw new RuntimeException(e);
+            if (file.getName().toLowerCase().endsWith(".drl")) {
+                try {
+                    knowledgeBaseManager.addOrUpdateRule(file);
+                } catch (IOException e) {
+                    logger.error("Failed to load the rule file [" + file.getName() + "]", e);
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
-    
+
     public void setRuleFolder(String ruleFolder) {
         this.ruleFolder = ruleFolder;
     }
-    
+
     public void setKnowledgeBaseManager(KnowledgeBaseManager knowledgeBaseManager) {
         this.knowledgeBaseManager = knowledgeBaseManager;
     }

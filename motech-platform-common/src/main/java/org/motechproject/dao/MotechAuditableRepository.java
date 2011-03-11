@@ -30,13 +30,56 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.model;
+package org.motechproject.dao;
 
-import org.ektorp.support.CouchDbDocument;
+import java.util.Date;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.ektorp.CouchDbConnector;
+import org.motechproject.model.Audit;
+import org.motechproject.model.MotechAuditableDataObject;
 
 
-public abstract class MotechBaseDataObject extends CouchDbDocument{
+public abstract class MotechAuditableRepository <T extends MotechAuditableDataObject> extends MotechBaseRepository<T>{
+    
+    private static final String AUDIT_ID_SUFFIX = "_AUDIT";
 
-    private static final long serialVersionUID = 1L;
+    protected MotechAuditableRepository(Class<T> type, CouchDbConnector db) {
+        super(type, db);
+    }
+
+    @Override
+    public void add(T entity) {
+        super.add(entity);
+        Audit audit = new Audit();
+        Date now = new Date();
+        audit.setId(entity.getId() + AUDIT_ID_SUFFIX);
+        audit.setDateCreated(now);
+        audit.setLastUpdated(now);
+        audit.setDataObjectId(entity.getId());
+        db.create(audit);
+        entity.setAudits(new TreeSet<Audit>());
+        entity.getAudits().add(audit);
+    }
+
+    @Override
+    public void update(T entity) {
+        super.update(entity);
+        Audit audit = db.get(Audit.class, entity.getId() + AUDIT_ID_SUFFIX);
+        audit.setLastUpdated(new Date());
+        db.update(audit);
+        entity.setAudits(new TreeSet<Audit>());
+        entity.getAudits().add(audit);
+    }
+    
+    @Override
+    public void remove(T entity){
+        Set<Audit> audits = entity.getAudits();
+        for (Audit audit : audits) {
+            db.delete(audit);
+        }
+        super.remove(entity);
+    }
     
 }

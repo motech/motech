@@ -32,11 +32,43 @@
  */
 package org.motechproject.model;
 
+import java.util.Date;
+
 import org.ektorp.support.CouchDbDocument;
+import org.ektorp.support.TypeDiscriminator;
 
 
-public abstract class MotechBaseDataObject extends CouchDbDocument{
+public class Audit extends CouchDbDocument{
 
     private static final long serialVersionUID = 1L;
+
+    @TypeDiscriminator
+    private Date lastUpdated;
+    private Date dateCreated;
+    private String dataObjectId;
+    
+    public String getDataObjectId() {
+        return dataObjectId;
+    }
+
+    public void setDataObjectId(String dataObjectId) {
+        this.dataObjectId = dataObjectId;
+    }
+
+    public Date getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(Date lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+    
+    public Date getDateCreated() {
+        return dateCreated;
+    }
+    
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
+    }
     
 }
