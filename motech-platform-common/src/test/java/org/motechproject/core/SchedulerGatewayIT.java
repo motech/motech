@@ -33,7 +33,7 @@
 package org.motechproject.core;
 
 import org.junit.Test;
-import org.motechproject.model.MotechScheduledEvent;
+import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.model.SchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerGateway;
@@ -64,14 +64,14 @@ public class SchedulerGatewayIT {
 
     @Test
     public void testMotechScheduler() {
-        MotechScheduledEvent scheduledEvent = new MotechScheduledEvent("test_1", "testEvent", null);
-        SchedulableJob schedulableJob = new SchedulableJob(scheduledEvent, "0/5 0 * * * ?");
+        MotechEvent motechEvent = new MotechEvent("test_1", "testEvent", null);
+        SchedulableJob schedulableJob = new SchedulableJob(motechEvent, "0/5 0 * * * ?");
 
         motechSchedulerGateway.scheduleJob(schedulableJob);
 
         motechSchedulerGateway.unscheduleJob("test_1");
         
-        RunOnceSchedulableJob runOnceSchedulableJob = new RunOnceSchedulableJob(scheduledEvent, new Date((new Date().getTime()+5000)));
+        RunOnceSchedulableJob runOnceSchedulableJob = new RunOnceSchedulableJob(motechEvent, new Date((new Date().getTime()+5000)));
 
         motechSchedulerGateway.scheduleRunOnceJob(runOnceSchedulableJob);
     }

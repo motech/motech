@@ -30,49 +30,47 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.scheduler;
+package org.motechproject.server.event;
 
+import org.motechproject.event.EventTypeRegistry;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.model.RunOnceSchedulableJob;
-import org.motechproject.model.SchedulableJob;
+import java.util.List;
+import java.util.Iterator;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 
 /**
- * Motech Scheduler Gateway provides access to Motech Scheduler. A proxy for that interface will be generated at run-time.
- *
- * This interface should be injected into any class that needs access to Motech Scheduler for scheduling, unscheduling and
- * rescheduling jobs/tasks.
- *
- * The interface is configured in the schedulerOutboundChannelAdapter.xml (motech-platform-core)
- *
- * For example of use see SchedulerGatewayIT (motech-platform-core)
- *
- * @author Igor (iopushnyev@2paths.com)
- * Date: 23/02/11
- *
+ * This class handled incoming scheduled events and relays those events to the appropriate event listeners
  */
-public interface MotechSchedulerGateway {
+public class EventRelay {
+
+    private ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 50);
+
+    public EventRelay() {
+
+    }
 
     /**
-     * Sends a message with the given SchedulableJob payload. The message directed to the channel specified in the
-     * a Spring Integration configuration file.
-     *
-     * @param schedulableJob
+     * Relay an event to all the listeners of that event.
+     * @param event event being relayed
      */
-    public void scheduleJob(SchedulableJob schedulableJob);
+    public void relayEvent(MotechEvent event) {
 
-    /**
-     * Sends a message with the given RunOnceSchedulableJob payload. The message directed to the channel specified in the
-     * a Spring Integration configuration file.
-     *
-     * @param schedulableJob
-     */
-    public void scheduleRunOnceJob(RunOnceSchedulableJob schedulableJob);
+        // Retrieve a list of listeners for the given event type
+        List<EventListener> listeners = EventListenerRegistry.getInstance().getListeners( EventTypeRegistry.getInstance().getEventType(event.getEventType()) );
 
-    /**
-     * Sends a message with the given jobID (String) payload. The message directed to the channel specified in the
-     * a Spring Integration configuration file.
-     *
-     * @param jobId
-     */
-    public void unscheduleJob(String jobId);
+        final MotechEvent providedEvent = event; // Copy the event to be provided to the listeners
+
+        // Iterate through the list of listeners of this event and execute handle method
+        // with the message.
+        for( Iterator<EventListener> iter = listeners.iterator(); iter.hasNext(); ) {
+            final EventListener listener = iter.next(); // create an instance of the event listener
+            executor.execute(new Runnable(){
+                    public void run() {
+                        listener.handle(providedEvent);
+                    }
+                });
+        }
+    }
+
 }

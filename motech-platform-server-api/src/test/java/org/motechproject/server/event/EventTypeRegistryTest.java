@@ -30,49 +30,47 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.scheduler;
+package org.motechproject.server.event;
 
-import org.motechproject.model.MotechEvent;
-import org.motechproject.model.RunOnceSchedulableJob;
-import org.motechproject.model.SchedulableJob;
+import static org.junit.Assert.*;
 
-/**
- * Motech Scheduler Gateway provides access to Motech Scheduler. A proxy for that interface will be generated at run-time.
- *
- * This interface should be injected into any class that needs access to Motech Scheduler for scheduling, unscheduling and
- * rescheduling jobs/tasks.
- *
- * The interface is configured in the schedulerOutboundChannelAdapter.xml (motech-platform-core)
- *
- * For example of use see SchedulerGatewayIT (motech-platform-core)
- *
- * @author Igor (iopushnyev@2paths.com)
- * Date: 23/02/11
- *
- */
-public interface MotechSchedulerGateway {
+import org.junit.Before;
+import org.junit.Test;
+import org.motechproject.event.EventType;
+import org.motechproject.event.EventTypeRegistry;
 
-    /**
-     * Sends a message with the given SchedulableJob payload. The message directed to the channel specified in the
-     * a Spring Integration configuration file.
-     *
-     * @param schedulableJob
-     */
-    public void scheduleJob(SchedulableJob schedulableJob);
+public class EventTypeRegistryTest {
 
-    /**
-     * Sends a message with the given RunOnceSchedulableJob payload. The message directed to the channel specified in the
-     * a Spring Integration configuration file.
-     *
-     * @param schedulableJob
-     */
-    public void scheduleRunOnceJob(RunOnceSchedulableJob schedulableJob);
+	@Test
+	public void testGetEventType() {
+		EventType eventType = new TestEventType("test", "test");
+		EventTypeRegistry etr = EventTypeRegistry.getInstance();
+		assertNotNull( "EventTyepRegistry.getInstance() returned null", etr );
+		etr.setEventType(eventType);
+		assertNotNull( etr.getEventType(eventType.getKey()) );
+		assertTrue(etr.getEventType(eventType.getKey()).getKey() == eventType.getKey());
+		assertTrue(etr.getEventType(eventType.getKey()).getName() == eventType.getName());
+	}
+	
+	class TestEventType implements EventType {
+		
+		private String key = null;
+		private String name = null;
+		
+		public TestEventType(String name, String key) {
+			this.name = name;
+			this.key = key;
+		}
+		
+		@Override
+		public String getKey() {
+			return key;
+		}
+		
+		@Override
+		public String getName() {
+			return name;
+		}
+	}
 
-    /**
-     * Sends a message with the given jobID (String) payload. The message directed to the channel specified in the
-     * a Spring Integration configuration file.
-     *
-     * @param jobId
-     */
-    public void unscheduleJob(String jobId);
 }

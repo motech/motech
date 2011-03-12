@@ -33,7 +33,7 @@
 package org.motechproject.core;
 
 import org.junit.Test;
-import org.motechproject.model.MotechScheduledEvent;
+import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RunOnceSchedulableJob;
 
 import java.util.Calendar;
@@ -58,8 +58,8 @@ public class TestRunOnceSchedulableJob
     @Test
     public void newTest() throws Exception{
         RunOnceSchedulableJob job;
-        MotechScheduledEvent scheduledEvent;
-        scheduledEvent = new MotechScheduledEvent(uuidStr, "TestEvent", null);
+        MotechEvent motechEvent;
+        motechEvent = new MotechEvent(uuidStr, "TestEvent", null);
 
         Calendar cal = Calendar.getInstance();
         Date currentDate = cal.getTime();
@@ -77,7 +77,7 @@ public class TestRunOnceSchedulableJob
 
         exceptionThrown = false;
         try {
-            job = new RunOnceSchedulableJob(scheduledEvent, null);
+            job = new RunOnceSchedulableJob(motechEvent, null);
         }
         catch (IllegalArgumentException e) {
             exceptionThrown = true;
@@ -86,7 +86,7 @@ public class TestRunOnceSchedulableJob
 
         exceptionThrown = false;
         try {
-            job = new RunOnceSchedulableJob(scheduledEvent, yesterday);
+            job = new RunOnceSchedulableJob(motechEvent, yesterday);
         }
         catch (IllegalArgumentException e) {
             exceptionThrown = true;
@@ -103,8 +103,8 @@ public class TestRunOnceSchedulableJob
         cal.add(Calendar.DATE, +1);
         Date date2 = cal.getTime();
 
-        MotechScheduledEvent scheduledEvent1 = new MotechScheduledEvent(uuidStr, "testEvent", null);
-        MotechScheduledEvent scheduledEvent2 = new MotechScheduledEvent(uuidStr2, "testEvent", null);
+        MotechEvent scheduledEvent1 = new MotechEvent(uuidStr, "testEvent", null);
+        MotechEvent scheduledEvent2 = new MotechEvent(uuidStr2, "testEvent", null);
 
         RunOnceSchedulableJob job1 = new RunOnceSchedulableJob(scheduledEvent1, date);
         RunOnceSchedulableJob job1Same = new RunOnceSchedulableJob(scheduledEvent1, date);

@@ -32,7 +32,7 @@
  */
 package org.motechproject.scheduler;
 
-import org.motechproject.model.MotechScheduledEvent;
+import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.model.SchedulableJob;
 import org.quartz.*;
@@ -71,16 +71,16 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             throw new IllegalArgumentException(errorMessage);
         }
 
-        MotechScheduledEvent motechScheduledEvent = schedulableJob.getMotechScheduledEvent();
-        if (motechScheduledEvent == null) {
-            String errorMessage = "Invalid SchedulableJob. MotechScheduledEvent of the SchedulableJob can not be null";
+        MotechEvent motechEvent = schedulableJob.getMotechEvent();
+        if (motechEvent == null) {
+            String errorMessage = "Invalid SchedulableJob. MotechEvent of the SchedulableJob can not be null";
             log.error(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }
 
-        String jobId = motechScheduledEvent.getJobId();
+        String jobId = motechEvent.getJobId();
         JobDetail jobDetail = new JobDetail(jobId, JOB_GROUP_NAME, MotechScheduledJob.class);
-        putMotechScheduledEventDataToJobDataMap(jobDetail.getJobDataMap(), motechScheduledEvent);
+        putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
         Trigger trigger;
 
@@ -114,18 +114,18 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
 
     @Override
-    public void updateScheduledJob(MotechScheduledEvent motechScheduledEvent) {
+    public void updateScheduledJob(MotechEvent motechEvent) {
 
-        log.info("Updating the scheduled job: " + motechScheduledEvent);
+        log.info("Updating the scheduled job: " + motechEvent);
 
-        if (motechScheduledEvent == null) {
-            String errorMessage = "MotechScheduledEvent can not be null";
+        if (motechEvent == null) {
+            String errorMessage = "MotechEvent can not be null";
             log.error(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }
 
         Scheduler scheduler = schedulerFactoryBean.getScheduler();
-        String jobId = motechScheduledEvent.getJobId();
+        String jobId = motechEvent.getJobId();
         Trigger trigger;
 
 
@@ -156,7 +156,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         }
 
         JobDetail jobDetail = new JobDetail(jobId, JOB_GROUP_NAME, MotechScheduledJob.class);
-        putMotechScheduledEventDataToJobDataMap(jobDetail.getJobDataMap(), motechScheduledEvent);
+        putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
 
         scheduleJob(jobDetail, trigger);
@@ -236,9 +236,9 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             throw new IllegalArgumentException(errorMessage);
         }
 
-        MotechScheduledEvent motechScheduledEvent = schedulableJob.getMotechScheduledEvent();
-        if (motechScheduledEvent == null) {
-            String errorMessage = "Invalid SchedulableJob. MotechScheduledEvent of the SchedulableJob can not be null";
+        MotechEvent motechEvent = schedulableJob.getMotechEvent();
+        if (motechEvent == null) {
+            String errorMessage = "Invalid SchedulableJob. MotechEvent of the SchedulableJob can not be null";
             log.error(errorMessage);
             throw new IllegalArgumentException();
         }
@@ -258,9 +258,9 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
              throw new IllegalArgumentException();
         }
 
-        String jobId = motechScheduledEvent.getJobId();
+        String jobId = motechEvent.getJobId();
         JobDetail jobDetail = new JobDetail(jobId, JOB_GROUP_NAME, MotechScheduledJob.class);
-        putMotechScheduledEventDataToJobDataMap(jobDetail.getJobDataMap(), motechScheduledEvent);
+        putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
         Trigger trigger = new SimpleTrigger(jobId, JOB_GROUP_NAME, jobStartDate);
 
@@ -302,8 +302,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         }
     }
 
-    private void putMotechScheduledEventDataToJobDataMap(JobDataMap jobDataMap, MotechScheduledEvent motechScheduledEvent) {
-        jobDataMap.putAll(motechScheduledEvent.getParameters());
-        jobDataMap.put(MotechScheduledEvent.EVENT_TYPE_KEY_NAME, motechScheduledEvent.getEventType());
+    private void putMotechEventDataToJobDataMap(JobDataMap jobDataMap, MotechEvent motechEvent) {
+        jobDataMap.putAll(motechEvent.getParameters());
+        jobDataMap.put(MotechEvent.EVENT_TYPE_KEY_NAME, motechEvent.getEventType());
     }
 }

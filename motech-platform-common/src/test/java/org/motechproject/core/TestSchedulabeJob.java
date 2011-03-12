@@ -33,7 +33,7 @@
 package org.motechproject.core;
 
 import org.junit.Test;
-import org.motechproject.model.MotechScheduledEvent;
+import org.motechproject.model.MotechEvent;
 import org.motechproject.model.SchedulableJob;
 
 import java.util.UUID;
@@ -56,8 +56,8 @@ public class TestSchedulabeJob
     @Test
     public void newTest() throws Exception{
         SchedulableJob job;
-        MotechScheduledEvent scheduledEvent;
-        scheduledEvent = new MotechScheduledEvent(uuidStr, "TestEvent", null);
+        MotechEvent motechEvent;
+        motechEvent = new MotechEvent(uuidStr, "TestEvent", null);
 
         boolean exceptionThrown = false;
         try {
@@ -70,7 +70,7 @@ public class TestSchedulabeJob
 
         exceptionThrown = false;
         try {
-            job = new SchedulableJob(scheduledEvent, null);
+            job = new SchedulableJob(motechEvent, null);
         }
         catch (IllegalArgumentException e) {
             exceptionThrown = true;
@@ -79,7 +79,7 @@ public class TestSchedulabeJob
 
         exceptionThrown = false;
         try {
-            job = new SchedulableJob(scheduledEvent, "");
+            job = new SchedulableJob(motechEvent, "");
         }
         catch (IllegalArgumentException e) {
             exceptionThrown = true;
@@ -92,8 +92,8 @@ public class TestSchedulabeJob
         String cron1 = "0/5 0 * * * ?";
         String cron2 = "5 0 * * * ?";
 
-        MotechScheduledEvent scheduledEvent1 = new MotechScheduledEvent(uuidStr, "testEvent", null);
-        MotechScheduledEvent scheduledEvent2 = new MotechScheduledEvent(uuidStr2, "testEvent", null);
+        MotechEvent scheduledEvent1 = new MotechEvent(uuidStr, "testEvent", null);
+        MotechEvent scheduledEvent2 = new MotechEvent(uuidStr2, "testEvent", null);
 
         SchedulableJob job1 = new SchedulableJob(scheduledEvent1, cron1);
         SchedulableJob job1Same = new SchedulableJob(scheduledEvent1, cron1);

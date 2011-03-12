@@ -33,44 +33,65 @@
 package org.motechproject.model;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Map;
 
 /**
- * Schedulable Job - a data carrier class for a scheduled job that can be fired unlimited number of times
- *  as specified with the cron expression
+ * Motech Scheduled Event data carrier class,
+ * Instance of this class with event specific data will be send by Motech Scheduler when a scheduled event is fired
+ *
+ * This class is immutable
  *
  * @author Igor (iopushnyev@2paths.com)
  * Date: 16/02/11
- * Time: 1:43 PM
  *
  */
-public class SchedulableJob implements Serializable {
+public final class MotechEvent implements Serializable{
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
-    private MotechEvent motechEvent;
-    private String cronExpression;
+    public static final String EVENT_TYPE_KEY_NAME = "eventType";
 
-    public SchedulableJob(MotechEvent motechEvent, String cronExpression) {
+    private String jobId;
+    private String eventType;
+    private Map<String, Object> parameters;
 
-         if (motechEvent == null) {
-            throw new IllegalArgumentException("MotechEvent can not be null");
+    /**
+     * Constructor
+     * @param jobId - ID of the scheduled job that generated this event.
+     * @param eventType - event type: Pill Reminder, Appointment Reminder ...
+     * @param parameters - a Map<String, Object> of additional parameters
+     *
+     * @throws IllegalArgumentException if given jobId or entityType is null
+     */
+    public MotechEvent(String jobId, String eventType, Map<String, Object> parameters) {
+
+        if (jobId == null) {
+            throw new IllegalArgumentException("jobId can not be null");
         }
 
-        if (cronExpression == null || cronExpression.isEmpty()) {
-            throw new IllegalArgumentException("Cron Expression can not be null or empty");
+        if (eventType == null) {
+            throw new IllegalArgumentException("eventType can not be null");
         }
 
-        this.motechEvent = motechEvent;
-        this.cronExpression = cronExpression;
+        this.jobId = jobId;
+        this.eventType = eventType;
+        this.parameters = parameters;
     }
 
-    public MotechEvent getMotechEvent() {
-        return motechEvent;
+    public String getJobId() {
+        return jobId;
     }
 
-    public String getCronExpression() {
-        return cronExpression;
+    public String getEventType() {
+        return eventType;
+    }
+
+    public Map<String, Object> getParameters() {
+        if (parameters == null ) {
+            return Collections.emptyMap();
+        }
+        return Collections.unmodifiableMap(parameters);
     }
 
     @Override
@@ -78,26 +99,29 @@ public class SchedulableJob implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        SchedulableJob that = (SchedulableJob) o;
+        MotechEvent that = (MotechEvent) o;
 
-        if (!cronExpression.equals(that.cronExpression)) return false;
-        if (!motechEvent.equals(that.motechEvent)) return false;
+        if (!eventType.equals(that.eventType)) return false;
+        if (!jobId.equals(that.jobId)) return false;
+        if (parameters != null ? !parameters.equals(that.parameters) : that.parameters != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = motechEvent.hashCode();
-        result = 31 * result + cronExpression.hashCode();
+        int result = jobId.hashCode();
+        result = 31 * result + eventType.hashCode();
+        result = 31 * result + (parameters != null ? parameters.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return "SchedulableJob{" +
-                "motechEvent=" + motechEvent +
-                ", cronExpression='" + cronExpression + '\'' +
+        return "MotechEvent{" +
+                "jobId='" + jobId + '\'' +
+                ", eventType='" + eventType + '\'' +
+                ", parameters=" + parameters +
                 '}';
     }
 }

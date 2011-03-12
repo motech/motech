@@ -49,21 +49,21 @@ public final class RunOnceSchedulableJob implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private MotechScheduledEvent motechScheduledEvent;
+    private MotechEvent motechEvent;
     private Date startDate;
 
     /**
      * Constructor
      *
-     * @param motechScheduledEvent - event data message that will be send by Motech Scheduler when this job is fired
+     * @param motechEvent - event data message that will be send by Motech Scheduler when this job is fired
      * @param startDate - date and time when the job fill be fired
      *
-     * @throws IllegalArgumentException if motechScheduledEvent or startDate is null or startDate is in past
+     * @throws IllegalArgumentException if motechEvent or startDate is null or startDate is in past
      */
-    public RunOnceSchedulableJob(MotechScheduledEvent motechScheduledEvent, Date startDate) {
+    public RunOnceSchedulableJob(MotechEvent motechEvent, Date startDate) {
 
-        if (motechScheduledEvent == null) {
-            throw new IllegalArgumentException("MotechScheduledEvent can not be null");
+        if (motechEvent == null) {
+            throw new IllegalArgumentException("MotechEvent can not be null");
         }
 
         if (startDate == null ) {
@@ -76,12 +76,12 @@ public final class RunOnceSchedulableJob implements Serializable {
                                                 " now:" + currentDate.toString());
         }
 
-        this.motechScheduledEvent = motechScheduledEvent;
+        this.motechEvent = motechEvent;
         this.startDate = startDate;
     }
 
-    public MotechScheduledEvent getMotechScheduledEvent() {
-        return motechScheduledEvent;
+    public MotechEvent getMotechEvent() {
+        return motechEvent;
     }
 
     public Date getStartDate() {
@@ -95,7 +95,7 @@ public final class RunOnceSchedulableJob implements Serializable {
 
         RunOnceSchedulableJob that = (RunOnceSchedulableJob) o;
 
-        if (!motechScheduledEvent.equals(that.motechScheduledEvent)) return false;
+        if (!motechEvent.equals(that.motechEvent)) return false;
         if (!startDate.equals(that.startDate)) return false;
 
         return true;
@@ -103,7 +103,7 @@ public final class RunOnceSchedulableJob implements Serializable {
 
     @Override
     public int hashCode() {
-        int result = motechScheduledEvent.hashCode();
+        int result = motechEvent.hashCode();
         result = 31 * result + startDate.hashCode();
         return result;
     }
@@ -111,7 +111,7 @@ public final class RunOnceSchedulableJob implements Serializable {
     @Override
     public String toString() {
         return "RunOnceSchedulableJob{" +
-                "motechScheduledEvent=" + motechScheduledEvent +
+                "motechEvent=" + motechEvent +
                 ", startDate=" + startDate +
                 '}';
     }

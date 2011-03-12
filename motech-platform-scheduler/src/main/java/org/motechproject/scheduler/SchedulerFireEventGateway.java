@@ -32,7 +32,7 @@
  */
 package org.motechproject.scheduler;
 
-import org.motechproject.model.MotechScheduledEvent;
+import org.motechproject.model.MotechEvent;
 
 /**
  *A gateway interface to a Spring Integration message channel.
@@ -45,10 +45,10 @@ import org.motechproject.model.MotechScheduledEvent;
 public interface SchedulerFireEventGateway {
 
     /**
-     * Sends the given MotechScheduledEvent message as a payload to the message channel
+     * Sends the given MotechEvent message as a payload to the message channel
      *  defined in the Spring Integration configuration file.
      *
-     * @param motechScheduledEvent
+     * @param motechEvent
      */
-    public void sendEventMessage(MotechScheduledEvent motechScheduledEvent);
+    public void sendEventMessage(MotechEvent motechEvent);
 }

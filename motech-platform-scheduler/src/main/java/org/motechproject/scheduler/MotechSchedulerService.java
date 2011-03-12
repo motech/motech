@@ -32,7 +32,7 @@
  */
 package org.motechproject.scheduler;
 
-import org.motechproject.model.MotechScheduledEvent;
+import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.model.SchedulableJob;
 
@@ -47,7 +47,7 @@ public interface MotechSchedulerService {
 
     /**
      * Schedules the given schedulable job. The Job ID by which the job will be referencing in the future should be provided
-     * in an Instance of MotechScheduledEvent in SchedulableJob (see MotechScheduledEvent.jobId)
+     * in an Instance of MotechEvent in SchedulableJob (see MotechEvent.jobId)
      *
      * If a job with the same job ID as the given exists, this job will be unscheduled and the given schedulable job will be scheduled
      *
@@ -56,11 +56,11 @@ public interface MotechSchedulerService {
     public void scheduleJob(SchedulableJob schedulableJob);
 
     /**
-     * Updates MotechScheduledEvent data of the job defined by jobIb in the given instance of that class
+     * Updates MotechEvent data of the job defined by jobIb in the given instance of that class
      *
-     * @param motechScheduledEvent
+     * @param motechEvent
      */
-    public void updateScheduledJob(MotechScheduledEvent motechScheduledEvent);
+    public void updateScheduledJob(MotechEvent motechEvent);
 
     /**
      * Reschedules a job with the given job ID to be fired according to the given Cron Expression

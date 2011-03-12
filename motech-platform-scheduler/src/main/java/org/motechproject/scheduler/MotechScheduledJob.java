@@ -32,7 +32,7 @@
  */
 package org.motechproject.scheduler;
 
-import org.motechproject.model.MotechScheduledEvent;
+import org.motechproject.model.MotechEvent;
 import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,13 +60,13 @@ public class MotechScheduledJob implements Job {
 
 
             String jobId = jobDetail.getName();
-            String eventType = jobDataMap.getString(MotechScheduledEvent.EVENT_TYPE_KEY_NAME);
+            String eventType = jobDataMap.getString(MotechEvent.EVENT_TYPE_KEY_NAME);
             Map<String, Object> params = jobDataMap.getWrappedMap();
-            params.remove(MotechScheduledEvent.EVENT_TYPE_KEY_NAME);
+            params.remove(MotechEvent.EVENT_TYPE_KEY_NAME);
 
-            MotechScheduledEvent motechScheduledEvent = new MotechScheduledEvent(jobId, eventType, params);
+            MotechEvent motechEvent = new MotechEvent(jobId, eventType, params);
 
-            log.info("Sending Motech Event Message: " + motechScheduledEvent);
+            log.info("Sending Motech Event Message: " + motechEvent);
 
             SchedulerContext schedulerContext;
             try {
@@ -81,7 +81,7 @@ public class MotechScheduledJob implements Job {
             SchedulerFireEventGateway schedulerFiredEventGateway =
                     (SchedulerFireEventGateway) applicationContext.getBean("schedulerFireEventGateway");
 
-            schedulerFiredEventGateway.sendEventMessage(motechScheduledEvent);
+            schedulerFiredEventGateway.sendEventMessage(motechEvent);
         } catch (Exception e) {
             log.error("Job execution failed.", e);
         }

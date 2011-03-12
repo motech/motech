@@ -32,7 +32,7 @@
  */
 package org.motechproject.scheduler;
 
-import org.motechproject.model.MotechScheduledEvent;
+import org.motechproject.model.MotechEvent;
 import org.motechproject.model.SchedulableJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,8 +91,8 @@ public class MotechScheduler {
 
     private void scheduleTestEvent() {
 
-        MotechScheduledEvent scheduledEvent = new MotechScheduledEvent(TEST_EVENT_NAME, "test", null);
-        SchedulableJob schedulableJob = new SchedulableJob(scheduledEvent, "0/5 * * * * ?");
+        MotechEvent motechEvent = new MotechEvent(TEST_EVENT_NAME, "test", null);
+        SchedulableJob schedulableJob = new SchedulableJob(motechEvent, "0/5 * * * * ?");
 
         try {
             log.info("Scheduling test job: " + schedulableJob);
