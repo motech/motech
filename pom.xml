@@ -89,6 +89,7 @@
         <module>motech-platform-server</module>
         <module>motech-platform-scheduler</module>
         <module>motech-platform-server-api</module>
+        <module>motech-appointment-reminder</module>
     </modules>
 
     <build>
