@@ -153,6 +153,15 @@
                 <artifactId>cobertura-maven-plugin</artifactId>
                 <version>2.4</version>
                 <configuration>
+                    <instrumentation>
+                        <excludes>
+                            <exclude>org/motechproject/event/*.class</exclude>
+                            <exclude>org/motechproject/dao/*.class</exclude>
+                            <exclude>org/motechproject/model/Audit.class</exclude>
+                            <exclude>org/motechproject/model/MotechBaseDataObject.class</exclude>
+                            <exclude>org/motechproject/model/Rule.class</exclude>
+                        </excludes>
+                    </instrumentation>
                     <check>
                         <!-- Per-class thresholds -->
                         <packageLineRate>69</packageLineRate>

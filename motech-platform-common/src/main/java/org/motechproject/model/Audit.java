@@ -38,7 +38,7 @@ import org.ektorp.support.CouchDbDocument;
 import org.ektorp.support.TypeDiscriminator;
 
 
-public class Audit extends CouchDbDocument{
+public class Audit extends CouchDbDocument {
 
     private static final long serialVersionUID = 1L;
 
