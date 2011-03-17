@@ -47,7 +47,7 @@
 
 	<jms:message-driven-channel-adapter id="jmsin"
 			destination="eventQueue"
-			channel="eventChannel" />
+			channel="eventChannel" acknowledge="auto"  />
 
 	<channel id="eventChannel"/>
 

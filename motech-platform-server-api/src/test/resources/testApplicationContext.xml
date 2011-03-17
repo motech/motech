@@ -43,8 +43,12 @@
 		 http://www.springframework.org/schema/util
 		 http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-	<context:annotation-config />
+	<!-- >import resource="integrationCommon.xml"/>
+    <import resource="inboundEventChannelAdapter.xml"/>
+    <import resource="outboundEventChannelAdapter.xml"/ -->
 
+	<context:annotation-config />
+	
 	<util:properties id="osgiConfig" location="classpath:osgi.properties" />
 
 	<bean id="osgiFramework" class="org.apache.felix.framework.Felix">
@@ -59,5 +63,14 @@
 			</list>
 		</property>
 	</bean>
+	
+	<bean id="eventRelay" class="org.motechproject.server.event.EventRelay"/>
+
+	<bean id="outboundEventGateway" class="org.motechproject.server.event.SampleOutboundEventGateway" /> 
+
+	<bean id="eventTypeRegistry" class="org.motechproject.event.EventTypeRegistry" scope="singleton" factory-method="getInstance"/>
+
+	<bean id="eventListenerRegistry" class="org.motechproject.server.event.EventListenerRegistry" scope="singleton" factory-method="getInstance" />
+
 
 </beans>
