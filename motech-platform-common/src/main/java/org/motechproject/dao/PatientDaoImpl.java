@@ -32,57 +32,20 @@
  */
 package org.motechproject.dao;
 
-import java.util.Date;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.ektorp.CouchDbConnector;
-import org.motechproject.model.Audit;
-import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.model.Patient;
+import org.motechproject.model.Rule;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
+@Component
+public class PatientDaoImpl extends MotechAuditableRepository<Patient> implements PatientDao {
 
-public abstract class MotechAuditableRepository <T extends MotechAuditableDataObject> extends MotechBaseRepository<T> implements BaseDao<T> {
-    
-    private static final String AUDIT_ID_SUFFIX = "_AUDIT";
-
-    protected MotechAuditableRepository(Class<T> type, CouchDbConnector db) {
-        super(type, db);
-    }
-
-    @Override
-    public void add(T entity) {
-        super.add(entity);
-        Audit audit = new Audit();
-        Date now = new Date();
-        audit.setId(entity.getId() + AUDIT_ID_SUFFIX);
-        audit.setDateCreated(now);
-        audit.setLastUpdated(now);
-        audit.setDataObjectId(entity.getId());
-        db.create(audit);
-        entity.setAudits(new TreeSet<Audit>());
-        entity.getAudits().add(audit);
-    }
-
-    @Override
-    public void update(T entity) {
-        super.update(entity);
-        Audit audit = db.get(Audit.class, entity.getId() + AUDIT_ID_SUFFIX);
-        audit.setLastUpdated(new Date());
-        db.update(audit);
-        entity.setAudits(new TreeSet<Audit>());
-        entity.getAudits().add(audit);
-    }
-    
-    @Override
-    public void remove(T entity){
-
-        Set<Audit> audits = entity.getAudits();
-        if (audits != null) {
-            for (Audit audit : audits) {
-                db.delete(audit);
-            }
-        }
-        super.remove(entity);
+    @Autowired
+    public PatientDaoImpl(@Qualifier("patientDatabase") CouchDbConnector db) {
+        super(Patient.class, db);
+        initStandardDesignDocument();
     }
     
 }
