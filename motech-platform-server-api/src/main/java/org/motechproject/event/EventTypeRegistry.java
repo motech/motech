@@ -78,7 +78,7 @@ public class EventTypeRegistry {
      *
      * @param type The event type being registered
      */
-    public void setEventType(EventType type) {
+    public void add(EventType type) {
         eventTypes.put(type.getKey(), type);
     }
 
@@ -87,9 +87,9 @@ public class EventTypeRegistry {
      *
      * @param types The event types being registered
      */
-    public void setEventType(EventType[] types) {
+    public void addAll(EventType[] types) {
         for(int i = 0; i < types.length; i++) {
-            this.setEventType(types[i]);
+            this.add(types[i]);
         }
     }
 

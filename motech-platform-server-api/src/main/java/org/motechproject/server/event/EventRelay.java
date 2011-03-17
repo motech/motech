@@ -34,22 +34,29 @@ package org.motechproject.server.event;
 
 import org.motechproject.event.EventTypeRegistry;
 import org.motechproject.model.MotechEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.List;
 import java.util.Iterator;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ExecutorService;
+import java.util.Map;
 
 /**
  * This class handled incoming scheduled events and relays those events to the appropriate event listeners
  */
 public class EventRelay {
 
-    private ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 50);
-
+	@Autowired
+	private EventTypeRegistry eventTypeRegistry;
+	@Autowired
+	private EventListenerRegistry eventListenerRegistry;
+	@Autowired
+    private OutboundEventGateway outboundEventGateway;
+    private static final String MESSAGE_DESTINATION = "message-destination";
+    
     public EventRelay() {
 
     }
-
+    
     /**
      * Relay an event to all the listeners of that event.
      * @param event event being relayed
@@ -57,20 +64,63 @@ public class EventRelay {
     public void relayEvent(MotechEvent event) {
 
         // Retrieve a list of listeners for the given event type
-        List<EventListener> listeners = EventListenerRegistry.getInstance().getListeners( EventTypeRegistry.getInstance().getEventType(event.getEventType()) );
+    	if (eventListenerRegistry == null) {
+    		System.out.println("eventListenerRegistry == null");
+    	}
+    	if (eventTypeRegistry == null) {
+    		System.out.println("eventTypeRegistry == null");
+    	}
+        List<EventListener> listeners = eventListenerRegistry.getListeners( eventTypeRegistry.getEventType(event.getEventType()) );
 
-        final MotechEvent providedEvent = event; // Copy the event to be provided to the listeners
+        // Is this message destine for a specific listener?
+        if (event.getParameters().containsKey(MESSAGE_DESTINATION)) {
+        	
+        	EventListener listener = null;
+        	String messageDestination = (String) event.getParameters().get(MESSAGE_DESTINATION);
 
-        // Iterate through the list of listeners of this event and execute handle method
-        // with the message.
-        for( Iterator<EventListener> iter = listeners.iterator(); iter.hasNext(); ) {
-            final EventListener listener = iter.next(); // create an instance of the event listener
-            executor.execute(new Runnable(){
-                    public void run() {
-                        listener.handle(providedEvent);
-                    }
-                });
-        }
+        	Iterator<EventListener> iter = listeners.iterator();
+        	while( iter.hasNext() ) {
+        		listener = iter.next();
+        		if (listener.getIdentifier().equals(messageDestination)) {
+        			listener.handle(event);
+        			break;
+        		}
+        	} // END while( iter.hasNext() )
+        	
+        } else {
+        	
+        	// Is there a single listener?
+	        if (listeners.size() > 1) {
+	        	// We need to split the message for each listener to ensure the work units
+	        	// are completed individually. Therefore, if a message fails it will be
+	        	// re-distributed to another server without being lost
+	        	splitEvent(event, listeners);
+	        } else {
+	        	listeners.get(0).handle(event);
+	        } // END IF/ELSE if (listeners.size() > 1)
+        } // END IF/ELSE if (event.getParameters().containsKey(MESSAGE_DESTINATION))
+        
+    }
+    
+    /**
+     * Split a given message into multiple messages with specific message destination
+     * parameters. Message destinations will route the message to the specific message
+     * listener.
+     * @param event Event message to be split
+     * @param listeners A list of listeners for this given message that will be used as message destinations
+     */
+    private void splitEvent(MotechEvent event, List<EventListener> listeners) {
+    	MotechEvent enrichedEventMessage = null;
+    	EventListener listener = null;
+    	Map<String, Object> parameters = null;
+    	for( Iterator<EventListener> iter = listeners.iterator(); iter.hasNext(); ) {
+    		listener = iter.next();
+    		parameters = event.getParameters();
+    		parameters.put("destination", listener.getIdentifier());
+    		enrichedEventMessage = new MotechEvent(event.getJobId(), event.getEventType(), parameters);
+    		
+    		outboundEventGateway.sendEventMessage(enrichedEventMessage);
+    	}
     }
 
 }

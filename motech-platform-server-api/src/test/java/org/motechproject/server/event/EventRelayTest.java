@@ -41,34 +41,42 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.event.EventType;
 import org.motechproject.event.EventTypeRegistry;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.server.event.EventListener;
 import org.motechproject.server.event.EventListenerRegistry;
 import org.motechproject.server.event.EventRelay;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "/testApplicationContext.xml" })
 public class EventRelayTest {
 
-    EventListenerRegistry registry = null;
+	@Autowired
+    EventListenerRegistry registry;
+    @Autowired
+    EventTypeRegistry eventTypeRegistry;
     MotechEvent motechEvent = null;
+    
     List<EventType> eventTypes = null;
-    TestEventListener sel = null;
+    SampleEventListener sel = null;
 
     @Before
     public void setUp() throws Exception {
         // Create event type array for creating a scheduled event listener
         eventTypes = new ArrayList<EventType>();
-        eventTypes.add(new TestEventType("test", "test"));
-
-        // Add event type to event type registry
-        EventTypeRegistry.getInstance().setEventType(eventTypes.get(0));
-
+        eventTypes.add(new SampleEventType());
+        
+        // Add the event type to the registry
+        eventTypeRegistry.add(eventTypes.get(0));
+        
         // Create an event listener
-        sel = new TestEventListener();
+        sel = new SampleEventListener();
 
         // Register the event listener
-        registry = EventListenerRegistry.getInstance();
         registry.registerListener(sel, eventTypes);
 
         // Create the scheduled event message object
@@ -83,41 +91,6 @@ public class EventRelayTest {
         ser.relayEvent(motechEvent);
         Thread.sleep(1000);
         assertTrue(sel.handledMethodCalled());
-    }
-
-    class TestEventType implements EventType {
-
-        private String key = null;
-        private String name = null;
-
-        public TestEventType(String name, String key) {
-            this.name = name;
-            this.key = key;
-        }
-
-        @Override
-        public String getKey() {
-            return key;
-        }
-
-        @Override
-        public String getName() {
-            return name;
-        }
-    }
-
-    class TestEventListener implements EventListener {
-
-        private boolean handleCalled = false;
-
-        @Override
-        public void handle(MotechEvent event) {
-            handleCalled = true;
-        }
-
-        public boolean handledMethodCalled() {
-            return handleCalled;
-        }
     }
 
 }
