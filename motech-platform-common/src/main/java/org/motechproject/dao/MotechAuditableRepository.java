@@ -33,10 +33,13 @@
 package org.motechproject.dao;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.ektorp.CouchDbConnector;
+import org.ektorp.ViewQuery;
+import org.ektorp.support.GenerateView;
 import org.motechproject.model.Audit;
 import org.motechproject.model.MotechAuditableDataObject;
 
@@ -44,9 +47,12 @@ import org.motechproject.model.MotechAuditableDataObject;
 public abstract class MotechAuditableRepository <T extends MotechAuditableDataObject> extends MotechBaseRepository<T> implements BaseDao<T> {
     
     private static final String AUDIT_ID_SUFFIX = "_AUDIT";
+    
+    private final Class<T> type;
 
     protected MotechAuditableRepository(Class<T> type, CouchDbConnector db) {
         super(type, db);
+        this.type = type;
     }
 
     @Override
@@ -83,6 +89,12 @@ public abstract class MotechAuditableRepository <T extends MotechAuditableDataOb
             }
         }
         super.remove(entity);
+    }
+    
+    @GenerateView @Override
+    public List<T> getAll() {
+            ViewQuery q = createQuery("all").includeDocs(true);
+            return db.queryView(q, this.type);
     }
     
 }

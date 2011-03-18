@@ -35,6 +35,8 @@ package org.motechproject.core;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,6 +64,7 @@ public class AuditablePersistenceIT {
     @Before
     public void setup() throws Exception {
         rule = new Rule();
+        rule.setContent("test");
         ruleRepository.add(rule);
     }
 
@@ -84,5 +87,8 @@ public class AuditablePersistenceIT {
         rule = ruleRepository.get(rule.getId());
         audit = rule.getAudit();
         assertTrue(audit.getLastUpdated().getTime() - audit.getDateCreated().getTime() >= 1000);
+        
+        List<Rule> list = ruleRepository.getAll();
+        assertTrue(list.size()>0);
     }
 }

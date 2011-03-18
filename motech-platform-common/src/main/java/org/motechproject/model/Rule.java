@@ -32,12 +32,15 @@
  */
 package org.motechproject.model;
 
+import org.ektorp.support.TypeDiscriminator;
+
 
 
 public class Rule extends MotechAuditableDataObject{
 
     private static final long serialVersionUID = 1L;
     
+    @TypeDiscriminator
     private String content;
     
     private String bundleSymbolicName;

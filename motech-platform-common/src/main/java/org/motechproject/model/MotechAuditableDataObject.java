@@ -38,7 +38,11 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.ektorp.docref.DocumentReferences;
 import org.ektorp.docref.FetchType;
 
-
+/**
+ * 
+ * 
+ * @author Ricky Wang
+ */
 public abstract class MotechAuditableDataObject extends MotechBaseDataObject{
 
     private static final long serialVersionUID = 1L;
@@ -56,6 +60,11 @@ public abstract class MotechAuditableDataObject extends MotechBaseDataObject{
         this.audits = audits;
     }
     
+    /**
+     * Convenience method to get the audit data
+     * 
+     * @return audit data of the latest version of the document (does NOT support auditing for older versions)
+     */
     @JsonIgnore
     public Audit getAudit(){
         Audit audit = null;
