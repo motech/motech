@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <!--
 
     MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
@@ -33,27 +33,30 @@
     EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -->
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
 
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:util="http://www.springframework.org/schema/util"
-	xmlns:context="http://www.springframework.org/schema/context"    
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
-			http://www.springframework.org/schema/beans/spring-beans.xsd
-			http://www.springframework.org/schema/util
-			http://www.springframework.org/schema/util/spring-util.xsd
-			http://www.springframework.org/schema/context
-			http://www.springframework.org/schema/context/spring-context.xsd">
+<hibernate-mapping package="org.motechproject.openmrs.model">						
+	<class name="Appointment" table="appointment">
+		<id name="id" type="java.lang.Integer" column="appointment_id" unsaved-value="0">
+			<generator class="native" />
+		</id>
 
-    <import resource="integrationCommon.xml"/>
-    <import resource="inboundEventChannelAdapter.xml"/>
-    <import resource="outboundEventChannelAdapter.xml"/>
-    
+		<discriminator column="appointment_id" insert="false"/>
 
-	<bean id="eventRelay" class="org.motechproject.server.event.EventRelay" />
+		<many-to-one name="patient" class="org.openmrs.Patient" not-null="true">
+			<column name="patient_id"/>
+		</many-to-one>
 
-	<bean id="eventTypeRegistry" class="event.EventTypeRegistry" scope="singleton" factory-method="getInstance" />
-	
-	<bean id="eventListenerRegistry" class="org.motechproject.server.event.EventListenerRegistry"  scope="singleton" factory-method="getInstance" />
+		<property name="patientArrived" type="java.lang.Boolean" column="patient_arrived"/>
 
-</beans>
+		<property name="arrivalDate" type="java.util.Date" column="arrival_date"/>
+
+		<property name="windowStartDate" type="java.util.Date" column="window_start_date"/>
+
+		<property name="windowEndDate" type="java.util.Date" column="window_end_date"/>
+
+		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
+	</class>
+</hibernate-mapping>

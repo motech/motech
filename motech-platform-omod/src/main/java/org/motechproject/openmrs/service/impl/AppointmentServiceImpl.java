@@ -30,28 +30,38 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.model;
+package org.motechproject.openmrs.service.impl;
 
-import org.ektorp.support.TypeDiscriminator;
+import java.util.List;
 
-/**
- *
- * TODO implement that class - depends on the domain model design task
- */
-public class Patient extends MotechAuditableDataObject {
+import org.motechproject.openmrs.dao.AppointmentDAO;
+import org.motechproject.openmrs.model.Appointment;
+import org.motechproject.openmrs.service.AppointmentService;
+import org.openmrs.Patient;
+import org.openmrs.api.impl.BaseOpenmrsService;
 
-    private static final long serialVersionUID = 1L;
+public class AppointmentServiceImpl extends BaseOpenmrsService implements AppointmentService {
 
-    @TypeDiscriminator
-    private String clinicPatientId;
+    private AppointmentDAO dao;
 
-    
-    public String getClinicPatientId() {
-        return clinicPatientId;
+    @Override
+    public Appointment getAppointment(Integer id) {
+        return dao.getAppointment(id);
     }
 
-    public void setClinicPatientId(String clinicPatientId) {
-        this.clinicPatientId = clinicPatientId;
+    @Override
+    public List<Appointment> getAppointments(Patient patient) {
+        return dao.getAppointments(patient);
     }
-    
+
+    @Override
+    public Appointment saveAppointment(Appointment appointment) {
+        return dao.saveAppointment(appointment);
+    }
+
+    @Override
+    public void setAppointmentDAO(AppointmentDAO dao) {
+        this.dao = dao;
+    }
+
 }

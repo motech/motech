@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
 
     MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
@@ -32,18 +33,13 @@
     EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -->
-<!DOCTYPE module PUBLIC "-//OpenMRS//DTD OpenMRS Config 1.0//EN"
-                        "http://resources.openmrs.org/doctype/config-1.3.dtd">
 
-<module configVersion="1.0">
+<!DOCTYPE hibernate-configuration PUBLIC
+	"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 
-	<id>motech</id>
-	<name>Motech Module</name>
-	<version>0.1</version>
-	<package>org.motechproject.openmrs</package>
-	<description>
-	</description>
-	<mappingFiles>
-		Appointment.hbm.xml
-	</mappingFiles>
-</module>
+<hibernate-configuration>
+	<session-factory>
+		<mapping resource="Appointment.hbm.xml" />
+	</session-factory>
+</hibernate-configuration>
