@@ -68,15 +68,6 @@ public class KnowledgeBaseManager {
     @Autowired
     private OsgiFrameworkService osgiFrameworkService;
 
-    private static KnowledgeBaseManager instance = new KnowledgeBaseManager();
-
-    private KnowledgeBaseManager() {
-    }
-
-    public static KnowledgeBaseManager getInstance() {
-        return instance;
-    }
-
     /**
      * 
      * @param ruleFile

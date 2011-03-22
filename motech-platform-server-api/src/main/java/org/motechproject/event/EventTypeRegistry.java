@@ -40,37 +40,13 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class EventTypeRegistry {
 
-    private static Object mutex = new Object();
-    private static EventTypeRegistry instance = null;
-
     // Central registry for scheduled event listeners
-    private static ConcurrentHashMap<String, EventType> eventTypes = null;
+    private static ConcurrentHashMap<String, EventType> eventTypes = new ConcurrentHashMap<String, EventType>();
 
     /**
      * Singleton constructor
      */
     private EventTypeRegistry() {
-        eventTypes = new ConcurrentHashMap<String, EventType>();
-    }
-
-
-    /**
-     * Retrieve an instance of the Scheduled Event Listener Registry Singleton
-     * @return singleton instance
-     */
-    public static EventTypeRegistry getInstance() {
-        // Do we need to initialized the singleton
-        if (instance == null) {
-            synchronized (mutex) {
-                // Do we still need to initialize the singleton or did someone do it for us while we
-                // were waiting for the lock?
-                if (instance == null) {
-                    instance = new EventTypeRegistry();
-                }
-            }
-        }
-
-        return instance;
     }
 
     /**

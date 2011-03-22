@@ -47,14 +47,15 @@ import org.motechproject.dao.RuleRepository;
 import org.motechproject.model.Rule;
 import org.motechproject.server.osgi.OsgiFrameworkService;
 
-public class KnowledgeBaseManagerTest {
 
+public class KnowledgeBaseManagerTest {
+	
     @Test
     public void addOrUpdateRuleTest() throws Exception {
         String ruleFolder = "/rules";
         String ruleFile = "test.drl";
         
-        KnowledgeBaseManager kbm = KnowledgeBaseManager.getInstance();
+        KnowledgeBaseManager kbm = new KnowledgeBaseManager();
         RuleRepository repo = mock(RuleRepository.class);
         OsgiFrameworkService ofs = mock(OsgiFrameworkService.class);
         kbm.setOsgiFrameworkService(ofs);

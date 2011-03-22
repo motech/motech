@@ -34,16 +34,12 @@ package org.motechproject.server;
 
 import java.util.Arrays;
 
-import org.motechproject.event.EventType;
+import org.motechproject.context.Context;
 import org.motechproject.event.EventTypeRegistry;
-import org.motechproject.server.event.EventListener;
-import org.motechproject.server.event.EventListenerRegistry;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 
@@ -77,8 +73,8 @@ public class Activator implements BundleActivator {
 //		};
 //		this.tracker.open();
 		listener = new ScheduleAppointmentReminderHandler();
-		EventTypeRegistry.getInstance().add(ScheduleAppointmentReminderEventType.getInstance());
-		EventListenerRegistry.getInstance().registerListener(listener, Arrays.asList(ScheduleAppointmentReminderEventType.getInstance()) );
+		Context.getInstance().getEventTypeRegistry().add(ScheduleAppointmentReminderEventType.getInstance());
+		Context.getInstance().getEventListenerRegistry().registerListener(listener, Arrays.asList(ScheduleAppointmentReminderEventType.getInstance()) );
 	}
 
 	@Override

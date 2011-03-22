@@ -64,7 +64,7 @@
 		</property>
 	</bean>
 
-	<bean id="knowledgeBaseManager" class="org.motechproject.server.ruleengine.KnowledgeBaseManager" factory-method="getInstance"/>
+	<bean id="knowledgeBaseManager" class="org.motechproject.server.ruleengine.KnowledgeBaseManager"/>
 	
 	<bean id="filesystemRuleLoader" class="org.motechproject.server.ruleengine.FilesystemRuleLoader" init-method="load"/>
 

@@ -46,38 +46,8 @@ import java.util.ArrayList;
  */
 public class EventListenerRegistry {
 
-    private static Object mutex = new Object();
-    private static EventListenerRegistry instance = null;
-
     // Central registry for scheduled event listeners
-    private static ConcurrentHashMap<String, List<EventListener>> eventListeners = null;
-
-    /**
-     * Singleton constructor
-     */
-    private EventListenerRegistry() {
-        eventListeners = new ConcurrentHashMap<String, List<EventListener>>();
-    }
-
-
-    /**
-     * Retrieve an instance of the Scheduled Event Listener Registry Singleton
-     * @return singleton instance
-     */
-    public static EventListenerRegistry getInstance() {
-        // Do we need to initialized the singleton
-        if (instance == null) {
-            synchronized (mutex) {
-                // Do we still need to initialize the singleton or did someone do it for us while we
-                // were waiting for the lock?
-                if (instance == null) {
-                    instance = new EventListenerRegistry();
-                }
-            }
-        }
-
-        return instance;
-    }
+    private static ConcurrentHashMap<String, List<EventListener>> eventListeners = new ConcurrentHashMap<String, List<EventListener>>();
 
     /**
      * Register an event listener to be notified when events of a given type are received via the Server JMS Event Queue

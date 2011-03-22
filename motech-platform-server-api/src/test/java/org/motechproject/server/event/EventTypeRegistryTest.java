@@ -32,20 +32,28 @@
  */
 package org.motechproject.server.event;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.event.EventType;
 import org.motechproject.event.EventTypeRegistry;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"/testApplicationContext.xml"})
 public class EventTypeRegistryTest {
+	
+	@Autowired
+	private EventTypeRegistry etr;
 
 	@Test
 	public void testGetEventType() {
 		EventType eventType = new SampleEventType();
-		EventTypeRegistry etr = EventTypeRegistry.getInstance();
-		assertNotNull( "EventTyepRegistry.getInstance() returned null", etr );
+		assertNotNull( etr );
 		etr.add(eventType);
 		assertNotNull( etr.getEventType(eventType.getKey()) );
 		assertTrue(etr.getEventType(eventType.getKey()).getKey() == eventType.getKey());

@@ -32,23 +32,33 @@
  */
 package org.motechproject.server.event;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
-import java.util.*;
-import org.motechproject.event.EventType;
-import org.motechproject.server.event.EventListener;
-import org.motechproject.server.event.EventListenerRegistry;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-//@RunWith(SpringJUnit4ClassRunner.class)
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.motechproject.event.EventType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+@RunWith(SpringJUnit4ClassRunner.class)
 ////specifies the Spring configuration to load for this test fixture
-//@ContextConfiguration(locations={"/testApplicationContext.xml"})
+@ContextConfiguration(locations={"/testApplicationContext.xml"})
 public class EventListenerRegistryTest {
+	
+	@Autowired
+	private EventListenerRegistry registry;
+	
 	@Test
 	public void testRegisterListener() {
 		List<EventType> et = new ArrayList<EventType>(); 
 		et.add(new SampleEventType());
 		EventListener sel = new SampleEventListener();
-		EventListenerRegistry registry = EventListenerRegistry.getInstance();
 		registry.registerListener(sel, et);
 		
 		assertNotNull(registry.getListeners(et.get(0)));
@@ -61,7 +71,6 @@ public class EventListenerRegistryTest {
 		List<EventType> et = new ArrayList<EventType>(); 
 		et.add(new SampleEventType());
 		EventListener sel = new SampleEventListener();
-		EventListenerRegistry registry = EventListenerRegistry.getInstance();
 		registry.registerListener(sel, et);
 		
 		assertNotNull(registry.getListeners(et.get(0)));

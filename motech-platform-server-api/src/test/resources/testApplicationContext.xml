@@ -69,9 +69,10 @@
 
 	<bean id="outboundEventGateway" class="org.motechproject.server.gateway.SampleOutboundEventGateway" /> 
 
-	<bean id="eventTypeRegistry" class="org.motechproject.event.EventTypeRegistry" scope="singleton" factory-method="getInstance"/>
+	<bean id="eventTypeRegistry" class="org.motechproject.event.EventTypeRegistry"/>
 
-	<bean id="eventListenerRegistry" class="org.motechproject.server.event.EventListenerRegistry" scope="singleton" factory-method="getInstance" />
-
-
+	<bean id="eventListenerRegistry" class="org.motechproject.server.event.EventListenerRegistry"/>
+	
+	<bean id="context" class="org.motechproject.context.Context" factory-method="getInstance"/>
+	
 </beans>
