@@ -58,14 +58,12 @@ public class AppointmentServiceImplTest extends BaseModuleContextSensitiveTest {
     @After
     public void tearDown() throws Exception {
     }
-
+    
     @Test
     public void testAppointmentService() throws Exception {
         
         PatientService patientService = Context.getPatientService();
         Patient patient = patientService.getPatient(2);
-        
-        System.out.println(patient);
         
         Appointment appoinment1 = new Appointment();
         appoinment1.setPatient(patient);
