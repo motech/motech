@@ -33,11 +33,18 @@
 package org.motechproject.dao;
 
 import org.motechproject.model.Patient;
+import org.motechproject.model.Visit;
 
 /**
- * Patient DAO interface provides Patient persistent data access methods
+ *  Patient DAO interface provides Patient persistent data access methods
  */
 public interface PatientDao extends BaseDao<Patient> {
 
+    void addVisit(Visit visit);
 
+    void updateVisit(Visit visit);
+
+    void removeVisit(String visitId);
+
+    public void removeVisit(Visit visit);
 }

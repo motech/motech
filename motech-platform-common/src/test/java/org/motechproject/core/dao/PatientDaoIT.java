@@ -32,14 +32,18 @@
  */
 package org.motechproject.core.dao;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.dao.PatientDao;
 import org.motechproject.model.Patient;
+import org.motechproject.model.Visit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Date;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
@@ -49,7 +53,7 @@ import static junit.framework.Assert.assertNull;
  * PatientDAO Integration Tests
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/applicationCommon.xml" , "/persistenceIntegrationContext.xml"})
+@ContextConfiguration(locations = {"/applicationCommon.xml", "/persistenceIntegrationContext.xml"})
 public class PatientDaoIT {
 
     @Autowired
@@ -80,6 +84,7 @@ public class PatientDaoIT {
 
         Patient patient = new Patient();
         patient.setId(id);
+        patient.setClinicPatientId("000");
         patientDao.add(patient);
 
         Patient savedPatient = patientDao.get(patient.getId());
@@ -87,28 +92,103 @@ public class PatientDaoIT {
 
         patientDao.remove(patient);
 
+        assertEquals(0, patientDao.getAll().size());
+
     }
 
 
     @Test
-     public void testGetAllEmptyDB() throws Exception {
+    public void testGetAllEmptyDB() throws Exception {
 
         List<Patient> patients = patientDao.getAll();
         assertEquals(0, patients.size());
 
     }
 
+    @Test
+    public void testAddRemoveVisit() throws Exception {
+
+        String id = "1_";
+
+        Patient patient = new Patient();
+        patient.setId(id);
+        patient.setClinicPatientId("000");
+        patientDao.add(patient);
+
+        Visit visit = new Visit();
+        visit.setId("ao1");
+        visit.setPatientId(id);
+        visit.setVisitDate(new Date());
+        patientDao.addVisit(visit);
+
+        Patient savedPatient = patientDao.get(id);
+
+
+        assertEquals(1, savedPatient.getVisits().size());
+
+        patientDao.removeVisit(visit);
+
+        savedPatient = patientDao.get(id);
+        assertEquals(0, savedPatient.getVisits().size());
+
+        patientDao.remove(savedPatient);
+    }
+
+    @Test
+    public void testUpdateVisit() throws Exception {
+
+        String id = "1_";
+
+        Date initialVisitDate = new Date();
+        Date newVisitDate =  new Date(initialVisitDate.getTime() + 10000);
+
+        Patient patient = new Patient();
+        patient.setId(id);
+        patient.setClinicPatientId("000");
+        patientDao.add(patient);
+
+        Visit visit = new Visit();
+        visit.setId("ao1");
+        visit.setPatientId(id);
+        visit.setVisitDate(initialVisitDate);
+        patientDao.addVisit(visit);
+
+        Patient savedPatient = patientDao.get(id);
+        visit = savedPatient.getVisits().iterator().next();
+
+        assertEquals(initialVisitDate, visit.getVisitDate());
+
+        visit.setVisitDate(newVisitDate);
+        patientDao.updateVisit(visit);
+
+        savedPatient = patientDao.get(id);
+        visit = savedPatient.getVisits().iterator().next();
+
+
+        assertEquals(newVisitDate, visit.getVisitDate());
+
+        patientDao.removeVisit(visit);
+
+        savedPatient = patientDao.get(id);
+        assertEquals(0, savedPatient.getVisits().size());
+
+        patientDao.remove(savedPatient);
+    }
+
+
     //The following tests have been developed to research ektorp
 
-    /*@Test
+    /*
     //Method CouchDbRepositorySupport.getAll seems does not work
     //org.ektorp.DbAccessException: org.codehaus.jackson.map.exc.UnrecognizedPropertyException: Unrecognized field "dataObjectId" (Class org.motechproject.model.Patient), not marked as ignorable
+    @Test
     public void testGetAll() throws Exception {
 
         String id = "1_";
 
         Patient patient = new Patient();
         patient.setId(id);
+        patient .setClinicPatientId("000");
         patientDao.add(patient);
 
         List<Patient> patients = patientDao.getAll();
@@ -178,6 +258,15 @@ public class PatientDaoIT {
 
     }
 */
+    @Before @After
+    public void cleanup() {
+        for (Patient patient : patientDao.getAll()) {
+            for (Visit visit : patient.getVisits()) {
+                patientDao.removeVisit(visit);
+            }
+            patientDao.remove(patient);
+        }
+    }
 
 
 }

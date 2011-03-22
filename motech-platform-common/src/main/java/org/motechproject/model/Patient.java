@@ -32,11 +32,16 @@
  */
 package org.motechproject.model;
 
+import org.ektorp.docref.DocumentReferences;
+import org.ektorp.docref.FetchType;
 import org.ektorp.support.TypeDiscriminator;
+
+import java.util.Date;
+import java.util.Set;
 
 /**
  *
- * TODO implement that class - depends on the domain model design task
+ *
  */
 public class Patient extends MotechAuditableDataObject {
 
@@ -44,8 +49,21 @@ public class Patient extends MotechAuditableDataObject {
 
     @TypeDiscriminator
     private String clinicPatientId;
+    private long passCode;
+    private String phoneNumber;
+    private String status;
 
-    
+    private String preferredLanguage;
+    private int bestCallTime;
+    private String dailyCallScheduledJobId;
+    private boolean sendAppointmentReminder;
+
+    private Date nextAppointmentDueDate;
+    private Date nextAppointmentDate;
+
+    @DocumentReferences(fetch = FetchType.LAZY, descendingSortOrder = true, orderBy = "appointmentDateTime", backReference = "patientId")
+    private Set<Visit> visits;
+
     public String getClinicPatientId() {
         return clinicPatientId;
     }
@@ -53,5 +71,125 @@ public class Patient extends MotechAuditableDataObject {
     public void setClinicPatientId(String clinicPatientId) {
         this.clinicPatientId = clinicPatientId;
     }
-    
+
+    public long getPassCode() {
+        return passCode;
+    }
+
+    public void setPassCode(long passCode) {
+        this.passCode = passCode;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getPreferredLanguage() {
+        return preferredLanguage;
+    }
+
+    public void setPreferredLanguage(String preferredLanguage) {
+        this.preferredLanguage = preferredLanguage;
+    }
+
+    public int getBestCallTime() {
+        return bestCallTime;
+    }
+
+    public void setBestCallTime(int bestCallTime) {
+        this.bestCallTime = bestCallTime;
+    }
+
+    public String getDailyCallScheduledJobId() {
+        return dailyCallScheduledJobId;
+    }
+
+    public void setDailyCallScheduledJobId(String dailyCallScheduledJobId) {
+        this.dailyCallScheduledJobId = dailyCallScheduledJobId;
+    }
+
+    public boolean isSendAppointmentReminder() {
+        return sendAppointmentReminder;
+    }
+
+    public void setSendAppointmentReminder(boolean sendAppointmentReminder) {
+        this.sendAppointmentReminder = sendAppointmentReminder;
+    }
+
+    public Date getNextAppointmentDueDate() {
+        return nextAppointmentDueDate;
+    }
+
+    public void setNextAppointmentDueDate(Date nextAppointmentDueDate) {
+        this.nextAppointmentDueDate = nextAppointmentDueDate;
+    }
+
+    public Date getNextAppointmentDate() {
+        return nextAppointmentDate;
+    }
+
+    public void setNextAppointmentDate(Date nextAppointmentDate) {
+        this.nextAppointmentDate = nextAppointmentDate;
+    }
+
+    public Set<Visit> getVisits() {
+        return visits;
+    }
+
+    public void setVisits(Set<Visit> visits) {
+        this.visits = visits;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Patient patient = (Patient) o;
+
+        if (bestCallTime != patient.bestCallTime) return false;
+        if (passCode != patient.passCode) return false;
+        if (sendAppointmentReminder != patient.sendAppointmentReminder) return false;
+        if (clinicPatientId != null ? !clinicPatientId.equals(patient.clinicPatientId) : patient.clinicPatientId != null)
+            return false;
+        if (dailyCallScheduledJobId != null ? !dailyCallScheduledJobId.equals(patient.dailyCallScheduledJobId) : patient.dailyCallScheduledJobId != null)
+            return false;
+        if (nextAppointmentDate != null ? !nextAppointmentDate.equals(patient.nextAppointmentDate) : patient.nextAppointmentDate != null)
+            return false;
+        if (nextAppointmentDueDate != null ? !nextAppointmentDueDate.equals(patient.nextAppointmentDueDate) : patient.nextAppointmentDueDate != null)
+            return false;
+        if (phoneNumber != null ? !phoneNumber.equals(patient.phoneNumber) : patient.phoneNumber != null) return false;
+        if (preferredLanguage != null ? !preferredLanguage.equals(patient.preferredLanguage) : patient.preferredLanguage != null)
+            return false;
+        if (status != null ? !status.equals(patient.status) : patient.status != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = clinicPatientId != null ? clinicPatientId.hashCode() : 0;
+        result = 31 * result + (int) (passCode ^ (passCode >>> 32));
+        result = 31 * result + (phoneNumber != null ? phoneNumber.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + (preferredLanguage != null ? preferredLanguage.hashCode() : 0);
+        result = 31 * result + bestCallTime;
+        result = 31 * result + (dailyCallScheduledJobId != null ? dailyCallScheduledJobId.hashCode() : 0);
+        result = 31 * result + (sendAppointmentReminder ? 1 : 0);
+        result = 31 * result + (nextAppointmentDueDate != null ? nextAppointmentDueDate.hashCode() : 0);
+        result = 31 * result + (nextAppointmentDate != null ? nextAppointmentDate.hashCode() : 0);
+        return result;
+    }
 }
