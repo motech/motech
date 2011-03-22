@@ -11,9 +11,9 @@
 
 	<bean id="scheduleAppointmentReminderHandler" class="org.motechproject.server.ScheduleAppointmentReminderHandler"/>
 
-	<bean id="eventListenerRegistry" class="org.motechproject.server.event.EventListenerRegistry"/>
+	<bean id="eventListenerRegistry" class="org.motechproject.server.event.EventListenerRegistry" factory-method="getInstance"/>
 	
-	<bean id="patientDatabase" class="org.ektorp.impl.StdCouchDbConnector">
+<!-- 	<bean id="patientDatabase" class="org.ektorp.impl.StdCouchDbConnector">
 		<constructor-arg value="patients" />
 		<constructor-arg>
 			<bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
@@ -26,5 +26,5 @@
 	    	
 	<bean id="parentDao" class="org.motechproject.dao.PatientDaoImpl">
 		<constructor-arg ref="patientDatabase"></constructor-arg>
-	</bean>
+	</bean> -->
 </beans>
