@@ -34,6 +34,7 @@ package org.motechproject.server.event;
 
 import org.motechproject.event.EventTypeRegistry;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.server.gateway.OutboundEventGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;

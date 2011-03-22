@@ -90,7 +90,7 @@ public class EventRelayTest {
 /*        EventRelay ser = new EventRelay();
         ser.relayEvent(motechEvent);
         Thread.sleep(1000);
-        assertTrue(sel.handledMethodCalled()); */
+        assertTrue(sel.handledMethodCalled()); */ 
     }
 
 }

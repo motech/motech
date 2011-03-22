@@ -30,9 +30,10 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.server.event;
+package org.motechproject.server.gateway;
 
 import org.motechproject.model.MotechEvent;
+import org.motechproject.server.gateway.OutboundEventGateway;
 
 public class SampleOutboundEventGateway implements OutboundEventGateway {
 

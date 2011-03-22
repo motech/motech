@@ -67,7 +67,7 @@
 	
 	<bean id="eventRelay" class="org.motechproject.server.event.EventRelay"/>
 
-	<bean id="outboundEventGateway" class="org.motechproject.server.event.SampleOutboundEventGateway" /> 
+	<bean id="outboundEventGateway" class="org.motechproject.server.gateway.SampleOutboundEventGateway" /> 
 
 	<bean id="eventTypeRegistry" class="org.motechproject.event.EventTypeRegistry" scope="singleton" factory-method="getInstance"/>
 
