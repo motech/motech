@@ -30,28 +30,76 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.model;
+package org.motechproject.openmrs.model;
 
-import org.ektorp.support.TypeDiscriminator;
+import java.io.Serializable;
+import java.util.Date;
 
-/**
- *
- * TODO implement that class - depends on the domain model design task
- */
-public class Patient extends MotechAuditableDataObject {
+import org.openmrs.BaseOpenmrsObject;
+import org.openmrs.Patient;
 
-    private static final long serialVersionUID = 1L;
+public class Appointment extends BaseOpenmrsObject implements Serializable {
 
-    @TypeDiscriminator
-    private String clinicPatientId;
+    private static final long serialVersionUID = -4102758492301203845L;
 
-    
-    public String getClinicPatientId() {
-        return clinicPatientId;
+    private Integer id;
+
+    private Patient patient;
+
+    private Boolean patientArrived = false;
+
+    private Date arrivalDate;
+
+    private Date windowStartDate;
+
+    private Date windowEndDate;
+
+    public Integer getId() {
+        return id;
     }
 
-    public void setClinicPatientId(String clinicPatientId) {
-        this.clinicPatientId = clinicPatientId;
+    public void setId(Integer id) {
+        this.id = id;
     }
-    
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public void setPatient(Patient patient) {
+        this.patient = patient;
+    }
+
+    public Boolean getPatientArrived() {
+        return patientArrived;
+    }
+
+    public void setPatientArrived(Boolean patientArrived) {
+        this.patientArrived = patientArrived;
+    }
+
+    public Date getArrivalDate() {
+        return arrivalDate;
+    }
+
+    public void setArrivalDate(Date arrivalDate) {
+        this.arrivalDate = arrivalDate;
+    }
+
+    public Date getWindowStartDate() {
+        return windowStartDate;
+    }
+
+    public void setWindowStartDate(Date windowStartDate) {
+        this.windowStartDate = windowStartDate;
+    }
+
+    public Date getWindowEndDate() {
+        return windowEndDate;
+    }
+
+    public void setWindowEndDate(Date windowEndDate) {
+        this.windowEndDate = windowEndDate;
+    }
+
 }

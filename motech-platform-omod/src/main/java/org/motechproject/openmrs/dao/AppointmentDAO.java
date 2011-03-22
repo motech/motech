@@ -30,28 +30,29 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.model;
+package org.motechproject.openmrs.dao;
 
-import org.ektorp.support.TypeDiscriminator;
+import java.util.List;
 
-/**
- *
- * TODO implement that class - depends on the domain model design task
- */
-public class Patient extends MotechAuditableDataObject {
+import org.motechproject.openmrs.model.Appointment;
+import org.openmrs.Patient;
 
-    private static final long serialVersionUID = 1L;
 
-    @TypeDiscriminator
-    private String clinicPatientId;
+public interface AppointmentDAO {
 
-    
-    public String getClinicPatientId() {
-        return clinicPatientId;
-    }
+	/**
+	 * @see org.openmrs.module.visitscheduler.service.ScheduleService#getAppointment(java.lang.Integer)
+	 */
+	public Appointment getAppointment(Integer id);
 
-    public void setClinicPatientId(String clinicPatientId) {
-        this.clinicPatientId = clinicPatientId;
-    }
-    
+	/**
+	 * @see org.openmrs.module.visitscheduler.service.ScheduleService#getAppointments(org.openmrs.Patient)
+	 */
+	public List<Appointment> getAppointments(Patient patient);
+
+	/**
+	 * @see org.openmrs.module.visitscheduler.service.ScheduleService#saveAppointment(org.openmrs.module.visitscheduler.model.Appointment) 
+	 */
+	public Appointment saveAppointment(Appointment appointment);
+
 }
