@@ -33,6 +33,7 @@
 package org.motechproject.dao;
 
 import org.ektorp.CouchDbConnector;
+import org.motechproject.model.Appointment;
 import org.motechproject.model.Patient;
 import org.motechproject.model.Visit;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,31 @@ public class PatientDaoImpl extends MotechAuditableRepository<Patient> implement
     public void removeVisit(Visit visit) {
 
         db.delete(visit);
+    }
+
+    @Override
+    public void addAppointment(Appointment appointment){
+
+        db.create(appointment);
+    }
+
+    @Override
+    public void updateAppointment(Appointment appointment){
+
+        db.update(appointment);
+    }
+
+    @Override
+    public void removeAppointment(String appointmentId) {
+
+        Appointment appointment = db.get(Appointment.class, appointmentId);
+        db.delete(appointment);
+    }
+
+    @Override
+    public void removeAppointment(Appointment appointment) {
+
+        db.delete(appointment);
     }
     
 }

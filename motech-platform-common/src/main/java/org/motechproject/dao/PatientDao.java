@@ -32,6 +32,7 @@
  */
 package org.motechproject.dao;
 
+import org.motechproject.model.Appointment;
 import org.motechproject.model.Patient;
 import org.motechproject.model.Visit;
 
@@ -40,11 +41,13 @@ import org.motechproject.model.Visit;
  */
 public interface PatientDao extends BaseDao<Patient> {
 
-    void addVisit(Visit visit);
-
-    void updateVisit(Visit visit);
-
-    void removeVisit(String visitId);
-
+    public void addVisit(Visit visit);
+    public void updateVisit(Visit visit);
+    public void removeVisit(String visitId);
     public void removeVisit(Visit visit);
+
+    public void addAppointment(Appointment appointment);
+    public void updateAppointment(Appointment appointment);
+    public void removeAppointment(String appointmentId);
+    public void removeAppointment(Appointment appointment);
 }

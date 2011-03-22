@@ -37,6 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.dao.PatientDao;
+import org.motechproject.model.Appointment;
 import org.motechproject.model.Patient;
 import org.motechproject.model.Visit;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +46,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.*;
 
 /**
  * PatientDAO Integration Tests
@@ -140,7 +141,7 @@ public class PatientDaoIT {
         String id = "1_";
 
         Date initialVisitDate = new Date();
-        Date newVisitDate =  new Date(initialVisitDate.getTime() + 10000);
+        Date newVisitDate = new Date(initialVisitDate.getTime() + 10000);
 
         Patient patient = new Patient();
         patient.setId(id);
@@ -173,6 +174,78 @@ public class PatientDaoIT {
         assertEquals(0, savedPatient.getVisits().size());
 
         patientDao.remove(savedPatient);
+    }
+
+    @Test
+    public void testAddRemoveAppointment() throws Exception {
+
+        String id = "1_";
+
+        Patient patient = new Patient();
+        patient.setId(id);
+        patient.setClinicPatientId("000");
+        patientDao.add(patient);
+
+        Appointment appointment = new Appointment();
+        appointment.setId("ao1");
+        appointment.setPatientId(id);
+        appointment.setWindowStartDate(new Date());
+        appointment.setWindowEndDate(new Date());
+        patientDao.addAppointment(appointment);
+
+
+        Patient savedPatient = patientDao.get(id);
+
+
+        assertEquals(1, savedPatient.getAppointments().size());
+
+        patientDao.removeAppointment(appointment);
+
+        savedPatient = patientDao.get(id);
+        assertEquals(0, savedPatient.getAppointments().size());
+
+        patientDao.remove(savedPatient);
+    }
+
+    @Test
+    public void testUpdateAppointment() throws Exception {
+
+        String id = "1_";
+
+        Patient patient = new Patient();
+        patient.setId(id);
+        patient.setClinicPatientId("000");
+        patientDao.add(patient);
+
+        Appointment appointment = new Appointment();
+        appointment.setId("ao1");
+        appointment.setPatientId(id);
+        appointment.setWindowStartDate(new Date());
+        appointment.setWindowEndDate(new Date());
+        patientDao.addAppointment(appointment);
+
+
+        Patient savedPatient = patientDao.get(id);
+        assertEquals(1, savedPatient.getAppointments().size());
+
+        Appointment savedAppointment = savedPatient.getAppointments().iterator().next();
+        assertFalse(savedAppointment.getPatientArrived());
+
+        savedAppointment.setPatientArrived(true);
+        patientDao.updateAppointment(savedAppointment);
+        savedPatient = patientDao.get(id);
+        assertEquals(1, savedPatient.getAppointments().size());
+        savedAppointment = savedPatient.getAppointments().iterator().next();
+
+        assertTrue(savedAppointment.getPatientArrived());
+
+        patientDao.removeAppointment(savedAppointment);
+
+        savedPatient = patientDao.get(id);
+        assertEquals(0, savedPatient.getAppointments().size());
+
+        patientDao.remove(savedPatient);
+
     }
 
 
@@ -258,11 +331,16 @@ public class PatientDaoIT {
 
     }
 */
-    @Before @After
+    @Before
+    @After
     public void cleanup() {
         for (Patient patient : patientDao.getAll()) {
-            for (Visit visit : patient.getVisits()) {
+            Set<Visit> visits = patient.getVisits();
+            for (Visit visit : visits) {
                 patientDao.removeVisit(visit);
+            }
+            for (Appointment appointment : patient.getAppointments()) {
+                patientDao.removeAppointment(appointment);
             }
             patientDao.remove(patient);
         }

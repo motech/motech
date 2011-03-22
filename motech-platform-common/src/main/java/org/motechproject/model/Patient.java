@@ -36,6 +36,7 @@ import org.ektorp.docref.DocumentReferences;
 import org.ektorp.docref.FetchType;
 import org.ektorp.support.TypeDiscriminator;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
 
@@ -58,11 +59,12 @@ public class Patient extends MotechAuditableDataObject {
     private String dailyCallScheduledJobId;
     private boolean sendAppointmentReminder;
 
-    private Date nextAppointmentDueDate;
-    private Date nextAppointmentDate;
 
-    @DocumentReferences(fetch = FetchType.LAZY, descendingSortOrder = true, orderBy = "appointmentDateTime", backReference = "patientId")
+    @DocumentReferences(fetch = FetchType.LAZY, descendingSortOrder = true, orderBy = "visitDate", backReference = "patientId")
     private Set<Visit> visits;
+
+    @DocumentReferences(fetch = FetchType.LAZY, descendingSortOrder = true, orderBy = "windowStartDate", backReference = "patientId")
+    private Set<Appointment> appointments;
 
     public String getClinicPatientId() {
         return clinicPatientId;
@@ -128,28 +130,21 @@ public class Patient extends MotechAuditableDataObject {
         this.sendAppointmentReminder = sendAppointmentReminder;
     }
 
-    public Date getNextAppointmentDueDate() {
-        return nextAppointmentDueDate;
-    }
-
-    public void setNextAppointmentDueDate(Date nextAppointmentDueDate) {
-        this.nextAppointmentDueDate = nextAppointmentDueDate;
-    }
-
-    public Date getNextAppointmentDate() {
-        return nextAppointmentDate;
-    }
-
-    public void setNextAppointmentDate(Date nextAppointmentDate) {
-        this.nextAppointmentDate = nextAppointmentDate;
-    }
 
     public Set<Visit> getVisits() {
-        return visits;
+        return visits == null ? Collections.<Visit>emptySet(): visits;
     }
 
     public void setVisits(Set<Visit> visits) {
         this.visits = visits;
+    }
+
+    public Set<Appointment> getAppointments() {
+        return appointments;
+    }
+
+    public void setAppointments(Set<Appointment> appointments) {
+        this.appointments = appointments  == null ? Collections.<Appointment>emptySet(): appointments;
     }
 
     @Override
@@ -165,10 +160,6 @@ public class Patient extends MotechAuditableDataObject {
         if (clinicPatientId != null ? !clinicPatientId.equals(patient.clinicPatientId) : patient.clinicPatientId != null)
             return false;
         if (dailyCallScheduledJobId != null ? !dailyCallScheduledJobId.equals(patient.dailyCallScheduledJobId) : patient.dailyCallScheduledJobId != null)
-            return false;
-        if (nextAppointmentDate != null ? !nextAppointmentDate.equals(patient.nextAppointmentDate) : patient.nextAppointmentDate != null)
-            return false;
-        if (nextAppointmentDueDate != null ? !nextAppointmentDueDate.equals(patient.nextAppointmentDueDate) : patient.nextAppointmentDueDate != null)
             return false;
         if (phoneNumber != null ? !phoneNumber.equals(patient.phoneNumber) : patient.phoneNumber != null) return false;
         if (preferredLanguage != null ? !preferredLanguage.equals(patient.preferredLanguage) : patient.preferredLanguage != null)
@@ -188,8 +179,6 @@ public class Patient extends MotechAuditableDataObject {
         result = 31 * result + bestCallTime;
         result = 31 * result + (dailyCallScheduledJobId != null ? dailyCallScheduledJobId.hashCode() : 0);
         result = 31 * result + (sendAppointmentReminder ? 1 : 0);
-        result = 31 * result + (nextAppointmentDueDate != null ? nextAppointmentDueDate.hashCode() : 0);
-        result = 31 * result + (nextAppointmentDate != null ? nextAppointmentDate.hashCode() : 0);
         return result;
     }
 }
