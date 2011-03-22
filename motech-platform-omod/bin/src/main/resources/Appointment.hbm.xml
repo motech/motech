@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!--
+
+    MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
+
+    Copyright (c) 2010-11 The Trustees of Columbia University in the City of
+    New York and Grameen Foundation USA.  All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+
+    1. Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+
+    2. Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the documentation
+    and/or other materials provided with the distribution.
+
+    3. Neither the name of Grameen Foundation USA, Columbia University, or
+    their respective contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY GRAMEEN FOUNDATION USA, COLUMBIA UNIVERSITY
+    AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING,
+    BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+    FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL GRAMEEN FOUNDATION
+    USA, COLUMBIA UNIVERSITY OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+    INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+    LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+    OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+    LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+    NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-->
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.motechproject.openmrs.model">						
+	<class name="Appointment" table="appointment">
+		<id name="id" type="java.lang.Integer" column="appointment_id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+
+		<discriminator column="appointment_id" insert="false"/>
+
+		<many-to-one name="patient" class="org.openmrs.Patient" not-null="true">
+			<column name="patient_id"/>
+		</many-to-one>
+
+		<property name="patientArrived" type="java.lang.Boolean" column="patient_arrived"/>
+
+		<property name="arrivalDate" type="java.util.Date" column="arrival_date"/>
+
+		<property name="windowStartDate" type="java.util.Date" column="window_start_date"/>
+
+		<property name="windowEndDate" type="java.util.Date" column="window_end_date"/>
+
+		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
+	</class>
+</hibernate-mapping>
