@@ -50,7 +50,13 @@
         	<groupId>org.motechproject</groupId>
         	<artifactId>motech-platform-server-api</artifactId>
         	<version>0.1-SNAPSHOT</version>
-        	<scope>provided</scope>
+        	<scope>compile</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.motechproject</groupId>
+        	<artifactId>motech-platform-common</artifactId>
+        	<version>0.1-SNAPSHOT</version>
+        	<scope>compile</scope>
         </dependency>
     </dependencies>
     <build>
