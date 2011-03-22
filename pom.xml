@@ -143,6 +143,7 @@
 							<exclude>org/motechproject/model/MotechBaseDataObject.class</exclude>
 							<exclude>org/motechproject/model/Rule.class</exclude>
 							<exclude>org/motechproject/model/Patient.class</exclude>
+                            <exclude>org/motechproject/model/Appointment.class</exclude>
 						</excludes>
 					</instrumentation>
 					<check>
