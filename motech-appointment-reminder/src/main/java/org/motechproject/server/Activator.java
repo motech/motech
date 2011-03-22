@@ -43,6 +43,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 
@@ -51,8 +52,8 @@ import org.slf4j.LoggerFactory;
  */
 public class Activator implements BundleActivator {
 	private static Logger logger = LoggerFactory.getLogger(Activator.class);
-	private ServiceTracker tracker;
-	private EventListener listener;
+//	private ServiceTracker tracker;
+	private ScheduleAppointmentReminderHandler listener;
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -76,9 +77,8 @@ public class Activator implements BundleActivator {
 //		};
 //		this.tracker.open();
 		listener = new ScheduleAppointmentReminderHandler();
-		EventType eventtype = new ScheduleAppointmentReminderEventType();
-		EventTypeRegistry.getInstance().add(eventtype);
-		EventListenerRegistry.getInstance().registerListener(listener, Arrays.asList(eventtype) );
+		EventTypeRegistry.getInstance().add(ScheduleAppointmentReminderEventType.getInstance());
+		EventListenerRegistry.getInstance().registerListener(listener, Arrays.asList(ScheduleAppointmentReminderEventType.getInstance()) );
 	}
 
 	@Override

@@ -32,27 +32,42 @@
  */
 package org.motechproject.server;
 
+import org.motechproject.dao.PatientDao;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.model.Patient;
 import org.motechproject.server.event.EventListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
- * Responsible for listening for @see ScheduleAppointmentReminderEventType events
+ * Responsible for listening for @see ScheduleAppointmentReminderEventType
+ * events with destination
  * 
  * @author yyonkov
- *
+ * 
  */
+@Component
 public class ScheduleAppointmentReminderHandler implements EventListener {
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	public final static String SCHEDULE_APPOINTMENT_REMINDER = "ScheduleAppointmentReminder";
+	public final static String SCHEDULE_APPOINTMENT_ID = "ScheduleAppointmentID";
+	public final static String SCHEDULE_PATIENT_ID = "PatientID";
+//	@Autowired
+	private PatientDao patientDao;
 
 	@Override
 	public void handle(MotechEvent event) {
-		// TODO Auto-generated method stub
+		String patientID = (String) event.getParameters().get(SCHEDULE_PATIENT_ID);
+		String appointmentID = (String) event.getParameters().get(SCHEDULE_APPOINTMENT_ID);
+		Patient patient = patientDao.get(patientID);
 		
 	}
 
 	@Override
 	public String getIdentifier() {
-		// TODO Auto-generated method stub
-		return null;
+		return SCHEDULE_APPOINTMENT_REMINDER;
 	}
 
 }

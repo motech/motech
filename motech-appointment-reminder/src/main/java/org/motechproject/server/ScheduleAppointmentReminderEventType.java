@@ -35,11 +35,21 @@ package org.motechproject.server;
 import org.motechproject.event.EventType;
 
 /**
- * Defines an @see EventType of event that a @see ScheduleAppointmentReminderHandler will be listening for.
+ * Defines an @see EventType of event that a @see
+ * ScheduleAppointmentReminderHandler will be listening for.
+ * 
  * @author yyonkov
- *
+ * 
  */
 public class ScheduleAppointmentReminderEventType implements EventType {
+	private static ScheduleAppointmentReminderEventType instance = new ScheduleAppointmentReminderEventType();
+
+	private ScheduleAppointmentReminderEventType() {
+	}
+
+	public static EventType getInstance() {
+		return instance;
+	}
 
 	@Override
 	public String getName() {
