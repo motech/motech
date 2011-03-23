@@ -7,7 +7,7 @@
 		<version>0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>motech-platform-omod</artifactId>
-	<packaging>jar</packaging>
+	<packaging>omod</packaging>
 	<name>Motech Platform OMOD</name>
 
 	<repositories>

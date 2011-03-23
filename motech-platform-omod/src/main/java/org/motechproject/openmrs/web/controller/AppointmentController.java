@@ -12,6 +12,8 @@
 package org.motechproject.openmrs.web.controller;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -27,39 +29,65 @@ import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.controller.PortletController;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-
 @Controller
 public class AppointmentController extends PortletController {
 
-    /**
-     * Logger for this class and subclasses
-     */
-    protected final Log log = LogFactory.getLog(getClass());
+	/**
+	 * Logger for this class and subclasses
+	 */
+	protected final Log log = LogFactory.getLog(getClass());
 
-    @RequestMapping(value = "/module/motech/appointment.portlet", method = RequestMethod.GET)
-    @Override
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        return super.handleRequest(request, response);
-    }
+	@RequestMapping(value = "/module/motech/portlets/appointment.portlet", method = RequestMethod.GET)
+	@Override
+	public ModelAndView handleRequest(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		System.out.println("in AppointmentController *******************");
+		return super.handleRequest(request, response);
+	}
 
-    /**
-     * Gets a list of appointments for the given Patient
-     * 
-     * @param request
-     *            the HttpServletRequest with the date to look for Appointments
-     * @param model
-     *            ModelMap with Patient information
-     */
-    @Override
-    public void populateModel(HttpServletRequest request, Map<String, Object> model) {
-        Patient patient = (Patient) model.get("patient");
-        List<Appointment> appointmentList = Context.getService(AppointmentService.class).getAppointments(patient);
-        model.put("appointmentList", appointmentList);
-    }
+	/**
+	 * Gets a list of appointments for the given Patient
+	 * 
+	 * @param request
+	 *            the HttpServletRequest with the date to look for Appointments
+	 * @param model
+	 *            ModelMap with Patient information
+	 */
+	@Override
+	public void populateModel(HttpServletRequest request,
+			Map<String, Object> model) {
+		Patient patient = (Patient) model.get("patient");
+
+		try {
+			String startDateString = ServletRequestUtils.getStringParameter(
+					request, "windowStartDate");
+			String endDateString = ServletRequestUtils.getStringParameter(
+					request, "windowEndDate");
+
+			if (startDateString != null && endDateString != null) {
+				Date startDate = Context.getDateFormat().parse(startDateString);
+				Date endDate = Context.getDateFormat().parse(endDateString);
+				Appointment appointment = new Appointment();
+				appointment.setPatient(patient);
+				appointment.setWindowStartDate(startDate);
+				appointment.setWindowEndDate(endDate);
+				Context.getService(AppointmentService.class).saveAppointment(
+						appointment);
+			}
+		} catch (Exception ex) {
+			log.error(ex);
+		}
+
+		List<Appointment> appointmentList = Context.getService(
+				AppointmentService.class).getAppointments(patient);
+		model.put("appointmentList", appointmentList);
+	}
+
 }
 
-//public class AppointmentController{}
+// public class AppointmentController{}
