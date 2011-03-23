@@ -34,6 +34,7 @@ package org.motechproject.server.ruleengine;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +54,8 @@ public class FilesystemRuleLoader {
     @Autowired
     private KnowledgeBaseManager knowledgeBaseManager;
 
-    public void load() {
-        File[] ruleFiles = new File(getClass().getResource(ruleFolder).getFile()).listFiles();
+    public void load() throws Exception {
+        File[] ruleFiles = new File(URLDecoder.decode(getClass().getResource(ruleFolder).getFile(), "UTF-8")).listFiles();
         for (File file : ruleFiles) {
             if (file.getName().toLowerCase().endsWith(".drl")) {
                 try {

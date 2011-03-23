@@ -39,6 +39,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import java.io.File;
+import java.net.URLDecoder;
 
 import org.drools.KnowledgeBase;
 import org.drools.runtime.StatelessKnowledgeSession;
@@ -61,7 +62,7 @@ public class KnowledgeBaseManagerTest {
         kbm.setOsgiFrameworkService(ofs);
         kbm.setRuleRepository(repo);
         
-        File file = new File(getClass().getResource(ruleFolder + "/" + ruleFile).getFile());
+        File file = new File(URLDecoder.decode(getClass().getResource(ruleFolder + "/" + ruleFile).getFile(), "UTF-8"));
         
         kbm.addOrUpdateRule(file);
         
