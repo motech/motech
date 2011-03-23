@@ -46,14 +46,14 @@
 			http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd
 			">
 
-	<gateway service-interface="org.motechproject.server.gateway.OutboundEventGateway"
-	 		id="outboundEventGateway"
-	 		default-request-channel="eventGatewayToEventJmsoutChannel"/>
+	<gateway service-interface="org.motechproject.server.gateway.OutboundScheduleJobGateway"
+	 		id="outboundScheduleJobGateway"
+	 		default-request-channel="scheduleJobGatewayToEventJmsoutChannel"/>
 
-	<channel id="eventGatewayToEventJmsoutChannel"/>
+	<channel id="scheduleJobGatewayToEventJmsoutChannel"/>
 	
 
-	<jms:outbound-channel-adapter id="eventjmsout" channel="eventGatewayToEventJmsoutChannel" destination="eventQueue"/>
+	<jms:outbound-channel-adapter id="schedulejmsout" channel="scheduleJobGatewayToEventJmsoutChannel" destination="schedulerQueue"/>
 
 	
 </beans:beans>
