@@ -9,6 +9,7 @@
   <artifactId>motech-appointment-reminder</artifactId>
   <version>0.1-SNAPSHOT</version>
   <name>Motech Appointment Reminder</name>
+  <packaging>bundle</packaging>
   <description>Motech Appointment Reminder</description>
     <dependencies>
         <dependency>
