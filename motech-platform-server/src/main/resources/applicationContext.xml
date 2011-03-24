@@ -68,16 +68,4 @@
 	
 	<bean id="filesystemRuleLoader" class="org.motechproject.server.ruleengine.FilesystemRuleLoader" init-method="load"/>
 
-    <bean id="ivrServise" class="org.motechproject.server.service.ivr.astersik.IVRServiceAsteriskImpl" >
-        <!--Asterisk Server host-->
-        <constructor-arg  value="motech.2paths.com"/>
-        <!--Asterisk Server user-->
-        <constructor-arg  value="admin"/>
-        <!--Asterisk Server user password-->
-        <constructor-arg value="amp111"/>
-
-        <!--Asterisk Gateway Interface URI - required for integration with Voiceglue-->
-        <property name="agiUrl" value="agi://localhost/url="/>
-    </bean>
-
 </beans>

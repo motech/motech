@@ -109,11 +109,6 @@
             <artifactId>log4j</artifactId>
             <version>1.2.16</version>
         </dependency>
-        <dependency>
-            <groupId>org.asteriskjava</groupId>
-            <artifactId>asterisk-java</artifactId>
-            <version>1.0.0.M3</version>
-        </dependency>
     </dependencies>
     <build>
         <finalName>motech-platform-server</finalName>

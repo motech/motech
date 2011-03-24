@@ -7,8 +7,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.model.InitiateCallData;
 import org.motechproject.server.service.ivr.CallInitiationException;
-import org.motechproject.server.service.ivr.IVRService;
-import org.motechproject.server.service.ivr.astersik.IVRServiceAsteriskImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -26,7 +24,7 @@ import static org.junit.Assert.*;
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/testServerAppContext.xml"})
+@ContextConfiguration(locations={"/testIVRAppContext.xml"})
 public class TestIVRService {
 
     @Autowired
