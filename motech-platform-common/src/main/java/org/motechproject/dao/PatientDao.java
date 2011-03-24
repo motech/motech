@@ -48,6 +48,7 @@ public interface PatientDao extends BaseDao<Patient> {
 
     public void addAppointment(Appointment appointment);
     public void updateAppointment(Appointment appointment);
+    public Appointment getAppointment(String appointmentId);
     public void removeAppointment(String appointmentId);
     public void removeAppointment(Appointment appointment);
 }

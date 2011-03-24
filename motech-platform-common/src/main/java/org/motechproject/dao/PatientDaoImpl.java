@@ -87,9 +87,16 @@ public class PatientDaoImpl extends MotechAuditableRepository<Patient> implement
     }
 
     @Override
-    public void removeAppointment(String appointmentId) {
+    public Appointment getAppointment(String appointmentId) {
 
         Appointment appointment = db.get(Appointment.class, appointmentId);
+        return appointment;
+    }
+
+    @Override
+    public void removeAppointment(String appointmentId) {
+
+        Appointment appointment = getAppointment(appointmentId);
         db.delete(appointment);
     }
 
