@@ -144,6 +144,8 @@
 							<exclude>org/motechproject/model/Rule.class</exclude>
 							<exclude>org/motechproject/model/Patient.class</exclude>
                             <exclude>org/motechproject/model/Appointment.class</exclude>
+                            <exclude>org/motechproject/model/Visit.class</exclude>
+                            <exclude>org/motechproject/server/service/ivr/CallInitiationException.class</exclude>
 						</excludes>
 					</instrumentation>
 					<check>

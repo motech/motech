@@ -34,50 +34,21 @@
 
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
-         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-         http://www.springframework.org/schema/context
-         http://www.springframework.org/schema/context/spring-context-3.0.xsd
-		 http://www.springframework.org/schema/util
-		 http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-	<import resource="applicationCommon.xml" />
-
-	<context:annotation-config />
-
-	<util:properties id="osgiConfig" location="classpath:osgi.properties" />
-
-	<bean id="osgiFramework" class="org.apache.felix.framework.Felix">
-		<constructor-arg ref="osgiConfig" />
-	</bean>
-
-	<bean id="osgiFrameworkService" class="org.motechproject.server.osgi.OsgiFrameworkService"
-		init-method="start" destroy-method="stop">
-		<property name="bundleFolder" value="/WEB-INF/bundles" />
-		<property name="bundleLoaders">
-			<list>
-				<bean id="log4jBundleLoader" class="org.motechproject.server.osgi.Log4JBundleLoader" />
-				<bean id="ruleBundleLoader" class="org.motechproject.server.osgi.RuleBundleLoader" />
-			</list>
-		</property>
-	</bean>
-
-	<bean id="knowledgeBaseManager" class="org.motechproject.server.ruleengine.KnowledgeBaseManager"/>
-	
-	<bean id="filesystemRuleLoader" class="org.motechproject.server.ruleengine.FilesystemRuleLoader" init-method="load"/>
 
     <bean id="ivrServise" class="org.motechproject.server.service.ivr.astersik.IVRServiceAsteriskImpl" >
         <!--Asterisk Server host-->
-        <constructor-arg  value="motech.2paths.com"/>
+        <constructor-arg  value="10.0.1.31"/>
         <!--Asterisk Server user-->
         <constructor-arg  value="admin"/>
         <!--Asterisk Server user password-->
         <constructor-arg value="amp111"/>
 
-        <!--Asterisk Gateway Interface URI - required for integration with Voiceglue-->
         <property name="agiUrl" value="agi://localhost/url="/>
     </bean>
+
 
 </beans>

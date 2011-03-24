@@ -81,9 +81,9 @@
         </dependency>           
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
+            <artifactId>spring-test</artifactId>
             <version>3.0.5.RELEASE</version>
-        </dependency>   
+        </dependency>
         <dependency>
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity</artifactId>
@@ -108,6 +108,11 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.16</version>
+        </dependency>
+        <dependency>
+            <groupId>org.asteriskjava</groupId>
+            <artifactId>asterisk-java</artifactId>
+            <version>1.0.0.M3</version>
         </dependency>
     </dependencies>
     <build>
