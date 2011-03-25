@@ -32,13 +32,18 @@
  */
 package org.motechproject.openmrs.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.motechproject.dao.PatientDao;
+import org.motechproject.model.MotechEvent;
 import org.motechproject.openmrs.dao.AppointmentDAO;
+import org.motechproject.openmrs.messaging.MotechEventSender;
 import org.motechproject.openmrs.model.Appointment;
 import org.motechproject.openmrs.service.AppointmentService;
+import org.motechproject.server.ScheduleAppointmentReminderEventType;
 import org.openmrs.Patient;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +55,9 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements
 
 	@Autowired(required=false)
 	private PatientDao motechPatientDao;
+	
+	@Autowired(required=false)
+	private MotechEventSender motechEventSender;
 
 	@Override
 	public Appointment getAppointment(Integer id) {
@@ -64,8 +72,9 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements
 	@Override
 	public Appointment saveAppointment(Appointment appointment) {
 		appointment = appointmentDao.saveAppointment(appointment);
+		
+		// save the appointment into motech's data store
 		if (motechPatientDao != null) {
-			// save the appointment into motech's data store
 			org.motechproject.model.Appointment mAppointment = new org.motechproject.model.Appointment();
 			try {
 				
@@ -76,12 +85,21 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements
 				mAppointment.setPatientArrived(appointment.getPatientArrived());
 				mAppointment.setWindowStartDate(appointment.getWindowStartDate());
 				mAppointment.setWindowEndDate(appointment.getWindowEndDate());
-				mAppointment.setPatientId(appointment.getPatient().getId().toString());
+				mAppointment.setPatientId(appointment.getPatient().getUuid());
 				
 				motechPatientDao.addAppointment(mAppointment);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
+		}
+		
+		// send motech event to the queue
+		if (motechEventSender != null) {
+			Map<String, Object> parameters = new HashMap<String, Object>();
+			parameters.put(MotechEvent.SCHEDULE_PATIENT_ID_KEY_NAME, appointment.getPatient().getUuid());
+			parameters.put(MotechEvent.SCHEDULE_APPOINTMENT_ID_KEY_NAME, appointment.getUuid());			
+			MotechEvent motechEvent = new MotechEvent(UUID.randomUUID().toString(), ScheduleAppointmentReminderEventType.getInstance().getKey(), parameters);
+			motechEventSender.send(motechEvent);
 		}
 		return appointment;
 	}

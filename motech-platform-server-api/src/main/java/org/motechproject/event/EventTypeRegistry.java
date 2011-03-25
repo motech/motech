@@ -44,12 +44,6 @@ public class EventTypeRegistry {
     private static ConcurrentHashMap<String, EventType> eventTypes = new ConcurrentHashMap<String, EventType>();
 
     /**
-     * Singleton constructor
-     */
-    private EventTypeRegistry() {
-    }
-
-    /**
      * Register an event type so that it can be referenced by others
      *
      * @param type The event type being registered

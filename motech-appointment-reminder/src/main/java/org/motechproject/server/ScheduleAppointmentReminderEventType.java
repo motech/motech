@@ -42,6 +42,9 @@ import org.motechproject.event.EventType;
  * 
  */
 public class ScheduleAppointmentReminderEventType implements EventType {
+	
+	public static final String KEY = "scheduleappointmentremindereventtype";
+	
 	private static ScheduleAppointmentReminderEventType instance = new ScheduleAppointmentReminderEventType();
 
 	private ScheduleAppointmentReminderEventType() {
@@ -58,7 +61,7 @@ public class ScheduleAppointmentReminderEventType implements EventType {
 
 	@Override
 	public String getKey() {
-		return "scheduleappointmentremindereventtype";
+		return KEY;
 	}
 
 }
