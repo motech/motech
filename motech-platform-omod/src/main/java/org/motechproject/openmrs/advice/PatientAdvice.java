@@ -1,7 +1,7 @@
 /**
  * MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
  *
- * Copyright (c) 2010 The Trustees of Columbia University in the City of
+ * Copyright (c) 2010-11 The Trustees of Columbia University in the City of
  * New York and Grameen Foundation USA.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,6 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.motechproject.openmrs.advice;
 
 import java.lang.reflect.Method;
