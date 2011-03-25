@@ -88,7 +88,7 @@ public class TestMotechScheduledEvent {
         params = nonNullParams.getParameters();
 
         assertTrue(params.equals(hashMap));
-        assertFalse(params == hashMap);
+//        assertFalse(params == hashMap);  // not wrapped collection anymore.
     }
 
     @Test
