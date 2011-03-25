@@ -84,5 +84,7 @@ public class AppointmentServiceImplIT extends BaseModuleContextSensitiveTest {
         assertNotNull(appoinment2.getId());
         assertEquals(2, appointmentService.getAppointments(patient).size());
         
+        //TODO: add some assertions for couchdb and jms messaging
+        
     }
 }

@@ -30,51 +30,60 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.event;
+package org.motechproject.server;
 
-import java.util.concurrent.ConcurrentHashMap;
-
+import org.motechproject.dao.PatientDao;
+import org.motechproject.model.MotechEvent;
+import org.motechproject.model.Patient;
+import org.motechproject.server.event.EventListener;
+import org.motechproject.server.service.AppointmentReminderService;
+import org.motechproject.server.service.AppointmentReminderServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
- * A central registry for all event types
+ * Handles Remind Appointment Events
+ * 
+ * @author Igor
+ * 
  */
-public class EventTypeRegistry {
+@Component
+public class RemindAppointmentEventHandler implements EventListener {
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    // Central registry for scheduled event listeners
-    private static ConcurrentHashMap<String, EventType> eventTypes = new ConcurrentHashMap<String, EventType>();
+    public final static String APPOINTMENT_REMINDER = "AppointmentReminder";
+    public final static String APPOINTMENT_ID_KEY = "AppointmentID";
 
-    /**
-     * Register an event type so that it can be referenced by others
-     *
-     * @param type The event type being registered
-     */
-    public void add(EventType type) {
-        eventTypes.put(type.getKey(), type);
-    }
+    @Autowired
+    AppointmentReminderService appointmentReminderService;
 
-    /**
-     * Register an event type so that it can be referenced by others
-     *
-     * @param types The event types being registered
-     */
-    public void addAll(EventType[] types) {
-        for(int i = 0; i < types.length; i++) {
-            this.add(types[i]);
-        }
-    }
+	@Override
+	public void handle(MotechEvent event) {
 
-    /**
-     * Retrieve a concrete instance of the event type you are looking for
-     * @param key The event type that you are looking for
-     * @return A concrete instance of the event type that 
-     */
-    public EventType getEventType(String key) {
-        EventType type = null;
-        if (eventTypes.containsKey(key)) {
-            type = eventTypes.get(key);
+        String appointmentId = null;
+        try {
+            appointmentId = (String) event.getParameters().get(APPOINTMENT_ID_KEY);
+        } catch (ClassCastException e) {
+            log.error("Can not handle the Appointment Reminder. Event: " + event + ". The event is invalid " +
+                    APPOINTMENT_ID_KEY + " parameter is not a String" );
+            return;
         }
 
-        return type;
+        if (appointmentId == null) {
+             log.error("Can not handle the Appointment Reminder. Event: " + event +
+                     ". The event is invalid - missing the " +
+                    APPOINTMENT_ID_KEY + " parameter" );
+            return;
+        }
 
+        appointmentReminderService.remindPatientAppointment(appointmentId);
     }
+
+	@Override
+	public String getIdentifier() {
+		return APPOINTMENT_REMINDER;
+	}
+
 }

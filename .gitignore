@@ -13,3 +13,4 @@ out/
 Error_log/
 test-output/
 felix-cache/
+activemq-data/

@@ -35,6 +35,11 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>motech-appointment-reminder</artifactId>
+			<version>${project.version}</version>
+		</dependency>		
+		<dependency>
 			<groupId>org.openmrs.api</groupId>
 			<artifactId>openmrs-api</artifactId>
 			<version>1.8.0-SNAPSHOT</version>
@@ -187,6 +192,16 @@
 			<artifactId>standard</artifactId>
 			<version>1.1.2</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-pool</artifactId>
+			<version>5.4.2</version>
+		</dependency>	
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jms</artifactId>
+			<version>${spring.version}</version>
 		</dependency>
 	</dependencies>
 
