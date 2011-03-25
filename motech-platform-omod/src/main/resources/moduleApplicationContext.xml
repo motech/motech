@@ -34,6 +34,7 @@
 	<context:component-scan base-package="org.motechproject.openmrs.web.controller" />
 
 	<import resource="classpath:/applicationCommon.xml" />
+	<import resource="classpath:/integrationCommon.xml" />
 
 	<bean parent="serviceContext">
 		<property name="moduleService">
@@ -79,21 +80,8 @@
     </bean>
 
 	<bean id="motechEventJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
-        <property name="connectionFactory" ref="jmsFactory" />
-        <property name="defaultDestination" ref="motechEventQueue" />
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="defaultDestination" ref="eventQueue" />
     </bean>
-
-	<bean id="motechEventQueue" class="org.apache.activemq.command.ActiveMQQueue">
-		<property name="physicalName" value="queue.event" />
-	</bean>
-
-	<bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory"
-		destroy-method="stop">
-		<property name="connectionFactory">
-			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
-				<property name="brokerURL" value="tcp://localhost:61616" />
-			</bean>
-		</property>
-	</bean>
 
 </beans>
