@@ -35,6 +35,8 @@ package org.motechproject.server;
 import org.motechproject.dao.PatientDao;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.Patient;
+import org.motechproject.model.SchedulableJob;
+import org.motechproject.scheduler.MotechSchedulerGateway;
 import org.motechproject.server.event.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,10 +53,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class ScheduleAppointmentReminderHandler implements EventListener {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	
 	public final static String SCHEDULE_APPOINTMENT_REMINDER = "ScheduleAppointmentReminder";
 	public final static String SCHEDULE_APPOINTMENT_ID = "ScheduleAppointmentID";
 	public final static String SCHEDULE_PATIENT_ID = "PatientID";
-//	@Autowired
+
+	@Autowired
+	private MotechSchedulerGateway motechSchedulerGateway;
+	@Autowired
 	private PatientDao patientDao;
 
 	@Override
@@ -62,7 +68,9 @@ public class ScheduleAppointmentReminderHandler implements EventListener {
 		String patientID = (String) event.getParameters().get(SCHEDULE_PATIENT_ID);
 		String appointmentID = (String) event.getParameters().get(SCHEDULE_APPOINTMENT_ID);
 		Patient patient = patientDao.get(patientID);
-		
+		// TODO build cronExpression from Appointment information. 
+        SchedulableJob schedulableJob = new SchedulableJob(event, "0 0 12 * * ?");
+        motechSchedulerGateway.scheduleJob(schedulableJob);
 	}
 
 	@Override

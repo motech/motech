@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.dao.PatientDao;
 import org.motechproject.event.EventTypeRegistry;
+import org.motechproject.model.MotechEvent;
 import org.motechproject.model.Patient;
 import org.motechproject.server.event.EventListener;
 import org.motechproject.server.event.EventListenerRegistry;
@@ -20,18 +21,25 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations = { "/ApplicationContext.xml", "/testApplicationContext.xml" })
 public class ScheduleAppointmentReminderTest {
 	@Autowired
-	private ScheduleAppointmentReminderHandler listener;
+	private EventListener scheduleAppointmentReminderHandler;
 	@Autowired
 	private EventListenerRegistry listenerRegistry;
+	@Autowired
+	private MotechEvent event;
 //	@Autowired
 //	private PatientDao patientDao;
 	@Test
 	public void testSubscription() {
-		listenerRegistry.registerListener(listener,Arrays.asList(ScheduleAppointmentReminderEventType.getInstance()));
+		listenerRegistry.registerListener(scheduleAppointmentReminderHandler,Arrays.asList(ScheduleAppointmentReminderEventType.getInstance()));
 		listenerRegistry.getListeners(ScheduleAppointmentReminderEventType.getInstance());
 		List<EventListener> listeners = listenerRegistry.getListeners(ScheduleAppointmentReminderEventType.getInstance());
 		assertNotNull(listeners);
 		assertEquals(1, listeners.size());
+	}
+	@Test
+	public void testHandlerIntegration() {
+		scheduleAppointmentReminderHandler.handle(event);
+		
 	}
 //    @Test
 //    public void testGetAll() throws Exception {
