@@ -40,6 +40,12 @@
 		<point>org.openmrs.patientDashboardTab</point>
 		<class>org.motechproject.openmrs.web.extension.AppointmentPatientDashboardTabExt</class>
 	</extension>	
+
+	<advice>
+		<point>org.openmrs.api.PatientService</point>
+		<class>org.motechproject.openmrs.advice.PatientAdvice</class>
+	</advice>
+
 	<messages>
 		<lang>en</lang>
 		<file>messages.properties</file>

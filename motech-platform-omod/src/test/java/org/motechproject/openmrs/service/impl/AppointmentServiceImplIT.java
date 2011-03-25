@@ -32,6 +32,9 @@
  */
 package org.motechproject.openmrs.service.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Date;
 
 import org.apache.commons.lang.time.DateUtils;
@@ -45,10 +48,8 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 
-import static org.junit.Assert.*;
-
-public class AppointmentServiceImplTest extends BaseModuleContextSensitiveTest {
-    
+public class AppointmentServiceImplIT extends BaseModuleContextSensitiveTest {
+	
     @Before
     public void setUp() throws Exception {
         initializeInMemoryDatabase();
@@ -82,5 +83,6 @@ public class AppointmentServiceImplTest extends BaseModuleContextSensitiveTest {
         assertNotNull(appoinment1.getId());
         assertNotNull(appoinment2.getId());
         assertEquals(2, appointmentService.getAppointments(patient).size());
+        
     }
 }

@@ -48,6 +48,8 @@ public interface BaseDao<T extends MotechAuditableDataObject> {
     public void remove(T entity);
 
     public T get(String id);
+    
+    public boolean contains(String id);
 
     public List<T> getAll();
 
