@@ -35,8 +35,8 @@ package org.motechproject.server;
 import org.motechproject.event.EventType;
 
 /**
- * Defines an @see EventType of event that a @see
- * ScheduleAppointmentReminderHandler will be listening for.
+ * Defines an {@link EventType} of event that a {@link
+ * ScheduleAppointmentReminderHandler} will be listening for.
  * 
  * @author yyonkov
  * 

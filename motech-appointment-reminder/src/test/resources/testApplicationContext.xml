@@ -7,11 +7,21 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-	<util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
-
-	<bean id="scheduleAppointmentReminderHandler" class="org.motechproject.server.ScheduleAppointmentReminderHandler"/>
-
-	<bean id="eventListenerRegistry" class="org.motechproject.server.event.EventListenerRegistry"/>
+<!-- 	<bean id="scheduleAppointmentReminderHandler" class="org.motechproject.server.ScheduleAppointmentReminderHandler"/>
+ -->	<bean id="motechEvent" class="org.motechproject.model.MotechEvent">
+		<constructor-arg type="java.lang.String" name="jobId"
+			value="ApptRemindJobId0001">
+		</constructor-arg>
+		<constructor-arg type="java.lang.String"
+			value="scheduleappointmentremindereventtype" name="eventType">
+		</constructor-arg>
+		<constructor-arg>
+			<util:map key-type="java.lang.String" value-type="java.lang.String">
+				<entry key="patientId" value="1234"></entry>
+				<entry key="appointmentId" value="0001"></entry>
+			</util:map>
+		</constructor-arg>
+	</bean>	
 	
 <!-- 	<bean id="patientDatabase" class="org.ektorp.impl.StdCouchDbConnector">
 		<constructor-arg value="patients" />
@@ -27,4 +37,5 @@
 	<bean id="parentDao" class="org.motechproject.dao.PatientDaoImpl">
 		<constructor-arg ref="patientDatabase"></constructor-arg>
 	</bean> -->
+	
 </beans>

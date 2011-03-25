@@ -18,16 +18,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/ApplicationContext.xml", "/testApplicationContext.xml" })
+@ContextConfiguration(locations = {  "/applicationAppointmentReminder.xml", "/testApplicationContext.xml" })
 public class ScheduleAppointmentReminderTest {
-	@Autowired
-	private EventListener scheduleAppointmentReminderHandler;
 	@Autowired
 	private EventListenerRegistry listenerRegistry;
 	@Autowired
-	private MotechEvent event;
-//	@Autowired
-//	private PatientDao patientDao;
+	private EventListener scheduleAppointmentReminderHandler;
 	@Test
 	public void testSubscription() {
 		listenerRegistry.registerListener(scheduleAppointmentReminderHandler,Arrays.asList(ScheduleAppointmentReminderEventType.getInstance()));
@@ -36,25 +32,4 @@ public class ScheduleAppointmentReminderTest {
 		assertNotNull(listeners);
 		assertEquals(1, listeners.size());
 	}
-	@Test
-	public void testHandlerIntegration() {
-		scheduleAppointmentReminderHandler.handle(event);
-		
-	}
-//    @Test
-//    public void testGetAll() throws Exception {
-//
-//        String id = "1234";
-//
-//        Patient patient = new Patient();
-//        patient.setId(id);
-//        patientDao.add(patient);
-//
-//        patient = patientDao.get(id);
-//        System.out.print(patient);
-//        assertNotNull(patient);
-//        
-//        patientDao.remove(patient);
-//
-//    }
 }
