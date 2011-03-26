@@ -50,4 +50,7 @@
 <!-- 	
 -->
 	<bean id="scheduleAppointmentReminderHandler" class="org.motechproject.server.ScheduleAppointmentReminderHandler"/>
+    <bean id="appointmentReminderService" class="org.motechproject.server.service.AppointmentReminderServiceImpl">
+        <property name="timeOut" value="20"/>
+    </bean>
 </beans>
