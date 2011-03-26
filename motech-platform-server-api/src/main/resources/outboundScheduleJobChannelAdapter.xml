@@ -34,38 +34,26 @@
 
 -->
 
-<beans xmlns="http://www.springframework.org/schema/beans"
+<beans:beans xmlns="http://www.springframework.org/schema/integration"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:util="http://www.springframework.org/schema/util"
-	xmlns:context="http://www.springframework.org/schema/context"    
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:jms="http://www.springframework.org/schema/integration/jms"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 			http://www.springframework.org/schema/beans/spring-beans.xsd
-			http://www.springframework.org/schema/util
-			http://www.springframework.org/schema/util/spring-util.xsd
-			http://www.springframework.org/schema/context
-			http://www.springframework.org/schema/context/spring-context.xsd">
+			http://www.springframework.org/schema/integration
+			http://www.springframework.org/schema/integration/spring-integration.xsd
+			http://www.springframework.org/schema/integration/jms
+			http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd
+			">
 
-    <import resource="integrationCommon.xml"/>
-    <import resource="inboundEventChannelAdapter.xml"/>
-    <import resource="outboundEventChannelAdapter.xml"/>
-    
+	<gateway service-interface="org.motechproject.server.gateway.MotechSchedulerGateway"
+	 		id="outboundScheduleJobGateway"
+	 		default-request-channel="scheduleJobGatewayToEventJmsoutChannel"/>
 
-	<bean id="eventRelay" class="org.motechproject.server.event.EventRelay" />
-
-	<bean id="eventTypeRegistry" class="org.motechproject.event.EventTypeRegistry" scope="singleton" factory-method="getInstance" />
+	<channel id="scheduleJobGatewayToEventJmsoutChannel"/>
 	
-	<bean id="eventListenerRegistry" class="org.motechproject.server.event.EventListenerRegistry"  scope="singleton" factory-method="getInstance" />
 
-    <bean id="ivrServise" class="org.motechproject.server.service.ivr.astersik.IVRServiceAsteriskImpl" >
-        <!--Asterisk Server host-->
-        <constructor-arg  value="motech.2paths.com"/>
-        <!--Asterisk Server user-->
-        <constructor-arg  value="admin"/>
-        <!--Asterisk Server user password-->
-        <constructor-arg value="amp111"/>
+	<jms:outbound-channel-adapter id="schedulejmsout" channel="scheduleJobGatewayToEventJmsoutChannel" destination="schedulerQueue"/>
 
-        <!--Asterisk Gateway Interface URI - required for integration with Voiceglue-->
-        <property name="agiUrl" value="agi://localhost/url="/>
-    </bean>
-
-</beans>
+	
+</beans:beans>

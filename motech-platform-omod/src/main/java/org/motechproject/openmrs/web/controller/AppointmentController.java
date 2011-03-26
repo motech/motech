@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.motechproject.openmrs.model.Appointment;
+import org.motechproject.openmrs.model.AppointmentReminderPreferences;
+import org.motechproject.openmrs.service.AppointmentReminderPreferenceService;
 import org.motechproject.openmrs.service.AppointmentService;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;

@@ -19,11 +19,46 @@ Copyright (C) OpenMRS, LLC.  All Rights Reserved.
 	<table cellpadding="2" cellspacing="0">
 		<tr>
 			<th><spring:message code="motech.appointment.preferences.service"/></th>
-			<td><input name="" type="checkbox" checked></th>
+			<td><input name="enableReminderService" type="checkbox" checked></th>
 		</tr>
 		<tr>
 			<th><spring:message code="motech.appointment.preferences.reminderCall"/></th>
-			<td><input type="text" value="3" size="3"> <spring:message code="motech.appointment.preferences.before"/></td>
+			<td><input name="daysBefore" type="text" value="3" size="3"> <spring:message code="motech.appointment.preferences.before"/></td>
+		</tr>
+		<tr>
+			<th><spring:message code="motech.appointment.preferences.bestTime"/></th>
+			<td>
+				<select name="preferredTime">
+					<option value="">-- Select a Time --</option>
+					<option value="0">00</option>
+					<option value="1">01</option>
+					<option value="2">02</option>
+					<option value="3">03</option>
+					<option value="4">04</option>
+					<option value="5">05</option>
+					<option value="6">06</option>
+					<option value="7">07</option>
+					<option value="8">08</option>
+					<option value="9">09</option>
+					<option value="10">12</option>
+					<option value="11">11</option>
+					<option value="12">12</option>
+					<option value="13">13</option>
+					<option value="14">14</option>
+					<option value="15">15</option>
+					<option value="16">16</option>
+					<option value="17">17</option>
+					<option value="18">18</option>
+					<option value="19">19</option>
+					<option value="20">20</option>
+					<option value="21">21</option>
+					<option value="22">22</option>
+					<option value="23">23</option>
+					<option value="24">24</option>
+					<option value=""></option>
+					
+				</select>
+				<input type="text" value="3" size="3"> <spring:message code="motech.appointment.preferences.before"/></td>
 		</tr>
 	</table>
 	<input type="hidden" name="patientId" value="${model.patient.id}"/>
