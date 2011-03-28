@@ -30,57 +30,15 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.server;
-
-import java.util.Arrays;
-
-import org.motechproject.context.Context;
-import org.motechproject.event.EventTypeRegistry;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package org.motechproject.server.appointmentreminder.service;
 
 /**
- * 
- * @author yyonkov
- * 
+ * Created by IntelliJ IDEA.
+ * User: az44
+ * Date: 24/03/11
+ * Time: 4:47 PM
+ * To change this template use File | Settings | File Templates.
  */
-public class Activator implements BundleActivator {
-	private static Logger logger = LoggerFactory.getLogger(Activator.class);
-//	private ServiceTracker tracker;
-	private ScheduleAppointmentReminderHandler listener;
-
-	@Override
-	public void start(BundleContext context) throws Exception {
-//		this.tracker = new ServiceTracker(context, HttpService.class.getName(),
-//				null) {
-//
-//			@Override
-//			public Object addingService(ServiceReference reference) {
-//				Object service = super.addingService(reference);
-//				// TODO add service
-//				return service;
-//			}
-//
-//			@Override
-//			public void removedService(ServiceReference reference,
-//					Object service) {
-//				// TODO remove service
-//				super.removedService(reference, service);
-//			}
-//
-//		};
-//		this.tracker.open();
-		listener = new ScheduleAppointmentReminderHandler();
-		Context.getInstance().getEventTypeRegistry().add(ScheduleAppointmentReminderEventType.getInstance());
-		Context.getInstance().getEventListenerRegistry().registerListener(listener, Arrays.asList(ScheduleAppointmentReminderEventType.getInstance()) );
-	}
-
-	@Override
-	public void stop(BundleContext context) throws Exception {
-//		this.tracker.close();
-//		EventListenerRegistry.getInstance().unregister...
-	}
-
+public interface AppointmentReminderService {
+    void remindPatientAppointment(String appointmentId);
 }
