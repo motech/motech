@@ -49,6 +49,8 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
 
     IVRService ivrService;
     PatientDao patientDao;
+    //Interim implementation
+     String  appointmentReminderVmlUrl; // = "http://10.0.1.29:8080/TamaIVR/reminder/doc";
 
     int timeOut;
     public final static String SCHEDULE_APPOINTMENT_REMINDER = "ScheduleAppointmentReminder";
@@ -56,6 +58,7 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
     @Override
     public void remindPatientAppointment(String appointmentId) {
 
+        //TODO - handle DAO exceptions
         Appointment appointment = patientDao.getAppointment(appointmentId);
         Patient patient = patientDao.get(appointment.getPatientId());
 
@@ -63,9 +66,8 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
         String phone = patient.getPhoneNumber();
 
         //TODO - implement rules to determine reminder vxml URL
-        KnowledgeBaseManager knowledgeBaseManager = Context.getInstance().getKnowledgeBaseManager();
-        //Interim implementation
-        String  appointmentReminderVmlUrl = "http://10.0.1.29:8080/TamaIVR/reminder/doc";
+        //KnowledgeBaseManager knowledgeBaseManager = Context.getInstance().getKnowledgeBaseManager();
+
 
 
         InitiateCallData initiateCallData = new InitiateCallData(messageId, phone, timeOut, appointmentReminderVmlUrl);
@@ -85,5 +87,7 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
         this.timeOut = timeOut;
     }
 
-
+    public void setAppointmentReminderVmlUrl(String appointmentReminderVmlUrl) {
+        this.appointmentReminderVmlUrl = appointmentReminderVmlUrl;
+    }
 }

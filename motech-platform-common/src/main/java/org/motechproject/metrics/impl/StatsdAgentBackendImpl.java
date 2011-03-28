@@ -35,6 +35,7 @@ package org.motechproject.metrics.impl;
 import org.motechproject.metrics.MetricsAgentBackend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.net.*;
@@ -51,10 +52,10 @@ public class StatsdAgentBackendImpl implements MetricsAgentBackend
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private String serverHost;
-    private InetAddress serverAddr;
-	private int serverPort;
-    private boolean generateHostBasedStats = false;
+    private int serverPort;
+    private boolean generateHostBasedStats;
 
+    private InetAddress serverAddr;
     private String hostName;
 
     public StatsdAgentBackendImpl() {

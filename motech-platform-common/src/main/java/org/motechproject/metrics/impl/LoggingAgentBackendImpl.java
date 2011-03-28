@@ -110,6 +110,6 @@ public class LoggingAgentBackendImpl implements MetricsAgentBackend
     @Override
     public void logTimedEvent(String metric, long time)
     {
-        metrics.info(String.format("%smetric=%s time=%l", prefix, metric, time));
+        metrics.info(String.format("%smetric=%s time=%d", prefix, metric, time));
     }
 }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--
 
     MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
@@ -33,25 +33,28 @@
     EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -->
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:util="http://www.springframework.org/schema/util" xmlns:int="http://www.springframework.org/schema/integration"
-	xmlns:int-jms="http://www.springframework.org/schema/integration/jms"
-	xsi:schemaLocation="http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.0.xsd
-		http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms-2.0.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
-	<import resource="applicationCommon.xml" />
-	<import resource="integrationCommon.xml" />
-	<import resource="applicationAPI.xml" /> 
-	<import resource="schedulerOutboundChannelAdapter.xml" />
-<!-- 	
--->
-	<bean id="scheduleAppointmentReminderHandler" class="org.motechproject.server.appointmentreminder.ScheduleAppointmentReminderHandler"/>
-    <bean id="appointmentReminderService" class="org.motechproject.server.appointmentreminder.service.AppointmentReminderServiceImpl">
-        <property name="timeOut" value="20"/>
-        <property name="appointmentReminderVmlUrl" value="" />
-    </bean>
-</beans>
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %-5p [%c] %m%n" />
+		</layout>
+	</appender>
+
+
+	<logger name="metrics">
+		<level value="DEBUG" />
+	</logger>
+
+	<logger name="org.motechproject">
+		<level value="DEBUG" />
+	</logger>
+	
+	<root>
+		<priority value="WARN" />
+		<appender-ref ref="CONSOLE" />
+	</root>
+
+</log4j:configuration>

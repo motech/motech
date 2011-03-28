@@ -35,7 +35,6 @@ package org.motechproject.server.appointmentreminder;
 import java.util.Arrays;
 
 import org.motechproject.context.Context;
-import org.motechproject.event.EventTypeRegistry;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -56,6 +55,7 @@ public class Activator implements BundleActivator {
 	private static final String SERVLET_URL_MAPPING = "/appointmentreminder";	
 	private ServiceTracker tracker;
 	private ScheduleAppointmentReminderHandler listener;
+    private RemindAppointmentEventHandler remindAppointmentEventListener;
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -79,6 +79,10 @@ public class Activator implements BundleActivator {
 		listener = new ScheduleAppointmentReminderHandler();
 		Context.getInstance().getEventTypeRegistry().add(ScheduleAppointmentReminderEventType.getInstance());
 		Context.getInstance().getEventListenerRegistry().registerListener(listener, Arrays.asList(ScheduleAppointmentReminderEventType.getInstance()) );
+
+        remindAppointmentEventListener = new RemindAppointmentEventHandler();
+        Context.getInstance().getEventTypeRegistry().add(RemindAppointmentEventType.getInstance());
+		Context.getInstance().getEventListenerRegistry().registerListener(remindAppointmentEventListener, Arrays.asList(RemindAppointmentEventType.getInstance()));
 	}
 
 	public void stop(BundleContext context) throws Exception {
