@@ -30,60 +30,53 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.server;
+package org.motechproject.server.appointmentreminder;
 
 import org.motechproject.dao.PatientDao;
+import org.motechproject.model.Appointment;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.Patient;
+import org.motechproject.model.SchedulableJob;
+import org.motechproject.server.gateway.MotechSchedulerGateway;
 import org.motechproject.server.event.EventListener;
-import org.motechproject.server.service.AppointmentReminderService;
-import org.motechproject.server.service.AppointmentReminderServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Handles Remind Appointment Events
+ * Responsible for listening for <code>{@link ScheduleAppointmentReminderEventType}</code>
+ * events with destination
  * 
- * @author Igor
+ * @author yyonkov
  * 
  */
 @Component
-public class RemindAppointmentEventHandler implements EventListener {
+public class ScheduleAppointmentReminderHandler implements EventListener {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	public final static String SCHEDULE_APPOINTMENT_REMINDER = "ScheduleAppointmentReminder";
 
-    public final static String APPOINTMENT_REMINDER = "AppointmentReminder";
-    public final static String APPOINTMENT_ID_KEY = "AppointmentID";
-
-    @Autowired
-    AppointmentReminderService appointmentReminderService;
+	@Autowired
+	private MotechSchedulerGateway motechSchedulerGateway;
+	@Autowired
+	private PatientDao patientDao;
 
 	@Override
 	public void handle(MotechEvent event) {
-
-        String appointmentId = null;
-        try {
-            appointmentId = (String) event.getParameters().get(APPOINTMENT_ID_KEY);
-        } catch (ClassCastException e) {
-            log.error("Can not handle the Appointment Reminder. Event: " + event + ". The event is invalid " +
-                    APPOINTMENT_ID_KEY + " parameter is not a String" );
-            return;
-        }
-
-        if (appointmentId == null) {
-             log.error("Can not handle the Appointment Reminder. Event: " + event +
-                     ". The event is invalid - missing the " +
-                    APPOINTMENT_ID_KEY + " parameter" );
-            return;
-        }
-
-        appointmentReminderService.remindPatientAppointment(appointmentId);
-    }
+		String patientId = (String) event.getParameters().get(MotechEvent.SCHEDULE_PATIENT_ID_KEY_NAME);
+		String appointmentId = (String) event.getParameters().get(MotechEvent.SCHEDULE_APPOINTMENT_ID_KEY_NAME);
+		Patient patient = patientDao.get(patientId);
+		Appointment appointment = patientDao.getAppointment(appointmentId);
+		event.getParameters().put(MotechEvent.START_TIME_KEY_NAME, appointment.getWindowStartDate());
+		event.getParameters().put(MotechEvent.END_TIME_KEY_NAME, appointment.getWindowEndDate());		
+		// TODO build cronExpression from Appointment information. 
+        SchedulableJob schedulableJob = new SchedulableJob(event, String.format("0 0 %d * * ?", patient.getBestCallTime()));
+        motechSchedulerGateway.scheduleJob(schedulableJob);
+	}
 
 	@Override
 	public String getIdentifier() {
-		return APPOINTMENT_REMINDER;
+		return SCHEDULE_APPOINTMENT_REMINDER;
 	}
 
 }

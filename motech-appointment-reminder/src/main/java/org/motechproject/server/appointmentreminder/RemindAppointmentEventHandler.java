@@ -30,55 +30,60 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.server.service;
+package org.motechproject.server.appointmentreminder;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.motechproject.dao.PatientDao;
-import org.motechproject.model.Appointment;
-import org.motechproject.model.InitiateCallData;
+import org.motechproject.model.MotechEvent;
 import org.motechproject.model.Patient;
-import org.motechproject.server.service.ivr.IVRService;
+import org.motechproject.server.appointmentreminder.service.AppointmentReminderService;
+import org.motechproject.server.appointmentreminder.service.AppointmentReminderServiceImpl;
+import org.motechproject.server.event.EventListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import static org.mockito.Mockito.*;
+import org.springframework.stereotype.Component;
 
 /**
- * Appointment Reminder Service Unit tests
+ * Handles Remind Appointment Events
+ * 
+ * @author Igor
+ * 
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/applicationAppointmentReminder.xml"})
-public class AppointmentReminderServiceImplTest {
+@Component
+public class RemindAppointmentEventHandler implements EventListener {
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+    public final static String APPOINTMENT_REMINDER = "AppointmentReminder";
+    public final static String APPOINTMENT_ID_KEY = "AppointmentID";
 
     @Autowired
-    private AppointmentReminderServiceImpl appointmentReminderService;
+    AppointmentReminderService appointmentReminderService;
 
-    @Test
-    public void testRemindPatientAppointment() throws Exception {
+	@Override
+	public void handle(MotechEvent event) {
 
-        IVRService ivrServiceMock = mock(IVRService.class);
-        PatientDao patientDaoMock = mock(PatientDao.class);
+        String appointmentId = null;
+        try {
+            appointmentId = (String) event.getParameters().get(APPOINTMENT_ID_KEY);
+        } catch (ClassCastException e) {
+            log.error("Can not handle the Appointment Reminder. Event: " + event + ". The event is invalid " +
+                    APPOINTMENT_ID_KEY + " parameter is not a String" );
+            return;
+        }
 
-        Appointment appointment = new Appointment();
-        appointment.setPatientId("1p");
+        if (appointmentId == null) {
+             log.error("Can not handle the Appointment Reminder. Event: " + event +
+                     ". The event is invalid - missing the " +
+                    APPOINTMENT_ID_KEY + " parameter" );
+            return;
+        }
 
-        Patient patient = new Patient();
-        patient.setPhoneNumber("1001");
-
-        when(patientDaoMock.getAppointment(Mockito.anyString())).thenReturn(appointment);
-        when(patientDaoMock.get(appointment.getPatientId())).thenReturn(patient);
-
-        appointmentReminderService.setIvrService(ivrServiceMock);
-        appointmentReminderService.setPatientDao(patientDaoMock);
-
-        appointmentReminderService.remindPatientAppointment("1a");
-
-        verify(ivrServiceMock, times(1)).initiateCall(Mockito.any(InitiateCallData.class));
-
-
+        appointmentReminderService.remindPatientAppointment(appointmentId);
     }
+
+	@Override
+	public String getIdentifier() {
+		return APPOINTMENT_REMINDER;
+	}
+
 }

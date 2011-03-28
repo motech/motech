@@ -30,13 +30,13 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.core;
+package org.motechproject.server.gateway;
 
 import org.junit.Test;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.model.SchedulableJob;
-import org.motechproject.scheduler.MotechSchedulerGateway;
+import org.motechproject.server.gateway.MotechSchedulerGateway;
 
 import org.junit.runner.RunWith;
 

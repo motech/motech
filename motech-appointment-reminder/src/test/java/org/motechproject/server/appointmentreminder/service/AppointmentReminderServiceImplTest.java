@@ -30,60 +30,56 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.server.service;
+package org.motechproject.server.appointmentreminder.service;
 
-import org.motechproject.context.Context;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.motechproject.dao.PatientDao;
 import org.motechproject.model.Appointment;
 import org.motechproject.model.InitiateCallData;
 import org.motechproject.model.Patient;
-import org.motechproject.server.ruleengine.KnowledgeBaseManager;
+import org.motechproject.server.appointmentreminder.service.AppointmentReminderServiceImpl;
 import org.motechproject.server.service.ivr.IVRService;
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import static org.mockito.Mockito.*;
 
 /**
- *
+ * Appointment Reminder Service Unit tests
  */
-public class AppointmentReminderServiceImpl implements AppointmentReminderService {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"/applicationAppointmentReminder.xml"})
+public class AppointmentReminderServiceImplTest {
+
+    @Autowired
+    private AppointmentReminderServiceImpl appointmentReminderService;
+
+    @Test
+    public void testRemindPatientAppointment() throws Exception {
+
+        IVRService ivrServiceMock = mock(IVRService.class);
+        PatientDao patientDaoMock = mock(PatientDao.class);
+
+        Appointment appointment = new Appointment();
+        appointment.setPatientId("1p");
+
+        Patient patient = new Patient();
+        patient.setPhoneNumber("1001");
+
+        when(patientDaoMock.getAppointment(Mockito.anyString())).thenReturn(appointment);
+        when(patientDaoMock.get(appointment.getPatientId())).thenReturn(patient);
+
+        appointmentReminderService.setIvrService(ivrServiceMock);
+        appointmentReminderService.setPatientDao(patientDaoMock);
+
+        appointmentReminderService.remindPatientAppointment("1a");
+
+        verify(ivrServiceMock, times(1)).initiateCall(Mockito.any(InitiateCallData.class));
 
 
-    IVRService ivrService;
-    PatientDao patientDao;
-
-    int timeOut;
-    public final static String SCHEDULE_APPOINTMENT_REMINDER = "ScheduleAppointmentReminder";
-
-    @Override
-    public void remindPatientAppointment(String appointmentId) {
-
-        Appointment appointment = patientDao.getAppointment(appointmentId);
-        Patient patient = patientDao.get(appointment.getPatientId());
-
-        long messageId = 1;
-        String phone = patient.getPhoneNumber();
-
-        //TODO - implement rules to determine reminder vxml URL
-        KnowledgeBaseManager knowledgeBaseManager = Context.getInstance().getKnowledgeBaseManager();
-        //Interim implementation
-        String  appointmentReminderVmlUrl = "http://10.0.1.29:8080/TamaIVR/reminder/doc";
-
-
-        InitiateCallData initiateCallData = new InitiateCallData(messageId, phone, timeOut, appointmentReminderVmlUrl);
-
-        ivrService.initiateCall(initiateCallData);
     }
-
-    void setIvrService(IVRService ivrService) {
-        this.ivrService = ivrService;
-    }
-
-    void setPatientDao(PatientDao patientDao) {
-        this.patientDao = patientDao;
-    }
-
-    public void setTimeOut(int timeOut) {
-        this.timeOut = timeOut;
-    }
-
-
 }

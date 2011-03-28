@@ -30,7 +30,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.server;
+package org.motechproject.server.appointmentreminder;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +41,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.server.service.AppointmentReminderService;
+import org.motechproject.server.appointmentreminder.RemindAppointmentEventHandler;
+import org.motechproject.server.appointmentreminder.service.AppointmentReminderService;
 
 import java.util.HashMap;
 import java.util.Map;

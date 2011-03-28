@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <!--
 
     MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
@@ -33,27 +33,28 @@
     EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -->
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
 
-<beans:beans xmlns="http://www.springframework.org/schema/integration"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:beans="http://www.springframework.org/schema/beans"
-	xmlns:jms="http://www.springframework.org/schema/integration/jms"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
-			http://www.springframework.org/schema/beans/spring-beans.xsd
-			http://www.springframework.org/schema/integration
-			http://www.springframework.org/schema/integration/spring-integration.xsd
-			http://www.springframework.org/schema/integration/jms
-			http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd
-			">
+<hibernate-mapping package="org.motechproject.openmrs.model">						
+	<class name="AppointmentReminderPreferences" table="appointment_reminder_pref">
+		<id name="id" type="java.lang.Integer" column="appointment_reminder_pref_id" unsaved-value="0">
+			<generator class="native" />
+		</id>
 
-	<gateway service-interface="org.motechproject.server.gateway.OutboundScheduleJobGateway"
-	 		id="outboundScheduleJobGateway"
-	 		default-request-channel="scheduleJobGatewayToEventJmsoutChannel"/>
+		<discriminator column="appointment_reminder_pref_id" insert="false"/>
 
-	<channel id="scheduleJobGatewayToEventJmsoutChannel"/>
-	
+		<many-to-one name="patient" class="org.openmrs.Patient" not-null="true">
+			<column name="patient_id"/>
+		</many-to-one>
 
-	<jms:outbound-channel-adapter id="schedulejmsout" channel="scheduleJobGatewayToEventJmsoutChannel" destination="schedulerQueue"/>
+		<property name="daysBefore" type="java.lang.Integer" column="days_before"/>
 
-	
-</beans:beans>
+		<property name="preferredTime" type="java.lang.Integer" column="preferred_time"/>
+
+		<property name="moduleEnabled" type="java.lang.Boolean" column="module_enabled"/>
+
+		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
+	</class>
+</hibernate-mapping>

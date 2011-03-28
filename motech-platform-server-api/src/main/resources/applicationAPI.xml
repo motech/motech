@@ -52,7 +52,7 @@
 
 	<bean id="eventRelay" class="org.motechproject.server.event.EventRelay" />
 
-	<bean id="eventTypeRegistry" class="org.motechproject.event.EventTypeRegistry"/>
+	<bean id="eventTypeRegistry" class="org.motechproject.event.EventTypeRegistry" scope="singleton" factory-method="getInstance" />
 	
 	<bean id="eventListenerRegistry" class="org.motechproject.server.event.EventListenerRegistry"/>
 

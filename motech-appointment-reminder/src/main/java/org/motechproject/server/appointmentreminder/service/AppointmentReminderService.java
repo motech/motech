@@ -30,38 +30,15 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.server;
+package org.motechproject.server.appointmentreminder.service;
 
-import static org.junit.Assert.*;
-
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.motechproject.dao.PatientDao;
-import org.motechproject.event.EventTypeRegistry;
-import org.motechproject.model.MotechEvent;
-import org.motechproject.model.Patient;
-import org.motechproject.server.event.EventListener;
-import org.motechproject.server.event.EventListenerRegistry;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/testApplicationContext.xml" })
-public class ScheduleAppointmentReminderTest {
-//	@Autowired
-//	private EventListenerRegistry listenerRegistry;
-//	@Autowired
-//	private EventListener scheduleAppointmentReminderHandler;
-	@Test
-	public void testSubscription() {
-//		listenerRegistry.registerListener(scheduleAppointmentReminderHandler,Arrays.asList(ScheduleAppointmentReminderEventType.getInstance()));
-//		listenerRegistry.getListeners(ScheduleAppointmentReminderEventType.getInstance());
-//		List<EventListener> listeners = listenerRegistry.getListeners(ScheduleAppointmentReminderEventType.getInstance());
-//		assertNotNull(listeners);
-//		assertEquals(1, listeners.size());
-	}
+/**
+ * Created by IntelliJ IDEA.
+ * User: az44
+ * Date: 24/03/11
+ * Time: 4:47 PM
+ * To change this template use File | Settings | File Templates.
+ */
+public interface AppointmentReminderService {
+    void remindPatientAppointment(String appointmentId);
 }

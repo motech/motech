@@ -45,6 +45,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.motechproject.openmrs.model.Appointment;
+import org.motechproject.openmrs.model.AppointmentReminderPreferences;
+import org.motechproject.openmrs.service.AppointmentReminderPreferenceService;
 import org.motechproject.openmrs.service.AppointmentService;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
@@ -63,6 +65,8 @@ public class AppointmentController extends PortletController {
 	 */
 	protected final Log log = LogFactory.getLog(getClass());
 
+	private static final String MODEL_KEY_PREFERENCES = "preferences";
+	
 	@RequestMapping(value = "/module/motech/portlets/appointment.portlet", method = RequestMethod.GET)
 	@Override
 	public ModelAndView handleRequest(HttpServletRequest request,
@@ -82,6 +86,9 @@ public class AppointmentController extends PortletController {
 	@Override
 	public void populateModel(HttpServletRequest request,
 			Map<String, Object> model) {
+		
+		AppointmentReminderPreferenceService arpService = Context.getService(AppointmentReminderPreferenceService.class);
+		
 		Patient patient = (Patient) model.get("patient");
 
 		try {
@@ -100,6 +107,40 @@ public class AppointmentController extends PortletController {
 				Context.getService(AppointmentService.class).saveAppointment(
 						appointment);
 			}
+
+			String form = ServletRequestUtils.getStringParameter(
+					request, "form");
+			
+			if (form != null && form.equals("preferences")) {
+				// Retrieve relevant fields
+				Boolean enableReminderService = ServletRequestUtils.getBooleanParameter(
+						request, "enableReminderService");
+				
+				Integer daysBefore = ServletRequestUtils.getIntParameter(
+						request, "daysBefore");
+				Integer preferredTime = ServletRequestUtils.getIntParameter(
+						request, "preferredTime");
+				AppointmentReminderPreferences prefs = new AppointmentReminderPreferences();
+
+				prefs.setModuleEnabled(enableReminderService);
+				prefs.setPatient(patient);
+				prefs.setDaysBefore(daysBefore);
+				prefs.setPreferredTime(preferredTime);
+				
+				// Store preferences in OpenMRS DB
+				arpService.saveAppointmentAppointmentReminderPreferences(prefs);
+				// TODO: Serializes object into Motech DB
+			}
+			
+			// Retrieve existing Appointment Reminder preferences (if they exist)
+			AppointmentReminderPreferences prefs = arpService.getAppointmentReminderPreferencesByPatient(patient);
+			if(prefs == null) {
+				prefs = new AppointmentReminderPreferences(false, null, 0, 0);
+			}
+			
+			model.put(MODEL_KEY_PREFERENCES, prefs);
+			
+			
 		} catch (Exception ex) {
 			log.error(ex);
 		}

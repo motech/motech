@@ -30,7 +30,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.server;
+package org.motechproject.server.appointmentreminder;
 
 import java.util.Arrays;
 
@@ -38,8 +38,12 @@ import org.motechproject.context.Context;
 import org.motechproject.event.EventTypeRegistry;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.http.HttpService;
+import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.servlet.DispatcherServlet;
 
 /**
  * 
@@ -48,39 +52,58 @@ import org.slf4j.LoggerFactory;
  */
 public class Activator implements BundleActivator {
 	private static Logger logger = LoggerFactory.getLogger(Activator.class);
-//	private ServiceTracker tracker;
+	private static final String CONTEXT_CONFIG_LOCATION = "applicationAppointmentReminder.xml";
+	private static final String SERVLET_URL_MAPPING = "/appointmentreminder";	
+	private ServiceTracker tracker;
 	private ScheduleAppointmentReminderHandler listener;
 
 	@Override
 	public void start(BundleContext context) throws Exception {
-//		this.tracker = new ServiceTracker(context, HttpService.class.getName(),
-//				null) {
-//
-//			@Override
-//			public Object addingService(ServiceReference reference) {
-//				Object service = super.addingService(reference);
-//				// TODO add service
-//				return service;
-//			}
-//
-//			@Override
-//			public void removedService(ServiceReference reference,
-//					Object service) {
-//				// TODO remove service
-//				super.removedService(reference, service);
-//			}
-//
-//		};
-//		this.tracker.open();
+		this.tracker = new ServiceTracker(context,
+				HttpService.class.getName(), null) {
+			
+			@Override
+			public Object addingService(ServiceReference ref) {
+				Object service = super.addingService(ref);
+				serviceAdded((HttpService) service);
+				return service;
+			}
+
+			@Override
+			public void removedService(ServiceReference ref, Object service) {
+				serviceRemoved((HttpService) service);
+				super.removedService(ref, service);
+			}
+		};
+		this.tracker.open();
 		listener = new ScheduleAppointmentReminderHandler();
 		Context.getInstance().getEventTypeRegistry().add(ScheduleAppointmentReminderEventType.getInstance());
 		Context.getInstance().getEventListenerRegistry().registerListener(listener, Arrays.asList(ScheduleAppointmentReminderEventType.getInstance()) );
 	}
 
-	@Override
 	public void stop(BundleContext context) throws Exception {
-//		this.tracker.close();
-//		EventListenerRegistry.getInstance().unregister...
+		this.tracker.close();
 	}
 
+	private void serviceAdded(HttpService service) {
+		try {
+			DispatcherServlet dispatcherServlet = new DispatcherServlet();
+			dispatcherServlet.setContextConfigLocation(CONTEXT_CONFIG_LOCATION);
+			ClassLoader old = Thread.currentThread().getContextClassLoader();
+			try {
+				Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+				service.registerServlet(SERVLET_URL_MAPPING, dispatcherServlet, null, null);
+				logger.debug("Servlet registered");
+			} finally {
+				Thread.currentThread().setContextClassLoader(old);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void serviceRemoved(HttpService service) {
+		service.unregister(SERVLET_URL_MAPPING);
+		logger.debug("Servlet unregistered");
+	}
 }
