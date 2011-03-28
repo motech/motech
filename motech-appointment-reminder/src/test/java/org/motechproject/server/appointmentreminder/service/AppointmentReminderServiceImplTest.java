@@ -52,7 +52,7 @@ import static org.mockito.Mockito.*;
  * Appointment Reminder Service Unit tests
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/applicationAppointmentReminder.xml"})
+@ContextConfiguration(locations={"/testApplicationContext.xml"})
 public class AppointmentReminderServiceImplTest {
 
     @Autowired

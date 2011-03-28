@@ -56,6 +56,7 @@ public class Patient extends MotechAuditableDataObject {
 
     private String preferredLanguage;
     private int bestCallTime;
+    private int reminderLeadupDays;
     private String dailyCallScheduledJobId;
     private boolean sendAppointmentReminder;
 
@@ -146,6 +147,14 @@ public class Patient extends MotechAuditableDataObject {
     public void setAppointments(Set<Appointment> appointments) {
         this.appointments = appointments  == null ? Collections.<Appointment>emptySet(): appointments;
     }
+    
+    public int getReminderLeadupDays() {
+    	return this.reminderLeadupDays;
+    }
+    
+    public void setReminderLeadupDays(int reminderLeadupDays) {
+    	this.reminderLeadupDays = reminderLeadupDays;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -165,7 +174,7 @@ public class Patient extends MotechAuditableDataObject {
         if (preferredLanguage != null ? !preferredLanguage.equals(patient.preferredLanguage) : patient.preferredLanguage != null)
             return false;
         if (status != null ? !status.equals(patient.status) : patient.status != null) return false;
-
+        if (reminderLeadupDays != patient.reminderLeadupDays) return false;
         return true;
     }
 

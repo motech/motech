@@ -46,7 +46,7 @@
 
 	<activator>org.motechproject.openmrs.MotechModuleActivator</activator>
 	<mappingFiles>
-		Appointment.hbm.xml, AppointmentReminderPreferences.hbm.xml
+		Appointment.hbm.xml AppointmentReminderPreferences.hbm.xml
 	</mappingFiles>
 	<extension>
 		<point>org.openmrs.patientDashboardTab</point>
