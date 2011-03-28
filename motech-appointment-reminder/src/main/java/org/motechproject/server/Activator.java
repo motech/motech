@@ -50,6 +50,7 @@ public class Activator implements BundleActivator {
 	private static Logger logger = LoggerFactory.getLogger(Activator.class);
 //	private ServiceTracker tracker;
 	private ScheduleAppointmentReminderHandler listener;
+    private RemindAppointmentEventHandler remindAppointmentEventListener;
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -75,6 +76,10 @@ public class Activator implements BundleActivator {
 		listener = new ScheduleAppointmentReminderHandler();
 		Context.getInstance().getEventTypeRegistry().add(ScheduleAppointmentReminderEventType.getInstance());
 		Context.getInstance().getEventListenerRegistry().registerListener(listener, Arrays.asList(ScheduleAppointmentReminderEventType.getInstance()) );
+
+        remindAppointmentEventListener = new RemindAppointmentEventHandler();
+        Context.getInstance().getEventTypeRegistry().add(RemindAppointmentEventType.getInstance());
+		Context.getInstance().getEventListenerRegistry().registerListener(remindAppointmentEventListener, Arrays.asList(RemindAppointmentEventType.getInstance()));
 	}
 
 	@Override
