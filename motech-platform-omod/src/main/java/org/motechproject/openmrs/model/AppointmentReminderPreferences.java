@@ -15,6 +15,20 @@ public class AppointmentReminderPreferences extends BaseOpenmrsObject implements
     private Integer daysBefore = null;
     private Integer preferredTime = null;
     
+    public AppointmentReminderPreferences() {
+		super();
+	}
+    
+    public AppointmentReminderPreferences(Boolean moduleEnabled, Patient patient, Integer daysBefore, Integer preferredTime) {
+		super();
+
+		this.moduleEnabled = moduleEnabled;
+		this.patient = patient;
+		this.daysBefore = daysBefore;
+		this.preferredTime = preferredTime;
+		
+	}
+    
 	@Override
 	public Integer getId() {
 		return id;
@@ -79,7 +93,7 @@ public class AppointmentReminderPreferences extends BaseOpenmrsObject implements
      * Determine if the patient wishes to make use of this module or not
      * @return TRUE = enabled/FALSE = disabled
      */
-    public Boolean isModuleEnabled() {
+    public Boolean getModuleEnabled() {
     	return moduleEnabled;
     }
     

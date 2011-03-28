@@ -54,7 +54,7 @@
 
 	<bean id="eventTypeRegistry" class="org.motechproject.event.EventTypeRegistry" scope="singleton" factory-method="getInstance" />
 	
-	<bean id="eventListenerRegistry" class="org.motechproject.server.event.EventListenerRegistry"  scope="singleton" factory-method="getInstance" />
+	<bean id="eventListenerRegistry" class="org.motechproject.server.event.EventListenerRegistry"/>
 
     <bean id="ivrServise" class="org.motechproject.server.service.ivr.astersik.IVRServiceAsteriskImpl" >
         <!--Asterisk Server host-->

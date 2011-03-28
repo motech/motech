@@ -33,7 +33,6 @@
     EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -->
-
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:util="http://www.springframework.org/schema/util"
@@ -44,11 +43,10 @@
            http://www.springframework.org/schema/util
            http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
-	<!-- 
-	From applicationContext-service.xml in openmrs-api.jar 
-	Needed to override and add hibernate mappings to classpath since omod is not packaged yet 
-	-->
-	<bean id="sessionFactory" class="org.openmrs.api.db.hibernate.HibernateSessionFactoryBean">
+	<!-- From applicationContext-service.xml in openmrs-api.jar Needed to override 
+		and add hibernate mappings to classpath since omod is not packaged yet -->
+	<bean id="sessionFactory"
+		class="org.openmrs.api.db.hibernate.HibernateSessionFactoryBean">
 		<property name="configLocations">
 			<list>
 				<value>classpath:hibernate.cfg.xml</value>
@@ -58,7 +56,17 @@
 		<property name="mappingJarLocations">
 			<ref bean="mappingJarResources" />
 		</property>
-		<!--  default properties must be set in the hibernate.default.properties -->
+		<!-- default properties must be set in the hibernate.default.properties -->
 	</bean>
 
+	<bean id="clientConnector"
+		class="org.springframework.jmx.support.MBeanServerConnectionFactoryBean">
+		<property name="serviceUrl" value="service:jmx:rmi:///jndi/rmi://localhost:1099/jmxrmi" />
+	</bean>
+
+	<bean id="proxy" class="org.springframework.jmx.access.MBeanProxyFactoryBean">
+		<property name="objectName" value="org.apache.activemq:BrokerName=localhost,Type=Queue,Destination=queue.event" />
+		<property name="proxyInterface" value="org.apache.activemq.broker.jmx.QueueViewMBean" />
+		<property name="server" ref="clientConnector" />
+	</bean>
 </beans>

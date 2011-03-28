@@ -1,15 +1,36 @@
 <%--
-The contents of this file are subject to the OpenMRS Public License
-Version 1.0 (the "License"); you may not use this file except in
-compliance with the License. You may obtain a copy of the License at
-http://license.openmrs.org
 
-Software distributed under the License is distributed on an "AS IS"
-basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-License for the specific language governing rights and limitations
-under the License.
+    MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
 
-Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+    Copyright (c) 2010-11 The Trustees of Columbia University in the City of
+    New York and Grameen Foundation USA.  All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+
+    1. Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+
+    2. Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the documentation
+    and/or other materials provided with the distribution.
+
+    3. Neither the name of Grameen Foundation USA, Columbia University, or
+    their respective contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY GRAMEEN FOUNDATION USA, COLUMBIA UNIVERSITY
+    AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING,
+    BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+    FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL GRAMEEN FOUNDATION
+    USA, COLUMBIA UNIVERSITY OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+    INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+    LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+    OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+    LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+    NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 --%>
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
@@ -23,44 +44,16 @@ Copyright (C) OpenMRS, LLC.  All Rights Reserved.
 		</tr>
 		<tr>
 			<th><spring:message code="motech.appointment.preferences.reminderCall"/></th>
-			<td><input name="daysBefore" type="text" value="3" size="3"> <spring:message code="motech.appointment.preferences.before"/></td>
+			<td><input name="daysBefore" type="text" value="${model.preferences.daysBefore}" size="2"> <spring:message code="motech.appointment.preferences.before"/></td>
 		</tr>
 		<tr>
 			<th><spring:message code="motech.appointment.preferences.bestTime"/></th>
 			<td>
-				<select name="preferredTime">
-					<option value="">-- Select a Time --</option>
-					<option value="0">00</option>
-					<option value="1">01</option>
-					<option value="2">02</option>
-					<option value="3">03</option>
-					<option value="4">04</option>
-					<option value="5">05</option>
-					<option value="6">06</option>
-					<option value="7">07</option>
-					<option value="8">08</option>
-					<option value="9">09</option>
-					<option value="10">12</option>
-					<option value="11">11</option>
-					<option value="12">12</option>
-					<option value="13">13</option>
-					<option value="14">14</option>
-					<option value="15">15</option>
-					<option value="16">16</option>
-					<option value="17">17</option>
-					<option value="18">18</option>
-					<option value="19">19</option>
-					<option value="20">20</option>
-					<option value="21">21</option>
-					<option value="22">22</option>
-					<option value="23">23</option>
-					<option value="24">24</option>
-					<option value=""></option>
-					
-				</select>
-				<input type="text" value="3" size="3"> <spring:message code="motech.appointment.preferences.before"/></td>
+				<input type="text" value="3" size="3"> <spring:message code="motech.appointment.preferences.before"/>
+			</td>
 		</tr>
 	</table>
+	<input type="hidden" name="form" value="preferences"/>
 	<input type="hidden" name="patientId" value="${model.patient.id}"/>
 	<input type="submit" value="submit"/>
 </form>

@@ -37,7 +37,7 @@
 
 <sqldiff version="1.0">
 	<help></help>
-	
+
 	<diff>
 		<version>0.1</version>
 		<author>Ricky Wang</author>
@@ -45,19 +45,54 @@
 		<description>
 			Create tables for the Appointment Motech module.
 		</description>
-		<sql>			
+		<sql>
 			CREATE TABLE IF NOT EXISTS appointment
 			(
-			   appointment_id       INT NOT NULL AUTO_INCREMENT,
-			   patient_id           INT NOT NULL,
-			   patient_arrived      BOOLEAN,
-			   arrival_date         DATETIME,
-			   window_start_date    DATETIME,
-			   window_end_date      DATETIME,
-			   uuid                 VARCHAR(38),
-			   PRIMARY KEY (appointment_id)
+			appointment_id INT NOT NULL AUTO_INCREMENT,
+			patient_id INT NOT NULL,
+			patient_arrived BOOLEAN,
+			arrival_date DATETIME,
+			window_start_date DATETIME,
+			window_end_date DATETIME,
+			uuid VARCHAR(38),
+			PRIMARY KEY (appointment_id)
 			) ENGINE = InnoDB;	
 		</sql>
 	</diff>
 	
+	<diff>
+		<version>0.2</version>
+		<author>Ricky Wang</author>
+		<date>Mar 24, 2011</date>
+		<description>
+			Adding person attribute
+		</description>
+		<sql>
+			INSERT INTO person_attribute_type
+			(name,description,format,creator,date_created,uuid) VALUES
+			('Phone Number','A person\'s phone number.','java.lang.String',1,NOW(),UUID());
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>0.1</version>
+		<author>Omar Khan</author>
+		<date>Mar 24, 2011</date>
+		<description>
+			Appointment Reminder Preferences
+		</description>
+		<sql>
+			CREATE TABLE IF NOT EXISTS appointment_reminder_pref
+			(
+			appointment_reminder_pref_id INT NOT NULL AUTO_INCREMENT,
+			module_enabled BOOLEAN,
+			patient_id INT NOT NULL,
+			days_before INT,
+			preferred_time INT,
+			uuid VARCHAR(38),
+			PRIMARY KEY (appointment_reminder_pref_id)
+			) ENGINE = InnoDB;	
+		</sql>
+	</diff>
+
 </sqldiff>

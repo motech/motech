@@ -34,6 +34,7 @@ package org.motechproject.model;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -51,6 +52,10 @@ public final class MotechEvent implements Serializable{
     private static final long serialVersionUID = 2L;
 
     public static final String EVENT_TYPE_KEY_NAME = "eventType";
+	public static final String START_TIME_KEY_NAME = "startTime";
+	public static final String END_TIME_KEY_NAME = "endTime";
+	public static final String SCHEDULE_PATIENT_ID_KEY_NAME = "patientId";
+	public static final String SCHEDULE_APPOINTMENT_ID_KEY_NAME = "appointmentId";
 
     private String jobId;
     private String eventType;
@@ -89,9 +94,9 @@ public final class MotechEvent implements Serializable{
 
     public Map<String, Object> getParameters() {
         if (parameters == null ) {
-            return Collections.emptyMap();
+            return new HashMap<String, Object>();
         }
-        return Collections.unmodifiableMap(parameters);
+        return parameters;
     }
 
     @Override

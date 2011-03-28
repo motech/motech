@@ -32,36 +32,81 @@
  */
 package org.motechproject.openmrs.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
+import org.motechproject.dao.PatientDao;
+import org.motechproject.model.MotechEvent;
 import org.motechproject.openmrs.dao.AppointmentDAO;
+import org.motechproject.openmrs.messaging.MotechEventSender;
 import org.motechproject.openmrs.model.Appointment;
 import org.motechproject.openmrs.service.AppointmentService;
+import org.motechproject.server.ScheduleAppointmentReminderEventType;
 import org.openmrs.Patient;
 import org.openmrs.api.impl.BaseOpenmrsService;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class AppointmentServiceImpl extends BaseOpenmrsService implements AppointmentService {
+public class AppointmentServiceImpl extends BaseOpenmrsService implements
+		AppointmentService {
 
-    private AppointmentDAO dao;
+	private AppointmentDAO appointmentDao;
 
-    @Override
-    public Appointment getAppointment(Integer id) {
-        return dao.getAppointment(id);
-    }
+	@Autowired(required=false)
+	private PatientDao motechPatientDao;
+	
+	@Autowired(required=false)
+	private MotechEventSender motechEventSender;
 
-    @Override
-    public List<Appointment> getAppointments(Patient patient) {
-        return dao.getAppointments(patient);
-    }
+	@Override
+	public Appointment getAppointment(Integer id) {
+		return appointmentDao.getAppointment(id);
+	}
 
-    @Override
-    public Appointment saveAppointment(Appointment appointment) {
-        return dao.saveAppointment(appointment);
-    }
+	@Override
+	public List<Appointment> getAppointments(Patient patient) {
+		return appointmentDao.getAppointments(patient);
+	}
 
-    @Override
-    public void setAppointmentDAO(AppointmentDAO dao) {
-        this.dao = dao;
-    }
+	@Override
+	public Appointment saveAppointment(Appointment appointment) {
+		appointment = appointmentDao.saveAppointment(appointment);
+		
+		// save the appointment into motech's data store
+		if (motechPatientDao != null) {
+			org.motechproject.model.Appointment mAppointment = new org.motechproject.model.Appointment();
+			try {
+				
+				//BeanUtils.copyProperties(mAppointment, appointment);
+
+				mAppointment.setId(appointment.getUuid());
+				mAppointment.setArrivalDate(appointment.getArrivalDate());
+				mAppointment.setPatientArrived(appointment.getPatientArrived());
+				mAppointment.setWindowStartDate(appointment.getWindowStartDate());
+				mAppointment.setWindowEndDate(appointment.getWindowEndDate());
+				mAppointment.setPatientId(appointment.getPatient().getUuid());
+				
+				motechPatientDao.addAppointment(mAppointment);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
+		// send motech event to the queue
+		if (motechEventSender != null) {
+			Map<String, Object> parameters = new HashMap<String, Object>();
+			parameters.put(MotechEvent.SCHEDULE_PATIENT_ID_KEY_NAME, appointment.getPatient().getUuid());
+			parameters.put(MotechEvent.SCHEDULE_APPOINTMENT_ID_KEY_NAME, appointment.getUuid());			
+			MotechEvent motechEvent = new MotechEvent(UUID.randomUUID().toString(), ScheduleAppointmentReminderEventType.getInstance().getKey(), parameters);
+			motechEventSender.send(motechEvent);
+		}
+		return appointment;
+	}
+
+	@Override
+	public void setAppointmentDAO(AppointmentDAO dao) {
+		this.appointmentDao = dao;
+	}
 
 }
