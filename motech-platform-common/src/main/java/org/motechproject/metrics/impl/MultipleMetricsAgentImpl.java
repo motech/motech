@@ -34,14 +34,17 @@ package org.motechproject.metrics.impl;
 
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.metrics.MetricsAgentBackend;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MultipleMetricsAgentImpl implements MetricsAgent
 {
-    ArrayList<MetricsAgentBackend> metricsAgents;
+    List<MetricsAgentBackend> metricsAgents;
+
     Map<String, Long> timers;
 
     public MultipleMetricsAgentImpl() {
@@ -120,7 +123,7 @@ public class MultipleMetricsAgentImpl implements MetricsAgent
         metricsAgents.add(agent);
     }
 
-    public ArrayList<MetricsAgentBackend> getMetricsAgents()
+    public List<MetricsAgentBackend> getMetricsAgents()
     {
         if (metricsAgents == null) {
             return new ArrayList<MetricsAgentBackend>();
@@ -129,7 +132,7 @@ public class MultipleMetricsAgentImpl implements MetricsAgent
         return metricsAgents;
     }
 
-    public void setMetricsAgents(ArrayList<MetricsAgentBackend> agents) {
+    public void setMetricsAgents(List<MetricsAgentBackend> agents) {
         metricsAgents = agents;
     }
 }
