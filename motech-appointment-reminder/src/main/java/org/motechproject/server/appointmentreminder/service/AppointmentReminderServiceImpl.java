@@ -30,7 +30,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.server.service;
+package org.motechproject.server.appointmentreminder.service;
 
 import org.motechproject.context.Context;
 import org.motechproject.dao.PatientDao;

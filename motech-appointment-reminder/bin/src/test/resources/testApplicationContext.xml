@@ -34,24 +34,42 @@
 
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:util="http://www.springframework.org/schema/util" xmlns:int="http://www.springframework.org/schema/integration"
-	xmlns:int-jms="http://www.springframework.org/schema/integration/jms"
-	xsi:schemaLocation="http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.0.xsd
-		http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms-2.0.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-	<import resource="applicationCommon.xml" />
-	<import resource="integrationCommon.xml" />
-	<import resource="applicationAPI.xml" /> 
-	<import resource="schedulerOutboundChannelAdapter.xml" />
-<!-- 	
--->
-	<bean id="scheduleAppointmentReminderHandler" class="org.motechproject.server.appointmentreminder.ScheduleAppointmentReminderHandler"/>
-    <bean id="appointmentReminderService" class="org.motechproject.server.appointmentreminder.service.AppointmentReminderServiceImpl">
-        <property name="timeOut" value="20"/>
-        <property name="appointmentReminderVmlUrl" value="" />
-    </bean>
+<!-- 	<bean id="scheduleAppointmentReminderHandler" class="org.motechproject.server.ScheduleAppointmentReminderHandler"/>
+ -->	<bean id="motechEvent" class="org.motechproject.model.MotechEvent">
+		<constructor-arg type="java.lang.String" name="jobId"
+			value="ApptRemindJobId0001">
+		</constructor-arg>
+		<constructor-arg type="java.lang.String"
+			value="scheduleappointmentremindereventtype" name="eventType">
+		</constructor-arg>
+		<constructor-arg>
+			<util:map key-type="java.lang.String" value-type="java.lang.String">
+				<entry key="patientId" value="1234"></entry>
+				<entry key="appointmentId" value="0001"></entry>
+			</util:map>
+		</constructor-arg>
+	</bean>	
+	
+<!-- 	<bean id="patientDatabase" class="org.ektorp.impl.StdCouchDbConnector">
+		<constructor-arg value="patients" />
+		<constructor-arg>
+			<bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
+				<constructor-arg>
+					<bean class="org.ektorp.spring.HttpClientFactoryBean" />
+				</constructor-arg>
+			</bean>
+		</constructor-arg>
+	</bean>
+	    	
+	<bean id="parentDao" class="org.motechproject.dao.PatientDaoImpl">
+		<constructor-arg ref="patientDatabase"></constructor-arg>
+	</bean> -->
+	
 </beans>

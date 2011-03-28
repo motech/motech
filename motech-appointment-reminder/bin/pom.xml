@@ -79,10 +79,10 @@
                 <configuration>
                     <instructions>
                         <Bundle-Activator>
-                            org.motechproject.server.appointmentreminder.Activator
+                            org.motechproject.appointmentreminder.server.Activator
                         </Bundle-Activator>
                         <Private-Package>
-                            org.motechproject.server.appointmentreminder.*
+                            org.motechproject.appointmentreminder.server.*
                         </Private-Package>
                         <Import-Package>
                             *;resolution:=optional

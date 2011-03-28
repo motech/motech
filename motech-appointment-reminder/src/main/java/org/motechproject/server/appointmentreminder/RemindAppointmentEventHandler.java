@@ -30,14 +30,14 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.server;
+package org.motechproject.server.appointmentreminder;
 
 import org.motechproject.dao.PatientDao;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.Patient;
+import org.motechproject.server.appointmentreminder.service.AppointmentReminderService;
+import org.motechproject.server.appointmentreminder.service.AppointmentReminderServiceImpl;
 import org.motechproject.server.event.EventListener;
-import org.motechproject.server.service.AppointmentReminderService;
-import org.motechproject.server.service.AppointmentReminderServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

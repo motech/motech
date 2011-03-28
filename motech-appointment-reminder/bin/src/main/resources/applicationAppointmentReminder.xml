@@ -49,9 +49,8 @@
 	<import resource="schedulerOutboundChannelAdapter.xml" />
 <!-- 	
 -->
-	<bean id="scheduleAppointmentReminderHandler" class="org.motechproject.server.appointmentreminder.ScheduleAppointmentReminderHandler"/>
-    <bean id="appointmentReminderService" class="org.motechproject.server.appointmentreminder.service.AppointmentReminderServiceImpl">
+	<bean id="scheduleAppointmentReminderHandler" class="org.motechproject.server.ScheduleAppointmentReminderHandler"/>
+    <bean id="appointmentReminderService" class="org.motechproject.server.service.AppointmentReminderServiceImpl">
         <property name="timeOut" value="20"/>
-        <property name="appointmentReminderVmlUrl" value="" />
     </bean>
 </beans>

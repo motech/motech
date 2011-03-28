@@ -30,22 +30,15 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.server.gateway;
+package org.motechproject.server.appointmentreminder.service;
 
-import org.motechproject.model.RunOnceSchedulableJob;
-import org.motechproject.model.SchedulableJob;
-
-public interface OutboundScheduleJobGateway {
-	
-	/**
-	 * Schedule a recurring job
-	 * @param job Job details object
-	 */
-	public void scheduleRecurringJob(SchedulableJob job);
-	
-	/**
-	 * Schedule a non-recurring job
-	 * @param job Job details object
-	 */
-	public void scheduleOneTimeJob(RunOnceSchedulableJob job);
+/**
+ * Created by IntelliJ IDEA.
+ * User: az44
+ * Date: 24/03/11
+ * Time: 4:47 PM
+ * To change this template use File | Settings | File Templates.
+ */
+public interface AppointmentReminderService {
+    void remindPatientAppointment(String appointmentId);
 }

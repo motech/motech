@@ -30,53 +30,49 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.server;
+package org.motechproject.server.gateway;
 
-import org.motechproject.dao.PatientDao;
-import org.motechproject.model.Appointment;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.model.Patient;
+import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.model.SchedulableJob;
-import org.motechproject.scheduler.MotechSchedulerGateway;
-import org.motechproject.server.event.EventListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
- * Responsible for listening for <code>{@link ScheduleAppointmentReminderEventType}</code>
- * events with destination
- * 
- * @author yyonkov
- * 
+ * Motech Scheduler Gateway provides access to Motech Scheduler. A proxy for that interface will be generated at run-time.
+ *
+ * This interface should be injected into any class that needs access to Motech Scheduler for scheduling, unscheduling and
+ * rescheduling jobs/tasks.
+ *
+ * The interface is configured in the schedulerOutboundChannelAdapter.xml (motech-platform-core)
+ *
+ * For example of use see SchedulerGatewayIT (motech-platform-core)
+ *
+ * @author Igor (iopushnyev@2paths.com)
+ * Date: 23/02/11
+ *
  */
-@Component
-public class ScheduleAppointmentReminderHandler implements EventListener {
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
-	public final static String SCHEDULE_APPOINTMENT_REMINDER = "ScheduleAppointmentReminder";
+public interface MotechSchedulerGateway {
 
-	@Autowired
-	private MotechSchedulerGateway motechSchedulerGateway;
-	@Autowired
-	private PatientDao patientDao;
+    /**
+     * Sends a message with the given SchedulableJob payload. The message directed to the channel specified in the
+     * a Spring Integration configuration file.
+     *
+     * @param schedulableJob
+     */
+    public void scheduleJob(SchedulableJob schedulableJob);
 
-	@Override
-	public void handle(MotechEvent event) {
-		String patientId = (String) event.getParameters().get(MotechEvent.SCHEDULE_PATIENT_ID_KEY_NAME);
-		String appointmentId = (String) event.getParameters().get(MotechEvent.SCHEDULE_APPOINTMENT_ID_KEY_NAME);
-		Patient patient = patientDao.get(patientId);
-		Appointment appointment = patientDao.getAppointment(appointmentId);
-		event.getParameters().put(MotechEvent.START_TIME_KEY_NAME, appointment.getWindowStartDate());
-		event.getParameters().put(MotechEvent.END_TIME_KEY_NAME, appointment.getWindowEndDate());		
-		// TODO build cronExpression from Appointment information. 
-        SchedulableJob schedulableJob = new SchedulableJob(event, String.format("0 0 %d * * ?", patient.getBestCallTime()));
-        motechSchedulerGateway.scheduleJob(schedulableJob);
-	}
+    /**
+     * Sends a message with the given RunOnceSchedulableJob payload. The message directed to the channel specified in the
+     * a Spring Integration configuration file.
+     *
+     * @param schedulableJob
+     */
+    public void scheduleRunOnceJob(RunOnceSchedulableJob schedulableJob);
 
-	@Override
-	public String getIdentifier() {
-		return SCHEDULE_APPOINTMENT_REMINDER;
-	}
-
+    /**
+     * Sends a message with the given jobID (String) payload. The message directed to the channel specified in the
+     * a Spring Integration configuration file.
+     *
+     * @param jobId
+     */
+    public void unscheduleJob(String jobId);
 }

@@ -40,13 +40,20 @@
 	<table cellpadding="2" cellspacing="0">
 		<tr>
 			<th><spring:message code="motech.appointment.preferences.service"/></th>
-			<td><input name="" type="checkbox" checked></th>
+			<td><input name="enableReminderService" type="checkbox" checked></th>
 		</tr>
 		<tr>
 			<th><spring:message code="motech.appointment.preferences.reminderCall"/></th>
-			<td><input type="text" value="3" size="3"> <spring:message code="motech.appointment.preferences.before"/></td>
+			<td><input name="daysBefore" type="text" value="${model.preferences.daysBefore}" size="2"> <spring:message code="motech.appointment.preferences.before"/></td>
+		</tr>
+		<tr>
+			<th><spring:message code="motech.appointment.preferences.bestTime"/></th>
+			<td>
+				<input type="text" value="3" size="3"> <spring:message code="motech.appointment.preferences.before"/>
+			</td>
 		</tr>
 	</table>
+	<input type="hidden" name="form" value="preferences"/>
 	<input type="hidden" name="patientId" value="${model.patient.id}"/>
 	<input type="submit" value="submit"/>
 </form>

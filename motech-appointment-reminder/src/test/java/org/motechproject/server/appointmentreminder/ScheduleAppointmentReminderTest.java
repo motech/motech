@@ -30,49 +30,38 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.scheduler;
+package org.motechproject.server.appointmentreminder;
 
+import static org.junit.Assert.*;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.motechproject.dao.PatientDao;
+import org.motechproject.event.EventTypeRegistry;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.model.RunOnceSchedulableJob;
-import org.motechproject.model.SchedulableJob;
+import org.motechproject.model.Patient;
+import org.motechproject.server.event.EventListener;
+import org.motechproject.server.event.EventListenerRegistry;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-/**
- * Motech Scheduler Gateway provides access to Motech Scheduler. A proxy for that interface will be generated at run-time.
- *
- * This interface should be injected into any class that needs access to Motech Scheduler for scheduling, unscheduling and
- * rescheduling jobs/tasks.
- *
- * The interface is configured in the schedulerOutboundChannelAdapter.xml (motech-platform-core)
- *
- * For example of use see SchedulerGatewayIT (motech-platform-core)
- *
- * @author Igor (iopushnyev@2paths.com)
- * Date: 23/02/11
- *
- */
-public interface MotechSchedulerGateway {
-
-    /**
-     * Sends a message with the given SchedulableJob payload. The message directed to the channel specified in the
-     * a Spring Integration configuration file.
-     *
-     * @param schedulableJob
-     */
-    public void scheduleJob(SchedulableJob schedulableJob);
-
-    /**
-     * Sends a message with the given RunOnceSchedulableJob payload. The message directed to the channel specified in the
-     * a Spring Integration configuration file.
-     *
-     * @param schedulableJob
-     */
-    public void scheduleRunOnceJob(RunOnceSchedulableJob schedulableJob);
-
-    /**
-     * Sends a message with the given jobID (String) payload. The message directed to the channel specified in the
-     * a Spring Integration configuration file.
-     *
-     * @param jobId
-     */
-    public void unscheduleJob(String jobId);
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "/testApplicationContext.xml" })
+public class ScheduleAppointmentReminderTest {
+//	@Autowired
+//	private EventListenerRegistry listenerRegistry;
+//	@Autowired
+//	private EventListener scheduleAppointmentReminderHandler;
+	@Test
+	public void testSubscription() {
+//		listenerRegistry.registerListener(scheduleAppointmentReminderHandler,Arrays.asList(ScheduleAppointmentReminderEventType.getInstance()));
+//		listenerRegistry.getListeners(ScheduleAppointmentReminderEventType.getInstance());
+//		List<EventListener> listeners = listenerRegistry.getListeners(ScheduleAppointmentReminderEventType.getInstance());
+//		assertNotNull(listeners);
+//		assertEquals(1, listeners.size());
+	}
 }

@@ -18,6 +18,14 @@
 		</repository>
 	</repositories>
 
+	<pluginRepositories>
+		<pluginRepository>
+			<id>openmrs-repo</id>
+			<name>OpenMRS Nexus Repository</name>
+			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
+		</pluginRepository>
+	</pluginRepositories>
+
 	<properties>
 		<spring.version>3.0.2.RELEASE</spring.version>
 	</properties>
@@ -34,11 +42,6 @@
 			<artifactId>motech-platform-common</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>motech-appointment-reminder</artifactId>
-			<version>${project.version}</version>
-		</dependency>		
 		<dependency>
 			<groupId>org.openmrs.api</groupId>
 			<artifactId>openmrs-api</artifactId>
@@ -197,20 +200,26 @@
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-pool</artifactId>
 			<version>5.4.2</version>
-		</dependency>	
+		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jms</artifactId>
 			<version>${spring.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>aopalliance</artifactId>
+					<groupId>aopalliance</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.motech.openmrs.plugin</groupId>
+				<groupId>org.openmrs.maven.plugins</groupId>
 				<artifactId>maven-openmrs-plugin</artifactId>
-				<version>1.0-RC4</version>
+				<version>1.0.1</version>
 				<extensions>true</extensions>
 				<configuration>
 					<verifyOmod>false</verifyOmod>

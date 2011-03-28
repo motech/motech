@@ -30,7 +30,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.server.service;
+package org.motechproject.server.appointmentreminder.service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +40,7 @@ import org.motechproject.dao.PatientDao;
 import org.motechproject.model.Appointment;
 import org.motechproject.model.InitiateCallData;
 import org.motechproject.model.Patient;
+import org.motechproject.server.appointmentreminder.service.AppointmentReminderServiceImpl;
 import org.motechproject.server.service.ivr.IVRService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
