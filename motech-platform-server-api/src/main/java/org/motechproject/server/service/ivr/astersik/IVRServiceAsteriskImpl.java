@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  */
 public class IVRServiceAsteriskImpl implements IVRService {
 
-    private final String asteriksApplication = "Agi";
+    private final String asteriskApplication = "Agi";
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final URLCodec urlCodec = new URLCodec();
@@ -90,9 +90,9 @@ public class IVRServiceAsteriskImpl implements IVRService {
 
             String data = agiUrl + encodedVxmlUrl;
 
-            log.info("Initiating call to: " + destinationPhone);
+            log.info("Initiating call to: " + destinationPhone + "VXML URL: " + data);
 
-             asteriskServer.originateToApplicationAsync(destinationPhone, asteriksApplication,
+             asteriskServer.originateToApplicationAsync(destinationPhone, asteriskApplication,
                      data, initiateCallData.getTimeOut(), asteriskCallBack);
         } catch (ManagerCommunicationException e) {
             String errorMessage = "Can not initiate call: " + e.getMessage();
