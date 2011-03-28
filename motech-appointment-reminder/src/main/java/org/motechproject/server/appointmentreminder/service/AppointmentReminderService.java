@@ -30,38 +30,15 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.server;
-
-import org.motechproject.event.EventType;
+package org.motechproject.server.appointmentreminder.service;
 
 /**
- * Defines an {@link EventType} of event that a {@link
- * ScheduleAppointmentReminderHandler} will be listening for.
- * 
- * @author yyonkov
- * 
+ * Created by IntelliJ IDEA.
+ * User: az44
+ * Date: 24/03/11
+ * Time: 4:47 PM
+ * To change this template use File | Settings | File Templates.
  */
-public class ScheduleAppointmentReminderEventType implements EventType {
-	
-	public static final String KEY = "scheduleappointmentremindereventtype";
-	
-	private static ScheduleAppointmentReminderEventType instance = new ScheduleAppointmentReminderEventType();
-
-	private ScheduleAppointmentReminderEventType() {
-	}
-
-	public static EventType getInstance() {
-		return instance;
-	}
-
-	@Override
-	public String getName() {
-		return "ScheduleAppointmentReminderEventType";
-	}
-
-	@Override
-	public String getKey() {
-		return KEY;
-	}
-
+public interface AppointmentReminderService {
+    void remindPatientAppointment(String appointmentId);
 }
