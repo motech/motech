@@ -35,8 +35,6 @@ package org.motechproject.server.appointmentreminder;
 import java.util.Arrays;
 
 import org.motechproject.context.Context;
-import org.motechproject.event.EventTypeRegistry;
-import org.motechproject.server.RemindAppointmentEventType;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
