@@ -43,7 +43,6 @@ import org.motechproject.openmrs.dao.AppointmentDAO;
 import org.motechproject.openmrs.messaging.MotechEventSender;
 import org.motechproject.openmrs.model.Appointment;
 import org.motechproject.openmrs.service.AppointmentService;
-import org.motechproject.server.ScheduleAppointmentReminderEventType;
 import org.openmrs.Patient;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,7 +97,8 @@ public class AppointmentServiceImpl extends BaseOpenmrsService implements
 			Map<String, Object> parameters = new HashMap<String, Object>();
 			parameters.put(MotechEvent.SCHEDULE_PATIENT_ID_KEY_NAME, appointment.getPatient().getUuid());
 			parameters.put(MotechEvent.SCHEDULE_APPOINTMENT_ID_KEY_NAME, appointment.getUuid());			
-			MotechEvent motechEvent = new MotechEvent(UUID.randomUUID().toString(), ScheduleAppointmentReminderEventType.getInstance().getKey(), parameters);
+			//FIXME: refactor the constant
+			MotechEvent motechEvent = new MotechEvent(UUID.randomUUID().toString(), "scheduleappointmentremindereventtype", parameters);
 			motechEventSender.send(motechEvent);
 		}
 		return appointment;

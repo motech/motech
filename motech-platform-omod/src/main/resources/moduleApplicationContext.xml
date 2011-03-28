@@ -86,7 +86,7 @@
 			</list>
 		</property>
 	</bean>	
-	
+
     <bean id="motechEventSender" class="org.motechproject.openmrs.messaging.impl.JmsMotechEventSender">
         <property name="jmsTemplate" ref="motechEventJmsTemplate" />
     </bean>
