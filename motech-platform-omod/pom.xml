@@ -225,6 +225,35 @@
 					<verifyOmod>false</verifyOmod>
 				</configuration>
 			</plugin>
+            <plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<instrumentation>
+						<excludes>
+							<exclude>org.motechproject.openmrs/**/*.class</exclude>
+						</excludes>
+					</instrumentation>
+					<check>
+						<!-- Per-class thresholds -->
+						<packageLineRate>0</packageLineRate>
+						<packageBranchRate>0</packageBranchRate>
+
+						<!-- Project-wide thresholds -->
+						<totalLineRate>0</totalLineRate>
+						<totalBranchRate>0</totalBranchRate>
+					</check>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 </project>

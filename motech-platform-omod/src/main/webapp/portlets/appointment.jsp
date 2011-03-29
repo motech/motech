@@ -40,7 +40,7 @@
 	<table cellpadding="2" cellspacing="0">
 		<tr>
 			<th><spring:message code="motech.appointment.preferences.service"/></th>
-			<td><input name="enableReminderService" type="checkbox" checked></th>
+			<td><input name="enableReminderService" type="checkbox" <c:if test="${i == model.preferences.moduleEnabled}">checked="checked"</c:if>checked></th>
 		</tr>
 		<tr>
 			<th><spring:message code="motech.appointment.preferences.reminderCall"/></th>
@@ -49,7 +49,15 @@
 		<tr>
 			<th><spring:message code="motech.appointment.preferences.bestTime"/></th>
 			<td>
-				<input type="text" value="3" size="3"> <spring:message code="motech.appointment.preferences.before"/>
+				<select name="preferredTime">
+					<option value="">-- Select a Time --</option>
+					<c:forEach var="i" begin="0" end="23">
+                	<option value="${i}" <c:if test="${i == model.preferences.preferredTime}">selected="selected"</c:if>>
+                 		 <c:out value="${i}" />
+                	</option>
+              </c:forEach>
+				</select>
+				 <spring:message code="motech.appointment.preferences.before"/>
 			</td>
 		</tr>
 	</table>
