@@ -43,13 +43,12 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-	<import resource="applicationCommon.xml" />
-	<import resource="integrationCommon.xml" />
-	<import resource="applicationAPI.xml" /> 
-	<import resource="schedulerOutboundChannelAdapter.xml" />
-<!-- 	
--->
+<!--	<import resource="applicationCommon.xml" />-->
+
+	<context:annotation-config />
+
 	<bean id="scheduleAppointmentReminderHandler" class="org.motechproject.server.appointmentreminder.ScheduleAppointmentReminderHandler"/>
+	<bean id="remindAppointmentEventHandler" class="org.motechproject.server.appointmentreminder.RemindAppointmentEventHandler"/>
     <bean id="appointmentReminderService" class="org.motechproject.server.appointmentreminder.service.AppointmentReminderServiceImpl">
         <property name="timeOut" value="20"/>
         <property name="appointmentReminderVmlUrl" value="" />

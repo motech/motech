@@ -36,7 +36,6 @@ import org.junit.Test;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.model.SchedulableJob;
-import org.motechproject.server.gateway.MotechSchedulerGateway;
 
 import org.junit.runner.RunWith;
 
@@ -56,7 +55,7 @@ import java.util.Date;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"/integrationCommon.xml",
-                                 "/schedulerOutboundChannelAdapter.xml"})
+                                 "/outboundScheduleJobChannelAdapter.xml"})
 public class SchedulerGatewayIT {
 
     @Autowired

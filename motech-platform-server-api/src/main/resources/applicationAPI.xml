@@ -48,11 +48,12 @@
     <import resource="integrationCommon.xml"/>
     <import resource="inboundEventChannelAdapter.xml"/>
     <import resource="outboundEventChannelAdapter.xml"/>
+    <import resource="outboundScheduleJobChannelAdapter.xml"/>
     
 
 	<bean id="eventRelay" class="org.motechproject.server.event.EventRelay" />
 
-	<bean id="eventTypeRegistry" class="org.motechproject.event.EventTypeRegistry" scope="singleton" factory-method="getInstance" />
+	<bean id="eventTypeRegistry" class="org.motechproject.event.EventTypeRegistry"/>
 	
 	<bean id="eventListenerRegistry" class="org.motechproject.server.event.EventListenerRegistry"/>
 
@@ -67,5 +68,7 @@
         <!--Asterisk Gateway Interface URI - required for integration with Voiceglue-->
         <property name="agiUrl" value="agi://localhost/url="/>
     </bean>
+    
+    <bean id="motechContext" class="org.motechproject.context.Context" factory-method="getInstance"/>
 
 </beans>

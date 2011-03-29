@@ -35,6 +35,7 @@ package org.motechproject.context;
 import org.motechproject.dao.PatientDao;
 import org.motechproject.event.EventTypeRegistry;
 import org.motechproject.server.event.EventListenerRegistry;
+import org.motechproject.server.gateway.MotechSchedulerGateway;
 import org.motechproject.server.ruleengine.KnowledgeBaseManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -51,6 +52,18 @@ public class Context {
 	
 	@Autowired(required=false)
 	private PatientDao patientDao;
+	
+	@Autowired(required=false)
+	private MotechSchedulerGateway motechSchedulerGateway;
+
+	public MotechSchedulerGateway getMotechSchedulerGateway() {
+		return motechSchedulerGateway;
+	}
+
+	public void setMotechSchedulerGateway(
+			MotechSchedulerGateway motechSchedulerGateway) {
+		this.motechSchedulerGateway = motechSchedulerGateway;
+	}
 
 	public KnowledgeBaseManager getKnowledgeBaseManager() {
 		return knowledgeBaseManager;

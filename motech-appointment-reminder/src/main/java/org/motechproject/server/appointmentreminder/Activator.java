@@ -76,13 +76,6 @@ public class Activator implements BundleActivator {
 			}
 		};
 		this.tracker.open();
-		listener = new ScheduleAppointmentReminderHandler();
-		Context.getInstance().getEventTypeRegistry().add(ScheduleAppointmentReminderEventType.getInstance());
-		Context.getInstance().getEventListenerRegistry().registerListener(listener, Arrays.asList(ScheduleAppointmentReminderEventType.getInstance()) );
-
-        remindAppointmentEventListener = new RemindAppointmentEventHandler();
-        Context.getInstance().getEventTypeRegistry().add(RemindAppointmentEventType.getInstance());
-		Context.getInstance().getEventListenerRegistry().registerListener(remindAppointmentEventListener, Arrays.asList(RemindAppointmentEventType.getInstance()));
 	}
 
 	public void stop(BundleContext context) throws Exception {
@@ -101,6 +94,15 @@ public class Activator implements BundleActivator {
 			} finally {
 				Thread.currentThread().setContextClassLoader(old);
 			}
+			//listener = new ScheduleAppointmentReminderHandler();
+			listener = dispatcherServlet.getWebApplicationContext().getBean(ScheduleAppointmentReminderHandler.class);
+			Context.getInstance().getEventTypeRegistry().add(ScheduleAppointmentReminderEventType.getInstance());
+			Context.getInstance().getEventListenerRegistry().registerListener(listener, Arrays.asList(ScheduleAppointmentReminderEventType.getInstance()) );
+			
+			//remindAppointmentEventListener = new RemindAppointmentEventHandler();
+			remindAppointmentEventListener = dispatcherServlet.getWebApplicationContext().getBean(RemindAppointmentEventHandler.class);
+			Context.getInstance().getEventTypeRegistry().add(RemindAppointmentEventType.getInstance());
+			Context.getInstance().getEventListenerRegistry().registerListener(remindAppointmentEventListener, Arrays.asList(RemindAppointmentEventType.getInstance()));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
