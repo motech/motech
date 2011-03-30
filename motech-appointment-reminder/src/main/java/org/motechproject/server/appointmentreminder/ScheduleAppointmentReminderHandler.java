@@ -33,13 +33,11 @@
 package org.motechproject.server.appointmentreminder;
 
 import org.motechproject.context.Context;
-import org.motechproject.dao.PatientDao;
 import org.motechproject.model.Appointment;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.Patient;
 import org.motechproject.model.SchedulableJob;
 import org.motechproject.server.event.EventListener;
-import org.motechproject.server.gateway.MotechSchedulerGateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,18 +54,22 @@ import org.springframework.stereotype.Component;
 public class ScheduleAppointmentReminderHandler implements EventListener {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	public final static String SCHEDULE_APPOINTMENT_REMINDER = "ScheduleAppointmentReminder";
-
+	
+	@Autowired
+	private Context context;
+	
 	@Override
 	public void handle(MotechEvent event) {
 		String patientId = (String) event.getParameters().get(MotechEvent.SCHEDULE_PATIENT_ID_KEY_NAME);
 		String appointmentId = (String) event.getParameters().get(MotechEvent.SCHEDULE_APPOINTMENT_ID_KEY_NAME);
-		Patient patient = Context.getInstance().getPatientDao().get(patientId);
-		Appointment appointment = Context.getInstance().getPatientDao().getAppointment(appointmentId);
+		Patient patient = context.getPatientDao().get(patientId);
+		Appointment appointment = context.getPatientDao().getAppointment(appointmentId);
 		event.getParameters().put(MotechEvent.START_TIME_KEY_NAME, appointment.getWindowStartDate());
 		event.getParameters().put(MotechEvent.END_TIME_KEY_NAME, appointment.getWindowEndDate());		
 		// TODO build cronExpression from Appointment information. 
         SchedulableJob schedulableJob = new SchedulableJob(event, String.format("0 0 %d * * ?", patient.getBestCallTime()));
-        Context.getInstance().getMotechSchedulerGateway().scheduleJob(schedulableJob);
+        
+        context.getMotechSchedulerGateway().scheduleJob(schedulableJob);
 	}
 
 	@Override
@@ -75,4 +77,7 @@ public class ScheduleAppointmentReminderHandler implements EventListener {
 		return SCHEDULE_APPOINTMENT_REMINDER;
 	}
 
+	public void setContext(Context context){
+		this.context = context;
+	}
 }

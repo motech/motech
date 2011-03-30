@@ -32,6 +32,7 @@
  */
 package org.motechproject.context;
 
+import org.ektorp.CouchDbInstance;
 import org.motechproject.dao.PatientDao;
 import org.motechproject.event.EventTypeRegistry;
 import org.motechproject.server.event.EventListenerRegistry;
@@ -55,6 +56,17 @@ public class Context {
 	
 	@Autowired(required=false)
 	private MotechSchedulerGateway motechSchedulerGateway;
+	
+	@Autowired(required=false)
+	private CouchDbInstance couchDbInstance;
+	
+	public CouchDbInstance getCouchDbInstance(){
+		return couchDbInstance;
+	}
+
+	public void setCouchDbInstance(CouchDbInstance couchDbInstance) {
+		this.couchDbInstance = couchDbInstance;
+	}
 
 	public MotechSchedulerGateway getMotechSchedulerGateway() {
 		return motechSchedulerGateway;

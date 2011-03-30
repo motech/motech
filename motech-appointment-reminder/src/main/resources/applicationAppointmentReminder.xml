@@ -43,8 +43,6 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-<!--	<import resource="applicationCommon.xml" />-->
-
 	<context:annotation-config />
 
 	<bean id="scheduleAppointmentReminderHandler" class="org.motechproject.server.appointmentreminder.ScheduleAppointmentReminderHandler"/>
@@ -53,4 +51,17 @@
         <property name="timeOut" value="20"/>
         <property name="appointmentReminderVmlUrl" value="" />
     </bean>
+    
+    <bean id="motechContext" class="org.motechproject.context.Context" factory-method="getInstance" />
+    
+    <!-- We have to use the couchDbInstance provided by the motech server context -->
+    <bean id="couchDbInstance" factory-bean="motechContext" factory-method="getCouchDbInstance" />
+    
+	<bean id="appointmentDatabase" class="org.ektorp.impl.StdCouchDbConnector">
+		<constructor-arg value="appointments" />
+		<constructor-arg ref="couchDbInstance" />
+	</bean>
+	
+<!--	<bean id="appointmentDao" class="org.motechproject.server.appointmentreminder.dao.AppointmentDao" />-->
+    
 </beans>
