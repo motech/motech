@@ -39,7 +39,7 @@
          http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
 
-    <bean id="ivrServise" class="org.motechproject.server.service.ivr.astersik.IVRServiceAsteriskImpl" >
+    <bean id="ivrService" class="org.motechproject.server.service.ivr.astersik.IVRServiceAsteriskImpl" >
         <!--Asterisk Server host-->
         <constructor-arg  value="10.0.1.31"/>
         <!--Asterisk Server user-->
