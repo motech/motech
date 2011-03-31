@@ -61,7 +61,6 @@
 		<constructor-arg value="appointments" />
 		<constructor-arg ref="couchDbInstance" />
 	</bean>
-	
-<!--	<bean id="appointmentDao" class="org.motechproject.server.appointmentreminder.dao.AppointmentDao" />-->
+	<bean id="appointmentDao" class="org.motechproject.server.appointmentreminder.dao.impl.AppointmentDaoImpl" />
     
 </beans>
