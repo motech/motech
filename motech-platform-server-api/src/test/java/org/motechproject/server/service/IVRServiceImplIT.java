@@ -64,7 +64,7 @@ public class IVRServiceImplIT {
     @Test
     public void initiateCallTest() throws Exception{
 
-        InitiateCallData initiateCallData = new InitiateCallData(1L, "SIP/1001", 5000, "http://10.0.1.29:8080/TamaIVR/reminder/doc");
+        InitiateCallData initiateCallData = new InitiateCallData(1L, "SIP/1001", 5000, "http://10.0.1.29:8080/TamaIVR/reminder/wt");
 
         ivrService.initiateCall(initiateCallData);
     }
