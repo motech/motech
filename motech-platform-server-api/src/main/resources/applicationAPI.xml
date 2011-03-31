@@ -71,4 +71,20 @@
     
     <bean id="motechContext" class="org.motechproject.context.Context" factory-method="getInstance"/>
 
+    <bean id="metricsAgent" class="org.motechproject.metrics.impl.MultipleMetricsAgentImpl">
+        <property name="metricsAgents">
+            <list>
+                <ref bean="loggingAgent"/>
+                <ref bean="statsdAgent"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="loggingAgent" class="org.motechproject.metrics.impl.LoggingAgentBackendImpl"/>
+    <bean id="statsdAgent" class="org.motechproject.metrics.impl.StatsdAgentBackendImpl">
+        <property name="serverHost" value="localhost"/>
+        <property name="serverPort" value="9000"/>
+        <property name="generateHostBasedStats" value="false"/>
+    </bean>
+
 </beans>
