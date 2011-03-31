@@ -36,7 +36,10 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.event.EventTypeRegistry;
+import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.server.event.EventListenerRegistry;
+import org.motechproject.server.ruleengine.KnowledgeBaseManager;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -44,8 +47,20 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations = { "/testApplicationContext.xml" })
 public class ContextTest {
 
-	@Test
-	public void testContext(){
+    @Test
+    public void testMetricsAgentContext() throws Exception {
+        MetricsAgent metricsAgent = Context.getInstance().getMetricsAgent();
+        assertNotNull(metricsAgent);
+    }
+
+    @Test
+	public void testEventTypeRegistry(){
+		EventTypeRegistry eventTypeRegistry = Context.getInstance().getEventTypeRegistry();
+		assertNotNull(eventTypeRegistry);
+	}
+
+    @Test
+	public void testEventListenerRegistry(){
 		EventListenerRegistry eventListenerRegistry = Context.getInstance().getEventListenerRegistry();
 		assertNotNull(eventListenerRegistry);
 	}

@@ -79,11 +79,13 @@
 			<groupId>org.ektorp</groupId>
 			<artifactId>org.ektorp</artifactId>
 			<version>1.1.0</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.ektorp</groupId>
 			<artifactId>org.ektorp.spring</artifactId>
 			<version>1.1.0</version>
+			<scope>provided</scope>
 		</dependency>        
     </dependencies>
     <build>
@@ -102,7 +104,7 @@
                             org.motechproject.server.appointmentreminder.*
                         </Private-Package>
                         <Import-Package>
-                            *;resolution:=optional
+                            *;org.ektorp;org.ektorp.impl;org.ektorp.spring;resolution:=optional
                         </Import-Package>
                         <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>

@@ -32,8 +32,10 @@
  */
 package org.motechproject.context;
 
+import org.ektorp.CouchDbInstance;
 import org.motechproject.dao.PatientDao;
 import org.motechproject.event.EventTypeRegistry;
+import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.server.event.EventListenerRegistry;
 import org.motechproject.server.gateway.MotechSchedulerGateway;
 import org.motechproject.server.ruleengine.KnowledgeBaseManager;
@@ -55,6 +57,28 @@ public class Context {
 	
 	@Autowired(required=false)
 	private MotechSchedulerGateway motechSchedulerGateway;
+	
+	@Autowired(required=false)
+	private CouchDbInstance couchDbInstance;
+
+    @Autowired(required=false)
+    private MetricsAgent metricsAgent;
+
+    public MetricsAgent getMetricsAgent() {
+        return metricsAgent;
+    }
+
+    public void setMetricsAgent(MetricsAgent metricsAgent) {
+        this.metricsAgent = metricsAgent;
+    }
+
+	public CouchDbInstance getCouchDbInstance(){
+		return couchDbInstance;
+	}
+
+	public void setCouchDbInstance(CouchDbInstance couchDbInstance) {
+		this.couchDbInstance = couchDbInstance;
+	}
 
 	public MotechSchedulerGateway getMotechSchedulerGateway() {
 		return motechSchedulerGateway;
