@@ -19,7 +19,7 @@
 		<repository>
 			<id>motech-repo</id>
 			<name>Motech Maven Repository</name>
-			<url>http://nexus.motechproject.org/content/repositories/all</url>
+			<url>http://nexus.motechproject.org/content/repositories/public</url>
 		</repository>
 	</repositories>
 
@@ -27,7 +27,7 @@
 		<pluginRepository>
 			<id>motech-repo</id>
 			<name>Motech Maven Repository</name>
-			<url>http://nexus.motechproject.org/content/repositories/all</url>
+			<url>http://nexus.motechproject.org/content/repositories/public</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
