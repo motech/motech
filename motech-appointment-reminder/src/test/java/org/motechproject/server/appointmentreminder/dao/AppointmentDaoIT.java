@@ -47,7 +47,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @author yyonkov
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/testApplicationContext.xml"})
+@ContextConfiguration(locations={"/testIntegrationContext.xml"})
 public class AppointmentDaoIT {
 	@Autowired
 	private AppointmentDao dao;
