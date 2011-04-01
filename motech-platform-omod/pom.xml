@@ -10,22 +10,6 @@
 	<packaging>omod</packaging>
 	<name>Motech Platform OMOD</name>
 
-	<repositories>
-		<repository>
-			<id>openmrs-repo</id>
-			<name>OpenMRS Nexus Repository</name>
-			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
-		</repository>
-	</repositories>
-
-	<pluginRepositories>
-		<pluginRepository>
-			<id>openmrs-repo</id>
-			<name>OpenMRS Nexus Repository</name>
-			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
-		</pluginRepository>
-	</pluginRepositories>
-
 	<properties>
 		<spring.version>3.0.2.RELEASE</spring.version>
 	</properties>
