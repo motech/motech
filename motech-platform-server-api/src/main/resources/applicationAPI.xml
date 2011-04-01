@@ -57,7 +57,7 @@
 	
 	<bean id="eventListenerRegistry" class="org.motechproject.server.event.EventListenerRegistry"/>
 
-    <bean id="ivrServise" class="org.motechproject.server.service.ivr.astersik.IVRServiceAsteriskImpl" >
+    <bean id="ivrService" class="org.motechproject.server.service.ivr.astersik.IVRServiceAsteriskImpl" >
         <!--Asterisk Server host-->
         <constructor-arg  value="motech.2paths.com"/>
         <!--Asterisk Server user-->
@@ -70,5 +70,21 @@
     </bean>
     
     <bean id="motechContext" class="org.motechproject.context.Context" factory-method="getInstance"/>
+
+    <bean id="metricsAgent" class="org.motechproject.metrics.impl.MultipleMetricsAgentImpl">
+        <property name="metricsAgents">
+            <list>
+                <ref bean="loggingAgent"/>
+                <ref bean="statsdAgent"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="loggingAgent" class="org.motechproject.metrics.impl.LoggingAgentBackendImpl"/>
+    <bean id="statsdAgent" class="org.motechproject.metrics.impl.StatsdAgentBackendImpl">
+        <property name="serverHost" value="localhost"/>
+        <property name="serverPort" value="9000"/>
+        <property name="generateHostBasedStats" value="false"/>
+    </bean>
 
 </beans>

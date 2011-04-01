@@ -30,44 +30,17 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.server.service;
+package org.motechproject.server.appointmentreminder.dao;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.motechproject.model.InitiateCallData;
-import org.motechproject.server.service.ivr.IVRService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import java.util.List;
+
+import org.motechproject.dao.BaseDao;
+import org.motechproject.server.appointmentreminder.model.Appointment;
 
 /**
- * This is an interactive test. In order to run that test please make sure that Asterisk, Voiceglue and VXML application
- * are properly configures, up and running. Your SIP phone configured to use the "SIP/1001" account and that account registered
- * in Asterisk.
- *
- * In order to run unit test
- * - start your soft phone
- * - run the initiateCallTest()
- * Your soft phone should start ringing. Answer the phone, you should hear a voice message specified in the voice XML document retrieved
- * from the URL specified as a value of the voiceXmlUrl property of the ivrService bean. See testApplicationContext.xml.
- *
- *
+ * Appointment DAO interface provides Appointment persistent data access methods
+ * @author yyonkov
  */
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/testIVRAppContext.xml"})
-public class IVRServiceImplIT {
-
-    @Autowired
-    private IVRService ivrService;
-
-    @Test
-    public void initiateCallTest() throws Exception{
-
-        InitiateCallData initiateCallData = new InitiateCallData(1L, "SIP/1001", 5000, "http://10.0.1.29:8080/TamaIVR/reminder/doc");
-
-        ivrService.initiateCall(initiateCallData);
-    }
-
-
+public interface AppointmentDao extends BaseDao<Appointment> {
+	public List<Appointment> findByPatientId(String patientId);
 }

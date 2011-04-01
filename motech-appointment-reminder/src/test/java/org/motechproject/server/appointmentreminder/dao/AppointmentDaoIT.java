@@ -30,54 +30,48 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.motechproject.server.appointmentreminder;
+package org.motechproject.server.appointmentreminder.dao;
 
-import org.motechproject.context.Context;
-import org.motechproject.model.Appointment;
-import org.motechproject.model.MotechEvent;
-import org.motechproject.model.Patient;
-import org.motechproject.model.SchedulableJob;
-import org.motechproject.server.event.EventListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.junit.Assert.*;
+
+import java.util.List;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.motechproject.server.appointmentreminder.model.Appointment;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- * Responsible for listening for <code>{@link ScheduleAppointmentReminderEventType}</code>
- * events with destination
- * 
+ * Appointment DAO test
  * @author yyonkov
- * 
  */
-@Component
-public class ScheduleAppointmentReminderHandler implements EventListener {
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
-	public final static String SCHEDULE_APPOINTMENT_REMINDER = "ScheduleAppointmentReminder";
-	
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"/testIntegrationContext.xml"})
+public class AppointmentDaoIT {
 	@Autowired
-	private Context context;
-	
-	@Override
-	public void handle(MotechEvent event) {
-		String patientId = (String) event.getParameters().get(MotechEvent.SCHEDULE_PATIENT_ID_KEY_NAME);
-		String appointmentId = (String) event.getParameters().get(MotechEvent.SCHEDULE_APPOINTMENT_ID_KEY_NAME);
-		Patient patient = context.getPatientDao().get(patientId);
-		Appointment appointment = context.getPatientDao().getAppointment(appointmentId);
-		event.getParameters().put(MotechEvent.START_TIME_KEY_NAME, appointment.getWindowStartDate());
-		event.getParameters().put(MotechEvent.END_TIME_KEY_NAME, appointment.getWindowEndDate());		
-		// TODO build cronExpression from Appointment information. 
-        SchedulableJob schedulableJob = new SchedulableJob(event, String.format("0 0 %d * * ?", patient.getBestCallTime()));
-        
-        context.getMotechSchedulerGateway().scheduleJob(schedulableJob);
-	}
+	private AppointmentDao dao;
 
-	@Override
-	public String getIdentifier() {
-		return SCHEDULE_APPOINTMENT_REMINDER;
-	}
-
-	public void setContext(Context context){
-		this.context = context;
+	@Test
+	public void testCRUDandFindByParrentId() {
+		String appId = "000111"; 
+		String patientId = "0001";
+		Appointment app = new Appointment();
+		Appointment app1 = new Appointment();
+		app.setId(appId);
+		app1.setId("xxx");
+		dao.add(app);
+		dao.add(app1);
+		app = dao.get(appId);
+		assertNotNull(app);
+		app.setPatientArrived(true);
+		app.setPatientId(patientId);
+		dao.update(app);
+		List<Appointment> apps = dao.findByPatientId(patientId);
+		assertNotNull(apps);
+		System.out.print(apps.size());
+		assertTrue(apps.size()==1);
+		dao.remove(app);
+		dao.remove(app1);
 	}
 }

@@ -33,10 +33,12 @@
 package org.motechproject.server.event;
 
 import org.motechproject.event.EventTypeRegistry;
+import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.gateway.OutboundEventGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Map;
@@ -48,10 +50,16 @@ public class EventRelay {
 
 	@Autowired
 	private EventTypeRegistry eventTypeRegistry;
+
 	@Autowired
 	private EventListenerRegistry eventListenerRegistry;
+
 	@Autowired
     private OutboundEventGateway outboundEventGateway;
+
+    @Autowired
+    private MetricsAgent metricsAgent;
+
     private static final String MESSAGE_DESTINATION = "message-destination";
     
     public EventRelay() {
@@ -82,8 +90,11 @@ public class EventRelay {
         	Iterator<EventListener> iter = listeners.iterator();
         	while( iter.hasNext() ) {
         		listener = iter.next();
-        		if (listener.getIdentifier().equals(messageDestination)) {
+                if (listener.getIdentifier().equals(messageDestination)) {
+                    String timer = listener.getIdentifier() + ".handler." + event.getEventType();
+                    metricsAgent.startTimer(timer);
         			listener.handle(event);
+                    metricsAgent.stopTimer(timer);
         			break;
         		}
         	} // END while( iter.hasNext() )
@@ -100,7 +111,11 @@ public class EventRelay {
 	        	listeners.get(0).handle(event);
 	        } // END IF/ELSE if (listeners.size() > 1)
         } // END IF/ELSE if (event.getParameters().containsKey(MESSAGE_DESTINATION))
-        
+
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("event", event.getEventType());
+        parameters.put("listeners", String.format("%d", listeners.size()));
+        metricsAgent.logEvent("motech.event-relay.relayEvent", parameters);
     }
     
     /**
