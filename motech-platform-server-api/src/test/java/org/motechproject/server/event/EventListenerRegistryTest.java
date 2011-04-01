@@ -223,41 +223,34 @@ public class EventListenerRegistryTest {
 
 		assertNull(registry.getListeners(et.get(0)));
 	}
+
+    class FooEventListener implements EventListener {
+
+        @Override
+        public void handle(MotechEvent event) {
+        }
+
+        @Override
+        public String getIdentifier() {
+            return "FooEventListener";
+        }
+    }
+
+    class FooEventType implements EventType {
+
+        private String key = "fooeventtype";
+        private String name = "FooEventType";
+
+        @Override
+        public String getKey() {
+            return key;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+    }
 }
 
-class FooEventListener implements EventListener {
-
-	private boolean handleCalled = false;
-
-	@Override
-	public void handle(MotechEvent event) {
-		handleCalled = true;
-	}
-
-	@Override
-	public String getIdentifier() {
-		return "FooEventListener";
-	}
-
-	public boolean handledMethodCalled() {
-		return handleCalled;
-	}
-
-}
-
-class FooEventType implements EventType {
-
-	private String key = "fooeventtype";
-	private String name = "FooEventType";
-
-	@Override
-	public String getKey() {
-		return key;
-	}
-
-	@Override
-	public String getName() {
-		return name;
-	}
-
-}
