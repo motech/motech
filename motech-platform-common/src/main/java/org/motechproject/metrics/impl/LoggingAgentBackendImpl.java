@@ -61,7 +61,7 @@ public class LoggingAgentBackendImpl implements MetricsAgentBackend
             prefix = String.format("host=%s ip=%s ", hostName, ip);
         } catch (UnknownHostException e) {
             // bummer, but not very important.  Log an error and set them to null and we just won't log them later
-            log.error(String.format("Unable to get host information: %s", e.getMessage()));
+            log.info(String.format("Unable to get host information: %s", e.getMessage()));
             prefix = "";
         }
     }
