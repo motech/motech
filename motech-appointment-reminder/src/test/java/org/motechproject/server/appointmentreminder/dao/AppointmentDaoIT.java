@@ -35,9 +35,12 @@ package org.motechproject.server.appointmentreminder.dao;
 import static org.junit.Assert.*;
 
 import java.util.List;
+import java.util.Set;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.server.appointmentreminder.model.Appointment;
+import org.motechproject.appointmentreminder.dao.PatientDAO;
+import org.motechproject.appointmentreminder.model.Appointment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -50,7 +53,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations={"/testIntegrationContext.xml"})
 public class AppointmentDaoIT {
 	@Autowired
-	private AppointmentDao dao;
+	private PatientDAO dao;
 
 	@Test
 	public void testCRUDandFindByParrentId() {
@@ -60,18 +63,18 @@ public class AppointmentDaoIT {
 		Appointment app1 = new Appointment();
 		app.setId(appId);
 		app1.setId("xxx");
-		dao.add(app);
-		dao.add(app1);
-		app = dao.get(appId);
+		dao.addAppointment(app);
+		dao.addAppointment(app1);
+		app = dao.getAppointment(appId);
 		assertNotNull(app);
-		app.setPatientArrived(true);
-		app.setPatientId(patientId);
-		dao.update(app);
-		List<Appointment> apps = dao.findByPatientId(patientId);
+//		app.setPatientArrived(true);
+//		app.setPatientId(patientId);
+//		dao.update(app);
+		Set<Appointment> apps = dao.get(patientId).getAppointments();
 		assertNotNull(apps);
 		System.out.print(apps.size());
 		assertTrue(apps.size()==1);
-		dao.remove(app);
-		dao.remove(app1);
+		dao.removeAppointment(app);
+		dao.removeAppointment(app1);
 	}
 }

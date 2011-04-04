@@ -36,6 +36,8 @@ import org.motechproject.event.EventTypeRegistry;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.gateway.OutboundEventGateway;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
@@ -47,6 +49,7 @@ import java.util.Map;
  * This class handled incoming scheduled events and relays those events to the appropriate event listeners
  */
 public class EventRelay {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
 	private EventTypeRegistry eventTypeRegistry;
@@ -74,11 +77,23 @@ public class EventRelay {
 
         // Retrieve a list of listeners for the given event type
     	if (eventListenerRegistry == null) {
-    		System.out.println("eventListenerRegistry == null");
+            String errorMessage = "eventListenerRegistry == null";
+            log.error(errorMessage);
+            throw new IllegalStateException(errorMessage);
     	}
+
     	if (eventTypeRegistry == null) {
-    		System.out.println("eventTypeRegistry == null");
+            String errorMessage = "eventTypeRegistry == null";
+            log.error(errorMessage);
+            throw new IllegalStateException(errorMessage);
     	}
+
+        if (event == null) {
+            String errorMessage = "Invalid request to relay null event";
+            log.warn(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
+        }
+
         List<EventListener> listeners = eventListenerRegistry.getListeners( eventTypeRegistry.getEventType(event.getEventType()) );
 
         // Is this message destine for a specific listener?
@@ -108,7 +123,11 @@ public class EventRelay {
 	        	// re-distributed to another server without being lost
 	        	splitEvent(event, listeners);
 	        } else {
-	        	listeners.get(0).handle(event);
+                EventListener listener = listeners.get(0);
+                String timer = listener.getIdentifier() + ".handler." + event.getEventType();
+                metricsAgent.startTimer(timer);
+	        	listener.handle(event);
+                metricsAgent.stopTimer(timer);
 	        } // END IF/ELSE if (listeners.size() > 1)
         } // END IF/ELSE if (event.getParameters().containsKey(MESSAGE_DESTINATION))
 
@@ -131,8 +150,8 @@ public class EventRelay {
     	Map<String, Object> parameters = null;
     	for( Iterator<EventListener> iter = listeners.iterator(); iter.hasNext(); ) {
     		listener = iter.next();
-    		parameters = event.getParameters();
-    		parameters.put("destination", listener.getIdentifier());
+    		parameters = new HashMap<String, Object>(event.getParameters());
+    		parameters.put(MESSAGE_DESTINATION, listener.getIdentifier());
     		enrichedEventMessage = new MotechEvent(event.getJobId(), event.getEventType(), parameters);
     		
     		outboundEventGateway.sendEventMessage(enrichedEventMessage);

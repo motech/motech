@@ -38,7 +38,7 @@ import org.mockito.Mockito;
 import org.motechproject.appointmentreminder.dao.PatientDAO;
 import org.motechproject.appointmentreminder.model.Patient;
 import org.motechproject.model.InitiateCallData;
-import org.motechproject.server.appointmentreminder.model.Appointment;
+import org.motechproject.appointmentreminder.model.Appointment;
 import org.motechproject.server.service.ivr.IVRService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;

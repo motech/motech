@@ -33,11 +33,12 @@
 package org.motechproject.server.event;
 
 import org.motechproject.event.EventType;
-import org.motechproject.server.event.EventListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -45,6 +46,7 @@ import java.util.ArrayList;
  * a specific set of event types.
  */
 public class EventListenerRegistry {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     // Central registry for scheduled event listeners
     private static ConcurrentHashMap<String, List<EventListener>> eventListeners = new ConcurrentHashMap<String, List<EventListener>>();
@@ -57,18 +59,35 @@ public class EventListenerRegistry {
      */
     public void registerListener(EventListener listener, List<EventType> eventTypes) {
 
+        if (listener == null) {
+            String errorMessage = "Invalid attempt to register a null EventListener";
+            log.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
+        }
+
+        if (eventTypes == null) {
+            String errorMessage = "Invalid attempt to register for null EventTypes";
+            log.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
+        }
+
         List<EventListener> listeners = null;
-        // Add the listener to the list of those interested in each event type
+        // Add the listener to the  list of those interested in each event type
         for (int i = 0; i < eventTypes.size(); i++) {
             // Check if there are any other listeners for this event
-            if (eventListeners.contains(eventTypes.get(i).getKey())) {
+            if (eventListeners.containsKey(eventTypes.get(i).getKey())) {
                 listeners = eventListeners.get(eventTypes.get(i).getKey());
             } else {
                 listeners = new ArrayList<EventListener>();
             }
 
-            listeners.add(listener); // Add the listener to the list
-            eventListeners.put(eventTypes.get(i).getKey(), listeners); // Add it back to the collection
+            // Don't allow duplicate listener registrations
+            if (!listeners.contains(listener)) {
+                listeners.add(listener); // Add the listener to the list
+                eventListeners.put(eventTypes.get(i).getKey(), listeners); // Add it back to the collection
+            } else {
+                log.info(String.format("Ignoring second request to register listener %s for event %s", listener.getIdentifier(), eventTypes.get(i).getKey()));
+            }
         }
     }
 
