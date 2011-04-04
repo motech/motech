@@ -33,7 +33,6 @@
 package org.motechproject.context;
 
 import org.ektorp.CouchDbInstance;
-import org.motechproject.dao.PatientDao;
 import org.motechproject.event.EventTypeRegistry;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.server.event.EventListenerRegistry;
@@ -51,9 +50,6 @@ public class Context {
 	
 	@Autowired(required=false)
 	private KnowledgeBaseManager knowledgeBaseManager;
-	
-	@Autowired(required=false)
-	private PatientDao patientDao;
 	
 	@Autowired(required=false)
 	private MotechSchedulerGateway motechSchedulerGateway;
@@ -113,14 +109,6 @@ public class Context {
 		this.eventListenerRegistry = eventListenerRegistry;
 	}
 
-	public PatientDao getPatientDao() {
-		return patientDao;
-	}
-	
-	public void setPatientDao(PatientDao patientDao) {
-		this.patientDao = patientDao;
-	}
-	
 	public static Context getInstance(){
 		return instance;
 	}

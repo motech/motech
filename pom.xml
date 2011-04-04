@@ -55,11 +55,11 @@
 
 	<modules>
 		<module>motech-platform-common</module>
-		<module>motech-platform-omod</module>
 		<module>motech-platform-server</module>
 		<module>motech-platform-scheduler</module>
 		<module>motech-platform-server-api</module>
 		<module>motech-appointment-reminder</module>
+		<module>motech-appointment-reminder-common</module>
 	</modules>
 
 	<build>
