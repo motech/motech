@@ -39,10 +39,10 @@ import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.dao.PatientDao;
+import org.motechproject.appointmentreminder.dao.PatientDAO;
 import org.motechproject.event.EventTypeRegistry;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.model.Patient;
+import org.motechproject.appointmentreminder.model.Patient;
 import org.motechproject.server.event.EventListener;
 import org.motechproject.server.event.EventListenerRegistry;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -35,10 +35,10 @@ package org.motechproject.server.appointmentreminder.service;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.motechproject.dao.PatientDao;
-import org.motechproject.model.Appointment;
+import org.motechproject.appointmentreminder.dao.PatientDAO;
+import org.motechproject.appointmentreminder.model.Patient;
 import org.motechproject.model.InitiateCallData;
-import org.motechproject.model.Patient;
+import org.motechproject.appointmentreminder.model.Appointment;
 import org.motechproject.server.service.ivr.IVRService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -61,7 +61,7 @@ public class AppointmentReminderServiceImplTest {
     public void testRemindPatientAppointment() throws Exception {
 
         IVRService ivrServiceMock = mock(IVRService.class);
-        PatientDao patientDaoMock = mock(PatientDao.class);
+        PatientDAO patientDaoMock = mock(PatientDAO.class);
 
         Appointment appointment = new Appointment();
         appointment.setPatientId("1p");

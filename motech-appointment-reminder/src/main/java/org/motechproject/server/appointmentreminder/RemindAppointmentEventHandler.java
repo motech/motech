@@ -32,9 +32,7 @@
  */
 package org.motechproject.server.appointmentreminder;
 
-import org.motechproject.dao.PatientDao;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.model.Patient;
 import org.motechproject.server.appointmentreminder.service.AppointmentReminderService;
 import org.motechproject.server.appointmentreminder.service.AppointmentReminderServiceImpl;
 import org.motechproject.server.event.EventListener;
