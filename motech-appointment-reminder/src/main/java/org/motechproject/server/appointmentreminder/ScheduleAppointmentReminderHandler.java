@@ -67,10 +67,8 @@ public class ScheduleAppointmentReminderHandler implements EventListener {
 		String appointmentId = (String) event.getParameters().get(MotechEvent.SCHEDULE_APPOINTMENT_ID_KEY_NAME);
 		Patient patient = patientDAO.get(patientId);
 		Appointment appointment = patientDAO.getAppointment(appointmentId);
-		event.getParameters().put(MotechEvent.START_TIME_KEY_NAME, appointment.getReminderWindowStart());
-		event.getParameters().put(MotechEvent.END_TIME_KEY_NAME, appointment.getReminderWindowEnd());		
 		// TODO build cronExpression from Appointment information. 
-        SchedulableJob schedulableJob = new SchedulableJob(event, String.format("0 0 %d * * ?", patient.getPreferences().getBestTimeToCall()));
+        SchedulableJob schedulableJob = new SchedulableJob(event, String.format("0 0 %d * * ?", patient.getPreferences().getBestTimeToCall()),appointment.getReminderWindowStart(), appointment.getReminderWindowEnd());
         
         context.getMotechSchedulerGateway().scheduleJob(schedulableJob);
 	}
