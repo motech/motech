@@ -32,9 +32,6 @@
  */
 package org.motechproject.server.event;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.event.EventType;
@@ -42,6 +39,8 @@ import org.motechproject.event.EventTypeRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"/testApplicationContext.xml"})
@@ -51,6 +50,12 @@ public class EventTypeRegistryTest {
 	private EventTypeRegistry etr;
 
 	@Test
+	public void testGetNonRegisteredEventType() {
+		EventType eventType = new SampleEventType();
+        assertNull(etr.getEventType(eventType.getKey()));
+	}
+
+    @Test
 	public void testGetEventType() {
 		EventType eventType = new SampleEventType();
 		assertNotNull( etr );
