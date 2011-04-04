@@ -60,13 +60,15 @@ public class EventListenerRegistry {
     public void registerListener(EventListener listener, List<EventType> eventTypes) {
 
         if (listener == null) {
-            log.info("Ignoring attempt to register a null EventListener");
-            return;
+            String errorMessage = "Invalid attempt to register a null EventListener";
+            log.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
         }
 
         if (eventTypes == null) {
-            log.info("Ignoring attempt to register for null EventTypes");
-            return;
+            String errorMessage = "Invalid attempt to register for null EventTypes";
+            log.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
         }
 
         List<EventListener> listeners = null;

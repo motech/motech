@@ -72,11 +72,11 @@ public class EventListenerRegistryTest {
 
         try {
             registry.registerListener(sel, et);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             exceptionThrown = true;
         }
 
-        assertFalse(exceptionThrown);
+        assertTrue(exceptionThrown);
     }
 
     @Test
@@ -87,11 +87,11 @@ public class EventListenerRegistryTest {
 
         try {
             registry.registerListener(sel, et);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             exceptionThrown = true;
         }
 
-        assertFalse(exceptionThrown);
+        assertTrue(exceptionThrown);
     }
 
     @Test
@@ -105,7 +105,8 @@ public class EventListenerRegistryTest {
         try
         {
             Object o = PrivateAccessor.getField(registry, "eventListeners");
-            Map<String, List<EventListener>> eventListeners = (Map<String, List<EventListener>>)o;
+            Map<String, List<EventListener>> eventListeners;
+            eventListeners = (Map<String, List<EventListener>>)o;
 
             assertEquals(eventListeners.size(), 0);
         } catch (NoSuchFieldException e)

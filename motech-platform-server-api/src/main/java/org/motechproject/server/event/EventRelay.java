@@ -77,16 +77,21 @@ public class EventRelay {
 
         // Retrieve a list of listeners for the given event type
     	if (eventListenerRegistry == null) {
-    		log.error("eventListenerRegistry == null");
+            String errorMessage = "eventListenerRegistry == null";
+            log.error(errorMessage);
+            throw new IllegalStateException(errorMessage);
     	}
 
     	if (eventTypeRegistry == null) {
-    		log.error("eventTypeRegistry == null");
+            String errorMessage = "eventTypeRegistry == null";
+            log.error(errorMessage);
+            throw new IllegalStateException(errorMessage);
     	}
 
         if (event == null) {
-            log.info("Ignoring request to relay null event");
-            return;
+            String errorMessage = "Invalid request to relay null event";
+            log.warn(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
         }
 
         List<EventListener> listeners = eventListenerRegistry.getListeners( eventTypeRegistry.getEventType(event.getEventType()) );

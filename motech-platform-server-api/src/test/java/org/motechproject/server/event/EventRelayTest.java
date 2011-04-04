@@ -147,11 +147,11 @@ public class EventRelayTest {
 
         try {
             eventRelay.relayEvent(null);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             exceptionThrown = true;
         }
 
-        assertFalse(exceptionThrown);
+        assertTrue(exceptionThrown);
     }
 
     @Test

@@ -18,7 +18,7 @@
 		<repository>
 			<id>openmrs-snapshot</id>
 			<name>OpenMRS Snapshots</name>
-			<url>http://mavenreop.openmrs.org/content/repositories/snapshots</url>
+			<url>http://mavenrepo.openmrs.org/content/repositories/snapshots</url>
 		</repository>
 	</repositories>
 
