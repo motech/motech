@@ -33,6 +33,7 @@
 package org.motechproject.model;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -50,8 +51,17 @@ public class SchedulableJob implements Serializable {
 
     private MotechEvent motechEvent;
     private String cronExpression;
+	private Date startTime;
+    private Date endTime;
 
-    public SchedulableJob(MotechEvent motechEvent, String cronExpression) {
+    public SchedulableJob(MotechEvent motechEvent, String cronExpression,
+			Date startTime, Date endTime) {
+    	this(motechEvent,cronExpression);
+		this.startTime = startTime;
+		this.endTime = endTime;
+	}
+
+	public SchedulableJob(MotechEvent motechEvent, String cronExpression) {
 
          if (motechEvent == null) {
             throw new IllegalArgumentException("MotechEvent can not be null");
@@ -65,6 +75,14 @@ public class SchedulableJob implements Serializable {
         this.cronExpression = cronExpression;
     }
 
+    public Date getStartTime() {
+    	return startTime;
+    }
+    
+    public Date getEndTime() {
+    	return endTime;
+    }
+    
     public MotechEvent getMotechEvent() {
         return motechEvent;
     }

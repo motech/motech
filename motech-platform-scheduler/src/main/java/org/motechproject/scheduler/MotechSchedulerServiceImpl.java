@@ -79,8 +79,6 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         }
 
         String jobId = motechEvent.getJobId();
-        Date startTime = (Date) motechEvent.getParameters().get(MotechEvent.START_TIME_KEY_NAME);
-        Date endTime = (Date) motechEvent.getParameters().get(MotechEvent.END_TIME_KEY_NAME);
         JobDetail jobDetail = new JobDetail(jobId, JOB_GROUP_NAME, MotechScheduledJob.class);
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
@@ -88,6 +86,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         try {
             trigger = new CronTrigger(jobId, JOB_GROUP_NAME, schedulableJob.getCronExpression());
+            Date startTime = schedulableJob.getStartTime();
+            Date endTime = schedulableJob.getEndTime();
 			if(startTime!=null) {
 				trigger.setStartTime(startTime);
 			}
