@@ -32,11 +32,10 @@
  */
 package org.motechproject.server.appointmentreminder.service;
 
-import org.motechproject.context.Context;
-import org.motechproject.dao.PatientDao;
-import org.motechproject.model.Appointment;
+import org.motechproject.appointmentreminder.dao.PatientDAO;
+import org.motechproject.appointmentreminder.model.Appointment;
+import org.motechproject.appointmentreminder.model.Patient;
 import org.motechproject.model.InitiateCallData;
-import org.motechproject.model.Patient;
 import org.motechproject.server.ruleengine.KnowledgeBaseManager;
 import org.motechproject.server.service.ivr.IVRService;
 import org.springframework.stereotype.Service;
@@ -48,7 +47,7 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
 
 
     IVRService ivrService;
-    PatientDao patientDao;
+    PatientDAO patientDao;
     //Interim implementation
      String  appointmentReminderVmlUrl; // = "http://10.0.1.29:8080/TamaIVR/reminder/doc";
 
@@ -79,7 +78,7 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
         this.ivrService = ivrService;
     }
 
-    void setPatientDao(PatientDao patientDao) {
+    void setPatientDao(PatientDAO patientDao) {
         this.patientDao = patientDao;
     }
 

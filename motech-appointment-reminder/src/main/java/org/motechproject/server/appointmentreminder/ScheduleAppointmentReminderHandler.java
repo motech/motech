@@ -32,10 +32,11 @@
  */
 package org.motechproject.server.appointmentreminder;
 
+import org.motechproject.appointmentreminder.dao.PatientDAO;
+import org.motechproject.appointmentreminder.model.Appointment;
+import org.motechproject.appointmentreminder.model.Patient;
 import org.motechproject.context.Context;
-import org.motechproject.model.Appointment;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.model.Patient;
 import org.motechproject.model.SchedulableJob;
 import org.motechproject.server.event.EventListener;
 import org.slf4j.Logger;
@@ -57,17 +58,17 @@ public class ScheduleAppointmentReminderHandler implements EventListener {
 	
 	@Autowired
 	private Context context;
+	@Autowired
+	private PatientDAO patientDAO;
 	
 	@Override
 	public void handle(MotechEvent event) {
 		String patientId = (String) event.getParameters().get(MotechEvent.SCHEDULE_PATIENT_ID_KEY_NAME);
 		String appointmentId = (String) event.getParameters().get(MotechEvent.SCHEDULE_APPOINTMENT_ID_KEY_NAME);
-		Patient patient = context.getPatientDao().get(patientId);
-		Appointment appointment = context.getPatientDao().getAppointment(appointmentId);
-		event.getParameters().put(MotechEvent.START_TIME_KEY_NAME, appointment.getWindowStartDate());
-		event.getParameters().put(MotechEvent.END_TIME_KEY_NAME, appointment.getWindowEndDate());		
+		Patient patient = patientDAO.get(patientId);
+		Appointment appointment = patientDAO.getAppointment(appointmentId);
 		// TODO build cronExpression from Appointment information. 
-        SchedulableJob schedulableJob = new SchedulableJob(event, String.format("0 0 %d * * ?", patient.getBestCallTime()));
+        SchedulableJob schedulableJob = new SchedulableJob(event, String.format("0 0 %d * * ?", patient.getPreferences().getBestTimeToCall()),appointment.getReminderWindowStart(), appointment.getReminderWindowEnd());
         
         context.getMotechSchedulerGateway().scheduleJob(schedulableJob);
 	}
