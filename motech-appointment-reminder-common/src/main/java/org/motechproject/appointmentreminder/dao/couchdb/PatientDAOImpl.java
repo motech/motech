@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class PatientDAOImpl extends MotechAuditableRepository<Patient> implements PatientDAO {
 
     @Autowired
-    public PatientDAOImpl(@Qualifier("patientDatabase") CouchDbConnector db) {
+    public PatientDAOImpl(@Qualifier("appointmentReminderDatabase") CouchDbConnector db) {
         super(Patient.class, db);
         initStandardDesignDocument();
     }

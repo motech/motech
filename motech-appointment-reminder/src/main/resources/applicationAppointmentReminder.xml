@@ -61,7 +61,36 @@
 		<constructor-arg value="appointments" />
 		<constructor-arg ref="couchDbInstance" />
 	</bean>
+    <bean id="appointmentReminderDatabase" class="org.ektorp.impl.StdCouchDbConnector">
+		<constructor-arg value="appointments" />
+		<constructor-arg ref="couchDbInstance" />
+	</bean>
+
 	<bean id="appointmentDao" class="org.motechproject.server.appointmentreminder.dao.impl.AppointmentDaoImpl" />
 	<bean id="patientDAO" class="org.motechproject.appointmentreminder.dao.couchdb.PatientDAOImpl" />
+
+
+
+
+    <bean id="controllerClassNameUrlMapping"
+		class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping">
+	</bean>
+
+	<bean id="ivrController" class="org.motechproject.server.appointmentreminder.web.VxmlController" />
+
+	<bean id="velocityConfig"
+		class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+		<property name="resourceLoaderPath" value="/vm" />
+	</bean>
+
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+		<property name="cache" value="true" />
+		<property name="prefix" value="" />
+		<property name="suffix" value=".vm" />
+		<!-- if you want to use the Spring Velocity macros, set this property to
+			true -->
+		<property name="exposeSpringMacroHelpers" value="true" />
+	</bean>
     
 </beans>

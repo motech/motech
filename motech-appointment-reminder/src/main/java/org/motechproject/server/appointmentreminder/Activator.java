@@ -52,7 +52,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 public class Activator implements BundleActivator {
 	private static Logger logger = LoggerFactory.getLogger(Activator.class);
 	private static final String CONTEXT_CONFIG_LOCATION = "applicationAppointmentReminder.xml";
-	private static final String SERVLET_URL_MAPPING = "/appointmentreminder";	
+	private static final String SERVLET_URL_MAPPING = "/ar";
 	private ServiceTracker tracker;
 	private ScheduleAppointmentReminderHandler listener;
     private RemindAppointmentEventHandler remindAppointmentEventListener;
