@@ -121,8 +121,8 @@
 							<exclude>org/motechproject/model/Patient.class</exclude>
                             <exclude>org/motechproject/model/Appointment.class</exclude>
                             <exclude>org/motechproject/model/Visit.class</exclude>
-                            <exclude>org/motechproject/server/appointmentreminder/model/Appointment.class</exclude>
-                            <exclude>org/motechproject/server/appointmentreminder/dao/impl/AppointmentDaoImpl.class</exclude>
+                            <exclude>org/motechproject/appointmentreminder/model/*.class</exclude>
+                            <exclude>org/motechproject/appointmentreminder/dao/couchdb/PatientDAOImpl.class</exclude>
                             <exclude>org/motechproject/server/appointmentreminder/Activator.class</exclude>
                             <exclude>org/motechproject/server/appointmentreminder/Activator$1.class</exclude>
                             <exclude>org/motechproject/server/appointmentreminder/RemindAppointmentEventType.class</exclude>
