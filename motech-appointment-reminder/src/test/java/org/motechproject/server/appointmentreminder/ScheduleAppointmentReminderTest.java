@@ -32,35 +32,70 @@
 package org.motechproject.server.appointmentreminder;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import java.util.Date;
 
-import java.util.Arrays;
-import java.util.List;
-
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.appointmentreminder.dao.PatientDAO;
-import org.motechproject.event.EventTypeRegistry;
-import org.motechproject.model.MotechEvent;
+import org.motechproject.appointmentreminder.model.Appointment;
 import org.motechproject.appointmentreminder.model.Patient;
+import org.motechproject.appointmentreminder.model.Preferences;
+import org.motechproject.context.Context;
+import org.motechproject.model.MotechEvent;
+import org.motechproject.model.SchedulableJob;
 import org.motechproject.server.event.EventListener;
-import org.motechproject.server.event.EventListenerRegistry;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.motechproject.server.gateway.MotechSchedulerGateway;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/testApplicationContext.xml" })
+@RunWith(MockitoJUnitRunner.class)
 public class ScheduleAppointmentReminderTest {
-//	@Autowired
-//	private EventListenerRegistry listenerRegistry;
-//	@Autowired
-//	private EventListener scheduleAppointmentReminderHandler;
+	@InjectMocks
+	private EventListener scheduleAppointmentReminderHandler = new ScheduleAppointmentReminderHandler();
+	@Mock
+	private Context context;
+	@Mock
+	private PatientDAO patientDAO;
+	@Mock
+	private MotechSchedulerGateway motechSchedulerGateway;
+	
+	static final String APPT_ID = "000111";
+	static final String PAT_ID = "0001";
+	
+	@Before
+    public void initMocks() {
+        MockitoAnnotations.initMocks(this);
+     }
 	@Test
-	public void testSubscription() {
-//		listenerRegistry.registerListener(scheduleAppointmentReminderHandler,Arrays.asList(ScheduleAppointmentReminderEventType.getInstance()));
-//		listenerRegistry.getListeners(ScheduleAppointmentReminderEventType.getInstance());
-//		List<EventListener> listeners = listenerRegistry.getListeners(ScheduleAppointmentReminderEventType.getInstance());
-//		assertNotNull(listeners);
-//		assertEquals(1, listeners.size());
+	public void testHandleHappyPath() {
+		MotechEvent event = new MotechEvent("", "", null);
+		event.getParameters().put(MotechEvent.SCHEDULE_APPOINTMENT_ID_KEY_NAME, APPT_ID);
+		event.getParameters().put(MotechEvent.SCHEDULE_PATIENT_ID_KEY_NAME, PAT_ID);
+		
+		Patient p = new Patient();
+		p.setPreferences(new Preferences());
+		p.getPreferences().setBestTimeToCall(10);
+	
+		Appointment a = new Appointment();
+		a.setReminderWindowEnd(new Date());
+		a.setReminderWindowStart(new Date());
+		
+		// stub
+		when(patientDAO.get(PAT_ID)).thenReturn(p);
+		when(patientDAO.getAppointment(APPT_ID)).thenReturn(a);
+		when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
+
+		// run
+		scheduleAppointmentReminderHandler.handle(event);
+		
+		// verify
+		verify(patientDAO).get(PAT_ID);
+		verify(patientDAO).getAppointment(APPT_ID);
+		verify(context).getMotechSchedulerGateway();
+		verify(motechSchedulerGateway).scheduleJob(any(SchedulableJob.class));
 	}
 }
