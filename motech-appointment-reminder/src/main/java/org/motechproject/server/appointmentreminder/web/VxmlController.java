@@ -31,15 +31,22 @@
  */
 package org.motechproject.server.appointmentreminder.web;
 
+import org.motechproject.appointmentreminder.dao.PatientDAO;
+import org.motechproject.appointmentreminder.model.Appointment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 
 /**
+ * Spring MVC controller implementation provides method to handle HTTP requests and generate
+ * Appointment Reminder related VXML documents
+ *
  *
  * @author Igor (iopushnyev@2paths.com)
  */
@@ -47,16 +54,64 @@ public class VxmlController extends MultiActionController {
 
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
 
-	/**
-	 * URL to request appointment reminder VoiceXML:
-	 * http://localhost:8080/motech-platform-server/module/ar/vxml/ar
-	 */
-	public ModelAndView ar(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		logger.debug("In vxml controller");
+    @Autowired
+    private PatientDAO patientDAO;
 
-		ModelAndView mav = new ModelAndView();
-		mav.setViewName("ar");
-		mav.addObject("message", "Appointment Reminder");
+
+    /**
+     * Handles Appointment Reminder HTTP requests and generates a VXML document based on a Velocity template.
+     * The HTTP request should contain the mandatory 'a' parameter with value of ID of the Appointment for which
+     * a VXML document will be generated.
+     *
+     * If Invalid appointment ID has been sent or appointment data can not be obtained a VVML with an error message
+     * will be generated.
+     *
+	 * URL to request appointment reminder VoiceXML:
+	 * http://<host>:<port>/<motech-platform-server>/module/ar/vxml/ar?a=<appointmentId>
+	 */
+	public ModelAndView ar(HttpServletRequest request, HttpServletResponse response) {
+        logger.info("Generate appointment reminder VXML");
+
+        response.setContentType("text/plain");
+        response.setCharacterEncoding("UTF-8");
+
+        ModelAndView mav = new ModelAndView();
+
+
+        String appointmentId = request.getParameter("a");
+
+        logger.debug("Appointment Reminder ID: " + appointmentId );
+
+        if (appointmentId  == null) {
+            logger.warn("Invalid request. Value of the Appointment Reminder ID parameter - 'a'  sent as a part of that VXML URL is null." +
+                    " Generating a VXML with the error message...");
+
+            mav.setViewName("ar_error");
+		    return mav;
+        }
+
+        Appointment appointment = null;
+
+        try {
+            appointment = patientDAO.getAppointment(appointmentId );
+        } catch (Exception e) {
+            logger.error("Can not obtain Appointment by ID: " + appointmentId , e);
+            logger.warn("Generating a VXML with the error message...");
+            mav.setViewName("ar_error");
+            return mav;
+        }
+
+
+        if (appointment == null) {
+            logger.error("Can not find Appointment by ID: " + appointmentId );
+            logger.warn("Generating a VXML with the error message...");
+            mav.setViewName("ar_error");
+             return mav;
+        }
+
+
+        mav.setViewName("ar");
+		mav.addObject("appointmentDueDate", appointment.getReminderWindowEnd());
 		return mav;
 	}
 }

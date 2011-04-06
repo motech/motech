@@ -127,6 +127,9 @@
                             <exclude>org/motechproject/metrics/impl/LoggingAgentBackendImpl.class</exclude>
                             <exclude>org/motechproject/metrics/impl/StatsdAgentBackendImpl.class</exclude>
 							<exclude>org.motechproject.openmrs/service/impl/*.class</exclude>
+                            <exclude>org.motechproject.server.appointmentreminder.Activator</exclude>
+                            <exclude>org.motechproject.server.appointmentreminder.RemindAppointmentEventType</exclude>
+                            <exclude>org.motechproject.server.appointmentreminder.ScheduleAppointmentReminderEventType</exclude>
 						</excludes>
 					</instrumentation>
 					<check>
