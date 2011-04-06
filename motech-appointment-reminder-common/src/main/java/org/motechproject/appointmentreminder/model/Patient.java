@@ -31,15 +31,14 @@
  */
 package org.motechproject.appointmentreminder.model;
 
-import java.util.Collections;
-import java.util.Set;
-
-import javax.management.DescriptorKey;
-
 import org.ektorp.docref.DocumentReferences;
 import org.ektorp.docref.FetchType;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechAuditableDataObject;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Patient extends MotechAuditableDataObject {
 
@@ -137,10 +136,13 @@ public class Patient extends MotechAuditableDataObject {
     }
 
     public void setVisits(Set<Visit> visits) {
-        this.visits = visits;
+        this.visits = visits == null ? Collections.<Visit>emptySet() : visits;
     }
 
     public void addVisit(Visit visit) {
+        if (visits == null) {
+            visits = new HashSet<Visit>();
+        }
 		this.visits.add(visit);
 	}
 
@@ -149,10 +151,13 @@ public class Patient extends MotechAuditableDataObject {
     }
 
     public void setAppointments(Set<Appointment> appointments) {
-        this.appointments = appointments  == null ? Collections.<Appointment>emptySet(): appointments;
+        this.appointments = appointments == null ? Collections.<Appointment>emptySet(): appointments;
     }
     
     public void addAppointment(Appointment appointment) {
+        if (appointments == null) {
+            appointments = new HashSet<Appointment>();
+        }
     	this.appointments.add(appointment);
     }
 
