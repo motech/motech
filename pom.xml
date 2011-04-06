@@ -123,13 +123,14 @@
                             <exclude>org/motechproject/model/Visit.class</exclude>
                             <exclude>org/motechproject/server/appointmentreminder/model/Appointment.class</exclude>
                             <exclude>org/motechproject/server/appointmentreminder/dao/impl/AppointmentDaoImpl.class</exclude>
+                            <exclude>org/motechproject/server/appointmentreminder/Activator.class</exclude>
+                            <exclude>org/motechproject/server/appointmentreminder/Activator$1.class</exclude>
+                            <exclude>org/motechproject/server/appointmentreminder/RemindAppointmentEventType.class</exclude>
+                            <exclude>org/motechproject/server/appointmentreminder/ScheduleAppointmentReminderEventType.class</exclude>
                             <exclude>org/motechproject/server/service/ivr/CallInitiationException.class</exclude>
                             <exclude>org/motechproject/metrics/impl/LoggingAgentBackendImpl.class</exclude>
                             <exclude>org/motechproject/metrics/impl/StatsdAgentBackendImpl.class</exclude>
 							<exclude>org.motechproject.openmrs/service/impl/*.class</exclude>
-                            <exclude>org.motechproject.server.appointmentreminder.Activator</exclude>
-                            <exclude>org.motechproject.server.appointmentreminder.RemindAppointmentEventType</exclude>
-                            <exclude>org.motechproject.server.appointmentreminder.ScheduleAppointmentReminderEventType</exclude>
 						</excludes>
 					</instrumentation>
 					<check>
