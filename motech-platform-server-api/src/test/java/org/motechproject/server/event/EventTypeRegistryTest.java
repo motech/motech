@@ -51,8 +51,7 @@ public class EventTypeRegistryTest {
 
 	@Test
 	public void testGetNonRegisteredEventType() {
-		EventType eventType = new SampleEventType();
-        assertNull(etr.getEventType(eventType.getKey()));
+        assertNull(etr.getEventType("not exist"));
 	}
 
     @Test

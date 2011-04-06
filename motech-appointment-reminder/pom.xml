@@ -92,6 +92,7 @@
 			<artifactId>motech-appointment-reminder-common</artifactId>
 			<version>0.1-SNAPSHOT</version>
 			<type>jar</type>
+			<scope>provided</scope>
 		</dependency>
     </dependencies>
     <build>
