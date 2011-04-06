@@ -52,7 +52,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ScheduleAppointmentReminderHandler implements EventListener {
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	public final static String SCHEDULE_APPOINTMENT_REMINDER = "ScheduleAppointmentReminder";
 	
 	@Autowired
@@ -62,22 +62,24 @@ public class ScheduleAppointmentReminderHandler implements EventListener {
 	
 	@Override
 	public void handle(MotechEvent event) {
-		String patientId = (String) event.getParameters().get(MotechEvent.SCHEDULE_PATIENT_ID_KEY_NAME);
-		String appointmentId = (String) event.getParameters().get(MotechEvent.SCHEDULE_APPOINTMENT_ID_KEY_NAME);
-		Patient patient = patientDAO.get(patientId);
-		Appointment appointment = patientDAO.getAppointment(appointmentId);
-		// TODO build cronExpression from Appointment information. 
-        SchedulableJob schedulableJob = new SchedulableJob(event, String.format("0 0 %d * * ?", patient.getPreferences().getBestTimeToCall()),appointment.getReminderWindowStart(), appointment.getReminderWindowEnd());
-        
-        context.getMotechSchedulerGateway().scheduleJob(schedulableJob);
+		try {
+			String patientId = (String) event.getParameters().get(MotechEvent.SCHEDULE_PATIENT_ID_KEY_NAME);
+			String appointmentId = (String) event.getParameters().get(MotechEvent.SCHEDULE_APPOINTMENT_ID_KEY_NAME);
+			Patient patient = patientDAO.get(patientId);
+			Appointment appointment = patientDAO.getAppointment(appointmentId);
+			SchedulableJob schedulableJob = new SchedulableJob(event, String.format("0 0 %d * * ?", patient.getPreferences().getBestTimeToCall()),appointment.getReminderWindowStart(), appointment.getReminderWindowEnd());
+			context.getMotechSchedulerGateway().scheduleJob(schedulableJob);
+		} catch (RuntimeException e) {
+		    for (StackTraceElement el : e.getStackTrace()) {
+		        logger.error(el.getFileName() + ":" + el.getLineNumber() + ">> " + el.getMethodName() + "()");
+		    }			
+		    // TODO break the exceptions on transient and non-transient and throw the appropriate one
+			throw e;
+		}
 	}
 
 	@Override
 	public String getIdentifier() {
 		return SCHEDULE_APPOINTMENT_REMINDER;
-	}
-
-	public void setContext(Context context){
-		this.context = context;
 	}
 }
