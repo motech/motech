@@ -56,16 +56,11 @@
     <!-- We have to use the couchDbInstance provided by the motech server context -->
     <bean id="couchDbInstance" factory-bean="motechContext" factory-method="getCouchDbInstance" />
     
-	<bean id="appointmentDatabase" class="org.ektorp.impl.StdCouchDbConnector">
-		<constructor-arg value="appointments" />
-		<constructor-arg ref="couchDbInstance" />
-	</bean>
     <bean id="appointmentReminderDatabase" class="org.ektorp.impl.StdCouchDbConnector">
 		<constructor-arg value="appointments" />
 		<constructor-arg ref="couchDbInstance" />
 	</bean>
 
-	<bean id="appointmentDao" class="org.motechproject.server.appointmentreminder.dao.impl.AppointmentDaoImpl" />
 	<bean id="patientDAO" class="org.motechproject.appointmentreminder.dao.couchdb.PatientDAOImpl" />
 
 

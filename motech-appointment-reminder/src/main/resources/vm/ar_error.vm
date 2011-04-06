@@ -6,11 +6,8 @@
                 <audio src="/m/wav/hello.wav"/>
              </prompt>
             <prompt>
-                Please fix your appointment on or before ${appointmentDueDate}
+                Please ask your nurse to check your appointment reminder settings
             </prompt>
-
-
 		</block>
-
 	</form>
 </vxml>
