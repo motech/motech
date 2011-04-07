@@ -34,21 +34,31 @@ package org.motechproject.server.appointmentreminder.service;
 import org.motechproject.appointmentreminder.dao.PatientDAO;
 import org.motechproject.appointmentreminder.model.Appointment;
 import org.motechproject.appointmentreminder.model.Patient;
+import org.motechproject.appointmentreminder.model.Visit;
 import org.motechproject.model.InitiateCallData;
-import org.motechproject.server.ruleengine.KnowledgeBaseManager;
 import org.motechproject.server.service.ivr.IVRService;
-import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
 
 /**
  *
  */
 public class AppointmentReminderServiceImpl implements AppointmentReminderService {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-
+    @Autowired
     IVRService ivrService;
-    PatientDAO patientDao;
+
+    @Autowired
+    PatientDAO patientDao
+            ;
     //Interim implementation
-     String  appointmentReminderVmlUrl; // = "http://10.0.1.29:8080/TamaIVR/reminder/doc";
+    String  appointmentReminderVmlUrl = "http://10.0.1.29:8080/TamaIVR/reminder/doc";
 
     int timeOut;
     public final static String SCHEDULE_APPOINTMENT_REMINDER = "ScheduleAppointmentReminder";
@@ -63,29 +73,58 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
         long messageId = 1;
         String phone = patient.getPhoneNumber();
 
-        //TODO - implement rules to determine reminder vxml URL
-        //KnowledgeBaseManager knowledgeBaseManager = Context.getInstance().getKnowledgeBaseManager();
+        Date today = setTimeToMidnight(new Date());
 
+        // Patient is in window
+        Date reminderWindowStart = setTimeToMidnight(appointment.getReminderWindowStart());
+        Date reminderWindowEnd = setTimeToMidnight(appointment.getReminderWindowEnd());
+        boolean inWindow = false;
+        boolean visitedClinic = false;
 
+        if (reminderWindowStart.compareTo(today) <= 0 &&
+                reminderWindowEnd.compareTo(today) >= 0) {
+            inWindow = true;
+        }
 
-        InitiateCallData initiateCallData = new InitiateCallData(messageId, phone, timeOut, appointmentReminderVmlUrl);
+        Set<Visit> visits = patient.getVisits();
+        for (Visit v : visits) {
+            Date visitDate = setTimeToMidnight(v.getVisitDate());
+            if (reminderWindowStart.compareTo(visitDate) <= 0 &&
+                    reminderWindowEnd.compareTo(visitDate) >= 0) {
+                visitedClinic = true;
+            }
+        }
 
-        ivrService.initiateCall(initiateCallData);
+        if (!inWindow) {
+            log.info("Ignoring reminder event for patientId=" + patient.getClinicPatientId() +
+                             "appointmentId=" + appointmentId +
+                             " outside of window start=" + reminderWindowStart +
+                             " today=" + today + " end=" + reminderWindowEnd);
+        }
+
+        if (visitedClinic) {
+            log.info("Ignoring reminder event for patientId=" + patient.getClinicPatientId() +
+                             "appointmentId=" + appointmentId +
+                             " already visited clinic");
+        }
+
+        if (inWindow && !visitedClinic) {
+            InitiateCallData initiateCallData = new InitiateCallData(messageId, phone,
+                                                                     timeOut, appointmentReminderVmlUrl);
+
+            ivrService.initiateCall(initiateCallData);
+        }
     }
 
-    void setIvrService(IVRService ivrService) {
-        this.ivrService = ivrService;
-    }
+    private Date setTimeToMidnight(Date date) {
+        Calendar calendar = Calendar.getInstance();
 
-    void setPatientDao(PatientDAO patientDao) {
-        this.patientDao = patientDao;
-    }
+        calendar.setTime( date );
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
 
-    public void setTimeOut(int timeOut) {
-        this.timeOut = timeOut;
-    }
-
-    public void setAppointmentReminderVmlUrl(String appointmentReminderVmlUrl) {
-        this.appointmentReminderVmlUrl = appointmentReminderVmlUrl;
+        return calendar.getTime();
     }
 }

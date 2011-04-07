@@ -35,25 +35,26 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.server.appointmentreminder.RemindAppointmentEventHandler;
 import org.motechproject.server.appointmentreminder.service.AppointmentReminderService;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
  *
  */
 @RunWith(MockitoJUnitRunner.class)
+@ContextConfiguration(locations = { "/testApplicationContext.xml" })
 public class RemindAppointmentEventHandlerTest {
-
 
     @InjectMocks
     RemindAppointmentEventHandler remindAppointmentEventHandler = new RemindAppointmentEventHandler();
@@ -61,12 +62,13 @@ public class RemindAppointmentEventHandlerTest {
     @Mock
     private AppointmentReminderService appointmentReminderService;
 
+    @Mock
+    private MetricsAgent metricsAgent;
+
     @Before
     public void initMocks() {
-
         MockitoAnnotations.initMocks(this);
      }
-
 
     @Test
     public void testHandle() throws Exception {
@@ -91,21 +93,33 @@ public class RemindAppointmentEventHandlerTest {
         params.put(RemindAppointmentEventHandler.APPOINTMENT_ID_KEY, new Integer(0));
 
         MotechEvent motechEvent = new MotechEvent("", "", params);
+        boolean exceptionThrown = false;
 
-       remindAppointmentEventHandler.handle(motechEvent);
+        try {
+            remindAppointmentEventHandler.handle(motechEvent);
+        } catch (IllegalArgumentException e) {
+            exceptionThrown = true;
+        }
 
+        assertTrue(exceptionThrown);
         verify(appointmentReminderService, times(0)).remindPatientAppointment(anyString());
-
     }
 
     @Test
     public void testHandleNoAppointmentId() throws Exception {
 
         Map<String, Object> params = new HashMap<String, Object>();
+        boolean exceptionThrown = false;
 
         MotechEvent motechEvent = new MotechEvent("", "", params);
 
-       remindAppointmentEventHandler.handle(motechEvent);
+        try {
+            remindAppointmentEventHandler.handle(motechEvent);
+        } catch (IllegalArgumentException e) {
+            exceptionThrown = true;
+        }
+
+        assertTrue(exceptionThrown);
 
         verify(appointmentReminderService, times(0)).remindPatientAppointment(anyString());
 

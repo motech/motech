@@ -31,14 +31,17 @@
  */
 package org.motechproject.server.appointmentreminder;
 
+import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.appointmentreminder.service.AppointmentReminderService;
-import org.motechproject.server.appointmentreminder.service.AppointmentReminderServiceImpl;
 import org.motechproject.server.event.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Handles Remind Appointment Events
@@ -56,6 +59,9 @@ public class RemindAppointmentEventHandler implements EventListener {
     @Autowired
     AppointmentReminderService appointmentReminderService;
 
+    @Autowired
+    private MetricsAgent metricsAgent;
+
 	@Override
 	public void handle(MotechEvent event) {
 
@@ -63,19 +69,25 @@ public class RemindAppointmentEventHandler implements EventListener {
         try {
             appointmentId = (String) event.getParameters().get(APPOINTMENT_ID_KEY);
         } catch (ClassCastException e) {
-            log.error("Can not handle the Appointment Reminder. Event: " + event + ". The event is invalid " +
-                    APPOINTMENT_ID_KEY + " parameter is not a String" );
-            return;
+            String errorMessage = "Can not handle the Appointment Reminder. Event: " + event + ". The event is invalid " +
+                    APPOINTMENT_ID_KEY + " parameter is not a String";
+            log.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
         }
 
         if (appointmentId == null) {
-             log.error("Can not handle the Appointment Reminder. Event: " + event +
+            String errorMessage = "Can not handle the Appointment Reminder. Event: " + event +
                      ". The event is invalid - missing the " +
-                    APPOINTMENT_ID_KEY + " parameter" );
-            return;
+                    APPOINTMENT_ID_KEY + " parameter";
+            log.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
         }
 
         appointmentReminderService.remindPatientAppointment(appointmentId);
+
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("appointmentId", appointmentId);
+        metricsAgent.logEvent("motech.appointment-reminder.reminder", parameters);
     }
 
 	@Override
