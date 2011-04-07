@@ -31,6 +31,7 @@
  */
 package org.motechproject.server.appointmentreminder.service;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.motechproject.appointmentreminder.dao.PatientDAO;
 import org.motechproject.appointmentreminder.model.Appointment;
 import org.motechproject.appointmentreminder.model.Patient;
@@ -73,11 +74,11 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
         long messageId = 1;
         String phone = patient.getPhoneNumber();
 
-        Date today = setTimeToMidnight(new Date());
+        Date today = DateUtils.truncate(new Date(), Calendar.DATE);
 
         // Patient is in window
-        Date reminderWindowStart = setTimeToMidnight(appointment.getReminderWindowStart());
-        Date reminderWindowEnd = setTimeToMidnight(appointment.getReminderWindowEnd());
+        Date reminderWindowStart = DateUtils.truncate(appointment.getReminderWindowStart(), Calendar.DATE);
+        Date reminderWindowEnd = DateUtils.truncate(appointment.getReminderWindowEnd(), Calendar.DATE);
         boolean inWindow = false;
         boolean visitedClinic = false;
 
@@ -88,7 +89,7 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
 
         Set<Visit> visits = patient.getVisits();
         for (Visit v : visits) {
-            Date visitDate = setTimeToMidnight(v.getVisitDate());
+            Date visitDate = DateUtils.truncate(v.getVisitDate(), Calendar.DATE);
             if (reminderWindowStart.compareTo(visitDate) <= 0 &&
                     reminderWindowEnd.compareTo(visitDate) >= 0) {
                 visitedClinic = true;
@@ -114,17 +115,5 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
 
             ivrService.initiateCall(initiateCallData);
         }
-    }
-
-    private Date setTimeToMidnight(Date date) {
-        Calendar calendar = Calendar.getInstance();
-
-        calendar.setTime( date );
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-
-        return calendar.getTime();
     }
 }
