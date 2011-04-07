@@ -36,21 +36,15 @@ package org.motechproject.appointmentreminder.dao;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.appointmentreminder.model.Patient;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * PatientDAO Integration Tests
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-//@ContextConfiguration(locations = {"/applicationCommon.xml", "/persistenceIntegrationContext.xml"})
+@ContextConfiguration(locations = {"/applicationCommon.xml"})
 public class PatientDAOIT {
-
-    @Autowired
-    private PatientDAO patientDao;
-
-    private Patient patient;
 
     @Test
     public void testMotechScheduler() {
