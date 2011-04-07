@@ -34,6 +34,7 @@ package org.motechproject.server.appointmentreminder.service;
 import org.apache.commons.lang.time.DateUtils;
 import org.motechproject.appointmentreminder.dao.PatientDAO;
 import org.motechproject.appointmentreminder.model.Appointment;
+import org.motechproject.appointmentreminder.model.AppointmentReminder;
 import org.motechproject.appointmentreminder.model.Patient;
 import org.motechproject.appointmentreminder.model.Visit;
 import org.motechproject.model.InitiateCallData;
@@ -81,6 +82,7 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
         Date reminderWindowEnd = DateUtils.truncate(appointment.getReminderWindowEnd(), Calendar.DATE);
         boolean inWindow = false;
         boolean visitedClinic = false;
+        boolean alreadyReminded = false;
 
         if (reminderWindowStart.compareTo(today) <= 0 &&
                 reminderWindowEnd.compareTo(today) >= 0) {
@@ -110,10 +112,37 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
         }
 
         if (inWindow && !visitedClinic) {
-            InitiateCallData initiateCallData = new InitiateCallData(messageId, phone,
-                                                                     timeOut, appointmentReminderVmlUrl);
+            // Get list of Appointment Reminders
+            Set<AppointmentReminder> reminders = appointment.getReminders();
 
-            ivrService.initiateCall(initiateCallData);
+            // See if there is a completed or open reminder for today
+            for (AppointmentReminder r : reminders) {
+                Date reminderDate = DateUtils.truncate(r.getReminderDate(), Calendar.DATE);
+
+                // See if this reminder has already been sent
+                if (reminderDate.compareTo(today) == 0 &&
+                        r.getStatus() != AppointmentReminder.Status.INCOMPLETE) {
+                    log.info("Ignoring duplicate reminder event for patientId=" + patient.getClinicPatientId() +
+                                     "appointmentId=" + appointmentId);
+                    alreadyReminded = true;
+                }
+            }
+
+            if (!alreadyReminded) {
+                appointment.addReminder(new AppointmentReminder(today,
+                                                                AppointmentReminder.Status.REQUESTED));
+
+                // Ignore any optimistic locks.  The event should be rehandled and next time through
+                // my write will either succeed, or this reminder will have been handled by someone else
+                // I'm nt happy with this solution since we can't wrap the IVR call with this update
+                // it is still possible that calls will be recorded as sent that are not.
+                patientDao.updateAppointment(appointment);
+
+                InitiateCallData initiateCallData = new InitiateCallData(messageId, phone,
+                                                                         timeOut, appointmentReminderVmlUrl);
+
+                ivrService.initiateCall(initiateCallData);
+            }
         }
     }
 }

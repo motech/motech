@@ -50,6 +50,7 @@ public class Patient extends MotechAuditableDataObject {
 	private Doctor doctor;
 	private String phoneNumber;
 	private Preferences preferences;
+
     @DocumentReferences(fetch = FetchType.LAZY, descendingSortOrder = true, orderBy = "visitDate", backReference = "patientId")
     private Set<Visit> visits;
 

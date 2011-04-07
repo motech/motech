@@ -41,6 +41,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.appointmentreminder.dao.PatientDAO;
 import org.motechproject.appointmentreminder.model.Appointment;
+import org.motechproject.appointmentreminder.model.AppointmentReminder;
 import org.motechproject.appointmentreminder.model.Patient;
 import org.motechproject.appointmentreminder.model.Visit;
 import org.motechproject.model.InitiateCallData;
@@ -48,6 +49,7 @@ import org.motechproject.server.service.ivr.IVRService;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import static org.mockito.Mockito.*;
 
@@ -75,7 +77,9 @@ public class AppointmentReminderServiceImplTest {
     // These offsets all start from today and are applied in the following order
     // startOffset, endOffset, visitOffset
     // You'll need to do the math on your own.
-    private void setTestData(int startOffset, int endOffset, boolean setVisits, int visitOffset) {
+    private void setTestData(int startOffset, int endOffset,
+                             boolean setVisits, int visitOffset)
+    {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, startOffset);
 
@@ -99,6 +103,48 @@ public class AppointmentReminderServiceImplTest {
 
             patient.addVisit(v);
         }
+
+    }
+
+    private  void setTestData(int startOffset, int endOffset,
+                             boolean setVisits, int visitOffset,
+                             Date reminderDate, AppointmentReminder.Status reminderStatus)
+    {
+        setTestData(startOffset, endOffset, setVisits, visitOffset);
+
+        Appointment appointment = patientDaoMock.getAppointment("");
+
+        AppointmentReminder ar = new AppointmentReminder(reminderDate, reminderStatus);
+        appointment.addReminder(ar);
+    }
+
+    @Test
+    public void testRemindPatientAppointment_ExistingReminderRequested() throws Exception {
+        setTestData(-3, 7, true, -30, new Date(), AppointmentReminder.Status.REQUESTED);
+
+        appointmentReminderService.remindPatientAppointment("1a");
+
+        verify(ivrServiceMock, times(0)).initiateCall(Mockito.any(InitiateCallData.class));
+    }
+
+
+    @Test
+    public void testRemindPatientAppointment_ExistingReminderCompleted() throws Exception {
+        setTestData(-3, 7, true, -30, new Date(), AppointmentReminder.Status.COMPLETED);
+
+        appointmentReminderService.remindPatientAppointment("1a");
+
+        verify(ivrServiceMock, times(0)).initiateCall(Mockito.any(InitiateCallData.class));
+    }
+
+
+    @Test
+    public void testRemindPatientAppointment_ExistingReminderIncomplete() throws Exception {
+        setTestData(-3, 7, true, -30, new Date(), AppointmentReminder.Status.INCOMPLETE);
+
+        appointmentReminderService.remindPatientAppointment("1a");
+
+        verify(ivrServiceMock, times(1)).initiateCall(Mockito.any(InitiateCallData.class));
     }
 
     /*

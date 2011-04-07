@@ -31,20 +31,25 @@
  */
 package org.motechproject.appointmentreminder.model;
 
-import java.util.Date;
-
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechAuditableDataObject;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Appointment extends MotechAuditableDataObject {
 
 	private static final long serialVersionUID = -3065277684319403907L;
+
 	@TypeDiscriminator
 	private String patientId;
 	private Date reminderWindowStart;
 	private Date reminderWindowEnd;
 	private Date date;
-	
+
+    private Set<AppointmentReminder> reminders;
 	
 	/**
 	 * @return the patientId
@@ -100,7 +105,25 @@ public class Appointment extends MotechAuditableDataObject {
 	public void setDate(Date date) {
 		this.date = date;
 	}
-	
+
+    public Set<AppointmentReminder> getReminders()
+    {
+        return reminders == null ? Collections.<AppointmentReminder>emptySet() : reminders;
+    }
+
+    public void setReminders(Set<AppointmentReminder> reminders)
+    {
+        this.reminders = reminders == null ? Collections.<AppointmentReminder>emptySet() : reminders;
+    }
+
+    public void addReminder(AppointmentReminder reminder) {
+        if (reminders == null) {
+            reminders = new HashSet<AppointmentReminder>();
+        }
+
+		this.reminders.add(reminder);
+	}
+
     @Override
     public String toString() {
         return "id = " + this.getId() + ", reminder window start = " + reminderWindowStart + ", reminder window end = " + this.reminderWindowEnd + ", appointment date = " + this.date + ", patient id = " + patientId; 
