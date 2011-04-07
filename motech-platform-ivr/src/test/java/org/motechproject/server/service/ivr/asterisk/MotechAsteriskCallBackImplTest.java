@@ -31,50 +31,114 @@
  */
 package org.motechproject.server.service.ivr.asterisk;
 
+import junitx.util.PrivateAccessor;
 import org.asteriskjava.live.AsteriskChannel;
+import org.asteriskjava.live.CallDetailRecord;
 import org.asteriskjava.live.LiveException;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.model.MotechEvent;
+import org.motechproject.server.gateway.OutboundEventGateway;
+import org.motechproject.server.service.ivr.CallRequest;
 
 import static org.mockito.Mockito.*;
 
-/**
- *  TODO - develop proper tests
- */
+@RunWith(MockitoJUnitRunner.class)
 public class MotechAsteriskCallBackImplTest {
 
-    private MotechAsteriskCallBackImpl motechAsteriskCallBack;
+    @Mock
+    private OutboundEventGateway eventGateway;
 
-    private AsteriskChannel asteriskChannel = mock(AsteriskChannel.class);
+    @Mock
+    private AsteriskChannel asteriskChannel;
+
+    @Mock
+    private LiveException liveException;
+
+    @Mock
+    private CallDetailRecord asteriskCallDetailRecord;
+
+    MotechEvent event;
+    CallRequest callRequest;
+    MotechAsteriskCallBackImpl motechAsteriskCallBack;
 
     @Before
-    public void setup() {
-        motechAsteriskCallBack = new MotechAsteriskCallBackImpl();
+    public void setUp() throws Exception {
+        event = new MotechEvent("", "", null);
+
+        callRequest = new CallRequest(1l, "", 0, "");
+
+        motechAsteriskCallBack = new MotechAsteriskCallBackImpl(callRequest);
+
+        when(asteriskChannel.getCallDetailRecord()).thenReturn(asteriskCallDetailRecord);
+
+        PrivateAccessor.setField(motechAsteriskCallBack, "eventGateway", eventGateway);
     }
 
     @Test
-    public void testOnDialing() throws Exception {
-        motechAsteriskCallBack.onDialing(asteriskChannel);
-    }
+    public void testOnBusy_Event() throws Exception {
+        callRequest.setOnBusyEvent(event);
 
-    @Test
-    public void testOnSuccess() throws Exception {
-        motechAsteriskCallBack.onSuccess(asteriskChannel);
-    }
-
-    @Test
-    public void testOnNoAnswer() throws Exception {
-        motechAsteriskCallBack.onNoAnswer(asteriskChannel);
-    }
-
-    @Test
-    public void testOnBusy() throws Exception {
         motechAsteriskCallBack.onBusy(asteriskChannel);
+
+        verify(eventGateway, times(1)).sendEventMessage(event);
     }
 
     @Test
-    public void testOnFailure() throws Exception {
-        motechAsteriskCallBack.onFailure(new LiveException("error") {
-        });
+    public void testOnBusy_NoEvent() throws Exception {
+        motechAsteriskCallBack.onBusy(asteriskChannel);
+
+        verify(eventGateway, times(0)).sendEventMessage(event);
+    }
+
+    @Test
+    public void testOnSuccess_Event() throws Exception {
+        callRequest.setOnSuccessEvent(event);
+
+        motechAsteriskCallBack.onSuccess(asteriskChannel);
+
+        verify(eventGateway, times(1)).sendEventMessage(event);
+    }
+
+    @Test
+    public void testOnSuccess_NoEvent() throws Exception {
+        motechAsteriskCallBack.onSuccess(asteriskChannel);
+
+        verify(eventGateway, times(0)).sendEventMessage(event);
+    }
+
+    @Test
+    public void testOnNoAnswer_Event() throws Exception {
+        callRequest.setOnNoAnswerEvent(event);
+
+        motechAsteriskCallBack.onNoAnswer(asteriskChannel);
+
+        verify(eventGateway, times(1)).sendEventMessage(event);
+    }
+
+    @Test
+    public void testOnNoAnswer_NoEvent() throws Exception {
+        motechAsteriskCallBack.onNoAnswer(asteriskChannel);
+
+        verify(eventGateway, times(0)).sendEventMessage(event);
+    }
+
+    @Test
+    public void testOnFailure_Event() throws Exception {
+        callRequest.setOnFailureEvent(event);
+
+        motechAsteriskCallBack.onFailure(liveException);
+
+        verify(eventGateway, times(1)).sendEventMessage(event);
+    }
+
+    @Test
+    public void testOnFailure_NoEvent() throws Exception {
+        motechAsteriskCallBack.onFailure(liveException);
+
+        verify(eventGateway, times(0)).sendEventMessage(event);
     }
 }

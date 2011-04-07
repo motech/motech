@@ -32,40 +32,112 @@
 package org.motechproject.server.service.ivr.asterisk;
 
 import org.asteriskjava.live.AsteriskChannel;
+import org.asteriskjava.live.Disposition;
 import org.asteriskjava.live.LiveException;
 import org.asteriskjava.live.OriginateCallback;
+import org.motechproject.model.MotechEvent;
+import org.motechproject.server.gateway.OutboundEventGateway;
+import org.motechproject.server.service.ivr.CallDetailRecord;
+import org.motechproject.server.service.ivr.CallRequest;
+import org.motechproject.server.service.ivr.IVREventDelegate;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Map;
 
 /**
  *  Motech specific implementation of the Asterisk-Java call-back interface
  *   see org.asteriskjava.live.OriginateCallback.java for details
  *
- *
- *
- * TODO - implement properly
  */
 public class MotechAsteriskCallBackImpl implements OriginateCallback {
-    @Override
-    public void onDialing(AsteriskChannel asteriskChannel) {
-        System.out.println("onDialing " + asteriskChannel);
+
+    @Autowired
+    private OutboundEventGateway eventGateway;
+
+    private CallRequest callRequest;
+
+    public MotechAsteriskCallBackImpl(CallRequest callRequest) {
+        this.callRequest = callRequest;
     }
 
     @Override
+    public void onDialing(AsteriskChannel asteriskChannel) {}
+
+    @Override
     public void onSuccess(AsteriskChannel asteriskChannel) {
-        System.out.println("onSuccess");
+        MotechEvent event = callRequest.getOnSuccessEvent();
+
+        if (event != null) {
+            org.asteriskjava.live.CallDetailRecord aCDR = asteriskChannel.getCallDetailRecord();
+            CallDetailRecord cdr = new CallDetailRecord(aCDR.getStartDate(), aCDR.getEndDate(), aCDR.getAnswerDate(),
+                                                        translateDisposition(aCDR.getDisposition()), aCDR.getDuration());
+
+            Map<String, Object> parameters = event.getParameters();
+            parameters.put(IVREventDelegate.CALL_DETAIL_RECORD_KEY, cdr);
+
+            eventGateway.sendEventMessage(event);
+        }
     }
 
     @Override
     public void onNoAnswer(AsteriskChannel asteriskChannel) {
-        System.out.println("onNoAnswer");
+        MotechEvent event = callRequest.getOnNoAnswerEvent();
+
+        if (event != null) {
+            org.asteriskjava.live.CallDetailRecord aCDR = asteriskChannel.getCallDetailRecord();
+            CallDetailRecord cdr = new CallDetailRecord(aCDR.getStartDate(), aCDR.getEndDate(), aCDR.getAnswerDate(),
+                                                    translateDisposition(aCDR.getDisposition()), aCDR.getDuration());
+
+            eventGateway.sendEventMessage(event);
+        }
+
     }
 
     @Override
     public void onBusy(AsteriskChannel asteriskChannel) {
-        System.out.println("onBusy");
+        MotechEvent event = callRequest.getOnBusyEvent();
+
+        if (event != null) {
+            org.asteriskjava.live.CallDetailRecord aCDR = asteriskChannel.getCallDetailRecord();
+            CallDetailRecord cdr = new CallDetailRecord(aCDR.getStartDate(), aCDR.getEndDate(), aCDR.getAnswerDate(),
+                                                    translateDisposition(aCDR.getDisposition()), aCDR.getDuration());
+
+            eventGateway.sendEventMessage(event);
+        }
+
     }
 
     @Override
     public void onFailure(LiveException e) {
-        System.out.println("onFailure");
+        MotechEvent event = callRequest.getOnFailureEvent();
+
+        if (event != null) {
+            CallDetailRecord cdr = new CallDetailRecord(CallDetailRecord.Disposition.FAILED, e.getMessage());
+
+            eventGateway.sendEventMessage(event);
+        }
+
+    }
+
+    private CallDetailRecord.Disposition translateDisposition(Disposition disposition) {
+        CallDetailRecord.Disposition ret = CallDetailRecord.Disposition.UNKNOWN;
+
+        if (disposition == Disposition.BUSY) {
+            ret = CallDetailRecord.Disposition.BUSY;
+        }
+
+        if (disposition == Disposition.ANSWERED) {
+            ret = CallDetailRecord.Disposition.ANSWERED;
+        }
+
+        if (disposition == Disposition.NO_ANSWER) {
+            ret = CallDetailRecord.Disposition.NO_ANSWER;
+        }
+
+        if (disposition == Disposition.FAILED) {
+            ret = CallDetailRecord.Disposition.FAILED;
+        }
+
+        return ret;
     }
 }

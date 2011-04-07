@@ -34,8 +34,8 @@ package org.motechproject.server.service.ivr.asterisk;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.net.URLCodec;
 import org.asteriskjava.live.*;
-import org.motechproject.server.service.ivr.CallRequest;
 import org.motechproject.server.service.ivr.CallInitiationException;
+import org.motechproject.server.service.ivr.CallRequest;
 import org.motechproject.server.service.ivr.IVRService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +46,8 @@ import org.slf4j.LoggerFactory;
  * Date: 07/03/11
  *
  */
-public class IVRServiceAsteriskImpl implements IVRService {
+public class IVRServiceAsteriskImpl implements IVRService
+{
 
     private final String asteriskApplication = "Agi";
 
@@ -73,7 +74,7 @@ public class IVRServiceAsteriskImpl implements IVRService {
             throw new IllegalArgumentException("CallRequest can not be null");
         }
 
-        OriginateCallback asteriskCallBack = new MotechAsteriskCallBackImpl();
+        OriginateCallback asteriskCallBack = new MotechAsteriskCallBackImpl(callRequest);
         try {
 
             String destinationPhone = callRequest.getPhone();
@@ -116,4 +117,5 @@ public class IVRServiceAsteriskImpl implements IVRService {
     AsteriskServer getAsteriskServer() {
         return asteriskServer;
     }
+
 }

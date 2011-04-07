@@ -38,8 +38,9 @@ import java.io.Serializable;
 /**
  * This class is used to request a call from the IVR system
  *
- * To receive events related to this call provide the class with the events to raise when the following
- * events within the IVR system happen
+ * To receive events related to this call provide this class with the events to raise when the following
+ * events within the IVR system happen.  The supplied event will be augmented with {@link CallDetailRecord}
+ * if one is available
  *
  * onSuccessEvent - Following the successful completion of the call
  * onBusyEvent - If the IVR system is unable to place the call because the line is busy

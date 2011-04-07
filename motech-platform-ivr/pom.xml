@@ -37,6 +37,12 @@
             <artifactId>asterisk-java</artifactId>
             <version>1.0.0.M3</version>
         </dependency>
+        <dependency>
+            <groupId>junit-addons</groupId>
+            <artifactId>junit-addons</artifactId>
+            <version>1.4</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>
