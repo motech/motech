@@ -126,7 +126,7 @@ public class VxmlControllerTest {
 
         Appointment appointment = new Appointment();
 
-        when(request.getParameter("a")).thenReturn(null);
+        when(request.getParameter("a")).thenReturn(appointmentId);
         when(patientDAO.getAppointment(appointmentId)).thenThrow(new RuntimeException());
 
         ModelAndView modelAndView = vxmlController.ar(request, response);
