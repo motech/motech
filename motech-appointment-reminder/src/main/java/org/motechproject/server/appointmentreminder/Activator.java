@@ -31,9 +31,11 @@
  */
 package org.motechproject.server.appointmentreminder;
 
-import java.util.Arrays;
-
 import org.motechproject.context.Context;
+import org.motechproject.server.appointmentreminder.eventtype.RemindAppointmentEventType;
+import org.motechproject.server.appointmentreminder.eventtype.ReminderCallCompleteEventType;
+import org.motechproject.server.appointmentreminder.eventtype.ReminderCallIncompleteEventType;
+import org.motechproject.server.appointmentreminder.eventtype.ScheduleAppointmentReminderEventType;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -42,6 +44,8 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.DispatcherServlet;
+
+import java.util.Arrays;
 
 /**
  * 
@@ -53,8 +57,10 @@ public class Activator implements BundleActivator {
 	private static final String CONTEXT_CONFIG_LOCATION = "applicationAppointmentReminder.xml";
 	private static final String SERVLET_URL_MAPPING = "/ar";
 	private ServiceTracker tracker;
-	private ScheduleAppointmentReminderHandler listener;
+	private ScheduleAppointmentReminderHandler scheduleAppointmentListener;
     private RemindAppointmentEventHandler remindAppointmentEventListener;
+    private ReminderCallCompleteEventHandler reminderCallCompleteEventListener;
+    private ReminderCallIncompleteEventHandler reminderCallIncompleteEventListener;
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -94,14 +100,22 @@ public class Activator implements BundleActivator {
 				Thread.currentThread().setContextClassLoader(old);
 			}
 			//listener = new ScheduleAppointmentReminderHandler();
-			listener = dispatcherServlet.getWebApplicationContext().getBean(ScheduleAppointmentReminderHandler.class);
+			scheduleAppointmentListener = dispatcherServlet.getWebApplicationContext().getBean(ScheduleAppointmentReminderHandler.class);
 			Context.getInstance().getEventTypeRegistry().add(ScheduleAppointmentReminderEventType.getInstance());
-			Context.getInstance().getEventListenerRegistry().registerListener(listener, Arrays.asList(ScheduleAppointmentReminderEventType.getInstance()) );
+			Context.getInstance().getEventListenerRegistry().registerListener(scheduleAppointmentListener, Arrays.asList(ScheduleAppointmentReminderEventType.getInstance()) );
 			
 			//remindAppointmentEventListener = new RemindAppointmentEventHandler();
 			remindAppointmentEventListener = dispatcherServlet.getWebApplicationContext().getBean(RemindAppointmentEventHandler.class);
 			Context.getInstance().getEventTypeRegistry().add(RemindAppointmentEventType.getInstance());
 			Context.getInstance().getEventListenerRegistry().registerListener(remindAppointmentEventListener, Arrays.asList(RemindAppointmentEventType.getInstance()));
+
+            reminderCallCompleteEventListener = dispatcherServlet.getWebApplicationContext().getBean(ReminderCallCompleteEventHandler.class);
+            Context.getInstance().getEventTypeRegistry().add(ReminderCallCompleteEventType.getInstance());
+            Context.getInstance().getEventListenerRegistry().registerListener(reminderCallCompleteEventListener, Arrays.asList(ReminderCallCompleteEventType.getInstance()));
+
+            reminderCallIncompleteEventListener = dispatcherServlet.getWebApplicationContext().getBean(ReminderCallIncompleteEventHandler.class);
+            Context.getInstance().getEventTypeRegistry().add(ReminderCallIncompleteEventType.getInstance());
+            Context.getInstance().getEventListenerRegistry().registerListener(reminderCallIncompleteEventListener, Arrays.asList(ReminderCallIncompleteEventType.getInstance()));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

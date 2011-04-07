@@ -29,24 +29,24 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.appointmentreminder;
+package org.motechproject.server.appointmentreminder.eventtype;
 
 import org.motechproject.event.EventType;
 
 /**
- * Defines an {@link org.motechproject.event.EventType} of event that a {@link
- * org.motechproject.server.RemindAppointmentEventHandler} will be listening for.
- *
- * @author iopushnyev@2paths.com
- *
+ * Defines an {@link EventType} of event that a {@link
+ * org.motechproject.server.appointmentreminder.ScheduleAppointmentReminderHandler} will be listening for.
+ * 
+ * @author yyonkov
+ * 
  */
-public class RemindAppointmentEventType implements EventType {
+public class ScheduleAppointmentReminderEventType implements EventType {
+	
+	public static final String KEY = "scheduleappointmentremindereventtype";
+	
+	private static ScheduleAppointmentReminderEventType instance = new ScheduleAppointmentReminderEventType();
 
-	public static final String KEY = "remindappointmenteventtype";
-
-	private static RemindAppointmentEventType instance = new RemindAppointmentEventType();
-
-	private RemindAppointmentEventType() {
+	private ScheduleAppointmentReminderEventType() {
 	}
 
 	public static EventType getInstance() {
@@ -55,7 +55,7 @@ public class RemindAppointmentEventType implements EventType {
 
 	@Override
 	public String getName() {
-		return "RemindAppointmentEventType";
+		return "ScheduleAppointmentReminderEventType";
 	}
 
 	@Override

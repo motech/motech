@@ -31,9 +31,15 @@
  */
 package org.motechproject.server.appointmentreminder.service;
 
+import java.util.Date;
+
 /**
  *
  */
 public interface AppointmentReminderService {
     void remindPatientAppointment(String appointmentId);
+
+    void reminderCallCompleted(String appointmentId, Date callDate);
+
+    void reminderCallIncompleted(String appointmentId, Date callDate);
 }

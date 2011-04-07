@@ -32,7 +32,6 @@
 package org.motechproject.model;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +45,7 @@ import java.util.Map;
  * Date: 16/02/11
  *
  */
-public final class MotechEvent implements Serializable{
+public final class MotechEvent implements Serializable {
 
     private static final long serialVersionUID = 2L;
 
