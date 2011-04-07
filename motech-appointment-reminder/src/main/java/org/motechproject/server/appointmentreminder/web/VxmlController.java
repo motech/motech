@@ -84,9 +84,9 @@ public class VxmlController extends MultiActionController {
 
         if (appointmentId  == null) {
             logger.warn("Invalid request. Value of the Appointment Reminder ID parameter - 'a'  sent as a part of that VXML URL is null." +
-                    " Generating a VXML with the error message...");
+                    " Generating default appointment reminder VXML...");
 
-            mav.setViewName("ar_error");
+            mav.setViewName("ar_default");
 		    return mav;
         }
 
