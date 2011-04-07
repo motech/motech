@@ -102,7 +102,7 @@ public class VxmlControllerTest {
 
         ModelAndView modelAndView = vxmlController.ar(request, response);
 
-        assertEquals("ar_error", modelAndView.getViewName());
+        assertEquals("ar_default", modelAndView.getViewName());
 
     }
 
