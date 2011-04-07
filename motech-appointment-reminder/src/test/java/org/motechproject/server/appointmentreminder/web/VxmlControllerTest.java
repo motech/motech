@@ -47,8 +47,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
 
 /**
  *
@@ -132,7 +131,7 @@ public class VxmlControllerTest {
 
         ModelAndView modelAndView = vxmlController.ar(request, response);
 
-        assertEquals("ar_error", modelAndView.getViewName());
+        assertEquals("ar_default", modelAndView.getViewName());
 
     }
 
