@@ -29,53 +29,51 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.model;
+package org.motechproject.server.service.ivr;
 
-import java.io.Serializable;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  *
- * Date: 07/03/11
- *
  */
-public class InitiateCallData implements Serializable {
+public class TestInitiateCallData {
 
-    private static final long serialVersionUID = 1L;
+    @Test
+    public void TestConstructor() {
+        long messageId = 1L;
+        String phone = "1001";
+        int timeOut = Integer.MAX_VALUE;
+        String vxmlUrl = "http://test.test/vxml";
 
-    private long messageId;
-    private String phone;
-    private int timeOut; //how long IVR will wait for the channel to be answered before its considered to have failed (in ms)
-    private String vxmlUrl;
+        CallRequest callRequest = new CallRequest(messageId,phone, timeOut,vxmlUrl);
 
-    public InitiateCallData(long messageId, String phone, int timeOut, String vxmlUrl) {
-
-         if (phone == null) {
-            throw new IllegalArgumentException("phone can not be null");
-        }
-
-        if (vxmlUrl == null) {
-            throw new IllegalArgumentException("vxmlUrl can not be null");
-        }
-
-        this.messageId = messageId;
-        this.phone = phone;
-        this.timeOut = timeOut;
-        this.vxmlUrl = vxmlUrl;
+        assertEquals(messageId, callRequest.getMessageId());
+        assertEquals(phone, callRequest.getPhone());
+        assertEquals(timeOut, callRequest.getTimeOut());
+        assertEquals(vxmlUrl, callRequest.getVxmlUrl());
     }
 
-    public long getMessageId() {
-        return messageId;
+    @Test(expected = IllegalArgumentException.class)
+    public void TestConstructorNullPhone() {
+        long messageId = 1L;
+        String phone = null;
+        int timeOut = Integer.MAX_VALUE;
+        String vxmlUrl = "http://test.test/vxml";
+
+        CallRequest callRequest = new CallRequest(messageId,phone, timeOut,vxmlUrl);
+
     }
 
-    public String getPhone() {
-        return phone;
-    }
+    @Test(expected = IllegalArgumentException.class)
+    public void TestConstructorNullVxmlUrl() {
+        long messageId = 1L;
+        String phone = "1001";
+        int timeOut = Integer.MAX_VALUE;
+        String vxmlUrl= null;
 
-    public int getTimeOut() {
-        return timeOut;
-    }
+        CallRequest callRequest = new CallRequest(messageId,phone, timeOut,vxmlUrl);
 
-    public String getVxmlUrl() {
-        return vxmlUrl;
     }
 }

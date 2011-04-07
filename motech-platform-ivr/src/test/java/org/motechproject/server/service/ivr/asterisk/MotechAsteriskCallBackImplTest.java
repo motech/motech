@@ -29,43 +29,52 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.service.ivr.astersik;
+package org.motechproject.server.service.ivr.asterisk;
 
 import org.asteriskjava.live.AsteriskChannel;
 import org.asteriskjava.live.LiveException;
-import org.asteriskjava.live.OriginateCallback;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.mockito.Mockito.*;
 
 /**
- *  Motech specific implementation of the Asterisk-Java call-back interface
- *   see org.asteriskjava.live.OriginateCallback.java for details
- *
- *
- *
- * TODO - implement properly
+ *  TODO - develop proper tests
  */
-public class MotechAsteriskCallBackImpl implements OriginateCallback {
-    @Override
-    public void onDialing(AsteriskChannel asteriskChannel) {
-        System.out.println("onDialing " + asteriskChannel);
+public class MotechAsteriskCallBackImplTest {
+
+    private MotechAsteriskCallBackImpl motechAsteriskCallBack;
+
+    private AsteriskChannel asteriskChannel = mock(AsteriskChannel.class);
+
+    @Before
+    public void setup() {
+        motechAsteriskCallBack = new MotechAsteriskCallBackImpl();
     }
 
-    @Override
-    public void onSuccess(AsteriskChannel asteriskChannel) {
-        System.out.println("onSuccess");
+    @Test
+    public void testOnDialing() throws Exception {
+        motechAsteriskCallBack.onDialing(asteriskChannel);
     }
 
-    @Override
-    public void onNoAnswer(AsteriskChannel asteriskChannel) {
-        System.out.println("onNoAnswer");
+    @Test
+    public void testOnSuccess() throws Exception {
+        motechAsteriskCallBack.onSuccess(asteriskChannel);
     }
 
-    @Override
-    public void onBusy(AsteriskChannel asteriskChannel) {
-        System.out.println("onBusy");
+    @Test
+    public void testOnNoAnswer() throws Exception {
+        motechAsteriskCallBack.onNoAnswer(asteriskChannel);
     }
 
-    @Override
-    public void onFailure(LiveException e) {
-        System.out.println("onFailure");
+    @Test
+    public void testOnBusy() throws Exception {
+        motechAsteriskCallBack.onBusy(asteriskChannel);
+    }
+
+    @Test
+    public void testOnFailure() throws Exception {
+        motechAsteriskCallBack.onFailure(new LiveException("error") {
+        });
     }
 }

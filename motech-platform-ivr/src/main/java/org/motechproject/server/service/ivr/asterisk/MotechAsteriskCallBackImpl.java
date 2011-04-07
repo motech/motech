@@ -29,51 +29,43 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.model;
+package org.motechproject.server.service.ivr.asterisk;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+import org.asteriskjava.live.AsteriskChannel;
+import org.asteriskjava.live.LiveException;
+import org.asteriskjava.live.OriginateCallback;
 
 /**
+ *  Motech specific implementation of the Asterisk-Java call-back interface
+ *   see org.asteriskjava.live.OriginateCallback.java for details
  *
+ *
+ *
+ * TODO - implement properly
  */
-public class TestInitiateCallData {
-
-    @Test
-    public void TestConstructor() {
-        long messageId = 1L;
-        String phone = "1001";
-        int timeOut = Integer.MAX_VALUE;
-        String vxmlUrl = "http://test.test/vxml";
-
-        InitiateCallData initiateCallData = new InitiateCallData(messageId,phone, timeOut,vxmlUrl);
-
-        assertEquals(messageId, initiateCallData.getMessageId());
-        assertEquals(phone, initiateCallData.getPhone());
-        assertEquals(timeOut, initiateCallData.getTimeOut());
-        assertEquals(vxmlUrl, initiateCallData.getVxmlUrl());
+public class MotechAsteriskCallBackImpl implements OriginateCallback {
+    @Override
+    public void onDialing(AsteriskChannel asteriskChannel) {
+        System.out.println("onDialing " + asteriskChannel);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void TestConstructorNullPhone() {
-        long messageId = 1L;
-        String phone = null;
-        int timeOut = Integer.MAX_VALUE;
-        String vxmlUrl = "http://test.test/vxml";
-
-        InitiateCallData initiateCallData = new InitiateCallData(messageId,phone, timeOut,vxmlUrl);
-
+    @Override
+    public void onSuccess(AsteriskChannel asteriskChannel) {
+        System.out.println("onSuccess");
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void TestConstructorNullVxmlUrl() {
-        long messageId = 1L;
-        String phone = "1001";
-        int timeOut = Integer.MAX_VALUE;
-        String vxmlUrl= null;
+    @Override
+    public void onNoAnswer(AsteriskChannel asteriskChannel) {
+        System.out.println("onNoAnswer");
+    }
 
-        InitiateCallData initiateCallData = new InitiateCallData(messageId,phone, timeOut,vxmlUrl);
+    @Override
+    public void onBusy(AsteriskChannel asteriskChannel) {
+        System.out.println("onBusy");
+    }
 
+    @Override
+    public void onFailure(LiveException e) {
+        System.out.println("onFailure");
     }
 }

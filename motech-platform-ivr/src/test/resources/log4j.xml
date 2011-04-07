@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--
 
     MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
@@ -32,22 +32,23 @@
     OF SUCH DAMAGE.
 
 -->
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
-         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
 
-    <bean id="ivrService" class="org.motechproject.server.service.ivr.astersik.IVRServiceAsteriskImpl" >
-        <!--Asterisk Server host-->
-        <constructor-arg  value="10.0.1.31"/>
-        <!--Asterisk Server user-->
-        <constructor-arg  value="admin"/>
-        <!--Asterisk Server user password-->
-        <constructor-arg value="amp111"/>
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %-5p [%c] %m%n" />
+		</layout>
+	</appender>
 
-        <property name="agiUrl" value="agi://localhost/url="/>
-    </bean>
+	<logger name="org.motechproject">
+		<level value="DEBUG" />
+	</logger>
+	
+	<root>
+		<priority value="WARN" />
+		<appender-ref ref="CONSOLE" />
+	</root>
 
-
-</beans>
+</log4j:configuration>

@@ -29,12 +29,12 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.service.ivr.astersik;
+package org.motechproject.server.service.ivr.asterisk;
 
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.net.URLCodec;
 import org.asteriskjava.live.*;
-import org.motechproject.model.InitiateCallData;
+import org.motechproject.server.service.ivr.CallRequest;
 import org.motechproject.server.service.ivr.CallInitiationException;
 import org.motechproject.server.service.ivr.IVRService;
 import org.slf4j.Logger;
@@ -66,33 +66,33 @@ public class IVRServiceAsteriskImpl implements IVRService {
     }
 
     @Override
-    public void initiateCall(InitiateCallData initiateCallData) {
+    public void initiateCall(CallRequest callRequest)
+    {
 
-        if (initiateCallData ==null ) {
-
-            throw new IllegalArgumentException("InitiateCallData can not be null");
+        if (callRequest == null) {
+            throw new IllegalArgumentException("CallRequest can not be null");
         }
 
         OriginateCallback asteriskCallBack = new MotechAsteriskCallBackImpl();
         try {
 
-            String destinationPhone = initiateCallData.getPhone();
+            String destinationPhone = callRequest.getPhone();
 
             String encodedVxmlUrl;
             try {
-            encodedVxmlUrl = urlCodec.encode(initiateCallData.getVxmlUrl());
-        } catch (EncoderException e) {
-            String errorMessage = "Invalid Voice XML URL: " + initiateCallData.getVxmlUrl();
-            log.error(errorMessage);
-            throw new IllegalArgumentException(errorMessage);
-        }
+                encodedVxmlUrl = urlCodec.encode(callRequest.getVxmlUrl());
+            } catch (EncoderException e) {
+                String errorMessage = "Invalid Voice XML URL: " + callRequest.getVxmlUrl();
+                log.error(errorMessage);
+                throw new IllegalArgumentException(errorMessage);
+            }
 
             String data = agiUrl + encodedVxmlUrl;
 
             log.info("Initiating call to: " + destinationPhone + "VXML URL: " + data);
 
-             asteriskServer.originateToApplicationAsync(destinationPhone, asteriskApplication,
-                     data, initiateCallData.getTimeOut(), asteriskCallBack);
+            asteriskServer.originateToApplicationAsync(destinationPhone, asteriskApplication,
+                                                       data, callRequest.getTimeOut(), asteriskCallBack);
         } catch (ManagerCommunicationException e) {
             String errorMessage = "Can not initiate call: " + e.getMessage();
             throw new CallInitiationException(errorMessage, e);
@@ -100,7 +100,6 @@ public class IVRServiceAsteriskImpl implements IVRService {
             String errorMessage = "Can not initiate call: " + e.getMessage();
             throw new CallInitiationException(errorMessage, e); //TODO - check what actually causes that exception
         }
-
     }
 
     public void setAgiUrl(String agiUrl) {

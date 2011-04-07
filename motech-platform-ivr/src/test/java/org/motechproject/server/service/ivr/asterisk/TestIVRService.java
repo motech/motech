@@ -29,24 +29,24 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.service.ivr.astersik;
+package org.motechproject.server.service.ivr.asterisk;
 
 import org.asteriskjava.live.AsteriskServer;
 import org.asteriskjava.live.ManagerCommunicationException;
 import org.asteriskjava.live.NoSuchChannelException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.model.InitiateCallData;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
+import org.motechproject.server.service.ivr.CallRequest;
 import org.motechproject.server.service.ivr.CallInitiationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import org.mockito.Mockito;
-
-import static org.junit.Assert.*;
 
 
 /**
@@ -67,15 +67,15 @@ public class TestIVRService {
         AsteriskServer asteriskServerMock = mock(AsteriskServer.class);
         ivrService.setAsteriskServer(asteriskServerMock);
 
-        InitiateCallData initiateCallData = new InitiateCallData(1L,"1001", Integer.MAX_VALUE, "");
+        CallRequest callRequest = new CallRequest(1L,"1001", Integer.MAX_VALUE, "");
 
-        ivrService.initiateCall(initiateCallData);
+        ivrService.initiateCall(callRequest);
 
         Mockito.verify(asteriskServerMock, Mockito.times(1))
-                .originateToApplicationAsync(eq(initiateCallData.getPhone()),
+                .originateToApplicationAsync(Matchers.eq(callRequest.getPhone()),
                         Mockito.anyString(),
                         Mockito.anyString(),
-                        eq((long)initiateCallData.getTimeOut()),
+                        eq((long) callRequest.getTimeOut()),
                         Mockito.any(MotechAsteriskCallBackImpl.class));
 
     }
@@ -83,26 +83,26 @@ public class TestIVRService {
     @Test (expected = CallInitiationException.class)
     public void testInitiateCallManagerException() throws Exception {
 
-        InitiateCallData initiateCallData = new InitiateCallData(1L,"1001", Integer.MAX_VALUE,"");
+        CallRequest callRequest = new CallRequest(1L,"1001", Integer.MAX_VALUE,"");
 
         AsteriskServer asteriskServerMock = mock(AsteriskServer.class);
         Mockito.doThrow(new ManagerCommunicationException("", new Exception())).when(asteriskServerMock)
                 .originateToApplicationAsync(
-                        eq(initiateCallData.getPhone()),
+                        Matchers.eq(callRequest.getPhone()),
                         Mockito.anyString(),
                         Mockito.anyString(),
-                        eq((long) initiateCallData.getTimeOut()),
+                        eq((long) callRequest.getTimeOut()),
                         Mockito.any(MotechAsteriskCallBackImpl.class));
 
         ivrService.setAsteriskServer(asteriskServerMock);
 
-        ivrService.initiateCall(initiateCallData);
+        ivrService.initiateCall(callRequest);
 
         Mockito.verify(asteriskServerMock, Mockito.times(1))
-                .originateToApplicationAsync(eq(initiateCallData.getPhone()),
+                .originateToApplicationAsync(Matchers.eq(callRequest.getPhone()),
                         Mockito.anyString(),
                         Mockito.anyString(),
-                        eq((long)initiateCallData.getTimeOut()),
+                        eq((long) callRequest.getTimeOut()),
                         Mockito.any(MotechAsteriskCallBackImpl.class));
 
     }
@@ -110,26 +110,26 @@ public class TestIVRService {
 @Test (expected = CallInitiationException.class)
     public void testInitiateCallChannelException() throws Exception {
 
-        InitiateCallData initiateCallData = new InitiateCallData(1L,"0000", Integer.MAX_VALUE, "");
+        CallRequest callRequest = new CallRequest(1L,"0000", Integer.MAX_VALUE, "");
 
         AsteriskServer asteriskServerMock = mock(AsteriskServer.class);
         Mockito.doThrow(new NoSuchChannelException("no channel")).when(asteriskServerMock)
                 .originateToApplicationAsync(
-                        eq(initiateCallData.getPhone()),
+                        Matchers.eq(callRequest.getPhone()),
                         Mockito.anyString(),
                         Mockito.anyString(),
-                        eq((long) initiateCallData.getTimeOut()),
+                        eq((long) callRequest.getTimeOut()),
                         Mockito.any(MotechAsteriskCallBackImpl.class));
 
         ivrService.setAsteriskServer(asteriskServerMock);
 
-        ivrService.initiateCall(initiateCallData);
+        ivrService.initiateCall(callRequest);
 
         Mockito.verify(asteriskServerMock, Mockito.times(1))
-                .originateToApplicationAsync(eq(initiateCallData.getPhone()),
+                .originateToApplicationAsync(Matchers.eq(callRequest.getPhone()),
                         Mockito.anyString(),
                         Mockito.anyString(),
-                        eq((long)initiateCallData.getTimeOut()),
+                        eq((long) callRequest.getTimeOut()),
                         Mockito.any(MotechAsteriskCallBackImpl.class));
 
     }

@@ -57,6 +57,7 @@
 		<module>motech-platform-common</module>
 		<module>motech-platform-server</module>
 		<module>motech-platform-scheduler</module>
+        <module>motech-platform-ivr</module>
 		<module>motech-platform-server-api</module>
 		<module>motech-appointment-reminder</module>
 		<module>motech-appointment-reminder-common</module>
@@ -122,6 +123,7 @@
                             <exclude>org/motechproject/model/Appointment.class</exclude>
                             <exclude>org/motechproject/model/Visit.class</exclude>
                             <exclude>org/motechproject/appointmentreminder/model/*.class</exclude>
+                            <exclude>org/motechproject/server/appointmentreminder/eventtype/*.class</exclude>
                             <exclude>org/motechproject/appointmentreminder/dao/couchdb/PatientDAOImpl.class</exclude>
                             <exclude>org/motechproject/server/appointmentreminder/Activator.class</exclude>
                             <exclude>org/motechproject/server/appointmentreminder/Activator$1.class</exclude>

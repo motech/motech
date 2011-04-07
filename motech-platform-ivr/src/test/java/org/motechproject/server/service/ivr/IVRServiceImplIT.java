@@ -1,4 +1,4 @@
-/**
+package org.motechproject.server.service.ivr; /**
  * MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
  *
  * Copyright (c) 2011 Grameen Foundation USA.  All rights reserved.
@@ -29,52 +29,43 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.service.ivr.astersik;
 
-import org.asteriskjava.live.AsteriskChannel;
-import org.asteriskjava.live.LiveException;
-import org.junit.Before;
 import org.junit.Test;
-
-import static org.mockito.Mockito.*;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- *  TODO - develop proper tests
+ * This is an interactive test. In order to run that test please make sure that Asterisk, Voiceglue and VXML application
+ * are properly configures, up and running. Your SIP phone configured to use the "SIP/1001" account and that account registered
+ * in Asterisk.
+ *
+ * In order to run unit test
+ * - start your soft phone
+ * - run the initiateCallTest()
+ * Your soft phone should start ringing. Answer the phone, you should hear a voice message specified in the voice XML document retrieved
+ * from the URL specified as a value of the voiceXmlUrl property of the ivrService bean. See testApplicationContext.xml.
+ *
+ *
  */
-public class MotechAsteriskCallBackImplTest {
 
-    private MotechAsteriskCallBackImpl motechAsteriskCallBack;
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"/testIVRAppContext.xml"})
+public class IVRServiceImplIT {
 
-    private AsteriskChannel asteriskChannel = mock(AsteriskChannel.class);
-
-    @Before
-    public void setup() {
-        motechAsteriskCallBack = new MotechAsteriskCallBackImpl();
-    }
+    @Autowired
+    private IVRService ivrService;
 
     @Test
-    public void testOnDialing() throws Exception {
-        motechAsteriskCallBack.onDialing(asteriskChannel);
+    public void initiateCallTest() throws Exception{
+
+        //CallRequest initiateCallData = new CallRequest(1L, "SIP/1001", 5000, "http://10.0.1.29:8080/TamaIVR/r/wt");
+        //CallRequest initiateCallData = new CallRequest(1L, "SIP/1001", 5000, "http://10.0.1.29:8080/m/module/ar/vxml/ar?r=1");
+
+
+        //ivrService.initiateCall(initiateCallData);
     }
 
-    @Test
-    public void testOnSuccess() throws Exception {
-        motechAsteriskCallBack.onSuccess(asteriskChannel);
-    }
 
-    @Test
-    public void testOnNoAnswer() throws Exception {
-        motechAsteriskCallBack.onNoAnswer(asteriskChannel);
-    }
-
-    @Test
-    public void testOnBusy() throws Exception {
-        motechAsteriskCallBack.onBusy(asteriskChannel);
-    }
-
-    @Test
-    public void testOnFailure() throws Exception {
-        motechAsteriskCallBack.onFailure(new LiveException("error") {
-        });
-    }
 }
