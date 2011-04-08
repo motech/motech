@@ -82,6 +82,29 @@ public class MotechPersistenceIT {
 
 	@Before
 	public void setup() throws Exception {
+
+	}
+
+	@After
+	public void tearDown() throws Exception {
+        log.info("Removing visit");
+        visitRepository.remove(first);
+
+        log.info("Removing patient " + male.getName());
+        patientRepository.remove(male);
+
+        log.info("Removing patient " + female.getName());
+        patientRepository.remove(female);
+
+        log.info("Deleting patients database");
+        couchDbInstance.deleteDatabase("patients");
+
+        log.info("Deleting visits database");
+        couchDbInstance.deleteDatabase("visits");
+	}
+
+    @Test
+    public void testMotechPersistence() {
         // Create new patient
         male = new Patient();
         male.setName("Colin Firth");
@@ -108,28 +131,7 @@ public class MotechPersistenceIT {
 
         log.info("Creating visit " + first.getId());
         visitRepository.add(first);
-	}
 
-	@After
-	public void tearDown() throws Exception {
-        log.info("Removing visit");
-        visitRepository.remove(first);
-
-        log.info("Removing patient " + male.getName());
-        patientRepository.remove(male);
-
-        log.info("Removing patient " + female.getName());
-        patientRepository.remove(female);
-
-        log.info("Deleting patients database");
-        couchDbInstance.deleteDatabase("patients");
-
-        log.info("Deleting visits database");
-        couchDbInstance.deleteDatabase("visits");
-	}
-
-    @Test
-    public void testMotechPersistence() {
         assertEquals(2, patientRepository.getAll().size());
 
         List<Patient> pregnant = patientRepository.findByTag("Pregnant");
