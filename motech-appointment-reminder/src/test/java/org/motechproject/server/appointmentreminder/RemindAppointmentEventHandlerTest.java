@@ -76,7 +76,7 @@ public class RemindAppointmentEventHandlerTest {
         String appointmentId = "1a";
 
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put(RemindAppointmentEventHandler.APPOINTMENT_ID_KEY, appointmentId);
+        params.put(EventKeys.APPOINTMENT_ID_KEY, appointmentId);
 
         MotechEvent motechEvent = new MotechEvent("", "", params);
 
@@ -90,7 +90,7 @@ public class RemindAppointmentEventHandlerTest {
     public void testHandleInvalidAppointmentIdType() throws Exception {
 
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put(RemindAppointmentEventHandler.APPOINTMENT_ID_KEY, new Integer(0));
+        params.put(EventKeys.APPOINTMENT_ID_KEY, new Integer(0));
 
         MotechEvent motechEvent = new MotechEvent("", "", params);
         boolean exceptionThrown = false;

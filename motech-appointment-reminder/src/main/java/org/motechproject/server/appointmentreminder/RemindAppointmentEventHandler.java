@@ -54,7 +54,6 @@ public class RemindAppointmentEventHandler implements EventListener {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     public final static String APPOINTMENT_REMINDER = "AppointmentReminder";
-    public final static String APPOINTMENT_ID_KEY = "AppointmentID";
 
     @Autowired
     AppointmentReminderService appointmentReminderService;
@@ -67,10 +66,10 @@ public class RemindAppointmentEventHandler implements EventListener {
 
         String appointmentId = null;
         try {
-            appointmentId = (String) event.getParameters().get(APPOINTMENT_ID_KEY);
+            appointmentId = (String) event.getParameters().get(EventKeys.APPOINTMENT_ID_KEY);
         } catch (ClassCastException e) {
             String errorMessage = "Can not handle the Appointment Reminder. Event: " + event + ". The event is invalid " +
-                    APPOINTMENT_ID_KEY + " parameter is not a String";
+                    EventKeys.APPOINTMENT_ID_KEY + " parameter is not a String";
             log.error(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }
@@ -78,7 +77,7 @@ public class RemindAppointmentEventHandler implements EventListener {
         if (appointmentId == null) {
             String errorMessage = "Can not handle the Appointment Reminder. Event: " + event +
                      ". The event is invalid - missing the " +
-                    APPOINTMENT_ID_KEY + " parameter";
+                    EventKeys.APPOINTMENT_ID_KEY + " parameter";
             log.error(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }

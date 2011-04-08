@@ -56,8 +56,6 @@ public class ReminderCallIncompleteEventHandler implements EventListener {
 
     public final static String HANDLER_ID = "CallReminderIncompleted";
 
-    public final static String APPOINTMENT_ID_KEY = "AppointmentID";
-    public final static String CALL_DATE_KEY = "CallDate";
 
     @Autowired
     AppointmentReminderService appointmentReminderService;
@@ -71,10 +69,10 @@ public class ReminderCallIncompleteEventHandler implements EventListener {
         String appointmentId = null;
         Date callDate = null;
         try {
-            appointmentId = (String) event.getParameters().get(APPOINTMENT_ID_KEY);
+            appointmentId = (String) event.getParameters().get(EventKeys.APPOINTMENT_ID_KEY);
         } catch (ClassCastException e) {
             String errorMessage = "Can not handle call complete. Event: " + event + ". The event is invalid " +
-                    APPOINTMENT_ID_KEY + " parameter is not a String";
+                    EventKeys.APPOINTMENT_ID_KEY + " parameter is not a String";
             log.error(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }
@@ -82,16 +80,16 @@ public class ReminderCallIncompleteEventHandler implements EventListener {
         if (appointmentId == null) {
             String errorMessage = "Can not handle call complete. Event: " + event +
                      ". The event is invalid - missing the " +
-                    APPOINTMENT_ID_KEY + " parameter";
+                    EventKeys.APPOINTMENT_ID_KEY + " parameter";
             log.error(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }
 
         try {
-            callDate = (Date) event.getParameters().get(CALL_DATE_KEY);
+            callDate = (Date) event.getParameters().get(EventKeys.CALL_DATE_KEY);
         } catch (ClassCastException e) {
             String errorMessage = "Can not handle the call complete. Event: " + event + ". The event is invalid " +
-                    CALL_DATE_KEY + " parameter is not a Date";
+                    EventKeys.CALL_DATE_KEY + " parameter is not a Date";
             log.error(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }
@@ -99,7 +97,7 @@ public class ReminderCallIncompleteEventHandler implements EventListener {
         if (callDate == null) {
             String errorMessage = "Can not handle the call complete. Event: " + event +
                      ". The event is invalid - missing the " +
-                    CALL_DATE_KEY + " parameter";
+                    EventKeys.CALL_DATE_KEY + " parameter";
             log.error(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }

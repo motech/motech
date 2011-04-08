@@ -82,8 +82,8 @@ public class ReminderCallCompleteEventHandlerTest
         Date callDate = DateUtils.truncate(new Date(), Calendar.DATE);
 
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put(ReminderCallCompleteEventHandler.APPOINTMENT_ID_KEY, appointmentId);
-        params.put(ReminderCallCompleteEventHandler.CALL_DATE_KEY, callDate);
+        params.put(EventKeys.APPOINTMENT_ID_KEY, appointmentId);
+        params.put(EventKeys.CALL_DATE_KEY, callDate);
 
         MotechEvent motechEvent = new MotechEvent("", "", params);
 
@@ -98,8 +98,8 @@ public class ReminderCallCompleteEventHandlerTest
         Date callDate = DateUtils.truncate(new Date(), Calendar.DATE);
 
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put(RemindAppointmentEventHandler.APPOINTMENT_ID_KEY, new Integer(0));
-        params.put(ReminderCallCompleteEventHandler.CALL_DATE_KEY, callDate);
+        params.put(EventKeys.APPOINTMENT_ID_KEY, new Integer(0));
+        params.put(EventKeys.CALL_DATE_KEY, callDate);
 
         MotechEvent motechEvent = new MotechEvent("", "", params);
         boolean exceptionThrown = false;
@@ -119,7 +119,7 @@ public class ReminderCallCompleteEventHandlerTest
         Date callDate = DateUtils.truncate(new Date(), Calendar.DATE);
 
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put(ReminderCallCompleteEventHandler.CALL_DATE_KEY, callDate);
+        params.put(EventKeys.CALL_DATE_KEY, callDate);
         boolean exceptionThrown = false;
 
         MotechEvent motechEvent = new MotechEvent("", "", params);
@@ -141,8 +141,8 @@ public class ReminderCallCompleteEventHandlerTest
         String appointmentId = "1a";
 
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put(ReminderCallCompleteEventHandler.APPOINTMENT_ID_KEY, appointmentId);
-        params.put(ReminderCallCompleteEventHandler.CALL_DATE_KEY, "Date");
+        params.put(EventKeys.APPOINTMENT_ID_KEY, appointmentId);
+        params.put(EventKeys.CALL_DATE_KEY, "Date");
 
         MotechEvent motechEvent = new MotechEvent("", "", params);
         boolean exceptionThrown = false;
@@ -162,7 +162,7 @@ public class ReminderCallCompleteEventHandlerTest
         String appointmentId = "1a";
 
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put(ReminderCallCompleteEventHandler.APPOINTMENT_ID_KEY, appointmentId);
+        params.put(EventKeys.APPOINTMENT_ID_KEY, appointmentId);
         boolean exceptionThrown = false;
 
         MotechEvent motechEvent = new MotechEvent("", "", params);

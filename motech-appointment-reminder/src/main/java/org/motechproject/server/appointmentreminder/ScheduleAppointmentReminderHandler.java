@@ -63,8 +63,8 @@ public class ScheduleAppointmentReminderHandler implements EventListener {
 	@Override
 	public void handle(MotechEvent event) {
 		try {
-			String patientId = (String) event.getParameters().get(MotechEvent.SCHEDULE_PATIENT_ID_KEY_NAME);
-			String appointmentId = (String) event.getParameters().get(MotechEvent.SCHEDULE_APPOINTMENT_ID_KEY_NAME);
+			String patientId = (String) event.getParameters().get(EventKeys.PATIENT_ID_KEY);
+			String appointmentId = (String) event.getParameters().get(EventKeys.APPOINTMENT_ID_KEY);
 			Patient patient = patientDAO.get(patientId);
 			Appointment appointment = patientDAO.getAppointment(appointmentId);
 			SchedulableJob schedulableJob = new SchedulableJob(event, String.format("0 0 %d * * ?", patient.getPreferences().getBestTimeToCall()),appointment.getReminderWindowStart(), appointment.getReminderWindowEnd());

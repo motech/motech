@@ -73,8 +73,8 @@ public class ScheduleAppointmentReminderTest {
 	@Test
 	public void testHandleHappyPath() {
 		MotechEvent event = new MotechEvent("", "", null);
-		event.getParameters().put(MotechEvent.SCHEDULE_APPOINTMENT_ID_KEY_NAME, APPT_ID);
-		event.getParameters().put(MotechEvent.SCHEDULE_PATIENT_ID_KEY_NAME, PAT_ID);
+		event.getParameters().put(EventKeys.APPOINTMENT_ID_KEY, APPT_ID);
+		event.getParameters().put(EventKeys.PATIENT_ID_KEY, PAT_ID);
 		
 		Patient p = new Patient();
 		p.setPreferences(new Preferences());

@@ -50,8 +50,6 @@ public final class MotechEvent implements Serializable {
     private static final long serialVersionUID = 2L;
 
     public static final String EVENT_TYPE_KEY_NAME = "eventType";
-	public static final String SCHEDULE_PATIENT_ID_KEY_NAME = "patientId";
-	public static final String SCHEDULE_APPOINTMENT_ID_KEY_NAME = "appointmentId";
 
     private String jobId;
     private String eventType;
