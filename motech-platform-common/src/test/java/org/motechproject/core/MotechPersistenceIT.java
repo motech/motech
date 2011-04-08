@@ -71,19 +71,44 @@ public class MotechPersistenceIT {
     private CouchDbInstance couchDbInstance;
 
     @Autowired
-    private PatientRepository patientRepository;
+    private ActorRepository actorRepository;
 
     @Autowired
     private VisitRepository visitRepository;
 
-    private Patient male;
-    private Patient female;
+    private Actor male;
+    private Actor female;
     private Visit first;
 
 	@Before
 	public void setup() throws Exception {
+        // Create new patient
+        male = new Actor();
+        male.setName("Colin Firth");
+        male.setDateCreated(new Date());
+        male.setPhoneNumber("+1(123)456-7890");
+        male.setTags(Arrays.asList("Male"));
 
-	}
+        log.info("Creating patient " + male.getName());
+        actorRepository.add(male);
+
+        female = new Actor();
+        female.setName("Natalie Portman");
+        female.setDateCreated(new Date());
+        female.setPhoneNumber("+1(123)456-7890");
+        female.setTags(Arrays.asList("Female", "Pregnant"));
+
+        log.info("Creating patient " + female.getName());
+        actorRepository.add(female);
+
+        first = new Visit();
+        first.setActorId(female.getId());
+        first.setDateCreated(new Date());
+        first.setComment("First Visit");
+
+        visitRepository.add(first);
+        log.info("Creating visit " + first.getId());
+    }
 
 	@After
 	public void tearDown() throws Exception {
@@ -91,13 +116,13 @@ public class MotechPersistenceIT {
         visitRepository.remove(first);
 
         log.info("Removing patient " + male.getName());
-        patientRepository.remove(male);
+        actorRepository.remove(male);
 
         log.info("Removing patient " + female.getName());
-        patientRepository.remove(female);
+        actorRepository.remove(female);
 
         log.info("Deleting patients database");
-        couchDbInstance.deleteDatabase("patients");
+        couchDbInstance.deleteDatabase("actors");
 
         log.info("Deleting visits database");
         couchDbInstance.deleteDatabase("visits");
@@ -105,47 +130,20 @@ public class MotechPersistenceIT {
 
     @Test
     public void testMotechPersistence() {
-        // Create new patient
-        male = new Patient();
-        male.setName("Colin Firth");
-        male.setDateCreated(new Date());
-        male.setPhoneNumber("+1(123)456-7890");
-        male.setTags(Arrays.asList("Male"));
+        assertEquals(2, actorRepository.getAll().size());
 
-        log.info("Creating patient " + male.getName());
-        patientRepository.add(male);
-
-        female = new Patient();
-        female.setName("Natalie Portman");
-        female.setDateCreated(new Date());
-        female.setPhoneNumber("+1(123)456-7890");
-        female.setTags(Arrays.asList("Female", "Pregnant"));
-
-        log.info("Creating patient " + female.getName());
-        patientRepository.add(female);
-
-        first = new Visit();
-        first.setPatientId(female.getId());
-        first.setDateCreated(new Date());
-        first.setComment("First Visit");
-
-        log.info("Creating visit " + first.getId());
-        visitRepository.add(first);
-
-        assertEquals(2, patientRepository.getAll().size());
-
-        List<Patient> pregnant = patientRepository.findByTag("Pregnant");
+        List<Actor> pregnant = actorRepository.findByTag("Pregnant");
         assertEquals(1, pregnant.size());
         assertEquals("Natalie Portman", pregnant.get(0).getName());
 
-        List<Visit> vists = visitRepository.findByPatientId(female.getId());
+        List<Visit> vists = visitRepository.findByActorId(female.getId());
 
         assertEquals(1, vists.size());
-        assertEquals(female.getId(), vists.get(0).getPatientId());
+        assertEquals(female.getId(), vists.get(0).getActorId());
     }
 }
 
-class Patient extends CouchDbDocument {
+class Actor extends CouchDbDocument {
 
     private static final long serialVersionUID = 1L;
 
@@ -191,16 +189,16 @@ class Visit extends CouchDbDocument {
 
     private static final long serialVersionUID = 1L;
 
-    private String patientId;
+    private String actorId;
     private String comment;
     private Date dateCreated;
 
-    public String getPatientId() {
-        return patientId;
+    public String getActorId() {
+        return actorId;
     }
 
-    public void setPatientId(String patientId) {
-        this.patientId= patientId;
+    public void setActorId(String actorId) {
+        this.actorId = actorId;
     }
 
     public String getComment() {
@@ -221,33 +219,33 @@ class Visit extends CouchDbDocument {
 }
 
 @Component
-class PatientRepository extends CouchDbRepositorySupport<Patient> {
+class ActorRepository extends CouchDbRepositorySupport<Actor> {
 
     @Autowired
-    public PatientRepository(@Qualifier("testPatientDatabase") CouchDbConnector db) {
-        super(Patient.class, db);
+    public ActorRepository(@Qualifier("actorDatabase") CouchDbConnector db) {
+        super(Actor.class, db);
         initStandardDesignDocument();
     }
 
     @GenerateView
-    public List<Patient> findByTag(String tag) {
+    public List<Actor> findByTag(String tag) {
         return queryView("by_tag", tag);
     }
 }
 
 @Component
-@View( name="all", map = "function(doc) { if (doc.patientId) { emit(doc.dateCreated, doc._id) } }")
+@View( name="all", map = "function(doc) { if (doc.actorId) { emit(doc.dateCreated, doc._id) } }")
 class VisitRepository extends CouchDbRepositorySupport<Visit>
 {
 
     @Autowired
-    public VisitRepository(@Qualifier("testVisitDatabase") CouchDbConnector db) {
+    public VisitRepository(@Qualifier("visitDatabase") CouchDbConnector db) {
         super(Visit.class, db);
         initStandardDesignDocument();
     }
 
     @GenerateView
-    public List<Visit> findByPatientId(String patientId) {
-        return queryView("by_patientId", patientId);
+    public List<Visit> findByActorId(String actorId) {
+        return queryView("by_actorId", actorId);
     }
 }

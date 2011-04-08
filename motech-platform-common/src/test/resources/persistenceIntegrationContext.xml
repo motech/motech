@@ -36,12 +36,12 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 			http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="testPatientDatabase" class="org.ektorp.impl.StdCouchDbConnector">
-        <constructor-arg value="patients" />
+    <bean id="actorDatabase" class="org.ektorp.impl.StdCouchDbConnector">
+        <constructor-arg value="actors" />
         <constructor-arg ref="couchDbInstance"/>
     </bean>
 
-     <bean id="testVisitDatabase" class="org.ektorp.impl.StdCouchDbConnector">
+     <bean id="visitDatabase" class="org.ektorp.impl.StdCouchDbConnector">
         <constructor-arg value="visits" />
         <constructor-arg ref="couchDbInstance"/>
     </bean>
@@ -51,7 +51,7 @@
         <constructor-arg ref="couchDbInstance"/>
     </bean>
 
-    <bean id="patientRepository" class="org.motechproject.core.PatientRepository"/>
+    <bean id="actorRepository" class="org.motechproject.core.ActorRepository"/>
 
     <bean id="visitRepository" class="org.motechproject.core.VisitRepository"/>
 
