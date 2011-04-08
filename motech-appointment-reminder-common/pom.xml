@@ -7,7 +7,8 @@
 		<version>0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>motech-appointment-reminder-common</artifactId>
-	<dependencies>
+	<name>Motech Appointment Reminder Common</name>
+    <dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>motech-platform-common</artifactId>
