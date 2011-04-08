@@ -41,13 +41,14 @@ import java.util.Set;
 
 public class Appointment extends MotechAuditableDataObject {
 
-	private static final long serialVersionUID = -3065277684319403907L;
+	private static final long serialVersionUID = 3L;
 
 	@TypeDiscriminator
 	private String patientId;
 	private Date reminderWindowStart;
 	private Date reminderWindowEnd;
 	private Date date;
+    private String reminderScheduledJobId;
 
     private Set<AppointmentReminder> reminders;
 	
@@ -106,6 +107,14 @@ public class Appointment extends MotechAuditableDataObject {
 		this.date = date;
 	}
 
+    public String getReminderScheduledJobId() {
+        return reminderScheduledJobId;
+    }
+
+    public void setReminderScheduledJobId(String reminderScheduledJobId) {
+        this.reminderScheduledJobId = reminderScheduledJobId;
+    }
+
     public Set<AppointmentReminder> getReminders()
     {
         return reminders == null ? Collections.<AppointmentReminder>emptySet() : reminders;
@@ -126,33 +135,41 @@ public class Appointment extends MotechAuditableDataObject {
 
     @Override
     public String toString() {
-        return "id = " + this.getId() + ", reminder window start = " + reminderWindowStart + ", reminder window end = " + this.reminderWindowEnd + ", appointment date = " + this.date + ", patient id = " + patientId; 
+        return "Appointment{" +
+                "patientId='" + patientId + '\'' +
+                ", reminderWindowStart=" + reminderWindowStart +
+                ", reminderWindowEnd=" + reminderWindowEnd +
+                ", date=" + date +
+                ", reminderScheduledJobId='" + reminderScheduledJobId + '\'' +
+                '}';
     }
-    
+
     @Override
     public boolean equals(Object o) {
-	    if (this == o) return true;
-	    if (o == null || getClass() != o.getClass()) return false;
-	    
-	    Appointment a = (Appointment) o;
-	    if (this.getId() != null ? !this.getId().equals(a.getId()) : a.getId() != null) return false;
-	    if (this.reminderWindowStart != null ? !this.reminderWindowStart.equals(a.getReminderWindowStart()) : a.getReminderWindowStart() != null) return false;
-	    if (this.reminderWindowEnd != null ? !this.reminderWindowEnd.equals(a.getReminderWindowEnd()) : a.getReminderWindowEnd() != null) return false;
-	    if (this.date != null ? !this.date.equals(a.getDate()) : a.getDate() != null) return false;
-	    if (this.patientId != null ? !this.patientId.equals(a.getPatientId()) : a.getPatientId() != null) return false;
-	    
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Appointment that = (Appointment) o;
+
+        if (date != null ? !date.equals(that.date) : that.date != null) return false;
+        if (patientId != null ? !patientId.equals(that.patientId) : that.patientId != null) return false;
+        if (reminderScheduledJobId != null ? !reminderScheduledJobId.equals(that.reminderScheduledJobId) : that.reminderScheduledJobId != null)
+            return false;
+        if (reminderWindowEnd != null ? !reminderWindowEnd.equals(that.reminderWindowEnd) : that.reminderWindowEnd != null)
+            return false;
+        if (reminderWindowStart != null ? !reminderWindowStart.equals(that.reminderWindowStart) : that.reminderWindowStart != null)
+            return false;
+
         return true;
     }
 
     @Override
     public int hashCode() {
-	    int result = this.getId() != null ? this.getId().hashCode() : 0;
-	    result = 31 * result + (this.reminderWindowStart != null ? this.reminderWindowStart.hashCode() : 0);
-	    result = 31 * result + (this.reminderWindowEnd != null ? this.reminderWindowEnd.hashCode() : 0);
-	    result = 31 * result + (this.date != null ? this.date.hashCode() : 0);
-	    result = 31 * result + (this.patientId != null ? this.patientId.hashCode() : 0);
-	    return result;
+        int result = patientId != null ? patientId.hashCode() : 0;
+        result = 31 * result + (reminderWindowStart != null ? reminderWindowStart.hashCode() : 0);
+        result = 31 * result + (reminderWindowEnd != null ? reminderWindowEnd.hashCode() : 0);
+        result = 31 * result + (date != null ? date.hashCode() : 0);
+        result = 31 * result + (reminderScheduledJobId != null ? reminderScheduledJobId.hashCode() : 0);
+        return result;
     }
-	
-	
 }
