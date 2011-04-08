@@ -68,4 +68,32 @@
 	
 	<bean id="filesystemRuleLoader" class="org.motechproject.server.ruleengine.FilesystemRuleLoader" init-method="load"/>
 
+    <bean id="ivrService" class="org.motechproject.server.service.ivr.asterisk.IVRServiceAsteriskImpl" >
+        <!--Asterisk Server host-->
+        <constructor-arg  value="motech.2paths.com"/>
+        <!--Asterisk Server user-->
+        <constructor-arg  value="admin"/>
+        <!--Asterisk Server user password-->
+        <constructor-arg value="amp111"/>
+
+        <!--Asterisk Gateway Interface URI - required for integration with Voiceglue-->
+        <property name="agiUrl" value="agi://localhost/url="/>
+    </bean>
+
+    <bean id="metricsAgent" class="org.motechproject.metrics.impl.MultipleMetricsAgentImpl">
+        <property name="metricsAgents">
+            <list>
+                <ref bean="loggingAgent"/>
+                <ref bean="statsdAgent"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="loggingAgent" class="org.motechproject.metrics.impl.LoggingAgentBackendImpl"/>
+    <bean id="statsdAgent" class="org.motechproject.metrics.impl.StatsdAgentBackendImpl">
+        <property name="serverHost" value="localhost"/>
+        <property name="serverPort" value="9000"/>
+        <property name="generateHostBasedStats" value="false"/>
+    </bean>
+
 </beans>

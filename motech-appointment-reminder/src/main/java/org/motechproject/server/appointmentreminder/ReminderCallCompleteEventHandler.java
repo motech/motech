@@ -31,6 +31,7 @@
  */
 package org.motechproject.server.appointmentreminder;
 
+import org.motechproject.context.Context;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.appointmentreminder.service.AppointmentReminderService;
@@ -59,8 +60,7 @@ public class ReminderCallCompleteEventHandler implements EventListener {
     @Autowired
     AppointmentReminderService appointmentReminderService;
 
-    @Autowired
-    private MetricsAgent metricsAgent;
+    private MetricsAgent metricsAgent = Context.getInstance().getMetricsAgent();
 
 	@Override
 	public void handle(MotechEvent event) {

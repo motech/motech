@@ -10,7 +10,7 @@
     </parent>
     <artifactId>motech-platform-server</artifactId>
     <packaging>war</packaging>
-        <name>Motech Platform Server</name>
+    <name>Motech Platform Server</name>
 
     <repositories>
 		<repository>
@@ -30,6 +30,11 @@
         	<artifactId>motech-platform-server-api</artifactId>
         	<version>${project.version}</version>
         </dependency>        
+        <dependency>
+        	<groupId>${project.groupId}</groupId>
+        	<artifactId>motech-platform-ivr</artifactId>
+        	<version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>

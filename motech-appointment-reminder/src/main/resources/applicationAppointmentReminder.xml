@@ -63,9 +63,6 @@
 
 	<bean id="patientDAO" class="org.motechproject.appointmentreminder.dao.couchdb.PatientDAOImpl" />
 
-
-
-
     <bean id="controllerClassNameUrlMapping"
 		class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping">
 	</bean>

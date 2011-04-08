@@ -37,6 +37,7 @@ import org.motechproject.appointmentreminder.model.Appointment;
 import org.motechproject.appointmentreminder.model.AppointmentReminder;
 import org.motechproject.appointmentreminder.model.Patient;
 import org.motechproject.appointmentreminder.model.Visit;
+import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.appointmentreminder.eventtype.ReminderCallCompleteEventType;
 import org.motechproject.server.appointmentreminder.eventtype.ReminderCallIncompleteEventType;
@@ -55,12 +56,11 @@ import java.util.*;
 public class AppointmentReminderServiceImpl implements AppointmentReminderService {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    IVRService ivrService;
+    private IVRService ivrService = Context.getInstance().getIvrService();
 
     @Autowired
-    PatientDAO patientDao
-            ;
+    PatientDAO patientDao;
+
     //Interim implementation
     String  appointmentReminderVmlUrl = "http://10.0.1.29:8080/TamaIVR/reminder/doc";
 
