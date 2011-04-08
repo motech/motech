@@ -41,6 +41,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -63,6 +65,8 @@ import static junit.framework.Assert.assertEquals;
 @ContextConfiguration(locations={"/applicationCommon.xml",
                                  "/persistenceIntegrationContext.xml"})
 public class MotechPersistenceIT {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     private CouchDbInstance couchDbInstance;
 
@@ -85,6 +89,7 @@ public class MotechPersistenceIT {
         male.setPhoneNumber("+1(123)456-7890");
         male.setTags(Arrays.asList("Male"));
 
+        log.info("Creating patient " + male.getName());
         patientRepository.add(male);
 
         female = new Patient();
@@ -93,6 +98,7 @@ public class MotechPersistenceIT {
         female.setPhoneNumber("+1(123)456-7890");
         female.setTags(Arrays.asList("Female", "Pregnant"));
 
+        log.info("Creating patient " + female.getName());
         patientRepository.add(female);
 
         first = new Visit();
@@ -100,16 +106,25 @@ public class MotechPersistenceIT {
         first.setDateCreated(new Date());
         first.setComment("First Visit");
 
+        log.info("Creating visit " + first.getId());
         visitRepository.add(first);
 	}
 
 	@After
 	public void tearDown() throws Exception {
+        log.info("Removing visit");
         visitRepository.remove(first);
+
+        log.info("Removing patient " + male.getName());
         patientRepository.remove(male);
+
+        log.info("Removing patient " + female.getName());
         patientRepository.remove(female);
 
+        log.info("Deleting patients database");
         couchDbInstance.deleteDatabase("patients");
+
+        log.info("Deleting visits database");
         couchDbInstance.deleteDatabase("visits");
 	}
 
@@ -207,7 +222,7 @@ class Visit extends CouchDbDocument {
 class PatientRepository extends CouchDbRepositorySupport<Patient> {
 
     @Autowired
-    public PatientRepository(@Qualifier("patientDatabase") CouchDbConnector db) {
+    public PatientRepository(@Qualifier("testPatientDatabase") CouchDbConnector db) {
         super(Patient.class, db);
         initStandardDesignDocument();
     }
@@ -224,7 +239,7 @@ class VisitRepository extends CouchDbRepositorySupport<Visit>
 {
 
     @Autowired
-    public VisitRepository(@Qualifier("visitDatabase") CouchDbConnector db) {
+    public VisitRepository(@Qualifier("testVisitDatabase") CouchDbConnector db) {
         super(Visit.class, db);
         initStandardDesignDocument();
     }
