@@ -64,22 +64,11 @@ public class RemindAppointmentEventHandler implements EventListener {
 	@Override
 	public void handle(MotechEvent event) {
 
-        String appointmentId = null;
-        try {
-            appointmentId = (String) event.getParameters().get(EventKeys.APPOINTMENT_ID_KEY);
-        } catch (ClassCastException e) {
-            String errorMessage = "Can not handle the Appointment Reminder. Event: " + event + ". The event is invalid " +
-                    EventKeys.APPOINTMENT_ID_KEY + " parameter is not a String";
-            log.error(errorMessage);
-            throw new IllegalArgumentException(errorMessage);
-        }
-
+        String appointmentId = EventKeys.getAppointmentId(event);
         if (appointmentId == null) {
-            String errorMessage = "Can not handle the Appointment Reminder. Event: " + event +
-                     ". The event is invalid - missing the " +
-                    EventKeys.APPOINTMENT_ID_KEY + " parameter";
-            log.error(errorMessage);
-            throw new IllegalArgumentException(errorMessage);
+            log.error("Can not handle the Appointment Reminder Event: " + event +
+                     ". The event is invalid - missing the " + EventKeys.APPOINTMENT_ID_KEY + " parameter");
+            return;
         }
 
         appointmentReminderService.remindPatientAppointment(appointmentId);
@@ -89,7 +78,7 @@ public class RemindAppointmentEventHandler implements EventListener {
         metricsAgent.logEvent("motech.appointment-reminder.reminder", parameters);
     }
 
-	@Override
+    @Override
 	public String getIdentifier() {
 		return APPOINTMENT_REMINDER;
 	}

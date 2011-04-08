@@ -62,9 +62,22 @@ public class ScheduleAppointmentReminderHandler implements EventListener {
 	
 	@Override
 	public void handle(MotechEvent event) {
+
+        String appointmentId = EventKeys.getAppointmentId(event);
+        if (appointmentId == null) {
+            logger.error("Can not handle the Schedule Appointment Reminder Event: " + event +
+                     ". The event is invalid - missing the " + EventKeys.APPOINTMENT_ID_KEY + " parameter");
+            return;
+        }
+
+        String patientId = EventKeys.getPatientId(event);
+        if (patientId == null) {
+            logger.error("Can not handle the Schedule Appointment Reminder Event: " + event +
+                     ". The event is invalid - missing the " + EventKeys.PATIENT_ID_KEY + " parameter");
+            return;
+        }
+
 		try {
-			String patientId = (String) event.getParameters().get(EventKeys.PATIENT_ID_KEY);
-			String appointmentId = (String) event.getParameters().get(EventKeys.APPOINTMENT_ID_KEY);
 			Patient patient = patientDAO.get(patientId);
 			Appointment appointment = patientDAO.getAppointment(appointmentId);
 			SchedulableJob schedulableJob = new SchedulableJob(event, String.format("0 0 %d * * ?", patient.getPreferences().getBestTimeToCall()),appointment.getReminderWindowStart(), appointment.getReminderWindowEnd());

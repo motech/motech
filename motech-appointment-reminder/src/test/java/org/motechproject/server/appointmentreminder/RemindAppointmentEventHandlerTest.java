@@ -46,7 +46,6 @@ import org.springframework.test.context.ContextConfiguration;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
@@ -93,15 +92,9 @@ public class RemindAppointmentEventHandlerTest {
         params.put(EventKeys.APPOINTMENT_ID_KEY, new Integer(0));
 
         MotechEvent motechEvent = new MotechEvent("", "", params);
-        boolean exceptionThrown = false;
 
-        try {
-            remindAppointmentEventHandler.handle(motechEvent);
-        } catch (IllegalArgumentException e) {
-            exceptionThrown = true;
-        }
+        remindAppointmentEventHandler.handle(motechEvent);
 
-        assertTrue(exceptionThrown);
         verify(appointmentReminderService, times(0)).remindPatientAppointment(anyString());
     }
 
@@ -109,20 +102,12 @@ public class RemindAppointmentEventHandlerTest {
     public void testHandleNoAppointmentId() throws Exception {
 
         Map<String, Object> params = new HashMap<String, Object>();
-        boolean exceptionThrown = false;
 
         MotechEvent motechEvent = new MotechEvent("", "", params);
 
-        try {
-            remindAppointmentEventHandler.handle(motechEvent);
-        } catch (IllegalArgumentException e) {
-            exceptionThrown = true;
-        }
-
-        assertTrue(exceptionThrown);
+        remindAppointmentEventHandler.handle(motechEvent);
 
         verify(appointmentReminderService, times(0)).remindPatientAppointment(anyString());
-
     }
 
     @Test

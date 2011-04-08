@@ -65,40 +65,18 @@ public class ReminderCallCompleteEventHandler implements EventListener {
 	@Override
 	public void handle(MotechEvent event) {
 
-        String appointmentId = null;
-        Date callDate = null;
-        try {
-            appointmentId = (String) event.getParameters().get(EventKeys.APPOINTMENT_ID_KEY);
-        } catch (ClassCastException e) {
-            String errorMessage = "Can not handle call complete. Event: " + event + ". The event is invalid " +
-                    EventKeys.APPOINTMENT_ID_KEY + " parameter is not a String";
-            log.error(errorMessage);
-            throw new IllegalArgumentException(errorMessage);
-        }
-
+        String appointmentId = EventKeys.getAppointmentId(event);
         if (appointmentId == null) {
-            String errorMessage = "Can not handle call complete. Event: " + event +
-                     ". The event is invalid - missing the " +
-                    EventKeys.APPOINTMENT_ID_KEY + " parameter";
-            log.error(errorMessage);
-            throw new IllegalArgumentException(errorMessage);
+            log.error("Can not handle the Call Complete Event: " + event +
+                     ". The event is invalid - missing the " + EventKeys.APPOINTMENT_ID_KEY + " parameter");
+            return;
         }
 
-        try {
-            callDate = (Date) event.getParameters().get(EventKeys.CALL_DATE_KEY);
-        } catch (ClassCastException e) {
-            String errorMessage = "Can not handle the call complete. Event: " + event + ". The event is invalid " +
-                    EventKeys.CALL_DATE_KEY + " parameter is not a Date";
-            log.error(errorMessage);
-            throw new IllegalArgumentException(errorMessage);
-        }
-
+        Date callDate = EventKeys.getCallDate(event);
         if (callDate == null) {
-            String errorMessage = "Can not handle the call complete. Event: " + event +
-                     ". The event is invalid - missing the " +
-                    EventKeys.CALL_DATE_KEY + " parameter";
-            log.error(errorMessage);
-            throw new IllegalArgumentException(errorMessage);
+            log.error("Can not handle the Call Complete Event: " + event +
+                     ". The event is invalid - missing the " + EventKeys.CALL_DATE_KEY + " parameter");
+            return;
         }
 
         appointmentReminderService.reminderCallCompleted(appointmentId, callDate);
@@ -108,7 +86,7 @@ public class ReminderCallCompleteEventHandler implements EventListener {
         metricsAgent.logEvent("motech.appointment-reminder.call.complete", parameters);
     }
 
-	@Override
+    @Override
 	public String getIdentifier() {
 		return HANDLER_ID;
 	}

@@ -50,7 +50,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
@@ -102,15 +101,9 @@ public class ReminderCallCompleteEventHandlerTest
         params.put(EventKeys.CALL_DATE_KEY, callDate);
 
         MotechEvent motechEvent = new MotechEvent("", "", params);
-        boolean exceptionThrown = false;
 
-        try {
-            handler.handle(motechEvent);
-        } catch (IllegalArgumentException e) {
-            exceptionThrown = true;
-        }
+        handler.handle(motechEvent);
 
-        assertTrue(exceptionThrown);
         verify(appointmentReminderService, times(0)).reminderCallCompleted(anyString(), Matchers.<Date>anyObject());
     }
 
@@ -120,20 +113,12 @@ public class ReminderCallCompleteEventHandlerTest
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(EventKeys.CALL_DATE_KEY, callDate);
-        boolean exceptionThrown = false;
 
         MotechEvent motechEvent = new MotechEvent("", "", params);
 
-        try {
-            handler.handle(motechEvent);
-        } catch (IllegalArgumentException e) {
-            exceptionThrown = true;
-        }
-
-        assertTrue(exceptionThrown);
+        handler.handle(motechEvent);
 
         verify(appointmentReminderService, times(0)).reminderCallCompleted(anyString(), Matchers.<Date>anyObject());
-
     }
 
         @Test
@@ -145,15 +130,8 @@ public class ReminderCallCompleteEventHandlerTest
         params.put(EventKeys.CALL_DATE_KEY, "Date");
 
         MotechEvent motechEvent = new MotechEvent("", "", params);
-        boolean exceptionThrown = false;
+        handler.handle(motechEvent);
 
-        try {
-            handler.handle(motechEvent);
-        } catch (IllegalArgumentException e) {
-            exceptionThrown = true;
-        }
-
-        assertTrue(exceptionThrown);
         verify(appointmentReminderService, times(0)).reminderCallCompleted(anyString(), Matchers.<Date>anyObject());
     }
 
@@ -163,17 +141,10 @@ public class ReminderCallCompleteEventHandlerTest
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(EventKeys.APPOINTMENT_ID_KEY, appointmentId);
-        boolean exceptionThrown = false;
 
         MotechEvent motechEvent = new MotechEvent("", "", params);
 
-        try {
-            handler.handle(motechEvent);
-        } catch (IllegalArgumentException e) {
-            exceptionThrown = true;
-        }
-
-        assertTrue(exceptionThrown);
+        handler.handle(motechEvent);
 
         verify(appointmentReminderService, times(0)).reminderCallCompleted(anyString(), Matchers.<Date>anyObject());
     }
