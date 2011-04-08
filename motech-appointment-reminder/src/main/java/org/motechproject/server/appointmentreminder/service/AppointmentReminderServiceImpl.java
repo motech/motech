@@ -64,8 +64,16 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
     //Interim implementation
     String  appointmentReminderVmlUrl = "http://10.0.1.29:8080/TamaIVR/reminder/doc";
 
-    int timeOut;
+	int timeOut;
     public final static String SCHEDULE_APPOINTMENT_REMINDER = "ScheduleAppointmentReminder";
+    
+    public void setAppointmentReminderVmlUrl(String appointmentReminderVmlUrl) {
+    	this.appointmentReminderVmlUrl = appointmentReminderVmlUrl;
+    }
+
+    public void setTimeOut(int timeOut) {
+    	this.timeOut = timeOut;
+    }
 
     @Override
     public void remindPatientAppointment(String appointmentId) {
