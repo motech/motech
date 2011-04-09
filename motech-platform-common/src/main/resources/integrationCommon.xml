@@ -33,26 +33,43 @@
 
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
-			http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:jms="http://www.springframework.org/schema/integration/jms"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/integration
+			http://www.springframework.org/schema/integration/spring-integration.xsd
+			http://www.springframework.org/schema/integration/jms
+			http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd
+			">
 
-	<bean id="connectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
-		<property name="targetConnectionFactory">
-			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
-				<property name="brokerURL" value="tcp://localhost:61616"/>		
-			</bean>
-		</property>
-		<property name="sessionCacheSize" value="10"/>
-		<property name="cacheProducers" value="false"/>
-	</bean>
+    <bean id="connectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+        <property name="targetConnectionFactory">
+            <bean class="org.apache.activemq.ActiveMQConnectionFactory">
+                <property name="brokerURL" value="tcp://localhost:61616"/>
+            </bean>
+        </property>
+        <property name="sessionCacheSize" value="10"/>
+        <property name="cacheProducers" value="false"/>
+    </bean>
 
-	<bean id="schedulerQueue" class="org.apache.activemq.command.ActiveMQQueue">
-		<constructor-arg value="queue.scheduler"/>
-	</bean>
+    <bean id="schedulerQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="queue.scheduler"/>
+    </bean>
 
-	<bean id="eventQueue" class="org.apache.activemq.command.ActiveMQQueue">
-		<constructor-arg value="queue.event"/>
-	</bean>
+    <bean id="eventQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="queue.event"/>
+    </bean>
+
+    <int:gateway service-interface="org.motechproject.eventgateway.EventGateway"
+                 id="eventGateway"
+                 default-request-channel="eventGatewayToEventJmsoutChannel"/>
+
+    <int:channel id="eventGatewayToEventJmsoutChannel"/>
+
+
+    <jms:outbound-channel-adapter id="eventjmsout" channel="eventGatewayToEventJmsoutChannel" destination="eventQueue"/>
+
 
 </beans>
