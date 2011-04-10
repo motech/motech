@@ -39,8 +39,9 @@ public class Preferences extends MotechBaseDataObject {
 	private static final long serialVersionUID = 7959940892352071956L;
 	@TypeDiscriminator
 	private String patientId;
-	private int bestTimeToCall;
-	private boolean enabled = false;
+	// FIXME: best time to call is not only the hour but also the minute in 24 hour format
+	private Integer bestTimeToCall;
+	private Boolean enabled = Boolean.FALSE;
 	
 
 	/**
@@ -60,27 +61,27 @@ public class Preferences extends MotechBaseDataObject {
 	/**
 	 * @return the bestTimeToCall
 	 */
-	public int getBestTimeToCall() {
+	public Integer getBestTimeToCall() {
 		return bestTimeToCall;
 	}
 	
 	/**
 	 * @param bestTimeToCall the bestTimeToCall to set
 	 */
-	public void setBestTimeToCall(int bestTimeToCall) {
+	public void setBestTimeToCall(Integer bestTimeToCall) {
 		this.bestTimeToCall = bestTimeToCall;
 	}
 	
 	/**
 	 * @return the enabled
 	 */
-	public boolean isEnabled() {
+	public Boolean isEnabled() {
 		return enabled;
 	}
 	/**
 	 * @param enabled the enabled to set
 	 */
-	public void setEnabled(boolean enabled) {
+	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
 	
