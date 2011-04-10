@@ -44,10 +44,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Responsible for listening for <code>{@link org.motechproject.server.appointmentreminder.eventtype.ScheduleAppointmentReminderEventType}</code>
+ * Responsible for listening for <code>{@link org.motechproject.server.appointmentreminder.eventtype.UnscheduleAppointmentReminderEventType}</code>
  * events with destination
  * 
- * @author yyonkov
+ * @author Igor (iopushnyev@2paths.com)
  * 
  */
 @Component
