@@ -81,7 +81,8 @@ public class ScheduleAppointmentReminderTest {
 		
 		Patient p = new Patient();
 		p.setPreferences(new Preferences());
-		p.getPreferences().setBestTimeToCall(10);
+		p.getPreferences().setBestTimeToCallHour(10);
+		p.getPreferences().setBestTimeToCallMinute(10);
 	
 		Appointment a = new Appointment();
 		a.setReminderWindowEnd(new Date());

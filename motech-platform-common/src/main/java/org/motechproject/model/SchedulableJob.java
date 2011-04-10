@@ -91,29 +91,57 @@ public class SchedulableJob implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((cronExpression == null) ? 0 : cronExpression.hashCode());
+		result = prime * result + ((endTime == null) ? 0 : endTime.hashCode());
+		result = prime * result
+				+ ((motechEvent == null) ? 0 : motechEvent.hashCode());
+		result = prime * result
+				+ ((startTime == null) ? 0 : startTime.hashCode());
+		return result;
+	}
 
-        SchedulableJob that = (SchedulableJob) o;
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SchedulableJob other = (SchedulableJob) obj;
+		if (cronExpression == null) {
+			if (other.cronExpression != null)
+				return false;
+		} else if (!cronExpression.equals(other.cronExpression))
+			return false;
+		if (endTime == null) {
+			if (other.endTime != null)
+				return false;
+		} else if (!endTime.equals(other.endTime))
+			return false;
+		if (motechEvent == null) {
+			if (other.motechEvent != null)
+				return false;
+		} else if (!motechEvent.equals(other.motechEvent))
+			return false;
+		if (startTime == null) {
+			if (other.startTime != null)
+				return false;
+		} else if (!startTime.equals(other.startTime))
+			return false;
+		return true;
+	}
 
-        if (!cronExpression.equals(that.cronExpression)) return false;
-        if (!motechEvent.equals(that.motechEvent)) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = motechEvent.hashCode();
-        result = 31 * result + cronExpression.hashCode();
-        return result;
-    }
-
-    @Override
+	@Override
     public String toString() {
         return "SchedulableJob{" +
                 "motechEvent=" + motechEvent +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
                 ", cronExpression='" + cronExpression + '\'' +
                 '}';
     }
