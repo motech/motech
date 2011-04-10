@@ -37,6 +37,7 @@ import org.motechproject.appointmentreminder.model.Patient;
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.SchedulableJob;
+import org.motechproject.server.appointmentreminder.eventtype.RemindAppointmentEventType;
 import org.motechproject.server.event.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +79,9 @@ public class ScheduleAppointmentReminderHandler implements EventListener {
 		try {
 			Patient patient = patientDAO.get(patientId);
 			Appointment appointment = patientDAO.getAppointment(appointmentId);
-			SchedulableJob schedulableJob = new SchedulableJob(event, String.format("0 %d %d * * ?", patient.getPreferences().getBestTimeToCallMinute(), patient.getPreferences().getBestTimeToCallHour()),appointment.getReminderWindowStart(), appointment.getReminderWindowEnd());
+			//TODO confirm if we should schedule a RemindAppointmentEvent here and the jobId is correct
+			MotechEvent reminderEvent = new MotechEvent(event.getJobId(), RemindAppointmentEventType.KEY, event.getParameters());
+			SchedulableJob schedulableJob = new SchedulableJob(reminderEvent, String.format("0 %d %d * * ?", patient.getPreferences().getBestTimeToCallMinute(), patient.getPreferences().getBestTimeToCallHour()),appointment.getReminderWindowStart(), appointment.getReminderWindowEnd());
 			context.getMotechSchedulerGateway().scheduleJob(schedulableJob);
 		} catch (RuntimeException e) {
 		    for (StackTraceElement el : e.getStackTrace()) {
