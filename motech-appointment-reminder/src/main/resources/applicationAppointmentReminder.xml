@@ -48,7 +48,8 @@
 	<bean id="remindAppointmentEventHandler" class="org.motechproject.server.appointmentreminder.RemindAppointmentEventHandler"/>
     <bean id="appointmentReminderService" class="org.motechproject.server.appointmentreminder.service.AppointmentReminderServiceImpl">
         <property name="timeOut" value="20"/>
-        <property name="appointmentReminderVmlUrl" value="" />
+        <!-- Interim implementation -->
+        <property name="appointmentReminderVmlUrl" value="http://localhost:8080/module/ar/vxml/ar" />
     </bean>
     
     <bean id="motechContext" class="org.motechproject.context.Context" factory-method="getInstance" />
