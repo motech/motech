@@ -41,7 +41,6 @@ import org.motechproject.server.event.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * Responsible for listening for <code>{@link org.motechproject.server.appointmentreminder.eventtype.ScheduleAppointmentReminderEventType}</code>
@@ -50,7 +49,6 @@ import org.springframework.stereotype.Component;
  * @author yyonkov
  * 
  */
-@Component
 public class ScheduleAppointmentReminderHandler implements EventListener {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	public final static String SCHEDULE_APPOINTMENT_REMINDER = "ScheduleAppointmentReminder";

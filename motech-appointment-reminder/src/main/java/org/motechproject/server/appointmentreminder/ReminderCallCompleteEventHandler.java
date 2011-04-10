@@ -31,6 +31,10 @@
  */
 package org.motechproject.server.appointmentreminder;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.motechproject.context.Context;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
@@ -39,11 +43,6 @@ import org.motechproject.server.event.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Handles Remind Appointment Events
@@ -51,7 +50,6 @@ import java.util.Map;
  * @author Igor
  * 
  */
-@Component
 public class ReminderCallCompleteEventHandler implements EventListener {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 

@@ -36,12 +36,10 @@ import org.motechproject.appointmentreminder.model.Appointment;
 import org.motechproject.appointmentreminder.model.Patient;
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.model.SchedulableJob;
 import org.motechproject.server.event.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * Responsible for listening for <code>{@link org.motechproject.server.appointmentreminder.eventtype.UnscheduleAppointmentReminderEventType}</code>
@@ -50,7 +48,6 @@ import org.springframework.stereotype.Component;
  * @author Igor (iopushnyev@2paths.com)
  * 
  */
-@Component
 public class UnscheduleAppointmentReminderHandler implements EventListener {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	public final static String UNSCHEDULE_APPOINTMENT_REMINDER = "UnscheduleAppointmentReminder";

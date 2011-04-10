@@ -86,5 +86,6 @@
 	 
 	<bean id="reminderCallCompleteEventHandler" class="org.motechproject.server.appointmentreminder.ReminderCallCompleteEventHandler"/>
 	<bean id="reminderCallIncompleteEventHandler" class="org.motechproject.server.appointmentreminder.ReminderCallIncompleteEventHandler"/>
+	<bean id="unscheduleAppointmentReminderHandler" class="org.motechproject.server.appointmentreminder.UnscheduleAppointmentReminderHandler"/>
     
 </beans>
