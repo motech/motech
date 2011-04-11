@@ -173,7 +173,7 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
                     ivrService.initiateCall(callRequest);
                 } catch (CallInitiationException e) {
                     log.warn("Unable to initiate call to patientId=" + patient.getClinicPatientId() +
-                                     " for appointmentId=" + appointmentId);
+                                     " for appointmentId=" + appointmentId + e.getMessage());
                     ar.setStatus(AppointmentReminder.Status.INCOMPLETE);
                     patientDao.updateAppointment(appointment);
                 }

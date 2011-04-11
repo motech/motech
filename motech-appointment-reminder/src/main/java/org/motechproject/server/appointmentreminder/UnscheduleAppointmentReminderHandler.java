@@ -31,62 +31,64 @@
  */
 package org.motechproject.server.appointmentreminder;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
+import org.motechproject.appointmentreminder.dao.PatientDAO;
+import org.motechproject.appointmentreminder.model.Appointment;
+import org.motechproject.appointmentreminder.model.Patient;
 import org.motechproject.context.Context;
-import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.server.appointmentreminder.service.AppointmentReminderService;
 import org.motechproject.server.event.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Handles Remind Appointment Events
+ * Responsible for listening for <code>org.motechproject.</code>
+ * events with destination
  * 
- * @author Igor
+ * @author Igor (iopushnyev@2paths.com)
  * 
  */
-public class ReminderCallCompleteEventHandler implements EventListener {
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
-
-    public final static String HANDLER_ID = "CallReminderCompleted";
-
-    @Autowired
-    AppointmentReminderService appointmentReminderService;
-
-    private MetricsAgent metricsAgent = Context.getInstance().getMetricsAgent();
-
+public class UnscheduleAppointmentReminderHandler implements EventListener {
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	public final static String UNSCHEDULE_APPOINTMENT_REMINDER = "UnscheduleAppointmentReminder";
+	
+	@Autowired
+	private Context context;
+	@Autowired
+	private PatientDAO patientDAO;
+	
 	@Override
 	public void handle(MotechEvent event) {
 
         String appointmentId = EventKeys.getAppointmentId(event);
         if (appointmentId == null) {
-            log.error("Can not handle the Call Complete Event: " + event +
+            logger.error("Can not handle the Schedule Appointment Reminder Event: " + event +
                      ". The event is invalid - missing the " + EventKeys.APPOINTMENT_ID_KEY + " parameter");
             return;
         }
 
-        Date callDate = EventKeys.getCallDate(event);
-        if (callDate == null) {
-            log.error("Can not handle the Call Complete Event: " + event +
-                     ". The event is invalid - missing the " + EventKeys.CALL_DATE_KEY + " parameter");
+        String patientId = EventKeys.getPatientId(event);
+        if (patientId == null) {
+            logger.error("Can not handle the Schedule Appointment Reminder Event: " + event +
+                     ". The event is invalid - missing the " + EventKeys.PATIENT_ID_KEY + " parameter");
             return;
         }
 
-        appointmentReminderService.reminderCallCompleted(appointmentId, callDate);
-
-        Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("appointmentId", appointmentId);
-        metricsAgent.logEvent("motech.appointment-reminder.call.complete", parameters);
-    }
-
-    @Override
-	public String getIdentifier() {
-		return HANDLER_ID;
+		try {
+			Patient patient = patientDAO.get(patientId);
+			Appointment appointment = patientDAO.getAppointment(appointmentId);
+			context.getMotechSchedulerGateway().unscheduleJob(appointment.getReminderScheduledJobId());
+		} catch (RuntimeException e) {
+		    for (StackTraceElement el : e.getStackTrace()) {
+		        logger.error(el.getFileName() + ":" + el.getLineNumber() + ">> " + el.getMethodName() + "()");
+		    }			
+		    // TODO break the exceptions on transient and non-transient and throw the appropriate one
+			throw e;
+		}
 	}
 
+	@Override
+	public String getIdentifier() {
+		return UNSCHEDULE_APPOINTMENT_REMINDER;
+	}
 }

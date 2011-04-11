@@ -39,8 +39,9 @@ public class Preferences extends MotechBaseDataObject {
 	private static final long serialVersionUID = 7959940892352071956L;
 	@TypeDiscriminator
 	private String patientId;
-	private int bestTimeToCall;
-	private boolean enabled = false;
+	private Integer bestTimeToCallHour;
+	private Integer bestTimeToCallMinute;
+	private Boolean enabled = Boolean.FALSE;
 	
 
 	/**
@@ -57,58 +58,88 @@ public class Preferences extends MotechBaseDataObject {
 		this.patientId = patientId;
 	}
 
-	/**
-	 * @return the bestTimeToCall
-	 */
-	public int getBestTimeToCall() {
-		return bestTimeToCall;
+	public Integer getBestTimeToCallHour() {
+		return bestTimeToCallHour;
 	}
-	
-	/**
-	 * @param bestTimeToCall the bestTimeToCall to set
-	 */
-	public void setBestTimeToCall(int bestTimeToCall) {
-		this.bestTimeToCall = bestTimeToCall;
+
+	public void setBestTimeToCallHour(Integer bestTimeToCallHour) {
+		this.bestTimeToCallHour = bestTimeToCallHour;
+	}
+
+	public Integer getBestTimeToCallMinute() {
+		return bestTimeToCallMinute;
+	}
+
+	public void setBestTimeToCallMinute(Integer bestTimeToCallMinute) {
+		this.bestTimeToCallMinute = bestTimeToCallMinute;
 	}
 	
 	/**
 	 * @return the enabled
 	 */
-	public boolean isEnabled() {
+	public Boolean isEnabled() {
 		return enabled;
 	}
 	/**
 	 * @param enabled the enabled to set
 	 */
-	public void setEnabled(boolean enabled) {
+	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
 	
     @Override
     public String toString() {
-        return "id = " + this.getId() + ", enabled = " + enabled + ", best time to call = " + this.bestTimeToCall + ", patient id = " + patientId; 
-    }
-    
-    @Override
-    public boolean equals(Object o) {
-	    if (this == o) return true;
-	    if (o == null || getClass() != o.getClass()) return false;
-	    
-	    Preferences p = (Preferences) o;
-	    if (this.getId() != null ? !this.getId().equals(p.getId()) : p.getId() != null) return false;
-	    if (this.enabled != p.isEnabled())  return false;
-	    if (this.bestTimeToCall != p.getBestTimeToCall())  return false;
-	    if (this.patientId != null ? !this.patientId.equals(p.getPatientId()) : p.getPatientId() != null) return false;
-	    
-        return true;
+        return "id = " + this.getId() + ", enabled = " + enabled + ", best time to call hour = " + this.bestTimeToCallHour + ", best time to call minute = " + this.bestTimeToCallMinute + ", patient id = " + patientId; 
     }
 
-    @Override
-    public int hashCode() {
-	    int result = bestTimeToCall;
-	    result = 31 * result + (this.getId() != null ? this.getId().hashCode() : 0);
-	    result = 31 * result + (this.patientId != null ? this.patientId.hashCode() : 0);
-	    return result;
-    }
-	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime
+				* result
+				+ ((bestTimeToCallHour == null) ? 0 : bestTimeToCallHour
+						.hashCode());
+		result = prime
+				* result
+				+ ((bestTimeToCallMinute == null) ? 0 : bestTimeToCallMinute
+						.hashCode());
+		result = prime * result + ((enabled == null) ? 0 : enabled.hashCode());
+		result = prime * result
+				+ ((patientId == null) ? 0 : patientId.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Preferences other = (Preferences) obj;
+		if (bestTimeToCallHour == null) {
+			if (other.bestTimeToCallHour != null)
+				return false;
+		} else if (!bestTimeToCallHour.equals(other.bestTimeToCallHour))
+			return false;
+		if (bestTimeToCallMinute == null) {
+			if (other.bestTimeToCallMinute != null)
+				return false;
+		} else if (!bestTimeToCallMinute.equals(other.bestTimeToCallMinute))
+			return false;
+		if (enabled == null) {
+			if (other.enabled != null)
+				return false;
+		} else if (!enabled.equals(other.enabled))
+			return false;
+		if (patientId == null) {
+			if (other.patientId != null)
+				return false;
+		} else if (!patientId.equals(other.patientId))
+			return false;
+		return true;
+	}
+    
 }

@@ -90,7 +90,7 @@ public class IVRServiceAsteriskImpl implements IVRService
 
             String data = agiUrl + encodedVxmlUrl;
 
-            log.info("Initiating call to: " + destinationPhone + "VXML URL: " + data);
+            log.info("Initiating call to: " + destinationPhone + " VXML URL: " + data);
 
             asteriskServer.originateToApplicationAsync(destinationPhone, asteriskApplication,
                                                        data, callRequest.getTimeOut(), asteriskCallBack);

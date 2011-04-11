@@ -57,7 +57,7 @@
     <bean id="couchDbInstance" factory-bean="motechContext" factory-method="getCouchDbInstance" />
     
     <bean id="appointmentReminderDatabase" class="org.ektorp.impl.StdCouchDbConnector">
-		<constructor-arg value="appointments" />
+		<constructor-arg value="appointment_reminder" />
 		<constructor-arg ref="couchDbInstance" />
 	</bean>
 
@@ -86,5 +86,6 @@
 	 
 	<bean id="reminderCallCompleteEventHandler" class="org.motechproject.server.appointmentreminder.ReminderCallCompleteEventHandler"/>
 	<bean id="reminderCallIncompleteEventHandler" class="org.motechproject.server.appointmentreminder.ReminderCallIncompleteEventHandler"/>
+	<bean id="unscheduleAppointmentReminderHandler" class="org.motechproject.server.appointmentreminder.UnscheduleAppointmentReminderHandler"/>
     
 </beans>

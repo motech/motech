@@ -32,7 +32,6 @@
 package org.motechproject.server.appointmentreminder;
 
 import org.motechproject.context.Context;
-import org.motechproject.server.event.EventListener;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -42,12 +41,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import java.awt.*;
-import java.util.Arrays;
-
 /**
  * 
  * @author yyonkov
+ * @author Igor (iopushnyev@2paths.com)
  * 
  */
 public class Activator implements BundleActivator {
@@ -55,7 +52,8 @@ public class Activator implements BundleActivator {
 	private static final String CONTEXT_CONFIG_LOCATION = "applicationAppointmentReminder.xml";
 	private static final String SERVLET_URL_MAPPING = "/ar";
 	private ServiceTracker tracker;
-	private ScheduleAppointmentReminderHandler scheduleAppointmentListener;
+	private ScheduleAppointmentReminderHandler scheduleAppointmentReminderListener;
+    private UnscheduleAppointmentReminderHandler unscheduleAppointmentReminderListener;
     private RemindAppointmentEventHandler remindAppointmentEventListener;
     private ReminderCallCompleteEventHandler reminderCallCompleteEventListener;
     private ReminderCallIncompleteEventHandler reminderCallIncompleteEventListener;
@@ -98,10 +96,12 @@ public class Activator implements BundleActivator {
 				Thread.currentThread().setContextClassLoader(old);
 			}
 			//listener = new ScheduleAppointmentReminderHandler();
-			scheduleAppointmentListener = dispatcherServlet.getWebApplicationContext().getBean(ScheduleAppointmentReminderHandler.class);
-			Context.getInstance().getEventListenerRegistry().registerListener(scheduleAppointmentListener, EventKeys.SCHEDULE_REMINDER_SUBJECT);
-			
-			//remindAppointmentEventListener = new RemindAppointmentEventHandler();
+			scheduleAppointmentReminderListener = dispatcherServlet.getWebApplicationContext().getBean(ScheduleAppointmentReminderHandler.class);
+			Context.getInstance().getEventListenerRegistry().registerListener(scheduleAppointmentReminderListener, EventKeys.SCHEDULE_REMINDER_SUBJECT);
+
+            unscheduleAppointmentReminderListener = dispatcherServlet.getWebApplicationContext().getBean(UnscheduleAppointmentReminderHandler.class);
+			Context.getInstance().getEventListenerRegistry().registerListener(unscheduleAppointmentReminderListener, EventKeys.UNSCHEDULE_REMINDER_SUBJECT);
+
 			remindAppointmentEventListener = dispatcherServlet.getWebApplicationContext().getBean(RemindAppointmentEventHandler.class);
 			Context.getInstance().getEventListenerRegistry().registerListener(remindAppointmentEventListener, EventKeys.REMINDER_EVENT_SUBJECT);
 

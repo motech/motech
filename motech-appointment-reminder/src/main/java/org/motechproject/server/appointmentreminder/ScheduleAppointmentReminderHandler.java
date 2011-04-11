@@ -41,16 +41,14 @@ import org.motechproject.server.event.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
- * Responsible for listening for <code>{@link org.motechproject.server.appointmentreminder.eventtype.ScheduleAppointmentReminderEventType}</code>
+ * Responsible for listening for <code>org.motechproject.</code>
  * events with destination
  * 
  * @author yyonkov
  * 
  */
-@Component
 public class ScheduleAppointmentReminderHandler implements EventListener {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	public final static String SCHEDULE_APPOINTMENT_REMINDER = "ScheduleAppointmentReminder";
@@ -80,7 +78,9 @@ public class ScheduleAppointmentReminderHandler implements EventListener {
 		try {
 			Patient patient = patientDAO.get(patientId);
 			Appointment appointment = patientDAO.getAppointment(appointmentId);
-			SchedulableJob schedulableJob = new SchedulableJob(event, String.format("0 0 %d * * ?", patient.getPreferences().getBestTimeToCall()),appointment.getReminderWindowStart(), appointment.getReminderWindowEnd());
+			//TODO confirm if we should schedule a RemindAppointmentEvent here and the jobId is correct
+			MotechEvent reminderEvent = new MotechEvent(event.getJobId(), EventKeys.SCHEDULE_REMINDER_SUBJECT, event.getParameters());
+			SchedulableJob schedulableJob = new SchedulableJob(reminderEvent, String.format("0 %d %d * * ?", patient.getPreferences().getBestTimeToCallMinute(), patient.getPreferences().getBestTimeToCallHour()),appointment.getReminderWindowStart(), appointment.getReminderWindowEnd());
 			context.getMotechSchedulerGateway().scheduleJob(schedulableJob);
 		} catch (RuntimeException e) {
 		    for (StackTraceElement el : e.getStackTrace()) {

@@ -55,9 +55,9 @@ import java.util.Map;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ScheduleAppointmentReminderTest {
+public class UncheduleAppointmentReminderTest {
 	@InjectMocks
-	private EventListener scheduleAppointmentReminderHandler = new ScheduleAppointmentReminderHandler();
+	private EventListener unscheduleAppointmentReminderHandler = new UnscheduleAppointmentReminderHandler();
 	@Mock
 	private Context context;
 	@Mock
@@ -78,6 +78,8 @@ public class ScheduleAppointmentReminderTest {
 		MotechEvent event = new MotechEvent("", "", null);
 		event.getParameters().put(EventKeys.APPOINTMENT_ID_KEY, APPT_ID);
 		event.getParameters().put(EventKeys.PATIENT_ID_KEY, PAT_ID);
+
+        String reminderScheduledJobId = "999";
 		
 		Patient p = new Patient();
 		p.setPreferences(new Preferences());
@@ -87,6 +89,7 @@ public class ScheduleAppointmentReminderTest {
 		Appointment a = new Appointment();
 		a.setReminderWindowEnd(new Date());
 		a.setReminderWindowStart(new Date());
+        a.setReminderScheduledJobId(reminderScheduledJobId);
 		
 		// stub
 		when(patientDAO.get(PAT_ID)).thenReturn(p);
@@ -94,13 +97,13 @@ public class ScheduleAppointmentReminderTest {
 		when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
 
 		// run
-		scheduleAppointmentReminderHandler.handle(event);
+		unscheduleAppointmentReminderHandler.handle(event);
 		
 		// verify
 		verify(patientDAO).get(PAT_ID);
 		verify(patientDAO).getAppointment(APPT_ID);
 		verify(context).getMotechSchedulerGateway();
-		verify(motechSchedulerGateway).scheduleJob(any(SchedulableJob.class));
+		verify(motechSchedulerGateway).unscheduleJob(reminderScheduledJobId);
 	}
 
     @Test
@@ -112,7 +115,7 @@ public class ScheduleAppointmentReminderTest {
 
         MotechEvent motechEvent = new MotechEvent("", "", params);
 
-        scheduleAppointmentReminderHandler.handle(motechEvent);
+        unscheduleAppointmentReminderHandler.handle(motechEvent);
 
         verify(patientDAO, times(0)).get(anyString());
     }
@@ -125,7 +128,7 @@ public class ScheduleAppointmentReminderTest {
 
         MotechEvent motechEvent = new MotechEvent("", "", params);
 
-        scheduleAppointmentReminderHandler.handle(motechEvent);
+        unscheduleAppointmentReminderHandler.handle(motechEvent);
 
         verify(patientDAO, times(0)).get(anyString());
     }
@@ -139,7 +142,7 @@ public class ScheduleAppointmentReminderTest {
 
         MotechEvent motechEvent = new MotechEvent("", "", params);
 
-        scheduleAppointmentReminderHandler.handle(motechEvent);
+        unscheduleAppointmentReminderHandler.handle(motechEvent);
 
         verify(patientDAO, times(0)).get(anyString());
     }
@@ -152,7 +155,7 @@ public class ScheduleAppointmentReminderTest {
 
         MotechEvent motechEvent = new MotechEvent("", "", params);
 
-        scheduleAppointmentReminderHandler.handle(motechEvent);
+        unscheduleAppointmentReminderHandler.handle(motechEvent);
 
         verify(patientDAO, times(0)).get(anyString());
     }

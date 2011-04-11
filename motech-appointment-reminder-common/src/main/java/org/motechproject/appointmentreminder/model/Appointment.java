@@ -43,8 +43,8 @@ public class Appointment extends MotechAuditableDataObject {
 
 	private static final long serialVersionUID = 3L;
 
-	@TypeDiscriminator
 	private String patientId;
+	@TypeDiscriminator
 	private Date reminderWindowStart;
 	private Date reminderWindowEnd;
 	private Date date;

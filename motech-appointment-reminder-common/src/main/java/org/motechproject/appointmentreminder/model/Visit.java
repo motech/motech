@@ -39,8 +39,8 @@ import org.motechproject.model.MotechBaseDataObject;
 public class Visit extends MotechBaseDataObject {
 
 	private static final long serialVersionUID = -3934731398961846431L;
-	@TypeDiscriminator
 	private String patientId;
+	@TypeDiscriminator
     private Date visitDate;
 
     public String getPatientId() {
