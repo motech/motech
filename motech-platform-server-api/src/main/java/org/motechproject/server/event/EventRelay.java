@@ -31,7 +31,6 @@
  */
 package org.motechproject.server.event;
 
-import org.motechproject.event.EventTypeRegistry;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.gateway.OutboundEventGateway;
@@ -39,19 +38,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class handled incoming scheduled events and relays those events to the appropriate event listeners
  */
 public class EventRelay {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-
-	@Autowired
-	private EventTypeRegistry eventTypeRegistry;
 
 	@Autowired
 	private EventListenerRegistry eventListenerRegistry;
@@ -63,7 +56,8 @@ public class EventRelay {
     private MetricsAgent metricsAgent;
 
     private static final String MESSAGE_DESTINATION = "message-destination";
-    
+    private static final String ORIGINAL_PARAMETERS = "original-parameters";
+
     public EventRelay() {
 
     }
@@ -81,34 +75,30 @@ public class EventRelay {
             throw new IllegalStateException(errorMessage);
     	}
 
-    	if (eventTypeRegistry == null) {
-            String errorMessage = "eventTypeRegistry == null";
-            log.error(errorMessage);
-            throw new IllegalStateException(errorMessage);
-    	}
-
         if (event == null) {
             String errorMessage = "Invalid request to relay null event";
             log.warn(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }
 
-        List<EventListener> listeners = eventListenerRegistry.getListeners( eventTypeRegistry.getEventType(event.getEventType()) );
+        Set<EventListener> listeners = eventListenerRegistry.getListeners( event.getSubject() );
 
         // Is this message destine for a specific listener?
         if (event.getParameters().containsKey(MESSAGE_DESTINATION)) {
-        	
-        	EventListener listener = null;
+
         	String messageDestination = (String) event.getParameters().get(MESSAGE_DESTINATION);
 
-        	Iterator<EventListener> iter = listeners.iterator();
-        	while( iter.hasNext() ) {
-        		listener = iter.next();
+        	for (EventListener listener : listeners) {
                 if (listener.getIdentifier().equals(messageDestination)) {
-                    String timer = listener.getIdentifier() + ".handler." + event.getEventType();
+  		            MotechEvent _event = new MotechEvent(event.getJobId(),
+                                                         event.getSubject(),
+                                                         (Map<String, Object>)event.getParameters().get(ORIGINAL_PARAMETERS));
+
+                    String timer = listener.getIdentifier() + ".handler." + event.getSubject();
                     metricsAgent.startTimer(timer);
         			listener.handle(event);
                     metricsAgent.stopTimer(timer);
+
         			break;
         		}
         	} // END while( iter.hasNext() )
@@ -122,16 +112,18 @@ public class EventRelay {
 	        	// re-distributed to another server without being lost
 	        	splitEvent(event, listeners);
 	        } else {
-                EventListener listener = listeners.get(0);
-                String timer = listener.getIdentifier() + ".handler." + event.getEventType();
-                metricsAgent.startTimer(timer);
-	        	listener.handle(event);
-                metricsAgent.stopTimer(timer);
+                // Is there a way to get at a Sets elements other than an iterator?  I know there is only one
+                for (EventListener listener : listeners) {
+                    String timer = listener.getIdentifier() + ".handler." + event.getSubject();
+                    metricsAgent.startTimer(timer);
+                    listener.handle(event);
+                    metricsAgent.stopTimer(timer);
+                }
 	        } // END IF/ELSE if (listeners.size() > 1)
         } // END IF/ELSE if (event.getParameters().containsKey(MESSAGE_DESTINATION))
 
         Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("event", event.getEventType());
+        parameters.put("event", event.getSubject());
         parameters.put("listeners", String.format("%d", listeners.size()));
         metricsAgent.logEvent("motech.event-relay.relayEvent", parameters);
     }
@@ -143,15 +135,15 @@ public class EventRelay {
      * @param event Event message to be split
      * @param listeners A list of listeners for this given message that will be used as message destinations
      */
-    private void splitEvent(MotechEvent event, List<EventListener> listeners) {
+    private void splitEvent(MotechEvent event, Set<EventListener> listeners) {
     	MotechEvent enrichedEventMessage = null;
-    	EventListener listener = null;
     	Map<String, Object> parameters = null;
-    	for( Iterator<EventListener> iter = listeners.iterator(); iter.hasNext(); ) {
-    		listener = iter.next();
-    		parameters = new HashMap<String, Object>(event.getParameters());
+
+    	for( EventListener listener : listeners) {
+    		parameters = new HashMap<String, Object>();
     		parameters.put(MESSAGE_DESTINATION, listener.getIdentifier());
-    		enrichedEventMessage = new MotechEvent(event.getJobId(), event.getEventType(), parameters);
+            parameters.put(ORIGINAL_PARAMETERS, event.getParameters());
+    		enrichedEventMessage = new MotechEvent(event.getJobId(), event.getSubject(), parameters);
     		
     		outboundEventGateway.sendEventMessage(enrichedEventMessage);
     	}

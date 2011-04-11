@@ -311,6 +311,6 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
     private void putMotechEventDataToJobDataMap(JobDataMap jobDataMap, MotechEvent motechEvent) {
         jobDataMap.putAll(motechEvent.getParameters());
-        jobDataMap.put(MotechEvent.EVENT_TYPE_KEY_NAME, motechEvent.getEventType());
+        jobDataMap.put(MotechEvent.EVENT_TYPE_KEY_NAME, motechEvent.getSubject());
     }
 }

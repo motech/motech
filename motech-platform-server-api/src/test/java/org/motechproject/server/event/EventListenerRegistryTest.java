@@ -35,7 +35,7 @@ import junitx.util.PrivateAccessor;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.event.EventType;
+import org.mockito.Matchers;
 import org.motechproject.model.MotechEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -43,10 +43,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 ////specifies the Spring configuration to load for this test fixture
@@ -59,18 +60,16 @@ public class EventListenerRegistryTest {
     @After
     public void tearDown() throws NoSuchFieldException
     {
-        PrivateAccessor.setField(registry, "eventListeners", new ConcurrentHashMap<String, List<EventListener>>());
+        PrivateAccessor.setField(registry, "listenerTree", new EventListenerTree());
     }
 
     @Test
     public void testNullEventListenerRegistration() {
         boolean exceptionThrown = false;
-        List<EventType> et = new ArrayList<EventType>();
-		et.add(new SampleEventType());
         EventListener sel = null;
 
         try {
-            registry.registerListener(sel, et);
+            registry.registerListener(sel, "org.motechproject.server.someevent");
         } catch (IllegalArgumentException e) {
             exceptionThrown = true;
         }
@@ -81,11 +80,10 @@ public class EventListenerRegistryTest {
     @Test
     public void testNullEventTypeRegistration() {
         boolean exceptionThrown = false;
-        List<EventType> et = null;
         EventListener sel = new SampleEventListener();
 
         try {
-            registry.registerListener(sel, et);
+            registry.registerListener(sel, (String)null);
         } catch (IllegalArgumentException e) {
             exceptionThrown = true;
         }
@@ -94,51 +92,71 @@ public class EventListenerRegistryTest {
     }
 
     @Test
-    public void testEmptyEventListRegistration() {
+    public void testEmptyEventListRegistration() throws NoSuchFieldException{
         boolean exceptionThrown = false;
-        List<EventType> et = new ArrayList<EventType>();
+        List<String> subjects = new ArrayList<String>();
 		EventListener sel = new SampleEventListener();
 
-        registry.registerListener(sel, et);
+        EventListenerTree mockTree = mock(EventListenerTree.class);
+        PrivateAccessor.setField(registry, "listenerTree", mockTree);
 
-        try
-        {
-            Object o = PrivateAccessor.getField(registry, "eventListeners");
-            Map<String, List<EventListener>> eventListeners;
-            eventListeners = (Map<String, List<EventListener>>)o;
+        registry.registerListener(sel, subjects);
 
-            assertEquals(eventListeners.size(), 0);
-        } catch (NoSuchFieldException e)
-        {
-            exceptionThrown = true;
-        }
-
-        assertFalse(exceptionThrown);
+        verify(mockTree, times(0)).addListener(Matchers.<EventListener>anyObject(), anyString());
     }
 
 	@Test
 	public void testRegisterSingleListener() {
-		List<EventType> et = new ArrayList<EventType>(); 
-		et.add(new SampleEventType());
 		EventListener sel = new SampleEventListener();
-		registry.registerListener(sel, et);
-		
-		assertNotNull(registry.getListeners(et.get(0)));
-		assertTrue(registry.getListeners(et.get(0)).size() == 1);
-		assertEquals(registry.getListeners(et.get(0)).get(0), sel);
+		registry.registerListener(sel, "org.motechproject.server.someevent");
+
+        Set<EventListener> listeners = registry.getListeners("org.motechproject.server.someevent");
+		assertNotNull(listeners);
+		assertTrue(listeners.size() == 1);
+		assertEquals(listeners.iterator().next(), sel);
 	}
 
     @Test
+    public void testHasListener_Yes() {
+        EventListener sel = new SampleEventListener();
+        registry.registerListener(sel, "org.motechproject.server.someevent");
+
+        assertTrue(registry.hasListener("org.motechproject.server.someevent"));
+    }
+
+    @Test
+    public void testHasListener_YesWildcard() {
+        EventListener sel = new SampleEventListener();
+        registry.registerListener(sel, "org.motechproject.server.*");
+
+        assertTrue(registry.hasListener("org.motechproject.server.someevent"));
+    }
+
+    @Test
+	public void testHasListener_NoEmpty() {
+		EventListener sel = new SampleEventListener();
+
+        assertFalse(registry.hasListener("org.motechproject.server.someevent"));
+	}
+
+    @Test
+    public void testHasListener_No() {
+        EventListener sel = new SampleEventListener();
+        registry.registerListener(sel, "org.motechproject.server.someevent");
+
+        assertFalse(registry.hasListener("org.motechproject.client.otherevent"));
+    }
+
+    @Test
 	public void testRegisterMultipleListener() {
-		List<EventType> et = new ArrayList<EventType>();
-		et.add(new SampleEventType());
+
 		EventListener sel = new SampleEventListener();
         EventListener sel2 = new FooEventListener();
 
-		registry.registerListener(sel, et);
-        registry.registerListener(sel2, et);
+		registry.registerListener(sel, "org.motechproject.server.someevent");
+        registry.registerListener(sel2, "org.motechproject.server.someevent");
 
-        List<EventListener> el = registry.getListeners(et.get(0));
+        Set<EventListener> el = registry.getListeners("org.motechproject.server.someevent");
 		assertNotNull(el);
 		assertTrue(el.size() == 2);
 		assertTrue(el.contains(sel));
@@ -147,15 +165,15 @@ public class EventListenerRegistryTest {
 
     @Test
 	public void testRegisterForMultipleEvents() {
-		List<EventType> et = new ArrayList<EventType>();
-		et.add(new SampleEventType());
-        et.add(new FooEventType());
+		List<String> et = new ArrayList<String>();
+		et.add("org.motechproject.server.someevent");
+        et.add("org.motechproject.server.someotherevent");
 
 		EventListener sel = new SampleEventListener();
 
 		registry.registerListener(sel, et);
 
-        List<EventListener> el = registry.getListeners(et.get(0));
+        Set<EventListener> el = registry.getListeners(et.get(0));
 		assertNotNull(el);
 		assertTrue(el.size() == 1);
 		assertTrue(el.contains(sel));
@@ -168,15 +186,13 @@ public class EventListenerRegistryTest {
 
     @Test
 	public void testRegisterTwice() {
-		List<EventType> et = new ArrayList<EventType>();
-		et.add(new SampleEventType());
 
 		EventListener sel = new SampleEventListener();
 
-		registry.registerListener(sel, et);
-    	registry.registerListener(sel, et);
+		registry.registerListener(sel, "org.motechproject.server.someevent");
+    	registry.registerListener(sel, "org.motechproject.server.someevent");
 
-        List<EventListener> el = registry.getListeners(et.get(0));
+        Set<EventListener> el = registry.getListeners("org.motechproject.server.someevent");
 		assertNotNull(el);
 		assertTrue(el.size() == 1);
 		assertTrue(el.contains(sel));
@@ -185,15 +201,15 @@ public class EventListenerRegistryTest {
 
     @Test
 	public void testRegisterForSameEventTwice() {
-		List<EventType> et = new ArrayList<EventType>();
-		et.add(new SampleEventType());
-        et.add(new SampleEventType());
+		List<String> et = new ArrayList<String>();
+		et.add("org.motechproject.server.someevent");
+        et.add("org.motechproject.server.someevent");
 
 		EventListener sel = new SampleEventListener();
 
 		registry.registerListener(sel, et);
 
-        List<EventListener> el = registry.getListeners(et.get(0));
+        Set<EventListener> el = registry.getListeners(et.get(0));
 		assertNotNull(el);
 		assertTrue(el.size() == 1);
 		assertTrue(el.contains(sel));
@@ -206,22 +222,23 @@ public class EventListenerRegistryTest {
 
 	@Test
 	public void testGetListeners() {
-		List<EventType> et = new ArrayList<EventType>(); 
-		et.add(new SampleEventType());
+		List<String> et = new ArrayList<String>();
+		et.add("org.motechproject.server.someevent");
 		EventListener sel = new SampleEventListener();
 		registry.registerListener(sel, et);
-		
-		assertNotNull(registry.getListeners(et.get(0)));
-		assertTrue(registry.getListeners(et.get(0)).size() == 1);
-		assertEquals(registry.getListeners(et.get(0)).get(0), sel);
+
+        Set<EventListener> el = registry.getListeners("org.motechproject.server.someevent");
+		assertNotNull(el);
+		assertEquals(1, el.size());
+		assertEquals(el.iterator().next(), sel);
 	}
 	
 	@Test
 	public void testGetEmptyListenerList() {
-		List<EventType> et = new ArrayList<EventType>();
-		et.add(new SampleEventType());
+		List<String> et = new ArrayList<String>();
+		et.add("org.motechproject.server.someevent");
 
-		assertNull(registry.getListeners(et.get(0)));
+		assertEquals(0, registry.getListeners(et.get(0)).size());
 	}
 
     class FooEventListener implements EventListener {
@@ -234,23 +251,6 @@ public class EventListenerRegistryTest {
         public String getIdentifier() {
             return "FooEventListener";
         }
-    }
-
-    class FooEventType implements EventType {
-
-        private String key = "fooeventtype";
-        private String name = "FooEventType";
-
-        @Override
-        public String getKey() {
-            return key;
-        }
-
-        @Override
-        public String getName() {
-            return name;
-        }
-
     }
 }
 

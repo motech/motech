@@ -21,6 +21,11 @@ public class EventKeys
     public final static String CALL_DATE_KEY = "CallDate";
     public final static String PATIENT_ID_KEY = "PatientID";
 
+    public final static String REMINDER_EVENT_SUBJECT = "org.motechproject.server.appointmentreminder.reminder-call";
+    public final static String SCHEDULE_REMINDER_SUBJECT = "org.motechproject.server.appointmentreminder.schedule-reminder-call";
+    public final static String INCOMPLETE_CALL_SUBJECT = "org.motechproject.server.appointmentreminder.incomplete-reminder-call";
+    public final static String COMPLETED_CALL_SUBJECT = "org.motechproject.server.appointmentreminder.completed-reminder-call";
+
     public static String getAppointmentId(MotechEvent event)
     {
         String appointmentId = null;

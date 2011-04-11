@@ -37,19 +37,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.motechproject.event.EventType;
-import org.motechproject.event.EventTypeRegistry;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.gateway.OutboundEventGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -63,47 +58,37 @@ public class EventRelayTest {
     EventListenerRegistry registry;
 
     @Autowired
-    EventTypeRegistry eventTypeRegistry;
-
-    @Autowired
     EventRelay eventRelay;
 
     @Autowired
     OutboundEventGateway outboundEventGateway;
 
     MotechEvent motechEvent = null;
-    
-    List<EventType> eventTypes = null;
+
     SampleEventListener sel = null;
 
 
     @Before
     public void setUp() throws Exception {
-        // Create event type array for creating a scheduled event listener
-        eventTypes = new ArrayList<EventType>();
-        eventTypes.add(new SampleEventType());
-        
-        // Add the event type to the registry
-        eventTypeRegistry.add(eventTypes.get(0));
 
         // Create the scheduled event message object
         Map<String, Object> messageParameters = new HashMap<String, Object>();
         messageParameters.put("test", "value");
-        motechEvent = new MotechEvent("abcd123", eventTypes.get(0).getKey(), messageParameters);
+        motechEvent = new MotechEvent("abcd123", "org.motechproject.server.someevent", messageParameters);
     }
 
     @After
     public void tearDown() throws NoSuchFieldException
     {
         // Clear out the event listener registry
-        PrivateAccessor.setField(registry, "eventListeners", new ConcurrentHashMap<String, List<EventListener>>());
+        PrivateAccessor.setField(registry, "listenerTree", new EventListenerTree());
     }
 
     @Test
     public void testRelayToSingleListener() throws Exception {
         // Register a single listener for an event
         SampleEventListener sel = mock(SampleEventListener.class);
-        registry.registerListener(sel, eventTypes);
+        registry.registerListener(sel, "org.motechproject.server.someevent");
 
         eventRelay.relayEvent(motechEvent);
 
@@ -119,11 +104,11 @@ public class EventRelayTest {
         // Register a single listener for an event
         SampleEventListener sel = mock(SampleEventListener.class);
         stub(sel.getIdentifier()).toReturn("SampleEventListener");
-        registry.registerListener(sel, eventTypes);
+        registry.registerListener(sel, "org.motechproject.server.someevent");
 
         FooEventListener fel = mock(FooEventListener.class);
         stub(fel.getIdentifier()).toReturn("FooEventListener");
-        registry.registerListener(fel, eventTypes);
+        registry.registerListener(fel, "org.motechproject.server.someevent");
 
         eventRelay.relayEvent(motechEvent);
 
@@ -158,17 +143,17 @@ public class EventRelayTest {
         // Register a single listener for an event
         SampleEventListener sel = mock(SampleEventListener.class);
         stub(sel.getIdentifier()).toReturn("SampleEventListener");
-        registry.registerListener(sel, eventTypes);
+        registry.registerListener(sel, "org.motechproject.server.someevent");
 
         FooEventListener fel = mock(FooEventListener.class);
         stub(fel.getIdentifier()).toReturn("FooEventListener");
-        registry.registerListener(fel, eventTypes);
+        registry.registerListener(fel, "org.motechproject.server.someevent");
 
         // Create my own event so I don't pollute the main one with a new param
         Map<String, Object> messageParameters = new HashMap<String, Object>();
         messageParameters.put("test", "value");
         messageParameters.put("message-destination", "FooEventListener");
-        MotechEvent motechEvent = new MotechEvent("abcd123", eventTypes.get(0).getKey(), messageParameters);
+        MotechEvent motechEvent = new MotechEvent("abcd123", "org.motechproject.server.someevent", messageParameters);
 
         eventRelay.relayEvent(motechEvent);
 
