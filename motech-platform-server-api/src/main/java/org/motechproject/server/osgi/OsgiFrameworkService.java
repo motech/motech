@@ -31,6 +31,7 @@
  */
 package org.motechproject.server.osgi;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +41,7 @@ import java.util.Set;
 
 import javax.servlet.ServletContext;
 
+import org.apache.commons.lang.StringUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.launch.Framework;
@@ -61,9 +63,11 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
-    private String bundleFolder;
+    private String internalBundleFolder;
 
-    @Autowired
+    private String externalBundleFolder;
+
+	@Autowired
     private Framework osgiFramework;
 
     private List<BundleLoader> bundleLoaders;
@@ -156,20 +160,63 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     }
 
     private List<URL> findBundles(ServletContext servletContext) throws Exception {
+    	List<URL> list = findInternalBundles(servletContext);
+    	list.addAll(findExternalBundles());
+    	return list;
+    }
+    
+    /**
+     * Find built-in/mandatory bundles
+     * 
+     * @param servletContext
+     * @return
+     * @throws Exception
+     */
+    private List<URL> findInternalBundles(ServletContext servletContext) throws Exception {
         List<URL> list = new ArrayList<URL>();
-        @SuppressWarnings("unchecked")
-        Set<String> paths = servletContext.getResourcePaths(bundleFolder);
-        if (paths != null) {
-            for (String path : paths) {
-                if (path.endsWith(".jar")) {
-                    URL url = servletContext.getResource(path);
-                    if (url != null) {
-                        list.add(url);
-                    }
-                }
-            }
+        if (StringUtils.isNotBlank(internalBundleFolder)) {
+	        @SuppressWarnings("unchecked")
+	        Set<String> paths = servletContext.getResourcePaths(internalBundleFolder);
+	        if (paths != null) {
+	            for (String path : paths) {
+	                if (path.endsWith(".jar")) {
+	                    URL url = servletContext.getResource(path);
+	                    if (url != null) {
+	                        list.add(url);
+	                    }
+	                }
+	            }
+	        }
         }
         return list;
+    }
+    
+    /**
+     * Find external/optional bundles
+     * 
+     * @return
+     * @throws Exception
+     */
+    private List<URL> findExternalBundles() throws Exception {
+    	List<URL> list = new ArrayList<URL>();
+    	if (StringUtils.isNotBlank(externalBundleFolder)) {
+	    	File folder = new File(externalBundleFolder);
+	    	
+			if (!folder.exists()) {
+				folder.mkdirs();
+			}
+			
+	    	File[] files = folder.listFiles();
+			for (File file : files) {
+				if (file.getAbsolutePath().endsWith(".jar")) {
+					URL url = file.toURI().toURL();
+					if (url != null) {
+						list.add(url);
+					}
+				}
+			}
+    	}
+    	return list;
     }
 
     @Override
@@ -177,9 +224,13 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         applicationContext = ctx;
     }
 
-    public void setBundleFolder(String bundleFolder) {
-        this.bundleFolder = bundleFolder;
+    public void setInternalBundleFolder(String bundleFolder) {
+        this.internalBundleFolder = bundleFolder;
     }
+
+    public void setExternalBundleFolder(String externalBundleFolder) {
+		this.externalBundleFolder = externalBundleFolder;
+	}
 
     public void setOsgiFramework(Framework osgiFramework) {
         this.osgiFramework = osgiFramework;
