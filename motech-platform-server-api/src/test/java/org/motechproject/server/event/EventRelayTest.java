@@ -74,7 +74,7 @@ public class EventRelayTest {
         // Create the scheduled event message object
         Map<String, Object> messageParameters = new HashMap<String, Object>();
         messageParameters.put("test", "value");
-        motechEvent = new MotechEvent("abcd123", "org.motechproject.server.someevent", messageParameters);
+        motechEvent = new MotechEvent("org.motechproject.server.someevent", messageParameters);
     }
 
     @After
@@ -125,17 +125,9 @@ public class EventRelayTest {
         assertFalse(firstListener.equals(secondListener));
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testRelayNullEvent() throws Exception {
-        boolean exceptionThrown = false;
-
-        try {
-            eventRelay.relayEvent(null);
-        } catch (IllegalArgumentException e) {
-            exceptionThrown = true;
-        }
-
-        assertTrue(exceptionThrown);
+        eventRelay.relayEvent(null);
     }
 
     @Test
@@ -150,12 +142,16 @@ public class EventRelayTest {
         registry.registerListener(fel, "org.motechproject.server.someevent");
 
         // Create my own event so I don't pollute the main one with a new param
-        Map<String, Object> messageParameters = new HashMap<String, Object>();
-        messageParameters.put("test", "value");
-        messageParameters.put("message-destination", "FooEventListener");
-        MotechEvent motechEvent = new MotechEvent("abcd123", "org.motechproject.server.someevent", messageParameters);
+        // This event is the same as the one created in  setUp only it is augmented like a split relayed event
+        Map<String , Object> originalParameters = new HashMap<String, Object>();
+        originalParameters.put("test", "value");
 
-        eventRelay.relayEvent(motechEvent);
+        Map<String, Object> messageParameters = new HashMap<String, Object>();
+        messageParameters.put("original-parameters", originalParameters);
+        messageParameters.put("message-destination", "FooEventListener");
+        MotechEvent _motechEvent = new MotechEvent("org.motechproject.server.someevent", messageParameters);
+
+        eventRelay.relayEvent(_motechEvent);
 
         verify(fel).handle(motechEvent);
         verify(sel, never()).handle(any(MotechEvent.class));

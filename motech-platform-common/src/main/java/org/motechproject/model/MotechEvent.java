@@ -51,35 +51,31 @@ public final class MotechEvent implements Serializable {
 
     public static final String EVENT_TYPE_KEY_NAME = "eventType";
 
-    private String jobId;
     private String subject;
     private Map<String, Object> parameters;
 
     /**
      * Constructor
-     * @param jobId - ID of the scheduled job that generated this event.
      * @param subject - event type: Pill Reminder, Appointment Reminder ...
      * @param parameters - a Map<String, Object> of additional parameters
      *
      * @throws IllegalArgumentException if given jobId or entityType is null
      */
-    public MotechEvent(String jobId, String subject, Map<String, Object> parameters) {
-
-        if (jobId == null) {
-            throw new IllegalArgumentException("jobId can not be null");
-        }
-
+    public MotechEvent(String subject, Map<String, Object> parameters) {
         if (subject == null) {
             throw new IllegalArgumentException("subject can not be null");
         }
 
-        this.jobId = jobId;
+        if (subject.indexOf("*") != -1) {
+            throw new IllegalArgumentException("subject can not contain wildcard: " + subject);
+        }
+
+        if (subject.indexOf("..") != -1) {
+            throw new IllegalArgumentException("subject can not contain empty path segment: " + subject);
+        }
+
         this.subject = subject;
         this.parameters = parameters;
-    }
-
-    public String getJobId() {
-        return jobId;
     }
 
     public String getSubject() {
@@ -101,7 +97,6 @@ public final class MotechEvent implements Serializable {
         MotechEvent that = (MotechEvent) o;
 
         if (!subject.equals(that.subject)) return false;
-        if (!jobId.equals(that.jobId)) return false;
         if (parameters != null ? !parameters.equals(that.parameters) : that.parameters != null) return false;
 
         return true;
@@ -109,8 +104,7 @@ public final class MotechEvent implements Serializable {
 
     @Override
     public int hashCode() {
-        int result = jobId.hashCode();
-        result = 31 * result + subject.hashCode();
+        int result = 31 * subject.hashCode();
         result = 31 * result + (parameters != null ? parameters.hashCode() : 0);
         return result;
     }
@@ -118,8 +112,7 @@ public final class MotechEvent implements Serializable {
     @Override
     public String toString() {
         return "MotechEvent{" +
-                "jobId='" + jobId + '\'' +
-                ", subject='" + subject + '\'' +
+                "subject='" + subject + '\'' +
                 ", parameters=" + parameters +
                 '}';
     }

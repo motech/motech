@@ -79,7 +79,7 @@ public class ScheduleAppointmentReminderHandler implements EventListener {
 			Patient patient = patientDAO.get(patientId);
 			Appointment appointment = patientDAO.getAppointment(appointmentId);
 			//TODO confirm if we should schedule a RemindAppointmentEvent here and the jobId is correct
-			MotechEvent reminderEvent = new MotechEvent(event.getJobId(), EventKeys.SCHEDULE_REMINDER_SUBJECT, event.getParameters());
+			MotechEvent reminderEvent = new MotechEvent(EventKeys.SCHEDULE_REMINDER_SUBJECT, event.getParameters());
 			SchedulableJob schedulableJob = new SchedulableJob(reminderEvent, String.format("0 %d %d * * ?", patient.getPreferences().getBestTimeToCallMinute(), patient.getPreferences().getBestTimeToCallHour()),appointment.getReminderWindowStart(), appointment.getReminderWindowEnd());
 			context.getMotechSchedulerGateway().scheduleJob(schedulableJob);
 		} catch (RuntimeException e) {

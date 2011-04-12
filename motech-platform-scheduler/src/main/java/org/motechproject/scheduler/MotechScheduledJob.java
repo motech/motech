@@ -62,8 +62,9 @@ public class MotechScheduledJob implements Job {
             String eventType = jobDataMap.getString(MotechEvent.EVENT_TYPE_KEY_NAME);
             Map<String, Object> params = jobDataMap.getWrappedMap();
             params.remove(MotechEvent.EVENT_TYPE_KEY_NAME);
+            params.put("JobID", jobId);
 
-            MotechEvent motechEvent = new MotechEvent(jobId, eventType, params);
+            MotechEvent motechEvent = new MotechEvent(eventType, params);
 
             log.info("Sending Motech Event Message: " + motechEvent);
 

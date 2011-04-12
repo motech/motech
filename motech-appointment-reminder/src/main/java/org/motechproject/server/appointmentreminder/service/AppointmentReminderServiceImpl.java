@@ -156,16 +156,14 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
                     Map<String, Object> messageParameters = new HashMap<String, Object>();
                     messageParameters.put("AppointmentID", appointmentId);
                     messageParameters.put("CallDate", today);
-                    MotechEvent incompleteEvent = new MotechEvent("Incomplete Reminder Call",
-                                                                  EventKeys.INCOMPLETE_CALL_SUBJECT,
+                    MotechEvent incompleteEvent = new MotechEvent(EventKeys.INCOMPLETE_CALL_SUBJECT,
                                                                   messageParameters);
 
                     callRequest.setOnBusyEvent(incompleteEvent);
                     callRequest.setOnFailureEvent(incompleteEvent);
                     callRequest.setOnNoAnswerEvent(incompleteEvent);
 
-                    MotechEvent successEvent = new MotechEvent("Completed Reminder Call",
-                                                               EventKeys.COMPLETED_CALL_SUBJECT,
+                    MotechEvent successEvent = new MotechEvent(EventKeys.COMPLETED_CALL_SUBJECT,
                                                                messageParameters);
 
                     callRequest.setOnSuccessEvent(successEvent);

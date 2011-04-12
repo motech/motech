@@ -63,37 +63,22 @@ public class EventListenerRegistryTest {
         PrivateAccessor.setField(registry, "listenerTree", new EventListenerTree());
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testNullEventListenerRegistration() {
-        boolean exceptionThrown = false;
         EventListener sel = null;
 
-        try {
-            registry.registerListener(sel, "org.motechproject.server.someevent");
-        } catch (IllegalArgumentException e) {
-            exceptionThrown = true;
-        }
-
-        assertTrue(exceptionThrown);
+        registry.registerListener(sel, "org.motechproject.server.someevent");
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testNullEventTypeRegistration() {
-        boolean exceptionThrown = false;
         EventListener sel = new SampleEventListener();
 
-        try {
-            registry.registerListener(sel, (String)null);
-        } catch (IllegalArgumentException e) {
-            exceptionThrown = true;
-        }
-
-        assertTrue(exceptionThrown);
+        registry.registerListener(sel, (String)null);
     }
 
     @Test
     public void testEmptyEventListRegistration() throws NoSuchFieldException{
-        boolean exceptionThrown = false;
         List<String> subjects = new ArrayList<String>();
 		EventListener sel = new SampleEventListener();
 

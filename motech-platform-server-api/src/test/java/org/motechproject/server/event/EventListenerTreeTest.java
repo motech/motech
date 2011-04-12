@@ -91,43 +91,24 @@ public class EventListenerTreeTest
 		assertEquals(listeners.iterator().next(), el);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testAddListener_InvalidSubjectWildcardInMiddle() {
-        boolean exceptionThrown = false;
-
-        try {
-            tree.addListener(el, "org.motechproject.*.event");
-        } catch (IllegalArgumentException e) {
-            exceptionThrown = true;
-        }
-
-        assertTrue(exceptionThrown);
+        tree.addListener(el, "org.motechproject.*.event");
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddListener_InvalidSubjectEmptyPath() {
+        tree.addListener(el, "org.motechproject..event");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public void testAddListener_InvalidSubjectWildcard() {
-        boolean exceptionThrown = false;
-
-        try {
-            tree.addListener(el, "org.motechproject.server.event*");
-        } catch (IllegalArgumentException e) {
-            exceptionThrown = true;
-        }
-
-        assertTrue(exceptionThrown);
+        tree.addListener(el, "org.motechproject.server.event*");
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testAddListener_Nullsubject() {
-        boolean exceptionThrown = false;
-
-        try {
-            tree.addListener(el, null);
-        } catch (IllegalArgumentException e) {
-            exceptionThrown = true;
-        }
-
-        assertTrue(exceptionThrown);
+        tree.addListener(el, null);
     }
 
     @Test

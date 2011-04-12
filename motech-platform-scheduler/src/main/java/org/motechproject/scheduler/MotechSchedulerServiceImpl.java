@@ -77,7 +77,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             throw new IllegalArgumentException(errorMessage);
         }
 
-        String jobId = motechEvent.getJobId();
+        String jobId = (String)motechEvent.getParameters().get(JOB_ID_KEY);
         JobDetail jobDetail = new JobDetail(jobId, JOB_GROUP_NAME, MotechScheduledJob.class);
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
@@ -132,7 +132,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         }
 
         Scheduler scheduler = schedulerFactoryBean.getScheduler();
-        String jobId = motechEvent.getJobId();
+        String jobId = (String)motechEvent.getParameters().get(JOB_ID_KEY);
         Trigger trigger;
 
 
@@ -265,7 +265,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
              throw new IllegalArgumentException();
         }
 
-        String jobId = motechEvent.getJobId();
+        String jobId = (String)motechEvent.getParameters().get(JOB_ID_KEY);
         JobDetail jobDetail = new JobDetail(jobId, JOB_GROUP_NAME, MotechScheduledJob.class);
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 

@@ -90,13 +90,12 @@ public class EventRelay {
 
         	for (EventListener listener : listeners) {
                 if (listener.getIdentifier().equals(messageDestination)) {
-  		            MotechEvent _event = new MotechEvent(event.getJobId(),
-                                                         event.getSubject(),
+  		            MotechEvent _event = new MotechEvent(event.getSubject(),
                                                          (Map<String, Object>)event.getParameters().get(ORIGINAL_PARAMETERS));
 
                     String timer = listener.getIdentifier() + ".handler." + event.getSubject();
                     metricsAgent.startTimer(timer);
-        			listener.handle(event);
+        			listener.handle(_event);
                     metricsAgent.stopTimer(timer);
 
         			break;
@@ -136,14 +135,14 @@ public class EventRelay {
      * @param listeners A list of listeners for this given message that will be used as message destinations
      */
     private void splitEvent(MotechEvent event, Set<EventListener> listeners) {
-    	MotechEvent enrichedEventMessage = null;
-    	Map<String, Object> parameters = null;
+    	MotechEvent enrichedEventMessage;
+    	Map<String, Object> parameters;
 
     	for( EventListener listener : listeners) {
     		parameters = new HashMap<String, Object>();
     		parameters.put(MESSAGE_DESTINATION, listener.getIdentifier());
             parameters.put(ORIGINAL_PARAMETERS, event.getParameters());
-    		enrichedEventMessage = new MotechEvent(event.getJobId(), event.getSubject(), parameters);
+    		enrichedEventMessage = new MotechEvent(event.getSubject(), parameters);
     		
     		outboundEventGateway.sendEventMessage(enrichedEventMessage);
     	}

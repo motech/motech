@@ -71,7 +71,11 @@ class EventListenerTree
 
         int asteriskLocation = subject.indexOf("*");
         if (asteriskLocation != -1 && (asteriskLocation  + 1)!= subject.length()) {
-            throw new IllegalArgumentException("Wildcard must be last element of subject");
+            throw new IllegalArgumentException("Wildcard must be last element of subject: " + subject);
+        }
+
+        if (subject.indexOf("..") != -1) {
+            throw new IllegalArgumentException("Subject can not contain an empty path segment: " + subject);
         }
 
         // Split the subject into it's path components
