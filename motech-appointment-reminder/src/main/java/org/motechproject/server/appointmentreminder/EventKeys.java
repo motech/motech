@@ -7,11 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
- * Created by IntelliJ IDEA.
- * User: rob
- * Date: 4/7/11
- * Time: 9:55 PM
- * To change this template use File | Settings | File Templates.
+ *
  */
 public class EventKeys
 {
