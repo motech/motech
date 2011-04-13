@@ -120,30 +120,25 @@
 							<exclude>org/motechproject/model/Audit.class</exclude>
 							<exclude>org/motechproject/model/MotechBaseDataObject.class</exclude>
 							<exclude>org/motechproject/model/Rule.class</exclude>
-							<exclude>org/motechproject/model/Patient.class</exclude>
-                            <exclude>org/motechproject/model/Appointment.class</exclude>
-                            <exclude>org/motechproject/model/Visit.class</exclude>
                             <exclude>org/motechproject/appointmentreminder/model/*.class</exclude>
                             <exclude>org/motechproject/server/appointmentreminder/eventtype/*.class</exclude>
                             <exclude>org/motechproject/appointmentreminder/dao/couchdb/PatientDAOImpl.class</exclude>
                             <exclude>org/motechproject/server/appointmentreminder/Activator.class</exclude>
                             <exclude>org/motechproject/server/appointmentreminder/Activator$1.class</exclude>
-                            <exclude>org/motechproject/server/appointmentreminder/RemindAppointmentEventType.class</exclude>
-                            <exclude>org/motechproject/server/appointmentreminder/ScheduleAppointmentReminderEventType.class</exclude>
                             <exclude>org/motechproject/server/service/ivr/CallInitiationException.class</exclude>
                             <exclude>org/motechproject/metrics/impl/LoggingAgentBackendImpl.class</exclude>
                             <exclude>org/motechproject/metrics/impl/StatsdAgentBackendImpl.class</exclude>
-							<exclude>org.motechproject.openmrs/service/impl/*.class</exclude>
+                            <exclude>org/motechproject/context/Context.class</exclude>
 						</excludes>
 					</instrumentation>
 					<check>
 						<!-- Per-class thresholds -->
-						<packageLineRate>17</packageLineRate>
-						<packageBranchRate>20</packageBranchRate>
+						<packageLineRate>35</packageLineRate>
+						<packageBranchRate>30</packageBranchRate>
 
 						<!-- Project-wide thresholds -->
-						<totalLineRate>31</totalLineRate>
-						<totalBranchRate>48</totalBranchRate>
+						<totalLineRate>55</totalLineRate>
+						<totalBranchRate>61</totalBranchRate>
 					</check>
 				</configuration>
 				<executions>
