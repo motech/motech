@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -96,7 +97,7 @@ public class EventListenerRegistry {
      * @return A list of scheduled event listeners that are interested in that event
      */
     public List<EventListener> getListeners(EventType type) {
-        List<EventListener> listeners =  null;
+        List<EventListener> listeners = Collections.<EventListener>emptyList();
         if (eventListeners.containsKey(type.getKey())) {
             listeners = eventListeners.get(type.getKey());
         }

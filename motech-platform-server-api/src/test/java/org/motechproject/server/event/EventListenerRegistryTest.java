@@ -221,7 +221,7 @@ public class EventListenerRegistryTest {
 		List<EventType> et = new ArrayList<EventType>();
 		et.add(new SampleEventType());
 
-		assertNull(registry.getListeners(et.get(0)));
+		assertTrue(registry.getListeners(et.get(0)).isEmpty());
 	}
 
     class FooEventListener implements EventListener {
