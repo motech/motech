@@ -47,22 +47,6 @@
 		<property name="appointmentReminderVmlUrl" value="" />
 	</bean>
 
-	<!-- <bean id="scheduleAppointmentReminderHandler" class="org.motechproject.server.appointmentreminder.ScheduleAppointmentReminderHandler"/> -->
-	<bean id="motechEvent" class="org.motechproject.model.MotechEvent">
-		<constructor-arg type="java.lang.String" name="jobId"
-			value="ApptRemindJobId0001">
-		</constructor-arg>
-		<constructor-arg type="java.lang.String"
-			value="scheduleappointmentremindereventtype" name="eventType">
-		</constructor-arg>
-		<constructor-arg>
-			<util:map key-type="java.lang.String" value-type="java.lang.String">
-				<entry key="patientId" value="1234"></entry>
-				<entry key="appointmentId" value="0001"></entry>
-			</util:map>
-		</constructor-arg>
-	</bean>
-
     <bean id="metricsAgent" class="org.motechproject.metrics.impl.MultipleMetricsAgentImpl">
         <property name="metricsAgents">
             <list>

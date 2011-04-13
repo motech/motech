@@ -41,6 +41,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.server.event.EventRelay;
 import org.motechproject.server.gateway.OutboundEventGateway;
 import org.motechproject.server.service.ivr.CallRequest;
 
@@ -50,7 +51,7 @@ import static org.mockito.Mockito.*;
 public class MotechAsteriskCallBackImplTest {
 
     @Mock
-    private OutboundEventGateway eventGateway;
+    private EventRelay eventRelay;
 
     @Mock
     private AsteriskChannel asteriskChannel;
@@ -75,7 +76,7 @@ public class MotechAsteriskCallBackImplTest {
 
         when(asteriskChannel.getCallDetailRecord()).thenReturn(asteriskCallDetailRecord);
 
-        PrivateAccessor.setField(motechAsteriskCallBack, "eventGateway", eventGateway);
+        PrivateAccessor.setField(motechAsteriskCallBack, "eventRelay", eventRelay);
     }
 
     @Test
@@ -84,14 +85,14 @@ public class MotechAsteriskCallBackImplTest {
 
         motechAsteriskCallBack.onBusy(asteriskChannel);
 
-        verify(eventGateway, times(1)).sendEventMessage(event);
+        verify(eventRelay, times(1)).sendEventMessage(event);
     }
 
     @Test
     public void testOnBusy_NoEvent() throws Exception {
         motechAsteriskCallBack.onBusy(asteriskChannel);
 
-        verify(eventGateway, times(0)).sendEventMessage(event);
+        verify(eventRelay, times(0)).sendEventMessage(event);
     }
 
     @Test
@@ -100,14 +101,14 @@ public class MotechAsteriskCallBackImplTest {
 
         motechAsteriskCallBack.onSuccess(asteriskChannel);
 
-        verify(eventGateway, times(1)).sendEventMessage(event);
+        verify(eventRelay, times(1)).sendEventMessage(event);
     }
 
     @Test
     public void testOnSuccess_NoEvent() throws Exception {
         motechAsteriskCallBack.onSuccess(asteriskChannel);
 
-        verify(eventGateway, times(0)).sendEventMessage(event);
+        verify(eventRelay, times(0)).sendEventMessage(event);
     }
 
     @Test
@@ -116,14 +117,14 @@ public class MotechAsteriskCallBackImplTest {
 
         motechAsteriskCallBack.onNoAnswer(asteriskChannel);
 
-        verify(eventGateway, times(1)).sendEventMessage(event);
+        verify(eventRelay, times(1)).sendEventMessage(event);
     }
 
     @Test
     public void testOnNoAnswer_NoEvent() throws Exception {
         motechAsteriskCallBack.onNoAnswer(asteriskChannel);
 
-        verify(eventGateway, times(0)).sendEventMessage(event);
+        verify(eventRelay, times(0)).sendEventMessage(event);
     }
 
     @Test
@@ -132,13 +133,13 @@ public class MotechAsteriskCallBackImplTest {
 
         motechAsteriskCallBack.onFailure(liveException);
 
-        verify(eventGateway, times(1)).sendEventMessage(event);
+        verify(eventRelay, times(1)).sendEventMessage(event);
     }
 
     @Test
     public void testOnFailure_NoEvent() throws Exception {
         motechAsteriskCallBack.onFailure(liveException);
 
-        verify(eventGateway, times(0)).sendEventMessage(event);
+        verify(eventRelay, times(0)).sendEventMessage(event);
     }
 }

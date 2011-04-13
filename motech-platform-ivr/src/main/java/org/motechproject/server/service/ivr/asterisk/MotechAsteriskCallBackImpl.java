@@ -35,7 +35,9 @@ import org.asteriskjava.live.AsteriskChannel;
 import org.asteriskjava.live.Disposition;
 import org.asteriskjava.live.LiveException;
 import org.asteriskjava.live.OriginateCallback;
+import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.server.event.EventRelay;
 import org.motechproject.server.gateway.OutboundEventGateway;
 import org.motechproject.server.service.ivr.CallDetailRecord;
 import org.motechproject.server.service.ivr.CallRequest;
@@ -52,7 +54,7 @@ import java.util.Map;
 public class MotechAsteriskCallBackImpl implements OriginateCallback {
 
     @Autowired
-    private OutboundEventGateway eventGateway;
+    private EventRelay eventRelay = Context.getInstance().getEventRelay();
 
     private CallRequest callRequest;
 
@@ -75,7 +77,7 @@ public class MotechAsteriskCallBackImpl implements OriginateCallback {
             Map<String, Object> parameters = event.getParameters();
             parameters.put(IVREventDelegate.CALL_DETAIL_RECORD_KEY, cdr);
 
-            eventGateway.sendEventMessage(event);
+            eventRelay.sendEventMessage(event);
         }
     }
 
@@ -88,7 +90,7 @@ public class MotechAsteriskCallBackImpl implements OriginateCallback {
             CallDetailRecord cdr = new CallDetailRecord(aCDR.getStartDate(), aCDR.getEndDate(), aCDR.getAnswerDate(),
                                                     translateDisposition(aCDR.getDisposition()), aCDR.getDuration());
 
-            eventGateway.sendEventMessage(event);
+            eventRelay.sendEventMessage(event);
         }
 
     }
@@ -102,7 +104,7 @@ public class MotechAsteriskCallBackImpl implements OriginateCallback {
             CallDetailRecord cdr = new CallDetailRecord(aCDR.getStartDate(), aCDR.getEndDate(), aCDR.getAnswerDate(),
                                                     translateDisposition(aCDR.getDisposition()), aCDR.getDuration());
 
-            eventGateway.sendEventMessage(event);
+            eventRelay.sendEventMessage(event);
         }
 
     }
@@ -114,7 +116,7 @@ public class MotechAsteriskCallBackImpl implements OriginateCallback {
         if (event != null) {
             CallDetailRecord cdr = new CallDetailRecord(CallDetailRecord.Disposition.FAILED, e.getMessage());
 
-            eventGateway.sendEventMessage(event);
+            eventRelay.sendEventMessage(event);
         }
 
     }

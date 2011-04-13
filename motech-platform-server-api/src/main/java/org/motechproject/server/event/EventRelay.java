@@ -67,9 +67,18 @@ public class EventRelay {
     public EventRelay() {
 
     }
-    
+
+    // @TODO either relayEvent should be made private, or this method moved out to it's own class.
+    public void sendEventMessage(MotechEvent event) {
+        List<EventListener> listeners = eventListenerRegistry.getListeners( eventTypeRegistry.getEventType(event.getEventType()) );
+        if (!listeners.isEmpty()) {
+            outboundEventGateway.sendEventMessage(event);
+        }
+    }
+
     /**
      * Relay an event to all the listeners of that event.
+     *
      * @param event event being relayed
      */
     public void relayEvent(MotechEvent event) {

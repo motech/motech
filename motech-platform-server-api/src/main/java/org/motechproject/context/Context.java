@@ -35,6 +35,7 @@ import org.ektorp.CouchDbInstance;
 import org.motechproject.event.EventTypeRegistry;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.server.event.EventListenerRegistry;
+import org.motechproject.server.event.EventRelay;
 import org.motechproject.server.gateway.MotechSchedulerGateway;
 import org.motechproject.server.ruleengine.KnowledgeBaseManager;
 import org.motechproject.server.service.ivr.IVRService;
@@ -62,6 +63,17 @@ public class Context {
 
     @Autowired(required=false)
     private IVRService ivrService;
+
+    @Autowired(required=false)
+    private EventRelay eventRelay;
+
+    public EventRelay getEventRelay() {
+        return eventRelay;
+    }
+
+    public void setEventRelay(EventRelay eventRelay) {
+        this.eventRelay = eventRelay;
+    }
 
     public IVRService getIvrService()
     {
