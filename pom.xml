@@ -60,8 +60,9 @@
 		<module>motech-platform-server-api</module>
 		<module>motech-appointment-reminder</module>
 		<module>motech-appointment-reminder-common</module>
-    <module>motech-platform-outbox</module>
-  </modules>
+    	<module>motech-platform-outbox</module>
+    	<module>motech-platform-outbox-common</module>
+	</modules>
 
 	<build>
 		<plugins>

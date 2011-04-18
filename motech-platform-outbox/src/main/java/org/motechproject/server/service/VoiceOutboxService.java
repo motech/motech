@@ -1,7 +1,8 @@
 package org.motechproject.server.service;
 
-import org.motechproject.model.OutboundVoiceMessage;
-import org.motechproject.model.OutboundVoiceMessageStatus;
+import org.motechproject.outbox.model.OutboundVoiceMessage;
+import org.motechproject.outbox.model.OutboundVoiceMessageStatus;
+
 
 /**
  *

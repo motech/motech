@@ -1,4 +1,4 @@
-package org.motechproject.model;
+package org.motechproject.outbox.model;
 
 
 public enum OutboundVoiceMessageStatus {
