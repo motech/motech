@@ -31,10 +31,17 @@
  */
 package org.motechproject.outbox.dao.couchdb;
 
+import java.util.Date;
+import java.util.List;
+
+import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
+import org.ektorp.ViewQuery;
+import org.ektorp.support.View;
 import org.motechproject.dao.MotechAuditableRepository;
 import org.motechproject.outbox.dao.OutboundVoiceMessageDao;
 import org.motechproject.outbox.model.OutboundVoiceMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -51,6 +58,7 @@ public class OutboundVoiceMessageDaoImpl extends
 	 * @param type
 	 * @param db
 	 */
+	@Autowired
 	protected OutboundVoiceMessageDaoImpl( @Qualifier("outboxDatabase") CouchDbConnector db) {
 		super(OutboundVoiceMessage.class, db);
 		initStandardDesignDocument();
@@ -59,8 +67,13 @@ public class OutboundVoiceMessageDaoImpl extends
 	 * @see org.motechproject.outbox.dao.OutboundVoiceMessageDao#getNextPendingMessage(java.lang.String)
 	 */
 	@Override
+	@View( name = "findPendingByPartyIdExpirationDateCreationTime", map = "function(doc) { if (doc.partyId && doc.status=='PENDING') { emit([doc.partyId, doc.expirationDate, doc.creationTime], doc._id); } }")
 	public OutboundVoiceMessage getNextPendingMessage(String partyId) {
-		// TODO Auto-generated method stub
+		ViewQuery q = createQuery("findPendingByPartyIdExpirationDateCreationTime").startKey(ComplexKey.of(partyId, new Date(), 0));
+		List<OutboundVoiceMessage> messages = db.queryView(q, OutboundVoiceMessage.class);
+		if (messages.size()>0) {
+			return messages.get(0);
+		}
 		return null;
 	}
 
