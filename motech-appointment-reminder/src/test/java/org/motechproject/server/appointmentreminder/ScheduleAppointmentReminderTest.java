@@ -77,19 +77,19 @@ public class ScheduleAppointmentReminderTest {
 	public void testHandleHappyPath() {
 		MotechEvent event = new MotechEvent("", "", null);
 		event.getParameters().put(EventKeys.APPOINTMENT_ID_KEY, APPT_ID);
-		event.getParameters().put(EventKeys.PATIENT_ID_KEY, PAT_ID);
-		
-		Patient p = new Patient();
-		p.setPreferences(new Preferences());
-		p.getPreferences().setBestTimeToCallHour(10);
-		p.getPreferences().setBestTimeToCallMinute(10);
+//		event.getParameters().put(EventKeys.PATIENT_ID_KEY, PAT_ID);
+//		
+//		Patient p = new Patient();
+//		p.setPreferences(new Preferences());
+//		p.getPreferences().setBestTimeToCallHour(10);
+//		p.getPreferences().setBestTimeToCallMinute(10);
 	
 		Appointment a = new Appointment();
 		a.setReminderWindowEnd(new Date());
 		a.setReminderWindowStart(new Date());
 		
 		// stub
-		when(patientDAO.get(PAT_ID)).thenReturn(p);
+//		when(patientDAO.get(PAT_ID)).thenReturn(p);
 		when(patientDAO.getAppointment(APPT_ID)).thenReturn(a);
 		when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
 
@@ -97,7 +97,7 @@ public class ScheduleAppointmentReminderTest {
 		scheduleAppointmentReminderHandler.handle(event);
 		
 		// verify
-		verify(patientDAO).get(PAT_ID);
+//		verify(patientDAO).get(PAT_ID);
 		verify(patientDAO).getAppointment(APPT_ID);
 		verify(context).getMotechSchedulerGateway();
 		verify(motechSchedulerGateway).scheduleJob(any(SchedulableJob.class));
@@ -130,30 +130,31 @@ public class ScheduleAppointmentReminderTest {
         verify(patientDAO, times(0)).get(anyString());
     }
 
-    @Test
-    public void testHandle_InvalidPatientIdType() throws Exception {
-
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put(EventKeys.APPOINTMENT_ID_KEY, "foo");
-		params.put(EventKeys.PATIENT_ID_KEY, new Integer(0));
-
-        MotechEvent motechEvent = new MotechEvent("", "", params);
-
-        scheduleAppointmentReminderHandler.handle(motechEvent);
-
-        verify(patientDAO, times(0)).get(anyString());
-    }
-
-    @Test
-    public void testHandle_NoPatientId() throws Exception {
-
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put(EventKeys.APPOINTMENT_ID_KEY, "foo");
-
-        MotechEvent motechEvent = new MotechEvent("", "", params);
-
-        scheduleAppointmentReminderHandler.handle(motechEvent);
-
-        verify(patientDAO, times(0)).get(anyString());
-    }
+    
+//    @Test
+//    public void testHandle_InvalidPatientIdType() throws Exception {
+//
+//        Map<String, Object> params = new HashMap<String, Object>();
+//        params.put(EventKeys.APPOINTMENT_ID_KEY, "foo");
+//		params.put(EventKeys.PATIENT_ID_KEY, new Integer(0));
+//
+//        MotechEvent motechEvent = new MotechEvent("", "", params);
+//
+//        scheduleAppointmentReminderHandler.handle(motechEvent);
+//
+//        verify(patientDAO, times(0)).get(anyString());
+//    }
+//
+//    @Test
+//    public void testHandle_NoPatientId() throws Exception {
+//
+//        Map<String, Object> params = new HashMap<String, Object>();
+//        params.put(EventKeys.APPOINTMENT_ID_KEY, "foo");
+//
+//        MotechEvent motechEvent = new MotechEvent("", "", params);
+//
+//        scheduleAppointmentReminderHandler.handle(motechEvent);
+//
+//        verify(patientDAO, times(0)).get(anyString());
+//    }
 }

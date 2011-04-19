@@ -69,19 +69,27 @@ public class ScheduleAppointmentReminderHandler implements EventListener {
             return;
         }
 
-        String patientId = EventKeys.getPatientId(event);
-        if (patientId == null) {
-            logger.error("Can not handle the Schedule Appointment Reminder Event: " + event +
-                     ". The event is invalid - missing the " + EventKeys.PATIENT_ID_KEY + " parameter");
-            return;
-        }
+//        String patientId = EventKeys.getPatientId(event);
+//        if (patientId == null) {
+//            logger.error("Can not handle the Schedule Appointment Reminder Event: " + event +
+//                     ". The event is invalid - missing the " + EventKeys.PATIENT_ID_KEY + " parameter");
+//            return;
+//        }
 
 		try {
-			Patient patient = patientDAO.get(patientId);
+//			Patient patient = patientDAO.get(patientId);
 			Appointment appointment = patientDAO.getAppointment(appointmentId);
-			//TODO confirm if we should schedule a RemindAppointmentEvent here and the jobId is correct
-			MotechEvent reminderEvent = new MotechEvent(event.getJobId(), RemindAppointmentEventType.KEY, event.getParameters());
-			SchedulableJob schedulableJob = new SchedulableJob(reminderEvent, String.format("0 %d %d * * ?", patient.getPreferences().getBestTimeToCallMinute(), patient.getPreferences().getBestTimeToCallHour()),appointment.getReminderWindowStart(), appointment.getReminderWindowEnd());
+			String eventKey;
+			// determine if its concrete appointment or "window reminder"
+			if(appointment.getDate()==null) {
+				// window reminder
+				eventKey = RemindAppointmentEventType.KEY;
+			} else {
+				//TODO set the corresponding event type key
+				eventKey = "";
+			}
+			MotechEvent reminderEvent = new MotechEvent(event.getJobId(), eventKey, event.getParameters());
+			SchedulableJob schedulableJob = new SchedulableJob(reminderEvent,"0 0 0 * * ?",appointment.getReminderWindowStart(), appointment.getReminderWindowEnd());
 			context.getMotechSchedulerGateway().scheduleJob(schedulableJob);
 		} catch (RuntimeException e) {
 		    for (StackTraceElement el : e.getStackTrace()) {
