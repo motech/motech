@@ -65,7 +65,7 @@ public class OutboundVoiceMessageDaoIT {
 		for(int i = 0; i<20; i++) {
 			OutboundVoiceMessage msg = new OutboundVoiceMessage();
 			msg.setPartyId(i<10?partyId1:partyId2);
-			msg.setCreationTime(now);
+			msg.setCreationTime(new Date()); 
 			msg.setExpirationDate(DateUtils.addDays(now, 1-2*(i&1)));
 			msg.setStatus((i&2)>0?OutboundVoiceMessageStatus.PENDING:OutboundVoiceMessageStatus.PLAYED);
 			outboundVoiceMessageDao.add(msg);
@@ -81,6 +81,6 @@ public class OutboundVoiceMessageDaoIT {
 	@Test
 	public void testGetNextPendingMessage() {
 		OutboundVoiceMessage msg = outboundVoiceMessageDao.getNextPendingMessage(partyId1);
-//		assertNotNull(msg);
+		assertNotNull(msg);
 	}
 }

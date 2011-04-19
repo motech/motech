@@ -67,11 +67,12 @@ public class OutboundVoiceMessageDaoImpl extends
 	 * @see org.motechproject.outbox.dao.OutboundVoiceMessageDao#getNextPendingMessage(java.lang.String)
 	 */
 	@Override
-	@View( name = "findPendingByPartyIdExpirationDateCreationTime", map = "function(doc) { if (doc.partyId && doc.status=='PENDING') { emit([doc.partyId, doc.expirationDate, doc.creationTime], doc._id); } }")
+	@View( name = "findPendingByPartyIdExpirationDateCreationTime", map = "function(doc) { if (doc.partyId && doc.status=='PENDING') { emit([doc.expirationDate, doc.partyId, -new Date(Date(doc.creationTime)).getTime()], doc._id); } }")
 	public OutboundVoiceMessage getNextPendingMessage(String partyId) {
-		ViewQuery q = createQuery("findPendingByPartyIdExpirationDateCreationTime").startKey(ComplexKey.of(partyId, new Date(), 0));
+		ComplexKey key = ComplexKey.of(new Date(), partyId);
+		ViewQuery q = createQuery("findPendingByPartyIdExpirationDateCreationTime").startKey(key).includeDocs(true);
 		List<OutboundVoiceMessage> messages = db.queryView(q, OutboundVoiceMessage.class);
-		if (messages.size()>0) {
+		if (messages.size()>0 && messages.get(0).getPartyId().equals(partyId)) {
 			return messages.get(0);
 		}
 		return null;
