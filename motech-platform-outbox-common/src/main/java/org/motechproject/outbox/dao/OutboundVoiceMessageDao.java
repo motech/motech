@@ -31,6 +31,8 @@
  */
 package org.motechproject.outbox.dao;
 
+import java.util.List;
+
 import org.motechproject.dao.BaseDao;
 import org.motechproject.outbox.model.OutboundVoiceMessage;
 
@@ -39,5 +41,5 @@ import org.motechproject.outbox.model.OutboundVoiceMessage;
  * @author yyonkov
  */
 public interface OutboundVoiceMessageDao extends BaseDao<OutboundVoiceMessage> {
-	OutboundVoiceMessage getNextPendingMessage(String partyId);
+	List<OutboundVoiceMessage> getPendingMessages(String partyId);
 }

@@ -29,48 +29,15 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.outbox.dao.couchdb;
+package org.motechproject.outbox.dao;
 
-import java.util.Date;
-import java.util.List;
-
-import org.ektorp.ComplexKey;
-import org.ektorp.CouchDbConnector;
-import org.ektorp.ViewQuery;
-import org.ektorp.support.View;
-import org.motechproject.dao.MotechAuditableRepository;
-import org.motechproject.outbox.dao.OutboundVoiceMessageDao;
-import org.motechproject.outbox.model.OutboundVoiceMessage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import org.motechproject.dao.BaseDao;
+import org.motechproject.outbox.model.VoiceMessageType;
 
 /**
+ * DAO for VoiceMessageType
  * @author yyonkov
- *
  */
-@Component
-public class OutboundVoiceMessageDaoImpl extends
-		MotechAuditableRepository<OutboundVoiceMessage> implements
-		OutboundVoiceMessageDao {
-	@Autowired
-	protected OutboundVoiceMessageDaoImpl( @Qualifier("outboxDatabase") CouchDbConnector db) {
-		super(OutboundVoiceMessage.class, db);
-		initStandardDesignDocument();
-	}
-	/* (non-Javadoc)
-	 * @see org.motechproject.outbox.dao.OutboundVoiceMessageDao#getPendingMessages(java.lang.String)
-	 */
-	@Override
-	@View( name = "getPendingMessages", map = "function(doc) { if (doc.partyId && doc.status=='PENDING') { emit([doc.partyId, doc.expirationDate], doc._id); } }")
-	public List<OutboundVoiceMessage> getPendingMessages(String partyId) {
-		ComplexKey startKey = ComplexKey.of(partyId, new Date());
-		char[] chars = partyId.toCharArray();
-		chars[chars.length-1]++;
-		ComplexKey endKey = ComplexKey.of(new String(chars));
-		ViewQuery q = createQuery("getPendingMessages").startKey(startKey).endKey(endKey).includeDocs(true);
-		List<OutboundVoiceMessage> messages = db.queryView(q, OutboundVoiceMessage.class);
-		return messages;
-	}
+public interface VoiceMessageTypeDao extends BaseDao<VoiceMessageType> {
 
 }

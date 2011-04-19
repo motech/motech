@@ -35,14 +35,17 @@ import static org.junit.Assert.*;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.outbox.model.MessagePriority;
 import org.motechproject.outbox.model.OutboundVoiceMessage;
 import org.motechproject.outbox.model.OutboundVoiceMessageStatus;
+import org.motechproject.outbox.model.VoiceMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -56,14 +59,24 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class OutboundVoiceMessageDaoIT {
 	@Autowired
 	private OutboundVoiceMessageDao outboundVoiceMessageDao;
+	@Autowired
+	private VoiceMessageTypeDao voiceMessageTypeDao;
 	private String partyId1 = "0001";
 	private String partyId2 = "0002";
-
+	private VoiceMessageType messageType;
 	@Before
 	public void setUp() {
+		messageType = new VoiceMessageType();
+		messageType.setVoiceMessageTypeName("Play something");
+		messageType.setPriority(MessagePriority.HIGH);
+		messageType.setvXmlUrl("http://yahoo.com");
+		voiceMessageTypeDao.add(messageType);
+		
+		// create messages
 		Date now = DateUtils.truncate(new Date(), Calendar.DATE);
 		for(int i = 0; i<20; i++) {
 			OutboundVoiceMessage msg = new OutboundVoiceMessage();
+			msg.setVoiceMessageTypeId(messageType.getId());
 			msg.setPartyId(i<10?partyId1:partyId2);
 			msg.setCreationTime(new Date()); 
 			msg.setExpirationDate(DateUtils.addDays(now, 1-2*(i&1)));
@@ -77,10 +90,19 @@ public class OutboundVoiceMessageDaoIT {
 		for(OutboundVoiceMessage msg : outboundVoiceMessageDao.getAll()) {
 			outboundVoiceMessageDao.remove(msg);
 		}
+		voiceMessageTypeDao.remove(messageType);
 	}
 	@Test
 	public void testGetNextPendingMessage() {
-		OutboundVoiceMessage msg = outboundVoiceMessageDao.getNextPendingMessage(partyId1);
-		assertNotNull(msg);
+		List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getPendingMessages(partyId1);
+		assertNotNull(messages);
+		assertEquals(2, messages.size());
+		for(OutboundVoiceMessage m : messages) {
+			VoiceMessageType voiceMessageType = voiceMessageTypeDao.get(messages.get(0).getVoiceMessageTypeId());
+			assertNotNull(voiceMessageType);
+			assertEquals(OutboundVoiceMessageStatus.PENDING, m.getStatus());
+			assertTrue(m.getExpirationDate().after(new Date()));
+			System.out.println(m+"   "+voiceMessageType);
+		}
 	}
 }
