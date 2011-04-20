@@ -7,11 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
- * Created by IntelliJ IDEA.
- * User: rob
- * Date: 4/7/11
- * Time: 9:55 PM
- * To change this template use File | Settings | File Templates.
+ *
  */
 public class EventKeys
 {
@@ -20,6 +16,12 @@ public class EventKeys
     public final static String APPOINTMENT_ID_KEY = "AppointmentID";
     public final static String CALL_DATE_KEY = "CallDate";
     public final static String PATIENT_ID_KEY = "PatientID";
+
+    public final static String REMINDER_EVENT_SUBJECT = "org.motechproject.server.appointmentreminder.reminder-call";
+    public final static String SCHEDULE_REMINDER_SUBJECT = "org.motechproject.server.appointmentreminder.schedule-reminder-call";
+    public final static String UNSCHEDULE_REMINDER_SUBJECT = "org.motechproject.server.appointmentreminder.unschedule-reminder-call";
+    public final static String INCOMPLETE_CALL_SUBJECT = "org.motechproject.server.appointmentreminder.incomplete-reminder-call";
+    public final static String COMPLETED_CALL_SUBJECT = "org.motechproject.server.appointmentreminder.completed-reminder-call";
 
     public static String getAppointmentId(MotechEvent event)
     {

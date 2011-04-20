@@ -31,14 +31,12 @@
  */
 package org.motechproject.server.event;
 
-import org.motechproject.event.EventType;
+import org.motechproject.metrics.MetricsAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 
 
 /**
@@ -48,16 +46,18 @@ import java.util.concurrent.ConcurrentHashMap;
 public class EventListenerRegistry {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    // Central registry for scheduled event listeners
-    private static ConcurrentHashMap<String, List<EventListener>> eventListeners = new ConcurrentHashMap<String, List<EventListener>>();
+    private EventListenerTree listenerTree = new EventListenerTree();
+
+    @Autowired
+    private MetricsAgent metricsAgent;
 
     /**
      * Register an event listener to be notified when events of a given type are received via the Server JMS Event Queue
      *
      * @param listener the listener instance
-     * @param eventTypes the event types that a listener is interested in
+     * @param subjects the event types that a listener is interested in
      */
-    public void registerListener(EventListener listener, List<EventType> eventTypes) {
+    public void registerListener(EventListener listener, List<String> subjects) {
 
         if (listener == null) {
             String errorMessage = "Invalid attempt to register a null EventListener";
@@ -65,45 +65,79 @@ public class EventListenerRegistry {
             throw new IllegalArgumentException(errorMessage);
         }
 
-        if (eventTypes == null) {
-            String errorMessage = "Invalid attempt to register for null EventTypes";
+        if (subjects == null) {
+            String errorMessage = "Invalid attempt to register for null subjects";
             log.error(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }
 
-        List<EventListener> listeners = null;
         // Add the listener to the  list of those interested in each event type
-        for (int i = 0; i < eventTypes.size(); i++) {
-            // Check if there are any other listeners for this event
-            if (eventListeners.containsKey(eventTypes.get(i).getKey())) {
-                listeners = eventListeners.get(eventTypes.get(i).getKey());
-            } else {
-                listeners = new ArrayList<EventListener>();
-            }
-
-            // Don't allow duplicate listener registrations
-            if (!listeners.contains(listener)) {
-                listeners.add(listener); // Add the listener to the list
-                eventListeners.put(eventTypes.get(i).getKey(), listeners); // Add it back to the collection
-            } else {
-                log.info(String.format("Ignoring second request to register listener %s for event %s", listener.getIdentifier(), eventTypes.get(i).getKey()));
-            }
+        for (String subject : subjects) {
+            registerListener(listener, subject);
         }
+    }
+
+    public void registerListener(EventListener listener, String subject) {
+        if (listener == null) {
+            String errorMessage = "Invalid attempt to register a null EventListener";
+            log.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
+        }
+
+        if (subject == null) {
+            String errorMessage = "Invalid attempt to register for null subject";
+            log.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
+        }
+
+        String timer = "motech.listener-registry.addListener";
+        metricsAgent.startTimer(timer);
+        listenerTree.addListener(listener, subject);
+        metricsAgent.stopTimer(timer);
     }
 
     /**
-     * Retrieve a list of event listeners for a given event type. If there are no listeners, null is returned.
-     * @param type The event type that you are seeking listeners for
+     * Retrieve a list of event listeners for a given event type. If there are no listeners, an empty list is
+     * returned.
+     * @param subject The event type that you are seeking listeners for
      * @return A list of scheduled event listeners that are interested in that event
      */
-    public List<EventListener> getListeners(EventType type) {
-        List<EventListener> listeners = Collections.<EventListener>emptyList();
-        if (eventListeners.containsKey(type.getKey())) {
-            listeners = eventListeners.get(type.getKey());
-        }
+    public Set<EventListener> getListeners(String subject) {
+        String timer = "motech.listener-registry.getListeners";
+        metricsAgent.startTimer(timer);
+        Set<EventListener> ret = listenerTree.getListeners(subject);
+        metricsAgent.stopTimer(timer);
 
-        return listeners;
-
+        return ret;
     }
 
+    /**
+     * See if a particular subject has any listeners
+     * @param subject
+     * @return
+     */
+    public boolean hasListener(String subject) {
+        String timer = "motech.listener-registry.hasListener";
+
+        metricsAgent.startTimer(timer);
+        boolean ret = listenerTree.hasListener(subject);
+        metricsAgent.stopTimer(timer);
+
+        return ret;
+    }
+
+    /**
+     * Get the count of listeners for a particular subject
+     * @param subject
+     * @return
+     */
+    public int getListenerCount(String subject) {
+        String timer = "motech.listener-registry.hasListener";
+
+        metricsAgent.startTimer(timer);
+        int ret = listenerTree.getListenerCount(subject);
+        metricsAgent.stopTimer(timer);
+
+        return ret;
+    }
 }

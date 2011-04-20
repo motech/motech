@@ -31,13 +31,12 @@
  */
 package org.motechproject.core;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RunOnceSchedulableJob;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -54,43 +53,41 @@ public class TestRunOnceSchedulableJob
     private String uuidStr = UUID.randomUUID().toString();
     private String uuidStr2 = UUID.randomUUID().toString();
 
-    @Test
-    public void newTest() throws Exception{
-        RunOnceSchedulableJob job;
-        MotechEvent motechEvent;
-        motechEvent = new MotechEvent(uuidStr, "TestEvent", null);
+    private MotechEvent motechEvent1;
+    private MotechEvent motechEvent2;
+
+    private Date currentDate;
+    private Date yesterday;
+
+    @Before
+    public void setUp() {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("JobID", uuidStr);
+        motechEvent1 = new MotechEvent("TestEvent", params);
+
+        params = new HashMap<String, Object>();
+        params.put("JobID", uuidStr2);
+        motechEvent2 = new MotechEvent("TestEvent", params);
 
         Calendar cal = Calendar.getInstance();
-        Date currentDate = cal.getTime();
+        currentDate = cal.getTime();
         cal.add(Calendar.DATE, -1);
-        Date yesterday = cal.getTime();
+        yesterday = cal.getTime();
+    }
 
-        boolean exceptionThrown = false;
-        try {
-            job = new RunOnceSchedulableJob(null, currentDate);
-        }
-        catch (IllegalArgumentException e) {
-            exceptionThrown = true;
-        }
-        assertTrue(exceptionThrown);
+    @Test(expected = IllegalArgumentException.class)
+    public void newConstructor_NullEvent() throws Exception{
+        new RunOnceSchedulableJob(null, currentDate);
+    }
 
-        exceptionThrown = false;
-        try {
-            job = new RunOnceSchedulableJob(motechEvent, null);
-        }
-        catch (IllegalArgumentException e) {
-            exceptionThrown = true;
-        }
-        assertTrue(exceptionThrown);
+    @Test(expected = IllegalArgumentException.class)
+    public void newConstructor_NullDate() throws Exception{
+        new RunOnceSchedulableJob(motechEvent1, null);
+    }
 
-        exceptionThrown = false;
-        try {
-            job = new RunOnceSchedulableJob(motechEvent, yesterday);
-        }
-        catch (IllegalArgumentException e) {
-            exceptionThrown = true;
-        }
-        assertTrue(exceptionThrown);
+    @Test(expected = IllegalArgumentException.class)
+    public void newConstructor_InvalidDate() throws Exception{
+        new RunOnceSchedulableJob(motechEvent1, yesterday);
     }
 
     @Test
@@ -102,19 +99,16 @@ public class TestRunOnceSchedulableJob
         cal.add(Calendar.DATE, +1);
         Date date2 = cal.getTime();
 
-        MotechEvent scheduledEvent1 = new MotechEvent(uuidStr, "testEvent", null);
-        MotechEvent scheduledEvent2 = new MotechEvent(uuidStr2, "testEvent", null);
-
-        RunOnceSchedulableJob job1 = new RunOnceSchedulableJob(scheduledEvent1, date);
-        RunOnceSchedulableJob job1Same = new RunOnceSchedulableJob(scheduledEvent1, date);
-        RunOnceSchedulableJob job2 = new RunOnceSchedulableJob(scheduledEvent2, date);
-        RunOnceSchedulableJob job3 = new RunOnceSchedulableJob(scheduledEvent1, date2);
+        RunOnceSchedulableJob job1 = new RunOnceSchedulableJob(motechEvent1, date);
+        RunOnceSchedulableJob job1Same = new RunOnceSchedulableJob(motechEvent1, date);
+        RunOnceSchedulableJob job2 = new RunOnceSchedulableJob(motechEvent2, date);
+        RunOnceSchedulableJob job3 = new RunOnceSchedulableJob(motechEvent1, date2);
 
         assertTrue(job1.equals(job1));
         assertTrue(job1.equals(job1Same));
 
         assertFalse(job1.equals(null));
-        assertFalse(job1.equals(scheduledEvent1));
+        assertFalse(job1.equals(motechEvent1));
 
         // Same date, different event
         assertFalse(job1.equals(job2));

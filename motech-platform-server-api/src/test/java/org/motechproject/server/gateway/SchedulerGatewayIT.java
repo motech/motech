@@ -32,18 +32,17 @@
 package org.motechproject.server.gateway;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.model.SchedulableJob;
-
-import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Motech Scheduler integration test
@@ -62,7 +61,9 @@ public class SchedulerGatewayIT {
 
     @Test
     public void testMotechScheduler() {
-        MotechEvent motechEvent = new MotechEvent("test_1", "testEvent", null);
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("JobID", "test_1");
+        MotechEvent motechEvent = new MotechEvent("testEvent", params);
         SchedulableJob schedulableJob = new SchedulableJob(motechEvent, "0/5 0 * * * ?");
 
         motechSchedulerGateway.scheduleJob(schedulableJob);

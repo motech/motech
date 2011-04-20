@@ -35,10 +35,12 @@ import org.motechproject.model.MotechEvent;
 import org.motechproject.model.SchedulableJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Main class that can bootstrap a Motech Scheduler
@@ -90,7 +92,9 @@ public class MotechScheduler {
 
     private void scheduleTestEvent() {
 
-        MotechEvent motechEvent = new MotechEvent(TEST_EVENT_NAME, "test", null);
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put(MotechSchedulerService.JOB_ID_KEY, TEST_EVENT_NAME);
+        MotechEvent motechEvent = new MotechEvent("test", params);
         SchedulableJob schedulableJob = new SchedulableJob(motechEvent, "0/5 * * * * ?");
 
         try {
