@@ -51,31 +51,17 @@ public class TestMotechScheduledEvent {
     private String uuidStr = UUID.randomUUID().toString();
     private String uuidStr2 = UUID.randomUUID().toString();
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void newTest() throws Exception{
         MotechEvent motechEvent;
-        boolean exceptionThrown = false;
-        try {
-            motechEvent = new MotechEvent(null, "testEvent", null);
-        }
-        catch (IllegalArgumentException e) {
-            exceptionThrown = true;
-        }
-        assertTrue(exceptionThrown);
-
-        exceptionThrown = false;
-        try {
-            motechEvent = new MotechEvent(uuidStr, null, null);
-        }
-        catch (IllegalArgumentException e) {
-            exceptionThrown = true;
-        }
-        assertTrue(exceptionThrown);
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("JobID", uuidStr);
+        motechEvent = new MotechEvent(null, params);
     }
 
     @Test
     public void testGetParameters() {
-        MotechEvent motechEvent = new MotechEvent(uuidStr, "testEvent", null);
+        MotechEvent motechEvent = new MotechEvent("testEvent", null);
         Map<String, Object> params = motechEvent.getParameters();
 
         assertNotNull("Expecting param object", params);
@@ -83,7 +69,7 @@ public class TestMotechScheduledEvent {
         HashMap hashMap = new HashMap();
         hashMap.put("One", new Integer(1));
 
-        MotechEvent nonNullParams = new MotechEvent(uuidStr, "testEvent", hashMap);
+        MotechEvent nonNullParams = new MotechEvent("testEvent", hashMap);
         params = nonNullParams.getParameters();
 
         assertTrue(params.equals(hashMap));
@@ -92,16 +78,16 @@ public class TestMotechScheduledEvent {
 
     @Test
     public void equalsTest() throws Exception{
-        MotechEvent motechEvent = new MotechEvent(uuidStr, "testEvent", null);
-        MotechEvent motechEventSame = new MotechEvent(uuidStr, "testEvent", null);
-        MotechEvent motechEventDifferentJobId = new MotechEvent(uuidStr2, "testEvent", null);
-        MotechEvent scheduledEventDifferentEventType = new MotechEvent(uuidStr, "testEvent2", null);
+        MotechEvent motechEvent = new MotechEvent("testEvent", null);
+        MotechEvent motechEventSame = new MotechEvent("testEvent", null);
+        MotechEvent motechEventDifferentJobId = new MotechEvent("testEvent", null);
+        MotechEvent scheduledEventDifferentEventType = new MotechEvent("testEvent2", null);
 
         HashMap hashMap = new HashMap();
         hashMap.put("One", new Integer(1));
 
-        MotechEvent nonNullParams = new MotechEvent(uuidStr, "testEvent", hashMap);
-        MotechEvent nonNullParams2 = new MotechEvent(uuidStr, "testEvent", hashMap);
+        MotechEvent nonNullParams = new MotechEvent("testEvent", hashMap);
+        MotechEvent nonNullParams2 = new MotechEvent("testEvent", hashMap);
 
         assertTrue(motechEvent.equals(motechEvent));
         assertTrue(motechEvent.equals(motechEventSame));
@@ -110,7 +96,6 @@ public class TestMotechScheduledEvent {
         assertFalse(motechEvent.equals(null));
         assertFalse(motechEvent.equals(uuidStr));
         assertFalse(motechEvent.equals(scheduledEventDifferentEventType));
-        assertFalse(motechEvent.equals(motechEventDifferentJobId));
 
         assertFalse(motechEvent.equals(nonNullParams));
         assertFalse(nonNullParams.equals(motechEvent));

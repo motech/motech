@@ -121,15 +121,14 @@
 							<exclude>org/motechproject/model/Audit.class</exclude>
 							<exclude>org/motechproject/model/MotechBaseDataObject.class</exclude>
 							<exclude>org/motechproject/model/Rule.class</exclude>
+                            <exclude>org/motechproject/context/Context.class</exclude>
                             <exclude>org/motechproject/appointmentreminder/model/*.class</exclude>
-                            <exclude>org/motechproject/server/appointmentreminder/eventtype/*.class</exclude>
                             <exclude>org/motechproject/appointmentreminder/dao/couchdb/PatientDAOImpl.class</exclude>
                             <exclude>org/motechproject/server/appointmentreminder/Activator.class</exclude>
                             <exclude>org/motechproject/server/appointmentreminder/Activator$1.class</exclude>
                             <exclude>org/motechproject/server/service/ivr/CallInitiationException.class</exclude>
                             <exclude>org/motechproject/metrics/impl/LoggingAgentBackendImpl.class</exclude>
                             <exclude>org/motechproject/metrics/impl/StatsdAgentBackendImpl.class</exclude>
-                            <exclude>org/motechproject/context/Context.class</exclude>
 						</excludes>
 					</instrumentation>
 					<check>

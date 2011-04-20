@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Responsible for listening for <code>{@link org.motechproject.server.appointmentreminder.eventtype.UnscheduleAppointmentReminderEventType}</code>
+ * Responsible for listening for <code>org.motechproject.</code>
  * events with destination
  * 
  * @author Igor (iopushnyev@2paths.com)

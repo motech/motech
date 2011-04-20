@@ -37,14 +37,13 @@ import org.motechproject.appointmentreminder.model.Patient;
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.SchedulableJob;
-import org.motechproject.server.appointmentreminder.eventtype.RemindAppointmentEventType;
 import org.motechproject.server.event.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Responsible for listening for <code>{@link org.motechproject.server.appointmentreminder.eventtype.ScheduleAppointmentReminderEventType}</code>
+ * Responsible for listening for <code>org.motechproject.</code>
  * events with destination
  * 
  * @author yyonkov
@@ -56,9 +55,10 @@ public class ScheduleAppointmentReminderHandler implements EventListener {
 	
 	@Autowired
 	private Context context;
+
 	@Autowired
 	private PatientDAO patientDAO;
-	
+
 	@Override
 	public void handle(MotechEvent event) {
 
@@ -69,26 +69,20 @@ public class ScheduleAppointmentReminderHandler implements EventListener {
             return;
         }
 
-//        String patientId = EventKeys.getPatientId(event);
-//        if (patientId == null) {
-//            logger.error("Can not handle the Schedule Appointment Reminder Event: " + event +
-//                     ". The event is invalid - missing the " + EventKeys.PATIENT_ID_KEY + " parameter");
-//            return;
-//        }
-
 		try {
-//			Patient patient = patientDAO.get(patientId);
 			Appointment appointment = patientDAO.getAppointment(appointmentId);
-			String eventKey;
+			String eventSubject;
+
 			// determine if its concrete appointment or "window reminder"
 			if(appointment.getDate()==null) {
 				// window reminder
-				eventKey = RemindAppointmentEventType.KEY;
+				eventSubject = EventKeys.SCHEDULE_REMINDER_SUBJECT;
 			} else {
 				//TODO set the corresponding event type key
-				eventKey = "";
+				eventSubject = "";
 			}
-			MotechEvent reminderEvent = new MotechEvent(event.getJobId(), eventKey, event.getParameters());
+
+			MotechEvent reminderEvent = new MotechEvent(eventSubject, event.getParameters());
 			SchedulableJob schedulableJob = new SchedulableJob(reminderEvent,"0 0 0 * * ?",appointment.getReminderWindowStart(), appointment.getReminderWindowEnd());
 			context.getMotechSchedulerGateway().scheduleJob(schedulableJob);
 		} catch (RuntimeException e) {

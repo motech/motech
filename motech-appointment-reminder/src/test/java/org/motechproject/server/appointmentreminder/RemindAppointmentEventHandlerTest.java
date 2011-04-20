@@ -77,7 +77,7 @@ public class RemindAppointmentEventHandlerTest {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(EventKeys.APPOINTMENT_ID_KEY, appointmentId);
 
-        MotechEvent motechEvent = new MotechEvent("", "", params);
+        MotechEvent motechEvent = new MotechEvent("", params);
 
        remindAppointmentEventHandler.handle(motechEvent);
 
@@ -91,7 +91,7 @@ public class RemindAppointmentEventHandlerTest {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(EventKeys.APPOINTMENT_ID_KEY, new Integer(0));
 
-        MotechEvent motechEvent = new MotechEvent("", "", params);
+        MotechEvent motechEvent = new MotechEvent("", params);
 
         remindAppointmentEventHandler.handle(motechEvent);
 
@@ -103,7 +103,7 @@ public class RemindAppointmentEventHandlerTest {
 
         Map<String, Object> params = new HashMap<String, Object>();
 
-        MotechEvent motechEvent = new MotechEvent("", "", params);
+        MotechEvent motechEvent = new MotechEvent("", params);
 
         remindAppointmentEventHandler.handle(motechEvent);
 

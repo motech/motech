@@ -43,6 +43,7 @@ import org.motechproject.model.SchedulableJob;
  *
  */
 public interface MotechSchedulerService {
+    public static final String JOB_ID_KEY = "JobID";
 
     /**
      * Schedules the given schedulable job. The Job ID by which the job will be referencing in the future should be provided

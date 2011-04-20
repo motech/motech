@@ -68,7 +68,7 @@ public class MotechAsteriskCallBackImplTest {
 
     @Before
     public void setUp() throws Exception {
-        event = new MotechEvent("", "", null);
+        event = new MotechEvent("", null);
 
         callRequest = new CallRequest(1l, "", 0, "");
 
