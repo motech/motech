@@ -31,6 +31,8 @@
  */
 package org.motechproject.outbox.dao.couchdb;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -70,6 +72,18 @@ public class OutboundVoiceMessageDaoImpl extends
 		ComplexKey endKey = ComplexKey.of(new String(chars));
 		ViewQuery q = createQuery("getPendingMessages").startKey(startKey).endKey(endKey).includeDocs(true);
 		List<OutboundVoiceMessage> messages = db.queryView(q, OutboundVoiceMessage.class);
+		if(messages.size()>0) {
+			Collections.sort(messages, new Comparator<OutboundVoiceMessage>() {
+				@Override
+				public int compare(OutboundVoiceMessage m1, OutboundVoiceMessage m2) {
+					int dateComp = m2.getCreationTime().compareTo(m1.getCreationTime());
+					if(dateComp!=0) {
+						return dateComp;
+					}
+					return m2.getVoiceMessageType().getPriority().compareTo(m1.getVoiceMessageType().getPriority());
+				}
+			});
+		}
 		return messages;
 	}
 
