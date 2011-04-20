@@ -42,6 +42,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.outbox.dao.OutboundVoiceMessageDao;
 import org.motechproject.outbox.model.MessagePriority;
 import org.motechproject.outbox.model.OutboundVoiceMessage;
 import org.motechproject.outbox.model.OutboundVoiceMessageStatus;
@@ -74,9 +75,9 @@ public class OutboundVoiceMessageDaoIT {
 			OutboundVoiceMessage msg = new OutboundVoiceMessage();
 			msg.setVoiceMessageType(messageType);
 			msg.setPartyId(i<10?partyId1:partyId2);
-			msg.setCreationTime(new Date()); 
-			msg.setExpirationDate(DateUtils.addDays(now, 1-2*(i&1)));
-			msg.setStatus((i&2)>0?OutboundVoiceMessageStatus.PENDING:OutboundVoiceMessageStatus.PLAYED);
+			msg.setCreationTime(DateUtils.addDays(now, i)); 
+			msg.setExpirationDate(DateUtils.addDays(now, 1-2*(i&2)));
+			msg.setStatus((i&1)>0?OutboundVoiceMessageStatus.PENDING:OutboundVoiceMessageStatus.PLAYED);
 			outboundVoiceMessageDao.add(msg);
 		}
 		
@@ -91,11 +92,11 @@ public class OutboundVoiceMessageDaoIT {
 	public void testGetNextPendingMessage() {
 		List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getPendingMessages(partyId1);
 		assertNotNull(messages);
-		assertEquals(2, messages.size());
+		assertEquals(3, messages.size());
 		for(OutboundVoiceMessage m : messages) {
 			assertEquals(OutboundVoiceMessageStatus.PENDING, m.getStatus());
 			assertTrue(m.getExpirationDate().after(new Date()));
-			System.out.println(m);
+//			System.out.println(m);
 		}
 	}
 }
