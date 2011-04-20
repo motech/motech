@@ -23,7 +23,7 @@ public class EventKeysTest
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(EventKeys.APPOINTMENT_ID_KEY, appointmentId);
 
-        MotechEvent motechEvent = new MotechEvent("", "", params);
+        MotechEvent motechEvent = new MotechEvent("", params);
 
         String _aptId = EventKeys.getAppointmentId(motechEvent);
 
@@ -35,7 +35,7 @@ public class EventKeysTest
 
         Map<String, Object> params = new HashMap<String, Object>();
 
-        MotechEvent motechEvent = new MotechEvent("", "", params);
+        MotechEvent motechEvent = new MotechEvent("", params);
 
         String _aptId = EventKeys.getAppointmentId(motechEvent);
 
@@ -48,7 +48,7 @@ public class EventKeysTest
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(EventKeys.APPOINTMENT_ID_KEY, new Integer(0));
 
-        MotechEvent motechEvent = new MotechEvent("", "", params);
+        MotechEvent motechEvent = new MotechEvent("", params);
 
         String _aptId = EventKeys.getAppointmentId(motechEvent);
 
@@ -63,7 +63,7 @@ public class EventKeysTest
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(EventKeys.PATIENT_ID_KEY, patientId);
 
-        MotechEvent motechEvent = new MotechEvent("", "", params);
+        MotechEvent motechEvent = new MotechEvent("", params);
 
         String _Id = EventKeys.getPatientId(motechEvent);
 
@@ -75,7 +75,7 @@ public class EventKeysTest
 
         Map<String, Object> params = new HashMap<String, Object>();
 
-        MotechEvent motechEvent = new MotechEvent("", "", params);
+        MotechEvent motechEvent = new MotechEvent("", params);
 
         String _Id = EventKeys.getPatientId(motechEvent);
 
@@ -88,7 +88,7 @@ public class EventKeysTest
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(EventKeys.PATIENT_ID_KEY, new Integer(0));
 
-        MotechEvent motechEvent = new MotechEvent("", "", params);
+        MotechEvent motechEvent = new MotechEvent("", params);
 
         String _Id = EventKeys.getPatientId(motechEvent);
 
@@ -103,7 +103,7 @@ public class EventKeysTest
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(EventKeys.CALL_DATE_KEY, callDate);
 
-        MotechEvent motechEvent = new MotechEvent("", "", params);
+        MotechEvent motechEvent = new MotechEvent("", params);
 
         Date _date = EventKeys.getCallDate(motechEvent);
 
@@ -115,7 +115,7 @@ public class EventKeysTest
 
         Map<String, Object> params = new HashMap<String, Object>();
 
-        MotechEvent motechEvent = new MotechEvent("", "", params);
+        MotechEvent motechEvent = new MotechEvent("", params);
 
         Date _date = EventKeys.getCallDate(motechEvent);
 
@@ -128,7 +128,7 @@ public class EventKeysTest
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(EventKeys.CALL_DATE_KEY, new Integer(0));
 
-        MotechEvent motechEvent = new MotechEvent("", "", params);
+        MotechEvent motechEvent = new MotechEvent("", params);
 
         Date _date = EventKeys.getCallDate(motechEvent);
 

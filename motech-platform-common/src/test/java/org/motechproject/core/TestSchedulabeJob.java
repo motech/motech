@@ -31,10 +31,13 @@
  */
 package org.motechproject.core;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.SchedulableJob;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
@@ -52,38 +55,34 @@ public class TestSchedulabeJob
     private String uuidStr = UUID.randomUUID().toString();
     private String uuidStr2 = UUID.randomUUID().toString();
 
-    @Test
-    public void newTest() throws Exception{
-        SchedulableJob job;
-        MotechEvent motechEvent;
-        motechEvent = new MotechEvent(uuidStr, "TestEvent", null);
+    private MotechEvent motechEvent1;
+    private MotechEvent motechEvent2;
 
-        boolean exceptionThrown = false;
-        try {
-            job = new SchedulableJob(null, "0/5 0 * * * ?");
-        }
-        catch (IllegalArgumentException e) {
-            exceptionThrown = true;
-        }
-        assertTrue(exceptionThrown);
+    @Before
+    public void setUp() {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("JobID", uuidStr);
+        motechEvent1 = new MotechEvent("TestEvent", params);
 
-        exceptionThrown = false;
-        try {
-            job = new SchedulableJob(motechEvent, null);
-        }
-        catch (IllegalArgumentException e) {
-            exceptionThrown = true;
-        }
-        assertTrue(exceptionThrown);
+        params = new HashMap<String, Object>();
+        params.put("JobID", uuidStr2);
+        motechEvent2 = new MotechEvent("TestEvent", params);
 
-        exceptionThrown = false;
-        try {
-            job = new SchedulableJob(motechEvent, "");
-        }
-        catch (IllegalArgumentException e) {
-            exceptionThrown = true;
-        }
-        assertTrue(exceptionThrown);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructor_NullEvent() throws Exception{
+        new SchedulableJob(null, "0/5 0 * * * ?");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructor_NullCronExpression() throws Exception{
+        new SchedulableJob(motechEvent1, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructor_InvalidCronExpression() throws Exception{
+        new SchedulableJob(motechEvent1, "");
     }
 
     @Test
@@ -91,19 +90,16 @@ public class TestSchedulabeJob
         String cron1 = "0/5 0 * * * ?";
         String cron2 = "5 0 * * * ?";
 
-        MotechEvent scheduledEvent1 = new MotechEvent(uuidStr, "testEvent", null);
-        MotechEvent scheduledEvent2 = new MotechEvent(uuidStr2, "testEvent", null);
-
-        SchedulableJob job1 = new SchedulableJob(scheduledEvent1, cron1);
-        SchedulableJob job1Same = new SchedulableJob(scheduledEvent1, cron1);
-        SchedulableJob job2 = new SchedulableJob(scheduledEvent2, cron1);
-        SchedulableJob job3 = new SchedulableJob(scheduledEvent1, cron2);
+        SchedulableJob job1 = new SchedulableJob(motechEvent1, cron1);
+        SchedulableJob job1Same = new SchedulableJob(motechEvent1, cron1);
+        SchedulableJob job2 = new SchedulableJob(motechEvent2, cron1);
+        SchedulableJob job3 = new SchedulableJob(motechEvent1, cron2);
 
         assertTrue(job1.equals(job1));
         assertTrue(job1.equals(job1Same));
 
         assertFalse(job1.equals(null));
-        assertFalse(job1.equals(scheduledEvent1));
+        assertFalse(job1.equals(motechEvent1));
 
         // Same date, different event
         assertFalse(job1.equals(job2));

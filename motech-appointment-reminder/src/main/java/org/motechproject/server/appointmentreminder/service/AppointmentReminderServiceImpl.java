@@ -39,8 +39,7 @@ import org.motechproject.appointmentreminder.model.Patient;
 import org.motechproject.appointmentreminder.model.Visit;
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.server.appointmentreminder.eventtype.ReminderCallCompleteEventType;
-import org.motechproject.server.appointmentreminder.eventtype.ReminderCallIncompleteEventType;
+import org.motechproject.server.appointmentreminder.EventKeys;
 import org.motechproject.server.service.ivr.CallInitiationException;
 import org.motechproject.server.service.ivr.CallRequest;
 import org.motechproject.server.service.ivr.IVRService;
@@ -48,6 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.awt.*;
 import java.util.*;
 
 /**
@@ -156,16 +156,14 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
                     Map<String, Object> messageParameters = new HashMap<String, Object>();
                     messageParameters.put("AppointmentID", appointmentId);
                     messageParameters.put("CallDate", today);
-                    MotechEvent incompleteEvent = new MotechEvent("Incomplete Reminder Call",
-                                                                  ReminderCallIncompleteEventType.getInstance().getKey(),
+                    MotechEvent incompleteEvent = new MotechEvent(EventKeys.INCOMPLETE_CALL_SUBJECT,
                                                                   messageParameters);
 
                     callRequest.setOnBusyEvent(incompleteEvent);
                     callRequest.setOnFailureEvent(incompleteEvent);
                     callRequest.setOnNoAnswerEvent(incompleteEvent);
 
-                    MotechEvent successEvent = new MotechEvent("Completed Reminder Call",
-                                                               ReminderCallCompleteEventType.getInstance().getKey(),
+                    MotechEvent successEvent = new MotechEvent(EventKeys.COMPLETED_CALL_SUBJECT,
                                                                messageParameters);
 
                     callRequest.setOnSuccessEvent(successEvent);

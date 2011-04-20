@@ -37,14 +37,13 @@ import org.motechproject.appointmentreminder.model.Patient;
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.SchedulableJob;
-import org.motechproject.server.appointmentreminder.eventtype.RemindAppointmentEventType;
 import org.motechproject.server.event.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Responsible for listening for <code>{@link org.motechproject.server.appointmentreminder.eventtype.ScheduleAppointmentReminderEventType}</code>
+ * Responsible for listening for <code>org.motechproject.</code>
  * events with destination
  * 
  * @author yyonkov
@@ -80,7 +79,7 @@ public class ScheduleAppointmentReminderHandler implements EventListener {
 			Patient patient = patientDAO.get(patientId);
 			Appointment appointment = patientDAO.getAppointment(appointmentId);
 			//TODO confirm if we should schedule a RemindAppointmentEvent here and the jobId is correct
-			MotechEvent reminderEvent = new MotechEvent(event.getJobId(), RemindAppointmentEventType.KEY, event.getParameters());
+			MotechEvent reminderEvent = new MotechEvent(EventKeys.SCHEDULE_REMINDER_SUBJECT, event.getParameters());
 			SchedulableJob schedulableJob = new SchedulableJob(reminderEvent, String.format("0 %d %d * * ?", patient.getPreferences().getBestTimeToCallMinute(), patient.getPreferences().getBestTimeToCallHour()),appointment.getReminderWindowStart(), appointment.getReminderWindowEnd());
 			context.getMotechSchedulerGateway().scheduleJob(schedulableJob);
 		} catch (RuntimeException e) {

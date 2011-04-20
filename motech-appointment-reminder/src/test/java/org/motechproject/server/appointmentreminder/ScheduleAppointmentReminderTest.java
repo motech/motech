@@ -75,7 +75,7 @@ public class ScheduleAppointmentReminderTest {
 
 	@Test
 	public void testHandleHappyPath() {
-		MotechEvent event = new MotechEvent("", "", null);
+		MotechEvent event = new MotechEvent("", null);
 		event.getParameters().put(EventKeys.APPOINTMENT_ID_KEY, APPT_ID);
 		event.getParameters().put(EventKeys.PATIENT_ID_KEY, PAT_ID);
 		
@@ -110,7 +110,7 @@ public class ScheduleAppointmentReminderTest {
         params.put(EventKeys.APPOINTMENT_ID_KEY, new Integer(0));
 		params.put(EventKeys.PATIENT_ID_KEY, PAT_ID);
 
-        MotechEvent motechEvent = new MotechEvent("", "", params);
+        MotechEvent motechEvent = new MotechEvent("", params);
 
         scheduleAppointmentReminderHandler.handle(motechEvent);
 
@@ -123,7 +123,7 @@ public class ScheduleAppointmentReminderTest {
         Map<String, Object> params = new HashMap<String, Object>();
 		params.put(EventKeys.PATIENT_ID_KEY, PAT_ID);
 
-        MotechEvent motechEvent = new MotechEvent("", "", params);
+        MotechEvent motechEvent = new MotechEvent("", params);
 
         scheduleAppointmentReminderHandler.handle(motechEvent);
 
@@ -137,7 +137,7 @@ public class ScheduleAppointmentReminderTest {
         params.put(EventKeys.APPOINTMENT_ID_KEY, "foo");
 		params.put(EventKeys.PATIENT_ID_KEY, new Integer(0));
 
-        MotechEvent motechEvent = new MotechEvent("", "", params);
+        MotechEvent motechEvent = new MotechEvent("", params);
 
         scheduleAppointmentReminderHandler.handle(motechEvent);
 
@@ -150,7 +150,7 @@ public class ScheduleAppointmentReminderTest {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(EventKeys.APPOINTMENT_ID_KEY, "foo");
 
-        MotechEvent motechEvent = new MotechEvent("", "", params);
+        MotechEvent motechEvent = new MotechEvent("", params);
 
         scheduleAppointmentReminderHandler.handle(motechEvent);
 
