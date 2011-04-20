@@ -20,5 +20,4 @@
 		</constructor-arg>
 	</bean>
 	<bean id="outboundVoiceMessageDao" class="org.motechproject.outbox.dao.couchdb.OutboundVoiceMessageDaoImpl"/>
-	<bean id="voiceMessageTypeDao" class="org.motechproject.outbox.dao.couchdb.VoiceMessageTypeDaoImpl"/>
 </beans>

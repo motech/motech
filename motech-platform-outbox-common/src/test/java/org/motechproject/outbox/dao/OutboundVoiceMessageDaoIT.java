@@ -59,24 +59,20 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class OutboundVoiceMessageDaoIT {
 	@Autowired
 	private OutboundVoiceMessageDao outboundVoiceMessageDao;
-	@Autowired
-	private VoiceMessageTypeDao voiceMessageTypeDao;
 	private String partyId1 = "0001";
 	private String partyId2 = "0002";
-	private VoiceMessageType messageType;
 	@Before
 	public void setUp() {
-		messageType = new VoiceMessageType();
+		VoiceMessageType messageType = new VoiceMessageType();
 		messageType.setVoiceMessageTypeName("Play something");
 		messageType.setPriority(MessagePriority.HIGH);
 		messageType.setvXmlUrl("http://yahoo.com");
-		voiceMessageTypeDao.add(messageType);
 		
 		// create messages
 		Date now = DateUtils.truncate(new Date(), Calendar.DATE);
 		for(int i = 0; i<20; i++) {
 			OutboundVoiceMessage msg = new OutboundVoiceMessage();
-			msg.setVoiceMessageTypeId(messageType.getId());
+			msg.setVoiceMessageType(messageType);
 			msg.setPartyId(i<10?partyId1:partyId2);
 			msg.setCreationTime(new Date()); 
 			msg.setExpirationDate(DateUtils.addDays(now, 1-2*(i&1)));
@@ -90,7 +86,6 @@ public class OutboundVoiceMessageDaoIT {
 		for(OutboundVoiceMessage msg : outboundVoiceMessageDao.getAll()) {
 			outboundVoiceMessageDao.remove(msg);
 		}
-		voiceMessageTypeDao.remove(messageType);
 	}
 	@Test
 	public void testGetNextPendingMessage() {
@@ -98,11 +93,9 @@ public class OutboundVoiceMessageDaoIT {
 		assertNotNull(messages);
 		assertEquals(2, messages.size());
 		for(OutboundVoiceMessage m : messages) {
-			VoiceMessageType voiceMessageType = voiceMessageTypeDao.get(messages.get(0).getVoiceMessageTypeId());
-			assertNotNull(voiceMessageType);
 			assertEquals(OutboundVoiceMessageStatus.PENDING, m.getStatus());
 			assertTrue(m.getExpirationDate().after(new Date()));
-			System.out.println(m+"   "+voiceMessageType);
+			System.out.println(m);
 		}
 	}
 }

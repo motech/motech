@@ -7,7 +7,7 @@
   </parent>
   <groupId>org.motechproject</groupId>
   <artifactId>motech-platform-outbox-common</artifactId>
-  <name>Outbox Common</name>
+  <name>Motech Platform Outbox Common</name>
   <version>0.1-SNAPSHOT</version>
     <dependencies>
 		<dependency>
@@ -70,5 +70,5 @@
 			<version>2.6</version>
 			<scope>provided</scope>
 		</dependency>
-    </dependencies>
+    </dependencies>  
 </project>
