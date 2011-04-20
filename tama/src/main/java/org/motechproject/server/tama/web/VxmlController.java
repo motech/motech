@@ -29,7 +29,7 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.appointmentreminder.web;
+package org.motechproject.server.tama.web;
 
 import org.motechproject.appointmentreminder.dao.PatientDAO;
 import org.motechproject.appointmentreminder.model.Appointment;

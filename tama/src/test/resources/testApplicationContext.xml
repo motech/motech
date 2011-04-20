@@ -41,14 +41,6 @@
 
 	<context:annotation-config />
 
-    <import resource="applicationAPI.xml"/>
-
-	<bean id="appointmentReminderService"
-		class="org.motechproject.server.appointmentreminder.service.AppointmentReminderServiceImpl">
-		<property name="timeOut" value="20" />
-		<property name="appointmentReminderVmlUrl" value="" />
-	</bean>
-
     <bean id="metricsAgent" class="org.motechproject.metrics.impl.MultipleMetricsAgentImpl">
         <property name="metricsAgents">
             <list>

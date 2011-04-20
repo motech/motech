@@ -38,10 +38,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.appointmentreminder.EventKeys;
 import org.motechproject.appointmentreminder.dao.PatientDAO;
 import org.motechproject.appointmentreminder.model.Appointment;
-import org.motechproject.appointmentreminder.model.Patient;
-import org.motechproject.appointmentreminder.model.Preferences;
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.SchedulableJob;
@@ -91,7 +90,6 @@ public class ScheduleAppointmentReminderTest {
 		
 		// verify
 		verify(patientDAO).getAppointment(APPT_ID);
-		verify(context).getMotechSchedulerGateway();
 		verify(motechSchedulerGateway).scheduleJob(any(SchedulableJob.class));
 	}
 
@@ -100,7 +98,6 @@ public class ScheduleAppointmentReminderTest {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(EventKeys.APPOINTMENT_ID_KEY, new Integer(0));
-		params.put(EventKeys.PATIENT_ID_KEY, PAT_ID);
 
         MotechEvent motechEvent = new MotechEvent("", params);
 
@@ -113,7 +110,6 @@ public class ScheduleAppointmentReminderTest {
     public void testHandle_NoAppointmentId() throws Exception {
 
         Map<String, Object> params = new HashMap<String, Object>();
-		params.put(EventKeys.PATIENT_ID_KEY, PAT_ID);
 
         MotechEvent motechEvent = new MotechEvent("", params);
 

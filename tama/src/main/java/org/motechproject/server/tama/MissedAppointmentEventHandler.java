@@ -29,36 +29,43 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.appointmentreminder;
+package org.motechproject.server.tama;
 
 import org.motechproject.appointmentreminder.EventKeys;
-import org.motechproject.context.Context;
-import org.motechproject.metrics.MetricsAgent;
+import org.motechproject.appointmentreminder.dao.PatientDAO;
+import org.motechproject.appointmentreminder.model.Appointment;
+import org.motechproject.appointmentreminder.model.Patient;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.server.appointmentreminder.service.AppointmentReminderService;
 import org.motechproject.server.event.EventListener;
+import org.motechproject.server.service.ivr.CallInitiationException;
+import org.motechproject.server.service.ivr.CallRequest;
+import org.motechproject.server.service.ivr.IVRService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Handles Remind Appointment Events
  * 
- * @author Igor
- * 
+ *
  */
-public class RemindAppointmentEventHandler implements EventListener {
+public class MissedAppointmentEventHandler implements EventListener {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public final static String APPOINTMENT_REMINDER = "AppointmentReminder";
+    public final static String MISSED_APPOINTMENT = "MissedAppointment";
 
     @Autowired
-    AppointmentReminderService appointmentReminderService;
+    PatientDAO patientDao;
 
-    private MetricsAgent metricsAgent = Context.getInstance().getMetricsAgent();
+    @Autowired
+    IVRService ivrService;
+
+    //Interim implementation
+    String vxmlUrl;
+
+    public void setVxmlUrl(String vxmlUrl) {
+    	this.vxmlUrl = vxmlUrl;
+    }
 
 	@Override
 	public void handle(MotechEvent event) {
@@ -70,16 +77,27 @@ public class RemindAppointmentEventHandler implements EventListener {
             return;
         }
 
-        appointmentReminderService.remindPatientAppointment(appointmentId);
+        Appointment appointment = patientDao.getAppointment(appointmentId);
+        Patient patient = patientDao.get(appointment.getPatientId());
 
-        Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("appointmentId", appointmentId);
-        metricsAgent.logEvent("motech.appointment-reminder.reminder", parameters);
+        long messageId = 1;
+        String phone = patient.getPhoneNumber();
+
+        // Todo Place message in outbox
+        try {
+            CallRequest callRequest = new CallRequest(messageId, phone, 10, vxmlUrl);
+
+            ivrService.initiateCall(callRequest);
+        } catch (CallInitiationException e) {
+            log.warn("Unable to initiate call to patientId=" + patient.getClinicPatientId() +
+                             " for appointmentId=" + appointmentId + e.getMessage());
+        }
+
     }
 
     @Override
 	public String getIdentifier() {
-		return APPOINTMENT_REMINDER;
+		return MISSED_APPOINTMENT;
 	}
 
 }

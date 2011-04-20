@@ -29,13 +29,15 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.appointmentreminder.web;
+package org.motechproject.server.tama.web;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.appointmentreminder.dao.PatientDAO;
@@ -45,9 +47,6 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 
 /**
  *
@@ -83,25 +82,25 @@ public class VxmlControllerTest {
         Date appointmentDate = new Date(12345L);
         appointment.setReminderWindowEnd(appointmentDate);
 
-        when(request.getParameter("a")).thenReturn(appointmentId);
-        when(patientDAO.getAppointment(appointmentId)).thenReturn(appointment);
+        Mockito.when(request.getParameter("a")).thenReturn(appointmentId);
+        Mockito.when(patientDAO.getAppointment(appointmentId)).thenReturn(appointment);
 
         ModelAndView modelAndView = vxmlController.ar(request, response);
 
-        assertEquals("ar", modelAndView.getViewName());
+        Assert.assertEquals("ar", modelAndView.getViewName());
 
-        assertEquals(appointmentDate, modelAndView.getModelMap().get("appointmentDueDate"));
+        Assert.assertEquals(appointmentDate, modelAndView.getModelMap().get("appointmentDueDate"));
 
     }
 
     @Test
     public void testAppointmentReminderNoId () {
 
-        when(request.getParameter("a")).thenReturn(null);
+        Mockito.when(request.getParameter("a")).thenReturn(null);
 
         ModelAndView modelAndView = vxmlController.ar(request, response);
 
-        assertEquals("ar_default", modelAndView.getViewName());
+        Assert.assertEquals("ar_default", modelAndView.getViewName());
 
     }
 
@@ -110,12 +109,12 @@ public class VxmlControllerTest {
 
         String appointmentId = "nID";
 
-        when(request.getParameter("a")).thenReturn(appointmentId);
-        when(patientDAO.getAppointment(appointmentId)).thenReturn(null);
+        Mockito.when(request.getParameter("a")).thenReturn(appointmentId);
+        Mockito.when(patientDAO.getAppointment(appointmentId)).thenReturn(null);
 
         ModelAndView modelAndView = vxmlController.ar(request, response);
 
-        assertEquals("ar_error", modelAndView.getViewName());
+        Assert.assertEquals("ar_error", modelAndView.getViewName());
 
     }
 
@@ -126,12 +125,12 @@ public class VxmlControllerTest {
 
         Appointment appointment = new Appointment();
 
-        when(request.getParameter("a")).thenReturn(appointmentId);
-        when(patientDAO.getAppointment(appointmentId)).thenThrow(new RuntimeException());
+        Mockito.when(request.getParameter("a")).thenReturn(appointmentId);
+        Mockito.when(patientDAO.getAppointment(appointmentId)).thenThrow(new RuntimeException());
 
         ModelAndView modelAndView = vxmlController.ar(request, response);
 
-        assertEquals("ar_error", modelAndView.getViewName());
+        Assert.assertEquals("ar_error", modelAndView.getViewName());
 
     }
 

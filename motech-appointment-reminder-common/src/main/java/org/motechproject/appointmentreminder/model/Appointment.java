@@ -34,10 +34,7 @@ package org.motechproject.appointmentreminder.model;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechAuditableDataObject;
 
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 public class Appointment extends MotechAuditableDataObject {
 
@@ -50,8 +47,6 @@ public class Appointment extends MotechAuditableDataObject {
 	private Date date;
     private String reminderScheduledJobId;
 
-    private Set<AppointmentReminder> reminders;
-	
 	/**
 	 * @return the patientId
 	 */
@@ -114,24 +109,6 @@ public class Appointment extends MotechAuditableDataObject {
     public void setReminderScheduledJobId(String reminderScheduledJobId) {
         this.reminderScheduledJobId = reminderScheduledJobId;
     }
-
-    public Set<AppointmentReminder> getReminders()
-    {
-        return reminders == null ? Collections.<AppointmentReminder>emptySet() : reminders;
-    }
-
-    public void setReminders(Set<AppointmentReminder> reminders)
-    {
-        this.reminders = reminders == null ? Collections.<AppointmentReminder>emptySet() : reminders;
-    }
-
-    public void addReminder(AppointmentReminder reminder) {
-        if (reminders == null) {
-            reminders = new HashSet<AppointmentReminder>();
-        }
-
-		this.reminders.add(reminder);
-	}
 
     @Override
     public String toString() {

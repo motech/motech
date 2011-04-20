@@ -31,12 +31,13 @@
  */
 package org.motechproject.server.appointmentreminder;
 
+import org.motechproject.appointmentreminder.EventKeys;
 import org.motechproject.appointmentreminder.dao.PatientDAO;
 import org.motechproject.appointmentreminder.model.Appointment;
-import org.motechproject.appointmentreminder.model.Patient;
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.EventListener;
+import org.motechproject.server.gateway.MotechSchedulerGateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +53,9 @@ public class UnscheduleAppointmentReminderHandler implements EventListener {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	public final static String UNSCHEDULE_APPOINTMENT_REMINDER = "UnscheduleAppointmentReminder";
 	
-	@Autowired
-	private Context context;
+    @Autowired
+    private MotechSchedulerGateway schedulerGateway = Context.getInstance().getMotechSchedulerGateway();
+
 	@Autowired
 	private PatientDAO patientDAO;
 	
@@ -62,29 +64,19 @@ public class UnscheduleAppointmentReminderHandler implements EventListener {
 
         String appointmentId = EventKeys.getAppointmentId(event);
         if (appointmentId == null) {
-            logger.error("Can not handle the Schedule Appointment Reminder Event: " + event +
+            logger.error("Can not handle Event: " + event.getSubject() +
                      ". The event is invalid - missing the " + EventKeys.APPOINTMENT_ID_KEY + " parameter");
             return;
         }
 
-        String patientId = EventKeys.getPatientId(event);
-        if (patientId == null) {
-            logger.error("Can not handle the Schedule Appointment Reminder Event: " + event +
-                     ". The event is invalid - missing the " + EventKeys.PATIENT_ID_KEY + " parameter");
+        Appointment appointment = patientDAO.getAppointment(appointmentId);
+        if (appointment == null) {
+            logger.error("Can not handle Event: " + event.getSubject() +
+                     ". The event is invalid - no appointment for id " + appointmentId);
             return;
         }
 
-		try {
-			Patient patient = patientDAO.get(patientId);
-			Appointment appointment = patientDAO.getAppointment(appointmentId);
-			context.getMotechSchedulerGateway().unscheduleJob(appointment.getReminderScheduledJobId());
-		} catch (RuntimeException e) {
-		    for (StackTraceElement el : e.getStackTrace()) {
-		        logger.error(el.getFileName() + ":" + el.getLineNumber() + ">> " + el.getMethodName() + "()");
-		    }			
-		    // TODO break the exceptions on transient and non-transient and throw the appropriate one
-			throw e;
-		}
+		schedulerGateway.unscheduleJob(appointment.getReminderScheduledJobId());
 	}
 
 	@Override

@@ -62,6 +62,7 @@
 		<module>motech-appointment-reminder-common</module>
     	<module>motech-platform-outbox</module>
     	<module>motech-platform-outbox-common</module>
+        <module>tama</module>
 	</modules>
 
 	<build>
@@ -129,6 +130,10 @@
                             <exclude>org/motechproject/server/service/ivr/CallInitiationException.class</exclude>
                             <exclude>org/motechproject/metrics/impl/LoggingAgentBackendImpl.class</exclude>
                             <exclude>org/motechproject/metrics/impl/StatsdAgentBackendImpl.class</exclude>
+
+                            <exclude>org/motechproject/outbox/dao/*.class</exclude>
+                            <exclude>org/motechproject/outbox/dao/couchdb/*.class</exclude>
+							<exclude>org/motechproject/outbox/model/*.class</exclude>
 						</excludes>
 					</instrumentation>
 					<check>

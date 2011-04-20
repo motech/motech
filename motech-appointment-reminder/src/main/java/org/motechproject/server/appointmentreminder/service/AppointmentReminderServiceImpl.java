@@ -32,22 +32,18 @@
 package org.motechproject.server.appointmentreminder.service;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.motechproject.appointmentreminder.EventKeys;
 import org.motechproject.appointmentreminder.dao.PatientDAO;
 import org.motechproject.appointmentreminder.model.Appointment;
-import org.motechproject.appointmentreminder.model.AppointmentReminder;
 import org.motechproject.appointmentreminder.model.Patient;
 import org.motechproject.appointmentreminder.model.Visit;
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.server.appointmentreminder.EventKeys;
-import org.motechproject.server.service.ivr.CallInitiationException;
-import org.motechproject.server.service.ivr.CallRequest;
-import org.motechproject.server.service.ivr.IVRService;
+import org.motechproject.server.event.EventRelay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.awt.*;
 import java.util.*;
 
 /**
@@ -56,24 +52,14 @@ import java.util.*;
 public class AppointmentReminderServiceImpl implements AppointmentReminderService {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private IVRService ivrService = Context.getInstance().getIvrService();
+    @Autowired
+    private EventRelay eventRelay = Context.getInstance().getEventRelay();
 
     @Autowired
     PatientDAO patientDao;
 
-    //Interim implementation
-    String  appointmentReminderVmlUrl = "http://10.0.1.29:8080/TamaIVR/reminder/doc";
-
 	int timeOut;
     public final static String SCHEDULE_APPOINTMENT_REMINDER = "ScheduleAppointmentReminder";
-    
-    public void setAppointmentReminderVmlUrl(String appointmentReminderVmlUrl) {
-    	this.appointmentReminderVmlUrl = appointmentReminderVmlUrl;
-    }
-
-    public void setTimeOut(int timeOut) {
-    	this.timeOut = timeOut;
-    }
 
     @Override
     public void remindPatientAppointment(String appointmentId) {
@@ -83,7 +69,6 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
         Patient patient = patientDao.get(appointment.getPatientId());
 
         long messageId = 1;
-        String phone = patient.getPhoneNumber();
 
         Date today = DateUtils.truncate(new Date(), Calendar.DATE);
 
@@ -122,100 +107,22 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
         }
 
         if (inWindow && !visitedClinic) {
-            // Get list of Appointment Reminders
-            Set<AppointmentReminder> reminders = appointment.getReminders();
-
-            // See if there is a completed or open reminder for today
-            for (AppointmentReminder r : reminders) {
-                Date reminderDate = DateUtils.truncate(r.getReminderDate(), Calendar.DATE);
-
-                // See if this reminder has already been sent
-                if (reminderDate.compareTo(today) == 0 &&
-                        r.getStatus() != AppointmentReminder.Status.INCOMPLETE) {
-                    log.info("Ignoring duplicate reminder event for patientId=" + patient.getClinicPatientId() +
-                                     "appointmentId=" + appointmentId);
-                    alreadyReminded = true;
+            Map<String, Object> messageParameters = new HashMap<String, Object>();
+            messageParameters.put("AppointmentID", appointmentId);
+            String subject;
+            if (appointment.getDate() != null) {
+                if (today.compareTo(appointment.getDate()) <= 0) {
+                    subject = EventKeys.SCHEDULED_APPOINTMENT_UPCOMING;
+                } else {
+                    subject = EventKeys.SCHEDULED_APPOINTMENT_MISSED;
                 }
+            } else {
+                subject = EventKeys.UNSCHEDULED_APPOINTMENT_UPCOMING;
             }
+            MotechEvent event = new MotechEvent(subject, messageParameters);
 
-            if (!alreadyReminded) {
-                AppointmentReminder ar = new AppointmentReminder(today,
-                                                                AppointmentReminder.Status.REQUESTED);
-                appointment.addReminder(ar);
-
-                // Ignore any optimistic locks.  The event should be rehandled and next time through
-                // my write will either succeed, or this reminder will have been handled by someone else
-                // I'm nt happy with this solution since we can't wrap the IVR call with this update
-                // it is still possible that calls will be recorded as sent that are not.
-                patientDao.updateAppointment(appointment);
-
-                try {
-                    CallRequest callRequest = new CallRequest(messageId, phone,
-                                                              timeOut, appointmentReminderVmlUrl);
-
-                    Map<String, Object> messageParameters = new HashMap<String, Object>();
-                    messageParameters.put("AppointmentID", appointmentId);
-                    messageParameters.put("CallDate", today);
-                    MotechEvent incompleteEvent = new MotechEvent(EventKeys.INCOMPLETE_CALL_SUBJECT,
-                                                                  messageParameters);
-
-                    callRequest.setOnBusyEvent(incompleteEvent);
-                    callRequest.setOnFailureEvent(incompleteEvent);
-                    callRequest.setOnNoAnswerEvent(incompleteEvent);
-
-                    MotechEvent successEvent = new MotechEvent(EventKeys.COMPLETED_CALL_SUBJECT,
-                                                               messageParameters);
-
-                    callRequest.setOnSuccessEvent(successEvent);
-
-                    ivrService.initiateCall(callRequest);
-                } catch (CallInitiationException e) {
-                    log.warn("Unable to initiate call to patientId=" + patient.getClinicPatientId() +
-                                     " for appointmentId=" + appointmentId + e.getMessage());
-                    ar.setStatus(AppointmentReminder.Status.INCOMPLETE);
-                    patientDao.updateAppointment(appointment);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void reminderCallCompleted(String appointmentId, Date callDate)
-    {
-        //TODO - handle DAO exceptions
-        Appointment appointment = patientDao.getAppointment(appointmentId);
-
-        Set<AppointmentReminder> reminders = appointment.getReminders();
-
-        for (AppointmentReminder r : reminders) {
-            Date reminderDate = DateUtils.truncate(r.getReminderDate(), Calendar.DATE);
-
-            if (reminderDate.compareTo(callDate) == 0) {
-                r.setStatus(AppointmentReminder.Status.COMPLETED);
-                patientDao.updateAppointment(appointment);
-            }
-        }
-    }
-
-    @Override
-    public void reminderCallIncompleted(String appointmentId, Date callDate)
-    {
-        //TODO - handle DAO exceptions
-        Appointment appointment = patientDao.getAppointment(appointmentId);
-
-        Set<AppointmentReminder> reminders = appointment.getReminders();
-
-        for (AppointmentReminder r : reminders) {
-            Date reminderDate = DateUtils.truncate(r.getReminderDate(), Calendar.DATE);
-
-            if (reminderDate.compareTo(callDate) == 0) {
-                // Only move calls in REQUESTED to INCOMPLETE.  If it was somehow set to COMPLETE
-                // leave it there.
-                if (r.getStatus() == AppointmentReminder.Status.REQUESTED) {
-                    r.setStatus(AppointmentReminder.Status.INCOMPLETE);
-                    patientDao.updateAppointment(appointment);
-                }
-            }
+            Context c = Context.getInstance();
+            eventRelay.sendEventMessage(event);
         }
     }
 }

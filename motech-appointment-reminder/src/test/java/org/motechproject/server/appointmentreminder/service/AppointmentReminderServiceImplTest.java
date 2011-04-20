@@ -31,7 +31,6 @@
  */
 package org.motechproject.server.appointmentreminder.service;
 
-import org.apache.commons.lang.time.DateUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,17 +41,15 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.appointmentreminder.dao.PatientDAO;
 import org.motechproject.appointmentreminder.model.Appointment;
-import org.motechproject.appointmentreminder.model.AppointmentReminder;
 import org.motechproject.appointmentreminder.model.Patient;
 import org.motechproject.appointmentreminder.model.Visit;
-import org.motechproject.server.service.ivr.CallRequest;
-import org.motechproject.server.service.ivr.IVRService;
+import org.motechproject.model.MotechEvent;
+import org.motechproject.server.event.EventRelay;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Calendar;
 import java.util.Date;
 
-import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -66,10 +63,10 @@ public class AppointmentReminderServiceImplTest {
     AppointmentReminderServiceImpl appointmentReminderService = new AppointmentReminderServiceImpl();
 
     @Mock
-    private IVRService ivrServiceMock;
+    private PatientDAO patientDaoMock;
 
     @Mock
-    private PatientDAO patientDaoMock;
+    private EventRelay eventRelayMock;
 
     @Before
     public void initMocks() {
@@ -110,43 +107,11 @@ public class AppointmentReminderServiceImplTest {
 
     private  void setTestData(int startOffset, int endOffset,
                              boolean setVisits, int visitOffset,
-                             Date reminderDate, AppointmentReminder.Status reminderStatus)
+                             Date reminderDate)
     {
         setTestData(startOffset, endOffset, setVisits, visitOffset);
 
         Appointment appointment = patientDaoMock.getAppointment("");
-
-        AppointmentReminder ar = new AppointmentReminder(reminderDate, reminderStatus);
-        appointment.addReminder(ar);
-    }
-
-    @Test
-    public void testRemindPatientAppointment_ExistingReminderRequested() throws Exception {
-        setTestData(-3, 7, true, -30, new Date(), AppointmentReminder.Status.REQUESTED);
-
-        appointmentReminderService.remindPatientAppointment("1a");
-
-        verify(ivrServiceMock, times(0)).initiateCall(Mockito.any(CallRequest.class));
-    }
-
-
-    @Test
-    public void testRemindPatientAppointment_ExistingReminderCompleted() throws Exception {
-        setTestData(-3, 7, true, -30, new Date(), AppointmentReminder.Status.COMPLETED);
-
-        appointmentReminderService.remindPatientAppointment("1a");
-
-        verify(ivrServiceMock, times(0)).initiateCall(Mockito.any(CallRequest.class));
-    }
-
-
-    @Test
-    public void testRemindPatientAppointment_ExistingReminderIncomplete() throws Exception {
-        setTestData(-3, 7, true, -30, new Date(), AppointmentReminder.Status.INCOMPLETE);
-
-        appointmentReminderService.remindPatientAppointment("1a");
-
-        verify(ivrServiceMock, times(1)).initiateCall(Mockito.any(CallRequest.class));
     }
 
     /*
@@ -166,7 +131,7 @@ public class AppointmentReminderServiceImplTest {
 
         appointmentReminderService.remindPatientAppointment("1a");
 
-        verify(ivrServiceMock, times(1)).initiateCall(Mockito.any(CallRequest.class));
+        verify(eventRelayMock, times(1)).sendEventMessage(Mockito.any(MotechEvent.class));
     }
 
     @Test
@@ -175,7 +140,7 @@ public class AppointmentReminderServiceImplTest {
 
         appointmentReminderService.remindPatientAppointment("1a");
 
-        verify(ivrServiceMock, times(0)).initiateCall(Mockito.any(CallRequest.class));
+        verify(eventRelayMock, times(0)).sendEventMessage(Mockito.any(MotechEvent.class));
     }
 
     @Test
@@ -184,7 +149,7 @@ public class AppointmentReminderServiceImplTest {
 
         appointmentReminderService.remindPatientAppointment("1a");
 
-        verify(ivrServiceMock, times(0)).initiateCall(Mockito.any(CallRequest.class));
+        verify(eventRelayMock, times(0)).sendEventMessage(Mockito.any(MotechEvent.class));
     }
 
     @Test
@@ -193,7 +158,7 @@ public class AppointmentReminderServiceImplTest {
 
         appointmentReminderService.remindPatientAppointment("1a");
 
-        verify(ivrServiceMock, times(0)).initiateCall(Mockito.any(CallRequest.class));
+        verify(eventRelayMock, times(0)).sendEventMessage(Mockito.any(MotechEvent.class));
     }
 
 
@@ -203,7 +168,7 @@ public class AppointmentReminderServiceImplTest {
 
         appointmentReminderService.remindPatientAppointment("1a");
 
-        verify(ivrServiceMock, times(1)).initiateCall(Mockito.any(CallRequest.class));
+        verify(eventRelayMock, times(1)).sendEventMessage(Mockito.any(MotechEvent.class));
     }
 
     /*
@@ -221,7 +186,7 @@ public class AppointmentReminderServiceImplTest {
 
         appointmentReminderService.remindPatientAppointment("1a");
 
-        verify(ivrServiceMock, times(0)).initiateCall(Mockito.any(CallRequest.class));
+        verify(eventRelayMock, times(0)).sendEventMessage(Mockito.any(MotechEvent.class));
     }
 
     @Test
@@ -230,7 +195,7 @@ public class AppointmentReminderServiceImplTest {
 
         appointmentReminderService.remindPatientAppointment("1a");
 
-        verify(ivrServiceMock, times(1)).initiateCall(Mockito.any(CallRequest.class));
+        verify(eventRelayMock, times(1)).sendEventMessage(Mockito.any(MotechEvent.class));
     }
 
     @Test
@@ -239,7 +204,7 @@ public class AppointmentReminderServiceImplTest {
 
         appointmentReminderService.remindPatientAppointment("1a");
 
-        verify(ivrServiceMock, times(1)).initiateCall(Mockito.any(CallRequest.class));
+        verify(eventRelayMock, times(1)).sendEventMessage(Mockito.any(MotechEvent.class));
     }
 
     @Test
@@ -248,7 +213,7 @@ public class AppointmentReminderServiceImplTest {
 
         appointmentReminderService.remindPatientAppointment("1a");
 
-        verify(ivrServiceMock, times(1)).initiateCall(Mockito.any(CallRequest.class));
+        verify(eventRelayMock, times(1)).sendEventMessage(Mockito.any(MotechEvent.class));
     }
 
 
@@ -258,119 +223,6 @@ public class AppointmentReminderServiceImplTest {
 
         appointmentReminderService.remindPatientAppointment("1a");
 
-        verify(ivrServiceMock, times(0)).initiateCall(Mockito.any(CallRequest.class));
-    }
-
-    @Test
-    public void testReminderCallComplete_NoAR() throws Exception {
-        Date callDate = DateUtils.truncate(new Date(), Calendar.DATE);
-        Appointment appointment = new Appointment();
-
-        when(patientDaoMock.getAppointment(Mockito.anyString())).thenReturn(appointment);
-
-        appointmentReminderService.reminderCallCompleted("foo", callDate);
-
-        verify(patientDaoMock, times(0)).updateAppointment(Mockito.<Appointment>anyObject());
-    }
-
-    @Test
-    public void testReminderCallComplete_AROnDifferentDay() throws Exception {
-        Appointment appointment = new Appointment();
-        Calendar cal = Calendar.getInstance();
-        Date callDate = DateUtils.truncate(cal.getTime(), Calendar.DATE);
-        cal.add(Calendar.DATE, 1);
-
-        AppointmentReminder ar = new AppointmentReminder(DateUtils.truncate(cal.getTime(), Calendar.DATE),
-                                                         AppointmentReminder.Status.REQUESTED);
-        appointment.addReminder(ar);
-
-        when(patientDaoMock.getAppointment(Mockito.anyString())).thenReturn(appointment);
-
-        appointmentReminderService.reminderCallCompleted("foo", callDate);
-
-        verify(patientDaoMock, times(0)).updateAppointment(Mockito.<Appointment>anyObject());
-        assertEquals(AppointmentReminder.Status.REQUESTED, ar.getStatus());
-    }
-
-    @Test
-    public void testReminderCallComplete_AROnDay() throws Exception {
-        Date callDate = DateUtils.truncate(new Date(), Calendar.DATE);
-        Appointment appointment = new Appointment();
-
-        AppointmentReminder ar = new AppointmentReminder(callDate,
-                                                         AppointmentReminder.Status.REQUESTED);
-        appointment.addReminder(ar);
-
-        when(patientDaoMock.getAppointment(Mockito.anyString())).thenReturn(appointment);
-
-        appointmentReminderService.reminderCallCompleted("foo", callDate);
-
-        verify(patientDaoMock, times(1)).updateAppointment(Mockito.<Appointment>anyObject());
-        assertEquals(AppointmentReminder.Status.COMPLETED, ar.getStatus());
-    }
-
-        @Test
-    public void testReminderCallIncomplete_NoAR() throws Exception {
-        Date callDate = DateUtils.truncate(new Date(), Calendar.DATE);
-        Appointment appointment = new Appointment();
-
-        when(patientDaoMock.getAppointment(Mockito.anyString())).thenReturn(appointment);
-
-        appointmentReminderService.reminderCallIncompleted("foo", callDate);
-
-        verify(patientDaoMock, times(0)).updateAppointment(Mockito.<Appointment>anyObject());
-    }
-
-    @Test
-    public void testReminderCallIncomplete_AROnDifferentDay() throws Exception {
-        Appointment appointment = new Appointment();
-        Calendar cal = Calendar.getInstance();
-        Date callDate = DateUtils.truncate(cal.getTime(), Calendar.DATE);
-        cal.add(Calendar.DATE, 1);
-
-        AppointmentReminder ar = new AppointmentReminder(DateUtils.truncate(cal.getTime(), Calendar.DATE),
-                                                         AppointmentReminder.Status.REQUESTED);
-        appointment.addReminder(ar);
-
-        when(patientDaoMock.getAppointment(Mockito.anyString())).thenReturn(appointment);
-
-        appointmentReminderService.reminderCallIncompleted("foo", callDate);
-
-        verify(patientDaoMock, times(0)).updateAppointment(Mockito.<Appointment>anyObject());
-        assertEquals(AppointmentReminder.Status.REQUESTED, ar.getStatus());
-    }
-
-    @Test
-    public void testReminderCallIncomplete_AROnDayInREQUESTED() throws Exception {
-        Date callDate = DateUtils.truncate(new Date(), Calendar.DATE);
-        Appointment appointment = new Appointment();
-
-        AppointmentReminder ar = new AppointmentReminder(callDate,
-                                                         AppointmentReminder.Status.REQUESTED);
-        appointment.addReminder(ar);
-
-        when(patientDaoMock.getAppointment(Mockito.anyString())).thenReturn(appointment);
-
-        appointmentReminderService.reminderCallIncompleted("foo", callDate);
-
-        verify(patientDaoMock, times(1)).updateAppointment(Mockito.<Appointment>anyObject());
-        assertEquals(AppointmentReminder.Status.INCOMPLETE, ar.getStatus());
-    }
-
-    @Test
-    public void testReminderCallIncomplete_AROnDayInCOMPLETED() throws Exception {
-        Date callDate = DateUtils.truncate(new Date(), Calendar.DATE);
-        Appointment appointment = new Appointment();
-
-        AppointmentReminder ar = new AppointmentReminder(callDate,
-                                                         AppointmentReminder.Status.COMPLETED);
-        appointment.addReminder(ar);
-
-        when(patientDaoMock.getAppointment(Mockito.anyString())).thenReturn(appointment);
-
-        appointmentReminderService.reminderCallIncompleted("foo", callDate);
-
-        verify(patientDaoMock, times(0)).updateAppointment(Mockito.<Appointment>anyObject());
-        assertEquals(AppointmentReminder.Status.COMPLETED, ar.getStatus());
+        verify(eventRelayMock, times(0)).sendEventMessage(Mockito.any(MotechEvent.class));
     }
 }

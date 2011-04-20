@@ -31,13 +31,14 @@
  */
 package org.motechproject.server.appointmentreminder;
 
+import org.motechproject.appointmentreminder.EventKeys;
 import org.motechproject.appointmentreminder.dao.PatientDAO;
 import org.motechproject.appointmentreminder.model.Appointment;
-import org.motechproject.appointmentreminder.model.Patient;
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.SchedulableJob;
 import org.motechproject.server.event.EventListener;
+import org.motechproject.server.gateway.MotechSchedulerGateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,7 @@ public class ScheduleAppointmentReminderHandler implements EventListener {
 	public final static String SCHEDULE_APPOINTMENT_REMINDER = "ScheduleAppointmentReminder";
 	
 	@Autowired
-	private Context context;
+	private MotechSchedulerGateway schedulerGateway = Context.getInstance().getMotechSchedulerGateway();
 
 	@Autowired
 	private PatientDAO patientDAO;
@@ -64,34 +65,24 @@ public class ScheduleAppointmentReminderHandler implements EventListener {
 
         String appointmentId = EventKeys.getAppointmentId(event);
         if (appointmentId == null) {
-            logger.error("Can not handle the Schedule Appointment Reminder Event: " + event +
+            logger.error("Can not handle Event: " + event.getSubject() +
                      ". The event is invalid - missing the " + EventKeys.APPOINTMENT_ID_KEY + " parameter");
             return;
         }
 
-		try {
-			Appointment appointment = patientDAO.getAppointment(appointmentId);
-			String eventSubject;
+        Appointment appointment = patientDAO.getAppointment(appointmentId);
+        if (appointment == null) {
+            logger.error("Can not handle Event: " + event.getSubject() +
+                     ". The event is invalid - no appointment for id " + appointmentId);
+            return;
+        }
 
-			// determine if its concrete appointment or "window reminder"
-			if(appointment.getDate()==null) {
-				// window reminder
-				eventSubject = EventKeys.SCHEDULE_REMINDER_SUBJECT;
-			} else {
-				//TODO set the corresponding event type key
-				eventSubject = "";
-			}
+    	MotechEvent reminderEvent = new MotechEvent(EventKeys.SCHEDULE_REMINDER_SUBJECT, event.getParameters());
+		SchedulableJob schedulableJob = new SchedulableJob(reminderEvent, "0 0 0 * * ?",
+                                                           appointment.getReminderWindowStart(),
+                                                           appointment.getReminderWindowEnd());
 
-			MotechEvent reminderEvent = new MotechEvent(eventSubject, event.getParameters());
-			SchedulableJob schedulableJob = new SchedulableJob(reminderEvent,"0 0 0 * * ?",appointment.getReminderWindowStart(), appointment.getReminderWindowEnd());
-			context.getMotechSchedulerGateway().scheduleJob(schedulableJob);
-		} catch (RuntimeException e) {
-		    for (StackTraceElement el : e.getStackTrace()) {
-		        logger.error(el.getFileName() + ":" + el.getLineNumber() + ">> " + el.getMethodName() + "()");
-		    }			
-		    // TODO break the exceptions on transient and non-transient and throw the appropriate one
-			throw e;
-		}
+    	schedulerGateway.scheduleJob(schedulableJob);
 	}
 
 	@Override
