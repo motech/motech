@@ -52,8 +52,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class UnscheduleAppointmentReminderHandler implements EventListener {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	public final static String UNSCHEDULE_APPOINTMENT_REMINDER = "UnscheduleAppointmentReminder";
-	
-    @Autowired
+
     private MotechSchedulerGateway schedulerGateway = Context.getInstance().getMotechSchedulerGateway();
 
 	@Autowired

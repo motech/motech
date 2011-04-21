@@ -52,7 +52,6 @@ import java.util.*;
 public class AppointmentReminderServiceImpl implements AppointmentReminderService {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
     private EventRelay eventRelay = Context.getInstance().getEventRelay();
 
     @Autowired
