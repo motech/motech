@@ -3,10 +3,10 @@
 	<form>
  		<block>
              <prompt>
-                <audio src="/m/wav/hello.wav"/>
+                <audio src="/m/wav/ar.wav"/>
              </prompt>
             <prompt>
-                Please fix your appointment on or before ${appointmentDueDate}
+                Your appointment is coming up.
             </prompt>
 		</block>
 	</form>

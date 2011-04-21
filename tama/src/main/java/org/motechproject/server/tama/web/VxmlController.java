@@ -31,17 +31,16 @@
  */
 package org.motechproject.server.tama.web;
 
+import org.motechproject.appointmentreminder.context.AppointmentReminderContext;
 import org.motechproject.appointmentreminder.dao.PatientDAO;
 import org.motechproject.appointmentreminder.model.Appointment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
 
 /**
  * Spring MVC controller implementation provides method to handle HTTP requests and generate
@@ -54,9 +53,7 @@ public class VxmlController extends MultiActionController {
 
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
 
-    @Autowired
-    private PatientDAO patientDAO;
-
+    PatientDAO patientDao = AppointmentReminderContext.getInstance().getPatientDAO();
 
     /**
      * Handles Appointment Reminder HTTP requests and generates a VXML document based on a Velocity template.
@@ -67,7 +64,7 @@ public class VxmlController extends MultiActionController {
      * will be generated.
      *
 	 * URL to request appointment reminder VoiceXML:
-	 * http://<host>:<port>/<motech-platform-server>/module/ar/vxml/ar?a=<appointmentId>
+	 * http://<host>:<port>/<motech-platform-server>/module/tama/vxml/ar?a=<appointmentId>
 	 */
 	public ModelAndView ar(HttpServletRequest request, HttpServletResponse response) {
         logger.info("Generate appointment reminder VXML");
@@ -93,7 +90,7 @@ public class VxmlController extends MultiActionController {
         Appointment appointment = null;
 
         try {
-            appointment = patientDAO.getAppointment(appointmentId );
+            appointment = patientDao.getAppointment(appointmentId );
         } catch (Exception e) {
             logger.error("Can not obtain Appointment by ID: " + appointmentId , e);
             logger.warn("Generating a VXML with the error message...");

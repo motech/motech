@@ -56,16 +56,11 @@
         <property name="vxmlUrl" value="http://localhost:8080/m/module/tama/vxml/mar" />
     </bean>
 
-    <bean id="motechContext" class="org.motechproject.context.Context" factory-method="getInstance" />
-    
-    <!-- We have to use the couchDbInstance provided by the motech server context -->
-    <bean id="couchDbInstance" factory-bean="motechContext" factory-method="getCouchDbInstance" />
-    
     <bean id="controllerClassNameUrlMapping"
 		class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping">
 	</bean>
 
-	<bean id="ivrController" class="VxmlController" />
+	<bean id="ivrController" class="org.motechproject.server.tama.web.VxmlController" />
 
 	<bean id="velocityConfig"
 		class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">

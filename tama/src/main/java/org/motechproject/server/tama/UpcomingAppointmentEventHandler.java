@@ -32,9 +32,11 @@
 package org.motechproject.server.tama;
 
 import org.motechproject.appointmentreminder.EventKeys;
+import org.motechproject.appointmentreminder.context.AppointmentReminderContext;
 import org.motechproject.appointmentreminder.dao.PatientDAO;
 import org.motechproject.appointmentreminder.model.Appointment;
 import org.motechproject.appointmentreminder.model.Patient;
+import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.EventListener;
 import org.motechproject.server.service.ivr.CallInitiationException;
@@ -42,7 +44,6 @@ import org.motechproject.server.service.ivr.CallRequest;
 import org.motechproject.server.service.ivr.IVRService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Handles Remind Appointment Events
@@ -54,11 +55,9 @@ public class UpcomingAppointmentEventHandler implements EventListener {
 
     public final static String UPCOMING_APPOINTMENT = "UpcomingAppointment";
 
-    @Autowired
-    PatientDAO patientDao;
+    PatientDAO patientDao = AppointmentReminderContext.getInstance().getPatientDAO();
 
-    @Autowired
-    IVRService ivrService;
+    IVRService ivrService = Context.getInstance().getIvrService();;
 
     //Interim implementation
     String vxmlUrl;
