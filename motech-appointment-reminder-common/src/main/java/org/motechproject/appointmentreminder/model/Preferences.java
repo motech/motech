@@ -42,7 +42,7 @@ public class Preferences extends MotechBaseDataObject {
 	private Integer bestTimeToCallHour;
 	private Integer bestTimeToCallMinute;
 	private Boolean enabled = Boolean.FALSE;
-	
+	private String ivrCallJobId;
 
 	/**
 	 * @return the patientId
@@ -87,7 +87,15 @@ public class Preferences extends MotechBaseDataObject {
 		this.enabled = enabled;
 	}
 	
-    @Override
+    public String getIvrCallJobId() {
+		return ivrCallJobId;
+	}
+
+	public void setIvrCallJobId(String ivrCallJobId) {
+		this.ivrCallJobId = ivrCallJobId;
+	}
+
+	@Override
     public String toString() {
         return "id = " + this.getId() + ", enabled = " + enabled + ", best time to call hour = " + this.bestTimeToCallHour + ", best time to call minute = " + this.bestTimeToCallMinute + ", patient id = " + patientId; 
     }
