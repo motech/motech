@@ -134,6 +134,8 @@
                             <exclude>org/motechproject/outbox/dao/*.class</exclude>
                             <exclude>org/motechproject/outbox/dao/couchdb/*.class</exclude>
 							<exclude>org/motechproject/outbox/model/*.class</exclude>
+                            <exclude>org/motechproject/server/tama/**/*.class</exclude>
+
 						</excludes>
 					</instrumentation>
 					<check>
