@@ -31,6 +31,7 @@
  */
 package org.motechproject.server.tama;
 
+import org.motechproject.appointmentreminder.EventKeys;
 import org.motechproject.context.Context;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -50,6 +51,9 @@ public class Activator implements BundleActivator {
 	private static final String CONTEXT_CONFIG_LOCATION = "applicationTAMA.xml";
 	private static final String SERVLET_URL_MAPPING = "/tama";
 	private ServiceTracker tracker;
+    private MissedAppointmentEventHandler missedAppointmentEventHandler;
+    private UpcomingAppointmentEventHandler upcomingAppointmentEventHandler;
+    private UpcomingUnscheduledAppointmentEventHandler upcomingUnscheduledAppointmentEventHandler;
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -88,9 +92,19 @@ public class Activator implements BundleActivator {
 			} finally {
 				Thread.currentThread().setContextClassLoader(old);
 			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+
+            missedAppointmentEventHandler = dispatcherServlet.getWebApplicationContext().getBean(MissedAppointmentEventHandler.class);
+            Context.getInstance().getEventListenerRegistry().registerListener(missedAppointmentEventHandler, EventKeys.SCHEDULED_APPOINTMENT_MISSED);
+
+            upcomingAppointmentEventHandler = dispatcherServlet.getWebApplicationContext().getBean(UpcomingAppointmentEventHandler.class);
+            Context.getInstance().getEventListenerRegistry().registerListener(upcomingAppointmentEventHandler, EventKeys.SCHEDULED_APPOINTMENT_UPCOMING);
+
+            upcomingUnscheduledAppointmentEventHandler = dispatcherServlet.getWebApplicationContext().getBean(UpcomingUnscheduledAppointmentEventHandler.class);
+            Context.getInstance().getEventListenerRegistry().registerListener(upcomingUnscheduledAppointmentEventHandler, EventKeys.UNSCHEDULED_APPOINTMENT_UPCOMING);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
 	}
 
 	private void serviceRemoved(HttpService service) {
