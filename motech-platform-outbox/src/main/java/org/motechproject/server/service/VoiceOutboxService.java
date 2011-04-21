@@ -23,9 +23,10 @@ public interface VoiceOutboxService {
     public void addMessage(OutboundVoiceMessage outboundVoiceMessage);
 
     /**
-     * Returns the next pending message from the outbox of the party identified by the given party ID.
-     * A next pending message in a party outbox considered a not expired message with status "Pending" that belongs
-     * to this party, has the oldest creation time and  highest priority.
+     * Returns the next pending message from the outbox of the party identified by the given party ID, or NULL
+     * if there is no more pending messages in the outbox.
+     * A next pending message is a not expired message with the status "Pending" that belongs
+     * to this party, the oldest creation time and the highest priority among other pending messages in the party outbox.
      *
      * @param partyId - unique identifier of the party from
      * @return OutboundVoiceMessage
