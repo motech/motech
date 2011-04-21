@@ -76,7 +76,7 @@ public class ScheduleAppointmentReminderHandler implements EventListener {
             return;
         }
 
-    	MotechEvent reminderEvent = new MotechEvent(EventKeys.SCHEDULE_REMINDER_SUBJECT, event.getParameters());
+    	MotechEvent reminderEvent = new MotechEvent(EventKeys.REMINDER_EVENT_SUBJECT, event.getParameters());
 		SchedulableJob schedulableJob = new SchedulableJob(reminderEvent, "0 0 0 * * ?",
                                                            appointment.getReminderWindowStart(),
                                                            appointment.getReminderWindowEnd());
