@@ -29,21 +29,16 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.appointmentreminder.dao;
-
-import static org.junit.Assert.*;
-
-import java.util.List;
-import java.util.Set;
+package org.motechproject.appointmentreminder.dao;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.appointmentreminder.dao.PatientDAO;
 import org.motechproject.appointmentreminder.model.Appointment;
-import org.motechproject.appointmentreminder.model.Patient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Appointment DAO test
