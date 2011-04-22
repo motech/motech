@@ -77,6 +77,12 @@ public class UpcomingUnscheduledAppointmentEventHandler implements EventListener
         }
 
         Appointment appointment = patientDao.getAppointment(appointmentId);
+        if (appointment == null) {
+            log.error("Can not handle the Appointment Reminder Event: " + event +
+                     ". The event is invalid - no appointment for id " + appointmentId);
+            return;
+        }
+
         Patient patient = patientDao.get(appointment.getPatientId());
 
         long messageId = 1;

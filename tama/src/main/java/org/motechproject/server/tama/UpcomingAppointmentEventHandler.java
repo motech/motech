@@ -57,7 +57,7 @@ public class UpcomingAppointmentEventHandler implements EventListener {
 
     PatientDAO patientDao = AppointmentReminderContext.getInstance().getPatientDAO();
 
-    IVRService ivrService = Context.getInstance().getIvrService();;
+    IVRService ivrService = Context.getInstance().getIvrService();
 
     //Interim implementation
     String vxmlUrl;
@@ -77,6 +77,13 @@ public class UpcomingAppointmentEventHandler implements EventListener {
         }
 
         Appointment appointment = patientDao.getAppointment(appointmentId);
+
+        if (appointment == null) {
+            log.error("Can not handle the Appointment Reminder Event: " + event +
+                     ". The event is invalid - no appointment for id " + appointmentId);
+            return;
+        }
+
         Patient patient = patientDao.get(appointment.getPatientId());
 
         long messageId = 1;
@@ -84,6 +91,7 @@ public class UpcomingAppointmentEventHandler implements EventListener {
 
         // Todo Place message in outbox
         try {
+            String url = vxmlUrl + "?aptId=" + appointmentId;
             CallRequest callRequest = new CallRequest(messageId, phone, 10, vxmlUrl);
 
             ivrService.initiateCall(callRequest);

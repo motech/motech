@@ -55,18 +55,8 @@ public class VxmlController extends MultiActionController {
 
     PatientDAO patientDao = AppointmentReminderContext.getInstance().getPatientDAO();
 
-    /**
-     * Handles Appointment Reminder HTTP requests and generates a VXML document based on a Velocity template.
-     * The HTTP request should contain the mandatory 'a' parameter with value of ID of the Appointment for which
-     * a VXML document will be generated.
-     *
-     * If Invalid appointment ID has been sent or appointment data can not be obtained a VVML with an error message
-     * will be generated.
-     *
-	 * URL to request appointment reminder VoiceXML:
-	 * http://<host>:<port>/<motech-platform-server>/module/tama/vxml/ar?a=<appointmentId>
-	 */
-	public ModelAndView ar(HttpServletRequest request, HttpServletResponse response) {
+    private ModelAndView appointmentReminderHandler(HttpServletRequest request, HttpServletResponse response,
+                                                    String view, String defaultView, String errorView) {
         logger.info("Generate appointment reminder VXML");
 
         response.setContentType("text/plain");
@@ -74,16 +64,15 @@ public class VxmlController extends MultiActionController {
 
         ModelAndView mav = new ModelAndView();
 
-
-        String appointmentId = request.getParameter("a");
+        String appointmentId = request.getParameter("aptId");
 
         logger.debug("Appointment Reminder ID: " + appointmentId );
 
-        if (appointmentId  == null) {
-            logger.warn("Invalid request. Value of the Appointment Reminder ID parameter - 'a'  sent as a part of that VXML URL is null." +
-                    " Generating default appointment reminder VXML...");
+        if (appointmentId == null) {
+            logger.warn("Invalid request. 'aptId' parameter is null" +
+                        " Generating generic appointment reminder VXML...");
 
-            mav.setViewName("ar_default");
+            mav.setViewName(defaultView);
 		    return mav;
         }
 
@@ -94,7 +83,7 @@ public class VxmlController extends MultiActionController {
         } catch (Exception e) {
             logger.error("Can not obtain Appointment by ID: " + appointmentId , e);
             logger.warn("Generating a VXML with the error message...");
-            mav.setViewName("ar_error");
+            mav.setViewName(errorView);
             return mav;
         }
 
@@ -102,13 +91,42 @@ public class VxmlController extends MultiActionController {
         if (appointment == null) {
             logger.error("Can not find Appointment by ID: " + appointmentId );
             logger.warn("Generating a VXML with the error message...");
-            mav.setViewName("ar_error");
-             return mav;
+            mav.setViewName(errorView);
+            return mav;
         }
 
-
-        mav.setViewName("ar");
+        mav.setViewName(view);
 		mav.addObject("appointmentDueDate", appointment.getReminderWindowEnd());
 		return mav;
+    }
+
+    /**
+     * Handles Appointment Reminder HTTP requests and generates a VXML document based on a Velocity template.
+     * The HTTP request should contain the mandatory 'aptId' parameter with value of ID of the Appointment for which
+     * a VXML document will be generated.
+     *
+     * If Invalid appointment ID has been sent or appointment data can not be obtained a VVML with an error message
+     * will be generated.
+     *
+	 * URL to request appointment reminder VoiceXML:
+	 * http://<host>:<port>/<motech-platform-server>/module/tama/vxml/appointmentreminder?aptId=<appointmentId>
+	 */
+	public ModelAndView appointmentreminder(HttpServletRequest request, HttpServletResponse response) {
+        return appointmentReminderHandler(request, response, "appointment_reminder", "appointment_reminder_generic", "ar_error");
+	}
+
+    /**
+     * Handles Appointment Reminder HTTP requests and generates a VXML document based on a Velocity template.
+     * The HTTP request should contain the mandatory 'apt' parameter with value of ID of the Appointment for which
+     * a VXML document will be generated.
+     *
+     * If Invalid appointment ID has been sent or appointment data can not be obtained a VVML with an error message
+     * will be generated.
+     *
+	 * URL to request appointment reminder VoiceXML:
+	 * http://<host>:<port>/<motech-platform-server>/module/tama/vxml/scheduleappointmentreminder?aptId=<appointmentId>
+	 */
+	public ModelAndView scheduleappointmentreminder(HttpServletRequest request, HttpServletResponse response) {
+        return appointmentReminderHandler(request, response, "schedule_appointment_reminder", "ar_error", "ar_error");
 	}
 }
