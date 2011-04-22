@@ -32,6 +32,7 @@
 package org.motechproject.server.outbox;
 
 import org.motechproject.context.Context;
+import org.motechproject.outbox.EventKeys;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -52,7 +53,10 @@ public class Activator implements BundleActivator {
 	private static final String CONTEXT_CONFIG_LOCATION = "applicationOutbox.xml";
 	private static final String SERVLET_URL_MAPPING = "/outbox";
 	private ServiceTracker tracker;
-//	private ScheduleAppointmentReminderHandler scheduleAppointmentReminderListener;
+
+	private ScheduleOutboxExecutionHandler scheduleOutboxExecutionHandler;
+    private UnscheduleOutboxExecutionHandler unscheduleOutboxExecutionHandler;
+    private OutboxExecutionHandler outboxExecutionHandler;
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -98,9 +102,15 @@ public class Activator implements BundleActivator {
             Context context = Context.getInstance();
             logger.info("Using Context: " + context.toString());
 
-//			scheduleAppointmentReminderListener = dispatcherServlet.getWebApplicationContext().getBean(ScheduleAppointmentReminderHandler.class);
-//			Context.getInstance().getEventTypeRegistry().add(ScheduleAppointmentReminderEventType.getInstance());
-//			Context.getInstance().getEventListenerRegistry().registerListener(scheduleAppointmentReminderListener, Arrays.asList(ScheduleAppointmentReminderEventType.getInstance()) );
+			scheduleOutboxExecutionHandler = dispatcherServlet.getWebApplicationContext().getBean(ScheduleOutboxExecutionHandler.class);
+			Context.getInstance().getEventListenerRegistry().registerListener(scheduleOutboxExecutionHandler, EventKeys.SCHEDULE_EXECUTION_SUBJECT);
+
+            unscheduleOutboxExecutionHandler = dispatcherServlet.getWebApplicationContext().getBean(UnscheduleOutboxExecutionHandler.class);
+            Context.getInstance().getEventListenerRegistry().registerListener(unscheduleOutboxExecutionHandler, EventKeys.UNSCHEDULE_EXECUTION_SUBJECT);
+
+            outboxExecutionHandler = dispatcherServlet.getWebApplicationContext().getBean(OutboxExecutionHandler.class);
+            Context.getInstance().getEventListenerRegistry().registerListener(outboxExecutionHandler, EventKeys.EXECUTE_OUTBOX_SUBJECT);
+
         } catch (Exception e) {
 			throw new RuntimeException(e);
 		}

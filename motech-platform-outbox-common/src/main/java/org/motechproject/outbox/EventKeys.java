@@ -14,12 +14,15 @@ public class EventKeys
     public final static String CALL_HOUR_KEY = "CallHour";
     public final static String CALL_MINUTE_KEY = "CallMinute";
     public final static String PHONE_NUMBER_KEY = "PhoneNumber";
-    public final static String PARTY_ID_KEY = "PhoneNumber";
+    public final static String PARTY_ID_KEY = "PartyID";
     public final static String SCHEDULE_JOB_ID_KEY = "JobID";
 
     public final static String SCHEDULE_EXECUTION_SUBJECT = "org.motechproject.server.outbox.schedule-execution";
     public final static String UNSCHEDULE_EXECUTION_SUBJECT = "org.motechproject.server.outbox.unschedule-execution";
     public final static String EXECUTE_OUTBOX_SUBJECT = "org.motechproject.server.outbox.execute";
+
+    public final static String INCOMPLETE_OUTBOX_CALL_SUBJECT = "org.motechproject.server.outbox.call.completed";
+    public final static String COMPLETED_OUTBOX_CALL_SUBJECT  = "org.motechproject.server.outbox.call.incomplete";
 
     public static String getScheduleJobIdKey(MotechEvent event)
     {
