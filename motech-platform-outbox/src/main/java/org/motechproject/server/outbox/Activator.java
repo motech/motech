@@ -29,8 +29,9 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.outbox.osgi;
+package org.motechproject.server.outbox;
 
+import org.motechproject.context.Context;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -90,10 +91,17 @@ public class Activator implements BundleActivator {
 			} finally {
 				Thread.currentThread().setContextClassLoader(old);
 			}
+
+            // I need to access Context so maven-bundle-plugin lists it in my manifest.
+            // If I don't actually need to reference it then this access should be removed and we should
+            // explicitly list the dependency in the bundle plugin config
+            Context context = Context.getInstance();
+            logger.info("Using Context: " + context.toString());
+
 //			scheduleAppointmentReminderListener = dispatcherServlet.getWebApplicationContext().getBean(ScheduleAppointmentReminderHandler.class);
 //			Context.getInstance().getEventTypeRegistry().add(ScheduleAppointmentReminderEventType.getInstance());
 //			Context.getInstance().getEventListenerRegistry().registerListener(scheduleAppointmentReminderListener, Arrays.asList(ScheduleAppointmentReminderEventType.getInstance()) );
-		} catch (Exception e) {
+        } catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}

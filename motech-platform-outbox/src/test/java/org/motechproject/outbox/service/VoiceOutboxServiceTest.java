@@ -12,6 +12,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.outbox.dao.OutboundVoiceMessageDao;
 import org.motechproject.outbox.model.OutboundVoiceMessage;
 import org.motechproject.outbox.model.OutboundVoiceMessageStatus;
+import org.motechproject.server.outbox.service.VoiceOutboxService;
+import org.motechproject.server.outbox.service.VoiceOutboxServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -11,7 +11,7 @@
 	<groupId>org.motechproject</groupId>
 	<artifactId>motech-platform-outbox</artifactId>
 	<version>1.0-SNAPSHOT</version>
-	<name>Motech Platform Outbox </name>
+	<name>Motech Platform Outbox</name>
 	<packaging>bundle</packaging>
 	<dependencies>
 		<dependency>
@@ -60,26 +60,12 @@
 			<artifactId>motech-platform-server-api</artifactId>
 			<version>0.1-SNAPSHOT</version>
 			<scope>provided</scope>
-			<!--The scope is "provided". Why do we still need to explicitly exclude 
-				log4j from the bundle? -->
-			<exclusions>
-				<exclusion>
-					<artifactId>log4j</artifactId>
-					<groupId>log4j</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.motechproject</groupId>
 			<artifactId>motech-platform-common</artifactId>
 			<version>0.1-SNAPSHOT</version>
 			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>log4j</artifactId>
-					<groupId>log4j</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -110,21 +96,10 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.2</version>
-		</dependency>
-		<dependency>
 			<groupId>org.motechproject</groupId>
 			<artifactId>motech-platform-outbox-common</artifactId>
 			<version>0.1-SNAPSHOT</version>
-			<scope>compile</scope>
+			<type>jar</type>
 		</dependency>
 	</dependencies>
 	<build>
@@ -137,10 +112,10 @@
 				<configuration>
 					<instructions>
 						<Bundle-Activator>
-                            org.motechproject.outbox.osgi.Activator
+                            org.motechproject.server.outbox.Activator
                         </Bundle-Activator>
 						<Private-Package>
-							org.motechproject.server.*
+							org.motechproject.server.outbox.*
                         </Private-Package>
 						<Import-Package>
 							*;org.ektorp;org.ektorp.impl;org.ektorp.spring;resolution:=optional
