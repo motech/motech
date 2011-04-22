@@ -36,14 +36,18 @@ import org.motechproject.appointmentreminder.context.AppointmentReminderContext;
 import org.motechproject.appointmentreminder.dao.PatientDAO;
 import org.motechproject.appointmentreminder.model.Appointment;
 import org.motechproject.appointmentreminder.model.Patient;
-import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.outbox.context.OutboxContext;
+import org.motechproject.outbox.dao.OutboundVoiceMessageDao;
+import org.motechproject.outbox.model.MessagePriority;
+import org.motechproject.outbox.model.OutboundVoiceMessage;
+import org.motechproject.outbox.model.OutboundVoiceMessageStatus;
+import org.motechproject.outbox.model.VoiceMessageType;
 import org.motechproject.server.event.EventListener;
-import org.motechproject.server.service.ivr.CallInitiationException;
-import org.motechproject.server.service.ivr.CallRequest;
-import org.motechproject.server.service.ivr.IVRService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Date;
 
 /**
  * Handles Remind Appointment Events
@@ -57,7 +61,7 @@ public class UpcomingUnscheduledAppointmentEventHandler implements EventListener
 
     PatientDAO patientDao = AppointmentReminderContext.getInstance().getPatientDAO();
 
-    IVRService ivrService = Context.getInstance().getIvrService();;
+    OutboundVoiceMessageDao outboundVoiceMessageDao = OutboxContext.getInstance().getOutboundVoiceMessageDao();
 
     //Interim implementation
     String vxmlUrl;
@@ -85,18 +89,19 @@ public class UpcomingUnscheduledAppointmentEventHandler implements EventListener
 
         Patient patient = patientDao.get(appointment.getPatientId());
 
-        long messageId = 1;
-        String phone = patient.getPhoneNumber();
+        String url = vxmlUrl + "?aptId=" + appointmentId;
 
-        // Todo Place message in outbox
-        try {
-            CallRequest callRequest = new CallRequest(messageId, phone, 10, vxmlUrl);
+        VoiceMessageType mt = new VoiceMessageType();
+        mt.setPriority(MessagePriority.MEDIUM);
+        mt.setvXmlUrl(url);
 
-            ivrService.initiateCall(callRequest);
-        } catch (CallInitiationException e) {
-            log.warn("Unable to initiate call to patientId=" + patient.getClinicPatientId() +
-                             " for appointmentId=" + appointmentId + e.getMessage());
-        }
+        OutboundVoiceMessage msg = new OutboundVoiceMessage();
+        msg.setPartyId(patient.getId());
+        msg.setStatus(OutboundVoiceMessageStatus.PENDING);
+        msg.setCreationTime(new Date());
+        msg.setVoiceMessageType(mt);
+
+        outboundVoiceMessageDao.add(msg);
     }
 
     @Override
