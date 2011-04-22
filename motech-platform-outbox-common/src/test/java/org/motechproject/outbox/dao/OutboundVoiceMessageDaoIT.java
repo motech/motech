@@ -42,7 +42,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.outbox.dao.OutboundVoiceMessageDao;
 import org.motechproject.outbox.model.MessagePriority;
 import org.motechproject.outbox.model.OutboundVoiceMessage;
 import org.motechproject.outbox.model.OutboundVoiceMessageStatus;
@@ -56,7 +55,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/persistenceOutboxCommon.xml"})
+@ContextConfiguration(locations={"/src/main/resources/persistenceOutboxCommon.xml"})
 public class OutboundVoiceMessageDaoIT {
 	@Autowired
 	private OutboundVoiceMessageDao outboundVoiceMessageDao;

@@ -29,11 +29,8 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.osgi;
+package org.motechproject.outbox.osgi;
 
-import java.util.Arrays;
-
-import org.motechproject.context.Context;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -51,7 +48,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  */
 public class Activator implements BundleActivator {
 	private static Logger logger = LoggerFactory.getLogger(Activator.class);
-	private static final String CONTEXT_CONFIG_LOCATION = "applicationAppointmentReminder.xml";
+	private static final String CONTEXT_CONFIG_LOCATION = "applicationOutbox.xml";
 	private static final String SERVLET_URL_MAPPING = "/outbox";
 	private ServiceTracker tracker;
 //	private ScheduleAppointmentReminderHandler scheduleAppointmentReminderListener;

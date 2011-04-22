@@ -73,6 +73,11 @@
 			<artifactId>motech-appointment-reminder-common</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>org.motechproject</groupId>
+			<artifactId>motech-platform-outbox-common</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
         <dependency>
 			<groupId>org.motechproject</groupId>
 			<artifactId>motech-platform-common</artifactId>

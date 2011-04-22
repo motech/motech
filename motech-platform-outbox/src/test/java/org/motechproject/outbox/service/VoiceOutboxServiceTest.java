@@ -1,4 +1,4 @@
-package org.motechproject.server.service;
+package org.motechproject.outbox.service;
 
 
 import org.junit.Before;
@@ -16,7 +16,8 @@ import org.motechproject.outbox.model.OutboundVoiceMessageStatus;
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static org.mockito.Mockito.*;
 
 

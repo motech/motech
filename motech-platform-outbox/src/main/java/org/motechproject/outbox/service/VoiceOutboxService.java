@@ -1,4 +1,4 @@
-package org.motechproject.server.service;
+package org.motechproject.outbox.service;
 
 import org.motechproject.outbox.model.OutboundVoiceMessage;
 import org.motechproject.outbox.model.OutboundVoiceMessageStatus;

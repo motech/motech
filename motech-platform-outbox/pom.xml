@@ -137,7 +137,7 @@
 				<configuration>
 					<instructions>
 						<Bundle-Activator>
-							org.motechproject.server.osgi.Activator
+                            org.motechproject.outbox.osgi.Activator
                         </Bundle-Activator>
 						<Private-Package>
 							org.motechproject.server.*
