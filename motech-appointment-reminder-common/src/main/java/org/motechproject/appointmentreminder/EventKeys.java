@@ -13,9 +13,9 @@ public class EventKeys
 
     public final static String APPOINTMENT_ID_KEY = "AppointmentID";
 
-    public final static String REMINDER_EVENT_SUBJECT = "org.motechproject.server.appointmentreminder.reminder-call";
-    public final static String SCHEDULE_REMINDER_SUBJECT = "org.motechproject.server.appointmentreminder.schedule-reminder-call";
-    public final static String UNSCHEDULE_REMINDER_SUBJECT = "org.motechproject.server.appointmentreminder.unschedule-reminder-call";
+    public final static String REMINDER_EVENT_SUBJECT = "org.motechproject.server.appointmentreminder.reminder";
+    public final static String SCHEDULE_REMINDER_SUBJECT = "org.motechproject.server.appointmentreminder.schedule-reminder";
+    public final static String UNSCHEDULE_REMINDER_SUBJECT = "org.motechproject.server.appointmentreminder.unschedule-reminder";
 
     public final static String UNSCHEDULED_APPOINTMENT_UPCOMING = "org.motechproject.server.appointmentreminder.unscheduled-appointment.upcoming";
     public final static String UNSCHEDULED_APPOINTMENT_MISSED = "org.motechproject.server.appointmentreminder.unscheduled-appointment.missed";
