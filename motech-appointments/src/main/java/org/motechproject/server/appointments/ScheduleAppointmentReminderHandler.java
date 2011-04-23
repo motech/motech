@@ -32,7 +32,7 @@
 package org.motechproject.server.appointments;
 
 import org.motechproject.appointments.api.EventKeys;
-import org.motechproject.appointments.api.dao.PatientDAO;
+import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
@@ -57,7 +57,7 @@ public class ScheduleAppointmentReminderHandler implements EventListener {
 	private MotechSchedulerGateway schedulerGateway = Context.getInstance().getMotechSchedulerGateway();
 
 	@Autowired
-	private PatientDAO patientDAO;
+	private AppointmentsDAO appointmentsDAO;
 
 	@Override
 	public void handle(MotechEvent event) {
@@ -69,7 +69,7 @@ public class ScheduleAppointmentReminderHandler implements EventListener {
             return;
         }
 
-        Appointment appointment = patientDAO.getAppointment(appointmentId);
+        Appointment appointment = appointmentsDAO.getAppointment(appointmentId);
         if (appointment == null) {
             logger.error("Can not handle Event: " + event.getSubject() +
                      ". The event is invalid - no appointment for id " + appointmentId);

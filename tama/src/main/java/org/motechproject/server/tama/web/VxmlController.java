@@ -32,7 +32,7 @@
 package org.motechproject.server.tama.web;
 
 import org.motechproject.appointments.api.context.AppointmentReminderContext;
-import org.motechproject.appointments.api.dao.PatientDAO;
+import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.model.Appointment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +53,7 @@ public class VxmlController extends MultiActionController {
 
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
 
-    PatientDAO patientDao = AppointmentReminderContext.getInstance().getPatientDAO();
+    AppointmentsDAO appointmentsDao = AppointmentReminderContext.getInstance().getAppointmentsDAO();
 
     private ModelAndView appointmentReminderHandler(HttpServletRequest request, HttpServletResponse response,
                                                     String view, String defaultView, String errorView) {
@@ -79,7 +79,7 @@ public class VxmlController extends MultiActionController {
         Appointment appointment = null;
 
         try {
-            appointment = patientDao.getAppointment(appointmentId );
+            appointment = appointmentsDao.getAppointment(appointmentId );
         } catch (Exception e) {
             logger.error("Can not obtain Appointment by ID: " + appointmentId , e);
             logger.warn("Generating a VXML with the error message...");

@@ -39,7 +39,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.appointments.api.EventKeys;
-import org.motechproject.appointments.api.dao.PatientDAO;
+import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.Patient;
 import org.motechproject.appointments.api.model.Preferences;
@@ -61,7 +61,7 @@ public class UncheduleAppointmentReminderTest {
 	@Mock
 	private Context context;
 	@Mock
-	private PatientDAO patientDAO;
+	private AppointmentsDAO appointmentsDAO;
 	@Mock
 	private MotechSchedulerGateway motechSchedulerGateway;
 	
@@ -91,15 +91,15 @@ public class UncheduleAppointmentReminderTest {
         a.setReminderScheduledJobId(reminderScheduledJobId);
 		
 		// stub
-		when(patientDAO.get(PAT_ID)).thenReturn(p);
-		when(patientDAO.getAppointment(APPT_ID)).thenReturn(a);
+		when(appointmentsDAO.get(PAT_ID)).thenReturn(p);
+		when(appointmentsDAO.getAppointment(APPT_ID)).thenReturn(a);
 		when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
 
 		// run
 		unscheduleAppointmentReminderHandler.handle(event);
 		
 		// verify
-		verify(patientDAO).getAppointment(APPT_ID);
+		verify(appointmentsDAO).getAppointment(APPT_ID);
 		verify(motechSchedulerGateway).unscheduleJob(reminderScheduledJobId);
 	}
 
@@ -113,7 +113,7 @@ public class UncheduleAppointmentReminderTest {
 
         unscheduleAppointmentReminderHandler.handle(motechEvent);
 
-        verify(patientDAO, times(0)).get(anyString());
+        verify(appointmentsDAO, times(0)).get(anyString());
     }
 
     @Test
@@ -125,7 +125,7 @@ public class UncheduleAppointmentReminderTest {
 
         unscheduleAppointmentReminderHandler.handle(motechEvent);
 
-        verify(patientDAO, times(0)).get(anyString());
+        verify(appointmentsDAO, times(0)).get(anyString());
     }
 
     @Test

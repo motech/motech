@@ -29,25 +29,24 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-/**
- * 
- */
 package org.motechproject.appointments.api.dao;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.motechproject.appointments.api.model.Appointment;
+import org.motechproject.appointments.api.model.Patient;
+import org.motechproject.appointments.api.model.Visit;
+import org.motechproject.dao.BaseDao;
 
-/**
- * PatientDAO Integration Tests
- */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/applicationCommon.xml"})
-public class PatientDAOIT {
+public interface AppointmentsDAO extends BaseDao<Patient> {
 
-    @Test
-    public void testMotechScheduler() {
-        assert(true);
-    }
+	public void addVisit(Visit visit);
+    public void updateVisit(Visit visit);
+    public void removeVisit(String visitId);
+    public void removeVisit(Visit visit);
+
+    public void addAppointment(Appointment appointment);
+    public void updateAppointment(Appointment appointment);
+    public Appointment getAppointment(String appointmentId);
+    public void removeAppointment(String appointmentId);
+    public void removeAppointment(Appointment appointment);
+    
 }

@@ -1,22 +1,22 @@
 package org.motechproject.appointments.api.context;
 
-import org.motechproject.appointments.api.dao.PatientDAO;
+import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
 public class AppointmentReminderContext
 {
     @Autowired
-    private PatientDAO patientDAO;
+    private AppointmentsDAO appointmentsDAO;
 
-    public PatientDAO getPatientDAO()
+    public AppointmentsDAO getAppointmentsDAO()
     {
-        return patientDAO;
+        return appointmentsDAO;
     }
 
-    public void setPatientDAO(PatientDAO patientDAO)
+    public void setAppointmentsDAO(AppointmentsDAO appointmentsDAO)
     {
-        this.patientDAO = patientDAO;
+        this.appointmentsDAO = appointmentsDAO;
     }
 
     public static AppointmentReminderContext getInstance(){

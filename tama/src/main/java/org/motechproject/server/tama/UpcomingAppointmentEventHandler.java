@@ -33,7 +33,7 @@ package org.motechproject.server.tama;
 
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.context.AppointmentReminderContext;
-import org.motechproject.appointments.api.dao.PatientDAO;
+import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.Patient;
 import org.motechproject.context.Context;
@@ -61,7 +61,7 @@ public class UpcomingAppointmentEventHandler implements EventListener {
 
     public final static String UPCOMING_APPOINTMENT = "UpcomingAppointment";
 
-    PatientDAO patientDao = AppointmentReminderContext.getInstance().getPatientDAO();
+    AppointmentsDAO appointmentsDao = AppointmentReminderContext.getInstance().getAppointmentsDAO();
 
     OutboundVoiceMessageDao outboundVoiceMessageDao = OutboxContext.getInstance().getOutboundVoiceMessageDao();
 
@@ -84,7 +84,7 @@ public class UpcomingAppointmentEventHandler implements EventListener {
             return;
         }
 
-        Appointment appointment = patientDao.getAppointment(appointmentId);
+        Appointment appointment = appointmentsDao.getAppointment(appointmentId);
 
         if (appointment == null) {
             log.error("Can not handle the Appointment Reminder Event: " + event +
@@ -92,7 +92,7 @@ public class UpcomingAppointmentEventHandler implements EventListener {
             return;
         }
 
-        Patient patient = patientDao.get(appointment.getPatientId());
+        Patient patient = appointmentsDao.get(appointment.getPatientId());
 
         String url = vxmlUrl + "?aptId=" + appointmentId;
 

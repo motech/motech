@@ -60,6 +60,6 @@
 		<constructor-arg ref="couchDbInstance" />
 	</bean>
 
-	<bean id="patientDAO" class="org.motechproject.appointments.api.dao.couchdb.PatientDAOImpl" />
+	<bean id="patientDAO" class="org.motechproject.appointments.api.dao.impl.AppointmentsCouchDBDAOImpl" />
 
 </beans>

@@ -39,7 +39,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.appointments.api.dao.PatientDAO;
+import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.Patient;
 import org.motechproject.appointments.api.model.Visit;
@@ -63,7 +63,7 @@ public class AppointmentReminderServiceImplTest {
     AppointmentReminderServiceImpl appointmentReminderService = new AppointmentReminderServiceImpl();
 
     @Mock
-    private PatientDAO patientDaoMock;
+    private AppointmentsDAO appointmentsDaoMock;
 
     @Mock
     private EventRelay eventRelayMock;
@@ -92,8 +92,8 @@ public class AppointmentReminderServiceImplTest {
         Patient patient = new Patient();
         patient.setPhoneNumber("1001");
 
-        when(patientDaoMock.getAppointment(Mockito.anyString())).thenReturn(appointment);
-        when(patientDaoMock.get(appointment.getPatientId())).thenReturn(patient);
+        when(appointmentsDaoMock.getAppointment(Mockito.anyString())).thenReturn(appointment);
+        when(appointmentsDaoMock.get(appointment.getPatientId())).thenReturn(patient);
 
         if (setVisits) {
             Visit v = new Visit();
@@ -111,7 +111,7 @@ public class AppointmentReminderServiceImplTest {
     {
         setTestData(startOffset, endOffset, setVisits, visitOffset);
 
-        Appointment appointment = patientDaoMock.getAppointment("");
+        Appointment appointment = appointmentsDaoMock.getAppointment("");
     }
 
     /*

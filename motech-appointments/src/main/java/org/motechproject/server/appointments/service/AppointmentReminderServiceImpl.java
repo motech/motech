@@ -33,7 +33,7 @@ package org.motechproject.server.appointments.service;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.motechproject.appointments.api.EventKeys;
-import org.motechproject.appointments.api.dao.PatientDAO;
+import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.Patient;
 import org.motechproject.appointments.api.model.Visit;
@@ -55,7 +55,7 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
     private EventRelay eventRelay = Context.getInstance().getEventRelay();
 
     @Autowired
-    PatientDAO patientDao;
+    AppointmentsDAO appointmentsDao;
 
 	int timeOut;
     public final static String SCHEDULE_APPOINTMENT_REMINDER = "ScheduleAppointmentReminder";
@@ -64,8 +64,8 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
     public void remindPatientAppointment(String appointmentId) {
 
         //TODO - handle DAO exceptions
-        Appointment appointment = patientDao.getAppointment(appointmentId);
-        Patient patient = patientDao.get(appointment.getPatientId());
+        Appointment appointment = appointmentsDao.getAppointment(appointmentId);
+        Patient patient = appointmentsDao.get(appointment.getPatientId());
 
         long messageId = 1;
 

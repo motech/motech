@@ -48,7 +48,7 @@ import static org.junit.Assert.assertNotNull;
 @ContextConfiguration(locations={"/testIntegrationContext.xml"})
 public class AppointmentDaoIT {
 	@Autowired
-	private PatientDAO dao;
+	private AppointmentsDAO dao;
 
 	@Test
 	public void testCRUDandFindByParrentId() {

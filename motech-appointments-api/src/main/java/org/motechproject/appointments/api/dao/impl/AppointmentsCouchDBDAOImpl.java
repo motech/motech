@@ -29,10 +29,10 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.appointments.api.dao.couchdb;
+package org.motechproject.appointments.api.dao.impl;
 
 import org.ektorp.CouchDbConnector;
-import org.motechproject.appointments.api.dao.PatientDAO;
+import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.Patient;
 import org.motechproject.appointments.api.model.Visit;
@@ -42,10 +42,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PatientDAOImpl extends MotechAuditableRepository<Patient> implements PatientDAO {
+public class AppointmentsCouchDBDAOImpl extends MotechAuditableRepository<Patient> implements AppointmentsDAO
+{
 
     @Autowired
-    public PatientDAOImpl(@Qualifier("appointmentReminderDatabase") CouchDbConnector db) {
+    public AppointmentsCouchDBDAOImpl(@Qualifier("appointmentReminderDatabase") CouchDbConnector db) {
         super(Patient.class, db);
         initStandardDesignDocument();
     }

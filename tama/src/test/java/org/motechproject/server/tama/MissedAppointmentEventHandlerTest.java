@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.appointments.api.EventKeys;
-import org.motechproject.appointments.api.dao.PatientDAO;
+import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.Patient;
 import org.motechproject.model.MotechEvent;
@@ -28,7 +28,7 @@ public class MissedAppointmentEventHandlerTest extends TestCase {
     MissedAppointmentEventHandler missedAppointmentEventHandler = new MissedAppointmentEventHandler();
 
     @Mock
-    private PatientDAO patientDAOMock;
+    private AppointmentsDAO appointmentsDAOMock;
 
     @Mock
     private OutboundVoiceMessageDao outboundVoiceMessageDaoMock;
@@ -54,8 +54,8 @@ public class MissedAppointmentEventHandlerTest extends TestCase {
 
         ArgumentCaptor<OutboundVoiceMessage> argument = ArgumentCaptor.forClass(OutboundVoiceMessage.class);
 
-        Mockito.when(patientDAOMock.getAppointment("aID")).thenReturn(appointment);
-        Mockito.when(patientDAOMock.get("pID")).thenReturn(patient);
+        Mockito.when(appointmentsDAOMock.getAppointment("aID")).thenReturn(appointment);
+        Mockito.when(appointmentsDAOMock.get("pID")).thenReturn(patient);
 
         missedAppointmentEventHandler.handle(event);
 
@@ -77,8 +77,8 @@ public class MissedAppointmentEventHandlerTest extends TestCase {
         Patient patient = new Patient();
         patient.setPhoneNumber("SIP/1000");
 
-        Mockito.when(patientDAOMock.getAppointment("aID")).thenReturn(appointment);
-        Mockito.when(patientDAOMock.get("pID")).thenReturn(patient);
+        Mockito.when(appointmentsDAOMock.getAppointment("aID")).thenReturn(appointment);
+        Mockito.when(appointmentsDAOMock.get("pID")).thenReturn(patient);
 
         missedAppointmentEventHandler.handle(event);
 
@@ -97,8 +97,8 @@ public class MissedAppointmentEventHandlerTest extends TestCase {
         Patient patient = new Patient();
         patient.setPhoneNumber("SIP/1000");
 
-        Mockito.when(patientDAOMock.getAppointment("aID")).thenReturn(appointment);
-        Mockito.when(patientDAOMock.get("pID")).thenReturn(patient);
+        Mockito.when(appointmentsDAOMock.getAppointment("aID")).thenReturn(appointment);
+        Mockito.when(appointmentsDAOMock.get("pID")).thenReturn(patient);
 
         missedAppointmentEventHandler.handle(event);
 
@@ -117,8 +117,8 @@ public class MissedAppointmentEventHandlerTest extends TestCase {
         Patient patient = new Patient();
         patient.setPhoneNumber("SIP/1000");
 
-        Mockito.when(patientDAOMock.getAppointment("aID")).thenReturn(appointment);
-        Mockito.when(patientDAOMock.get("pID")).thenReturn(patient);
+        Mockito.when(appointmentsDAOMock.getAppointment("aID")).thenReturn(appointment);
+        Mockito.when(appointmentsDAOMock.get("pID")).thenReturn(patient);
 
         missedAppointmentEventHandler.handle(event);
 

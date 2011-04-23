@@ -39,7 +39,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.appointments.api.EventKeys;
-import org.motechproject.appointments.api.dao.PatientDAO;
+import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
@@ -60,7 +60,7 @@ public class ScheduleAppointmentReminderTest {
 	@Mock
 	private Context context;
 	@Mock
-	private PatientDAO patientDAO;
+	private AppointmentsDAO appointmentsDAO;
 	@Mock
 	private MotechSchedulerGateway motechSchedulerGateway;
 	
@@ -82,14 +82,14 @@ public class ScheduleAppointmentReminderTest {
 		a.setReminderWindowStart(new Date());
 		
 		// stub
-		when(patientDAO.getAppointment(APPT_ID)).thenReturn(a);
+		when(appointmentsDAO.getAppointment(APPT_ID)).thenReturn(a);
 		when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
 
 		// run
 		scheduleAppointmentReminderHandler.handle(event);
 		
 		// verify
-		verify(patientDAO).getAppointment(APPT_ID);
+		verify(appointmentsDAO).getAppointment(APPT_ID);
 		verify(motechSchedulerGateway).scheduleJob(any(SchedulableJob.class));
 	}
 
@@ -103,7 +103,7 @@ public class ScheduleAppointmentReminderTest {
 
         scheduleAppointmentReminderHandler.handle(motechEvent);
 
-        verify(patientDAO, times(0)).get(anyString());
+        verify(appointmentsDAO, times(0)).get(anyString());
     }
 
     @Test
@@ -115,6 +115,6 @@ public class ScheduleAppointmentReminderTest {
 
         scheduleAppointmentReminderHandler.handle(motechEvent);
 
-        verify(patientDAO, times(0)).get(anyString());
+        verify(appointmentsDAO, times(0)).get(anyString());
     }
 }
