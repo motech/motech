@@ -31,7 +31,7 @@
  */
 package org.motechproject.server.tama.web;
 
-import org.motechproject.appointments.api.appointmentreminder.context.AppointmentReminderContext;
+import org.motechproject.appointments.api.context.AppointmentReminderContext;
 import org.motechproject.appointments.api.dao.PatientDAO;
 import org.motechproject.appointments.api.model.Appointment;
 import org.slf4j.Logger;

@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.appointments.api.appointmentreminder.EventKeys;
+import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.dao.PatientDAO;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.Patient;

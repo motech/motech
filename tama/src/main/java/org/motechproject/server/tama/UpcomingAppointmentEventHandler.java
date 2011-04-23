@@ -31,8 +31,8 @@
  */
 package org.motechproject.server.tama;
 
-import org.motechproject.appointments.api.appointmentreminder.EventKeys;
-import org.motechproject.appointments.api.appointmentreminder.context.AppointmentReminderContext;
+import org.motechproject.appointments.api.EventKeys;
+import org.motechproject.appointments.api.context.AppointmentReminderContext;
 import org.motechproject.appointments.api.dao.PatientDAO;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.Patient;

@@ -5,7 +5,7 @@
 	<artifactId>motech-platform</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>Motech Platform</name>
+	<name>MOTECH</name>
 
 	<distributionManagement>
 		<site>
@@ -58,10 +58,8 @@
 		<module>motech-platform-scheduler</module>
         <module>motech-platform-ivr</module>
 		<module>motech-platform-server-api</module>
-        <!--
 		<module>motech-appointment-reminder</module>
 		<module>motech-appointment-reminder-common</module>
-		-->
     	<module>motech-outbox</module>
     	<module>motech-outbox-api</module>
         <module>motech-appointments</module>
