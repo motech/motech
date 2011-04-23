@@ -29,12 +29,11 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.appointments.api.dao;
+package org.motechproject.tama.dao;
 
-import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.dao.BaseDao;
+import org.motechproject.tama.model.Patient;
 
-public interface AppointmentsDAO extends BaseDao<Appointment> {
+public interface TamaDAO extends BaseDao<Patient> {
 
-    
 }

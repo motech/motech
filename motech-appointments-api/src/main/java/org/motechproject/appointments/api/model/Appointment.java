@@ -31,7 +31,6 @@
  */
 package org.motechproject.appointments.api.model;
 
-import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechAuditableDataObject;
 
 import java.util.Date;
@@ -40,113 +39,35 @@ public class Appointment extends MotechAuditableDataObject {
 
 	private static final long serialVersionUID = 3L;
 
-	private String patientId;
-	@TypeDiscriminator
-	private Date reminderWindowStart;
-	private Date reminderWindowEnd;
+    private String externalId;
 	private Date date;
-    private String reminderScheduledJobId;
+    private Visit visit;
 
-	/**
-	 * @return the patientId
-	 */
-	public String getPatientId() {
-		return patientId;
-	}
-	/**
-	 * @param patientId the patientId to set
-	 */
-	public void setPatientId(String patientId) {
-		this.patientId = patientId;
-	}
-	/**
-	 * Get the value for when the appointment reminder should stop for this appointment
-	 * @return the reminderWindowStart
-	 */
-	public Date getReminderWindowStart() {
-		return reminderWindowStart;
-	}
-	/**
-	 * Set the value for when the appointment reminder should start for this appointment
-	 * @param reminderWindowStart the reminderWindowStart to set
-	 */
-	public void setReminderWindowStart(Date reminderWindowStart) {
-		this.reminderWindowStart = reminderWindowStart;
-	}
-	/**
-	 * Get the value for when the appointment reminder should start for this appointment
-	 * @return the reminderWindowEnd
-	 */
-	public Date getReminderWindowEnd() {
-		return reminderWindowEnd;
-	}
-	/**
-	 * Set the value for when the appointment reminder should stop for this appointment
-	 * @param reminderWindowEnd the reminderWindowEnd to set
-	 */
-	public void setReminderWindowEnd(Date reminderWindowEnd) {
-		this.reminderWindowEnd = reminderWindowEnd;
-	}
-	/**
-	 * Get the specific appointment date
-	 * @return the date
-	 */
-	public Date getDate() {
+    public String getExternalId()
+    {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId)
+    {
+        this.externalId = externalId;
+    }
+
+    public Date getDate() {
 		return date;
 	}
-	/**
-	 * Set the specific appointment date
-	 * @param date the date to set
-	 */
+
 	public void setDate(Date date) {
 		this.date = date;
 	}
 
-    public String getReminderScheduledJobId() {
-        return reminderScheduledJobId;
+    public Visit getVisit()
+    {
+        return visit;
     }
 
-    public void setReminderScheduledJobId(String reminderScheduledJobId) {
-        this.reminderScheduledJobId = reminderScheduledJobId;
-    }
-
-    @Override
-    public String toString() {
-        return "Appointment{" +
-                "patientId='" + patientId + '\'' +
-                ", reminderWindowStart=" + reminderWindowStart +
-                ", reminderWindowEnd=" + reminderWindowEnd +
-                ", date=" + date +
-                ", reminderScheduledJobId='" + reminderScheduledJobId + '\'' +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Appointment that = (Appointment) o;
-
-        if (date != null ? !date.equals(that.date) : that.date != null) return false;
-        if (patientId != null ? !patientId.equals(that.patientId) : that.patientId != null) return false;
-        if (reminderScheduledJobId != null ? !reminderScheduledJobId.equals(that.reminderScheduledJobId) : that.reminderScheduledJobId != null)
-            return false;
-        if (reminderWindowEnd != null ? !reminderWindowEnd.equals(that.reminderWindowEnd) : that.reminderWindowEnd != null)
-            return false;
-        if (reminderWindowStart != null ? !reminderWindowStart.equals(that.reminderWindowStart) : that.reminderWindowStart != null)
-            return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = patientId != null ? patientId.hashCode() : 0;
-        result = 31 * result + (reminderWindowStart != null ? reminderWindowStart.hashCode() : 0);
-        result = 31 * result + (reminderWindowEnd != null ? reminderWindowEnd.hashCode() : 0);
-        result = 31 * result + (date != null ? date.hashCode() : 0);
-        result = 31 * result + (reminderScheduledJobId != null ? reminderScheduledJobId.hashCode() : 0);
-        return result;
+    public void setVisit(Visit visit)
+    {
+        this.visit = visit;
     }
 }

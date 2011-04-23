@@ -29,13 +29,14 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.tama;
+package org.motechproject.tama;
 
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.context.AppointmentReminderContext;
 import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.model.Appointment;
-import org.motechproject.appointments.api.model.Patient;
+import org.motechproject.tama.model.Patient;
+import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.outbox.api.context.OutboxContext;
 import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;
@@ -44,6 +45,7 @@ import org.motechproject.outbox.api.model.OutboundVoiceMessage;
 import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.model.VoiceMessageType;
 import org.motechproject.server.event.EventListener;
+import org.motechproject.server.service.ivr.IVRService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,14 +56,16 @@ import java.util.Date;
  * 
  *
  */
-public class UpcomingUnscheduledAppointmentEventHandler implements EventListener {
+public class UpcomingAppointmentEventHandler implements EventListener {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public final static String UPCOMING_UNSCHEDULED = "UpcomingUnscheduledAppointment";
+    public final static String UPCOMING_APPOINTMENT = "UpcomingAppointment";
 
     AppointmentsDAO appointmentsDao = AppointmentReminderContext.getInstance().getAppointmentsDAO();
 
     OutboundVoiceMessageDao outboundVoiceMessageDao = OutboxContext.getInstance().getOutboundVoiceMessageDao();
+
+    IVRService ivrService = Context.getInstance().getIvrService();
 
     //Interim implementation
     String vxmlUrl;
@@ -81,6 +85,7 @@ public class UpcomingUnscheduledAppointmentEventHandler implements EventListener
         }
 
         Appointment appointment = appointmentsDao.getAppointment(appointmentId);
+
         if (appointment == null) {
             log.error("Can not handle the Appointment Reminder Event: " + event +
                      ". The event is invalid - no appointment for id " + appointmentId);
@@ -106,7 +111,7 @@ public class UpcomingUnscheduledAppointmentEventHandler implements EventListener
 
     @Override
 	public String getIdentifier() {
-		return UPCOMING_UNSCHEDULED;
+		return UPCOMING_APPOINTMENT;
 	}
 
 }

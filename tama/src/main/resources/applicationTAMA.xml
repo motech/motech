@@ -44,15 +44,15 @@
 
 	<context:annotation-config />
     
-    <bean id="upcomingUnscheduledAppointmentEventHandler" class="org.motechproject.server.tama.UpcomingUnscheduledAppointmentEventHandler">
+    <bean id="upcomingUnscheduledAppointmentEventHandler" class="org.motechproject.tama.UpcomingUnscheduledAppointmentEventHandler">
         <property name="vxmlUrl" value="http://localhost:8080/m/module/tama/vxml/sar" />
     </bean>
 
-    <bean id="upcomingAppointmentEventHandler" class="org.motechproject.server.tama.UpcomingAppointmentEventHandler">
+    <bean id="upcomingAppointmentEventHandler" class="org.motechproject.tama.UpcomingAppointmentEventHandler">
         <property name="vxmlUrl" value="http://localhost:8080/m/module/tama/vxml/ar" />
     </bean>
 
-    <bean id="missedAppointmentEventHandler" class="org.motechproject.server.tama.MissedAppointmentEventHandler">
+    <bean id="missedAppointmentEventHandler" class="org.motechproject.tama.MissedAppointmentEventHandler">
         <property name="vxmlUrl" value="http://localhost:8080/m/module/tama/vxml/mar" />
     </bean>
 
@@ -60,7 +60,7 @@
 		class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping">
 	</bean>
 
-	<bean id="ivrController" class="org.motechproject.server.tama.web.VxmlController" />
+	<bean id="ivrController" class="org.motechproject.tama.web.VxmlController" />
 
 	<bean id="velocityConfig"
 		class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
@@ -76,5 +76,16 @@
 			true -->
 		<property name="exposeSpringMacroHelpers" value="true" />
 	</bean>
-	 
+
+    <bean id="motechContext" class="org.motechproject.context.Context" factory-method="getInstance" />
+
+    <bean id="couchDbInstance" factory-bean="motechContext" factory-method="getCouchDbInstance" />
+
+    <bean id="tamaDatabase" class="org.ektorp.impl.StdCouchDbConnector">
+		<constructor-arg value="tama" />
+		<constructor-arg ref="couchDbInstance" />
+	</bean>
+
+	<bean id="tamaDAO" class="org.motechproject.tama.dao.impl.TamaCouchDBDAOImpl" />
+
 </beans>

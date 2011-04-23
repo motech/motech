@@ -31,6 +31,56 @@
  */
 package org.motechproject.appointments.api.model;
 
-public enum AppointmentStatus {
-	APPOINTMENT_SET, APPOINTMENT_OVERDUE, APPOINTMENT_MISSED
+import java.util.Date;
+
+public class RepeatingReminder extends Reminder {
+
+	private static final long serialVersionUID = -3934731398961846431L;
+
+    public enum intervalUnits {SECONDS, MINUTES, HOURS, DAYS, WEEKS};
+
+    private Date startDate;
+    private Date endDate;
+    private int interval;
+    private intervalUnits units;
+
+    public Date getStartDate()
+    {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate)
+    {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate()
+    {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate)
+    {
+        this.endDate = endDate;
+    }
+
+    public int getInterval()
+    {
+        return interval;
+    }
+
+    public void setInterval(int interval)
+    {
+        this.interval = interval;
+    }
+
+    public intervalUnits getUnits()
+    {
+        return units;
+    }
+
+    public void setUnits(intervalUnits units)
+    {
+        this.units = units;
+    }
 }

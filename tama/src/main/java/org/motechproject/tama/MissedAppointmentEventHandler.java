@@ -29,13 +29,13 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.tama;
+package org.motechproject.tama;
 
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.context.AppointmentReminderContext;
 import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.model.Appointment;
-import org.motechproject.appointments.api.model.Patient;
+import org.motechproject.tama.model.Patient;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.outbox.api.context.OutboxContext;
 import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;

@@ -29,12 +29,24 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.appointments.api.dao;
+package org.motechproject.tama.dao.impl;
 
-import org.motechproject.appointments.api.model.Appointment;
-import org.motechproject.dao.BaseDao;
+import org.ektorp.CouchDbConnector;
+import org.motechproject.dao.MotechAuditableRepository;
+import org.motechproject.tama.dao.TamaDAO;
+import org.motechproject.tama.model.Patient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
-public interface AppointmentsDAO extends BaseDao<Appointment> {
+@Component
+public class TamaCouchDBDAOImpl extends MotechAuditableRepository<Patient> implements TamaDAO
+{
 
-    
+    @Autowired
+    public TamaCouchDBDAOImpl(@Qualifier("tamaDatabase") CouchDbConnector db) {
+        super(Patient.class, db);
+        initStandardDesignDocument();
+    }
+
 }

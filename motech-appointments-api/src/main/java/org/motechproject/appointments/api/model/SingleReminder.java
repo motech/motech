@@ -29,12 +29,22 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.appointments.api.dao;
+package org.motechproject.appointments.api.model;
 
-import org.motechproject.appointments.api.model.Appointment;
-import org.motechproject.dao.BaseDao;
+import java.util.Date;
 
-public interface AppointmentsDAO extends BaseDao<Appointment> {
+public class SingleReminder extends Reminder {
 
-    
+	private static final long serialVersionUID = -3934731398961846431L;
+    private Date reminderDate;
+
+    public Date getReminderDate()
+    {
+        return reminderDate;
+    }
+
+    public void setReminderDate(Date reminderDate)
+    {
+        this.reminderDate = reminderDate;
+    }
 }
