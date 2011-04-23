@@ -62,12 +62,12 @@
         </dependency>
 		<dependency>
 			<groupId>org.motechproject</groupId>
-			<artifactId>motech-appointment-reminder-common</artifactId>
+			<artifactId>motech-appointments-api</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.motechproject</groupId>
-			<artifactId>motech-platform-outbox-common</artifactId>
+			<artifactId>motech-outbox-api</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
         <dependency>

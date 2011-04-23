@@ -31,7 +31,6 @@
  */
 package org.motechproject.server.tama;
 
-import org.motechproject.appointmentreminder.EventKeys;
 import org.motechproject.context.Context;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

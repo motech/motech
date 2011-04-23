@@ -31,9 +31,9 @@
  */
 package org.motechproject.server.tama.web;
 
-import org.motechproject.appointmentreminder.context.AppointmentReminderContext;
-import org.motechproject.appointmentreminder.dao.PatientDAO;
-import org.motechproject.appointmentreminder.model.Appointment;
+import org.motechproject.appointments.api.appointmentreminder.context.AppointmentReminderContext;
+import org.motechproject.appointments.api.dao.PatientDAO;
+import org.motechproject.appointments.api.model.Appointment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
@@ -109,7 +109,7 @@ public class VxmlController extends MultiActionController {
      * will be generated.
      *
 	 * URL to request appointment reminder VoiceXML:
-	 * http://<host>:<port>/<motech-platform-server>/module/tama/vxml/appointmentreminder?aptId=<appointmentId>
+	 * http://<host>:<port>/<motech-platform-server>/module/tama/vxml/appointments?aptId=<appointmentId>
 	 */
 	public ModelAndView appointmentreminder(HttpServletRequest request, HttpServletResponse response) {
         return appointmentReminderHandler(request, response, "appointment_reminder", "appointment_reminder_generic", "ar_error");

@@ -70,7 +70,7 @@
 		</constructor-arg>
 	</bean>
 	<bean id="dao"
-		class="org.motechproject.server.appointmentreminder.dao.impl.AppointmentDaoImpl">
+		class="org.motechproject.server.appointmentspl.AppointmentDaoImpl">
 		<constructor-arg ref="patientDatabase" />
 	</bean> -->
 

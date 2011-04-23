@@ -58,10 +58,14 @@
 		<module>motech-platform-scheduler</module>
         <module>motech-platform-ivr</module>
 		<module>motech-platform-server-api</module>
+        <!--
 		<module>motech-appointment-reminder</module>
 		<module>motech-appointment-reminder-common</module>
-    	<module>motech-platform-outbox</module>
-    	<module>motech-platform-outbox-common</module>
+		-->
+    	<module>motech-outbox</module>
+    	<module>motech-outbox-api</module>
+        <module>motech-appointments</module>
+        <module>motech-appointments-api</module>
         <module>tama</module>
 	</modules>
 

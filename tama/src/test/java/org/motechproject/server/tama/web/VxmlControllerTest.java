@@ -40,8 +40,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.appointmentreminder.dao.PatientDAO;
-import org.motechproject.appointmentreminder.model.Appointment;
+import org.motechproject.appointments.api.dao.PatientDAO;
+import org.motechproject.appointments.api.model.Appointment;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;

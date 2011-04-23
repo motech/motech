@@ -31,18 +31,18 @@
  */
 package org.motechproject.server.tama;
 
-import org.motechproject.appointmentreminder.EventKeys;
-import org.motechproject.appointmentreminder.context.AppointmentReminderContext;
-import org.motechproject.appointmentreminder.dao.PatientDAO;
-import org.motechproject.appointmentreminder.model.Appointment;
-import org.motechproject.appointmentreminder.model.Patient;
+import org.motechproject.appointments.api.appointmentreminder.EventKeys;
+import org.motechproject.appointments.api.appointmentreminder.context.AppointmentReminderContext;
+import org.motechproject.appointments.api.dao.PatientDAO;
+import org.motechproject.appointments.api.model.Appointment;
+import org.motechproject.appointments.api.model.Patient;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.outbox.context.OutboxContext;
-import org.motechproject.outbox.dao.OutboundVoiceMessageDao;
-import org.motechproject.outbox.model.MessagePriority;
-import org.motechproject.outbox.model.OutboundVoiceMessage;
-import org.motechproject.outbox.model.OutboundVoiceMessageStatus;
-import org.motechproject.outbox.model.VoiceMessageType;
+import org.motechproject.outbox.api.context.OutboxContext;
+import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;
+import org.motechproject.outbox.api.model.MessagePriority;
+import org.motechproject.outbox.api.model.OutboundVoiceMessage;
+import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
+import org.motechproject.outbox.api.model.VoiceMessageType;
 import org.motechproject.server.event.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
