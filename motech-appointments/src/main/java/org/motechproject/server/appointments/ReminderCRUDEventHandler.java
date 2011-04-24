@@ -37,8 +37,8 @@ import org.motechproject.appointments.api.dao.RemindersDAO;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.RunOnceSchedulableJob;
-import org.motechproject.model.SchedulableJob;
 import org.motechproject.server.event.EventListener;
 import org.motechproject.server.gateway.MotechSchedulerGateway;
 import org.slf4j.Logger;
@@ -96,10 +96,13 @@ public class ReminderCRUDEventHandler implements EventListener {
 
             Reminder reminder = remindersDAO.getReminder(EventKeys.getReminderId(event));
             // This isn't the best model object, but basically if there are no units specified then it is a single
-            // reminder
-            if (null == reminder.getUnits()) {
-                // Todo Create new schedulable job that mirrors the SimpleTrigger
-                SchedulableJob schedulableJob = new SchedulableJob(reminderEvent, "0 0 0 * * ?");
+            // reminder otherwise it is a repeating job
+            if (null != reminder.getUnits()) {
+                RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(reminderEvent,
+                                                                                     reminder.getStartDate(),
+                                                                                     reminder.getEndDate(),
+                                                                                     reminder.getRepeatCount(),
+                                                                                     reminder.getIntervalSeconds() * 1000);
             } else {
                 RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(reminderEvent, reminder.getStartDate());
                 schedulerGateway.scheduleRunOnceJob(schedulableJob);

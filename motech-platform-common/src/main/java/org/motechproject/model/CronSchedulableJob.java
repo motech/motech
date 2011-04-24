@@ -33,7 +33,6 @@ package org.motechproject.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
 
 /**
  * Schedulable Job - a data carrier class for a scheduled job that can be fired unlimited number of times
@@ -44,7 +43,7 @@ import java.util.HashMap;
  * Time: 1:43 PM
  *
  */
-public class SchedulableJob implements Serializable {
+public class CronSchedulableJob implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -53,14 +52,14 @@ public class SchedulableJob implements Serializable {
 	private Date startTime;
     private Date endTime;
 
-    public SchedulableJob(MotechEvent motechEvent, String cronExpression,
-			Date startTime, Date endTime) {
+    public CronSchedulableJob(MotechEvent motechEvent, String cronExpression,
+                              Date startTime, Date endTime) {
     	this(motechEvent,cronExpression);
 		this.startTime = startTime;
 		this.endTime = endTime;
 	}
 
-	public SchedulableJob(MotechEvent motechEvent, String cronExpression) {
+	public CronSchedulableJob(MotechEvent motechEvent, String cronExpression) {
 
          if (motechEvent == null) {
             throw new IllegalArgumentException("MotechEvent can not be null");
@@ -112,7 +111,7 @@ public class SchedulableJob implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		SchedulableJob other = (SchedulableJob) obj;
+		CronSchedulableJob other = (CronSchedulableJob) obj;
 		if (cronExpression == null) {
 			if (other.cronExpression != null)
 				return false;

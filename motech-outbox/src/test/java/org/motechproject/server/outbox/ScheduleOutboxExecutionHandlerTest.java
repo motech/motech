@@ -39,8 +39,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.context.Context;
+import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.model.SchedulableJob;
 import org.motechproject.outbox.api.EventKeys;
 import org.motechproject.server.event.EventListener;
 import org.motechproject.server.gateway.MotechSchedulerGateway;
@@ -76,7 +76,7 @@ public class ScheduleOutboxExecutionHandlerTest
 
 		scheduleOutboxExecutionHandler.handle(event);
 
-		verify(motechSchedulerGateway).scheduleJob(any(SchedulableJob.class));
+		verify(motechSchedulerGateway).scheduleJob(any(CronSchedulableJob.class));
 	}
 
 	@Test
@@ -90,7 +90,7 @@ public class ScheduleOutboxExecutionHandlerTest
 
 		scheduleOutboxExecutionHandler.handle(event);
 
-		verify(motechSchedulerGateway, times(0)).scheduleJob(any(SchedulableJob.class));
+		verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
 	}
 
     @Test
@@ -104,7 +104,7 @@ public class ScheduleOutboxExecutionHandlerTest
 
         scheduleOutboxExecutionHandler.handle(event);
 
-        verify(motechSchedulerGateway, times(0)).scheduleJob(any(SchedulableJob.class));
+        verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
     }
 
     @Test
@@ -118,7 +118,7 @@ public class ScheduleOutboxExecutionHandlerTest
 
         scheduleOutboxExecutionHandler.handle(event);
 
-        verify(motechSchedulerGateway, times(0)).scheduleJob(any(SchedulableJob.class));
+        verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
     }
 
     @Test
@@ -133,7 +133,7 @@ public class ScheduleOutboxExecutionHandlerTest
 
         scheduleOutboxExecutionHandler.handle(event);
 
-        verify(motechSchedulerGateway, times(0)).scheduleJob(any(SchedulableJob.class));
+        verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
     }
 
     @Test
@@ -147,7 +147,7 @@ public class ScheduleOutboxExecutionHandlerTest
 
         scheduleOutboxExecutionHandler.handle(event);
 
-        verify(motechSchedulerGateway, times(0)).scheduleJob(any(SchedulableJob.class));
+        verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
     }
 
     @Test
@@ -162,6 +162,6 @@ public class ScheduleOutboxExecutionHandlerTest
 
         scheduleOutboxExecutionHandler.handle(event);
 
-        verify(motechSchedulerGateway, times(0)).scheduleJob(any(SchedulableJob.class));
+        verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
     }
 }

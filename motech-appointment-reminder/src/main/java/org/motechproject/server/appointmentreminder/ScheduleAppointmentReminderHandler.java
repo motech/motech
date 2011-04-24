@@ -35,8 +35,8 @@ import org.motechproject.appointmentreminder.EventKeys;
 import org.motechproject.appointmentreminder.dao.PatientDAO;
 import org.motechproject.appointmentreminder.model.Appointment;
 import org.motechproject.context.Context;
+import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.model.SchedulableJob;
 import org.motechproject.server.event.EventListener;
 import org.motechproject.server.gateway.MotechSchedulerGateway;
 import org.slf4j.Logger;
@@ -77,11 +77,11 @@ public class ScheduleAppointmentReminderHandler implements EventListener {
         }
 
     	MotechEvent reminderEvent = new MotechEvent(EventKeys.REMINDER_EVENT_SUBJECT, event.getParameters());
-		SchedulableJob schedulableJob = new SchedulableJob(reminderEvent, "0 0 0 * * ?",
+		CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(reminderEvent, "0 0 0 * * ?",
                                                            appointment.getReminderWindowStart(),
                                                            appointment.getReminderWindowEnd());
 
-    	schedulerGateway.scheduleJob(schedulableJob);
+    	schedulerGateway.scheduleJob(cronSchedulableJob);
 	}
 
 	@Override

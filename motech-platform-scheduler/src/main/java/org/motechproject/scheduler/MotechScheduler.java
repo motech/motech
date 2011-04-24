@@ -32,7 +32,7 @@
 package org.motechproject.scheduler;
 
 import org.motechproject.model.MotechEvent;
-import org.motechproject.model.SchedulableJob;
+import org.motechproject.model.CronSchedulableJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,11 +95,11 @@ public class MotechScheduler {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(MotechSchedulerService.JOB_ID_KEY, TEST_EVENT_NAME);
         MotechEvent motechEvent = new MotechEvent("test", params);
-        SchedulableJob schedulableJob = new SchedulableJob(motechEvent, "0/5 * * * * ?");
+        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, "0/5 * * * * ?");
 
         try {
-            log.info("Scheduling test job: " + schedulableJob);
-            schedulerService.scheduleJob(schedulableJob);
+            log.info("Scheduling test job: " + cronSchedulableJob);
+            schedulerService.scheduleJob(cronSchedulableJob);
         } catch (Exception e) {
             log.warn("Can not schedule test job. " + e.getMessage());
         }

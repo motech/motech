@@ -33,8 +33,8 @@ package org.motechproject.core;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.model.SchedulableJob;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +50,7 @@ import static org.junit.Assert.assertTrue;
  * Time: 1:50 PM
  * To change this template use File | Settings | File Templates.
  */
-public class TestSchedulabeJob
+public class TestCronSchedulabeJob
 {
     private String uuidStr = UUID.randomUUID().toString();
     private String uuidStr2 = UUID.randomUUID().toString();
@@ -72,17 +72,17 @@ public class TestSchedulabeJob
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructor_NullEvent() throws Exception{
-        new SchedulableJob(null, "0/5 0 * * * ?");
+        new CronSchedulableJob(null, "0/5 0 * * * ?");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructor_NullCronExpression() throws Exception{
-        new SchedulableJob(motechEvent1, null);
+        new CronSchedulableJob(motechEvent1, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructor_InvalidCronExpression() throws Exception{
-        new SchedulableJob(motechEvent1, "");
+        new CronSchedulableJob(motechEvent1, "");
     }
 
     @Test
@@ -90,10 +90,10 @@ public class TestSchedulabeJob
         String cron1 = "0/5 0 * * * ?";
         String cron2 = "5 0 * * * ?";
 
-        SchedulableJob job1 = new SchedulableJob(motechEvent1, cron1);
-        SchedulableJob job1Same = new SchedulableJob(motechEvent1, cron1);
-        SchedulableJob job2 = new SchedulableJob(motechEvent2, cron1);
-        SchedulableJob job3 = new SchedulableJob(motechEvent1, cron2);
+        CronSchedulableJob job1 = new CronSchedulableJob(motechEvent1, cron1);
+        CronSchedulableJob job1Same = new CronSchedulableJob(motechEvent1, cron1);
+        CronSchedulableJob job2 = new CronSchedulableJob(motechEvent2, cron1);
+        CronSchedulableJob job3 = new CronSchedulableJob(motechEvent1, cron2);
 
         assertTrue(job1.equals(job1));
         assertTrue(job1.equals(job1Same));

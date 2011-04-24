@@ -33,9 +33,10 @@ package org.motechproject.scheduler;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.RunOnceSchedulableJob;
-import org.motechproject.model.SchedulableJob;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -71,11 +72,11 @@ public class MotechSchedulerTest {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("JobID", uuidStr);
         MotechEvent motechEvent = new MotechEvent("testEvent", params);
-        SchedulableJob schedulableJob = new SchedulableJob(motechEvent, "0 0 12 * * ?");
+        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, "0 0 12 * * ?");
 
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 
-        motechScheduler.scheduleJob(schedulableJob);
+        motechScheduler.scheduleJob(cronSchedulableJob);
 
         assertEquals(scheduledJobsNum+1, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
     }
@@ -86,7 +87,7 @@ public class MotechSchedulerTest {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("JobID", uuidStr);
         MotechEvent motechEvent = new MotechEvent("testEvent", params);
-        SchedulableJob schedulableJob = new SchedulableJob(motechEvent, "0 0 12 * * ?");
+        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, "0 0 12 * * ?");
 
 
         Map<String, Object> newParameters = new HashMap<String, Object>();
@@ -96,15 +97,15 @@ public class MotechSchedulerTest {
         String newCronExpression = "0 0 0 * * ?";
 
         MotechEvent newMotechEvent = new MotechEvent("testEvent", newParameters);
-        SchedulableJob newSchedulableJob = new SchedulableJob(newMotechEvent, newCronExpression);
+        CronSchedulableJob newCronSchedulableJob = new CronSchedulableJob(newMotechEvent, newCronExpression);
 
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 
-        motechScheduler.scheduleJob(schedulableJob);
+        motechScheduler.scheduleJob(cronSchedulableJob);
         assertEquals(scheduledJobsNum+1, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
 
 
-        motechScheduler.scheduleJob(newSchedulableJob);
+        motechScheduler.scheduleJob(newCronSchedulableJob);
 
         assertEquals(scheduledJobsNum+1, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
 
@@ -123,9 +124,9 @@ public class MotechSchedulerTest {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("JobID", uuidStr);
         MotechEvent motechEvent = new MotechEvent("testEvent", params);
-        SchedulableJob schedulableJob = new SchedulableJob(motechEvent, " ?");
+        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, " ?");
 
-        motechScheduler.scheduleJob(schedulableJob);
+        motechScheduler.scheduleJob(cronSchedulableJob);
 
     }
 
@@ -135,10 +136,14 @@ public class MotechSchedulerTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void scheduleNullRuOnceJobTest() throws Exception{
+    public void scheduleNullRunOnceJobTest() throws Exception{
         motechScheduler.scheduleRunOnceJob(null);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void scheduleNullRepeatingJobTest() throws Exception{
+        motechScheduler.scheduleRepeatingJob(null);
+    }
 
     @Test
     public void updateScheduledJobHappyPathTest() throws Exception {
@@ -146,9 +151,9 @@ public class MotechSchedulerTest {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("JobID", uuidStr);
         MotechEvent motechEvent = new MotechEvent("testEvent", params);
-        SchedulableJob schedulableJob = new SchedulableJob(motechEvent, "0 0 12 * * ?");
+        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, "0 0 12 * * ?");
 
-        motechScheduler.scheduleJob(schedulableJob);
+        motechScheduler.scheduleJob(cronSchedulableJob);
 
         String patientIdKeyName = "patientId";
         String patientId = "1";
@@ -178,9 +183,9 @@ public class MotechSchedulerTest {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("JobID", uuidStr);
         MotechEvent motechEvent = new MotechEvent("testEvent", params);
-        SchedulableJob schedulableJob = new SchedulableJob(motechEvent, "0 0 12 * * ?");
+        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, "0 0 12 * * ?");
 
-        motechScheduler.scheduleJob(schedulableJob);
+        motechScheduler.scheduleJob(cronSchedulableJob);
 
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 
@@ -198,9 +203,7 @@ public class MotechSchedulerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void rescheduleJobNullJobIdTest() {
-
         motechScheduler.rescheduleJob(null, "");
-
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -214,16 +217,15 @@ public class MotechSchedulerTest {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("JobID", uuidStr);
         MotechEvent motechEvent = new MotechEvent("testEvent", params);
-        SchedulableJob schedulableJob = new SchedulableJob(motechEvent, "0 0 12 * * ?");
+        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, "0 0 12 * * ?");
 
-        motechScheduler.scheduleJob(schedulableJob);
+        motechScheduler.scheduleJob(cronSchedulableJob);
 
         motechScheduler.rescheduleJob(uuidStr, "?");
     }
 
     @Test(expected = MotechSchedulerException.class)
     public void rescheduleNotExistingJobTest() {
-
         motechScheduler.rescheduleJob("0", "?");
     }
 
@@ -258,8 +260,84 @@ public class MotechSchedulerTest {
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 
         motechScheduler.scheduleRunOnceJob(schedulableJob);
+    }
+
+    @Test
+    public void testScheduleRepeatingJob() throws Exception{
+        String uuidStr = UUID.randomUUID().toString();
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("JobID", uuidStr);
+        MotechEvent motechEvent = new MotechEvent("TestEvent", params);
+
+        Calendar cal = Calendar.getInstance();
+        Date start = cal.getTime();
+        cal.add(Calendar.DATE, 1);
+        Date end = cal.getTime();
+
+        RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(motechEvent, start, end, 5, 5000);
+
+        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
+
+        motechScheduler.scheduleRepeatingJob(schedulableJob);
 
         assertEquals(scheduledJobsNum+1, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testScheduleRepeatingJobTest_NoStartDate() throws Exception{
+        String uuidStr = UUID.randomUUID().toString();
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("JobID", uuidStr);
+        MotechEvent motechEvent = new MotechEvent("TestEvent", params);
+        RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(motechEvent, null, new Date(), 5, 5000);
+
+        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
+
+        motechScheduler.scheduleRepeatingJob(schedulableJob);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testScheduleRepeatingJobTest_NoEndDate() throws Exception{
+        String uuidStr = UUID.randomUUID().toString();
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("JobID", uuidStr);
+        MotechEvent motechEvent = new MotechEvent("TestEvent", params);
+        RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(motechEvent, new Date(), null, 5, 5000);
+
+        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
+
+        motechScheduler.scheduleRepeatingJob(schedulableJob);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testScheduleRepeatingJobTest_NullJob() throws Exception{
+        String uuidStr = UUID.randomUUID().toString();
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("JobID", uuidStr);
+        MotechEvent motechEvent = new MotechEvent("TestEvent", params);
+        RepeatingSchedulableJob schedulableJob = null;
+
+        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
+
+        motechScheduler.scheduleRepeatingJob(schedulableJob);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testScheduleRepeatingJobTest_NullEvent() throws Exception{
+        String uuidStr = UUID.randomUUID().toString();
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("JobID", uuidStr);
+        MotechEvent motechEvent = null;
+        RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(motechEvent, new Date(), new Date(), 5, 5000);;
+
+        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
+
+        motechScheduler.scheduleRepeatingJob(schedulableJob);
     }
 
     @Test
@@ -268,9 +346,9 @@ public class MotechSchedulerTest {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("JobID", uuidStr);
         MotechEvent motechEvent = new MotechEvent("testEvent", params);
-        SchedulableJob schedulableJob = new SchedulableJob(motechEvent, "0 0 12 * * ?");
+        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, "0 0 12 * * ?");
 
-        motechScheduler.scheduleJob(schedulableJob);
+        motechScheduler.scheduleJob(cronSchedulableJob);
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 
         motechScheduler.unscheduleJob(uuidStr);

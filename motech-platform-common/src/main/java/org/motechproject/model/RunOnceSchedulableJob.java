@@ -70,7 +70,7 @@ public final class RunOnceSchedulableJob implements Serializable {
         }
         Date currentDate = new Date();
         if (startDate.before(currentDate) ) {
-             throw new IllegalArgumentException("Sstart date can not be in the past. \n" +
+             throw new IllegalArgumentException("Start date can not be in the past. \n" +
                                                 " Start date: " + startDate.toString() +
                                                 " now:" + currentDate.toString());
         }

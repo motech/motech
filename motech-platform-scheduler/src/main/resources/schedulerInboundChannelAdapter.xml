@@ -50,7 +50,7 @@
 	<channel id="jmsinToSchedulerChannel"/>
 	
 	<payload-type-router input-channel="jmsinToSchedulerChannel">
-		<mapping type="org.motechproject.model.SchedulableJob" channel="scheduleChannel"/>
+		<mapping type="org.motechproject.model.CronSchedulableJob" channel="scheduleChannel"/>
 		<mapping type="org.motechproject.model.RunOnceSchedulableJob" channel="scheduleRunOnceChannel"/>
 		<mapping type="java.lang.String" channel="unscheduleChannel"/>
 	</payload-type-router>

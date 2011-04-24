@@ -43,7 +43,7 @@ import org.motechproject.appointmentreminder.dao.PatientDAO;
 import org.motechproject.appointmentreminder.model.Appointment;
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.model.SchedulableJob;
+import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.server.event.EventListener;
 import org.motechproject.server.gateway.MotechSchedulerGateway;
 
@@ -90,7 +90,7 @@ public class ScheduleAppointmentReminderTest {
 		
 		// verify
 		verify(patientDAO).getAppointment(APPT_ID);
-		verify(motechSchedulerGateway).scheduleJob(any(SchedulableJob.class));
+		verify(motechSchedulerGateway).scheduleJob(any(CronSchedulableJob.class));
 	}
 
     @Test

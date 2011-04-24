@@ -33,7 +33,7 @@ package org.motechproject.server.outbox;
 
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.model.SchedulableJob;
+import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.outbox.api.EventKeys;
 import org.motechproject.server.event.EventListener;
 import org.motechproject.server.gateway.MotechSchedulerGateway;
@@ -81,11 +81,11 @@ public class ScheduleOutboxExecutionHandler implements EventListener {
         }
 
         MotechEvent reminderEvent = new MotechEvent(EventKeys.EXECUTE_OUTBOX_SUBJECT, event.getParameters());
-		SchedulableJob schedulableJob = new SchedulableJob(reminderEvent,
+		CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(reminderEvent,
                                                            String.format("0 %d %d * * ?", callHour,
                                                                          callMinute));
 
-    	schedulerGateway.scheduleJob(schedulableJob);
+    	schedulerGateway.scheduleJob(cronSchedulableJob);
 	}
 
 	@Override

@@ -32,8 +32,9 @@
 package org.motechproject.scheduler;
 
 import org.motechproject.model.MotechEvent;
+import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.RunOnceSchedulableJob;
-import org.motechproject.model.SchedulableJob;
+import org.motechproject.model.CronSchedulableJob;
 import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,18 +60,18 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
 
     @Override
-    public void scheduleJob(SchedulableJob schedulableJob) {
+    public void scheduleJob(CronSchedulableJob cronSchedulableJob) {
 
-        log.info("Scheduling the job: " + schedulableJob);
+        log.info("Scheduling the job: " + cronSchedulableJob);
 
-        if (schedulableJob == null ) {
+        if (cronSchedulableJob == null ) {
 
             String errorMessage = "SchedulableJob can not be null";
             log.error(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }
 
-        MotechEvent motechEvent = schedulableJob.getMotechEvent();
+        MotechEvent motechEvent = cronSchedulableJob.getMotechEvent();
         if (motechEvent == null) {
             String errorMessage = "Invalid SchedulableJob. MotechEvent of the SchedulableJob can not be null";
             log.error(errorMessage);
@@ -84,9 +85,9 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         Trigger trigger;
 
         try {
-            trigger = new CronTrigger(jobId, JOB_GROUP_NAME, schedulableJob.getCronExpression());
-            Date startTime = schedulableJob.getStartTime();
-            Date endTime = schedulableJob.getEndTime();
+            trigger = new CronTrigger(jobId, JOB_GROUP_NAME, cronSchedulableJob.getCronExpression());
+            Date startTime = cronSchedulableJob.getStartTime();
+            Date endTime = cronSchedulableJob.getEndTime();
 			if(startTime!=null) {
 				trigger.setStartTime(startTime);
 			}
@@ -95,7 +96,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 			}
         } catch (ParseException e) {
             String errorMessage = "Can not schedule the job: " + jobId + "\n invalid Cron expression: " +
-                                                schedulableJob.getCronExpression();
+                                                cronSchedulableJob.getCronExpression();
             log.error(errorMessage);
             throw new MotechSchedulerException(errorMessage);
         }
@@ -135,8 +136,6 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         String jobId = (String)motechEvent.getParameters().get(JOB_ID_KEY);
         Trigger trigger;
 
-
-
         try {
             trigger =  scheduler.getTrigger(jobId, JOB_GROUP_NAME);
 
@@ -165,9 +164,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         JobDetail jobDetail = new JobDetail(jobId, JOB_GROUP_NAME, MotechScheduledJob.class);
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
-
         scheduleJob(jobDetail, trigger);
-
     }
 
 
@@ -192,7 +189,6 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         CronTrigger trigger;
 
-
         try {
             trigger = (CronTrigger) scheduler.getTrigger(jobId, JOB_GROUP_NAME);
 
@@ -211,7 +207,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             String errorMessage = "Can not reschedule the job: " + jobId +
                     ".\n The trigger associated with that job is not a CronTrigger";
             log.error(errorMessage);
-            throw new MotechSchedulerException();
+            throw new MotechSchedulerException(errorMessage);
         }
 
         try {
@@ -230,6 +226,57 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             log.error(errorMessage, e);
             throw new MotechSchedulerException(errorMessage);
         }
+    }
+
+    /**
+     * Schedules the given schedulable job. The Job ID by which the job will be referencing in the future should be provided
+     * in an Instance of MotechEvent in SchedulableJob (see MotechEvent.jobId)
+     * <p/>
+     * If a job with the same job ID as the given exists, this job will be unscheduled and the given schedulable job will be scheduled
+     *
+     * @param repeatingSchedulableJob
+     */
+    @Override
+    public void scheduleRepeatingJob(RepeatingSchedulableJob repeatingSchedulableJob)
+    {
+        log.info("Scheduling the Job: " + repeatingSchedulableJob);
+
+        if (repeatingSchedulableJob == null ) {
+            String errorMessage = "SchedulableJob can not be null";
+            log.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
+        }
+
+        MotechEvent motechEvent = repeatingSchedulableJob.getMotechEvent();
+        if (motechEvent == null) {
+            String errorMessage = "Invalid SchedulableJob. MotechEvent of the SchedulableJob can not be null";
+            log.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
+        }
+
+        Date jobStartDate = repeatingSchedulableJob.getStartTime();
+        if (jobStartDate == null ) {
+            String errorMessage = "Invalid RunOnceSchedulableJob. The job start date can not be null";
+            log.error(errorMessage);
+             throw new IllegalArgumentException(errorMessage);
+        }
+
+        Date jobEndDate = repeatingSchedulableJob.getEndTime();
+        if (jobEndDate == null ) {
+            String errorMessage = "Invalid RunOnceSchedulableJob. The job end date can not be null";
+            log.error(errorMessage);
+             throw new IllegalArgumentException(errorMessage);
+        }
+
+        String jobId = (String)motechEvent.getParameters().get(JOB_ID_KEY);
+        JobDetail jobDetail = new JobDetail(jobId, JOB_GROUP_NAME, MotechScheduledJob.class);
+        putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
+
+        Trigger trigger = new SimpleTrigger(jobId, JOB_GROUP_NAME, jobStartDate, jobEndDate,
+                                            repeatingSchedulableJob.getRepeatCount(),
+                                            repeatingSchedulableJob.getRepeatInterval());
+
+        scheduleJob(jobDetail, trigger);
     }
 
     @Override

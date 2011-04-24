@@ -33,9 +33,9 @@ package org.motechproject.server.gateway;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RunOnceSchedulableJob;
-import org.motechproject.model.SchedulableJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -64,9 +64,9 @@ public class SchedulerGatewayIT {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("JobID", "test_1");
         MotechEvent motechEvent = new MotechEvent("testEvent", params);
-        SchedulableJob schedulableJob = new SchedulableJob(motechEvent, "0/5 0 * * * ?");
+        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, "0/5 0 * * * ?");
 
-        motechSchedulerGateway.scheduleJob(schedulableJob);
+        motechSchedulerGateway.scheduleJob(cronSchedulableJob);
 
         motechSchedulerGateway.unscheduleJob("test_1");
         

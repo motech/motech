@@ -31,9 +31,10 @@
  */
 package org.motechproject.scheduler;
 
+import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.RunOnceSchedulableJob;
-import org.motechproject.model.SchedulableJob;
 
 /**
  * Motech Scheduler Service Interface provides methods to schedule reschedule and unschedule a job
@@ -51,9 +52,9 @@ public interface MotechSchedulerService {
      *
      * If a job with the same job ID as the given exists, this job will be unscheduled and the given schedulable job will be scheduled
      *
-     * @param schedulableJob
+     * @param cronSchedulableJob
      */
-    public void scheduleJob(SchedulableJob schedulableJob);
+    public void scheduleJob(CronSchedulableJob cronSchedulableJob);
 
     /**
      * Updates MotechEvent data of the job defined by jobIb in the given instance of that class
@@ -71,6 +72,16 @@ public interface MotechSchedulerService {
      * @param cronExpression
      */
     public void rescheduleJob(String jobId, String cronExpression);
+
+    /**
+     * Schedules the given schedulable job. The Job ID by which the job will be referencing in the future should be provided
+     * in an Instance of MotechEvent in SchedulableJob (see MotechEvent.jobId)
+     *
+     * If a job with the same job ID as the given exists, this job will be unscheduled and the given schedulable job will be scheduled
+     *
+     * @param repeatingSchedulableJob
+     */
+    public void scheduleRepeatingJob(RepeatingSchedulableJob repeatingSchedulableJob);
 
     /**
      * Unschedules a job with the given job ID

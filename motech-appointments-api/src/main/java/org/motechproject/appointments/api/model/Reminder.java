@@ -31,6 +31,7 @@
  */
 package org.motechproject.appointments.api.model;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechAuditableDataObject;
 
@@ -44,8 +45,9 @@ public class Reminder extends MotechAuditableDataObject
     private String appointmentId;
     private Date startDate;
     private Date endDate;
-    private int interval;
+    private int intervalCount;
     private intervalUnits units;
+    private int repeatCount;
     private String jobId;
     private final String type = "REMINDER";
 
@@ -79,14 +81,14 @@ public class Reminder extends MotechAuditableDataObject
         this.endDate = endDate;
     }
 
-    public int getInterval()
+    public int getIntervalCount()
     {
-        return interval;
+        return intervalCount;
     }
 
-    public void setInterval(int interval)
+    public void setIntervalCount(int intervalCount)
     {
-        this.interval = interval;
+        this.intervalCount = intervalCount;
     }
 
     public intervalUnits getUnits()
@@ -99,6 +101,16 @@ public class Reminder extends MotechAuditableDataObject
         this.units = units;
     }
 
+    public int getRepeatCount()
+    {
+        return repeatCount;
+    }
+
+    public void setRepeatCount(int repeatCount)
+    {
+        this.repeatCount = repeatCount;
+    }
+
     public String getJobId()
     {
         return jobId;
@@ -107,5 +119,32 @@ public class Reminder extends MotechAuditableDataObject
     public void setJobId(String jobId)
     {
         this.jobId = jobId;
+    }
+
+    @JsonIgnore
+    public long getIntervalSeconds() {
+        long ret = -1;
+
+        if (intervalUnits.SECONDS == units) {
+            ret = intervalCount;
+        }
+
+        if (intervalUnits.MINUTES == units) {
+            ret = (intervalCount * 60);
+        }
+
+        if (intervalUnits.HOURS == units) {
+            ret = (intervalCount * 60 * 60);
+        }
+
+        if (intervalUnits.DAYS == units) {
+            ret = (intervalCount * 60 * 60 * 24);
+        }
+
+        if (intervalUnits.WEEKS == units) {
+            ret = (intervalCount * 60 * 60 * 24 * 7);
+        }
+
+        return ret;
     }
 }
