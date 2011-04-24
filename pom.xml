@@ -126,7 +126,7 @@
                             <!-- All models, contexts, daos, event keys and activators get a free test limit pass -->
                             <exclude>org/motechproject/**/model/*.class</exclude>
                             <exclude>org/motechproject/**/dao/*.class</exclude>
-                            <exclude>org/motechproject/**/dao/couchdb/*.class</exclude>
+                            <exclude>org/motechproject/**/dao/**/*.class</exclude>
                             <exclude>org/motechproject/**/context/*.class</exclude>
                             <exclude>org/motechproject/**/Activator.class</exclude>
                             <exclude>org/motechproject/**/Activator$1.class</exclude>

@@ -39,80 +39,89 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.appointments.api.EventKeys;
-import org.motechproject.context.Context;
+import org.motechproject.appointments.api.dao.RemindersDAO;
+import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.model.CronSchedulableJob;
-import org.motechproject.server.event.EventListener;
-import org.motechproject.server.gateway.MotechSchedulerGateway;
+import org.springframework.test.context.ContextConfiguration;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.mockito.Mockito.*;
 
+/**
+ *
+ */
 @RunWith(MockitoJUnitRunner.class)
-public class ScheduleAppointmentReminderTest {
-	@InjectMocks
-	private EventListener scheduleAppointmentReminderHandler = new ReminderCRUDEventHandler();
-	@Mock
-	private Context context;
-	@Mock
-	private PatientDAO patientDAO;
-	@Mock
-	private MotechSchedulerGateway motechSchedulerGateway;
-	
-	static final String APPT_ID = "000111";
-	static final String PAT_ID = "0001";
-	
-	@Before
+@ContextConfiguration(locations = { "/testApplicationContext.xml" })
+public class AppointmentDeletedEventHandlerTest {
+
+    @InjectMocks
+    AppointmentDeletedEventHandler appointmentDeletedEventHandler = new AppointmentDeletedEventHandler();
+
+    @Mock
+    private RemindersDAO remindersDAO;
+
+    @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
-    }
-
-	@Test
-	public void testHandleHappyPath() {
-		MotechEvent event = new MotechEvent("", null);
-		event.getParameters().put(EventKeys.APPOINTMENT_ID_KEY, APPT_ID);
-	
-		Appointment a = new Appointment();
-		a.setReminderWindowEnd(new Date());
-		a.setReminderWindowStart(new Date());
-		
-		// stub
-		when(patientDAO.getAppointment(APPT_ID)).thenReturn(a);
-		when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
-
-		// run
-		scheduleAppointmentReminderHandler.handle(event);
-		
-		// verify
-		verify(patientDAO).getAppointment(APPT_ID);
-		verify(motechSchedulerGateway).scheduleJob(any(CronSchedulableJob.class));
-	}
+     }
 
     @Test
-    public void testHandle_InvalidAppointmentIdType() throws Exception {
+    public void testHandle() throws Exception {
+        String appointmentId = "1a";
 
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put(EventKeys.APPOINTMENT_ID_KEY, new Integer(0));
+        params.put(EventKeys.APPOINTMENT_ID_KEY, appointmentId);
 
         MotechEvent motechEvent = new MotechEvent("", params);
 
-        scheduleAppointmentReminderHandler.handle(motechEvent);
+        Reminder r = new Reminder();
+        List<Reminder> reminders = new ArrayList<Reminder>();
+        reminders.add(r);
 
-        verify(patientDAO, times(0)).get(anyString());
+        when(remindersDAO.getReminders(appointmentId)).thenReturn(reminders);
+
+        appointmentDeletedEventHandler.handle(motechEvent);
+
+        verify(remindersDAO, times(1)).removeReminder(r);
     }
 
     @Test
-    public void testHandle_NoAppointmentId() throws Exception {
+    public void testHandle_DeleteMultiple() throws Exception {
+        String appointmentId = "1a";
 
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put(EventKeys.APPOINTMENT_ID_KEY, appointmentId);
+
+        MotechEvent motechEvent = new MotechEvent("", params);
+
+        Reminder r = new Reminder();
+        Reminder r2 = new Reminder();
+        List<Reminder> reminders = new ArrayList<Reminder>();
+        reminders.add(r);
+        reminders.add(r2);
+
+        when(remindersDAO.getReminders(appointmentId)).thenReturn(reminders);
+
+        appointmentDeletedEventHandler.handle(motechEvent);
+
+        verify(remindersDAO, times(2)).removeReminder(any(Reminder.class));
+    }
+
+    @Test
+    public void testHandle_NoAptKey() throws Exception {
         Map<String, Object> params = new HashMap<String, Object>();
 
         MotechEvent motechEvent = new MotechEvent("", params);
 
-        scheduleAppointmentReminderHandler.handle(motechEvent);
+        Reminder r = new Reminder();
+        List<Reminder> reminders = new ArrayList<Reminder>();
+        reminders.add(r);
 
-        verify(patientDAO, times(0)).get(anyString());
+        when(remindersDAO.getReminders(null)).thenReturn(Collections.<Reminder>emptyList());
+
+        appointmentDeletedEventHandler.handle(motechEvent);
+
+        verify(remindersDAO, times(0)).removeReminder(any(Reminder.class));
     }
 }

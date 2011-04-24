@@ -42,10 +42,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Component
 public class RemindersCouchDBDAOImpl extends MotechAuditableRepository<Reminder> implements RemindersDAO
@@ -112,6 +112,9 @@ public class RemindersCouchDBDAOImpl extends MotechAuditableRepository<Reminder>
     public List<Reminder> getReminders(String appointmentId)
     {
         List<Reminder> ret = queryView("by_appointmentId", appointmentId);
+        if (null == ret) {
+            ret = Collections.<Reminder>emptyList();
+        }
         return ret;
     }
 

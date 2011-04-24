@@ -32,7 +32,6 @@
 package org.motechproject.server.appointments;
 
 import org.motechproject.appointments.api.EventKeys;
-import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.dao.RemindersDAO;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.model.MotechEvent;
@@ -48,10 +47,7 @@ import java.util.List;
  */
 public class AppointmentDeletedEventHandler implements EventListener {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	public final static String REMINDER_CRUD_HANDLER = "AppointmentCRUDHandler";
-
-	@Autowired
-	private AppointmentsDAO appointmentsDAO;
+	public final static String APPOINTMENT_DELETED_HANDLER = "AppointmentDeletedHandler";
 
     @Autowired
     private RemindersDAO remindersDAO;
@@ -68,6 +64,6 @@ public class AppointmentDeletedEventHandler implements EventListener {
 
 	@Override
 	public String getIdentifier() {
-		return REMINDER_CRUD_HANDLER;
+		return APPOINTMENT_DELETED_HANDLER;
 	}
 }

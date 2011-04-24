@@ -31,6 +31,7 @@
  */
 package org.motechproject.server.gateway;
 
+import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.model.CronSchedulableJob;
 
@@ -57,6 +58,14 @@ public interface MotechSchedulerGateway {
      * @param cronSchedulableJob
      */
     public void scheduleJob(CronSchedulableJob cronSchedulableJob);
+
+    /**
+     * Sends a message with the given SchedulableJob payload. The message directed to the channel specified in the
+     * a Spring Integration configuration file.
+     *
+     * @param schedulableJob
+     */
+    public void scheduleRepeatingJob(RepeatingSchedulableJob schedulableJob);
 
     /**
      * Sends a message with the given RunOnceSchedulableJob payload. The message directed to the channel specified in the

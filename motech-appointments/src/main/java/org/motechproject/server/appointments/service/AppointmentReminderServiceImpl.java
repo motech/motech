@@ -31,20 +31,10 @@
  */
 package org.motechproject.server.appointments.service;
 
-import org.apache.commons.lang.time.DateUtils;
-import org.motechproject.appointmentreminder.EventKeys;
-import org.motechproject.appointmentreminder.dao.PatientDAO;
-import org.motechproject.appointmentreminder.model.Appointment;
-import org.motechproject.appointmentreminder.model.Patient;
-import org.motechproject.appointmentreminder.model.Visit;
 import org.motechproject.context.Context;
-import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.EventRelay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.*;
 
 /**
  *
@@ -54,15 +44,15 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
 
     private EventRelay eventRelay = Context.getInstance().getEventRelay();
 
-    @Autowired
-    PatientDAO patientDAO;
+//    @Autowired
+//    PatientDAO patientDAO;
 
 	int timeOut;
     public final static String SCHEDULE_APPOINTMENT_REMINDER = "ScheduleAppointmentReminder";
 
     @Override
     public void remindPatientAppointment(String appointmentId) {
-
+/*
         //TODO - handle DAO exceptions
         Appointment appointment = patientDAO.getAppointment(appointmentId);
         Patient patient = patientDAO.get(appointment.getPatientId());
@@ -123,5 +113,6 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
             Context c = Context.getInstance();
             eventRelay.sendEventMessage(event);
         }
+*/
     }
 }

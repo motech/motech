@@ -75,6 +75,12 @@ public class ReminderCRUDEventHandler implements EventListener {
 
         if (event.getSubject().endsWith("created")) {
             Reminder reminder = remindersDAO.getReminder(EventKeys.getReminderId(event));
+
+            if (null == reminder) {
+                logger.error("Can not handle Event: " + event.getSubject() +
+                             ". The event is invalid - missing the " + EventKeys.REMINDER_ID_KEY + " parameter");
+                return;
+            }
             reminder.setJobId(UUID.randomUUID().toString());
 
             // This will publish an updated event so no need to talk to the scheduler twice, just wait for
@@ -83,9 +89,13 @@ public class ReminderCRUDEventHandler implements EventListener {
         }
 
         if (event.getSubject().endsWith("updated")) {
-            String jobId = EventKeys.getJobId(event);
-
             Reminder reminder = remindersDAO.getReminder(EventKeys.getReminderId(event));
+            if (null == reminder) {
+                logger.error("Can not handle Event: " + event.getSubject() +
+                             ". The event is invalid - missing the " + EventKeys.REMINDER_ID_KEY + " parameter");
+                return;
+            }
+
             if (reminder.getEnabled()) {
                 String appointmentId = EventKeys.getAppointmentId(event);
                 if (null == appointmentId || 0 == appointmentId.length()) {
@@ -104,11 +114,19 @@ public class ReminderCRUDEventHandler implements EventListener {
                                                                                          reminder.getEndDate(),
                                                                                          reminder.getRepeatCount(),
                                                                                          reminder.getIntervalSeconds() * 1000);
+                    schedulerGateway.scheduleRepeatingJob(schedulableJob);
                 } else {
                     RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(reminderEvent, reminder.getStartDate());
                     schedulerGateway.scheduleRunOnceJob(schedulableJob);
                 }
             } else {
+                String jobId = EventKeys.getJobId(event);
+
+                if (null == jobId) {
+                    logger.error("Can not handle Event: " + event.getSubject() +
+                             ". The event is invalid - missing the " + EventKeys.JOB_ID_KEY + " parameter");
+                    return;
+                }
                 schedulerGateway.unscheduleJob(jobId);
             }
     	}

@@ -39,18 +39,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.appointmentreminder.dao.PatientDAO;
-import org.motechproject.appointmentreminder.model.Appointment;
-import org.motechproject.appointmentreminder.model.Patient;
-import org.motechproject.appointmentreminder.model.Visit;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.EventRelay;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.util.Calendar;
 import java.util.Date;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Appointment Reminder Service Unit tests
@@ -62,8 +58,8 @@ public class AppointmentReminderServiceImplTest {
     @InjectMocks
     AppointmentReminderServiceImpl appointmentReminderService = new AppointmentReminderServiceImpl();
 
-    @Mock
-    private PatientDAO patientDAOMock;
+//    @Mock
+//    private PatientDAO patientDAOMock;
 
     @Mock
     private EventRelay eventRelayMock;
@@ -79,6 +75,7 @@ public class AppointmentReminderServiceImplTest {
     private void setTestData(int startOffset, int endOffset,
                              boolean setVisits, int visitOffset)
     {
+/*
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, startOffset);
 
@@ -102,16 +99,18 @@ public class AppointmentReminderServiceImplTest {
 
             patient.addVisit(v);
         }
-
+*/
     }
 
     private  void setTestData(int startOffset, int endOffset,
                              boolean setVisits, int visitOffset,
                              Date reminderDate)
     {
+/*
         setTestData(startOffset, endOffset, setVisits, visitOffset);
 
         Appointment appointment = patientDAOMock.getAppointment("");
+*/
     }
 
     /*
