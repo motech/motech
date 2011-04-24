@@ -31,10 +31,12 @@
  */
 package org.motechproject.appointments.api.model;
 
+import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechAuditableDataObject;
 
 import java.util.Date;
 
+@TypeDiscriminator("doc.type === 'APPOINTMENT_WINDOW'")
 public class AppointmentWindow extends MotechAuditableDataObject {
 
 	private static final long serialVersionUID = 3L;
@@ -43,6 +45,7 @@ public class AppointmentWindow extends MotechAuditableDataObject {
 	private Date startDate;
 	private Date endDate;
     private Visit visit;
+    private final String type = "APPOINTMENT_WINDOW";
 
     public String getExternalId()
     {

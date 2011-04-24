@@ -39,8 +39,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.appointments.api.EventKeys;
-import org.motechproject.appointments.api.dao.AppointmentsDAO;
-import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.SchedulableJob;
@@ -56,11 +54,11 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class ScheduleAppointmentReminderTest {
 	@InjectMocks
-	private EventListener scheduleAppointmentReminderHandler = new ScheduleAppointmentReminderHandler();
+	private EventListener scheduleAppointmentReminderHandler = new ReminderCRUDEventHandler();
 	@Mock
 	private Context context;
 	@Mock
-	private AppointmentsDAO appointmentsDAO;
+	private PatientDAO patientDAO;
 	@Mock
 	private MotechSchedulerGateway motechSchedulerGateway;
 	
@@ -82,14 +80,14 @@ public class ScheduleAppointmentReminderTest {
 		a.setReminderWindowStart(new Date());
 		
 		// stub
-		when(appointmentsDAO.getAppointment(APPT_ID)).thenReturn(a);
+		when(patientDAO.getAppointment(APPT_ID)).thenReturn(a);
 		when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
 
 		// run
 		scheduleAppointmentReminderHandler.handle(event);
 		
 		// verify
-		verify(appointmentsDAO).getAppointment(APPT_ID);
+		verify(patientDAO).getAppointment(APPT_ID);
 		verify(motechSchedulerGateway).scheduleJob(any(SchedulableJob.class));
 	}
 
@@ -103,7 +101,7 @@ public class ScheduleAppointmentReminderTest {
 
         scheduleAppointmentReminderHandler.handle(motechEvent);
 
-        verify(appointmentsDAO, times(0)).get(anyString());
+        verify(patientDAO, times(0)).get(anyString());
     }
 
     @Test
@@ -115,6 +113,6 @@ public class ScheduleAppointmentReminderTest {
 
         scheduleAppointmentReminderHandler.handle(motechEvent);
 
-        verify(appointmentsDAO, times(0)).get(anyString());
+        verify(patientDAO, times(0)).get(anyString());
     }
 }

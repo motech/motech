@@ -32,11 +32,11 @@
 package org.motechproject.server.appointments.service;
 
 import org.apache.commons.lang.time.DateUtils;
-import org.motechproject.appointments.api.EventKeys;
-import org.motechproject.appointments.api.dao.AppointmentsDAO;
-import org.motechproject.appointments.api.model.Appointment;
-import org.motechproject.appointments.api.model.Patient;
-import org.motechproject.appointments.api.model.Visit;
+import org.motechproject.appointmentreminder.EventKeys;
+import org.motechproject.appointmentreminder.dao.PatientDAO;
+import org.motechproject.appointmentreminder.model.Appointment;
+import org.motechproject.appointmentreminder.model.Patient;
+import org.motechproject.appointmentreminder.model.Visit;
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.EventRelay;
@@ -55,7 +55,7 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
     private EventRelay eventRelay = Context.getInstance().getEventRelay();
 
     @Autowired
-    AppointmentsDAO appointmentsDao;
+    PatientDAO patientDAO;
 
 	int timeOut;
     public final static String SCHEDULE_APPOINTMENT_REMINDER = "ScheduleAppointmentReminder";
@@ -64,8 +64,8 @@ public class AppointmentReminderServiceImpl implements AppointmentReminderServic
     public void remindPatientAppointment(String appointmentId) {
 
         //TODO - handle DAO exceptions
-        Appointment appointment = appointmentsDao.getAppointment(appointmentId);
-        Patient patient = appointmentsDao.get(appointment.getPatientId());
+        Appointment appointment = patientDAO.getAppointment(appointmentId);
+        Patient patient = patientDAO.get(appointment.getPatientId());
 
         long messageId = 1;
 

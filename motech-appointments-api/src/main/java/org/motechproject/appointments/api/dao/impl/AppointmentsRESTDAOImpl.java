@@ -1,11 +1,8 @@
 package org.motechproject.appointments.api.dao.impl;
 
 /**
- * Created by IntelliJ IDEA.
- * User: rob
- * Date: 4/22/11
- * Time: 10:00 PM
- * To change this template use File | Settings | File Templates.
+ * This is just a placeholder class since our current implementation does not require a remote client interface.
+ * Additionally the server doesn't have a REST interface implemented so this guy has nothing to talk to.
  */
 public class AppointmentsRESTDAOImpl
 {

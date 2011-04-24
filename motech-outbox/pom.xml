@@ -97,7 +97,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.motechproject</groupId>
-			<artifactId>motech-platform-outbox-common</artifactId>
+			<artifactId>motech-outbox-api</artifactId>
 			<version>0.1-SNAPSHOT</version>
 			<type>jar</type>
 		</dependency>

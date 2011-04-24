@@ -31,9 +31,9 @@
  */
 package org.motechproject.server.appointments;
 
-import org.motechproject.appointments.api.EventKeys;
-import org.motechproject.appointments.api.dao.AppointmentsDAO;
-import org.motechproject.appointments.api.model.Appointment;
+import org.motechproject.appointmentreminder.EventKeys;
+import org.motechproject.appointmentreminder.dao.PatientDAO;
+import org.motechproject.appointmentreminder.model.Appointment;
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.SchedulableJob;
@@ -50,14 +50,14 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author yyonkov
  * 
  */
-public class ScheduleAppointmentReminderHandler implements EventListener {
+public class ReminderCRUDEventHandler implements EventListener {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	public final static String SCHEDULE_APPOINTMENT_REMINDER = "ScheduleAppointmentReminder";
 
 	private MotechSchedulerGateway schedulerGateway = Context.getInstance().getMotechSchedulerGateway();
 
 	@Autowired
-	private AppointmentsDAO appointmentsDAO;
+	private PatientDAO patientDAO;
 
 	@Override
 	public void handle(MotechEvent event) {
@@ -69,7 +69,7 @@ public class ScheduleAppointmentReminderHandler implements EventListener {
             return;
         }
 
-        Appointment appointment = appointmentsDAO.getAppointment(appointmentId);
+        Appointment appointment = patientDAO.getAppointment(appointmentId);
         if (appointment == null) {
             logger.error("Can not handle Event: " + event.getSubject() +
                      ". The event is invalid - no appointment for id " + appointmentId);

@@ -31,13 +31,10 @@
  */
 package org.motechproject.appointments.api.model;
 
-import org.motechproject.model.MotechBaseDataObject;
-
 import java.util.Date;
 
-public class Visit extends MotechBaseDataObject {
+public class Visit {
 
-	private static final long serialVersionUID = -3934731398961846431L;
     private Date visitDate;
 
     public Date getVisitDate() {

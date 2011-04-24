@@ -29,58 +29,22 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.appointments.api.model;
+package org.motechproject.appointments.api.dao;
 
-import java.util.Date;
+import org.motechproject.appointments.api.model.Reminder;
 
-public class RepeatingReminder extends Reminder {
+import java.util.List;
 
-	private static final long serialVersionUID = -3934731398961846431L;
+// Responsible for publishing when appointments and appointment windows are
+// created, updated or deleted
+public interface RemindersDAO {
 
-    public enum intervalUnits {SECONDS, MINUTES, HOURS, DAYS, WEEKS};
+    public void addReminder(Reminder reminder);
+    public void updateReminder(Reminder reminder);
 
-    private Date startDate;
-    private Date endDate;
-    private int interval;
-    private intervalUnits units;
+    public void removeReminder(String reminderId);
+    public void removeReminder(Reminder reminder);
 
-    public Date getStartDate()
-    {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate)
-    {
-        this.startDate = startDate;
-    }
-
-    public Date getEndDate()
-    {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate)
-    {
-        this.endDate = endDate;
-    }
-
-    public int getInterval()
-    {
-        return interval;
-    }
-
-    public void setInterval(int interval)
-    {
-        this.interval = interval;
-    }
-
-    public intervalUnits getUnits()
-    {
-        return units;
-    }
-
-    public void setUnits(intervalUnits units)
-    {
-        this.units = units;
-    }
+    public Reminder getReminder(String reminderId);
+    public List<Reminder> getReminders(String appointmentId);
 }

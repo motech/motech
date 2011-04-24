@@ -50,12 +50,11 @@ import org.springframework.web.servlet.DispatcherServlet;
  */
 public class Activator implements BundleActivator {
 	private static Logger logger = LoggerFactory.getLogger(Activator.class);
-	private static final String CONTEXT_CONFIG_LOCATION = "applicationAppointmentReminder.xml";
-	private static final String SERVLET_URL_MAPPING = "/ar";
+	private static final String CONTEXT_CONFIG_LOCATION = "applicationAppointments.xml";
+	private static final String SERVLET_URL_MAPPING = "/appointments";
 	private ServiceTracker tracker;
-	private ScheduleAppointmentReminderHandler scheduleAppointmentReminderListener;
-    private UnscheduleAppointmentReminderHandler unscheduleAppointmentReminderListener;
-    private RemindAppointmentEventHandler remindAppointmentEventListener;
+
+	private ReminderCRUDEventHandler reminderCRUDEventHandler;
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -94,15 +93,9 @@ public class Activator implements BundleActivator {
 			} finally {
 				Thread.currentThread().setContextClassLoader(old);
 			}
-			//listener = new ScheduleAppointmentReminderHandler();
-			scheduleAppointmentReminderListener = dispatcherServlet.getWebApplicationContext().getBean(ScheduleAppointmentReminderHandler.class);
-			Context.getInstance().getEventListenerRegistry().registerListener(scheduleAppointmentReminderListener, EventKeys.SCHEDULE_REMINDER_SUBJECT);
 
-            unscheduleAppointmentReminderListener = dispatcherServlet.getWebApplicationContext().getBean(UnscheduleAppointmentReminderHandler.class);
-			Context.getInstance().getEventListenerRegistry().registerListener(unscheduleAppointmentReminderListener, EventKeys.UNSCHEDULE_REMINDER_SUBJECT);
-
-			remindAppointmentEventListener = dispatcherServlet.getWebApplicationContext().getBean(RemindAppointmentEventHandler.class);
-			Context.getInstance().getEventListenerRegistry().registerListener(remindAppointmentEventListener, EventKeys.REMINDER_EVENT_SUBJECT);
+			reminderCRUDEventHandler = dispatcherServlet.getWebApplicationContext().getBean(ReminderCRUDEventHandler.class);
+			Context.getInstance().getEventListenerRegistry().registerListener(reminderCRUDEventHandler, EventKeys.REMINDER_WILDCARD_SUBJECT);
 
 		} catch (Exception e) {
 			throw new RuntimeException(e);

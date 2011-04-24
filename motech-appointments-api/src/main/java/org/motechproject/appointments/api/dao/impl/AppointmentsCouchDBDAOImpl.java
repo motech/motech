@@ -32,21 +32,132 @@
 package org.motechproject.appointments.api.dao.impl;
 
 import org.ektorp.CouchDbConnector;
+import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.model.Appointment;
+import org.motechproject.appointments.api.model.AppointmentWindow;
 import org.motechproject.dao.MotechAuditableRepository;
+import org.motechproject.eventgateway.EventGateway;
+import org.motechproject.model.MotechEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Component
 public class AppointmentsCouchDBDAOImpl extends MotechAuditableRepository<Appointment> implements AppointmentsDAO
 {
+    @Autowired
+    private EventGateway eventGateway;
 
     @Autowired
     public AppointmentsCouchDBDAOImpl(@Qualifier("appointmentsDatabase") CouchDbConnector db) {
         super(Appointment.class, db);
         initStandardDesignDocument();
+    }
+
+    @Override
+    public void addAppointment(Appointment appointment)
+    {
+        db.create(appointment);
+
+        eventGateway.sendEventMessage(getSkinnyEvent(appointment, EventKeys.APPOINTMENT_CREATED_SUBJECT));
+    }
+
+    @Override
+    public void updateAppointment(Appointment appointment)
+    {
+        db.update(appointment);
+
+        eventGateway.sendEventMessage(getSkinnyEvent(appointment, EventKeys.APPOINTMENT_UPDATED_SUBJECT));
+    }
+
+    @Override
+    public Appointment getAppointment(String appointmentId)
+    {
+        Appointment appointment = db.get(Appointment.class, appointmentId);
+        return appointment;
+    }
+
+    @Override
+    public void removeAppointment(String appointmentId)
+    {
+        Appointment appointment = getAppointment(appointmentId);
+
+        removeAppointment(appointment);
+    }
+
+    @Override
+    public void removeAppointment(Appointment appointment)
+    {
+        MotechEvent event = getSkinnyEvent(appointment, EventKeys.APPOINTMENT_DELETED_SUBJECT);
+
+        db.delete(appointment);
+
+        eventGateway.sendEventMessage(event);
+    }
+
+    @Override
+    public void addAppointmentWindow(AppointmentWindow appointmentWindow)
+    {
+        db.create(appointmentWindow);
+
+        eventGateway.sendEventMessage(getSkinnyEvent(appointmentWindow,
+                                                     EventKeys.APPOINTMENT_WINDOW_CREATED_SUBJECT));
+    }
+
+    @Override
+    public void updateAppointmentWindow(AppointmentWindow appointmentWindow)
+    {
+        db.update(appointmentWindow);
+
+        eventGateway.sendEventMessage(getSkinnyEvent(appointmentWindow,
+                                                     EventKeys.APPOINTMENT_WINDOW_UPDATED_SUBJECT));
+    }
+
+    @Override
+    public AppointmentWindow getAppointmentWindow(String appointmentWindowId)
+    {
+        AppointmentWindow appointment = db.get(AppointmentWindow.class, appointmentWindowId);
+        return appointment;
+    }
+
+    @Override
+    public void removeAppointmentWindow(String appointmentWindowId)
+    {
+        AppointmentWindow appointment = getAppointmentWindow(appointmentWindowId);
+
+        removeAppointmentWindow(appointment);
+    }
+
+    @Override
+    public void removeAppointmentWindow(AppointmentWindow appointmentWindow)
+    {
+        MotechEvent event = getSkinnyEvent(appointmentWindow, EventKeys.APPOINTMENT_WINDOW_DELETED_SUBJECT);
+
+        db.delete(appointmentWindow);
+
+        eventGateway.sendEventMessage(event);
+    }
+
+    private MotechEvent getSkinnyEvent(Appointment apt, String subject) {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put(EventKeys.APPOINTMENT_ID_KEY, apt.getId());
+
+        MotechEvent event = new MotechEvent(subject, parameters);
+
+        return event;
+    }
+
+    private MotechEvent getSkinnyEvent(AppointmentWindow aptWindow, String subject) {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put(EventKeys.APPOINTMENT_ID_KEY, aptWindow.getId());
+
+        MotechEvent event = new MotechEvent(subject, parameters);
+
+        return event;
     }
 
 }

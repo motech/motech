@@ -45,7 +45,7 @@ import static org.junit.Assert.assertNotNull;
  * @author yyonkov
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/testIntegrationContext.xml"})
+@ContextConfiguration(locations={"/testApplicationsAPIContext.xml"})
 public class AppointmentDaoIT {
 	@Autowired
 	private AppointmentsDAO dao;
