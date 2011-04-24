@@ -45,6 +45,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Component
 public class RemindersCouchDBDAOImpl extends MotechAuditableRepository<Reminder> implements RemindersDAO
@@ -118,6 +119,8 @@ public class RemindersCouchDBDAOImpl extends MotechAuditableRepository<Reminder>
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(EventKeys.APPOINTMENT_ID_KEY, reminder.getAppointmentId());
         parameters.put(EventKeys.REMINDER_ID_KEY, reminder.getId());
+        // Not sure I want this here, but it does save the handler from having to load the reminder
+        parameters.put(EventKeys.JOB_ID_KEY, reminder.getJobId());
 
         MotechEvent event = new MotechEvent(subject, parameters);
 

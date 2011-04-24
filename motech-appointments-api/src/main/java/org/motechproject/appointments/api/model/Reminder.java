@@ -46,6 +46,7 @@ public class Reminder extends MotechAuditableDataObject
     private Date endDate;
     private int interval;
     private intervalUnits units;
+    private String jobId;
     private final String type = "REMINDER";
 
     public String getAppointmentId()
@@ -96,5 +97,15 @@ public class Reminder extends MotechAuditableDataObject
     public void setUnits(intervalUnits units)
     {
         this.units = units;
+    }
+
+    public String getJobId()
+    {
+        return jobId;
+    }
+
+    public void setJobId(String jobId)
+    {
+        this.jobId = jobId;
     }
 }

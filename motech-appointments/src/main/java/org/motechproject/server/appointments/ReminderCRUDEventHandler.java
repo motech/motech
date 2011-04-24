@@ -31,11 +31,13 @@
  */
 package org.motechproject.server.appointments;
 
-import org.motechproject.appointmentreminder.EventKeys;
-import org.motechproject.appointmentreminder.dao.PatientDAO;
-import org.motechproject.appointmentreminder.model.Appointment;
+import org.motechproject.appointments.api.EventKeys;
+import org.motechproject.appointments.api.dao.AppointmentsDAO;
+import org.motechproject.appointments.api.dao.RemindersDAO;
+import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.model.SchedulableJob;
 import org.motechproject.server.event.EventListener;
 import org.motechproject.server.gateway.MotechSchedulerGateway;
@@ -43,49 +45,70 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.UUID;
+
 /**
- * Responsible for listening for <code>org.motechproject.</code>
- * events with destination
- * 
- * @author yyonkov
  * 
  */
 public class ReminderCRUDEventHandler implements EventListener {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	public final static String SCHEDULE_APPOINTMENT_REMINDER = "ScheduleAppointmentReminder";
+	public final static String REMINDER_CRUD_HANDLER = "ReminderCRUDHandler";
 
 	private MotechSchedulerGateway schedulerGateway = Context.getInstance().getMotechSchedulerGateway();
 
 	@Autowired
-	private PatientDAO patientDAO;
+	private AppointmentsDAO appointmentsDAO;
+
+    @Autowired
+    private RemindersDAO remindersDAO;
 
 	@Override
 	public void handle(MotechEvent event) {
 
-        String appointmentId = EventKeys.getAppointmentId(event);
-        if (appointmentId == null) {
-            logger.error("Can not handle Event: " + event.getSubject() +
-                     ". The event is invalid - missing the " + EventKeys.APPOINTMENT_ID_KEY + " parameter");
-            return;
+        if (event.getSubject().endsWith("deleted")) {
+            String jobId = EventKeys.getJobId(event);
+
+            if (null != jobId) {
+		        schedulerGateway.unscheduleJob(jobId);
+            }
         }
 
-        Appointment appointment = patientDAO.getAppointment(appointmentId);
-        if (appointment == null) {
-            logger.error("Can not handle Event: " + event.getSubject() +
-                     ". The event is invalid - no appointment for id " + appointmentId);
-            return;
+        if (event.getSubject().endsWith("created")) {
+            Reminder reminder = remindersDAO.getReminder(EventKeys.getReminderId(event));
+            reminder.setJobId(UUID.randomUUID().toString());
+
+            // This will publish an updated event so no need to talk to the scheduler twice, just wait for
+            // the event to get here.
+            remindersDAO.updateReminder(reminder);
         }
 
-    	MotechEvent reminderEvent = new MotechEvent(EventKeys.REMINDER_EVENT_SUBJECT, event.getParameters());
-		SchedulableJob schedulableJob = new SchedulableJob(reminderEvent, "0 0 0 * * ?",
-                                                           appointment.getReminderWindowStart(),
-                                                           appointment.getReminderWindowEnd());
+        if (event.getSubject().endsWith("updated")) {
+            String jobId = EventKeys.getJobId(event);
 
-    	schedulerGateway.scheduleJob(schedulableJob);
-	}
+            String appointmentId = EventKeys.getAppointmentId(event);
+            if (null == appointmentId || 0 == appointmentId.length()) {
+                logger.error("Can not handle Event: " + event.getSubject() +
+                         ". The event is invalid - missing the " + EventKeys.APPOINTMENT_ID_KEY + " parameter");
+                return;
+            }
+
+            MotechEvent reminderEvent = new MotechEvent(EventKeys.REMINDER_EVENT_SUBJECT, event.getParameters());
+
+            Reminder reminder = remindersDAO.getReminder(EventKeys.getReminderId(event));
+            // This isn't the best model object, but basically if there are no units specified then it is a single
+            // reminder
+            if (null == reminder.getUnits()) {
+                // Todo Create new schedulable job that mirrors the SimpleTrigger
+                SchedulableJob schedulableJob = new SchedulableJob(reminderEvent, "0 0 0 * * ?");
+            } else {
+                RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(reminderEvent, reminder.getStartDate());
+                schedulerGateway.scheduleRunOnceJob(schedulableJob);
+            }
+    	}
+    }
 
 	@Override
 	public String getIdentifier() {
-		return SCHEDULE_APPOINTMENT_REMINDER;
+		return REMINDER_CRUD_HANDLER;
 	}
 }

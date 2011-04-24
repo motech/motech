@@ -13,6 +13,7 @@ public class EventKeys
 
     public final static String APPOINTMENT_ID_KEY = "AppointmentID";
     public final static String REMINDER_ID_KEY = "ReminderID";
+    public final static String JOB_ID_KEY = "JobID";
 
     public final static String BASE_SUBJECT = "org.motechproject.server.appointments.";
     public final static String APPOINTMENT_CREATED_SUBJECT = BASE_SUBJECT + "appointment.created";
@@ -39,13 +40,28 @@ public class EventKeys
 
     public static String getAppointmentId(MotechEvent event)
     {
-        String appointmentId = null;
+        return getStringValue(event, EventKeys.APPOINTMENT_ID_KEY);
+    }
+
+    public static String getJobId(MotechEvent event)
+    {
+        return getStringValue(event, EventKeys.JOB_ID_KEY);
+    }
+
+    public static String getReminderId(MotechEvent event)
+    {
+        return getStringValue(event, EventKeys.REMINDER_ID_KEY);
+    }
+
+    public static String getStringValue(MotechEvent event, String key)
+    {
+        String ret = null;
         try {
-            appointmentId = (String) event.getParameters().get(EventKeys.APPOINTMENT_ID_KEY);
+            ret = (String) event.getParameters().get(key);
         } catch (ClassCastException e) {
-            log.warn("Event: " + event + " Key: " + EventKeys.APPOINTMENT_ID_KEY + " is not a String");
+            log.warn("Event: " + event + " Key: " + key + " is not a String");
         }
 
-        return appointmentId;
+        return ret;
     }
 }

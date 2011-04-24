@@ -87,7 +87,7 @@ public class MissedAppointmentEventHandler implements EventListener {
             return;
         }
 
-        Patient patient = appointmentsDao.get(appointment.getPatientId());
+        Patient patient = appointmentsDao.get(appointment.getExternalId());
 
         String url = vxmlUrl + "?aptId=" + appointmentId;
 
