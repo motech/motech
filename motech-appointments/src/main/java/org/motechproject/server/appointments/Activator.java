@@ -55,6 +55,7 @@ public class Activator implements BundleActivator {
 	private ServiceTracker tracker;
 
 	private ReminderCRUDEventHandler reminderCRUDEventHandler;
+	private AppointmentDeletedEventHandler appointmentDeletedEventHandler;
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -96,6 +97,9 @@ public class Activator implements BundleActivator {
 
 			reminderCRUDEventHandler = dispatcherServlet.getWebApplicationContext().getBean(ReminderCRUDEventHandler.class);
 			Context.getInstance().getEventListenerRegistry().registerListener(reminderCRUDEventHandler, EventKeys.REMINDER_WILDCARD_SUBJECT);
+
+            appointmentDeletedEventHandler = dispatcherServlet.getWebApplicationContext().getBean(AppointmentDeletedEventHandler.class);
+            Context.getInstance().getEventListenerRegistry().registerListener(appointmentDeletedEventHandler, EventKeys.APPOINTMENT_DELETED_SUBJECT);
 
 		} catch (Exception e) {
 			throw new RuntimeException(e);

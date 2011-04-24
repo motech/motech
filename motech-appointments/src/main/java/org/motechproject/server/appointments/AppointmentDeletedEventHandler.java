@@ -29,61 +29,45 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.appointments.api.model;
+package org.motechproject.server.appointments;
 
-import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.appointments.api.EventKeys;
+import org.motechproject.appointments.api.dao.AppointmentsDAO;
+import org.motechproject.appointments.api.dao.RemindersDAO;
+import org.motechproject.appointments.api.model.Reminder;
+import org.motechproject.model.MotechEvent;
+import org.motechproject.server.event.EventListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Date;
+import java.util.List;
 
-@TypeDiscriminator("doc.type === 'APPOINTMENT_WINDOW'")
-public class AppointmentWindow extends MotechAuditableDataObject {
+/**
+ * 
+ */
+public class AppointmentDeletedEventHandler implements EventListener {
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	public final static String REMINDER_CRUD_HANDLER = "AppointmentCRUDHandler";
 
-	private static final long serialVersionUID = 3L;
+	@Autowired
+	private AppointmentsDAO appointmentsDAO;
 
-    private String externalId;
-	private Date startDate;
-	private Date endDate;
-    private Visit visit;
-    private final String type = "APPOINTMENT_WINDOW";
+    @Autowired
+    private RemindersDAO remindersDAO;
 
-    public String getExternalId()
-    {
-        return externalId;
+	@Override
+	public void handle(MotechEvent event) {
+        // If an appointment is deleted then we don't need any reminders hanging around.
+        List<Reminder> reminders = remindersDAO.getReminders(EventKeys.getAppointmentId(event));
+
+        for (Reminder r : reminders) {
+            remindersDAO.removeReminder(r);
+        }
     }
 
-    public void setExternalId(String externalId)
-    {
-        this.externalId = externalId;
-    }
-
-    public Date getStartDate()
-    {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate)
-    {
-        this.startDate = startDate;
-    }
-
-    public Date getEndDate()
-    {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate)
-    {
-        this.endDate = endDate;
-    }
-
-    public Visit getVisit()
-    {
-        return visit;
-    }
-
-    public void setVisit(Visit visit)
-    {
-        this.visit = visit;
-    }
+	@Override
+	public String getIdentifier() {
+		return REMINDER_CRUD_HANDLER;
+	}
 }

@@ -35,7 +35,7 @@ import org.ektorp.CouchDbConnector;
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.model.Appointment;
-import org.motechproject.appointments.api.model.AppointmentWindow;
+import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.dao.MotechAuditableRepository;
 import org.motechproject.eventgateway.EventGateway;
 import org.motechproject.model.MotechEvent;
@@ -99,49 +99,6 @@ public class AppointmentsCouchDBDAOImpl extends MotechAuditableRepository<Appoin
         eventGateway.sendEventMessage(event);
     }
 
-    @Override
-    public void addAppointmentWindow(AppointmentWindow appointmentWindow)
-    {
-        db.create(appointmentWindow);
-
-        eventGateway.sendEventMessage(getSkinnyEvent(appointmentWindow,
-                                                     EventKeys.APPOINTMENT_WINDOW_CREATED_SUBJECT));
-    }
-
-    @Override
-    public void updateAppointmentWindow(AppointmentWindow appointmentWindow)
-    {
-        db.update(appointmentWindow);
-
-        eventGateway.sendEventMessage(getSkinnyEvent(appointmentWindow,
-                                                     EventKeys.APPOINTMENT_WINDOW_UPDATED_SUBJECT));
-    }
-
-    @Override
-    public AppointmentWindow getAppointmentWindow(String appointmentWindowId)
-    {
-        AppointmentWindow appointment = db.get(AppointmentWindow.class, appointmentWindowId);
-        return appointment;
-    }
-
-    @Override
-    public void removeAppointmentWindow(String appointmentWindowId)
-    {
-        AppointmentWindow appointment = getAppointmentWindow(appointmentWindowId);
-
-        removeAppointmentWindow(appointment);
-    }
-
-    @Override
-    public void removeAppointmentWindow(AppointmentWindow appointmentWindow)
-    {
-        MotechEvent event = getSkinnyEvent(appointmentWindow, EventKeys.APPOINTMENT_WINDOW_DELETED_SUBJECT);
-
-        db.delete(appointmentWindow);
-
-        eventGateway.sendEventMessage(event);
-    }
-
     private MotechEvent getSkinnyEvent(Appointment apt, String subject) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(EventKeys.APPOINTMENT_ID_KEY, apt.getId());
@@ -150,14 +107,4 @@ public class AppointmentsCouchDBDAOImpl extends MotechAuditableRepository<Appoin
 
         return event;
     }
-
-    private MotechEvent getSkinnyEvent(AppointmentWindow aptWindow, String subject) {
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put(EventKeys.APPOINTMENT_ID_KEY, aptWindow.getId());
-
-        MotechEvent event = new MotechEvent(subject, parameters);
-
-        return event;
-    }
-
 }

@@ -32,7 +32,6 @@
 package org.motechproject.appointments.api.dao;
 
 import org.motechproject.appointments.api.model.Appointment;
-import org.motechproject.appointments.api.model.AppointmentWindow;
 import org.motechproject.dao.BaseDao;
 
 // Responisble for publishing when appointments and appointment windows are
@@ -44,10 +43,4 @@ public interface AppointmentsDAO extends BaseDao<Appointment> {
     public Appointment getAppointment(String appointmentId);
     public void removeAppointment(String appointmentId);
     public void removeAppointment(Appointment appointment);
-
-    public void addAppointmentWindow(AppointmentWindow appointmentWindow);
-    public void updateAppointmentWindow(AppointmentWindow appointmentWindow);
-    public AppointmentWindow getAppointmentWindow(String appointmentWindowId);
-    public void removeAppointmentWindow(String appointmentWindowId);
-    public void removeAppointmentWindow(AppointmentWindow appointmentWindow);
 }

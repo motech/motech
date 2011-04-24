@@ -85,27 +85,31 @@ public class ReminderCRUDEventHandler implements EventListener {
         if (event.getSubject().endsWith("updated")) {
             String jobId = EventKeys.getJobId(event);
 
-            String appointmentId = EventKeys.getAppointmentId(event);
-            if (null == appointmentId || 0 == appointmentId.length()) {
-                logger.error("Can not handle Event: " + event.getSubject() +
-                         ". The event is invalid - missing the " + EventKeys.APPOINTMENT_ID_KEY + " parameter");
-                return;
-            }
-
-            MotechEvent reminderEvent = new MotechEvent(EventKeys.REMINDER_EVENT_SUBJECT, event.getParameters());
-
             Reminder reminder = remindersDAO.getReminder(EventKeys.getReminderId(event));
-            // This isn't the best model object, but basically if there are no units specified then it is a single
-            // reminder otherwise it is a repeating job
-            if (null != reminder.getUnits()) {
-                RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(reminderEvent,
-                                                                                     reminder.getStartDate(),
-                                                                                     reminder.getEndDate(),
-                                                                                     reminder.getRepeatCount(),
-                                                                                     reminder.getIntervalSeconds() * 1000);
+            if (reminder.getEnabled()) {
+                String appointmentId = EventKeys.getAppointmentId(event);
+                if (null == appointmentId || 0 == appointmentId.length()) {
+                    logger.error("Can not handle Event: " + event.getSubject() +
+                             ". The event is invalid - missing the " + EventKeys.APPOINTMENT_ID_KEY + " parameter");
+                    return;
+                }
+
+                MotechEvent reminderEvent = new MotechEvent(EventKeys.REMINDER_EVENT_SUBJECT, event.getParameters());
+
+                // This isn't the best model object, but basically if there are no units specified then it is a single
+                // reminder otherwise it is a repeating job
+                if (null != reminder.getUnits()) {
+                    RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(reminderEvent,
+                                                                                         reminder.getStartDate(),
+                                                                                         reminder.getEndDate(),
+                                                                                         reminder.getRepeatCount(),
+                                                                                         reminder.getIntervalSeconds() * 1000);
+                } else {
+                    RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(reminderEvent, reminder.getStartDate());
+                    schedulerGateway.scheduleRunOnceJob(schedulableJob);
+                }
             } else {
-                RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(reminderEvent, reminder.getStartDate());
-                schedulerGateway.scheduleRunOnceJob(schedulableJob);
+                schedulerGateway.unscheduleJob(jobId);
             }
     	}
     }
