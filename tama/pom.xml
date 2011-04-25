@@ -9,7 +9,7 @@
 	<groupId>org.motechproject</groupId>
 	<artifactId>tama</artifactId>
 	<version>0.1-SNAPSHOT</version>
-	<name>TAMA Modules</name>
+	<name>TAMA</name>
 	<packaging>bundle</packaging>
 	<description>TAMA Server Side Logic</description>
 	<dependencies>
@@ -70,6 +70,11 @@
 			<artifactId>motech-outbox-api</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>org.motechproject</groupId>
+			<artifactId>tama-api</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
         <dependency>
 			<groupId>org.motechproject</groupId>
 			<artifactId>motech-platform-common</artifactId>
@@ -118,7 +123,7 @@
                             org.motechproject.tama.Activator
                         </Bundle-Activator>
 						<Private-Package>
-							org.motechproject.server.tama.*
+							org.motechproject.tama.*
                         </Private-Package>
 						<Import-Package>
 							*;org.ektorp;org.ektorp.impl;org.ektorp.spring;resolution:=optional

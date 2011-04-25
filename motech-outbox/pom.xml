@@ -9,8 +9,8 @@
 		<version>0.1-SNAPSHOT</version>
 	</parent>
 	<groupId>org.motechproject</groupId>
-	<artifactId>motech-platform-outbox</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<artifactId>motech-outbox</artifactId>
+	<version>0.1-SNAPSHOT</version>
 	<name>Motech Platform Outbox</name>
 	<packaging>bundle</packaging>
 	<dependencies>

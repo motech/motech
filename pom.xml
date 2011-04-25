@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.motechproject</groupId>
-	<artifactId>motech-platform</artifactId>
+	<artifactId>motech</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>MOTECH</name>
@@ -58,13 +58,12 @@
 		<module>motech-platform-scheduler</module>
         <module>motech-platform-ivr</module>
 		<module>motech-platform-server-api</module>
-		<module>motech-appointment-reminder</module>
-		<module>motech-appointment-reminder-common</module>
     	<module>motech-outbox</module>
     	<module>motech-outbox-api</module>
         <module>motech-appointments</module>
         <module>motech-appointments-api</module>
         <module>tama</module>
+        <module>tama-api</module>
 	</modules>
 
 	<build>

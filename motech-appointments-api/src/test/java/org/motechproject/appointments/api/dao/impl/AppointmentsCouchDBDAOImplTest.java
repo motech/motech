@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.model.Appointment;
+import org.motechproject.event.EventRelay;
 import org.motechproject.eventgateway.EventGateway;
 import org.motechproject.model.MotechEvent;
 
@@ -19,7 +20,7 @@ import static org.mockito.Mockito.verify;
 public class AppointmentsCouchDBDAOImplTest
 {
     @Mock
-    EventGateway eventGatewayMock;
+    EventRelay eventRelay;
 
     @Mock
     CouchDbConnector couchDbConnector;
@@ -43,7 +44,7 @@ public class AppointmentsCouchDBDAOImplTest
         appointmentsDAO.addAppointment(a);
 
         verify(couchDbConnector).create(a);
-        verify(eventGatewayMock).sendEventMessage(argument.capture());
+        verify(eventRelay).sendEventMessage(argument.capture());
 
         MotechEvent event = argument.getValue();
 
