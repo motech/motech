@@ -76,6 +76,20 @@ public class AppointmentReminderEventHandlerTest extends TestCase {
     }
 
     @Test
+    public void testHandle_NullApt() throws Exception {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put(EventKeys.APPOINTMENT_ID_KEY, "aID");
+
+        MotechEvent event = new MotechEvent("", params);
+
+        Mockito.when(appointmentsDAO.getAppointment("aID")).thenReturn(null);
+
+        appointmentReminderEventHandler.handle(event);
+
+        verify(outboundVoiceMessageDaoMock, times(0)).add(Matchers.<OutboundVoiceMessage>anyObject());
+    }
+
+    @Test
     public void testHandle_NeedToSchedule() throws Exception {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(EventKeys.APPOINTMENT_ID_KEY, "aID");
