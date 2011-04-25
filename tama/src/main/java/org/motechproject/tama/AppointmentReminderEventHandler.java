@@ -70,7 +70,7 @@ public class AppointmentReminderEventHandler implements EventListener {
     OutboundVoiceMessageDao outboundVoiceMessageDao = OutboxContext.getInstance().getOutboundVoiceMessageDao();
 
     //Interim implementation
-    String needToScheduleAppointmentVxmlUrl = "";
+    String needToScheduleAppointmentVxmlUrl = "http://needtoschedule/";
     String upcomingAppointmentVxmlUrl = "";
     String missedAppointmentVxmlUrl = "";
 
@@ -101,7 +101,7 @@ public class AppointmentReminderEventHandler implements EventListener {
 
         String url = null;
         if (null == appointment.getScheduledDate()) {
-            url = needToScheduleAppointmentVxmlUrl + "?aptId=" + appointmentId;
+            url = needToScheduleAppointmentVxmlUrl + "?aptId=" + appointmentId + "&type=schedule";
         }
 
         Date today = new Date();
@@ -110,16 +110,19 @@ public class AppointmentReminderEventHandler implements EventListener {
             // If they have visited the clinic disable this reminder
             if (null != appointment.getVisit()) {
                 Reminder reminder = remindersDAO.getReminder(EventKeys.getReminderId(event));
-                reminder.setEnabled(false);
-                remindersDAO.updateReminder(reminder);
+
+                if (null != reminder) {
+                    reminder.setEnabled(false);
+                    remindersDAO.updateReminder(reminder);
+                }
 
                 return;
             }
 
             if (today.compareTo(appointment.getScheduledDate()) <= 0) {
-                url = upcomingAppointmentVxmlUrl + "?aptId=" + appointmentId;
+                url = upcomingAppointmentVxmlUrl + "?aptId=" + appointmentId + "&type=upcoming";
             } else {
-                url = missedAppointmentVxmlUrl + "?aptId=" + appointmentId;
+                url = missedAppointmentVxmlUrl + "?aptId=" + appointmentId + "&type=missed";
             }
         }
 

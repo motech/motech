@@ -36,4 +36,6 @@ import org.motechproject.tama.model.Patient;
 
 public interface TamaDAO extends BaseDao<Patient> {
 
+    public Patient getPatient(String patientId);
+
 }

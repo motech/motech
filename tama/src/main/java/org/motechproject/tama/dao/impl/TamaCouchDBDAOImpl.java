@@ -32,6 +32,7 @@
 package org.motechproject.tama.dao.impl;
 
 import org.ektorp.CouchDbConnector;
+import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.dao.MotechAuditableRepository;
 import org.motechproject.tama.dao.TamaDAO;
 import org.motechproject.tama.model.Patient;
@@ -49,4 +50,10 @@ public class TamaCouchDBDAOImpl extends MotechAuditableRepository<Patient> imple
         initStandardDesignDocument();
     }
 
+    @Override
+    public Patient getPatient(String patientId)
+    {
+        Patient patient = db.get(Patient.class, patientId);
+        return patient;
+    }
 }

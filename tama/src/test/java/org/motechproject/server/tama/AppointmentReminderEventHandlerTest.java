@@ -4,13 +4,29 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.dao.AppointmentsDAO;
+import org.motechproject.appointments.api.dao.RemindersDAO;
+import org.motechproject.appointments.api.model.Appointment;
+import org.motechproject.appointments.api.model.Reminder;
+import org.motechproject.appointments.api.model.Visit;
+import org.motechproject.metrics.MetricsAgent;
+import org.motechproject.model.MotechEvent;
 import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;
+import org.motechproject.outbox.api.model.OutboundVoiceMessage;
 import org.motechproject.tama.AppointmentReminderEventHandler;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AppointmentReminderEventHandlerTest extends TestCase {
@@ -18,10 +34,16 @@ public class AppointmentReminderEventHandlerTest extends TestCase {
     AppointmentReminderEventHandler appointmentReminderEventHandler = new AppointmentReminderEventHandler();
 
     @Mock
-    private AppointmentsDAO appointmentsDAOMock;
+    private AppointmentsDAO appointmentsDAO;
+
+    @Mock
+    private RemindersDAO remindersDAO;
 
     @Mock
     private OutboundVoiceMessageDao outboundVoiceMessageDaoMock;
+
+    @Mock
+    private MetricsAgent metricsAgent;
 
     @Before
     public void initMocks() {
@@ -29,53 +51,14 @@ public class AppointmentReminderEventHandlerTest extends TestCase {
      }
 
     @Test
-    public void alwaysPass() throws Exception {
-        assertTrue(true);
-    }
-/*
-    @Test
-    public void testHandle() throws Exception {
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put(EventKeys.APPOINTMENT_ID_KEY, "aID");
-
-        MotechEvent event = new MotechEvent("", params);
-
-        Appointment appointment = new Appointment();
-        appointment.setPatientId("pID");
-        Patient patient = new Patient();
-        patient.setId("pID");
-        patient.setPhoneNumber("SIP/1000");
-
-        ArgumentCaptor<OutboundVoiceMessage> argument = ArgumentCaptor.forClass(OutboundVoiceMessage.class);
-
-        Mockito.when(appointmentsDAOMock.getAppointment("aID")).thenReturn(appointment);
-        Mockito.when(appointmentsDAOMock.get("pID")).thenReturn(patient);
-
-        appointmentReminderEventHandler.handle(event);
-
-        verify(outboundVoiceMessageDaoMock, times(1)).add(argument.capture());
-
-        OutboundVoiceMessage msg = argument.getValue();
-        assertEquals("http://test.org/?aptId=aID", msg.getVoiceMessageType().getvXmlUrl());
-        assertEquals("pID", msg.getPartyId());
-    }
-
-    @Test
-    public void testHandle_NoIDInEvent() throws Exception {
+    public void testHandle_NoAptId() throws Exception {
         Map<String, Object> params = new HashMap<String, Object>();
 
         MotechEvent event = new MotechEvent("", params);
 
-        Appointment appointment = new Appointment();
-        appointment.setPatientId("pID");
-        Patient patient = new Patient();
-        patient.setPhoneNumber("SIP/1000");
-
-        Mockito.when(appointmentsDAOMock.getAppointment("aID")).thenReturn(appointment);
-        Mockito.when(appointmentsDAOMock.get("pID")).thenReturn(patient);
-
         appointmentReminderEventHandler.handle(event);
 
+        verify(appointmentsDAO, times(0)).getAppointment(anyString());
         verify(outboundVoiceMessageDaoMock, times(0)).add(any(OutboundVoiceMessage.class));
     }
 
@@ -86,13 +69,57 @@ public class AppointmentReminderEventHandlerTest extends TestCase {
 
         MotechEvent event = new MotechEvent("", params);
 
-        Appointment appointment = new Appointment();
-        appointment.setPatientId("pID");
-        Patient patient = new Patient();
-        patient.setPhoneNumber("SIP/1000");
+        appointmentReminderEventHandler.handle(event);
 
-        Mockito.when(appointmentsDAOMock.getAppointment("aID")).thenReturn(appointment);
-        Mockito.when(appointmentsDAOMock.get("pID")).thenReturn(patient);
+        verify(appointmentsDAO, times(0)).getAppointment(anyString());
+        verify(outboundVoiceMessageDaoMock, times(0)).add(any(OutboundVoiceMessage.class));
+    }
+
+    @Test
+    public void testHandle_NeedToSchedule() throws Exception {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put(EventKeys.APPOINTMENT_ID_KEY, "aID");
+
+        MotechEvent event = new MotechEvent("", params);
+
+        Appointment appointment = new Appointment();
+        appointment.setId("aID");
+        appointment.setExternalId("pID");
+        appointment.setDueDate(new Date());
+        appointment.setScheduledDate(null);
+
+        Mockito.when(appointmentsDAO.getAppointment("aID")).thenReturn(appointment);
+
+        ArgumentCaptor<OutboundVoiceMessage> argument = ArgumentCaptor.forClass(OutboundVoiceMessage.class);
+        appointmentReminderEventHandler.handle(event);
+
+        verify(outboundVoiceMessageDaoMock, times(1)).add(argument.capture());
+
+        OutboundVoiceMessage msg = argument.getValue();
+        assertTrue(msg.getVoiceMessageType().getvXmlUrl().endsWith("schedule"));
+    }
+
+    @Test
+    public void testHandle_ScheduledAndVisited() throws Exception {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put(EventKeys.APPOINTMENT_ID_KEY, "aID");
+        params.put(EventKeys.REMINDER_ID_KEY, "rID");
+
+        MotechEvent event = new MotechEvent("", params);
+
+        Appointment appointment = new Appointment();
+        appointment.setId("aID");
+        appointment.setExternalId("pID");
+        appointment.setDueDate(new Date());
+        appointment.setScheduledDate(new Date());
+
+        Visit v = new Visit();
+        appointment.setVisit(v);
+
+        Reminder reminder = new Reminder();
+
+        Mockito.when(appointmentsDAO.getAppointment("aID")).thenReturn(appointment);
+        Mockito.when(remindersDAO.getReminder("rID")).thenReturn(reminder);
 
         appointmentReminderEventHandler.handle(event);
 
@@ -100,199 +127,105 @@ public class AppointmentReminderEventHandlerTest extends TestCase {
     }
 
     @Test
-    public void testHandle_InvalidIDInEvent() throws Exception {
+    public void testHandle_ScheduledAndVisitedNoReminderId() throws Exception {
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put(EventKeys.APPOINTMENT_ID_KEY, "invalid");
+        params.put(EventKeys.APPOINTMENT_ID_KEY, "aID");
 
         MotechEvent event = new MotechEvent("", params);
 
         Appointment appointment = new Appointment();
-        appointment.setPatientId("pID");
-        Patient patient = new Patient();
-        patient.setPhoneNumber("SIP/1000");
+        appointment.setId("aID");
+        appointment.setExternalId("pID");
+        appointment.setDueDate(new Date());
+        appointment.setScheduledDate(new Date());
 
-        Mockito.when(appointmentsDAOMock.getAppointment("aID")).thenReturn(appointment);
-        Mockito.when(appointmentsDAOMock.get("pID")).thenReturn(patient);
+        Visit v = new Visit();
+        appointment.setVisit(v);
+
+        Mockito.when(appointmentsDAO.getAppointment("aID")).thenReturn(appointment);
+        Mockito.when(remindersDAO.getReminder("rID")).thenReturn(null);
 
         appointmentReminderEventHandler.handle(event);
 
         verify(outboundVoiceMessageDaoMock, times(0)).add(any(OutboundVoiceMessage.class));
     }
 
-
-    // Upcoming Tests
     @Test
-    public void testHandle() throws Exception {
+    public void testHandle_ScheduledAndVisitedNullReminder() throws Exception {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put(EventKeys.APPOINTMENT_ID_KEY, "aID");
+        params.put(EventKeys.REMINDER_ID_KEY, "rID");
+
+        MotechEvent event = new MotechEvent("", params);
+
+        Appointment appointment = new Appointment();
+        appointment.setId("aID");
+        appointment.setExternalId("pID");
+        appointment.setDueDate(new Date());
+        appointment.setScheduledDate(new Date());
+
+        Visit v = new Visit();
+        appointment.setVisit(v);
+
+        Mockito.when(appointmentsDAO.getAppointment("aID")).thenReturn(appointment);
+        Mockito.when(remindersDAO.getReminder("rID")).thenReturn(null);
+
+        appointmentReminderEventHandler.handle(event);
+
+        verify(outboundVoiceMessageDaoMock, times(0)).add(any(OutboundVoiceMessage.class));
+    }
+
+    @Test
+    public void testHandle_ScheduledAndNotVisitedUpcoming() throws Exception {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(EventKeys.APPOINTMENT_ID_KEY, "aID");
 
         MotechEvent event = new MotechEvent("", params);
 
         Appointment appointment = new Appointment();
-        appointment.setPatientId("pID");
-        Patient patient = new Patient();
-        patient.setId("pID");
-        patient.setPhoneNumber("SIP/1000");
+        appointment.setId("aID");
+        appointment.setExternalId("pID");
+        appointment.setDueDate(new Date());
 
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, 1);
+        appointment.setScheduledDate(cal.getTime());
+
+        Mockito.when(appointmentsDAO.getAppointment("aID")).thenReturn(appointment);
         ArgumentCaptor<OutboundVoiceMessage> argument = ArgumentCaptor.forClass(OutboundVoiceMessage.class);
 
-        Mockito.when(appointmentsDAOMock.getAppointment("aID")).thenReturn(appointment);
-        Mockito.when(appointmentsDAOMock.get("pID")).thenReturn(patient);
-
-        upcomingAppointmentEventHandler.handle(event);
+        appointmentReminderEventHandler.handle(event);
 
         verify(outboundVoiceMessageDaoMock, times(1)).add(argument.capture());
 
         OutboundVoiceMessage msg = argument.getValue();
-        assertEquals("http://test.org/?aptId=aID", msg.getVoiceMessageType().getvXmlUrl());
-        assertEquals("pID", msg.getPartyId());
+        assertTrue(msg.getVoiceMessageType().getvXmlUrl().endsWith("upcoming"));
     }
 
     @Test
-    public void testHandle_NoIDInEvent() throws Exception {
-        Map<String, Object> params = new HashMap<String, Object>();
-
-        MotechEvent event = new MotechEvent("", params);
-
-        Appointment appointment = new Appointment();
-        appointment.setPatientId("pID");
-        Patient patient = new Patient();
-        patient.setPhoneNumber("SIP/1000");
-
-        Mockito.when(appointmentsDAOMock.getAppointment("aID")).thenReturn(appointment);
-        Mockito.when(appointmentsDAOMock.get("pID")).thenReturn(patient);
-
-        upcomingAppointmentEventHandler.handle(event);
-
-        verify(outboundVoiceMessageDaoMock, times(0)).add(any(OutboundVoiceMessage.class));
-    }
-
-    @Test
-    public void testHandle_NullIDInEvent() throws Exception {
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put(EventKeys.APPOINTMENT_ID_KEY, null);
-
-        MotechEvent event = new MotechEvent("", params);
-
-        Appointment appointment = new Appointment();
-        appointment.setPatientId("pID");
-        Patient patient = new Patient();
-        patient.setPhoneNumber("SIP/1000");
-
-        Mockito.when(appointmentsDAOMock.getAppointment("aID")).thenReturn(appointment);
-        Mockito.when(appointmentsDAOMock.get("pID")).thenReturn(patient);
-
-        upcomingAppointmentEventHandler.handle(event);
-
-        verify(outboundVoiceMessageDaoMock, times(0)).add(any(OutboundVoiceMessage.class));
-    }
-
-    @Test
-    public void testHandle_InvalidIDInEvent() throws Exception {
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put(EventKeys.APPOINTMENT_ID_KEY, "invalid");
-
-        MotechEvent event = new MotechEvent("", params);
-
-        Appointment appointment = new Appointment();
-        appointment.setPatientId("pID");
-        Patient patient = new Patient();
-        patient.setPhoneNumber("SIP/1000");
-
-        Mockito.when(appointmentsDAOMock.getAppointment("aID")).thenReturn(appointment);
-        Mockito.when(appointmentsDAOMock.get("pID")).thenReturn(patient);
-
-        upcomingAppointmentEventHandler.handle(event);
-
-        verify(outboundVoiceMessageDaoMock, times(0)).add(any(OutboundVoiceMessage.class));
-    }
-
-    // Upcoming unscheduled tests
-    @Test
-    public void testHandle() throws Exception {
+    public void testHandle_ScheduledAndNotVisitedMissed() throws Exception {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(EventKeys.APPOINTMENT_ID_KEY, "aID");
 
         MotechEvent event = new MotechEvent("", params);
 
         Appointment appointment = new Appointment();
-        appointment.setPatientId("pID");
-        Patient patient = new Patient();
-        patient.setId("pID");
-        patient.setPhoneNumber("SIP/1000");
+        appointment.setId("aID");
+        appointment.setExternalId("pID");
+        appointment.setDueDate(new Date());
 
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -11);
+        appointment.setScheduledDate(cal.getTime());
+
+        Mockito.when(appointmentsDAO.getAppointment("aID")).thenReturn(appointment);
         ArgumentCaptor<OutboundVoiceMessage> argument = ArgumentCaptor.forClass(OutboundVoiceMessage.class);
 
-        Mockito.when(appointmentsDAOMock.getAppointment("aID")).thenReturn(appointment);
-        Mockito.when(appointmentsDAOMock.get("pID")).thenReturn(patient);
-
-        upcomingUnscheduledAppointmentEventHandler.handle(event);
+        appointmentReminderEventHandler.handle(event);
 
         verify(outboundVoiceMessageDaoMock, times(1)).add(argument.capture());
 
         OutboundVoiceMessage msg = argument.getValue();
-        assertEquals("http://test.org/?aptId=aID", msg.getVoiceMessageType().getvXmlUrl());
-        assertEquals("pID", msg.getPartyId());
+        assertTrue(msg.getVoiceMessageType().getvXmlUrl().endsWith("missed"));
     }
-
-    @Test
-    public void testHandle_NoIDInEvent() throws Exception {
-        Map<String, Object> params = new HashMap<String, Object>();
-
-        MotechEvent event = new MotechEvent("", params);
-
-        Appointment appointment = new Appointment();
-        appointment.setPatientId("pID");
-        Patient patient = new Patient();
-        patient.setPhoneNumber("SIP/1000");
-
-        Mockito.when(appointmentsDAOMock.getAppointment("aID")).thenReturn(appointment);
-        Mockito.when(appointmentsDAOMock.get("pID")).thenReturn(patient);
-
-        upcomingUnscheduledAppointmentEventHandler.handle(event);
-
-        verify(outboundVoiceMessageDaoMock, times(0)).add(any(OutboundVoiceMessage.class));
-    }
-
-    @Test
-    public void testHandle_NullIDInEvent() throws Exception {
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put(EventKeys.APPOINTMENT_ID_KEY, null);
-
-        MotechEvent event = new MotechEvent("", params);
-
-        Appointment appointment = new Appointment();
-        appointment.setPatientId("pID");
-        Patient patient = new Patient();
-        patient.setPhoneNumber("SIP/1000");
-
-        Mockito.when(appointmentsDAOMock.getAppointment("aID")).thenReturn(appointment);
-        Mockito.when(appointmentsDAOMock.get("pID")).thenReturn(patient);
-
-        upcomingUnscheduledAppointmentEventHandler.handle(event);
-
-        verify(outboundVoiceMessageDaoMock, times(0)).add(any(OutboundVoiceMessage.class));
-    }
-
-    @Test
-    public void testHandle_InvalidIDInEvent() throws Exception {
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put(EventKeys.APPOINTMENT_ID_KEY, "invalid");
-
-        MotechEvent event = new MotechEvent("", params);
-
-        Appointment appointment = new Appointment();
-        appointment.setPatientId("pID");
-        Patient patient = new Patient();
-        patient.setPhoneNumber("SIP/1000");
-
-        Mockito.when(appointmentsDAOMock.getAppointment("aID")).thenReturn(appointment);
-        Mockito.when(appointmentsDAOMock.get("pID")).thenReturn(patient);
-
-        upcomingUnscheduledAppointmentEventHandler.handle(event);
-
-        verify(outboundVoiceMessageDaoMock, times(0)).add(any(OutboundVoiceMessage.class));
-    }
-
-*/
 }
