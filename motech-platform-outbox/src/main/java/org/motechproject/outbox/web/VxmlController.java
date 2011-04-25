@@ -32,7 +32,7 @@
 package org.motechproject.outbox.web;
 
 import org.motechproject.outbox.model.OutboundVoiceMessage;
-import org.motechproject.server.service.VoiceOutboxService;
+import org.motechproject.server.outbox.service.VoiceOutboxService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,12 +46,14 @@ import javax.servlet.http.HttpServletResponse;
  * Spring MVC controller implementation provides method to handle HTTP requests and generate
  * Appointment Reminder related VXML documents
  *
- *
  * @author Igor (iopushnyev@2paths.com)
  */
 public class VxmlController extends MultiActionController {
 
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
+
+    public static final String NO_MESSAGE_TEMPLATE_NAME = "nonsg";
+    public static final String ERROR_MESSAGE_TEMPLATE_NAME = "msg_error";
 
     @Autowired
     VoiceOutboxService voiceOutboxService;
@@ -59,14 +61,14 @@ public class VxmlController extends MultiActionController {
     /**
      * Handles Appointment Reminder HTTP requests and generates a VXML document based on a Velocity template.
      * The HTTP request may contain an optional 'mId' parameter with value of ID of the message for which
-     *  VXML document will be generated. If the "mId" parameter is not passed the next pending voice message
-     *  will be obtained from the outbox and a VXML document will be generated for that message
-     *
-     *
-	 * URL to request appointment reminder VoiceXML:
-	 * http://<host>:<port>/<motech-platform-server>/module/outbox/vxml/msg?mId=<messageId>
-	 */
-	public ModelAndView msg(HttpServletRequest request, HttpServletResponse response) {
+     * VXML document will be generated. If the "mId" parameter is not passed the next pending voice message
+     * will be obtained from the outbox and a VXML document will be generated for that message
+     * <p/>
+     * <p/>
+     * URL to request appointment reminder VoiceXML:
+     * http://<host>:<port>/<motech-platform-server>/module/outbox/vxml/outboxMessage?mId=<messageId>
+     */
+    public ModelAndView outboxMessage(HttpServletRequest request, HttpServletResponse response) {
         logger.info("Generate appointment reminder VXML");
 
         response.setContentType("text/plain");
@@ -80,24 +82,32 @@ public class VxmlController extends MultiActionController {
 
         String messageId = request.getParameter("mId");
 
-        logger.debug("Message ID: " + messageId );
-
-        if (messageId  != null) {
-            logger.info("Generating VXML for the voice message ID: " + messageId);
-
-            mav.setViewName("msg");
-		    return mav;
-        }
+        logger.debug("Message ID: " + messageId);
 
         OutboundVoiceMessage voiceMessage = null;
 
+        if (messageId != null) {
+            logger.info("Generating VXML for the voice message ID: " + messageId);
+
+            try {
+                voiceMessage = voiceOutboxService.getMessageById(messageId);
+            } catch (Exception e) {
+                logger.error("Can not get message by ID: " + messageId +
+                        " " + e.getMessage(), e);
+                logger.warn("Generating a VXML with the error message...");
+                mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
+                return mav;
+            }
+        }
+
+
         try {
-            voiceOutboxService.getNextPendingMessage(partyId);
+            voiceMessage = voiceOutboxService.getNextPendingMessage(partyId);
         } catch (Exception e) {
             logger.error("Can not obtain next message from the outbox of the party ID: " + partyId +
                     " " + e.getMessage(), e);
             logger.warn("Generating a VXML with the error message...");
-            mav.setViewName("msg_error");
+            mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
             return mav;
         }
 
@@ -105,11 +115,12 @@ public class VxmlController extends MultiActionController {
         if (voiceMessage == null) {
 
             logger.info("There are no more messages in the outbox of the party ID: " + partyId);
-            mav.setViewName("nomsg");
-             return mav;
+            mav.setViewName(NO_MESSAGE_TEMPLATE_NAME);
+            return mav;
         }
 
-         return mav;
+        mav.setViewName(voiceMessage.getVoiceMessageType().getVoiceMessageTypeName());
+        return mav;
 
-	}
+    }
 }

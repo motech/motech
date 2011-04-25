@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" xmlns="http://www.w3.org/2001/vxml">
+    <menu>
+      <property name="inputmodes" value="dtmf"/>
+      <prompt>
+       To listen this message again press 1, to go to the next message press 2
+      </prompt>
+      <choice dtmf="1" next="${messageUrl}?mId=${messageId}"/>
+      <choice dtmf="2" next="${messageUrl}"/>
+    </menu>
+</vxml>
