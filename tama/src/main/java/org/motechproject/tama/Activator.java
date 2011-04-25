@@ -52,8 +52,6 @@ public class Activator implements BundleActivator {
 	private static final String SERVLET_URL_MAPPING = "/tama";
 	private ServiceTracker tracker;
     private AppointmentReminderEventHandler appointmentReminderEventHandler;
-    private UpcomingAppointmentEventHandler upcomingAppointmentEventHandler;
-    private UpcomingUnscheduledAppointmentEventHandler upcomingUnscheduledAppointmentEventHandler;
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -94,13 +92,7 @@ public class Activator implements BundleActivator {
 			}
 
             appointmentReminderEventHandler = dispatcherServlet.getWebApplicationContext().getBean(AppointmentReminderEventHandler.class);
-            Context.getInstance().getEventListenerRegistry().registerListener(appointmentReminderEventHandler, EventKeys.APPOINTMENT_MISSED_SUBJECT);
-
-            upcomingAppointmentEventHandler = dispatcherServlet.getWebApplicationContext().getBean(UpcomingAppointmentEventHandler.class);
-            Context.getInstance().getEventListenerRegistry().registerListener(upcomingAppointmentEventHandler, EventKeys.APPOINTMENT_UPCOMING_SUBJECT);
-
-            upcomingUnscheduledAppointmentEventHandler = dispatcherServlet.getWebApplicationContext().getBean(UpcomingUnscheduledAppointmentEventHandler.class);
-            Context.getInstance().getEventListenerRegistry().registerListener(upcomingUnscheduledAppointmentEventHandler, EventKeys.UNSCHEDULED_APPOINTMENT_UPCOMING);
+            Context.getInstance().getEventListenerRegistry().registerListener(appointmentReminderEventHandler, EventKeys.APPOINTMENT_REMINDER_EVENT_SUBJECT);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

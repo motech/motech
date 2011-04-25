@@ -96,7 +96,7 @@ public class VxmlController extends MultiActionController {
         }
 
         mav.setViewName(view);
-		mav.addObject("appointmentDueDate", appointment.getReminderWindowEnd());
+		mav.addObject("appointmentDueDate", appointment.getScheduledDate());
 		return mav;
     }
 

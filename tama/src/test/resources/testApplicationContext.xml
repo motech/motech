@@ -57,21 +57,4 @@
         <property name="generateHostBasedStats" value="false"/>
     </bean>
 
-<!-- 	<util:properties id="couchdbProperties" location="classpath:couchdb.properties" />
-
-	<bean id="patientDatabase" class="org.ektorp.impl.StdCouchDbConnector">
-		<constructor-arg value="patients" />
-		<constructor-arg>
-			<bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
-				<constructor-arg>
-					<bean class="org.ektorp.spring.HttpClientFactoryBean" />
-				</constructor-arg>
-			</bean>
-		</constructor-arg>
-	</bean>
-	<bean id="dao"
-		class="org.motechproject.server.appointmentspl.AppointmentDaoImpl">
-		<constructor-arg ref="patientDatabase" />
-	</bean> -->
-
 </beans>

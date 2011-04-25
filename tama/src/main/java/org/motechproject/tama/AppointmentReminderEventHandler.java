@@ -55,7 +55,7 @@ import java.util.Date;
 /**
  * Handles Remind Appointment Events
  * 
- *
+ * todo implement tests
  */
 public class AppointmentReminderEventHandler implements EventListener {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());

@@ -81,7 +81,7 @@ public class VxmlControllerTest {
 
         Appointment appointment = new Appointment();
         Date appointmentDate = new Date(12345L);
-        appointment.setReminderWindowEnd(appointmentDate);
+        appointment.setScheduledDate(appointmentDate);
 
         Mockito.when(request.getParameter("aptId")).thenReturn(appointmentId);
         Mockito.when(appointmentsDAO.getAppointment(appointmentId)).thenReturn(appointment);
@@ -143,7 +143,7 @@ public class VxmlControllerTest {
 
         Appointment appointment = new Appointment();
         Date appointmentDate = new Date(12345L);
-        appointment.setReminderWindowEnd(appointmentDate);
+        appointment.setScheduledDate(appointmentDate);
 
         Mockito.when(request.getParameter("aptId")).thenReturn(appointmentId);
         Mockito.when(appointmentsDAO.getAppointment(appointmentId)).thenReturn(appointment);
