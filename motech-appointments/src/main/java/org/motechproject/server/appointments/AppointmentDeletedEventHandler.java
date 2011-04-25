@@ -34,6 +34,8 @@ package org.motechproject.server.appointments;
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.dao.RemindersDAO;
 import org.motechproject.appointments.api.model.Reminder;
+import org.motechproject.context.Context;
+import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.EventListener;
 import org.slf4j.Logger;
@@ -52,8 +54,12 @@ public class AppointmentDeletedEventHandler implements EventListener {
     @Autowired
     private RemindersDAO remindersDAO;
 
+    private MetricsAgent metricsAgent = Context.getInstance().getMetricsAgent();
+
 	@Override
 	public void handle(MotechEvent event) {
+        metricsAgent.logEvent(event.getSubject());
+
         // If an appointment is deleted then we don't need any reminders hanging around.
         List<Reminder> reminders = remindersDAO.getReminders(EventKeys.getAppointmentId(event));
 

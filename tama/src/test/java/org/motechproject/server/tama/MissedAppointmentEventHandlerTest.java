@@ -9,7 +9,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.model.Appointment;
-import org.motechproject.tama.MissedAppointmentEventHandler;
+import org.motechproject.tama.AppointmentReminderEventHandler;
 import org.motechproject.tama.model.Patient;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.verify;
 public class MissedAppointmentEventHandlerTest extends TestCase {
 
     @InjectMocks
-    MissedAppointmentEventHandler missedAppointmentEventHandler = new MissedAppointmentEventHandler();
+    AppointmentReminderEventHandler appointmentReminderEventHandler = new AppointmentReminderEventHandler();
 
     @Mock
     private AppointmentsDAO appointmentsDAOMock;
@@ -37,7 +37,7 @@ public class MissedAppointmentEventHandlerTest extends TestCase {
     @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
-        missedAppointmentEventHandler.setVxmlUrl("http://test.org/");
+        appointmentReminderEventHandler.setVxmlUrl("http://test.org/");
      }
 
     @Test
@@ -58,7 +58,7 @@ public class MissedAppointmentEventHandlerTest extends TestCase {
         Mockito.when(appointmentsDAOMock.getAppointment("aID")).thenReturn(appointment);
         Mockito.when(appointmentsDAOMock.get("pID")).thenReturn(patient);
 
-        missedAppointmentEventHandler.handle(event);
+        appointmentReminderEventHandler.handle(event);
 
         verify(outboundVoiceMessageDaoMock, times(1)).add(argument.capture());
 
@@ -81,7 +81,7 @@ public class MissedAppointmentEventHandlerTest extends TestCase {
         Mockito.when(appointmentsDAOMock.getAppointment("aID")).thenReturn(appointment);
         Mockito.when(appointmentsDAOMock.get("pID")).thenReturn(patient);
 
-        missedAppointmentEventHandler.handle(event);
+        appointmentReminderEventHandler.handle(event);
 
         verify(outboundVoiceMessageDaoMock, times(0)).add(any(OutboundVoiceMessage.class));
     }
@@ -101,7 +101,7 @@ public class MissedAppointmentEventHandlerTest extends TestCase {
         Mockito.when(appointmentsDAOMock.getAppointment("aID")).thenReturn(appointment);
         Mockito.when(appointmentsDAOMock.get("pID")).thenReturn(patient);
 
-        missedAppointmentEventHandler.handle(event);
+        appointmentReminderEventHandler.handle(event);
 
         verify(outboundVoiceMessageDaoMock, times(0)).add(any(OutboundVoiceMessage.class));
     }
@@ -121,7 +121,7 @@ public class MissedAppointmentEventHandlerTest extends TestCase {
         Mockito.when(appointmentsDAOMock.getAppointment("aID")).thenReturn(appointment);
         Mockito.when(appointmentsDAOMock.get("pID")).thenReturn(patient);
 
-        missedAppointmentEventHandler.handle(event);
+        appointmentReminderEventHandler.handle(event);
 
         verify(outboundVoiceMessageDaoMock, times(0)).add(any(OutboundVoiceMessage.class));
     }

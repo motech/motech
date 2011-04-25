@@ -51,7 +51,7 @@ public class Activator implements BundleActivator {
 	private static final String CONTEXT_CONFIG_LOCATION = "applicationTAMA.xml";
 	private static final String SERVLET_URL_MAPPING = "/tama";
 	private ServiceTracker tracker;
-    private MissedAppointmentEventHandler missedAppointmentEventHandler;
+    private AppointmentReminderEventHandler appointmentReminderEventHandler;
     private UpcomingAppointmentEventHandler upcomingAppointmentEventHandler;
     private UpcomingUnscheduledAppointmentEventHandler upcomingUnscheduledAppointmentEventHandler;
 
@@ -93,11 +93,11 @@ public class Activator implements BundleActivator {
 				Thread.currentThread().setContextClassLoader(old);
 			}
 
-            missedAppointmentEventHandler = dispatcherServlet.getWebApplicationContext().getBean(MissedAppointmentEventHandler.class);
-            Context.getInstance().getEventListenerRegistry().registerListener(missedAppointmentEventHandler, EventKeys.SCHEDULED_APPOINTMENT_MISSED);
+            appointmentReminderEventHandler = dispatcherServlet.getWebApplicationContext().getBean(AppointmentReminderEventHandler.class);
+            Context.getInstance().getEventListenerRegistry().registerListener(appointmentReminderEventHandler, EventKeys.APPOINTMENT_MISSED_SUBJECT);
 
             upcomingAppointmentEventHandler = dispatcherServlet.getWebApplicationContext().getBean(UpcomingAppointmentEventHandler.class);
-            Context.getInstance().getEventListenerRegistry().registerListener(upcomingAppointmentEventHandler, EventKeys.SCHEDULED_APPOINTMENT_UPCOMING);
+            Context.getInstance().getEventListenerRegistry().registerListener(upcomingAppointmentEventHandler, EventKeys.APPOINTMENT_UPCOMING_SUBJECT);
 
             upcomingUnscheduledAppointmentEventHandler = dispatcherServlet.getWebApplicationContext().getBean(UpcomingUnscheduledAppointmentEventHandler.class);
             Context.getInstance().getEventListenerRegistry().registerListener(upcomingUnscheduledAppointmentEventHandler, EventKeys.UNSCHEDULED_APPOINTMENT_UPCOMING);

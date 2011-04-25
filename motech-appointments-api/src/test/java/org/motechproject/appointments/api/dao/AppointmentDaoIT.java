@@ -34,11 +34,12 @@ package org.motechproject.appointments.api.dao;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.appointments.api.model.Appointment;
+import org.motechproject.appointments.api.model.Visit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertNotNull;
+import java.util.Date;
 
 /**
  * Appointment DAO test
@@ -47,29 +48,27 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"/testApplicationsAPIContext.xml"})
 public class AppointmentDaoIT {
+
 	@Autowired
-	private AppointmentsDAO dao;
+	private AppointmentsDAO appointmentsDAO;
+
+    @Autowired
+    private RemindersDAO remindersDAO;
 
 	@Test
-	public void testCRUDandFindByParrentId() {
-		String appId = "000111"; 
-		String patientId = "0001";
+	public void testAddAppointment() {
+        Date now = new Date();
+
+        Visit visit = new Visit();
+        visit.setVisitDate(now);
+
 		Appointment app = new Appointment();
-		Appointment app1 = new Appointment();
-		app.setId(appId);
-		app1.setId("xxx");
-//		dao.addAppointment(app);
-//		dao.addAppointment(app1);
-//		app = dao.getAppointment(appId);
-		assertNotNull(app);
-//		app.setPatientArrived(true);
-//		app.setPatientId(patientId);
-//		dao.update(app);
-//		Set<Appointment> apps = dao.get(patientId).getAppointment
-//		assertNotNull(apps);
-//		System.out.print(apps.size());
-//		assertTrue(apps.size()==1);
-//		dao.removeAppointment(app);
-//		dao.removeAppointment(app1);
+        app.setDueDate(now);
+        app.setExternalId("foo");
+        app.setScheduledDate(now);
+        app.setVisit(visit);
+
+        appointmentsDAO.addAppointment(app);
+//		Appointment app1 = appointmentsDAO.getAppointment(app.getId());
 	}
 }

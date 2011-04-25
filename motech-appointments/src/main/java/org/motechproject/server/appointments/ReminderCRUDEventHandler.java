@@ -36,6 +36,7 @@ import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.dao.RemindersDAO;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.context.Context;
+import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.RunOnceSchedulableJob;
@@ -62,8 +63,11 @@ public class ReminderCRUDEventHandler implements EventListener {
     @Autowired
     private RemindersDAO remindersDAO;
 
+    private MetricsAgent metricsAgent = Context.getInstance().getMetricsAgent();
+
 	@Override
 	public void handle(MotechEvent event) {
+        metricsAgent.logEvent(event.getSubject());
 
         if (event.getSubject().endsWith("deleted")) {
             String jobId = EventKeys.getJobId(event);
@@ -104,7 +108,7 @@ public class ReminderCRUDEventHandler implements EventListener {
                     return;
                 }
 
-                MotechEvent reminderEvent = new MotechEvent(EventKeys.REMINDER_EVENT_SUBJECT, event.getParameters());
+                MotechEvent reminderEvent = new MotechEvent(EventKeys.APPOINTMENT_REMINDER_EVENT_SUBJECT, event.getParameters());
 
                 // This isn't the best model object, but basically if there are no units specified then it is a single
                 // reminder otherwise it is a repeating job

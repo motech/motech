@@ -34,8 +34,11 @@ package org.motechproject.tama;
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.context.AppointmentReminderContext;
 import org.motechproject.appointments.api.dao.AppointmentsDAO;
+import org.motechproject.appointments.api.dao.RemindersDAO;
 import org.motechproject.appointments.api.model.Appointment;
-import org.motechproject.tama.model.Patient;
+import org.motechproject.appointments.api.model.Reminder;
+import org.motechproject.context.Context;
+import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.outbox.api.context.OutboxContext;
 import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;
@@ -54,24 +57,25 @@ import java.util.Date;
  * 
  *
  */
-public class MissedAppointmentEventHandler implements EventListener {
+public class AppointmentReminderEventHandler implements EventListener {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public final static String MISSED_APPOINTMENT = "MissedAppointment";
+    public final static String TAMA_APPOINTMENT_REMINDER = "TamaAppointmentReminder";
 
-    AppointmentsDAO appointmentsDao = AppointmentReminderContext.getInstance().getAppointmentsDAO();
+    AppointmentsDAO appointmentsDAO = AppointmentReminderContext.getInstance().getAppointmentsDAO();
+    RemindersDAO remindersDAO = AppointmentReminderContext.getInstance().getRemindersDAO();
+    MetricsAgent metricsAgent = Context.getInstance().getMetricsAgent();
 
     OutboundVoiceMessageDao outboundVoiceMessageDao = OutboxContext.getInstance().getOutboundVoiceMessageDao();
 
     //Interim implementation
-    String vxmlUrl;
+    String needToScheduleAppointmentVxmlUrl = "";
+    String upcomingAppointmentVxmlUrl = "";
+    String missedAppointmentVxmlUrl = "";
 
-    public void setVxmlUrl(String vxmlUrl) {
-    	this.vxmlUrl = vxmlUrl;
-    }
-
-	@Override
+    @Override
 	public void handle(MotechEvent event) {
+        metricsAgent.logEvent(event.getSubject());
 
         String appointmentId = EventKeys.getAppointmentId(event);
         if (appointmentId == null) {
@@ -80,33 +84,65 @@ public class MissedAppointmentEventHandler implements EventListener {
             return;
         }
 
-        Appointment appointment = appointmentsDao.getAppointment(appointmentId);
+        Appointment appointment = appointmentsDAO.getAppointment(appointmentId);
         if (appointment == null) {
             log.error("Can not handle the Appointment Reminder Event: " + event +
                      ". The event is invalid - no appointment for id " + appointmentId);
             return;
         }
 
-        Patient patient = appointmentsDao.get(appointment.getExternalId());
+        // I need to figure out what state the patient is in.  Either they need to schedule an appointment,
+        // or their appointment is scheduled and they need to be reminded, or their appointment has past and they
+        // need to be scolded.
+        //
+        // I also am making an assumption that the reminders have been set up according to the m, n logic.  So I
+        // am not checking for that here.
 
-        String url = vxmlUrl + "?aptId=" + appointmentId;
+        String url = null;
+        if (null == appointment.getScheduledDate()) {
+            url = needToScheduleAppointmentVxmlUrl + "?aptId=" + appointmentId;
+        }
 
-        VoiceMessageType mt = new VoiceMessageType();
-        mt.setPriority(MessagePriority.MEDIUM);
-        mt.setvXmlUrl(url);
+        Date today = new Date();
+        if (null != appointment.getScheduledDate()) {
 
-        OutboundVoiceMessage msg = new OutboundVoiceMessage();
-        msg.setPartyId(patient.getId());
-        msg.setStatus(OutboundVoiceMessageStatus.PENDING);
-        msg.setCreationTime(new Date());
-        msg.setVoiceMessageType(mt);
+            // If they have visited the clinic disable this reminder
+            if (null != appointment.getVisit()) {
+                Reminder reminder = remindersDAO.getReminder(EventKeys.getReminderId(event));
+                reminder.setEnabled(false);
+                remindersDAO.updateReminder(reminder);
 
-        outboundVoiceMessageDao.add(msg);
+                return;
+            }
+
+            if (today.compareTo(appointment.getScheduledDate()) <= 0) {
+                url = upcomingAppointmentVxmlUrl + "?aptId=" + appointmentId;
+            } else {
+                url = missedAppointmentVxmlUrl + "?aptId=" + appointmentId;
+            }
+        }
+
+        if (null != url) {
+            VoiceMessageType mt = new VoiceMessageType();
+            mt.setPriority(MessagePriority.MEDIUM);
+            mt.setvXmlUrl(url);
+
+            OutboundVoiceMessage msg = new OutboundVoiceMessage();
+            msg.setPartyId(appointment.getExternalId());
+            msg.setStatus(OutboundVoiceMessageStatus.PENDING);
+            msg.setCreationTime(new Date());
+            msg.setVoiceMessageType(mt);
+
+            outboundVoiceMessageDao.add(msg);
+        } else {
+            log.warn(String.format("Unable to determine patient state for Appointment Reminder: AptId: %s Due Date: %s Scheduled Date: %s Today: %s",
+                                   appointment, appointment.getDueDate(), appointment.getScheduledDate(), today));
+        }
     }
 
     @Override
 	public String getIdentifier() {
-		return MISSED_APPOINTMENT;
+		return TAMA_APPOINTMENT_REMINDER;
 	}
 
 }

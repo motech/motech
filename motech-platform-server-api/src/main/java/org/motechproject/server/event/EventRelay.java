@@ -31,6 +31,7 @@
  */
 package org.motechproject.server.event;
 
+import org.motechproject.eventgateway.EventGateway;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.gateway.OutboundEventGateway;
@@ -43,7 +44,7 @@ import java.util.*;
 /**
  * This class handled incoming scheduled events and relays those events to the appropriate event listeners
  */
-public class EventRelay {
+public class EventRelay implements EventGateway {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired

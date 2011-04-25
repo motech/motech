@@ -48,7 +48,7 @@
 
 	<bean id="scheduleAppointmentReminderHandler" class="org.motechproject.server.appointments.ReminderCRUDEventHandler"/>
     <bean id="unscheduleAppointmentReminderHandler" class="org.motechproject.server.appointments.UnscheduleAppointmentReminderHandler"/>
-	<bean id="remindAppointmentEventHandler" class="org.motechproject.server.appointments.RemindAppointmentEventHandler"/>
+	<bean id="remindAppointmentEventHandler" class="org.motechproject.server.appointments.ReminderEventHandler"/>
 
     <bean id="motechContext" class="org.motechproject.context.Context" factory-method="getInstance" />
     

@@ -41,6 +41,11 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
 	<context:annotation-config />
+
+    <bean id="motechContext" class="org.motechproject.context.Context" factory-method="getInstance" />
+
+    <bean id="eventGateway" factory-bean="motechContext" factory-method="getEventRelay"/>
+
 	<util:properties id="couchdbProperties" location="classpath:couchdb.properties" />
 	<bean id="appointmentsDatabase" class="org.ektorp.impl.StdCouchDbConnector">
 		<constructor-arg value="test-appointments" />

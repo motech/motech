@@ -16,8 +16,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-//@RunWith(SpringJUnit4ClassRunner.class)
-//@ContextConfiguration(locations = {"/testApplicationsAPIContext.xml"})
 public class AppointmentsCouchDBDAOImplTest
 {
     @Mock
@@ -60,11 +58,5 @@ public class AppointmentsCouchDBDAOImplTest
     public Appointment getAppointment(String appointmentId);
     public void removeAppointment(String appointmentId);
     public void removeAppointment(Appointment appointment);
-
-    public void addAppointmentWindow(AppointmentWindow appointmentWindow);
-    public void updateAppointmentWindow(AppointmentWindow appointmentWindow);
-    public AppointmentWindow getAppointmentWindow(String appointmentWindowId);
-    public void removeAppointmentWindow(String appointmentWindowId);
-    public void removeAppointmentWindow(AppointmentWindow appointmentWindow);
              */
 }

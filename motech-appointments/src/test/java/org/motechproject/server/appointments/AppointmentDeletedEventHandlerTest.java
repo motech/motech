@@ -33,16 +33,14 @@ package org.motechproject.server.appointments;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.dao.RemindersDAO;
 import org.motechproject.appointments.api.model.Reminder;
+import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
-import org.springframework.test.context.ContextConfiguration;
 
 import java.util.*;
 
@@ -51,8 +49,6 @@ import static org.mockito.Mockito.*;
 /**
  *
  */
-@RunWith(MockitoJUnitRunner.class)
-@ContextConfiguration(locations = { "/testApplicationContext.xml" })
 public class AppointmentDeletedEventHandlerTest {
 
     @InjectMocks
@@ -60,6 +56,9 @@ public class AppointmentDeletedEventHandlerTest {
 
     @Mock
     private RemindersDAO remindersDAO;
+
+    @Mock
+    private MetricsAgent metricsAgent;
 
     @Before
     public void initMocks() {
