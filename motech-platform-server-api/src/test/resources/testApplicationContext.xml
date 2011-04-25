@@ -33,7 +33,7 @@
 
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:util="http://www.springframework.org/schema/util"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
@@ -91,5 +91,10 @@
         <property name="serverPort" value="9000"/>
         <property name="generateHostBasedStats" value="false"/>
     </bean>
+    
+    <!-- handels @MotechListner annotations -->
+    <bean class="org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor"/>
 	
+    <bean id="my-handler" class="org.motechproject.server.event.annotations.AnnotationBasedHandlerTest$MyHandler"/>
+
 </beans>
