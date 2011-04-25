@@ -44,17 +44,7 @@
 
 	<context:annotation-config />
     
-    <bean id="upcomingUnscheduledAppointmentEventHandler" class="org.motechproject.tama.UpcomingUnscheduledAppointmentEventHandler">
-        <property name="vxmlUrl" value="http://localhost:8080/m/module/tama/vxml/sar" />
-    </bean>
-
-    <bean id="upcomingAppointmentEventHandler" class="org.motechproject.tama.UpcomingAppointmentEventHandler">
-        <property name="vxmlUrl" value="http://localhost:8080/m/module/tama/vxml/ar" />
-    </bean>
-
-    <bean id="missedAppointmentEventHandler" class="org.motechproject.tama.AppointmentReminderEventHandler">
-        <property name="vxmlUrl" value="http://localhost:8080/m/module/tama/vxml/mar" />
-    </bean>
+    <bean id="appointmentReminderEventHandler" class="org.motechproject.tama.AppointmentReminderEventHandler"/>
 
     <bean id="controllerClassNameUrlMapping"
 		class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping">
@@ -86,6 +76,6 @@
 		<constructor-arg ref="couchDbInstance" />
 	</bean>
 
-	<bean id="tamaDAO" class="org.motechproject.tama.dao.impl.TamaCouchDBDAOImpl" />
+	<bean id="tamaDAO" class="org.motechproject.tama.dao.impl.TamaCouchDBDAOImpl"/>
 
 </beans>

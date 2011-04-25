@@ -56,7 +56,7 @@
     <bean id="couchDbInstance" factory-bean="motechContext" factory-method="getCouchDbInstance" />
 
 	<bean id="outboxDatabase" class="org.ektorp.impl.StdCouchDbConnector">
-		<constructor-arg value="outbox" />
+		<constructor-arg value="motech-outbox" />
 		<constructor-arg ref="couchDbInstance" />
 	</bean>
 

@@ -36,7 +36,7 @@ import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.dao.RemindersDAO;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.dao.MotechAuditableRepository;
-import org.motechproject.eventgateway.EventGateway;
+import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -51,7 +51,7 @@ import java.util.Map;
 public class RemindersCouchDBDAOImpl extends MotechAuditableRepository<Reminder> implements RemindersDAO
 {
     @Autowired
-    private EventGateway eventGateway;
+    private EventRelay eventRelay;
 
     @Autowired
     public RemindersCouchDBDAOImpl(@Qualifier("appointmentsDatabase") CouchDbConnector db) {
@@ -68,7 +68,7 @@ public class RemindersCouchDBDAOImpl extends MotechAuditableRepository<Reminder>
 
         db.create(reminder);
 
-        eventGateway.sendEventMessage(getSkinnyEvent(reminder, EventKeys.REMINDER_CREATED_SUBJECT));
+        eventRelay.sendEventMessage(getSkinnyEvent(reminder, EventKeys.REMINDER_CREATED_SUBJECT));
     }
 
     @Override
@@ -80,7 +80,7 @@ public class RemindersCouchDBDAOImpl extends MotechAuditableRepository<Reminder>
 
         db.update(reminder);
 
-        eventGateway.sendEventMessage(getSkinnyEvent(reminder, EventKeys.REMINDER_UPDATED_SUBJECT));
+        eventRelay.sendEventMessage(getSkinnyEvent(reminder, EventKeys.REMINDER_UPDATED_SUBJECT));
     }
 
     @Override
@@ -98,7 +98,7 @@ public class RemindersCouchDBDAOImpl extends MotechAuditableRepository<Reminder>
 
         db.delete(reminder);
 
-        eventGateway.sendEventMessage(event);
+        eventRelay.sendEventMessage(event);
     }
 
     @Override

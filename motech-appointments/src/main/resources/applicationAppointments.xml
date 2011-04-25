@@ -44,22 +44,24 @@
 
 	<context:annotation-config />
 
-    <bean id="appointmentReminderService" class="org.motechproject.server.appointments.service.AppointmentReminderServiceImpl"/>
-
-	<bean id="scheduleAppointmentReminderHandler" class="org.motechproject.server.appointments.ReminderCRUDEventHandler"/>
-    <bean id="unscheduleAppointmentReminderHandler" class="org.motechproject.server.appointments.UnscheduleAppointmentReminderHandler"/>
-	<bean id="remindAppointmentEventHandler" class="org.motechproject.server.appointments.ReminderEventHandler"/>
+	<bean id="reminderCRUDEventHandler" class="org.motechproject.server.appointments.ReminderCRUDEventHandler"/>
+    <bean id="appointmentDeletedEventHandler" class="org.motechproject.server.appointments.AppointmentDeletedEventHandler"/>
 
     <bean id="motechContext" class="org.motechproject.context.Context" factory-method="getInstance" />
     
     <!-- We have to use the couchDbInstance provided by the motech server context -->
     <bean id="couchDbInstance" factory-bean="motechContext" factory-method="getCouchDbInstance" />
     
-    <bean id="appointmentReminderDatabase" class="org.ektorp.impl.StdCouchDbConnector">
-		<constructor-arg value="appointment_reminder" />
+    <bean id="appointmentsDatabase" class="org.ektorp.impl.StdCouchDbConnector">
+		<constructor-arg value="motech-appointments" />
 		<constructor-arg ref="couchDbInstance" />
 	</bean>
 
-	<bean id="patientDAO" class="org.motechproject.appointmentreminder.dao.couchdb.PatientDAOImpl" />
+    <bean id="appointmentsDAO" class="org.motechproject.appointments.api.dao.impl.AppointmentsCouchDBDAOImpl"/>
+    <bean id="remindersDAO" class="org.motechproject.appointments.api.dao.impl.RemindersCouchDBDAOImpl"/>
+
+    <!-- server side event interfaces -->
+    <bean id="eventRelay" class="org.motechproject.event.EventRelay"/>
+    <bean id="eventListenerRegistry" class="org.motechproject.event.EventListenerRegistry"/>
 
 </beans>

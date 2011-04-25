@@ -35,9 +35,8 @@ import org.ektorp.CouchDbConnector;
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.model.Appointment;
-import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.dao.MotechAuditableRepository;
-import org.motechproject.eventgateway.EventGateway;
+import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -50,7 +49,7 @@ import java.util.Map;
 public class AppointmentsCouchDBDAOImpl extends MotechAuditableRepository<Appointment> implements AppointmentsDAO
 {
     @Autowired
-    private EventGateway eventGateway;
+    private EventRelay eventRelay;
 
     @Autowired
     public AppointmentsCouchDBDAOImpl(@Qualifier("appointmentsDatabase") CouchDbConnector db) {
@@ -63,7 +62,7 @@ public class AppointmentsCouchDBDAOImpl extends MotechAuditableRepository<Appoin
     {
         db.create(appointment);
 
-        eventGateway.sendEventMessage(getSkinnyEvent(appointment, EventKeys.APPOINTMENT_CREATED_SUBJECT));
+        eventRelay.sendEventMessage(getSkinnyEvent(appointment, EventKeys.APPOINTMENT_CREATED_SUBJECT));
     }
 
     @Override
@@ -71,7 +70,7 @@ public class AppointmentsCouchDBDAOImpl extends MotechAuditableRepository<Appoin
     {
         db.update(appointment);
 
-        eventGateway.sendEventMessage(getSkinnyEvent(appointment, EventKeys.APPOINTMENT_UPDATED_SUBJECT));
+        eventRelay.sendEventMessage(getSkinnyEvent(appointment, EventKeys.APPOINTMENT_UPDATED_SUBJECT));
     }
 
     @Override
@@ -96,7 +95,7 @@ public class AppointmentsCouchDBDAOImpl extends MotechAuditableRepository<Appoin
 
         db.delete(appointment);
 
-        eventGateway.sendEventMessage(event);
+        eventRelay.sendEventMessage(event);
     }
 
     private MotechEvent getSkinnyEvent(Appointment apt, String subject) {
