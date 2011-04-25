@@ -32,17 +32,19 @@
 package org.motechproject.tama.model;
 
 import org.ektorp.support.TypeDiscriminator;
+import org.motechproject.model.MotechAuditableDataObject;
 import org.motechproject.model.MotechBaseDataObject;
 
-public class Preferences extends MotechBaseDataObject {
+@TypeDiscriminator("doc.type === 'PREFERENCES'")
+public class Preferences extends MotechAuditableDataObject {
 
 	private static final long serialVersionUID = 7959940892352071956L;
-	@TypeDiscriminator
 	private String patientId;
 	private Integer bestTimeToCallHour;
 	private Integer bestTimeToCallMinute;
 	private Boolean enabled = Boolean.FALSE;
 	private String ivrCallJobId;
+    private final String type = "PREFERENCES";
 
 	/**
 	 * @return the patientId

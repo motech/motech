@@ -32,14 +32,17 @@
 package org.motechproject.tama.model;
 
 import org.ektorp.support.TypeDiscriminator;
+import org.motechproject.model.MotechAuditableDataObject;
 import org.motechproject.model.MotechBaseDataObject;
 
-public class Doctor extends MotechBaseDataObject {
+@TypeDiscriminator("doc.type === 'DOCTOR'")
+public class Doctor extends MotechAuditableDataObject {
 	
 	private static final long serialVersionUID = 6716142269089685993L;
 	@TypeDiscriminator
 	private String name;
 	private Clinic clinic;
+    private final String type = "DOCTOR";
 
 	/**
 	 * @return the name

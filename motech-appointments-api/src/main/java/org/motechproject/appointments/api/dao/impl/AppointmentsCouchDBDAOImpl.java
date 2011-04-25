@@ -32,6 +32,7 @@
 package org.motechproject.appointments.api.dao.impl;
 
 import org.ektorp.CouchDbConnector;
+import org.ektorp.support.GenerateView;
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.model.Appointment;
@@ -43,6 +44,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -79,6 +81,12 @@ public class AppointmentsCouchDBDAOImpl extends MotechAuditableRepository<Appoin
         Appointment appointment = db.get(Appointment.class, appointmentId);
         return appointment;
     }
+
+    @Override
+	@GenerateView
+	public List<Appointment> findByExternalId(String externalId) {
+		return queryView("by_externalId", externalId);
+	}
 
     @Override
     public void removeAppointment(String appointmentId)

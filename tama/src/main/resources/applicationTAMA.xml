@@ -76,6 +76,4 @@
 		<constructor-arg ref="couchDbInstance" />
 	</bean>
 
-	<bean id="tamaDAO" class="org.motechproject.tama.dao.impl.TamaCouchDBDAOImpl"/>
-
 </beans>

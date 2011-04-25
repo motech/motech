@@ -42,16 +42,17 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+@TypeDiscriminator("doc.type === 'PATIENT'")
 public class Patient extends MotechAuditableDataObject {
 
 	private static final long serialVersionUID = -4678392647206490010L;
-	@TypeDiscriminator
 	private String clinicPatientId;
 	private String gender;
 	private Clinic clinic;
 	private Doctor doctor;
 	private String phoneNumber;
 	private Preferences preferences;
+    private final String type = "PATIENT";
 
     @DocumentReferences(fetch = FetchType.LAZY, descendingSortOrder = true, orderBy = "visitDate", backReference = "patientId")
     private Set<Visit> visits;

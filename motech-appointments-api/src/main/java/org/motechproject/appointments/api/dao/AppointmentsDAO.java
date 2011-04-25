@@ -34,6 +34,8 @@ package org.motechproject.appointments.api.dao;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.dao.BaseDao;
 
+import java.util.List;
+
 // Responisble for publishing when appointments and appointment windows are
 // created, updated or deleted
 public interface AppointmentsDAO extends BaseDao<Appointment> {
@@ -41,6 +43,7 @@ public interface AppointmentsDAO extends BaseDao<Appointment> {
     public void addAppointment(Appointment appointment);
     public void updateAppointment(Appointment appointment);
     public Appointment getAppointment(String appointmentId);
+    public List<Appointment> findByExternalId(String externalId);
     public void removeAppointment(String appointmentId);
     public void removeAppointment(Appointment appointment);
 }
