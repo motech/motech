@@ -29,12 +29,11 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.gateway;
+package org.motechproject.gateway;
 
 import org.motechproject.model.MotechEvent;
-import org.motechproject.server.gateway.OutboundEventGateway;
 
-public class SampleOutboundEventGateway implements OutboundEventGateway {
+public class StubOutboundEventGateway implements OutboundEventGateway {
 
 	@Override
 	public void sendEventMessage(MotechEvent motechEvent) {

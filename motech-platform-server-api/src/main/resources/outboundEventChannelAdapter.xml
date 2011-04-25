@@ -44,7 +44,7 @@
 			http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd
 			">
 
-	<gateway service-interface="org.motechproject.server.gateway.OutboundEventGateway"
+	<gateway service-interface="org.motechproject.gateway.OutboundEventGateway"
 	 		id="outboundEventGateway"
 	 		default-request-channel="eventGatewayToEventJmsoutChannel"/>
 

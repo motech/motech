@@ -34,7 +34,7 @@ package org.motechproject.context;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.metrics.MetricsAgent;
-import org.motechproject.server.event.EventListenerRegistry;
+import org.motechproject.event.EventListenerRegistry;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 

@@ -44,7 +44,7 @@ import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.RunOnceSchedulableJob;
-import org.motechproject.server.gateway.MotechSchedulerGateway;
+import org.motechproject.gateway.MotechSchedulerGateway;
 
 import java.util.Calendar;
 import java.util.Date;

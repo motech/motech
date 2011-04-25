@@ -37,7 +37,7 @@ import org.asteriskjava.live.LiveException;
 import org.asteriskjava.live.OriginateCallback;
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.server.event.EventRelay;
+import org.motechproject.event.EventRelay;
 import org.motechproject.server.service.ivr.CallDetailRecord;
 import org.motechproject.server.service.ivr.CallRequest;
 import org.motechproject.server.service.ivr.IVREventDelegate;

@@ -29,18 +29,17 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.event;
+package org.motechproject.gateway;
 
 import org.motechproject.model.MotechEvent;
 
-public class SampleEventListener implements EventListener {
+public interface OutboundEventGateway {
 	
-	@Override
-	public void handle(MotechEvent event) {
-	}
-	
-	@Override
-	public String getIdentifier() {
-		return "TestEventListener";
-	}
+    /**
+     * Sends the given MotechEvent message as a payload to the message channel
+     *  defined in the Spring Integration configuration file.
+     *
+     * @param motechEvent
+     */
+    public void sendEventMessage(MotechEvent motechEvent);
 }

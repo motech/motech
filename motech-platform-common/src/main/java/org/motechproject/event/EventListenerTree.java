@@ -1,4 +1,4 @@
-package org.motechproject.server.event;
+package org.motechproject.event;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

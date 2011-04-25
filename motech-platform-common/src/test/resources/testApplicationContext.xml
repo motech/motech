@@ -43,40 +43,16 @@
 		 http://www.springframework.org/schema/util
 		 http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-	<!-- >import resource="integrationCommon.xml"/>
-    <import resource="inboundEventChannelAdapter.xml"/>
-    <import resource="outboundEventChannelAdapter.xml"/ -->
-
-	<!-- context:annotation-config / -->
-	
-	<util:properties id="osgiConfig" location="classpath:osgi.properties" />
-
-	<bean id="osgiFramework" class="org.apache.felix.framework.Felix">
-		<constructor-arg ref="osgiConfig" />
-	</bean>
-
-	<bean id="osgiFrameworkService" class="org.motechproject.server.osgi.OsgiFrameworkService">
-		<property name="internalBundleFolder" value="/bundles" />
-		<property name="externalBundleFolder" value="#{systemProperties['user.home']}/.motech/bundles" />
-		<property name="bundleLoaders">
-			<list>
-				<bean id="log4jBundleTracker" class="org.motechproject.server.osgi.Log4JBundleLoader" />
-			</list>
-		</property>
-	</bean>
-
-	<bean id="outboundEventGateway" class="org.motechproject.gateway.StubOutboundEventGateway" />
     <!--
+    <bean id="outboundEventGateway" class="org.motechproject.gateway.StubOutboundEventGateway" />
+    -->
     <bean id="outboundEventGateway" class="org.mockito.Mockito" factory-method="mock">
         <constructor-arg value="org.motechproject.gateway.StubOutboundEventGateway" />
     </bean>
-    -->
 
     <bean id="eventRelay" class="org.motechproject.event.EventRelay"/>
 	
 	<bean id="eventListenerRegistry" class="org.motechproject.event.EventListenerRegistry" />
-	
-	<bean id="context" class="org.motechproject.context.Context" factory-method="getInstance"/>
 
     <bean id="metricsAgent" class="org.motechproject.metrics.impl.MultipleMetricsAgentImpl">
         <property name="metricsAgents">

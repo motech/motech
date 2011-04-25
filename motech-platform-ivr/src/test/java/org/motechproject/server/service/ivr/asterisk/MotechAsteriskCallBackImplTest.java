@@ -41,8 +41,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.server.event.EventRelay;
-import org.motechproject.server.gateway.OutboundEventGateway;
+import org.motechproject.event.EventRelay;
 import org.motechproject.server.service.ivr.CallRequest;
 
 import static org.mockito.Mockito.*;

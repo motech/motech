@@ -42,8 +42,8 @@ import org.motechproject.context.Context;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.outbox.api.EventKeys;
-import org.motechproject.server.event.EventListener;
-import org.motechproject.server.gateway.MotechSchedulerGateway;
+import org.motechproject.event.EventListener;
+import org.motechproject.gateway.MotechSchedulerGateway;
 
 import static org.mockito.Mockito.*;
 

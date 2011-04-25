@@ -29,23 +29,46 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.event;
+package org.motechproject.appointments.api.dao;
 
-import org.motechproject.model.MotechEvent;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.motechproject.appointments.api.model.Appointment;
+import org.motechproject.appointments.api.model.Visit;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-public interface EventListener {
-	
-	/**
-	 * Handle an particular event that has been received
-	 * @param event
-	 */
-    public void handle(MotechEvent event);
-    
-    /**
-     * Retrieve a unique identifier/key for the given listener class. This identifier is used
-     * when messages are destine for this specific listener type
-     *  
-     * @return Unique listener identifier/key
-     */
-    public String getIdentifier();
+import java.util.Date;
+
+/**
+ * Appointment DAO test
+ * @author yyonkov
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"/testAppointmentsAPIContext.xml"})
+public class AppointmentDaoIT {
+
+	@Autowired
+	private AppointmentsDAO appointmentsDAO;
+
+    @Autowired
+    private RemindersDAO remindersDAO;
+
+	@Test
+	public void testAddAppointment() {
+        Date now = new Date();
+
+        Visit visit = new Visit();
+        visit.setVisitDate(now);
+
+		Appointment app = new Appointment();
+        app.setDueDate(now);
+        app.setExternalId("foo");
+        app.setScheduledDate(now);
+        app.setVisit(visit);
+
+        appointmentsDAO.addAppointment(app);
+//		Appointment app1 = appointmentsDAO.getAppointment(app.getId());
+	}
 }

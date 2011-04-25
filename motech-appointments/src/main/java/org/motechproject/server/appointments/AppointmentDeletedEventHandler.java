@@ -37,7 +37,7 @@ import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.context.Context;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.server.event.EventListener;
+import org.motechproject.event.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

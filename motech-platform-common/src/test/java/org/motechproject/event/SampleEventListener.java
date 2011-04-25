@@ -29,46 +29,18 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.appointments.api.dao;
+package org.motechproject.event;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.motechproject.appointments.api.model.Appointment;
-import org.motechproject.appointments.api.model.Visit;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.motechproject.model.MotechEvent;
 
-import java.util.Date;
-
-/**
- * Appointment DAO test
- * @author yyonkov
- */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/testApplicationsAPIContext.xml"})
-public class AppointmentDaoIT {
-
-	@Autowired
-	private AppointmentsDAO appointmentsDAO;
-
-    @Autowired
-    private RemindersDAO remindersDAO;
-
-	@Test
-	public void testAddAppointment() {
-        Date now = new Date();
-
-        Visit visit = new Visit();
-        visit.setVisitDate(now);
-
-		Appointment app = new Appointment();
-        app.setDueDate(now);
-        app.setExternalId("foo");
-        app.setScheduledDate(now);
-        app.setVisit(visit);
-
-        appointmentsDAO.addAppointment(app);
-//		Appointment app1 = appointmentsDAO.getAppointment(app.getId());
+public class SampleEventListener implements EventListener {
+	
+	@Override
+	public void handle(MotechEvent event) {
+	}
+	
+	@Override
+	public String getIdentifier() {
+		return "TestEventListener";
 	}
 }

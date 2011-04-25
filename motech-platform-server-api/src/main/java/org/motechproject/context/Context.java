@@ -32,10 +32,10 @@
 package org.motechproject.context;
 
 import org.ektorp.CouchDbInstance;
+import org.motechproject.event.EventListenerRegistry;
+import org.motechproject.event.EventRelay;
 import org.motechproject.metrics.MetricsAgent;
-import org.motechproject.server.event.EventListenerRegistry;
-import org.motechproject.server.event.EventRelay;
-import org.motechproject.server.gateway.MotechSchedulerGateway;
+import org.motechproject.gateway.MotechSchedulerGateway;
 import org.motechproject.server.ruleengine.KnowledgeBaseManager;
 import org.motechproject.server.service.ivr.IVRService;
 import org.springframework.beans.factory.annotation.Autowired;

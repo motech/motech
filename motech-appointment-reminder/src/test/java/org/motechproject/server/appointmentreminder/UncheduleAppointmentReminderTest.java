@@ -45,8 +45,8 @@ import org.motechproject.appointmentreminder.model.Patient;
 import org.motechproject.appointmentreminder.model.Preferences;
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.server.event.EventListener;
-import org.motechproject.server.gateway.MotechSchedulerGateway;
+import org.motechproject.event.EventListener;
+import org.motechproject.gateway.MotechSchedulerGateway;
 
 import java.util.Date;
 import java.util.HashMap;

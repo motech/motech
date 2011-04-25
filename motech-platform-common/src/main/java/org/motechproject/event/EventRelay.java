@@ -29,12 +29,12 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.event;
+package org.motechproject.event;
 
 import org.motechproject.eventgateway.EventGateway;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.server.gateway.OutboundEventGateway;
+import org.motechproject.gateway.OutboundEventGateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

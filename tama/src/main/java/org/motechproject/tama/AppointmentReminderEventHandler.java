@@ -46,7 +46,7 @@ import org.motechproject.outbox.api.model.MessagePriority;
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
 import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.model.VoiceMessageType;
-import org.motechproject.server.event.EventListener;
+import org.motechproject.event.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,6 +56,7 @@ import java.util.Date;
  * Handles Remind Appointment Events
  * 
  * todo implement tests
+ * todo need to get clarity around what goes in server-common vs. server-api
  */
 public class AppointmentReminderEventHandler implements EventListener {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());

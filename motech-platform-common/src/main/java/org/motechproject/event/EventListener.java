@@ -29,17 +29,23 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.gateway;
+package org.motechproject.event;
 
 import org.motechproject.model.MotechEvent;
 
-public interface OutboundEventGateway {
+public interface EventListener {
 	
+	/**
+	 * Handle an particular event that has been received
+	 * @param event
+	 */
+    public void handle(MotechEvent event);
+    
     /**
-     * Sends the given MotechEvent message as a payload to the message channel
-     *  defined in the Spring Integration configuration file.
-     *
-     * @param motechEvent
+     * Retrieve a unique identifier/key for the given listener class. This identifier is used
+     * when messages are destine for this specific listener type
+     *  
+     * @return Unique listener identifier/key
      */
-    public void sendEventMessage(MotechEvent motechEvent);
+    public String getIdentifier();
 }

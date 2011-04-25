@@ -39,7 +39,7 @@ import org.motechproject.appointmentreminder.model.Patient;
 import org.motechproject.appointmentreminder.model.Visit;
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.server.event.EventRelay;
+import org.motechproject.event.EventRelay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -42,9 +42,15 @@
 
 	<context:annotation-config />
 
-    <bean id="motechContext" class="org.motechproject.context.Context" factory-method="getInstance" />
+    <bean id="eventGateway" class="org.motechproject.event.EventRelay"/>
+    <bean id="eventListenerRegistry" class="org.motechproject.event.EventListenerRegistry"/>
 
-    <bean id="eventGateway" factory-bean="motechContext" factory-method="getEventRelay"/>
+    <bean id="outboundEventGateway" class="org.motechproject.gateway.StubOutboundEventGateway" />
+<!--
+    <bean id="outboundEventGateway" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="org.motechproject.gateway.StubOutboundEventGateway" />
+    </bean>
+-->
 
 	<util:properties id="couchdbProperties" location="classpath:couchdb.properties" />
 	<bean id="appointmentsDatabase" class="org.ektorp.impl.StdCouchDbConnector">
@@ -59,5 +65,21 @@
 	</bean>
 
     <bean id="appointmentsDAO" class="org.motechproject.appointments.api.dao.impl.AppointmentsCouchDBDAOImpl" />
+    <bean id="remindersDAO" class="org.motechproject.appointments.api.dao.impl.RemindersCouchDBDAOImpl" />
 
+    <bean id="metricsAgent" class="org.motechproject.metrics.impl.MultipleMetricsAgentImpl">
+        <property name="metricsAgents">
+            <list>
+                <ref bean="loggingAgent"/>
+                <ref bean="statsdAgent"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="loggingAgent" class="org.motechproject.metrics.impl.LoggingAgentBackendImpl"/>
+    <bean id="statsdAgent" class="org.motechproject.metrics.impl.StatsdAgentBackendImpl">
+        <property name="serverHost" value="localhost"/>
+        <property name="serverPort" value="9000"/>
+        <property name="generateHostBasedStats" value="false"/>
+    </bean>
 </beans>

@@ -29,7 +29,7 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.event;
+package org.motechproject.event;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -103,7 +103,7 @@ public class EventListenerTreeTest
 
     @Test(expected = IllegalArgumentException.class)
     public void testAddListener_InvalidSubjectWildcard() {
-        tree.addListener(el, "org.motechproject.server.event*");
+        tree.addListener(el, "org.motechproject.event*");
     }
 
     @Test(expected = IllegalArgumentException.class)

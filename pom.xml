@@ -132,6 +132,10 @@
                             <exclude>org/motechproject/**/Activator$1.class</exclude>
                             <exclude>org/motechproject/**/EventKeys.class</exclude>
 
+                            <exclude>org/motechproject/server/osgi/*.class</exclude>
+                            <exclude>org/motechproject/server/ruleengine/*.class</exclude>
+                            <exclude>org/motechproject/server/service/ivr/*.class</exclude>
+                            <exclude>org/motechproject/gateway/*.class</exclude>
 						</excludes>
 					</instrumentation>
 					<check>

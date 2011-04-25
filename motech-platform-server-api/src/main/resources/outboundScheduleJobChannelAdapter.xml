@@ -44,7 +44,7 @@
 			http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd
 			">
 
-	<gateway service-interface="org.motechproject.server.gateway.MotechSchedulerGateway"
+	<gateway service-interface="org.motechproject.gateway.MotechSchedulerGateway"
 	 		id="outboundScheduleJobGateway"
 	 		default-request-channel="scheduleJobGatewayToEventJmsoutChannel"/>
 
