@@ -77,6 +77,7 @@ public class EventAnnotationBeanPostProcessor implements BeanPostProcessor {
 				if(annotation!=null) {
 					final List<String> subjects = Arrays.asList(annotation.subjects());
 					final Method mtd = method;
+					logger.info("Registering listener: "+beanName+", method: "+method.getName()+", for subjects: "+subjects);
 					Context.getInstance().getEventListenerRegistry().registerListener(new EventListener() {
 						@Override
 						public void handle(MotechEvent event) {
