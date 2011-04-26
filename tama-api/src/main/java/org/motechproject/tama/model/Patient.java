@@ -31,36 +31,62 @@
  */
 package org.motechproject.tama.model;
 
-import org.ektorp.docref.DocumentReferences;
-import org.ektorp.docref.FetchType;
 import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.appointments.api.model.Appointment;
-import org.motechproject.appointments.api.model.Visit;
 import org.motechproject.model.MotechAuditableDataObject;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Date;
 
 @TypeDiscriminator("doc.type === 'PATIENT'")
 public class Patient extends MotechAuditableDataObject {
 
 	private static final long serialVersionUID = -4678392647206490010L;
+
+    public enum Status {
+	    ACTIVE, INACTIVE
+    }
+
+    public enum InterventionProgram {
+	    //Hardcoded a program for now
+	    PROGRAM
+    }
+
+    public enum Gender {
+    	MALE("Male"), FEMALE("Female"), HIJIRA("Hijira");
+        private String text;
+
+        Gender(String text) {
+            this.text = text;
+        }
+
+        public String getText() {
+            return this.text;
+        }
+
+        public static Gender fromString(String text) {
+            if (text != null) {
+                for (Gender b : Gender.values()) {
+                    if (text.equalsIgnoreCase(b.text)) {
+                      return b;
+                    }
+                }
+            }
+            return null;
+        }
+    }
+
 	private String clinicPatientId;
-	private String gender;
+	private Gender gender;
 	private Clinic clinic;
 	private Doctor doctor;
 	private String phoneNumber;
 	private Preferences preferences;
+	private String passcode;
+	private InterventionProgram interventionProgram = InterventionProgram.PROGRAM;
+	private Date dateOfBirth;
+	private Status status = Status.ACTIVE;
+
     private final String type = "PATIENT";
 
-    @DocumentReferences(fetch = FetchType.LAZY, descendingSortOrder = true, orderBy = "visitDate", backReference = "patientId")
-    private Set<Visit> visits;
-
-    @DocumentReferences(fetch = FetchType.LAZY, descendingSortOrder = true, orderBy = "windowStartDate", backReference = "patientId")
-    private Set<Appointment> appointments;
-
-	
 	/**
 	 * @return the clinicPatientId
 	 */
@@ -88,13 +114,13 @@ public class Patient extends MotechAuditableDataObject {
 	/**
 	 * @return the gender
 	 */
-	public String getGender() {
+	public Gender getGender() {
 		return gender;
 	}
 	/**
 	 * @param gender the gender to set
 	 */
-	public void setGender(String gender) {
+	public void setGender(Gender gender) {
 		this.gender = gender;
 	}
 	/**
@@ -134,39 +160,47 @@ public class Patient extends MotechAuditableDataObject {
 	public void setPreferences(Preferences preferences) {
 		this.preferences = preferences;
 	}
-	
-    public Set<Visit> getVisits() {
-        return visits == null ? Collections.<Visit>emptySet(): visits;
+
+    public String getPasscode()
+    {
+        return passcode;
     }
 
-    public void setVisits(Set<Visit> visits) {
-        this.visits = visits == null ? Collections.<Visit>emptySet() : visits;
+    public void setPasscode(String passcode)
+    {
+        this.passcode = passcode;
     }
 
-    public void addVisit(Visit visit) {
-        if (visits == null) {
-            visits = new HashSet<Visit>();
-        }
-		this.visits.add(visit);
-	}
-
-    public Set<Appointment> getAppointments() {
-        return appointments;
+    public InterventionProgram getInterventionProgram()
+    {
+        return interventionProgram;
     }
 
-    public void setAppointments(Set<Appointment> appointments) {
-        this.appointments = appointments == null ? Collections.<Appointment>emptySet(): appointments;
-    }
-    
-    public void addAppointment(Appointment appointment) {
-        if (appointments == null) {
-            appointments = new HashSet<Appointment>();
-        }
-    	this.appointments.add(appointment);
+    public void setInterventionProgram(InterventionProgram interventionProgram)
+    {
+        this.interventionProgram = interventionProgram;
     }
 
-	
-	
+    public Date getDateOfBirth()
+    {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(Date dateOfBirth)
+    {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public Status getStatus()
+    {
+        return status;
+    }
+
+    public void setStatus(Status status)
+    {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "id = " + this.getId() + ", clinic patient id = " + clinicPatientId + ", gender = " + this.gender + ", phone number = " + phoneNumber + "preferences = {" + ((this.preferences != null) ? this.preferences.toString() : "null") + ", clinic = {" + ((this.clinic != null) ? this.clinic.toString() : "null") + "}, doctor = {" + ((this.doctor != null) ? doctor.toString() : "null") + "}"; 

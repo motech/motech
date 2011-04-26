@@ -33,7 +33,6 @@ package org.motechproject.tama.model;
 
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechAuditableDataObject;
-import org.motechproject.model.MotechBaseDataObject;
 
 @TypeDiscriminator("doc.type === 'PREFERENCES'")
 public class Preferences extends MotechAuditableDataObject {
@@ -43,10 +42,12 @@ public class Preferences extends MotechAuditableDataObject {
 	private Integer bestTimeToCallHour;
 	private Integer bestTimeToCallMinute;
 	private Boolean enabled = Boolean.FALSE;
-	private String ivrCallJobId;
+	private String clinicId;
+    private Boolean appointmentReminderEnabled; // Is the appointment reminder enabled
+
     private final String type = "PREFERENCES";
 
-	/**
+    /**
 	 * @return the patientId
 	 */
 	public String getPatientId() {
@@ -88,14 +89,26 @@ public class Preferences extends MotechAuditableDataObject {
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
-	
-    public String getIvrCallJobId() {
-		return ivrCallJobId;
-	}
 
-	public void setIvrCallJobId(String ivrCallJobId) {
-		this.ivrCallJobId = ivrCallJobId;
-	}
+    public String getClinicId()
+    {
+        return clinicId;
+    }
+
+    public void setClinicId(String clinicId)
+    {
+        this.clinicId = clinicId;
+    }
+
+    public Boolean getAppointmentReminderEnabled()
+    {
+        return appointmentReminderEnabled;
+    }
+
+    public void setAppointmentReminderEnabled(Boolean appointmentReminderEnabled)
+    {
+        this.appointmentReminderEnabled = appointmentReminderEnabled;
+    }
 
 	@Override
     public String toString() {
