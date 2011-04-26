@@ -78,7 +78,7 @@ public class AppointmentDeletedEventHandlerTest {
         List<Reminder> reminders = new ArrayList<Reminder>();
         reminders.add(r);
 
-        when(remindersDAO.getReminders(appointmentId)).thenReturn(reminders);
+        when(remindersDAO.getRemindersByAppointmentId(appointmentId)).thenReturn(reminders);
 
         appointmentDeletedEventHandler.handle(motechEvent);
 
@@ -100,7 +100,7 @@ public class AppointmentDeletedEventHandlerTest {
         reminders.add(r);
         reminders.add(r2);
 
-        when(remindersDAO.getReminders(appointmentId)).thenReturn(reminders);
+        when(remindersDAO.getRemindersByAppointmentId(appointmentId)).thenReturn(reminders);
 
         appointmentDeletedEventHandler.handle(motechEvent);
 
@@ -117,7 +117,7 @@ public class AppointmentDeletedEventHandlerTest {
         List<Reminder> reminders = new ArrayList<Reminder>();
         reminders.add(r);
 
-        when(remindersDAO.getReminders(null)).thenReturn(Collections.<Reminder>emptyList());
+        when(remindersDAO.getRemindersByAppointmentId(null)).thenReturn(Collections.<Reminder>emptyList());
 
         appointmentDeletedEventHandler.handle(motechEvent);
 

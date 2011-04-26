@@ -128,7 +128,8 @@ public class AppointmentReminderEventHandlerTest extends TestCase {
         appointment.setScheduledDate(new Date());
 
         Visit v = new Visit();
-        appointment.setVisit(v);
+        v.setId("vID");
+        appointment.setVisitId(v.getId());
 
         Reminder reminder = new Reminder();
 
@@ -154,7 +155,8 @@ public class AppointmentReminderEventHandlerTest extends TestCase {
         appointment.setScheduledDate(new Date());
 
         Visit v = new Visit();
-        appointment.setVisit(v);
+        v.setId("vID");
+        appointment.setVisitId(v.getId());
 
         Mockito.when(appointmentsDAO.getAppointment("aID")).thenReturn(appointment);
         Mockito.when(remindersDAO.getReminder("rID")).thenReturn(null);
@@ -179,7 +181,8 @@ public class AppointmentReminderEventHandlerTest extends TestCase {
         appointment.setScheduledDate(new Date());
 
         Visit v = new Visit();
-        appointment.setVisit(v);
+        v.setId("vID");
+        appointment.setVisitId(v.getId());
 
         Mockito.when(appointmentsDAO.getAppointment("aID")).thenReturn(appointment);
         Mockito.when(remindersDAO.getReminder("rID")).thenReturn(null);

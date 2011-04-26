@@ -61,7 +61,7 @@ public class AppointmentDeletedEventHandler implements EventListener {
         metricsAgent.logEvent(event.getSubject());
 
         // If an appointment is deleted then we don't need any reminders hanging around.
-        List<Reminder> reminders = remindersDAO.getReminders(EventKeys.getAppointmentId(event));
+        List<Reminder> reminders = remindersDAO.getRemindersByAppointmentId(EventKeys.getAppointmentId(event));
 
         for (Reminder r : reminders) {
             remindersDAO.removeReminder(r);

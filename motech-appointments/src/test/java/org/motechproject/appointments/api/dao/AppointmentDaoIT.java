@@ -66,7 +66,6 @@ public class AppointmentDaoIT {
         app.setDueDate(now);
         app.setExternalId("foo");
         app.setScheduledDate(now);
-        app.setVisit(visit);
 
         appointmentsDAO.addAppointment(app);
 //		Appointment app1 = appointmentsDAO.getAppointment(app.getId());

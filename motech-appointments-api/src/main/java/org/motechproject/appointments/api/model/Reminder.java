@@ -43,6 +43,7 @@ public class Reminder extends MotechAuditableDataObject
     public enum intervalUnits {SECONDS, MINUTES, HOURS, DAYS, WEEKS};
 
     private String appointmentId;
+    private String externalId;
     private Boolean enabled;
     private Date startDate;
     private Date endDate;
@@ -60,6 +61,16 @@ public class Reminder extends MotechAuditableDataObject
     public void setAppointmentId(String appointmentId)
     {
         this.appointmentId = appointmentId;
+    }
+
+    public String getExternalId()
+    {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId)
+    {
+        this.externalId = externalId;
     }
 
     public Boolean getEnabled()

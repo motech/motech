@@ -31,17 +31,59 @@
  */
 package org.motechproject.appointments.api.model;
 
+import org.ektorp.support.TypeDiscriminator;
+import org.motechproject.model.MotechAuditableDataObject;
+
 import java.util.Date;
 
-public class Visit {
+@TypeDiscriminator("doc.type === 'VISIT'")
+public class Visit extends MotechAuditableDataObject
+{
 
+    private String externalId;
     private Date visitDate;
+    private String title;
+    private String appointmentId;
 
-    public Date getVisitDate() {
+    private final String type = "VISIT";
+
+    public String getExternalId()
+    {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId)
+    {
+        this.externalId = externalId;
+    }
+
+    public Date getVisitDate()
+    {
         return visitDate;
     }
 
-    public void setVisitDate(Date visitDate) {
+    public void setVisitDate(Date visitDate)
+    {
         this.visitDate = visitDate;
+    }
+
+    public String getTitle()
+    {
+        return title;
+    }
+
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
+
+    public String getAppointmentId()
+    {
+        return appointmentId;
+    }
+
+    public void setAppointmentId(String appointmentId)
+    {
+        this.appointmentId = appointmentId;
     }
 }

@@ -33,8 +33,8 @@ package org.motechproject.appointments.api.dao.impl;
 
 import org.ektorp.CouchDbConnector;
 import org.motechproject.appointments.api.EventKeys;
-import org.motechproject.appointments.api.dao.RemindersDAO;
-import org.motechproject.appointments.api.model.Reminder;
+import org.motechproject.appointments.api.dao.VisitsDAO;
+import org.motechproject.appointments.api.model.Visit;
 import org.motechproject.dao.MotechAuditableRepository;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
@@ -48,92 +48,82 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class RemindersCouchDBDAOImpl extends MotechAuditableRepository<Reminder> implements RemindersDAO
+public class VisitsCouchDBDAOImpl extends MotechAuditableRepository<Visit> implements VisitsDAO
 {
     @Autowired
     private EventRelay eventRelay;
 
     @Autowired
-    public RemindersCouchDBDAOImpl(@Qualifier("appointmentsDatabase") CouchDbConnector db) {
-        super(Reminder.class, db);
+    public VisitsCouchDBDAOImpl(@Qualifier("appointmentsDatabase") CouchDbConnector db) {
+        super(Visit.class, db);
         initStandardDesignDocument();
     }
 
     @Override
-    public void addReminder(Reminder reminder)
+    public void addVisit(Visit visit)
     {
-        if (null == reminder.getAppointmentId()) {
-            throw new IllegalArgumentException("Reminder must be associated with an appointment");
-        }
+        db.create(visit);
 
-        db.create(reminder);
-
-        eventRelay.sendEventMessage(getSkinnyEvent(reminder, EventKeys.REMINDER_CREATED_SUBJECT));
+        eventRelay.sendEventMessage(getSkinnyEvent(visit, EventKeys.VISIT_CREATED_SUBJECT));
     }
 
     @Override
-    public void updateReminder(Reminder reminder)
+    public void updateVisit(Visit visit)
     {
-        if (null == reminder.getAppointmentId()) {
-            throw new IllegalArgumentException("Reminder must be associated with an appointment");
-        }
+        db.update(visit);
 
-        db.update(reminder);
-
-        eventRelay.sendEventMessage(getSkinnyEvent(reminder, EventKeys.REMINDER_UPDATED_SUBJECT));
+        eventRelay.sendEventMessage(getSkinnyEvent(visit, EventKeys.VISIT_UPDATED_SUBJECT));
     }
 
     @Override
-    public void removeReminder(String reminderId)
+    public void removeVisit(String visitId)
     {
-        Reminder reminder = getReminder(reminderId);
+        Visit visit = getVisit(visitId);
 
-        removeReminder(reminder);
+        removeVisit(visit);
     }
 
     @Override
-    public void removeReminder(Reminder reminder)
+    public void removeVisit(Visit visit)
     {
-        MotechEvent event = getSkinnyEvent(reminder, EventKeys.REMINDER_DELETED_SUBJECT);
+        MotechEvent event = getSkinnyEvent(visit, EventKeys.VISIT_DELETED_SUBJECT);
 
-        db.delete(reminder);
+        db.delete(visit);
 
         eventRelay.sendEventMessage(event);
     }
 
     @Override
-    public Reminder getReminder(String reminderId)
+    public Visit getVisit(String visitId)
     {
-        Reminder reminder = db.get(Reminder.class, reminderId);
-        return reminder;
+        Visit visit = db.get(Visit.class, visitId);
+        return visit;
     }
 
     @Override
-    public List<Reminder> getRemindersByAppointmentId(String appointmentId)
+    public List<Visit> getVisitsByAppointmentId(String appointmentId)
     {
-        List<Reminder> ret = queryView("by_appointmentId", appointmentId);
+        List<Visit> ret = queryView("by_appointmentId", appointmentId);
         if (null == ret) {
-            ret = Collections.<Reminder>emptyList();
+            ret = Collections.<Visit>emptyList();
         }
         return ret;
     }
 
     @Override
-    public List<Reminder> getRemindersByExternalId(String externalId)
+    public List<Visit> getVisitsByExternalId(String externalId)
     {
-        List<Reminder> ret = queryView("by_externalId", externalId);
+        List<Visit> ret = queryView("by_externalId", externalId);
         if (null == ret) {
-            ret = Collections.<Reminder>emptyList();
+            ret = Collections.<Visit>emptyList();
         }
         return ret;
     }
 
-    private MotechEvent getSkinnyEvent(Reminder reminder, String subject) {
+    private MotechEvent getSkinnyEvent(Visit visit, String subject) {
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put(EventKeys.APPOINTMENT_ID_KEY, reminder.getAppointmentId());
-        parameters.put(EventKeys.REMINDER_ID_KEY, reminder.getId());
-        // Not sure I want this here, but it does save the handler from having to load the reminder
-        parameters.put(EventKeys.JOB_ID_KEY, reminder.getJobId());
+        parameters.put(EventKeys.APPOINTMENT_ID_KEY, visit.getAppointmentId());
+        parameters.put(EventKeys.VISIT_ID_KEY, visit.getId());
 
         MotechEvent event = new MotechEvent(subject, parameters);
 

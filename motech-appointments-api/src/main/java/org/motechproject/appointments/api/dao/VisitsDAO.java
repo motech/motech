@@ -31,21 +31,20 @@
  */
 package org.motechproject.appointments.api.dao;
 
-import org.motechproject.appointments.api.model.Reminder;
+import org.motechproject.appointments.api.model.Visit;
 
 import java.util.List;
 
-// Responsible for publishing when appointments and appointment windows are
-// created, updated or deleted
-public interface RemindersDAO {
+public interface VisitsDAO
+{
 
-    public void addReminder(Reminder reminder);
-    public void updateReminder(Reminder reminder);
+    public void addVisit(Visit visit);
+    public void updateVisit(Visit visit);
 
-    public void removeReminder(String reminderId);
-    public void removeReminder(Reminder reminder);
+    public void removeVisit(String visitId);
+    public void removeVisit(Visit visit);
 
-    public Reminder getReminder(String reminderId);
-    public List<Reminder> getRemindersByAppointmentId(String appointmentId);
-    public List<Reminder> getRemindersByExternalId(String externalId);
+    public Visit getVisit(String visitId);
+    public List<Visit> getVisitsByAppointmentId(String appointmentId);
+    public List<Visit> getVisitsByExternalId(String externalId);
 }

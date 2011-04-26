@@ -108,7 +108,7 @@ public class AppointmentReminderEventHandler implements EventListener {
         if (null != appointment.getScheduledDate()) {
 
             // If they have visited the clinic disable this reminder
-            if (null != appointment.getVisit()) {
+            if (null != appointment.getVisitId()) {
                 Reminder reminder = remindersDAO.getReminder(EventKeys.getReminderId(event));
 
                 if (null != reminder) {

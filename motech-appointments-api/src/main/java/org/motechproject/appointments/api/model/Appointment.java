@@ -42,9 +42,10 @@ public class Appointment extends MotechAuditableDataObject {
 	private static final long serialVersionUID = 3L;
 
     private String externalId;
+    private String title;
 	private Date dueDate;
 	private Date scheduledDate;
-    private Visit visit;
+    private String visitId;
     private final String type = "APPOINTMENT";
 
     public String getExternalId()
@@ -55,6 +56,16 @@ public class Appointment extends MotechAuditableDataObject {
     public void setExternalId(String externalId)
     {
         this.externalId = externalId;
+    }
+
+    public String getTitle()
+    {
+        return title;
+    }
+
+    public void setTitle(String title)
+    {
+        this.title = title;
     }
 
     public Date getDueDate()
@@ -75,13 +86,13 @@ public class Appointment extends MotechAuditableDataObject {
 		this.scheduledDate = scheduledDate;
 	}
 
-    public Visit getVisit()
+    public String getVisitId()
     {
-        return visit;
+        return visitId;
     }
 
-    public void setVisit(Visit visit)
+    public void setVisitId(String visitId)
     {
-        this.visit = visit;
+        this.visitId = visitId;
     }
 }

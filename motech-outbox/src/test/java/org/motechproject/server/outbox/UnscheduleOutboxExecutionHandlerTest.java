@@ -48,7 +48,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UncheduleOutboxExecutionHandlerTest
+public class UnscheduleOutboxExecutionHandlerTest
 {
 	@InjectMocks
 	private EventListener unscheduleOutboxExecutionHandler = new UnscheduleOutboxExecutionHandler();
