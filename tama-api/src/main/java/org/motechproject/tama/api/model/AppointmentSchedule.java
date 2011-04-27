@@ -1,4 +1,4 @@
-package org.motechproject.tama.model;
+package org.motechproject.tama.api.model;
 
 /**
  * Created by IntelliJ IDEA.

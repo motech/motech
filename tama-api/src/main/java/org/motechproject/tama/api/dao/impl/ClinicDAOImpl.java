@@ -1,9 +1,9 @@
-package org.motechproject.tama.dao.impl;
+package org.motechproject.tama.api.dao.impl;
 
 import org.ektorp.CouchDbConnector;
 import org.motechproject.dao.MotechAuditableRepository;
-import org.motechproject.tama.dao.ClinicDAO;
-import org.motechproject.tama.model.Clinic;
+import org.motechproject.tama.api.dao.ClinicDAO;
+import org.motechproject.tama.api.model.Clinic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 

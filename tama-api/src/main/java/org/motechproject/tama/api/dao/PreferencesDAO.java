@@ -1,7 +1,7 @@
-package org.motechproject.tama.dao;
+package org.motechproject.tama.api.dao;
 
 import org.motechproject.dao.BaseDao;
-import org.motechproject.tama.model.Preferences;
+import org.motechproject.tama.api.model.Preferences;
 
 public interface PreferencesDAO extends BaseDao<Preferences> {
 	

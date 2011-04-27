@@ -1,4 +1,4 @@
-package org.motechproject.tama.dao.impl;
+package org.motechproject.tama.api.dao.impl;
 
 import java.util.List;
 
@@ -6,8 +6,8 @@ import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
 import org.motechproject.dao.MotechAuditableRepository;
-import org.motechproject.tama.model.Preferences;
-import org.motechproject.tama.dao.PreferencesDAO;
+import org.motechproject.tama.api.model.Preferences;
+import org.motechproject.tama.api.dao.PreferencesDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 

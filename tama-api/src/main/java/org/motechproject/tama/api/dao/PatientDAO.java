@@ -1,7 +1,7 @@
-package org.motechproject.tama.dao;
+package org.motechproject.tama.api.dao;
 
 import org.motechproject.dao.BaseDao;
-import org.motechproject.tama.model.Patient;
+import org.motechproject.tama.api.model.Patient;
 
 public interface PatientDAO extends BaseDao<Patient> {
 

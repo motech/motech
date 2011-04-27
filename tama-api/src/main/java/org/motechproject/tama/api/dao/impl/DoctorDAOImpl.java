@@ -1,12 +1,12 @@
-package org.motechproject.tama.dao.impl;
+package org.motechproject.tama.api.dao.impl;
 
 import java.util.List;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
 import org.motechproject.dao.MotechAuditableRepository;
-import org.motechproject.tama.dao.DoctorDAO;
-import org.motechproject.tama.model.Doctor;
+import org.motechproject.tama.api.dao.DoctorDAO;
+import org.motechproject.tama.api.model.Doctor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
