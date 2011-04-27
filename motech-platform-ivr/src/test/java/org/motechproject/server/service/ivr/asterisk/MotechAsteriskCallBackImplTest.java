@@ -40,8 +40,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.event.ServerEventRelay;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.event.EventRelay;
 import org.motechproject.server.service.ivr.CallRequest;
 
 import static org.mockito.Mockito.*;
@@ -50,7 +50,7 @@ import static org.mockito.Mockito.*;
 public class MotechAsteriskCallBackImplTest {
 
     @Mock
-    private EventRelay eventRelay;
+    private ServerEventRelay eventRelay;
 
     @Mock
     private AsteriskChannel asteriskChannel;

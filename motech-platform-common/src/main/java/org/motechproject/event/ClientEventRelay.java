@@ -29,25 +29,24 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.eventgateway;
+package org.motechproject.event;
 
+import org.motechproject.gateway.OutboundEventGateway;
 import org.motechproject.model.MotechEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- *A gateway interface to a Spring Integration message channel.
- * This interface configured in integrationCommon.xml
- *
- * @author Igor (iopushnyev@2paths.com)
- * Date: 08/04/11
- *
+ * This class handled incoming scheduled events and relays those events to the appropriate event listeners
  */
-public interface EventGateway {
+public class ClientEventRelay implements EventRelay {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    /**
-     * Sends the given MotechEvent message as a payload to the message channel
-     *  defined in the Spring Integration configuration file.
-     *
-     * @param motechEvent
-     */
-    public void sendEventMessage(MotechEvent motechEvent);
+	@Autowired
+    private OutboundEventGateway outboundEventGateway;
+
+    public void sendEventMessage(MotechEvent event) {
+        outboundEventGateway.sendEventMessage(event);
+    }
 }

@@ -5,6 +5,6 @@ import org.motechproject.tama.api.model.Patient;
 
 public interface PatientDAO extends BaseDao<Patient> {
 
-	public Patient findByClinicIDPatientId(String clinicId, String clinicPatientId);
+	public Patient findByClinicIdPatientId(String clinicId, String clinicPatientId);
 	
 }

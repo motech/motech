@@ -31,6 +31,7 @@
  */
 package org.motechproject.appointments.api.model;
 
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechAuditableDataObject;
 
@@ -45,7 +46,7 @@ public class Visit extends MotechAuditableDataObject
     private String title;
     private String appointmentId;
 
-    private final String type = "VISIT";
+    @JsonProperty("type") private final String type = "VISIT";
 
     public String getExternalId()
     {

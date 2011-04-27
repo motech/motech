@@ -40,7 +40,7 @@ public class PatientDAOImplTest
 
     @Test
     public void testFindByClinicId() {
-        Patient p = patientDAO.findByClinicIDPatientId("cID", "pID");
+        Patient p = patientDAO.findByClinicIdPatientId("cID", "pID");
 
         assertTrue(null == p);
     }
@@ -55,7 +55,7 @@ public class PatientDAOImplTest
 
         when(couchDbConnector.queryView(any(ViewQuery.class), Matchers.<Class<Patient>>any())).thenReturn(list);
 
-        Patient p = patientDAO.findByClinicIDPatientId("cID", "pID");
+        Patient p = patientDAO.findByClinicIdPatientId("cID", "pID");
 
         assertTrue(p1 == p);
     }

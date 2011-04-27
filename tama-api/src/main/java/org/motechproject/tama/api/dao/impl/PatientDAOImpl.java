@@ -22,9 +22,9 @@ public class PatientDAOImpl extends MotechAuditableRepository<Patient> implement
     }
 
 	@Override
-	@View( name = "findByClinicIDPatientId", map = "function(doc) {if (doc.clinicPatientId) {emit(doc.clinicId+':'+doc.clinicPatientId, doc._id);}}")
-	public Patient findByClinicIDPatientId(String clinicId, String clinicPatientId) {
-		ViewQuery q = createQuery("findByClinicIDPatientId").key(clinicId + ":" + clinicPatientId).includeDocs(true);
+	@View( name = "findByClinicIdPatientId", map = "function(doc) {if (doc.clinicPatientId) {emit(doc.clinicId+':'+doc.clinicPatientId, doc._id);}}")
+	public Patient findByClinicIdPatientId(String clinicId, String clinicPatientId) {
+		ViewQuery q = createQuery("findByClinicIdPatientId").key(clinicId + ":" + clinicPatientId).includeDocs(true);
 		List<Patient> patients = db.queryView(q, Patient.class);
 		if (patients.size()>0) {
 			return patients.get(0);

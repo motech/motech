@@ -40,6 +40,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Date;
+import java.util.List;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 /**
  * Appointment DAO test
@@ -68,6 +72,29 @@ public class AppointmentDaoIT {
         app.setScheduledDate(now);
 
         appointmentsDAO.addAppointment(app);
-//		Appointment app1 = appointmentsDAO.getAppointment(app.getId());
+
+        assertNotNull(app.getId());
+
+        appointmentsDAO.removeAppointment(app);
 	}
+
+    @Test
+    public void testFindByExternalId() {
+        Appointment app1 = new Appointment();
+        app1.setExternalId("foo");
+        app1.setTitle("Appointment 1");
+        appointmentsDAO.addAppointment(app1);
+
+        Appointment app2 = new Appointment();
+        app2.setTitle("Appointment 2");
+        app2.setExternalId("foo");
+        appointmentsDAO.addAppointment(app2);
+
+        List<Appointment> list = appointmentsDAO.findByExternalId("foo");
+
+        assertEquals(2, list.size());
+
+        appointmentsDAO.removeAppointment(app1);
+        appointmentsDAO.removeAppointment(app2);
+    }
 }

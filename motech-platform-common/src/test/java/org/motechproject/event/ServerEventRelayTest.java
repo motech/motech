@@ -52,13 +52,14 @@ import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/testApplicationContext.xml" })
-public class EventRelayTest {
+public class ServerEventRelayTest
+{
 
 	@Autowired
     EventListenerRegistry registry;
 
     @Autowired
-    EventRelay eventRelay;
+    ServerEventRelay eventRelay;
 
     @Autowired
     OutboundEventGateway outboundEventGateway;

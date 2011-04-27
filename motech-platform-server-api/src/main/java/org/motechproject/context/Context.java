@@ -34,6 +34,7 @@ package org.motechproject.context;
 import org.ektorp.CouchDbInstance;
 import org.motechproject.event.EventListenerRegistry;
 import org.motechproject.event.EventRelay;
+import org.motechproject.event.ServerEventRelay;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.gateway.MotechSchedulerGateway;
 import org.motechproject.server.ruleengine.KnowledgeBaseManager;
@@ -67,7 +68,7 @@ public class Context {
         return eventRelay;
     }
 
-    public void setEventRelay(EventRelay eventRelay) {
+    public void setEventRelay(ServerEventRelay eventRelay) {
         this.eventRelay = eventRelay;
     }
 

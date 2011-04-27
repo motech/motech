@@ -45,11 +45,10 @@
 
     <import resource="integrationCommon.xml"/>
     <import resource="inboundEventChannelAdapter.xml"/>
-    <import resource="outboundEventChannelAdapter.xml"/>
     <import resource="outboundScheduleJobChannelAdapter.xml"/>
     
 
-	<bean id="eventRelay" class="org.motechproject.event.EventRelay" />
+	<bean id="eventRelay" class="org.motechproject.event.ServerEventRelay" />
 	
 	<bean id="eventListenerRegistry" class="org.motechproject.event.EventListenerRegistry"/>
 

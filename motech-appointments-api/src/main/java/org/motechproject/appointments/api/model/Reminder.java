@@ -32,6 +32,7 @@
 package org.motechproject.appointments.api.model;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechAuditableDataObject;
 
@@ -51,7 +52,8 @@ public class Reminder extends MotechAuditableDataObject
     private intervalUnits units;
     private int repeatCount;
     private String jobId;
-    private final String type = "REMINDER";
+
+    @JsonProperty("type") private final String type = "REMINDER";
 
     public String getAppointmentId()
     {

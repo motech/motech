@@ -50,7 +50,7 @@
         <constructor-arg value="org.motechproject.gateway.StubOutboundEventGateway" />
     </bean>
 
-    <bean id="eventRelay" class="org.motechproject.event.EventRelay"/>
+    <bean id="eventRelay" class="org.motechproject.event.ServerEventRelay"/>
 	
 	<bean id="eventListenerRegistry" class="org.motechproject.event.EventListenerRegistry" />
 
