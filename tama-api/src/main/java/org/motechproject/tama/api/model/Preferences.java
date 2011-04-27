@@ -31,6 +31,7 @@
  */
 package org.motechproject.tama.api.model;
 
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechAuditableDataObject;
 
@@ -45,7 +46,7 @@ public class Preferences extends MotechAuditableDataObject {
 	private String clinicId;
     private Boolean appointmentReminderEnabled; // Is the appointment reminder enabled
 
-    private final String type = "PREFERENCES";
+    @JsonProperty("type") private final String type = "PREFERENCES";
 
     /**
 	 * @return the patientId

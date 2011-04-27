@@ -29,54 +29,35 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.tama.api.model;
+package org.motechproject.tama.api.dao;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.model.MotechAuditableDataObject;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.motechproject.tama.api.model.Patient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@TypeDiscriminator("doc.type === 'CLINIC'")
-public class Clinic extends MotechAuditableDataObject {
+/**
+ * Appointment DAO test
+ * @author yyonkov
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"/testApplicationContext.xml"})
+public class PatientDaoIT
+{
 
-	private static final long serialVersionUID = 8466662959316007760L;
-	private String name;
+	@Autowired
+	private PatientDAO patientDAO;
 
-    @JsonProperty("type") private final String type = "CLINIC";
+	@Test
+	public void testAddPatient() {
+		Patient p = new Patient();
+        p.setId("pID");
 
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
+        patientDAO.add(p);
+
+        Patient p1 = patientDAO.get("pID");
+//		Appointment app1 = appointmentsDAO.getAppointment(app.getId());
 	}
-	/**
-	 * @param name the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-    @Override
-    public String toString() {
-        return "id = " + this.getId() + ", name = " + name; 
-    }
-    
-    @Override
-    public boolean equals(Object o) {
-	    if (this == o) return true;
-	    if (o == null || getClass() != o.getClass()) return false;
-	    
-	    Clinic d = (Clinic) o;
-	    if (this.getId() != null ? !this.getId().equals(d.getId()) : d.getId() != null) return false;
-	    if (this.name != null ? !this.name.equals(d.getName()) : d.getName() != null) return false;
-	    
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-	    int result = this.getId() != null ? this.getId().hashCode() : 0;
-	    result = 31 * result + (this.name != null ? this.name.hashCode() : 0);
-	    return result;
-    }
 }

@@ -58,9 +58,4 @@
 		<constructor-arg ref="couchDbInstance" />
 	</bean>
 
-    <bean id="patientDatabase" class="org.ektorp.impl.StdCouchDbConnector">
-        <constructor-arg value="patients" />
-        <constructor-arg ref="couchDbInstance"/>
-    </bean>
-
 </beans>

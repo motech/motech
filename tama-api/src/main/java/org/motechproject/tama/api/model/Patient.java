@@ -31,6 +31,7 @@
  */
 package org.motechproject.tama.api.model;
 
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechAuditableDataObject;
 
@@ -76,8 +77,8 @@ public class Patient extends MotechAuditableDataObject {
 
 	private String clinicPatientId;
 	private Gender gender;
-	private Clinic clinic;
-	private Doctor doctor;
+	private String clinicId;
+	private String doctorId;
 	private String phoneNumber;
 	private Preferences preferences;
 	private String passcode;
@@ -85,7 +86,7 @@ public class Patient extends MotechAuditableDataObject {
 	private Date dateOfBirth;
 	private Status status = Status.ACTIVE;
 
-    private final String type = "PATIENT";
+    @JsonProperty("type") private final String type = "PATIENT";
 
 	/**
 	 * @return the clinicPatientId
@@ -126,26 +127,26 @@ public class Patient extends MotechAuditableDataObject {
 	/**
 	 * @return the clinic
 	 */
-	public Clinic getClinic() {
-		return clinic;
+	public String getClinicId() {
+		return clinicId;
 	}
 	/**
-	 * @param clinic the clinic to set
+	 * @param clinicId the clinic to set
 	 */
-	public void setClinic(Clinic clinic) {
-		this.clinic = clinic;
+	public void setClinicId(String clinicId) {
+		this.clinicId = clinicId;
 	}
 	/**
 	 * @return the doctor
 	 */
-	public Doctor getDoctor() {
-		return doctor;
+	public String getDoctorId() {
+		return doctorId;
 	}
 	/**
-	 * @param doctor the doctor to set
+	 * @param doctorId the doctor to set
 	 */
-	public void setDoctor(Doctor doctor) {
-		this.doctor = doctor;
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
 	}
 	
 	/**
@@ -203,7 +204,7 @@ public class Patient extends MotechAuditableDataObject {
 
     @Override
     public String toString() {
-        return "id = " + this.getId() + ", clinic patient id = " + clinicPatientId + ", gender = " + this.gender + ", phone number = " + phoneNumber + "preferences = {" + ((this.preferences != null) ? this.preferences.toString() : "null") + ", clinic = {" + ((this.clinic != null) ? this.clinic.toString() : "null") + "}, doctor = {" + ((this.doctor != null) ? doctor.toString() : "null") + "}"; 
+        return "id = " + this.getId() + ", clinic patient id = " + clinicPatientId + ", gender = " + this.gender + ", phone number = " + phoneNumber + "preferences = {" + ((this.preferences != null) ? this.preferences.toString() : "null") + ", clinic = {" + ((this.clinicId != null) ? this.clinicId.toString() : "null") + "}, doctor = {" + ((this.doctorId != null) ? doctorId.toString() : "null") + "}";
     }
     
     @Override
@@ -214,8 +215,8 @@ public class Patient extends MotechAuditableDataObject {
 	    Patient p = (Patient) o;
 	    if (this.getId() != null ? !this.getId().equals(p.getId()) : p.getId() != null) return false;
 	    if (this.clinicPatientId != null ? !this.clinicPatientId.equals(p.getClinicPatientId()) : p.getClinicPatientId() != null) return false;
-	    if (this.clinic != null ? !this.clinic.equals(p.getClinic()) : p.getClinic() != null) return false;
-	    if (this.doctor != null ? !this.doctor.equals(p.getDoctor()) : p.getDoctor() != null) return false;
+	    if (this.clinicId != null ? !this.clinicId.equals(p.getClinicId()) : p.getClinicId() != null) return false;
+	    if (this.doctorId != null ? !this.doctorId.equals(p.getDoctorId()) : p.getDoctorId() != null) return false;
 	    if (this.phoneNumber != null ? !this.phoneNumber.equals(p.getPhoneNumber()) : p.getPhoneNumber() != null) return false;
 	    
         return true;
@@ -225,9 +226,9 @@ public class Patient extends MotechAuditableDataObject {
     public int hashCode() {
 	    int result = this.getId() != null ? this.getId().hashCode() : 0;
 	    result = 31 * result + (this.clinicPatientId != null ? this.clinicPatientId.hashCode() : 0);
-	    result = 31 * result + (this.clinic != null ? this.clinic.hashCode() : 0);
+	    result = 31 * result + (this.clinicId != null ? this.clinicId.hashCode() : 0);
 	    result = 31 * result + (this.gender != null ? this.gender.hashCode() : 0);
-	    result = 31 * result + (this.doctor != null ? this.doctor.hashCode() : 0);
+	    result = 31 * result + (this.doctorId != null ? this.doctorId.hashCode() : 0);
 	    result = 31 * result + (this.phoneNumber != null ? this.phoneNumber.hashCode() : 0);
 	    return result;
     }

@@ -31,6 +31,7 @@
  */
 package org.motechproject.tama.api.model;
 
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechAuditableDataObject;
 
@@ -40,7 +41,8 @@ public class Doctor extends MotechAuditableDataObject {
 	private static final long serialVersionUID = 6716142269089685993L;
 	private String name;
 	private String clinicId;
-    private final String type = "DOCTOR";
+
+    @JsonProperty("type") private final String type = "DOCTOR";
 
 	/**
 	 * @return the name

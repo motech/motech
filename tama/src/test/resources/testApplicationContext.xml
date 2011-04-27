@@ -41,6 +41,20 @@
 
 	<context:annotation-config />
 
+    <util:properties id="couchdbProperties" location="classpath:couchdb.properties" />
+	<bean id="tamaDatabase" class="org.ektorp.impl.StdCouchDbConnector">
+		<constructor-arg value="test-tama" />
+		<constructor-arg>
+			<bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
+				<constructor-arg>
+					<bean class="org.ektorp.spring.HttpClientFactoryBean" />
+				</constructor-arg>
+			</bean>
+		</constructor-arg>
+	</bean>
+
+    <bean id="patientDAO" class="org.motechproject.tama.api.dao.impl.PatientDAOImpl" />
+
     <bean id="metricsAgent" class="org.motechproject.metrics.impl.MultipleMetricsAgentImpl">
         <property name="metricsAgents">
             <list>
