@@ -1,16 +1,18 @@
 package org.motechproject.tama.api.dao.impl;
 
-import java.util.List;
-
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
 import org.motechproject.dao.MotechAuditableRepository;
-import org.motechproject.tama.api.model.Preferences;
 import org.motechproject.tama.api.dao.PreferencesDAO;
+import org.motechproject.tama.api.model.Preferences;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
+import java.util.List;
+
+@Component
 public class PreferencesDAOImpl extends MotechAuditableRepository<Preferences>
 		implements PreferencesDAO {
 

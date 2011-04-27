@@ -32,7 +32,7 @@
 package org.motechproject.tama;
 
 import org.motechproject.appointments.api.EventKeys;
-import org.motechproject.appointments.api.context.AppointmentReminderContext;
+import org.motechproject.appointments.api.context.AppointmentsContext;
 import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.dao.RemindersDAO;
 import org.motechproject.appointments.api.model.Appointment;
@@ -63,8 +63,8 @@ public class AppointmentReminderEventHandler implements EventListener {
 
     public final static String TAMA_APPOINTMENT_REMINDER = "TamaAppointmentReminder";
 
-    AppointmentsDAO appointmentsDAO = AppointmentReminderContext.getInstance().getAppointmentsDAO();
-    RemindersDAO remindersDAO = AppointmentReminderContext.getInstance().getRemindersDAO();
+    AppointmentsDAO appointmentsDAO = AppointmentsContext.getInstance().getAppointmentsDAO();
+    RemindersDAO remindersDAO = AppointmentsContext.getInstance().getRemindersDAO();
     MetricsAgent metricsAgent = Context.getInstance().getMetricsAgent();
 
     OutboundVoiceMessageDao outboundVoiceMessageDao = OutboxContext.getInstance().getOutboundVoiceMessageDao();

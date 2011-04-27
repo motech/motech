@@ -59,6 +59,9 @@
 
     <bean id="appointmentsDAO" class="org.motechproject.appointments.api.dao.impl.AppointmentsCouchDBDAOImpl"/>
     <bean id="remindersDAO" class="org.motechproject.appointments.api.dao.impl.RemindersCouchDBDAOImpl"/>
+    <bean id="visitsDAO" class="org.motechproject.appointments.api.dao.impl.VisitsCouchDBDAOImpl"/>
+
+    <bean id="appointmentContext"  class="org.motechproject.appointments.api.context.AppointmentsContext"/>
 
     <!-- server side event interfaces -->
     <bean id="eventRelay" class="org.motechproject.event.EventRelay"/>

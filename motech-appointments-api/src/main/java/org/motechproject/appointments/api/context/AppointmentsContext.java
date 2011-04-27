@@ -3,9 +3,10 @@ package org.motechproject.appointments.api.context;
 import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.dao.RemindersDAO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-
-public class AppointmentReminderContext
+@Component
+public class AppointmentsContext
 {
     @Autowired
     private AppointmentsDAO appointmentsDAO;
@@ -33,11 +34,11 @@ public class AppointmentReminderContext
         this.remindersDAO = remindersDAO;
     }
 
-    public static AppointmentReminderContext getInstance(){
+    public static AppointmentsContext getInstance(){
 		return instance;
 	}
 
-	private static AppointmentReminderContext instance = new AppointmentReminderContext();
+	private static AppointmentsContext instance = new AppointmentsContext();
 
-	private AppointmentReminderContext(){}
+	private AppointmentsContext(){}
 }
