@@ -32,6 +32,7 @@
 package org.motechproject.appointments.api.dao.impl;
 
 import org.ektorp.CouchDbConnector;
+import org.ektorp.support.GenerateView;
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.dao.VisitsDAO;
 import org.motechproject.appointments.api.model.Visit;
@@ -101,7 +102,8 @@ public class VisitsCouchDBDAOImpl extends MotechAuditableRepository<Visit> imple
     }
 
     @Override
-    public List<Visit> getVisitsByAppointmentId(String appointmentId)
+	@GenerateView
+    public List<Visit> findByAppointmentId(String appointmentId)
     {
         List<Visit> ret = queryView("by_appointmentId", appointmentId);
         if (null == ret) {
@@ -111,7 +113,8 @@ public class VisitsCouchDBDAOImpl extends MotechAuditableRepository<Visit> imple
     }
 
     @Override
-    public List<Visit> getVisitsByExternalId(String externalId)
+	@GenerateView
+    public List<Visit> findByExternalId(String externalId)
     {
         List<Visit> ret = queryView("by_externalId", externalId);
         if (null == ret) {

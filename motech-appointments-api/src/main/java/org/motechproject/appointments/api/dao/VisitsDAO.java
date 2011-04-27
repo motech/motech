@@ -45,6 +45,6 @@ public interface VisitsDAO
     public void removeVisit(Visit visit);
 
     public Visit getVisit(String visitId);
-    public List<Visit> getVisitsByAppointmentId(String appointmentId);
-    public List<Visit> getVisitsByExternalId(String externalId);
+    public List<Visit> findByAppointmentId(String appointmentId);
+    public List<Visit> findByExternalId(String externalId);
 }

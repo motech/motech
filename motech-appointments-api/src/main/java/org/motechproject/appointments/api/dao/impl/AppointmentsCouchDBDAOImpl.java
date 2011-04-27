@@ -43,6 +43,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,7 +86,12 @@ public class AppointmentsCouchDBDAOImpl extends MotechAuditableRepository<Appoin
     @Override
 	@GenerateView
 	public List<Appointment> findByExternalId(String externalId) {
-		return queryView("by_externalId", externalId);
+        List<Appointment> ret = queryView("by_externalId", externalId);
+        if (null == ret) {
+            ret  = Collections.<Appointment>emptyList();
+        }
+
+        return ret;
 	}
 
     @Override

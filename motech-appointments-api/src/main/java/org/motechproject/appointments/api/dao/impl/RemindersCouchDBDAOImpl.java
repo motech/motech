@@ -32,6 +32,7 @@
 package org.motechproject.appointments.api.dao.impl;
 
 import org.ektorp.CouchDbConnector;
+import org.ektorp.support.GenerateView;
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.dao.RemindersDAO;
 import org.motechproject.appointments.api.model.Reminder;
@@ -109,7 +110,8 @@ public class RemindersCouchDBDAOImpl extends MotechAuditableRepository<Reminder>
     }
 
     @Override
-    public List<Reminder> getRemindersByAppointmentId(String appointmentId)
+    @GenerateView
+    public List<Reminder> findByAppointmentId(String appointmentId)
     {
         List<Reminder> ret = queryView("by_appointmentId", appointmentId);
         if (null == ret) {
@@ -119,7 +121,8 @@ public class RemindersCouchDBDAOImpl extends MotechAuditableRepository<Reminder>
     }
 
     @Override
-    public List<Reminder> getRemindersByExternalId(String externalId)
+    @GenerateView
+    public List<Reminder> findByExternalId(String externalId)
     {
         List<Reminder> ret = queryView("by_externalId", externalId);
         if (null == ret) {

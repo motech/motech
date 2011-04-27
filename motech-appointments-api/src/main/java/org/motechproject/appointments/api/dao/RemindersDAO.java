@@ -46,6 +46,6 @@ public interface RemindersDAO {
     public void removeReminder(Reminder reminder);
 
     public Reminder getReminder(String reminderId);
-    public List<Reminder> getRemindersByAppointmentId(String appointmentId);
-    public List<Reminder> getRemindersByExternalId(String externalId);
+    public List<Reminder> findByAppointmentId(String appointmentId);
+    public List<Reminder> findByExternalId(String externalId);
 }

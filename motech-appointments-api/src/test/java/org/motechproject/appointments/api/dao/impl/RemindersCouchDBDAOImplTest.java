@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.appointments.api.EventKeys;
-import org.motechproject.appointments.api.model.Appointment;
+import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
 
@@ -17,7 +17,7 @@ import java.util.List;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
-public class AppointmentsCouchDBDAOImplTest
+public class RemindersCouchDBDAOImplTest
 {
     @Mock
     EventRelay eventRelay;
@@ -26,84 +26,107 @@ public class AppointmentsCouchDBDAOImplTest
     CouchDbConnector couchDbConnector;
 
     @InjectMocks
-    AppointmentsCouchDBDAOImpl appointmentsDAO;
+    RemindersCouchDBDAOImpl remindersDAO;
 
     @Before
     public void setUp() {
         couchDbConnector = mock(CouchDbConnector.class);
-        appointmentsDAO = new AppointmentsCouchDBDAOImpl(couchDbConnector);
+        remindersDAO = new RemindersCouchDBDAOImpl(couchDbConnector);
         MockitoAnnotations.initMocks(this);
     }
 
     @Test
-    public void testAddAppointment() {
-        Appointment a = new Appointment();
+    public void testAddReminder() {
+        Reminder r = new Reminder();
+        r.setAppointmentId("aID");
 
         ArgumentCaptor<MotechEvent> argument = ArgumentCaptor.forClass(MotechEvent.class);
 
-        appointmentsDAO.addAppointment(a);
+        remindersDAO.addReminder(r);
 
-        verify(couchDbConnector).create(a);
+        verify(couchDbConnector).create(r);
         verify(eventRelay).sendEventMessage(argument.capture());
 
         MotechEvent event = argument.getValue();
 
-        assertTrue(EventKeys.APPOINTMENT_CREATED_SUBJECT.equals(event.getSubject()));
+        assertTrue(EventKeys.REMINDER_CREATED_SUBJECT.equals(event.getSubject()));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddReminder_NoAptId() {
+        Reminder r = new Reminder();
+
+        remindersDAO.addReminder(r);
     }
 
     @Test
-    public void testUpdateAppointment() {
-        Appointment a = new Appointment();
+    public void testUpdateReminder() {
+        Reminder r = new Reminder();
+        r.setAppointmentId("aID");
 
         ArgumentCaptor<MotechEvent> argument = ArgumentCaptor.forClass(MotechEvent.class);
 
-        appointmentsDAO.updateAppointment(a);
+        remindersDAO.updateReminder(r);
 
-        verify(couchDbConnector).update(a);
+        verify(couchDbConnector).update(r);
         verify(eventRelay).sendEventMessage(argument.capture());
 
         MotechEvent event = argument.getValue();
 
-        assertTrue(EventKeys.APPOINTMENT_UPDATED_SUBJECT.equals(event.getSubject()));
+        assertTrue(EventKeys.REMINDER_UPDATED_SUBJECT.equals(event.getSubject()));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUpdateReminder_NoAptId() {
+        Reminder r = new Reminder();
+
+        remindersDAO.updateReminder(r);
     }
 
     @Test
-    public void testRemoveAppointment() {
-        Appointment a = new Appointment();
+    public void testRemoveReminder() {
+        Reminder r = new Reminder();
 
         ArgumentCaptor<MotechEvent> argument = ArgumentCaptor.forClass(MotechEvent.class);
 
-        appointmentsDAO.removeAppointment(a);
+        remindersDAO.removeReminder(r);
 
-        verify(couchDbConnector).delete(a);
+        verify(couchDbConnector).delete(r);
         verify(eventRelay).sendEventMessage(argument.capture());
 
         MotechEvent event = argument.getValue();
 
-        assertTrue(EventKeys.APPOINTMENT_DELETED_SUBJECT.equals(event.getSubject()));
+        assertTrue(EventKeys.REMINDER_DELETED_SUBJECT.equals(event.getSubject()));
     }
 
     @Test
-    public void testRemoveAppointmentById() {
-        Appointment a = new Appointment();
-        a.setId("aID");
+    public void testRemoveReminderById() {
+        Reminder r = new Reminder();
+        r.setId("rID");
 
         ArgumentCaptor<MotechEvent> argument = ArgumentCaptor.forClass(MotechEvent.class);
-        when(appointmentsDAO.getAppointment("aID")).thenReturn(a);
+        when(remindersDAO.getReminder("rID")).thenReturn(r);
 
-        appointmentsDAO.removeAppointment(a.getId());
+        remindersDAO.removeReminder(r.getId());
 
-        verify(couchDbConnector).delete(a);
+        verify(couchDbConnector).delete(r);
         verify(eventRelay).sendEventMessage(argument.capture());
 
         MotechEvent event = argument.getValue();
 
-        assertTrue(EventKeys.APPOINTMENT_DELETED_SUBJECT.equals(event.getSubject()));
+        assertTrue(EventKeys.REMINDER_DELETED_SUBJECT.equals(event.getSubject()));
     }
 
     @Test
     public void testFindByExternalId() {
-        List<Appointment> list = appointmentsDAO.findByExternalId("eID");
+        List<Reminder> list = remindersDAO.findByExternalId("eID");
+
+        assertTrue(list.isEmpty());
+    }
+
+    @Test
+    public void testFindByAppointmentId() {
+        List<Reminder> list = remindersDAO.findByAppointmentId("aID");
 
         assertTrue(list.isEmpty());
     }
