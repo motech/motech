@@ -45,7 +45,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/testApplicationContext.xml"})
+@ContextConfiguration(locations={"/testAnnotatedHandlers.xml"})
 public class AnnotationBasedHandlerTest {
 	static MotechEvent motechEvent;
 	
@@ -55,10 +55,12 @@ public class AnnotationBasedHandlerTest {
 		@MotechListener(subjects={"sub_a","sub_b"})
 		public void handleX(MotechEvent event) {
 			AnnotationBasedHandlerTest.motechEvent = event;
+//			System.out.println(event);
 		}
 		@MotechListener(subjects={"sub_a","sub_c"})
 		public void handleY(MotechEvent event) {
 			AnnotationBasedHandlerTest.motechEvent = event;
+//			System.out.println(event);
 		}
 	}
 

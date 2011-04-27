@@ -92,9 +92,9 @@
         <property name="generateHostBasedStats" value="false"/>
     </bean>
     
-    <!-- handels @MotechListner annotations -->
+    <!-- handels @MotechListner annotations
     <bean class="org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor"/>
-	
     <bean id="my-handler" class="org.motechproject.server.event.annotations.AnnotationBasedHandlerTest$MyHandler"/>
+     -->
 
 </beans>
