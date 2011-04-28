@@ -44,7 +44,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * Spring MVC controller implementation provides method to handle HTTP requests and generate
- * Appointment Reminder related VXML documents
+ * VXML documents based on stored in outbox objects and the corresponding Velocity template
  *
  * @author Igor (iopushnyev@2paths.com)
  */
@@ -54,6 +54,7 @@ public class VxmlController extends MultiActionController {
 
     public static final String NO_MESSAGE_TEMPLATE_NAME = "nonsg";
     public static final String ERROR_MESSAGE_TEMPLATE_NAME = "msg_error";
+    public static final String MESSAGE_MENU_TEMPLATE_NAME = "msgMenu";
 
     @Autowired
     VoiceOutboxService voiceOutboxService;
@@ -98,19 +99,18 @@ public class VxmlController extends MultiActionController {
                 mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
                 return mav;
             }
+        } else {
+            logger.info("Generating VXML for the next voice message in outbox... ");
+            try {
+                voiceMessage = voiceOutboxService.getNextPendingMessage(partyId);
+            } catch (Exception e) {
+                logger.error("Can not obtain next message from the outbox of the party ID: " + partyId +
+                        " " + e.getMessage(), e);
+                logger.warn("Generating a VXML with the error message...");
+                mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
+                return mav;
+            }
         }
-
-
-        try {
-            voiceMessage = voiceOutboxService.getNextPendingMessage(partyId);
-        } catch (Exception e) {
-            logger.error("Can not obtain next message from the outbox of the party ID: " + partyId +
-                    " " + e.getMessage(), e);
-            logger.warn("Generating a VXML with the error message...");
-            mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
-            return mav;
-        }
-
 
         if (voiceMessage == null) {
 
@@ -120,6 +120,27 @@ public class VxmlController extends MultiActionController {
         }
 
         mav.setViewName(voiceMessage.getVoiceMessageType().getVoiceMessageTypeName());
+        return mav;
+
+    }
+
+    public ModelAndView messageMenu(HttpServletRequest request, HttpServletResponse response) {
+        logger.info("Generating the message menu VXML...");
+
+        response.setContentType("text/plain");
+        response.setCharacterEncoding("UTF-8");
+
+        String messageId = request.getParameter("mId");
+
+        logger.info("Message ID: " + messageId);
+
+        //TODO - set message status Played
+
+        request.getContextPath();
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName(MESSAGE_MENU_TEMPLATE_NAME);
+        mav.addObject("messageId", messageId);
         return mav;
 
     }
