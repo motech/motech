@@ -52,7 +52,7 @@ import java.util.Map;
 public class AppointmentsCouchDBDAOImpl extends MotechAuditableRepository<Appointment> implements AppointmentsDAO
 {
     @Autowired
-    private EventRelay eventRelay;
+    private EventRelay eventRelay ;
 
     @Autowired
     public AppointmentsCouchDBDAOImpl(@Qualifier("appointmentsDatabase") CouchDbConnector db) {

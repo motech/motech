@@ -63,8 +63,4 @@
 
     <bean id="appointmentContext"  class="org.motechproject.appointments.api.context.AppointmentsContext"/>
 
-    <!-- server side event interfaces -->
-    <bean id="eventRelay" class="org.motechproject.event.ServerEventRelay"/>
-    <bean id="eventListenerRegistry" class="org.motechproject.event.EventListenerRegistry"/>
-
 </beans>

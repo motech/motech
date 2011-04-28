@@ -79,6 +79,4 @@
     <bean id="clinicDAO" class="org.motechproject.tama.api.dao.impl.ClinicDAOImpl"/>
     <bean id="patientDao" class="org.motechproject.tama.api.dao.impl.PatientDAOImpl"/>
 	<bean id="doctorDao" class="org.motechproject.tama.api.dao.impl.DoctorDAOImpl"/>
-	<bean id="preferencesDao" class="org.motechproject.tama.api.dao.impl.PreferencesDAOImpl"/>
-	<bean id="appointmentsDao" class="org.motechproject.appointments.api.dao.impl.AppointmentCouchDBDAOImpl"/>
 </beans>

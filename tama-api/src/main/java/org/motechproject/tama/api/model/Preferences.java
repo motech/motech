@@ -31,36 +31,12 @@
  */
 package org.motechproject.tama.api.model;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.model.MotechAuditableDataObject;
+public class Preferences {
 
-@TypeDiscriminator("doc.type === 'PREFERENCES'")
-public class Preferences extends MotechAuditableDataObject {
-
-	private static final long serialVersionUID = 7959940892352071956L;
-	private String patientId;
 	private Integer bestTimeToCallHour;
 	private Integer bestTimeToCallMinute;
-	private Boolean enabled = Boolean.FALSE;
-	private String clinicId;
     private Boolean appointmentReminderEnabled; // Is the appointment reminder enabled
-
-    @JsonProperty("type") private final String type = "PREFERENCES";
-
-    /**
-	 * @return the patientId
-	 */
-	public String getPatientId() {
-		return patientId;
-	}
-
-	/**
-	 * @param patientId the patientId to set
-	 */
-	public void setPatientId(String patientId) {
-		this.patientId = patientId;
-	}
+    private String ivrCallJobId;
 
 	public Integer getBestTimeToCallHour() {
 		return bestTimeToCallHour;
@@ -78,29 +54,6 @@ public class Preferences extends MotechAuditableDataObject {
 		this.bestTimeToCallMinute = bestTimeToCallMinute;
 	}
 	
-	/**
-	 * @return the enabled
-	 */
-	public Boolean isEnabled() {
-		return enabled;
-	}
-	/**
-	 * @param enabled the enabled to set
-	 */
-	public void setEnabled(Boolean enabled) {
-		this.enabled = enabled;
-	}
-
-    public String getClinicId()
-    {
-        return clinicId;
-    }
-
-    public void setClinicId(String clinicId)
-    {
-        this.clinicId = clinicId;
-    }
-
     public Boolean getAppointmentReminderEnabled()
     {
         return appointmentReminderEnabled;
@@ -111,59 +64,57 @@ public class Preferences extends MotechAuditableDataObject {
         this.appointmentReminderEnabled = appointmentReminderEnabled;
     }
 
-	@Override
-    public String toString() {
-        return "id = " + this.getId() + ", enabled = " + enabled + ", best time to call hour = " + this.bestTimeToCallHour + ", best time to call minute = " + this.bestTimeToCallMinute + ", patient id = " + patientId; 
+    public String getIvrCallJobId()
+    {
+        return ivrCallJobId;
     }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime
-				* result
-				+ ((bestTimeToCallHour == null) ? 0 : bestTimeToCallHour
-						.hashCode());
-		result = prime
-				* result
-				+ ((bestTimeToCallMinute == null) ? 0 : bestTimeToCallMinute
-						.hashCode());
-		result = prime * result + ((enabled == null) ? 0 : enabled.hashCode());
-		result = prime * result
-				+ ((patientId == null) ? 0 : patientId.hashCode());
-		return result;
-	}
+    public void setIvrCallJobId(String ivrCallJobId)
+    {
+        this.ivrCallJobId = ivrCallJobId;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Preferences other = (Preferences) obj;
-		if (bestTimeToCallHour == null) {
-			if (other.bestTimeToCallHour != null)
-				return false;
-		} else if (!bestTimeToCallHour.equals(other.bestTimeToCallHour))
-			return false;
-		if (bestTimeToCallMinute == null) {
-			if (other.bestTimeToCallMinute != null)
-				return false;
-		} else if (!bestTimeToCallMinute.equals(other.bestTimeToCallMinute))
-			return false;
-		if (enabled == null) {
-			if (other.enabled != null)
-				return false;
-		} else if (!enabled.equals(other.enabled))
-			return false;
-		if (patientId == null) {
-			if (other.patientId != null)
-				return false;
-		} else if (!patientId.equals(other.patientId))
-			return false;
-		return true;
-	}
-    
+    @Override
+    public String toString() {
+        return "best time to call hour = " + this.bestTimeToCallHour + ", best time to call minute = " + this.bestTimeToCallMinute;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+
+        Preferences that = (Preferences) o;
+
+        if (appointmentReminderEnabled != null ? !appointmentReminderEnabled.equals(that.appointmentReminderEnabled) : that.appointmentReminderEnabled != null)
+        {
+            return false;
+        }
+        if (bestTimeToCallHour != null ? !bestTimeToCallHour.equals(that.bestTimeToCallHour) : that.bestTimeToCallHour != null)
+        {
+            return false;
+        }
+        if (bestTimeToCallMinute != null ? !bestTimeToCallMinute.equals(that.bestTimeToCallMinute) : that.bestTimeToCallMinute != null)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = bestTimeToCallHour != null ? bestTimeToCallHour.hashCode() : 0;
+        result = 31 * result + (bestTimeToCallMinute != null ? bestTimeToCallMinute.hashCode() : 0);
+        result = 31 * result + (appointmentReminderEnabled != null ? appointmentReminderEnabled.hashCode() : 0);
+        return result;
+    }
 }
