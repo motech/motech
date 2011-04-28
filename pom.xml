@@ -64,6 +64,7 @@
     	<module>motech-platform-outbox-common</module>
         <module>motech-platform-decisiontree-common</module>
         <module>tama</module>
+        <module>tama-common</module>
 	</modules>
 
 	<build>
