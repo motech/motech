@@ -1,13 +1,10 @@
 package org.motechproject.decisiontree.model;
 
-import org.motechproject.model.MotechAuditableDataObject;
 
 /**
  *
  */
-public class Transition extends MotechAuditableDataObject {
-
-    private static final long serialVersionUID =1L;
+public class Transition {
 
     private String name;
     private Node destinationNode;

@@ -1,16 +1,12 @@
 package org.motechproject.decisiontree.model;
 
-import org.motechproject.model.MotechAuditableDataObject;
-
 import java.util.List;
 import java.util.Map;
 
 /**
  * 
  */
-public class Node extends MotechAuditableDataObject {
-
-    private static final long serialVersionUID = 1L;
+public class Node {
 
     private List<Action> actionsBefore;
     private List<Action> actionsAfter;

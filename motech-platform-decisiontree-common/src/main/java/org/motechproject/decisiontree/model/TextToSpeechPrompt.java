@@ -5,8 +5,6 @@ package org.motechproject.decisiontree.model;
  */
 public class TextToSpeechPrompt extends Prompt {
 
-    private static final long serialVersionUID = 1L;
-
     private String message;
 
     public String getMessage() {

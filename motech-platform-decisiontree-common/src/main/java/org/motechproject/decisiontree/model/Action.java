@@ -1,13 +1,10 @@
 package org.motechproject.decisiontree.model;
 
-import org.motechproject.model.MotechAuditableDataObject;
 
 /**
  *
  */
-public class Action extends MotechAuditableDataObject {
-
-    private static final long serialVersionUID = 1L;
+public class Action {
 
     private String eventId;
 
