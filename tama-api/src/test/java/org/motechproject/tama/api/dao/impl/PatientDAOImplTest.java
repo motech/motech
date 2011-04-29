@@ -22,9 +22,6 @@ import static org.mockito.Mockito.when;
 public class PatientDAOImplTest
 {
     @Mock
-    EventRelay eventRelay;
-
-    @Mock
     CouchDbConnector couchDbConnector;
 
     @InjectMocks

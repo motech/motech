@@ -31,6 +31,7 @@
  */
 package org.motechproject.event;
 
+import org.motechproject.context.EventContext;
 import org.motechproject.metrics.MetricsAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,10 @@ public class EventListenerRegistry {
 
     @Autowired
     private MetricsAgent metricsAgent;
+
+    // Todo This needs to be moved out.  To get this bean to autowire it's dependency I need to load it in the
+    // servers spring context.  Lame
+    private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
 
     /**
      * Register an event listener to be notified when events of a given type are received via the Server JMS Event Queue

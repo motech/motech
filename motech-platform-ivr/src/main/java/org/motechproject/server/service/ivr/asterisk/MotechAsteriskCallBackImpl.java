@@ -35,13 +35,12 @@ import org.asteriskjava.live.AsteriskChannel;
 import org.asteriskjava.live.Disposition;
 import org.asteriskjava.live.LiveException;
 import org.asteriskjava.live.OriginateCallback;
-import org.motechproject.context.Context;
+import org.motechproject.context.EventContext;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.service.ivr.CallDetailRecord;
 import org.motechproject.server.service.ivr.CallRequest;
 import org.motechproject.server.service.ivr.IVREventDelegate;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 
@@ -52,8 +51,7 @@ import java.util.Map;
  */
 public class MotechAsteriskCallBackImpl implements OriginateCallback {
 
-    @Autowired
-    private EventRelay eventRelay = Context.getInstance().getEventRelay();
+    private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
 
     private CallRequest callRequest;
 

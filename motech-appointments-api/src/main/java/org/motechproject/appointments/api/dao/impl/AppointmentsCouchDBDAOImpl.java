@@ -36,23 +36,22 @@ import org.ektorp.support.GenerateView;
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.model.Appointment;
+import org.motechproject.context.EventContext;
 import org.motechproject.dao.MotechAuditableRepository;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component
 public class AppointmentsCouchDBDAOImpl extends MotechAuditableRepository<Appointment> implements AppointmentsDAO
 {
-    @Autowired
-    private EventRelay eventRelay ;
+    @Autowired(required = false)
+    private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
 
     @Autowired
     public AppointmentsCouchDBDAOImpl(@Qualifier("appointmentsDatabase") CouchDbConnector db) {

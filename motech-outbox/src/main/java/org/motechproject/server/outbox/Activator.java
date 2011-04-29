@@ -96,12 +96,6 @@ public class Activator implements BundleActivator {
 				Thread.currentThread().setContextClassLoader(old);
 			}
 
-            // I need to access Context so maven-bundle-plugin lists it in my manifest.
-            // If I don't actually need to reference it then this access should be removed and we should
-            // explicitly list the dependency in the bundle plugin config
-            Context context = Context.getInstance();
-            logger.info("Using Context: " + context.toString());
-
 			scheduleOutboxExecutionHandler = dispatcherServlet.getWebApplicationContext().getBean(ScheduleOutboxExecutionHandler.class);
 			Context.getInstance().getEventListenerRegistry().registerListener(scheduleOutboxExecutionHandler, EventKeys.SCHEDULE_EXECUTION_SUBJECT);
 

@@ -36,6 +36,7 @@ import org.ektorp.support.GenerateView;
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.dao.VisitsDAO;
 import org.motechproject.appointments.api.model.Visit;
+import org.motechproject.context.EventContext;
 import org.motechproject.dao.MotechAuditableRepository;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
@@ -51,8 +52,8 @@ import java.util.Map;
 @Component
 public class VisitsCouchDBDAOImpl extends MotechAuditableRepository<Visit> implements VisitsDAO
 {
-    @Autowired
-    private EventRelay eventRelay;
+    @Autowired(required = false)
+    private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
 
     @Autowired
     public VisitsCouchDBDAOImpl(@Qualifier("appointmentsDatabase") CouchDbConnector db) {

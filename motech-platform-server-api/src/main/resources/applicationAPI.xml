@@ -46,12 +46,14 @@
     <import resource="integrationCommon.xml"/>
     <import resource="inboundEventChannelAdapter.xml"/>
     <import resource="outboundScheduleJobChannelAdapter.xml"/>
-    
+
+    <context:annotation-config />
 
 	<bean id="eventRelay" class="org.motechproject.event.ServerEventRelay" />
 	
 	<bean id="eventListenerRegistry" class="org.motechproject.event.EventListenerRegistry"/>
 
     <bean id="motechContext" class="org.motechproject.context.Context" factory-method="getInstance"/>
+    <bean id="eventContext"  class="org.motechproject.context.EventContext" factory-method="getInstance"/>
 
 </beans>

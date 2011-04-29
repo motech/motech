@@ -33,10 +33,8 @@ package org.motechproject.context;
 
 import org.ektorp.CouchDbInstance;
 import org.motechproject.event.EventListenerRegistry;
-import org.motechproject.event.EventRelay;
-import org.motechproject.event.ServerEventRelay;
-import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.gateway.MotechSchedulerGateway;
+import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.server.ruleengine.KnowledgeBaseManager;
 import org.motechproject.server.service.ivr.IVRService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,17 +58,6 @@ public class Context {
 
     @Autowired(required=false)
     private IVRService ivrService;
-
-    @Autowired(required=false)
-    private EventRelay eventRelay;
-
-    public EventRelay getEventRelay() {
-        return eventRelay;
-    }
-
-    public void setEventRelay(ServerEventRelay eventRelay) {
-        this.eventRelay = eventRelay;
-    }
 
     public IVRService getIvrService()
     {

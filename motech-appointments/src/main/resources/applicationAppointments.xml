@@ -48,7 +48,7 @@
     <bean id="appointmentDeletedEventHandler" class="org.motechproject.server.appointments.AppointmentDeletedEventHandler"/>
 
     <bean id="motechContext" class="org.motechproject.context.Context" factory-method="getInstance" />
-    
+
     <!-- We have to use the couchDbInstance provided by the motech server context -->
     <bean id="couchDbInstance" factory-bean="motechContext" factory-method="getCouchDbInstance" />
     

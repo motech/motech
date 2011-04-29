@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.motechproject.event.EventRelay;
 import org.motechproject.tama.api.model.Doctor;
 
 import java.util.List;
@@ -16,9 +15,6 @@ import static org.mockito.Mockito.mock;
 
 public class DoctorDAOImplTest
 {
-    @Mock
-    EventRelay eventRelay;
-
     @Mock
     CouchDbConnector couchDbConnector;
 

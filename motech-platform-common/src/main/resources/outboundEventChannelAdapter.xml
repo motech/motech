@@ -49,9 +49,7 @@
 	 		default-request-channel="eventGatewayToEventJmsoutChannel"/>
 
 	<channel id="eventGatewayToEventJmsoutChannel"/>
-	
 
 	<jms:outbound-channel-adapter id="eventjmsout" channel="eventGatewayToEventJmsoutChannel" destination="eventQueue"/>
-
 	
 </beans:beans>
