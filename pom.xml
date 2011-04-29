@@ -62,6 +62,7 @@
 		<module>motech-appointment-reminder-common</module>
     	<module>motech-platform-outbox</module>
     	<module>motech-platform-outbox-common</module>
+        <module>motech-platform-decisiontree</module>
         <module>motech-platform-decisiontree-common</module>
         <module>tama</module>
 	</modules>
