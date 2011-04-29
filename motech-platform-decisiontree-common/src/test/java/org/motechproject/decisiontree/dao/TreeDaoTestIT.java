@@ -29,73 +29,49 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.outbox.dao;
+package org.motechproject.decisiontree.dao;
 
 import static org.junit.Assert.*;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.time.DateUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.outbox.model.MessagePriority;
-import org.motechproject.outbox.model.OutboundVoiceMessage;
-import org.motechproject.outbox.model.OutboundVoiceMessageStatus;
-import org.motechproject.outbox.model.VoiceMessageType;
+import org.motechproject.decisiontree.model.Tree;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
+ * DAO IT test findByName()
  * @author yyonkov
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/testOutboxCommon.xml"})
-public class OutboundVoiceMessageDaoIT {
+@ContextConfiguration(locations={"/testDecisionTreeCommon.xml"})
+public class TreeDaoTestIT {
 	@Autowired
-	private OutboundVoiceMessageDao outboundVoiceMessageDao;
-	private String partyId1 = "0001";
-	private String partyId2 = "0002";
+	private TreeDao treeDao;
+	private final String NAME = "TREE"; 
 	@Before
-	public void setUp() {
-		VoiceMessageType messageType = new VoiceMessageType();
-		messageType.setVoiceMessageTypeName("Play something");
-		messageType.setPriority(MessagePriority.HIGH);
-		messageType.setvXmlUrl("http://yahoo.com");
-		
-		// create messages
-		Date now = DateUtils.truncate(new Date(), Calendar.DATE);
-		for(int i = 0; i<20; i++) {
-			OutboundVoiceMessage msg = new OutboundVoiceMessage();
-			msg.setVoiceMessageType(messageType);
-			msg.setPartyId(i<10?partyId1:partyId2);
-			msg.setCreationTime(DateUtils.addDays(now, i)); 
-			msg.setExpirationDate(DateUtils.addDays(now, 1-2*(i&2)));
-			msg.setStatus((i&1)>0?OutboundVoiceMessageStatus.PENDING:OutboundVoiceMessageStatus.PLAYED);
-			outboundVoiceMessageDao.add(msg);
+	public void setUp() throws Exception {
+		for(int i = 0; i<10; i++) {
+			Tree tree = new Tree();
+			tree.setName(NAME+i);
+			treeDao.add(tree);
 		}
-		
 	}
 	@After
-	public void tearDown() {
-		for(OutboundVoiceMessage msg : outboundVoiceMessageDao.getAll()) {
-			outboundVoiceMessageDao.remove(msg);
+	public void tearDown() throws Exception {
+		for(Tree t : treeDao.getAll()) {
+			treeDao.remove(t);
 		}
 	}
 	@Test
-	public void testGetNextPendingMessage() {
-		List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getPendingMessages(partyId1);
-		assertNotNull(messages);
-		assertEquals(3, messages.size());
-		for(OutboundVoiceMessage m : messages) {
-			assertEquals(OutboundVoiceMessageStatus.PENDING, m.getStatus());
-			assertTrue(m.getExpirationDate().after(new Date()));
-//			System.out.println(m);
-		}
+	public void testFindByName() {
+		List<Tree> trees = treeDao.findByName(NAME+5);
+		assertEquals(1, trees.size());
 	}
 }

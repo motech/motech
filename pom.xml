@@ -65,6 +65,7 @@
         <module>motech-platform-decisiontree</module>
         <module>motech-platform-decisiontree-common</module>
         <module>tama</module>
+        <module>tama-common</module>
 	</modules>
 
 	<build>
@@ -124,6 +125,7 @@
                             <exclude>org/motechproject/metrics/impl/StatsdAgentBackendImpl.class</exclude>
 
                             <!-- All models, contexts, daos, event keys and activators get a free test limit pass -->
+                            <exclude>org/motechproject/**/annotations/*.class</exclude>
                             <exclude>org/motechproject/**/model/*.class</exclude>
                             <exclude>org/motechproject/**/dao/*.class</exclude>
                             <exclude>org/motechproject/**/dao/couchdb/*.class</exclude>

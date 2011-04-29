@@ -5,8 +5,6 @@ package org.motechproject.decisiontree.model;
  */
 public class AudioPrompt extends Prompt {
 
-    private static final long serialVersionUID = 1L;
-
     private String audioFileUrl;
     private String altMessage; //Text To Speech Alternate if audio file not available
 

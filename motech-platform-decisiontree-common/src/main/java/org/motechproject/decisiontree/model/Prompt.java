@@ -1,13 +1,10 @@
 package org.motechproject.decisiontree.model;
 
-import org.motechproject.model.MotechAuditableDataObject;
 
 /**
  *
  */
-public abstract class Prompt extends MotechAuditableDataObject {
-
-    private static final long serialVersionUID =1L;
+public abstract class Prompt {
 
     private String name;
 

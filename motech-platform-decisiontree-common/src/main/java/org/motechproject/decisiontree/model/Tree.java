@@ -1,14 +1,16 @@
 package org.motechproject.decisiontree.model;
 
+import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechAuditableDataObject;
 
 /**
  *
  */
-public class Tree  extends MotechAuditableDataObject {
+public class Tree extends MotechAuditableDataObject {
 
     private static final long serialVersionUID = 1L;
 
+    @TypeDiscriminator
     private String name;
     private String description;
     private Node rootNode;
