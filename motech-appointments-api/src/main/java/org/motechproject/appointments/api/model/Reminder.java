@@ -45,7 +45,7 @@ public class Reminder extends MotechAuditableDataObject
 
     private String appointmentId;
     private String externalId;
-    private Boolean enabled;
+    private boolean enabled = true;
     private Date startDate;
     private Date endDate;
     private int intervalCount;
@@ -75,12 +75,12 @@ public class Reminder extends MotechAuditableDataObject
         this.externalId = externalId;
     }
 
-    public Boolean getEnabled()
+    public boolean getEnabled()
     {
         return enabled;
     }
 
-    public void setEnabled(Boolean enabled)
+    public void setEnabled(boolean enabled)
     {
         this.enabled = enabled;
     }
