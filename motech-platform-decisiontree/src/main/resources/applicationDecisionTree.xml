@@ -62,6 +62,7 @@
 	</bean>
 
 	<bean id="decisionTreeVxmlController" class="org.motechproject.server.decisiontree.web.VxmlController" />
+    <bean id="decisionTreeService" class="org.motechproject.server.decisiontree.service.DecisionTreeServiceImpl"/>
 
 	<bean id="velocityConfig"
 		class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">

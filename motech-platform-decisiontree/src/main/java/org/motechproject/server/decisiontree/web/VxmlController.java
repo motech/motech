@@ -31,8 +31,11 @@
  */
 package org.motechproject.server.decisiontree.web;
 
+import org.motechproject.decisiontree.model.Node;
+import org.motechproject.server.decisiontree.service.DecisionTreeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
@@ -49,34 +52,66 @@ public class VxmlController extends MultiActionController {
 
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
 
-    public static final String AUDIO_MESSAGE_TEMPLATE_NAME = "audionode";
+    public static final String TREE_ID_PARAM = "tId";
+    public static final String NODE_ID_PARAM = "nId";
+    public static final String TRANSITION_KEY_PARAM = "trKey";
+    public static final String PATIENT_ID_PARAM = "pId";
+
+    public static final String MESSAGE_TEMPLATE_NAME = "node";
     public static final String TTS_MESSAGE_TEMPLATE_NAME = "ttsnode";
     public static final String ERROR_MESSAGE_TEMPLATE_NAME = "node_error";
 
-    //@Autowired
-    //DecisionTreeService decisionTreeService;
+    @Autowired
+    DecisionTreeService decisionTreeService;
 
     /**
      * Handles Decision Tree Node HTTP requests and generates a VXML document based on a Velocity template.
-     * The HTTP request should contain the Tree ID, Node ID, Patient ID and Selected Transition ID (optional) parameters
+     * The HTTP request should contain the Tree ID, Node ID, Patient ID and Selected Transition Key (optional) parameters
      *
      */
     public ModelAndView node(HttpServletRequest request, HttpServletResponse response) {
-        logger.info("Generate appointment reminder VXML");
+        logger.info("Generating decision tree node VXML");
 
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
 
-        String messageId = request.getParameter("mId");
+        String patientId = request.getParameter(PATIENT_ID_PARAM);
+        String nodeId = request.getParameter(NODE_ID_PARAM);
+        String treeId = request.getParameter(TREE_ID_PARAM);
+        String transitionKey = request.getParameter(TRANSITION_KEY_PARAM);
+
+        logger.info(" Node HTTP  request parameters: " + PATIENT_ID_PARAM + ": " + patientId + ", "
+                + TREE_ID_PARAM + ": " + treeId + ", "
+                + NODE_ID_PARAM + ": " + nodeId + ", "
+                + TRANSITION_KEY_PARAM + ": " + transitionKey);
+
+        Node node = null;
+        if (transitionKey == null) {  // get root node
+            try {
+                node = decisionTreeService.getNode(treeId, patientId);
+            } catch (Exception e) {
+                logger.error("Can not get node by Tree ID : " + treeId + " and Patient ID: " + patientId, e);
+            }
+        } else { // get not root node
+            try {
+                node = decisionTreeService.getNode(treeId, nodeId, transitionKey);
+            } catch (Exception e) {
+                 logger.error("Can not get node by Tree ID : " + treeId+ "de ID: " + nodeId +
+                         " and Transition Key: " + transitionKey, e);
+            }
+        }
 
         ModelAndView mav = new ModelAndView();
 
+        if (node != null) {
+            mav.setViewName(MESSAGE_TEMPLATE_NAME);
+            mav.addObject("node", node);
+            mav.addObject("patientId", patientId);
+        } else {
+            mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
+        }
 
-
-        mav.setViewName(AUDIO_MESSAGE_TEMPLATE_NAME);
-        mav.addObject("audioFileUrl", "/m/wav/hello.wav");
         return mav;
-
     }
 
 
