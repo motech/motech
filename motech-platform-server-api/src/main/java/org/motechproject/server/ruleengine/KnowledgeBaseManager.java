@@ -139,7 +139,11 @@ public class KnowledgeBaseManager {
      * @return
      */
     public KnowledgeBase getKnowledgeBase(String ruleId) {
-        return knowledgeBaseLookup.get(ruleId);
+    	if (ruleId != null) {
+    		return knowledgeBaseLookup.get(ruleId);
+		} else {
+			return null;
+		}
     }
     
     public void setRuleRepository(RuleRepository ruleRepository) {

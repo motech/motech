@@ -3,9 +3,13 @@ package org.motechproject.tama.model;
 import java.util.Date;
 import java.util.Set;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.ektorp.docref.DocumentReferences;
 import org.ektorp.docref.FetchType;
 import org.ektorp.support.TypeDiscriminator;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.Years;
 import org.motechproject.model.MotechAuditableDataObject;
 
 public class Patient extends MotechAuditableDataObject {
@@ -27,6 +31,24 @@ public class Patient extends MotechAuditableDataObject {
 	private Status status = Status.ACTIVE;
 	@DocumentReferences(fetch = FetchType.LAZY, descendingSortOrder = true, orderBy = "windowStartDate", backReference = "patientId")
 	private Set<Appointment> appointments;
+	private Date registrationDate;
+	private Regimen regimen;
+
+	public Regimen getRegimen() {
+		return regimen;
+	}
+
+	public void setRegimen(Regimen regimen) {
+		this.regimen = regimen;
+	}
+
+	public Date getRegistrationDate() {
+		return registrationDate;
+	}
+
+	public void setRegistrationDate(Date registrationDate) {
+		this.registrationDate = registrationDate;
+	}
 
 	public String getClinicPatientId() {
 		return clinicPatientId;
@@ -106,6 +128,24 @@ public class Patient extends MotechAuditableDataObject {
 
 	public void setAppointments(Set<Appointment> appointments) {
 		this.appointments = appointments;
+	}
+	
+	@JsonIgnore
+	public Integer getAge(){
+		if (dateOfBirth != null) {
+			return Years.yearsBetween(new DateTime(dateOfBirth), new DateTime()).getYears();
+		} else {
+			return null;
+		}
+	}
+	
+	@JsonIgnore
+	public Integer getDaysSinceRegistered(){
+		if (registrationDate != null) {
+			return Days.daysBetween(new DateTime(registrationDate), new DateTime()).getDays();
+		} else {
+			return null;
+		}
 	}
 
 	@Override
