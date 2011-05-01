@@ -29,8 +29,9 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.event;
+package org.motechproject.server.event;
 
+import org.motechproject.event.EventRelay;
 import org.motechproject.gateway.OutboundEventGateway;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
@@ -45,7 +46,8 @@ import java.util.Set;
 /**
  * This class handled incoming scheduled events and relays those events to the appropriate event listeners
  */
-public class ServerEventRelay implements EventRelay {
+public class ServerEventRelay implements EventRelay
+{
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired

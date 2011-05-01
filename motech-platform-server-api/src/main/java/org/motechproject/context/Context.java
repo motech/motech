@@ -32,7 +32,7 @@
 package org.motechproject.context;
 
 import org.ektorp.CouchDbInstance;
-import org.motechproject.event.EventListenerRegistry;
+import org.motechproject.server.event.EventListenerRegistry;
 import org.motechproject.gateway.MotechSchedulerGateway;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.server.ruleengine.KnowledgeBaseManager;

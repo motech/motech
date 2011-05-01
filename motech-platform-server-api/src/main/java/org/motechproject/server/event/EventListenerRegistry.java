@@ -29,9 +29,10 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.event;
+package org.motechproject.server.event;
 
 import org.motechproject.context.EventContext;
+import org.motechproject.event.*;
 import org.motechproject.metrics.MetricsAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +63,7 @@ public class EventListenerRegistry {
      * @param listener the listener instance
      * @param subjects the event types that a listener is interested in
      */
-    public void registerListener(EventListener listener, List<String> subjects) {
+    public void registerListener(org.motechproject.server.event.EventListener listener, List<String> subjects) {
 
         if (listener == null) {
             String errorMessage = "Invalid attempt to register a null EventListener";
@@ -82,7 +83,7 @@ public class EventListenerRegistry {
         }
     }
 
-    public void registerListener(EventListener listener, String subject) {
+    public void registerListener(org.motechproject.server.event.EventListener listener, String subject) {
         if (listener == null) {
             String errorMessage = "Invalid attempt to register a null EventListener";
             log.error(errorMessage);
@@ -107,10 +108,10 @@ public class EventListenerRegistry {
      * @param subject The event type that you are seeking listeners for
      * @return A list of scheduled event listeners that are interested in that event
      */
-    public Set<EventListener> getListeners(String subject) {
+    public Set<org.motechproject.server.event.EventListener> getListeners(String subject) {
         String timer = "motech.listener-registry.getListeners";
         metricsAgent.startTimer(timer);
-        Set<EventListener> ret = listenerTree.getListeners(subject);
+        Set<org.motechproject.server.event.EventListener> ret = listenerTree.getListeners(subject);
         metricsAgent.stopTimer(timer);
 
         return ret;

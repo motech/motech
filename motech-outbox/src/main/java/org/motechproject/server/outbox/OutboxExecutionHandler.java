@@ -34,7 +34,7 @@ package org.motechproject.server.outbox;
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.outbox.api.EventKeys;
-import org.motechproject.event.EventListener;
+import org.motechproject.server.event.EventListener;
 import org.motechproject.gateway.MotechSchedulerGateway;
 import org.motechproject.server.service.ivr.CallInitiationException;
 import org.motechproject.server.service.ivr.CallRequest;
@@ -48,7 +48,8 @@ import java.util.Map;
 /**
  * 
  */
-public class OutboxExecutionHandler implements EventListener {
+public class OutboxExecutionHandler implements EventListener
+{
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	public final static String OUTBOX_EXECUTION = "OutboxExecution";
 

@@ -40,7 +40,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.event.ServerEventRelay;
+import org.motechproject.server.event.ServerEventRelay;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.service.ivr.CallRequest;
 

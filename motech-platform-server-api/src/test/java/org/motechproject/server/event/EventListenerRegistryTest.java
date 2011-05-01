@@ -29,7 +29,7 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.event;
+package org.motechproject.server.event;
 
 import junitx.util.PrivateAccessor;
 import org.junit.After;

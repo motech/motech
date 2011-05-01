@@ -34,7 +34,7 @@ package org.motechproject.server.outbox;
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.outbox.api.EventKeys;
-import org.motechproject.event.EventListener;
+import org.motechproject.server.event.EventListener;
 import org.motechproject.gateway.MotechSchedulerGateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,8 @@ import org.slf4j.LoggerFactory;
 /**
  * 
  */
-public class UnscheduleOutboxExecutionHandler implements EventListener {
+public class UnscheduleOutboxExecutionHandler implements EventListener
+{
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	public final static String UNSCHEDULE_OUTBOX_EXECUTION = "UnscheduleOutboxExecutionReminder";
 

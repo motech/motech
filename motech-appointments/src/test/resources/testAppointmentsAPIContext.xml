@@ -42,8 +42,8 @@
 
 	<context:annotation-config />
 
-    <bean id="eventRelay" class="org.motechproject.event.ServerEventRelay"/>
-    <bean id="eventListenerRegistry" class="org.motechproject.event.EventListenerRegistry"/>
+    <bean id="eventRelay" class="org.motechproject.server.event.ServerEventRelay"/>
+    <bean id="eventListenerRegistry" class="org.motechproject.server.event.EventListenerRegistry"/>
 
     <bean id="outboundEventGateway" class="org.motechproject.gateway.StubOutboundEventGateway" />
 <!--
