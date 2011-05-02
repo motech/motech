@@ -100,7 +100,6 @@ public class ReminderCRUDEventHandler implements EventListener {
                 return;
             }
 
-            // todo need to set default value or change type to boolean or check for null
             if (reminder.getEnabled()) {
                 String appointmentId = EventKeys.getAppointmentId(event);
                 if (null == appointmentId || 0 == appointmentId.length()) {

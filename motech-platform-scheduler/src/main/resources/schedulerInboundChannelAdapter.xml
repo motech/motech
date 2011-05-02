@@ -52,15 +52,18 @@
 	<payload-type-router input-channel="jmsinToSchedulerChannel">
 		<mapping type="org.motechproject.model.CronSchedulableJob" channel="scheduleChannel"/>
 		<mapping type="org.motechproject.model.RunOnceSchedulableJob" channel="scheduleRunOnceChannel"/>
+        <mapping type="org.motechproject.model.RepeatingSchedulableJob" channel="scheduleRepeatingChannel"/>
 		<mapping type="java.lang.String" channel="unscheduleChannel"/>
 	</payload-type-router>
 	
 	<channel id="scheduleChannel"/>
 	<channel id="scheduleRunOnceChannel"/>
+    <channel id="scheduleRepeatingChannel"/>
 	<channel id="unscheduleChannel"/>
 
 	<outbound-channel-adapter channel="scheduleChannel" ref="schedulerService" method="scheduleJob"/>
 	<outbound-channel-adapter channel="scheduleRunOnceChannel" ref="schedulerService" method="scheduleRunOnceJob"/>
+    <outbound-channel-adapter channel="scheduleRepeatingChannel" ref="schedulerService" method="scheduleRepeatingJob"/>
 	<outbound-channel-adapter channel="unscheduleChannel" ref="schedulerService" method="unscheduleJob"/>
 	
 </beans:beans>

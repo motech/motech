@@ -47,6 +47,8 @@ public class ClientEventRelay implements EventRelay {
     private OutboundEventGateway outboundEventGateway;
 
     public void sendEventMessage(MotechEvent event) {
+        log.info("Sending event: " + event.getSubject());
+
         outboundEventGateway.sendEventMessage(event);
     }
 }

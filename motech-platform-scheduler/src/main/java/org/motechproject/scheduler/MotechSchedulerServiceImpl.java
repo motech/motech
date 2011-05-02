@@ -54,6 +54,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
     final Logger log = LoggerFactory.getLogger(MotechSchedulerServiceImpl.class);
 
+    final int MAX_REPEAT_COUNT = 999999;
 
     @Autowired
     private SchedulerFactoryBean schedulerFactoryBean;
@@ -256,25 +257,38 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         Date jobStartDate = repeatingSchedulableJob.getStartTime();
         if (jobStartDate == null ) {
-            String errorMessage = "Invalid RunOnceSchedulableJob. The job start date can not be null";
+            String errorMessage = "Invalid RepeatingSchedulableJob. The job start date can not be null";
             log.error(errorMessage);
              throw new IllegalArgumentException(errorMessage);
         }
 
         Date jobEndDate = repeatingSchedulableJob.getEndTime();
         if (jobEndDate == null ) {
-            String errorMessage = "Invalid RunOnceSchedulableJob. The job end date can not be null";
+            String errorMessage = "Invalid RepeatingSchedulableJob. The job end date can not be null";
             log.error(errorMessage);
              throw new IllegalArgumentException(errorMessage);
+        }
+
+        long jobRepeatInterval = repeatingSchedulableJob.getRepeatInterval();
+        if (jobRepeatInterval == 0) {
+            String errorMessage = "Invalid RepeatingSchedulableJob. The job repeat interval can not be 0";
+            log.error(errorMessage);
+             throw new IllegalArgumentException(errorMessage);
+        }
+
+        Integer jobRepeatCount = repeatingSchedulableJob.getRepeatCount();
+        if (null == jobRepeatCount) {
+            jobRepeatCount = MAX_REPEAT_COUNT;
         }
 
         String jobId = (String)motechEvent.getParameters().get(JOB_ID_KEY);
         JobDetail jobDetail = new JobDetail(jobId, JOB_GROUP_NAME, MotechScheduledJob.class);
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
-        Trigger trigger = new SimpleTrigger(jobId, JOB_GROUP_NAME, jobStartDate, jobEndDate,
-                                            repeatingSchedulableJob.getRepeatCount(),
-                                            repeatingSchedulableJob.getRepeatInterval());
+        Trigger trigger;
+        trigger = new SimpleTrigger(jobId, JOB_GROUP_NAME, jobStartDate, jobEndDate,
+                                    repeatingSchedulableJob.getRepeatCount(),
+                                    repeatingSchedulableJob.getRepeatInterval());
 
         scheduleJob(jobDetail, trigger);
     }

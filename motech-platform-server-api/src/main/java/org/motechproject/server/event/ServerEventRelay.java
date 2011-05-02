@@ -68,6 +68,8 @@ public class ServerEventRelay implements EventRelay
 
     // @TODO either relayEvent should be made private, or this method moved out to it's own class.
     public void sendEventMessage(MotechEvent event) {
+        log.info("Sending event: " + event.getSubject());
+
         Set<EventListener> listeners = eventListenerRegistry.getListeners( event.getSubject() );
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("subject", event.getSubject());

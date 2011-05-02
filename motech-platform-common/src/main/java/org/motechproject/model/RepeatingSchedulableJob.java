@@ -45,7 +45,7 @@ public class RepeatingSchedulableJob implements Serializable {
     private MotechEvent motechEvent;
 	private Date startTime;
     private Date endTime;
-    private int repeatCount;
+    private Integer repeatCount;
     private long repeatInterval;
 
     public RepeatingSchedulableJob(MotechEvent motechEvent,
@@ -55,6 +55,16 @@ public class RepeatingSchedulableJob implements Serializable {
 		this.startTime = startTime;
 		this.endTime = endTime;
         this.repeatCount = repeatCount;
+        this.repeatInterval = repeatInterval;
+    }
+
+    public RepeatingSchedulableJob(MotechEvent motechEvent,
+                                   Date startTime, Date endTime,
+                                   long repeatInterval) {
+        this.motechEvent = motechEvent;
+		this.startTime = startTime;
+		this.endTime = endTime;
+        this.repeatCount = null;
         this.repeatInterval = repeatInterval;
     }
 
@@ -88,7 +98,7 @@ public class RepeatingSchedulableJob implements Serializable {
         this.endTime = endTime;
     }
 
-    public int getRepeatCount()
+    public Integer getRepeatCount()
     {
         return repeatCount;
     }
