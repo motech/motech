@@ -29,50 +29,51 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.appointments.api.dao.impl;
+package org.motechproject.appointments.api;
 
-import org.ektorp.CouchDbConnector;
-import org.ektorp.support.GenerateView;
 import org.motechproject.appointments.api.dao.RemindersDAO;
 import org.motechproject.appointments.api.model.Reminder;
-import org.motechproject.dao.MotechAuditableRepository;
+import org.motechproject.context.EventContext;
+import org.motechproject.event.EventRelay;
+import org.motechproject.model.MotechEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
-public class RemindersCouchDBDAOImpl extends MotechAuditableRepository<Reminder> implements RemindersDAO
+public class ReminderService
 {
-    @Autowired
-    public RemindersCouchDBDAOImpl(@Qualifier("appointmentsDatabase") CouchDbConnector db) {
-        super(Reminder.class, db);
-        initStandardDesignDocument();
-    }
+    @Autowired(required = false)
+    private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
 
-    @Override
+    @Autowired
+    private RemindersDAO remindersDAO;
+
     public void addReminder(Reminder reminder)
     {
         if (null == reminder.getAppointmentId()) {
             throw new IllegalArgumentException("Reminder must be associated with an appointment");
         }
 
-        db.create(reminder);
+        remindersDAO.addReminder(reminder);
+
+        eventRelay.sendEventMessage(getSkinnyEvent(reminder, EventKeys.REMINDER_CREATED_SUBJECT));
     }
 
-    @Override
     public void updateReminder(Reminder reminder)
     {
         if (null == reminder.getAppointmentId()) {
             throw new IllegalArgumentException("Reminder must be associated with an appointment");
         }
 
-        db.update(reminder);
+        remindersDAO.updateReminder(reminder);
+
+        eventRelay.sendEventMessage(getSkinnyEvent(reminder, EventKeys.REMINDER_UPDATED_SUBJECT));
     }
 
-    @Override
     public void removeReminder(String reminderId)
     {
         Reminder reminder = getReminder(reminderId);
@@ -80,38 +81,40 @@ public class RemindersCouchDBDAOImpl extends MotechAuditableRepository<Reminder>
         removeReminder(reminder);
     }
 
-    @Override
     public void removeReminder(Reminder reminder)
     {
-        db.delete(reminder);
+        MotechEvent event = getSkinnyEvent(reminder, EventKeys.REMINDER_DELETED_SUBJECT);
+
+        remindersDAO.removeReminder(reminder);
+
+        eventRelay.sendEventMessage(event);
     }
 
-    @Override
     public Reminder getReminder(String reminderId)
     {
-        Reminder reminder = db.get(Reminder.class, reminderId);
+        Reminder reminder = remindersDAO.getReminder(reminderId);
         return reminder;
     }
 
-    @Override
-    @GenerateView
     public List<Reminder> findByAppointmentId(String appointmentId)
     {
-        List<Reminder> ret = queryView("by_appointmentId", appointmentId);
-        if (null == ret) {
-            ret = Collections.<Reminder>emptyList();
-        }
-        return ret;
+        return remindersDAO.findByAppointmentId(appointmentId);
     }
 
-    @Override
-    @GenerateView
     public List<Reminder> findByExternalId(String externalId)
     {
-        List<Reminder> ret = queryView("by_externalId", externalId);
-        if (null == ret) {
-            ret = Collections.<Reminder>emptyList();
-        }
-        return ret;
+        return remindersDAO.findByExternalId(externalId);
+    }
+
+    private MotechEvent getSkinnyEvent(Reminder reminder, String subject) {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put(EventKeys.APPOINTMENT_ID_KEY, reminder.getAppointmentId());
+        parameters.put(EventKeys.REMINDER_ID_KEY, reminder.getId());
+        // Not sure I want this here, but it does save the handler from having to load the reminder
+        parameters.put(EventKeys.JOB_ID_KEY, reminder.getJobId());
+
+        MotechEvent event = new MotechEvent(subject, parameters);
+
+        return event;
     }
 }

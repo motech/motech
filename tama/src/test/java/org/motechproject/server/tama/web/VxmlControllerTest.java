@@ -40,7 +40,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.appointments.api.dao.AppointmentsDAO;
+import org.motechproject.appointments.api.AppointmentService;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.tama.web.VxmlController;
 import org.springframework.web.servlet.ModelAndView;
@@ -60,7 +60,7 @@ public class VxmlControllerTest {
     VxmlController vxmlController = new VxmlController();
 
     @Mock
-    private AppointmentsDAO appointmentsDAO;
+    private AppointmentService appointmentService;
 
     @Mock
     private HttpServletRequest request;
@@ -84,7 +84,7 @@ public class VxmlControllerTest {
         appointment.setScheduledDate(appointmentDate);
 
         Mockito.when(request.getParameter("aptId")).thenReturn(appointmentId);
-        Mockito.when(appointmentsDAO.getAppointment(appointmentId)).thenReturn(appointment);
+        Mockito.when(appointmentService.getAppointment(appointmentId)).thenReturn(appointment);
 
         ModelAndView modelAndView = vxmlController.appointmentreminder(request, response);
 
@@ -111,7 +111,7 @@ public class VxmlControllerTest {
         String appointmentId = "nID";
 
         Mockito.when(request.getParameter("aptId")).thenReturn(appointmentId);
-        Mockito.when(appointmentsDAO.getAppointment(appointmentId)).thenReturn(null);
+        Mockito.when(appointmentService.getAppointment(appointmentId)).thenReturn(null);
 
         ModelAndView modelAndView = vxmlController.appointmentreminder(request, response);
 
@@ -127,7 +127,7 @@ public class VxmlControllerTest {
         Appointment appointment = new Appointment();
 
         Mockito.when(request.getParameter("aptId")).thenReturn(appointmentId);
-        Mockito.when(appointmentsDAO.getAppointment(appointmentId)).thenThrow(new RuntimeException());
+        Mockito.when(appointmentService.getAppointment(appointmentId)).thenThrow(new RuntimeException());
 
         ModelAndView modelAndView = vxmlController.appointmentreminder(request, response);
 
@@ -146,7 +146,7 @@ public class VxmlControllerTest {
         appointment.setScheduledDate(appointmentDate);
 
         Mockito.when(request.getParameter("aptId")).thenReturn(appointmentId);
-        Mockito.when(appointmentsDAO.getAppointment(appointmentId)).thenReturn(appointment);
+        Mockito.when(appointmentService.getAppointment(appointmentId)).thenReturn(appointment);
 
         ModelAndView modelAndView = vxmlController.scheduleappointmentreminder(request, response);
 
@@ -173,7 +173,7 @@ public class VxmlControllerTest {
         String appointmentId = "nID";
 
         Mockito.when(request.getParameter("aptId")).thenReturn(appointmentId);
-        Mockito.when(appointmentsDAO.getAppointment(appointmentId)).thenReturn(null);
+        Mockito.when(appointmentService.getAppointment(appointmentId)).thenReturn(null);
 
         ModelAndView modelAndView = vxmlController.scheduleappointmentreminder(request, response);
 
@@ -189,7 +189,7 @@ public class VxmlControllerTest {
         Appointment appointment = new Appointment();
 
         Mockito.when(request.getParameter("aptId")).thenReturn(appointmentId);
-        Mockito.when(appointmentsDAO.getAppointment(appointmentId)).thenThrow(new RuntimeException());
+        Mockito.when(appointmentService.getAppointment(appointmentId)).thenThrow(new RuntimeException());
 
         ModelAndView modelAndView = vxmlController.scheduleappointmentreminder(request, response);
 

@@ -37,14 +37,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.appointments.api.EventKeys;
-import org.motechproject.appointments.api.dao.AppointmentsDAO;
-import org.motechproject.appointments.api.dao.RemindersDAO;
+import org.motechproject.appointments.api.ReminderService;
 import org.motechproject.appointments.api.model.Reminder;
+import org.motechproject.gateway.MotechSchedulerGateway;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.RunOnceSchedulableJob;
-import org.motechproject.gateway.MotechSchedulerGateway;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -63,10 +62,7 @@ public class ReminderCRUDEventHandlerTest
     ReminderCRUDEventHandler reminderCRUDEventHandler = new ReminderCRUDEventHandler();
 
     @Mock
-    private RemindersDAO remindersDAO;
-
-    @Mock
-    private AppointmentsDAO appointmentsDAO;
+    private ReminderService reminderService;
 
     @Mock
     private MotechSchedulerGateway schedulerGateway;
@@ -110,11 +106,11 @@ public class ReminderCRUDEventHandlerTest
         MotechEvent motechEvent = new MotechEvent("created", params);
 
         Reminder r = new Reminder();
-        when(remindersDAO.getReminder("foo")).thenReturn(r);
+        when(reminderService.getReminder("foo")).thenReturn(r);
 
         reminderCRUDEventHandler.handle(motechEvent);
 
-        verify(remindersDAO, times(1)).updateReminder(r);
+        verify(reminderService, times(1)).updateReminder(r);
     }
 
     @Test
@@ -125,7 +121,7 @@ public class ReminderCRUDEventHandlerTest
 
         reminderCRUDEventHandler.handle(motechEvent);
 
-        verify(remindersDAO, times(0)).updateReminder(any(Reminder.class));
+        verify(reminderService, times(0)).updateReminder(any(Reminder.class));
     }
 
     @Test
@@ -151,7 +147,7 @@ public class ReminderCRUDEventHandlerTest
 
         Reminder r = new Reminder();
         r.setEnabled(false);
-        when(remindersDAO.getReminder("foo")).thenReturn(r);
+        when(reminderService.getReminder("foo")).thenReturn(r);
 
         reminderCRUDEventHandler.handle(motechEvent);
 
@@ -167,7 +163,7 @@ public class ReminderCRUDEventHandlerTest
 
         Reminder r = new Reminder();
         r.setEnabled(false);
-        when(remindersDAO.getReminder("foo")).thenReturn(r);
+        when(reminderService.getReminder("foo")).thenReturn(r);
 
         reminderCRUDEventHandler.handle(motechEvent);
 
@@ -183,7 +179,7 @@ public class ReminderCRUDEventHandlerTest
 
         Reminder r = new Reminder();
         r.setEnabled(true);
-        when(remindersDAO.getReminder("foo")).thenReturn(r);
+        when(reminderService.getReminder("foo")).thenReturn(r);
 
         reminderCRUDEventHandler.handle(motechEvent);
 
@@ -202,7 +198,7 @@ public class ReminderCRUDEventHandlerTest
         r.setEnabled(true);
         r.setStartDate(new Date());
 
-        when(remindersDAO.getReminder("foo")).thenReturn(r);
+        when(reminderService.getReminder("foo")).thenReturn(r);
 
         reminderCRUDEventHandler.handle(motechEvent);
 
@@ -224,7 +220,7 @@ public class ReminderCRUDEventHandlerTest
         cal.add(Calendar.DATE, 1);
         r.setStartDate(cal.getTime());
 
-        when(remindersDAO.getReminder("foo")).thenReturn(r);
+        when(reminderService.getReminder("foo")).thenReturn(r);
 
         reminderCRUDEventHandler.handle(motechEvent);
 
@@ -251,7 +247,7 @@ public class ReminderCRUDEventHandlerTest
         r.setUnits(Reminder.intervalUnits.HOURS);
         r.setRepeatCount(7);
 
-        when(remindersDAO.getReminder("foo")).thenReturn(r);
+        when(reminderService.getReminder("foo")).thenReturn(r);
 
         reminderCRUDEventHandler.handle(motechEvent);
 

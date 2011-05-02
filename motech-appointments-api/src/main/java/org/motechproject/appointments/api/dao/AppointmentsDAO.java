@@ -36,8 +36,6 @@ import org.motechproject.dao.BaseDao;
 
 import java.util.List;
 
-// Responisble for publishing when appointments and appointment windows are
-// created, updated or deleted
 public interface AppointmentsDAO extends BaseDao<Appointment> {
 
     public void addAppointment(Appointment appointment);

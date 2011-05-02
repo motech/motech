@@ -1,8 +1,8 @@
 package org.motechproject.appointments.api.context;
 
-import org.motechproject.appointments.api.dao.AppointmentsDAO;
-import org.motechproject.appointments.api.dao.RemindersDAO;
-import org.motechproject.appointments.api.dao.VisitsDAO;
+import org.motechproject.appointments.api.AppointmentService;
+import org.motechproject.appointments.api.ReminderService;
+import org.motechproject.appointments.api.VisitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -10,42 +10,42 @@ import org.springframework.stereotype.Component;
 public class AppointmentsContext
 {
     @Autowired
-    private AppointmentsDAO appointmentsDAO;
+    private AppointmentService appointmentService;
 
     @Autowired
-    private RemindersDAO remindersDAO;
+    private ReminderService reminderService;
 
     @Autowired
-    private VisitsDAO visitsDAO;
+    private VisitService visitService;
 
-    public AppointmentsDAO getAppointmentsDAO()
+    public AppointmentService getAppointmentService()
     {
-        return appointmentsDAO;
+        return appointmentService;
     }
 
-    public void setAppointmentsDAO(AppointmentsDAO appointmentsDAO)
+    public void setAppointmentService(AppointmentService appointmentService)
     {
-        this.appointmentsDAO = appointmentsDAO;
+        this.appointmentService = appointmentService;
     }
 
-    public RemindersDAO getRemindersDAO()
+    public ReminderService getReminderService()
     {
-        return remindersDAO;
+        return reminderService;
     }
 
-    public void setRemindersDAO(RemindersDAO remindersDAO)
+    public void setReminderService(ReminderService reminderService)
     {
-        this.remindersDAO = remindersDAO;
+        this.reminderService = reminderService;
     }
 
-    public VisitsDAO getVisitsDAO()
+    public VisitService getVisitService()
     {
-        return visitsDAO;
+        return visitService;
     }
 
-    public void setVisitsDAO(VisitsDAO visitsDAO)
+    public void setVisitService(VisitService visitService)
     {
-        this.visitsDAO = visitsDAO;
+        this.visitService = visitService;
     }
 
     public static AppointmentsContext getInstance(){

@@ -35,8 +35,6 @@ import org.motechproject.appointments.api.model.Reminder;
 
 import java.util.List;
 
-// Responsible for publishing when appointments and appointment windows are
-// created, updated or deleted
 public interface RemindersDAO {
 
     public void addReminder(Reminder reminder);

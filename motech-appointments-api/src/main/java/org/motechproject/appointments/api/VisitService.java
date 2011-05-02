@@ -29,42 +29,43 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.appointments.api.dao.impl;
+package org.motechproject.appointments.api;
 
-import org.ektorp.CouchDbConnector;
-import org.ektorp.support.GenerateView;
 import org.motechproject.appointments.api.dao.VisitsDAO;
 import org.motechproject.appointments.api.model.Visit;
-import org.motechproject.dao.MotechAuditableRepository;
+import org.motechproject.context.EventContext;
+import org.motechproject.event.EventRelay;
+import org.motechproject.model.MotechEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
-public class VisitsCouchDBDAOImpl extends MotechAuditableRepository<Visit> implements VisitsDAO
+public class VisitService
 {
-    @Autowired
-    public VisitsCouchDBDAOImpl(@Qualifier("appointmentsDatabase") CouchDbConnector db) {
-        super(Visit.class, db);
-        initStandardDesignDocument();
-    }
+    @Autowired(required = false)
+    private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
 
-    @Override
+    @Autowired
+    VisitsDAO visitsDAO;
+
     public void addVisit(Visit visit)
     {
-        db.create(visit);
+        visitsDAO.addVisit(visit);
+
+        eventRelay.sendEventMessage(getSkinnyEvent(visit, EventKeys.VISIT_CREATED_SUBJECT));
     }
 
-    @Override
     public void updateVisit(Visit visit)
     {
-        db.update(visit);
+        visitsDAO.updateVisit(visit);
+
+        eventRelay.sendEventMessage(getSkinnyEvent(visit, EventKeys.VISIT_UPDATED_SUBJECT));
     }
 
-    @Override
     public void removeVisit(String visitId)
     {
         Visit visit = getVisit(visitId);
@@ -72,38 +73,38 @@ public class VisitsCouchDBDAOImpl extends MotechAuditableRepository<Visit> imple
         removeVisit(visit);
     }
 
-    @Override
     public void removeVisit(Visit visit)
     {
-        db.delete(visit);
+        MotechEvent event = getSkinnyEvent(visit, EventKeys.VISIT_DELETED_SUBJECT);
+
+        visitsDAO.removeVisit(visit);
+
+        eventRelay.sendEventMessage(event);
     }
 
-    @Override
     public Visit getVisit(String visitId)
     {
-        Visit visit = db.get(Visit.class, visitId);
+        Visit visit = visitsDAO.getVisit(visitId);
         return visit;
     }
 
-    @Override
-	@GenerateView
     public List<Visit> findByAppointmentId(String appointmentId)
     {
-        List<Visit> ret = queryView("by_appointmentId", appointmentId);
-        if (null == ret) {
-            ret = Collections.<Visit>emptyList();
-        }
-        return ret;
+        return visitsDAO.findByAppointmentId(appointmentId);
     }
 
-    @Override
-	@GenerateView
     public List<Visit> findByExternalId(String externalId)
     {
-        List<Visit> ret = queryView("by_externalId", externalId);
-        if (null == ret) {
-            ret = Collections.<Visit>emptyList();
-        }
-        return ret;
+        return  visitsDAO.findByExternalId(externalId);
+    }
+
+    private MotechEvent getSkinnyEvent(Visit visit, String subject) {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put(EventKeys.APPOINTMENT_ID_KEY, visit.getAppointmentId());
+        parameters.put(EventKeys.VISIT_ID_KEY, visit.getId());
+
+        MotechEvent event = new MotechEvent(subject, parameters);
+
+        return event;
     }
 }

@@ -31,10 +31,10 @@
  */
 package org.motechproject.tama;
 
+import org.motechproject.appointments.api.AppointmentService;
 import org.motechproject.appointments.api.EventKeys;
+import org.motechproject.appointments.api.ReminderService;
 import org.motechproject.appointments.api.context.AppointmentsContext;
-import org.motechproject.appointments.api.dao.AppointmentsDAO;
-import org.motechproject.appointments.api.dao.RemindersDAO;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.context.Context;
@@ -63,8 +63,8 @@ public class AppointmentReminderEventHandler implements EventListener {
 
     public final static String TAMA_APPOINTMENT_REMINDER = "TamaAppointmentReminder";
 
-    AppointmentsDAO appointmentsDAO = AppointmentsContext.getInstance().getAppointmentsDAO();
-    RemindersDAO remindersDAO = AppointmentsContext.getInstance().getRemindersDAO();
+    AppointmentService appointmentService = AppointmentsContext.getInstance().getAppointmentService();
+    ReminderService reminderService = AppointmentsContext.getInstance().getReminderService();
     MetricsAgent metricsAgent = Context.getInstance().getMetricsAgent();
 
     OutboundVoiceMessageDao outboundVoiceMessageDao = OutboxContext.getInstance().getOutboundVoiceMessageDao();
@@ -85,7 +85,7 @@ public class AppointmentReminderEventHandler implements EventListener {
             return;
         }
 
-        Appointment appointment = appointmentsDAO.getAppointment(appointmentId);
+        Appointment appointment = appointmentService.getAppointment(appointmentId);
         if (appointment == null) {
             log.error("Can not handle the Appointment Reminder Event: " + event +
                      ". The event is invalid - no appointment for id " + appointmentId);
@@ -109,11 +109,11 @@ public class AppointmentReminderEventHandler implements EventListener {
 
             // If they have visited the clinic disable this reminder
             if (null != appointment.getVisitId()) {
-                Reminder reminder = remindersDAO.getReminder(EventKeys.getReminderId(event));
+                Reminder reminder = reminderService.getReminder(EventKeys.getReminderId(event));
 
                 if (null != reminder) {
                     reminder.setEnabled(false);
-                    remindersDAO.updateReminder(reminder);
+                    reminderService.updateReminder(reminder);
                 }
 
                 return;

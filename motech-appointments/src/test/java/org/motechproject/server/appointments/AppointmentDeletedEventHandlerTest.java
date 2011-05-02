@@ -37,7 +37,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.appointments.api.EventKeys;
-import org.motechproject.appointments.api.dao.RemindersDAO;
+import org.motechproject.appointments.api.ReminderService;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
@@ -55,7 +55,7 @@ public class AppointmentDeletedEventHandlerTest {
     AppointmentDeletedEventHandler appointmentDeletedEventHandler = new AppointmentDeletedEventHandler();
 
     @Mock
-    private RemindersDAO remindersDAO;
+    private ReminderService reminderService;
 
     @Mock
     private MetricsAgent metricsAgent;
@@ -78,11 +78,11 @@ public class AppointmentDeletedEventHandlerTest {
         List<Reminder> reminders = new ArrayList<Reminder>();
         reminders.add(r);
 
-        when(remindersDAO.findByAppointmentId(appointmentId)).thenReturn(reminders);
+        when(reminderService.findByAppointmentId(appointmentId)).thenReturn(reminders);
 
         appointmentDeletedEventHandler.handle(motechEvent);
 
-        verify(remindersDAO, times(1)).removeReminder(r);
+        verify(reminderService, times(1)).removeReminder(r);
     }
 
     @Test
@@ -100,11 +100,11 @@ public class AppointmentDeletedEventHandlerTest {
         reminders.add(r);
         reminders.add(r2);
 
-        when(remindersDAO.findByAppointmentId(appointmentId)).thenReturn(reminders);
+        when(reminderService.findByAppointmentId(appointmentId)).thenReturn(reminders);
 
         appointmentDeletedEventHandler.handle(motechEvent);
 
-        verify(remindersDAO, times(2)).removeReminder(any(Reminder.class));
+        verify(reminderService, times(2)).removeReminder(any(Reminder.class));
     }
 
     @Test
@@ -117,10 +117,10 @@ public class AppointmentDeletedEventHandlerTest {
         List<Reminder> reminders = new ArrayList<Reminder>();
         reminders.add(r);
 
-        when(remindersDAO.findByAppointmentId(null)).thenReturn(Collections.<Reminder>emptyList());
+        when(reminderService.findByAppointmentId(null)).thenReturn(Collections.<Reminder>emptyList());
 
         appointmentDeletedEventHandler.handle(motechEvent);
 
-        verify(remindersDAO, times(0)).removeReminder(any(Reminder.class));
+        verify(reminderService, times(0)).removeReminder(any(Reminder.class));
     }
 }

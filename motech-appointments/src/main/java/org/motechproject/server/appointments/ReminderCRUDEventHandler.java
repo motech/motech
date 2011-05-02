@@ -31,9 +31,9 @@
  */
 package org.motechproject.server.appointments;
 
+import org.motechproject.appointments.api.AppointmentService;
 import org.motechproject.appointments.api.EventKeys;
-import org.motechproject.appointments.api.dao.AppointmentsDAO;
-import org.motechproject.appointments.api.dao.RemindersDAO;
+import org.motechproject.appointments.api.ReminderService;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.context.Context;
 import org.motechproject.metrics.MetricsAgent;
@@ -58,10 +58,10 @@ public class ReminderCRUDEventHandler implements EventListener {
 	private MotechSchedulerGateway schedulerGateway = Context.getInstance().getMotechSchedulerGateway();
 
 	@Autowired
-	private AppointmentsDAO appointmentsDAO;
+	private AppointmentService appointmentService;
 
     @Autowired
-    private RemindersDAO remindersDAO;
+    private ReminderService reminderService;
 
     private MetricsAgent metricsAgent = Context.getInstance().getMetricsAgent();
 
@@ -78,7 +78,7 @@ public class ReminderCRUDEventHandler implements EventListener {
         }
 
         if (event.getSubject().endsWith("created")) {
-            Reminder reminder = remindersDAO.getReminder(EventKeys.getReminderId(event));
+            Reminder reminder = reminderService.getReminder(EventKeys.getReminderId(event));
 
             if (null == reminder) {
                 logger.error("Can not handle Event: " + event.getSubject() +
@@ -89,11 +89,11 @@ public class ReminderCRUDEventHandler implements EventListener {
 
             // This will publish an updated event so no need to talk to the scheduler twice, just wait for
             // the event to get here.
-            remindersDAO.updateReminder(reminder);
+            reminderService.updateReminder(reminder);
         }
 
         if (event.getSubject().endsWith("updated")) {
-            Reminder reminder = remindersDAO.getReminder(EventKeys.getReminderId(event));
+            Reminder reminder = reminderService.getReminder(EventKeys.getReminderId(event));
             if (null == reminder) {
                 logger.error("Can not handle Event: " + event.getSubject() +
                              ". The event is invalid - missing the " + EventKeys.REMINDER_ID_KEY + " parameter");

@@ -6,9 +6,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.appointments.api.AppointmentService;
 import org.motechproject.appointments.api.EventKeys;
-import org.motechproject.appointments.api.dao.AppointmentsDAO;
-import org.motechproject.appointments.api.dao.RemindersDAO;
+import org.motechproject.appointments.api.ReminderService;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.appointments.api.model.Visit;
@@ -34,10 +34,10 @@ public class AppointmentReminderEventHandlerTest extends TestCase {
     AppointmentReminderEventHandler appointmentReminderEventHandler = new AppointmentReminderEventHandler();
 
     @Mock
-    private AppointmentsDAO appointmentsDAO;
+    private AppointmentService appointmentService;
 
     @Mock
-    private RemindersDAO remindersDAO;
+    private ReminderService reminderService;
 
     @Mock
     private OutboundVoiceMessageDao outboundVoiceMessageDaoMock;
@@ -58,7 +58,7 @@ public class AppointmentReminderEventHandlerTest extends TestCase {
 
         appointmentReminderEventHandler.handle(event);
 
-        verify(appointmentsDAO, times(0)).getAppointment(anyString());
+        verify(appointmentService, times(0)).getAppointment(anyString());
         verify(outboundVoiceMessageDaoMock, times(0)).add(any(OutboundVoiceMessage.class));
     }
 
@@ -71,7 +71,7 @@ public class AppointmentReminderEventHandlerTest extends TestCase {
 
         appointmentReminderEventHandler.handle(event);
 
-        verify(appointmentsDAO, times(0)).getAppointment(anyString());
+        verify(appointmentService, times(0)).getAppointment(anyString());
         verify(outboundVoiceMessageDaoMock, times(0)).add(any(OutboundVoiceMessage.class));
     }
 
@@ -82,7 +82,7 @@ public class AppointmentReminderEventHandlerTest extends TestCase {
 
         MotechEvent event = new MotechEvent("", params);
 
-        Mockito.when(appointmentsDAO.getAppointment("aID")).thenReturn(null);
+        Mockito.when(appointmentService.getAppointment("aID")).thenReturn(null);
 
         appointmentReminderEventHandler.handle(event);
 
@@ -102,7 +102,7 @@ public class AppointmentReminderEventHandlerTest extends TestCase {
         appointment.setDueDate(new Date());
         appointment.setScheduledDate(null);
 
-        Mockito.when(appointmentsDAO.getAppointment("aID")).thenReturn(appointment);
+        Mockito.when(appointmentService.getAppointment("aID")).thenReturn(appointment);
 
         ArgumentCaptor<OutboundVoiceMessage> argument = ArgumentCaptor.forClass(OutboundVoiceMessage.class);
         appointmentReminderEventHandler.handle(event);
@@ -133,8 +133,8 @@ public class AppointmentReminderEventHandlerTest extends TestCase {
 
         Reminder reminder = new Reminder();
 
-        Mockito.when(appointmentsDAO.getAppointment("aID")).thenReturn(appointment);
-        Mockito.when(remindersDAO.getReminder("rID")).thenReturn(reminder);
+        Mockito.when(appointmentService.getAppointment("aID")).thenReturn(appointment);
+        Mockito.when(reminderService.getReminder("rID")).thenReturn(reminder);
 
         appointmentReminderEventHandler.handle(event);
 
@@ -158,8 +158,8 @@ public class AppointmentReminderEventHandlerTest extends TestCase {
         v.setId("vID");
         appointment.setVisitId(v.getId());
 
-        Mockito.when(appointmentsDAO.getAppointment("aID")).thenReturn(appointment);
-        Mockito.when(remindersDAO.getReminder("rID")).thenReturn(null);
+        Mockito.when(appointmentService.getAppointment("aID")).thenReturn(appointment);
+        Mockito.when(reminderService.getReminder("rID")).thenReturn(null);
 
         appointmentReminderEventHandler.handle(event);
 
@@ -184,8 +184,8 @@ public class AppointmentReminderEventHandlerTest extends TestCase {
         v.setId("vID");
         appointment.setVisitId(v.getId());
 
-        Mockito.when(appointmentsDAO.getAppointment("aID")).thenReturn(appointment);
-        Mockito.when(remindersDAO.getReminder("rID")).thenReturn(null);
+        Mockito.when(appointmentService.getAppointment("aID")).thenReturn(appointment);
+        Mockito.when(reminderService.getReminder("rID")).thenReturn(null);
 
         appointmentReminderEventHandler.handle(event);
 
@@ -208,7 +208,7 @@ public class AppointmentReminderEventHandlerTest extends TestCase {
         cal.add(Calendar.DATE, 1);
         appointment.setScheduledDate(cal.getTime());
 
-        Mockito.when(appointmentsDAO.getAppointment("aID")).thenReturn(appointment);
+        Mockito.when(appointmentService.getAppointment("aID")).thenReturn(appointment);
         ArgumentCaptor<OutboundVoiceMessage> argument = ArgumentCaptor.forClass(OutboundVoiceMessage.class);
 
         appointmentReminderEventHandler.handle(event);
@@ -235,7 +235,7 @@ public class AppointmentReminderEventHandlerTest extends TestCase {
         cal.add(Calendar.DATE, -11);
         appointment.setScheduledDate(cal.getTime());
 
-        Mockito.when(appointmentsDAO.getAppointment("aID")).thenReturn(appointment);
+        Mockito.when(appointmentService.getAppointment("aID")).thenReturn(appointment);
         ArgumentCaptor<OutboundVoiceMessage> argument = ArgumentCaptor.forClass(OutboundVoiceMessage.class);
 
         appointmentReminderEventHandler.handle(event);

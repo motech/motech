@@ -61,6 +61,10 @@
     <bean id="remindersDAO" class="org.motechproject.appointments.api.dao.impl.RemindersCouchDBDAOImpl"/>
     <bean id="visitsDAO" class="org.motechproject.appointments.api.dao.impl.VisitsCouchDBDAOImpl"/>
 
+    <bean id="appointmentService" class="org.motechproject.appointments.api.AppointmentService"/>
+    <bean id="reminderService" class="org.motechproject.appointments.api.ReminderService"/>
+    <bean id="visitService" class="org.motechproject.appointments.api.VisitService"/>
+
     <bean id="appointmentContext"  class="org.motechproject.appointments.api.context.AppointmentsContext"/>
 
 </beans>

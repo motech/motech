@@ -33,25 +33,17 @@ package org.motechproject.appointments.api.dao.impl;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
-import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.model.Appointment;
-import org.motechproject.context.EventContext;
 import org.motechproject.dao.MotechAuditableRepository;
-import org.motechproject.event.EventRelay;
-import org.motechproject.model.MotechEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class AppointmentsCouchDBDAOImpl extends MotechAuditableRepository<Appointment> implements AppointmentsDAO
 {
-    @Autowired(required = false)
-    private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
 
     @Autowired
     public AppointmentsCouchDBDAOImpl(@Qualifier("appointmentsDatabase") CouchDbConnector db) {
@@ -63,16 +55,12 @@ public class AppointmentsCouchDBDAOImpl extends MotechAuditableRepository<Appoin
     public void addAppointment(Appointment appointment)
     {
         db.create(appointment);
-
-        eventRelay.sendEventMessage(getSkinnyEvent(appointment, EventKeys.APPOINTMENT_CREATED_SUBJECT));
     }
 
     @Override
     public void updateAppointment(Appointment appointment)
     {
         db.update(appointment);
-
-        eventRelay.sendEventMessage(getSkinnyEvent(appointment, EventKeys.APPOINTMENT_UPDATED_SUBJECT));
     }
 
     @Override
@@ -104,19 +92,6 @@ public class AppointmentsCouchDBDAOImpl extends MotechAuditableRepository<Appoin
     @Override
     public void removeAppointment(Appointment appointment)
     {
-        MotechEvent event = getSkinnyEvent(appointment, EventKeys.APPOINTMENT_DELETED_SUBJECT);
-
         db.delete(appointment);
-
-        eventRelay.sendEventMessage(event);
-    }
-
-    private MotechEvent getSkinnyEvent(Appointment apt, String subject) {
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put(EventKeys.APPOINTMENT_ID_KEY, apt.getId());
-
-        MotechEvent event = new MotechEvent(subject, parameters);
-
-        return event;
     }
 }

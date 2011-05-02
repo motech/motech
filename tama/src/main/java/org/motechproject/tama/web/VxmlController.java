@@ -31,8 +31,8 @@
  */
 package org.motechproject.tama.web;
 
+import org.motechproject.appointments.api.AppointmentService;
 import org.motechproject.appointments.api.context.AppointmentsContext;
-import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.model.Appointment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +53,7 @@ public class VxmlController extends MultiActionController {
 
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
 
-    AppointmentsDAO appointmentsDao = AppointmentsContext.getInstance().getAppointmentsDAO();
+    AppointmentService appointmentsDao = AppointmentsContext.getInstance().getAppointmentService();
 
     private ModelAndView appointmentReminderHandler(HttpServletRequest request, HttpServletResponse response,
                                                     String view, String defaultView, String errorView) {
