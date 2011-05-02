@@ -60,14 +60,17 @@
 		<property name="bundleLoaders">
 			<list>
 				<bean id="log4jBundleLoader" class="org.motechproject.server.osgi.Log4JBundleLoader" />
-				<bean id="ruleBundleLoader" class="org.motechproject.server.osgi.RuleBundleLoader" />
+				<!-- <bean id="ruleBundleLoader" class="org.motechproject.server.osgi.RuleBundleLoader" /> -->
 			</list>
 		</property>
 	</bean>
 
-	<bean id="knowledgeBaseManager" class="org.motechproject.server.ruleengine.KnowledgeBaseManager"/>
+	<bean id="knowledgeBaseManager" class="org.motechproject.server.ruleengine.KnowledgeBaseManager" />
 	
-	<bean id="filesystemRuleLoader" class="org.motechproject.server.ruleengine.FilesystemRuleLoader" init-method="load"/>
+	<bean id="filesystemRuleLoader" class="org.motechproject.server.ruleengine.FilesystemRuleLoader" init-method="load">
+		<property name="internalRuleFolder" value="/rules" />
+		<property name="externalRuleFolder" value="#{systemProperties['user.home']}/.motech/rules" />
+	</bean>
 
     <bean id="ivrService" class="org.motechproject.server.service.ivr.asterisk.IVRServiceAsteriskImpl" >
         <!--Asterisk Server host-->

@@ -31,8 +31,8 @@
  */
 package org.motechproject.server.tama.service.impl;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
-import static org.junit.Assert.*;
 
 import java.io.File;
 import java.net.URLDecoder;
@@ -41,7 +41,6 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.dao.RuleRepository;
-import org.motechproject.server.osgi.OsgiFrameworkService;
 import org.motechproject.server.ruleengine.KnowledgeBaseManager;
 import org.motechproject.tama.model.Patient;
 import org.motechproject.tama.model.Regimen;
@@ -60,8 +59,6 @@ public class DroolsBasedTreeLookupServiceTest {
 	public void setup() throws Exception {
 		kbm = new KnowledgeBaseManager();
 		RuleRepository repo = mock(RuleRepository.class);
-		OsgiFrameworkService ofs = mock(OsgiFrameworkService.class);
-		kbm.setOsgiFrameworkService(ofs);
 		kbm.setRuleRepository(repo);
 		File file = new File(URLDecoder.decode(getClass().getResource(ruleFolder + "/" + ruleFile).getFile(), "UTF-8"));
 		kbm.addOrUpdateRule(file);
