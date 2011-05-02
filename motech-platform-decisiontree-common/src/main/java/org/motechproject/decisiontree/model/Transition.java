@@ -3,6 +3,8 @@ package org.motechproject.decisiontree.model;
 
 import java.util.List;
 
+import org.motechproject.decisiontree.model.Action.Builder;
+
 /**
  *
  */
@@ -11,7 +13,33 @@ public class Transition {
     private String name;
     private Node destinationNode;
     private List<Action> actions;
-
+ 
+    public static class Builder {
+    	private Transition obj;
+		public Builder() {
+			obj = new Transition();
+		} 
+		public Transition build() {
+			return obj;
+		}
+	    public Builder setName(String name) {
+	    	obj.name = name;
+	    	return this;
+	    }
+	    public Builder setDestinationNode(Node destinationNode) {
+	    	obj.destinationNode = destinationNode;
+	    	return this;
+	    }
+	    public Builder setActions(List<Action> actions) {
+	    	obj.actions = actions;
+	    	return this;
+	    }
+    }
+    
+    public static Builder newBuilder() {
+    	return new Builder();
+    }
+    
     public String getName() {
         return name;
     }

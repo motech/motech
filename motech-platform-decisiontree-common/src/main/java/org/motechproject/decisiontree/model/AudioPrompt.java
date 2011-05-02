@@ -1,5 +1,8 @@
 package org.motechproject.decisiontree.model;
 
+import org.motechproject.decisiontree.model.TextToSpeechPrompt.Builder;
+
+
 /**
  *
  */
@@ -7,6 +10,31 @@ public class AudioPrompt extends Prompt {
 
     private String audioFileUrl;
     private String altMessage; //Text To Speech Alternate if audio file not available
+
+    public static class Builder {
+    	private AudioPrompt obj;
+		public Builder() {
+			obj = new AudioPrompt();
+		} 
+		public Prompt build() {
+			return obj;
+		}
+	    public Builder setName(String name) {
+	        obj.setName(name);
+	        return this;
+	    }			
+	    public Builder setAudioFileUrl(String audioFileUrl) {
+	        obj.audioFileUrl = audioFileUrl;
+	        return this;
+	    }
+	    public Builder setAltMessage(String altMessage) {
+	        obj.altMessage = altMessage;
+	        return this;
+	    }		
+    }
+    public static Builder newBuilder() {
+    	return new Builder();
+    }    
 
     public String getAudioFileUrl() {
         return audioFileUrl;

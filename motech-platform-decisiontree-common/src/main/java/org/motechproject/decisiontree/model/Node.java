@@ -12,7 +12,37 @@ public class Node {
     private List<Action> actionsAfter;
     private List<Prompt> prompts;
     private Map<String, Transition> transitions;
+    
+    public static class Builder {
+    	private Node obj;
+		public Builder() {
+			obj = new Node();
+		} 
+		public Node build() {
+			return obj;
+		}
+	    public Builder setActionsBefore(List<Action> actionsBefore) {
+	    	obj.actionsBefore = actionsBefore;
+	    	return this;
+	    }
+	    public Builder setActionsAfter(List<Action> actionsAfter) {
+	    	obj.actionsAfter = actionsAfter;
+	    	return this;
+	    }
+	    public Builder setPrompts(List<Prompt> prompts) {
+	    	obj.prompts = prompts;
+	    	return this;
+	    }
+	    public Builder setTransitions(Map<String, Transition> transitions) {
+	    	obj.transitions = transitions;
+	    	return this;
+	    }
+    }
 
+    public static Builder newBuilder() {
+    	return new Builder();
+    }
+    
     public List<Action> getActionsBefore() {
         return actionsBefore;
     }

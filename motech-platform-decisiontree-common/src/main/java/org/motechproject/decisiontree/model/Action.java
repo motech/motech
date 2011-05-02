@@ -1,13 +1,31 @@
 package org.motechproject.decisiontree.model;
 
 
+
 /**
  *
  */
 public class Action {
 
     private String eventId;
-
+    
+    public static class Builder {
+    	private Action obj;
+		public Builder() {
+			obj = new Action();
+		} 
+		public Action build() {
+			return obj;
+		}
+	    public Builder setEventId(String eventId) {
+	    	obj.eventId = eventId;
+	    	return this;
+	    }		
+    }
+    public static Builder newBuilder() {
+    	return new Builder();
+    }
+    
     public String getEventId() {
         return eventId;
     }
