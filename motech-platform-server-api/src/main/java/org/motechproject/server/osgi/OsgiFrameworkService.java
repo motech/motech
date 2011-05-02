@@ -73,8 +73,8 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     private List<BundleLoader> bundleLoaders;
     
     private Map<String, ClassLoader> bundleClassLoaderLookup = new HashMap<String, ClassLoader>();
-    
-    private static final String BUNDLE_ACTIVATOR_HEADER = "Bundle-Activator";
+
+	public static final String BUNDLE_ACTIVATOR_HEADER = "Bundle-Activator";
 
     /**
      * Initialize and start the OSGi framework
@@ -142,6 +142,14 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     public ClassLoader getClassLoaderBySymbolicName(String bundleSymbolicName){
         return bundleClassLoaderLookup.get(bundleSymbolicName);
     }
+    
+    /**
+     * 
+     * @return
+     */
+    public Map<String, ClassLoader> getBundleClassLoaderLookup() {
+		return bundleClassLoaderLookup;
+	}    
     
     /**
      * @param bundle

@@ -83,4 +83,7 @@
     <bean class="org.motechproject.server.annotations.EventAnnotationBeanPostProcessor"/>	
     <bean id="symptomsNodeEventListener" class="org.motechproject.server.tama.SymptomsNodeEventListener"/>
     
+    <bean id="decisionTreeLookupService" class="org.motechproject.server.tama.service.impl.DroolsBasedDecisionTreeLookupService" >
+    	<property name="ruleId" value="SymptomTreeLookupRules.drl" />
+    </bean>
 </beans>

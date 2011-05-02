@@ -50,7 +50,6 @@ import org.drools.builder.ResourceType;
 import org.drools.io.ResourceFactory;
 import org.motechproject.dao.RuleRepository;
 import org.motechproject.model.Rule;
-import org.motechproject.server.osgi.OsgiFrameworkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,16 +63,13 @@ public class KnowledgeBaseManager {
     @Autowired
     private RuleRepository ruleRepository;   
 
-    @Autowired
-    private OsgiFrameworkService osgiFrameworkService;
-
     /**
      * 
      * @param ruleFile
      * @throws IOException
      */
-    public void addOrUpdateRule(File ruleFile) throws IOException {
-        addOrUpdateRule(ruleFile, null);
+    public void addOrUpdateRule(File ruleFile, ClassLoader... cl) throws IOException {
+        addOrUpdateRule(ruleFile, null, cl);
     }
     
     /**
@@ -82,9 +78,9 @@ public class KnowledgeBaseManager {
      * @param bundleSymbolicName
      * @throws IOException
      */
-    public void addOrUpdateRule(File ruleFile, String bundleSymbolicName) throws IOException {
+    public void addOrUpdateRule(File ruleFile, String bundleSymbolicName, ClassLoader... cl) throws IOException {
         InputStream inputStream = new FileInputStream(ruleFile);
-        addOrUpdateRule(ruleFile.getName(), bundleSymbolicName, inputStream);
+        addOrUpdateRule(ruleFile.getName(), bundleSymbolicName, inputStream, cl);
         inputStream.close();
     }
 
@@ -98,7 +94,7 @@ public class KnowledgeBaseManager {
      * @param inputStream
      * @throws IOException
      */
-    public void addOrUpdateRule(String ruleId, String bundleSymbolicName, InputStream inputStream) throws IOException {
+    public void addOrUpdateRule(String ruleId, String bundleSymbolicName, InputStream inputStream, ClassLoader... cl) throws IOException {
         logger.debug("Adding rule [" + ruleId + "," + bundleSymbolicName + "]");
 
         Rule rule = null;
@@ -118,7 +114,6 @@ public class KnowledgeBaseManager {
         }
 
         // update the in-memory knowledgeBaseLookup
-        ClassLoader cl = osgiFrameworkService.getClassLoaderBySymbolicName(rule.getBundleSymbolicName());
         KnowledgeBuilderConfiguration kbuilderConf = KnowledgeBuilderFactory.newKnowledgeBuilderConfiguration(null, cl);
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder(kbuilderConf);
         kbuilder.add(ResourceFactory.newReaderResource(new StringReader(rule.getContent())), ResourceType.DRL);
@@ -148,10 +143,6 @@ public class KnowledgeBaseManager {
     
     public void setRuleRepository(RuleRepository ruleRepository) {
         this.ruleRepository = ruleRepository;
-    }
-    
-    public void setOsgiFrameworkService(OsgiFrameworkService osgiFrameworkService) {
-        this.osgiFrameworkService = osgiFrameworkService;
     }
 
 }
