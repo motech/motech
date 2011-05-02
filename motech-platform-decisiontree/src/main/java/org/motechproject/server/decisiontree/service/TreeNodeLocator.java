@@ -29,52 +29,36 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.decisiontree.model;
+package org.motechproject.server.decisiontree.service;
 
-import static org.junit.Assert.*;
-import java.util.Arrays;
-import org.junit.Test;
-
+import org.motechproject.decisiontree.model.Node;
+import org.motechproject.decisiontree.model.Transition;
+import org.motechproject.decisiontree.model.Tree;
 
 /**
- * Test model Builders
+ * Responsible for locating a tree Node by transitionPath
  * @author yyonkov
  *
  */
-public class BuildersTest {
-	/**
-	 * Example of how to use Builders for easy tree building
-	 */
-	@Test
-	public void testTreeBuilder() {
-		Tree t = Tree.newBuilder()
-					.setName("tree1")
-					.setDescription("desc")
-					.setRootNode(Node.newBuilder()
-							.setActionsBefore(Arrays.asList(Action.newBuilder()
-									.setEventId("event_x")
-									.build()))
-							.setPrompts(Arrays.asList(TextToSpeechPrompt.newBuilder()
-									.setName("promp1")
-									.setMessage("haha")
-									.build()))
-							.setTransitions(new Object[][]{
-									{"1",Transition.newBuilder()
-										.setName("sick")
-										.build()},
-									{"2",Transition.newBuilder()
-										.setName("healthy")
-										.build()}
-									})
-							.build())
-					.build();
-//		System.out.print(t);
-		assertNotNull(t);
-		assertEquals("tree1", t.getName());
-		assertEquals("desc",t.getDescription());
-		assertNotNull(t.getRootNode());
-		assertNotNull(t.getRootNode().getTransitions());
-		assertEquals(2,t.getRootNode().getTransitions().size());		
-	}
+public class TreeNodeLocator {
+	
+	public static final String PATH_DELIMITER = "/";
 
+	public Node findNode(Tree tree, String path) {
+		if(tree==null || path==null) {
+			throw new IllegalArgumentException("tree: "+tree+" path: "+path);
+		}
+		Node node = tree.getRootNode();
+		if(node!=null) {
+			String[] keys = path.split(PATH_DELIMITER);
+			for(String key : keys) {
+				if(key.isEmpty()) continue;
+				Transition transition=node.getTransitions().get(key);
+				if(transition==null) return null;
+				node = transition.getDestinationNode();
+				if(node==null) return null;
+			}
+		}
+		return node;
+	}
 }

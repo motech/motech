@@ -1,7 +1,10 @@
 package org.motechproject.decisiontree.model;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.ArrayUtils;
 
 /**
  * 
@@ -33,8 +36,13 @@ public class Node {
 	    	obj.prompts = prompts;
 	    	return this;
 	    }
-	    public Builder setTransitions(Map<String, Transition> transitions) {
-	    	obj.transitions = transitions;
+	    /**
+	     * @param transitions an Object[][] array containing {Key,Transition} array pairs
+	     * @return a Builder
+	     */
+	    @SuppressWarnings("unchecked")
+		public Builder setTransitions(Object[][] transitions) {
+	    	obj.transitions = ArrayUtils.toMap(transitions);
 	    	return this;
 	    }
     }
@@ -60,7 +68,7 @@ public class Node {
     }
 
     public List<Prompt> getPrompts() {
-        return prompts;
+        return prompts==null?Collections.<Prompt>emptyList():prompts;
     }
 
     public void setPrompts(List<Prompt> prompts) {
@@ -68,7 +76,7 @@ public class Node {
     }
 
     public Map<String, Transition> getTransitions() {
-        return transitions;
+        return transitions==null?Collections.<String, Transition>emptyMap():transitions;
     }
 
     public void setTransitions(Map<String, Transition> transitions) {
