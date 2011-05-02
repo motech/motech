@@ -9,6 +9,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.server.decisiontree.service.DecisionTreeService;
+import org.motechproject.server.decisiontree.service.TreeNodeLocator;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +21,9 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class VxmlControllerTest {
+	static final String TREE_NAME = "treeName";
+	static final String TRANSITION_PATH = "transitionPath";
+	static final String PATIENT_ID = "0001";
 
     @InjectMocks
     VxmlController vxmlController = new VxmlController();
@@ -42,21 +46,14 @@ public class VxmlControllerTest {
     @Test
     public void nodeTest () {
 
-        String treeId = "treeId";
-        String nodeId = "nodeId";
-        String transitionKey = "transitionKey";
-
-        //Node node = new Node();
-
-        when(request.getParameter(VxmlController.TREE_ID_PARAM)).thenReturn(treeId);
-        when(request.getParameter(VxmlController.NODE_ID_PARAM)).thenReturn(nodeId);
-        when(request.getParameter(VxmlController.TRANSITION_KEY_PARAM)).thenReturn(transitionKey);
-        when(decisionTreeService.getNode(treeId, nodeId, transitionKey)).thenReturn(new Node());
+        when(request.getParameter(VxmlController.TREE_NAME_PARAM)).thenReturn(TREE_NAME);
+        when(request.getParameter(VxmlController.TRANSITION_PATH_PARAM)).thenReturn(TRANSITION_PATH);
+        when(decisionTreeService.getNode(TREE_NAME, TRANSITION_PATH)).thenReturn(new Node());
 
         ModelAndView modelAndView = vxmlController.node(request, response);
 
         assertNotNull(modelAndView);
-        verify(decisionTreeService).getNode(treeId, nodeId, transitionKey);
+        verify(decisionTreeService).getNode(TREE_NAME, TRANSITION_PATH);
         assertEquals(VxmlController.MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
 
     }
@@ -64,21 +61,14 @@ public class VxmlControllerTest {
     @Test
     public void nodeTestNoTree() {
 
-        String treeId = "treeId";
-        String nodeId = "nodeId";
-        String transitionKey = "transitionKey";
-
-        //Node node = new Node();
-
-        when(request.getParameter(VxmlController.TREE_ID_PARAM)).thenReturn(treeId);
-        when(request.getParameter(VxmlController.NODE_ID_PARAM)).thenReturn(nodeId);
-        when(request.getParameter(VxmlController.TRANSITION_KEY_PARAM)).thenReturn(transitionKey);
-        when(decisionTreeService.getNode(treeId, nodeId, transitionKey)).thenReturn(null);
+        when(request.getParameter(VxmlController.TREE_NAME_PARAM)).thenReturn(TREE_NAME);
+        when(request.getParameter(VxmlController.TRANSITION_PATH_PARAM)).thenReturn(TRANSITION_PATH);
+        when(decisionTreeService.getNode(TREE_NAME, TRANSITION_PATH)).thenReturn(null);
 
         ModelAndView modelAndView = vxmlController.node(request, response);
 
         assertNotNull(modelAndView);
-        verify(decisionTreeService).getNode(treeId, nodeId, transitionKey);
+        verify(decisionTreeService).getNode(TREE_NAME, TRANSITION_PATH);
         assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
 
     }
@@ -86,21 +76,14 @@ public class VxmlControllerTest {
     @Test
     public void nodeTestException () {
 
-        String treeId = "treeId";
-        String nodeId = "nodeId";
-        String transitionKey = "transitionKey";
-
-        //Node node = new Node();
-
-        when(request.getParameter(VxmlController.TREE_ID_PARAM)).thenReturn(treeId);
-        when(request.getParameter(VxmlController.NODE_ID_PARAM)).thenReturn(nodeId);
-        when(request.getParameter(VxmlController.TRANSITION_KEY_PARAM)).thenReturn(transitionKey);
-        when(decisionTreeService.getNode(treeId, nodeId, transitionKey)).thenThrow(new RuntimeException());
+        when(request.getParameter(VxmlController.TREE_NAME_PARAM)).thenReturn(TREE_NAME);
+        when(request.getParameter(VxmlController.TRANSITION_PATH_PARAM)).thenReturn(TRANSITION_PATH);
+        when(decisionTreeService.getNode(TREE_NAME, TRANSITION_PATH)).thenThrow(new RuntimeException());
 
         ModelAndView modelAndView = vxmlController.node(request, response);
 
         assertNotNull(modelAndView);
-        verify(decisionTreeService).getNode(treeId, nodeId, transitionKey);
+        verify(decisionTreeService).getNode(TREE_NAME, TRANSITION_PATH);
         assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
 
     }
@@ -108,18 +91,14 @@ public class VxmlControllerTest {
     @Test
     public void rootNodeTest() {
 
-        String treeId = "treeId";
-        String patientId = "nodeId";
-
-
-        when(request.getParameter(VxmlController.TREE_ID_PARAM)).thenReturn(treeId);
-        when(request.getParameter(VxmlController.PATIENT_ID_PARAM)).thenReturn(patientId);
-        when(decisionTreeService.getNode(treeId,  patientId)).thenReturn(new Node());
+        when(request.getParameter(VxmlController.TREE_NAME_PARAM)).thenReturn(TREE_NAME);
+        when(request.getParameter(VxmlController.PATIENT_ID_PARAM)).thenReturn(PATIENT_ID);
+        when(decisionTreeService.getNode(TREE_NAME, TreeNodeLocator.PATH_DELIMITER)).thenReturn(new Node());
 
         ModelAndView modelAndView = vxmlController.node(request, response);
 
         assertNotNull(modelAndView);
-        verify(decisionTreeService).getNode(treeId, patientId);
+        verify(decisionTreeService).getNode(TREE_NAME, TreeNodeLocator.PATH_DELIMITER);
         assertEquals(VxmlController.MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
 
     }
@@ -127,37 +106,29 @@ public class VxmlControllerTest {
     @Test
     public void rootNodeTestNoNode() {
 
-        String treeId = "treeId";
-        String patientId = "nodeId";
-
-
-        when(request.getParameter(VxmlController.TREE_ID_PARAM)).thenReturn(treeId);
-        when(request.getParameter(VxmlController.PATIENT_ID_PARAM)).thenReturn(patientId);
-        when(decisionTreeService.getNode(treeId,  patientId)).thenReturn(null);
+        when(request.getParameter(VxmlController.TREE_NAME_PARAM)).thenReturn(TREE_NAME);
+        when(request.getParameter(VxmlController.PATIENT_ID_PARAM)).thenReturn(PATIENT_ID);
+        when(decisionTreeService.getNode(TREE_NAME, TRANSITION_PATH)).thenReturn(null);
 
         ModelAndView modelAndView = vxmlController.node(request, response);
 
         assertNotNull(modelAndView);
-        verify(decisionTreeService).getNode(treeId, patientId);
+        verify(decisionTreeService).getNode(TREE_NAME, TreeNodeLocator.PATH_DELIMITER);
         assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
 
     }
 
     @Test
     public void rootNodeTestException() {
-
-        String treeId = "treeId";
-        String patientId = "nodeId";
-
-
-        when(request.getParameter(VxmlController.TREE_ID_PARAM)).thenReturn(treeId);
-        when(request.getParameter(VxmlController.PATIENT_ID_PARAM)).thenReturn(patientId);
-        when(decisionTreeService.getNode(treeId,  patientId)).thenThrow(new RuntimeException());
+    	
+        when(request.getParameter(VxmlController.TREE_NAME_PARAM)).thenReturn(TREE_NAME);
+        when(request.getParameter(VxmlController.PATIENT_ID_PARAM)).thenReturn(PATIENT_ID);
+        when(decisionTreeService.getNode(TREE_NAME, TRANSITION_PATH)).thenThrow(new RuntimeException());
 
         ModelAndView modelAndView = vxmlController.node(request, response);
 
         assertNotNull(modelAndView);
-        verify(decisionTreeService).getNode(treeId, patientId);
+        verify(decisionTreeService).getNode(TREE_NAME, TreeNodeLocator.PATH_DELIMITER);
         assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
 
     }

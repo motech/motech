@@ -33,6 +33,7 @@ package org.motechproject.server.decisiontree.web;
 
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.server.decisiontree.service.DecisionTreeService;
+import org.motechproject.server.decisiontree.service.TreeNodeLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,10 +53,9 @@ public class VxmlController extends MultiActionController {
 
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
 
-    public static final String TREE_ID_PARAM = "tId";
-    public static final String NODE_ID_PARAM = "nId";
-    public static final String TRANSITION_KEY_PARAM = "trKey";
-    public static final String PATIENT_ID_PARAM = "pId";
+    public static final String TREE_NAME_PARAM = "treeName";
+    public static final String TRANSITION_PATH_PARAM = "transitionPath";
+    public static final String PATIENT_ID_PARAM = "patientId";
 
     public static final String MESSAGE_TEMPLATE_NAME = "node";
     public static final String TTS_MESSAGE_TEMPLATE_NAME = "ttsnode";
@@ -76,28 +76,26 @@ public class VxmlController extends MultiActionController {
         response.setCharacterEncoding("UTF-8");
 
         String patientId = request.getParameter(PATIENT_ID_PARAM);
-        String nodeId = request.getParameter(NODE_ID_PARAM);
-        String treeId = request.getParameter(TREE_ID_PARAM);
-        String transitionKey = request.getParameter(TRANSITION_KEY_PARAM);
+        String treeName = request.getParameter(TREE_NAME_PARAM);
+        String transitionPath = request.getParameter(TRANSITION_PATH_PARAM);
 
         logger.info(" Node HTTP  request parameters: " + PATIENT_ID_PARAM + ": " + patientId + ", "
-                + TREE_ID_PARAM + ": " + treeId + ", "
-                + NODE_ID_PARAM + ": " + nodeId + ", "
-                + TRANSITION_KEY_PARAM + ": " + transitionKey);
+                + TREE_NAME_PARAM + ": " + treeName + ", "
+                + TRANSITION_PATH_PARAM + ": " + transitionPath);
 
         Node node = null;
-        if (transitionKey == null) {  // get root node
+        if (transitionPath == null) {  // get root node
             try {
-                node = decisionTreeService.getNode(treeId, patientId);
+                node = decisionTreeService.getNode(treeName, TreeNodeLocator.PATH_DELIMITER);
             } catch (Exception e) {
-                logger.error("Can not get node by Tree ID : " + treeId + " and Patient ID: " + patientId, e);
+                logger.error("Can not get node by Tree Name: " + treeName + " and Patient ID: " + patientId, e);
             }
         } else { // get not root node
             try {
-                node = decisionTreeService.getNode(treeId, nodeId, transitionKey);
+                node = decisionTreeService.getNode(treeName, transitionPath);
             } catch (Exception e) {
-                 logger.error("Can not get node by Tree ID : " + treeId+ "de ID: " + nodeId +
-                         " and Transition Key: " + transitionKey, e);
+                 logger.error("Can not get node by Tree ID : " + treeName+ 
+                         " and Transition Key: " + transitionPath, e);
             }
         }
 

@@ -25,7 +25,7 @@ public class DecisionTreeServiceTest {
      //TODO - implement
     @Test
     public void getNodeTest () {
-        decisionTreeService.getNode("", "");
+//        decisionTreeService.getNode("", "");
 
     }
 
@@ -33,7 +33,7 @@ public class DecisionTreeServiceTest {
     @Test
     public void getTransitionNodeTest () {
 
-        decisionTreeService.getNode("", "", "");
+//        decisionTreeService.getNode("", "");
 
     }
 }
