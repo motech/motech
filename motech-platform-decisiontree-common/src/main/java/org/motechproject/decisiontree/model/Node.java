@@ -52,7 +52,7 @@ public class Node {
     }
     
     public List<Action> getActionsBefore() {
-        return actionsBefore;
+        return actionsBefore==null?Collections.<Action>emptyList():actionsBefore;
     }
 
     public void setActionsBefore(List<Action> actionsBefore) {
@@ -60,7 +60,7 @@ public class Node {
     }
 
     public List<Action> getActionsAfter() {
-        return actionsAfter;
+        return actionsAfter==null?Collections.<Action>emptyList():actionsAfter;
     }
 
     public void setActionsAfter(List<Action> actionsAfter) {
