@@ -82,6 +82,16 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.motechproject</groupId>
+			<artifactId>motech-platform-decisiontree-common</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.motechproject</groupId>
+			<artifactId>tama-common</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
 			<version>3.0.5.RELEASE</version>
@@ -155,6 +165,24 @@
 							</resources>
 						</configuration>
 					</execution>
+					<execution>
+						<id>copy-rules</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${user.home}/.motech/rules</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/resources/rules</directory>
+									<includes>
+										<include>*.drl</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>					
 				</executions>
 			</plugin>
 		</plugins>

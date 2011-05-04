@@ -45,7 +45,6 @@ import org.drools.runtime.StatelessKnowledgeSession;
 import org.junit.Test;
 import org.motechproject.dao.RuleRepository;
 import org.motechproject.model.Rule;
-import org.motechproject.server.osgi.OsgiFrameworkService;
 
 
 public class KnowledgeBaseManagerTest {
@@ -57,8 +56,6 @@ public class KnowledgeBaseManagerTest {
         
         KnowledgeBaseManager kbm = new KnowledgeBaseManager();
         RuleRepository repo = mock(RuleRepository.class);
-        OsgiFrameworkService ofs = mock(OsgiFrameworkService.class);
-        kbm.setOsgiFrameworkService(ofs);
         kbm.setRuleRepository(repo);
         
         File file = new File(URLDecoder.decode(getClass().getResource(ruleFolder + "/" + ruleFile).getFile(), "UTF-8"));

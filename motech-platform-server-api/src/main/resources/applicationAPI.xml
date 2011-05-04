@@ -56,4 +56,8 @@
     <bean id="motechContext" class="org.motechproject.context.Context" factory-method="getInstance"/>
     <bean id="eventContext"  class="org.motechproject.context.EventContext" factory-method="getInstance"/>
 
+    <!-- handels @MotechListner annotations 
+    <bean class="org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor"/>
+    -->
+    
 </beans>
