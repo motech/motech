@@ -44,6 +44,11 @@ public class TreeNodeLocator {
 	
 	public static final String PATH_DELIMITER = "/";
 
+	/**
+	 * @param tree not null
+	 * @param path not null
+	 * @return null if node not found
+	 */
 	public Node findNode(Tree tree, String path) {
 		if(tree==null || path==null) {
 			throw new IllegalArgumentException("tree: "+tree+" path: "+path);
