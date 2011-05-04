@@ -31,7 +31,9 @@
  */
 package org.motechproject.server.decisiontree.web;
 
+import org.apache.commons.codec.binary.Base64;
 import org.motechproject.decisiontree.model.Node;
+import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.server.decisiontree.service.DecisionTreeService;
 import org.motechproject.server.decisiontree.service.TreeNodeLocator;
 import org.slf4j.Logger;
@@ -42,6 +44,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * Spring MVC controller implementation provides method to handle HTTP requests and generate
@@ -53,9 +56,11 @@ public class VxmlController extends MultiActionController {
 
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
 
-    public static final String TREE_NAME_PARAM = "treeName";
-    public static final String TRANSITION_PATH_PARAM = "transitionPath";
-    public static final String PATIENT_ID_PARAM = "patientId";
+    public static final String TREE_NAME_PARAM = "tNm";
+    public static final String TRANSITION_KEY_PARAM = "trK";
+    public static final String TRANSITION_PATH_PARAM = "trP";
+    public static final String PATIENT_ID_PARAM = "pId";
+    public static final String LANGUAGE_PARAM = "ln";
 
     public static final String MESSAGE_TEMPLATE_NAME = "node";
     public static final String TTS_MESSAGE_TEMPLATE_NAME = "ttsnode";
@@ -75,40 +80,127 @@ public class VxmlController extends MultiActionController {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
 
-        String patientId = request.getParameter(PATIENT_ID_PARAM);
-        String treeName = request.getParameter(TREE_NAME_PARAM);
-        String transitionPath = request.getParameter(TRANSITION_PATH_PARAM);
-
-        logger.info(" Node HTTP  request parameters: " + PATIENT_ID_PARAM + ": " + patientId + ", "
-                + TREE_NAME_PARAM + ": " + treeName + ", "
-                + TRANSITION_PATH_PARAM + ": " + transitionPath);
-
         Node node = null;
-        if (transitionPath == null) {  // get root node
+        String encodedTransitionPath = null;
+
+        String patientId = request.getParameter(PATIENT_ID_PARAM);
+        String language = request.getParameter(LANGUAGE_PARAM);
+        String treeName = request.getParameter(TREE_NAME_PARAM);
+        String encodedParentTransitionPath = request.getParameter(TRANSITION_PATH_PARAM);
+        String transitionKey = request.getParameter(TRANSITION_KEY_PARAM);
+
+
+
+        logger.info(" Node HTTP  request parameters: "
+                + PATIENT_ID_PARAM + ": " + patientId + ", "
+                + LANGUAGE_PARAM + ": " + language + ", "
+                + TREE_NAME_PARAM + ": " + treeName + ", "
+                + TRANSITION_PATH_PARAM + ": " + encodedParentTransitionPath + ", "
+                + TRANSITION_KEY_PARAM + ": " + transitionKey);
+
+
+
+
+        if (patientId == null || language == null || treeName == null) {
+
+            logger.error("Invalid HTTP request - the following parameters: "
+                    + PATIENT_ID_PARAM + ", " + LANGUAGE_PARAM + " and " + TREE_NAME_PARAM + " are mandatory");
+            return getErrorModelAndView();
+        }
+
+
+        if (transitionKey == null) {  // get root node
             try {
-                node = decisionTreeService.getNode(treeName, TreeNodeLocator.PATH_DELIMITER);
+                String rootTransitionPath =  TreeNodeLocator.PATH_DELIMITER;
+                node = decisionTreeService.getNode(treeName, rootTransitionPath);
+                encodedTransitionPath = Base64.encodeBase64URLSafeString(rootTransitionPath.getBytes());
             } catch (Exception e) {
-                logger.error("Can not get node by Tree Name: " + treeName + " and Patient ID: " + patientId, e);
+                logger.error("Can not get node by Tree Name: " + treeName + " transition path: " + patientId, e);
             }
         } else { // get not root node
+            String parentTransitionPath = null;
             try {
-                node = decisionTreeService.getNode(treeName, transitionPath);
+                if (encodedParentTransitionPath == null) {
+
+                    logger.error("Invalid HTTP request - the  " + TRANSITION_PATH_PARAM + " parameter is mandatory");
+                    return getErrorModelAndView();
+                }
+
+                parentTransitionPath = new String(Base64.decodeBase64(encodedParentTransitionPath));
+                Node parentNode = decisionTreeService.getNode(treeName, parentTransitionPath);
+
+                Transition transition = parentNode.getTransitions().get(transitionKey);
+
+                if (transition == null) {
+                    logger.error("Invalid Transition Key. There is no transition with key: "+transitionKey+" in the Node: " + parentNode);
+                    return getErrorModelAndView();
+                }
+
+                node = transition.getDestinationNode();
+
+                if (node == null) {
+                    logger.error("Transition: " + transition + " invalid - no Destination Node");
+                    return getErrorModelAndView();
+                }
+
+                String nodePath = parentTransitionPath + TreeNodeLocator.PATH_DELIMITER + transitionKey;
+                encodedTransitionPath = Base64.encodeBase64URLSafeString(nodePath.getBytes());
+
+                //TODO - send actions after
+
+
+                //TODO - send transition action
+
+
             } catch (Exception e) {
-                 logger.error("Can not get node by Tree ID : " + treeName+ 
-                         " and Transition Key: " + transitionPath, e);
+                logger.error("Can not get node by Tree ID : " + treeName +
+                        " and Transition Path: " + parentTransitionPath, e);
             }
         }
 
-        ModelAndView mav = new ModelAndView();
+
 
         if (node != null) {
+
+            //validate node
+            for (Map.Entry<String, Transition> transitionEntry: node.getTransitions().entrySet()) {
+
+                try {
+                    Integer.parseInt(transitionEntry.getKey());
+                } catch (NumberFormatException e) {
+                    logger.error("Invalid node: " + node
+                            + "\n In order  to be used in VXML transition keys should be an Integer");
+                    return getErrorModelAndView();
+                }
+
+                Transition transition = transitionEntry.getValue();
+                if (transition .getDestinationNode() == null) {
+                     logger.error("Invalid node: " + node + "\n Null Destination Node in the Transition: " +   transition);
+                    return getErrorModelAndView();
+                }
+            }
+
+            //TODO - send actions before
+
+            ModelAndView mav = new ModelAndView();
             mav.setViewName(MESSAGE_TEMPLATE_NAME);
             mav.addObject("node", node);
-            mav.addObject("patientId", patientId);
+            mav.addObject("patientIdUrlParam", PATIENT_ID_PARAM + "=" + patientId);
+            mav.addObject("languageUrlParam", LANGUAGE_PARAM + "=" +language);
+            mav.addObject("encodedTransitionPathUrlParam", TRANSITION_PATH_PARAM + "=" +encodedTransitionPath);
+
+            return mav;
         } else {
-            mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
+            return getErrorModelAndView();
         }
 
+
+    }
+
+    private ModelAndView getErrorModelAndView () {
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
         return mav;
     }
 

@@ -1,6 +1,7 @@
 package org.motechproject.decisiontree.model;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -81,6 +82,13 @@ public class Node {
 
     public void setTransitions(Map<String, Transition> transitions) {
         this.transitions = transitions;
+    }
+
+    public void addTransition(String transitionKey, Transition transition) {
+        if (transitions == null) {
+            transitions = new HashMap<String, Transition>();
+        }
+        transitions.put(transitionKey, transition);
     }
 
     @Override
