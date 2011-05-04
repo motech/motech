@@ -36,11 +36,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.motechproject.context.Context;
+import org.motechproject.context.EventContext;
 import org.motechproject.decisiontree.model.Action;
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.Transition;
+import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.server.event.EventRelay;
 
 /**
  * Responsible for emitting Tree events
@@ -49,7 +50,7 @@ import org.motechproject.server.event.EventRelay;
  * 
  */
 public class TreeEventProcessor {
-	private EventRelay eventRelay = Context.getInstance().getEventRelay();
+	private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
 
 	private void sendNodeActions(List<Action> actions, String path, String patientId) {
 		for (Action action : actions) {

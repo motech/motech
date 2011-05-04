@@ -38,9 +38,12 @@ import static org.mockito.Mockito.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.context.Context;
+import org.motechproject.context.EventContext;
+import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.EventListenerRegistry;
-import org.motechproject.server.event.EventRelay;
+import org.motechproject.server.event.ServerEventRelay;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -49,7 +52,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class AnnotationBasedHandlerTest {
 	static MotechEvent motechEvent;
 	
-	
+	@Autowired
+    ServerEventRelay eventRelay;
+
 	// Annotation based handler (needs a spring bean config.) 
 	public static class MyHandler {
 		@MotechListener(subjects={"sub_a","sub_b"})
@@ -76,7 +81,6 @@ public class AnnotationBasedHandlerTest {
 	}
 	@Test
 	public void testRelay() {
-		EventRelay eventRelay  = Context.getInstance().getEventRelay();
 		MotechEvent e = new MotechEvent("sub_b", null);
 		clearMotechEvent();
 		eventRelay.relayEvent(e);

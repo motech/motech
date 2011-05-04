@@ -44,11 +44,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.context.Context;
+import org.motechproject.context.EventContext;
 import org.motechproject.decisiontree.model.Action;
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.Transition;
+import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.server.event.EventRelay;
 
 /**
  * Tests TreeEventProcessor by mocking EventRelay
@@ -79,10 +80,10 @@ public class TreeEventProcessorTest {
 	TreeEventProcessor treeEventProcessor = new TreeEventProcessor();
 	
 	@Mock
-	Context context;
+    EventContext context;
 	
 	@Mock
-	EventRelay eventRelay;
+    EventRelay eventRelay;
 	
 	@Before
 	public void setUp() throws Exception {

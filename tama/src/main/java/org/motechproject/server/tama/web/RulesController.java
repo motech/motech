@@ -35,8 +35,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.motechproject.server.tama.service.DecisionTreeLookupService;
-import org.motechproject.tama.dao.PatientDao;
-import org.motechproject.tama.model.Patient;
+import org.motechproject.tama.api.dao.PatientDAO;
+import org.motechproject.tama.api.model.Patient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
@@ -58,7 +58,7 @@ public class RulesController extends MultiActionController {
 	@Autowired
 	private DecisionTreeLookupService decisionTreeLookupService;
 	@Autowired
-	private PatientDao patientDAO;
+	private PatientDAO patientDAO;
 
 	public String tree(HttpServletRequest request, HttpServletResponse response) {
 
