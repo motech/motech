@@ -1,6 +1,7 @@
 package org.motechproject.decisiontree.model;
 
 
+import java.util.Collections;
 import java.util.List;
 
 import org.motechproject.decisiontree.model.Action.Builder;
@@ -57,7 +58,7 @@ public class Transition {
     }
 
     public List<Action> getActions() {
-        return actions;
+        return actions==null?Collections.<Action>emptyList():actions;
     }
 
     public void setActions(List<Action> actions) {
