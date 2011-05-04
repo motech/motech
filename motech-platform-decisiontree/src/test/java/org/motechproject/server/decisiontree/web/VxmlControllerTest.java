@@ -25,7 +25,8 @@ import static org.mockito.Mockito.*;
 public class VxmlControllerTest {
 	private final String treeName = "treeName";
     private final String patientId = "pID";
-	private final String transitionPath = Base64.encodeBase64URLSafeString("/".getBytes());
+    private final String errorCodeKey = "errorCode";
+	private final String transitionPath ="/";
 
     @InjectMocks
     VxmlController vxmlController = new VxmlController();
@@ -93,21 +94,32 @@ public class VxmlControllerTest {
         assertNotNull(modelAndView);
         verify(decisionTreeService).getNode(treeName, transitionPath);
         assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
+        assertEquals(VxmlController.Errors.INVALID_TRANSITION_KEY, modelAndView.getModel().get(errorCodeKey));
 
     }
 
     @Test
-    public void nodeTestInvalidTransitionKey() {
+    public void nodeTestInvalidTransitionKeyType() {
+
+        String transitionKey ="1";
+
+
+        Node destinationNode = new Node();
+        Transition transition1 = new Transition();
+        transition1.setDestinationNode(new Node());
+        destinationNode.addTransition("a", transition1);
 
         Node node = new Node();
         Transition transition = new Transition();
-        transition.setDestinationNode(new Node());
-        node.addTransition("a", transition);
+        transition.setDestinationNode(destinationNode);
+        node.addTransition(transitionKey, transition);
+
+
 
         when(request.getParameter(VxmlController.TREE_NAME_PARAM)).thenReturn(treeName);
         when(request.getParameter(VxmlController.PATIENT_ID_PARAM)).thenReturn("PATIENT_ID");
         when(request.getParameter(VxmlController.LANGUAGE_PARAM)).thenReturn("en");
-        when(request.getParameter(VxmlController.TRANSITION_KEY_PARAM)).thenReturn("1");
+        when(request.getParameter(VxmlController.TRANSITION_KEY_PARAM)).thenReturn(transitionKey);
         when(request.getParameter(VxmlController.TRANSITION_PATH_PARAM)).thenReturn(Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
 
         when(decisionTreeService.getNode(treeName, transitionPath)).thenReturn(node);
@@ -117,6 +129,7 @@ public class VxmlControllerTest {
         assertNotNull(modelAndView);
         verify(decisionTreeService).getNode(treeName, transitionPath);
         assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
+        assertEquals(VxmlController.Errors.INVALID_TRANSITION_KEY_TYPE, modelAndView.getModel().get(errorCodeKey));
 
     }
 
@@ -133,13 +146,14 @@ public class VxmlControllerTest {
         when(request.getParameter(VxmlController.TRANSITION_KEY_PARAM)).thenReturn("1");
         when(request.getParameter(VxmlController.TRANSITION_PATH_PARAM)).thenReturn(Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
 
-        when(decisionTreeService.getNode(treeName, transitionPath)).thenReturn(new Node());
+        when(decisionTreeService.getNode(treeName, transitionPath)).thenReturn(node);
 
         ModelAndView modelAndView = vxmlController.node(request, response);
 
         assertNotNull(modelAndView);
         verify(decisionTreeService).getNode(treeName, transitionPath);
         assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
+        assertEquals(VxmlController.Errors.NULL_DESTINATION_NODE, modelAndView.getModel().get(errorCodeKey));
 
     }
 
@@ -159,6 +173,7 @@ public class VxmlControllerTest {
         assertNotNull(modelAndView);
         verify(decisionTreeService).getNode(treeName, transitionPath);
         assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
+        assertEquals(VxmlController.Errors.GET_NODE_ERROR, modelAndView.getModel().get(errorCodeKey));
 
     }
 
@@ -177,6 +192,7 @@ public class VxmlControllerTest {
         assertNotNull(modelAndView);
         verify(decisionTreeService).getNode(treeName, transitionPath);
         assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
+        assertEquals(VxmlController.Errors.GET_NODE_ERROR, modelAndView.getModel().get(errorCodeKey));
 
     }
 
@@ -209,6 +225,7 @@ public class VxmlControllerTest {
         assertNotNull(modelAndView);
         verify(decisionTreeService).getNode(treeName, TreeNodeLocator.PATH_DELIMITER);
         assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
+        assertEquals(VxmlController.Errors.GET_NODE_ERROR, modelAndView.getModel().get(errorCodeKey));
 
     }
 
@@ -225,6 +242,7 @@ public class VxmlControllerTest {
         assertNotNull(modelAndView);
         verify(decisionTreeService).getNode(treeName, TreeNodeLocator.PATH_DELIMITER);
         assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
+        assertEquals(VxmlController.Errors.GET_NODE_ERROR, modelAndView.getModel().get(errorCodeKey));
 
     }
 
@@ -236,6 +254,7 @@ public class VxmlControllerTest {
         assertNotNull(modelAndView);
         verify(decisionTreeService,times(0)).getNode(anyString(), anyString());
         assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
+        assertEquals(VxmlController.Errors.NULL_PATIENTID_LANGUAGE_OR_TREENAME_PARAM, modelAndView.getModel().get(errorCodeKey));
     }
 
     @Test
@@ -252,5 +271,6 @@ public class VxmlControllerTest {
         assertNotNull(modelAndView);
         verify(decisionTreeService, times(0)).getNode(anyString(), anyString());
         assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
+        assertEquals(VxmlController.Errors.NULL_TRANSITION_PATH_PARAM, modelAndView.getModel().get(errorCodeKey));
     }
 }

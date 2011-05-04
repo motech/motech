@@ -69,6 +69,15 @@ public class VxmlController extends MultiActionController {
     @Autowired
     DecisionTreeService decisionTreeService;
 
+    enum Errors {
+        NULL_PATIENTID_LANGUAGE_OR_TREENAME_PARAM,
+        NULL_TRANSITION_PATH_PARAM,
+        NULL_DESTINATION_NODE,
+        INVALID_TRANSITION_KEY,
+        INVALID_TRANSITION_KEY_TYPE,
+        GET_NODE_ERROR
+    }
+
     /**
      * Handles Decision Tree Node HTTP requests and generates a VXML document based on a Velocity template.
      * The HTTP request should contain the Tree ID, Node ID, Patient ID and Selected Transition Key (optional) parameters
@@ -105,7 +114,7 @@ public class VxmlController extends MultiActionController {
 
             logger.error("Invalid HTTP request - the following parameters: "
                     + PATIENT_ID_PARAM + ", " + LANGUAGE_PARAM + " and " + TREE_NAME_PARAM + " are mandatory");
-            return getErrorModelAndView();
+            return getErrorModelAndView(Errors.NULL_PATIENTID_LANGUAGE_OR_TREENAME_PARAM);
         }
 
 
@@ -123,7 +132,7 @@ public class VxmlController extends MultiActionController {
                 if (encodedParentTransitionPath == null) {
 
                     logger.error("Invalid HTTP request - the  " + TRANSITION_PATH_PARAM + " parameter is mandatory");
-                    return getErrorModelAndView();
+                    return getErrorModelAndView(Errors.NULL_TRANSITION_PATH_PARAM);
                 }
 
                 parentTransitionPath = new String(Base64.decodeBase64(encodedParentTransitionPath));
@@ -133,14 +142,14 @@ public class VxmlController extends MultiActionController {
 
                 if (transition == null) {
                     logger.error("Invalid Transition Key. There is no transition with key: "+transitionKey+" in the Node: " + parentNode);
-                    return getErrorModelAndView();
+                    return getErrorModelAndView(Errors.INVALID_TRANSITION_KEY);
                 }
 
                 node = transition.getDestinationNode();
 
                 if (node == null) {
                     logger.error("Transition: " + transition + " invalid - no Destination Node");
-                    return getErrorModelAndView();
+                    return getErrorModelAndView(Errors.NULL_DESTINATION_NODE);
                 }
 
                 String nodePath = parentTransitionPath + TreeNodeLocator.PATH_DELIMITER + transitionKey;
@@ -170,13 +179,13 @@ public class VxmlController extends MultiActionController {
                 } catch (NumberFormatException e) {
                     logger.error("Invalid node: " + node
                             + "\n In order  to be used in VXML transition keys should be an Integer");
-                    return getErrorModelAndView();
+                    return getErrorModelAndView(Errors.INVALID_TRANSITION_KEY_TYPE);
                 }
 
                 Transition transition = transitionEntry.getValue();
                 if (transition .getDestinationNode() == null) {
                      logger.error("Invalid node: " + node + "\n Null Destination Node in the Transition: " +   transition);
-                    return getErrorModelAndView();
+                    return getErrorModelAndView(Errors.NULL_DESTINATION_NODE);
                 }
             }
 
@@ -191,16 +200,17 @@ public class VxmlController extends MultiActionController {
 
             return mav;
         } else {
-            return getErrorModelAndView();
+            return getErrorModelAndView(Errors.GET_NODE_ERROR);
         }
 
 
     }
 
-    private ModelAndView getErrorModelAndView () {
+    private ModelAndView getErrorModelAndView (Errors errorCode) {
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
+        mav.addObject("errorCode", errorCode);
         return mav;
     }
 
