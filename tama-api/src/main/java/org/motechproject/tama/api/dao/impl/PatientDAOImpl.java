@@ -2,6 +2,7 @@ package org.motechproject.tama.api.dao.impl;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
+import org.ektorp.support.GenerateView;
 import org.ektorp.support.View;
 import org.motechproject.dao.MotechAuditableRepository;
 import org.motechproject.tama.api.dao.PatientDAO;
@@ -31,5 +32,10 @@ public class PatientDAOImpl extends MotechAuditableRepository<Patient> implement
 		}
 		return null;
 	}
-	
+
+    @Override
+    @GenerateView
+    public List<Patient> findByPhoneNumber(String phoneNumber) {
+        return queryView("by_phoneNumber", phoneNumber);
+    }
 }
