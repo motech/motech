@@ -34,15 +34,18 @@ package org.motechproject.server.tama.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.ektorp.DocumentNotFoundException;
 import org.motechproject.server.tama.service.DecisionTreeLookupService;
 import org.motechproject.tama.dao.PatientDao;
 import org.motechproject.tama.model.Patient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 /**
- * Spring MVC controller responsible for running rules for patient using patient
- * to tree mapping service and redirect to the decision tree controller passing
+ * Spring MVC controller responsible for running rules for a patient ID using patient
+ * to tree mapping service and redirect to the decision to VXML controller passing
  * in the patient id, tree name and language
  * 
  * @author yyonkov
@@ -54,6 +57,9 @@ public class RulesController extends MultiActionController {
     public static final String PATIENT_ID_PARAM = "pId";
     public static final String LANGUAGE_PARAM = "ln";
     public static final String TREE_NAME_PARAM = "tNm";
+    public static final String REDIRECT_LOGIN = "redirect:/tama/login";
+
+    private Logger logger = LoggerFactory.getLogger((this.getClass()));
     
 	@Autowired
 	private DecisionTreeLookupService decisionTreeLookupService;
@@ -66,11 +72,21 @@ public class RulesController extends MultiActionController {
         response.setCharacterEncoding("UTF-8");
 
         String patientId = request.getParameter(PATIENT_ID_PARAM);
-        logger.info("Running rules for patient id: "+patientId);
-        
-        Patient patient = patientDAO.get(patientId);
-		String treeName = decisionTreeLookupService.findTreeNameByPatient(patient);
-		// http://localhost:8081/motech-platform-server/module/tree/vxml/node		
-		return String.format("forward:/module/tree/vxml/node?"+PATIENT_ID_PARAM+"=%s&"+TREE_NAME_PARAM+"=%s&"+LANGUAGE_PARAM+"=%s", patientId, treeName, "en");
+        if(patientId==null) {
+        	logger.error("Invalid HTTP request - "+PATIENT_ID_PARAM+" is mandatory");
+        	return REDIRECT_LOGIN;
+        }
+
+        String treeName;
+        try {
+        	Patient patient = patientDAO.get(patientId);
+        	logger.info("Running rules for patient with ID: "+patientId);
+        	treeName = decisionTreeLookupService.findTreeNameByPatient(patient);
+        } catch (DocumentNotFoundException e) {
+        	logger.error("Patient with ID: "+patientId+" not found");
+        	return REDIRECT_LOGIN;
+        }
+		// http://localhost:8081/motech-platform-server/module/tree/vxml/node	
+		return String.format("redirect:/tree/vxml/node?"+PATIENT_ID_PARAM+"=%s&"+TREE_NAME_PARAM+"=%s&"+LANGUAGE_PARAM+"=%s", patientId, treeName, "en");
 	}
 }
