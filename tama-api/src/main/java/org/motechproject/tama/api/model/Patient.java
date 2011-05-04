@@ -75,6 +75,10 @@ public class Patient extends MotechAuditableDataObject {
         }
     }
 
+    public enum Regimen {
+	    REGIMEN_1, REGIMEN_2
+    }
+
 	private String clinicPatientId;
 	private Gender gender;
 	private String clinicId;
@@ -85,6 +89,8 @@ public class Patient extends MotechAuditableDataObject {
 	private InterventionProgram interventionProgram = InterventionProgram.PROGRAM;
 	private Date dateOfBirth;
 	private Status status = Status.ACTIVE;
+    private Date registrationDate;
+    private Regimen regimen;
 
     @JsonProperty("type") private final String type = "PATIENT";
 
@@ -200,6 +206,22 @@ public class Patient extends MotechAuditableDataObject {
     public void setStatus(Status status)
     {
         this.status = status;
+    }
+
+    public Date getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(Date registrationDate) {
+        this.registrationDate = registrationDate;
+    }
+
+    public Regimen getRegimen() {
+        return regimen;
+    }
+
+    public void setRegimen(Regimen regimen) {
+        this.regimen = regimen;
     }
 
     @Override
