@@ -46,18 +46,15 @@
 
 	<context:annotation-config />
 
-
-
     <bean id="motechContext" class="org.motechproject.context.Context" factory-method="getInstance" />
 
     <!-- We have to use the couchDbInstance provided by the motech server context -->
     <bean id="couchDbInstance" factory-bean="motechContext" factory-method="getCouchDbInstance" />
 
-	<bean id="outboxDatabase" class="org.ektorp.impl.StdCouchDbConnector">
-		<constructor-arg value="outbox" />
+	<bean id="treesDatabase" class="org.ektorp.impl.StdCouchDbConnector">
+		<constructor-arg value="trees" />
 		<constructor-arg ref="couchDbInstance" />
 	</bean>
-
 
     <bean id="controllerClassNameUrlMapping"
 		class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping">
@@ -83,5 +80,8 @@
 
 	<bean id="treeNodeLocator"
 		class="org.motechproject.server.decisiontree.service.TreeNodeLocator">
+	</bean>
+	<bean id="treeDao"
+		class="org.motechproject.decisiontree.dao.couchdb.TreeDaoImpl">
 	</bean>
 </beans>

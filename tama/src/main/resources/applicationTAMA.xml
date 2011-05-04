@@ -44,8 +44,15 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
+    <import resource="classpath:tamaCommon.xml" />
+
 	<context:annotation-config />
-    
+	
+    <!-- We have to use the couchDbInstance provided by the motech server context -->
+    <bean id="couchDbInstance" factory-bean="motechContext" factory-method="getCouchDbInstance" />
+	
+    <bean id="motechContext" class="org.motechproject.context.Context" factory-method="getInstance" />
+		    
     <bean id="upcomingUnscheduledAppointmentEventHandler" class="org.motechproject.server.tama.UpcomingUnscheduledAppointmentEventHandler">
         <property name="vxmlUrl" value="http://localhost:8080/m/module/tama/vxml/sar" />
     </bean>
@@ -85,5 +92,9 @@
     
     <bean id="decisionTreeLookupService" class="org.motechproject.server.tama.service.impl.DroolsBasedDecisionTreeLookupService" >
     	<property name="ruleId" value="SymptomTreeLookupRules.drl" />
+    </bean>
+    
+    <bean id="rulesController"
+    	class="org.motechproject.server.tama.web.RulesController">
     </bean>
 </beans>
