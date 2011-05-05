@@ -29,9 +29,9 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.outbox.web;
+package org.motechproject.server.outbox.web;
 
-import org.motechproject.outbox.model.OutboundVoiceMessage;
+import org.motechproject.outbox.api.model.OutboundVoiceMessage;
 import org.motechproject.server.outbox.service.VoiceOutboxService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

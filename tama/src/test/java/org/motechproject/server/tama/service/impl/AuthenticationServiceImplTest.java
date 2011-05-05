@@ -31,10 +31,6 @@
  */
 package org.motechproject.server.tama.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,9 +39,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.server.tama.service.AuthenticationService;
-import org.motechproject.tama.dao.PatientDao;
-import org.motechproject.tama.model.Patient;
+import org.motechproject.tama.api.dao.PatientDAO;
+import org.motechproject.tama.api.model.Patient;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class AuthenticationServiceImplTest {
 	
@@ -53,7 +52,7 @@ public class AuthenticationServiceImplTest {
     AuthenticationService service = new AuthenticationServiceImpl();
 
     @Mock
-    private PatientDao patientDao;
+    private PatientDAO patientDao;
     
     private Patient patient;
     private String patientId = UUID.randomUUID().toString();

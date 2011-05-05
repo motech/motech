@@ -40,19 +40,16 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.outbox.model.OutboundVoiceMessage;
-import org.motechproject.outbox.model.VoiceMessageType;
-import org.motechproject.outbox.web.VxmlController;
+import org.motechproject.outbox.api.model.OutboundVoiceMessage;
+import org.motechproject.outbox.api.model.VoiceMessageType;
 import org.motechproject.server.outbox.service.VoiceOutboxService;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.awt.*;
-import java.util.Date;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 /**
  *

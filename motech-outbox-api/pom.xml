@@ -7,7 +7,7 @@
   </parent>
   <groupId>org.motechproject</groupId>
   <artifactId>motech-outbox-api</artifactId>
-  <name>Motech Platform Outbox Common</name>
+  <name>Motech Outbox API</name>
   <version>0.1-SNAPSHOT</version>
     <dependencies>
 		<dependency>

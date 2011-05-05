@@ -66,7 +66,7 @@
 		class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping">
 	</bean>
 
-	<bean id="outboxVxmlController" class="org.motechproject.outbox.web.VxmlController" />
+	<bean id="outboxVxmlController" class="org.motechproject.server.outbox.web.VxmlController" />
 
 	<bean id="velocityConfig"
 		class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">

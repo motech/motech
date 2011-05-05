@@ -1,16 +1,16 @@
 package org.motechproject.server.tama.service.impl;
 
-import java.util.List;
-
 import org.motechproject.server.tama.service.AuthenticationService;
-import org.motechproject.tama.dao.PatientDao;
-import org.motechproject.tama.model.Patient;
+import org.motechproject.tama.api.dao.PatientDAO;
+import org.motechproject.tama.api.model.Patient;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 public class AuthenticationServiceImpl implements AuthenticationService{
 	
 	@Autowired
-	private PatientDao patientDao;
+	private PatientDAO patientDao;
 
 	@Override
 	public String getPatientIdByPhoneNumber(String phoneNumber) {

@@ -11,7 +11,7 @@
 	<groupId>org.motechproject</groupId>
 	<artifactId>motech-outbox</artifactId>
 	<version>0.1-SNAPSHOT</version>
-	<name>Motech Platform Outbox</name>
+	<name>Motech Outbox</name>
 	<packaging>bundle</packaging>
 	<dependencies>
 		<dependency>
