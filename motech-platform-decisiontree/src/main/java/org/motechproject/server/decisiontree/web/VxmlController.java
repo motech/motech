@@ -63,7 +63,6 @@ public class VxmlController extends MultiActionController {
     public static final String LANGUAGE_PARAM = "ln";
 
     public static final String MESSAGE_TEMPLATE_NAME = "node";
-    public static final String TTS_MESSAGE_TEMPLATE_NAME = "ttsnode";
     public static final String ERROR_MESSAGE_TEMPLATE_NAME = "node_error";
 
     @Autowired
@@ -193,10 +192,12 @@ public class VxmlController extends MultiActionController {
 
             ModelAndView mav = new ModelAndView();
             mav.setViewName(MESSAGE_TEMPLATE_NAME);
+            mav.addObject("contentPath", request.getContextPath());
             mav.addObject("node", node);
             mav.addObject("patientIdUrlParam", PATIENT_ID_PARAM + "=" + patientId);
-            mav.addObject("languageUrlParam", LANGUAGE_PARAM + "=" +language);
-            mav.addObject("encodedTransitionPathUrlParam", TRANSITION_PATH_PARAM + "=" +encodedTransitionPath);
+            mav.addObject("languageParam", language);
+            mav.addObject("transitionPathUrlParam", TRANSITION_PATH_PARAM + "=" +encodedTransitionPath);
+             mav.addObject("transitionKey", TRANSITION_KEY_PARAM);
 
             return mav;
         } else {

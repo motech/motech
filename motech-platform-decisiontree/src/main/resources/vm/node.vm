@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <vxml version="2.1" xmlns="http://www.w3.org/2001/vxml">
-	<form>
- 		<block>
-             <prompt>
-                <audio src="/m/wav/hello.wav"/>
-             </prompt>
-            <prompt>
-                Error
-            </prompt>
-		</block>
-	</form>
+    <menu>
+        <property name="inputmodes" value="dtmf"/>
+
+        <prompt>
+            #foreach( $prompt in $node.prompts )
+                #if($prompt.class.simpleName == "AudioPrompt")
+                    <audio src="$prompt.audioFileUrl"/>
+                    $prompt.altMessage
+                #else
+                    $prompt.message
+                #end
+            #end
+        </prompt>
+        #if ($node.transitions.size() > 0)
+            #foreach( $mapEntry in $node.transitions.entrySet() )
+                <choice dtmf="$mapEntry.key"
+                        next="$contentPath/?$patientIdUrlParam&ln=$languageParam&$transitionPathUrlParam&$transitionKey=$mapEntry.key"/>
+            #end
+         #else
+             <exit/>
+        #end
+    </menu>
 </vxml>
