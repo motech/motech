@@ -119,9 +119,6 @@
 				<version>2.5</version>
 				<configuration>
 					<instrumentation>
-                        <ignores>
-                            <ignore>org.motechproject.outbox.api.model.*</ignore>
-                        </ignores>
                         <excludes>
                             <exclude>org/motechproject/server/service/ivr/CallInitiationException.class</exclude>
                             <exclude>org/motechproject/metrics/impl/LoggingAgentBackendImpl.class</exclude>
@@ -152,7 +149,14 @@
 						<!-- Project-wide thresholds -->
 						<totalLineRate>55</totalLineRate>
 						<totalBranchRate>61</totalBranchRate>
-					</check>
+                        <regexes>
+                            <regex>
+                                <pattern>org.motechproject.outbox.api.model.*</pattern>
+                                <branchRate>0</branchRate>
+                                <lineRate>0</lineRate>
+                            </regex>
+                        </regexes>
+                    </check>
 				</configuration>
 				<executions>
 					<execution>
