@@ -84,4 +84,6 @@
 	<bean id="treeDao"
 		class="org.motechproject.decisiontree.dao.couchdb.TreeDaoImpl">
 	</bean>
+    <bean id="treeEventProcessor"
+          class="org.motechproject.server.decisiontree.service.TreeEventProcessor"/>
 </beans>

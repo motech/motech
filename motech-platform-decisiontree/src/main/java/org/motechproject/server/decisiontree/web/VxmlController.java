@@ -35,6 +35,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.server.decisiontree.service.DecisionTreeService;
+import org.motechproject.server.decisiontree.service.TreeEventProcessor;
 import org.motechproject.server.decisiontree.service.TreeNodeLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +69,9 @@ public class VxmlController extends MultiActionController {
     @Autowired
     DecisionTreeService decisionTreeService;
 
+    @Autowired
+    TreeEventProcessor treeEventProcessor;
+
     enum Errors {
         NULL_PATIENTID_LANGUAGE_OR_TREENAME_PARAM,
         NULL_TRANSITION_PATH_PARAM,
@@ -89,7 +93,7 @@ public class VxmlController extends MultiActionController {
         response.setCharacterEncoding("UTF-8");
 
         Node node = null;
-        String encodedTransitionPath = null;
+        String transitionPath = null;
 
         String patientId = request.getParameter(PATIENT_ID_PARAM);
         String language = request.getParameter(LANGUAGE_PARAM);
@@ -121,7 +125,7 @@ public class VxmlController extends MultiActionController {
             try {
                 String rootTransitionPath =  TreeNodeLocator.PATH_DELIMITER;
                 node = decisionTreeService.getNode(treeName, rootTransitionPath);
-                encodedTransitionPath = Base64.encodeBase64URLSafeString(rootTransitionPath.getBytes());
+                transitionPath = rootTransitionPath;
             } catch (Exception e) {
                 logger.error("Can not get node by Tree Name: " + treeName + " transition path: " + patientId, e);
             }
@@ -151,13 +155,14 @@ public class VxmlController extends MultiActionController {
                     return getErrorModelAndView(Errors.NULL_DESTINATION_NODE);
                 }
 
-                String nodePath = parentTransitionPath + TreeNodeLocator.PATH_DELIMITER + transitionKey;
-                encodedTransitionPath = Base64.encodeBase64URLSafeString(nodePath.getBytes());
+                transitionPath = parentTransitionPath +
+                        (TreeNodeLocator.PATH_DELIMITER.equals(parentTransitionPath) ? "": TreeNodeLocator.PATH_DELIMITER)
+                        +  transitionKey;
 
-                //TODO - send actions after
 
+                treeEventProcessor.sendActionsAfter(parentNode, parentTransitionPath, patientId);
 
-                //TODO - send transition action
+                treeEventProcessor.sendTransitionActions(transition, patientId);
 
 
             } catch (Exception e) {
@@ -188,7 +193,8 @@ public class VxmlController extends MultiActionController {
                 }
             }
 
-            //TODO - send actions before
+            treeEventProcessor.sendActionsBefore(node, transitionPath, patientId);
+
 
             ModelAndView mav = new ModelAndView();
             mav.setViewName(MESSAGE_TEMPLATE_NAME);
@@ -196,7 +202,7 @@ public class VxmlController extends MultiActionController {
             mav.addObject("node", node);
             mav.addObject("patientId",  patientId);
             mav.addObject("language", language);
-            mav.addObject("transitionPath", encodedTransitionPath);
+            mav.addObject("transitionPath", Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
 
             return mav;
         } else {
