@@ -33,12 +33,17 @@ package org.motechproject.decisiontree.dao;
 
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.decisiontree.model.Node;
+import org.motechproject.decisiontree.model.Prompt;
+import org.motechproject.decisiontree.model.TextToSpeechPrompt;
+import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.decisiontree.model.Tree;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -55,10 +60,36 @@ public class TreeDaoTestIT {
 	@Autowired
 	private TreeDao treeDao;
 	private final String NAME = "TREE"; 
+
 	@Before
 	public void setUp() throws Exception {
 		for(int i = 0; i<10; i++) {
-			Tree tree = new Tree();
+			Tree tree = Tree.newBuilder()
+							.setRootNode(Node.newBuilder()
+									.setPrompts(Arrays.<Prompt>asList( TextToSpeechPrompt.newBuilder().setMessage("if you are you sick select 1, if not select 2").build()))
+									.setTransitions(new Object[][] {
+											{"1", 	Transition.newBuilder().setName("pressed1")
+												.setDestinationNode(Node.newBuilder()
+														.setPrompts(Arrays.<Prompt>asList( TextToSpeechPrompt.newBuilder().setMessage("if you are dying select 1, if not select 3").build()))
+														.setTransitions(new Object[][] {
+																{"1", 	Transition.newBuilder().setName("pressed1").setDestinationNode(
+																		Node.newBuilder().setPrompts(Arrays.<Prompt>asList( 
+																				TextToSpeechPrompt.newBuilder().setMessage("come to the hospital now").build()
+																		)).build()
+																).build() },
+																{"3", 	Transition.newBuilder().setName("pressed3").setDestinationNode(
+																		Node.newBuilder().setPrompts(Arrays.<Prompt>asList( 
+																				TextToSpeechPrompt.newBuilder().setMessage("be patient, we will call you").build()
+																		)).build()
+																).build() }
+													}).build()
+											).build() },
+											{"2",	Transition.newBuilder().setName("pressed2")
+													.setDestinationNode(Node.newBuilder().setPrompts(Arrays.<Prompt>asList(TextToSpeechPrompt.newBuilder().setMessage("Check with us again").build())).build())
+											.build()}
+									})
+							.build())
+						.build();
 			tree.setName(NAME+i);
 			treeDao.add(tree);
 		}
@@ -72,6 +103,7 @@ public class TreeDaoTestIT {
 	@Test
 	public void testFindByName() {
 		List<Tree> trees = treeDao.findByName(NAME+5);
+		System.out.print(trees.get(0));
 		assertEquals(1, trees.size());
 	}
 }

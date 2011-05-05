@@ -1,6 +1,5 @@
 package org.motechproject.decisiontree.model;
 
-import org.motechproject.decisiontree.model.TextToSpeechPrompt.Builder;
 
 
 /**
