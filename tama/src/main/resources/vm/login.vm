@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" xmlns="http://www.w3.org/2001/vxml">
+	<property name="inputmodes" value="dtmf"/>
+	<form id="login">
+ 		<field name="passcode" type="digits?length=4"> 
+            <prompt>
+            	Music music music
+            </prompt>
+            <filled>
+            	<var name="callerId" expr="session.telephone.ani"/>
+				<submit next="login" namelist="passcode callerId" method="post"/>
+			</filled> 
+		</field>
+	</form>
+</vxml>
