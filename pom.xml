@@ -162,6 +162,7 @@
 					<execution>
 						<phase>verify</phase>
 						<goals>
+                            <goal>clean</goal>
 							<goal>check</goal>
 						</goals>
 					</execution>
