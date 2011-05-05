@@ -194,10 +194,9 @@ public class VxmlController extends MultiActionController {
             mav.setViewName(MESSAGE_TEMPLATE_NAME);
             mav.addObject("contentPath", request.getContextPath());
             mav.addObject("node", node);
-            mav.addObject("patientIdUrlParam", PATIENT_ID_PARAM + "=" + patientId);
-            mav.addObject("languageParam", language);
-            mav.addObject("transitionPathUrlParam", TRANSITION_PATH_PARAM + "=" +encodedTransitionPath);
-             mav.addObject("transitionKey", TRANSITION_KEY_PARAM);
+            mav.addObject("patientId",  patientId);
+            mav.addObject("language", language);
+            mav.addObject("transitionPath", encodedTransitionPath);
 
             return mav;
         } else {
