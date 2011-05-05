@@ -34,59 +34,59 @@ package org.motechproject.server.tama.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.ektorp.DocumentNotFoundException;
-import org.motechproject.server.tama.service.DecisionTreeLookupService;
-import org.motechproject.tama.dao.PatientDao;
-import org.motechproject.tama.model.Patient;
+import org.apache.commons.lang.StringUtils;
+import org.motechproject.server.tama.service.AuthenticationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.Controller;
 
 /**
- * Spring MVC controller responsible for running rules for a patient ID using patient
- * to tree mapping service and redirect to the decision to VXML controller passing
- * in the patient id, tree name and language
- * 
- * @author yyonkov
- * 
- * {@code http://localhost:8081/motech-platform-server/module/tama/rules/tree?pId=10 }
- * 
+ * Spring MVC controller implementation provides method to handle HTTP requests and generate
+ * IVR entry VXML documents
+ *
  */
-public class RulesController extends MultiActionController {
-    public static final String PATIENT_ID_PARAM = "pId";
-    public static final String LANGUAGE_PARAM = "ln";
-    public static final String TREE_NAME_PARAM = "tNm";
-    public static final String REDIRECT_LOGIN = "redirect:/tama/login";
+public class LoginController implements Controller {
 
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
-    
-	@Autowired
-	private DecisionTreeLookupService decisionTreeLookupService;
-	@Autowired
-	private PatientDao patientDAO;
 
-	public String tree(HttpServletRequest request, HttpServletResponse response) {
+    private String formView;
+    private String successView;
 
+	@Autowired
+    private AuthenticationService authenticationService;
+	
+	@Override
+	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
+        
+		ModelAndView mav = new ModelAndView();
+		String callerId = request.getParameter("callerId");
+		String passcode = request.getParameter("passcode");
+		logger.info("Received an inbound call from ["+callerId+"]");
+		logger.debug("passcode ["+passcode+"]");
+		
+		if (StringUtils.isNotEmpty(callerId) && StringUtils.isNotEmpty(passcode)) {
+			String patientId = authenticationService.getPatientIdByPhoneNumber(callerId);
+			boolean verified = authenticationService.verifyPasscode(patientId, passcode);
+			if (verified) {
+				mav.setViewName(successView + "?pId=" + patientId);
+			} else {
+				mav.setViewName(formView);
+			}
+		} else {
+			mav.setViewName(formView);
+		}
+		return mav;
+	}	
 
-        String patientId = request.getParameter(PATIENT_ID_PARAM);
-        if(patientId==null) {
-        	logger.error("Invalid HTTP request - "+PATIENT_ID_PARAM+" is mandatory");
-        	return REDIRECT_LOGIN;
-        }
+	public void setFormView(String formView) {
+		this.formView = formView;
+	}
 
-        String treeName;
-        try {
-        	Patient patient = patientDAO.get(patientId);
-        	logger.info("Running rules for patient with ID: "+patientId);
-        	treeName = decisionTreeLookupService.findTreeNameByPatient(patient);
-        } catch (DocumentNotFoundException e) {
-        	logger.error("Patient with ID: "+patientId+" not found");
-        	return REDIRECT_LOGIN;
-        }
-		// http://localhost:8081/motech-platform-server/module/tree/vxml/node	
-		return String.format("redirect:/tree/vxml/node?"+PATIENT_ID_PARAM+"=%s&"+TREE_NAME_PARAM+"=%s&"+LANGUAGE_PARAM+"=%s", patientId, treeName, "en");
+	public void setSuccessView(String successView) {
+		this.successView = successView;
 	}
 }

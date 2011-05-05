@@ -97,4 +97,13 @@
     <bean id="rulesController"
     	class="org.motechproject.server.tama.web.RulesController">
     </bean>
+	
+	<bean id="loginController" class="org.motechproject.server.tama.web.LoginController">
+		<property name="formView" value="login" />
+		<property name="successView" value="redirect:rules/tree" />
+	</bean>
+	    
+    <bean id="authenticationService"
+    	class="org.motechproject.server.tama.service.impl.AuthenticationServiceImpl">
+    </bean>
 </beans>

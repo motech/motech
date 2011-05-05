@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
+import org.ektorp.support.GenerateView;
 import org.ektorp.support.View;
 import org.motechproject.dao.MotechAuditableRepository;
 import org.motechproject.tama.dao.PatientDao;
@@ -28,6 +29,12 @@ public class PatientDaoImpl extends MotechAuditableRepository<Patient> implement
 			return patients.get(0);
 		}
 		return null;
+	}
+	
+	@Override
+	@GenerateView
+	public List<Patient> findByPhoneNumber(String phoneNumber) {
+		return queryView("by_phoneNumber", phoneNumber);
 	}
 	
 }
