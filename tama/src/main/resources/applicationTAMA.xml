@@ -101,4 +101,16 @@
     <bean id="authenticationService"
     	class="org.motechproject.server.tama.service.impl.AuthenticationServiceImpl">
     </bean>
+    
+    
+    <!-- populate decision trees -->
+    <bean id="treesDatabase" class="org.ektorp.impl.StdCouchDbConnector">
+		<constructor-arg value="trees" />
+		<constructor-arg ref="couchDbInstance" />
+	</bean>
+	
+	<bean id="treeDao"
+		class="org.motechproject.decisiontree.dao.couchdb.TreeDaoImpl">
+	</bean>    
+    
 </beans>

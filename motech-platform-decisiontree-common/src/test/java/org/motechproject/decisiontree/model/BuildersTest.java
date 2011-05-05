@@ -55,7 +55,6 @@ public class BuildersTest {
 									.setEventId("event_x")
 									.build()))
 							.setPrompts(Arrays.asList(TextToSpeechPrompt.newBuilder()
-									.setName("promp1")
 									.setMessage("haha")
 									.build()))
 							.setTransitions(new Object[][]{

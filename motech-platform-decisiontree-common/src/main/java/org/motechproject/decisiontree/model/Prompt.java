@@ -1,10 +1,34 @@
 package org.motechproject.decisiontree.model;
 
+import java.util.HashMap;
+
+import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.codehaus.jackson.map.annotate.JsonTypeIdResolver;
+import org.codehaus.jackson.map.jsontype.impl.TypeNameIdResolver;
+import org.codehaus.jackson.map.type.TypeFactory;
+import org.codehaus.jackson.type.JavaType;
+
 
 /**
  *
  */
+@JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property="@type")
+@JsonTypeIdResolver(Prompt.PromptResolver.class)
 public abstract class Prompt {
+	
+	public static class PromptResolver extends TypeNameIdResolver {
+		static HashMap<String, String> typeToId = new HashMap<String, String>();
+		static HashMap<String, JavaType> idToType = new HashMap<String, JavaType>();
+		{
+			typeToId.put(TextToSpeechPrompt.class.getName(), "text");
+			typeToId.put(AudioPrompt.class.getName(), "audio");
+			idToType.put("text", TypeFactory.fastSimpleType(TextToSpeechPrompt.class));
+			idToType.put("audio", TypeFactory.fastSimpleType(AudioPrompt.class));
+		}
+		public PromptResolver() {
+			super(TypeFactory.fastSimpleType(Prompt.class), typeToId, idToType);
+		}
+	}
 
     private String name;
 
