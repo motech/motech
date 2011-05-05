@@ -44,8 +44,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.server.tama.service.DecisionTreeLookupService;
-import org.motechproject.tama.dao.PatientDao;
-import org.motechproject.tama.model.Patient;
+import org.motechproject.tama.api.dao.PatientDAO;
+import org.motechproject.tama.api.model.Patient;
 
 
 /**
@@ -63,7 +63,7 @@ public class RulesControllerTest {
     RulesController rulesController = new RulesController();
 
     @Mock
-    private PatientDao patientDAO;
+    private PatientDAO patientDAO;
 
     @Mock
     private HttpServletRequest request;
