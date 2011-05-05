@@ -202,6 +202,7 @@ public class VxmlController extends MultiActionController {
             mav.addObject("node", node);
             mav.addObject("patientId",  patientId);
             mav.addObject("language", language);
+            mav.addObject("treeName", treeName);
             mav.addObject("transitionPath", Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
 
             return mav;
