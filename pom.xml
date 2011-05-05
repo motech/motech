@@ -119,7 +119,10 @@
 				<version>2.5</version>
 				<configuration>
 					<instrumentation>
-						<excludes>
+                        <ignores>
+                            <ignore>org.motechproject.outbox.api.model.*</ignore>
+                        </ignores>
+                        <excludes>
                             <exclude>org/motechproject/server/service/ivr/CallInitiationException.class</exclude>
                             <exclude>org/motechproject/metrics/impl/LoggingAgentBackendImpl.class</exclude>
                             <exclude>org/motechproject/metrics/impl/StatsdAgentBackendImpl.class</exclude>
