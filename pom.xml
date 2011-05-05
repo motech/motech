@@ -130,6 +130,7 @@
                             <exclude>org/motechproject/**/dao/*.class</exclude>
                             <exclude>org/motechproject/**/dao/**/*.class</exclude>
                             <exclude>org/motechproject/**/context/*.class</exclude>
+                            <exclude>org/motechproject/context/*.class</exclude>
                             <exclude>org/motechproject/**/Activator.class</exclude>
                             <exclude>org/motechproject/**/Activator$1.class</exclude>
                             <exclude>org/motechproject/**/EventKeys.class</exclude>
