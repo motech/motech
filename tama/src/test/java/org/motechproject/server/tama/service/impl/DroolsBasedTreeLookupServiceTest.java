@@ -31,19 +31,18 @@
  */
 package org.motechproject.server.tama.service.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-
-import java.io.File;
-import java.net.URLDecoder;
-
 import org.joda.time.DateTime;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.motechproject.dao.RuleRepository;
 import org.motechproject.server.ruleengine.KnowledgeBaseManager;
 import org.motechproject.tama.api.model.Patient;
+
+import java.io.File;
+import java.net.URLDecoder;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 
 public class DroolsBasedTreeLookupServiceTest {
@@ -66,7 +65,6 @@ public class DroolsBasedTreeLookupServiceTest {
 	}
 	
     @Test
-    @Ignore
     public void findTreeNameByPatientTest() throws Exception {
 
         Patient p1 = new Patient();
@@ -91,29 +89,6 @@ public class DroolsBasedTreeLookupServiceTest {
         p1.setRegimen(Patient.Regimen.REGIMEN_2);
         treeName = service.findTreeNameByPatient(p1);
         assertEquals("age-under-50-or-non-regimen1-or-registered-less-than-180", treeName);
-    }
-
-    @Test
-    public void stubFindTreeNameByPatientTest() throws Exception {
-
-        Patient p1 = new Patient();
-        //p1.setId("abc");
-        p1.setDateOfBirth(new DateTime().minusYears(51).toDate());
-        p1.setRegistrationDate(new DateTime().minusMonths(7).toDate());
-        p1.setRegimen(Patient.Regimen.REGIMEN_1);
-
-        String treeName = service.findTreeNameByPatient(p1);
-
-        p1.setDateOfBirth(new DateTime().minusYears(49).toDate());
-        treeName = service.findTreeNameByPatient(p1);
-
-        p1.setDateOfBirth(new DateTime().minusYears(51).toDate());
-        p1.setRegistrationDate(new DateTime().minusMonths(5).toDate());
-        treeName = service.findTreeNameByPatient(p1);
-
-        p1.setRegistrationDate(new DateTime().minusMonths(7).toDate());
-        p1.setRegimen(Patient.Regimen.REGIMEN_2);
-        treeName = service.findTreeNameByPatient(p1);
     }
 }
 

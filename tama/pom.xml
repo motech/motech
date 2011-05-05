@@ -136,7 +136,7 @@
 				<configuration>
 					<instructions>
 						<Bundle-Activator>
-                            org.motechproject.tama.Activator
+                            org.motechproject.server.tama.Activator
                         </Bundle-Activator>
 						<Private-Package>
 							org.motechproject.tama.*

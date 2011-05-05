@@ -52,7 +52,7 @@
 		class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping">
 	</bean>
 
-	<bean id="ivrController" class="org.motechproject.tama.web.VxmlController" />
+	<bean id="ivrController" class="org.motechproject.server.tama.web.VxmlController" />
 
 	<bean id="velocityConfig"
 		class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
@@ -85,7 +85,7 @@
     <!-- handles @MotechListner annotations -->
     <bean class="org.motechproject.server.annotations.EventAnnotationBeanPostProcessor"/>	
     <bean id="symptomsNodeEventListener" class="org.motechproject.server.tama.SymptomsNodeEventListener"/>
-    <bean id="appointmentReminderEventHandler" class="org.motechproject.tama.AppointmentReminderEventHandler"/>
+    <bean id="appointmentReminderEventHandler" class="org.motechproject.server.tama.AppointmentReminderEventHandler"/>
 
     <bean id="decisionTreeLookupService" class="org.motechproject.server.tama.service.impl.DroolsBasedDecisionTreeLookupService" >
     	<property name="ruleId" value="SymptomTreeLookupRules.drl" />

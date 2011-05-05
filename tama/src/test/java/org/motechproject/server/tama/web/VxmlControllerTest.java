@@ -42,7 +42,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.appointments.api.AppointmentService;
 import org.motechproject.appointments.api.model.Appointment;
-import org.motechproject.tama.web.VxmlController;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;

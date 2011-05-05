@@ -29,7 +29,7 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.tama;
+package org.motechproject.server.tama;
 
 import org.motechproject.appointments.api.AppointmentService;
 import org.motechproject.appointments.api.EventKeys;

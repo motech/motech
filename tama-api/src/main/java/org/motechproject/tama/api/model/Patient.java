@@ -31,8 +31,12 @@
  */
 package org.motechproject.tama.api.model;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.Years;
 import org.motechproject.model.MotechAuditableDataObject;
 
 import java.util.Date;
@@ -223,6 +227,24 @@ public class Patient extends MotechAuditableDataObject {
     public void setRegimen(Regimen regimen) {
         this.regimen = regimen;
     }
+
+    @JsonIgnore
+	public Integer getAge(){
+		if (dateOfBirth != null) {
+			return Years.yearsBetween(new DateTime(dateOfBirth), new DateTime()).getYears();
+		} else {
+			return null;
+		}
+	}
+
+	@JsonIgnore
+	public Integer getDaysSinceRegistered(){
+		if (registrationDate != null) {
+			return Days.daysBetween(new DateTime(registrationDate), new DateTime()).getDays();
+		} else {
+			return null;
+		}
+	}
 
     @Override
     public String toString() {

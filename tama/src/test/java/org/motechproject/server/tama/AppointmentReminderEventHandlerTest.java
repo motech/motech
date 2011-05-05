@@ -1,6 +1,5 @@
 package org.motechproject.server.tama;
 
-import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,20 +15,20 @@ import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
-import org.motechproject.tama.AppointmentReminderEventHandler;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AppointmentReminderEventHandlerTest extends TestCase {
+public class AppointmentReminderEventHandlerTest {
     @InjectMocks
     AppointmentReminderEventHandler appointmentReminderEventHandler = new AppointmentReminderEventHandler();
 
