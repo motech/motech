@@ -57,25 +57,40 @@ public class LoginController implements Controller {
 	@Autowired
     private AuthenticationService authenticationService;
 	
+	/**
+	 * If the passcode and phone number match the record in our data store, 
+	 * redirect to the success view; otherwise, show the login view
+	 */
 	@Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
         
 		ModelAndView mav = new ModelAndView();
+		mav.addObject("contextPath", request.getContextPath());
 		String callerId = request.getParameter("callerId");
 		String passcode = request.getParameter("passcode");
 		logger.info("Received an inbound call from ["+callerId+"]");
 		logger.debug("passcode ["+passcode+"]");
 		
+		boolean verified = false;
+		String patientId = "";
+		
 		if (StringUtils.isNotEmpty(callerId) && StringUtils.isNotEmpty(passcode)) {
-			String patientId = authenticationService.getPatientIdByPhoneNumber(callerId);
-			boolean verified = authenticationService.verifyPasscode(patientId, passcode);
-			if (verified) {
-				mav.setViewName(successView + "?pId=" + patientId);
-			} else {
-				mav.setViewName(formView);
+			try{
+				patientId = authenticationService.getPatientIdByPhoneNumber(callerId);
+				if (StringUtils.isNotEmpty(patientId)) {
+					verified = authenticationService.verifyPasscode(patientId, passcode);
+					if (!verified) {
+						logger.debug("Wrong passcode.");
+					}
+				}
+			} catch (Exception e){
+				logger.error("Login error. CallerID[" + callerId + "]" , e);
 			}
+		}
+		if (verified) {
+			mav.setViewName(successView + "?pId=" + patientId);
 		} else {
 			mav.setViewName(formView);
 		}

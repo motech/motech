@@ -31,10 +31,20 @@
  */
 package org.motechproject.server.tama;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.motechproject.decisiontree.dao.TreeDao;
+import org.motechproject.decisiontree.model.Node;
+import org.motechproject.decisiontree.model.Prompt;
+import org.motechproject.decisiontree.model.TextToSpeechPrompt;
+import org.motechproject.decisiontree.model.Transition;
+import org.motechproject.decisiontree.model.Tree;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.annotations.MotechListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Logs all symptoms decision tree events
@@ -42,10 +52,53 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class SymptomsNodeEventListener {
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static final String UNDER50 = "age-under-50-or-non-regimen1-or-registered-less-than-180";
+	private static final Tree tree = Tree.newBuilder()
+										.setName(UNDER50)
+										.setRootNode(Node.newBuilder()
+												.setPrompts(Arrays.<Prompt>asList( TextToSpeechPrompt.newBuilder().setMessage("if you are you sick select 1, if not select 2").build()))
+												.setTransitions(new Object[][] {
+														{"1", 	Transition.newBuilder().setName("pressed1")
+																	.setDestinationNode(Node.newBuilder()
+																		.setPrompts(Arrays.<Prompt>asList( TextToSpeechPrompt.newBuilder().setMessage("if you are dying select 1, if not select 3").build()))
+																		.setTransitions(new Object[][] {
+																				{"1", 	Transition.newBuilder().setName("pressed1").setDestinationNode(
+																							Node.newBuilder().setPrompts(Arrays.<Prompt>asList( 
+																									TextToSpeechPrompt.newBuilder().setMessage("come to the hospital now").build()
+																							)).build()
+																						).build() },
+																				{"3", 	Transition.newBuilder().setName("pressed3").setDestinationNode(
+																							Node.newBuilder().setPrompts(Arrays.<Prompt>asList( 
+																									TextToSpeechPrompt.newBuilder().setMessage("be patient, we will call you").build()
+																							)).build()
+																						).build() }
+																	}).build()
+																).build() },
+														{"2",	Transition.newBuilder().setName("pressed2")
+																	.setDestinationNode(Node.newBuilder().setPrompts(Arrays.<Prompt>asList(TextToSpeechPrompt.newBuilder().setMessage("Check with us again").build())).build())
+																.build()}
+												})
+										.build())
+									.build();
+
+	@Autowired
+	TreeDao treeDao;
 	
 	@MotechListener(subjects={"event_x", "event_y"})
 	public void handleAllNodeEvents(MotechEvent event) {
-		log.info("Symptoms node event: "+event);
+		logger.info("Symptoms node event: "+event);
+	}
+	
+	@MotechListener(subjects={"tama.initialize"})
+	public void init(MotechEvent event) {
+		logger.info("Initializing couchdb for decision tree module.");	
+		List<Tree> trees = treeDao.findByName(UNDER50);
+		if(!trees.isEmpty()) {
+			logger.info("Tree with name: "+UNDER50+" found: "+trees.size());	
+			return;
+		}
+		logger.info("Creating tree: "+tree);		
+		treeDao.add(tree);
 	}
 }

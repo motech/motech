@@ -33,6 +33,8 @@ package org.motechproject.server.tama;
 
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.context.Context;
+import org.motechproject.context.EventContext;
+import org.motechproject.model.MotechEvent;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -90,6 +92,8 @@ public class Activator implements BundleActivator {
 			} finally {
 				Thread.currentThread().setContextClassLoader(old);
 			}
+			
+			bootStrap();
 
             appointmentReminderEventHandler = dispatcherServlet.getWebApplicationContext().getBean(AppointmentReminderEventHandler.class);
             Context.getInstance().getEventListenerRegistry().registerListener(appointmentReminderEventHandler, EventKeys.APPOINTMENT_REMINDER_EVENT_SUBJECT);
@@ -97,6 +101,13 @@ public class Activator implements BundleActivator {
             throw new RuntimeException(e);
         }
 
+	}
+
+	/**
+	 * responsible for emitting by initialize event (a handler will populate patient and trees in the database for testing)
+	 */
+	private void bootStrap() {
+		EventContext.getInstance().getEventRelay().sendEventMessage(new MotechEvent("tama.initialize", null));
 	}
 
 	private void serviceRemoved(HttpService service) {
