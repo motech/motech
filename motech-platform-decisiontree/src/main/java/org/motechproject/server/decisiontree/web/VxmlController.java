@@ -32,6 +32,7 @@
 package org.motechproject.server.decisiontree.web;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.server.decisiontree.service.DecisionTreeService;
@@ -204,6 +205,7 @@ public class VxmlController extends MultiActionController {
             mav.addObject("language", language);
             mav.addObject("treeName", treeName);
             mav.addObject("transitionPath", Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
+            mav.addObject("escape", new StringEscapeUtils());
 
             return mav;
         } else {
