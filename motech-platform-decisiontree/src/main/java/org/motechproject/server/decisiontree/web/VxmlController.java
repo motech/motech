@@ -64,7 +64,8 @@ public class VxmlController extends MultiActionController {
     public static final String PATIENT_ID_PARAM = "pId";
     public static final String LANGUAGE_PARAM = "ln";
 
-    public static final String MESSAGE_TEMPLATE_NAME = "node";
+    public static final String NODE_TEMPLATE_NAME = "node";
+    public static final String LEAF_TEMPLATE_NAME = "leaf";
     public static final String ERROR_MESSAGE_TEMPLATE_NAME = "node_error";
 
     @Autowired
@@ -198,7 +199,11 @@ public class VxmlController extends MultiActionController {
 
 
             ModelAndView mav = new ModelAndView();
-            mav.setViewName(MESSAGE_TEMPLATE_NAME);
+            if (node.getTransitions().size() > 0) {
+                mav.setViewName(NODE_TEMPLATE_NAME);
+            } else { // leaf
+                mav.setViewName(LEAF_TEMPLATE_NAME);
+            }
             mav.addObject("contentPath", request.getContextPath());
             mav.addObject("node", node);
             mav.addObject("patientId",  patientId);
