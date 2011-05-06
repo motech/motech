@@ -46,18 +46,18 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations={"/testApplicationContext.xml"})
 public class PatientDaoIT
 {
-
 	@Autowired
 	private PatientDAO patientDAO;
 
 	@Test
 	public void testAddPatient() {
 		Patient p = new Patient();
-        p.setId("pID");
 
         patientDAO.add(p);
 
-        Patient p1 = patientDAO.get("pID");
+        Patient p1 = patientDAO.get(p.getId());
+
+        patientDAO.remove(p1);
 //		Appointment app1 = appointmentsDAO.getAppointment(app.getId());
 	}
 }

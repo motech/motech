@@ -18,6 +18,6 @@
 			</bean>
 		</constructor-arg>
 	</bean>
-	<bean id="outboundVoiceMessageDao" class="org.motechproject.outbox.dao.couchdb.OutboundVoiceMessageDaoImpl"/>
+	<bean id="outboundVoiceMessageDao" class="org.motechproject.outbox.api.dao.couchdb.OutboundVoiceMessageDaoImpl"/>
 	
 </beans>
