@@ -3,7 +3,7 @@
 	<form>
  		<block>
              <prompt>
-                <audio src="/m/wav/hello.wav"/>
+                <audio src="/m/audio/hello.wav"/>
              </prompt>
             <prompt>
                 No pending messages in your outbox

@@ -5,11 +5,11 @@
 	<form id="login">
  		<field name="passcode" type="digits?length=4"> 
             <prompt>
-            	<audio src="$contextPath/../sounds/background.wav"/>
+            	<audio src="$contextPath/../audio/background.wav"/>
             </prompt>
             <noinput cond="true">
 	            <prompt>
-	            	<audio src="$contextPath/../sounds/background.wav"/>
+	            	<audio src="$contextPath/../audio/background.wav"/>
 	            </prompt>
 		    </noinput>
             <filled>
