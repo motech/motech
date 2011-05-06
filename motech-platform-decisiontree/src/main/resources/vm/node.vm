@@ -6,7 +6,7 @@
         <prompt>
             #foreach( $prompt in $node.prompts )
                 #if($prompt.class.simpleName == "AudioPrompt")
-                    <audio src="$contentPath/../sounds/$language/$prompt.audioFileUrl"/>
+                    <audio src="$contentPath/../audio/$language/$prompt.audioFileUrl"/>
                     $prompt.altMessage
                 #else
                     $prompt.message
