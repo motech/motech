@@ -35,6 +35,8 @@ import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.context.Context;
 import org.motechproject.context.EventContext;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor;
+import org.motechproject.server.event.annotations.MotechListener;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -93,8 +95,9 @@ public class Activator implements BundleActivator {
 				Thread.currentThread().setContextClassLoader(old);
 			}
 			
+			EventAnnotationBeanPostProcessor.registerHandlers(dispatcherServlet.getWebApplicationContext());
 			bootStrap();
-
+			
             appointmentReminderEventHandler = dispatcherServlet.getWebApplicationContext().getBean(AppointmentReminderEventHandler.class);
             Context.getInstance().getEventListenerRegistry().registerListener(appointmentReminderEventHandler, EventKeys.APPOINTMENT_REMINDER_EVENT_SUBJECT);
         } catch (Exception e) {

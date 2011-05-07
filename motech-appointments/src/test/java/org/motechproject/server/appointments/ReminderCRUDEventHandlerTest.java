@@ -82,7 +82,7 @@ public class ReminderCRUDEventHandlerTest
 
         MotechEvent motechEvent = new MotechEvent("deleted", params);
 
-        reminderCRUDEventHandler.handle(motechEvent);
+        reminderCRUDEventHandler.delete(motechEvent);
 
         verify(schedulerGateway, times(1)).unscheduleJob("foo");
     }
@@ -93,7 +93,7 @@ public class ReminderCRUDEventHandlerTest
 
         MotechEvent motechEvent = new MotechEvent("deleted", params);
 
-        reminderCRUDEventHandler.handle(motechEvent);
+        reminderCRUDEventHandler.delete(motechEvent);
 
         verify(schedulerGateway, times(0)).unscheduleJob("foo");
     }
@@ -108,7 +108,7 @@ public class ReminderCRUDEventHandlerTest
         Reminder r = new Reminder();
         when(reminderService.getReminder("foo")).thenReturn(r);
 
-        reminderCRUDEventHandler.handle(motechEvent);
+        reminderCRUDEventHandler.create(motechEvent);
 
         verify(reminderService, times(1)).updateReminder(r);
     }
@@ -119,7 +119,7 @@ public class ReminderCRUDEventHandlerTest
 
         MotechEvent motechEvent = new MotechEvent("created", params);
 
-        reminderCRUDEventHandler.handle(motechEvent);
+        reminderCRUDEventHandler.create(motechEvent);
 
         verify(reminderService, times(0)).updateReminder(any(Reminder.class));
     }
@@ -130,7 +130,7 @@ public class ReminderCRUDEventHandlerTest
 
         MotechEvent motechEvent = new MotechEvent("updated", params);
 
-        reminderCRUDEventHandler.handle(motechEvent);
+        reminderCRUDEventHandler.update(motechEvent);
 
         verify(schedulerGateway, times(0)).scheduleRunOnceJob(any(RunOnceSchedulableJob.class));
         verify(schedulerGateway, times(0)).scheduleRepeatingJob(any(RepeatingSchedulableJob.class));
@@ -149,7 +149,7 @@ public class ReminderCRUDEventHandlerTest
         r.setEnabled(false);
         when(reminderService.getReminder("foo")).thenReturn(r);
 
-        reminderCRUDEventHandler.handle(motechEvent);
+        reminderCRUDEventHandler.update(motechEvent);
 
         verify(schedulerGateway, times(1)).unscheduleJob("bar");
     }
@@ -165,7 +165,7 @@ public class ReminderCRUDEventHandlerTest
         r.setEnabled(false);
         when(reminderService.getReminder("foo")).thenReturn(r);
 
-        reminderCRUDEventHandler.handle(motechEvent);
+        reminderCRUDEventHandler.update(motechEvent);
 
         verify(schedulerGateway, times(0)).unscheduleJob(anyString());
     }
@@ -181,7 +181,7 @@ public class ReminderCRUDEventHandlerTest
         r.setEnabled(true);
         when(reminderService.getReminder("foo")).thenReturn(r);
 
-        reminderCRUDEventHandler.handle(motechEvent);
+        reminderCRUDEventHandler.update(motechEvent);
 
         verify(schedulerGateway, times(0)).scheduleRunOnceJob(any(RunOnceSchedulableJob.class));
         verify(schedulerGateway, times(0)).scheduleRepeatingJob(any(RepeatingSchedulableJob.class));
@@ -200,7 +200,7 @@ public class ReminderCRUDEventHandlerTest
 
         when(reminderService.getReminder("foo")).thenReturn(r);
 
-        reminderCRUDEventHandler.handle(motechEvent);
+        reminderCRUDEventHandler.update(motechEvent);
 
         verify(schedulerGateway, times(0)).scheduleRunOnceJob(any(RunOnceSchedulableJob.class));
         verify(schedulerGateway, times(0)).scheduleRepeatingJob(any(RepeatingSchedulableJob.class));
@@ -222,7 +222,7 @@ public class ReminderCRUDEventHandlerTest
 
         when(reminderService.getReminder("foo")).thenReturn(r);
 
-        reminderCRUDEventHandler.handle(motechEvent);
+        reminderCRUDEventHandler.update(motechEvent);
 
         verify(schedulerGateway, times(1)).scheduleRunOnceJob(any(RunOnceSchedulableJob.class));
         verify(schedulerGateway, times(0)).scheduleRepeatingJob(any(RepeatingSchedulableJob.class));
@@ -249,7 +249,7 @@ public class ReminderCRUDEventHandlerTest
 
         when(reminderService.getReminder("foo")).thenReturn(r);
 
-        reminderCRUDEventHandler.handle(motechEvent);
+        reminderCRUDEventHandler.update(motechEvent);
 
         verify(schedulerGateway, times(0)).scheduleRunOnceJob(any(RunOnceSchedulableJob.class));
         verify(schedulerGateway, times(1)).scheduleRepeatingJob(any(RepeatingSchedulableJob.class));

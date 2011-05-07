@@ -80,8 +80,7 @@
     <bean id="patientDao" class="org.motechproject.tama.api.dao.impl.PatientDAOImpl"/>
 	<bean id="doctorDao" class="org.motechproject.tama.api.dao.impl.DoctorDAOImpl"/>
 
-    <!-- handles @MotechListner annotations -->
-    <bean class="org.motechproject.server.annotations.EventAnnotationBeanPostProcessor"/>	
+    <!-- we handle @MotechListner annotations -->
     <bean id="symptomsNodeEventListener" class="org.motechproject.server.tama.SymptomsNodeEventListener"/>
     <bean id="appointmentReminderEventHandler" class="org.motechproject.server.tama.AppointmentReminderEventHandler"/>
 

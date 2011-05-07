@@ -46,7 +46,7 @@ import org.motechproject.outbox.api.model.MessagePriority;
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
 import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.model.VoiceMessageType;
-import org.motechproject.server.event.EventListener;
+import org.motechproject.server.event.annotations.MotechListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,10 +58,8 @@ import java.util.Date;
  * todo implement tests
  * todo need to get clarity around what goes in server-common vs. server-api
  */
-public class AppointmentReminderEventHandler implements EventListener {
+public class AppointmentReminderEventHandler {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
-
-    public final static String TAMA_APPOINTMENT_REMINDER = "TamaAppointmentReminder";
 
     AppointmentService appointmentService = AppointmentsContext.getInstance().getAppointmentService();
     ReminderService reminderService = AppointmentsContext.getInstance().getReminderService();
@@ -73,10 +71,11 @@ public class AppointmentReminderEventHandler implements EventListener {
     String needToScheduleAppointmentVxmlUrl = "http://needtoschedule/";
     String upcomingAppointmentVxmlUrl = "";
     String missedAppointmentVxmlUrl = "";
-
-    @Override
+    
+    @MotechListener(subjects={EventKeys.APPOINTMENT_REMINDER_EVENT_SUBJECT})
 	public void handle(MotechEvent event) {
-        metricsAgent.logEvent(event.getSubject());
+// 		Metrics is logged for every handler automatically
+//      metricsAgent.logEvent(event.getSubject());
 
         String appointmentId = EventKeys.getAppointmentId(event);
         if (appointmentId == null) {
@@ -143,10 +142,4 @@ public class AppointmentReminderEventHandler implements EventListener {
                                    appointment, appointment.getDueDate(), appointment.getScheduledDate(), today));
         }
     }
-
-    @Override
-	public String getIdentifier() {
-		return TAMA_APPOINTMENT_REMINDER;
-	}
-
 }

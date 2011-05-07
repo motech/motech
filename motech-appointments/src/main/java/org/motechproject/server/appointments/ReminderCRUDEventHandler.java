@@ -31,113 +31,102 @@
  */
 package org.motechproject.server.appointments;
 
-import org.motechproject.appointments.api.AppointmentService;
+import java.util.UUID;
+
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.ReminderService;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.context.Context;
-import org.motechproject.metrics.MetricsAgent;
+import org.motechproject.gateway.MotechSchedulerGateway;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.RunOnceSchedulableJob;
-import org.motechproject.server.event.EventListener;
-import org.motechproject.gateway.MotechSchedulerGateway;
+import org.motechproject.server.event.annotations.MotechListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.UUID;
-
 /**
  * 
  */
-public class ReminderCRUDEventHandler implements EventListener {
+public class ReminderCRUDEventHandler {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	public final static String REMINDER_CRUD_HANDLER = "ReminderCRUDHandler";
 
 	private MotechSchedulerGateway schedulerGateway = Context.getInstance().getMotechSchedulerGateway();
 
 	@Autowired
-	private AppointmentService appointmentService;
+	private ReminderService reminderService;
 
-    @Autowired
-    private ReminderService reminderService;
+	@MotechListener(subjects = { EventKeys.REMINDER_DELETED_SUBJECT })
+	public void delete(MotechEvent event) {
+		String jobId = EventKeys.getJobId(event);
+		if (null != jobId) {
+			schedulerGateway.unscheduleJob(jobId);
+		}
+	}
 
-    private MetricsAgent metricsAgent = Context.getInstance().getMetricsAgent();
+	@MotechListener(subjects = { EventKeys.REMINDER_CREATED_SUBJECT })
+	public void create(MotechEvent event) {
+		Reminder reminder = reminderService.getReminder(EventKeys.getReminderId(event));
+		if (null == reminder) {
+			logger.error("Can not handle Event: " + event.getSubject()
+					+ ". The event is invalid - missing the "
+					+ EventKeys.REMINDER_ID_KEY + " parameter");
+			return;
+		}
+		reminder.setJobId(UUID.randomUUID().toString());
+		// This will publish an updated event so no need to talk to the
+		// scheduler twice, just wait for
+		// the event to get here.
+		reminderService.updateReminder(reminder);
+	}
 
-	@Override
-	public void handle(MotechEvent event) {
-        metricsAgent.logEvent(event.getSubject());
+	@MotechListener(subjects = { EventKeys.REMINDER_UPDATED_SUBJECT })
+	public void update(MotechEvent event) {
 
-        if (event.getSubject().endsWith("deleted")) {
-            String jobId = EventKeys.getJobId(event);
+		Reminder reminder = reminderService.getReminder(EventKeys.getReminderId(event));
+		if (null == reminder) {
+			logger.error("Can not handle Event: " + event.getSubject()
+					+ ". The event is invalid - missing the "
+					+ EventKeys.REMINDER_ID_KEY + " parameter");
+			return;
+		}
 
-            if (null != jobId) {
-		        schedulerGateway.unscheduleJob(jobId);
-            }
-        }
+		if (reminder.getEnabled()) {
+			String appointmentId = EventKeys.getAppointmentId(event);
+			if (null == appointmentId || 0 == appointmentId.length()) {
+				logger.error("Can not handle Event: " + event.getSubject()
+						+ ". The event is invalid - missing the "
+						+ EventKeys.APPOINTMENT_ID_KEY + " parameter");
+				return;
+			}
 
-        if (event.getSubject().endsWith("created")) {
-            Reminder reminder = reminderService.getReminder(EventKeys.getReminderId(event));
+			MotechEvent reminderEvent = new MotechEvent(EventKeys.APPOINTMENT_REMINDER_EVENT_SUBJECT, event.getParameters());
 
-            if (null == reminder) {
-                logger.error("Can not handle Event: " + event.getSubject() +
-                             ". The event is invalid - missing the " + EventKeys.REMINDER_ID_KEY + " parameter");
-                return;
-            }
-            reminder.setJobId(UUID.randomUUID().toString());
+			// This isn't the best model object, but basically if there are no
+			// units specified then it is a single
+			// reminder otherwise it is a repeating job
+			if (null != reminder.getUnits()) {
+				RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(	reminderEvent, 
+																						reminder.getStartDate(),
+																						reminder.getEndDate(), 
+																						reminder.getRepeatCount(),
+																						reminder.getIntervalSeconds() * 1000);
+				schedulerGateway.scheduleRepeatingJob(schedulableJob);
+			} else {
+				RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(reminderEvent, reminder.getStartDate());
+				schedulerGateway.scheduleRunOnceJob(schedulableJob);
+			}
+		} else {
+			String jobId = EventKeys.getJobId(event);
 
-            // This will publish an updated event so no need to talk to the scheduler twice, just wait for
-            // the event to get here.
-            reminderService.updateReminder(reminder);
-        }
-
-        if (event.getSubject().endsWith("updated")) {
-            Reminder reminder = reminderService.getReminder(EventKeys.getReminderId(event));
-            if (null == reminder) {
-                logger.error("Can not handle Event: " + event.getSubject() +
-                             ". The event is invalid - missing the " + EventKeys.REMINDER_ID_KEY + " parameter");
-                return;
-            }
-
-            if (reminder.getEnabled()) {
-                String appointmentId = EventKeys.getAppointmentId(event);
-                if (null == appointmentId || 0 == appointmentId.length()) {
-                    logger.error("Can not handle Event: " + event.getSubject() +
-                             ". The event is invalid - missing the " + EventKeys.APPOINTMENT_ID_KEY + " parameter");
-                    return;
-                }
-
-                MotechEvent reminderEvent = new MotechEvent(EventKeys.APPOINTMENT_REMINDER_EVENT_SUBJECT, event.getParameters());
-
-                // This isn't the best model object, but basically if there are no units specified then it is a single
-                // reminder otherwise it is a repeating job
-                if (null != reminder.getUnits()) {
-                    RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(reminderEvent,
-                                                                                         reminder.getStartDate(),
-                                                                                         reminder.getEndDate(),
-                                                                                         reminder.getRepeatCount(),
-                                                                                         reminder.getIntervalSeconds() * 1000);
-                    schedulerGateway.scheduleRepeatingJob(schedulableJob);
-                } else {
-                    RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(reminderEvent, reminder.getStartDate());
-                    schedulerGateway.scheduleRunOnceJob(schedulableJob);
-                }
-            } else {
-                String jobId = EventKeys.getJobId(event);
-
-                if (null == jobId) {
-                    logger.error("Can not handle Event: " + event.getSubject() +
-                             ". The event is invalid - missing the " + EventKeys.JOB_ID_KEY + " parameter");
-                    return;
-                }
-                schedulerGateway.unscheduleJob(jobId);
-            }
-    	}
-    }
-
-	@Override
-	public String getIdentifier() {
-		return REMINDER_CRUD_HANDLER;
+			if (null == jobId) {
+				logger.error("Can not handle Event: " + event.getSubject()
+						+ ". The event is invalid - missing the "
+						+ EventKeys.JOB_ID_KEY + " parameter");
+				return;
+			}
+			schedulerGateway.unscheduleJob(jobId);
+		}
 	}
 }

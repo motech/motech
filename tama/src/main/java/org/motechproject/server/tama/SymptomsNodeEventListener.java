@@ -41,7 +41,7 @@ import org.motechproject.decisiontree.model.TextToSpeechPrompt;
 import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.decisiontree.model.Tree;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.server.annotations.MotechListener;
+import org.motechproject.server.event.annotations.MotechListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

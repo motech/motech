@@ -34,6 +34,7 @@ package org.motechproject.server.event.annotations;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
@@ -42,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -92,5 +94,16 @@ public class EventAnnotationBeanPostProcessor implements BeanPostProcessor {
 				}
 			}
 		});
+	}
+
+	/**
+	 * Registers event handlers (hack because we are running spring embedded in an OSGi module)
+	 * @param applicationContext
+	 */
+	public static void registerHandlers(ApplicationContext applicationContext) {
+		EventAnnotationBeanPostProcessor p = new EventAnnotationBeanPostProcessor();
+		for (Map.Entry<String, Object> e : applicationContext.getBeansWithAnnotation(MotechListener.class).entrySet()) {
+			p.postProcessAfterInitialization(e.getValue(), e.getKey());
+		}
 	}
 }

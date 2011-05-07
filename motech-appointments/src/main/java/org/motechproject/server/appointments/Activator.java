@@ -33,6 +33,7 @@ package org.motechproject.server.appointments;
 
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.context.Context;
+import org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -40,6 +41,7 @@ import org.osgi.service.http.HttpService;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -53,9 +55,6 @@ public class Activator implements BundleActivator {
 	private static final String CONTEXT_CONFIG_LOCATION = "applicationAppointments.xml";
 	private static final String SERVLET_URL_MAPPING = "/appointments";
 	private ServiceTracker tracker;
-
-	private ReminderCRUDEventHandler reminderCRUDEventHandler;
-	private AppointmentDeletedEventHandler appointmentDeletedEventHandler;
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -94,13 +93,9 @@ public class Activator implements BundleActivator {
 			} finally {
 				Thread.currentThread().setContextClassLoader(old);
 			}
-
-			reminderCRUDEventHandler = dispatcherServlet.getWebApplicationContext().getBean(ReminderCRUDEventHandler.class);
-			Context.getInstance().getEventListenerRegistry().registerListener(reminderCRUDEventHandler, EventKeys.REMINDER_WILDCARD_SUBJECT);
-
-            appointmentDeletedEventHandler = dispatcherServlet.getWebApplicationContext().getBean(AppointmentDeletedEventHandler.class);
-            Context.getInstance().getEventListenerRegistry().registerListener(appointmentDeletedEventHandler, EventKeys.APPOINTMENT_DELETED_SUBJECT);
-
+			
+			// register all annotated handlers
+			EventAnnotationBeanPostProcessor.registerHandlers(BeanFactoryUtils.beansOfTypeIncludingAncestors(dispatcherServlet.getWebApplicationContext(), Object.class));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

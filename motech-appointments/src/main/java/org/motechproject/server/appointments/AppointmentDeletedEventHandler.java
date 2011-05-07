@@ -34,10 +34,8 @@ package org.motechproject.server.appointments;
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.ReminderService;
 import org.motechproject.appointments.api.model.Reminder;
-import org.motechproject.context.Context;
-import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.server.event.EventListener;
+import org.motechproject.server.event.annotations.MotechListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,19 +45,15 @@ import java.util.List;
 /**
  * 
  */
-public class AppointmentDeletedEventHandler implements EventListener {
+public class AppointmentDeletedEventHandler {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	public final static String APPOINTMENT_DELETED_HANDLER = "AppointmentDeletedHandler";
 
     @Autowired
     private ReminderService reminderService;
 
-    private MetricsAgent metricsAgent = Context.getInstance().getMetricsAgent();
-
-	@Override
+	@MotechListener(subjects={EventKeys.APPOINTMENT_DELETED_SUBJECT})
 	public void handle(MotechEvent event) {
-        metricsAgent.logEvent(event.getSubject());
-
+		logger.info("Delete appointments for Patient ID: "+EventKeys.getAppointmentId(event));
         // If an appointment is deleted then we don't need any reminders hanging around.
         List<Reminder> reminders = reminderService.findByAppointmentId(EventKeys.getAppointmentId(event));
 
@@ -67,9 +61,4 @@ public class AppointmentDeletedEventHandler implements EventListener {
             reminderService.removeReminder(r);
         }
     }
-
-	@Override
-	public String getIdentifier() {
-		return APPOINTMENT_DELETED_HANDLER;
-	}
 }
