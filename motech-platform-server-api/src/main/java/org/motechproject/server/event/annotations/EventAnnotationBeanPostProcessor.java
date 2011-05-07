@@ -43,7 +43,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.ApplicationContext;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -83,6 +82,7 @@ public class EventAnnotationBeanPostProcessor implements BeanPostProcessor {
 					Context.getInstance().getEventListenerRegistry().registerListener(new EventListener() {
 						@Override
 						public void handle(MotechEvent event) {
+						    Context.getInstance().getMetricsAgent().logEvent(event.getSubject());
 							ReflectionUtils.invokeMethod(mtd,bean,event);
 						}
 						
@@ -100,10 +100,10 @@ public class EventAnnotationBeanPostProcessor implements BeanPostProcessor {
 	 * Registers event handlers (hack because we are running spring embedded in an OSGi module)
 	 * @param applicationContext
 	 */
-	public static void registerHandlers(ApplicationContext applicationContext) {
-		EventAnnotationBeanPostProcessor p = new EventAnnotationBeanPostProcessor();
-		for (Map.Entry<String, Object> e : applicationContext.getBeansWithAnnotation(MotechListener.class).entrySet()) {
-			p.postProcessAfterInitialization(e.getValue(), e.getKey());
+	public static void registerHandlers(Map<String, Object> beans) {
+		EventAnnotationBeanPostProcessor processor = new EventAnnotationBeanPostProcessor();
+		for (Map.Entry<String, Object> entry : beans.entrySet()) {
+			processor.postProcessAfterInitialization(entry.getValue(), entry.getKey());
 		}
 	}
 }

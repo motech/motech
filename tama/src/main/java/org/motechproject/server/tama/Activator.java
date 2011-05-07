@@ -31,12 +31,9 @@
  */
 package org.motechproject.server.tama;
 
-import org.motechproject.appointments.api.EventKeys;
-import org.motechproject.context.Context;
 import org.motechproject.context.EventContext;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor;
-import org.motechproject.server.event.annotations.MotechListener;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -44,6 +41,7 @@ import org.osgi.service.http.HttpService;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -55,7 +53,6 @@ public class Activator implements BundleActivator {
 	private static final String CONTEXT_CONFIG_LOCATION = "applicationTAMA.xml";
 	private static final String SERVLET_URL_MAPPING = "/tama";
 	private ServiceTracker tracker;
-    private AppointmentReminderEventHandler appointmentReminderEventHandler;
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -95,11 +92,11 @@ public class Activator implements BundleActivator {
 				Thread.currentThread().setContextClassLoader(old);
 			}
 			
-			EventAnnotationBeanPostProcessor.registerHandlers(dispatcherServlet.getWebApplicationContext());
+			// register all annotated handlers
+			EventAnnotationBeanPostProcessor.registerHandlers(BeanFactoryUtils.beansOfTypeIncludingAncestors(dispatcherServlet.getWebApplicationContext(), Object.class));
+			// create tree objects in the database
 			bootStrap();
 			
-            appointmentReminderEventHandler = dispatcherServlet.getWebApplicationContext().getBean(AppointmentReminderEventHandler.class);
-            Context.getInstance().getEventListenerRegistry().registerListener(appointmentReminderEventHandler, EventKeys.APPOINTMENT_REMINDER_EVENT_SUBJECT);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
