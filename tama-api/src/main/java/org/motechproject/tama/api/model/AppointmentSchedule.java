@@ -11,11 +11,11 @@ public class AppointmentSchedule
 {
 	public static enum Followup {
 		REGISTERED("Registered",7),
-		WEEK4("4 week follow-up",4*7),
-		WEEK12("12 week follow-up",4*12),
-		WEEK24("24 week follow-up",4*24),
-		WEEK36("36 week follow-up",4*36),
-		WEEK48("48 week follow-up",4*48);
+		WEEK4("4 week follow-up",7*4),
+		WEEK12("12 week follow-up",7*12),
+		WEEK24("24 week follow-up",7*24),
+		WEEK36("36 week follow-up",7*36),
+		WEEK48("48 week follow-up",7*48);
 
 		final String value;
 		final int days;
