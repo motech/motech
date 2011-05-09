@@ -112,4 +112,12 @@
 		class="org.motechproject.decisiontree.dao.couchdb.TreeDaoImpl">
 	</bean>    
     
+	<bean id="menuController" class="org.motechproject.server.tama.web.MenuController">
+		<property name="successViews">
+			<map>
+				<entry key="1" value="tama/rules/tree"/>
+				<entry key="2" value="outbox/vxml/outboxMessage"/>
+			</map>
+		</property>
+	</bean>
 </beans>
