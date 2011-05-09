@@ -37,7 +37,6 @@ import static org.junit.Assert.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.ektorp.DocumentNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,28 +44,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.server.tama.service.DecisionTreeLookupService;
-import org.motechproject.tama.api.dao.PatientDAO;
-import org.motechproject.tama.api.model.Patient;
-
 
 /**
- * Test for Rules Controller
  * @author yyonkov
  *
  */
 @RunWith(MockitoJUnitRunner.class)
-public class RulesControllerTest {
-
-    private static final String patientId = "10";
-	private static final Patient patient = new Patient();
-	private static final String treeName = "tree1";
+public class MenuControllerTest {
+	private static final String patientId = "10";
 
 	@InjectMocks
-    RulesController rulesController = new RulesController();
-
-    @Mock
-    private PatientDAO patientDAO;
+    MenuController menuController = new MenuController();
 
     @Mock
     private HttpServletRequest request;
@@ -74,36 +62,19 @@ public class RulesControllerTest {
     @Mock
     private HttpServletResponse response;
     
-
-    @Mock
-    private DecisionTreeLookupService decisionTreeLookupService;
-    
     @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
     }
     
     @Test
-    public void testTreeHappy() {
+    public void testWithPid() {
     	when(request.getParameter(RulesController.PATIENT_ID_PARAM)).thenReturn(patientId);
-    	when(patientDAO.get(patientId)).thenReturn(patient);
-    	when(decisionTreeLookupService.findTreeNameByPatient(patient)).thenReturn(treeName);
-    	assertTrue(rulesController.tree(request, response).contains("redirect:/tree/vxml/node?"));
+    	assertEquals(MenuController.MENU_TEMPLATE_NAME,  menuController.select(request, response).getViewName());
     }
-    
     @Test
-    public void testTreeNoPid() {
+    public void testNoPid() {
     	when(request.getParameter(RulesController.PATIENT_ID_PARAM)).thenReturn(null);
-    	when(patientDAO.get(patientId)).thenReturn(patient);
-    	when(decisionTreeLookupService.findTreeNameByPatient(patient)).thenReturn(treeName);
-    	assertEquals(RulesController.REDIRECT_LOGIN,rulesController.tree(request, response));
+    	assertEquals(MenuController.REDIRECT_LOGIN,menuController.select(request, response).getViewName());
     }
-    
-    @Test
-    public void testTreeNoPatient() {
-    	when(request.getParameter(RulesController.PATIENT_ID_PARAM)).thenReturn(patientId);
-    	when(patientDAO.get(patientId)).thenThrow(new DocumentNotFoundException(""));
-    	when(decisionTreeLookupService.findTreeNameByPatient(patient)).thenReturn(treeName);
-    	assertEquals(RulesController.REDIRECT_LOGIN,rulesController.tree(request, response));
-    }    
 }
