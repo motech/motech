@@ -41,6 +41,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
+import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.model.VoiceMessageType;
 import org.motechproject.server.outbox.service.VoiceOutboxService;
 import org.springframework.web.servlet.ModelAndView;
@@ -49,6 +50,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -164,6 +166,32 @@ public class VxmlControllerTest {
         String messageId = "mID";
 
         Mockito.when(request.getParameter("mId")).thenReturn(messageId);
+
+         ModelAndView modelAndView = vxmlController.messageMenu(request, response) ;
+
+        Assert.assertEquals(VxmlController.MESSAGE_MENU_TEMPLATE_NAME, modelAndView.getViewName());
+        verify(voiceOutboxService).setMessageStatus(messageId, OutboundVoiceMessageStatus.PLAYED);
+    }
+
+    @Test
+    public void testMessageMenuNoMessageId() {
+
+        String messageId = "mID";
+
+        Mockito.when(request.getParameter("mId")).thenReturn(null);
+
+         ModelAndView modelAndView = vxmlController.messageMenu(request, response) ;
+
+        Assert.assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
+    }
+
+    @Test
+    public void testMessageMenuException() {
+
+        String messageId = "mID";
+
+        Mockito.when(request.getParameter("mId")).thenReturn(messageId);
+        when(voiceOutboxService.getMessageById(anyString())).thenThrow(new RuntimeException());
 
          ModelAndView modelAndView = vxmlController.messageMenu(request, response) ;
 

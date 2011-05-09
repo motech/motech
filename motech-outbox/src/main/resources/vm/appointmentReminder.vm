@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <vxml version="2.1" xmlns="http://www.w3.org/2001/vxml">
+    #set( $messageContext = "message" )
 	<form>
  		<block>
              <prompt>
                 <audio src="$contentPath/../audio/hello.wav"/>
              </prompt>
             <prompt>
-                No pending messages in your outbox
+                $params.get($messageContext)
+                Please fix your appointment
             </prompt>
 		</block>
+        <goto next="$contentPath/outbox/vxml/msgMenu?mId=$messageId"/>
 	</form>
 </vxml>

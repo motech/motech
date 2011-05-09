@@ -32,6 +32,7 @@
 package org.motechproject.server.outbox.web;
 
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
+import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
 import org.motechproject.server.outbox.service.VoiceOutboxService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +56,8 @@ public class VxmlController extends MultiActionController {
     public static final String NO_MESSAGE_TEMPLATE_NAME = "nonsg";
     public static final String ERROR_MESSAGE_TEMPLATE_NAME = "msg_error";
     public static final String MESSAGE_MENU_TEMPLATE_NAME = "msgMenu";
+
+     public static final String MESSAGE_ID_PARAM = "mId";
 
     @Autowired
     VoiceOutboxService voiceOutboxService;
@@ -81,7 +84,7 @@ public class VxmlController extends MultiActionController {
         String partyId = "1";
 
 
-        String messageId = request.getParameter("mId");
+        String messageId = request.getParameter(MESSAGE_ID_PARAM);
 
         logger.debug("Message ID: " + messageId);
 
@@ -119,7 +122,12 @@ public class VxmlController extends MultiActionController {
             return mav;
         }
 
+        String contextPath = request.getContextPath();
+
         mav.setViewName(voiceMessage.getVoiceMessageType().getVoiceMessageTypeName());
+        mav.addObject("contextPath", contextPath);
+        mav.addObject("messageId", voiceMessage.getId());
+        mav.addObject("params", voiceMessage.getParameters());
         return mav;
 
     }
@@ -130,16 +138,29 @@ public class VxmlController extends MultiActionController {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
 
-        String messageId = request.getParameter("mId");
+        ModelAndView mav = new ModelAndView();
+
+        String messageId = request.getParameter(MESSAGE_ID_PARAM);
 
         logger.info("Message ID: " + messageId);
 
-        //TODO - set message status Played
+        if (messageId == null) {
+            logger.error("Invalid request - missing parameter: " + MESSAGE_ID_PARAM);
+            mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
+            return mav;
+        }
 
-        request.getContextPath();
+        try {
+            voiceOutboxService.setMessageStatus(messageId, OutboundVoiceMessageStatus.PLAYED);
+        } catch (Exception e) {
+            logger.error("Can not set message status to " + OutboundVoiceMessageStatus.PLAYED + " to the message ID: " + messageId, e);
+        }
 
-        ModelAndView mav = new ModelAndView();
+        String contextPath = request.getContextPath();
+
+
         mav.setViewName(MESSAGE_MENU_TEMPLATE_NAME);
+        mav.addObject("contextPath", contextPath);
         mav.addObject("messageId", messageId);
         return mav;
 
