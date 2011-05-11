@@ -109,7 +109,7 @@ public class AppointmentReminderEventHandlerTest {
         verify(outboundVoiceMessageDaoMock, times(1)).add(argument.capture());
 
         OutboundVoiceMessage msg = argument.getValue();
-        assertTrue(msg.getVoiceMessageType().getvXmlUrl().endsWith("schedule"));
+        assertTrue(msg.getVoiceMessageType().getvXmlTemplateName().endsWith("schedule"));
     }
 
     @Test
@@ -215,7 +215,7 @@ public class AppointmentReminderEventHandlerTest {
         verify(outboundVoiceMessageDaoMock, times(1)).add(argument.capture());
 
         OutboundVoiceMessage msg = argument.getValue();
-        assertTrue(msg.getVoiceMessageType().getvXmlUrl().endsWith("upcoming"));
+        assertTrue(msg.getVoiceMessageType().getvXmlTemplateName().endsWith("upcoming"));
     }
 
     @Test
@@ -242,6 +242,6 @@ public class AppointmentReminderEventHandlerTest {
         verify(outboundVoiceMessageDaoMock, times(1)).add(argument.capture());
 
         OutboundVoiceMessage msg = argument.getValue();
-        assertTrue(msg.getVoiceMessageType().getvXmlUrl().endsWith("missed"));
+        assertTrue(msg.getVoiceMessageType().getvXmlTemplateName().endsWith("missed"));
     }
 }

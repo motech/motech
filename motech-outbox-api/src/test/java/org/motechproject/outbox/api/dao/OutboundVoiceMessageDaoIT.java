@@ -66,7 +66,7 @@ public class OutboundVoiceMessageDaoIT {
 		VoiceMessageType messageType = new VoiceMessageType();
 		messageType.setVoiceMessageTypeName("Play something");
 		messageType.setPriority(MessagePriority.HIGH);
-		messageType.setvXmlUrl("http://yahoo.com");
+		messageType.setvXmlTemplateName("appointmentReminder");
 		
 		// create messages
 		Date now = DateUtils.truncate(new Date(), Calendar.DATE);
