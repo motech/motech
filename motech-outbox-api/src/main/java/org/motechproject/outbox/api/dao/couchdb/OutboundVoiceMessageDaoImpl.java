@@ -40,6 +40,7 @@ import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
+import org.ektorp.support.Views;
 import org.motechproject.dao.MotechAuditableRepository;
 import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
@@ -52,6 +53,10 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
+@Views({
+	@View( name = "getPendingMessages", map = "function(doc) { if (doc.partyId && doc.status=='PENDING') { emit([doc.partyId, doc.expirationDate], doc._id); } }"),
+	@View( name = "getSavedMessages", map = "function(doc) { if (doc.partyId && doc.status=='SAVED') { emit([doc.partyId, doc.expirationDate], doc._id); } }")
+})
 public class OutboundVoiceMessageDaoImpl extends
 		MotechAuditableRepository<OutboundVoiceMessage> implements
 		OutboundVoiceMessageDao {
@@ -60,17 +65,13 @@ public class OutboundVoiceMessageDaoImpl extends
 		super(OutboundVoiceMessage.class, db);
 		initStandardDesignDocument();
 	}
-	/* (non-Javadoc)
-	 * @see org.motechproject.outbox.api.dao.OutboundVoiceMessageDao#getPendingMessages(java.lang.String)
-	 */
-	@Override
-	@View( name = "getPendingMessages", map = "function(doc) { if (doc.partyId && doc.status=='PENDING') { emit([doc.partyId, doc.expirationDate], doc._id); } }")
-	public List<OutboundVoiceMessage> getPendingMessages(String partyId) {
+	
+	private List<OutboundVoiceMessage> getMessages(String view, String partyId) {
 		ComplexKey startKey = ComplexKey.of(partyId, new Date());
 		char[] chars = partyId.toCharArray();
 		chars[chars.length-1]++;
 		ComplexKey endKey = ComplexKey.of(new String(chars));
-		ViewQuery q = createQuery("getPendingMessages").startKey(startKey).endKey(endKey).includeDocs(true);
+		ViewQuery q = createQuery(view).startKey(startKey).endKey(endKey).includeDocs(true);
 		List<OutboundVoiceMessage> messages = db.queryView(q, OutboundVoiceMessage.class);
 		if(messages.size()>0) {
 			Collections.sort(messages, new Comparator<OutboundVoiceMessage>() {
@@ -86,5 +87,33 @@ public class OutboundVoiceMessageDaoImpl extends
 		}
 		return messages;
 	}
-
+	
+	
+	
+	/* (non-Javadoc)
+	 * @see org.motechproject.outbox.api.dao.OutboundVoiceMessageDao#getPendingMessages(java.lang.String)
+	 */
+	@Override
+	public List<OutboundVoiceMessage> getPendingMessages(String partyId) {
+		return getMessages("getPendingMessages", partyId);
+	}
+	/* (non-Javadoc)
+	 * @see org.motechproject.outbox.api.dao.OutboundVoiceMessageDao#getSavedMessages(java.lang.String)
+	 */
+	@Override
+	public List<OutboundVoiceMessage> getSavedMessages(String partyId) {
+		return getMessages("getSavedMessages", partyId);
+	}
+	/* (non-Javadoc)
+	 * @see org.motechproject.outbox.api.dao.OutboundVoiceMessageDao#getPendingMessagesCount()
+	 */
+	@Override
+	public int getPendingMessagesCount(String partyId) {
+		ComplexKey startKey = ComplexKey.of(partyId, new Date());
+		char[] chars = partyId.toCharArray();
+		chars[chars.length-1]++;
+		ComplexKey endKey = ComplexKey.of(new String(chars));
+		ViewQuery q = createQuery("getPendingMessages").startKey(startKey).endKey(endKey);
+		return db.queryView(q).getSize();
+	}
 }

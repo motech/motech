@@ -76,7 +76,7 @@ public class OutboundVoiceMessageDaoIT {
 			msg.setPartyId(i<10?partyId1:partyId2);
 			msg.setCreationTime(DateUtils.addDays(now, i)); 
 			msg.setExpirationDate(DateUtils.addDays(now, 1-2*(i&2)));
-			msg.setStatus((i&1)>0?OutboundVoiceMessageStatus.PENDING:OutboundVoiceMessageStatus.PLAYED);
+			msg.setStatus((i&1)>0?OutboundVoiceMessageStatus.PENDING:OutboundVoiceMessageStatus.SAVED);
 			outboundVoiceMessageDao.add(msg);
 		}
 		
@@ -97,5 +97,21 @@ public class OutboundVoiceMessageDaoIT {
 			assertTrue(m.getExpirationDate().after(new Date()));
 //			System.out.println(m);
 		}
+	}
+	@Test
+	public void testGetSavedMessage() {
+		List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getSavedMessages(partyId1);
+		assertNotNull(messages);
+		assertEquals(3, messages.size());
+		for(OutboundVoiceMessage m : messages) {
+			assertEquals(OutboundVoiceMessageStatus.SAVED, m.getStatus());
+			assertTrue(m.getExpirationDate().after(new Date()));
+//			System.out.println(m);
+		}
+	}
+	@Test
+	public void testGet() {
+		int count = outboundVoiceMessageDao.getPendingMessagesCount(partyId1);
+		System.out.println(count);
 	}
 }

@@ -39,19 +39,22 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.context.Context;
+import org.motechproject.gateway.MotechSchedulerGateway;
+import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.outbox.api.EventKeys;
-import org.motechproject.server.event.EventListener;
 import org.motechproject.server.service.ivr.CallRequest;
 import org.motechproject.server.service.ivr.IVRService;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OutboxExecutionHandlerTest
 {
 	@InjectMocks
-	private EventListener outboxExecutionHandler = new OutboxExecutionHandler();
+	private OutboxExecutionHandler outboxExecutionHandler = new OutboxExecutionHandler();
 
 	@Mock
 	private Context context;
@@ -59,13 +62,16 @@ public class OutboxExecutionHandlerTest
     @Mock
     IVRService ivrServiceMock;
 
+	@Mock
+	private MotechSchedulerGateway motechSchedulerGateway;   
+
 	@Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
     }
 
 	@Test
-	public void testHandle() {
+	public void testExecute() {
 		MotechEvent event = new MotechEvent("", null);
 		event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
 		event.getParameters().put(EventKeys.PARTY_ID_KEY, "pID");
@@ -73,32 +79,156 @@ public class OutboxExecutionHandlerTest
 
         when(context.getIvrService()).thenReturn(ivrServiceMock);
 
-		outboxExecutionHandler.handle(event);
+		outboxExecutionHandler.execute(event);
 
 		verify(ivrServiceMock).initiateCall(any(CallRequest.class));
 	}
 
 	@Test
-	public void testHandle_NoPhone() {
+	public void testExecute_NoPhone() {
 		MotechEvent event = new MotechEvent("", null);
 		event.getParameters().put(EventKeys.PARTY_ID_KEY, "pID");
 
         when(context.getIvrService()).thenReturn(ivrServiceMock);
 
-		outboxExecutionHandler.handle(event);
+		outboxExecutionHandler.execute(event);
 
 		verify(ivrServiceMock, times(0)).initiateCall(any(CallRequest.class));
 	}
 
 	@Test
-	public void testHandle_NoPartyID() {
+	public void testExecute_NoPartyID() {
 		MotechEvent event = new MotechEvent("", null);
 		event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
 
         when(context.getIvrService()).thenReturn(ivrServiceMock);
 
-		outboxExecutionHandler.handle(event);
+		outboxExecutionHandler.execute(event);
 
 		verify(ivrServiceMock, times(0)).initiateCall(any(CallRequest.class));
 	}
+	
+	@Test
+	public void testSchedule() {
+		MotechEvent event = new MotechEvent("", null);
+		event.getParameters().put(EventKeys.CALL_HOUR_KEY, 12);
+		event.getParameters().put(EventKeys.CALL_MINUTE_KEY, 0);
+		event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
+		event.getParameters().put(EventKeys.PARTY_ID_KEY, "pID");
+
+		when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
+
+		outboxExecutionHandler.schedule(event);
+
+		verify(motechSchedulerGateway).scheduleJob(any(CronSchedulableJob.class));
+	}
+
+	@Test
+	public void testSchedule_NoPhone() {
+		MotechEvent event = new MotechEvent("", null);
+		event.getParameters().put(EventKeys.CALL_HOUR_KEY, 12);
+		event.getParameters().put(EventKeys.CALL_MINUTE_KEY, 0);
+		event.getParameters().put(EventKeys.PARTY_ID_KEY, "pID");
+
+		when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
+
+		outboxExecutionHandler.schedule(event);
+
+		verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
+	}
+
+    @Test
+    public void testSchedule_NoParty() {
+        MotechEvent event = new MotechEvent("", null);
+        event.getParameters().put(EventKeys.CALL_HOUR_KEY, 12);
+        event.getParameters().put(EventKeys.CALL_MINUTE_KEY, 0);
+        event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
+
+        when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
+
+        outboxExecutionHandler.schedule(event);
+
+        verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
+    }
+
+    @Test
+    public void testSchedule_NoHour() {
+        MotechEvent event = new MotechEvent("", null);
+        event.getParameters().put(EventKeys.CALL_MINUTE_KEY, 0);
+        event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
+        event.getParameters().put(EventKeys.PARTY_ID_KEY, "pID");
+
+        when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
+
+        outboxExecutionHandler.schedule(event);
+
+        verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
+    }
+
+    @Test
+    public void testSchedule_InvalidHour() {
+        MotechEvent event = new MotechEvent("", null);
+        event.getParameters().put(EventKeys.CALL_HOUR_KEY, "foo");
+        event.getParameters().put(EventKeys.CALL_MINUTE_KEY, 0);
+        event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
+        event.getParameters().put(EventKeys.PARTY_ID_KEY, "pID");
+
+        when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
+
+        outboxExecutionHandler.schedule(event);
+
+        verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
+    }
+
+    @Test
+    public void testSchedule_NoMinute() {
+        MotechEvent event = new MotechEvent("", null);
+        event.getParameters().put(EventKeys.CALL_HOUR_KEY, 12);
+        event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
+        event.getParameters().put(EventKeys.PARTY_ID_KEY, "pID");
+
+        when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
+
+        outboxExecutionHandler.schedule(event);
+
+        verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
+    }
+
+    @Test
+    public void testSchedule_InvalideMinute() {
+        MotechEvent event = new MotechEvent("", null);
+        event.getParameters().put(EventKeys.CALL_HOUR_KEY, 12);
+        event.getParameters().put(EventKeys.CALL_MINUTE_KEY, "foo");
+        event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
+        event.getParameters().put(EventKeys.PARTY_ID_KEY, "pID");
+
+        when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
+
+        outboxExecutionHandler.schedule(event);
+
+        verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
+    }	
+    
+	@Test
+	public void testUnschedule() {
+		MotechEvent event = new MotechEvent("", null);
+		event.getParameters().put(EventKeys.SCHEDULE_JOB_ID_KEY, "JobId");
+
+		when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
+
+		outboxExecutionHandler.unschedule(event);
+
+		verify(motechSchedulerGateway).unscheduleJob("JobId");
+	}
+
+	@Test
+	public void testUnschedule_NoPhone() {
+		MotechEvent event = new MotechEvent("", null);
+
+		when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
+
+		outboxExecutionHandler.unschedule(event);
+
+		verify(motechSchedulerGateway, times(0)).unscheduleJob(anyString());
+	}    
 }

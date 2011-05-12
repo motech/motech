@@ -19,7 +19,13 @@ public class VoiceOutboxServiceImpl implements VoiceOutboxService {
     final Logger log = LoggerFactory.getLogger(VoiceOutboxServiceImpl.class);
     private int numDayskeepSavedMessages;
 
-    @Autowired
+    /**
+     * Should be configurable externally.
+     * if pendingMessages > maxNumberOfPendingMessages we need to emit event 
+     */
+    private int maxNumberOfPendingMessages;
+
+	@Autowired
     OutboundVoiceMessageDao outboundVoiceMessageDao;
 
     @Override
@@ -31,6 +37,7 @@ public class VoiceOutboxServiceImpl implements VoiceOutboxService {
             throw new IllegalArgumentException("OutboundVoiceMessage can not be null.");
         }
         outboundVoiceMessageDao.add(outboundVoiceMessage);
+        
     }
 
     @Override
@@ -120,7 +127,7 @@ public class VoiceOutboxServiceImpl implements VoiceOutboxService {
             throw new IllegalArgumentException("Party ID can not be null or empty.");
         }
 
-        return outboundVoiceMessageDao.getPendingMessages(partyId).size();
+        return outboundVoiceMessageDao.getPendingMessagesCount(partyId);
     }
 
     public int getNumDayskeepSavedMessages() {
@@ -130,4 +137,7 @@ public class VoiceOutboxServiceImpl implements VoiceOutboxService {
     public void setNumDayskeepSavedMessages(int numDayskeepSavedMessages) {
         this.numDayskeepSavedMessages = numDayskeepSavedMessages;
     }
+	public void setMaxNumberOfPendingMessages(int maxNumberOfPendingMessages) {
+		this.maxNumberOfPendingMessages = maxNumberOfPendingMessages;
+	}    
 }

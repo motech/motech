@@ -42,4 +42,6 @@ import org.motechproject.outbox.api.model.OutboundVoiceMessage;
  */
 public interface OutboundVoiceMessageDao extends BaseDao<OutboundVoiceMessage> {
 	List<OutboundVoiceMessage> getPendingMessages(String partyId);
+	List<OutboundVoiceMessage> getSavedMessages(String partyId);
+	int getPendingMessagesCount(String partyId);
 }

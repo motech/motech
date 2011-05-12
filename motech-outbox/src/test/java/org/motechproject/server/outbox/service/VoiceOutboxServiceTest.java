@@ -202,15 +202,7 @@ public class VoiceOutboxServiceTest {
 
          String partyId = "pid";
 
-        OutboundVoiceMessage  outboundVoiceMessage1 = new OutboundVoiceMessage();
-        OutboundVoiceMessage  outboundVoiceMessage2 = new OutboundVoiceMessage();
-
-
-         List<OutboundVoiceMessage> pendingVoiceMessages = new ArrayList<OutboundVoiceMessage>();
-        pendingVoiceMessages.add(outboundVoiceMessage1);
-        pendingVoiceMessages.add(outboundVoiceMessage2);
-
-        when(outboundVoiceMessageDaoMock.getPendingMessages(partyId)).thenReturn(pendingVoiceMessages);
+        when(outboundVoiceMessageDaoMock.getPendingMessagesCount(partyId)).thenReturn(2);
 
         assertEquals(2, voiceOutboxService.getNumberPendingMessages(partyId));
     }

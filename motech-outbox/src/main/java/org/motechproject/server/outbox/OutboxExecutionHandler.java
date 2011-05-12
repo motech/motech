@@ -31,37 +31,34 @@
  */
 package org.motechproject.server.outbox;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.motechproject.context.Context;
+import org.motechproject.gateway.MotechSchedulerGateway;
+import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.outbox.api.EventKeys;
-import org.motechproject.server.event.EventListener;
-import org.motechproject.gateway.MotechSchedulerGateway;
+import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.server.service.ivr.CallInitiationException;
 import org.motechproject.server.service.ivr.CallRequest;
 import org.motechproject.server.service.ivr.IVRService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * 
  */
-public class OutboxExecutionHandler implements EventListener
-{
+public class OutboxExecutionHandler {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	public final static String OUTBOX_EXECUTION = "OutboxExecution";
-
 	private MotechSchedulerGateway schedulerGateway = Context.getInstance().getMotechSchedulerGateway();
-
     private IVRService ivrService = Context.getInstance().getIvrService();
 
     String outboxVxmlUrl = "http://192.168.1.162:8080/m/module/outbox/execute";
    	int timeOut = 10;
 
-	@Override
-	public void handle(MotechEvent event) {
+	@MotechListener(subjects={EventKeys.EXECUTE_OUTBOX_SUBJECT})
+	public void execute(MotechEvent event) {
 
         String partyId = EventKeys.getPartyID(event);
         if (partyId == null) {
@@ -108,8 +105,55 @@ public class OutboxExecutionHandler implements EventListener
         }
 	}
 
-	@Override
-	public String getIdentifier() {
-		return OUTBOX_EXECUTION;
+	@MotechListener(subjects={EventKeys.SCHEDULE_EXECUTION_SUBJECT})
+	public void schedule(MotechEvent event) {
+
+        Integer callHour = EventKeys.getCallHourKey(event);
+        if (callHour == null) {
+            logger.error("Can not handle Event: " + event.getSubject() +
+                     ". The event is invalid - missing the " + EventKeys.CALL_HOUR_KEY + " parameter");
+            return;
+        }
+
+        Integer callMinute = EventKeys.getCallMinuteKey(event);
+        if (callMinute == null) {
+            logger.error("Can not handle Event: " + event.getSubject() +
+                     ". The event is invalid - missing the " + EventKeys.CALL_MINUTE_KEY + " parameter");
+            return;
+        }
+
+        String partyId = EventKeys.getPartyID(event);
+        if (partyId == null) {
+            logger.error("Can not handle Event: " + event.getSubject() +
+                     ". The event is invalid - missing the " + EventKeys.PARTY_ID_KEY + " parameter");
+            return;
+        }
+
+        String phoneNumber = EventKeys.getPhoneNumberKey(event);
+        if (phoneNumber == null) {
+            logger.error("Can not handle Event: " + event.getSubject() +
+                     ". The event is invalid - missing the " + EventKeys.PHONE_NUMBER_KEY + " parameter");
+            return;
+        }
+
+        MotechEvent reminderEvent = new MotechEvent(EventKeys.EXECUTE_OUTBOX_SUBJECT, event.getParameters());
+		CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(reminderEvent,
+                                                           String.format("0 %d %d * * ?", callHour,
+                                                                         callMinute));
+
+    	schedulerGateway.scheduleJob(cronSchedulableJob);		
+	}
+
+	@MotechListener(subjects={EventKeys.UNSCHEDULE_EXECUTION_SUBJECT})
+	public void unschedule(MotechEvent event) {
+
+        String jobId = EventKeys.getScheduleJobIdKey(event);
+        if (jobId == null) {
+            logger.error("Can not handle Event: " + event.getSubject() +
+                     ". The event is invalid - missing the " + EventKeys.SCHEDULE_JOB_ID_KEY + " parameter");
+            return;
+        }
+
+		schedulerGateway.unscheduleJob(jobId);		
 	}
 }
