@@ -5,7 +5,9 @@
       <prompt>
        To listen this message again press 1, to go to the next message press 2
       </prompt>
-      <choice dtmf="1" next="$contextPath/outbox/vxml/outboxMessage?mId=$messageId"/>
-      <choice dtmf="2" next="$contextPath/outbox/vxml/outboxMessage"/>
+      #set ($url = "$contextPath/outbox/vxml/outboxMessage?mId=$messageId&ln=$language")
+      <choice dtmf="1" next="$escape.escapeXml($url)"/>
+      #set ($url = "$contextPath/outbox/vxml/outboxMessage?ln=$language")
+      <choice dtmf="2" next="$escape.escapeXml($url)"/>
     </menu>
 </vxml>
