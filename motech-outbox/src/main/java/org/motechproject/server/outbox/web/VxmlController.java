@@ -33,6 +33,7 @@ package org.motechproject.server.outbox.web;
 
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
 import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
+import org.motechproject.outbox.api.model.VoiceMessageType;
 import org.motechproject.server.outbox.service.VoiceOutboxService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,9 +54,11 @@ public class VxmlController extends MultiActionController {
 
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
 
-    public static final String NO_MESSAGE_TEMPLATE_NAME = "nonsg";
-    public static final String ERROR_MESSAGE_TEMPLATE_NAME = "msg_error";
+    public static final String NO_MESSAGE_TEMPLATE_NAME = "nomsg";
+    public static final String ERROR_MESSAGE_TEMPLATE_NAME = "msgError";
     public static final String MESSAGE_MENU_TEMPLATE_NAME = "msgMenu";
+    public static final String MESSAGE_SAVED_CONFIRMATION_TEMPLATE_NAME = "msgSavedConf";
+    public static final String SAVE_MESSAGE_ERROR_TEMPLATE_NAME = "saveMsgError";
 
      public static final String MESSAGE_ID_PARAM = "mId";
      
@@ -125,11 +128,26 @@ public class VxmlController extends MultiActionController {
             return mav;
         }
 
+        VoiceMessageType voiceMessageType = voiceMessage.getVoiceMessageType();
+
+        if (voiceMessageType == null) {
+            logger.error("Invalid Outbound voice message: " + voiceMessage + " Voice message type can not be null.");
+            mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
+            return mav;
+        }
+
         String contextPath = request.getContextPath();
 
-        mav.setViewName(voiceMessage.getVoiceMessageType().getVoiceMessageTypeName());
+        String templateName = voiceMessageType.getvXmlTemplateName();
+        if (templateName == null) {
+            templateName = voiceMessageType.getVoiceMessageTypeName();
+        }
+
+        mav.setViewName(templateName);
         mav.addObject("contextPath", contextPath);
         mav.addObject("messageId", voiceMessage.getId());
+        mav.addObject("canBeSaved", voiceMessageType.isCanBeSaved());
+        mav.addObject("canBeReplayed", voiceMessageType.isCanBeReplayed());
         mav.addObject("params", voiceMessage.getParameters());
         mav.addObject("language", language);
         
@@ -167,6 +185,42 @@ public class VxmlController extends MultiActionController {
         mav.setViewName(MESSAGE_MENU_TEMPLATE_NAME);
         mav.addObject("contextPath", contextPath);
         mav.addObject("messageId", messageId);
+        return mav;
+
+    }
+
+    public ModelAndView save(HttpServletRequest request, HttpServletResponse response) {
+        logger.info("Saving messageL...");
+
+        response.setContentType("text/plain");
+        response.setCharacterEncoding("UTF-8");
+
+        ModelAndView mav = new ModelAndView();
+
+        String messageId = request.getParameter(MESSAGE_ID_PARAM);
+
+        logger.info("Message ID: " + messageId);
+
+        if (messageId == null) {
+            logger.error("Invalid request - missing parameter: " + MESSAGE_ID_PARAM);
+            mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
+            return mav;
+        }
+
+        try {
+            voiceOutboxService.saveMessage(messageId);
+        } catch (Exception e) {
+            logger.error("Can not mark the message with ID: " + messageId + " as saved in the outbox", e);
+            mav.setViewName(SAVE_MESSAGE_ERROR_TEMPLATE_NAME);
+            return mav;
+        }
+
+        String contextPath = request.getContextPath();
+
+
+        mav.setViewName(MESSAGE_SAVED_CONFIRMATION_TEMPLATE_NAME);
+        mav.addObject("contextPath", contextPath);
+        mav.addObject("days", voiceOutboxService.getNumDayskeepSavedMessages());
         return mav;
 
     }
