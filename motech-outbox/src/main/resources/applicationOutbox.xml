@@ -48,7 +48,9 @@
     <bean id="unScheduleOutboxExecutionHandler" class="org.motechproject.server.outbox.UnscheduleOutboxExecutionHandler"/>
     <bean id="outboxExecutionHandler" class="org.motechproject.server.outbox.OutboxExecutionHandler"/>
 
-    <bean id="voiceOutboxService" class="org.motechproject.server.outbox.service.VoiceOutboxServiceImpl"/>
+    <bean id="voiceOutboxService" class="org.motechproject.server.outbox.service.VoiceOutboxServiceImpl">
+        <property name="numDayskeepSavedMessages" value="10"/>
+    </bean>
 
     <bean id="motechContext" class="org.motechproject.context.Context" factory-method="getInstance" />
 

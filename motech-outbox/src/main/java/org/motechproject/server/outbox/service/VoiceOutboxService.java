@@ -56,6 +56,14 @@ public interface VoiceOutboxService {
      */
     public void setMessageStatus(String outboundVoiceMessageId, OutboundVoiceMessageStatus status);
 
+     /**
+      * Saves the message with given id in the outbox for period (number of days) specified in the outbox configuration
+     * Sets to the message status: SAVED and expiration date: current date + number of days in the outbox configuration
+     *
+     * @param outboundVoiceMessageId
+     */
+    public void saveMessage(String outboundVoiceMessageId);
+
     /**
      * Returns number of pending messages in the voice outbox of the party with the given party ID
      *
@@ -63,4 +71,11 @@ public interface VoiceOutboxService {
      * @return
      */
     public int getNumberPendingMessages (String partyId);
+
+    /**
+     * Returns number of days for which a messages saved by the patient will be kept in outbox as SAVED messages
+     *
+     * @return
+     */
+    public int getNumDayskeepSavedMessages();
 }

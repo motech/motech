@@ -14,10 +14,12 @@ import org.motechproject.outbox.api.model.OutboundVoiceMessage;
 import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 
@@ -29,7 +31,7 @@ public class VoiceOutboxServiceTest {
 
 
     @InjectMocks
-    VoiceOutboxService voiceOutboxService = new VoiceOutboxServiceImpl();
+    VoiceOutboxServiceImpl voiceOutboxService = new VoiceOutboxServiceImpl();
 
     @Mock
     OutboundVoiceMessageDao outboundVoiceMessageDaoMock;
@@ -38,6 +40,7 @@ public class VoiceOutboxServiceTest {
     @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
+        voiceOutboxService.setNumDayskeepSavedMessages(10);
     }
 
     @Test
@@ -238,6 +241,32 @@ public class VoiceOutboxServiceTest {
 
         verify(outboundVoiceMessageDaoMock, times(0)).getPendingMessages(anyString());
 
+    }
+
+    @Test
+    public void testSaveMessage() {
+
+         String messageId = "msgId";
+
+        OutboundVoiceMessage message = new OutboundVoiceMessage();
+
+        when(outboundVoiceMessageDaoMock.get(messageId)).thenReturn(message);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, voiceOutboxService.getNumDayskeepSavedMessages());
+
+        voiceOutboxService.saveMessage(messageId);
+        verify(outboundVoiceMessageDaoMock).update(message);
+        assertEquals(OutboundVoiceMessageStatus.SAVED, message.getStatus());
+        System.out.println(calendar.getTime().getTime() - message.getExpirationDate().getTime());
+        assertTrue(message.getExpirationDate().getTime() - calendar.getTime().getTime() < 1000);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSaveMessageNoMessageId() {
+
+        voiceOutboxService.saveMessage(null);
+        verify(outboundVoiceMessageDaoMock, times(0)).update(Matchers.<OutboundVoiceMessage>any());
     }
 
 }

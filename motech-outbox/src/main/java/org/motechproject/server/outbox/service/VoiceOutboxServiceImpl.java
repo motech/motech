@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -16,6 +17,7 @@ import java.util.List;
 public class VoiceOutboxServiceImpl implements VoiceOutboxService {
 
     final Logger log = LoggerFactory.getLogger(VoiceOutboxServiceImpl.class);
+    private int numDayskeepSavedMessages;
 
     @Autowired
     OutboundVoiceMessageDao outboundVoiceMessageDao;
@@ -91,6 +93,25 @@ public class VoiceOutboxServiceImpl implements VoiceOutboxService {
     }
 
     @Override
+    public void saveMessage(String outboundVoiceMessageId) {
+
+        log.info("Save in the outbox message ID: " + outboundVoiceMessageId);
+
+         if (outboundVoiceMessageId == null || outboundVoiceMessageId.isEmpty()) {
+            throw new IllegalArgumentException("outboundVoiceMessageId can not be null or empty.");
+        }
+
+        OutboundVoiceMessage outboundVoiceMessage = getMessageById(outboundVoiceMessageId);
+        outboundVoiceMessage.setStatus(OutboundVoiceMessageStatus.SAVED);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, numDayskeepSavedMessages);
+        outboundVoiceMessage.setExpirationDate(calendar.getTime());
+
+        outboundVoiceMessageDao.update(outboundVoiceMessage);
+    }
+
+    @Override
     public int getNumberPendingMessages(String partyId) {
 
         log.info("Get number of pending messages for the party ID: " + partyId);
@@ -100,5 +121,13 @@ public class VoiceOutboxServiceImpl implements VoiceOutboxService {
         }
 
         return outboundVoiceMessageDao.getPendingMessages(partyId).size();
+    }
+
+    public int getNumDayskeepSavedMessages() {
+        return numDayskeepSavedMessages;
+    }
+
+    public void setNumDayskeepSavedMessages(int numDayskeepSavedMessages) {
+        this.numDayskeepSavedMessages = numDayskeepSavedMessages;
     }
 }
