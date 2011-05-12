@@ -45,6 +45,7 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Date;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -73,7 +74,7 @@ public class SpringQuartzTest {
         job.getJobDataMap().put("eventType", "PillReminder");
         job.getJobDataMap().put("patientId", "001");
 
-        Trigger trigger = new SimpleTrigger(uuidStr, groupName);
+        Trigger trigger = new SimpleTrigger(uuidStr, groupName, new Date(new Date().getTime()+3000));
 
         Scheduler scheduler = schedulerFactoryBean.getScheduler();
 
