@@ -2,6 +2,9 @@
 <vxml version="2.1" xmlns="http://www.w3.org/2001/vxml">
     <menu>
       <property name="inputmodes" value="dtmf"/>
+       #set ($repeatUrl = "$contextPath/outbox/vxml/outboxMessage?mId=$messageId&ln=$language")
+        #set ($saveUrl = "$contextPath/outbox/vxml/save?mId=$messageId&ln=$language")
+        #set ($nextUrl = "$contextPath/outbox/vxml/outboxMessage?ln=$language")
       <prompt>
           #if($canBeReplayed)
               To listen this message again press 1,
@@ -12,11 +15,11 @@
           to go to the next message press 3
       </prompt>
         #if($canBeReplayed)
-            <choice dtmf="1" next="$contextPath/outbox/vxml/outboxMessage?mId=$messageId"/>
+            <choice dtmf="1" next="$escape.escapeXml($repeatUrl)"/>
         #end
         #if($canBeSaved)
-            <choice dtmf="2" next="$contextPath/outbox/vxml/save?mId=$messageId"/>
+            <choice dtmf="2" next="$escape.escapeXml($saveUrl)"/>
         #end
-        <choice dtmf="3" next="$contextPath/outbox/vxml/outboxMessage"/>
+        <choice dtmf="3" next="$escape.escapeXml($nextUrl)"/>
     </menu>
 </vxml>
