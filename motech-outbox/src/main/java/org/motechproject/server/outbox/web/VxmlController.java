@@ -58,6 +58,8 @@ public class VxmlController extends MultiActionController {
     public static final String MESSAGE_MENU_TEMPLATE_NAME = "msgMenu";
 
      public static final String MESSAGE_ID_PARAM = "mId";
+     
+    public static final String LANGUAGE_PARAM = "ln";
 
     @Autowired
     VoiceOutboxService voiceOutboxService;
@@ -85,6 +87,7 @@ public class VxmlController extends MultiActionController {
 
 
         String messageId = request.getParameter(MESSAGE_ID_PARAM);
+        String language = request.getParameter(LANGUAGE_PARAM);
 
         logger.debug("Message ID: " + messageId);
 
@@ -128,6 +131,8 @@ public class VxmlController extends MultiActionController {
         mav.addObject("contextPath", contextPath);
         mav.addObject("messageId", voiceMessage.getId());
         mav.addObject("params", voiceMessage.getParameters());
+        mav.addObject("language", language);
+        
         return mav;
 
     }

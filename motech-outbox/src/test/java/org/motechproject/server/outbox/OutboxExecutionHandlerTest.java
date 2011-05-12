@@ -69,6 +69,7 @@ public class OutboxExecutionHandlerTest
 		MotechEvent event = new MotechEvent("", null);
 		event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
 		event.getParameters().put(EventKeys.PARTY_ID_KEY, "pID");
+		event.getParameters().put(EventKeys.LANGUAGE_KEY, "en");
 
         when(context.getIvrService()).thenReturn(ivrServiceMock);
 

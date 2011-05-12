@@ -16,6 +16,7 @@ public class EventKeys
     public final static String PHONE_NUMBER_KEY = "PhoneNumber";
     public final static String PARTY_ID_KEY = "PartyID";
     public final static String SCHEDULE_JOB_ID_KEY = "JobID";
+    public final static String LANGUAGE_KEY = "Language";
 
     public final static String SCHEDULE_EXECUTION_SUBJECT = "org.motechproject.server.outbox.schedule-execution";
     public final static String UNSCHEDULE_EXECUTION_SUBJECT = "org.motechproject.server.outbox.unschedule-execution";
@@ -47,6 +48,11 @@ public class EventKeys
     public static String getPartyID(MotechEvent event)
     {
         return getStringValue(event, EventKeys.PARTY_ID_KEY);
+    }
+
+    public static String getLanguageKey(MotechEvent event)
+    {
+    	return getStringValue(event, EventKeys.LANGUAGE_KEY);
     }
 
     public static String getStringValue(MotechEvent event, String key)

@@ -76,9 +76,16 @@ public class OutboxExecutionHandler implements EventListener
                      ". The event is invalid - missing the " + EventKeys.PHONE_NUMBER_KEY + " parameter");
             return;
         }
+        
+        String language = EventKeys.getLanguageKey(event);
+        if (language == null) {
+            logger.error("Can not handle Event: " + event.getSubject() +
+                    ". The event is invalid - missing the " + EventKeys.LANGUAGE_KEY + " parameter");
+           return;
+        }        
 
         try {
-            String vxmlUrl = outboxVxmlUrl + "?partyId=" + partyId;
+            String vxmlUrl = outboxVxmlUrl + "?partyId=" + partyId + "&ln=" + language;
             CallRequest callRequest = new CallRequest(1l, phoneNumber, timeOut, vxmlUrl);
 
             Map<String, Object> messageParameters = new HashMap<String, Object>();
