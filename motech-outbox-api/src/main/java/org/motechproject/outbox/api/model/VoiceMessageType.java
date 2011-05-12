@@ -7,8 +7,10 @@ package org.motechproject.outbox.api.model;
 public class VoiceMessageType {	
 	private String voiceMessageTypeName;
     private MessagePriority priority;
-    private String vXmlUrl;
+    private String vXmlTemplateName;
     private boolean canBeSaved; // indicates if this type of messages allowed to be saved by patients in they voice outbox
+    private boolean canBeReplayed; // indicates if this type of messages allowed to be replayed by a patient request after been played once
+
 	public String getVoiceMessageTypeName() {
 		return voiceMessageTypeName;
 	}
@@ -21,11 +23,11 @@ public class VoiceMessageType {
 	public void setPriority(MessagePriority priority) {
 		this.priority = priority;
 	}
-	public String getvXmlUrl() {
-		return vXmlUrl;
+	public String getvXmlTemplateName() {
+		return vXmlTemplateName;
 	}
-	public void setvXmlUrl(String vXmlUrl) {
-		this.vXmlUrl = vXmlUrl;
+	public void setvXmlTemplateName(String vXmlTemplateName) {
+		this.vXmlTemplateName = vXmlTemplateName;
 	}
 	public boolean isCanBeSaved() {
 		return canBeSaved;
@@ -33,49 +35,26 @@ public class VoiceMessageType {
 	public void setCanBeSaved(boolean canBeSaved) {
 		this.canBeSaved = canBeSaved;
 	}
-	@Override
-	public String toString() {
-		return "VoiceMessageType [voiceMessageTypeName=" + voiceMessageTypeName
-				+ ", priority=" + priority + ", vXmlUrl=" + vXmlUrl
-				+ ", canBeSaved=" + canBeSaved + "]";
-	}
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (canBeSaved ? 1231 : 1237);
-		result = prime * result
-				+ ((priority == null) ? 0 : priority.hashCode());
-		result = prime * result + ((vXmlUrl == null) ? 0 : vXmlUrl.hashCode());
-		result = prime
-				* result
-				+ ((voiceMessageTypeName == null) ? 0 : voiceMessageTypeName
-						.hashCode());
-		return result;
-	}
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		VoiceMessageType other = (VoiceMessageType) obj;
-		if (canBeSaved != other.canBeSaved)
-			return false;
-		if (priority != other.priority)
-			return false;
-		if (vXmlUrl == null) {
-			if (other.vXmlUrl != null)
-				return false;
-		} else if (!vXmlUrl.equals(other.vXmlUrl))
-			return false;
-		if (voiceMessageTypeName == null) {
-			if (other.voiceMessageTypeName != null)
-				return false;
-		} else if (!voiceMessageTypeName.equals(other.voiceMessageTypeName))
-			return false;
-		return true;
-	}
+
+    public boolean isCanBeReplayed() {
+        return canBeReplayed;
+    }
+
+    public void setCanBeReplayed(boolean canBeReplayed) {
+        this.canBeReplayed = canBeReplayed;
+    }
+
+
+    @Override
+    public String toString() {
+        return "VoiceMessageType{" +
+                "voiceMessageTypeName='" + voiceMessageTypeName + '\'' +
+                ", priority=" + priority +
+                ", vXmlTemplateName='" + vXmlTemplateName + '\'' +
+                ", canBeSaved=" + canBeSaved +
+                ", canBeReplayed=" + canBeReplayed +
+                '}';
+    }
+
+
 }

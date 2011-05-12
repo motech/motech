@@ -128,7 +128,7 @@ public class AppointmentReminderEventHandler {
         if (null != url) {
             VoiceMessageType mt = new VoiceMessageType();
             mt.setPriority(MessagePriority.MEDIUM);
-            mt.setvXmlUrl(url);
+            mt.setvXmlTemplateName(url);
 
             OutboundVoiceMessage msg = new OutboundVoiceMessage();
             msg.setPartyId(appointment.getExternalId());
