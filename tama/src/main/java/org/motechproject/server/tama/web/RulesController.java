@@ -78,8 +78,10 @@ public class RulesController extends MultiActionController {
         }
 
         String treeName;
+        String language;
         try {
         	Patient patient = patientDAO.get(patientId);
+        	language = patient.getPreferences().getLanguage().name();
         	logger.info("Running rules for patient with ID: "+patientId);
         	treeName = decisionTreeLookupService.findTreeNameByPatient(patient);
         } catch (DocumentNotFoundException e) {
@@ -87,6 +89,6 @@ public class RulesController extends MultiActionController {
         	return REDIRECT_LOGIN;
         }
 		// http://localhost:8081/motech-platform-server/module/tree/vxml/node	
-		return String.format("redirect:/tree/vxml/node?"+PATIENT_ID_PARAM+"=%s&"+TREE_NAME_PARAM+"=%s&"+LANGUAGE_PARAM+"=%s", patientId, treeName, "en");
+		return String.format("redirect:/tree/vxml/node?"+PATIENT_ID_PARAM+"=%s&"+TREE_NAME_PARAM+"=%s&"+LANGUAGE_PARAM+"=%s", patientId, treeName, language);
 	}
 }

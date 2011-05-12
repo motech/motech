@@ -31,8 +31,9 @@
  */
 package org.motechproject.server.tama.web;
 
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,6 +49,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.server.tama.service.DecisionTreeLookupService;
 import org.motechproject.tama.api.dao.PatientDAO;
 import org.motechproject.tama.api.model.Patient;
+import org.motechproject.tama.api.model.Preferences;
 
 
 /**
@@ -81,6 +83,9 @@ public class RulesControllerTest {
     @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
+        Preferences pref = new Preferences();
+        pref.setLanguage(Preferences.Language.fr);
+        patient.setPreferences(pref);
     }
     
     @Test
@@ -89,6 +94,7 @@ public class RulesControllerTest {
     	when(patientDAO.get(patientId)).thenReturn(patient);
     	when(decisionTreeLookupService.findTreeNameByPatient(patient)).thenReturn(treeName);
     	assertTrue(rulesController.tree(request, response).contains("redirect:/tree/vxml/node?"));
+    	assertTrue(rulesController.tree(request, response).contains("ln=fr"));
     }
     
     @Test
