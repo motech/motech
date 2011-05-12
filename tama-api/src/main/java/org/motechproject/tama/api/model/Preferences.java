@@ -31,12 +31,46 @@
  */
 package org.motechproject.tama.api.model;
 
+
 public class Preferences {
+	
+    public enum Language {
+    	en("English"), fr("French");
+        private String text;
+
+        Language(String text) {
+            this.text = text;
+        }
+
+        public String getText() {
+            return this.text;
+        }
+        
+        public static Language fromString(String text) {
+            if (text != null) {
+                for (Language b : Language.values()) {
+                    if (text.equalsIgnoreCase(b.text)) {
+                      return b;
+                    }
+                }
+            }
+            return null;
+        }
+    }
 
 	private Integer bestTimeToCallHour;
 	private Integer bestTimeToCallMinute;
     private Boolean appointmentReminderEnabled; // Is the appointment reminder enabled
     private String ivrCallJobId;
+    private Language language = Language.en;
+
+	public Language getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(Language language) {
+		this.language = language;
+	}
 
 	public Integer getBestTimeToCallHour() {
 		return bestTimeToCallHour;
