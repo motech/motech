@@ -31,7 +31,6 @@
  */
 package org.motechproject.server.outbox.web;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
 import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.model.VoiceMessageType;
@@ -151,7 +150,7 @@ public class VxmlController extends MultiActionController {
         mav.addObject("canBeReplayed", voiceMessageType.isCanBeReplayed());
         mav.addObject("params", voiceMessage.getParameters());
         mav.addObject("language", language);
-        mav.addObject("escape", new StringEscapeUtils());
+        
         return mav;
 
     }
@@ -165,7 +164,6 @@ public class VxmlController extends MultiActionController {
         ModelAndView mav = new ModelAndView();
 
         String messageId = request.getParameter(MESSAGE_ID_PARAM);
-        String language = request.getParameter(LANGUAGE_PARAM);
 
         logger.info("Message ID: " + messageId);
 
@@ -187,8 +185,6 @@ public class VxmlController extends MultiActionController {
         mav.setViewName(MESSAGE_MENU_TEMPLATE_NAME);
         mav.addObject("contextPath", contextPath);
         mav.addObject("messageId", messageId);
-        mav.addObject("language", language);
-        mav.addObject("escape", new StringEscapeUtils());
         return mav;
 
     }
@@ -202,7 +198,6 @@ public class VxmlController extends MultiActionController {
         ModelAndView mav = new ModelAndView();
 
         String messageId = request.getParameter(MESSAGE_ID_PARAM);
-        String language = request.getParameter(LANGUAGE_PARAM);
 
         logger.info("Message ID: " + messageId);
 
@@ -226,8 +221,6 @@ public class VxmlController extends MultiActionController {
         mav.setViewName(MESSAGE_SAVED_CONFIRMATION_TEMPLATE_NAME);
         mav.addObject("contextPath", contextPath);
         mav.addObject("days", voiceOutboxService.getNumDayskeepSavedMessages());
-        mav.addObject("language", language);
-        mav.addObject("escape", new StringEscapeUtils());
         return mav;
 
     }

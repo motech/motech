@@ -3,13 +3,12 @@
 	<form>
  		<block>
              <prompt>
-                <audio src="$contentPath/../audio/$language/outbox/hello.wav"/>
+                <audio src="$contentPath/../audio/hello.wav"/>
              </prompt>
             <prompt>
                 This message can not be saved at the moment due to technical issues. Sorry.
             </prompt>
 		</block>
-		#set ($url = "$contextPath/outbox/vxml/outboxMessage?ln=$language")
-        <goto next="$escape.escapeXml($url)"/>
+        <goto next="$contentPath/outbox/vxml/outboxMessage"/>
 	</form>
 </vxml>
