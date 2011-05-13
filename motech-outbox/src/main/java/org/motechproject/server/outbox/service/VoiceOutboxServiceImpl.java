@@ -1,6 +1,11 @@
 package org.motechproject.server.outbox.service;
 
 
+import org.apache.commons.lang.ArrayUtils;
+import org.motechproject.context.EventContext;
+import org.motechproject.event.EventRelay;
+import org.motechproject.model.MotechEvent;
+import org.motechproject.outbox.api.EventKeys;
 import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
 import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
@@ -24,11 +29,15 @@ public class VoiceOutboxServiceImpl implements VoiceOutboxService {
      * if pendingMessages > maxNumberOfPendingMessages we need to emit event 
      */
     private int maxNumberOfPendingMessages;
+    
+    @Autowired(required = false)
+    private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
 
 	@Autowired
-    OutboundVoiceMessageDao outboundVoiceMessageDao;
+    private OutboundVoiceMessageDao outboundVoiceMessageDao;
 
-    @Override
+	@Override
+	@SuppressWarnings("unchecked")
     public void addMessage(OutboundVoiceMessage outboundVoiceMessage) {
 
         log.info("Add message: " + outboundVoiceMessage);
@@ -38,6 +47,13 @@ public class VoiceOutboxServiceImpl implements VoiceOutboxService {
         }
         outboundVoiceMessageDao.add(outboundVoiceMessage);
         
+        //sends max-pending-messages event if needed
+        String pId = outboundVoiceMessage.getPartyId();
+        int msgNum = outboundVoiceMessageDao.getPendingMessagesCount(pId);
+        if(maxNumberOfPendingMessages==msgNum) {
+        	log.warn(String.format("Max number (%d) of pending messages reached!", msgNum));
+			eventRelay.sendEventMessage( new MotechEvent(EventKeys.OUTBOX_MAX_PENDING_MESSAGES_EVENT_SUBJECT, ArrayUtils.toMap(new Object[][] {{EventKeys.PARTY_ID_KEY, pId}})));
+        }
     }
 
     @Override
@@ -137,6 +153,7 @@ public class VoiceOutboxServiceImpl implements VoiceOutboxService {
     public void setNumDayskeepSavedMessages(int numDayskeepSavedMessages) {
         this.numDayskeepSavedMessages = numDayskeepSavedMessages;
     }
+    
 	public void setMaxNumberOfPendingMessages(int maxNumberOfPendingMessages) {
 		this.maxNumberOfPendingMessages = maxNumberOfPendingMessages;
 	}    
