@@ -17,6 +17,8 @@ public class EventKeys
     public final static String PARTY_ID_KEY = "PartyID";
     public final static String SCHEDULE_JOB_ID_KEY = "JobID";
     public final static String LANGUAGE_KEY = "Language";
+    
+    public final static String OUTBOX_MAX_PENDING_MESSAGES_EVENT_SUBJECT = "org.motechproject.server.outbox.max-pending-messages";
 
     public final static String SCHEDULE_EXECUTION_SUBJECT = "org.motechproject.server.outbox.schedule-execution";
     public final static String UNSCHEDULE_EXECUTION_SUBJECT = "org.motechproject.server.outbox.unschedule-execution";

@@ -4,11 +4,15 @@ package org.motechproject.server.outbox.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.event.EventRelay;
+import org.motechproject.model.MotechEvent;
+import org.motechproject.outbox.api.EventKeys;
 import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
 import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
@@ -30,17 +34,22 @@ import static org.mockito.Mockito.*;
 public class VoiceOutboxServiceTest {
 
 
-    @InjectMocks
+    private static final int MAX_MESSAGES_PENDING = 15;
+
+	@InjectMocks
     VoiceOutboxServiceImpl voiceOutboxService = new VoiceOutboxServiceImpl();
 
     @Mock
     OutboundVoiceMessageDao outboundVoiceMessageDaoMock;
 
+    @Mock
+    EventRelay eventRelay;
 
     @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
         voiceOutboxService.setNumDayskeepSavedMessages(10);
+        voiceOutboxService.setMaxNumberOfPendingMessages(MAX_MESSAGES_PENDING);
     }
 
     @Test
@@ -118,6 +127,54 @@ public class VoiceOutboxServiceTest {
         assertEquals(message, voiceOutboxService.getMessageById(messageId));
 
     }
+
+
+    @Test
+    public void testGetNextSavedMessage() {
+
+        String partyId = "pid";
+
+        OutboundVoiceMessage  outboundVoiceMessage1 = new OutboundVoiceMessage();
+        OutboundVoiceMessage  outboundVoiceMessage2 = new OutboundVoiceMessage();
+
+
+        List<OutboundVoiceMessage> pendingVoiceMessages = new ArrayList<OutboundVoiceMessage>();
+        pendingVoiceMessages.add(outboundVoiceMessage1);
+        pendingVoiceMessages.add(outboundVoiceMessage2);
+
+        when(outboundVoiceMessageDaoMock.getSavedMessages(partyId)).thenReturn(pendingVoiceMessages);
+
+        assertEquals(outboundVoiceMessage1, voiceOutboxService.getNextSavedMessage(partyId));
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetNextSavedMessageNullPartyId() {
+
+        voiceOutboxService.getNextSavedMessage(null);
+
+        verify(outboundVoiceMessageDaoMock, times(0)).getSavedMessages(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetNextSavedMessageEmptyPartyId() {
+
+        voiceOutboxService.getNextSavedMessage("");
+
+        verify(outboundVoiceMessageDaoMock, times(0)).getSavedMessages(anyString());
+
+    }
+
+    @Test
+    public void testGetNextSavedMessageNoMessages() {
+
+        String partyId = "pid";
+
+        when(outboundVoiceMessageDaoMock.getSavedMessages(partyId)).thenReturn(new ArrayList<OutboundVoiceMessage>());
+
+        assertNull(voiceOutboxService.getNextSavedMessage(partyId));
+    }
+
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetMessageByIdNullId() {
@@ -261,4 +318,33 @@ public class VoiceOutboxServiceTest {
         verify(outboundVoiceMessageDaoMock, times(0)).update(Matchers.<OutboundVoiceMessage>any());
     }
 
+    @Test
+    public void testMaxPendingMessagesReached() {
+    	String partyId = "001";
+        OutboundVoiceMessage outboundVoiceMessage = new OutboundVoiceMessage();
+        outboundVoiceMessage.setPartyId(partyId);
+        
+        when(outboundVoiceMessageDaoMock.getPendingMessagesCount(partyId)).thenReturn(MAX_MESSAGES_PENDING);
+        voiceOutboxService.addMessage(outboundVoiceMessage);
+        
+        verify(outboundVoiceMessageDaoMock).add(outboundVoiceMessage);
+
+        ArgumentCaptor<MotechEvent> argument = ArgumentCaptor.<MotechEvent>forClass(MotechEvent.class);
+        verify(eventRelay).sendEventMessage(argument.capture());
+        assertEquals(argument.getValue().getSubject(), EventKeys.OUTBOX_MAX_PENDING_MESSAGES_EVENT_SUBJECT);
+        assertEquals(EventKeys.getPartyID(argument.getValue()), partyId);
+    }
+    
+    @Test
+    public void testMaxPendingMessagesMoreAndLess() {
+    	String partyId = "001";
+        OutboundVoiceMessage outboundVoiceMessage = new OutboundVoiceMessage();
+        outboundVoiceMessage.setPartyId(partyId);
+        
+        when(outboundVoiceMessageDaoMock.getPendingMessagesCount(partyId)).thenReturn(MAX_MESSAGES_PENDING-1);
+        voiceOutboxService.addMessage(outboundVoiceMessage);
+        
+        verify(outboundVoiceMessageDaoMock).add(outboundVoiceMessage);
+        verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
+    }
 }
