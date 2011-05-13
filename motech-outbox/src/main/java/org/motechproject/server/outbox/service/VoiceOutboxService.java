@@ -34,6 +34,15 @@ public interface VoiceOutboxService {
     public OutboundVoiceMessage getNextPendingMessage(String partyId);
 
     /**
+     * Returns the next saved message from the outbox of the party identified by the given party ID, or NULL
+     * if there is no more saved messages in the outbox.
+     *
+     * @param partyId - unique identifier of the party from
+     * @return OutboundVoiceMessage
+     */
+    public OutboundVoiceMessage getNextSavedMessage(String partyId);
+
+    /**
      * Returns the outbound voice messages with the given message ID stored in the outbox
      *
      * @param outboundVoiceMessageId
