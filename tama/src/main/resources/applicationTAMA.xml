@@ -83,6 +83,7 @@
     <!-- we handle @MotechListner annotations -->
     <bean id="symptomsNodeEventListener" class="org.motechproject.server.tama.SymptomsNodeEventListener"/>
     <bean id="appointmentReminderEventHandler" class="org.motechproject.server.tama.AppointmentReminderEventHandler"/>
+	<bean id="outboxMaxPendingMessagesEventHandler"	class="org.motechproject.server.tama.OutboxMaxPendingMessagesEventHandler"/>
 
     <bean id="decisionTreeLookupService" class="org.motechproject.server.tama.service.impl.DroolsBasedDecisionTreeLookupService" >
     	<property name="ruleId" value="SymptomTreeLookupRules.drl" />

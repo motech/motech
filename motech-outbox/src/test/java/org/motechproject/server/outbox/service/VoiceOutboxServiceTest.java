@@ -293,10 +293,15 @@ public class VoiceOutboxServiceTest {
         OutboundVoiceMessage outboundVoiceMessage = new OutboundVoiceMessage();
         outboundVoiceMessage.setPartyId(partyId);
         
+        // LESS
         when(outboundVoiceMessageDaoMock.getPendingMessagesCount(partyId)).thenReturn(MAX_MESSAGES_PENDING-1);
         voiceOutboxService.addMessage(outboundVoiceMessage);
-        
-        verify(outboundVoiceMessageDaoMock).add(outboundVoiceMessage);
+
+        // MORE
+        when(outboundVoiceMessageDaoMock.getPendingMessagesCount(partyId)).thenReturn(MAX_MESSAGES_PENDING+1);
+        voiceOutboxService.addMessage(outboundVoiceMessage);
+
+        verify(outboundVoiceMessageDaoMock, times(2)).add(outboundVoiceMessage);
         verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
     }
 }
