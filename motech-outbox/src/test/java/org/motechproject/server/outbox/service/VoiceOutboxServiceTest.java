@@ -128,6 +128,54 @@ public class VoiceOutboxServiceTest {
 
     }
 
+
+    @Test
+    public void testGetNextSavedMessage() {
+
+        String partyId = "pid";
+
+        OutboundVoiceMessage  outboundVoiceMessage1 = new OutboundVoiceMessage();
+        OutboundVoiceMessage  outboundVoiceMessage2 = new OutboundVoiceMessage();
+
+
+        List<OutboundVoiceMessage> pendingVoiceMessages = new ArrayList<OutboundVoiceMessage>();
+        pendingVoiceMessages.add(outboundVoiceMessage1);
+        pendingVoiceMessages.add(outboundVoiceMessage2);
+
+        when(outboundVoiceMessageDaoMock.getSavedMessages(partyId)).thenReturn(pendingVoiceMessages);
+
+        assertEquals(outboundVoiceMessage1, voiceOutboxService.getNextSavedMessage(partyId));
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetNextSavedMessageNullPartyId() {
+
+        voiceOutboxService.getNextSavedMessage(null);
+
+        verify(outboundVoiceMessageDaoMock, times(0)).getSavedMessages(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetNextSavedMessageEmptyPartyId() {
+
+        voiceOutboxService.getNextSavedMessage("");
+
+        verify(outboundVoiceMessageDaoMock, times(0)).getSavedMessages(anyString());
+
+    }
+
+    @Test
+    public void testGetNextSavedMessageNoMessages() {
+
+        String partyId = "pid";
+
+        when(outboundVoiceMessageDaoMock.getSavedMessages(partyId)).thenReturn(new ArrayList<OutboundVoiceMessage>());
+
+        assertNull(voiceOutboxService.getNextSavedMessage(partyId));
+    }
+
+
     @Test(expected = IllegalArgumentException.class)
     public void testGetMessageByIdNullId() {
 

@@ -77,6 +77,26 @@ public class VoiceOutboxServiceImpl implements VoiceOutboxService {
     }
 
     @Override
+    public OutboundVoiceMessage getNextSavedMessage(String partyId) {
+
+        log.info("Get next saved message for the party ID: " + partyId);
+
+        if (partyId == null || partyId.isEmpty()) {
+            throw new IllegalArgumentException("Party ID can not be null or empty.");
+        }
+
+        OutboundVoiceMessage nextSavedVoiceMessage = null;
+        List<OutboundVoiceMessage> savedVoiceMessages = outboundVoiceMessageDao.getSavedMessages(partyId);
+
+        if (savedVoiceMessages.size() > 0) {
+
+            nextSavedVoiceMessage = savedVoiceMessages.get(0);
+        }
+
+        return nextSavedVoiceMessage;
+    }
+
+    @Override
     public OutboundVoiceMessage getMessageById(String outboundVoiceMessageId) {
 
          log.info("Get message by ID: " + outboundVoiceMessageId);
