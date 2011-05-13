@@ -4,13 +4,14 @@
 	<form>
  		<block>
              <prompt>
-                <audio src="$contentPath/../audio/hello.wav"/>
+                <audio src="$contentPath/../audio/$language/hello.wav"/>
              </prompt>
             <prompt>
                 $params.get($messageContext)
                 Please fix your appointment
             </prompt>
 		</block>
-        <goto next="$contentPath/outbox/vxml/msgMenu?mId=$messageId"/>
+		#set ($url = "$contentPath/outbox/vxml/msgMenu?mId=$messageId&ln=$language")
+        <goto next="$escape.escapeXml($url)"/>
 	</form>
 </vxml>
