@@ -95,7 +95,7 @@
 	
 	<bean id="loginController" class="org.motechproject.server.tama.web.LoginController">
 		<property name="formView" value="login" />
-		<property name="successView" value="redirect:rules/tree" />
+		<property name="successView" value="redirect:menu/select" />
 	</bean>
 	    
     <bean id="authenticationService"
