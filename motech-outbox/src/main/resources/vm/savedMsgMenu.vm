@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" xmlns="http://www.w3.org/2001/vxml">
+    <menu>
+      <property name="inputmodes" value="dtmf"/>
+       #set ($repeatUrl = "$contextPath/outbox/vxml/outboxMessage?mId=$message.id&ln=$language")
+        #set ($repeatUrl = "$contextPath/outbox/vxml/remove?mId=$message.id&ln=$language")
+        #set ($nextUrl = "$contextPath/outbox/vxml/savedMessage?ln=$language")
+      <prompt>
+          #if($message.voiceMessageType.canBeReplayed)
+              To listen this message again press 1,
+          #end
+          to go to the next saved message in your outbox press 3
+      </prompt>
+        #if($message.voiceMessageType.canBeReplayed)
+            <choice dtmf="1" next="$escape.escapeXml($repeatUrl)"/>
+        #end
+        <choice dtmf="3" next="$escape.escapeXml($nextUrl)"/>
+    </menu>
+</vxml>
