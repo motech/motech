@@ -35,11 +35,15 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.context.Context;
-import org.motechproject.context.EventContext;
-import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.EventListenerRegistry;
 import org.motechproject.server.event.ServerEventRelay;
@@ -54,6 +58,16 @@ public class AnnotationBasedHandlerTest {
 	
 	@Autowired
     ServerEventRelay eventRelay;
+	
+	private void send(String dest, Object...objects) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		int i = 0;
+		for(Object obj : objects) {
+			params.put(Integer.toString(i++), obj);
+		}
+		MotechEvent event = new MotechEvent(dest, params );
+		eventRelay.relayEvent(event);
+	}
 
 	// Annotation based handler (needs a spring bean config.) 
 	public static class MyHandler {
@@ -66,6 +80,10 @@ public class AnnotationBasedHandlerTest {
 		public void handleY(MotechEvent event) {
 			AnnotationBasedHandlerTest.motechEvent = event;
 //			System.out.println(event);
+		}
+		@MotechListener(subjects={"params"}, type=MotechListenerType.ORDERED_PARAMETERS)
+		public void handleParams(Integer a, Integer b, String s) {
+			System.out.printf("a+b= %d",a+b);
 		}
 	}
 
@@ -90,5 +108,9 @@ public class AnnotationBasedHandlerTest {
 		clearMotechEvent();
 		eventRelay.relayEvent(e);
 		assertEquals(e, motechEvent);
+	}
+	@Test
+	public void testParams() {
+		send("params",23,44,null);
 	}
 }

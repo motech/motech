@@ -37,8 +37,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.motechproject.context.Context;
-import org.motechproject.model.MotechEvent;
-import org.motechproject.server.event.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -77,20 +75,17 @@ public class EventAnnotationBeanPostProcessor implements BeanPostProcessor {
 				MotechListener annotation = method.getAnnotation(MotechListener.class);
 				if(annotation!=null) {
 					final List<String> subjects = Arrays.asList(annotation.subjects());
-					final Method mtd = method;
-					logger.info("Registering listener: "+beanName+", method: "+method.getName()+", for subjects: "+subjects);
-					Context.getInstance().getEventListenerRegistry().registerListener(new EventListener() {
-						@Override
-						public void handle(MotechEvent event) {
-						    Context.getInstance().getMetricsAgent().logEvent(event.getSubject());
-							ReflectionUtils.invokeMethod(mtd,bean,event);
-						}
-						
-						@Override
-						public String getIdentifier() {
-							return beanName;
-						}
-					}, subjects);
+					MotechListenerAbstractProxy proxy = null;
+					switch (annotation.type()) {
+					case ORDERED_PARAMETERS:
+						proxy = new MotechListenerOrderedParametersProxy(beanName, bean, method);
+						break;
+					case MOTECH_EVENT:
+						proxy = new MotechListenerEventProxy(beanName, bean, method);
+						break;
+					}
+					logger.info("Registering listener: "+beanName+", method: "+method.toGenericString()+", for subjects: "+subjects);
+					Context.getInstance().getEventListenerRegistry().registerListener(proxy, subjects);
 				}
 			}
 		});
