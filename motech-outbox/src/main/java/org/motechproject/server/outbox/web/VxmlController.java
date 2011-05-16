@@ -31,10 +31,10 @@
  */
 package org.motechproject.server.outbox.web;
 
+import org.motechproject.outbox.api.VoiceOutboxService;
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
 import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.model.VoiceMessageType;
-import org.motechproject.server.outbox.service.VoiceOutboxService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

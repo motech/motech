@@ -1,11 +1,10 @@
-package org.motechproject.server.outbox.service;
+package org.motechproject.outbox.api;
 
 
 import org.apache.commons.lang.ArrayUtils;
 import org.motechproject.context.EventContext;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.outbox.api.EventKeys;
 import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
 import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
@@ -166,15 +165,24 @@ public class VoiceOutboxServiceImpl implements VoiceOutboxService {
         return outboundVoiceMessageDao.getPendingMessagesCount(partyId);
     }
 
+    @Override
     public int getNumDayskeepSavedMessages() {
         return numDayskeepSavedMessages;
     }
 
+    @Override
     public void setNumDayskeepSavedMessages(int numDayskeepSavedMessages) {
         this.numDayskeepSavedMessages = numDayskeepSavedMessages;
     }
     
+    @Override
 	public void setMaxNumberOfPendingMessages(int maxNumberOfPendingMessages) {
 		this.maxNumberOfPendingMessages = maxNumberOfPendingMessages;
+	}
+
+	@Override
+	public int getMaxNumberOfPendingMessages() {
+		return this.maxNumberOfPendingMessages;
 	}    
+	
 }

@@ -40,10 +40,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.outbox.api.VoiceOutboxService;
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
 import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.model.VoiceMessageType;
-import org.motechproject.server.outbox.service.VoiceOutboxService;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;

@@ -13,6 +13,7 @@ import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.appointments.api.model.Visit;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.outbox.api.VoiceOutboxService;
 import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
 
@@ -37,12 +38,9 @@ public class AppointmentReminderEventHandlerTest {
 
     @Mock
     private ReminderService reminderService;
-
+    
     @Mock
-    private OutboundVoiceMessageDao outboundVoiceMessageDaoMock;
-
-    @Mock
-    private MetricsAgent metricsAgent;
+    private VoiceOutboxService voiceOutboxService;
 
     @Before
     public void initMocks() {
@@ -58,7 +56,7 @@ public class AppointmentReminderEventHandlerTest {
         appointmentReminderEventHandler.handle(event);
 
         verify(appointmentService, times(0)).getAppointment(anyString());
-        verify(outboundVoiceMessageDaoMock, times(0)).add(any(OutboundVoiceMessage.class));
+        verify(voiceOutboxService, times(0)).addMessage(any(OutboundVoiceMessage.class));
     }
 
     @Test
@@ -71,7 +69,7 @@ public class AppointmentReminderEventHandlerTest {
         appointmentReminderEventHandler.handle(event);
 
         verify(appointmentService, times(0)).getAppointment(anyString());
-        verify(outboundVoiceMessageDaoMock, times(0)).add(any(OutboundVoiceMessage.class));
+        verify(voiceOutboxService, times(0)).addMessage(any(OutboundVoiceMessage.class));
     }
 
     @Test
@@ -85,7 +83,7 @@ public class AppointmentReminderEventHandlerTest {
 
         appointmentReminderEventHandler.handle(event);
 
-        verify(outboundVoiceMessageDaoMock, times(0)).add(Matchers.<OutboundVoiceMessage>anyObject());
+        verify(voiceOutboxService, times(0)).addMessage(Matchers.<OutboundVoiceMessage>anyObject());
     }
 
     @Test
@@ -106,7 +104,7 @@ public class AppointmentReminderEventHandlerTest {
         ArgumentCaptor<OutboundVoiceMessage> argument = ArgumentCaptor.forClass(OutboundVoiceMessage.class);
         appointmentReminderEventHandler.handle(event);
 
-        verify(outboundVoiceMessageDaoMock, times(1)).add(argument.capture());
+        verify(voiceOutboxService, times(1)).addMessage(argument.capture());
 
         OutboundVoiceMessage msg = argument.getValue();
         assertTrue(msg.getVoiceMessageType().getvXmlTemplateName().endsWith("schedule"));
@@ -137,7 +135,7 @@ public class AppointmentReminderEventHandlerTest {
 
         appointmentReminderEventHandler.handle(event);
 
-        verify(outboundVoiceMessageDaoMock, times(0)).add(any(OutboundVoiceMessage.class));
+        verify(voiceOutboxService, times(0)).addMessage(any(OutboundVoiceMessage.class));
     }
 
     @Test
@@ -162,7 +160,7 @@ public class AppointmentReminderEventHandlerTest {
 
         appointmentReminderEventHandler.handle(event);
 
-        verify(outboundVoiceMessageDaoMock, times(0)).add(any(OutboundVoiceMessage.class));
+        verify(voiceOutboxService, times(0)).addMessage(any(OutboundVoiceMessage.class));
     }
 
     @Test
@@ -188,7 +186,7 @@ public class AppointmentReminderEventHandlerTest {
 
         appointmentReminderEventHandler.handle(event);
 
-        verify(outboundVoiceMessageDaoMock, times(0)).add(any(OutboundVoiceMessage.class));
+        verify(voiceOutboxService, times(0)).addMessage(any(OutboundVoiceMessage.class));
     }
 
     @Test
@@ -212,7 +210,7 @@ public class AppointmentReminderEventHandlerTest {
 
         appointmentReminderEventHandler.handle(event);
 
-        verify(outboundVoiceMessageDaoMock, times(1)).add(argument.capture());
+        verify(voiceOutboxService, times(1)).addMessage(argument.capture());
 
         OutboundVoiceMessage msg = argument.getValue();
         assertTrue(msg.getVoiceMessageType().getvXmlTemplateName().endsWith("upcoming"));
@@ -239,7 +237,7 @@ public class AppointmentReminderEventHandlerTest {
 
         appointmentReminderEventHandler.handle(event);
 
-        verify(outboundVoiceMessageDaoMock, times(1)).add(argument.capture());
+        verify(voiceOutboxService, times(1)).addMessage(argument.capture());
 
         OutboundVoiceMessage msg = argument.getValue();
         assertTrue(msg.getVoiceMessageType().getvXmlTemplateName().endsWith("missed"));
