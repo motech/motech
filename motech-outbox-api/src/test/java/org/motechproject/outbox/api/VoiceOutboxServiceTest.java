@@ -1,4 +1,4 @@
-package org.motechproject.server.outbox.service;
+package org.motechproject.outbox.api;
 
 
 import org.junit.Before;
