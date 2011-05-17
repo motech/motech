@@ -3,13 +3,12 @@
 	<form>
  		<block>
              <prompt>
-                <audio src="$contentPath/../audio/$language/hello.wav"/>
-             </prompt>
-            <prompt>
+                <audio src="$contextPath/../audio/$language/hello.wav"/>
                 The message have been save successfully. It will be kept in your outbox for $days days.
             </prompt>
+             #set ($url = "$contextPath/outbox/vxml/outboxMessage?ln=$language")
+             <goto next="$escape.escapeXml($url)"/>
 		</block>
-		#set ($url = "$contextPath/outbox/vxml/outboxMessage?ln=$language")
-        <goto next="$escape.escapeXml($url)"/>
+
 	</form>
 </vxml>

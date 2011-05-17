@@ -183,6 +183,7 @@ public class VxmlControllerTest {
         voiceMessageType.setVoiceMessageTypeName(voiceMessageTypeName);
         voiceMessage.setVoiceMessageType(voiceMessageType);
 
+        when(request.getParameter("pId")).thenReturn(partyId);
         when(voiceOutboxService.getNextSavedMessage(partyId)).thenReturn(voiceMessage);
 
         ModelAndView modelAndView = vxmlController.savedMessage(request, response);
@@ -222,6 +223,7 @@ public class VxmlControllerTest {
 
             OutboundVoiceMessage voiceMessage = new OutboundVoiceMessage();
 
+            when(request.getParameter("pId")).thenReturn(partyId);
             when(voiceOutboxService.getNextSavedMessage(partyId)).thenReturn(voiceMessage);
 
             ModelAndView modelAndView = vxmlController.savedMessage(request, response);

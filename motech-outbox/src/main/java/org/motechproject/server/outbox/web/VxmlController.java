@@ -31,6 +31,7 @@
  */
 package org.motechproject.server.outbox.web;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.motechproject.outbox.api.VoiceOutboxService;
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
 import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
@@ -87,14 +88,26 @@ public class VxmlController extends MultiActionController {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
 
-        ModelAndView mav = new ModelAndView();
+
 
         //Interim implementation. Party ID will be obtained from the Authentication context
-        String partyId = "1";
-
+        //String partyId = "1";
+        String partyId = request.getParameter("pId");
 
         String messageId = request.getParameter(MESSAGE_ID_PARAM);
         String language = request.getParameter(LANGUAGE_PARAM);
+
+        if(language == null) {
+            language = "en";
+        }
+
+        String contextPath = request.getContextPath();
+
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("contextPath", contextPath);
+        mav.addObject("language", language);
+        mav.addObject("escape", new StringEscapeUtils());
+
 
         logger.debug("Message ID: " + messageId);
 
@@ -129,6 +142,7 @@ public class VxmlController extends MultiActionController {
 
             logger.info("There are no more messages in the outbox of the party ID: " + partyId);
             mav.setViewName(NO_MESSAGE_TEMPLATE_NAME);
+            mav.addObject("partyId", partyId);
             return mav;
         }
 
@@ -137,10 +151,11 @@ public class VxmlController extends MultiActionController {
         if (voiceMessageType == null) {
             logger.error("Invalid Outbound voice message: " + voiceMessage + " Voice message type can not be null.");
             mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
+            mav.addObject("partyId", partyId);
             return mav;
         }
 
-        String contextPath = request.getContextPath();
+
 
         String templateName = voiceMessageType.getvXmlTemplateName();
         if (templateName == null) {
@@ -148,13 +163,8 @@ public class VxmlController extends MultiActionController {
         }
 
         mav.setViewName(templateName);
-        mav.addObject("contextPath", contextPath);
-        mav.addObject("messageId", voiceMessage.getId());
-        mav.addObject("canBeSaved", voiceMessageType.isCanBeSaved());
-        mav.addObject("canBeReplayed", voiceMessageType.isCanBeReplayed());
-        mav.addObject("params", voiceMessage.getParameters());
-        mav.addObject("language", language);
-        
+        mav.addObject("message", voiceMessage);
+
         return mav;
 
     }
@@ -217,6 +227,7 @@ public class VxmlController extends MultiActionController {
         mav.addObject("contextPath", contextPath);
         mav.addObject("message", voiceMessage);
         mav.addObject("language", language);
+        mav.addObject("escape", new StringEscapeUtils());
         return mav;
 
     }
@@ -227,10 +238,20 @@ public class VxmlController extends MultiActionController {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
 
-        ModelAndView mav = new ModelAndView();
-
         String messageId = request.getParameter(MESSAGE_ID_PARAM);
         String language = request.getParameter(LANGUAGE_PARAM);
+
+        ModelAndView mav = new ModelAndView();
+
+        String contextPath = request.getContextPath();
+
+
+        mav.setViewName(MESSAGE_SAVED_CONFIRMATION_TEMPLATE_NAME);
+        mav.addObject("contextPath", contextPath);
+        mav.addObject("language", language);
+        mav.addObject("escape", new StringEscapeUtils());
+
+
 
         logger.info("Message ID: " + messageId);
 
@@ -248,13 +269,8 @@ public class VxmlController extends MultiActionController {
             return mav;
         }
 
-        String contextPath = request.getContextPath();
 
-
-        mav.setViewName(MESSAGE_SAVED_CONFIRMATION_TEMPLATE_NAME);
-        mav.addObject("contextPath", contextPath);
         mav.addObject("days", voiceOutboxService.getNumDayskeepSavedMessages());
-        mav.addObject("language", language);
         return mav;
 
     }
@@ -276,10 +292,16 @@ public class VxmlController extends MultiActionController {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
 
-        ModelAndView mav = new ModelAndView();
-
         String messageId = request.getParameter(MESSAGE_ID_PARAM);
         String language = request.getParameter(LANGUAGE_PARAM);
+
+         String contextPath = request.getContextPath();
+
+         ModelAndView mav = new ModelAndView();
+        mav.setViewName(MESSAGE_REMOVED_CONFIRMATION_TEMPLATE_NAME);
+        mav.addObject("contextPath", contextPath);
+        mav.addObject("language", language);
+        mav.addObject("escape", new StringEscapeUtils());
 
         logger.info("Message ID: " + messageId);
 
@@ -297,12 +319,7 @@ public class VxmlController extends MultiActionController {
             return mav;
         }
 
-        String contextPath = request.getContextPath();
 
-
-        mav.setViewName(MESSAGE_REMOVED_CONFIRMATION_TEMPLATE_NAME);
-        mav.addObject("contextPath", contextPath);
-        mav.addObject("language", language);
         return mav;
 
     }
@@ -321,13 +338,19 @@ public class VxmlController extends MultiActionController {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
 
-        ModelAndView mav = new ModelAndView();
-
         //Interim implementation. Party ID will be obtained from the Authentication context
-        String partyId = "1";
+        //String partyId = "1";
+        String partyId = request.getParameter("pId");
 
 
         String language = request.getParameter(LANGUAGE_PARAM);
+
+        String contextPath = request.getContextPath();
+
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("contextPath", contextPath);
+        mav.addObject("language", language);
+        mav.addObject("escape", new StringEscapeUtils());
 
         logger.debug("Party ID: " + partyId);
 
@@ -349,6 +372,7 @@ public class VxmlController extends MultiActionController {
 
             logger.info("There are no more messages in the outbox of the party ID: " + partyId);
             mav.setViewName(NO_SAVED_MESSAGE_TEMPLATE_NAME);
+            mav.addObject("partyId", partyId);
             return mav;
         }
 
@@ -357,10 +381,10 @@ public class VxmlController extends MultiActionController {
         if (voiceMessageType == null) {
             logger.error("Invalid Outbound voice message: " + voiceMessage + " Voice message type can not be null.");
             mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
+            mav.addObject("partyId", partyId);
             return mav;
         }
 
-        String contextPath = request.getContextPath();
 
         String templateName = voiceMessageType.getvXmlTemplateName();
         if (templateName == null) {
@@ -368,12 +392,7 @@ public class VxmlController extends MultiActionController {
         }
 
         mav.setViewName(templateName);
-        mav.addObject("contextPath", contextPath);
-        mav.addObject("messageId", voiceMessage.getId());
-        mav.addObject("canBeSaved", voiceMessageType.isCanBeSaved());
-        mav.addObject("canBeReplayed", voiceMessageType.isCanBeReplayed());
-        mav.addObject("params", voiceMessage.getParameters());
-        mav.addObject("language", language);
+        mav.addObject("message", voiceMessage);
 
         return mav;
 

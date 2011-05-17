@@ -8,6 +8,8 @@
             <prompt>
                 Error
             </prompt>
+             #set ($url = "$contextPath/tama/menu/select?pId=$partyId")
+            <goto next="$escape.escapeXml($url)"/>
 		</block>
 	</form>
 </vxml>
