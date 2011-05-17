@@ -5,6 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Date;
 import java.util.List;
 
 import org.ektorp.CouchDbConnector;
@@ -28,7 +29,7 @@ public class PillReminderServiceTest
     CouchDbConnector couchDbConnector;
 
     @Mock
-    PillReminderCouchDBDaoImpl pillReminderDAO;
+    PillReminderCouchDBDaoImpl pillReminderDao;
 
     @InjectMocks
     PillReminderService pillReminderService;
@@ -36,21 +37,21 @@ public class PillReminderServiceTest
     @Before
     public void setUp() {
         couchDbConnector = mock(CouchDbConnector.class);
-        pillReminderDAO = new PillReminderCouchDBDaoImpl(couchDbConnector);
+        pillReminderDao = new PillReminderCouchDBDaoImpl(couchDbConnector);
 
         pillReminderService = new PillReminderService();
         MockitoAnnotations.initMocks(this);
     }
 
     @Test
-    public void testAddAppointment() {
+    public void testAddPillReminder() {
     	PillReminder a = new PillReminder();
 
         ArgumentCaptor<MotechEvent> argument = ArgumentCaptor.forClass(MotechEvent.class);
 
         pillReminderService.addPillReminder(a);
 
-        verify(pillReminderDAO).add(a);
+        verify(pillReminderDao).add(a);
         verify(eventRelay).sendEventMessage(argument.capture());
 
         MotechEvent event = argument.getValue();
@@ -59,14 +60,14 @@ public class PillReminderServiceTest
     }
 
     @Test
-    public void testUpdateAppointment() {
+    public void testUpdatePillReminder() {
     	PillReminder a = new PillReminder();
 
         ArgumentCaptor<MotechEvent> argument = ArgumentCaptor.forClass(MotechEvent.class);
 
         pillReminderService.updatePillReminder(a);
 
-        verify(pillReminderDAO).update(a);
+        verify(pillReminderDao).update(a);
         verify(eventRelay).sendEventMessage(argument.capture());
 
         MotechEvent event = argument.getValue();
@@ -75,14 +76,14 @@ public class PillReminderServiceTest
     }
 
     @Test
-    public void testRemoveAppointment() {
+    public void testRemovePillReminder() {
     	PillReminder a = new PillReminder();
 
         ArgumentCaptor<MotechEvent> argument = ArgumentCaptor.forClass(MotechEvent.class);
 
         pillReminderService.removePillReminder(a);
 
-        verify(pillReminderDAO).remove(a);
+        verify(pillReminderDao).remove(a);
         verify(eventRelay).sendEventMessage(argument.capture());
 
         MotechEvent event = argument.getValue();
@@ -91,16 +92,16 @@ public class PillReminderServiceTest
     }
 
     @Test
-    public void testRemoveAppointmentById() {
+    public void testRemovePillReminderById() {
     	PillReminder a = new PillReminder();
         a.setId("aID");
 
         ArgumentCaptor<MotechEvent> argument = ArgumentCaptor.forClass(MotechEvent.class);
-        when(pillReminderDAO.get("aID")).thenReturn(a);
+        when(pillReminderDao.get("aID")).thenReturn(a);
 
         pillReminderService.removePillReminder(a.getId());
 
-        verify(pillReminderDAO).remove(a);
+        verify(pillReminderDao).remove(a);
         verify(eventRelay).sendEventMessage(argument.capture());
 
         MotechEvent event = argument.getValue();
@@ -110,8 +111,13 @@ public class PillReminderServiceTest
 
     @Test
     public void testFindByExternalId() {
-//        List<PillReminder> list = appointmentService.findByExternalId("eID");
-//
-//        assertTrue(list.isEmpty());
+        List<PillReminder> list = pillReminderService.findByExternalId("eID");
+        assertTrue(list.isEmpty());
+    }
+    
+    @Test
+    public void testFindByExternalIdAndWithinWindow() {
+    	List<PillReminder> list = pillReminderService.getRemindersWithinWindow("eID", new Date());
+    	assertTrue(list.isEmpty());
     }
 }

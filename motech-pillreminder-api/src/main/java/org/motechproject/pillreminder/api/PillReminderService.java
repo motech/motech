@@ -1,6 +1,9 @@
 package org.motechproject.pillreminder.api;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.motechproject.context.EventContext;
@@ -41,6 +44,21 @@ public class PillReminderService {
 	public PillReminder getPillReminder(String pillReminderId) {
 		PillReminder appointment = pillReminderDao.get(pillReminderId);
 		return appointment;
+	}
+	
+	public List<PillReminder> findByExternalId(String externalId) {
+		return pillReminderDao.findByExternalId(externalId);
+	}
+
+	public List<PillReminder> getRemindersWithinWindow(String externalId, Date time) {
+		return pillReminderDao.findByExternalIdAndWithinWindow(externalId, time);
+	}
+	
+	public List<String> getMedicinesWithinWindow(String externalId, Date time){
+		List<String> medicineNames = new ArrayList<String>();
+		List<PillReminder> pillReminders = getRemindersWithinWindow(externalId, time);
+		
+		return null;
 	}
 
 	private MotechEvent getSkinnyEvent(PillReminder pillReminder, String subject) {
