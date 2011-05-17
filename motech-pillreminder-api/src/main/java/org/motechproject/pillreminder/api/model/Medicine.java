@@ -1,11 +1,12 @@
 package org.motechproject.pillreminder.api.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Medicine {
 
 	private String name;
-	private List<Status> statuses;
+	private List<Status> statuses = new ArrayList<Status>();
 
 	public List<Status> getStatuses() {
 		return statuses;

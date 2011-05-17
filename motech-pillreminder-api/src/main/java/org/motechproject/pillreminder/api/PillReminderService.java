@@ -12,6 +12,8 @@ import org.motechproject.model.MotechEvent;
 import org.motechproject.pillreminder.api.dao.PillReminderDao;
 import org.motechproject.pillreminder.api.model.Medicine;
 import org.motechproject.pillreminder.api.model.PillReminder;
+import org.motechproject.pillreminder.api.model.Schedule;
+import org.motechproject.pillreminder.api.model.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class PillReminderService {
@@ -55,17 +57,59 @@ public class PillReminderService {
 		return pillReminderDao.findByExternalIdAndWithinWindow(externalId, time);
 	}
 	
-//	public List<String> getMedicinesWithinWindow(String externalId, Date time){
-//		List<String> medicineNames = new ArrayList<String>();
-//		List<PillReminder> pillReminders = getRemindersWithinWindow(externalId, time);
-//		for (PillReminder pillReminder : pillReminders) {
-//			List<Medicine> medicines = pillReminder.getMedicines();
-//			for (Medicine medicine : medicines) {
-//				medicineNames.add(medicine.getName());
-//			}
-//		}
-//		return medicineNames;
-//	}
+	public List<String> getMedicinesWithinWindow(String externalId, Date time){
+		List<String> medicineNames = new ArrayList<String>();
+		List<PillReminder> pillReminders = getRemindersWithinWindow(externalId, time);
+		for (PillReminder pillReminder : pillReminders) {
+			List<Medicine> medicines = pillReminder.getMedicines();
+			for (Medicine medicine : medicines) {
+				medicineNames.add(medicine.getName());
+			}
+		}
+		return medicineNames;
+	}
+	
+	public boolean getResult(String externalId, String medicineName, Date windowStartTime){
+		boolean result = false;
+		List<PillReminder> pillReminders = getRemindersWithinWindow(externalId, windowStartTime);
+		for (PillReminder pillReminder : pillReminders) {
+			List<Medicine> medicines = pillReminder.getMedicines();
+			for (Medicine medicine : medicines) {
+				if (medicine.getName().equals(medicineName)) {
+					List<Status> statuses = medicine.getStatuses();
+					for (Status status : statuses) {
+						if (status.getWindowStartTimeWithDate().equals(windowStartTime)) {
+							result = status.getTaken();
+						}
+					}
+				}
+			}
+		}
+		return result;
+	}
+	
+	public boolean isPillReminderCompleted(String pillReminderId, Date time){
+		boolean completed = true;
+		PillReminder pillReminder = getPillReminder(pillReminderId);
+		Schedule schedule = pillReminder.getScheduleWithinWindow(time);
+		if (schedule == null) {
+			// the given time is not within any window
+			return false;
+		}
+		List<Medicine> medicines = pillReminder.getMedicines();
+		int completedMedCount = 0;
+		for (Medicine medicine : medicines) {
+			List<Status> statuses = medicine.getStatuses();
+			for (Status status : statuses) {
+				Date windowStartTime = schedule.getWindowStart().getTimeOfDate(time);
+				if (status.getWindowStartTimeWithDate().equals(windowStartTime)
+						&& status.getTaken()) {
+					completedMedCount++;
+				}
+			}
+		}
+		return (completedMedCount == medicines.size());
+	}
 
 	private MotechEvent getSkinnyEvent(PillReminder pillReminder, String subject) {
 		Map<String, Object> parameters = new HashMap<String, Object>();

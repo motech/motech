@@ -1,13 +1,18 @@
 package org.motechproject.pillreminder.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.ektorp.CouchDbConnector;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -16,8 +21,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.model.Time;
 import org.motechproject.pillreminder.api.dao.PillReminderDao;
+import org.motechproject.pillreminder.api.model.Medicine;
 import org.motechproject.pillreminder.api.model.PillReminder;
+import org.motechproject.pillreminder.api.model.Schedule;
+import org.motechproject.pillreminder.api.model.Status;
 
 public class PillReminderServiceTest
 {
@@ -113,9 +122,146 @@ public class PillReminderServiceTest
     }
     
     @Test
-    public void testFindByExternalIdAndWithinWindow() {
+    public void testGetRemindersWithinWindow() {
     	List<PillReminder> list = pillReminderService.getRemindersWithinWindow("eID", new Date());
     	assertTrue(list.isEmpty());
     }
     
+    @Test
+    public void testGetMedicinesWithinWindow() {
+    	Date time = new Date();
+    	List<String> list = pillReminderService.getMedicinesWithinWindow("eID", time);
+    	assertTrue(list.isEmpty());
+    	
+		List<PillReminder> reminders = new ArrayList<PillReminder>();
+		PillReminder reminder = new PillReminder();
+		Medicine medicine = new Medicine();
+		medicine.setName("a");
+		reminder.getMedicines().add(medicine);
+		
+		medicine= new Medicine();
+		medicine.setName("b");
+		reminder.getMedicines().add(medicine);
+		reminders.add(reminder);
+		
+		reminder = new PillReminder();
+		medicine = new Medicine();
+		medicine.setName("c");
+		reminder.getMedicines().add(medicine);
+		reminders.add(reminder);
+		
+    	when(pillReminderDao.findByExternalIdAndWithinWindow("eID", time)).thenReturn(reminders);
+    	
+    	list = pillReminderService.getMedicinesWithinWindow("eID", time);
+    	assertEquals(3, list.size());
+    }
+    
+    @Test
+    public void testGetResult(){
+    	boolean result = pillReminderService.getResult("eID", "med", new Date());
+    	assertFalse(result);
+    	
+		List<PillReminder> reminders = new ArrayList<PillReminder>();
+		PillReminder reminder = new PillReminder();
+		Medicine medicine = new Medicine();
+		medicine.setName("a");
+		Status status = new Status();
+		Date date = new DateTime(2011, 5, 17, 0, 0, 0, 0).toDate();
+		status.setDate(date);
+		status.setWindowStartTime(new Time(9, 0));
+		status.setTaken(true);
+		medicine.getStatuses().add(status);
+		
+		status = new Status();
+		status.setDate(date);
+		status.setWindowStartTime(new Time(17, 0));
+		status.setTaken(false);
+		medicine.getStatuses().add(status);
+		
+		reminder.getMedicines().add(medicine);
+		reminders.add(reminder);
+		
+		when(pillReminderDao.findByExternalIdAndWithinWindow(any(String.class), any(Date.class))).thenReturn(reminders);
+		
+		result = pillReminderService.getResult("eID", "a", new DateTime(2011, 5, 17, 9, 0, 0, 0).toDate());
+		assertTrue(result);
+		
+		result = pillReminderService.getResult("eID", "a", new DateTime(2011, 5, 17, 17, 0, 0, 0).toDate());
+		assertFalse(result);
+		
+		result = pillReminderService.getResult("eID", "a", new DateTime(2011, 5, 17, 21, 0, 0, 0).toDate());
+		assertFalse(result);
+		
+		result = pillReminderService.getResult("eID", "a", new DateTime(2011, 5, 18, 9, 0, 0, 0).toDate());
+		assertFalse(result);
+    }
+    
+    @Test
+    public void testIsPillReminderCompleted(){
+		PillReminder reminder = new PillReminder();
+		Schedule schedule = new Schedule();
+		reminder.getSchedules().add(schedule);
+		schedule.setWindowStart(new Time(9,0));
+		schedule.setWindowEnd(new Time(11,0));
+
+		schedule = new Schedule();
+		reminder.getSchedules().add(schedule);
+		schedule.setWindowStart(new Time(17,0));
+		schedule.setWindowEnd(new Time(19,0));
+
+		Medicine medicine = new Medicine();
+		reminder.getMedicines().add(medicine);
+		medicine.setName("a");
+		
+		Status status = new Status();
+		medicine.getStatuses().add(status);
+		Date date = new DateTime(2011, 5, 17, 0, 0, 0, 0).toDate();
+		status.setDate(date);
+		status.setWindowStartTime(new Time(9, 0));
+		status.setTaken(true);
+		
+		status = new Status();
+		medicine.getStatuses().add(status);
+		date = new DateTime(2011, 5, 17, 0, 0, 0, 0).toDate();
+		status.setDate(date);
+		status.setWindowStartTime(new Time(17, 0));
+		status.setTaken(true);
+		
+		medicine= new Medicine();
+		reminder.getMedicines().add(medicine);
+		medicine.setName("b");
+
+		status = new Status();
+		medicine.getStatuses().add(status);
+		date = new DateTime(2011, 5, 17, 0, 0, 0, 0).toDate();
+		status.setDate(date);
+		status.setWindowStartTime(new Time(9, 0));
+		status.setTaken(true);
+		
+		status = new Status();
+		medicine.getStatuses().add(status);
+		date = new DateTime(2011, 5, 17, 0, 0, 0, 0).toDate();
+		status.setDate(date);
+		status.setWindowStartTime(new Time(17, 0));
+		status.setTaken(false);
+		
+		when(pillReminderDao.get(any(String.class))).thenReturn(reminder);
+		
+		boolean result;
+		result = pillReminderService.isPillReminderCompleted("rID", new DateTime(2011, 5, 16, 9, 0, 0, 0).toDate());
+		assertFalse(result);
+		
+		result = pillReminderService.isPillReminderCompleted("rID", new DateTime(2011, 5, 17, 9, 0, 0, 0).toDate());
+		assertTrue(result);
+		
+		result = pillReminderService.isPillReminderCompleted("rID", new DateTime(2011, 5, 17, 10, 10, 0, 0).toDate());
+		assertTrue(result);
+		
+		result = pillReminderService.isPillReminderCompleted("rID", new DateTime(2011, 5, 17, 17, 0, 0, 0).toDate());
+		assertFalse(result);
+		
+		result = pillReminderService.isPillReminderCompleted("rID", new DateTime(2011, 5, 17, 18, 0, 0, 0).toDate());
+		assertFalse(result);
+		
+    }
 }

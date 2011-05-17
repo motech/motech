@@ -1,10 +1,11 @@
 package org.motechproject.pillreminder.api.dao;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.ektorp.CouchDbInstance;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +24,9 @@ public class PillReminderDaoIT {
 	@Autowired
 	private PillReminderDao pillReminderDao;
 	
+    @Autowired
+    private CouchDbInstance couchDbInstance;
+    
 	private PillReminder reminder;
 	
 	@Before
@@ -37,16 +41,16 @@ public class PillReminderDaoIT {
 	
 	@After
 	public void tearDown() {
-		for(PillReminder reminder : pillReminderDao.getAll()) {
-			pillReminderDao.remove(reminder);
-		}
+		couchDbInstance.deleteDatabase("pillreminder-test");
 	}
 	
 	@Test
-	public void testAdd(){
+	public void testCRUD(){
 		pillReminderDao.add(reminder);
-		
 		PillReminder pillReminder = pillReminderDao.get(reminder.getId());
-		
+		assertNotNull(pillReminder);
+		pillReminder.setStartDate(new Date());
+		pillReminderDao.update(pillReminder);
+		pillReminderDao.remove(pillReminder);		
 	}
 }

@@ -2,6 +2,7 @@ package org.motechproject.pillreminder.api.model;
 
 import java.util.Date;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.model.Time;
 
 public class Status {
@@ -33,5 +34,13 @@ public class Status {
 	public void setTaken(Boolean taken) {
 		this.taken = taken;
 	}
-
+	
+	@JsonIgnore
+	public Date getWindowStartTimeWithDate(){
+		if (windowStartTime != null && date != null) {
+			return windowStartTime.getTimeOfDate(date);
+		} else {
+			return null;
+		}
+	}
 }

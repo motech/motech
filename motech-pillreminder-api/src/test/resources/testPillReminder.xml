@@ -8,15 +8,16 @@
 
 	<context:annotation-config />
 	<util:properties id="couchdbProperties" location="classpath:couchdb.properties" />
+	
+	<bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
+		<constructor-arg>
+			<bean class="org.ektorp.spring.HttpClientFactoryBean" />
+		</constructor-arg>
+	</bean>
+
 	<bean id="pillReminderDatabase" class="org.ektorp.impl.StdCouchDbConnector">
 		<constructor-arg value="pillreminder-test" />
-		<constructor-arg>
-			<bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
-				<constructor-arg>
-					<bean class="org.ektorp.spring.HttpClientFactoryBean" />
-				</constructor-arg>
-			</bean>
-		</constructor-arg>
+		<constructor-arg ref="couchDbInstance" />
 	</bean>
 	<bean id="pillReminderDao" class="org.motechproject.pillreminder.api.dao.impl.PillReminderCouchDBDaoImpl"/>
 	
