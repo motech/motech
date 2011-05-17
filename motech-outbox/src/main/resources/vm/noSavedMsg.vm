@@ -6,7 +6,7 @@
                 <audio src="$contentPath/../audio/$language/hello.wav"/>
              </prompt>
             <prompt>
-                There are no pending messages in your outbox
+                There are no saved messages in your outbox
             </prompt>
 		</block>
 	</form>

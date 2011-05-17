@@ -1,23 +1,17 @@
 package org.motechproject.outbox.api.context;
 
-import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;
+import org.motechproject.outbox.api.VoiceOutboxService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
 public class OutboxContext
 {
     @Autowired
-    private OutboundVoiceMessageDao outboundVoiceMessageDao;
+    private VoiceOutboxService voiceOutboxService;
 
-    public OutboundVoiceMessageDao getOutboundVoiceMessageDao()
-    {
-        return outboundVoiceMessageDao;
-    }
-
-    public void setOutboundVoiceMessageDao(OutboundVoiceMessageDao outboundVoiceMessageDao)
-    {
-        this.outboundVoiceMessageDao = outboundVoiceMessageDao;
-    }
+    public VoiceOutboxService getVoiceOutboxService() {
+		return voiceOutboxService;
+	}
 
     public static OutboxContext getInstance(){
 		return instance;

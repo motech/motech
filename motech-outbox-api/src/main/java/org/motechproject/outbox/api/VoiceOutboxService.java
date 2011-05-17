@@ -1,4 +1,4 @@
-package org.motechproject.server.outbox.service;
+package org.motechproject.outbox.api;
 
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
 import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
@@ -80,6 +80,12 @@ public interface VoiceOutboxService {
      * @return
      */
     public int getNumberPendingMessages (String partyId);
+    
+    /**
+     * Sets the number of days for which a messages saved by the patient will be kept in outbox as SAVED messages
+     * @param numDayskeepSavedMessages
+     */
+    public void setNumDayskeepSavedMessages(int numDayskeepSavedMessages);
 
     /**
      * Returns number of days for which a messages saved by the patient will be kept in outbox as SAVED messages
@@ -87,4 +93,15 @@ public interface VoiceOutboxService {
      * @return
      */
     public int getNumDayskeepSavedMessages();
+    
+    /**
+     * Sets max number of pending messages after which the outbox will send an event
+     * @param maxNumberOfPendingMessages
+     */
+    public void setMaxNumberOfPendingMessages(int maxNumberOfPendingMessages);
+    
+    /**
+     * @return max number of pending messages
+     */
+    public int getMaxNumberOfPendingMessages();
 }

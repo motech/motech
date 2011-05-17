@@ -40,6 +40,7 @@ import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.context.Context;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.outbox.api.VoiceOutboxService;
 import org.motechproject.outbox.api.context.OutboxContext;
 import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;
 import org.motechproject.outbox.api.model.MessagePriority;
@@ -65,7 +66,7 @@ public class AppointmentReminderEventHandler {
     ReminderService reminderService = AppointmentsContext.getInstance().getReminderService();
     MetricsAgent metricsAgent = Context.getInstance().getMetricsAgent();
 
-    OutboundVoiceMessageDao outboundVoiceMessageDao = OutboxContext.getInstance().getOutboundVoiceMessageDao();
+    VoiceOutboxService voiceOutboxService = OutboxContext.getInstance().getVoiceOutboxService();
 
     //Interim implementation
     String needToScheduleAppointmentVxmlUrl = "http://needtoschedule/";
@@ -136,7 +137,7 @@ public class AppointmentReminderEventHandler {
             msg.setCreationTime(new Date());
             msg.setVoiceMessageType(mt);
 
-            outboundVoiceMessageDao.add(msg);
+            voiceOutboxService.addMessage(msg);
         } else {
             log.warn(String.format("Unable to determine patient state for Appointment Reminder: AptId: %s Due Date: %s Scheduled Date: %s Today: %s",
                                    appointment, appointment.getDueDate(), appointment.getScheduledDate(), today));

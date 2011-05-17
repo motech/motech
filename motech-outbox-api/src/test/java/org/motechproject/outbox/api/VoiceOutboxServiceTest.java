@@ -1,4 +1,4 @@
-package org.motechproject.server.outbox.service;
+package org.motechproject.outbox.api;
 
 
 import org.junit.Before;
@@ -13,6 +13,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.outbox.api.EventKeys;
+import org.motechproject.outbox.api.VoiceOutboxServiceImpl;
 import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
 import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;

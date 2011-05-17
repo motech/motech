@@ -41,6 +41,7 @@ import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
 import org.ektorp.support.Views;
+import org.ektorp.util.Assert;
 import org.motechproject.dao.MotechAuditableRepository;
 import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
@@ -77,10 +78,14 @@ public class OutboundVoiceMessageDaoImpl extends
 			Collections.sort(messages, new Comparator<OutboundVoiceMessage>() {
 				@Override
 				public int compare(OutboundVoiceMessage m1, OutboundVoiceMessage m2) {
+					Assert.notNull(m1.getCreationTime(), "OutboundVoiceMessage: CreationTime mandatory!");
+					Assert.notNull(m2.getCreationTime(), "OutboundVoiceMessage: CreationTime mandatory!");
 					int dateComp = m2.getCreationTime().compareTo(m1.getCreationTime());
 					if(dateComp!=0) {
 						return dateComp;
 					}
+					Assert.notNull(m1.getVoiceMessageType(), "OutboundVoiceMessage: VoiceMessageType mandatory!");
+					Assert.notNull(m2.getVoiceMessageType(), "OutboundVoiceMessage: VoiceMessageType mandatory!");
 					return m2.getVoiceMessageType().getPriority().compareTo(m1.getVoiceMessageType().getPriority());
 				}
 			});
