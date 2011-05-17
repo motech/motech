@@ -118,6 +118,7 @@
 			<map>
 				<entry key="1" value="tama/rules/tree"/>
 				<entry key="2" value="outbox/vxml/outboxMessage"/>
+                <entry key="3" value="outbox/vxml/savedMessage"/>
 			</map>
 		</property>
 	</bean>
