@@ -22,8 +22,8 @@ public class PillReminder extends MotechAuditableDataObject {
 	private Date startDate;
 	private Date endDate;
 	
-	private List<Schedule> schedules;
-	private List<Medicine> medicines;
+	private List<Schedule> schedules = new ArrayList<Schedule>();
+	private List<Medicine> medicines = new ArrayList<Medicine>();
 	
 	@JsonProperty("type") private final String type = "PillReminder";
 

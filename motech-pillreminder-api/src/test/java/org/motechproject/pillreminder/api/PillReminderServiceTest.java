@@ -1,7 +1,6 @@
 package org.motechproject.pillreminder.api;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -17,7 +16,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.pillreminder.api.dao.impl.PillReminderCouchDBDaoImpl;
+import org.motechproject.pillreminder.api.dao.PillReminderDao;
 import org.motechproject.pillreminder.api.model.PillReminder;
 
 public class PillReminderServiceTest
@@ -29,16 +28,14 @@ public class PillReminderServiceTest
     CouchDbConnector couchDbConnector;
 
     @Mock
-    PillReminderCouchDBDaoImpl pillReminderDao;
+    PillReminderDao pillReminderDao;
 
     @InjectMocks
     PillReminderService pillReminderService;
 
     @Before
     public void setUp() {
-        couchDbConnector = mock(CouchDbConnector.class);
-        pillReminderDao = new PillReminderCouchDBDaoImpl(couchDbConnector);
-
+        
         pillReminderService = new PillReminderService();
         MockitoAnnotations.initMocks(this);
     }
@@ -120,4 +117,5 @@ public class PillReminderServiceTest
     	List<PillReminder> list = pillReminderService.getRemindersWithinWindow("eID", new Date());
     	assertTrue(list.isEmpty());
     }
+    
 }

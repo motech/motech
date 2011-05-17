@@ -10,6 +10,7 @@ import org.motechproject.context.EventContext;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.pillreminder.api.dao.PillReminderDao;
+import org.motechproject.pillreminder.api.model.Medicine;
 import org.motechproject.pillreminder.api.model.PillReminder;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -54,12 +55,17 @@ public class PillReminderService {
 		return pillReminderDao.findByExternalIdAndWithinWindow(externalId, time);
 	}
 	
-	public List<String> getMedicinesWithinWindow(String externalId, Date time){
-		List<String> medicineNames = new ArrayList<String>();
-		List<PillReminder> pillReminders = getRemindersWithinWindow(externalId, time);
-		
-		return null;
-	}
+//	public List<String> getMedicinesWithinWindow(String externalId, Date time){
+//		List<String> medicineNames = new ArrayList<String>();
+//		List<PillReminder> pillReminders = getRemindersWithinWindow(externalId, time);
+//		for (PillReminder pillReminder : pillReminders) {
+//			List<Medicine> medicines = pillReminder.getMedicines();
+//			for (Medicine medicine : medicines) {
+//				medicineNames.add(medicine.getName());
+//			}
+//		}
+//		return medicineNames;
+//	}
 
 	private MotechEvent getSkinnyEvent(PillReminder pillReminder, String subject) {
 		Map<String, Object> parameters = new HashMap<String, Object>();
