@@ -58,8 +58,8 @@ public class PillReminderDaoTest {
 		reminder = new PillReminder();
 		reminder.setId("2");
 		schedules = new ArrayList<Schedule>();
-		reminder.setStartDate(new DateTime(2011, 4, 1, 0, 0, 0, 0).toDate());
-		reminder.setEndDate(new DateTime(2011, 4, 30, 0, 0, 0, 0).toDate());
+		reminder.setStartDate(new DateTime(2011, 5, 1, 0, 0, 0, 0).toDate());
+		reminder.setEndDate(new DateTime(2011, 5, 31, 0, 0, 0, 0).toDate());
 		reminder.setSchedules(schedules);
 		schedule = new Schedule();
 		schedule.setWindowStart(new Time(7,0));
@@ -80,14 +80,27 @@ public class PillReminderDaoTest {
 	@Test
 	public void testFindByExternalIdAndWithinWindow() throws Exception {
 		PillReminderDao dao = new PillReminderCouchDBDaoImpl(db);
-		List<PillReminder> reminders = dao.findByExternalIdAndWithinWindow("patient-id-1", new DateTime(2011, 3, 1, 8, 0, 0, 0).toDate());
+		
+		List<PillReminder> reminders = dao.findByExternalIdAndWithinWindow("patient-id-1", new DateTime(2011, 3, 31, 6, 59, 59, 0).toDate());
+		assertEquals(0, reminders.size());
+
+		reminders = dao.findByExternalIdAndWithinWindow("patient-id-1", new DateTime(2011, 3, 1, 7, 0, 0, 0).toDate());
 		assertEquals(1, reminders.size());
 		
-		DateTime start = new DateTime(2010, 5, 25, 12, 0, 0, 0);
-		DateTime end = new DateTime(2010, 5, 25, 21, 0, 0, 0);
-		Interval interval = new Interval(start, end);
-		DateTime test = new DateTime(2010, 5, 25, 21, 0, 0, 0);
-		System.out.println(interval.contains(test));
+		reminders = dao.findByExternalIdAndWithinWindow("patient-id-1", new DateTime(2011, 3, 31, 8, 59, 59, 0).toDate());
+		assertEquals(1, reminders.size());
+		
+		reminders = dao.findByExternalIdAndWithinWindow("patient-id-1", new DateTime(2011, 3, 31, 9, 0, 0, 0).toDate());
+		assertEquals(0, reminders.size());
+		
+		reminders = dao.findByExternalIdAndWithinWindow("patient-id-1", new DateTime(2011, 4, 1, 8, 0, 0, 0).toDate());
+		assertEquals(0, reminders.size());
+		
+		reminders = dao.findByExternalIdAndWithinWindow("patient-id-1", new DateTime(2011, 4, 30, 8, 0, 0, 0).toDate());
+		assertEquals(0, reminders.size());
+		
+		reminders = dao.findByExternalIdAndWithinWindow("patient-id-1", new DateTime(2011, 5, 1, 8, 0, 0, 0).toDate());
+		assertEquals(1, reminders.size());
 
 	}
 }

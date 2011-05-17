@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 public class PillReminderCouchDBDaoImpl extends MotechAuditableRepository<PillReminder> implements PillReminderDao {
 
 	@Autowired
-	protected PillReminderCouchDBDaoImpl( @Qualifier("pillReminderDatabase") CouchDbConnector db) {
+	public PillReminderCouchDBDaoImpl( @Qualifier("pillReminderDatabase") CouchDbConnector db) {
 		super(PillReminder.class, db);
 		initStandardDesignDocument();
 	}
@@ -34,7 +34,8 @@ public class PillReminderCouchDBDaoImpl extends MotechAuditableRepository<PillRe
 		List<PillReminder> pillReminders = findByExternalId(externalId);
 		if (pillReminders != null) {
 			for (PillReminder pillReminder : pillReminders) {
-				Interval interval = new Interval(new DateTime(pillReminder.getStartDate()), new DateTime(pillReminder.getEndDate()));
+				//'contains' is inclusive of the start instant and exclusive of the end, so we need to plus one day for the end
+				Interval interval = new Interval(new DateTime(pillReminder.getStartDate()), new DateTime(pillReminder.getEndDate()).plusDays(1));
 				if (interval.contains(new DateTime(time).withMillisOfDay(0))
 						&& pillReminder.getScheduleWithinWindow(time) != null) {
 					results.add(pillReminder);

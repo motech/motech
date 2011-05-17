@@ -27,12 +27,17 @@ public class PillReminderService {
 		pillReminderDao.update(pillReminder);
 		eventRelay.sendEventMessage(getSkinnyEvent(pillReminder, EventKeys.PILLREMINDER_UPDATED_SUBJECT));
 	}
+	
+	public void removePillReminder(String pillReminderId){
+		PillReminder pillReminder = getPillReminder(pillReminderId);
+		removePillReminder(pillReminder);
+	}
 
 	public void removePillReminder(PillReminder pillReminder) {
 		pillReminderDao.remove(pillReminder);
 		eventRelay.sendEventMessage(getSkinnyEvent(pillReminder, EventKeys.PILLREMINDER_DELETED_SUBJECT));
 	}
-
+    
 	public PillReminder getPillReminder(String pillReminderId) {
 		PillReminder appointment = pillReminderDao.get(pillReminderId);
 		return appointment;
