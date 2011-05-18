@@ -106,7 +106,7 @@
 				<configuration>
 					<instructions>
 						<Bundle-Activator>
-                            org.motechproject.server.appointments.ReminderCRUDEventHandler
+                            org.motechproject.server.appointments.Activator
                         </Bundle-Activator>
 						<Private-Package>
                             org.motechproject.server.appointments.*
