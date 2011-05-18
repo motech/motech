@@ -34,6 +34,7 @@ package org.motechproject.server.pillreminder;
 
 import static org.mockito.Mockito.*;
 
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,19 +46,29 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.gateway.MotechSchedulerGateway;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
+import org.motechproject.model.Time;
+import org.motechproject.pillreminder.api.EventKeys;
+import org.motechproject.pillreminder.api.PillReminderService;
+import org.motechproject.pillreminder.api.model.PillReminder;
+import org.motechproject.pillreminder.api.model.Schedule;
 
 /**
  * @author yyonkov
  *
  */
 @RunWith(MockitoJUnitRunner.class)
-public class PillreminderEventHandlerTest {
+public class PillReminderEventHandlerTest {
 	
+	private static final String PILLREMINDER_ID = "001";
+
 	@InjectMocks
-	PillreminderEventHandler pillreminderEventHandler = new PillreminderEventHandler();
+	PillReminderEventHandler pillreminderEventHandler = new PillReminderEventHandler();
 	
     @Mock
     private MotechSchedulerGateway schedulerGateway;
+    
+    @Mock
+    private PillReminderService pillReminderService;
 
 	/**
 	 * @throws java.lang.Exception
@@ -65,6 +76,27 @@ public class PillreminderEventHandlerTest {
 	@Before
 	public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        PillReminder reminder = new PillReminder();
+        reminder.setId(PILLREMINDER_ID);		
+		reminder.setStartDate(new DateTime(2011, 3, 1, 0, 0, 0, 0).toDate());
+		reminder.setEndDate(new DateTime(2011, 3, 31, 0, 0, 0, 0).toDate());
+		
+		Schedule schedule = new Schedule();
+		schedule.setStartCallTime(new Time(7,0));
+		schedule.setEndCallTime(new Time(9,0));
+		schedule.setRepeatCount(5);
+		schedule.setRepeatInterval(5*60);		
+		reminder.getSchedules().add(schedule);
+		
+		schedule = new Schedule();
+
+		schedule.setStartCallTime(new Time(11,0));
+		schedule.setEndCallTime(new Time(13,0));
+		schedule.setRepeatCount(5);
+		schedule.setRepeatInterval(5*60);
+		reminder.getSchedules().add(schedule);
+		
+		when(pillReminderService.getPillReminder(PILLREMINDER_ID)).thenReturn(reminder);
 	}
 
 	/**
@@ -75,8 +107,10 @@ public class PillreminderEventHandlerTest {
 	}
 
 	@Test
-	public void testCreate() {
-		pillreminderEventHandler.create(new MotechEvent(EventKeys.PILLREMINDER_CREATED_SUBJECT, null));
-		verify(schedulerGateway, times(1)).scheduleRepeatingJob(any(RepeatingSchedulableJob.class));
+	public void testSchedulePillReminder() {
+		MotechEvent event = new MotechEvent(EventKeys.PILLREMINDER_CREATED_SUBJECT);
+		event.getParameters().put(EventKeys.PILLREMINDER_ID_KEY, PILLREMINDER_ID);
+		pillreminderEventHandler.schedulePillReminder(event);
+		verify(schedulerGateway, times(60)).scheduleRepeatingJob(any(RepeatingSchedulableJob.class));
 	}
 }

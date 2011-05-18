@@ -1,5 +1,7 @@
 package org.motechproject.pillreminder.api.model;
 
+import java.util.UUID;
+
 import org.motechproject.model.Time;
 
 public class Schedule {
@@ -10,6 +12,8 @@ public class Schedule {
     private Time endCallTime;
     private Integer repeatInterval;
     private Integer repeatCount;
+    private String jobId = UUID.randomUUID().toString();
+
 
     public Time getStartCallTime() {
 		return startCallTime;
@@ -58,5 +62,13 @@ public class Schedule {
     public void setWindowEnd(Time windowEnd) {
     	this.windowEnd = windowEnd;
     }
-    
+
+	public void setJobId(String jobId) {
+		this.jobId = jobId;
+	}
+
+	public String getJobId() {
+		return jobId;
+	}
+
 }

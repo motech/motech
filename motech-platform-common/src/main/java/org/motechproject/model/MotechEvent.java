@@ -55,13 +55,11 @@ public final class MotechEvent implements Serializable {
     private Map<String, Object> parameters;
 
     /**
-     * Constructor
-     * @param subject - event type: Pill Reminder, Appointment Reminder ...
-     * @param parameters - a Map<String, Object> of additional parameters
-     *
-     * @throws IllegalArgumentException if given jobId or entityType is null
+     * Constructor with subject only (parameters can be added interactively)
+     * @param subject - event destination
+     * @throws IllegalArgumentException
      */
-    public MotechEvent(String subject, Map<String, Object> parameters) {
+    public MotechEvent(String subject) {
         if (subject == null) {
             throw new IllegalArgumentException("subject can not be null");
         }
@@ -75,6 +73,17 @@ public final class MotechEvent implements Serializable {
         }
 
         this.subject = subject;
+    }
+    
+    /**
+     * Constructor
+     * @param subject - event type: Pill Reminder, Appointment Reminder ...
+     * @param parameters - a Map<String, Object> of additional parameters
+     *
+     * @throws IllegalArgumentException
+     */
+    public MotechEvent(String subject, Map<String, Object> parameters) {
+    	this(subject);
         this.parameters = parameters;
     }
 
@@ -82,11 +91,12 @@ public final class MotechEvent implements Serializable {
         return subject;
     }
 
+    /**
+     * Sets empty HashMap if parameters=null
+     * @return
+     */
     public Map<String, Object> getParameters() {
-        if (parameters == null ) {
-        	parameters = new HashMap<String, Object>();
-        }
-        return parameters;
+        return parameters!=null?parameters:(parameters = new HashMap<String, Object>());
     }
 
     @Override
