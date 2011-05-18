@@ -35,17 +35,19 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.context.Context;
-import org.motechproject.context.EventContext;
-import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.EventListenerRegistry;
 import org.motechproject.server.event.ServerEventRelay;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"/testAnnotatedHandlers.xml"})
@@ -54,6 +56,16 @@ public class AnnotationBasedHandlerTest {
 	
 	@Autowired
     ServerEventRelay eventRelay;
+	
+	private void send(String dest, Object...objects) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		int i = 0;
+		for(Object obj : objects) {
+			params.put(Integer.toString(i++), obj);
+		}
+		MotechEvent event = new MotechEvent(dest, params );
+		eventRelay.relayEvent(event);
+	}
 
 	// Annotation based handler (needs a spring bean config.) 
 	public static class MyHandler {
@@ -67,11 +79,21 @@ public class AnnotationBasedHandlerTest {
 			AnnotationBasedHandlerTest.motechEvent = event;
 //			System.out.println(event);
 		}
+		@MotechListener(subjects={"params"}, type=MotechListenerType.ORDERED_PARAMETERS)
+		public void handleParams(Integer a, Integer b, String s) {
+//			System.out.printf("a+b= %d\n",a+b);
+		}
+		@MotechListener(subjects={"exception"}, type=MotechListenerType.ORDERED_PARAMETERS)
+		public void excParams(Integer a, Integer b, String s) {
+			Assert.notNull(s, "s must not be null");
+//			System.out.printf("a+b= %d\n"+s,a+b);
+		}
 	}
 
 	public static void clearMotechEvent() {
 		AnnotationBasedHandlerTest.motechEvent = null;
 	}
+	
 	@Test
 	public void testRegistry() {
 		EventListenerRegistry registry = Context.getInstance().getEventListenerRegistry();
@@ -79,6 +101,7 @@ public class AnnotationBasedHandlerTest {
 		assertEquals(1,registry.getListenerCount("sub_b"));
 		assertEquals(1,registry.getListenerCount("sub_c"));
 	}
+	
 	@Test
 	public void testRelay() {
 		MotechEvent e = new MotechEvent("sub_b", null);
@@ -90,5 +113,15 @@ public class AnnotationBasedHandlerTest {
 		clearMotechEvent();
 		eventRelay.relayEvent(e);
 		assertEquals(e, motechEvent);
+	}
+	
+	@Test
+	public void testParams() {
+		send("params",23,44,null);
+	}
+	
+	@Test
+	public void testExeption() {
+		send("exception", 1, 3, null);
 	}
 }

@@ -31,20 +31,60 @@
  */
 package org.motechproject.server.event.annotations;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.reflect.Method;
+
+import org.motechproject.context.Context;
+import org.motechproject.model.MotechEvent;
+import org.motechproject.server.event.EventListener;
+import org.slf4j.LoggerFactory;
 
 /**
+ * Event Listener Proxy base abstract class
  * @author yyonkov
  *
  */
-@Target({ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface MotechListener {
-	String[] subjects();
-	MotechListenerType type() default MotechListenerType.MOTECH_EVENT;
+public abstract class MotechListenerAbstractProxy implements EventListener {
+    
+	protected final String name;
+	protected final Object bean;
+	protected final Method method;
+	
+	/**
+	 * @param name
+	 * @param bean
+	 * @param method
+	 */
+	public MotechListenerAbstractProxy(String name, Object bean, Method method) {
+		this.name = name;
+		this.bean = bean;
+		this.method = method;
+	}
+
+	/**
+	 * Needs to be implemented by concrete Proxies
+	 * @param event
+	 * @return 
+	 */
+	public abstract void callHandler(MotechEvent event);
+	
+	/* (non-Javadoc)
+	 * @see org.motechproject.server.event.EventListener#handle(org.motechproject.model.MotechEvent)
+	 */
+	@Override
+	public void handle(MotechEvent event) {
+		Context.getInstance().getMetricsAgent().logEvent(event.getSubject());
+		try {
+			callHandler(event);
+		} catch (Exception e) {
+			LoggerFactory.getLogger(bean.getClass()).error(String.format("An exception of type: %s(\"%s\") has been caught in: %s", e.getClass().getSimpleName(), e.getLocalizedMessage(), method.toGenericString()));
+		}
+	}
+	/* (non-Javadoc)
+	 * @see org.motechproject.server.event.EventListener#getIdentifier()
+	 */
+	@Override
+	public String getIdentifier() {
+		return this.name;
+	}
+
 }

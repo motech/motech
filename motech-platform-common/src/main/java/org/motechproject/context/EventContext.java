@@ -32,6 +32,7 @@
 package org.motechproject.context;
 
 import org.motechproject.event.EventRelay;
+import org.motechproject.model.MotechEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,25 @@ public class EventContext {
     public void setEventRelay(EventRelay eventRelay) {
         log.info("EventContext: " + this + " SetEventRelay: " + eventRelay);
         this.eventRelay = eventRelay;
+    }
+    
+    /**
+     * Responsible for packing parameters in order with keys: 0,1,2 ... n
+     * parameters can be unpacked in handlers using 
+     * {@code 
+     * 		@MotechListener(subjects={"destination"}, type=MotechListenerType.ORDERED_PARAMETERS)
+     * 		public void handler(Type1 a, Type2 b ...) {}
+     * }
+     * @param destination
+     * @param objs
+     */
+    public void send(String destination, Object... objs) {
+    	MotechEvent event = new MotechEvent(destination);
+		int i = 0;
+    	for(Object o : objs) {
+    		event.getParameters().put(Integer.toString(i++), o);
+    	}
+    	eventRelay.sendEventMessage(event);
     }
 
 	public static EventContext getInstance(){
