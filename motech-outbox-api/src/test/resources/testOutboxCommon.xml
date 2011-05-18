@@ -9,7 +9,7 @@
 	<context:annotation-config />
 	<util:properties id="couchdbProperties" location="classpath:couchdb.properties" />
 	<bean id="outboxDatabase" class="org.ektorp.impl.StdCouchDbConnector">
-		<constructor-arg value="outbox" />
+		<constructor-arg value="motech-outbox" />
 		<constructor-arg>
 			<bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
 				<constructor-arg>

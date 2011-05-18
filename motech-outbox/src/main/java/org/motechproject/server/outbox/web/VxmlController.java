@@ -155,7 +155,7 @@ public class VxmlController extends MultiActionController {
             return mav;
         }
 
-
+         logger.debug(voiceMessage.toString());
 
         String templateName = voiceMessageType.getvXmlTemplateName();
         if (templateName == null) {
@@ -209,20 +209,22 @@ public class VxmlController extends MultiActionController {
         }
 
 
-        if (voiceMessage.getStatus() == OutboundVoiceMessageStatus.PENDING) {
+        if (voiceMessage.getStatus() == OutboundVoiceMessageStatus.SAVED) {
+
+            mav.setViewName(SAVED_MESSAGE_MENU_TEMPLATE_NAME);
+        } else {
             try {
                 voiceOutboxService.setMessageStatus(messageId, OutboundVoiceMessageStatus.PLAYED);
             } catch (Exception e) {
                 logger.error("Can not set message status to " + OutboundVoiceMessageStatus.PLAYED + " to the message ID: " + messageId, e);
             }
             mav.setViewName(MESSAGE_MENU_TEMPLATE_NAME);
-        } else {
-            mav.setViewName(SAVED_MESSAGE_MENU_TEMPLATE_NAME);
         }
 
         String contextPath = request.getContextPath();
 
-
+         logger.debug(voiceMessage.toString());
+        logger.debug(mav.getViewName());
 
         mav.addObject("contextPath", contextPath);
         mav.addObject("message", voiceMessage);
@@ -261,6 +263,7 @@ public class VxmlController extends MultiActionController {
             return mav;
         }
 
+
         try {
             voiceOutboxService.saveMessage(messageId);
         } catch (Exception e) {
@@ -269,8 +272,19 @@ public class VxmlController extends MultiActionController {
             return mav;
         }
 
+         //TODO - get party ID proper way from security principal or authentication context when it is available
+        String partyId;
+        try {
+            OutboundVoiceMessage message =  voiceOutboxService.getMessageById(messageId);
+            partyId = message.getPartyId();
+        } catch (Exception e) {
+            logger.error("Can not obtain message ID: " + messageId + " to get party ID");
+            mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
+            return mav;
+        }
 
         mav.addObject("days", voiceOutboxService.getNumDayskeepSavedMessages());
+        mav.addObject("partyId", partyId);
         return mav;
 
     }
@@ -287,7 +301,7 @@ public class VxmlController extends MultiActionController {
      * http://<host>:<port>/<motech-platform-server>/module/outbox/vxml/remove?mId=$message.id&ln=$language>
      */
      public ModelAndView remove(HttpServletRequest request, HttpServletResponse response) {
-        logger.info("Saving messageL...");
+        logger.info("Removing saved message message...");
 
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
@@ -319,7 +333,20 @@ public class VxmlController extends MultiActionController {
             return mav;
         }
 
+          //TODO - get party ID proper way from security principal or authentication context when it is available
+        String partyId;
+        try {
+            OutboundVoiceMessage message =  voiceOutboxService.getMessageById(messageId);
+            partyId = message.getPartyId();
+        } catch (Exception e) {
+            logger.error("Can not obtain message ID: " + messageId + " to get party ID");
+            mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
+            return mav;
+        }
 
+         logger.debug("partyId: " + partyId);
+
+        mav.addObject("partyId", partyId);
         return mav;
 
     }

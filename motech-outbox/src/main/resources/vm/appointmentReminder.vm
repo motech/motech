@@ -7,7 +7,6 @@
                 <audio src="$contextPath/../audio/$language/hello.wav"/>
              </prompt>
             <prompt>
- ##               $message.params.get($messageContext)
                 Please fix your appointment
             </prompt>
              #set ($url = "$contextPath/outbox/vxml/messageMenu?mId=$message.id&ln=$language")

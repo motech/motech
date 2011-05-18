@@ -4,7 +4,7 @@
       <property name="inputmodes" value="dtmf"/>
        #set ($repeatUrl = "$contextPath/outbox/vxml/outboxMessage?mId=$message.id&ln=$language")
         #set ($removeUrl = "$contextPath/outbox/vxml/remove?mId=$message.id&ln=$language")
-        #set ($nextUrl = "$contextPath/outbox/vxml/savedMessage?ln=$language")
+        #set ($nextUrl = "$contextPath/outbox/vxml/savedMessage?pId=$message.partyId&ln=$language")
         #set ($mainMenuUrl = "$contextPath/tama/menu/select?pId=$message.partyId")
       <prompt>
           #if($message.voiceMessageType.canBeReplayed)

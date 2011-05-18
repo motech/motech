@@ -319,6 +319,7 @@ public class VxmlControllerTest {
         voiceMessage.setVoiceMessageType(voiceMessageType);
 
         Mockito.when(request.getParameter("mId")).thenReturn(messageId);
+        when(voiceOutboxService.getMessageById(messageId)).thenReturn(new OutboundVoiceMessage());
 
         ModelAndView modelAndView = vxmlController.save(request, response);
         verify(voiceOutboxService).saveMessage(messageId);
@@ -333,6 +334,7 @@ public class VxmlControllerTest {
 
 
         Mockito.when(request.getParameter(VxmlController.MESSAGE_ID_PARAM)).thenReturn(messageId);
+        when(voiceOutboxService.getMessageById(messageId)).thenReturn(new OutboundVoiceMessage());
         doThrow(new RuntimeException()).when(voiceOutboxService).saveMessage(messageId);
 
         ModelAndView modelAndView = vxmlController.save(request, response);
@@ -359,7 +361,8 @@ public class VxmlControllerTest {
            String messageId = "mID";
 
 
-           Mockito.when(request.getParameter("mId")).thenReturn(messageId);
+           when(request.getParameter("mId")).thenReturn(messageId);
+           when(voiceOutboxService.getMessageById(messageId)).thenReturn(new OutboundVoiceMessage());
 
            ModelAndView modelAndView = vxmlController.remove(request, response);
            verify(voiceOutboxService).setMessageStatus(messageId, OutboundVoiceMessageStatus.PLAYED);
