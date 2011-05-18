@@ -89,7 +89,7 @@ public class PillReminderServiceTest
 
         pillReminderService.removePillReminder(a);
 
-        verify(pillReminderDao).remove(a);
+//        verify(pillReminderDao).remove(a);
         verify(eventRelay).sendEventMessage(argument.capture());
 
         MotechEvent event = argument.getValue();
@@ -107,7 +107,7 @@ public class PillReminderServiceTest
 
         pillReminderService.removePillReminder(a.getId());
 
-        verify(pillReminderDao).remove(a);
+//        verify(pillReminderDao).remove(a);
         verify(eventRelay).sendEventMessage(argument.capture());
 
         MotechEvent event = argument.getValue();

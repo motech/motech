@@ -37,11 +37,13 @@ import org.apache.commons.lang.time.DateUtils;
 import org.ektorp.DocumentNotFoundException;
 import org.motechproject.context.Context;
 import org.motechproject.context.EventContext;
+import org.motechproject.event.EventRelay;
 import org.motechproject.gateway.MotechSchedulerGateway;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.pillreminder.api.EventKeys;
 import org.motechproject.pillreminder.api.PillReminderService;
+import org.motechproject.pillreminder.api.dao.PillReminderDao;
 import org.motechproject.pillreminder.api.model.PillReminder;
 import org.motechproject.pillreminder.api.model.Schedule;
 import org.motechproject.server.event.annotations.MotechListener;
@@ -58,44 +60,52 @@ import org.springframework.util.Assert;
 public class PillReminderEventHandler {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+	enum ProcessType { SCHEDULE, UNSCHEDULE };
+	
 	private MotechSchedulerGateway schedulerGateway = Context.getInstance().getMotechSchedulerGateway();
 	
-	/**
-	 * I don't use EventRelay here since i'd like to add event parameter dispatching functionality in EventContext (or anywhere else) 
-	 */
-	private EventContext eventContext = EventContext.getInstance();
+	@Autowired(required=false)
+	private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
 	
 	@Autowired
 	private PillReminderService pillReminderService;
 	
-	private void schedule(PillReminder reminder) {
+	@Autowired
+	private PillReminderDao pillReminderDao;
+	
+	private void processReminder(PillReminder reminder, ProcessType t) {
 		MotechEvent event = new MotechEvent(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT);
 		event.getParameters().put(EventKeys.PILLREMINDER_ID_KEY, reminder.getId());
-		// Schedule all reminders
+		// (un)schedule all reminders
 		//TODO clarify if end date is included in the regimen
 		Assert.notNull(reminder, "PillReminder must not be null");
 		Assert.notNull(reminder.getStartDate(), "PillReminder startDate must not be null");
 		Assert.notNull(reminder.getEndDate(), "PillReminder endDate must not be null");
 		for(Date d = reminder.getStartDate(); d.before(reminder.getEndDate()); d=DateUtils.addDays(d, +1) ) {
-			// schedule for each day
+			// (un)schedule for each day
 			for( Schedule s : reminder.getSchedules()) {
-				// schedule for each time of the day
+				// (un)schedule for each time of the day
 				Assert.notNull(s, "Schedule must not be null");
-				Assert.notNull(s.getStartCallTime(), "Schedule startCallTime must not be null");
-				Assert.notNull(s.getEndCallTime(), "Schedule endCallTime must not be null");
-				Assert.notNull(s.getRepeatCount(), "Schedule repeatCount must not be null");
-				Assert.notNull(s.getRepeatInterval(), "Schedule repeatInterval must not be null");
-				event.getParameters().put(EventKeys.SCHEDULE_JOB_ID_KEY, s.getJobId());
-				RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(	
-						event,
-						s.getStartCallTime().getTimeOfDate(d),
-						s.getEndCallTime().getTimeOfDate(d), 
-						s.getRepeatCount(),
-						s.getRepeatInterval() * 1000);
-				schedulerGateway.scheduleRepeatingJob(schedulableJob);
+				if(t==ProcessType.SCHEDULE) {
+					Assert.notNull(s.getStartCallTime(), "Schedule startCallTime must not be null");
+					Assert.notNull(s.getEndCallTime(), "Schedule endCallTime must not be null");
+					Assert.notNull(s.getRepeatCount(), "Schedule repeatCount must not be null");
+					Assert.notNull(s.getRepeatInterval(), "Schedule repeatInterval must not be null");
+					event.getParameters().put(EventKeys.SCHEDULE_JOB_ID_KEY, s.getJobId());
+					RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(	
+							event,
+							s.getStartCallTime().getTimeOfDate(d),
+							s.getEndCallTime().getTimeOfDate(d), 
+							s.getRepeatCount(),
+							s.getRepeatInterval() * 1000);
+					schedulerGateway.scheduleRepeatingJob(schedulableJob);
+				} else {
+					schedulerGateway.unscheduleJob(s.getJobId());
+				}
 			}
 		}
 	}
+
 	
 	/**
 	 * Responsible for scheduling and re-scheduling of pill reminders
@@ -105,12 +115,23 @@ public class PillReminderEventHandler {
 	public void schedulePillReminder(MotechEvent event) {
 		try {
 			PillReminder reminder = pillReminderService.getPillReminder(EventKeys.getReminderID(event));
-			schedule(reminder);
+			processReminder(reminder,ProcessType.SCHEDULE);
 		} catch ( DocumentNotFoundException e) {
 			logger.error(String.format("PillReminder for ID: %s not found.", EventKeys.getReminderID(event)));
 		}
 	}
 	
+	@MotechListener(subjects={EventKeys.PILLREMINDER_DELETED_SUBJECT})
+	public void unschedulePillReminder(MotechEvent event) {
+		try {
+			PillReminder reminder = pillReminderService.getPillReminder(EventKeys.getReminderID(event));
+			processReminder(reminder, ProcessType.UNSCHEDULE);
+			pillReminderDao.remove(reminder);
+		} catch ( DocumentNotFoundException e) {
+			logger.error(String.format("PillReminder for ID: %s not found.", EventKeys.getReminderID(event)));
+		}
+	}
+
 	/**
 	 * Responsible for deciding if all pills have been reported
 	 * @param event
@@ -118,8 +139,8 @@ public class PillReminderEventHandler {
 	@MotechListener(subjects={EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT})
 	public void receivePillReminderFromScheduler(MotechEvent event) {
 		try {
-			if( ! pillReminderService.isPillReminderCompleted(EventKeys.getReminderID(event), new Date()) ) {
-				eventContext.getEventRelay().sendEventMessage(new MotechEvent(EventKeys.PILLREMINDER_PUBLISH_REMINDER, event.getParameters()));
+			if( !pillReminderService.isPillReminderCompleted(EventKeys.getReminderID(event), new Date()) ) {
+				eventRelay.sendEventMessage(new MotechEvent(EventKeys.PILLREMINDER_PUBLISH_REMINDER, event.getParameters()));
 			}
 		} catch ( DocumentNotFoundException e) {
 			logger.error(String.format("PillReminder for ID: %s not found.", EventKeys.getReminderID(event)));

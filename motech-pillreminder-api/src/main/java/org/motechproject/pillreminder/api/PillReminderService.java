@@ -55,7 +55,7 @@ public class PillReminderService {
 	public void removePillReminder(PillReminder pillReminder) {
         log.info("Remove PillReminder: " + pillReminder);
         Assert.notNull(pillReminder, "PillReminder can not be null.");			
-		pillReminderDao.remove(pillReminder);
+//		pillReminderDao.remove(pillReminder); // called in handler
 		eventRelay.sendEventMessage(getSkinnyEvent(pillReminder, EventKeys.PILLREMINDER_DELETED_SUBJECT));
 	}
     
