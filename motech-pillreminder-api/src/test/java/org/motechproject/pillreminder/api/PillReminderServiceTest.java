@@ -128,35 +128,6 @@ public class PillReminderServiceTest
     }
     
     @Test
-    public void testGetMedicinesWithinWindow() {
-    	Date time = new Date();
-    	List<String> list = pillReminderService.getMedicinesWithinWindow("eID", time);
-    	assertTrue(list.isEmpty());
-    	
-		List<PillReminder> reminders = new ArrayList<PillReminder>();
-		PillReminder reminder = new PillReminder();
-		Medicine medicine = new Medicine();
-		medicine.setName("a");
-		reminder.getMedicines().add(medicine);
-		
-		medicine= new Medicine();
-		medicine.setName("b");
-		reminder.getMedicines().add(medicine);
-		reminders.add(reminder);
-		
-		reminder = new PillReminder();
-		medicine = new Medicine();
-		medicine.setName("c");
-		reminder.getMedicines().add(medicine);
-		reminders.add(reminder);
-		
-    	when(pillReminderDao.findByExternalIdAndWithinWindow("eID", time)).thenReturn(reminders);
-    	
-    	list = pillReminderService.getMedicinesWithinWindow("eID", time);
-    	assertEquals(3, list.size());
-    }
-    
-    @Test
     public void testGetResult(){
     	boolean result = pillReminderService.getResult("eID", "med", new Date());
     	assertFalse(result);
@@ -197,7 +168,7 @@ public class PillReminderServiceTest
     }
     
     @Test
-    public void testIsPillReminderCompleted(){
+    public void testGetMedicinesWithinWindow(){
 		PillReminder reminder = new PillReminder();
 		Schedule schedule = new Schedule();
 		reminder.getSchedules().add(schedule);
@@ -248,20 +219,41 @@ public class PillReminderServiceTest
 		when(pillReminderDao.get(any(String.class))).thenReturn(reminder);
 		
 		boolean result;
-		result = pillReminderService.isPillReminderCompleted("rID", new DateTime(2011, 5, 16, 9, 0, 0, 0).toDate());
-		assertFalse(result);
+		List<String> meds = null;
+		date = new DateTime(2011, 5, 16, 9, 0, 0, 0).toDate();
+		result = pillReminderService.isPillReminderCompleted("rID", date);
+		assertTrue(result);
+
+		meds = pillReminderService.getMedicinesWithinWindow("rID", date);
+		assertEquals(0, meds.size());
 		
-		result = pillReminderService.isPillReminderCompleted("rID", new DateTime(2011, 5, 17, 9, 0, 0, 0).toDate());
+		date = new DateTime(2011, 5, 17, 9, 0, 0, 0).toDate();
+		result = pillReminderService.isPillReminderCompleted("rID", date);
 		assertTrue(result);
 		
-		result = pillReminderService.isPillReminderCompleted("rID", new DateTime(2011, 5, 17, 10, 10, 0, 0).toDate());
+		meds = pillReminderService.getMedicinesWithinWindow("rID", date);
+		assertEquals(0, meds.size());
+		
+		date = new DateTime(2011, 5, 17, 10, 10, 0, 0).toDate();
+		result = pillReminderService.isPillReminderCompleted("rID", date);
 		assertTrue(result);
 		
-		result = pillReminderService.isPillReminderCompleted("rID", new DateTime(2011, 5, 17, 17, 0, 0, 0).toDate());
+		meds = pillReminderService.getMedicinesWithinWindow("rID", date);
+		assertEquals(0, meds.size());
+		
+		date = new DateTime(2011, 5, 17, 17, 0, 0, 0).toDate();
+		result = pillReminderService.isPillReminderCompleted("rID", date);
 		assertFalse(result);
 		
-		result = pillReminderService.isPillReminderCompleted("rID", new DateTime(2011, 5, 17, 18, 0, 0, 0).toDate());
+		meds = pillReminderService.getMedicinesWithinWindow("rID", date);
+		assertEquals(1, meds.size());
+		
+		date = new DateTime(2011, 5, 17, 18, 0, 0, 0).toDate();
+		result = pillReminderService.isPillReminderCompleted("rID", date);
 		assertFalse(result);
+		
+		meds = pillReminderService.getMedicinesWithinWindow("rID", date);
+		assertEquals(1, meds.size());
 		
     }
 }

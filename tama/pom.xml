@@ -72,6 +72,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.motechproject</groupId>
+			<artifactId>motech-pillreminder-api</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>		
+		<dependency>
+			<groupId>org.motechproject</groupId>
 			<artifactId>tama-api</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>

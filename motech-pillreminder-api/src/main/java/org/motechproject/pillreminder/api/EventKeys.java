@@ -17,10 +17,13 @@ public class EventKeys {
     public final static String PILLREMINDER_CREATED_SUBJECT = BASE_SUBJECT + "reminder.created";
     public final static String PILLREMINDER_UPDATED_SUBJECT = BASE_SUBJECT + "reminder.updated";
     public final static String PILLREMINDER_DELETED_SUBJECT = BASE_SUBJECT + "reminder.deleted";
+    public static final String PILLREMINDER_INCOMPLETE_SUBJECT = BASE_SUBJECT + "reminder.incomplete";
+    public static final String PILLREMINDER_COMPLETE_SUBJECT = BASE_SUBJECT + "reminder.complete";
 
     public final static String PILLREMINDER_REMINDER_EVENT_SUBJECT = BASE_SUBJECT + "reminder";
 
 	public static final String PILLREMINDER_PUBLISH_REMINDER = BASE_SUBJECT + "publish-reminder";
+	
     
 
     public static String getScheduleJobIdKey(MotechEvent event)
