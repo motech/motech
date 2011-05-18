@@ -67,7 +67,7 @@ public class PillReminderEventHandler {
 	private PillReminderService pillReminderService = PillReminderContext.getInstance().getPillReminderService();
 	private IVRService ivrService = Context.getInstance().getIvrService();
 	
-	private String vxmlUrl = "http://needtoschedule/";
+	private String vxmlUrl;
 
 	//TODO: should be a system wide configuration?
 	private int timeOut = 20;
