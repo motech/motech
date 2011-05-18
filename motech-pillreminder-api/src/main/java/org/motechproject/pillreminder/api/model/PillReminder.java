@@ -80,4 +80,12 @@ public class PillReminder extends MotechAuditableDataObject {
 		this.schedules = schedules;
 	}
 
+	@Override
+	public String toString() {
+		return "PillReminder [externalId=" + externalId + ", startDate="
+				+ startDate + ", endDate=" + endDate + ", schedules="
+				+ schedules + ", medicines=" + medicines + ", type=" + type
+				+ "]";
+	}
+
 }

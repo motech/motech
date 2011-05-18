@@ -71,4 +71,13 @@ public class Schedule {
 		return jobId;
 	}
 
+	@Override
+	public String toString() {
+		return "Schedule [windowStart=" + windowStart + ", windowEnd="
+				+ windowEnd + ", startCallTime=" + startCallTime
+				+ ", endCallTime=" + endCallTime + ", repeatInterval="
+				+ repeatInterval + ", repeatCount=" + repeatCount + ", jobId="
+				+ jobId + "]";
+	}
+
 }

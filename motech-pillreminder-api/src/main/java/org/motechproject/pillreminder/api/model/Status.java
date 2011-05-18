@@ -43,4 +43,11 @@ public class Status {
 			return null;
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "Status [taken=" + taken + ", date=" + date
+				+ ", windowStartTime=" + windowStartTime + "]";
+	}
+	
 }

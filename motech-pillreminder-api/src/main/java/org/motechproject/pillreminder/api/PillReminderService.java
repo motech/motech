@@ -57,6 +57,12 @@ public class PillReminderService {
 		return pillReminderDao.findByExternalIdAndWithinWindow(externalId, time);
 	}
 	
+	/**
+	 * 
+	 * @param externalId
+	 * @param time
+	 * @return
+	 */
 	public List<String> getMedicinesWithinWindow(String externalId, Date time){
 		List<String> medicineNames = new ArrayList<String>();
 		List<PillReminder> pillReminders = getRemindersWithinWindow(externalId, time);
@@ -69,6 +75,13 @@ public class PillReminderService {
 		return medicineNames;
 	}
 	
+	/**
+	 * 
+	 * @param externalId
+	 * @param medicineName
+	 * @param windowStartTime
+	 * @return
+	 */
 	public boolean getResult(String externalId, String medicineName, Date windowStartTime){
 		boolean result = false;
 		List<PillReminder> pillReminders = getRemindersWithinWindow(externalId, windowStartTime);
@@ -88,8 +101,13 @@ public class PillReminderService {
 		return result;
 	}
 	
+	/**
+	 * 
+	 * @param pillReminderId
+	 * @param time
+	 * @return
+	 */
 	public boolean isPillReminderCompleted(String pillReminderId, Date time){
-		boolean completed = true;
 		PillReminder pillReminder = getPillReminder(pillReminderId);
 		Schedule schedule = pillReminder.getScheduleWithinWindow(time);
 		if (schedule == null) {
