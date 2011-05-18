@@ -47,7 +47,7 @@
 	<context:annotation-config />
 
     <bean id="motechContext" class="org.motechproject.context.Context" factory-method="getInstance" />
-    <bean id="pillreminderEventHandler"	class="org.motechproject.server.pillreminder.PillreminderEventHandler"/>
+    <bean id="pillreminderEventHandler"	class="org.motechproject.server.pillreminder.PillReminderEventHandler"/>
 
     <!-- We have to use the couchDbInstance provided by the motech server context -->
     <bean id="couchDbInstance" factory-bean="motechContext" factory-method="getCouchDbInstance" />
@@ -62,7 +62,6 @@
     <bean id="controllerClassNameUrlMapping"
 		class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping">
 	</bean>
-	
-	
+	<bean id="pillReminderService" class="org.motechproject.pillreminder.api.PillReminderService"/>
 
 </beans>
