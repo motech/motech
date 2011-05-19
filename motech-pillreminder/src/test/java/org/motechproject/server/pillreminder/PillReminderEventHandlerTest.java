@@ -80,7 +80,7 @@ public class PillReminderEventHandlerTest {
     @Mock
     private EventRelay eventRelay;
 
-    private MotechEvent event = new MotechEvent(EventKeys.PILLREMINDER_PUBLISH_REMINDER);
+    private MotechEvent event = new MotechEvent(EventKeys.PILLREMINDER_PUBLISH_EVENT_SUBJECT);
     
 	/**
 	 * @throws java.lang.Exception
@@ -125,12 +125,12 @@ public class PillReminderEventHandlerTest {
 	}
 	@Test
 	public void testReceivePillReminderFromSchedulerCompleted() {
-		when(pillReminderService.isPillReminderCompleted(anyString(), any(Date.class))).thenReturn(true);
+		when(pillReminderService.isPillReminderCompleted(any(PillReminder.class), any(Date.class))).thenReturn(true);
 		pillreminderEventHandler.receivePillReminderFromScheduler(event);
 	}
 	@Test
 	public void testReceivePillReminderFromSchedulerNotCompleted() {
-		when(pillReminderService.isPillReminderCompleted(anyString(), any(Date.class))).thenReturn(false);
+		when(pillReminderService.isPillReminderCompleted(any(PillReminder.class), any(Date.class))).thenReturn(false);
 		pillreminderEventHandler.receivePillReminderFromScheduler(event);
 		verify(eventRelay,times(1)).sendEventMessage(event);
 	}

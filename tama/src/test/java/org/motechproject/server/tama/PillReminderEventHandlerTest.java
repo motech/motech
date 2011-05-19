@@ -94,7 +94,7 @@ public class PillReminderEventHandlerTest {
 		List<String> names = new ArrayList<String>();
 		names.add("m1");
 		names.add("m2");
-		when(pillReminderService.getMedicinesWithinWindow(any(String.class), any(Date.class))).thenReturn(names);
+		when(pillReminderService.getMedicinesWithinWindow(any(PillReminder.class), any(Date.class))).thenReturn(names);
 		
 		pillReminderEventHandler.setVxmlUrl(VXML_URL);
     }

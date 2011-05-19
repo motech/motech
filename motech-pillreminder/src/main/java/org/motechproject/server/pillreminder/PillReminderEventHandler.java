@@ -31,7 +31,11 @@
  */
 package org.motechproject.server.pillreminder;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+
+import javax.print.attribute.standard.Media;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.ektorp.DocumentNotFoundException;
@@ -44,8 +48,10 @@ import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.pillreminder.api.EventKeys;
 import org.motechproject.pillreminder.api.PillReminderService;
 import org.motechproject.pillreminder.api.dao.PillReminderDao;
+import org.motechproject.pillreminder.api.model.Medicine;
 import org.motechproject.pillreminder.api.model.PillReminder;
 import org.motechproject.pillreminder.api.model.Schedule;
+import org.motechproject.pillreminder.api.model.Status;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,6 +127,10 @@ public class PillReminderEventHandler {
 		}
 	}
 	
+	/**
+	 * Responsible for unscheduling pill reminders
+	 * @param event
+	 */
 	@MotechListener(subjects={EventKeys.PILLREMINDER_DELETED_SUBJECT})
 	public void unschedulePillReminder(MotechEvent event) {
 		try {
@@ -139,11 +149,69 @@ public class PillReminderEventHandler {
 	@MotechListener(subjects={EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT})
 	public void receivePillReminderFromScheduler(MotechEvent event) {
 		try {
-			if( !pillReminderService.isPillReminderCompleted(EventKeys.getReminderID(event), new Date()) ) {
-				eventRelay.sendEventMessage(new MotechEvent(EventKeys.PILLREMINDER_PUBLISH_REMINDER, event.getParameters()));
+			PillReminder reminder = pillReminderService.getPillReminder(EventKeys.getReminderID(event));
+			Assert.notNull(reminder);
+			if( !pillReminderService.isPillReminderCompleted(reminder, new Date()) ) {
+				eventRelay.sendEventMessage(new MotechEvent(EventKeys.PILLREMINDER_PUBLISH_EVENT_SUBJECT, event.getParameters()));
 			}
 		} catch ( DocumentNotFoundException e) {
 			logger.error(String.format("PillReminder for ID: %s not found.", EventKeys.getReminderID(event)));
+		}
+	}
+	
+	/**
+	 * Responsible for reporting pill reminder results
+	 * @param event
+	 */
+	@MotechListener(subjects={EventKeys.PILLREMINDER_RESULT_EVENT_SUBJECT})
+	public void receivePillReminderResults(MotechEvent event) {
+		String transitionName = EventKeys.getStringValue(event, EventKeys.TREE_TRANSITION_ID);
+		String medName = EventKeys.getStringValue(event, EventKeys.TREE_NAME_ID);
+		String patientId = EventKeys.getStringValue(event, EventKeys.TREE_PATIENT_ID);
+		Assert.notNull(patientId, EventKeys.TREE_PATIENT_ID+" must not be null");
+		Assert.notNull(medName, EventKeys.TREE_NAME_ID+" must not be null");
+		Assert.notNull(transitionName, EventKeys.TREE_TRANSITION_ID+" must not be null");
+		
+		List<PillReminder> reminders = pillReminderService.getRemindersWithinWindow(patientId, new Date());
+		if(reminders.size()==0) {
+			logger.warn("No pill reminders found for reporting results.");
+			return;
+		}
+		
+		//TODO implementation for 1 reminder only (update for more) 
+		PillReminder reminder = reminders.get(0);
+		if(!transitionName.equalsIgnoreCase(EventKeys.TRANSITION_NOT_YET_TAKEN)) {
+			reportResult(reminder,medName,transitionName.equalsIgnoreCase(EventKeys.TRANSITION_TAKEN));
+		}
+		
+		// if all medicine reminders are completed unschedule the schedule with the window
+		if( pillReminderService.isPillReminderCompleted(reminder, new Date()) ) {
+			Schedule schedule = reminder.getScheduleWithinWindow(new Date());
+			schedulerGateway.unscheduleJob(schedule.getJobId());
+			schedule.setJobId(null);
+		}
+	}
+
+
+	/**
+	 * @param pillReminder
+	 * @param medName
+	 * @param equals
+	 */
+	private void reportResult(PillReminder pillReminder, String medName, boolean taken) {
+		Date now = new Date();
+		Schedule schedule = pillReminder.getScheduleWithinWindow(now);
+		Assert.notNull(schedule);
+		Assert.notNull(pillReminder.getMedicines());
+		
+		for(Medicine medicine : pillReminder.getMedicines()) {
+			if(medicine.getName().equalsIgnoreCase(medName)) {
+				for (Status status : medicine.getStatuses()) {
+					if(status.getWindowStartTimeWithDate().equals(schedule.getWindowStart().getTimeOfDate(now))) {
+						status.setTaken(taken);
+					}
+				}
+			}
 		}
 	}
 }

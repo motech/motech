@@ -221,38 +221,38 @@ public class PillReminderServiceTest
 		boolean result;
 		List<String> meds = null;
 		date = new DateTime(2011, 5, 16, 9, 0, 0, 0).toDate();
-		result = pillReminderService.isPillReminderCompleted("rID", date);
+		result = pillReminderService.isPillReminderCompleted(reminder, date);
 		assertTrue(result);
 
-		meds = pillReminderService.getMedicinesWithinWindow("rID", date);
+		meds = pillReminderService.getMedicinesWithinWindow(reminder, date);
 		assertEquals(0, meds.size());
 		
 		date = new DateTime(2011, 5, 17, 9, 0, 0, 0).toDate();
-		result = pillReminderService.isPillReminderCompleted("rID", date);
+		result = pillReminderService.isPillReminderCompleted(reminder, date);
 		assertTrue(result);
 		
-		meds = pillReminderService.getMedicinesWithinWindow("rID", date);
+		meds = pillReminderService.getMedicinesWithinWindow(reminder, date);
 		assertEquals(0, meds.size());
 		
 		date = new DateTime(2011, 5, 17, 10, 10, 0, 0).toDate();
-		result = pillReminderService.isPillReminderCompleted("rID", date);
+		result = pillReminderService.isPillReminderCompleted(reminder, date);
 		assertTrue(result);
 		
-		meds = pillReminderService.getMedicinesWithinWindow("rID", date);
+		meds = pillReminderService.getMedicinesWithinWindow(reminder, date);
 		assertEquals(0, meds.size());
 		
 		date = new DateTime(2011, 5, 17, 17, 0, 0, 0).toDate();
-		result = pillReminderService.isPillReminderCompleted("rID", date);
+		result = pillReminderService.isPillReminderCompleted(reminder, date);
 		assertFalse(result);
 		
-		meds = pillReminderService.getMedicinesWithinWindow("rID", date);
+		meds = pillReminderService.getMedicinesWithinWindow(reminder, date);
 		assertEquals(1, meds.size());
 		
 		date = new DateTime(2011, 5, 17, 18, 0, 0, 0).toDate();
-		result = pillReminderService.isPillReminderCompleted("rID", date);
+		result = pillReminderService.isPillReminderCompleted(reminder, date);
 		assertFalse(result);
 		
-		meds = pillReminderService.getMedicinesWithinWindow("rID", date);
+		meds = pillReminderService.getMedicinesWithinWindow(reminder, date);
 		assertEquals(1, meds.size());
 		
     }

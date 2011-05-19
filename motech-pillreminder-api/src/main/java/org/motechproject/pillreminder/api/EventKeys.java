@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 public class EventKeys {
 	private final static Logger log = LoggerFactory.getLogger(EventKeys.class);
 
-	
 	public final static String PILLREMINDER_ID_KEY = "PillReminderID";
     public final static String PARTY_ID_KEY = "PartyID";
     public final static String SCHEDULE_JOB_ID_KEY = "JobID";
@@ -20,12 +19,20 @@ public class EventKeys {
     public static final String PILLREMINDER_INCOMPLETE_SUBJECT = BASE_SUBJECT + "reminder.incomplete";
     public static final String PILLREMINDER_COMPLETE_SUBJECT = BASE_SUBJECT + "reminder.complete";
 
-    public final static String PILLREMINDER_REMINDER_EVENT_SUBJECT = BASE_SUBJECT + "reminder";
+    public final static String PILLREMINDER_REMINDER_EVENT_SUBJECT = BASE_SUBJECT + "scheduler-reminder";
+	public static final String PILLREMINDER_PUBLISH_EVENT_SUBJECT = BASE_SUBJECT + "publish-reminder";
+	public static final String PILLREMINDER_RESULT_EVENT_SUBJECT = BASE_SUBJECT + "publish-reminder";
 
-	public static final String PILLREMINDER_PUBLISH_REMINDER = BASE_SUBJECT + "publish-reminder";
+	// decision tree ID's
+	public static final String TREE_NAME_ID = "tNm";
+	public static final String TREE_TRANSITION_ID = "transitionName";
+	public static final String TREE_PATIENT_ID = "pId";
 	
-    
-
+	// transition names
+	public static final String TRANSITION_NOT_YET_TAKEN = "NOT_YET_TAKEN";
+	public static final String TRANSITION_NOT_TAKEN = "NOT_TAKEN";
+	public static final String TRANSITION_TAKEN = "TAKEN";
+	
     public static String getScheduleJobIdKey(MotechEvent event)
     {
         return getStringValue(event, EventKeys.SCHEDULE_JOB_ID_KEY);

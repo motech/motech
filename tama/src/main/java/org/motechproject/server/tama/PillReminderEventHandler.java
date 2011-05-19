@@ -75,7 +75,7 @@ public class PillReminderEventHandler {
 	@Autowired
 	private PatientDAO patientDAO;
 
-	@MotechListener(subjects = { EventKeys.PILLREMINDER_PUBLISH_REMINDER })
+	@MotechListener(subjects = { EventKeys.PILLREMINDER_PUBLISH_EVENT_SUBJECT })
 	public void handle(MotechEvent event) {
 		String pillReminderId = EventKeys.getReminderID(event);
 		if (pillReminderId == null) {
@@ -100,7 +100,7 @@ public class PillReminderEventHandler {
 			Patient patient = patientDAO.get(pillReminder.getExternalId());
 			phoneNumber = patient.getPhoneNumber();
 			language = patient.getPreferences().getLanguage().name();
-			List<String> medicineNames = pillReminderService.getMedicinesWithinWindow(pillReminder.getExternalId(),	new Date());
+			List<String> medicineNames = pillReminderService.getMedicinesWithinWindow(pillReminder,	new Date());
 			treeName = StringUtils.join(medicineNames, ",");
 		} catch (Exception e) {
 			log.error("Error at loading information for Pill Reminder ID:" + pillReminderId, e);

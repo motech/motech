@@ -82,10 +82,10 @@ public class PillReminderService {
 	 * @param time
 	 * @return
 	 */
-	public boolean isPillReminderCompleted(String pillReminderId, Date time){
-        Assert.notNull(pillReminderId, "pillReminderId can not be null.");
+	public boolean isPillReminderCompleted(PillReminder pillReminder, Date time){
+        Assert.notNull(pillReminder, "pillReminder can not be null.");
         Assert.notNull(time, "time can not be null.");
-		List<String> medicineNames = getMedicinesWithinWindow(pillReminderId, time);
+		List<String> medicineNames = getMedicinesWithinWindow(pillReminder, time);
 		return (medicineNames.size() == 0);
 	}
 	
@@ -96,11 +96,9 @@ public class PillReminderService {
 	 * @param time
 	 * @return
 	 */
-	public List<String> getMedicinesWithinWindow(String pillReminderId, Date time){
-        Assert.notNull(pillReminderId, "pillReminderId can not be null.");
+	public List<String> getMedicinesWithinWindow(PillReminder pillReminder, Date time){
+        Assert.notNull(pillReminder, "pillReminder can not be null.");
         Assert.notNull(time, "time can not be null.");
-		PillReminder pillReminder = getPillReminder(pillReminderId);
-		Assert.notNull(pillReminder, "pillReminder[" + pillReminderId + "] doesn't exist.");
 		
 		List<String> medicineNames = new ArrayList<String>();
 		Schedule schedule = pillReminder.getScheduleWithinWindow(time);
