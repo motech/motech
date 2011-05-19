@@ -35,6 +35,8 @@ package org.motechproject.server.decisiontree.service;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +45,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.context.Context;
 import org.motechproject.context.EventContext;
 import org.motechproject.decisiontree.model.Action;
 import org.motechproject.decisiontree.model.Node;
@@ -58,7 +59,7 @@ import org.motechproject.model.MotechEvent;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class TreeEventProcessorTest {
-	private static final String PATIENT_ID = "0001";
+	private Map<String,Object> params = new HashMap<String, Object>();
 	private Node node = Node.newBuilder()
 							.setActionsBefore( Arrays.<Action>asList(
 									Action.newBuilder().setEventId("eventbefore1").build(),
@@ -88,34 +89,55 @@ public class TreeEventProcessorTest {
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
+		params.put("patientId", "001");
 		when(context.getEventRelay()).thenReturn(eventRelay);
 	}
 
 	@Test
 	public void testNodeActionsBefore() {
-		treeEventProcessor.sendActionsBefore(node, "/", PATIENT_ID);
+		treeEventProcessor.sendActionsBefore(node, "/", params);
 		verify(eventRelay, times(3)).sendEventMessage(any(MotechEvent.class));
 	}
 	
 	@Test
 	public void testNodeActionsAfter() {
-		treeEventProcessor.sendActionsAfter(node, "/", PATIENT_ID);
+		treeEventProcessor.sendActionsAfter(node, "/", params);
 		verify(eventRelay, times(2)).sendEventMessage(any(MotechEvent.class));
 	}
 	
 	@Test
 	public void testTransitionActions() {
-		treeEventProcessor.sendTransitionActions(node.getTransitions().get("1"), PATIENT_ID);
+		treeEventProcessor.sendTransitionActions(node.getTransitions().get("1"), params);
 		verify(eventRelay, times(1)).sendEventMessage(any(MotechEvent.class));		
 	}
-	@Test
-	public void testActionsEdgeCases() {
-		treeEventProcessor.sendTransitionActions(null, PATIENT_ID);		
-		treeEventProcessor.sendTransitionActions(Transition.newBuilder().build(), PATIENT_ID);
-		treeEventProcessor.sendActionsBefore(null, "/", PATIENT_ID);
-		treeEventProcessor.sendActionsBefore(Node.newBuilder().build(), "/", PATIENT_ID);
-		treeEventProcessor.sendActionsAfter(null, "/", PATIENT_ID);
-		treeEventProcessor.sendActionsAfter(Node.newBuilder().build(), "/", PATIENT_ID);		
-		verify(eventRelay, times(0)).sendEventMessage(any(MotechEvent.class));		
+
+	@Test(expected=IllegalArgumentException.class)
+	public void testActionsEdgeCase1() {
+		treeEventProcessor.sendTransitionActions(null, params);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testActionsEdgeCase2() {
+		treeEventProcessor.sendTransitionActions(Transition.newBuilder().build(), null);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testActionsEdgeCase3() {
+		treeEventProcessor.sendActionsBefore(null, "/", params);
+	}
+		
+	@Test(expected=IllegalArgumentException.class)
+	public void testActionsEdgeCase4() {
+		treeEventProcessor.sendActionsBefore(Node.newBuilder().build(), "/", null);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testActionsEdgeCase5() {
+		treeEventProcessor.sendActionsAfter(null, "/", params);
+	}
+		
+	@Test(expected=IllegalArgumentException.class)
+	public void testActionsEdgeCase6() {
+		treeEventProcessor.sendActionsAfter(Node.newBuilder().build(), "/", null);		
 	}
 }

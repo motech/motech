@@ -31,17 +31,16 @@
  */
 package org.motechproject.server.decisiontree.service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.motechproject.context.Context;
 import org.motechproject.context.EventContext;
 import org.motechproject.decisiontree.model.Action;
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
+import org.springframework.util.Assert;
 
 /**
  * Responsible for emitting Tree events
@@ -52,37 +51,32 @@ import org.motechproject.model.MotechEvent;
 public class TreeEventProcessor {
 	private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
 
-	private void sendNodeActions(List<Action> actions, String path, String patientId) {
+	private void sendActions(List<Action> actions, Map<String, Object> params) {
 		for (Action action : actions) {
-			Map<String, Object> params = new HashMap<String, Object>();
-			params.put("patientId", patientId);
-			params.put("nodePath", path);
-			MotechEvent event = new MotechEvent(action.getEventId(), params);
-			eventRelay.sendEventMessage(event);
+			eventRelay.sendEventMessage(new MotechEvent(action.getEventId(), params));
 		}
 	}
 
-	public void sendActionsBefore(Node node, String path, String patientId) {
-		if (node != null) {
-			sendNodeActions(node.getActionsBefore(), path, patientId);
-		}
+	public void sendActionsBefore(Node node, String path, Map<String, Object> params) {
+		Assert.notNull(node, "Node must not be null");
+		Assert.notNull(node, "Path must not be null");
+		Assert.notNull(params, "Params must not be null");
+		params.put("treePath", path);
+		sendActions(node.getActionsBefore(), params);
 	}
 
-	public void sendActionsAfter(Node node, String path, String patientId) {
-		if (node != null) {
-			sendNodeActions(node.getActionsAfter(), path, patientId);
-		}
+	public void sendActionsAfter(Node node, String path, Map<String, Object> params) {
+		Assert.notNull(node, "Node must not be null");
+		Assert.notNull(node, "Path must not be null");
+		Assert.notNull(params, "Params must not be null");
+		params.put("treePath", path);
+		sendActions(node.getActionsAfter(), params);
 	}
 
-	public void sendTransitionActions(Transition transition, String patientId) {
-		if (transition != null) {
-			for (Action action : transition.getActions()) {
-				Map<String, Object> params = new HashMap<String, Object>();
-				params.put("patientId", patientId);
-				params.put("transitionName", transition.getName());
-				MotechEvent event = new MotechEvent(action.getEventId(), params);
-				eventRelay.sendEventMessage(event);
-			}
-		}
+	public void sendTransitionActions(Transition transition, Map<String, Object> params) {
+		Assert.notNull(transition, "Transition must not be null");
+		Assert.notNull(params, "Params must not be null");
+		params.put("transitionName", transition.getName());
+		sendActions(transition.getActions(), params);
 	}
 }

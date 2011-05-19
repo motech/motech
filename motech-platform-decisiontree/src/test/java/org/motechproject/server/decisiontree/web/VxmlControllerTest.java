@@ -1,5 +1,8 @@
 package org.motechproject.server.decisiontree.web;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +28,8 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class VxmlControllerTest {
 	private final String treeName = "treeName";
-    private final String patientId = "pID";
+    private final String patientId = "001";
+    private Map<String,Object> params = new HashMap<String, Object>();
     private final String errorCodeKey = "errorCode";
 	private final String transitionPath ="/";
 
@@ -335,9 +339,9 @@ public class VxmlControllerTest {
 
         ModelAndView modelAndView = vxmlController.node(request, response);
 
-        verify(treeEventProcessor).sendActionsBefore(node, TreeNodeLocator.PATH_DELIMITER + transitionKey, patientId);
-        verify(treeEventProcessor, times(0)).sendActionsBefore(parentNode, TreeNodeLocator.PATH_DELIMITER, patientId);
-        verify(treeEventProcessor, times(0)).sendActionsAfter(node, TreeNodeLocator.PATH_DELIMITER + transitionKey, patientId);
+        verify(treeEventProcessor).sendActionsBefore(node, TreeNodeLocator.PATH_DELIMITER + transitionKey, params);
+        verify(treeEventProcessor, times(0)).sendActionsBefore(parentNode, TreeNodeLocator.PATH_DELIMITER, params);
+        verify(treeEventProcessor, times(0)).sendActionsAfter(node, TreeNodeLocator.PATH_DELIMITER + transitionKey, params);
 
     }
 
@@ -363,8 +367,8 @@ public class VxmlControllerTest {
 
         ModelAndView modelAndView = vxmlController.node(request, response);
 
-        verify(treeEventProcessor, times(0)).sendActionsBefore(parentNode, TreeNodeLocator.PATH_DELIMITER, patientId);
-        verify(treeEventProcessor, times(1)).sendActionsAfter(parentNode, TreeNodeLocator.PATH_DELIMITER, patientId);
+        verify(treeEventProcessor, times(0)).sendActionsBefore(parentNode, TreeNodeLocator.PATH_DELIMITER, params);
+        verify(treeEventProcessor, times(1)).sendActionsAfter(parentNode, TreeNodeLocator.PATH_DELIMITER, params);
 
     }
 
@@ -390,7 +394,7 @@ public class VxmlControllerTest {
 
         ModelAndView modelAndView = vxmlController.node(request, response);
 
-        verify(treeEventProcessor).sendTransitionActions(transition, patientId);
+        verify(treeEventProcessor).sendTransitionActions(transition, params);
         assertEquals(VxmlController.LEAF_TEMPLATE_NAME, modelAndView.getViewName());
 
     }
@@ -409,8 +413,8 @@ public class VxmlControllerTest {
 
         ModelAndView modelAndView = vxmlController.node(request, response);
 
-        verify(treeEventProcessor).sendActionsBefore(node, TreeNodeLocator.PATH_DELIMITER, patientId);
-        verify(treeEventProcessor, times(0)).sendActionsAfter(node, TreeNodeLocator.PATH_DELIMITER, patientId);
+        verify(treeEventProcessor).sendActionsBefore(node, TreeNodeLocator.PATH_DELIMITER, params);
+        verify(treeEventProcessor, times(0)).sendActionsAfter(node, TreeNodeLocator.PATH_DELIMITER, params);
 
         verify(decisionTreeService).getNode(treeName, TreeNodeLocator.PATH_DELIMITER);
         assertEquals(VxmlController.LEAF_TEMPLATE_NAME, modelAndView.getViewName());

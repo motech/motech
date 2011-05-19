@@ -41,12 +41,16 @@ import org.motechproject.server.decisiontree.service.TreeNodeLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Spring MVC controller implementation provides method to handle HTTP requests and generate
@@ -82,6 +86,20 @@ public class VxmlController extends MultiActionController {
         INVALID_TRANSITION_KEY_TYPE,
         GET_NODE_ERROR
     }
+    
+    @SuppressWarnings("unchecked")
+	private Map<String, Object> convertParams(@SuppressWarnings("rawtypes") Map requestParams) {
+    	Map<String, Object> params = new HashMap<String, Object>();
+    	Assert.notNull(requestParams);
+    	for(Map.Entry<String, String[]> e : (Set<Map.Entry<String, String[]>>)requestParams.entrySet()) {
+    		if (e.getValue().length==1) {
+    			params.put(e.getKey(), e.getValue()[0]);
+    		} else {
+    			params.put(e.getKey(), e.getValue());
+    		}
+    	}
+    	return params;
+    }
 
     /**
      * Handles Decision Tree Node HTTP requests and generates a VXML document based on a Velocity template.
@@ -96,6 +114,7 @@ public class VxmlController extends MultiActionController {
 
         Node node = null;
         String transitionPath = null;
+        Map<String,Object> params = convertParams(request.getParameterMap());
 
         String patientId = request.getParameter(PATIENT_ID_PARAM);
         String language = request.getParameter(LANGUAGE_PARAM);
@@ -162,9 +181,9 @@ public class VxmlController extends MultiActionController {
                         +  transitionKey;
 
 
-                treeEventProcessor.sendActionsAfter(parentNode, parentTransitionPath, patientId);
+                treeEventProcessor.sendActionsAfter(parentNode, parentTransitionPath, params);
 
-                treeEventProcessor.sendTransitionActions(transition, patientId);
+                treeEventProcessor.sendTransitionActions(transition, params);
 
 
             } catch (Exception e) {
@@ -195,7 +214,7 @@ public class VxmlController extends MultiActionController {
                 }
             }
 
-            treeEventProcessor.sendActionsBefore(node, transitionPath, patientId);
+            treeEventProcessor.sendActionsBefore(node, transitionPath, params);
 
 
             ModelAndView mav = new ModelAndView();
