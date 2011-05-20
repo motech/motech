@@ -1,7 +1,19 @@
 package org.motechproject.server.decisiontree.web;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
@@ -11,19 +23,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.decisiontree.model.Action;
 import org.motechproject.decisiontree.model.Node;
+import org.motechproject.decisiontree.model.Prompt;
+import org.motechproject.decisiontree.model.TextToSpeechPrompt;
 import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.server.decisiontree.service.DecisionTreeService;
 import org.motechproject.server.decisiontree.service.TreeEventProcessor;
 import org.motechproject.server.decisiontree.service.TreeNodeLocator;
 import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class VxmlControllerTest {
@@ -90,6 +98,11 @@ public class VxmlControllerTest {
         Node node = new Node();
         Transition transition = new Transition();
         transition.setDestinationNode(new Node());
+        Prompt p = new TextToSpeechPrompt();
+        p.setName("p");
+        List<Prompt> pl = new ArrayList<Prompt>();
+        pl.add(p);
+        transition.getDestinationNode().setPrompts(pl);
         node.addTransition("1", transition);
 
 
@@ -168,30 +181,6 @@ public class VxmlControllerTest {
         verify(decisionTreeService).getNode(treeName, transitionPath);
         assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
         assertEquals(VxmlController.Errors.INVALID_TRANSITION_KEY_TYPE, modelAndView.getModel().get(errorCodeKey));
-
-    }
-
-    @Test
-    public void nodeTestInvalidTransitionNoDestinationNode() {
-
-        Node node = new Node();
-        Transition transition = new Transition();
-        node.addTransition("1", transition);
-
-        when(request.getParameter(VxmlController.TREE_NAME_PARAM)).thenReturn(treeName);
-        when(request.getParameter(VxmlController.PATIENT_ID_PARAM)).thenReturn("PATIENT_ID");
-        when(request.getParameter(VxmlController.LANGUAGE_PARAM)).thenReturn("en");
-        when(request.getParameter(VxmlController.TRANSITION_KEY_PARAM)).thenReturn("1");
-        when(request.getParameter(VxmlController.TRANSITION_PATH_PARAM)).thenReturn(Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
-
-        when(decisionTreeService.getNode(treeName, transitionPath)).thenReturn(node);
-
-        ModelAndView modelAndView = vxmlController.node(request, response);
-
-        assertNotNull(modelAndView);
-        verify(decisionTreeService).getNode(treeName, transitionPath);
-        assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
-        assertEquals(VxmlController.Errors.NULL_DESTINATION_NODE, modelAndView.getModel().get(errorCodeKey));
 
     }
 
@@ -321,6 +310,10 @@ public class VxmlControllerTest {
     public void sendActionsBeforeTest() {
 
         Node node = new Node();
+        List<Action> actions = new ArrayList<Action>();
+        Action a = new Action();
+        actions.add(a);
+        node.setActionsBefore(actions);
         String transitionKey = "1";
 
         Node parentNode = new Node();
@@ -381,6 +374,11 @@ public class VxmlControllerTest {
         Node node = new Node();
         Transition transition = new Transition();
         transition.setDestinationNode(new Node());
+        Prompt p = new TextToSpeechPrompt();
+        p.setName("p");
+        List<Prompt> pl = new ArrayList<Prompt>();
+        pl.add(p);
+        transition.getDestinationNode().setPrompts(pl);
         node.addTransition("1", transition);
 
 
