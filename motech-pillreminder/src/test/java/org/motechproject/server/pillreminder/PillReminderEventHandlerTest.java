@@ -34,6 +34,8 @@ package org.motechproject.server.pillreminder;
 
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.joda.time.DateTime;
@@ -81,6 +83,8 @@ public class PillReminderEventHandlerTest {
     private EventRelay eventRelay;
 
     private MotechEvent event = new MotechEvent(EventKeys.PILLREMINDER_PUBLISH_EVENT_SUBJECT);
+
+    PillReminder reminder = spy(new PillReminder());
     
 	/**
 	 * @throws java.lang.Exception
@@ -88,8 +92,11 @@ public class PillReminderEventHandlerTest {
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
+		
+		event.getParameters().put(EventKeys.TREE_NAME_ID, "tree");
+		event.getParameters().put(EventKeys.TREE_TRANSITION_ID, "taken");
+		event.getParameters().put(EventKeys.TREE_PATIENT_ID, "10");
 
-		PillReminder reminder = new PillReminder();
         reminder.setId(PILLREMINDER_ID);		
 		reminder.setStartDate(new DateTime(2011, 3, 1, 0, 0, 0, 0).toDate());
 		reminder.setEndDate(new DateTime(2011, 3, 31, 0, 0, 0, 0).toDate());
@@ -117,21 +124,50 @@ public class PillReminderEventHandlerTest {
 		pillreminderEventHandler.schedulePillReminder(event);
 		verify(schedulerGateway, times(60)).scheduleRepeatingJob(any(RepeatingSchedulableJob.class));
 	}
+	
 	@Test
 	public void testUnschedulePillReminder() {
 		pillreminderEventHandler.unschedulePillReminder(event);
 		verify(schedulerGateway, times(60)).unscheduleJob(any(String.class));
 		verify(pillReminderDao, times(1)).remove(any(PillReminder.class));
 	}
+	
 	@Test
 	public void testReceivePillReminderFromSchedulerCompleted() {
 		when(pillReminderService.isPillReminderCompleted(any(PillReminder.class), any(Date.class))).thenReturn(true);
 		pillreminderEventHandler.receivePillReminderFromScheduler(event);
+		verify(eventRelay,times(0)).sendEventMessage(event);
 	}
+	
 	@Test
 	public void testReceivePillReminderFromSchedulerNotCompleted() {
 		when(pillReminderService.isPillReminderCompleted(any(PillReminder.class), any(Date.class))).thenReturn(false);
 		pillreminderEventHandler.receivePillReminderFromScheduler(event);
 		verify(eventRelay,times(1)).sendEventMessage(event);
+	}
+	
+	@Test
+	public void testRreceivePillReminderResultsNoRemindersWithinWindow() {
+		when(pillReminderService.getRemindersWithinWindow(anyString(), any(Date.class))).thenReturn(new ArrayList<PillReminder>());
+		pillreminderEventHandler.receivePillReminderResults(event);
+		verify(pillReminderService, times(0)).isPillReminderCompleted(any(PillReminder.class), any(Date.class));
+	}
+
+	@Test
+	public void testRreceivePillReminderResultsNotCompleted() {
+		when(pillReminderService.getRemindersWithinWindow(anyString(), any(Date.class))).thenReturn(Arrays.asList(reminder));
+		when(pillReminderService.isPillReminderCompleted(any(PillReminder.class), any(Date.class))).thenReturn(false);
+		doReturn(reminder.getSchedules().get(0)).when(reminder).getScheduleWithinWindow(any(Date.class));
+		pillreminderEventHandler.receivePillReminderResults(event);
+		verify(schedulerGateway,times(0)).unscheduleJob(anyString());
+	}
+
+	@Test
+	public void testRreceivePillReminderResultsCompleted() {
+		when(pillReminderService.getRemindersWithinWindow(anyString(), any(Date.class))).thenReturn(Arrays.asList(reminder));
+		when(pillReminderService.isPillReminderCompleted(any(PillReminder.class), any(Date.class))).thenReturn(true);
+		doReturn(reminder.getSchedules().get(0)).when(reminder).getScheduleWithinWindow(any(Date.class));
+		pillreminderEventHandler.receivePillReminderResults(event);
+		verify(schedulerGateway,times(1)).unscheduleJob(anyString());
 	}
 }

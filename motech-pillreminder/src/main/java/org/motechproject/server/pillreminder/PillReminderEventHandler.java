@@ -194,6 +194,7 @@ public class PillReminderEventHandler {
 
 
 	/**
+	 * Reports results
 	 * @param pillReminder
 	 * @param medName
 	 * @param equals
@@ -209,6 +210,8 @@ public class PillReminderEventHandler {
 				for (Status status : medicine.getStatuses()) {
 					if(status.getWindowStartTimeWithDate().equals(schedule.getWindowStart().getTimeOfDate(now))) {
 						status.setTaken(taken);
+						pillReminderDao.update(pillReminder);
+						return;
 					}
 				}
 			}
