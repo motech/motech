@@ -36,6 +36,7 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -52,7 +53,8 @@ import org.springframework.util.Assert;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"/testAnnotatedHandlers.xml"})
 public class AnnotationBasedHandlerTest {
-	static MotechEvent motechEvent;
+	
+	static boolean test = false;
 	
 	@Autowired
     ServerEventRelay eventRelay;
@@ -71,27 +73,34 @@ public class AnnotationBasedHandlerTest {
 	public static class MyHandler {
 		@MotechListener(subjects={"sub_a","sub_b"})
 		public void handleX(MotechEvent event) {
-			AnnotationBasedHandlerTest.motechEvent = event;
+			test=true;
 //			System.out.println(event);
 		}
 		@MotechListener(subjects={"sub_a","sub_c"})
 		public void handleY(MotechEvent event) {
-			AnnotationBasedHandlerTest.motechEvent = event;
+			test=true;
 //			System.out.println(event);
 		}
 		@MotechListener(subjects={"params"}, type=MotechListenerType.ORDERED_PARAMETERS)
 		public void handleParams(Integer a, Integer b, String s) {
+			test=true;
 //			System.out.printf("a+b= %d\n",a+b);
 		}
 		@MotechListener(subjects={"exception"}, type=MotechListenerType.ORDERED_PARAMETERS)
-		public void excParams(Integer a, Integer b, String s) {
+		public void orderedParams(Integer a, Integer b, String s) {
 			Assert.notNull(s, "s must not be null");
+			test=true;
 //			System.out.printf("a+b= %d\n"+s,a+b);
+		}
+		@MotechListener(subjects={"named"}, type=MotechListenerType.NAMED_PARAMETERS)
+		public void namedParams(@MotechParam("id") String id, @MotechParam("key") String key) {
+			test=true;
+//			System.out.printf("id: %s, key: %s\n", id,key);
 		}
 	}
 
-	public static void clearMotechEvent() {
-		AnnotationBasedHandlerTest.motechEvent = null;
+	public static void clear() {
+		test=false;
 	}
 	
 	@Test
@@ -105,23 +114,52 @@ public class AnnotationBasedHandlerTest {
 	@Test
 	public void testRelay() {
 		MotechEvent e = new MotechEvent("sub_b", null);
-		clearMotechEvent();
+		clear();
 		eventRelay.relayEvent(e);
-		assertEquals(e, motechEvent);
-
+		assertTrue(test);
+		
 		e = new MotechEvent("sub_c", null);
-		clearMotechEvent();
+		clear();
 		eventRelay.relayEvent(e);
-		assertEquals(e, motechEvent);
+		assertTrue(test);
 	}
 	
 	@Test
-	public void testParams() {
+	public void testOrderedParams() {
+		clear();
 		send("params",23,44,null);
+		assertTrue(test);
 	}
 	
 	@Test
 	public void testExeption() {
+		clear();
 		send("exception", 1, 3, null);
+		assertFalse(test);
+	}
+
+	@Test
+	public void testNamedParamsHappy() {
+		clear();
+		MotechEvent event = new MotechEvent("named");
+		event.getParameters().put("id", "id0012");
+		event.getParameters().put("key", "2354");
+		eventRelay.relayEvent(event);
+		assertTrue(test);
+	}
+
+	@Test
+	public void testNamedParamsNotHappy() {
+		clear();
+		MotechEvent event = new MotechEvent("named");
+		event.getParameters().put("id", "id0012");
+		event.getParameters().put("key", 1);
+		eventRelay.relayEvent(event);
+		assertFalse(test);
+		clear();
+		event.getParameters().clear();
+		event.getParameters().put("id", "id0012");
+		eventRelay.relayEvent(event);
+		assertFalse(test);
 	}
 }

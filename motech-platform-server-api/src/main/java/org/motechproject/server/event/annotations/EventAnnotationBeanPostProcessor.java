@@ -83,8 +83,11 @@ public class EventAnnotationBeanPostProcessor implements BeanPostProcessor {
 					case MOTECH_EVENT:
 						proxy = new MotechListenerEventProxy(beanName, bean, method);
 						break;
+					case NAMED_PARAMETERS:
+						proxy = new MotechListenerNamedParametersProxy(beanName, bean, method);
+						break;
 					}
-					logger.info("Registering listener: "+beanName+", method: "+method.toGenericString()+", for subjects: "+subjects);
+					logger.info(String.format("Registering listener type(%20s) bean: %s , method: %s, for subjects: %s",annotation.type().toString(), beanName, method.toGenericString(), subjects));
 					Context.getInstance().getEventListenerRegistry().registerListener(proxy, subjects);
 				}
 			}

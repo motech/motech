@@ -42,9 +42,12 @@ import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.server.event.annotations.MotechListener;
+import org.motechproject.server.event.annotations.MotechListenerType;
+import org.motechproject.server.event.annotations.MotechParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 
 /**
  * 
@@ -57,23 +60,16 @@ public class ReminderCRUDEventHandler {
 	@Autowired
 	private ReminderService reminderService;
 
-	@MotechListener(subjects = { EventKeys.REMINDER_DELETED_SUBJECT })
-	public void delete(MotechEvent event) {
-		String jobId = EventKeys.getJobId(event);
-		if (null != jobId) {
-			schedulerGateway.unscheduleJob(jobId);
-		}
+	@MotechListener(subjects = { EventKeys.REMINDER_DELETED_SUBJECT }, type=MotechListenerType.NAMED_PARAMETERS)
+	public void delete(@MotechParam(EventKeys.JOB_ID_KEY) String jobId) {
+		Assert.notNull(jobId);
+		schedulerGateway.unscheduleJob(jobId);
 	}
 
-	@MotechListener(subjects = { EventKeys.REMINDER_CREATED_SUBJECT })
-	public void create(MotechEvent event) {
-		Reminder reminder = reminderService.getReminder(EventKeys.getReminderId(event));
-		if (null == reminder) {
-			logger.error("Can not handle Event: " + event.getSubject()
-					+ ". The event is invalid - missing the "
-					+ EventKeys.REMINDER_ID_KEY + " parameter");
-			return;
-		}
+	@MotechListener(subjects = { EventKeys.REMINDER_CREATED_SUBJECT }, type=MotechListenerType.NAMED_PARAMETERS)
+	public void create(@MotechParam(EventKeys.REMINDER_ID_KEY) String reminderId) {
+		Reminder reminder = reminderService.getReminder(reminderId);
+		Assert.notNull(reminder);
 		reminder.setJobId(UUID.randomUUID().toString());
 		// This will publish an updated event so no need to talk to the
 		// scheduler twice, just wait for

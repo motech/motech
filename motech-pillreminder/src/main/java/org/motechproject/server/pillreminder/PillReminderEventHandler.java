@@ -31,11 +31,8 @@
  */
 package org.motechproject.server.pillreminder;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
-import javax.print.attribute.standard.Media;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.ektorp.DocumentNotFoundException;
@@ -53,6 +50,8 @@ import org.motechproject.pillreminder.api.model.PillReminder;
 import org.motechproject.pillreminder.api.model.Schedule;
 import org.motechproject.pillreminder.api.model.Status;
 import org.motechproject.server.event.annotations.MotechListener;
+import org.motechproject.server.event.annotations.MotechListenerType;
+import org.motechproject.server.event.annotations.MotechParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,13 +116,13 @@ public class PillReminderEventHandler {
 	 * Responsible for scheduling and re-scheduling of pill reminders
 	 * @param event
 	 */
-	@MotechListener(subjects={EventKeys.PILLREMINDER_CREATED_SUBJECT, EventKeys.PILLREMINDER_UPDATED_SUBJECT})
-	public void schedulePillReminder(MotechEvent event) {
+	@MotechListener(subjects={EventKeys.PILLREMINDER_CREATED_SUBJECT, EventKeys.PILLREMINDER_UPDATED_SUBJECT}, type=MotechListenerType.NAMED_PARAMETERS)
+	public void schedulePillReminder(@MotechParam(EventKeys.PILLREMINDER_ID_KEY) String pillReminderId) {
 		try {
-			PillReminder reminder = pillReminderService.getPillReminder(EventKeys.getReminderID(event));
+			PillReminder reminder = pillReminderService.getPillReminder(pillReminderId);
 			processReminder(reminder,ProcessType.SCHEDULE);
 		} catch ( DocumentNotFoundException e) {
-			logger.error(String.format("PillReminder for ID: %s not found.", EventKeys.getReminderID(event)));
+			logger.error(String.format("PillReminder for ID: %s not found.", pillReminderId));
 		}
 	}
 	
@@ -131,14 +130,14 @@ public class PillReminderEventHandler {
 	 * Responsible for unscheduling pill reminders
 	 * @param event
 	 */
-	@MotechListener(subjects={EventKeys.PILLREMINDER_DELETED_SUBJECT})
-	public void unschedulePillReminder(MotechEvent event) {
+	@MotechListener(subjects={EventKeys.PILLREMINDER_DELETED_SUBJECT} , type=MotechListenerType.NAMED_PARAMETERS)
+	public void unschedulePillReminder(@MotechParam(EventKeys.PILLREMINDER_ID_KEY) String pillReminderId) {
 		try {
-			PillReminder reminder = pillReminderService.getPillReminder(EventKeys.getReminderID(event));
+			PillReminder reminder = pillReminderService.getPillReminder(pillReminderId);
 			processReminder(reminder, ProcessType.UNSCHEDULE);
 			pillReminderDao.remove(reminder);
 		} catch ( DocumentNotFoundException e) {
-			logger.error(String.format("PillReminder for ID: %s not found.", EventKeys.getReminderID(event)));
+			logger.error(String.format("PillReminder for ID: %s not found.", pillReminderId));
 		}
 	}
 

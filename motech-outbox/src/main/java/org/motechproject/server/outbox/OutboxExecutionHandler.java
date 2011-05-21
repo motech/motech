@@ -137,9 +137,7 @@ public class OutboxExecutionHandler {
         }
 
         MotechEvent reminderEvent = new MotechEvent(EventKeys.EXECUTE_OUTBOX_SUBJECT, event.getParameters());
-		CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(reminderEvent,
-                                                           String.format("0 %d %d * * ?", callHour,
-                                                                         callMinute));
+		CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(reminderEvent, String.format("0 %d %d * * ?", callMinute, callHour));
 
     	schedulerGateway.scheduleJob(cronSchedulableJob);		
 	}

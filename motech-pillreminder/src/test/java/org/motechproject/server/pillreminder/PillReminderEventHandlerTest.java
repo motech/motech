@@ -121,13 +121,13 @@ public class PillReminderEventHandlerTest {
 
 	@Test
 	public void testSchedulePillReminder() {
-		pillreminderEventHandler.schedulePillReminder(event);
+		pillreminderEventHandler.schedulePillReminder(PILLREMINDER_ID);
 		verify(schedulerGateway, times(60)).scheduleRepeatingJob(any(RepeatingSchedulableJob.class));
 	}
 	
 	@Test
 	public void testUnschedulePillReminder() {
-		pillreminderEventHandler.unschedulePillReminder(event);
+		pillreminderEventHandler.unschedulePillReminder(PILLREMINDER_ID);
 		verify(schedulerGateway, times(60)).unscheduleJob(any(String.class));
 		verify(pillReminderDao, times(1)).remove(any(PillReminder.class));
 	}

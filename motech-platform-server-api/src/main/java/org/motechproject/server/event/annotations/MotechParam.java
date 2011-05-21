@@ -31,9 +31,19 @@
  */
 package org.motechproject.server.event.annotations;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
- * ENUM defining the annotation types
  * @author yyonkov
  *
  */
-public enum MotechListenerType { MOTECH_EVENT, ORDERED_PARAMETERS, NAMED_PARAMETERS }
+@Target({ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface MotechParam {
+	String value();
+}

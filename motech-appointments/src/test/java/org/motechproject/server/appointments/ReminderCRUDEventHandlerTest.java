@@ -77,51 +77,30 @@ public class ReminderCRUDEventHandlerTest
 
     @Test
     public void testHandle_Delete() throws Exception {
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put(EventKeys.JOB_ID_KEY, "foo");
-
-        MotechEvent motechEvent = new MotechEvent("deleted", params);
-
-        reminderCRUDEventHandler.delete(motechEvent);
-
+        reminderCRUDEventHandler.delete("foo");
         verify(schedulerGateway, times(1)).unscheduleJob("foo");
     }
 
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void testHandle_DeleteNoJobId() throws Exception {
-        Map<String, Object> params = new HashMap<String, Object>();
-
-        MotechEvent motechEvent = new MotechEvent("deleted", params);
-
-        reminderCRUDEventHandler.delete(motechEvent);
-
+        reminderCRUDEventHandler.delete(null);
         verify(schedulerGateway, times(0)).unscheduleJob("foo");
     }
 
     @Test
     public void testHandle_Created() throws Exception {
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put(EventKeys.REMINDER_ID_KEY, "foo");
-
-        MotechEvent motechEvent = new MotechEvent("created", params);
 
         Reminder r = new Reminder();
         when(reminderService.getReminder("foo")).thenReturn(r);
 
-        reminderCRUDEventHandler.create(motechEvent);
+        reminderCRUDEventHandler.create("foo");
 
         verify(reminderService, times(1)).updateReminder(r);
     }
 
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void testHandle_CreatedNoReminderId() throws Exception {
-        Map<String, Object> params = new HashMap<String, Object>();
-
-        MotechEvent motechEvent = new MotechEvent("created", params);
-
-        reminderCRUDEventHandler.create(motechEvent);
-
-        verify(reminderService, times(0)).updateReminder(any(Reminder.class));
+        reminderCRUDEventHandler.create("");
     }
 
     @Test
