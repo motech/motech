@@ -8,6 +8,7 @@
              </prompt>
             <prompt>
                 Please fix your appointment
+                $message.getParameters().get("message")
             </prompt>
              #set ($url = "$contextPath/outbox/vxml/messageMenu?mId=$message.id&ln=$language")
             <goto next="$escape.escapeXml($url)"/>

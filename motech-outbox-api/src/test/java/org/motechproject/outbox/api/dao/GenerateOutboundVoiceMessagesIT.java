@@ -63,7 +63,7 @@ public class GenerateOutboundVoiceMessagesIT {
 	private String partyId1 = "10";
 	@Before
 	public void setUp() {
-		/*VoiceMessageType messageType = new VoiceMessageType();
+		VoiceMessageType messageType = new VoiceMessageType();
 		messageType.setVoiceMessageTypeName("Type1");
 		messageType.setPriority(MessagePriority.HIGH);
 		messageType.setvXmlTemplateName("appointmentReminder");
@@ -90,10 +90,11 @@ public class GenerateOutboundVoiceMessagesIT {
 			msg1.setCreationTime(now);
 			msg1.setExpirationDate(DateUtils.addDays(now,2));
 			msg1.setStatus(OutboundVoiceMessageStatus.PENDING);
-			outboundVoiceMessageDao.add(msg1);
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("message", "message 1 - can be saved");
+         Map<String, Object> params = new HashMap<String, Object>();
+        params.put("message", "with doctor John Doe");
         msg1.setParameters(params);
+			outboundVoiceMessageDao.add(msg1);
+
         
         OutboundVoiceMessage msg2 = new OutboundVoiceMessage();
         msg2.setVoiceMessageType(messageType1);
@@ -101,10 +102,11 @@ public class GenerateOutboundVoiceMessagesIT {
 			msg2.setCreationTime(now);
 			msg2.setExpirationDate(DateUtils.addDays(now, 2));
 			msg2.setStatus(OutboundVoiceMessageStatus.PENDING);
-			outboundVoiceMessageDao.add(msg2);
         params.clear();
-         params.put("message", "message 2 - can be re-played");
+         params.put("message", "with doctor Simpson");
         msg2.setParameters(params);
+			outboundVoiceMessageDao.add(msg2);
+
         
         OutboundVoiceMessage msg3 = new OutboundVoiceMessage();
         msg3.setVoiceMessageType(messageType2);
@@ -112,10 +114,11 @@ public class GenerateOutboundVoiceMessagesIT {
 			msg3.setCreationTime(now);
 			msg3.setExpirationDate(DateUtils.addDays(now, 2));
 			msg3.setStatus(OutboundVoiceMessageStatus.PENDING);
-			outboundVoiceMessageDao.add(msg3);
         params.clear();
-         params.put("message", "message 3 - can be saved and re-played");
-        msg3.setParameters(params);*/
+         params.put("message", "with doctor House");
+        msg3.setParameters(params);
+			outboundVoiceMessageDao.add(msg3);
+
 
 	}
 
