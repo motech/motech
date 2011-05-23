@@ -21,7 +21,7 @@ public class EventKeys {
 
     public final static String PILLREMINDER_REMINDER_EVENT_SUBJECT = BASE_SUBJECT + "scheduler-reminder";
 	public static final String PILLREMINDER_PUBLISH_EVENT_SUBJECT = BASE_SUBJECT + "publish-reminder";
-	public static final String PILLREMINDER_RESULT_EVENT_SUBJECT = BASE_SUBJECT + "publish-reminder";
+	public static final String PILLREMINDER_RESULT_EVENT_SUBJECT = BASE_SUBJECT + "results-reminder";
 
 	// decision tree ID's
 	public static final String TREE_NAME_ID = "tNm";
@@ -29,9 +29,9 @@ public class EventKeys {
 	public static final String TREE_PATIENT_ID = "pId";
 	
 	// transition names
-	public static final String TRANSITION_NOT_YET_TAKEN = "NOT_YET_TAKEN";
-	public static final String TRANSITION_NOT_TAKEN = "NOT_TAKEN";
-	public static final String TRANSITION_TAKEN = "TAKEN";
+	public static final String TRANSITION_NOT_YET_TAKEN = "dose-not-taken-yet";
+	public static final String TRANSITION_NOT_TAKEN = "cannot-take-dose";
+	public static final String TRANSITION_TAKEN = "dose-taken";
 	
     public static String getScheduleJobIdKey(MotechEvent event)
     {

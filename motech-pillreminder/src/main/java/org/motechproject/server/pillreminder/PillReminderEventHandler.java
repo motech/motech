@@ -31,6 +31,7 @@
  */
 package org.motechproject.server.pillreminder;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -40,6 +41,7 @@ import org.motechproject.context.Context;
 import org.motechproject.context.EventContext;
 import org.motechproject.event.EventRelay;
 import org.motechproject.gateway.MotechSchedulerGateway;
+import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.pillreminder.api.EventKeys;
@@ -86,27 +88,40 @@ public class PillReminderEventHandler {
 		Assert.notNull(reminder, "PillReminder must not be null");
 		Assert.notNull(reminder.getStartDate(), "PillReminder startDate must not be null");
 		Assert.notNull(reminder.getEndDate(), "PillReminder endDate must not be null");
-		for(Date d = reminder.getStartDate(); d.before(reminder.getEndDate()); d=DateUtils.addDays(d, +1) ) {
-			// (un)schedule for each day
-			for( Schedule s : reminder.getSchedules()) {
-				// (un)schedule for each time of the day
-				Assert.notNull(s, "Schedule must not be null");
-				if(t==ProcessType.SCHEDULE) {
-					Assert.notNull(s.getStartCallTime(), "Schedule startCallTime must not be null");
-					Assert.notNull(s.getEndCallTime(), "Schedule endCallTime must not be null");
-					Assert.notNull(s.getRepeatCount(), "Schedule repeatCount must not be null");
-					Assert.notNull(s.getRepeatInterval(), "Schedule repeatInterval must not be null");
-					event.getParameters().put(EventKeys.SCHEDULE_JOB_ID_KEY, s.getJobId());
-					RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(	
-							event,
-							s.getStartCallTime().getTimeOfDate(d),
-							s.getEndCallTime().getTimeOfDate(d), 
-							s.getRepeatCount(),
-							s.getRepeatInterval() * 1000);
-					schedulerGateway.scheduleRepeatingJob(schedulableJob);
-				} else {
-					schedulerGateway.unscheduleJob(s.getJobId());
-				}
+		for( Schedule s : reminder.getSchedules()) {
+			// (un)schedule for each time of the day
+			Assert.notNull(s, "Schedule must not be null");
+			if(t==ProcessType.SCHEDULE) {
+				Assert.notNull(s.getStartCallTime(), "Schedule startCallTime must not be null");
+				Assert.notNull(s.getEndCallTime(), "Schedule endCallTime must not be null");
+				Assert.notNull(s.getRepeatCount(), "Schedule repeatCount must not be null");
+				Assert.notNull(s.getRepeatInterval(), "Schedule repeatInterval must not be null");
+				event.getParameters().put(EventKeys.SCHEDULE_JOB_ID_KEY, s.getJobId());
+
+				CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(
+						event, 
+						String.format("0 %d/%d %d-%d * * ?", // "0 min/rep-min hour_begin-hour_end * * ?"
+								DateUtils.getFragmentInMinutes(s.getStartCallTime().getTimeOfDate(reminder.getStartDate()), Calendar.HOUR_OF_DAY),  s.getRepeatInterval(),  // minutes / repeat interval
+								DateUtils.getFragmentInHours(s.getStartCallTime().getTimeOfDate(reminder.getStartDate()), Calendar.DAY_OF_YEAR), // start hour
+								DateUtils.getFragmentInHours(s.getEndCallTime().getTimeOfDate(reminder.getStartDate()), Calendar.DAY_OF_YEAR)  // end hour    
+						), 
+						reminder.getStartDate(),  // start day
+						reminder.getEndDate()  // end day
+				);
+				schedulerGateway.scheduleJob(cronSchedulableJob);
+
+//					** RepeatingSchedulableJob is insufficient for scheduling start-end days
+//					RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(	
+//							event,
+//							s.getStartCallTime().getTimeOfDate(d),
+//							s.getEndCallTime().getTimeOfDate(d), 
+//							s.getRepeatCount(),
+//							s.getRepeatInterval() * 1000);
+//					schedulerGateway.scheduleRepeatingJob(schedulableJob);
+
+			} else {
+				schedulerGateway.unscheduleJob(s.getJobId());
+				s.setJobId(null);
 			}
 		}
 	}
