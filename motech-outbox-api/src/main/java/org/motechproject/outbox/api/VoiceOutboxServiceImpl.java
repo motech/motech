@@ -11,6 +11,7 @@ import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 
 import java.util.Calendar;
 import java.util.List;
@@ -48,6 +49,7 @@ public class VoiceOutboxServiceImpl implements VoiceOutboxService {
         
         //sends max-pending-messages event if needed
         String pId = outboundVoiceMessage.getPartyId();
+        Assert.hasText(pId, "VoiceMessage must have a valid partyId");
         int msgNum = outboundVoiceMessageDao.getPendingMessagesCount(pId);
         if(maxNumberOfPendingMessages==msgNum) {
         	log.warn(String.format("Max number (%d) of pending messages reached!", msgNum));

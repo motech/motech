@@ -33,14 +33,15 @@
 
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:util="http://www.springframework.org/schema/util"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
 	<context:annotation-config />
-
+	
     <util:properties id="couchdbProperties" location="classpath:couchdb.properties" />
 	<bean id="tamaDatabase" class="org.ektorp.impl.StdCouchDbConnector">
 		<constructor-arg value="test-tama" />
@@ -54,6 +55,20 @@
 	</bean>
 
     <bean id="patientDAO" class="org.motechproject.tama.api.dao.impl.PatientDAOImpl" />
+
+	<bean id="outboxDatabase" class="org.ektorp.impl.StdCouchDbConnector">
+		<constructor-arg value="test-outbox" />
+		<constructor-arg>
+			<bean name="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
+				<constructor-arg>
+					<bean class="org.ektorp.spring.HttpClientFactoryBean" />
+				</constructor-arg>
+			</bean>
+		</constructor-arg>
+	</bean>
+
+	<bean id="outboundVoiceMessageDao" class="org.motechproject.outbox.api.dao.couchdb.OutboundVoiceMessageDaoImpl"/>
+
 
     <bean id="metricsAgent" class="org.motechproject.metrics.impl.MultipleMetricsAgentImpl">
         <property name="metricsAgents">
@@ -70,5 +85,22 @@
         <property name="serverPort" value="9000"/>
         <property name="generateHostBasedStats" value="false"/>
     </bean>
+    
+    <bean id="outboundEventGateway" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="org.motechproject.gateway.StubOutboundEventGateway" />
+    </bean>
 
+    <bean id="eventRelay" class="org.motechproject.server.event.ServerEventRelay"/>
+	<bean id="eventListenerRegistry" class="org.motechproject.server.event.EventListenerRegistry" />
+	<bean id="context" class="org.motechproject.context.Context" factory-method="getInstance"/>
+
+    <!-- handels @MotechListner annotations -->
+    <bean class="org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor"/>
+<!--     <bean id="outboxMaxPendingMessagesIT" class="org.motechproject.server.tama.OutboxMaxPendingMessagesIT"/>    
+ -->
+    <bean id="voiceOutboxService" class="org.motechproject.outbox.api.VoiceOutboxServiceImpl">
+        <property name="numDayskeepSavedMessages" value="10"/>
+    	<property name="maxNumberOfPendingMessages" value="15"/>
+    </bean>
+    
 </beans>

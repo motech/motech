@@ -55,8 +55,10 @@ public class VoiceOutboxServiceTest {
 
     @Test
      public void testAddMessage() {
-
+        String partyId = "pid";
+        
         OutboundVoiceMessage outboundVoiceMessage = new OutboundVoiceMessage();
+        outboundVoiceMessage.setPartyId(partyId);
 
         voiceOutboxService.addMessage(outboundVoiceMessage);
 

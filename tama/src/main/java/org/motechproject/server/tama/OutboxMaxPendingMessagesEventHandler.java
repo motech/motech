@@ -31,9 +31,10 @@
  */
 package org.motechproject.server.tama;
 
-import org.motechproject.model.MotechEvent;
 import org.motechproject.outbox.api.EventKeys;
 import org.motechproject.server.event.annotations.MotechListener;
+import org.motechproject.server.event.annotations.MotechListenerType;
+import org.motechproject.server.event.annotations.MotechParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,8 +45,8 @@ import org.slf4j.LoggerFactory;
  */
 public class OutboxMaxPendingMessagesEventHandler {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	@MotechListener(subjects = { EventKeys.OUTBOX_MAX_PENDING_MESSAGES_EVENT_SUBJECT })
-	public void maxPendingMessages(MotechEvent event) {
-		logger.info(String.format("Max number of pending messages for pId: %d, event received.", EventKeys.getPartyID(event)));
+	@MotechListener(subjects = { EventKeys.OUTBOX_MAX_PENDING_MESSAGES_EVENT_SUBJECT }, type=MotechListenerType.NAMED_PARAMETERS)
+	public void maxPendingMessages(@MotechParam(EventKeys.PARTY_ID_KEY) String partyId) {
+		logger.info(String.format("Max number of pending messages for pId: %d, event received.", partyId));
 	}
 }
