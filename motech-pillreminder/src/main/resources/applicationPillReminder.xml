@@ -64,6 +64,6 @@
 	</bean>
 	<bean id="pillReminderService" class="org.motechproject.pillreminder.api.PillReminderService"/>
 	
-	<bean id="pillReminderContext"  class="org.motechproject.pillreminder.api.PillReminderContext"/>
+	<bean id="pillReminderContext"  class="org.motechproject.pillreminder.api.PillReminderContext" factory-method="getInstance"/>
 
 </beans>

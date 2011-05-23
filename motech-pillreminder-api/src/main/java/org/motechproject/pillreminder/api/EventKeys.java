@@ -21,7 +21,7 @@ public class EventKeys {
 
     public final static String PILLREMINDER_REMINDER_EVENT_SUBJECT = BASE_SUBJECT + "scheduler-reminder";
 	public static final String PILLREMINDER_PUBLISH_EVENT_SUBJECT = BASE_SUBJECT + "publish-reminder";
-	public static final String PILLREMINDER_RESULT_EVENT_SUBJECT = BASE_SUBJECT + "publish-reminder";
+	public static final String PILLREMINDER_RESULT_EVENT_SUBJECT = BASE_SUBJECT + "result-reminder";
 
 	// decision tree ID's
 	public static final String TREE_NAME_ID = "tNm";

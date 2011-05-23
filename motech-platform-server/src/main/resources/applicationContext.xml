@@ -74,7 +74,8 @@
 
     <bean id="ivrService" class="org.motechproject.server.service.ivr.asterisk.IVRServiceAsteriskImpl" >
         <!--Asterisk Server host-->
-        <constructor-arg  value="motech.2paths.com"/>
+        <constructor-arg  value="192.168.0.9"/>
+<!--         <constructor-arg  value="10.0.1.47"/> -->
         <!--Asterisk Server user-->
         <constructor-arg  value="admin"/>
         <!--Asterisk Server user password-->

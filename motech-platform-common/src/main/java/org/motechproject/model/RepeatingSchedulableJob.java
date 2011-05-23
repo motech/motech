@@ -117,4 +117,13 @@ public class RepeatingSchedulableJob implements Serializable {
     {
         this.repeatInterval = repeatInterval;
     }
+
+	@Override
+	public String toString() {
+		return "RepeatingSchedulableJob [motechEvent=" + motechEvent
+				+ ", startTime=" + startTime + ", endTime=" + endTime
+				+ ", repeatCount=" + repeatCount + ", repeatInterval="
+				+ repeatInterval + "]";
+	}
+    
 }
