@@ -192,6 +192,9 @@ public class PillReminderEventHandler {
 			return;
 		}
 		
+ 		//The first one in the comma separated list is the current medicine name.
+		medName = medName.split(",")[0];
+		
 		//TODO implementation for 1 reminder only (update for more) 
 		PillReminder reminder = reminders.get(0);
 		if(!transitionName.equalsIgnoreCase(EventKeys.TRANSITION_NOT_YET_TAKEN)) {

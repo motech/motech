@@ -65,18 +65,21 @@ public class PillReminderEventHandler {
     public static final String TREE_NAME_PARAM = "tNm";
 
 	private IVRService ivrService = Context.getInstance().getIvrService();
-	private PillReminderService pillReminderService = PillReminderContext.getInstance().getPillReminderService();
+	private PillReminderService pillReminderService;
 	
 	private String vxmlUrl;
 
 	//TODO: should be a system wide configuration?
-	private int timeOut = 20;
+	private int timeOut = 20000;
 
 	@Autowired
 	private PatientDAO patientDAO;
 
 	@MotechListener(subjects = { EventKeys.PILLREMINDER_PUBLISH_EVENT_SUBJECT })
 	public void handle(MotechEvent event) {
+		if (pillReminderService == null) {
+			pillReminderService = PillReminderContext.getInstance().getPillReminderService();
+		}
 		String pillReminderId = EventKeys.getReminderID(event);
 		if (pillReminderId == null) {
 			log.error("Can not handle the Pill Reminder Event: " + event
