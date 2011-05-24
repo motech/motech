@@ -52,6 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Handles Remind Appointment Events
@@ -60,7 +61,12 @@ import java.util.Date;
  * todo need to get clarity around what goes in server-common vs. server-api
  */
 public class AppointmentReminderEventHandler {
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
+    
+    //TODO: move this out to config somewhere
+    private static final String HOST_IP = "10.0.1.6";
+    private static final String OUTBOX_MESSAGE_BASE_URL = "http://" + HOST_IP + "/motech-platform-server/module/outbox/vxml/outboxMessage";
+    
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     AppointmentService appointmentService = AppointmentsContext.getInstance().getAppointmentService();
     ReminderService reminderService = AppointmentsContext.getInstance().getReminderService();
@@ -69,9 +75,9 @@ public class AppointmentReminderEventHandler {
     VoiceOutboxService voiceOutboxService = OutboxContext.getInstance().getVoiceOutboxService();
 
     //Interim implementation
-    String needToScheduleAppointmentVxmlUrl = "http://needtoschedule/";
-    String upcomingAppointmentVxmlUrl = "";
-    String missedAppointmentVxmlUrl = "";
+    String needToScheduleAppointmentVxmlUrl = OUTBOX_MESSAGE_BASE_URL;
+    String upcomingAppointmentVxmlUrl = OUTBOX_MESSAGE_BASE_URL;
+    String missedAppointmentVxmlUrl = OUTBOX_MESSAGE_BASE_URL;
     
     @MotechListener(subjects={EventKeys.APPOINTMENT_REMINDER_EVENT_SUBJECT})
 	public void handle(MotechEvent event) {
@@ -109,10 +115,13 @@ public class AppointmentReminderEventHandler {
         //
         // I also am making an assumption that the reminders have been set up according to the m, n logic.  So I
         // am not checking for that here.
+        
+        String msgId = UUID.randomUUID().toString();
+        String pId = appointment.getExternalId();
 
         String url = null;
         if (null == appointment.getScheduledDate()) {
-            url = needToScheduleAppointmentVxmlUrl + "?aptId=" + appointmentId + "&type=schedule";
+            url = needToScheduleAppointmentVxmlUrl + "?mId=" + msgId + "&pId=" + pId + "&type=schedule";
         }
 
         Date today = new Date();
@@ -131,9 +140,9 @@ public class AppointmentReminderEventHandler {
             }
 
             if (today.compareTo(appointment.getScheduledDate()) <= 0) {
-                url = upcomingAppointmentVxmlUrl + "?aptId=" + appointmentId + "&type=upcoming";
+                url = upcomingAppointmentVxmlUrl + "?mId=" + msgId + "&pId=" + pId + "&type=upcoming";
             } else {
-                url = missedAppointmentVxmlUrl + "?aptId=" + appointmentId + "&type=missed";
+                url = missedAppointmentVxmlUrl + "?mId=" + msgId + "&pId=" + pId + "&type=missed";
             }
         }
 
@@ -143,6 +152,7 @@ public class AppointmentReminderEventHandler {
             mt.setvXmlTemplateName(url);
 
             OutboundVoiceMessage msg = new OutboundVoiceMessage();
+            msg.setId(msgId);
             msg.setPartyId(appointment.getExternalId());
             msg.setStatus(OutboundVoiceMessageStatus.PENDING);
             msg.setCreationTime(new Date());

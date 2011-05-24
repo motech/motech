@@ -54,8 +54,11 @@ public class OutboxExecutionHandler {
 	private MotechSchedulerGateway schedulerGateway = Context.getInstance().getMotechSchedulerGateway();
     private IVRService ivrService = Context.getInstance().getIvrService();
 
-    String outboxVxmlUrl = "http://192.168.1.162:8080/m/module/outbox/execute";
-   	int timeOut = 10;
+    //TODO: move this out to config somewhere
+    private static final String HOST_IP = "10.0.1.6";
+    private static final String OUTBOX_VXML_BASE_URL = "http://" + HOST_IP + "/motech-platform-server/module/outbox/vxml/outboxMessage";
+
+   	int timeOut = 20000;
 
 	@MotechListener(subjects={EventKeys.EXECUTE_OUTBOX_SUBJECT})
 	public void execute(MotechEvent event) {
@@ -82,7 +85,7 @@ public class OutboxExecutionHandler {
         }        
 
         try {
-            String vxmlUrl = outboxVxmlUrl + "?partyId=" + partyId + "&ln=" + language;
+            String vxmlUrl = OUTBOX_VXML_BASE_URL + "?pId=" + partyId + "&ln=" + language;
             CallRequest callRequest = new CallRequest(1l, phoneNumber, timeOut, vxmlUrl);
 
             Map<String, Object> messageParameters = new HashMap<String, Object>();
