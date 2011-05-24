@@ -56,6 +56,7 @@ import org.motechproject.model.Time;
 import org.motechproject.pillreminder.api.EventKeys;
 import org.motechproject.pillreminder.api.PillReminderService;
 import org.motechproject.pillreminder.api.dao.PillReminderDao;
+import org.motechproject.pillreminder.api.model.Medicine;
 import org.motechproject.pillreminder.api.model.PillReminder;
 import org.motechproject.pillreminder.api.model.Schedule;
 
@@ -166,6 +167,9 @@ public class PillReminderEventHandlerTest {
 
 	@Test
 	public void testRreceivePillReminderResultsCompleted() {
+		Medicine med = new Medicine();
+		med.setName("tree");
+		reminder.getMedicines().add(med);
 		when(pillReminderService.getRemindersWithinWindow(anyString(), any(Date.class))).thenReturn(Arrays.asList(reminder));
 		when(pillReminderService.isPillReminderCompleted(any(PillReminder.class), any(Date.class))).thenReturn(true);
 		doReturn(reminder.getSchedules().get(0)).when(reminder).getScheduleWithinWindow(any(Date.class));
