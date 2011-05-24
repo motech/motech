@@ -86,5 +86,5 @@
 		<property name="exposeSpringMacroHelpers" value="true" />
 	</bean>
 
-	<bean id="outboxContext" class="org.motechproject.outbox.api.context.OutboxContext"/>
+	<bean id="outboxContext" class="org.motechproject.outbox.api.context.OutboxContext" factory-method="getInstance"/>
 </beans>

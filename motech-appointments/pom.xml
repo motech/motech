@@ -105,6 +105,7 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
+                        <Export-Package>org.motechproject.appointments.api;org.motechproject.appointments.api.model;org.motechproject.appointments.api.context</Export-Package>
 						<Bundle-Activator>
                             org.motechproject.server.appointments.Activator
                         </Bundle-Activator>

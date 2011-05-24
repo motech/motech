@@ -77,7 +77,18 @@ public class AppointmentReminderEventHandler {
 	public void handle(MotechEvent event) {
 // 		Metrics is logged for every handler automatically
 //      metricsAgent.logEvent(event.getSubject());
-
+        if (appointmentService == null) {
+            appointmentService = AppointmentsContext.getInstance().getAppointmentService();
+        }
+        
+        if (voiceOutboxService == null) {
+            voiceOutboxService = OutboxContext.getInstance().getVoiceOutboxService();
+        }
+        
+        if (reminderService == null) {
+            reminderService = AppointmentsContext.getInstance().getReminderService();
+        }
+        
         String appointmentId = EventKeys.getAppointmentId(event);
         if (appointmentId == null) {
             log.error("Can not handle the Appointment Reminder Event: " + event +
