@@ -49,6 +49,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.event.EventRelay;
 import org.motechproject.gateway.MotechSchedulerGateway;
+import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.Time;
@@ -122,13 +123,13 @@ public class PillReminderEventHandlerTest {
 	@Test
 	public void testSchedulePillReminder() {
 		pillreminderEventHandler.schedulePillReminder(PILLREMINDER_ID);
-		verify(schedulerGateway, times(60)).scheduleRepeatingJob(any(RepeatingSchedulableJob.class));
+		verify(schedulerGateway, times(2)).scheduleJob(any(CronSchedulableJob.class));
 	}
 	
 	@Test
 	public void testUnschedulePillReminder() {
 		pillreminderEventHandler.unschedulePillReminder(PILLREMINDER_ID);
-		verify(schedulerGateway, times(60)).unscheduleJob(any(String.class));
+		verify(schedulerGateway, times(2)).unscheduleJob(any(String.class));
 		verify(pillReminderDao, times(1)).remove(any(PillReminder.class));
 	}
 	
