@@ -56,7 +56,7 @@ public class GeneratePillReminderIT {
 //		reminder.getSchedules().add(schedule);
 //		
 //		reminder.setStartDate(DateUtils.truncate(new Date(), Calendar.DATE));
-//		reminder.setEndDate(now.toDate());
+//		reminder.setEndDate(DateUtils.addDays(new Date(),+1));
 //		
 //		pillReminderService.addPillReminder(reminder);
 	}
