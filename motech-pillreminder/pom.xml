@@ -107,6 +107,7 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
+						<Export-Package>org.motechproject.pillreminder.api;org.motechproject.pillreminder.api.model</Export-Package>
 						<Bundle-Activator>
 							org.motechproject.server.pillreminder.Activator
                         </Bundle-Activator>

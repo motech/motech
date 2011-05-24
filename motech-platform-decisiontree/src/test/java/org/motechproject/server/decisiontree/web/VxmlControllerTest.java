@@ -58,8 +58,8 @@ public class VxmlControllerTest {
 
     @Before
     public void initMocks() {
-
         MockitoAnnotations.initMocks(this);
+        params.put(VxmlController.TREE_NAME_PARAM, treeName);
      }
 
     @Test

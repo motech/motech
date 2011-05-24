@@ -35,12 +35,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.motechproject.decisiontree.dao.TreeDao;
+import org.motechproject.decisiontree.model.Action;
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.Prompt;
 import org.motechproject.decisiontree.model.TextToSpeechPrompt;
 import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.decisiontree.model.Tree;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.pillreminder.api.EventKeys;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,6 +79,7 @@ public class SymptomsNodeEventListener {
 																).build() },
 														{"2",	Transition.newBuilder().setName("pressed2")
 																	.setDestinationNode(Node.newBuilder().setPrompts(Arrays.<Prompt>asList(TextToSpeechPrompt.newBuilder().setMessage("Check with us again").build())).build())
+																.setActions(Arrays.asList(Action.newBuilder().setEventId(EventKeys.PILLREMINDER_RESULT_EVENT_SUBJECT).build())) // event to pill reminder
 																.build()}
 												})
 										.build())

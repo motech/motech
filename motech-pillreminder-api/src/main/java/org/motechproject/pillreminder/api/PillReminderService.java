@@ -106,11 +106,15 @@ public class PillReminderService {
 			List<Medicine> medicines = pillReminder.getMedicines();
 			for (Medicine medicine : medicines) {
 				List<Status> statuses = medicine.getStatuses();
-				for (Status status : statuses) {
-					Date windowStartTime = schedule.getWindowStart().getTimeOfDate(time);
-					if (status.getWindowStartTimeWithDate().equals(windowStartTime)
-							&& !status.getTaken()) {
-						medicineNames.add(medicine.getName());
+				if (statuses.isEmpty()) {
+					medicineNames.add(medicine.getName());
+				} else {
+					for (Status status : statuses) {
+						Date windowStartTime = schedule.getWindowStart().getTimeOfDate(time);
+						if (status.getWindowStartTimeWithDate().equals(windowStartTime)
+								&& !status.getTaken()) {
+							medicineNames.add(medicine.getName());
+						}
 					}
 				}
 			}

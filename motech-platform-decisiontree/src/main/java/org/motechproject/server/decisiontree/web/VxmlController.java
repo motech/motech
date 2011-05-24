@@ -148,6 +148,8 @@ public class VxmlController extends MultiActionController {
         
         String[] treeNames = treeNameString.split(TREE_NAME_SEPARATOR);
         String currentTree = treeNames[0];
+        // put only one tree name in params
+        params.put(TREE_NAME_PARAM, currentTree);        
 
         if (transitionKey == null) {  // get root node
             try {

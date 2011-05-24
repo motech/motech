@@ -150,7 +150,7 @@
 
 						<!-- Project-wide thresholds -->
 						<totalLineRate>55</totalLineRate>
-						<totalBranchRate>61</totalBranchRate>
+						<totalBranchRate>60</totalBranchRate>
                         <regexes>
                             <regex>
                                 <pattern>org.motechproject.outbox.api.model.*</pattern>

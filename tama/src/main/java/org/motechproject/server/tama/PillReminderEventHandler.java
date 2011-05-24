@@ -64,8 +64,8 @@ public class PillReminderEventHandler {
     public static final String LANGUAGE_PARAM = "ln";
     public static final String TREE_NAME_PARAM = "tNm";
 
-	private PillReminderService pillReminderService = PillReminderContext.getInstance().getPillReminderService();
 	private IVRService ivrService = Context.getInstance().getIvrService();
+	private PillReminderService pillReminderService = PillReminderContext.getInstance().getPillReminderService();
 	
 	private String vxmlUrl;
 
