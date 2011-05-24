@@ -98,26 +98,26 @@ public class PillReminderEventHandler {
 				Assert.notNull(s.getRepeatInterval(), "Schedule repeatInterval must not be null");
 				event.getParameters().put(EventKeys.SCHEDULE_JOB_ID_KEY, s.getJobId());
 
-//				CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(
-//						event, 
-//						String.format("0 %d/%d %d-%d * * ?", // "0 min/rep-min hour_begin-hour_end * * ?"
-//								DateUtils.getFragmentInMinutes(s.getStartCallTime().getTimeOfDate(reminder.getStartDate()), Calendar.HOUR_OF_DAY),  s.getRepeatInterval(),  // minutes / repeat interval
-//								DateUtils.getFragmentInHours(s.getStartCallTime().getTimeOfDate(reminder.getStartDate()), Calendar.DAY_OF_YEAR), // start hour
-//								DateUtils.getFragmentInHours(s.getEndCallTime().getTimeOfDate(reminder.getStartDate()), Calendar.DAY_OF_YEAR)  // end hour    
-//						), 
-//						reminder.getStartDate(),  // start day
-//						reminder.getEndDate()  // end day
-//				);
-//				schedulerGateway.scheduleJob(cronSchedulableJob);
+				CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(
+						event, 
+						String.format("0 %d/%d %d-%d * * ?", // "0 min/rep-min hour_begin-hour_end * * ?"
+								DateUtils.getFragmentInMinutes(s.getStartCallTime().getTimeOfDate(reminder.getStartDate()), Calendar.HOUR_OF_DAY),  s.getRepeatInterval()/60,  // minutes / repeat interval in minutes
+								DateUtils.getFragmentInHours(s.getStartCallTime().getTimeOfDate(reminder.getStartDate()), Calendar.DAY_OF_YEAR), // start hour
+								DateUtils.getFragmentInHours(s.getEndCallTime().getTimeOfDate(reminder.getStartDate()), Calendar.DAY_OF_YEAR)  // end hour    
+						), 
+						reminder.getStartDate(),  // start day
+						reminder.getEndDate()  // end day
+				);
+				schedulerGateway.scheduleJob(cronSchedulableJob);
 
 //					** RepeatingSchedulableJob is insufficient for scheduling start-end days
-					RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(	
-							event,
-							s.getStartCallTime().getTimeOfDate(reminder.getStartDate()),
-							s.getEndCallTime().getTimeOfDate(reminder.getStartDate()), 
-							s.getRepeatCount(),
-							s.getRepeatInterval() * 1000);
-					schedulerGateway.scheduleRepeatingJob(schedulableJob);
+//					RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(	
+//							event,
+//							s.getStartCallTime().getTimeOfDate(reminder.getStartDate()),
+//							s.getEndCallTime().getTimeOfDate(reminder.getStartDate()), 
+//							s.getRepeatCount(),
+//							s.getRepeatInterval() * 1000);
+//					schedulerGateway.scheduleRepeatingJob(schedulableJob);
 
 			} else {
 				schedulerGateway.unscheduleJob(s.getJobId());

@@ -124,8 +124,8 @@ public class PillReminderEventHandlerTest {
 	@Test
 	public void testSchedulePillReminder() {
 		pillreminderEventHandler.schedulePillReminder(PILLREMINDER_ID);
-		//verify(schedulerGateway, times(2)).scheduleJob(any(CronSchedulableJob.class));
-		verify(schedulerGateway, times(2)).scheduleRepeatingJob(any(RepeatingSchedulableJob.class));
+		verify(schedulerGateway, times(2)).scheduleJob(any(CronSchedulableJob.class));
+//		verify(schedulerGateway, times(2)).scheduleRepeatingJob(any(RepeatingSchedulableJob.class));
 	}
 	
 	@Test
