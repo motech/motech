@@ -31,22 +31,17 @@
  */
 package org.motechproject.server.tama;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.motechproject.decisiontree.dao.TreeDao;
-import org.motechproject.decisiontree.model.Action;
-import org.motechproject.decisiontree.model.Node;
-import org.motechproject.decisiontree.model.Prompt;
-import org.motechproject.decisiontree.model.TextToSpeechPrompt;
-import org.motechproject.decisiontree.model.Transition;
-import org.motechproject.decisiontree.model.Tree;
+import org.motechproject.decisiontree.model.*;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.pillreminder.api.EventKeys;
+import org.motechproject.outbox.api.EventKeys;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Logs all symptoms decision tree events
@@ -79,7 +74,7 @@ public class SymptomsNodeEventListener {
 																).build() },
 														{"2",	Transition.newBuilder().setName("pressed2")
 																	.setDestinationNode(Node.newBuilder().setPrompts(Arrays.<Prompt>asList(TextToSpeechPrompt.newBuilder().setMessage("Check with us again").build())).build())
-																.setActions(Arrays.asList(Action.newBuilder().setEventId(EventKeys.PILLREMINDER_RESULT_EVENT_SUBJECT).build())) // event to pill reminder
+																.setActions(Arrays.asList(Action.newBuilder().setEventId(EventKeys.EXECUTE_OUTBOX_SUBJECT).build())) // event to pill reminder
 																.build()}
 												})
 										.build())
