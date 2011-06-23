@@ -43,10 +43,10 @@ import org.motechproject.model.Audit;
 import org.motechproject.model.MotechAuditableDataObject;
 
 
-public abstract class MotechAuditableRepository <T extends MotechAuditableDataObject> extends MotechBaseRepository<T> implements BaseDao<T> {
-    
+public abstract class MotechAuditableRepository<T extends MotechAuditableDataObject> extends MotechBaseRepository<T> implements BaseDao<T> {
+
     private static final String AUDIT_ID_SUFFIX = "_AUDIT";
-    
+
     private final Class<T> type;
 
     protected MotechAuditableRepository(Class<T> type, CouchDbConnector db) {
@@ -77,10 +77,9 @@ public abstract class MotechAuditableRepository <T extends MotechAuditableDataOb
         entity.setAudits(new TreeSet<Audit>());
         entity.getAudits().add(audit);
     }
-    
-    @Override
-    public void remove(T entity){
 
+    @Override
+    public void remove(T entity) {
         Set<Audit> audits = entity.getAudits();
         if (audits != null) {
             for (Audit audit : audits) {
@@ -89,11 +88,12 @@ public abstract class MotechAuditableRepository <T extends MotechAuditableDataOb
         }
         super.remove(entity);
     }
-    
-    @GenerateView @Override
+
+    @GenerateView
+    @Override
     public List<T> getAll() {
-            ViewQuery q = createQuery("all").includeDocs(true);
-            return db.queryView(q, this.type);
+        ViewQuery q = createQuery("all").includeDocs(true);
+        return db.queryView(q, this.type);
     }
-    
+
 }
