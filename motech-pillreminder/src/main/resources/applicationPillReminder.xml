@@ -29,8 +29,8 @@
     <bean id="jaxbMarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
         <property name="classesToBeBound">
             <list>
-                <value>com.motechproject.server.pillreminder.contract.PillRegimenRequest</value>
-                <value>com.motechproject.server.pillreminder.contract.DosageRequest</value>
+                <value>org.motechproject.server.pillreminder.contract.PillRegimenRequest</value>
+                <value>org.motechproject.server.pillreminder.contract.DosageRequest</value>
             </list>
         </property>
      </bean>

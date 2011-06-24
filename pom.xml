@@ -130,7 +130,6 @@
                             <exclude>org/motechproject/**/annotations/*.class</exclude>
                             <exclude>org/motechproject/**/model/*.class</exclude>
                             <exclude>org/motechproject/**/dao/*.class</exclude>
-                            <exclude>org/motechproject/**/repository/*.class</exclude>
                             <exclude>org/motechproject/**/dao/**/*.class</exclude>
                             <exclude>org/motechproject/**/context/*.class</exclude>
                             <exclude>org/motechproject/context/*.class</exclude>
