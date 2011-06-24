@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.motechproject.server.pillreminder.util.TestUtil.getDate;
+import static com.motechproject.server.pillreminder.util.TestUtil.newDate;
 import static org.junit.Assert.assertEquals;
 
 public class PillRegimenBuilderTest {
@@ -22,8 +22,8 @@ public class PillRegimenBuilderTest {
 
     @Test
     public void shouldCreateAPillRegimenFromARequest() {
-        Date date1 = getDate(2011, 5, 20);
-        Date date2 = getDate(2011, 5, 21);
+        Date date1 = newDate(2011, 5, 20);
+        Date date2 = newDate(2011, 5, 21);
         String externalId = "123";
         String medicine1Name = "m1";
         String medicine2Name = "m2";
@@ -33,11 +33,11 @@ public class PillRegimenBuilderTest {
         PillRegimen pillRegimen = builder.createFrom(pillRegimenRequest);
 
         Set<Dosage> expectedDosages = new HashSet<Dosage>();
-        HashSet<Medicine> expectedMedicines = new HashSet<Medicine>();
+        Set<Medicine> expectedMedicines = new HashSet<Medicine>();
         expectedMedicines.add(new Medicine(medicine1Name));
         expectedMedicines.add(new Medicine(medicine2Name));
 
-        HashSet<Reminder> expectedReminders = new HashSet<Reminder>();
+        Set<Reminder> expectedReminders = new HashSet<Reminder>();
         expectedReminders.add(new Reminder(date1));
         expectedReminders.add(new Reminder(date2));
 

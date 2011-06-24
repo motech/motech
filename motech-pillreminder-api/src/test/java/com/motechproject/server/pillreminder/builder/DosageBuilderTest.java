@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import java.util.*;
 
-import static com.motechproject.server.pillreminder.util.TestUtil.getDate;
+import static com.motechproject.server.pillreminder.util.TestUtil.newDate;
 import static org.junit.Assert.assertEquals;
 
 public class DosageBuilderTest {
@@ -18,18 +18,18 @@ public class DosageBuilderTest {
     @Test
     public void shouldBuildADosageFromRequest(){
         List<String> medicines = Arrays.asList("m1", "m2");
-        Date date1 = getDate(2011, 5, 20);
-        Date date2 = getDate(2011, 5, 21);
+        Date date1 = newDate(2011, 5, 20);
+        Date date2 = newDate(2011, 5, 21);
         List<Date> reminders = Arrays.asList(date1, date2);
         DosageRequest dosageRequest = new DosageRequest(medicines, reminders);
 
         Dosage dosage = builder.createFrom(dosageRequest);
 
-        HashSet<Medicine> expectedMedicines = new HashSet<Medicine>();
+        Set<Medicine> expectedMedicines = new HashSet<Medicine>();
         expectedMedicines.add(new Medicine("m1"));
         expectedMedicines.add(new Medicine("m2"));
 
-        HashSet<Reminder> expectedReminders = new HashSet<Reminder>();
+        Set<Reminder> expectedReminders = new HashSet<Reminder>();
         expectedReminders.add(new Reminder(date1));
         expectedReminders.add(new Reminder(date2));
 

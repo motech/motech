@@ -10,7 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.*;
 
-import static com.motechproject.server.pillreminder.util.TestUtil.getDate;
+import static com.motechproject.server.pillreminder.util.TestUtil.newDate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -27,8 +27,8 @@ public class AllPillRegimensTest {
 
     @Before
     public void setUp() {
-        startDate = getDate(2011, 1, 1);
-        endDate = getDate(2011, 3, 1);
+        startDate = newDate(2011, 1, 1);
+        endDate = newDate(2011, 3, 1);
     }
 
     @Test
@@ -44,7 +44,7 @@ public class AllPillRegimensTest {
     @Test
     public void shouldSaveThePillRegimenWithDosages() {
         Medicine medicine = new Medicine("m1");
-        Reminder reminder = new Reminder(getDate(2011, 1, 21));
+        Reminder reminder = new Reminder(newDate(2011, 1, 21));
         Set<Medicine> medicines = new HashSet<Medicine>();
         medicines.add(medicine);
         Set<Reminder> reminders = new HashSet<Reminder>();

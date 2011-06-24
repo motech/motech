@@ -14,8 +14,6 @@ public class PillReminderServiceImpl implements PillReminderService {
 
     @Override
     public void createNew(PillRegimenRequest pillRegimenRequest) {
-        PillRegimenBuilder pillRegimenBuilder = new PillRegimenBuilder();
-        PillRegimen pillRegimen = pillRegimenBuilder.createFrom(pillRegimenRequest);
 
     }
 
