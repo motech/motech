@@ -17,7 +17,6 @@ public class ReminderTest {
         assertFalse(reminder.equals(new Reminder()));
 
         assertTrue(reminder.equals(reminder));
-        assertTrue(reminder.equals(new Reminder(TestUtil.newDate(2011, 1, 1))));
     }
 
 }
