@@ -6,6 +6,7 @@ import com.motechproject.server.pillreminder.domain.PillRegimen;
 import com.motechproject.server.pillreminder.repository.AllPillRegimens;
 
 public class PillReminderServiceImpl implements PillReminderService {
+
     private AllPillRegimens allPillRegimens;
 
     public PillReminderServiceImpl(AllPillRegimens allPillRegimens) {
@@ -14,7 +15,10 @@ public class PillReminderServiceImpl implements PillReminderService {
 
     @Override
     public void createNew(PillRegimenRequest pillRegimenRequest) {
-
+        PillRegimenBuilder builder = new PillRegimenBuilder();
+        PillRegimen pillRegimen = builder.createFrom(pillRegimenRequest);
+        pillRegimen.validate();
+        allPillRegimens.add(pillRegimen);
     }
 
 }
