@@ -9,6 +9,7 @@ import java.util.Set;
 
 @TypeDiscriminator("doc.type === 'PILLREGIMEN'")
 public class PillRegimen extends MotechAuditableDataObject {
+
     public static final String REGIMEN_END_DATE_CANNOT_BE_BEFORE_START_DATE = "Regimen end-date cannot be before start-date";
 
     @JsonProperty("type")

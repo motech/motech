@@ -1,4 +1,4 @@
-package org.motechproject.server.pillreminder.repository;
+package org.motechproject.server.pillreminder.dao;
 
 import org.motechproject.server.pillreminder.domain.PillRegimen;
 import org.ektorp.CouchDbConnector;

@@ -4,7 +4,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 import java.util.List;
 
-@XmlRootElement
 public class PillRegimenRequest {
     private String externalId;
     private Date startDate;

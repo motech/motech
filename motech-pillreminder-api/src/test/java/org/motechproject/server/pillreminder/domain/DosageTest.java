@@ -14,24 +14,23 @@ public class DosageTest {
 
     @Test
     public void shouldTestEquality() {
-        Date date1 = TestUtil.newDate(2011, 5, 20);
-        Date date2 = TestUtil.newDate(2011, 5, 21);
+        Set<Medicine> medicines = new HashSet<Medicine>();
+        medicines.add(new Medicine("m1"));
+        medicines.add(new Medicine("m2"));
 
-        Set<Medicine> expectedMedicines = new HashSet<Medicine>();
-        expectedMedicines.add(new Medicine("m1"));
-        expectedMedicines.add(new Medicine("m2"));
+        Set<Reminder> reminders = new HashSet<Reminder>();
+        Reminder reminder1 = new Reminder(2,30,4,30);
+        Reminder reminder2 = new Reminder(3,30,4,30);
+        reminders.add(reminder1);
+        reminders.add(reminder2);
 
-        Set<Reminder> expectedReminders = new HashSet<Reminder>();
-        expectedReminders.add(new Reminder(date1));
-        expectedReminders.add(new Reminder(date2));
-
-        Dosage dosage = new Dosage(expectedMedicines, expectedReminders);
+        Dosage dosage = new Dosage(medicines, reminders);
 
         assertFalse(dosage.equals(""));
         assertFalse(dosage.equals(null));
         assertFalse(dosage.equals(new Dosage()));
 
         assertTrue(dosage.equals(dosage));
-        assertTrue(dosage.equals(new Dosage(expectedMedicines, expectedReminders)));
+        assertTrue(dosage.equals(new Dosage(medicines, reminders)));
     }
 }

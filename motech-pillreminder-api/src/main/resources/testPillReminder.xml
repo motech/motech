@@ -20,7 +20,7 @@
 		</constructor-arg>
 	</bean>
 
-	<bean id="allPillRegimens" class="org.motechproject.server.pillreminder.repository.AllPillRegimens" >
+	<bean id="allPillRegimens" class="org.motechproject.server.pillreminder.dao.AllPillRegimens" >
         <constructor-arg ref="pillReminderDatabase"/>
     </bean>
 

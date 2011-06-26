@@ -1,7 +1,7 @@
 package org.motechproject.server.pillreminder.domain;
 
 public class Medicine {
-   private String name;
+    private String name;
 
     public Medicine() {
     }

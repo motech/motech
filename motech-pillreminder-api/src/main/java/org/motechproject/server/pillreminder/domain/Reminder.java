@@ -1,23 +1,64 @@
 package org.motechproject.server.pillreminder.domain;
 
-import java.util.Date;
+import java.util.UUID;
 
 public class Reminder {
-    private Date dateTime;
+    private String id;
+    private Integer hour;
+    private Integer minute;
+    private Integer repeatSize;
+    private Integer repeatInterval;
 
     public Reminder() {
+
     }
 
-    public Reminder(Date dateTime) {
-        this.dateTime = dateTime;
+    public Reminder(Integer hour, Integer minute, Integer repeatSize, Integer repeatInterval) {
+        this.id = UUID.randomUUID().toString();
+        this.hour = hour;
+        this.minute = minute;
+        this.repeatSize = repeatSize;
+        this.repeatInterval = repeatInterval;
     }
 
-    public Date getDateTime() {
-        return dateTime;
+    public String getId() {
+        return id;
     }
 
-    public void setDateTime(Date dateTime) {
-        this.dateTime = dateTime;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Integer getHour() {
+        return hour;
+    }
+
+    public void setHour(Integer hour) {
+        this.hour = hour;
+    }
+
+    public Integer getMinute() {
+        return minute;
+    }
+
+    public void setMinute(Integer minute) {
+        this.minute = minute;
+    }
+
+    public Integer getRepeatSize() {
+        return repeatSize;
+    }
+
+    public void setRepeatSize(Integer repeatSize) {
+        this.repeatSize = repeatSize;
+    }
+
+    public Integer getRepeatInterval() {
+        return repeatInterval;
+    }
+
+    public void setRepeatInterval(Integer repeatInterval) {
+        this.repeatInterval = repeatInterval;
     }
 
     @Override
@@ -25,12 +66,20 @@ public class Reminder {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Reminder reminder = (Reminder) o;
-        if (dateTime != null ? !dateTime.equals(reminder.dateTime) : reminder.dateTime != null) return false;
+        if (hour != null ? !hour.equals(reminder.hour) : reminder.hour != null) return false;
+        if (minute != null ? !minute.equals(reminder.minute) : reminder.minute != null) return false;
+        if (repeatInterval != null ? !repeatInterval.equals(reminder.repeatInterval) : reminder.repeatInterval != null)
+            return false;
+        if (repeatSize != null ? !repeatSize.equals(reminder.repeatSize) : reminder.repeatSize != null) return false;
         return true;
     }
 
     @Override
     public int hashCode() {
-        return dateTime != null ? dateTime.hashCode() : 0;
+        int result = hour != null ? hour.hashCode() : 0;
+        result = 31 * result + (minute != null ? minute.hashCode() : 0);
+        result = 31 * result + (repeatSize != null ? repeatSize.hashCode() : 0);
+        result = 31 * result + (repeatInterval != null ? repeatInterval.hashCode() : 0);
+        return result;
     }
 }

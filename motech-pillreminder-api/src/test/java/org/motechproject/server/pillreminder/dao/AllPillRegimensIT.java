@@ -1,7 +1,6 @@
-package org.motechproject.server.pillreminder.repository;
+package org.motechproject.server.pillreminder.dao;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.server.pillreminder.domain.Dosage;
@@ -48,13 +47,13 @@ public class AllPillRegimensIT {
     @Test
     public void shouldSaveThePillRegimenWithDosages() {
         Medicine medicine = new Medicine("m1");
-        Reminder reminder = new Reminder(TestUtil.newDate(2011, 1, 21));
+        Reminder reminder = new Reminder(1, 30, 5, 400);
         Set<Medicine> medicines = new HashSet<Medicine>();
         medicines.add(medicine);
         Set<Reminder> reminders = new HashSet<Reminder>();
         reminders.add(reminder);
 
-        Dosage dosage = new Dosage(medicines,reminders);
+        Dosage dosage = new Dosage(medicines, reminders);
         Set<Dosage> dosages = new HashSet<Dosage>();
         dosages.add(dosage);
 

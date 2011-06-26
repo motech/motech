@@ -1,6 +1,7 @@
 package org.motechproject.server.pillreminder.builder;
 
 import org.motechproject.server.pillreminder.contract.DosageRequest;
+import org.motechproject.server.pillreminder.contract.ReminderRequest;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.junit.Test;
 import org.motechproject.server.pillreminder.domain.Medicine;
@@ -16,22 +17,17 @@ public class DosageBuilderTest {
     private DosageBuilder builder = new DosageBuilder();
 
     @Test
-    public void shouldBuildADosageFromRequest(){
-        List<String> medicines = Arrays.asList("m1", "m2");
-        Date date1 = newDate(2011, 5, 20);
-        Date date2 = newDate(2011, 5, 21);
-        List<Date> reminders = Arrays.asList(date1, date2);
-        DosageRequest dosageRequest = new DosageRequest(medicines, reminders);
-
-        Dosage dosage = builder.createFrom(dosageRequest);
+    public void shouldBuildADosageFromRequest() {
+        ReminderRequest reminderRequest = new ReminderRequest(1, 30, 5, 300);
+        DosageRequest dosageRequest = new DosageRequest(Arrays.asList("m1"), Arrays.asList(reminderRequest));
 
         Set<Medicine> expectedMedicines = new HashSet<Medicine>();
         expectedMedicines.add(new Medicine("m1"));
-        expectedMedicines.add(new Medicine("m2"));
 
         Set<Reminder> expectedReminders = new HashSet<Reminder>();
-        expectedReminders.add(new Reminder(date1));
-        expectedReminders.add(new Reminder(date2));
+        expectedReminders.add(new Reminder(1, 30, 5, 300));
+
+        Dosage dosage = builder.createFrom(dosageRequest);
 
         Dosage expectedDosage = new Dosage(expectedMedicines, expectedReminders);
         assertEquals(expectedDosage, dosage);
