@@ -1,5 +1,8 @@
 package org.motechproject.server.pillreminder.service;
 
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.motechproject.server.pillreminder.contract.DosageRequest;
 import org.motechproject.server.pillreminder.contract.PillRegimenRequest;
 import org.motechproject.server.pillreminder.contract.ReminderRequest;
@@ -15,6 +18,7 @@ import org.motechproject.server.pillreminder.domain.Medicine;
 import java.util.*;
 
 import static java.util.Arrays.asList;
+import static org.mockito.Matchers.argThat;
 import static org.motechproject.server.pillreminder.util.TestUtil.newDate;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -45,17 +49,19 @@ public class PillReminderServiceTest {
         PillRegimenRequest pillRegimenRequest = new PillRegimenRequest(externalId, startDate, endDate, asList(dosageRequest));
 
         service.createNew(pillRegimenRequest);
-
-        Set<Dosage> expectedDosages = new HashSet<Dosage>();
-        Set<Medicine> expectedMedicines = new HashSet<Medicine>();
-        expectedMedicines.add(new Medicine("m1"));
-        Set<Reminder> expectedReminders = new HashSet<Reminder>();
-        expectedReminders.add(new Reminder(1, 30, 5, 300));
-        Dosage expectedDosage = new Dosage(expectedMedicines, expectedReminders);
-        expectedDosages.add(expectedDosage);
-
-        PillRegimen expectedPillRegimen = new PillRegimen(externalId, startDate, endDate, expectedDosages);
-        verify(allPillRegimens).add(eq(expectedPillRegimen));
+        verify(allPillRegimens).add(argThat(new PillRegimenArgumentMatcher()));
     }
 
+
+    private class PillRegimenArgumentMatcher extends BaseMatcher<PillRegimen> {
+        @Override
+        public boolean matches(Object o) {
+            PillRegimen pillRegimen = (PillRegimen) o;
+            return pillRegimen.getExternalId().equals("123") && pillRegimen.getDosages().size() == 1;
+        }
+
+        @Override
+        public void describeTo(Description description) {
+        }
+    }
 }

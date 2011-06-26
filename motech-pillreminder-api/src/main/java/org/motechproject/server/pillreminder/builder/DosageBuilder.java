@@ -20,9 +20,9 @@ public class DosageBuilder {
             medicines.add(new Medicine(medicineName));
 
         Set<Reminder> reminders = new HashSet<Reminder>();
-        for (ReminderRequest reminderRequest : dosageRequest.getReminderRequests()) {
+        for (ReminderRequest reminderRequest : dosageRequest.getReminderRequests())
             reminders.add(reminderBuilder.createFrom(reminderRequest));
-        }
+
         return new Dosage(medicines, reminders);
     }
 }

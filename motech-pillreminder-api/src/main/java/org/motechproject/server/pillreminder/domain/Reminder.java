@@ -61,25 +61,4 @@ public class Reminder {
         this.repeatInterval = repeatInterval;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Reminder reminder = (Reminder) o;
-        if (hour != null ? !hour.equals(reminder.hour) : reminder.hour != null) return false;
-        if (minute != null ? !minute.equals(reminder.minute) : reminder.minute != null) return false;
-        if (repeatInterval != null ? !repeatInterval.equals(reminder.repeatInterval) : reminder.repeatInterval != null)
-            return false;
-        if (repeatSize != null ? !repeatSize.equals(reminder.repeatSize) : reminder.repeatSize != null) return false;
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = hour != null ? hour.hashCode() : 0;
-        result = 31 * result + (minute != null ? minute.hashCode() : 0);
-        result = 31 * result + (repeatSize != null ? repeatSize.hashCode() : 0);
-        result = 31 * result + (repeatInterval != null ? repeatInterval.hashCode() : 0);
-        return result;
-    }
 }

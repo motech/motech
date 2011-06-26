@@ -30,21 +30,4 @@ public class Dosage{
         this.reminders = reminders;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Dosage dosage = (Dosage) o;
-        if (medicines != null ? !medicines.equals(dosage.medicines) : dosage.medicines != null) return false;
-        if (reminders != null ? !reminders.equals(dosage.reminders) : dosage.reminders != null) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = medicines != null ? medicines.hashCode() : 0;
-        result = 31 * result + (reminders != null ? reminders.hashCode() : 0);
-        return result;
-    }
 }

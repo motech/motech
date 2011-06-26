@@ -31,20 +31,24 @@ public class PillRegimenBuilderTest {
         DosageRequest dosageRequest = new DosageRequest(medicineRequests, reminderRequests);
         PillRegimenRequest pillRegimenRequest = new PillRegimenRequest(externalId, date1, date2, asList(dosageRequest));
 
-        Set<Medicine> expectedMedicines = new HashSet<Medicine>();
-        expectedMedicines.add(new Medicine("m1"));
-
-        Set<Reminder> expectedReminders = new HashSet<Reminder>();
-        Reminder reminder = new Reminder(1, 30, 5, 300);
-        expectedReminders.add(reminder);
-
-        Set<Dosage> expectedDosages = new HashSet<Dosage>();
-        Dosage expectedDosage = new Dosage(expectedMedicines, expectedReminders);
-        expectedDosages.add(expectedDosage);
-
         PillRegimen pillRegimen = builder.createFrom(pillRegimenRequest);
 
-        PillRegimen expectedPillRegimen = new PillRegimen(externalId, date1, date2, expectedDosages);
-        assertEquals(expectedPillRegimen, pillRegimen);
+        assertEquals(date1, pillRegimen.getStartDate());
+        assertEquals(date2, pillRegimen.getEndDate());
+        assertEquals(externalId, pillRegimen.getExternalId());
+        assertEquals(1, pillRegimen.getDosages().size());
+        for (Dosage dosage : pillRegimen.getDosages()) {
+            assertEquals(1, dosage.getMedicines().size());
+            for (Medicine medicine : dosage.getMedicines()) {
+                assertEquals("m1", medicine.getName());
+            }
+            assertEquals(1, dosage.getReminders().size());
+            for (Reminder reminder : dosage.getReminders()) {
+                assertEquals(new Integer(1), reminder.getHour());
+                assertEquals(new Integer(30), reminder.getMinute());
+                assertEquals(new Integer(5), reminder.getRepeatSize());
+                assertEquals(new Integer(300), reminder.getRepeatInterval());
+            }
+        }
     }
 }

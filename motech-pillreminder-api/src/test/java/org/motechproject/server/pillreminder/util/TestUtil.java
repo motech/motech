@@ -16,9 +16,13 @@ public class TestUtil {
         return cal.getTime();
     }
 
+    public static boolean areDatesSame(Date date1, Date date2) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd G HH:mm:ss z");
+        return dateFormat.format(date1).equals(dateFormat.format(date2));
+    }
+
     @Test
-    public void shouldTest(){
-       assertTrue(true);
-        //TBD to add filters in POM.
+    public void shouldTest() {
+        assertTrue(true);
     }
 }

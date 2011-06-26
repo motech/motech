@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.motechproject.server.pillreminder.contract.ReminderRequest;
 import org.motechproject.server.pillreminder.domain.Reminder;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class ReminderBuilderTest {
 
@@ -25,7 +25,11 @@ public class ReminderBuilderTest {
         ReminderRequest reminderRequest = new ReminderRequest(hour, minute, repeatSize, repeatInterval);
 
         Reminder reminder = builder.createFrom(reminderRequest);
-        Reminder expectedReminder = new Reminder(hour, minute, repeatSize, repeatInterval);
-        assertTrue(expectedReminder.equals(reminder));
+
+        assertEquals(new Integer(1), reminder.getHour());
+        assertEquals(new Integer(30), reminder.getMinute());
+        assertEquals(new Integer(5), reminder.getRepeatSize());
+        assertEquals(new Integer(300), reminder.getRepeatInterval());
+
     }
 }

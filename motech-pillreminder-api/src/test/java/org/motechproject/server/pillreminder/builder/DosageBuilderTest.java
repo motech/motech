@@ -9,6 +9,7 @@ import org.motechproject.server.pillreminder.domain.Reminder;
 
 import java.util.*;
 
+import static java.util.Arrays.asList;
 import static org.motechproject.server.pillreminder.util.TestUtil.newDate;
 import static org.junit.Assert.assertEquals;
 
@@ -21,16 +22,19 @@ public class DosageBuilderTest {
         ReminderRequest reminderRequest = new ReminderRequest(1, 30, 5, 300);
         DosageRequest dosageRequest = new DosageRequest(Arrays.asList("m1"), Arrays.asList(reminderRequest));
 
-        Set<Medicine> expectedMedicines = new HashSet<Medicine>();
-        expectedMedicines.add(new Medicine("m1"));
-
-        Set<Reminder> expectedReminders = new HashSet<Reminder>();
-        expectedReminders.add(new Reminder(1, 30, 5, 300));
-
         Dosage dosage = builder.createFrom(dosageRequest);
 
-        Dosage expectedDosage = new Dosage(expectedMedicines, expectedReminders);
-        assertEquals(expectedDosage, dosage);
+        assertEquals(1, dosage.getMedicines().size());
+        for (Medicine medicine : dosage.getMedicines()) {
+            assertEquals("m1", medicine.getName());
+        }
+        assertEquals(1, dosage.getReminders().size());
+        for (Reminder reminder : dosage.getReminders()) {
+            assertEquals(new Integer(1), reminder.getHour());
+            assertEquals(new Integer(30), reminder.getMinute());
+            assertEquals(new Integer(5), reminder.getRepeatSize());
+            assertEquals(new Integer(300), reminder.getRepeatInterval());
+        }
     }
 
 }
