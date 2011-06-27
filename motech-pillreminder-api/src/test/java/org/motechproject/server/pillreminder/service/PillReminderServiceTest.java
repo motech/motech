@@ -3,6 +3,7 @@ package org.motechproject.server.pillreminder.service;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.pillreminder.contract.DosageRequest;
 import org.motechproject.server.pillreminder.contract.PillRegimenRequest;
 import org.motechproject.server.pillreminder.contract.ReminderRequest;
@@ -30,11 +31,13 @@ public class PillReminderServiceTest {
 
     @Mock
     private AllPillRegimens allPillRegimens;
+    @Mock
+    private MotechSchedulerService schedulerService;
 
     @Before
     public void setUp() {
         initMocks(this);
-        service = new PillReminderServiceImpl(allPillRegimens);
+        service = new PillReminderServiceImpl(allPillRegimens, schedulerService);
     }
 
     @Test

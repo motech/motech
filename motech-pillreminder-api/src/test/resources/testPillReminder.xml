@@ -24,4 +24,15 @@
         <constructor-arg ref="pillReminderDatabase"/>
     </bean>
 
+    <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+      <property name="configLocation">
+         <value>classpath:testQuartz.properties</value>
+      </property>
+      <property name="applicationContextSchedulerContextKey">
+      	<value>applicationContext</value>
+      </property>
+    </bean>
+
+    <bean id="schedulerService" class="org.motechproject.scheduler.MotechSchedulerServiceImpl" />
+
 </beans>
