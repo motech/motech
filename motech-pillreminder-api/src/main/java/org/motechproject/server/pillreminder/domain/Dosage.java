@@ -1,8 +1,10 @@
 package org.motechproject.server.pillreminder.domain;
 
 import java.util.Set;
+import java.util.UUID;
 
 public class Dosage{
+    private String id;
     private Integer startHour;
     private Integer startMinute;
     private Set<Medicine> medicines;
@@ -12,9 +14,14 @@ public class Dosage{
     }
 
     public Dosage(Integer startHour, Integer startMinute, Set<Medicine> medicines) {
+        this.id = UUID.randomUUID().toString();
         this.startHour = startHour;
         this.startMinute = startMinute;
         this.medicines = medicines;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public Set<Medicine> getMedicines() {

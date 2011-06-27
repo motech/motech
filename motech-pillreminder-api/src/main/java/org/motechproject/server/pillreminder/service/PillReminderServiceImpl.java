@@ -1,11 +1,13 @@
 package org.motechproject.server.pillreminder.service;
 
+import org.motechproject.builder.CronJobExpressionBuilder;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.pillreminder.builder.PillRegimenBuilder;
 import org.motechproject.server.pillreminder.contract.PillRegimenRequest;
 import org.motechproject.server.pillreminder.dao.AllPillRegimens;
+import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
 
 import java.util.HashMap;
@@ -29,12 +31,16 @@ public class PillReminderServiceImpl implements PillReminderService {
         pillRegimen.validate();
         allPillRegimens.add(pillRegimen);
 
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("PillReminderID", pillRegimen.getId());
-        params.put("JobID", UUID.randomUUID().toString());
-        MotechEvent motechEvent = new MotechEvent("org.motechproject.server.pillreminder.scheduler-reminder", params);
-        CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, "0 0/20 9-12 * * ?", pillRegimenRequest.getStartDate(), pillRegimenRequest.getEndDate());
+        for (Dosage dosage : pillRegimen.getDosages()) {
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("DosageID", dosage.getId());
+            params.put("JobID", UUID.randomUUID().toString());
 
-        schedulerService.scheduleJob(schedulableJob);
+            MotechEvent motechEvent = new MotechEvent("org.motechproject.server.pillreminder.scheduler-reminder", params);
+            String cronJobExpression = new CronJobExpressionBuilder(dosage.getStartHour(), dosage.getStartMinute(), pillRegimen.getReminderRepeatCount(), pillRegimen.getReminderRepeatIntervalInMinutes()).build();
+            CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, pillRegimenRequest.getStartDate(), pillRegimenRequest.getEndDate());
+
+            schedulerService.scheduleJob(schedulableJob);
+        }
     }
 }
