@@ -17,15 +17,19 @@ public class PillRegimen extends MotechAuditableDataObject {
     private String externalId;
     private Date startDate;
     private Date endDate;
+    private Integer reminderRepeatCount;
+    private Integer reminderRepeatIntervalInMinutes;
     private Set<Dosage> dosages;
 
     public PillRegimen() {
     }
 
-    public PillRegimen(String externalId, Date startDate, Date endDate, Set<Dosage> dosages) {
+    public PillRegimen(String externalId, Date startDate, Date endDate, Integer reminderRepeatCount, Integer reminderRepeatIntervalInMinutes, Set<Dosage> dosages) {
         this.externalId = externalId;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.reminderRepeatCount = reminderRepeatCount;
+        this.reminderRepeatIntervalInMinutes = reminderRepeatIntervalInMinutes;
         this.dosages = dosages;
     }
 
@@ -59,6 +63,22 @@ public class PillRegimen extends MotechAuditableDataObject {
 
     public void setDosages(Set<Dosage> dosages) {
         this.dosages = dosages;
+    }
+
+    public Integer getReminderRepeatCount() {
+        return reminderRepeatCount;
+    }
+
+    public void setReminderRepeatCount(Integer reminderRepeatCount) {
+        this.reminderRepeatCount = reminderRepeatCount;
+    }
+
+    public Integer getReminderRepeatIntervalInMinutes() {
+        return reminderRepeatIntervalInMinutes;
+    }
+
+    public void setReminderRepeatIntervalInMinutes(Integer reminderRepeatIntervalInMinutes) {
+        this.reminderRepeatIntervalInMinutes = reminderRepeatIntervalInMinutes;
     }
 
     public String getType() {

@@ -3,15 +3,18 @@ package org.motechproject.server.pillreminder.domain;
 import java.util.Set;
 
 public class Dosage{
+    private Integer startHour;
+    private Integer startMinute;
     private Set<Medicine> medicines;
-    private Set<Reminder> reminders;
+    private boolean reminded = false;
 
     public Dosage() {
     }
 
-    public Dosage(Set<Medicine> medicines, Set<Reminder> reminders) {
+    public Dosage(Integer startHour, Integer startMinute, Set<Medicine> medicines) {
+        this.startHour = startHour;
+        this.startMinute = startMinute;
         this.medicines = medicines;
-        this.reminders = reminders;
     }
 
     public Set<Medicine> getMedicines() {
@@ -22,12 +25,27 @@ public class Dosage{
         this.medicines = medicines;
     }
 
-    public Set<Reminder> getReminders() {
-        return reminders;
+    public Integer getStartHour() {
+        return startHour;
     }
 
-    public void setReminders(Set<Reminder> reminders) {
-        this.reminders = reminders;
+    public void setStartHour(Integer startHour) {
+        this.startHour = startHour;
     }
 
+    public Integer getStartMinute() {
+        return startMinute;
+    }
+
+    public void setStartMinute(Integer startMinute) {
+        this.startMinute = startMinute;
+    }
+
+    public boolean isReminded() {
+        return reminded;
+    }
+
+    public void setReminded(boolean reminded) {
+        this.reminded = reminded;
+    }
 }

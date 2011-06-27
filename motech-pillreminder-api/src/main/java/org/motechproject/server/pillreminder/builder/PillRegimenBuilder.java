@@ -16,6 +16,6 @@ public class PillRegimenBuilder {
         Set<Dosage> dosages = new HashSet<Dosage>();
         for (DosageRequest dosageRequest : pillRegimenRequest.getDosageContracts())
             dosages.add(dosageBuilder.createFrom(dosageRequest));
-        return new PillRegimen(pillRegimenRequest.getExternalId(), pillRegimenRequest.getStartDate(), pillRegimenRequest.getEndDate(), dosages);
+        return new PillRegimen(pillRegimenRequest.getExternalId(), pillRegimenRequest.getStartDate(), pillRegimenRequest.getEndDate(), pillRegimenRequest.getReminderRepeatCount(), pillRegimenRequest.getReminderRepeatIntervalInMinutes(), dosages);
     }
 }

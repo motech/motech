@@ -24,7 +24,7 @@ public class AllPillRegimensTest {
 
     @Test
     public void shouldAddPillRegimen() {
-        PillRegimen pillRegimen = new PillRegimen("123", newDate(2011, 1, 1), newDate(2011, 2, 1), null);
+        PillRegimen pillRegimen = new PillRegimen("123", newDate(2011, 1, 1), newDate(2011, 2, 1), 5, 10, null);
         allPillRegimens.add(pillRegimen);
         verify(couchDbConnector).create(pillRegimen);
     }

@@ -6,17 +6,16 @@ import org.junit.runner.RunWith;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.Medicine;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
-import org.motechproject.server.pillreminder.domain.Reminder;
 import org.motechproject.server.pillreminder.util.TestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/testPillReminder.xml"})
@@ -36,7 +35,7 @@ public class AllPillRegimensIT {
 
     @Test
     public void shouldSaveThePillRegimenWithoutDosage() {
-        PillRegimen pillRegimen = new PillRegimen("1234", startDate, endDate, null);
+        PillRegimen pillRegimen = new PillRegimen("1234", startDate, endDate, 5, 20, null);
 
         allPillRegimens.add(pillRegimen);
 
@@ -47,22 +46,21 @@ public class AllPillRegimensIT {
     @Test
     public void shouldSaveThePillRegimenWithDosages() {
         Medicine medicine = new Medicine("m1");
-        Reminder reminder = new Reminder(1, 30, 5, 400);
         Set<Medicine> medicines = new HashSet<Medicine>();
         medicines.add(medicine);
-        Set<Reminder> reminders = new HashSet<Reminder>();
-        reminders.add(reminder);
 
-        Dosage dosage = new Dosage(medicines, reminders);
+        Dosage dosage = new Dosage(9, 5, medicines);
         Set<Dosage> dosages = new HashSet<Dosage>();
         dosages.add(dosage);
 
-        PillRegimen pillRegimen = new PillRegimen("1234", startDate, endDate, dosages);
+        PillRegimen pillRegimen = new PillRegimen("1234", startDate, endDate, 5, 20, dosages);
         allPillRegimens.add(pillRegimen);
 
         assertNotNull(pillRegimen.getId());
 
         PillRegimen pillRegimenFromDB = allPillRegimens.get(pillRegimen.getId());
+        assertEquals(new Integer(5), pillRegimenFromDB.getReminderRepeatCount());
+        assertEquals(new Integer(20), pillRegimenFromDB.getReminderRepeatIntervalInMinutes());
         assertNotNull(pillRegimenFromDB.getDosages());
         assertFalse(pillRegimenFromDB.getDosages().isEmpty());
 

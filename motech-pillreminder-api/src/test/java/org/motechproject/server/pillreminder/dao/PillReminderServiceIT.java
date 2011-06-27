@@ -37,8 +37,8 @@ public class PillReminderServiceIT {
 
     @Before
     public void setUp() {
-        startDate = TestUtil.newDate(2011, 1, 1);
-        endDate = TestUtil.newDate(2011, 3, 1);
+        startDate = TestUtil.newDate(2011, 10, 20);
+        endDate = TestUtil.newDate(2011, 10, 23);
         pillReminderService = new PillReminderServiceImpl(allPillRegimens, schedulerService);
     }
 
@@ -46,7 +46,7 @@ public class PillReminderServiceIT {
     public void shouldSaveThePillRegimenAndScheduleJob() throws SchedulerException {
 
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
-        pillReminderService.createNew(new PillRegimenRequest("1234", startDate, endDate, new ArrayList<DosageRequest>()));
+        pillReminderService.createNew(new PillRegimenRequest("1234", startDate, endDate, 5, 10,  new ArrayList<DosageRequest>()));
         assertEquals(scheduledJobsNum+1, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
 
     }}

@@ -13,11 +13,12 @@ public class DosageTest {
     public void shouldTestAccessors(){
         Dosage dosage = new Dosage();
         Set<Medicine> medicines = new HashSet<Medicine>();
-        Set<Reminder> reminders = new HashSet<Reminder>();
 
         dosage.setMedicines(medicines);
-        assertEquals(medicines,dosage.getMedicines());
-        dosage.setReminders(reminders);
-        assertEquals(reminders,dosage.getReminders());
+        dosage.setStartHour(9);
+        dosage.setStartMinute(5);
+        assertEquals(medicines, dosage.getMedicines());
+        assertEquals(new Integer(9),dosage.getStartHour());
+        assertEquals(new Integer(5),dosage.getStartMinute());
     }
 }

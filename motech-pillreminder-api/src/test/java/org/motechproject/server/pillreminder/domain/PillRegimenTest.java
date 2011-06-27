@@ -1,14 +1,13 @@
 package org.motechproject.server.pillreminder.domain;
 
 import org.junit.Test;
-import org.motechproject.server.pillreminder.util.TestUtil;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.motechproject.server.pillreminder.util.TestUtil.areDatesSame;
 import static org.motechproject.server.pillreminder.util.TestUtil.newDate;
 
@@ -20,7 +19,7 @@ public class PillRegimenTest {
         Date endDate = newDate(2011, 0, 1);
         Set<Dosage> dosages = new HashSet<Dosage>();
 
-        PillRegimen regimen = new PillRegimen("1", startDate, endDate, dosages);
+        PillRegimen regimen = new PillRegimen("1", startDate, endDate, 5, 10, dosages);
         regimen.validate();
     }
 
