@@ -4,6 +4,7 @@ import org.motechproject.builder.CronJobExpressionBuilder;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.server.pillreminder.EventKeys;
 import org.motechproject.server.pillreminder.builder.PillRegimenBuilder;
 import org.motechproject.server.pillreminder.contract.PillRegimenRequest;
 import org.motechproject.server.pillreminder.dao.AllPillRegimens;
@@ -33,10 +34,10 @@ public class PillReminderServiceImpl implements PillReminderService {
 
         for (Dosage dosage : pillRegimen.getDosages()) {
             Map<String, Object> params = new HashMap<String, Object>();
-            params.put("DosageID", dosage.getId());
-            params.put("JobID", UUID.randomUUID().toString());
+            params.put(EventKeys.DOSAGE_ID_KEY, dosage.getId());
+            params.put(EventKeys.SCHEDULE_JOB_ID_KEY, UUID.randomUUID().toString());
 
-            MotechEvent motechEvent = new MotechEvent("org.motechproject.server.pillreminder.scheduler-reminder", params);
+            MotechEvent motechEvent = new MotechEvent(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT, params);
             String cronJobExpression = new CronJobExpressionBuilder(dosage.getStartHour(), dosage.getStartMinute(), pillRegimen.getReminderRepeatWindowInHours(), pillRegimen.getReminderRepeatIntervalInMinutes()).build();
             CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, pillRegimenRequest.getStartDate(), pillRegimenRequest.getEndDate());
 

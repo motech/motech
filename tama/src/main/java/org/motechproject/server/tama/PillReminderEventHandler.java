@@ -31,19 +31,14 @@
  */
 package org.motechproject.server.tama;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.pillreminder.api.EventKeys;
-import org.motechproject.pillreminder.api.PillReminderContext;
-import org.motechproject.pillreminder.api.PillReminderService;
-import org.motechproject.pillreminder.api.model.PillReminder;
 import org.motechproject.server.event.annotations.MotechListener;
+import org.motechproject.server.pillreminder.EventKeys;
+import org.motechproject.server.pillreminder.PillReminderContext;
+import org.motechproject.server.pillreminder.PillReminderService;
+import org.motechproject.server.pillreminder.domain.PillReminder;
 import org.motechproject.server.service.ivr.CallInitiationException;
 import org.motechproject.server.service.ivr.CallRequest;
 import org.motechproject.server.service.ivr.IVRService;
@@ -52,6 +47,11 @@ import org.motechproject.tama.api.model.Patient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Handles Pill Reminder Events

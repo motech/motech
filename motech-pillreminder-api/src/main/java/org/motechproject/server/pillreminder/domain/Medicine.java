@@ -1,7 +1,11 @@
 package org.motechproject.server.pillreminder.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Medicine {
     private String name;
+    private List<Status> statuses = new ArrayList<Status>();
 
     public Medicine() {
     }
@@ -30,5 +34,13 @@ public class Medicine {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Status> getStatuses() {
+        return statuses;
+    }
+
+    public void setStatuses(List<Status> statuses) {
+        this.statuses = statuses;
     }
 }
