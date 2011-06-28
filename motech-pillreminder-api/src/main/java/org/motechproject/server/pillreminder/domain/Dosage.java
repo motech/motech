@@ -20,9 +20,6 @@ public class Dosage{
         this.medicines = medicines;
     }
 
-    public String getId() {
-        return id;
-    }
 
     public Set<Medicine> getMedicines() {
         return medicines;
@@ -54,5 +51,13 @@ public class Dosage{
 
     public void setReminded(boolean reminded) {
         this.reminded = reminded;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
