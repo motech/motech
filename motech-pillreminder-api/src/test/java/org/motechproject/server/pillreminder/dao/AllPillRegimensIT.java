@@ -59,8 +59,8 @@ public class AllPillRegimensIT {
         assertNotNull(pillRegimen.getId());
 
         PillRegimen pillRegimenFromDB = allPillRegimens.get(pillRegimen.getId());
-        assertEquals(new Integer(5), pillRegimenFromDB.getReminderRepeatWindowInHours());
-        assertEquals(new Integer(20), pillRegimenFromDB.getReminderRepeatIntervalInMinutes());
+        assertEquals(5, pillRegimenFromDB.getReminderRepeatWindowInHours());
+        assertEquals(20, pillRegimenFromDB.getReminderRepeatIntervalInMinutes());
         assertNotNull(pillRegimenFromDB.getDosages());
         assertFalse(pillRegimenFromDB.getDosages().isEmpty());
 

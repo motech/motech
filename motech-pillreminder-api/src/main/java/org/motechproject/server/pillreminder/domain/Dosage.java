@@ -5,15 +5,15 @@ import java.util.UUID;
 
 public class Dosage{
     private String id;
-    private Integer startHour;
-    private Integer startMinute;
+    private int startHour;
+    private int startMinute;
     private Set<Medicine> medicines;
-    private boolean reminded = false;
+    private boolean reminded;
 
     public Dosage() {
     }
 
-    public Dosage(Integer startHour, Integer startMinute, Set<Medicine> medicines) {
+    public Dosage(int startHour, int startMinute, Set<Medicine> medicines) {
         this.id = UUID.randomUUID().toString();
         this.startHour = startHour;
         this.startMinute = startMinute;
@@ -32,19 +32,19 @@ public class Dosage{
         this.medicines = medicines;
     }
 
-    public Integer getStartHour() {
+    public int getStartHour() {
         return startHour;
     }
 
-    public void setStartHour(Integer startHour) {
+    public void setStartHour(int startHour) {
         this.startHour = startHour;
     }
 
-    public Integer getStartMinute() {
+    public int getStartMinute() {
         return startMinute;
     }
 
-    public void setStartMinute(Integer startMinute) {
+    public void setStartMinute(int startMinute) {
         this.startMinute = startMinute;
     }
 

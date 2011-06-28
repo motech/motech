@@ -3,11 +3,11 @@ package org.motechproject.server.pillreminder.contract;
 import java.util.List;
 
 public class DosageRequest {
-    private Integer startHour;
-    private Integer startMinute;
+    private int startHour;
+    private int startMinute;
     private List<String> medicineRequests;
 
-    public DosageRequest(Integer startHour, Integer startMinute, List<String> medicineRequests) {
+    public DosageRequest(int startHour, int startMinute, List<String> medicineRequests) {
         this.startHour = startHour;
         this.startMinute = startMinute;
         this.medicineRequests = medicineRequests;
@@ -17,11 +17,11 @@ public class DosageRequest {
         return medicineRequests;
     }
 
-    public Integer getStartMinute() {
+    public int getStartMinute() {
         return startMinute;
     }
 
-    public Integer getStartHour() {
+    public int getStartHour() {
         return startHour;
     }
 }

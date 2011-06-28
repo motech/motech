@@ -33,12 +33,12 @@ public class PillRegimenBuilderTest {
         assertEquals(date1, pillRegimen.getStartDate());
         assertEquals(date2, pillRegimen.getEndDate());
         assertEquals(externalId, pillRegimen.getExternalId());
-        assertEquals(new Integer(5), pillRegimen.getReminderRepeatWindowInHours());
-        assertEquals(new Integer(20), pillRegimen.getReminderRepeatIntervalInMinutes());
+        assertEquals(5, pillRegimen.getReminderRepeatWindowInHours());
+        assertEquals(20, pillRegimen.getReminderRepeatIntervalInMinutes());
         assertEquals(1, pillRegimen.getDosages().size());
         for (Dosage dosage : pillRegimen.getDosages()) {
-            assertEquals(new Integer(10), dosage.getStartHour());
-            assertEquals(new Integer(5), dosage.getStartMinute());
+            assertEquals(10, dosage.getStartHour());
+            assertEquals(5, dosage.getStartMinute());
             assertEquals(1, dosage.getMedicines().size());
             for (Medicine medicine : dosage.getMedicines()) {
                 assertEquals("m1", medicine.getName());

@@ -7,11 +7,11 @@ public class PillRegimenRequest {
     private String externalId;
     private Date startDate;
     private Date endDate;
-    private Integer reminderRepeatWindowInHours;
-    private Integer reminderRepeatIntervalInMinutes;
+    private int reminderRepeatWindowInHours;
+    private int reminderRepeatIntervalInMinutes;
     private List<DosageRequest> dosageContracts;
 
-    public PillRegimenRequest(String externalId, Date startDate, Date endDate, Integer reminderRepeatWindowInHours, Integer reminderRepeatIntervalInMinutes, List<DosageRequest> dosageContracts) {
+    public PillRegimenRequest(String externalId, Date startDate, Date endDate, int reminderRepeatWindowInHours, int reminderRepeatIntervalInMinutes, List<DosageRequest> dosageContracts) {
         this.externalId = externalId;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -32,11 +32,11 @@ public class PillRegimenRequest {
         return endDate;
     }
 
-    public Integer getReminderRepeatWindowInHours() {
+    public int getReminderRepeatWindowInHours() {
         return reminderRepeatWindowInHours;
     }
 
-    public Integer getReminderRepeatIntervalInMinutes() {
+    public int getReminderRepeatIntervalInMinutes() {
         return reminderRepeatIntervalInMinutes;
     }
 

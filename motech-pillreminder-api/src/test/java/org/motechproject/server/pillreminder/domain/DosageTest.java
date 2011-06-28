@@ -18,7 +18,7 @@ public class DosageTest {
         dosage.setStartHour(9);
         dosage.setStartMinute(5);
         assertEquals(medicines, dosage.getMedicines());
-        assertEquals(new Integer(9),dosage.getStartHour());
-        assertEquals(new Integer(5),dosage.getStartMinute());
+        assertEquals(9,dosage.getStartHour());
+        assertEquals(5,dosage.getStartMinute());
     }
 }
