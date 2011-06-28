@@ -37,7 +37,7 @@ public class PillReminderServiceImpl implements PillReminderService {
             params.put("JobID", UUID.randomUUID().toString());
 
             MotechEvent motechEvent = new MotechEvent("org.motechproject.server.pillreminder.scheduler-reminder", params);
-            String cronJobExpression = new CronJobExpressionBuilder(dosage.getStartHour(), dosage.getStartMinute(), pillRegimen.getReminderRepeatCount(), pillRegimen.getReminderRepeatIntervalInMinutes()).build();
+            String cronJobExpression = new CronJobExpressionBuilder(dosage.getStartHour(), dosage.getStartMinute(), pillRegimen.getReminderRepeatWindowInHours(), pillRegimen.getReminderRepeatIntervalInMinutes()).build();
             CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, pillRegimenRequest.getStartDate(), pillRegimenRequest.getEndDate());
 
             schedulerService.scheduleJob(schedulableJob);
