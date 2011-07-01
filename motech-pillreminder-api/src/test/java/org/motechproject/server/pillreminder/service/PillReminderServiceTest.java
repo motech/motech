@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.pillreminder.contract.DosageRequest;
+import org.motechproject.server.pillreminder.contract.MedicineRequest;
 import org.motechproject.server.pillreminder.contract.PillRegimenRequest;
 import org.motechproject.server.pillreminder.dao.AllPillRegimens;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
@@ -18,7 +19,7 @@ import static java.util.Arrays.asList;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.server.pillreminder.util.TestUtil.newDate;
+import static org.motechproject.server.pillreminder.util.Util.getEndDateAfter;
 
 public class PillReminderServiceTest {
     PillReminderService service;
@@ -36,13 +37,16 @@ public class PillReminderServiceTest {
 
     @Test
     public void shouldCreateAPillRegimenFromRequestAndPersist() {
-        Date startDate = newDate(2011, 5, 20);
-        Date endDate = newDate(2011, 5, 21);
+        Date startDate = new Date();
+        Date endDate = getEndDateAfter(startDate, 2);
         String externalId = "123";
-        List<String> medicineRequests = asList("m1");
+
+        MedicineRequest medicineRequest1 = new MedicineRequest("m1", startDate, endDate);
+        MedicineRequest medicineRequest2 = new MedicineRequest("m2", startDate, getEndDateAfter(startDate, 4));
+        List<MedicineRequest> medicineRequests = asList(medicineRequest1, medicineRequest2);
 
         DosageRequest dosageRequest = new DosageRequest(9, 5, medicineRequests);
-        PillRegimenRequest pillRegimenRequest = new PillRegimenRequest(externalId, startDate, endDate, 5, 20, asList(dosageRequest));
+        PillRegimenRequest pillRegimenRequest = new PillRegimenRequest(externalId, 5, 20, asList(dosageRequest));
 
         service.createNew(pillRegimenRequest);
         verify(allPillRegimens).add(argThat(new PillRegimenArgumentMatcher()));

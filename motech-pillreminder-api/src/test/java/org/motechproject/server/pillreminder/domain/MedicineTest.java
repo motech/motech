@@ -2,29 +2,29 @@ package org.motechproject.server.pillreminder.domain;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import java.util.Date;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.motechproject.server.pillreminder.util.Util.getEndDateAfter;
 
 public class MedicineTest {
 
     @Test
     public void shouldTestEquality() {
-        Medicine medicine = new Medicine("m1");
+        Date startDate = new Date();
+        Date endDate = getEndDateAfter(startDate, 2);
+        Medicine medicine = new Medicine("m1", startDate, endDate);
 
         assertFalse(medicine.equals(null));
         assertFalse(medicine.equals(""));
         assertFalse(medicine.equals(new Medicine()));
-        assertFalse(medicine.equals(new Medicine("m2")));
+        assertFalse(medicine.equals(new Medicine("m2", startDate, endDate)));
 
         assertTrue(medicine.equals(medicine));
-        assertTrue(medicine.equals(new Medicine("m1")));
-    }
+        assertTrue(medicine.equals(new Medicine("m1", startDate, endDate)));
 
-    @Test
-    public void shouldTestAccessors() {
-        Medicine medicine = new Medicine("m1");
-        medicine.setName("m2");
-        assertEquals("m2", medicine.getName());
+        //Important case: medicine objects are same if they have the same names
+        assertTrue(medicine.equals(new Medicine("m1", startDate, getEndDateAfter(startDate, 5))));
     }
 }

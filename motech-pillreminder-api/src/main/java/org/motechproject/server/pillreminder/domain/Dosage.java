@@ -8,7 +8,6 @@ public class Dosage{
     private int startHour;
     private int startMinute;
     private Set<Medicine> medicines;
-    private boolean reminded;
 
     public Dosage() {
     }
@@ -43,14 +42,6 @@ public class Dosage{
 
     public void setStartMinute(int startMinute) {
         this.startMinute = startMinute;
-    }
-
-    public boolean isReminded() {
-        return reminded;
-    }
-
-    public void setReminded(boolean reminded) {
-        this.reminded = reminded;
     }
 
     public String getId() {

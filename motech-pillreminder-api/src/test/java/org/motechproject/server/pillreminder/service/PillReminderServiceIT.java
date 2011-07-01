@@ -6,10 +6,10 @@ import org.junit.runner.RunWith;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.MotechSchedulerServiceImpl;
 import org.motechproject.server.pillreminder.contract.DosageRequest;
+import org.motechproject.server.pillreminder.contract.MedicineRequest;
 import org.motechproject.server.pillreminder.contract.PillRegimenRequest;
 import org.motechproject.server.pillreminder.dao.AllPillRegimens;
-import org.motechproject.server.pillreminder.service.PillReminderServiceImpl;
-import org.motechproject.server.pillreminder.util.TestUtil;
+import org.motechproject.server.pillreminder.util.Util;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
+import static org.motechproject.server.pillreminder.util.Util.getEndDateAfter;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/testPillReminder.xml"})
@@ -38,8 +39,8 @@ public class PillReminderServiceIT {
 
     @Before
     public void setUp() {
-        startDate = TestUtil.newDate(2011, 01, 20);
-        endDate = TestUtil.newDate(2012, 01, 20);
+        startDate = Util.newDate(2011, 01, 20);
+        endDate = Util.newDate(2012, 01, 20);
         pillReminderService = new PillReminderServiceImpl(allPillRegimens, schedulerService);
     }
 
@@ -47,10 +48,15 @@ public class PillReminderServiceIT {
     public void shouldSaveThePillRegimenAndScheduleJob() throws SchedulerException {
 
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
-        ArrayList<DosageRequest> dosageContracts = new ArrayList<DosageRequest>();
-        dosageContracts.add(new DosageRequest(9, 05, new ArrayList<String>()));
-        dosageContracts.add(new DosageRequest(21, 05, new ArrayList<String>()));
-        pillReminderService.createNew(new PillRegimenRequest("1234", startDate, endDate, 2, 15, dosageContracts));
-        assertEquals(scheduledJobsNum+2, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
+        ArrayList<MedicineRequest> medicineRequests = new ArrayList<MedicineRequest>();
 
+        MedicineRequest medicineRequest1 = new MedicineRequest("m1", startDate, endDate);
+        medicineRequests.add(medicineRequest1);
+        MedicineRequest medicineRequest2 = new MedicineRequest("m2", startDate, getEndDateAfter(startDate, 5));
+        medicineRequests.add(medicineRequest2);
+
+        ArrayList<DosageRequest> dosageContracts = new ArrayList<DosageRequest>();
+        dosageContracts.add(new DosageRequest(9, 5, medicineRequests));
+        pillReminderService.createNew(new PillRegimenRequest("1234", 2, 15, dosageContracts));
+        assertEquals(scheduledJobsNum+2, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
     }}

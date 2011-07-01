@@ -8,9 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.motechproject.server.pillreminder.util.TestUtil.areDatesSame;
-import static org.motechproject.server.pillreminder.util.TestUtil.newDate;
+import static org.motechproject.server.pillreminder.util.Util.newDate;
 
 public class PillRegimenTest {
 
@@ -18,9 +16,14 @@ public class PillRegimenTest {
     public void shouldNotValidateIfEndDateIsBeforeTheStartDate() {
         Date startDate = newDate(2011, 1, 1);
         Date endDate = newDate(2011, 0, 1);
-        Set<Dosage> dosages = new HashSet<Dosage>();
 
-        PillRegimen regimen = new PillRegimen("1", startDate, endDate, 5, 10, dosages);
+        Set<Medicine> medicines = new HashSet<Medicine>();
+        medicines.add(new Medicine("m1", startDate, endDate));
+
+        Set<Dosage> dosages = new HashSet<Dosage>();
+        dosages.add(new Dosage(9, 5, medicines));
+
+        PillRegimen regimen = new PillRegimen("1", 5, 10, dosages);
         regimen.validate();
     }
 
@@ -28,9 +31,15 @@ public class PillRegimenTest {
     public void shouldValidateIfNoEndDateIsProvided() {
         Date startDate = newDate(2011, 1, 1);
         Date endDate = null;
-        Set<Dosage> dosages = new HashSet<Dosage>();
 
-        PillRegimen regimen = new PillRegimen("1", startDate, endDate, 5, 10, dosages);
+        Set<Medicine> medicines = new HashSet<Medicine>();
+        medicines.add(new Medicine("m1", startDate, endDate));
+
+        Set<Dosage> dosages = new HashSet<Dosage>();
+        dosages.add(new Dosage(9, 5, medicines));
+
+        PillRegimen regimen = new PillRegimen("1", 5, 10, dosages);
+
         try {
             regimen.validate();
         } catch (Exception e) {
@@ -48,12 +57,6 @@ public class PillRegimenTest {
         Set<Dosage> dosages = new HashSet<Dosage>();
         regimen.setDosages(dosages);
         assertEquals(dosages, regimen.getDosages());
-
-        regimen.setStartDate(newDate(2011, 3, 1));
-        assertTrue(areDatesSame(newDate(2011, 3, 1), regimen.getStartDate()));
-
-        regimen.setEndDate(newDate(2011, 4, 1));
-        assertTrue(areDatesSame(newDate(2011, 4, 1), regimen.getEndDate()));
 
         regimen.setType("type");
         assertEquals("type",regimen.getType());

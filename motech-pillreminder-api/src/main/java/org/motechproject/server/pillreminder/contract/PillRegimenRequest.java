@@ -1,35 +1,22 @@
 package org.motechproject.server.pillreminder.contract;
 
-import java.util.Date;
 import java.util.List;
 
 public class PillRegimenRequest {
     private String externalId;
-    private Date startDate;
-    private Date endDate;
     private int reminderRepeatWindowInHours;
     private int reminderRepeatIntervalInMinutes;
-    private List<DosageRequest> dosageContracts;
+    private List<DosageRequest> dosageRequests;
 
-    public PillRegimenRequest(String externalId, Date startDate, Date endDate, int reminderRepeatWindowInHours, int reminderRepeatIntervalInMinutes, List<DosageRequest> dosageContracts) {
+    public PillRegimenRequest(String externalId, int reminderRepeatWindowInHours, int reminderRepeatIntervalInMinutes, List<DosageRequest> dosageRequests) {
         this.externalId = externalId;
-        this.startDate = startDate;
-        this.endDate = endDate;
         this.reminderRepeatWindowInHours = reminderRepeatWindowInHours;
         this.reminderRepeatIntervalInMinutes = reminderRepeatIntervalInMinutes;
-        this.dosageContracts = dosageContracts;
+        this.dosageRequests = dosageRequests;
     }
 
     public String getExternalId() {
         return externalId;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
     }
 
     public int getReminderRepeatWindowInHours() {
@@ -40,7 +27,7 @@ public class PillRegimenRequest {
         return reminderRepeatIntervalInMinutes;
     }
 
-    public List<DosageRequest> getDosageContracts() {
-        return dosageContracts;
+    public List<DosageRequest> getDosageRequests() {
+        return dosageRequests;
     }
 }

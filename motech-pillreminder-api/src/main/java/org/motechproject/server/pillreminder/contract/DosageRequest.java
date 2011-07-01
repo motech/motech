@@ -5,15 +5,15 @@ import java.util.List;
 public class DosageRequest {
     private int startHour;
     private int startMinute;
-    private List<String> medicineRequests;
+    private List<MedicineRequest> medicineRequests;
 
-    public DosageRequest(int startHour, int startMinute, List<String> medicineRequests) {
+    public DosageRequest(int startHour, int startMinute, List<MedicineRequest> medicineRequests) {
         this.startHour = startHour;
         this.startMinute = startMinute;
         this.medicineRequests = medicineRequests;
     }
 
-    public List<String> getMedicineRequests() {
+    public List<MedicineRequest> getMedicineRequests() {
         return medicineRequests;
     }
 

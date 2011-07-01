@@ -2,6 +2,7 @@ package org.motechproject.server.pillreminder.builder;
 
 import org.junit.Test;
 import org.motechproject.server.pillreminder.contract.DosageRequest;
+import org.motechproject.server.pillreminder.contract.MedicineRequest;
 import org.motechproject.server.pillreminder.contract.PillRegimenRequest;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.Medicine;
@@ -12,7 +13,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
-import static org.motechproject.server.pillreminder.util.TestUtil.newDate;
+import static org.motechproject.server.pillreminder.util.Util.newDate;
 
 public class PillRegimenBuilderTest {
 
@@ -20,18 +21,18 @@ public class PillRegimenBuilderTest {
 
     @Test
     public void shouldCreateAPillRegimenFromARequest() {
-        Date date1 = newDate(2011, 5, 20);
-        Date date2 = newDate(2011, 5, 21);
+        Date startDate = newDate(2011, 5, 20);
+        Date endDate = newDate(2011, 5, 21);
         String externalId = "123";
 
-        List<String> medicineRequests = asList("m1");
+        MedicineRequest medicineRequest = new MedicineRequest("m1", startDate, endDate);
+        List<MedicineRequest> medicineRequests = asList(medicineRequest);
+
         DosageRequest dosageRequest = new DosageRequest(10, 5, medicineRequests);
-        PillRegimenRequest pillRegimenRequest = new PillRegimenRequest(externalId, date1, date2, 5, 20, asList(dosageRequest));
+        PillRegimenRequest pillRegimenRequest = new PillRegimenRequest(externalId, 5, 20, asList(dosageRequest));
 
         PillRegimen pillRegimen = builder.createFrom(pillRegimenRequest);
 
-        assertEquals(date1, pillRegimen.getStartDate());
-        assertEquals(date2, pillRegimen.getEndDate());
         assertEquals(externalId, pillRegimen.getExternalId());
         assertEquals(5, pillRegimen.getReminderRepeatWindowInHours());
         assertEquals(20, pillRegimen.getReminderRepeatIntervalInMinutes());
@@ -42,6 +43,8 @@ public class PillRegimenBuilderTest {
             assertEquals(1, dosage.getMedicines().size());
             for (Medicine medicine : dosage.getMedicines()) {
                 assertEquals("m1", medicine.getName());
+                assertEquals(startDate, medicine.getStartDate());
+                assertEquals(endDate, medicine.getEndDate());
             }
         }
     }

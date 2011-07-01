@@ -1,8 +1,8 @@
 package org.motechproject.server.pillreminder.dao;
 
-import org.motechproject.server.pillreminder.domain.PillRegimen;
 import org.ektorp.CouchDbConnector;
 import org.motechproject.dao.MotechAuditableRepository;
+import org.motechproject.server.pillreminder.domain.PillRegimen;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
