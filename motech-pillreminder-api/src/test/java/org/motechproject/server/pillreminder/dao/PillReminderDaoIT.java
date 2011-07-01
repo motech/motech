@@ -22,9 +22,6 @@ public class PillReminderDaoIT {
 
 	@Autowired
 	private PillReminderDao pillReminderDao;
-	
-    @Autowired
-    private CouchDbInstance couchDbInstance;
     
 	private PillReminder reminder;
 	
@@ -36,11 +33,6 @@ public class PillReminderDaoIT {
 		reminder = new PillReminder();
 		reminder.setStartDate(new Date());
 		reminder.getSchedules().add(schedule);
-	}
-	
-	@After
-	public void tearDown() {
-		couchDbInstance.deleteDatabase("pillreminder-test");
 	}
 	
 	@Test

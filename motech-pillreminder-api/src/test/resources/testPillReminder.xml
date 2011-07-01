@@ -24,6 +24,10 @@
         <constructor-arg ref="pillReminderDatabase"/>
     </bean>
 
+    <bean id="pillReminderDao" class="org.motechproject.server.pillreminder.dao.impl.PillReminderCouchDBDaoImpl" >
+        <constructor-arg ref="pillReminderDatabase"/>
+    </bean>
+
     <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
       <property name="configLocation">
          <value>classpath:testQuartz.properties</value>
