@@ -10,13 +10,11 @@ import org.motechproject.server.pillreminder.contract.PillRegimenRequest;
 import org.motechproject.server.pillreminder.dao.AllPillRegimens;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class PillReminderServiceImpl implements PillReminderService {
 
+    public static final int DEFAULT_REGIMEN_PERIOD_IN_MONTHS = 12;
     private AllPillRegimens allPillRegimens;
     private MotechSchedulerService schedulerService;
 
@@ -39,9 +37,19 @@ public class PillReminderServiceImpl implements PillReminderService {
 
             MotechEvent motechEvent = new MotechEvent(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT, params);
             String cronJobExpression = new CronJobExpressionBuilder(dosage.getStartHour(), dosage.getStartMinute(), pillRegimen.getReminderRepeatWindowInHours(), pillRegimen.getReminderRepeatIntervalInMinutes()).build();
-            CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, pillRegimenRequest.getStartDate(), pillRegimenRequest.getEndDate());
+            CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, pillRegimenRequest.getStartDate(), getReminderEndDate(pillRegimenRequest));
 
             schedulerService.scheduleJob(schedulableJob);
         }
+    }
+
+    private Date getReminderEndDate(PillRegimenRequest pillRegimenRequest) {
+        if(pillRegimenRequest.getEndDate() == null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(pillRegimenRequest.getStartDate());
+            calendar.add(Calendar.MONTH, DEFAULT_REGIMEN_PERIOD_IN_MONTHS);
+            return calendar.getTime();
+        }
+        return pillRegimenRequest.getEndDate();
     }
 }

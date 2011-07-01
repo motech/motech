@@ -90,7 +90,7 @@ public class PillRegimen extends MotechAuditableDataObject {
     }
 
     public void validate() {
-        if(startDate.after(endDate))
+        if(endDate!=null && startDate.after(endDate))
             throw(new ValidationException(REGIMEN_END_DATE_CANNOT_BE_BEFORE_START_DATE));
     }
 

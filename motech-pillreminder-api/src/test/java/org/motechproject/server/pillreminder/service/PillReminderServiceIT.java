@@ -1,4 +1,4 @@
-package org.motechproject.server.pillreminder.dao;
+package org.motechproject.server.pillreminder.service;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -7,6 +7,7 @@ import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.MotechSchedulerServiceImpl;
 import org.motechproject.server.pillreminder.contract.DosageRequest;
 import org.motechproject.server.pillreminder.contract.PillRegimenRequest;
+import org.motechproject.server.pillreminder.dao.AllPillRegimens;
 import org.motechproject.server.pillreminder.service.PillReminderServiceImpl;
 import org.motechproject.server.pillreminder.util.TestUtil;
 import org.quartz.SchedulerException;
@@ -49,7 +50,7 @@ public class PillReminderServiceIT {
         ArrayList<DosageRequest> dosageContracts = new ArrayList<DosageRequest>();
         dosageContracts.add(new DosageRequest(9, 05, new ArrayList<String>()));
         dosageContracts.add(new DosageRequest(21, 05, new ArrayList<String>()));
-        pillReminderService.createNew(new PillRegimenRequest("1234", startDate, endDate, 20, 2, dosageContracts));
-        assertEquals(scheduledJobsNum+1, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
+        pillReminderService.createNew(new PillRegimenRequest("1234", startDate, endDate, 2, 15, dosageContracts));
+        assertEquals(scheduledJobsNum+2, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
 
     }}

@@ -1,5 +1,6 @@
 package org.motechproject.server.pillreminder.domain;
 
+import junit.framework.Assert;
 import org.junit.Test;
 
 import java.util.Date;
@@ -14,13 +15,27 @@ import static org.motechproject.server.pillreminder.util.TestUtil.newDate;
 public class PillRegimenTest {
 
     @Test(expected = ValidationException.class)
-    public void shouldThrowAnExceptionIfValidationFails() {
+    public void shouldNotValidateIfEndDateIsBeforeTheStartDate() {
         Date startDate = newDate(2011, 1, 1);
         Date endDate = newDate(2011, 0, 1);
         Set<Dosage> dosages = new HashSet<Dosage>();
 
         PillRegimen regimen = new PillRegimen("1", startDate, endDate, 5, 10, dosages);
         regimen.validate();
+    }
+
+    @Test
+    public void shouldValidateIfNoEndDateIsProvided() {
+        Date startDate = newDate(2011, 1, 1);
+        Date endDate = null;
+        Set<Dosage> dosages = new HashSet<Dosage>();
+
+        PillRegimen regimen = new PillRegimen("1", startDate, endDate, 5, 10, dosages);
+        try {
+            regimen.validate();
+        } catch (Exception e) {
+            Assert.fail();
+        }
     }
 
     @Test
