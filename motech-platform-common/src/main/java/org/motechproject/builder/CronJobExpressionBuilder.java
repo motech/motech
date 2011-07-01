@@ -17,6 +17,11 @@ public class CronJobExpressionBuilder {
     }
 
     public String build() {
-        return String.format(CRON_JOB_EXPR, startMinute, repeatIntervalInMinutes, startHour, startHour + repeatWindowInHours);
+        return String.format(CRON_JOB_EXPR, startMinute, repeatIntervalInMinutes, startHour, getEndHour());
+    }
+
+    private int getEndHour() {
+        int currentEndHour = startHour + repeatWindowInHours;
+        return (currentEndHour > 23) ? 23 : currentEndHour;
     }
 }

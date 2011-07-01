@@ -22,4 +22,10 @@ public class CronJobExpressionBuilderTest {
         String cronJobExpression = new CronJobExpressionBuilder(9, 15, 3, 15).build();
         assertEquals("0 15/15 9-12 * * ?", cronJobExpression);
     }
+
+    @Test
+    public void testBuild_SetEndHourAsTwentyThreeIfReminderWindowExtendsBeyondTheCurrentDay() {
+        String cronJobExpression = new CronJobExpressionBuilder(9, 15, 21, 15).build();
+        assertEquals("0 15/15 9-23 * * ?", cronJobExpression);
+    }
 }
