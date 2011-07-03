@@ -108,27 +108,27 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.7.2</version>
                 <!--<configuration>-->
-                    <!--<excludes>-->
-                        <!--<exclude>**/IVRServiceImplIT.java</exclude>-->
-                        <!--<exclude>**/SchedulerGatewayIT.java</exclude>-->
-                        <!--<exclude>**/PillReminderDaoIT.java</exclude>-->
-                        <!--<exclude>**/PillReminderServiceIT.java</exclude>-->
-                        <!--<exclude>**/GeneratePillReminderIT.java</exclude>-->
-                    <!--</excludes>-->
+                <!--<excludes>-->
+                <!--<exclude>**/IVRServiceImplIT.java</exclude>-->
+                <!--<exclude>**/SchedulerGatewayIT.java</exclude>-->
+                <!--<exclude>**/PillReminderDaoIT.java</exclude>-->
+                <!--<exclude>**/PillReminderServiceIT.java</exclude>-->
+                <!--<exclude>**/GeneratePillReminderIT.java</exclude>-->
+                <!--</excludes>-->
                 <!--</configuration>-->
                 <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>integration-test</id>-->
-                        <!--<goals>-->
-                            <!--<goal>integration-test</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                    <!--<execution>-->
-                        <!--<id>verify</id>-->
-                        <!--<goals>-->
-                            <!--<goal>verify</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
+                <!--<execution>-->
+                <!--<id>integration-test</id>-->
+                <!--<goals>-->
+                <!--<goal>integration-test</goal>-->
+                <!--</goals>-->
+                <!--</execution>-->
+                <!--<execution>-->
+                <!--<id>verify</id>-->
+                <!--<goals>-->
+                <!--<goal>verify</goal>-->
+                <!--</goals>-->
+                <!--</execution>-->
                 <!--</executions>-->
             </plugin>
             <plugin>
@@ -327,6 +327,157 @@
                     <url>http://nexus.motechproject.org/content/repositories/snapshots</url>
                 </snapshotRepository>
             </distributionManagement>
+        </profile>
+        <profile>
+            <id>tw-ci</id>
+            <properties>
+                <db.server>127.0.0.1</db.server>
+                <db.port>5984</db.port>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.7.2</version>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/IVRServiceImplIT.java</exclude>
+                                <exclude>**/SchedulerGatewayIT.java</exclude>
+                                <exclude>**/PillReminderDaoIT.java</exclude>
+                                <exclude>**/PillReminderServiceIT.java</exclude>
+                                <exclude>**/GeneratePillReminderIT.java</exclude>
+                            </excludes>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>integration-test</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>verify</id>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.1.1</version>
+                        <executions>
+                            <execution>
+                                <id>drop DB => rules</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>curl</executable>
+                                    <arguments>
+                                        <argument>-X</argument>
+                                        <argument>"DELETE"</argument>
+                                        <argument>"http://${db.server}:${db.port}/rules"</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>drop DB => trees</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>curl</executable>
+                                    <arguments>
+                                        <argument>-X</argument>
+                                        <argument>"DELETE"</argument>
+                                        <argument>"http://${db.server}:${db.port}/trees"</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>drop DB => test-tama</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>curl</executable>
+                                    <arguments>
+                                        <argument>-X</argument>
+                                        <argument>"DELETE"</argument>
+                                        <argument>"http://${db.server}:${db.port}/test-tama"</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>drop DB => test-appointments</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>curl</executable>
+                                    <arguments>
+                                        <argument>-X</argument>
+                                        <argument>"DELETE"</argument>
+                                        <argument>"http://${db.server}:${db.port}/test-appointments"</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>drop DB => test-outbox</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>curl</executable>
+                                    <arguments>
+                                        <argument>-X</argument>
+                                        <argument>"DELETE"</argument>
+                                        <argument>"http://${db.server}:${db.port}/test-outbox"</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>drop DB => motech-pillreminder</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>curl</executable>
+                                    <arguments>
+                                        <argument>-X</argument>
+                                        <argument>"DELETE"</argument>
+                                        <argument>"http://${db.server}:${db.port}/motech-pillreminder"</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>drop DB => motech-outbox</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>curl</executable>
+                                    <arguments>
+                                        <argument>-X</argument>
+                                        <argument>"DELETE"</argument>
+                                        <argument>"http://${db.server}:${db.port}/motech-outbox"</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 
