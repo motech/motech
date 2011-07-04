@@ -2,6 +2,7 @@ package org.motechproject.server.pillreminder.domain;
 
 import junit.framework.Assert;
 import org.junit.Test;
+import org.motechproject.model.Time;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -21,7 +22,7 @@ public class PillRegimenTest {
         medicines.add(new Medicine("m1", startDate, endDate));
 
         Set<Dosage> dosages = new HashSet<Dosage>();
-        dosages.add(new Dosage(9, 5, medicines));
+        dosages.add(new Dosage(new Time(9, 5), medicines));
 
         PillRegimen regimen = new PillRegimen("1", 5, 10, dosages);
         regimen.validate();
@@ -36,7 +37,7 @@ public class PillRegimenTest {
         medicines.add(new Medicine("m1", startDate, endDate));
 
         Set<Dosage> dosages = new HashSet<Dosage>();
-        dosages.add(new Dosage(9, 5, medicines));
+        dosages.add(new Dosage(new Time(9, 5), medicines));
 
         PillRegimen regimen = new PillRegimen("1", 5, 10, dosages);
 

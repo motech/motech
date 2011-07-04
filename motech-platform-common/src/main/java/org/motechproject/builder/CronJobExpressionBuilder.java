@@ -1,27 +1,27 @@
 package org.motechproject.builder;
 
+import org.motechproject.model.Time;
+
 public class CronJobExpressionBuilder {
 
-    private Integer startHour;
-    private Integer startMinute;
+    private Time startTime;
     private Integer repeatWindowInHours;
     private Integer repeatIntervalInMinutes;
 
     private final String CRON_JOB_EXPR = "0 %d/%d %d-%d * * ?";
 
-    public CronJobExpressionBuilder(Integer startHour, Integer startMinute, Integer repeatWindowInHours, Integer repeatIntervalInMinutes) {
-        this.startHour = startHour;
-        this.startMinute = startMinute;
+    public CronJobExpressionBuilder(Time startTime, Integer repeatWindowInHours, Integer repeatIntervalInMinutes) {
+        this.startTime = startTime;
         this.repeatWindowInHours = repeatWindowInHours;
         this.repeatIntervalInMinutes = repeatIntervalInMinutes;
     }
 
     public String build() {
-        return String.format(CRON_JOB_EXPR, startMinute, repeatIntervalInMinutes, startHour, getEndHour());
+        return String.format(CRON_JOB_EXPR, startTime.getMinute(), repeatIntervalInMinutes, startTime.getHour(), getEndHour());
     }
 
     private int getEndHour() {
-        int currentEndHour = startHour + repeatWindowInHours;
+        int currentEndHour = startTime.getHour() + repeatWindowInHours;
         return (currentEndHour > 23) ? 23 : currentEndHour;
     }
 }

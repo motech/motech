@@ -3,6 +3,7 @@ package org.motechproject.server.pillreminder.dao;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.model.Time;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.Medicine;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
@@ -53,7 +54,7 @@ public class AllPillRegimensIT {
         medicines.add(medicine);
         medicines.add(medicine2);
 
-        Dosage dosage = new Dosage(9, 5, medicines);
+        Dosage dosage = new Dosage(new Time(9, 5), medicines);
         Set<Dosage> dosages = new HashSet<Dosage>();
         dosages.add(dosage);
 

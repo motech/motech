@@ -1,5 +1,6 @@
 package org.motechproject.server.pillreminder.builder;
 
+import org.motechproject.model.Time;
 import org.motechproject.server.pillreminder.contract.DosageRequest;
 import org.motechproject.server.pillreminder.contract.MedicineRequest;
 import org.motechproject.server.pillreminder.domain.Dosage;
@@ -16,6 +17,6 @@ public class DosageBuilder {
             Medicine medicine = new Medicine(medicineRequest.getName(), medicineRequest.getStartDate(), medicineRequest.getEndDate());
             medicines.add(medicine);
         }
-        return new Dosage(dosageRequest.getStartHour(), dosageRequest.getStartMinute(), medicines);
+        return new Dosage(new Time(dosageRequest.getStartHour(), dosageRequest.getStartMinute()), medicines);
     }
 }

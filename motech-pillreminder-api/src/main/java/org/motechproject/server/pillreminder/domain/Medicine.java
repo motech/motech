@@ -52,8 +52,16 @@ public class Medicine {
         return statuses;
     }
 
+    public void setStatuses(List<Status> statuses) {
+        this.statuses = statuses;
+    }
+
     public Date getStartDate() {
         return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
     public Date getEndDate() {
@@ -64,6 +72,10 @@ public class Medicine {
             return calendar.getTime();
         }
         return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
     public void validate() {

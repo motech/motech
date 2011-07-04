@@ -46,8 +46,16 @@ public class PillRegimen extends MotechAuditableDataObject {
         return reminderRepeatWindowInHours;
     }
 
+    public void setReminderRepeatWindowInHours(int reminderRepeatWindowInHours) {
+        this.reminderRepeatWindowInHours = reminderRepeatWindowInHours;
+    }
+
     public int getReminderRepeatIntervalInMinutes() {
         return reminderRepeatIntervalInMinutes;
+    }
+
+    public void setReminderRepeatIntervalInMinutes(int reminderRepeatIntervalInMinutes) {
+        this.reminderRepeatIntervalInMinutes = reminderRepeatIntervalInMinutes;
     }
 
     public String getType() {

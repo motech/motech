@@ -1,6 +1,7 @@
 package org.motechproject.server.pillreminder.builder;
 
 import org.junit.Test;
+import org.motechproject.model.Time;
 import org.motechproject.server.pillreminder.contract.DosageRequest;
 import org.motechproject.server.pillreminder.contract.MedicineRequest;
 import org.motechproject.server.pillreminder.domain.Dosage;
@@ -26,8 +27,7 @@ public class DosageBuilderTest {
 
         Dosage dosage = builder.createFrom(dosageRequest);
 
-        assertEquals(9, dosage.getStartHour());
-        assertEquals(5, dosage.getStartMinute());
+        assertEquals(new Time(9, 5), dosage.getStartTime());
         assertEquals(1, dosage.getMedicines().size());
         for (Medicine medicine : dosage.getMedicines()) {
             assertEquals("m1", medicine.getName());

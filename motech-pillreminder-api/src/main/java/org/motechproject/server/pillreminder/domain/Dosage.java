@@ -1,20 +1,21 @@
 package org.motechproject.server.pillreminder.domain;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.motechproject.model.Time;
+
 import java.util.*;
 
 public class Dosage{
     private String id;
-    private int startHour;
-    private int startMinute;
+    private Time startTime;
     private Set<Medicine> medicines;
 
     public Dosage() {
     }
 
-    public Dosage(int startHour, int startMinute, Set<Medicine> medicines) {
+    public Dosage(Time startTime, Set<Medicine> medicines) {
         this.id = UUID.randomUUID().toString();
-        this.startHour = startHour;
-        this.startMinute = startMinute;
+        this.startTime = startTime;
         this.medicines = medicines;
     }
 
@@ -26,20 +27,12 @@ public class Dosage{
         this.medicines = medicines;
     }
 
-    public int getStartHour() {
-        return startHour;
+    public Time getStartTime() {
+        return startTime;
     }
 
-    public void setStartHour(int startHour) {
-        this.startHour = startHour;
-    }
-
-    public int getStartMinute() {
-        return startMinute;
-    }
-
-    public void setStartMinute(int startMinute) {
-        this.startMinute = startMinute;
+    public void setStartTime(Time startTime) {
+        this.startTime = startTime;
     }
 
     public String getId() {
@@ -50,6 +43,7 @@ public class Dosage{
         this.id = id;
     }
 
+    @JsonIgnore
     public Date getStartDate() {
         ArrayList<Medicine> sortedList = new ArrayList<Medicine>(medicines);
         Collections.sort(sortedList, new Comparator<Medicine>() {
@@ -61,6 +55,7 @@ public class Dosage{
         return sortedList.isEmpty() ? null : sortedList.get(0).getStartDate();
     }
 
+    @JsonIgnore
     public Date getEndDate() {
         ArrayList<Medicine> sortedList = new ArrayList<Medicine>(medicines);
         Collections.sort(sortedList, new Comparator<Medicine>() {
