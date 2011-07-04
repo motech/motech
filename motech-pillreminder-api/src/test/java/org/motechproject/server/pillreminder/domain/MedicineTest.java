@@ -32,15 +32,6 @@ public class MedicineTest {
         assertTrue(medicine.equals(new Medicine("m1", startDate, getDateAfter(startDate, 5))));
     }
 
-    @Test
-    public void shouldDefaultEndDateIfNotSpecified() {
-        Date startDate = new Date();
-        Date expectedEndDate = getDateAfter(startDate, 12);
-        Medicine medicine = new Medicine("medicine", startDate, null);
-
-        assertEquals(expectedEndDate, medicine.getEndDate());
-    }
-
     @Test(expected = ValidationException.class)
     public void shouldValidateMedicineEndDateToBeLaterThanStartDate() {
         Date endDate = new Date();

@@ -12,7 +12,6 @@ public class Medicine {
     private Date endDate;
 
     public static final String MEDICINE_END_DATE_CANNOT_BE_BEFORE_START_DATE = "Medicine end-date cannot be before start-date";
-    public static final int DEFAULT_MEDICINE_PERIOD_IN_MONTHS = 12;
 
     public Medicine() {
     }
@@ -65,12 +64,6 @@ public class Medicine {
     }
 
     public Date getEndDate() {
-        if (endDate == null) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(startDate);
-            calendar.add(Calendar.MONTH, DEFAULT_MEDICINE_PERIOD_IN_MONTHS);
-            return calendar.getTime();
-        }
         return endDate;
     }
 

@@ -13,10 +13,10 @@ public class DosageBuilder {
 
     public Dosage createFrom(DosageRequest dosageRequest) {
         Set<Medicine> medicines = new HashSet<Medicine>();
+        Time startTime = new Time(dosageRequest.getStartHour(), dosageRequest.getStartMinute());
         for (MedicineRequest medicineRequest : dosageRequest.getMedicineRequests()) {
-            Medicine medicine = new Medicine(medicineRequest.getName(), medicineRequest.getStartDate(), medicineRequest.getEndDate());
-            medicines.add(medicine);
+            medicines.add(new MedicineBuilder().createFrom(medicineRequest));
         }
-        return new Dosage(new Time(dosageRequest.getStartHour(), dosageRequest.getStartMinute()), medicines);
+        return new Dosage(startTime, medicines);
     }
 }
