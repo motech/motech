@@ -16,7 +16,6 @@ import java.util.*;
 
 public class PillReminderServiceImpl implements PillReminderService {
 
-    public static final int DEFAULT_REGIMEN_PERIOD_IN_MONTHS = 12;
     private AllPillRegimens allPillRegimens;
     private MotechSchedulerService schedulerService;
 
@@ -33,27 +32,15 @@ public class PillReminderServiceImpl implements PillReminderService {
         allPillRegimens.add(pillRegimen);
 
         for (Dosage dosage : pillRegimen.getDosages()) {
-            for (Medicine medicine : dosage.getMedicines()) {
-                Map<String, Object> params = new HashMap<String, Object>();
-                params.put(EventKeys.DOSAGE_ID_KEY, dosage.getId());
-                params.put(EventKeys.SCHEDULE_JOB_ID_KEY, UUID.randomUUID().toString());
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put(EventKeys.DOSAGE_ID_KEY, dosage.getId());
+            params.put(EventKeys.SCHEDULE_JOB_ID_KEY, UUID.randomUUID().toString());
 
-                MotechEvent motechEvent = new MotechEvent(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT, params);
-                String cronJobExpression = new CronJobExpressionBuilder(dosage.getStartHour(), dosage.getStartMinute(), pillRegimen.getReminderRepeatWindowInHours(), pillRegimen.getReminderRepeatIntervalInMinutes()).build();
-                CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, medicine.getStartDate(), getReminderEndDate(medicine));
+            MotechEvent motechEvent = new MotechEvent(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT, params);
+            String cronJobExpression = new CronJobExpressionBuilder(dosage.getStartHour(), dosage.getStartMinute(), pillRegimen.getReminderRepeatWindowInHours(), pillRegimen.getReminderRepeatIntervalInMinutes()).build();
+            CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, dosage.getStartDate(), dosage.getEndDate());
 
-                schedulerService.scheduleJob(schedulableJob);
-            }
+            schedulerService.scheduleJob(schedulableJob);
         }
-    }
-
-    private Date getReminderEndDate(Medicine medicine) {
-        if(medicine.getEndDate() == null) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(medicine.getStartDate());
-            calendar.add(Calendar.MONTH, DEFAULT_REGIMEN_PERIOD_IN_MONTHS);
-            return calendar.getTime();
-        }
-        return medicine.getEndDate();
     }
 }

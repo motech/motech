@@ -17,7 +17,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.motechproject.server.pillreminder.util.Util.getEndDateAfter;
+import static org.motechproject.server.pillreminder.util.Util.getDateAfter;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/testPillReminder.xml"})
@@ -48,7 +48,7 @@ public class AllPillRegimensIT {
     @Test
     public void shouldSaveThePillRegimenWithDosages() {
         Medicine medicine = new Medicine("m1", startDate, endDate);
-        Medicine medicine2 = new Medicine("m2", startDate, getEndDateAfter(startDate, 3));
+        Medicine medicine2 = new Medicine("m2", startDate, getDateAfter(startDate, 3));
         Set<Medicine> medicines = new HashSet<Medicine>();
         medicines.add(medicine);
         medicines.add(medicine2);

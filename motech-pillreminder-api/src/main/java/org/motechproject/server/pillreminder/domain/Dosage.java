@@ -1,7 +1,6 @@
 package org.motechproject.server.pillreminder.domain;
 
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class Dosage{
     private String id;
@@ -18,7 +17,6 @@ public class Dosage{
         this.startMinute = startMinute;
         this.medicines = medicines;
     }
-
 
     public Set<Medicine> getMedicines() {
         return medicines;
@@ -50,5 +48,33 @@ public class Dosage{
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Date getStartDate() {
+        ArrayList<Medicine> sortedList = new ArrayList<Medicine>(medicines);
+        Collections.sort(sortedList, new Comparator<Medicine>() {
+            @Override
+            public int compare(Medicine o1, Medicine o2) {
+                return o1.getStartDate().compareTo(o2.getStartDate());
+            }
+        });
+        return sortedList.isEmpty() ? null : sortedList.get(0).getStartDate();
+    }
+
+    public Date getEndDate() {
+        ArrayList<Medicine> sortedList = new ArrayList<Medicine>(medicines);
+        Collections.sort(sortedList, new Comparator<Medicine>() {
+            @Override
+            public int compare(Medicine o1, Medicine o2) {
+                return o2.getEndDate().compareTo(o1.getEndDate());
+            }
+        });
+        return sortedList.isEmpty() ? null : sortedList.get(0).getEndDate();
+    }
+
+    public void validate() {
+        for(Medicine medicine : getMedicines()) {
+            medicine.validate();
+        }
     }
 }

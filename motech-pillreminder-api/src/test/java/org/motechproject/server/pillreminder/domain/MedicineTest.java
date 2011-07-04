@@ -6,14 +6,14 @@ import java.util.Date;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.motechproject.server.pillreminder.util.Util.getEndDateAfter;
+import static org.motechproject.server.pillreminder.util.Util.getDateAfter;
 
 public class MedicineTest {
 
     @Test
     public void shouldTestEquality() {
         Date startDate = new Date();
-        Date endDate = getEndDateAfter(startDate, 2);
+        Date endDate = getDateAfter(startDate, 2);
         Medicine medicine = new Medicine("m1", startDate, endDate);
 
         assertFalse(medicine.equals(null));
@@ -25,6 +25,6 @@ public class MedicineTest {
         assertTrue(medicine.equals(new Medicine("m1", startDate, endDate)));
 
         //Important case: medicine objects are same if they have the same names
-        assertTrue(medicine.equals(new Medicine("m1", startDate, getEndDateAfter(startDate, 5))));
+        assertTrue(medicine.equals(new Medicine("m1", startDate, getDateAfter(startDate, 5))));
     }
 }

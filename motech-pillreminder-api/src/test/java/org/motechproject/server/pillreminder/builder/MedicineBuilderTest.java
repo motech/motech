@@ -7,7 +7,7 @@ import org.motechproject.server.pillreminder.domain.Medicine;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
-import static org.motechproject.server.pillreminder.util.Util.getEndDateAfter;
+import static org.motechproject.server.pillreminder.util.Util.getDateAfter;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,7 +23,7 @@ public class MedicineBuilderTest {
     public void shouldBuildADosageFromRequest() {
         String medicineName = "paracetamol";
         Date startDate = new Date();
-        Date endDate = getEndDateAfter(startDate, 2);
+        Date endDate = getDateAfter(startDate, 2);
         MedicineRequest medicineRequest = new MedicineRequest(medicineName, startDate, endDate);
 
         Medicine medicine = builder.createFrom(medicineRequest);

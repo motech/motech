@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
-import static org.motechproject.server.pillreminder.util.Util.getEndDateAfter;
+import static org.motechproject.server.pillreminder.util.Util.getDateAfter;
 
 public class DosageBuilderTest {
 
@@ -19,7 +19,7 @@ public class DosageBuilderTest {
     @Test
     public void shouldBuildADosageFromRequest() {
         Date startDate = new Date();
-        Date endDate = getEndDateAfter(startDate, 2);
+        Date endDate = getDateAfter(startDate, 2);
         MedicineRequest medicineRequest = new MedicineRequest("m1", startDate, endDate);
 
         DosageRequest dosageRequest = new DosageRequest(9, 5, Arrays.asList(medicineRequest));

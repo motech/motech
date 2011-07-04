@@ -17,9 +17,9 @@ public class Util {
         return dateFormat.format(date1).equals(dateFormat.format(date2));
     }
 
-    public static Date getEndDateAfter(Date startDate, int numOfMonth) {
+    public static Date getDateAfter(Date date, int numOfMonth) {
         Calendar cal = Calendar.getInstance();
-        cal.setTime(startDate);
+        cal.setTime(date);
         cal.add(Calendar.MONTH, numOfMonth);
         return cal.getTime();
     }

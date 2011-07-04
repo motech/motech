@@ -9,8 +9,6 @@ import java.util.Set;
 @TypeDiscriminator("doc.type === 'PILLREGIMEN'")
 public class PillRegimen extends MotechAuditableDataObject {
 
-    public static final String MEDICINE_END_DATE_CANNOT_BE_BEFORE_START_DATE = "Medicine end-date cannot be before start-date";
-
     @JsonProperty("type")
     private String type = "PILLREGIMEN";
     private String externalId;
@@ -48,16 +46,8 @@ public class PillRegimen extends MotechAuditableDataObject {
         return reminderRepeatWindowInHours;
     }
 
-    public void setReminderRepeatWindowInHours(int reminderRepeatWindowInHours) {
-        this.reminderRepeatWindowInHours = reminderRepeatWindowInHours;
-    }
-
     public int getReminderRepeatIntervalInMinutes() {
         return reminderRepeatIntervalInMinutes;
-    }
-
-    public void setReminderRepeatIntervalInMinutes(int reminderRepeatIntervalInMinutes) {
-        this.reminderRepeatIntervalInMinutes = reminderRepeatIntervalInMinutes;
     }
 
     public String getType() {
@@ -70,11 +60,7 @@ public class PillRegimen extends MotechAuditableDataObject {
 
     public void validate() {
         for(Dosage dosage : dosages) {
-            for(Medicine medicine : dosage.getMedicines()) {
-               if(medicine.getEndDate()!=null && medicine.getStartDate().after(medicine.getEndDate()))
-                    throw(new ValidationException(MEDICINE_END_DATE_CANNOT_BE_BEFORE_START_DATE));
-            }
+            dosage.validate();
         }
     }
-
 }

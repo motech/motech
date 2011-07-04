@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
-import static org.motechproject.server.pillreminder.util.Util.getEndDateAfter;
+import static org.motechproject.server.pillreminder.util.Util.getDateAfter;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/testPillReminder.xml"})
@@ -52,7 +52,7 @@ public class PillReminderServiceIT {
 
         MedicineRequest medicineRequest1 = new MedicineRequest("m1", startDate, endDate);
         medicineRequests.add(medicineRequest1);
-        MedicineRequest medicineRequest2 = new MedicineRequest("m2", startDate, getEndDateAfter(startDate, 5));
+        MedicineRequest medicineRequest2 = new MedicineRequest("m2", startDate, getDateAfter(startDate, 5));
         medicineRequests.add(medicineRequest2);
 
         ArrayList<DosageRequest> dosageContracts = new ArrayList<DosageRequest>();

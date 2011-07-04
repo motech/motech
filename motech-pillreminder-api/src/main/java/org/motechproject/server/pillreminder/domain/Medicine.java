@@ -1,6 +1,7 @@
 package org.motechproject.server.pillreminder.domain;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -9,6 +10,9 @@ public class Medicine {
     private List<Status> statuses = new ArrayList<Status>();
     private Date startDate;
     private Date endDate;
+
+    public static final String MEDICINE_END_DATE_CANNOT_BE_BEFORE_START_DATE = "Medicine end-date cannot be before start-date";
+    public static final int DEFAULT_MEDICINE_PERIOD_IN_MONTHS = 12;
 
     public Medicine() {
     }
@@ -48,23 +52,23 @@ public class Medicine {
         return statuses;
     }
 
-    public void setStatuses(List<Status> statuses) {
-        this.statuses = statuses;
-    }
-
     public Date getStartDate() {
         return startDate;
     }
 
     public Date getEndDate() {
+        if (endDate == null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(startDate);
+            calendar.add(Calendar.MONTH, DEFAULT_MEDICINE_PERIOD_IN_MONTHS);
+            return calendar.getTime();
+        }
         return endDate;
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
+    public void validate() {
+        if (getEndDate() != null && getStartDate().after(getEndDate()))
+             throw(new ValidationException(MEDICINE_END_DATE_CANNOT_BE_BEFORE_START_DATE));
 
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
     }
 }
