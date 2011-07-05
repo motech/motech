@@ -3,11 +3,13 @@ package org.motechproject.server.pillreminder.domain;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.model.Time;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Dosage{
     private String id;
     private Time startTime;
+    private Date currentDosageDate;
     private Set<Medicine> medicines;
 
     public Dosage() {
@@ -17,6 +19,7 @@ public class Dosage{
         this.id = UUID.randomUUID().toString();
         this.startTime = startTime;
         this.medicines = medicines;
+        this.currentDosageDate = getStartDate();
     }
 
     public Set<Medicine> getMedicines() {
@@ -41,6 +44,20 @@ public class Dosage{
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Date getCurrentDosageDate() {
+        return currentDosageDate;
+    }
+
+    public void setCurrentDosageDate(Date currentDosageDate) {
+        this.currentDosageDate = currentDosageDate;
+    }
+
+    public boolean isTaken(Time dosageWindow) {
+        String dosageDate = new SimpleDateFormat("dd/MM/yyyy").format(this.currentDosageDate);
+        String today = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
+        return dosageDate.equals(today) && startTime.equals(dosageWindow);
     }
 
     @JsonIgnore
