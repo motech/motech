@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <context:annotation-config />
+	<util:properties id="couchdbProperties" location="classpath:couchdb.properties" />
+
+	<bean id="cmsLiteDatabase" class="org.ektorp.impl.StdCouchDbConnector">
+		<constructor-arg value="motech-cmslite" />
+		<constructor-arg>
+			<bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
+				<constructor-arg>
+					<bean class="org.ektorp.spring.HttpClientFactoryBean" />
+				</constructor-arg>
+			</bean>
+		</constructor-arg>
+	</bean>
+
+    <bean id="cmsLiteDAO" class="org.motechproject.cmslite.dao.impl.CMSLiteDAOImpl">
+        <constructor-arg ref="cmsLiteDatabase"/>
+    </bean>
+
+    <bean id="pathToResource" class="java.lang.String">
+        <constructor-arg value="/testResource.png" />
+    </bean>
+
+</beans>
