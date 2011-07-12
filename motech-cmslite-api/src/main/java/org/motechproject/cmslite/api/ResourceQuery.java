@@ -1,4 +1,4 @@
-package org.motechproject.cmslite;
+package org.motechproject.cmslite.api;
 
 public class ResourceQuery {
 

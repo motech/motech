@@ -1,8 +1,8 @@
-package org.motechproject.cmslite;
+package org.motechproject.cmslite.api;
 
 
-import org.motechproject.cmslite.dao.CMSLiteDAO;
-import org.motechproject.cmslite.model.Resource;
+import org.motechproject.cmslite.api.dao.CMSLiteDAO;
+import org.motechproject.cmslite.api.model.Resource;
 
 import java.io.InputStream;
 

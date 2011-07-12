@@ -19,7 +19,7 @@
 		</constructor-arg>
 	</bean>
 
-    <bean id="cmsLiteDAO" class="org.motechproject.cmslite.dao.impl.CMSLiteDAOImpl">
+    <bean id="cmsLiteDAO" class="org.motechproject.cmslite.api.dao.impl.CMSLiteDAOImpl">
         <constructor-arg ref="cmsLiteDatabase"/>
     </bean>
 

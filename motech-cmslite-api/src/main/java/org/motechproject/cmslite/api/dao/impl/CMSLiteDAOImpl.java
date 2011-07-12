@@ -1,13 +1,13 @@
-package org.motechproject.cmslite.dao.impl;
+package org.motechproject.cmslite.api.dao.impl;
 
 import org.ektorp.AttachmentInputStream;
 import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
-import org.motechproject.cmslite.ResourceQuery;
-import org.motechproject.cmslite.dao.CMSLiteDAO;
-import org.motechproject.cmslite.model.Resource;
+import org.motechproject.cmslite.api.ResourceQuery;
+import org.motechproject.cmslite.api.dao.CMSLiteDAO;
+import org.motechproject.cmslite.api.model.Resource;
 import org.motechproject.dao.MotechAuditableRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 

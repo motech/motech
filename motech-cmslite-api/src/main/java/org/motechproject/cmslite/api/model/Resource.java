@@ -1,4 +1,4 @@
-package org.motechproject.cmslite.model;
+package org.motechproject.cmslite.api.model;
 
 
 import org.codehaus.jackson.annotate.JsonIgnore;

@@ -1,13 +1,13 @@
-package org.motechproject.cmslite.dao.impl;
+package org.motechproject.cmslite.api.dao.impl;
 
 import org.ektorp.AttachmentInputStream;
 import org.ektorp.CouchDbConnector;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.cmslite.ResourceNotFoundException;
-import org.motechproject.cmslite.ResourceQuery;
-import org.motechproject.cmslite.model.Resource;
+import org.motechproject.cmslite.api.ResourceNotFoundException;
+import org.motechproject.cmslite.api.ResourceQuery;
+import org.motechproject.cmslite.api.model.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
