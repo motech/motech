@@ -2,6 +2,7 @@ package org.motechproject.cmslite.api.dao.impl;
 
 import org.ektorp.AttachmentInputStream;
 import org.ektorp.CouchDbConnector;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,10 +23,10 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/testCmsLiteConfiguration.xml")
-public class CMSLiteDAOImplIT {
+public class CMSLiteResourcesImplIT {
 
     @Autowired
-    CMSLiteDAOImpl cmsLiteDAO;
+    CMSLiteResourcesImpl cmsLiteDAO;
     @Autowired
     protected CouchDbConnector couchDbConnector;
 
@@ -45,13 +46,15 @@ public class CMSLiteDAOImplIT {
 
         couchDbConnector.create(resourceEnglish);
         couchDbConnector.createAttachment(resourceEnglish.getId(), resourceEnglish.getRevision(), new AttachmentInputStream(resourceEnglish.getId(), inputStreamToResource, "image/png"));
+        resourceEnglish = couchDbConnector.get(Resource.class,resourceEnglish.getId());
 
         resourceFrench = new Resource();
         resourceFrench.setLanguage("fr");
         resourceFrench.setName("new");
 
         couchDbConnector.create(resourceFrench);
-        couchDbConnector.createAttachment(resourceFrench.getId(),resourceFrench.getRevision(), new AttachmentInputStream(resourceFrench.getId(), inputStreamToResource, "image/png"));
+        couchDbConnector.createAttachment(resourceFrench.getId(), resourceFrench.getRevision(), new AttachmentInputStream(resourceFrench.getId(), inputStreamToResource, "image/png"));
+        resourceFrench = couchDbConnector.get(Resource.class,resourceFrench.getId());
 
     }
 
@@ -78,8 +81,7 @@ public class CMSLiteDAOImplIT {
 
     @Test
     public void shouldNotRetrieveAResourceIfCaseDoesNotMatch() {
-        ResourceQuery query =
- new ResourceQuery("test", "En");
+        ResourceQuery query = new ResourceQuery("test", "En");
         Resource resource = cmsLiteDAO.getResource(query);
         assertNull(resource);
         query = new ResourceQuery("Test", "en");
@@ -101,8 +103,13 @@ public class CMSLiteDAOImplIT {
         assertNull(resource);
     }
 
+    @After
     public void tearData() {
-        if(this.resourceEnglish != null && this.couchDbConnector.contains(resourceEnglish.getId())) this.couchDbConnector.delete(resourceEnglish);
-        if(this.resourceFrench != null && this.couchDbConnector.contains(resourceFrench.getId())) this.couchDbConnector.delete(resourceFrench);
+        if (this.resourceEnglish != null && this.couchDbConnector.contains(resourceEnglish.getId())) {
+            this.couchDbConnector.delete(resourceEnglish);
+        }
+        if (this.resourceFrench != null && this.couchDbConnector.contains(resourceFrench.getId())) {
+            this.couchDbConnector.delete(resourceFrench);
+        }
     }
 }

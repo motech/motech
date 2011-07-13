@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.motechproject.cmslite.api.CMSLiteService;
 import org.motechproject.cmslite.api.ResourceNotFoundException;
 import org.motechproject.cmslite.api.ResourceQuery;
-import org.motechproject.cmslite.api.dao.CMSLiteDAO;
+import org.motechproject.cmslite.api.dao.CMSLiteResources;
 import org.motechproject.cmslite.api.model.Resource;
 
 import java.io.IOException;
@@ -20,17 +20,17 @@ public class CMSLiteServiceTest {
     public void shouldReturnInputStreamToContentIfContentExists() throws IOException, ResourceNotFoundException {
         ResourceQuery query = new ResourceQuery("name", "language");
         CMSLiteService cmsLiteService = new CMSLiteService();
-        CMSLiteDAO mockDAO = mock(CMSLiteDAO.class);
+        CMSLiteResources mockResources = mock(CMSLiteResources.class);
         Resource resource = new Resource();
         InputStream inputStreamToResource = mock(InputStream.class);
 
-        cmsLiteService.setDAO(mockDAO);
+        cmsLiteService.setDAO(mockResources);
         resource.setInputStream(inputStreamToResource);
-        when(mockDAO.getResource(query)).thenReturn(resource);
+        when(mockResources.getResource(query)).thenReturn(resource);
 
         InputStream content = cmsLiteService.getContent(query);
 
-        verify(mockDAO).getResource(query);
+        verify(mockResources).getResource(query);
         assertEquals(inputStreamToResource, content);
     }
 
@@ -38,10 +38,10 @@ public class CMSLiteServiceTest {
     public void shouldThrowExceptionIfContentDoesNotExist() throws ResourceNotFoundException {
         ResourceQuery query = new ResourceQuery("test1", "language");
         CMSLiteService cmsLiteService = new CMSLiteService();
-        CMSLiteDAO mockDAO = mock(CMSLiteDAO.class);
+        CMSLiteResources mockResources = mock(CMSLiteResources.class);
 
-        cmsLiteService.setDAO(mockDAO);
-        when(mockDAO.getResource(query)).thenReturn(null);
+        cmsLiteService.setDAO(mockResources);
+        when(mockResources.getResource(query)).thenReturn(null);
 
         cmsLiteService.getContent(query);
 
@@ -51,12 +51,12 @@ public class CMSLiteServiceTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentExceptionWhenQueryIsNull() throws ResourceNotFoundException {
         CMSLiteService cmsLiteService = new CMSLiteService();
-        CMSLiteDAO mockDAO = mock(CMSLiteDAO.class);
+        CMSLiteResources mockResources = mock(CMSLiteResources.class);
 
-        cmsLiteService.setDAO(mockDAO);
+        cmsLiteService.setDAO(mockResources);
 
         cmsLiteService.getContent(null);
-        verify(mockDAO,never()).getResource(null);
+        verify(mockResources,never()).getResource(null);
 
         fail("Should have thrown IllegalArgumentException when query is null");
     }

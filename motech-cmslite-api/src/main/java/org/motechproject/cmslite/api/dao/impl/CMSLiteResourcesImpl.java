@@ -6,16 +6,16 @@ import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
 import org.motechproject.cmslite.api.ResourceQuery;
-import org.motechproject.cmslite.api.dao.CMSLiteDAO;
+import org.motechproject.cmslite.api.dao.CMSLiteResources;
 import org.motechproject.cmslite.api.model.Resource;
 import org.motechproject.dao.MotechAuditableRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.List;
 
-public class CMSLiteDAOImpl extends MotechAuditableRepository<Resource> implements CMSLiteDAO {
+public class CMSLiteResourcesImpl extends MotechAuditableRepository<Resource> implements CMSLiteResources {
 
-    protected CMSLiteDAOImpl(@Qualifier("cmsLiteDatabase") CouchDbConnector db) {
+    protected CMSLiteResourcesImpl(@Qualifier("cmsLiteDatabase") CouchDbConnector db) {
         super(Resource.class, db);
         initStandardDesignDocument();
     }
