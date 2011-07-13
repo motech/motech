@@ -112,11 +112,8 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.cmslite.api;org.motechproject.cmslite.api.model;org.motechproject.cmslite.api.context
+                            org.motechproject.cmslite.api;org.motechproject.cmslite.api.model
                         </Export-Package>
-                        <Bundle-Activator>
-                            org.motechproject.server.outbox.Activator
-                        </Bundle-Activator>
                         <Private-Package>
                             org.motechproject.server.cmslite.*
                         </Private-Package>
