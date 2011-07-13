@@ -5,6 +5,7 @@ import org.motechproject.cmslite.api.CMSLiteService;
 import org.motechproject.cmslite.api.ResourceNotFoundException;
 import org.motechproject.cmslite.api.ResourceQuery;
 import org.motechproject.cmslite.api.dao.CMSLiteResources;
+import org.motechproject.cmslite.api.impl.CMSLiteServiceImpl;
 import org.motechproject.cmslite.api.model.Resource;
 
 import java.io.IOException;
@@ -19,12 +20,11 @@ public class CMSLiteServiceTest {
     @Test
     public void shouldReturnInputStreamToContentIfContentExists() throws IOException, ResourceNotFoundException {
         ResourceQuery query = new ResourceQuery("name", "language");
-        CMSLiteService cmsLiteService = new CMSLiteService();
         CMSLiteResources mockResources = mock(CMSLiteResources.class);
+        CMSLiteService cmsLiteService = new CMSLiteServiceImpl(mockResources);
         Resource resource = new Resource();
         InputStream inputStreamToResource = mock(InputStream.class);
 
-        cmsLiteService.setDAO(mockResources);
         resource.setInputStream(inputStreamToResource);
         when(mockResources.getResource(query)).thenReturn(resource);
 
@@ -37,10 +37,9 @@ public class CMSLiteServiceTest {
     @Test(expected = ResourceNotFoundException.class)
     public void shouldThrowExceptionIfContentDoesNotExist() throws ResourceNotFoundException {
         ResourceQuery query = new ResourceQuery("test1", "language");
-        CMSLiteService cmsLiteService = new CMSLiteService();
         CMSLiteResources mockResources = mock(CMSLiteResources.class);
+        CMSLiteService cmsLiteService = new CMSLiteServiceImpl(mockResources);
 
-        cmsLiteService.setDAO(mockResources);
         when(mockResources.getResource(query)).thenReturn(null);
 
         cmsLiteService.getContent(query);
@@ -50,10 +49,8 @@ public class CMSLiteServiceTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentExceptionWhenQueryIsNull() throws ResourceNotFoundException {
-        CMSLiteService cmsLiteService = new CMSLiteService();
         CMSLiteResources mockResources = mock(CMSLiteResources.class);
-
-        cmsLiteService.setDAO(mockResources);
+        CMSLiteService cmsLiteService = new CMSLiteServiceImpl(mockResources);
 
         cmsLiteService.getContent(null);
         verify(mockResources,never()).getResource(null);

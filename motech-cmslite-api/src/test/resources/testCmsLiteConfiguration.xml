@@ -23,8 +23,4 @@
         <constructor-arg ref="cmsLiteDatabase"/>
     </bean>
 
-    <bean id="pathToResource" class="java.lang.String">
-        <constructor-arg value="/testResource.png" />
-    </bean>
-
 </beans>

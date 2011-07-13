@@ -30,14 +30,12 @@ public class CMSLiteResourcesImplIT {
     @Autowired
     protected CouchDbConnector couchDbConnector;
 
-    @Autowired
-    private String pathToFile;
-
     private Resource resourceEnglish;
     private Resource resourceFrench;
 
     @Before
     public void setUpData() throws FileNotFoundException {
+        String pathToFile = "/testResource.png";
         resourceEnglish = new Resource();
         resourceEnglish.setLanguage("en");
         resourceEnglish.setName("test");
