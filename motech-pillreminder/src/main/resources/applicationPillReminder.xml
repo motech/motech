@@ -9,11 +9,11 @@
     <context:component-scan base-package="org.motechproject.server.pillreminder" />
 
     <bean id="motechContext" class="org.motechproject.context.Context" factory-method="getInstance"/>
-    <bean id="couchDbInstance" factory-bean="motechContext" factory-method="getCouchDbInstance"/>
+    <bean id="couchDbInstancePillReminder" factory-bean="motechContext" factory-method="getCouchDbInstance"/>
 
     <bean id="pillReminderDatabase" class="org.ektorp.impl.StdCouchDbConnector">
         <constructor-arg value="motech-pillreminder"/>
-        <constructor-arg ref="couchDbInstance"/>
+        <constructor-arg ref="couchDbInstancePillReminder"/>
     </bean>
 
     <!--<bean id="controllerClassNameUrlMapping"-->
@@ -24,6 +24,17 @@
 
     <bean id="jaxbView" class="org.springframework.web.servlet.view.xml.MarshallingView">
         <constructor-arg ref="jaxbMarshaller" />
+    </bean>
+
+    <bean id="allPillRegimens" class="org.motechproject.server.pillreminder.dao.AllPillRegimens" >
+        <constructor-arg ref="pillReminderDatabase"/>
+    </bean>
+
+    <bean id="schedulerService" class="org.motechproject.scheduler.MotechSchedulerServiceImpl"/>
+
+    <bean id="pillReminderServiceImpl" class="org.motechproject.server.pillreminder.service.PillReminderServiceImpl">
+        <constructor-arg ref ="allPillRegimens"/>
+        <constructor-arg ref="schedulerService"/>
     </bean>
 
     <bean id="jaxbMarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">

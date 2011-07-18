@@ -18,7 +18,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-scheduler</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
 			<groupId>org.springframework</groupId>
