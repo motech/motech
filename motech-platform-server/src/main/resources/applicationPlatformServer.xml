@@ -42,10 +42,9 @@
 		 http://www.springframework.org/schema/util
 		 http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-	<import resource="applicationCommon.xml" />
-	<import resource="applicationAPI.xml" /> 
-
-	<context:annotation-config />
+    <context:annotation-config />
+	<import resource="classpath*:applicationPlatformCommon.xml" />
+	<import resource="classpath*:applicationPlatformServerAPI.xml" />
 
 	<util:properties id="osgiConfig" location="classpath:osgi.properties" />
 
@@ -53,8 +52,7 @@
 		<constructor-arg ref="osgiConfig" />
 	</bean>
 
-	<bean id="osgiFrameworkService" class="org.motechproject.server.osgi.OsgiFrameworkService"
-		init-method="start" destroy-method="stop">
+	<bean id="osgiFrameworkService" class="org.motechproject.server.osgi.OsgiFrameworkService">
 		<property name="internalBundleFolder" value="/WEB-INF/bundles" />
 		<property name="externalBundleFolder" value="#{systemProperties['user.home']}/.motech/bundles" />
 		<property name="bundleLoaders">
@@ -82,22 +80,6 @@
 
         <!--Asterisk Gateway Interface URI - required for integration with Voiceglue-->
         <property name="agiUrl" value="agi://localhost/url="/>
-    </bean>
-
-    <bean id="metricsAgent" class="org.motechproject.metrics.impl.MultipleMetricsAgentImpl">
-        <property name="metricsAgents">
-            <list>
-                <ref bean="loggingAgent"/>
-                <ref bean="statsdAgent"/>
-            </list>
-        </property>
-    </bean>
-
-    <bean id="loggingAgent" class="org.motechproject.metrics.impl.LoggingAgentBackendImpl"/>
-    <bean id="statsdAgent" class="org.motechproject.metrics.impl.StatsdAgentBackendImpl">
-        <property name="serverHost" value="localhost"/>
-        <property name="serverPort" value="9000"/>
-        <property name="generateHostBasedStats" value="false"/>
     </bean>
 
 </beans>

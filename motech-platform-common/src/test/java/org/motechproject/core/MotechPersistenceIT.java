@@ -62,7 +62,7 @@ import static junit.framework.Assert.assertEquals;
  * To change this template use File | Settings | File Templates.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/applicationCommon.xml",
+@ContextConfiguration(locations={"/applicationPlatformCommon.xml",
                                  "/persistenceIntegrationContext.xml"})
 public class MotechPersistenceIT {
     private final Logger log = LoggerFactory.getLogger(this.getClass());

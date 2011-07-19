@@ -52,7 +52,7 @@ import static junit.framework.Assert.assertTrue;
  * this template use File | Settings | File Templates.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/applicationCommon.xml", "/persistenceIntegrationContext.xml" })
+@ContextConfiguration(locations = {"/applicationPlatformCommon.xml", "/persistenceIntegrationContext.xml" })
 public class AuditablePersistenceIT {
 
     @Autowired

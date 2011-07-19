@@ -63,7 +63,7 @@ public class MotechScheduler {
     public static void main(String[] args) {
 
         AbstractApplicationContext ctx
-                = new ClassPathXmlApplicationContext(new String[]{"/applicationContext.xml"});
+                = new ClassPathXmlApplicationContext(new String[]{"/applicationPlatformScheduler.xml"});
 
         // add a shutdown hook for the above context...
         ctx.registerShutdownHook();

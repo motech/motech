@@ -40,8 +40,8 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
-			classpath:applicationContext.xml
-         </param-value>
+            classpath:applicationPlatformServer.xml
+        </param-value>
 	</context-param>
 	
 	<!-- Spring -->

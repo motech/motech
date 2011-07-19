@@ -1,7 +1,5 @@
 package org.motechproject.server.pillreminder.dao;
 
-import org.ektorp.CouchDbInstance;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

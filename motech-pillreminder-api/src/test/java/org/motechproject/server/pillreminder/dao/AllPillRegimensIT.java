@@ -21,7 +21,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.motechproject.server.pillreminder.util.Util.getDateAfter;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testPillReminder.xml"})
+@ContextConfiguration(locations = {"/applicationPillReminderAPI.xml"})
 public class AllPillRegimensIT {
 
     @Autowired

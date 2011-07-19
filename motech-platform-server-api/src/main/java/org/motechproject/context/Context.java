@@ -50,7 +50,7 @@ public class Context {
 	@Autowired(required=false)
 	private MotechSchedulerGateway motechSchedulerGateway;
 	
-	@Autowired(required=false)
+	@Autowired(required = false)
 	private CouchDbInstance couchDbInstance;
 
     @Autowired(required=false)
