@@ -76,4 +76,12 @@ public class AllPillRegimensIT {
         allPillRegimens.remove(pillRegimen);
     }
 
+    @Test
+    public void shouldGetPillRegimenByExternalId() {
+        PillRegimen pillRegimen = new PillRegimen("1234", 5, 20, null);
+        allPillRegimens.add(pillRegimen);
+        PillRegimen returnedRegimen = allPillRegimens.findByExternalId("1234");
+        assertNotNull(returnedRegimen);
+        assertEquals(returnedRegimen.getExternalId(), "1234");
+    }
 }

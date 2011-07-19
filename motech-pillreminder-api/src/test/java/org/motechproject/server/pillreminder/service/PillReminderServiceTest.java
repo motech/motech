@@ -11,15 +11,17 @@ import org.motechproject.server.pillreminder.contract.DosageRequest;
 import org.motechproject.server.pillreminder.contract.MedicineRequest;
 import org.motechproject.server.pillreminder.contract.PillRegimenRequest;
 import org.motechproject.server.pillreminder.dao.AllPillRegimens;
+import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.server.pillreminder.util.Util.getDateAfter;
 
@@ -51,6 +53,36 @@ public class PillReminderServiceTest {
         PillRegimenRequest pillRegimenRequest = new PillRegimenRequest(externalId, 5, 20, asList(dosageRequest));
 
         service.createNew(pillRegimenRequest);
+        verify(allPillRegimens).add(argThat(new PillRegimenArgumentMatcher()));
+        verify(schedulerService, times(1)).scheduleJob(argThat(new CronSchedulableJobArgumentMatcher(startDate, getDateAfter(startDate, 4))));
+    }
+
+    @Test
+    public void shouldRenewAPillRegimenFromRequest() {
+        String externalId = "123";
+        String randomUID = "1234567890";
+        Date startDate = new Date();
+        Date endDate = getDateAfter(startDate, 2);
+
+        MedicineRequest medicineRequest1 = new MedicineRequest("m1", startDate, endDate);
+        MedicineRequest medicineRequest2 = new MedicineRequest("m2", getDateAfter(startDate, 1), getDateAfter(startDate, 4));
+        List<MedicineRequest> medicineRequests = asList(medicineRequest1, medicineRequest2);
+
+        DosageRequest dosageRequest = new DosageRequest(9, 5, medicineRequests);
+        PillRegimenRequest pillRegimenRequest = new PillRegimenRequest(externalId, 5, 20, asList(dosageRequest));
+        PillRegimen regimen = mock(PillRegimen.class);
+        final Dosage dosage = mock(Dosage.class);
+        Set<Dosage> dosages = new HashSet<Dosage>() {{
+            add(dosage);
+        }};
+        when(regimen.getDosages()).thenReturn((Set<Dosage>) dosages);
+        when(dosage.getId()).thenReturn(randomUID);
+        when(allPillRegimens.findByExternalId(externalId)).thenReturn(regimen);
+
+        service.renew(pillRegimenRequest);
+
+        verify(schedulerService).unscheduleJob(randomUID);
+        verify(allPillRegimens).remove(regimen);
         verify(allPillRegimens).add(argThat(new PillRegimenArgumentMatcher()));
         verify(schedulerService, times(1)).scheduleJob(argThat(new CronSchedulableJobArgumentMatcher(startDate, getDateAfter(startDate, 4))));
     }

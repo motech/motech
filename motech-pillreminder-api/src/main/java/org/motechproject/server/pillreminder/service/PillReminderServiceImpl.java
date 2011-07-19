@@ -6,10 +6,10 @@ import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.pillreminder.EventKeys;
 import org.motechproject.server.pillreminder.builder.PillRegimenBuilder;
+import org.motechproject.server.pillreminder.builder.SchedulerPayloadBuilder;
 import org.motechproject.server.pillreminder.contract.PillRegimenRequest;
 import org.motechproject.server.pillreminder.dao.AllPillRegimens;
 import org.motechproject.server.pillreminder.domain.Dosage;
-import org.motechproject.server.pillreminder.domain.Medicine;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
 
 import java.util.*;
@@ -32,9 +32,9 @@ public class PillReminderServiceImpl implements PillReminderService {
         allPillRegimens.add(pillRegimen);
 
         for (Dosage dosage : pillRegimen.getDosages()) {
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put(EventKeys.DOSAGE_ID_KEY, dosage.getId());
-            params.put(EventKeys.SCHEDULE_JOB_ID_KEY, UUID.randomUUID().toString());
+            Map<String, Object> params = new SchedulerPayloadBuilder().
+                    withJobId(dosage.getId()).
+                    withDosageId(dosage.getId()).payload();
 
             MotechEvent motechEvent = new MotechEvent(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT, params);
             String cronJobExpression = new CronJobExpressionBuilder(dosage.getStartTime(), pillRegimen.getReminderRepeatWindowInHours(), pillRegimen.getReminderRepeatIntervalInMinutes()).build();
@@ -42,5 +42,19 @@ public class PillReminderServiceImpl implements PillReminderService {
 
             schedulerService.scheduleJob(schedulableJob);
         }
+    }
+
+    @Override
+    public void renew(PillRegimenRequest newScheduleRequest) {
+        destroy(newScheduleRequest.getExternalId());
+        createNew(newScheduleRequest);
+    }
+
+    private void destroy(String externalID) {
+       PillRegimen regimen = allPillRegimens.findByExternalId(externalID);
+       for(Dosage dosage : regimen.getDosages()) {
+           schedulerService.unscheduleJob(dosage.getId());
+       }
+        allPillRegimens.remove(regimen);
     }
 }
