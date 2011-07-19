@@ -349,6 +349,7 @@
                                 <exclude>**/PillReminderDaoIT.java</exclude>
                                 <exclude>**/PillReminderServiceIT.java</exclude>
                                 <exclude>**/GeneratePillReminderIT.java</exclude>
+                                <exclude>**/CMSLiteResourcesImplIT.java</exclude>
                             </excludes>
                         </configuration>
                         <executions>
