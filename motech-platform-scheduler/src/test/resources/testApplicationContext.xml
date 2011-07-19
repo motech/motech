@@ -34,7 +34,16 @@
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jms="http://www.springframework.org/schema/integration/jms">
+
+    <bean id="eventRelay" class="org.motechproject.server.event.ServerEventRelay"/>
+    <bean id="eventListenerRegistry" class="org.motechproject.server.event.EventListenerRegistry"/>
+
+    <import resource="integrationCommon.xml"/>
+    <import resource="inboundEventChannelAdapter.xml"/>
+    <import resource="schedulerFiredEventChannelAdapter.xml"/>
 
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
       <property name="configLocation">
@@ -47,4 +56,19 @@
 
     <bean name="schedulerService" class="org.motechproject.scheduler.MotechSchedulerServiceImpl"/>
 
+    <bean id="metricsAgent" class="org.motechproject.metrics.impl.MultipleMetricsAgentImpl">
+        <property name="metricsAgents">
+            <list>
+                <ref bean="loggingAgent"/>
+                <ref bean="statsdAgent"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="loggingAgent" class="org.motechproject.metrics.impl.LoggingAgentBackendImpl"/>
+    <bean id="statsdAgent" class="org.motechproject.metrics.impl.StatsdAgentBackendImpl">
+        <property name="serverHost" value="localhost"/>
+        <property name="serverPort" value="9000"/>
+        <property name="generateHostBasedStats" value="false"/>
+    </bean>
 </beans>

@@ -117,6 +117,7 @@ public class ServerEventRelay implements EventRelay
 
                     String timer = listener.getIdentifier() + ".handler." + event.getSubject();
                     metricsAgent.startTimer(timer);
+                    metricsAgent.logEvent(_event.getSubject());
         			listener.handle(_event);
                     metricsAgent.stopTimer(timer);
 
@@ -137,6 +138,7 @@ public class ServerEventRelay implements EventRelay
                 for (EventListener listener : listeners) {
                     String timer = listener.getIdentifier() + ".handler." + event.getSubject();
                     metricsAgent.startTimer(timer);
+                    metricsAgent.logEvent(event.getSubject());
                     listener.handle(event);
                     metricsAgent.stopTimer(timer);
                 }

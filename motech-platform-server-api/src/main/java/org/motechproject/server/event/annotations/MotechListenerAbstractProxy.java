@@ -31,12 +31,12 @@
  */
 package org.motechproject.server.event.annotations;
 
-import java.lang.reflect.Method;
-
 import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.EventListener;
 import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Method;
 
 /**
  * Event Listener Proxy base abstract class
@@ -72,7 +72,6 @@ public abstract class MotechListenerAbstractProxy implements EventListener {
 	 */
 	@Override
 	public void handle(MotechEvent event) {
-		Context.getInstance().getMetricsAgent().logEvent(event.getSubject());
 		try {
 			callHandler(event);
 		} catch (Exception e) {
