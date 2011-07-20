@@ -69,7 +69,6 @@
         <module>motech-platform-decisiontree-common</module>
         <module>motech-pillreminder</module>
         <module>motech-pillreminder-api</module>
-        <module>motech-cmslite</module>
         <module>motech-cmslite-api</module>
     </modules>
 
@@ -121,6 +120,7 @@
                 <version>2.5</version>
                 <configuration>
                     <instrumentation>
+
                         <excludes>
                             <exclude>org/motechproject/server/service/ivr/CallInitiationException.class</exclude>
                             <exclude>org/motechproject/metrics/impl/LoggingAgentBackendImpl.class</exclude>
