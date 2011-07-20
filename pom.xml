@@ -455,6 +455,21 @@
                                     </arguments>
                                 </configuration>
                             </execution>
+                            <execution>
+                                <id>drop DB => motech-cmslite</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>curl</executable>
+                                    <arguments>
+                                        <argument>-X</argument>
+                                        <argument>"DELETE"</argument>
+                                        <argument>"http://${db.server}:${db.port}/motech-cmslite"</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
                         </executions>
                     </plugin>
                 </plugins>
