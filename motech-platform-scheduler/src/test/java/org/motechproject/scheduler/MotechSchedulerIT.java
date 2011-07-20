@@ -32,8 +32,8 @@
 package org.motechproject.scheduler;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.model.CronSchedulableJob;
@@ -86,7 +86,6 @@ public class MotechSchedulerIT {
     }
 
     @Test
-    @Ignore
     public void scheduleTest() throws Exception{
 
         Map<String, Object> params = new HashMap<String, Object>();
@@ -100,8 +99,9 @@ public class MotechSchedulerIT {
         CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent,  String.format("%d %d %d * * ?", scheduledSecond, scheduledMinute, scheduledHour));
         motechScheduler.scheduleJob(cronSchedulableJob);
 
-        while (!executed){
-            Thread.sleep(1000);
+        Thread.sleep(90000);
+        if (!executed) {
+            Assert.fail("scheduler job not handled ..........");
         }
     }
 
