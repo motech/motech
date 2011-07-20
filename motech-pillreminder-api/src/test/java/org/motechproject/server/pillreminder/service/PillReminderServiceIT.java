@@ -71,8 +71,6 @@ public class PillReminderServiceIT {
         dosageContracts.add(new DosageRequest(9, 5, medicineRequests));
 
         pillReminderService.createNew(new PillRegimenRequest("12345678", 2, 15, dosageContracts));
-        System.out.println("**********************************************************************************************************************");
-        System.out.println(schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
 
         ArrayList<DosageRequest> newDosageContracts = new ArrayList<DosageRequest>();
         newDosageContracts.add(new DosageRequest(9, 5, new ArrayList<MedicineRequest>()));
