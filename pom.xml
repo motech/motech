@@ -109,29 +109,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.7.2</version>
-                <!--<configuration>-->
-                    <!--<excludes>-->
-                        <!--<exclude>**/IVRServiceImplIT.java</exclude>-->
-                        <!--<exclude>**/SchedulerGatewayIT.java</exclude>-->
-                        <!--<exclude>**/PillReminderDaoIT.java</exclude>-->
-                        <!--<exclude>**/PillReminderServiceIT.java</exclude>-->
-                        <!--<exclude>**/GeneratePillReminderIT.java</exclude>-->
-                    <!--</excludes>-->
-                <!--</configuration>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>integration-test</id>-->
-                        <!--<goals>-->
-                            <!--<goal>integration-test</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                    <!--<execution>-->
-                        <!--<id>verify</id>-->
-                        <!--<goals>-->
-                            <!--<goal>verify</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -350,6 +327,7 @@
                                 <exclude>**/PillReminderServiceIT.java</exclude>
                                 <exclude>**/GeneratePillReminderIT.java</exclude>
                                 <exclude>**/CMSLiteResourcesImplIT.java</exclude>
+                                <exclude>**/AllPillRegimensIT.java</exclude>
                             </excludes>
                         </configuration>
                         <executions>
