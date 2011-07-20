@@ -324,7 +324,6 @@
                                 <exclude>**/IVRServiceImplIT.java</exclude>
                                 <exclude>**/SchedulerGatewayIT.java</exclude>
                                 <exclude>**/PillReminderDaoIT.java</exclude>
-                                <exclude>**/PillReminderServiceIT.java</exclude>
                                 <exclude>**/GeneratePillReminderIT.java</exclude>
                                 <exclude>**/CMSLiteResourcesImplIT.java</exclude>
                                 <exclude>**/AllPillRegimensIT.java</exclude>
