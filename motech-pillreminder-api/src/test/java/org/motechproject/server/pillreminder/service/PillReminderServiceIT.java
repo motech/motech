@@ -55,4 +55,29 @@ public class PillReminderServiceIT {
         pillReminderService.createNew(new PillRegimenRequest("1234", 2, 15, dosageContracts));
         Assert.assertEquals(scheduledJobsNum + 1, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
     }
+
+    @Test
+    public void shouldRenewThePillRegimenAndScheduleJob() throws SchedulerException {
+
+        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
+
+        ArrayList<MedicineRequest> medicineRequests = new ArrayList<MedicineRequest>();
+        MedicineRequest medicineRequest1 = new MedicineRequest("m1", startDate, endDate);
+        medicineRequests.add(medicineRequest1);
+        MedicineRequest medicineRequest2 = new MedicineRequest("m2", startDate, getDateAfter(startDate, 5));
+        medicineRequests.add(medicineRequest2);
+
+        ArrayList<DosageRequest> dosageContracts = new ArrayList<DosageRequest>();
+        dosageContracts.add(new DosageRequest(9, 5, medicineRequests));
+
+        pillReminderService.createNew(new PillRegimenRequest("12345678", 2, 15, dosageContracts));
+        System.out.println("**********************************************************************************************************************");
+        System.out.println(schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
+
+        ArrayList<DosageRequest> newDosageContracts = new ArrayList<DosageRequest>();
+        newDosageContracts.add(new DosageRequest(9, 5, new ArrayList<MedicineRequest>()));
+        newDosageContracts.add(new DosageRequest(4, 5, new ArrayList<MedicineRequest>()));
+        pillReminderService.renew(new PillRegimenRequest("12345678", 2, 15, newDosageContracts));
+        Assert.assertEquals(scheduledJobsNum + 2, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
+    }
 }
