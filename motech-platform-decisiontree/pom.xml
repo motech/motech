@@ -6,7 +6,7 @@
 	<parent>
 		<artifactId>motech</artifactId>
 		<groupId>org.motechproject</groupId>
-		<version>0.1-SNAPSHOT</version>
+		<version>${motech.platform.version}</version>
 	</parent>
 	<groupId>org.motechproject</groupId>
 	<artifactId>motech-platform-decisiontree</artifactId>
@@ -58,13 +58,13 @@
 		<dependency>
 			<groupId>org.motechproject</groupId>
 			<artifactId>motech-platform-server-api</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>${motech.platform.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.motechproject</groupId>
 			<artifactId>motech-platform-common</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>${motech.platform.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -103,7 +103,7 @@
 		<dependency>
 			<groupId>org.motechproject</groupId>
 			<artifactId>motech-platform-decisiontree-common</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>${motech.platform.version}</version>
 			<type>jar</type>
 		</dependency>
 	</dependencies>

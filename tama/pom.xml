@@ -4,11 +4,11 @@
 	<parent>
 		<artifactId>motech</artifactId>
 		<groupId>org.motechproject</groupId>
-		<version>0.1-SNAPSHOT</version>
+		<version>${motech.platform.version}</version>
 	</parent>
 	<groupId>org.motechproject</groupId>
 	<artifactId>tama</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version>${motech.platform.version}</version>
 	<name>TAMA</name>
 	<packaging>bundle</packaging>
 	<description>TAMA Server Side Logic</description>
@@ -57,42 +57,42 @@
 		<dependency>
 			<groupId>org.motechproject</groupId>
 			<artifactId>motech-platform-server-api</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>${motech.platform.version}</version>
 			<scope>provided</scope>
         </dependency>
 		<dependency>
 			<groupId>org.motechproject</groupId>
 			<artifactId>motech-appointments-api</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>${motech.platform.version}</version>
             <scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.motechproject</groupId>
 			<artifactId>motech-outbox-api</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>${motech.platform.version}</version>
             <scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.motechproject</groupId>
 			<artifactId>motech-pillreminder-api</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>${motech.platform.version}</version>
 			<scope>provided</scope>
 		</dependency>		
 		<dependency>
 			<groupId>org.motechproject</groupId>
 			<artifactId>tama-api</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>${motech.platform.version}</version>
 		</dependency>
         <dependency>
 			<groupId>org.motechproject</groupId>
 			<artifactId>motech-platform-common</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>${motech.platform.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.motechproject</groupId>
 			<artifactId>motech-platform-decisiontree-common</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>${motech.platform.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>

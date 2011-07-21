@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>motech</artifactId>
 		<groupId>org.motechproject</groupId>
-		<version>0.1-SNAPSHOT</version>
+		<version>${motech.platform.version}</version>
 	</parent>
 	<artifactId>motech-pillreminder-api</artifactId>
 	<name>Motech Pill Reminder API</name>
