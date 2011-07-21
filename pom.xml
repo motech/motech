@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.motechproject</groupId>
     <artifactId>motech</artifactId>
-    <version>${motech.platform.version}</version>
+    <version>0.1</version>
     <packaging>pom</packaging>
     <name>MOTECH</name>
 
@@ -51,7 +51,6 @@
     </dependencies>
 
     <properties>
-        <motech.platform.version>0.1</motech.platform.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -302,11 +301,11 @@
                     <name>Motech Releases Repository</name>
                     <url>http://nexus.motechproject.org/content/repositories/releases</url>
                 </repository>
-                <snapshotRepository>
-                    <id>motech.nexus</id>
-                    <name>Motech Snapshots Repository</name>
-                    <url>http://nexus.motechproject.org/content/repositories/snapshots</url>
-                </snapshotRepository>
+                <!--<snapshotRepository>-->
+                    <!--<id>motech.nexus</id>-->
+                    <!--<name>Motech Snapshots Repository</name>-->
+                    <!--<url>http://nexus.motechproject.org/content/repositories/snapshots</url>-->
+                <!--</snapshotRepository>-->
             </distributionManagement>
         </profile>
         <profile>

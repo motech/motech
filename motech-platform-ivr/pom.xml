@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>motech</artifactId>
 		<groupId>org.motechproject</groupId>
-		<version>${motech.platform.version}</version>
+		<version>0.1</version>
 	</parent>
 	<artifactId>motech-platform-ivr</artifactId>
 	<name>Motech Platform Server IVR</name>
@@ -13,7 +13,7 @@
         <dependency>
         	<groupId>org.motechproject</groupId>
         	<artifactId>motech-platform-server-api</artifactId>
-        	<version>${motech.platform.version}</version>
+        	<version>0.1</version>
         	<scope>provided</scope>
         </dependency>
         <dependency>

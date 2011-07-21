@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>motech</artifactId>
 		<groupId>org.motechproject</groupId>
-		<version>${motech.platform.version}</version>
+		<version>0.1</version>
 	</parent>
 	<artifactId>motech-platform-common</artifactId>
 	<name>Motech Platform Common</name>

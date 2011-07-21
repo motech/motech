@@ -5,11 +5,11 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>${motech.platform.version}</version>
+        <version>0.1</version>
     </parent>
     <artifactId>motech-platform-scheduler</artifactId>
     <packaging>jar</packaging>
-    <version>${motech.platform.version}</version>
+    <version>0.1</version>
     <name>Motech Platform Scheduler</name>
 
     <properties>

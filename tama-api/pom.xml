@@ -4,23 +4,23 @@
 	<parent>
 		<artifactId>motech</artifactId>
 		<groupId>org.motechproject</groupId>
-		<version>${motech.platform.version}</version>
+		<version>0.1</version>
 	</parent>
 	<groupId>org.motechproject</groupId>
 	<artifactId>tama-api</artifactId>
-	<version>${motech.platform.version}</version>
+	<version>0.1</version>
 	<name>TAMA API</name>
 	<description>TAMA API</description>
 	<dependencies>
         <dependency>
 			<groupId>org.motechproject</groupId>
 			<artifactId>motech-platform-common</artifactId>
-			<version>${motech.platform.version}</version>
+			<version>0.1</version>
 		</dependency>
         <dependency>
 			<groupId>org.motechproject</groupId>
 			<artifactId>motech-appointments-api</artifactId>
-			<version>${motech.platform.version}</version>
+			<version>0.1</version>
 		</dependency>
         <dependency>
             <groupId>org.springframework</groupId>
