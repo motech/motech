@@ -34,6 +34,7 @@ package org.motechproject.scheduler;
 import org.apache.commons.lang.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.model.CronSchedulableJob;
@@ -66,6 +67,7 @@ public class MotechSchedulerIT {
     private boolean executed;
 
     @Before
+    @Ignore
     public void setUp() {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());

@@ -9,6 +9,7 @@ public class EventKeys {
 
 	public final static String PILLREMINDER_ID_KEY = "PillReminderID";
 	public final static String DOSAGE_ID_KEY = "DosageID";
+	public final static String EXTERNAL_ID_KEY = "ExternalID";
     public final static String PARTY_ID_KEY = "PartyID";
     public final static String SCHEDULE_JOB_ID_KEY = "JobID";
     public final static String LANGUAGE_KEY = "Language";

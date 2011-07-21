@@ -13,9 +13,7 @@ import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class PillReminderServiceImpl implements PillReminderService {
 
@@ -39,7 +37,8 @@ public class PillReminderServiceImpl implements PillReminderService {
         for (Dosage dosage : pillRegimen.getDosages()) {
             Map<String, Object> params = new SchedulerPayloadBuilder().
                     withJobId(dosage.getId()).
-                    withDosageId(dosage.getId()).payload();
+                    withDosageId(dosage.getId()).
+                    withExternalId(pillRegimen.getExternalId()).payload();
 
             MotechEvent motechEvent = new MotechEvent(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT, params);
             String cronJobExpression = new CronJobExpressionBuilder(dosage.getStartTime(), pillRegimen.getReminderRepeatWindowInHours(), pillRegimen.getReminderRepeatIntervalInMinutes()).build();

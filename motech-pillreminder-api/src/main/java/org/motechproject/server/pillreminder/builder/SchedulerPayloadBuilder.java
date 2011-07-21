@@ -20,6 +20,11 @@ public class SchedulerPayloadBuilder {
         return this;
     }
 
+    public SchedulerPayloadBuilder withExternalId(String id) {
+        params.put(EventKeys.EXTERNAL_ID_KEY, id);
+        return this;
+    }
+
     public HashMap payload() {
         return params;
     }
