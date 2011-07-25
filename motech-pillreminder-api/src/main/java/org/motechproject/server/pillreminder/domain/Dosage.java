@@ -74,7 +74,11 @@ public class Dosage{
 
     @JsonIgnore
     public Date getEndDate() {
-        ArrayList<Medicine> sortedList = new ArrayList<Medicine>(medicines);
+        Set<Medicine> medicinesWithNonNullEndDate = getMedicinesWithNonNullEndDate();
+        if(medicinesWithNonNullEndDate.isEmpty())
+            return null;
+
+        ArrayList<Medicine> sortedList = new ArrayList<Medicine>(medicinesWithNonNullEndDate);
         Collections.sort(sortedList, new Comparator<Medicine>() {
             @Override
             public int compare(Medicine o1, Medicine o2) {
@@ -82,6 +86,15 @@ public class Dosage{
             }
         });
         return sortedList.isEmpty() ? null : sortedList.get(0).getEndDate();
+    }
+
+    private Set<Medicine> getMedicinesWithNonNullEndDate() {
+        Set<Medicine> medicinesWithNonNullEndDate = new HashSet<Medicine>();
+        for(Medicine medicine : medicines) {
+            if(medicine.getEndDate()!=null)
+                medicinesWithNonNullEndDate.add(medicine);
+        }
+        return medicinesWithNonNullEndDate;
     }
 
     public void validate() {
