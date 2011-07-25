@@ -1,9 +1,12 @@
 package org.motechproject.server.pillreminder.service;
 
+import org.apache.log4j.Logger;
 import org.motechproject.builder.CronJobExpressionBuilder;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.server.event.annotations.MotechListener;
+import org.motechproject.server.event.annotations.MotechListenerType;
 import org.motechproject.server.pillreminder.EventKeys;
 import org.motechproject.server.pillreminder.builder.PillRegimenBuilder;
 import org.motechproject.server.pillreminder.builder.SchedulerPayloadBuilder;
@@ -11,6 +14,7 @@ import org.motechproject.server.pillreminder.contract.PillRegimenRequest;
 import org.motechproject.server.pillreminder.dao.AllPillRegimens;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
@@ -21,6 +25,8 @@ public class PillReminderServiceImpl implements PillReminderService {
     private AllPillRegimens allPillRegimens;
     @Autowired
     private MotechSchedulerService schedulerService;
+
+    private final org.slf4j.Logger log = LoggerFactory.getLogger(this.getClass());
 
     public PillReminderServiceImpl(AllPillRegimens allPillRegimens, MotechSchedulerService schedulerService) {
         this.allPillRegimens = allPillRegimens;
@@ -48,6 +54,11 @@ public class PillReminderServiceImpl implements PillReminderService {
             schedulerService.scheduleJob(schedulableJob);
         }
     }
+
+    @MotechListener(subjects = {"org.motechproject.server.pillreminder.scheduler-reminder"})
+    public void handlePillReminderEvent(MotechEvent motechEvent) {
+    }
+
 
     @Override
     public void renew(PillRegimenRequest newScheduleRequest) {

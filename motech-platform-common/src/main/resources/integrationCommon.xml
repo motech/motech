@@ -43,7 +43,7 @@
 			http://www.springframework.org/schema/integration/jms
 			http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd
 			">
-    <import resource="outboundEventChannelAdapter.xml"/>
+
 
     <bean id="connectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
         <property name="targetConnectionFactory">
@@ -62,5 +62,7 @@
     <bean id="eventQueue" class="org.apache.activemq.command.ActiveMQQueue">
         <constructor-arg value="queue.event"/>
     </bean>
+
+    <import resource="outboundEventChannelAdapter.xml"/>
 
 </beans>
