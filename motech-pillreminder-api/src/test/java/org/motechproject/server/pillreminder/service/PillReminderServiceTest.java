@@ -1,12 +1,12 @@
 package org.motechproject.server.pillreminder.service;
 
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.server.pillreminder.EventKeys;
 import org.motechproject.server.pillreminder.contract.DosageRequest;
 import org.motechproject.server.pillreminder.contract.MedicineRequest;
 import org.motechproject.server.pillreminder.contract.PillRegimenRequest;
@@ -14,10 +14,7 @@ import org.motechproject.server.pillreminder.dao.AllPillRegimens;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.Arrays.asList;
 import static org.mockito.Matchers.argThat;
@@ -27,7 +24,6 @@ import static org.motechproject.server.pillreminder.util.Util.getDateAfter;
 
 public class PillReminderServiceTest {
     PillReminderService service;
-
     @Mock
     private AllPillRegimens allPillRegimens;
     @Mock
@@ -53,6 +49,7 @@ public class PillReminderServiceTest {
         PillRegimenRequest pillRegimenRequest = new PillRegimenRequest(externalId, 5, 20, asList(dosageRequest));
 
         service.createNew(pillRegimenRequest);
+
         verify(allPillRegimens).add(argThat(new PillRegimenArgumentMatcher()));
         verify(schedulerService, times(1)).scheduleJob(argThat(new CronSchedulableJobArgumentMatcher(startDate, getDateAfter(startDate, 4))));
     }
@@ -87,20 +84,15 @@ public class PillReminderServiceTest {
         verify(schedulerService, times(1)).scheduleJob(argThat(new CronSchedulableJobArgumentMatcher(startDate, getDateAfter(startDate, 4))));
     }
 
-    private class PillRegimenArgumentMatcher extends BaseMatcher<PillRegimen> {
+    private class PillRegimenArgumentMatcher extends ArgumentMatcher<PillRegimen> {
         @Override
         public boolean matches(Object o) {
             PillRegimen pillRegimen = (PillRegimen) o;
             return pillRegimen.getExternalId().equals("123") && pillRegimen.getDosages().size() == 1;
         }
-
-        @Override
-        public void describeTo(Description description) {
-        }
     }
 
-    private class CronSchedulableJobArgumentMatcher extends BaseMatcher<CronSchedulableJob> {
-
+    private class CronSchedulableJobArgumentMatcher extends ArgumentMatcher<CronSchedulableJob> {
         private Date startDate;
         private Date endDate;
 
@@ -112,11 +104,13 @@ public class PillReminderServiceTest {
         @Override
         public boolean matches(Object o) {
             CronSchedulableJob schedulableJob = (CronSchedulableJob) o;
-            return schedulableJob.getStartTime().equals(startDate) && schedulableJob.getEndTime().equals(endDate);
-        }
+            Map<String, Object> parameters = schedulableJob.getMotechEvent().getParameters();
+            Boolean allParamsPresent = parameters.containsKey(EventKeys.SCHEDULE_JOB_ID_KEY)
+                    && parameters.containsKey(EventKeys.PILLREMINDER_ID_KEY)
+                    && parameters.containsKey(EventKeys.DOSAGE_ID_KEY)
+                    && parameters.containsKey(EventKeys.EXTERNAL_ID_KEY);
 
-        @Override
-        public void describeTo(Description description) {
+            return allParamsPresent && schedulableJob.getStartTime().equals(startDate) && schedulableJob.getEndTime().equals(endDate);
         }
     }
 }

@@ -6,7 +6,7 @@ import org.motechproject.model.Time;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class Dosage{
+public class Dosage {
     private String id;
     private Time startTime;
     private Date currentDosageDate;
@@ -62,7 +62,7 @@ public class Dosage{
 
     @JsonIgnore
     public Date getStartDate() {
-        ArrayList<Medicine> sortedList = new ArrayList<Medicine>(medicines);
+        List<Medicine> sortedList = new ArrayList<Medicine>(medicines);
         Collections.sort(sortedList, new Comparator<Medicine>() {
             @Override
             public int compare(Medicine o1, Medicine o2) {
@@ -75,10 +75,9 @@ public class Dosage{
     @JsonIgnore
     public Date getEndDate() {
         Set<Medicine> medicinesWithNonNullEndDate = getMedicinesWithNonNullEndDate();
-        if(medicinesWithNonNullEndDate.isEmpty())
-            return null;
+        if (medicinesWithNonNullEndDate.isEmpty()) return null;
 
-        ArrayList<Medicine> sortedList = new ArrayList<Medicine>(medicinesWithNonNullEndDate);
+        List<Medicine> sortedList = new ArrayList<Medicine>(medicinesWithNonNullEndDate);
         Collections.sort(sortedList, new Comparator<Medicine>() {
             @Override
             public int compare(Medicine o1, Medicine o2) {
@@ -90,16 +89,23 @@ public class Dosage{
 
     private Set<Medicine> getMedicinesWithNonNullEndDate() {
         Set<Medicine> medicinesWithNonNullEndDate = new HashSet<Medicine>();
-        for(Medicine medicine : medicines) {
-            if(medicine.getEndDate()!=null)
+        for (Medicine medicine : medicines) {
+            if (medicine.getEndDate() != null)
                 medicinesWithNonNullEndDate.add(medicine);
         }
         return medicinesWithNonNullEndDate;
     }
 
     public void validate() {
-        for(Medicine medicine : getMedicines()) {
+        for (Medicine medicine : getMedicines()) {
             medicine.validate();
         }
+    }
+
+    public List<String> getMedicineNames() {
+        List<String> medicineNames = new ArrayList<String>();
+        for (Medicine medicine : medicines)
+            medicineNames.add(medicine.getName());
+        return medicineNames;
     }
 }

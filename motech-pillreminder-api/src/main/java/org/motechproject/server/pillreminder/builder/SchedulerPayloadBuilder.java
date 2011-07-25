@@ -15,6 +15,11 @@ public class SchedulerPayloadBuilder {
         return this;
     }
 
+    public SchedulerPayloadBuilder withPillRegimenId(String id) {
+        params.put(EventKeys.PILLREMINDER_ID_KEY, id);
+        return this;
+    }
+
     public SchedulerPayloadBuilder withDosageId(String id) {
         params.put(EventKeys.DOSAGE_ID_KEY, id);
         return this;

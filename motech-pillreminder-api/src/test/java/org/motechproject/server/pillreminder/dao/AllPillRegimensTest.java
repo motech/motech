@@ -10,7 +10,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class AllPillRegimensTest {
-
     @Mock
     CouchDbConnector couchDbConnector;
     private AllPillRegimens allPillRegimens;

@@ -26,11 +26,8 @@ public class Medicine {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Medicine medicine = (Medicine) o;
-
         if (!name.equals(medicine.name)) return false;
-
         return true;
     }
 

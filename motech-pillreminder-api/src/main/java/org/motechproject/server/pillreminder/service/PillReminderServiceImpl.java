@@ -35,10 +35,11 @@ public class PillReminderServiceImpl implements PillReminderService {
         allPillRegimens.add(pillRegimen);
 
         for (Dosage dosage : pillRegimen.getDosages()) {
-            Map<String, Object> params = new SchedulerPayloadBuilder().
-                    withJobId(dosage.getId()).
-                    withDosageId(dosage.getId()).
-                    withExternalId(pillRegimen.getExternalId()).payload();
+            Map<String, Object> params = new SchedulerPayloadBuilder()
+                    .withJobId(dosage.getId())
+                    .withDosageId(dosage.getId())
+                    .withPillRegimenId(pillRegimen.getId())
+                    .withExternalId(pillRegimen.getExternalId()).payload();
 
             MotechEvent motechEvent = new MotechEvent(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT, params);
             String cronJobExpression = new CronJobExpressionBuilder(dosage.getStartTime(), pillRegimen.getReminderRepeatWindowInHours(), pillRegimen.getReminderRepeatIntervalInMinutes()).build();
@@ -55,10 +56,10 @@ public class PillReminderServiceImpl implements PillReminderService {
     }
 
     private void destroy(String externalID) {
-       PillRegimen regimen = allPillRegimens.findByExternalId(externalID);
-       for(Dosage dosage : regimen.getDosages()) {
-           schedulerService.unscheduleJob(dosage.getId());
-       }
+        PillRegimen regimen = allPillRegimens.findByExternalId(externalID);
+        for (Dosage dosage : regimen.getDosages()) {
+            schedulerService.unscheduleJob(dosage.getId());
+        }
         allPillRegimens.remove(regimen);
     }
 }
