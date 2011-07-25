@@ -81,7 +81,7 @@ public class AllPillRegimensIT {
         allPillRegimens.add(pillRegimen);
         Dosage[] dosages = (Dosage[]) pillRegimen.getDosages().toArray();
 
-        List<String> medicines = allPillRegimens.getMedicinesFor(pillRegimen.getId(), dosages[0].getId());
+        List<String> medicines = allPillRegimens.medicinesFor(pillRegimen.getId(), dosages[0].getId());
 
         assertTrue(medicines.contains("m1"));
         assertTrue(medicines.contains("m2"));

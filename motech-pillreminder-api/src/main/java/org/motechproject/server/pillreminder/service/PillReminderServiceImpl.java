@@ -17,6 +17,7 @@ import org.motechproject.server.pillreminder.domain.PillRegimen;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Map;
 
 public class PillReminderServiceImpl implements PillReminderService {
@@ -48,9 +49,12 @@ public class PillReminderServiceImpl implements PillReminderService {
                     .withExternalId(pillRegimen.getExternalId()).payload();
 
             MotechEvent motechEvent = new MotechEvent(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT, params);
-            String cronJobExpression = new CronJobExpressionBuilder(dosage.getStartTime(), pillRegimen.getReminderRepeatWindowInHours(), pillRegimen.getReminderRepeatIntervalInMinutes()).build();
-            CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, dosage.getStartDate(), dosage.getEndDate());
+            String cronJobExpression = new CronJobExpressionBuilder(
+                    dosage.getStartTime(),
+                    pillRegimen.getReminderRepeatWindowInHours(),
+                    pillRegimen.getReminderRepeatIntervalInMinutes()).build();
 
+            CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, dosage.getStartDate(), dosage.getEndDate());
             schedulerService.scheduleJob(schedulableJob);
         }
     }
@@ -64,6 +68,11 @@ public class PillReminderServiceImpl implements PillReminderService {
     public void renew(PillRegimenRequest newScheduleRequest) {
         destroy(newScheduleRequest.getExternalId());
         createNew(newScheduleRequest);
+    }
+
+    @Override
+    public List<String> medicinesFor(String pillRegimenId, String dosageId) {
+        return allPillRegimens.medicinesFor(pillRegimenId, dosageId);
     }
 
     private void destroy(String externalID) {

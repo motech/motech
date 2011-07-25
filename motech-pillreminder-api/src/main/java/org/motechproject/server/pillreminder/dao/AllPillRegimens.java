@@ -28,7 +28,7 @@ public class AllPillRegimens extends MotechAuditableRepository<PillRegimen> {
         return regimens.isEmpty() ? null : regimens.get(0);
     }
 
-    public List<String> getMedicinesFor(String pillRegimenId, String dosageId) {
+    public List<String> medicinesFor(String pillRegimenId, String dosageId) {
         PillRegimen pillRegimen = get(pillRegimenId);
         for (Dosage dosage : pillRegimen.getDosages())
             if (dosage.getId().equals(dosageId))

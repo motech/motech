@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Dosage {
+    public static final String DATE_FORMAT = "dd/MM/yyyy";
     private String id;
     private Time startTime;
     private Date currentDosageDate;
@@ -55,8 +56,8 @@ public class Dosage {
     }
 
     public boolean isTaken(Time dosageWindow) {
-        String dosageDate = new SimpleDateFormat("dd/MM/yyyy").format(this.currentDosageDate);
-        String today = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
+        String dosageDate = new SimpleDateFormat(DATE_FORMAT).format(this.currentDosageDate);
+        String today = new SimpleDateFormat(DATE_FORMAT).format(new Date());
         return dosageDate.equals(today) && startTime.equals(dosageWindow);
     }
 
