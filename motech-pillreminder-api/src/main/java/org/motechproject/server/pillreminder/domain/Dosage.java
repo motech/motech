@@ -102,6 +102,7 @@ public class Dosage {
         }
     }
 
+    @JsonIgnore
     public List<String> getMedicineNames() {
         List<String> medicineNames = new ArrayList<String>();
         for (Medicine medicine : medicines)
