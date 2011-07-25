@@ -25,7 +25,6 @@ import static org.motechproject.server.pillreminder.util.Util.getDateAfter;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/testPillReminder.xml"})
 public class AllPillRegimensIT {
-
     @Autowired
     private AllPillRegimens allPillRegimens;
 
