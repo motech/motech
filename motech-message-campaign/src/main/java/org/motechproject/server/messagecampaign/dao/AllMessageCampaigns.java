@@ -1,12 +1,16 @@
 package org.motechproject.server.messagecampaign.dao;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.server.messagecampaign.domain.Campaign;
 import org.motechproject.server.messagecampaign.domain.MessageCampaignException;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
+import java.util.List;
 
 public class AllMessageCampaigns {
     private String definitionFile;
@@ -26,10 +30,15 @@ public class AllMessageCampaigns {
         try {
             jsonText = IOUtils.toString(inputStream);
         } catch (IOException e) {
-//            TODO
+            LoggerFactory.getLogger(AllMessageCampaigns.class).error("Error reading message campaign definitions - " + e.getMessage());
+            return null;
         }
-        Gson gson = new Gson();
-        Campaign campaign = gson.fromJson(jsonText, Campaign.class);
-        return campaign;
+        Type campaignListType = new TypeToken<List<Campaign>>() {}.getType();
+        List<Campaign> campaigns = new Gson().fromJson(jsonText, campaignListType);
+
+        for (Campaign campaign:campaigns) {
+            if(campaign.getName().equals(name)) return campaign;
+        }
+        return null;
     }
 }
