@@ -3,12 +3,22 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:util="http://www.springframework.org/schema/util"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-    <context:annotation-config/>
-    <context:component-scan base-package="org.motechproject.server.messagecampaign" />
-    <util:properties id="ivrProperties" location="classpath:/messageCampaign.properties"/>
+    <import resource="classpath*:applicationPlatformScheduler.xml" />
+    <util:properties id="messageCampaignProperties" location="classpath:messageCampaign.properties" />
 
-    <bean id="allMessageCampaigns" class="org.motechproject.server.messagecampaign.dao.AllMessageCampaigns" />
+    <bean id="allMessageCampaigns" class="org.motechproject.server.messagecampaign.dao.AllMessageCampaigns">
+        <constructor-arg ref="messageCampaignProperties" />
+    </bean>
+
+    <bean id="messageCampaignService" class="org.motechproject.server.messagecampaign.service.MessageCampaignServiceImpl">
+        <constructor-arg ref ="allMessageCampaigns"/>
+        <constructor-arg ref="schedulerService"/>
+    </bean>
 </beans>

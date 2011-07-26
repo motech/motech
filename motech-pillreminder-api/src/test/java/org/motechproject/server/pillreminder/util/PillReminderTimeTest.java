@@ -1,6 +1,5 @@
 package org.motechproject.server.pillreminder.util;
 
-import junit.framework.Assert;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +29,7 @@ public class PillReminderTimeTest {
 
     @Test
     public void testTimesPillRemindersSentWhenDosageStartTimeLaterThanNow() {
+//        TODO : test fails when run between 11:00 and 12:00 pm
         DateTime oneHourLater = new DateTime().plusHours(1);
         int twoHourWindow = 2;
         int tenMinuteInterval = 10;
