@@ -61,6 +61,10 @@ public class PillReminderServiceImpl implements PillReminderService {
 
     @MotechListener(subjects = {"org.motechproject.server.pillreminder.scheduler-reminder"})
     public void handlePillReminderEvent(MotechEvent motechEvent) {
+        // get the dosage object
+        // calculate the number of times the event was thrown for the particular dosage
+        // store the event times for the dosage
+        // throw a new event with the number of times with a different subject  if the pill window has not expired
     }
 
 

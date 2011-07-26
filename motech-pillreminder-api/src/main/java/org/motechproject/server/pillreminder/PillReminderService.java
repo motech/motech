@@ -1,5 +1,6 @@
 package org.motechproject.server.pillreminder;
 
+import org.motechproject.annotations.Unused;
 import org.motechproject.context.EventContext;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
@@ -15,6 +16,7 @@ import org.springframework.util.Assert;
 
 import java.util.*;
 
+@Unused
 public class PillReminderService {
 	
     final Logger log = LoggerFactory.getLogger(PillReminderService.class);	
