@@ -71,7 +71,8 @@
         <module>motech-pillreminder</module>
         <module>motech-pillreminder-api</module>
         <module>motech-cmslite-api</module>
-        <module>scheduletracking</module>
+        <module>motech-scheduletracking-api</module>
+        <module>motech-message-campaign</module>
     </modules>
 
     <build>
