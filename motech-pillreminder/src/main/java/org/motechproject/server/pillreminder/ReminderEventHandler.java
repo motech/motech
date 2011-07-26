@@ -4,6 +4,7 @@ package org.motechproject.server.pillreminder;
 import org.apache.commons.collections.Predicate;
 import org.motechproject.gateway.OutboundEventGateway;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.server.pillreminder.dao.AllPillRegimens;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
@@ -27,6 +28,7 @@ public class ReminderEventHandler {
         this.pillRegimenTime = pillRegimenTime;
     }
 
+    @MotechListener(subjects = {EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER})
     public void handleEvent(MotechEvent motechEvent) {
         PillRegimen pillRegimen = getPillRegimen(motechEvent);
         Dosage dosage = getDosage(pillRegimen, motechEvent);

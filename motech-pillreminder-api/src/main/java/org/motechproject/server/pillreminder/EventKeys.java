@@ -21,7 +21,8 @@ public class EventKeys {
     public static final String PILLREMINDER_INCOMPLETE_SUBJECT = BASE_SUBJECT + "reminder.incomplete";
     public static final String PILLREMINDER_COMPLETE_SUBJECT = BASE_SUBJECT + "reminder.complete";
 
-    public final static String PILLREMINDER_REMINDER_EVENT_SUBJECT = BASE_SUBJECT + "scheduler-reminder";
+    public final static String PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER = BASE_SUBJECT + "scheduler-reminder";
+    public final static String PILLREMINDER_REMINDER_EVENT_SUBJECT = BASE_SUBJECT + "pill-reminder";
 	public static final String PILLREMINDER_PUBLISH_EVENT_SUBJECT = BASE_SUBJECT + "publish-reminder";
 	public static final String PILLREMINDER_RESULT_EVENT_SUBJECT = BASE_SUBJECT + "results-reminder";
 
