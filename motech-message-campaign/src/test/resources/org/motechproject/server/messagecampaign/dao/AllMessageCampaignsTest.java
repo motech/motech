@@ -1,5 +1,6 @@
 package org.motechproject.server.messagecampaign.dao;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.server.messagecampaign.domain.Campaign;
 import org.motechproject.server.messagecampaign.domain.CampaignMessage;
@@ -7,15 +8,25 @@ import org.motechproject.server.messagecampaign.domain.CampaignMessage;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 
 public class AllMessageCampaignsTest {
 
+    private Properties properties;
+    private AllMessageCampaigns allMessageCampaigns;
+
+    @Before
+    public void setup() {
+        properties = new Properties();
+        properties.setProperty("messagecampaign.definition.file", "simple-message-campaign.json");
+        allMessageCampaigns = new AllMessageCampaigns(properties);
+    }
+
     @Test
     public void testGet() {
-        AllMessageCampaigns allMessageCampaigns = new AllMessageCampaigns("simple-message-campaign.json");
         Campaign campaign = allMessageCampaigns.get("Weekly Info Child Program");
         assertNotNull(campaign);
         assertEquals("Weekly Info Child Program", campaign.getName());
