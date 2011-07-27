@@ -15,13 +15,19 @@ import static org.apache.commons.collections.CollectionUtils.find;
 
 public class ReminderEventHandler {
 
-    private final OutboundEventGateway outboundEventGateway;
-
-    private final AllPillRegimens allPillRegimens;
-
-    private final PillReminderTime pillRegimenTime;
+    @Autowired
+    private  OutboundEventGateway outboundEventGateway;
 
     @Autowired
+    private  AllPillRegimens allPillRegimens;
+
+    @Autowired
+    private  PillReminderTime pillRegimenTime;
+
+    public ReminderEventHandler(){
+
+    }
+
     public ReminderEventHandler(OutboundEventGateway outboundEventGateway, AllPillRegimens allPillRegimens, PillReminderTime pillRegimenTime) {
         this.outboundEventGateway = outboundEventGateway;
         this.allPillRegimens = allPillRegimens;
