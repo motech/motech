@@ -21,7 +21,8 @@ public class EventKeys {
     public static final String PILLREMINDER_INCOMPLETE_SUBJECT = BASE_SUBJECT + "reminder.incomplete";
     public static final String PILLREMINDER_COMPLETE_SUBJECT = BASE_SUBJECT + "reminder.complete";
 
-    public final static String PILLREMINDER_REMINDER_EVENT_SUBJECT = BASE_SUBJECT + "scheduler-reminder";
+    public final static String PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER = BASE_SUBJECT + "scheduler-reminder";
+    public final static String PILLREMINDER_REMINDER_EVENT_SUBJECT = BASE_SUBJECT + "pill-reminder";
 	public static final String PILLREMINDER_PUBLISH_EVENT_SUBJECT = BASE_SUBJECT + "publish-reminder";
 	public static final String PILLREMINDER_RESULT_EVENT_SUBJECT = BASE_SUBJECT + "results-reminder";
 
@@ -34,7 +35,9 @@ public class EventKeys {
 	public static final String TRANSITION_NOT_YET_TAKEN = "dose-not-taken-yet";
 	public static final String TRANSITION_NOT_TAKEN = "cannot-take-dose";
 	public static final String TRANSITION_TAKEN = "dose-taken";
-	
+    public static final String PILLREMINDER_TIMES_SENT = "times-reminders-sent";
+    public static final String PILLREMINDER_TIMES_TO_BE_SENT = "times-reminders-to-be-sent";
+
     public static String getScheduleJobIdKey(MotechEvent event)
     {
         return getStringValue(event, EventKeys.SCHEDULE_JOB_ID_KEY);

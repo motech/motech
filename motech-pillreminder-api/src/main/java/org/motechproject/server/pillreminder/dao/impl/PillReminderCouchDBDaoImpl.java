@@ -4,6 +4,7 @@ import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
+import org.motechproject.annotations.Unused;
 import org.motechproject.dao.MotechAuditableRepository;
 import org.motechproject.server.pillreminder.dao.PillReminderDao;
 import org.motechproject.server.pillreminder.domain.PillReminder;

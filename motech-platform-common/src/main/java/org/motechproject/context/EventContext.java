@@ -66,7 +66,7 @@ public class EventContext {
      * @param objs
      */
     public void send(String destination, Object... objs) {
-    	MotechEvent event = new MotechEvent(destination);
+    	MotechEvent event = new     MotechEvent(destination);
 		int i = 0;
     	for(Object o : objs) {
     		event.getParameters().put(Integer.toString(i++), o);

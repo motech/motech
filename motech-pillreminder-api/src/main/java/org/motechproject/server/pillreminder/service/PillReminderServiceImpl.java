@@ -48,7 +48,7 @@ public class PillReminderServiceImpl implements PillReminderService {
                     .withPillRegimenId(pillRegimen.getId())
                     .withExternalId(pillRegimen.getExternalId()).payload();
 
-            MotechEvent motechEvent = new MotechEvent(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT, params);
+            MotechEvent motechEvent = new MotechEvent(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, params);
             String cronJobExpression = new CronJobExpressionBuilder(
                     dosage.getStartTime(),
                     pillRegimen.getReminderRepeatWindowInHours(),
@@ -58,11 +58,6 @@ public class PillReminderServiceImpl implements PillReminderService {
             schedulerService.scheduleJob(schedulableJob);
         }
     }
-
-    @MotechListener(subjects = {"org.motechproject.server.pillreminder.scheduler-reminder"})
-    public void handlePillReminderEvent(MotechEvent motechEvent) {
-    }
-
 
     @Override
     public void renew(PillRegimenRequest newScheduleRequest) {

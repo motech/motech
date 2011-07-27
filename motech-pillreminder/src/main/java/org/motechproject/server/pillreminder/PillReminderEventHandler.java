@@ -33,6 +33,7 @@ package org.motechproject.server.pillreminder;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.ektorp.DocumentNotFoundException;
+import org.motechproject.annotations.Unused;
 import org.motechproject.context.Context;
 import org.motechproject.context.EventContext;
 import org.motechproject.event.EventRelay;
@@ -61,6 +62,7 @@ import java.util.List;
  * @author yyonkov
  *
  */
+@Unused
 public class PillReminderEventHandler {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 

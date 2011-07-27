@@ -6,6 +6,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
+import org.motechproject.annotations.Unused;
 import org.motechproject.model.MotechAuditableDataObject;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+@Unused
 @TypeDiscriminator("doc.type === 'PillReminder'")
 public class PillReminder extends MotechAuditableDataObject {
 
