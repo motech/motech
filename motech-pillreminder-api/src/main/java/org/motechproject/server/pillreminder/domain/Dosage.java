@@ -98,9 +98,8 @@ public class Dosage {
     }
 
     public void validate() {
-        for (Medicine medicine : getMedicines()) {
+        for (Medicine medicine : getMedicines())
             medicine.validate();
-        }
     }
 
     @JsonIgnore
@@ -109,5 +108,9 @@ public class Dosage {
         for (Medicine medicine : medicines)
             medicineNames.add(medicine.getName());
         return medicineNames;
+    }
+
+    public void updateCurrentDate() {
+        currentDosageDate = new Date();
     }
 }
