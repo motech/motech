@@ -7,15 +7,7 @@ import org.motechproject.server.pillreminder.domain.Dosage;
 
 public class PillReminderTime {
 
-    public boolean pillWindowExpired(Dosage dosage, int pillWindow) {
-        return  new DateTime()
-               .withHourOfDay(dosage.getStartTime().getHour())
-               .withMinuteOfHour(dosage.getStartTime().getMinute())
-               .plusHours(pillWindow)
-               .isBeforeNow();
-    }
-
-    public int timesPillRemindersSent(Dosage dosage, int pillWindow, int retryInterval) {
+     public int timesPillRemindersSent(Dosage dosage, int pillWindow, int retryInterval) {
         Time dosageStartTime = dosage.getStartTime();
         DateTime now = new DateTime();
 

@@ -16,15 +16,15 @@ import static org.apache.commons.collections.CollectionUtils.find;
 public class ReminderEventHandler {
 
     @Autowired
-    private  OutboundEventGateway outboundEventGateway;
+    private OutboundEventGateway outboundEventGateway;
 
     @Autowired
-    private  AllPillRegimens allPillRegimens;
+    private AllPillRegimens allPillRegimens;
 
     @Autowired
-    private  PillReminderTime pillRegimenTime;
+    private PillReminderTime pillRegimenTime;
 
-    public ReminderEventHandler(){
+    public ReminderEventHandler() {
 
     }
 
@@ -40,9 +40,7 @@ public class ReminderEventHandler {
         Dosage dosage = getDosage(pillRegimen, motechEvent);
         final int pillWindow = pillRegimen.getReminderRepeatWindowInHours();
 
-        if (shouldRaisePillReminderEvent(pillWindow, dosage)) {
-            outboundEventGateway.sendEventMessage(createNewMotechEvent(dosage, pillRegimen, motechEvent));
-        }
+        outboundEventGateway.sendEventMessage(createNewMotechEvent(dosage, pillRegimen, motechEvent));
     }
 
     private MotechEvent createNewMotechEvent(Dosage dosage, PillRegimen pillRegimen, MotechEvent eventRaisedByScheduler) {
@@ -74,9 +72,5 @@ public class ReminderEventHandler {
                 return dosage.getId().equals(dosageId);
             }
         });
-    }
-
-    private boolean shouldRaisePillReminderEvent(int pillWindow, Dosage dosage) {
-        return !pillRegimenTime.pillWindowExpired(dosage, pillWindow);
     }
 }

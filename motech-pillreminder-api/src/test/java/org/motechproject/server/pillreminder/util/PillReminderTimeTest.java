@@ -18,16 +18,6 @@ public class PillReminderTimeTest {
     public void setUp() {
         pillReminderTime = new PillReminderTime();
     }
-
-    @Test
-    public void testPillWindowExpired() {
-        DateTime tenHoursEarlier = new DateTime().minusHours(10);
-        int twoHourWindow = 2;
-        Dosage dosageStaringTenHoursEarlier = new Dosage();
-        dosageStaringTenHoursEarlier.setStartTime(new Time(tenHoursEarlier.getHourOfDay(), tenHoursEarlier.getMinuteOfHour()));
-        assertTrue(pillReminderTime.pillWindowExpired(dosageStaringTenHoursEarlier, twoHourWindow));
-    }
-
     @Test
     public void testTimesPillRemindersSent() {
         DateTime oneHourEarlier = new DateTime().minusHours(1);
