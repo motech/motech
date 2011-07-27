@@ -23,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 import static org.motechproject.server.pillreminder.util.Util.getDateAfter;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testPillReminder.xml"})
+@ContextConfiguration(locations = {"/applicationPillReminderAPI.xml"})
 public class AllPillRegimensIT {
     @Autowired
     private AllPillRegimens allPillRegimens;
@@ -79,7 +79,7 @@ public class AllPillRegimensIT {
     public void shouldGetMedicinesForGivenDosage() {
         PillRegimen pillRegimen = setUpPillRegimen();
         allPillRegimens.add(pillRegimen);
-        Dosage[] dosages = (Dosage[]) pillRegimen.getDosages().toArray();
+        Dosage[] dosages = pillRegimen.getDosages().toArray(new Dosage[0]);
 
         List<String> medicines = allPillRegimens.medicinesFor(pillRegimen.getId(), dosages[0].getId());
 

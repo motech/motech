@@ -1,7 +1,6 @@
 package org.motechproject.server.pillreminder;
 
 
-import org.apache.commons.collections.Predicate;
 import org.motechproject.gateway.OutboundEventGateway;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
@@ -11,8 +10,6 @@ import org.motechproject.server.pillreminder.domain.PillRegimen;
 import org.motechproject.server.pillreminder.util.PillReminderTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.apache.commons.collections.CollectionUtils.find;
-
 public class ReminderEventHandler {
 
     @Autowired
@@ -21,17 +18,16 @@ public class ReminderEventHandler {
     @Autowired
     private AllPillRegimens allPillRegimens;
 
-    @Autowired
-    private PillReminderTime pillRegimenTime;
+    private PillReminderTime pillReminderTime;
 
     public ReminderEventHandler() {
-
+        pillReminderTime = new PillReminderTime();
     }
 
     public ReminderEventHandler(OutboundEventGateway outboundEventGateway, AllPillRegimens allPillRegimens, PillReminderTime pillRegimenTime) {
         this.outboundEventGateway = outboundEventGateway;
         this.allPillRegimens = allPillRegimens;
-        this.pillRegimenTime = pillRegimenTime;
+        this.pillReminderTime = pillRegimenTime;
     }
 
     @MotechListener(subjects = {EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER})
@@ -40,7 +36,13 @@ public class ReminderEventHandler {
         Dosage dosage = getDosage(pillRegimen, motechEvent);
         final int pillWindow = pillRegimen.getReminderRepeatWindowInHours();
 
-        outboundEventGateway.sendEventMessage(createNewMotechEvent(dosage, pillRegimen, motechEvent));
+        if (shouldRaiseEvent(dosage, pillWindow)) {
+            outboundEventGateway.sendEventMessage(createNewMotechEvent(dosage, pillRegimen, motechEvent));
+        }
+    }
+
+    private boolean shouldRaiseEvent(Dosage dosage, int pillWindow) {
+        return !(pillReminderTime.isDosageTaken(dosage, pillWindow));
     }
 
     private MotechEvent createNewMotechEvent(Dosage dosage, PillRegimen pillRegimen, MotechEvent eventRaisedByScheduler) {
@@ -49,8 +51,8 @@ public class ReminderEventHandler {
         int pillWindow = pillRegimen.getReminderRepeatWindowInHours();
         int retryInterval = pillRegimen.getReminderRepeatIntervalInMinutes();
 
-        motechEvent.getParameters().put(EventKeys.PILLREMINDER_TIMES_SENT, pillRegimenTime.timesPillRemindersSent(dosage, pillWindow, retryInterval));
-        motechEvent.getParameters().put(EventKeys.PILLREMINDER_TIMES_TO_BE_SENT, pillRegimenTime.timesPillRemainderWillBeSent(pillWindow, retryInterval));
+        motechEvent.getParameters().put(EventKeys.PILLREMINDER_TIMES_SENT, pillReminderTime.timesPillRemindersSent(dosage, pillWindow, retryInterval));
+        motechEvent.getParameters().put(EventKeys.PILLREMINDER_TIMES_TO_BE_SENT, pillReminderTime.timesPillRemainderWillBeSent(pillWindow, retryInterval));
         return motechEvent;
     }
 
@@ -65,12 +67,9 @@ public class ReminderEventHandler {
     }
 
     private Dosage findDosage(final String dosageId, PillRegimen pillRegimen) {
-        return (Dosage) find(pillRegimen.getDosages(), new Predicate() {
-            @Override
-            public boolean evaluate(Object o) {
-                Dosage dosage = (Dosage) o;
-                return dosage.getId().equals(dosageId);
-            }
-        });
+        for(Dosage dosage: pillRegimen.getDosages()) {
+              if(dosage.getId().equals(dosageId)) return dosage;
+        }
+        return null;
     }
 }

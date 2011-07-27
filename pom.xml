@@ -328,8 +328,6 @@
                                 <exclude>**/SchedulerGatewayIT.java</exclude>
                                 <exclude>**/PillReminderDaoIT.java</exclude>
                                 <exclude>**/GeneratePillReminderIT.java</exclude>
-                                <exclude>**/CMSLiteResourcesImplIT.java</exclude>
-                                <exclude>**/AllPillRegimensIT.java</exclude>
                             </excludes>
                         </configuration>
                         <executions>

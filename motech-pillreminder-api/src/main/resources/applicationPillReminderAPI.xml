@@ -27,6 +27,5 @@
     </bean>
 
      <bean id="pillReminderEventHandler" class="org.motechproject.server.pillreminder.ReminderEventHandler"/>
-     <bean id="pillReminderTime" class="org.motechproject.server.pillreminder.util.PillReminderTime"/>
 
 </beans>

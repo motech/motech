@@ -1,8 +1,8 @@
 package org.motechproject.server.pillreminder;
 
 
+import org.apache.commons.lang.time.DateUtils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
@@ -50,7 +50,7 @@ public class ReminderEventHandlerTest {
         String dosageId = "dosageId";
         int retryInterval = 0;
 
-        Dosage dosage = buildDosage(dosageId);
+        Dosage dosage = buildDosageNotYetTaken(dosageId);
         PillRegimen pillRegimen = buildPillRegimen(externalId, pillWindow, dosage, retryInterval);
 
         when(allPillRegimens.findByExternalId(externalId)).thenReturn(pillRegimen);
@@ -71,7 +71,7 @@ public class ReminderEventHandlerTest {
         ArgumentCaptor<MotechEvent> event = ArgumentCaptor.forClass(MotechEvent.class);
         int timesPillReminderSent = 2;
 
-        Dosage dosage = buildDosage(dosageId);
+        Dosage dosage = buildDosageNotYetTaken(dosageId);
         PillRegimen pillRegimen = buildPillRegimen(externalId, pillWindow, dosage, retryInterval);
 
         when(pillRegimenTime.timesPillRemindersSent(dosage, pillWindow, retryInterval)).thenReturn(timesPillReminderSent);
@@ -96,7 +96,7 @@ public class ReminderEventHandlerTest {
         int timesToBeSent = 2;
         int retryInterval = 4;
 
-        Dosage dosage = buildDosage(dosageId);
+        Dosage dosage = buildDosageNotYetTaken(dosageId);
         PillRegimen pillRegimen = buildPillRegimen(externalId, pillWindow, dosage, retryInterval);
 
         when(pillRegimenTime.timesPillRemainderWillBeSent(pillWindow, retryInterval)).thenReturn(timesToBeSent);
@@ -115,8 +115,24 @@ public class ReminderEventHandlerTest {
 
 
     @Test
-    @Ignore
     public void shoulNotRaiseEventWhenDosageIsAlreadyTakenForCurrentPillWindow() {
+        int pillWindow = 0;
+        String externalId = "externalId";
+        String dosageId = "dosageId";
+        int retryInterval = 4;
+
+        Dosage dosage = buildDosageTaken(dosageId);
+
+        PillRegimen pillRegimen = buildPillRegimen(externalId, pillWindow, dosage, retryInterval);
+
+        when(pillRegimenTime.isDosageTaken(dosage, pillWindow)).thenReturn(true);
+        when(allPillRegimens.findByExternalId(externalId)).thenReturn(pillRegimen);
+
+        MotechEvent motechEvent = buildMotechEvent(externalId, dosageId);
+        pillReminderEventHandler.handleEvent(motechEvent);
+
+        verify(allPillRegimens, atLeastOnce()).findByExternalId(externalId);
+        verify(outboundEventGateway, never()).sendEventMessage(Matchers.<MotechEvent>any());
     }
 
     private MotechEvent buildMotechEvent(String externalId, String dosageId) {
@@ -124,7 +140,14 @@ public class ReminderEventHandlerTest {
         return new MotechEvent(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT, eventParams);
     }
 
-    private Dosage buildDosage(String dosageId) {
+    private Dosage buildDosageNotYetTaken(String dosageId) {
+        return org.motechproject.server.pillreminder.builder.test.DosageBuilder.newDosage()
+                .withCurrentDosageDate(DateUtils.addDays(new Date(), -1))
+                .withId(dosageId)
+                .build();
+    }
+
+    private Dosage buildDosageTaken(String dosageId) {
         return org.motechproject.server.pillreminder.builder.test.DosageBuilder.newDosage()
                 .withCurrentDosageDate(new Date())
                 .withId(dosageId)
