@@ -28,20 +28,16 @@ public class AllPillRegimens extends MotechAuditableRepository<PillRegimen> {
     }
 
     public List<String> medicinesFor(String regimenId, String dosageId) {
-        Dosage dosage = findBy(regimenId, dosageId);
+        PillRegimen pillRegimen = get(regimenId);
+        Dosage dosage = pillRegimen.getDosage(dosageId);
         return dosage != null ? dosage.getMedicineNames() : Collections.EMPTY_LIST;
     }
 
     public void updateDosageTaken(String regimenId, String dosageId) {
-       Dosage dosage = findBy(regimenId, dosageId);
-       if(dosage != null) dosage.updateCurrentDate();
+        PillRegimen pillRegimen = get(regimenId);
+        Dosage dosage = pillRegimen.getDosage(dosageId);
+        dosage.updateCurrentDate();
+        update(pillRegimen);
     }
 
-    public Dosage findBy(String pillRegimenId, String dosageId) {
-        PillRegimen pillRegimen = get(pillRegimenId);
-        for (Dosage dosage : pillRegimen.getDosages())
-            if (dosage.getId().equals(dosageId))
-                return dosage;
-        return null;
-    }
 }

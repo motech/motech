@@ -98,7 +98,8 @@ public class AllPillRegimensIT {
 
         allPillRegimens.updateDosageTaken(regimenId, dosageId);
 
-        Dosage dbDosage = allPillRegimens.findBy(regimenId, dosageId);
+        PillRegimen dbRegimen = allPillRegimens.get(regimenId);
+        Dosage dbDosage = dbRegimen.getDosage(dosageId);
         assertTrue(Util.areDatesSame(new Date(), dbDosage.getCurrentDosageDate()));
     }
 

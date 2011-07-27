@@ -53,17 +53,34 @@ public class PillRegimenTest {
         PillRegimen regimen = new PillRegimen();
 
         regimen.setExternalId("123");
-        assertEquals("123",regimen.getExternalId());
+        assertEquals("123", regimen.getExternalId());
 
         Set<Dosage> dosages = new HashSet<Dosage>();
         regimen.setDosages(dosages);
         assertEquals(dosages, regimen.getDosages());
 
         regimen.setType("type");
-        assertEquals("type",regimen.getType());
+        assertEquals("type", regimen.getType());
 
     }
 
+    @Test
+    public void shouldFindDosageById() {
+        Dosage dosage1 = new Dosage();
+        dosage1.setId("1");
+        Dosage dosage2 = new Dosage();
+        dosage1.setId("2");
+
+        Set<Dosage> dosages = new HashSet<Dosage>();
+        dosages.add(dosage1);
+        dosages.add(dosage2);
+
+        PillRegimen regimen = new PillRegimen();
+        regimen.setDosages(dosages);
+
+        assertEquals(dosage1, regimen.getDosage("1"));
+        assertEquals(dosage2, regimen.getDosage("2"));
+    }
 
 
 }

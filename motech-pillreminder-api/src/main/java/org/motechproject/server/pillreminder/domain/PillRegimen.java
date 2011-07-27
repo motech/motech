@@ -67,8 +67,14 @@ public class PillRegimen extends MotechAuditableDataObject {
     }
 
     public void validate() {
-        for(Dosage dosage : dosages) {
+        for (Dosage dosage : dosages) {
             dosage.validate();
         }
+    }
+
+    public Dosage getDosage(String dosageId) {
+        for (Dosage dosage : dosages)
+            if (dosage.getId().equals(dosageId)) return dosage;
+        return null;
     }
 }
