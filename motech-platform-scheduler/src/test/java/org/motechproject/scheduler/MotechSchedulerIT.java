@@ -90,7 +90,7 @@ public class MotechSchedulerIT {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("JobID", UUID.randomUUID().toString());
-        String testSubject = "testEvent";
+        String testSubject = "MotechSchedulerITScheduleTest";
         MotechEvent motechEvent = new MotechEvent(testSubject, params);
 
         Method handlerMethod = ReflectionUtils.findMethod(MotechSchedulerIT.class, "handleEvent", MotechEvent.class);
