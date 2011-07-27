@@ -1,43 +1,28 @@
-"IPTI Schedule" :  {
-    "IPTI 1" : {
-        Reference Date : "IPTI Schedule",
-        Schedule : {
-            Earliest : "13 Weeks",
-            Due : "14 Weeks",
-            Late : "16 Weeks",
-            Max : ""
-        },
-    }
-    "IPTI 2" : {
-        Reference Date : "IPTI 1",
-        Schedule : {
-            Earliest : "0 weeks",
-            Due : "4 Weeks",
-            Late : "5 Weeks",
-            Max : ""
-        },
-    }
-    "IPTI 3" : {
-        Reference Date : "IPTI 2",
-        Schedule : {
-            Earliest : "0 weeks",
-            Due : "4 Weeks",
-            Late : "5 Weeks",
-            Max : ""
-        },
-        Alerts : {
-            Late : {
-                Start Offset : "0 Days",
-                Interval : "1",
-                Unit : "DAY",
-                Count : "7"
-            }
-            Late : {
-                Start Offset : "1 Week",
-                Interval : "1",
-                Unit : "Week",
-                Count : "51"
-            }
+[{
+    Name : "IPTI Schedule",
+    Milestones : [
+        {
+            Name : "IPTI 1",
+            ReferenceDate : "IPTI Schedule",
+            scheduleWindows : {
+                Earliest : "13 Weeks",
+                Due : "14 Weeks",
+                Late : "16 Weeks",
+                Max : ""
+            },
+            Alerts : [{
+                    Window : "Late",
+                    StartOffset : "0 Days",
+                    Interval : "1 Day",
+                    Count : "7"
+                },
+                {
+                    Window : "Late",
+                    StartOffset : "1 Week",
+                    Interval : "1 Week",
+                    Count : "51"
+                }
+            ]
         }
-    }
-}
+    ]
+}]
