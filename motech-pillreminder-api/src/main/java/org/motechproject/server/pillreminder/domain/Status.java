@@ -6,7 +6,6 @@ import org.motechproject.model.Time;
 import java.util.Date;
 
 public class Status {
-	
 	private Boolean taken;
 	private Date date;
 	private Time windowStartTime;

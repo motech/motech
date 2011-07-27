@@ -87,6 +87,19 @@ public class AllPillRegimensIT {
         assertTrue(medicines.contains("m2"));
     }
 
+    @Test
+    public void shouldFindAndUpdateDosageCurrentDate() {
+        PillRegimen pillRegimen = setUpPillRegimen();
+        Dosage[] dosages = (Dosage[]) pillRegimen.getDosages().toArray();
+        String regimenId = pillRegimen.getId();
+        String dosageId = dosages[0].getId();
+
+        allPillRegimens.add(pillRegimen);
+        allPillRegimens.updateDosageTaken(regimenId, dosageId);
+        Dosage dbDosage = allPillRegimens.findBy(regimenId, dosageId);
+        assertTrue(Util.areDatesSame(new Date(), dbDosage.getCurrentDosageDate()));
+    }
+
     private PillRegimen setUpPillRegimen() {
         Medicine medicine = new Medicine("m1", startDate, endDate);
         Medicine medicine2 = new Medicine("m2", startDate, getDateAfter(startDate, 3));

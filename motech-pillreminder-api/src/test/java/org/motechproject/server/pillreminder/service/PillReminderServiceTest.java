@@ -97,6 +97,12 @@ public class PillReminderServiceTest {
         assertEquals(expectedMedicines, medicines);
     }
 
+    @Test
+    public void shouldCallAllPillRegimensToUpdateDosageDate() {
+        service.updateDosageTaken("pillRegimenId", "dosageId");
+        verify(allPillRegimens).updateDosageTaken("pillRegimenId", "dosageId");
+    }
+
 
     private class PillRegimenArgumentMatcher extends ArgumentMatcher<PillRegimen> {
         @Override
