@@ -4,6 +4,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechAuditableDataObject;
 
+import javax.xml.transform.Source;
 import java.util.Set;
 
 @TypeDiscriminator("doc.type === 'PILLREGIMEN'")

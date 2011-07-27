@@ -69,7 +69,7 @@ public class PillRegimenTest {
         Dosage dosage1 = new Dosage();
         dosage1.setId("1");
         Dosage dosage2 = new Dosage();
-        dosage1.setId("2");
+        dosage2.setId("2");
 
         Set<Dosage> dosages = new HashSet<Dosage>();
         dosages.add(dosage1);
