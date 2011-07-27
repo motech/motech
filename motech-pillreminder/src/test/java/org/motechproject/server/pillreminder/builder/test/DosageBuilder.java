@@ -1,4 +1,4 @@
-package org.motechproject.server.pillreminder.builder;
+package org.motechproject.server.pillreminder.builder.test;
 
 import org.motechproject.model.Time;
 import org.motechproject.server.pillreminder.domain.Dosage;

@@ -9,8 +9,6 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.gateway.OutboundEventGateway;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.server.pillreminder.builder.DosageBuilder;
-import org.motechproject.server.pillreminder.builder.PillRegimenBuilder;
 import org.motechproject.server.pillreminder.builder.SchedulerPayloadBuilder;
 import org.motechproject.server.pillreminder.dao.AllPillRegimens;
 import org.motechproject.server.pillreminder.domain.Dosage;
@@ -127,14 +125,14 @@ public class ReminderEventHandlerTest {
     }
 
     private Dosage buildDosage(String dosageId) {
-        return DosageBuilder.newDosage()
+        return org.motechproject.server.pillreminder.builder.test.DosageBuilder.newDosage()
                 .withCurrentDosageDate(new Date())
                 .withId(dosageId)
                 .build();
     }
 
     private PillRegimen buildPillRegimen(String externalId, int pillWindow, Dosage dosage, int retryInterval) {
-        return PillRegimenBuilder.newPillRegimen()
+        return org.motechproject.server.pillreminder.builder.test.PillRegimenBuilder.newPillRegimen()
                 .withExternalId(externalId)
                 .withReminderRepeatWindowInHours(pillWindow)
                 .withReminderRepeatIntervalInMinutes(retryInterval)
