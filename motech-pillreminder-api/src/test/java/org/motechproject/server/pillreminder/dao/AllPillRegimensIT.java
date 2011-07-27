@@ -90,12 +90,14 @@ public class AllPillRegimensIT {
     @Test
     public void shouldFindAndUpdateDosageCurrentDate() {
         PillRegimen pillRegimen = setUpPillRegimen();
-        Dosage[] dosages = (Dosage[]) pillRegimen.getDosages().toArray();
-        String regimenId = pillRegimen.getId();
+        Dosage[] dosages =  pillRegimen.getDosages().toArray(new Dosage[0]);
         String dosageId = dosages[0].getId();
 
         allPillRegimens.add(pillRegimen);
+        String regimenId = pillRegimen.getId();
+
         allPillRegimens.updateDosageTaken(regimenId, dosageId);
+
         Dosage dbDosage = allPillRegimens.findBy(regimenId, dosageId);
         assertTrue(Util.areDatesSame(new Date(), dbDosage.getCurrentDosageDate()));
     }
