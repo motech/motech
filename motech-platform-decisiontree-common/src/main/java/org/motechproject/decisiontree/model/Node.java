@@ -104,6 +104,10 @@ public class Node {
         transitions.put(transitionKey, transition);
     }
 
+    public boolean hasTransitions() {
+        return !transitions.isEmpty();
+    }
+
     @Override
     public String toString() {
         return "Node{" +

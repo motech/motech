@@ -23,7 +23,11 @@ public class TextToSpeechPrompt extends Prompt {
 	    public Builder setMessage(String message) {
 	        obj.message = message;
 	        return this;
-	    }		
+	    }
+        public Builder setTTSCommand(ITreeCommand command) {
+            obj.command = command;
+            return this;
+        }
     }
     
     public static Builder newBuilder() {

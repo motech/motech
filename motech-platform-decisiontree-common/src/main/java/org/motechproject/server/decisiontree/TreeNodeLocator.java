@@ -29,7 +29,7 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.decisiontree.service;
+package org.motechproject.server.decisiontree;
 
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.Transition;

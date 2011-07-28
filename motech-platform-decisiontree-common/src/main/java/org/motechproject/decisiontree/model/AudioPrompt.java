@@ -29,7 +29,11 @@ public class AudioPrompt extends Prompt {
 	    public Builder setAltMessage(String altMessage) {
 	        obj.altMessage = altMessage;
 	        return this;
-	    }		
+	    }
+        public Builder setAudioCommand(ITreeCommand command) {
+            obj.command = command;
+            return this;
+        }
     }
     public static Builder newBuilder() {
     	return new Builder();

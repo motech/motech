@@ -31,17 +31,19 @@
  */
 package org.motechproject.server.decisiontree.service;
 
-import static org.junit.Assert.*;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.decisiontree.model.Tree;
+import org.motechproject.server.decisiontree.TreeNodeLocator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author yyonkov
@@ -52,7 +54,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class TreeNodeLocatorTest {
 	Tree tree;
 	@Autowired
-	TreeNodeLocator locator;
+    TreeNodeLocator locator;
 	
 	@Before
 	public void setUp() {

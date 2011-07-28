@@ -52,27 +52,28 @@ public class DecisionTreeServiceTest {
 
     @Test
     public void shouldFetchCommandForRootNode () {
-        Node nextNode = decisionTreeService.getNode(pillReminderTree, "", "");
+        Node nextNode = decisionTreeService.getNode("", "");
         assertEquals(RootNodeCommand.class, nextNode.getTreeCommand().getClass());
     }
 
     @Test
     public void shouldFetchNextCommand() {
-        Node nextNode = decisionTreeService.getNode(pillReminderTree, "/", "1");
+        Node nextNode = decisionTreeService.getNode("/", "1");
         assertEquals(NextCommand.class, nextNode.getTreeCommand().getClass());
     }
 
     private class RootNodeCommand implements ITreeCommand {
-
         @Override
-        public void execute() {
+        public String execute(Object obj) {
+            return null;
         }
     }
 
     private class NextCommand implements ITreeCommand {
 
         @Override
-        public void execute() {
+        public String execute(Object obj) {
+            return null;
         }
     }
 }

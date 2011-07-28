@@ -70,7 +70,7 @@
 		<property name="exposeSpringMacroHelpers" value="true" />
 	</bean>
 
-	<bean id="treeNodeLocator" class="org.motechproject.server.decisiontree.service.TreeNodeLocator">
+	<bean id="treeNodeLocator" class="org.motechproject.server.decisiontree.TreeNodeLocator">
 	</bean>
 	<bean id="treeDao" class="org.motechproject.decisiontree.dao.couchdb.TreeDaoImpl">
         <constructor-arg ref="treesDatabase"/>

@@ -25,9 +25,9 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.decisiontree.model.*;
 import org.motechproject.decisiontree.model.Action;
+import org.motechproject.server.decisiontree.TreeNodeLocator;
 import org.motechproject.server.decisiontree.service.DecisionTreeService;
 import org.motechproject.server.decisiontree.service.TreeEventProcessor;
-import org.motechproject.server.decisiontree.service.TreeNodeLocator;
 import org.springframework.web.servlet.ModelAndView;
 
 @RunWith(MockitoJUnitRunner.class)
