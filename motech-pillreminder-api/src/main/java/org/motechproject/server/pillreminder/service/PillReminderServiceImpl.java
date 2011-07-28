@@ -68,6 +68,14 @@ public class PillReminderServiceImpl implements PillReminderService {
         allPillRegimens.updateDosageTaken(pillRegimenId, dosageId);
     }
 
+    @Override
+    public String getPreviousDosage(String pillRegimenId, String currentDosageId) {
+        PillRegimen pillRegimen = allPillRegimens.get(pillRegimenId);
+        Dosage currentDosage = pillRegimen.getDosage(currentDosageId);
+        Dosage previousDosage = pillRegimen.getPreviousDosage(currentDosage);
+        return previousDosage == null ? null : previousDosage.getId();
+    }
+
     private void destroy(String externalID) {
         PillRegimen regimen = allPillRegimens.findByExternalId(externalID);
         for (Dosage dosage : regimen.getDosages())

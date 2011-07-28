@@ -9,4 +9,5 @@ public interface PillReminderService {
     void renew(PillRegimenRequest newScheduleRequest);
     List<String> medicinesFor(String pillRegimenId, String dosageId);
     void updateDosageTaken(String pillRegimenId, String dosageId);
+    String getPreviousDosage(String pillRegimenId, String dosageId);
 }
