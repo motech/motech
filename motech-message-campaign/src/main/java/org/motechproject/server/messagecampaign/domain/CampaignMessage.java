@@ -1,5 +1,6 @@
 package org.motechproject.server.messagecampaign.domain;
 
+import java.util.Date;
 import java.util.List;
 
 public class CampaignMessage {
@@ -7,6 +8,11 @@ public class CampaignMessage {
     private List<String> formats;
     private List<String> languages;
     private String messageKey;
+
+    //for absolute schedules
+    private Date date;
+
+
     private String timeOffset;
 
     public String getName() {
@@ -27,5 +33,13 @@ public class CampaignMessage {
 
     public String getTimeOffset() {
         return timeOffset;
+    }
+
+    public Date date() {
+        return this.date;
+    }
+
+    public Date getDate() {
+        return date;
     }
 }

@@ -1,19 +1,40 @@
-[{
-    "name" : "Weekly Info Child Program" ,
-    "messages" : [
-        {
-            "name" : "Week 1",
-            "formats" : ["IVR"],
-            "languages" : ["en"],
-            "messageKey": "child-info-week-1",
-            "timeOffset" : "1 Week"
-        },
-        {
-            "name" : "Week 1A",
-            "formats" : ["SMS"],
-            "languages" : ["en"],
-            "messageKey": "child-info-week-1a",
-            "timeOffset" : "1 Week"
-        }
-    ]
-}]
+[
+    {
+        "name" : "Weekly Info Child Program" ,
+        "messages" : [
+            {
+                "name" : "Week 1",
+                "formats" : ["IVR"],
+                "languages" : ["en"],
+                "messageKey": "child-info-week-1",
+                "timeOffset" : "1 Week"
+            },
+            {
+                "name" : "Week 1A",
+                "formats" : ["SMS"],
+                "languages" : ["en"],
+                "messageKey": "child-info-week-1a",
+                "timeOffset" : "1 Week"
+            }
+        ]
+    },
+    {
+        "name" : "Absolute Dates Message Program",
+        "messages" : [
+            {
+                "name" : "First",
+                "formats" : ["IVR", "SMS"],
+                "languages" : ["en"],
+                "messageKey": "random-1",
+                "date" : "2011-06-15"
+            },
+            {
+                "name" : "Second",
+                "formats" : ["IVR"],
+                "languages" : ["en"],
+                "messageKey": "random-2",
+                "date" : "2011-06-22"
+            }
+        ]
+    }
+]

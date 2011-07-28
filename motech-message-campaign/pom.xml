@@ -41,12 +41,12 @@
             <version>1.6.1</version>
             <scope>provided</scope>
         </dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>3.0.5.RELEASE</version>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>3.0.5.RELEASE</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
@@ -56,6 +56,11 @@
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-scheduler</artifactId>
             <version>0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>1.6.2</version>
         </dependency>
     </dependencies>
 </project>
