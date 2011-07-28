@@ -103,6 +103,25 @@ public class PillReminderServiceTest {
         verify(allPillRegimens).updateDosageTaken("pillRegimenId", "dosageId");
     }
 
+    @Test
+    public void shouldGetPreviousDosageGivenCurrentDosageForARegimen() {
+        Dosage currentDosage = mock(Dosage.class);
+        Dosage previousDosage = mock(Dosage.class);
+        PillRegimen pillRegimen = mock(PillRegimen.class);
+
+        String currentDosageId = "currentDosageId";
+        String previousDosageId = "previousDosageId";
+        String pillRegimenId = "pillRegimenId";
+
+        when(currentDosage.getId()).thenReturn(currentDosageId);
+        when(previousDosage.getId()).thenReturn(previousDosageId);
+        when(pillRegimen.getDosage(currentDosageId)).thenReturn(currentDosage);
+        when(pillRegimen.getPreviousDosage(currentDosage)).thenReturn(previousDosage);
+        when(allPillRegimens.get(pillRegimenId)).thenReturn(pillRegimen);
+
+        String actualPreviousDosageId = service.getPreviousDosage(pillRegimenId, currentDosageId);
+        assertEquals(previousDosageId, actualPreviousDosageId);
+    }
 
     private class PillRegimenArgumentMatcher extends ArgumentMatcher<PillRegimen> {
         @Override

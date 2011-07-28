@@ -47,4 +47,8 @@ public class WallTime {
     public void setUnit(WallTimeUnit unit) {
         this.unit = unit;
     }
+
+    public int inDays() {
+        return this.unit.days * value;
+    }
 }

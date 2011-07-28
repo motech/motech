@@ -3,6 +3,7 @@ package org.motechproject.server.pillreminder.domain;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.motechproject.model.Time;
+import org.motechproject.server.pillreminder.builder.test.DosageBuilder;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -53,17 +54,71 @@ public class PillRegimenTest {
         PillRegimen regimen = new PillRegimen();
 
         regimen.setExternalId("123");
-        assertEquals("123",regimen.getExternalId());
+        assertEquals("123", regimen.getExternalId());
 
         Set<Dosage> dosages = new HashSet<Dosage>();
         regimen.setDosages(dosages);
         assertEquals(dosages, regimen.getDosages());
 
         regimen.setType("type");
-        assertEquals("type",regimen.getType());
+        assertEquals("type", regimen.getType());
 
     }
 
+    @Test
+    public void shouldFindDosageById() {
+        Dosage dosage1 = new Dosage();
+        dosage1.setId("1");
+        Dosage dosage2 = new Dosage();
+        dosage2.setId("2");
 
+        Set<Dosage> dosages = new HashSet<Dosage>();
+        dosages.add(dosage1);
+        dosages.add(dosage2);
+
+        PillRegimen regimen = new PillRegimen();
+        regimen.setDosages(dosages);
+
+        assertEquals(dosage1, regimen.getDosage("1"));
+        assertEquals(dosage2, regimen.getDosage("2"));
+    }
+
+    @Test
+    public void shouldGetPreviousDosageGivenCurrentDosage() {
+        Dosage morningDosage = DosageBuilder.newDosage().withStartTime(new Time(07, 00)).build();
+        Dosage afternoonDosage = DosageBuilder.newDosage().withStartTime(new Time(12, 00)).build();
+        Dosage nightDosage = DosageBuilder.newDosage().withStartTime(new Time(20, 00)).build();
+
+        Set<Dosage> dosages = new HashSet<Dosage>();
+        dosages.add(morningDosage);
+        dosages.add(afternoonDosage);
+        dosages.add(nightDosage);
+
+        PillRegimen regimen = new PillRegimen();
+        regimen.setDosages(dosages);
+
+        assertEquals(afternoonDosage, regimen.getPreviousDosage(nightDosage));
+        assertEquals(morningDosage, regimen.getPreviousDosage(afternoonDosage));
+        assertEquals(nightDosage, regimen.getPreviousDosage(morningDosage));
+    }
+
+    @Test
+    public void previousDosageIsSameAsCurrentDosageWhenItsTheOnlyDosageForARegimen() {
+        Dosage morningDosage = DosageBuilder.newDosage().withStartTime(new Time(07, 00)).build();
+
+        Set<Dosage> dosages = new HashSet<Dosage>();
+        dosages.add(morningDosage);
+
+        PillRegimen regimen = new PillRegimen();
+        regimen.setDosages(dosages);
+
+        assertEquals(morningDosage, regimen.getPreviousDosage(morningDosage));
+    }
+
+    @Test
+    public void previousDosageRetunsNullWhenNoDosagesArePresentForARegimen() {
+        PillRegimen regimen = new PillRegimen();
+        assertEquals(null, regimen.getPreviousDosage(new Dosage()));
+    }
 
 }

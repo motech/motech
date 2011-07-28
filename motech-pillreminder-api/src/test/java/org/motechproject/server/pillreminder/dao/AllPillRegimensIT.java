@@ -23,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 import static org.motechproject.server.pillreminder.util.Util.getDateAfter;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testPillReminder.xml"})
+@ContextConfiguration(locations = {"/applicationPillReminderAPI.xml"})
 public class AllPillRegimensIT {
     @Autowired
     private AllPillRegimens allPillRegimens;
@@ -79,7 +79,7 @@ public class AllPillRegimensIT {
     public void shouldGetMedicinesForGivenDosage() {
         PillRegimen pillRegimen = setUpPillRegimen();
         allPillRegimens.add(pillRegimen);
-        Dosage[] dosages = (Dosage[]) pillRegimen.getDosages().toArray();
+        Dosage[] dosages = pillRegimen.getDosages().toArray(new Dosage[0]);
 
         List<String> medicines = allPillRegimens.medicinesFor(pillRegimen.getId(), dosages[0].getId());
 
@@ -90,13 +90,16 @@ public class AllPillRegimensIT {
     @Test
     public void shouldFindAndUpdateDosageCurrentDate() {
         PillRegimen pillRegimen = setUpPillRegimen();
-        Dosage[] dosages = (Dosage[]) pillRegimen.getDosages().toArray();
-        String regimenId = pillRegimen.getId();
+        Dosage[] dosages =  pillRegimen.getDosages().toArray(new Dosage[0]);
         String dosageId = dosages[0].getId();
 
         allPillRegimens.add(pillRegimen);
+        String regimenId = pillRegimen.getId();
+
         allPillRegimens.updateDosageTaken(regimenId, dosageId);
-        Dosage dbDosage = allPillRegimens.findBy(regimenId, dosageId);
+
+        PillRegimen dbRegimen = allPillRegimens.get(regimenId);
+        Dosage dbDosage = dbRegimen.getDosage(dosageId);
         assertTrue(Util.areDatesSame(new Date(), dbDosage.getCurrentDosageDate()));
     }
 
