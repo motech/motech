@@ -28,4 +28,8 @@ public class WallTime {
         result = 31 * result + (unit != null ? unit.hashCode() : 0);
         return result;
     }
+
+    public int inDays() {
+        return this.unit.days * value;
+    }
 }

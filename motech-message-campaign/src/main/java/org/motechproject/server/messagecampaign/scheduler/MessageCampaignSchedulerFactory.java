@@ -17,9 +17,9 @@ public class MessageCampaignSchedulerFactory {
 
     public MessageCampaignScheduler scheduler(EnrollRequest enrollRequest) {
         if(enrollRequest.getClass().equals(EnrollForAbsoluteProgramRequest.class))
-            return new AbsoluteProgramCampaignScheduler(schedulerService, (EnrollForAbsoluteProgramRequest) enrollRequest);
+            return new AbsoluteProgramScheduler(schedulerService, (EnrollForAbsoluteProgramRequest) enrollRequest);
         else if(enrollRequest.getClass().equals(EnrollForRelativeProgramRequest.class))
-            return new RelativeProgramCampaignScheduler(schedulerService, (EnrollForRelativeProgramRequest) enrollRequest);
+            return new RelativeProgramScheduler(schedulerService, (EnrollForRelativeProgramRequest) enrollRequest);
         return null;
     }
 }
