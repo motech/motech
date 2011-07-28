@@ -26,21 +26,7 @@ public class AllMessageCampaignsTest {
     }
 
     @Test
-    public void getCampaignWithRelativeScheduleTest() {
-        String campaignName = "Weekly Info Child Program";
-
-        Campaign campaign = allMessageCampaigns.get(campaignName);
-        assertNotNull(campaign);
-        assertEquals(campaignName, campaign.getName());
-        List<CampaignMessage> messages = campaign.getMessages();
-        assertEquals(3, messages.size());
-        assertMessageWithRelativeSchedule(messages.get(0), "Week 1", new String[]{"IVR"}, "child-info-week-1", "1 Week");
-        assertMessageWithRelativeSchedule(messages.get(1), "Week 1A", new String[]{"SMS"}, "child-info-week-1a", "1 Week");
-        assertMessageWithRelativeSchedule(messages.get(2), "Week 1B", new String[]{"SMS"}, "child-info-week-1b", "9 Days");
-    }
-
-    @Test
-    public void getCampaignWithAbsoluteScheduleTest() {
+    public void getAbsoluteDatesMessageProgramTest() {
         String campaignName = "Absolute Dates Message Program";
 
         Campaign campaign = allMessageCampaigns.get(campaignName);
@@ -54,6 +40,35 @@ public class AllMessageCampaignsTest {
         assertMessageWithAbsoluteSchedule(messages.get(1), "Second", new String[]{"IVR"}, "random-2", secondDate.toDate());
     }
 
+    @Test
+    public void getRelativeDatesMessageProgramTest() {
+        String campaignName = "Relative Dates Message Program";
+
+        Campaign campaign = allMessageCampaigns.get(campaignName);
+        assertNotNull(campaign);
+        assertEquals(campaignName, campaign.getName());
+        List<CampaignMessage> messages = campaign.getMessages();
+        assertEquals(3, messages.size());
+        assertMessageWithRelativeSchedule(messages.get(0), "Week 1", new String[]{"IVR"}, "child-info-week-1", "1 Week");
+        assertMessageWithRelativeSchedule(messages.get(1), "Week 1A", new String[]{"SMS"}, "child-info-week-1a", "1 Week");
+        assertMessageWithRelativeSchedule(messages.get(2), "Week 1B", new String[]{"SMS"}, "child-info-week-1b", "9 Days");
+    }
+
+    @Test
+    public void getReltiveParameterizedDatesMessageProgramTest() {
+        String campaignName = "Relative Parameterized Dates Message Program";
+
+        Campaign campaign = allMessageCampaigns.get(campaignName);
+        assertNotNull(campaign);
+        assertEquals(campaignName, campaign.getName());
+        assertEquals("5 weeks", campaign.maxDuration());
+        List<CampaignMessage> messages = campaign.getMessages();
+        assertEquals(3, messages.size());
+        assertMessageWithParameterizedRelativeSchedule(messages.get(0), "Weekly Message #1", new String[]{"IVR", "SMS"}, "child-info-week-{WeekOffset}-1", "1 Week");
+        assertMessageWithParameterizedRelativeSchedule(messages.get(1), "Weekly Message #2", new String[]{"SMS"}, "child-info-week-{WeekOffset}-2", "9 Days");
+        assertMessageWithParameterizedRelativeSchedule(messages.get(2), "Weekly Message #3", new String[]{"SMS"}, "child-info-week-{WeekOffset}-3", "12 Days");
+    }
+
     private void assertMessageWithAbsoluteSchedule(CampaignMessage message, String name, String[] formats, Object messageKey, Date date) {
         assertMessage(message, name, formats, messageKey);
         assertEquals(date, message.date());
@@ -62,6 +77,11 @@ public class AllMessageCampaignsTest {
     private void assertMessageWithRelativeSchedule(CampaignMessage message, String name, String[] formats, Object messageKey, String timeOffset) {
         assertMessage(message, name, formats, messageKey);
         assertEquals(timeOffset, message.timeOffset());
+    }
+
+    private void assertMessageWithParameterizedRelativeSchedule(CampaignMessage message, String name, String[] formats, Object messageKey, String repeatInterval) {
+        assertMessage(message, name, formats, messageKey);
+        assertEquals(repeatInterval, message.repeatInterval());
     }
 
     private void assertMessage(CampaignMessage message, String name, String[] formats, Object messageKey) {

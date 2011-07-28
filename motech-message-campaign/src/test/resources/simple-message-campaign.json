@@ -1,6 +1,25 @@
 [
     {
-        "name" : "Weekly Info Child Program" ,
+        "name" : "Absolute Dates Message Program",
+        "messages" : [
+            {
+                "name" : "First",
+                "formats" : ["IVR", "SMS"],
+                "languages" : ["en"],
+                "messageKey": "random-1",
+                "date" : "2011-06-15"
+            },
+            {
+                "name" : "Second",
+                "formats" : ["IVR"],
+                "languages" : ["en"],
+                "messageKey": "random-2",
+                "date" : "2011-06-22"
+            }
+        ]
+    },
+    {
+        "name" : "Relative Dates Message Program" ,
         "messages" : [
             {
                 "name" : "Week 1",
@@ -26,21 +45,29 @@
         ]
     },
     {
-        "name" : "Absolute Dates Message Program",
+        "name" : "Relative Parameterized Dates Message Program",
+        "maxDuration" : "5 weeks",
         "messages" : [
             {
-                "name" : "First",
+                "name" : "Weekly Message #1",
                 "formats" : ["IVR", "SMS"],
                 "languages" : ["en"],
-                "messageKey": "random-1",
-                "date" : "2011-06-15"
+                "messageKey": "child-info-week-{WeekOffset}-1",
+                "repeatInterval" : "1 Week"
             },
             {
-                "name" : "Second",
-                "formats" : ["IVR"],
+                "name" : "Weekly Message #2",
+                "formats" : ["SMS"],
                 "languages" : ["en"],
-                "messageKey": "random-2",
-                "date" : "2011-06-22"
+                "messageKey": "child-info-week-{WeekOffset}-2",
+                "repeatInterval" : "9 Days"
+            },
+            {
+                "name" : "Weekly Message #3",
+                "formats" : ["SMS"],
+                "languages" : ["en"],
+                "messageKey": "child-info-week-{WeekOffset}-3",
+                "repeatInterval" : "12 Days"
             }
         ]
     }

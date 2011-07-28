@@ -9,10 +9,13 @@ public class CampaignMessage {
     private List<String> languages;
     private String messageKey;
 
-    //for absolute schedules
+    //for absolute programs
     private Date date;
 
+    //for simple relative programs
     private String timeOffset;
+    //for parameterized reltive programs
+    private String repeatInterval;
 
     public String name() {
         return name;
@@ -36,5 +39,9 @@ public class CampaignMessage {
 
     public Date date() {
         return this.date;
+    }
+
+    public String repeatInterval() {
+        return this.repeatInterval;
     }
 }

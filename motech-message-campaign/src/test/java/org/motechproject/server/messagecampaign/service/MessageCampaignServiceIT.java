@@ -30,7 +30,7 @@ public class MessageCampaignServiceIT {
 
         EnrollForAbsoluteProgramRequest enrollRequest = new EnrollForAbsoluteProgramRequest();
         enrollRequest.campaignName("Absolute Dates Message Program");
-        enrollRequest.externalId("patiend Id");
+        enrollRequest.externalId("patient_Id1");
         enrollRequest.reminderTime(new Time(9, 30));
         messageCampaignService.enroll(enrollRequest);
         assertEquals(scheduledJobsNum + 2, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
@@ -41,11 +41,24 @@ public class MessageCampaignServiceIT {
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 
         EnrollForRelativeProgramRequest enrollRequest = new EnrollForRelativeProgramRequest();
-        enrollRequest.campaignName("Weekly Info Child Program");
-        enrollRequest.externalId("patiend Id");
+        enrollRequest.campaignName("Relative Dates Message Program");
+        enrollRequest.externalId("patient_Id2");
         enrollRequest.referenceDate(Calendar.getInstance().getTime());
         enrollRequest.reminderTime(new Time(9, 30));
         messageCampaignService.enroll(enrollRequest);
         assertEquals(scheduledJobsNum + 3, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
+    }
+
+    @Test
+    public void testEnrollWithParameterizedRelativeProgram() throws Exception {
+        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
+
+        EnrollForRelativeProgramRequest enrollRequest = new EnrollForRelativeProgramRequest();
+        enrollRequest.campaignName("Relative Parameterized Dates Message Program");
+        enrollRequest.externalId("patiend_Id3");
+        enrollRequest.referenceDate(Calendar.getInstance().getTime());
+        enrollRequest.reminderTime(new Time(9, 30));
+        messageCampaignService.enroll(enrollRequest);
+        assertEquals(scheduledJobsNum + 12, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
     }
 }
