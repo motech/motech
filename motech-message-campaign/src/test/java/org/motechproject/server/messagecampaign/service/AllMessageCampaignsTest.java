@@ -56,19 +56,19 @@ public class AllMessageCampaignsTest {
 
     private void assertMessageWithAbsoluteSchedule(CampaignMessage message, String name, String[] formats, Object messageKey, Date date) {
         assertMessage(message, name, formats, messageKey);
-        assertEquals(date, message.getDate());
+        assertEquals(date, message.date());
     }
 
     private void assertMessageWithRelativeSchedule(CampaignMessage message, String name, String[] formats, Object messageKey, String timeOffset) {
         assertMessage(message, name, formats, messageKey);
-        assertEquals(timeOffset, message.getTimeOffset());
+        assertEquals(timeOffset, message.timeOffset());
     }
 
     private void assertMessage(CampaignMessage message, String name, String[] formats, Object messageKey) {
-        assertEquals(name, message.getName());
-        assertCollection(formats, message.getFormats());
-        assertCollection(new String[]{"en"}, message.getLanguages());
-        assertEquals(messageKey, message.getMessageKey());
+        assertEquals(name, message.name());
+        assertCollection(formats, message.formats());
+        assertCollection(new String[]{"en"}, message.languages());
+        assertEquals(messageKey, message.messageKey());
     }
 
     private void assertCollection(String[] expectedFormats, List<String> actualFormats) {

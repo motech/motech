@@ -20,9 +20,13 @@
 
     <bean id="messageCampaignService" class="org.motechproject.server.messagecampaign.service.MessageCampaignServiceImpl">
         <constructor-arg ref ="allMessageCampaigns"/>
-        <constructor-arg ref="schedulerService"/>
+        <constructor-arg ref="messageCampaignSchedulerFactory"/>
     </bean>
 
     <bean id="motechJsonReader" class="org.motechproject.dao.MotechJsonReader"/>
+
+    <bean id="messageCampaignSchedulerFactory" class="org.motechproject.server.messagecampaign.scheduler.MessageCampaignSchedulerFactory">
+        <constructor-arg ref="schedulerService"/>
+    </bean>
 
 </beans>
