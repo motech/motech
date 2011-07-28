@@ -33,6 +33,7 @@ package org.motechproject.server.tama;
 
 import org.motechproject.decisiontree.dao.TreeDao;
 import org.motechproject.decisiontree.model.*;
+import org.motechproject.decisiontree.model.Action;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.outbox.api.EventKeys;
 import org.motechproject.server.event.annotations.MotechListener;

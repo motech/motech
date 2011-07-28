@@ -4,36 +4,75 @@ package org.motechproject.server.decisiontree.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.decisiontree.model.ITreeCommand;
+import org.motechproject.decisiontree.model.Node;
+import org.motechproject.decisiontree.model.Transition;
+import org.motechproject.decisiontree.model.Tree;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@RunWith(MockitoJUnitRunner.class)
+import static org.junit.Assert.assertEquals;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"/applicationDecisionTree.xml"})
 public class DecisionTreeServiceTest {
 
-    @InjectMocks
-    DecisionTreeService decisionTreeService = new DecisionTreeServiceImpl();
+    @Autowired
+    private DecisionTreeService decisionTreeService;
 
-
+    private Tree pillReminderTree;
 
     @Before
-    public void initMocks() {
+    public void SetUp() {
+        Node rootNode = Node.newBuilder()
+                .setTreeCommand(new RootNodeCommand())
+                .setTransitions(new Object[][]{
+                        {"1", Transition.newBuilder()
+                                .setName("pillTakenOnTime")
+                                .setDestinationNode(
+                                        Node.newBuilder()
+                                                .setTreeCommand(new NextCommand())
+                                                .build())
+                                .build()
+                        }
+                })
+                .build();
 
-        MockitoAnnotations.initMocks(this);
-     }
+        pillReminderTree = Tree.newBuilder()
+                .setName("PillReminderTree")
+                .setRootNode(rootNode)
+                .build();
 
-     //TODO - implement
-    @Test
-    public void getNodeTest () {
-//        decisionTreeService.getNode("", "");
-
+        pillReminderTree = Tree.newBuilder()
+                .setName("PillReminderTree")
+                .setRootNode(rootNode)
+                .build();
     }
 
-     //TODO - implement
     @Test
-    public void getTransitionNodeTest () {
+    public void shouldFetchCommandForRootNode () {
+        Node nextNode = decisionTreeService.getNode(pillReminderTree, "", "");
+        assertEquals(RootNodeCommand.class, nextNode.getTreeCommand().getClass());
+    }
 
-//        decisionTreeService.getNode("", "");
+    @Test
+    public void shouldFetchNextCommand() {
+        Node nextNode = decisionTreeService.getNode(pillReminderTree, "/", "1");
+        assertEquals(NextCommand.class, nextNode.getTreeCommand().getClass());
+    }
 
+    private class RootNodeCommand implements ITreeCommand {
+
+        @Override
+        public void execute() {
+        }
+    }
+
+    private class NextCommand implements ITreeCommand {
+
+        @Override
+        public void execute() {
+        }
     }
 }

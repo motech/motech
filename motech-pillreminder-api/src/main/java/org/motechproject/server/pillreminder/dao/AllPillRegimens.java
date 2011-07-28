@@ -15,7 +15,7 @@ import java.util.List;
 public class AllPillRegimens extends MotechAuditableRepository<PillRegimen> {
 
     @Autowired
-    public AllPillRegimens(@Qualifier("pillReminderDatabase") CouchDbConnector db) {
+    public AllPillRegimens(@Qualifier("pillReminderDbConnector") CouchDbConnector db) {
         super(PillRegimen.class, db);
     }
 

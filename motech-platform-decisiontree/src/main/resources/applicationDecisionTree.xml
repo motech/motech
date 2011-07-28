@@ -33,23 +33,15 @@
 
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xmlns:int="http://www.springframework.org/schema/integration"
-	xmlns:int-jms="http://www.springframework.org/schema/integration/jms"
-	xsi:schemaLocation="http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.0.xsd
-		http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms-2.0.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 	<context:annotation-config />
 
-    <bean id="motechContext" class="org.motechproject.context.Context" factory-method="getInstance" />
-
-    <!-- We have to use the couchDbInstance provided by the motech server context -->
-    <bean id="couchDbInstance" factory-bean="motechContext" factory-method="getCouchDbInstance" />
+    <import resource="applicationPlatformServerAPI.xml"/>
+    <import resource="applicationPlatformCommon.xml"/>
 
 	<bean id="treesDatabase" class="org.ektorp.impl.StdCouchDbConnector">
 		<constructor-arg value="trees" />
@@ -78,11 +70,10 @@
 		<property name="exposeSpringMacroHelpers" value="true" />
 	</bean>
 
-	<bean id="treeNodeLocator"
-		class="org.motechproject.server.decisiontree.service.TreeNodeLocator">
+	<bean id="treeNodeLocator" class="org.motechproject.server.decisiontree.service.TreeNodeLocator">
 	</bean>
-	<bean id="treeDao"
-		class="org.motechproject.decisiontree.dao.couchdb.TreeDaoImpl">
+	<bean id="treeDao" class="org.motechproject.decisiontree.dao.couchdb.TreeDaoImpl">
+        <constructor-arg ref="treesDatabase"/>
 	</bean>
     <bean id="treeEventProcessor"
           class="org.motechproject.server.decisiontree.service.TreeEventProcessor"/>

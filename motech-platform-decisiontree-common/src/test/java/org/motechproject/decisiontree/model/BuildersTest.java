@@ -34,6 +34,7 @@ package org.motechproject.decisiontree.model;
 import static org.junit.Assert.*;
 import java.util.Arrays;
 import org.junit.Test;
+import org.motechproject.decisiontree.model.Action;
 
 
 /**

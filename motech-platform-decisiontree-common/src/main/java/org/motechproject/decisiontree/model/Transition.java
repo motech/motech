@@ -4,8 +4,6 @@ package org.motechproject.decisiontree.model;
 import java.util.Collections;
 import java.util.List;
 
-import org.motechproject.decisiontree.model.Action.Builder;
-
 /**
  *
  */

@@ -1,11 +1,11 @@
 package org.motechproject.decisiontree.model;
 
+import org.apache.commons.lang.ArrayUtils;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang.ArrayUtils;
 
 /**
  * 
@@ -16,7 +16,8 @@ public class Node {
     private List<Action> actionsAfter;
     private List<Prompt> prompts;
     private Map<String, Transition> transitions;
-    
+    private ITreeCommand treeCommand;
+
     public static class Builder {
     	private Node obj;
 		public Builder() {
@@ -33,6 +34,10 @@ public class Node {
 	    	obj.actionsAfter = actionsAfter;
 	    	return this;
 	    }
+        public Builder setTreeCommand(ITreeCommand treeCommand) {
+            obj.treeCommand = treeCommand;
+            return this;
+        }
 	    public Builder setPrompts(List<Prompt> prompts) {
 	    	obj.prompts = prompts;
 	    	return this;
@@ -82,6 +87,14 @@ public class Node {
 
     public void setTransitions(Map<String, Transition> transitions) {
         this.transitions = transitions;
+    }
+
+    public ITreeCommand getTreeCommand() {
+        return treeCommand;
+    }
+
+    public void setTreeCommand(ITreeCommand treeCommand) {
+        this.treeCommand = treeCommand;
     }
 
     public void addTransition(String transitionKey, Transition transition) {

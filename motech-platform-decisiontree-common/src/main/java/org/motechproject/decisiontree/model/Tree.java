@@ -32,6 +32,7 @@ public class Tree extends MotechAuditableDataObject {
 	        obj.rootNode = rootNode;
 	        return this;
 	    }
+
     	public Tree build() {
     		return obj;
     	}
