@@ -110,7 +110,7 @@ public class ReminderEventHandlerTest {
         verify(outboundEventGateway, times(1)).sendEventMessage(event.capture());
 
         assertNotNull(event.getValue().getParameters());
-        assertEquals(timesToBeSent, event.getValue().getParameters().get(EventKeys.PILLREMINDER_TIMES_TO_BE_SENT));
+        assertEquals(timesToBeSent, event.getValue().getParameters().get(EventKeys.PILLREMINDER_TOTAL_TIMES_TO_SEND));
     }
 
 

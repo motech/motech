@@ -36,7 +36,7 @@ public class EventKeys {
 	public static final String TRANSITION_NOT_TAKEN = "cannot-take-dose";
 	public static final String TRANSITION_TAKEN = "dose-taken";
     public static final String PILLREMINDER_TIMES_SENT = "times-reminders-sent";
-    public static final String PILLREMINDER_TIMES_TO_BE_SENT = "times-reminders-to-be-sent";
+    public static final String PILLREMINDER_TOTAL_TIMES_TO_SEND = "times-reminders-to-be-sent";
 
     public static String getScheduleJobIdKey(MotechEvent event)
     {

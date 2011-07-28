@@ -52,7 +52,7 @@ public class ReminderEventHandler {
         int retryInterval = pillRegimen.getReminderRepeatIntervalInMinutes();
 
         motechEvent.getParameters().put(EventKeys.PILLREMINDER_TIMES_SENT, pillReminderTime.timesPillRemindersSent(dosage, pillWindow, retryInterval));
-        motechEvent.getParameters().put(EventKeys.PILLREMINDER_TIMES_TO_BE_SENT, pillReminderTime.timesPillRemainderWillBeSent(pillWindow, retryInterval));
+        motechEvent.getParameters().put(EventKeys.PILLREMINDER_TOTAL_TIMES_TO_SEND, pillReminderTime.timesPillRemainderWillBeSent(pillWindow, retryInterval));
         return motechEvent;
     }
 
