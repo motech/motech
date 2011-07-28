@@ -31,6 +31,7 @@ public class RelativeProgramScheduler extends MessageCampaignScheduler {
             scheduleRepeatingJobs(message.repeatInterval(), campaign.maxDuration(), message, campaign.getName());
         } else {
             String jobId = campaign.getName() + "_" + message.name() + "_" + enrollRequest.externalId();
+
             HashMap jobParams = new SchedulerPayloadBuilder()
                     .withJobId(jobId)
                     .withCampaignName(campaign.getName())
@@ -43,6 +44,7 @@ public class RelativeProgramScheduler extends MessageCampaignScheduler {
     }
 
     private void scheduleRepeatingJobs(String repeatInterval, String maxDuration, CampaignMessage message, String campaignName) {
+
         DateTime startDate = new DateTime(enrollRequest.referenceDate());
         WallTime duration = WallTimeFactory.create(maxDuration);
         DateTime endDate = startDate.plusDays(duration.inDays());

@@ -55,7 +55,7 @@ public class AllMessageCampaignsTest {
     }
 
     @Test
-    public void getReltiveParameterizedDatesMessageProgramTest() {
+    public void getRelativeParameterizedDatesMessageProgramTest() {
         String campaignName = "Relative Parameterized Dates Message Program";
 
         Campaign campaign = allMessageCampaigns.get(campaignName);
@@ -67,6 +67,18 @@ public class AllMessageCampaignsTest {
         assertMessageWithParameterizedRelativeSchedule(messages.get(0), "Weekly Message #1", new String[]{"IVR", "SMS"}, "child-info-week-{WeekOffset}-1", "1 Week");
         assertMessageWithParameterizedRelativeSchedule(messages.get(1), "Weekly Message #2", new String[]{"SMS"}, "child-info-week-{WeekOffset}-2", "9 Days");
         assertMessageWithParameterizedRelativeSchedule(messages.get(2), "Weekly Message #3", new String[]{"SMS"}, "child-info-week-{WeekOffset}-3", "12 Days");
+    }
+
+    @Test
+    public void getCronBasedMessageProgramTest() {
+        String campaignName = "Cron based Message Program";
+
+        Campaign campaign = allMessageCampaigns.get(campaignName);
+        assertNotNull(campaign);
+        assertEquals(campaignName, campaign.getName());
+        List<CampaignMessage> messages = campaign.getMessages();
+        assertEquals(1, messages.size());
+        assertMessageWithCronSchedule(messages.get(0), "First", new String[]{"IVR", "SMS"}, "cron-message", "0 11 11 11 11 ?");
     }
 
     private void assertMessageWithAbsoluteSchedule(CampaignMessage message, String name, String[] formats, Object messageKey, Date date) {
@@ -82,6 +94,11 @@ public class AllMessageCampaignsTest {
     private void assertMessageWithParameterizedRelativeSchedule(CampaignMessage message, String name, String[] formats, Object messageKey, String repeatInterval) {
         assertMessage(message, name, formats, messageKey);
         assertEquals(repeatInterval, message.repeatInterval());
+    }
+
+    private void assertMessageWithCronSchedule(CampaignMessage message, String name, String[] formats, Object messageKey, String cron) {
+        assertMessage(message, name, formats, messageKey);
+        assertEquals(cron, message.cron());
     }
 
     private void assertMessage(CampaignMessage message, String name, String[] formats, Object messageKey) {

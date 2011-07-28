@@ -70,5 +70,17 @@
                 "repeatInterval" : "12 Days"
             }
         ]
+    },
+    {
+        "name" : "Cron based Message Program",
+        "messages" : [
+            {
+                "name" : "First",
+                "formats" : ["IVR", "SMS"],
+                "languages" : ["en"],
+                "messageKey": "cron-message",
+                "cron" : "0 11 11 11 11 ?"
+            }
+        ]
     }
 ]

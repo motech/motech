@@ -5,6 +5,7 @@ import org.junit.runner.RunWith;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerServiceImpl;
 import org.motechproject.server.messagecampaign.contract.EnrollForAbsoluteProgramRequest;
+import org.motechproject.server.messagecampaign.contract.EnrollForCronBasedProgramRequest;
 import org.motechproject.server.messagecampaign.contract.EnrollForRelativeProgramRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
@@ -60,5 +61,17 @@ public class MessageCampaignServiceIT {
         enrollRequest.reminderTime(new Time(9, 30));
         messageCampaignService.enroll(enrollRequest);
         assertEquals(scheduledJobsNum + 12, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
+    }
+
+    @Test
+    public void testEnrollWithCronBasedProgram() throws Exception {
+        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
+
+        EnrollForCronBasedProgramRequest enrollRequest = new EnrollForCronBasedProgramRequest();
+        enrollRequest.campaignName("Cron based Message Program");
+        enrollRequest.externalId("patiend_Id3");
+        enrollRequest.referenceDate(Calendar.getInstance().getTime());
+        messageCampaignService.enroll(enrollRequest);
+        assertEquals(scheduledJobsNum + 1, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
     }
 }

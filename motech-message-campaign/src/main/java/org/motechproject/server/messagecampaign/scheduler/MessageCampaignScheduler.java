@@ -25,10 +25,17 @@ public abstract class MessageCampaignScheduler {
         String cronJobExpression = new CronJobExpressionBuilder(startTime,
                 REPEAT_WINDOW_IN_HOURS, REPEAT_INTERVAL_IN_MINUTES).build();
 
+        scheduleJobOn(cronJobExpression, startDate, params);
+    }
+
+    public void scheduleJobOn(String cronJobExpression, Date startDate, Map<String, Object> params) {
         MotechEvent motechEvent = new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_EVENT_SUBJECT, params);
 
         CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, startDate, null);
         schedulerService.scheduleJob(schedulableJob);
+
     }
+
+
 }
 

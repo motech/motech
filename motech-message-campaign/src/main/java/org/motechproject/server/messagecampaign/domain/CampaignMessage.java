@@ -11,11 +11,12 @@ public class CampaignMessage {
 
     //for absolute programs
     private Date date;
-
     //for simple relative programs
     private String timeOffset;
-    //for parameterized reltive programs
+    //for parameterized relative programs
     private String repeatInterval;
+    //for cron based programs
+    private String cron;
 
     public String name() {
         return name;
@@ -43,5 +44,9 @@ public class CampaignMessage {
 
     public String repeatInterval() {
         return this.repeatInterval;
+    }
+
+    public String cron() {
+        return cron;
     }
 }
