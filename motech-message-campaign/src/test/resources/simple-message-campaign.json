@@ -15,6 +15,13 @@
                 "languages" : ["en"],
                 "messageKey": "child-info-week-1a",
                 "timeOffset" : "1 Week"
+            },
+            {
+                "name" : "Week 1B",
+                "formats" : ["SMS"],
+                "languages" : ["en"],
+                "messageKey": "child-info-week-1b",
+                "timeOffset" : "9 Days"
             }
         ]
     },

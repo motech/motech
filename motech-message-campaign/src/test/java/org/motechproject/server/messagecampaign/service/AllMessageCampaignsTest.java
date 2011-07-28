@@ -33,9 +33,10 @@ public class AllMessageCampaignsTest {
         assertNotNull(campaign);
         assertEquals(campaignName, campaign.getName());
         List<CampaignMessage> messages = campaign.getMessages();
-        assertEquals(2, messages.size());
-        assertMessageWithRelativeSchedule(messages.get(0), "Week 1", new String[]{"IVR"}, "child-info-week-1");
-        assertMessageWithRelativeSchedule(messages.get(1), "Week 1A", new String[]{"SMS"}, "child-info-week-1a");
+        assertEquals(3, messages.size());
+        assertMessageWithRelativeSchedule(messages.get(0), "Week 1", new String[]{"IVR"}, "child-info-week-1", "1 Week");
+        assertMessageWithRelativeSchedule(messages.get(1), "Week 1A", new String[]{"SMS"}, "child-info-week-1a", "1 Week");
+        assertMessageWithRelativeSchedule(messages.get(2), "Week 1B", new String[]{"SMS"}, "child-info-week-1b", "9 Days");
     }
 
     @Test
@@ -58,9 +59,9 @@ public class AllMessageCampaignsTest {
         assertEquals(date, message.getDate());
     }
 
-    private void assertMessageWithRelativeSchedule(CampaignMessage message, String name, String[] formats, Object messageKey) {
+    private void assertMessageWithRelativeSchedule(CampaignMessage message, String name, String[] formats, Object messageKey, String timeOffset) {
         assertMessage(message, name, formats, messageKey);
-        assertEquals("1 Week", message.getTimeOffset());
+        assertEquals(timeOffset, message.getTimeOffset());
     }
 
     private void assertMessage(CampaignMessage message, String name, String[] formats, Object messageKey) {

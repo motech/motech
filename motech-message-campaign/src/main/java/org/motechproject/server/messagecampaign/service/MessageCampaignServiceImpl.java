@@ -1,5 +1,6 @@
 package org.motechproject.server.messagecampaign.service;
 
+import org.joda.time.DateTime;
 import org.motechproject.builder.CronJobExpressionBuilder;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
@@ -13,7 +14,6 @@ import org.motechproject.server.messagecampaign.domain.Campaign;
 import org.motechproject.server.messagecampaign.domain.CampaignMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -38,31 +38,29 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
 
         for (CampaignMessage message : campaign.getMessages()) {
             String jobId = campaign.getName() + "_" + message.getName() + "_" + enrollRequest.externalId();
-            scheduleJob(jobId, enrollRequest.externalId(), campaign.getName(), message);
+
+            scheduleJob(jobId, enrollRequest.externalId(), campaign.getName(), enrollRequest.reminderTime(), message.date());
         }
     }
 
-    private void scheduleJob(String jobId, String externalId, String campaignName, CampaignMessage message) {
+    private void scheduleJob(String jobId, String externalId, String campaignName, Time startTime, Date date) {
         HashMap params = new SchedulerPayloadBuilder()
                 .withJobId(jobId)
                 .withCampaignName(campaignName)
                 .withExternalId(externalId)
                 .payload();
 
-        Time startTime = time(message.date());
-
         String cronJobExpression = new CronJobExpressionBuilder(startTime,
                 REPEAT_WINDOW_IN_HOURS, REPEAT_INTERVAL_IN_MINUTES).build();
 
         MotechEvent motechEvent = new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_EVENT_SUBJECT, params);
 
-        CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, message.date(), null);
+        CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, date, null);
         schedulerService.scheduleJob(schedulableJob);
     }
 
     private Time time(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        return new Time(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.HOUR_OF_DAY));
+        DateTime dateTime = new DateTime(date);
+        return new Time(dateTime.hourOfDay().get(), dateTime.minuteOfDay().get());
     }
 }
