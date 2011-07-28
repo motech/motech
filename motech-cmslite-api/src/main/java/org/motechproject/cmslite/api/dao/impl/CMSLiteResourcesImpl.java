@@ -17,7 +17,6 @@ public class CMSLiteResourcesImpl extends MotechAuditableRepository<Resource> im
 
     protected CMSLiteResourcesImpl(@Qualifier("cmsLiteDatabase") CouchDbConnector db) {
         super(Resource.class, db);
-        initStandardDesignDocument();
     }
 
     @View(name = "by_name_and_language", map = "function(doc) { if (doc.type=='RESOURCE') { emit([doc.name, doc.language], doc); } }")

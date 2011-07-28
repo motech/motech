@@ -20,7 +20,6 @@ public class PillReminderCouchDBDaoImpl extends MotechAuditableRepository<PillRe
 	@Autowired
 	public PillReminderCouchDBDaoImpl( @Qualifier("pillReminderDatabase") CouchDbConnector db) {
 		super(PillReminder.class, db);
-		initStandardDesignDocument();
 	}
 
 	@Override

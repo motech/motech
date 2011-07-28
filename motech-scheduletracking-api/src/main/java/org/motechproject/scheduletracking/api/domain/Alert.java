@@ -2,14 +2,9 @@ package org.motechproject.scheduletracking.api.domain;
 
 import org.motechproject.valueobjects.WallTime;
 
-public class Alert {
-    private WallTime startOffset;
-    private WallTime interval;
-    private int totalCount;
+import java.util.Dictionary;
 
-    public Alert(WallTime startOffset, WallTime interval, int totalCount) {
-        this.startOffset = startOffset;
-        this.interval = interval;
-        this.totalCount = totalCount;
-    }
+public class Alert {
+    private WallTime wallTime;
+    private Dictionary data;
 }

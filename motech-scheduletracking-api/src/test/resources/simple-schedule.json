@@ -1,5 +1,5 @@
 [{
-    Name : "IPTI Schedule",
+    "name" : "IPTI Schedule",
     Milestones : [
         {
             Name : "IPTI 1",
@@ -9,6 +9,9 @@
                 Due : "14 Weeks",
                 Late : "16 Weeks",
                 Max : ""
+            },
+            Data : {
+                Foo : "Bar"
             },
             Alerts : [{
                     Window : "Late",
@@ -23,6 +26,19 @@
                     Count : "51"
                 }
             ]
+        },
+        {
+            Name : "IPTI 2",
+            ReferenceDate : "IPTI 1",
+            scheduleWindows : {
+                Earliest : "1 Weeks",
+                Due : "2 Weeks",
+                Late : "3 Weeks",
+                Max : ""
+            },
+            Data : {
+                Foo : "Bar"
+            }
         }
     ]
 }]

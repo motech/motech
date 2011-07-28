@@ -49,7 +49,6 @@ public class RemindersCouchDBDAOImpl extends MotechAuditableRepository<Reminder>
     @Autowired
     public RemindersCouchDBDAOImpl(@Qualifier("appointmentsDatabase") CouchDbConnector db) {
         super(Reminder.class, db);
-        initStandardDesignDocument();
     }
 
     @Override

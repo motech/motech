@@ -18,4 +18,8 @@ public class Schedule {
     public void addMilestone(Milestone milestone) {
         milestones.add(milestone);
     }
+
+    public List<Alert> alerts(String enroledInMilestone, int enroledAt) {
+        return null;
+    }
 }

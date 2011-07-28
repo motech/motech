@@ -48,7 +48,6 @@ public class AppointmentsCouchDBDAOImpl extends MotechAuditableRepository<Appoin
     @Autowired
     public AppointmentsCouchDBDAOImpl(@Qualifier("appointmentsDatabase") CouchDbConnector db) {
         super(Appointment.class, db);
-        initStandardDesignDocument();
     }
 
     @Override

@@ -49,7 +49,6 @@ public class VisitsCouchDBDAOImpl extends MotechAuditableRepository<Visit> imple
     @Autowired
     public VisitsCouchDBDAOImpl(@Qualifier("appointmentsDatabase") CouchDbConnector db) {
         super(Visit.class, db);
-        initStandardDesignDocument();
     }
 
     @Override

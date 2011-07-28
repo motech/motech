@@ -52,6 +52,7 @@ public abstract class MotechAuditableRepository<T extends MotechAuditableDataObj
     protected MotechAuditableRepository(Class<T> type, CouchDbConnector db) {
         super(type, db);
         this.type = type;
+        initStandardDesignDocument();
     }
 
     @Override

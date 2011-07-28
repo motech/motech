@@ -1,6 +1,8 @@
 package org.motechproject.scheduletracking.api.userspecified;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.List;
 
 public class MilestoneRecord {
@@ -8,6 +10,7 @@ public class MilestoneRecord {
     private String referenceDate;
     private ScheduleWindowsRecord scheduleWindowsRecord;
     private List<AlertRecord> alerts = new ArrayList<AlertRecord>();
+    private Dictionary<String, String> data = new Hashtable<String, String>();
 
     public MilestoneRecord() {
     }

@@ -17,7 +17,6 @@ public class AllPillRegimens extends MotechAuditableRepository<PillRegimen> {
     @Autowired
     public AllPillRegimens(@Qualifier("pillReminderDatabase") CouchDbConnector db) {
         super(PillRegimen.class, db);
-        initStandardDesignDocument();
     }
 
     @View(name = "findByExternalId", map = "function(doc) {if (doc.type == 'PILLREGIMEN' && doc.externalId) {emit(doc.externalId, doc._id);}}")

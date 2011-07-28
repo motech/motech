@@ -9,14 +9,14 @@ public class MilestoneWindow {
     private WallTime begin;
     private WallTime end;
 
-    private List<Alert> alerts = new ArrayList<Alert>();
+    private List<AlertConfiguration> alertConfigurations = new ArrayList<AlertConfiguration>();
 
     public MilestoneWindow(WallTime begin, WallTime end) {
         this.begin = begin;
         this.end = end;
     }
 
-    public void addAlert(Alert alert) {
-        alerts.add(alert);
+    public void addAlert(AlertConfiguration alertConfiguration) {
+        alertConfigurations.add(alertConfiguration);
     }
 }

@@ -64,7 +64,6 @@ public class OutboundVoiceMessageDaoImpl extends
 	@Autowired
 	protected OutboundVoiceMessageDaoImpl( @Qualifier("outboxDatabase") CouchDbConnector db) {
 		super(OutboundVoiceMessage.class, db);
-		initStandardDesignDocument();
 	}
 	
 	private List<OutboundVoiceMessage> getMessages(String view, String partyId) {

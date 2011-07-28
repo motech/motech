@@ -53,7 +53,6 @@ public class TreeDaoImpl extends MotechAuditableRepository<Tree> implements
 	@Autowired
 	protected TreeDaoImpl(@Qualifier("treesDatabase") CouchDbConnector db) {
 		super(Tree.class, db);
-		initStandardDesignDocument();		
 	}
 
 	@Override

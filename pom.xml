@@ -64,8 +64,6 @@
         <module>motech-outbox-api</module>
         <module>motech-appointments</module>
         <module>motech-appointments-api</module>
-        <module>tama</module>
-        <module>tama-api</module>
         <module>motech-platform-decisiontree</module>
         <module>motech-platform-decisiontree-common</module>
         <module>motech-pillreminder</module>
