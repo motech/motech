@@ -3,6 +3,7 @@ package org.motechproject.server.messagecampaign.service;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.motechproject.dao.MotechJsonReader;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.Campaign;
 import org.motechproject.server.messagecampaign.domain.CampaignMessage;
@@ -20,7 +21,8 @@ public class AllMessageCampaignsTest {
     public void setup() {
         Properties properties = new Properties();
         properties.setProperty("messagecampaign.definition.file", "simple-message-campaign.json");
-        allMessageCampaigns = new AllMessageCampaigns(properties);
+        MotechJsonReader motechJsonReader = new MotechJsonReader();
+        allMessageCampaigns = new AllMessageCampaigns(properties, motechJsonReader);
     }
 
     @Test
