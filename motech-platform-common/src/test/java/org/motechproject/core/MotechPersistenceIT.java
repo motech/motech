@@ -224,6 +224,7 @@ class ActorRepository extends CouchDbRepositorySupport<Actor> {
     @Autowired
     public ActorRepository(@Qualifier("actorDatabase") CouchDbConnector db) {
         super(Actor.class, db);
+        initStandardDesignDocument();
     }
 
     @GenerateView
