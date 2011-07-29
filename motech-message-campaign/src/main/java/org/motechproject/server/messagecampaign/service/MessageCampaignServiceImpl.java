@@ -2,8 +2,8 @@ package org.motechproject.server.messagecampaign.service;
 
 import org.motechproject.server.messagecampaign.contract.EnrollRequest;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
-import org.motechproject.server.messagecampaign.domain.Campaign;
-import org.motechproject.server.messagecampaign.domain.CampaignMessage;
+import org.motechproject.server.messagecampaign.domain.campaign.AbsoluteCampaign;
+import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.domain.MessageCampaignException;
 import org.motechproject.server.messagecampaign.scheduler.MessageCampaignScheduler;
 import org.motechproject.server.messagecampaign.scheduler.MessageCampaignSchedulerFactory;
@@ -21,13 +21,12 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
         this.schedulerFactory = schedulerFactory;
     }
 
-    @Override
     public void enroll(EnrollRequest enrollRequest) {
-        Campaign campaign = allMessageCampaigns.get(enrollRequest.campaignName());
+        AbsoluteCampaign campaign = (AbsoluteCampaign) allMessageCampaigns.get(enrollRequest.campaignName());
 
         if(campaign == null) throw new MessageCampaignException("No campaign by name : "+enrollRequest.campaignName());
 
-        for (CampaignMessage message : campaign.getMessages()) {
+        for (CampaignMessage message : campaign.messages()) {
             MessageCampaignScheduler scheduler = schedulerFactory.scheduler(enrollRequest);
             scheduler.scheduleJob(campaign, message);
         }

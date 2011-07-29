@@ -1,6 +1,5 @@
-package org.motechproject.server.messagecampaign.domain;
+package org.motechproject.server.messagecampaign.domain.message;
 
-import java.util.Date;
 import java.util.List;
 
 public class CampaignMessage {
@@ -9,10 +8,6 @@ public class CampaignMessage {
     private List<String> languages;
     private String messageKey;
 
-    //for absolute programs
-    private Date date;
-    //for simple relative programs
-    private String timeOffset;
     //for parameterized relative programs
     private String repeatInterval;
     //for cron based programs
@@ -34,19 +29,35 @@ public class CampaignMessage {
         return messageKey;
     }
 
-    public String timeOffset() {
-        return timeOffset;
-    }
-
-    public Date date() {
-        return this.date;
-    }
-
     public String repeatInterval() {
         return this.repeatInterval;
     }
 
     public String cron() {
         return cron;
+    }
+
+    public void name(String name) {
+        this.name = name;
+    }
+
+    public void formats(List<String> formats) {
+        this.formats = formats;
+    }
+
+    public void languages(List<String> languages) {
+        this.languages = languages;
+    }
+
+    public void messageKey(String messageKey) {
+        this.messageKey = messageKey;
+    }
+
+    public void repeatInterval(String repeatInterval) {
+        this.repeatInterval = repeatInterval;
+    }
+
+    public void cron(String cron) {
+        this.cron = cron;
     }
 }

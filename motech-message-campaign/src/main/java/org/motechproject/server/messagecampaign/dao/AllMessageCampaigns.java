@@ -2,7 +2,8 @@ package org.motechproject.server.messagecampaign.dao;
 
 import com.google.gson.reflect.TypeToken;
 import org.motechproject.dao.MotechJsonReader;
-import org.motechproject.server.messagecampaign.domain.Campaign;
+import org.motechproject.server.messagecampaign.builder.CampaignBuilder;
+import org.motechproject.server.messagecampaign.domain.campaign.Campaign;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -24,12 +25,12 @@ public class AllMessageCampaigns {
     }
 
     public Campaign get(String name) {
-        List<Campaign> campaigns =
-                (List<Campaign>) motechJsonReader.readFromFile(definitionFile(),
-                new TypeToken<List<Campaign>>() {}.getType());
+        List<CampaignBuilder> campaigns =
+                (List<CampaignBuilder>) motechJsonReader.readFromFile(definitionFile(),
+                new TypeToken<List<CampaignBuilder>>() {}.getType());
 
-        for (Campaign campaign : campaigns) {
-            if (campaign.getName().equals(name)) return campaign;
+        for (CampaignBuilder campaign : campaigns) {
+            if (campaign.name().equals(name)) return campaign.build();
         }
         return null;
     }

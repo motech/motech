@@ -5,8 +5,9 @@ import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.builder.SchedulerPayloadBuilder;
 import org.motechproject.server.messagecampaign.contract.EnrollForRelativeProgramRequest;
-import org.motechproject.server.messagecampaign.domain.Campaign;
-import org.motechproject.server.messagecampaign.domain.CampaignMessage;
+import org.motechproject.server.messagecampaign.domain.campaign.Campaign;
+import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
+import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
 import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.factory.WallTimeFactory;
 
@@ -24,21 +25,24 @@ public class RelativeProgramScheduler extends MessageCampaignScheduler {
 
     @Override
     public void scheduleJob(Campaign campaign, CampaignMessage message) {
+
+        OffsetCampaignMessage offsetCampaignMessage = (OffsetCampaignMessage) message;
+
         Date referenceDate = enrollRequest.referenceDate();
         Time reminderTime = enrollRequest.reminderTime();
 
         if (messageHasRepeatInterval(message)) {
-            scheduleRepeatingJobs(message.repeatInterval(), campaign.maxDuration(), message, campaign.getName());
+            scheduleRepeatingJobs(message.repeatInterval(), campaign.maxDuration(), message, campaign.name());
         } else {
-            String jobId = campaign.getName() + "_" + message.name() + "_" + enrollRequest.externalId();
+            String jobId = campaign.name() + "_" + message.name() + "_" + enrollRequest.externalId();
 
             HashMap jobParams = new SchedulerPayloadBuilder()
                     .withJobId(jobId)
-                    .withCampaignName(campaign.getName())
+                    .withCampaignName(campaign.name())
                     .withExternalId(enrollRequest.externalId())
                     .payload();
 
-            Date jobDate = jobDate(referenceDate, message.timeOffset());
+            Date jobDate = jobDate(referenceDate, offsetCampaignMessage.timeOffset());
             scheduleJobOn(reminderTime, jobDate, jobParams);
         }
     }
