@@ -98,12 +98,17 @@ public class Tree extends MotechAuditableDataObject {
         return result;
     }
 
-    public Node nextNode(String currentPosition, String userInput) {
-        return nextNodeInfo(currentPosition, userInput).node();
+    public NodeInfo currentNodeInfo(String currentPosition) {
+        Node node = new TreeNodeLocator().findNode(this, currentPosition);
+        return new NodeInfo(currentPosition, node);
     }
 
-    public NodeInfo nextNodeInfo(String currentPosition, String userInput) {
-        String path = String.format("%s/%s", currentPosition, userInput);
+    public Node nextNode(String currentPosition, String transitionInput) {
+        return nextNodeInfo(currentPosition, transitionInput).node();
+    }
+
+    public NodeInfo nextNodeInfo(String currentPosition, String transitionInput) {
+        String path = String.format("%s/%s", currentPosition, transitionInput);
         Node node = new TreeNodeLocator().findNode(this, path);
         return new NodeInfo(path, node);
     }

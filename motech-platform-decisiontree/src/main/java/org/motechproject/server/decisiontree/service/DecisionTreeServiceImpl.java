@@ -17,10 +17,14 @@ public class DecisionTreeServiceImpl implements DecisionTreeService {
 
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
 
-    @Autowired
     TreeDao treeDao;
-    @Autowired
     TreeNodeLocator treeNodeLocator;
+
+    @Autowired
+    public DecisionTreeServiceImpl(TreeDao treeDao, TreeNodeLocator treeNodeLocator) {
+        this.treeDao = treeDao;
+        this.treeNodeLocator = treeNodeLocator;
+    }
 
     @Override
     public Node getNode(String treeName, String path) {

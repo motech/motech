@@ -4,36 +4,50 @@ package org.motechproject.server.decisiontree.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.motechproject.decisiontree.dao.TreeDao;
 import org.motechproject.decisiontree.model.ITreeCommand;
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.decisiontree.model.Tree;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.motechproject.server.decisiontree.TreeNodeLocator;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Arrays;
+
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/applicationDecisionTree.xml"})
 public class DecisionTreeServiceTest {
 
-    @Autowired
+    @Mock
+    private TreeDao treeDao;
+
+    @Mock
+    private TreeNodeLocator treeNodeLocator;
+
     private DecisionTreeService decisionTreeService;
 
     private Tree pillReminderTree;
+    private Node rootNode;
+    private Node nextNode;
 
     @Before
     public void SetUp() {
-        Node rootNode = Node.newBuilder()
+        initMocks(this);
+        nextNode = Node.newBuilder()
+                .setTreeCommand(new NextCommand())
+                .build();
+        rootNode = Node.newBuilder()
                 .setTreeCommand(new RootNodeCommand())
                 .setTransitions(new Object[][]{
                         {"1", Transition.newBuilder()
                                 .setName("pillTakenOnTime")
-                                .setDestinationNode(
-                                        Node.newBuilder()
-                                                .setTreeCommand(new NextCommand())
-                                                .build())
+                                .setDestinationNode(nextNode)
                                 .build()
                         }
                 })
@@ -44,27 +58,27 @@ public class DecisionTreeServiceTest {
                 .setRootNode(rootNode)
                 .build();
 
-        pillReminderTree = Tree.newBuilder()
-                .setName("PillReminderTree")
-                .setRootNode(rootNode)
-                .build();
+        when(treeDao.findByName(pillReminderTree.getName())).thenReturn(Arrays.asList(pillReminderTree));
+        decisionTreeService = new DecisionTreeServiceImpl(treeDao, treeNodeLocator);
     }
 
     @Test
     public void shouldFetchCommandForRootNode () {
-        Node nextNode = decisionTreeService.getNode("", "");
+        when(treeNodeLocator.findNode(pillReminderTree, "")).thenReturn(rootNode);
+        Node nextNode = decisionTreeService.getNode(pillReminderTree.getName(), "");
         assertEquals(RootNodeCommand.class, nextNode.getTreeCommand().getClass());
     }
 
     @Test
     public void shouldFetchNextCommand() {
-        Node nextNode = decisionTreeService.getNode("/", "1");
+        when(treeNodeLocator.findNode(pillReminderTree, "/1")).thenReturn(nextNode);
+        Node nextNode = decisionTreeService.getNode(pillReminderTree.getName(), "/1");
         assertEquals(NextCommand.class, nextNode.getTreeCommand().getClass());
     }
 
     private class RootNodeCommand implements ITreeCommand {
         @Override
-        public String execute(Object obj) {
+        public String[] execute(Object obj) {
             return null;
         }
     }
@@ -72,7 +86,7 @@ public class DecisionTreeServiceTest {
     private class NextCommand implements ITreeCommand {
 
         @Override
-        public String execute(Object obj) {
+        public String[] execute(Object obj) {
             return null;
         }
     }

@@ -37,12 +37,18 @@ public abstract class Prompt {
         return name;
     }
 
-    public void setName(String name) {
+    public Prompt setName(String name) {
         this.name = name;
+        return this;
     }
 
     public ITreeCommand getCommand() {
         return command;
+    }
+
+    public Prompt setCommand(ITreeCommand command) {
+        this.command = command;
+        return this;
     }
 
     @Override

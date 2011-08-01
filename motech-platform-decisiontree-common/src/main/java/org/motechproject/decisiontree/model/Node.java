@@ -1,6 +1,7 @@
 package org.motechproject.decisiontree.model;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,7 +17,7 @@ public class Node {
     private List<Action> actionsAfter;
     private List<Prompt> prompts;
     private Map<String, Transition> transitions;
-    private ITreeCommand treeCommand;
+    private ITreeCommand treeCommand = new NullTreeCommand();
 
     public static class Builder {
     	private Node obj;
@@ -49,6 +50,11 @@ public class Node {
 	    @SuppressWarnings("unchecked")
 		public Builder setTransitions(Object[][] transitions) {
 	    	obj.transitions = ArrayUtils.toMap(transitions);
+	    	return this;
+	    }
+
+        public Builder setTransitions(Map<String, Transition> transitions) {
+	    	obj.transitions = transitions;
 	    	return this;
 	    }
     }
@@ -89,6 +95,7 @@ public class Node {
         this.transitions = transitions;
     }
 
+    @JsonIgnore
     public ITreeCommand getTreeCommand() {
         return treeCommand;
     }
@@ -104,8 +111,9 @@ public class Node {
         transitions.put(transitionKey, transition);
     }
 
+    @JsonIgnore
     public boolean hasTransitions() {
-        return !transitions.isEmpty();
+        return transitions != null && !transitions.isEmpty();
     }
 
     @Override
