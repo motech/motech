@@ -1,9 +1,18 @@
 package org.motechproject.server.messagecampaign.domain.campaign;
 
-public class Campaign {
+import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
+
+import java.util.List;
+
+public abstract class Campaign<T extends CampaignMessage> {
 
     private String name;
-    private String maxDuration;
+
+
+
+    private CampaignType type;
+
+    private List<CampaignMessage> messages;
 
     public void name(String name) {
         this.name = name;
@@ -13,12 +22,21 @@ public class Campaign {
         return name;
     }
 
-    public String maxDuration() {
-        return maxDuration;
-    }
+
 
     public CampaignType type() {
-        return CampaignType.ABSOLUTE;
+        return type;
     }
 
+    public abstract void messages(List<T> messages);
+
+    public abstract List<T> messages();
+
+    public void type(CampaignType type) {
+        this.type = type;
+    }
+
+    public void addMessage(CampaignMessage message){
+        messages.add(message);
+    }
 }

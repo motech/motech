@@ -5,6 +5,7 @@ import org.motechproject.server.messagecampaign.contract.EnrollForAbsoluteProgra
 import org.motechproject.server.messagecampaign.contract.EnrollForCronBasedProgramRequest;
 import org.motechproject.server.messagecampaign.contract.EnrollForRelativeProgramRequest;
 import org.motechproject.server.messagecampaign.contract.EnrollRequest;
+import org.motechproject.server.messagecampaign.domain.campaign.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class MessageCampaignSchedulerFactory {
@@ -16,13 +17,15 @@ public class MessageCampaignSchedulerFactory {
         this.schedulerService = schedulerService;
     }
 
-    public MessageCampaignScheduler scheduler(EnrollRequest enrollRequest) {
-        if(enrollRequest.getClass().equals(EnrollForAbsoluteProgramRequest.class))
-            return new AbsoluteProgramScheduler(schedulerService, (EnrollForAbsoluteProgramRequest) enrollRequest);
-        else if(enrollRequest.getClass().equals(EnrollForRelativeProgramRequest.class))
-            return new RelativeProgramScheduler(schedulerService, (EnrollForRelativeProgramRequest) enrollRequest);
-        else if(enrollRequest.getClass().equals(EnrollForCronBasedProgramRequest.class))
-            return new CronBasedProgramScheduler(schedulerService, (EnrollForCronBasedProgramRequest) enrollRequest);
+    public MessageCampaignScheduler scheduler(EnrollRequest enrollRequest, Campaign campaign) {
+        if(campaign.getClass().equals(AbsoluteCampaign.class))
+            return new AbsoluteProgramScheduler(schedulerService, (EnrollForAbsoluteProgramRequest) enrollRequest, (AbsoluteCampaign) campaign);
+        else if(campaign.getClass().equals(OffsetCampaign.class))
+            return new OffsetProgramScheduler(schedulerService, (EnrollForRelativeProgramRequest) enrollRequest, (OffsetCampaign) campaign);
+        else if(campaign.getClass().equals(RepeatingCampaign.class))
+            return new RepeatingProgramScheduler(schedulerService, (EnrollForRelativeProgramRequest) enrollRequest, (RepeatingCampaign) campaign);
+        else if(campaign.getClass().equals(CronBasedCampaign.class))
+            return new CronBasedProgramScheduler(schedulerService, (EnrollForCronBasedProgramRequest) enrollRequest, (CronBasedCampaign) campaign);
         return null;
     }
 }

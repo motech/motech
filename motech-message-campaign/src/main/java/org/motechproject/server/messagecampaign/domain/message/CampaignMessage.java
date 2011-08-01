@@ -8,11 +8,6 @@ public class CampaignMessage {
     private List<String> languages;
     private String messageKey;
 
-    //for parameterized relative programs
-    private String repeatInterval;
-    //for cron based programs
-    private String cron;
-
     public String name() {
         return name;
     }
@@ -29,14 +24,6 @@ public class CampaignMessage {
         return messageKey;
     }
 
-    public String repeatInterval() {
-        return this.repeatInterval;
-    }
-
-    public String cron() {
-        return cron;
-    }
-
     public void name(String name) {
         this.name = name;
     }
@@ -51,13 +38,5 @@ public class CampaignMessage {
 
     public void messageKey(String messageKey) {
         this.messageKey = messageKey;
-    }
-
-    public void repeatInterval(String repeatInterval) {
-        this.repeatInterval = repeatInterval;
-    }
-
-    public void cron(String cron) {
-        this.cron = cron;
     }
 }

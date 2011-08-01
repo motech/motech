@@ -4,16 +4,17 @@ import org.motechproject.server.messagecampaign.domain.message.AbsoluteCampaignM
 
 import java.util.List;
 
-public class AbsoluteCampaign extends Campaign {
+public class AbsoluteCampaign extends Campaign<AbsoluteCampaignMessage> {
 
     protected List<AbsoluteCampaignMessage> messages;
 
+    @Override
     public List<AbsoluteCampaignMessage> messages() {
         return this.messages;
     }
 
+    @Override
     public void messages(List<AbsoluteCampaignMessage> messages) {
         this.messages = messages;
     }
-
 }

@@ -6,7 +6,6 @@ import org.motechproject.model.MotechEvent;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.EventKeys;
-import org.motechproject.server.messagecampaign.domain.campaign.Campaign;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 
 import java.util.Date;
@@ -18,7 +17,7 @@ public abstract class MessageCampaignScheduler {
 
     protected MotechSchedulerService schedulerService;
 
-    public abstract void scheduleJob(Campaign campaign, CampaignMessage message);
+    public abstract void scheduleJob(CampaignMessage message);
 
     public void scheduleJobOn(Time startTime, Date startDate, Map<String, Object> params) {
 
