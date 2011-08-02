@@ -6,7 +6,6 @@ import org.motechproject.model.MotechEvent;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.EventKeys;
-import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 
 import java.util.Date;
 import java.util.Map;

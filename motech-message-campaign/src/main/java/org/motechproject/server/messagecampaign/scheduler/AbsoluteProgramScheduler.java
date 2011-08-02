@@ -1,6 +1,7 @@
 package org.motechproject.server.messagecampaign.scheduler;
 
 import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.builder.SchedulerPayloadBuilder;
 import org.motechproject.server.messagecampaign.contract.EnrollRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.AbsoluteCampaign;
@@ -21,11 +22,12 @@ public class AbsoluteProgramScheduler extends MessageCampaignScheduler {
     }
 
     private void scheduleJob(AbsoluteCampaignMessage message) {
-        String jobId = campaign + "_" + message.name() + "_" + enrollRequest.externalId();
+        String jobId = EventKeys.BASE_SUBJECT + campaign.name() + "." + message.name() + "." + enrollRequest.externalId();
 
         HashMap params = new SchedulerPayloadBuilder()
                 .withJobId(jobId)
                 .withCampaignName(campaign.name())
+                .withMessageKey(message.messageKey())
                 .withExternalId(enrollRequest.externalId())
                 .payload();
 

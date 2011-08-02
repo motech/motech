@@ -3,6 +3,7 @@ package org.motechproject.server.messagecampaign.scheduler;
 import org.joda.time.DateTime;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.builder.SchedulerPayloadBuilder;
 import org.motechproject.server.messagecampaign.contract.EnrollRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.OffsetCampaign;
@@ -28,12 +29,13 @@ public class OffsetProgramScheduler extends MessageCampaignScheduler {
         Date referenceDate = enrollRequest.referenceDate();
         Time reminderTime = enrollRequest.reminderTime();
 
-        String jobId = campaign.name() + "_" + message.name() + "_" + enrollRequest.externalId();
+        String jobId = EventKeys.BASE_SUBJECT + campaign.name() + "." + message.name() + "." + enrollRequest.externalId();
 
         HashMap jobParams = new SchedulerPayloadBuilder()
                 .withJobId(jobId)
                 .withCampaignName(campaign.name())
                 .withExternalId(enrollRequest.externalId())
+                .withMessageKey(message.messageKey())
                 .payload();
 
         Date jobDate = jobDate(referenceDate, message.timeOffset());

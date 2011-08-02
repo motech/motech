@@ -1,8 +1,8 @@
 package org.motechproject.server.messagecampaign.userspecified;
 
 import org.junit.Test;
-import org.motechproject.server.messagecampaign.builder.CampaignBuilder;
-import org.motechproject.server.messagecampaign.builder.CampaignMessageBuilder;
+import org.motechproject.server.messagecampaign.builder.CampaignRecordBuilder;
+import org.motechproject.server.messagecampaign.builder.CampaignMessageRecordBuilder;
 import org.motechproject.server.messagecampaign.domain.campaign.*;
 import org.motechproject.server.messagecampaign.domain.message.AbsoluteCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
@@ -22,8 +22,8 @@ public class CampaignRecordTest {
 
     @Test
     public void testBuildAbsoluteCampaign() {
-        messageRecord = CampaignMessageBuilder.createAbsoluteCampaignMessageRecord("Message 1", "message-key");
-        campaignRecord = CampaignBuilder.absoluteCampaignRecord("Campaign 1", messageRecord);
+        messageRecord = CampaignMessageRecordBuilder.createAbsoluteCampaignMessageRecord("Message 1", "message-key");
+        campaignRecord = CampaignRecordBuilder.absoluteCampaignRecord("Campaign 1", messageRecord);
 
         Campaign campaign =  campaignRecord.build();
         assertTrue(campaign instanceof AbsoluteCampaign);
@@ -43,8 +43,8 @@ public class CampaignRecordTest {
 
     @Test
     public void testBuildOffsetCampaign() {
-        messageRecord = CampaignMessageBuilder.createOffsetCampaignMessageRecord("Message 1", "message-key");
-        campaignRecord = CampaignBuilder.offsetCampaignRecord("Campaign 1", messageRecord);
+        messageRecord = CampaignMessageRecordBuilder.createOffsetCampaignMessageRecord("Message 1", "message-key");
+        campaignRecord = CampaignRecordBuilder.offsetCampaignRecord("Campaign 1", messageRecord);
 
         Campaign campaign = campaignRecord.build();
         assertTrue(campaign instanceof OffsetCampaign);
@@ -66,8 +66,8 @@ public class CampaignRecordTest {
 
     @Test
     public void testBuildRepeatingCampaign() {
-        messageRecord = CampaignMessageBuilder.createRepeatingCampaignMessageRecord("Message 1", "message-key");
-        campaignRecord = CampaignBuilder.repeatingCampaignRecord("Campaign 1", messageRecord);
+        messageRecord = CampaignMessageRecordBuilder.createRepeatingCampaignMessageRecord("Message 1", "message-key");
+        campaignRecord = CampaignRecordBuilder.repeatingCampaignRecord("Campaign 1", messageRecord);
 
         Campaign campaign = campaignRecord.build();
         assertTrue(campaign instanceof RepeatingCampaign);
@@ -89,8 +89,8 @@ public class CampaignRecordTest {
 
     @Test
     public void testBuildCronBasedCampaign() {
-        messageRecord = CampaignMessageBuilder.createCronBasedCampaignMessageRecord("Message 1", "message-key");
-        campaignRecord = CampaignBuilder.cronBasedCampaignRecord("Campaign 1", messageRecord);
+        messageRecord = CampaignMessageRecordBuilder.createCronBasedCampaignMessageRecord("Message 1", "message-key");
+        campaignRecord = CampaignRecordBuilder.cronBasedCampaignRecord("Campaign 1", messageRecord);
 
         Campaign campaign = campaignRecord.build();
         assertTrue(campaign instanceof CronBasedCampaign);

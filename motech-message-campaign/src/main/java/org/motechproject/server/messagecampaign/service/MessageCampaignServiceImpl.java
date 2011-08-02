@@ -30,6 +30,5 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
         MessageCampaignScheduler scheduler = schedulerFactory.scheduler(enrollRequest, campaign);
 
         scheduler.scheduleJobs();
-
     }
 }

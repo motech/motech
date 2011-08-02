@@ -1,44 +1,43 @@
 package org.motechproject.server.messagecampaign.builder;
 
-import org.motechproject.server.messagecampaign.userspecified.CampaignMessageRecord;
+import org.motechproject.server.messagecampaign.domain.message.AbsoluteCampaignMessage;
+import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
+import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
+import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 public class CampaignMessageBuilder {
-    private static ArrayList<String> formats = new ArrayList<String>() {{
-        add("SMS");
-        add("IVR");
-    }};
 
-    private static ArrayList<String> languages = new ArrayList<String>() {{
-        add("en");
-        add("gh");
-    }};
-
-    public static CampaignMessageRecord createAbsoluteCampaignMessageRecord(String name, String messageKey) {
-        CampaignMessageRecord campaignMessageRecord = createCampaignMessageRecord(name, messageKey);
-        campaignMessageRecord.date(new Date());
-        return campaignMessageRecord;
+    public AbsoluteCampaignMessage absoluteCampaignMessage(String name, Date date, String messageKey) {
+        AbsoluteCampaignMessage absoluteCampaignMessage = new AbsoluteCampaignMessage();
+        absoluteCampaignMessage.name(name);
+        absoluteCampaignMessage.date(date);
+        absoluteCampaignMessage.messageKey(messageKey);
+        return absoluteCampaignMessage;
     }
 
-    public static CampaignMessageRecord createOffsetCampaignMessageRecord(String name, String messageKey) {
-        CampaignMessageRecord campaignMessageRecord = createCampaignMessageRecord(name, messageKey);
-        campaignMessageRecord.timeOffset("1 Week");
-        return campaignMessageRecord;
+    public CronBasedCampaignMessage cronBasedCampaignMessage(String name, String cron, String messageKey) {
+        CronBasedCampaignMessage cronBasedCampaignMessage = new CronBasedCampaignMessage();
+        cronBasedCampaignMessage.name(name);
+        cronBasedCampaignMessage.cron(cron);
+        cronBasedCampaignMessage.messageKey(messageKey);
+        return cronBasedCampaignMessage;
     }
 
-    private static CampaignMessageRecord createCampaignMessageRecord(String name, String messageKey) {
-        return new CampaignMessageRecord().name(name).formats(formats).languages(languages).messageKey(messageKey);
+    public OffsetCampaignMessage offsetCampaignMessage(String name, String timeOffset, String messageKey) {
+        OffsetCampaignMessage offsetCampaignMessage = new OffsetCampaignMessage();
+        offsetCampaignMessage.name(name);
+        offsetCampaignMessage.timeOffset(timeOffset);
+        offsetCampaignMessage.messageKey(messageKey);
+        return offsetCampaignMessage;
     }
 
-    public static CampaignMessageRecord createRepeatingCampaignMessageRecord(String name, String messageKey) {
-        return createOffsetCampaignMessageRecord(name, messageKey);
-    }
-
-    public static CampaignMessageRecord createCronBasedCampaignMessageRecord(String name, String messageKey) {
-        CampaignMessageRecord campaignMessageRecord = createCampaignMessageRecord(name, messageKey);
-        campaignMessageRecord.cron("0 11 11 11 11 ?");
-        return campaignMessageRecord;
+    public RepeatingCampaignMessage repeatingCampaignMessage(String name, String repeatInterval, String messageKey) {
+        RepeatingCampaignMessage repeatingCampaignMessage = new RepeatingCampaignMessage();
+        repeatingCampaignMessage.name(name);
+        repeatingCampaignMessage.repeatInterval(repeatInterval);
+        repeatingCampaignMessage.messageKey(messageKey);
+        return repeatingCampaignMessage;
     }
 }
