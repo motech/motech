@@ -4,7 +4,6 @@ import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.builder.SchedulerPayloadBuilder;
 import org.motechproject.server.messagecampaign.contract.EnrollForCronBasedProgramRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.CronBasedCampaign;
-import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
 
 import java.util.HashMap;
@@ -20,8 +19,7 @@ public class CronBasedProgramScheduler extends MessageCampaignScheduler {
         this.enrollRequest = enrollRequest;
     }
 
-    @Override
-    public void scheduleJob(CampaignMessage message) {
+    private void scheduleJob(CronBasedCampaignMessage message) {
         String jobId = campaign.name() + "_" + message.name() + "_" + enrollRequest.externalId();
 
         HashMap jobParams = new SchedulerPayloadBuilder()
@@ -30,6 +28,13 @@ public class CronBasedProgramScheduler extends MessageCampaignScheduler {
                 .withExternalId(enrollRequest.externalId())
                 .payload();
 
-        scheduleJobOn(((CronBasedCampaignMessage)message).cron(), enrollRequest.referenceDate(), jobParams);
+        scheduleJobOn(message.cron(), enrollRequest.referenceDate(), jobParams);
+    }
+
+    @Override
+    public void scheduleJobs() {
+        for (CronBasedCampaignMessage message : campaign.messages()) {
+            scheduleJob(message);
+        }
     }
 }

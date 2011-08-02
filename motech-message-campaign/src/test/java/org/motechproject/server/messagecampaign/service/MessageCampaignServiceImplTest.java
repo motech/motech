@@ -53,7 +53,7 @@ public class MessageCampaignServiceImplTest {
         when(schedulerFactory.scheduler(enrollRequest, absoluteCampaign)).thenReturn(mockAbsoluteProgramScheduler);
 
         messageCampaignService.enroll(enrollRequest);
-        verify(mockAbsoluteProgramScheduler, times(1)).scheduleJob(absoluteCampaignMessage);
+        verify(mockAbsoluteProgramScheduler, times(1)).scheduleJobs();
     }
 
 

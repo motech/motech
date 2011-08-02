@@ -23,8 +23,7 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler {
         this.enrollRequest = enrollRequest;
     }
 
-    @Override
-    public void scheduleJob(CampaignMessage message) {
+    private void scheduleJob(CampaignMessage message) {
 
         RepeatingCampaign repeatingCampaign = campaign;
         RepeatingCampaignMessage repeatingCampaignMessage = (RepeatingCampaignMessage) message;
@@ -52,5 +51,13 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler {
             jobDate = jobDate.plusDays(repeatIntervalInDays);
         }
     }
+
+    @Override
+    public void scheduleJobs(){
+        for(RepeatingCampaignMessage repeatingCampaignMessage : campaign.messages()){
+            scheduleJob(repeatingCampaignMessage);
+        }
+    }
+
 
 }

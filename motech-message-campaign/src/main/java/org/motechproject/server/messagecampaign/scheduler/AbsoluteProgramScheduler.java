@@ -5,7 +5,6 @@ import org.motechproject.server.messagecampaign.builder.SchedulerPayloadBuilder;
 import org.motechproject.server.messagecampaign.contract.EnrollForAbsoluteProgramRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.AbsoluteCampaign;
 import org.motechproject.server.messagecampaign.domain.message.AbsoluteCampaignMessage;
-import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 
 import java.util.HashMap;
 
@@ -21,9 +20,7 @@ public class AbsoluteProgramScheduler extends MessageCampaignScheduler {
         this.enrollRequest = request;
     }
 
-    @Override
-    public void scheduleJob(CampaignMessage message) {
-        AbsoluteCampaignMessage absoluteCampaignMessage = (AbsoluteCampaignMessage) message;
+    private void scheduleJob(AbsoluteCampaignMessage message) {
         String jobId = campaign + "_" + message.name() + "_" + enrollRequest.externalId();
 
         HashMap params = new SchedulerPayloadBuilder()
@@ -32,6 +29,13 @@ public class AbsoluteProgramScheduler extends MessageCampaignScheduler {
                 .withExternalId(enrollRequest.externalId())
                 .payload();
 
-        scheduleJobOn(enrollRequest.reminderTime(), absoluteCampaignMessage.date(), params);
+        scheduleJobOn(enrollRequest.reminderTime(), message.date(), params);
+    }
+
+    @Override
+    public void scheduleJobs() {
+        for (AbsoluteCampaignMessage message : campaign.messages()) {
+            scheduleJob(message);
+        }
     }
 }

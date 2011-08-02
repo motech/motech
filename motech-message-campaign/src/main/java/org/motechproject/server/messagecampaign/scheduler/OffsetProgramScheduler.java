@@ -6,7 +6,6 @@ import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.builder.SchedulerPayloadBuilder;
 import org.motechproject.server.messagecampaign.contract.EnrollForRelativeProgramRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.OffsetCampaign;
-import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
 import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.factory.WallTimeFactory;
@@ -25,11 +24,7 @@ public class OffsetProgramScheduler extends MessageCampaignScheduler {
         this.enrollRequest = enrollRequest;
     }
 
-    @Override
-    public void scheduleJob(CampaignMessage message) {
-
-        OffsetCampaignMessage offsetCampaignMessage = (OffsetCampaignMessage) message;
-
+    private void scheduleJob(OffsetCampaignMessage message) {
         Date referenceDate = enrollRequest.referenceDate();
         Time reminderTime = enrollRequest.reminderTime();
 
@@ -41,7 +36,7 @@ public class OffsetProgramScheduler extends MessageCampaignScheduler {
                 .withExternalId(enrollRequest.externalId())
                 .payload();
 
-        Date jobDate = jobDate(referenceDate, offsetCampaignMessage.timeOffset());
+        Date jobDate = jobDate(referenceDate, message.timeOffset());
         scheduleJobOn(reminderTime, jobDate, jobParams);
     }
 
@@ -50,4 +45,12 @@ public class OffsetProgramScheduler extends MessageCampaignScheduler {
         int offSetDays = wallTime.inDays();
         return new DateTime(referenceDate).plusDays(offSetDays).toDate();
     }
+
+    @Override
+    public void scheduleJobs() {
+        for (OffsetCampaignMessage message : campaign.messages()) {
+            scheduleJob(message);
+        }
+    }
+
 }

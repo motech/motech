@@ -29,8 +29,7 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
 
         MessageCampaignScheduler scheduler = schedulerFactory.scheduler(enrollRequest, campaign);
 
-        for ( CampaignMessage message : campaign.messages()) {
-            scheduler.scheduleJob(message);
-        }
+        scheduler.scheduleJobs();
+
     }
 }

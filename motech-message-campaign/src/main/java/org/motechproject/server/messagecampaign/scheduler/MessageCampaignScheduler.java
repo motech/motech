@@ -17,7 +17,7 @@ public abstract class MessageCampaignScheduler {
 
     protected MotechSchedulerService schedulerService;
 
-    public abstract void scheduleJob(CampaignMessage message);
+    public abstract void scheduleJobs();
 
     public void scheduleJobOn(Time startTime, Date startDate, Map<String, Object> params) {
 
@@ -32,9 +32,6 @@ public abstract class MessageCampaignScheduler {
 
         CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, startDate, null);
         schedulerService.scheduleJob(schedulableJob);
-
     }
-
-
 }
 
