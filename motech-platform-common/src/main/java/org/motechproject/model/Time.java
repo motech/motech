@@ -1,10 +1,11 @@
 package org.motechproject.model;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import org.apache.commons.lang.time.DateUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.joda.time.DateTime;
+
+import java.util.Calendar;
+import java.util.Date;
 
 public class Time {
 
@@ -34,7 +35,8 @@ public class Time {
 	public void setMinute(Integer minute) {
 		this.minute = minute;
 	}
-	
+
+    @Deprecated
 	@JsonIgnore
 	public Date getTimeOfDate(Date date){
 		if (hour != null && minute != null) {
@@ -46,6 +48,11 @@ public class Time {
 		} else {
 			return null;
 		}
+	}
+
+	@JsonIgnore
+	public DateTime getDateTime(DateTime today){
+        return new DateTime(today.getYear(), today.getMonthOfYear(), today.getDayOfMonth(), hour, minute, 0, 0);
 	}
 
 	@Override

@@ -80,11 +80,24 @@ public class PillRegimen extends MotechAuditableDataObject {
     }
 
     public Dosage getPreviousDosage(Dosage currentDosage) {
+        List<Dosage> allDosages = getSortedDosages();
+        if (allDosages == null) return null;
+        int currentDosageIndex = allDosages.indexOf(currentDosage);
+        return currentDosageIndex == 0 ? allDosages.get(allDosages.size() - 1) : allDosages.get(currentDosageIndex - 1);
+    }
+
+    public Dosage getNextDosage(Dosage currentDosage) {
+        List<Dosage> allDosages = getSortedDosages();
+        if (allDosages == null) return null;
+        int currentDosageIndex = allDosages.indexOf(currentDosage);
+        return currentDosageIndex == allDosages.size() - 1 ? allDosages.get(0) : allDosages.get(currentDosageIndex + 1);
+    }
+
+    private List<Dosage> getSortedDosages() {
         if (CollectionUtils.isEmpty(dosages))
             return null;
-
-        ArrayList<Dosage> allDosages = new ArrayList<Dosage>(dosages);
-        Collections.sort(allDosages, new Comparator<Dosage>() {
+        List<Dosage> sortedDosages = new ArrayList<Dosage>(dosages);
+        Collections.sort(sortedDosages, new Comparator<Dosage>() {
             @Override
             public int compare(Dosage d1, Dosage d2) {
                 Date today = new Date();
@@ -93,7 +106,6 @@ public class PillRegimen extends MotechAuditableDataObject {
                 return d1TimeOfDate.compareTo(d2TimeOfDate);
             }
         });
-        int currentDosageIndex = allDosages.indexOf(currentDosage);
-        return currentDosageIndex == 0 ? allDosages.get(allDosages.size() - 1) : allDosages.get(currentDosageIndex - 1);
+        return sortedDosages;
     }
 }
