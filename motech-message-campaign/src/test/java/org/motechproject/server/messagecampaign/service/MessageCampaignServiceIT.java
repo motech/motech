@@ -7,6 +7,7 @@ import org.motechproject.scheduler.MotechSchedulerServiceImpl;
 import org.motechproject.server.messagecampaign.contract.EnrollRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -24,7 +25,7 @@ public class MessageCampaignServiceIT {
     private SchedulerFactoryBean schedulerFactoryBean;
 
     @Test
-    public void testEnrollWithAbsoluteProgram() throws Exception {
+    public void testEnrollForAbsoluteProgram() throws Exception {
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 
         EnrollRequest enrollRequest = new EnrollRequest();
@@ -36,7 +37,7 @@ public class MessageCampaignServiceIT {
     }
 
     @Test
-    public void testEnrollWithSimpleRelativeProgram() throws Exception {
+    public void testEnrollForOffsetProgram() throws Exception {
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 
         EnrollRequest enrollRequest = new EnrollRequest();
@@ -49,7 +50,7 @@ public class MessageCampaignServiceIT {
     }
 
     @Test
-    public void testEnrollWithParameterizedRelativeProgram() throws Exception {
+    public void testEnrollForRepeatingProgram() throws Exception {
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 
         EnrollRequest enrollRequest = new EnrollRequest();
@@ -62,7 +63,7 @@ public class MessageCampaignServiceIT {
     }
 
     @Test
-    public void testEnrollWithCronBasedProgram() throws Exception {
+    public void testEnrollForCronBasedProgram() throws Exception {
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 
         EnrollRequest enrollRequest = new EnrollRequest();

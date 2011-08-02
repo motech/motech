@@ -8,7 +8,9 @@ import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.scheduler.MessageCampaignScheduler;
 import org.motechproject.server.messagecampaign.scheduler.MessageCampaignSchedulerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class MessageCampaignServiceImpl implements MessageCampaignService {
 
     private AllMessageCampaigns allMessageCampaigns;

@@ -5,12 +5,14 @@ import org.motechproject.server.messagecampaign.contract.EnrollRequest;
 import org.motechproject.server.messagecampaign.domain.MessageCampaignException;
 import org.motechproject.server.messagecampaign.domain.campaign.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class MessageCampaignSchedulerFactory {
 
-    @Autowired
     private MotechSchedulerService schedulerService;
 
+    @Autowired
     public MessageCampaignSchedulerFactory(MotechSchedulerService schedulerService) {
         this.schedulerService = schedulerService;
     }
