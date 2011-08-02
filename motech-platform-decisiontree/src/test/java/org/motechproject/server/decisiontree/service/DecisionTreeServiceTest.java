@@ -40,10 +40,10 @@ public class DecisionTreeServiceTest {
     public void SetUp() {
         initMocks(this);
         nextNode = Node.newBuilder()
-                .setTreeCommand(new NextCommand())
+                .setTreeCommands(new NextCommand())
                 .build();
         rootNode = Node.newBuilder()
-                .setTreeCommand(new RootNodeCommand())
+                .setTreeCommands(new RootNodeCommand())
                 .setTransitions(new Object[][]{
                         {"1", Transition.newBuilder()
                                 .setName("pillTakenOnTime")
@@ -66,14 +66,14 @@ public class DecisionTreeServiceTest {
     public void shouldFetchCommandForRootNode () {
         when(treeNodeLocator.findNode(pillReminderTree, "")).thenReturn(rootNode);
         Node nextNode = decisionTreeService.getNode(pillReminderTree.getName(), "");
-        assertEquals(RootNodeCommand.class, nextNode.getTreeCommand().getClass());
+        assertEquals(RootNodeCommand.class, nextNode.getTreeCommands().get(0).getClass());
     }
 
     @Test
     public void shouldFetchNextCommand() {
         when(treeNodeLocator.findNode(pillReminderTree, "/1")).thenReturn(nextNode);
         Node nextNode = decisionTreeService.getNode(pillReminderTree.getName(), "/1");
-        assertEquals(NextCommand.class, nextNode.getTreeCommand().getClass());
+        assertEquals(NextCommand.class, nextNode.getTreeCommands().get(0).getClass());
     }
 
     private class RootNodeCommand implements ITreeCommand {

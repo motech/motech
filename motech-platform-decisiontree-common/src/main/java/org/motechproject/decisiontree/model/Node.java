@@ -3,10 +3,7 @@ package org.motechproject.decisiontree.model;
 import org.apache.commons.lang.ArrayUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 
@@ -17,7 +14,7 @@ public class Node {
     private List<Action> actionsAfter;
     private List<Prompt> prompts;
     private Map<String, Transition> transitions;
-    private ITreeCommand treeCommand = new NullTreeCommand();
+    private List<ITreeCommand> treeCommands = new ArrayList<ITreeCommand>();
 
     public static class Builder {
     	private Node obj;
@@ -35,8 +32,10 @@ public class Node {
 	    	obj.actionsAfter = actionsAfter;
 	    	return this;
 	    }
-        public Builder setTreeCommand(ITreeCommand treeCommand) {
-            obj.treeCommand = treeCommand;
+        public Builder setTreeCommands(ITreeCommand... treeCommands) {
+            for(ITreeCommand treeCommand : treeCommands) {
+                obj.treeCommands.add(treeCommand);
+            }
             return this;
         }
 	    public Builder setPrompts(List<Prompt> prompts) {
@@ -96,12 +95,14 @@ public class Node {
     }
 
     @JsonIgnore
-    public ITreeCommand getTreeCommand() {
-        return treeCommand;
+    public List<ITreeCommand> getTreeCommands() {
+        return treeCommands;
     }
 
-    public void setTreeCommand(ITreeCommand treeCommand) {
-        this.treeCommand = treeCommand;
+    public void setTreeCommands(ITreeCommand... treeCommands) {
+        for(ITreeCommand treeCommand : treeCommands) {
+                this.treeCommands.add(treeCommand);
+            }
     }
 
     public void addTransition(String transitionKey, Transition transition) {
