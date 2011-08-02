@@ -2,7 +2,7 @@ package org.motechproject.server.messagecampaign.scheduler;
 
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.builder.SchedulerPayloadBuilder;
-import org.motechproject.server.messagecampaign.contract.EnrollForCronBasedProgramRequest;
+import org.motechproject.server.messagecampaign.contract.EnrollRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.CronBasedCampaign;
 import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
 
@@ -10,10 +10,10 @@ import java.util.HashMap;
 
 public class CronBasedProgramScheduler extends MessageCampaignScheduler {
 
-    private EnrollForCronBasedProgramRequest enrollRequest;
+    private EnrollRequest enrollRequest;
     private CronBasedCampaign campaign;
 
-    public CronBasedProgramScheduler(MotechSchedulerService schedulerService, EnrollForCronBasedProgramRequest enrollRequest, CronBasedCampaign campaign) {
+    public CronBasedProgramScheduler(MotechSchedulerService schedulerService, EnrollRequest enrollRequest, CronBasedCampaign campaign) {
         this.campaign = campaign;
         this.schedulerService = schedulerService;
         this.enrollRequest = enrollRequest;

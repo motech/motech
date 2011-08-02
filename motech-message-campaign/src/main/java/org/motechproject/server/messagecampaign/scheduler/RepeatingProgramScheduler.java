@@ -3,7 +3,7 @@ package org.motechproject.server.messagecampaign.scheduler;
 import org.joda.time.DateTime;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.builder.SchedulerPayloadBuilder;
-import org.motechproject.server.messagecampaign.contract.EnrollForRelativeProgramRequest;
+import org.motechproject.server.messagecampaign.contract.EnrollRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.RepeatingCampaign;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
@@ -14,10 +14,10 @@ import java.util.HashMap;
 
 public class RepeatingProgramScheduler extends MessageCampaignScheduler {
 
-    private EnrollForRelativeProgramRequest enrollRequest;
+    private EnrollRequest enrollRequest;
     private RepeatingCampaign campaign;
 
-    public RepeatingProgramScheduler(MotechSchedulerService schedulerService, EnrollForRelativeProgramRequest enrollRequest, RepeatingCampaign campaign) {
+    public RepeatingProgramScheduler(MotechSchedulerService schedulerService, EnrollRequest enrollRequest, RepeatingCampaign campaign) {
         this.campaign = campaign;
         this.schedulerService = schedulerService;
         this.enrollRequest = enrollRequest;

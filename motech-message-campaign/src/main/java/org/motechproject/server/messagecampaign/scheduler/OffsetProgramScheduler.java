@@ -4,7 +4,7 @@ import org.joda.time.DateTime;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.builder.SchedulerPayloadBuilder;
-import org.motechproject.server.messagecampaign.contract.EnrollForRelativeProgramRequest;
+import org.motechproject.server.messagecampaign.contract.EnrollRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.OffsetCampaign;
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
 import org.motechproject.valueobjects.WallTime;
@@ -15,10 +15,10 @@ import java.util.HashMap;
 
 public class OffsetProgramScheduler extends MessageCampaignScheduler {
 
-    private EnrollForRelativeProgramRequest enrollRequest;
+    private EnrollRequest enrollRequest;
     private OffsetCampaign campaign;
 
-    public OffsetProgramScheduler(MotechSchedulerService schedulerService, EnrollForRelativeProgramRequest enrollRequest, OffsetCampaign campaign) {
+    public OffsetProgramScheduler(MotechSchedulerService schedulerService, EnrollRequest enrollRequest, OffsetCampaign campaign) {
         this.campaign = campaign;
         this.schedulerService = schedulerService;
         this.enrollRequest = enrollRequest;
