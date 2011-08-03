@@ -6,8 +6,10 @@ import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.pillreminder.EventKeys;
+import org.motechproject.server.pillreminder.builder.DosageResponseBuilder;
 import org.motechproject.server.pillreminder.builder.PillRegimenBuilder;
 import org.motechproject.server.pillreminder.builder.SchedulerPayloadBuilder;
+import org.motechproject.server.pillreminder.contract.DosageResponse;
 import org.motechproject.server.pillreminder.contract.PillRegimenRequest;
 import org.motechproject.server.pillreminder.dao.AllPillRegimens;
 import org.motechproject.server.pillreminder.domain.Dosage;
@@ -71,11 +73,11 @@ public class PillReminderServiceImpl implements PillReminderService {
     }
 
     @Override
-    public String getPreviousDosage(String pillRegimenId, String currentDosageId) {
+    public DosageResponse getPreviousDosage(String pillRegimenId, String currentDosageId) {
         PillRegimen pillRegimen = allPillRegimens.get(pillRegimenId);
         Dosage currentDosage = pillRegimen.getDosage(currentDosageId);
         Dosage previousDosage = pillRegimen.getPreviousDosage(currentDosage);
-        return previousDosage == null ? null : previousDosage.getId();
+        return new DosageResponseBuilder().createFrom(previousDosage);
     }
 
     @Override
