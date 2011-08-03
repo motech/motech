@@ -103,8 +103,8 @@ public class PillReminderServiceTest {
 
     @Test
     public void shouldCallAllPillRegimensToUpdateDosageDate() {
-        service.updateDosageTaken("pillRegimenId", "dosageId");
-        verify(allPillRegimens).updateDosageTaken("pillRegimenId", "dosageId");
+        service.stopTodaysReminders("pillRegimenId", "dosageId");
+        verify(allPillRegimens).stopTodaysReminders("pillRegimenId", "dosageId");
     }
 
     @Test

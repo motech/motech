@@ -96,7 +96,7 @@ public class AllPillRegimensIT {
         allPillRegimens.add(pillRegimen);
         String regimenId = pillRegimen.getId();
 
-        allPillRegimens.updateDosageTaken(regimenId, dosageId);
+        allPillRegimens.stopTodaysReminders(regimenId, dosageId);
 
         PillRegimen dbRegimen = allPillRegimens.get(regimenId);
         Dosage dbDosage = dbRegimen.getDosage(dosageId);

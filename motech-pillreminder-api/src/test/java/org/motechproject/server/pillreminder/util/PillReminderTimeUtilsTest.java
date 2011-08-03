@@ -1,7 +1,6 @@
 package org.motechproject.server.pillreminder.util;
 
 
-import junit.framework.Assert;
 import org.apache.commons.lang.time.DateUtils;
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -15,13 +14,13 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
-public class PillReminderTimeTest {
+public class PillReminderTimeUtilsTest {
 
-    private PillReminderTime pillReminderTime;
+    private PillReminderTimeUtils pillReminderTimeUtils;
 
     @Before
     public void setUp() {
-        pillReminderTime = new PillReminderTime();
+        pillReminderTimeUtils = new PillReminderTimeUtils();
     }
     @Test
     public void testTimesPillRemindersSent() {
@@ -30,7 +29,7 @@ public class PillReminderTimeTest {
         int tenMinuteInterval = 10;
         Dosage dosageStaringOneHourEarlier = new Dosage();
         dosageStaringOneHourEarlier.setStartTime(new Time(oneHourEarlier.getHourOfDay(), oneHourEarlier.getMinuteOfHour()));
-        assertEquals(6, pillReminderTime.timesPillRemindersSent(dosageStaringOneHourEarlier, twoHourWindow, tenMinuteInterval));
+        assertEquals(6, pillReminderTimeUtils.timesPillRemindersSent(dosageStaringOneHourEarlier, twoHourWindow, tenMinuteInterval));
     }
 
     @Test
@@ -41,7 +40,7 @@ public class PillReminderTimeTest {
         int tenMinuteInterval = 10;
         Dosage dosageStaringOneHourLater = new Dosage();
         dosageStaringOneHourLater.setStartTime(new Time(oneHourLater.getHourOfDay(), oneHourLater.getMinuteOfHour()));
-        assertEquals(0, pillReminderTime.timesPillRemindersSent(dosageStaringOneHourLater, twoHourWindow, tenMinuteInterval));
+        assertEquals(0, pillReminderTimeUtils.timesPillRemindersSent(dosageStaringOneHourLater, twoHourWindow, tenMinuteInterval));
     }
 
     @Test
@@ -50,7 +49,7 @@ public class PillReminderTimeTest {
         DateTime oneHourBack = new DateTime().minusHours(1);
         dosageNotYetConsumed.setStartTime(new Time(oneHourBack.getHourOfDay(),oneHourBack.getMinuteOfHour()));
         dosageNotYetConsumed.setCurrentDosageDate(DateUtils.addDays(new Date(), -1));
-        assertFalse(pillReminderTime.isDosageTaken(dosageNotYetConsumed, 4));
+        assertFalse(pillReminderTimeUtils.isDosageTaken(dosageNotYetConsumed, 4));
     }
 
     @Test
@@ -59,14 +58,14 @@ public class PillReminderTimeTest {
         DateTime oneHourBack = new DateTime().minusHours(1);
         dosageConsumed.setStartTime(new Time(oneHourBack.getHourOfDay(),oneHourBack.getMinuteOfHour()));
         dosageConsumed.setCurrentDosageDate(DateUtils.addSeconds(new Date(), -1));
-        assertTrue(pillReminderTime.isDosageTaken(dosageConsumed, 4));
+        assertTrue(pillReminderTimeUtils.isDosageTaken(dosageConsumed, 4));
     }
 
     @Test
     public void testTimesPillRemainderWillBeSent() {
         int twoHourWindow = 2;
         int tenMinuteInterval = 10;
-        assertEquals(12, pillReminderTime.timesPillRemainderWillBeSent(twoHourWindow, tenMinuteInterval));
+        assertEquals(12, pillReminderTimeUtils.timesPillRemainderWillBeSent(twoHourWindow, tenMinuteInterval));
     }
 
 }

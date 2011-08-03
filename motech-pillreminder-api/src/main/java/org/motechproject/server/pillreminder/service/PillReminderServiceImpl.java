@@ -68,8 +68,8 @@ public class PillReminderServiceImpl implements PillReminderService {
     }
 
     @Override
-    public void updateDosageTaken(String pillRegimenId, String dosageId) {
-        allPillRegimens.updateDosageTaken(pillRegimenId, dosageId);
+    public void stopTodaysReminders(String pillRegimenId, String dosageId) {
+        allPillRegimens.stopTodaysReminders(pillRegimenId, dosageId);
     }
 
     @Override
