@@ -1,24 +1,24 @@
 package org.motechproject.scheduletracking.api.userspecified;
 
 import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MilestoneRecord {
     private String name;
     private String referenceDate;
-    private ScheduleWindowsRecord scheduleWindowsRecord;
+    private ScheduleWindowsRecord scheduleWindows;
     private List<AlertRecord> alerts = new ArrayList<AlertRecord>();
-    private Dictionary<String, String> data = new Hashtable<String, String>();
+    private Map<String, String> data = new HashMap<String, String>();
 
-    public MilestoneRecord() {
+    private MilestoneRecord() {
     }
 
-    public MilestoneRecord(String name, String referenceDate, ScheduleWindowsRecord scheduleWindowsRecord) {
+    public MilestoneRecord(String name, String referenceDate, ScheduleWindowsRecord scheduleWindows) {
         this.name = name;
         this.referenceDate = referenceDate;
-        this.scheduleWindowsRecord = scheduleWindowsRecord;
+        this.scheduleWindows = scheduleWindows;
     }
 
     public String name() {
@@ -30,10 +30,14 @@ public class MilestoneRecord {
     }
 
     public ScheduleWindowsRecord scheduleWindowsRecord() {
-        return scheduleWindowsRecord;
+        return scheduleWindows;
     }
 
     public List<AlertRecord> alerts() {
         return alerts;
+    }
+
+    public Map<String, String> data() {
+        return data;
     }
 }

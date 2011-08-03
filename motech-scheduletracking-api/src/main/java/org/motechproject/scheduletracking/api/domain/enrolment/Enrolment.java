@@ -1,28 +1,30 @@
-package org.motechproject.scheduletracking.api.domain;
+package org.motechproject.scheduletracking.api.domain.enrolment;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
+import org.joda.time.LocalDate;
 import org.motechproject.model.MotechAuditableDataObject;
-import org.motechproject.valueobjects.WallTime;
+import org.motechproject.scheduletracking.api.domain.WindowName;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @TypeDiscriminator("doc.type === 'SCHEDULEENROLMENT'")
-public class Enrolment  extends MotechAuditableDataObject {
+public class Enrolment extends MotechAuditableDataObject {
     @JsonProperty("type")
     private String type = "SCHEDULEENROLMENT";
     private String externalId;
-    private Date enroledDate;
-    private WallTime enroledIn;
+    private LocalDate enroledDate;
     private String scheduleName;
+    private Map<WindowName, MilestoneFulfillment> fulfillments = new HashMap<WindowName, MilestoneFulfillment>();
 
-    public Enrolment() {
+    private Enrolment() {
     }
 
-    public Enrolment(String externalId, Date enroledDate, WallTime enroledIn, String scheduleName) {
+    public Enrolment(String externalId, LocalDate enroledDate, String scheduleName) {
         this.externalId = externalId;
         this.enroledDate = enroledDate;
-        this.enroledIn = enroledIn;
         this.scheduleName = scheduleName;
     }
 
@@ -50,19 +52,11 @@ public class Enrolment  extends MotechAuditableDataObject {
         this.externalId = externalId;
     }
 
-    public Date getEnroledDate() {
+    public LocalDate getEnroledDate() {
         return enroledDate;
     }
 
-    public void setEnroledDate(Date enroledDate) {
+    public void setEnroledDate(LocalDate enroledDate) {
         this.enroledDate = enroledDate;
-    }
-
-    public WallTime getEnroledIn() {
-        return enroledIn;
-    }
-
-    public void setEnroledIn(WallTime enroledIn) {
-        this.enroledIn = enroledIn;
     }
 }

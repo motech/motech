@@ -10,7 +10,8 @@ public class WallTimeFactory {
     public static WallTime create(String userReadableForm) {
         String inLowerCase = userReadableForm.trim().toLowerCase();
         StringTokenizer tokenizer = new StringTokenizer(inLowerCase);
-        if (tokenizer.countTokens() > 2 || tokenizer.countTokens() == 0) throw new ParseException(String.format("Could not parse: %s to time interval", inLowerCase));
+        if (tokenizer.countTokens() == 0) return null;
+        if (tokenizer.countTokens() > 2) throw new ParseException(String.format("Could not parse: \"%s\" to time interval", inLowerCase));
         String valueInString = tokenizer.nextToken();
         String timeUnit = tokenizer.nextToken();
 

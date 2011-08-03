@@ -1,24 +1,31 @@
 package org.motechproject.scheduletracking.api.contract;
 
+import org.motechproject.model.Time;
+
 public class EnrolmentRequest {
     private String externalId;
     private String scheduleName;
     private String enroledInMilestone;
     private int enroledAt;
+    private Time preferredAlertTime;
 
-    public String getScheduleName() {
+    public String scheduleName() {
         return scheduleName;
     }
 
-    public String getExternalId() {
+    public String externalId() {
         return externalId;
     }
 
-    public String getEnroledInMilestone() {
+    public String enroledInMilestone() {
         return enroledInMilestone;
     }
 
-    public int getEnroledAt() {
+    public int enroledAt() {
         return enroledAt;
+    }
+
+    public Time preferredAlertTime() {
+        return preferredAlertTime;
     }
 }

@@ -1,5 +1,7 @@
 package org.motechproject.valueobjects;
 
+import org.joda.time.Period;
+
 public class WallTime {
     private int value;
     private WallTimeUnit unit;
@@ -19,10 +21,7 @@ public class WallTime {
 
         WallTime wallTime = (WallTime) o;
 
-        if (value != wallTime.value) return false;
-        if (unit != wallTime.unit) return false;
-
-        return true;
+        return value == wallTime.value && unit == wallTime.unit;
     }
 
     @Override
@@ -50,5 +49,9 @@ public class WallTime {
 
     public int inDays() {
         return this.unit.days * value;
+    }
+
+    public Period asPeriod() {
+        return unit.toPeriod(value);
     }
 }

@@ -1,43 +1,44 @@
 [{
-    "name" : "IPTI Schedule",
-    Milestones : [
+    name : "IPTI Schedule",
+    totalDuration: "52 Weeks",
+    milestones : [
         {
-            Name : "IPTI 1",
-            ReferenceDate : "IPTI Schedule",
+            name : "IPTI 1",
+            referenceDate : "IPTI Schedule",
             scheduleWindows : {
-                Earliest : "13 Weeks",
-                Due : "14 Weeks",
-                Late : "16 Weeks",
-                Max : ""
+                earliest : "13 Weeks",
+                due : "14 Weeks",
+                late : "16 Weeks",
+                max : ""
             },
-            Data : {
+            data : {
                 Foo : "Bar"
             },
-            Alerts : [{
-                    Window : "Late",
-                    StartOffset : "0 Days",
-                    Interval : "1 Day",
-                    Count : "7"
+            alerts : [{
+                    window : "Late",
+                    startOffset : "0 Days",
+                    interval : "1 Day",
+                    count : "7"
                 },
                 {
-                    Window : "Late",
-                    StartOffset : "1 Week",
-                    Interval : "1 Week",
-                    Count : "51"
+                    window : "Late",
+                    startOffset : "1 Week",
+                    interval : "1 Week",
+                    count : "51"
                 }
             ]
         },
         {
-            Name : "IPTI 2",
-            ReferenceDate : "IPTI 1",
+            name : "IPTI 2",
+            referenceDate : "IPTI 1",
             scheduleWindows : {
-                Earliest : "1 Weeks",
-                Due : "2 Weeks",
-                Late : "3 Weeks",
-                Max : ""
+                earliest : "1 Weeks",
+                due : "2 Weeks",
+                late : "3 Weeks",
+                max : ""
             },
-            Data : {
-                Foo : "Bar"
+            data : {
+                doo : "Bar"
             }
         }
     ]

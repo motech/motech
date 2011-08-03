@@ -60,7 +60,6 @@ public class CronSchedulableJob implements Serializable {
 	}
 
 	public CronSchedulableJob(MotechEvent motechEvent, String cronExpression) {
-
          if (motechEvent == null) {
             throw new IllegalArgumentException("MotechEvent can not be null");
         }

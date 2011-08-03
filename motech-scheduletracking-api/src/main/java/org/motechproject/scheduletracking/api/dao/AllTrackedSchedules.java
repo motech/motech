@@ -6,21 +6,15 @@ import org.motechproject.scheduletracking.api.userspecified.ScheduleRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class AllTrackedSchedules {
-    @Autowired
-    private TrackedSchedulesJsonReader jsonReader;
-    private Dictionary<String, Schedule> schedules = new Hashtable<String, Schedule>();
+    private Map<String, Schedule> schedules = new HashMap<String, Schedule>();
 
     @Autowired
-    public AllTrackedSchedules(TrackedSchedulesJsonReader jsonReader) {
-        this.jsonReader = jsonReader;
-
-        List<ScheduleRecord> scheduleRecords = jsonReader.records();
+    public AllTrackedSchedules(TrackedSchedulesJsonReader schedulesJsonReader) {
+        List<ScheduleRecord> scheduleRecords = schedulesJsonReader.records();
         for (ScheduleRecord scheduleRecord : scheduleRecords) {
             schedules.put(scheduleRecord.name(), ScheduleFactory.create(scheduleRecord));
         }
