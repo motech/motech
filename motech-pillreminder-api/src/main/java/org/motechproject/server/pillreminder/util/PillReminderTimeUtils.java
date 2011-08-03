@@ -5,18 +5,13 @@ import org.joda.time.DateTime;
 import org.motechproject.model.Time;
 import org.motechproject.server.pillreminder.domain.Dosage;
 
-import java.util.Date;
-
 public class PillReminderTimeUtils {
 
-    public int timesPillRemindersSent(Dosage dosage, int pillWindow, int retryInterval) {
+    public int timesPillRemindersSent(Dosage dosage, int pillWindowInHours, int retryInterval) {
         Time dosageStartTime = dosage.getStartTime();
-        DateTime now = new DateTime();
-
-        int differenceBetweenDosageStartTimeAndNowInHours = getOffsetOfCurrentTimeFromDosageStartTime(dosageStartTime, now);
-        int differenceBetweenDosageStartTimeAndNowInMinutes = differenceBetweenDosageStartTimeAndNowInHours * 60;
-
-        return (differenceBetweenDosageStartTimeAndNowInMinutes / retryInterval);
+        DateTime now = Util.currentDateTime();
+        int minsSinceDosage = Math.min(getOffsetOfCurrentTimeFromDosageStartTime(dosageStartTime, now), pillWindowInHours * 60);
+        return (minsSinceDosage / retryInterval);
     }
 
     public int timesPillRemainderWillBeSent(int pillWindow, int retryInterval) {
@@ -24,8 +19,9 @@ public class PillReminderTimeUtils {
     }
 
     private int getOffsetOfCurrentTimeFromDosageStartTime(Time dosageStartTime, DateTime now) {
-        int hourDifference = now.getHourOfDay() - dosageStartTime.getHour();
-        return hourDifference > 0 ? hourDifference : 0;
+        int hourDiff = now.getHourOfDay() - dosageStartTime.getHour();
+        if (hourDiff < 0) hourDiff += 24;
+        return hourDiff * 60  + now.getMinuteOfHour() - dosageStartTime.getMinute();
     }
 
     public boolean isDosageTaken(Dosage dosage, int pillWindow) {
