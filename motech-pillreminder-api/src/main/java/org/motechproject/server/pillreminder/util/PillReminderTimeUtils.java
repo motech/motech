@@ -1,4 +1,4 @@
-package org.motechproject.server.pillreminder.util;
+    package org.motechproject.server.pillreminder.util;
 
 
 import org.joda.time.DateTime;
@@ -7,7 +7,7 @@ import org.motechproject.server.pillreminder.domain.Dosage;
 
 import java.util.Date;
 
-public class PillReminderTime {
+public class PillReminderTimeUtils {
 
     public int timesPillRemindersSent(Dosage dosage, int pillWindow, int retryInterval) {
         Time dosageStartTime = dosage.getStartTime();

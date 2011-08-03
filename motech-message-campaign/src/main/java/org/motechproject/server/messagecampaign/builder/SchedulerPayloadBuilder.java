@@ -25,4 +25,9 @@ public class SchedulerPayloadBuilder {
         params.put(EventKeys.EXTERNAL_ID_KEY, id);
         return this;
     }
+
+    public SchedulerPayloadBuilder withMessageKey(String messageKey) {
+        params.put(EventKeys.MESSAGE_KEY, messageKey);
+        return this;
+    }
 }

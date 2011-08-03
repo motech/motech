@@ -4,11 +4,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerServiceImpl;
-import org.motechproject.server.messagecampaign.contract.EnrollForAbsoluteProgramRequest;
-import org.motechproject.server.messagecampaign.contract.EnrollForCronBasedProgramRequest;
-import org.motechproject.server.messagecampaign.contract.EnrollForRelativeProgramRequest;
+import org.motechproject.server.messagecampaign.contract.EnrollRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -26,10 +25,10 @@ public class MessageCampaignServiceIT {
     private SchedulerFactoryBean schedulerFactoryBean;
 
     @Test
-    public void testEnrollWithAbsoluteProgram() throws Exception {
+    public void testEnrollForAbsoluteProgram() throws Exception {
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 
-        EnrollForAbsoluteProgramRequest enrollRequest = new EnrollForAbsoluteProgramRequest();
+        EnrollRequest enrollRequest = new EnrollRequest();
         enrollRequest.campaignName("Absolute Dates Message Program");
         enrollRequest.externalId("patient_Id1");
         enrollRequest.reminderTime(new Time(9, 30));
@@ -38,10 +37,10 @@ public class MessageCampaignServiceIT {
     }
 
     @Test
-    public void testEnrollWithSimpleRelativeProgram() throws Exception {
+    public void testEnrollForOffsetProgram() throws Exception {
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 
-        EnrollForRelativeProgramRequest enrollRequest = new EnrollForRelativeProgramRequest();
+        EnrollRequest enrollRequest = new EnrollRequest();
         enrollRequest.campaignName("Relative Dates Message Program");
         enrollRequest.externalId("patient_Id2");
         enrollRequest.referenceDate(Calendar.getInstance().getTime());
@@ -51,10 +50,10 @@ public class MessageCampaignServiceIT {
     }
 
     @Test
-    public void testEnrollWithParameterizedRelativeProgram() throws Exception {
+    public void testEnrollForRepeatingProgram() throws Exception {
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 
-        EnrollForRelativeProgramRequest enrollRequest = new EnrollForRelativeProgramRequest();
+        EnrollRequest enrollRequest = new EnrollRequest();
         enrollRequest.campaignName("Relative Parameterized Dates Message Program");
         enrollRequest.externalId("patiend_Id3");
         enrollRequest.referenceDate(Calendar.getInstance().getTime());
@@ -64,10 +63,10 @@ public class MessageCampaignServiceIT {
     }
 
     @Test
-    public void testEnrollWithCronBasedProgram() throws Exception {
+    public void testEnrollForCronBasedProgram() throws Exception {
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 
-        EnrollForCronBasedProgramRequest enrollRequest = new EnrollForCronBasedProgramRequest();
+        EnrollRequest enrollRequest = new EnrollRequest();
         enrollRequest.campaignName("Cron based Message Program");
         enrollRequest.externalId("patiend_Id3");
         enrollRequest.referenceDate(Calendar.getInstance().getTime());

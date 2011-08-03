@@ -1,17 +1,21 @@
 package org.motechproject.server.pillreminder.service;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.motechproject.model.CronSchedulableJob;
+import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.pillreminder.EventKeys;
 import org.motechproject.server.pillreminder.contract.DosageRequest;
+import org.motechproject.server.pillreminder.contract.DosageResponse;
 import org.motechproject.server.pillreminder.contract.MedicineRequest;
 import org.motechproject.server.pillreminder.contract.PillRegimenRequest;
 import org.motechproject.server.pillreminder.dao.AllPillRegimens;
 import org.motechproject.server.pillreminder.domain.Dosage;
+import org.motechproject.server.pillreminder.domain.Medicine;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
 
 import java.util.*;
@@ -99,28 +103,51 @@ public class PillReminderServiceTest {
 
     @Test
     public void shouldCallAllPillRegimensToUpdateDosageDate() {
-        service.updateDosageTaken("pillRegimenId", "dosageId");
-        verify(allPillRegimens).updateDosageTaken("pillRegimenId", "dosageId");
+        service.stopTodaysReminders("pillRegimenId", "dosageId");
+        verify(allPillRegimens).stopTodaysReminders("pillRegimenId", "dosageId");
     }
 
     @Test
     public void shouldGetPreviousDosageGivenCurrentDosageForARegimen() {
-        Dosage currentDosage = mock(Dosage.class);
-        Dosage previousDosage = mock(Dosage.class);
-        PillRegimen pillRegimen = mock(PillRegimen.class);
-
         String currentDosageId = "currentDosageId";
         String previousDosageId = "previousDosageId";
         String pillRegimenId = "pillRegimenId";
 
-        when(currentDosage.getId()).thenReturn(currentDosageId);
-        when(previousDosage.getId()).thenReturn(previousDosageId);
-        when(pillRegimen.getDosage(currentDosageId)).thenReturn(currentDosage);
-        when(pillRegimen.getPreviousDosage(currentDosage)).thenReturn(previousDosage);
+        Dosage currentDosage = new Dosage(new Time(20, 05), new HashSet<Medicine>());
+        Dosage previousDosage = new Dosage(new Time(10, 05), new HashSet<Medicine>());
+        currentDosage.setId(currentDosageId);
+        previousDosage.setId(previousDosageId);
+
+        HashSet<Dosage> dosages = new HashSet<Dosage>();
+        dosages.add(currentDosage);
+        dosages.add(previousDosage);
+        PillRegimen pillRegimen = new PillRegimen("patientId", 2, 15, dosages);
         when(allPillRegimens.get(pillRegimenId)).thenReturn(pillRegimen);
 
-        String actualPreviousDosageId = service.getPreviousDosage(pillRegimenId, currentDosageId);
-        assertEquals(previousDosageId, actualPreviousDosageId);
+        DosageResponse actualPreviousDosage = service.getPreviousDosage(pillRegimenId, currentDosageId);
+        assertEquals(previousDosageId, actualPreviousDosage.getDosageId());
+    }
+
+    @Test
+    public void shouldGetNextDosageTimeGivenCurrentDosageForARegimen() {
+        Dosage currentDosage = mock(Dosage.class);
+        Dosage nextDosage = mock(Dosage.class);
+        PillRegimen pillRegimen = mock(PillRegimen.class);
+
+        String currentDosageId = "currentDosageId";
+        String nextDosageId = "nextDosageId";
+        String pillRegimenId = "pillRegimenId";
+
+        when(currentDosage.getId()).thenReturn(currentDosageId);
+        when(nextDosage.getId()).thenReturn(nextDosageId);
+        when(nextDosage.getStartTime()).thenReturn(new Time(10, 20));
+        when(pillRegimen.getDosage(currentDosageId)).thenReturn(currentDosage);
+        when(pillRegimen.getNextDosage(currentDosage)).thenReturn(nextDosage);
+        when(allPillRegimens.get(pillRegimenId)).thenReturn(pillRegimen);
+
+        DateTime nextDosageTime = service.getNextDosageTime(pillRegimenId, currentDosageId);
+        assertEquals(10, nextDosageTime.getHourOfDay());
+        assertEquals(20, nextDosageTime.getMinuteOfHour());
     }
 
     private class PillRegimenArgumentMatcher extends ArgumentMatcher<PillRegimen> {

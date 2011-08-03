@@ -2,13 +2,15 @@ package org.motechproject.server.messagecampaign.service;
 
 import org.motechproject.server.messagecampaign.contract.EnrollRequest;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
-import org.motechproject.server.messagecampaign.domain.Campaign;
-import org.motechproject.server.messagecampaign.domain.CampaignMessage;
 import org.motechproject.server.messagecampaign.domain.MessageCampaignException;
+import org.motechproject.server.messagecampaign.domain.campaign.Campaign;
+import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.scheduler.MessageCampaignScheduler;
 import org.motechproject.server.messagecampaign.scheduler.MessageCampaignSchedulerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class MessageCampaignServiceImpl implements MessageCampaignService {
 
     private AllMessageCampaigns allMessageCampaigns;
@@ -21,15 +23,14 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
         this.schedulerFactory = schedulerFactory;
     }
 
-    @Override
     public void enroll(EnrollRequest enrollRequest) {
-        Campaign campaign = allMessageCampaigns.get(enrollRequest.campaignName());
+        Campaign<CampaignMessage> campaign = allMessageCampaigns.get(enrollRequest.campaignName());
 
-        if(campaign == null) throw new MessageCampaignException("No campaign by name : "+enrollRequest.campaignName());
+        if (campaign == null)
+            throw new MessageCampaignException("No campaign by name : " + enrollRequest.campaignName());
 
-        for (CampaignMessage message : campaign.getMessages()) {
-            MessageCampaignScheduler scheduler = schedulerFactory.scheduler(enrollRequest);
-            scheduler.scheduleJob(campaign, message);
-        }
+        MessageCampaignScheduler scheduler = schedulerFactory.scheduler(enrollRequest, campaign);
+
+        scheduler.scheduleJobs();
     }
 }

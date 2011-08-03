@@ -32,7 +32,7 @@ public class AllPillRegimens extends MotechAuditableRepository<PillRegimen> {
         return dosage != null ? dosage.getMedicineNames() : Collections.EMPTY_LIST;
     }
 
-    public void updateDosageTaken(String regimenId, String dosageId) {
+    public void stopTodaysReminders(String regimenId, String dosageId) {
         PillRegimen pillRegimen = get(regimenId);
         Dosage dosage = pillRegimen.getDosage(dosageId);
         dosage.updateCurrentDate();

@@ -10,23 +10,12 @@
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-    <import resource="classpath*:applicationPlatformScheduler.xml" />
-    <util:properties id="messageCampaignProperties" location="classpath:messageCampaign.properties" />
+    <util:properties id="messageCampaignProperties" location="classpath:messageCampaign.properties"/>
 
-    <bean id="allMessageCampaigns" class="org.motechproject.server.messagecampaign.dao.AllMessageCampaigns">
-        <constructor-arg ref="messageCampaignProperties" />
-        <constructor-arg ref="motechJsonReader" />
-    </bean>
+    <context:annotation-config/>
+    <context:component-scan base-package="org.motechproject.server.messagecampaign"/>
 
-    <bean id="messageCampaignService" class="org.motechproject.server.messagecampaign.service.MessageCampaignServiceImpl">
-        <constructor-arg ref ="allMessageCampaigns"/>
-        <constructor-arg ref="messageCampaignSchedulerFactory"/>
-    </bean>
 
-    <bean id="motechJsonReader" class="org.motechproject.dao.MotechJsonReader"/>
-
-    <bean id="messageCampaignSchedulerFactory" class="org.motechproject.server.messagecampaign.scheduler.MessageCampaignSchedulerFactory">
-        <constructor-arg ref="schedulerService"/>
-    </bean>
-
+    <import resource="classpath*:applicationPlatformCommon.xml"/>
+    <import resource="classpath*:applicationPlatformScheduler.xml"/>
 </beans>

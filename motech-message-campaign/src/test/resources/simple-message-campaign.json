@@ -1,6 +1,7 @@
 [
     {
         "name" : "Absolute Dates Message Program",
+        "type" : "ABSOLUTE",
         "messages" : [
             {
                 "name" : "First",
@@ -20,6 +21,7 @@
     },
     {
         "name" : "Relative Dates Message Program" ,
+        "type" : "OFFSET",
         "messages" : [
             {
                 "name" : "Week 1",
@@ -46,6 +48,7 @@
     },
     {
         "name" : "Relative Parameterized Dates Message Program",
+        "type" : "REPEATING",
         "maxDuration" : "5 weeks",
         "messages" : [
             {
@@ -73,6 +76,7 @@
     },
     {
         "name" : "Cron based Message Program",
+        "type" : "CRON",
         "messages" : [
             {
                 "name" : "First",

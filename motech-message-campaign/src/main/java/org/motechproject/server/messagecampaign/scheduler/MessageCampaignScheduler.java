@@ -6,8 +6,6 @@ import org.motechproject.model.MotechEvent;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.EventKeys;
-import org.motechproject.server.messagecampaign.domain.Campaign;
-import org.motechproject.server.messagecampaign.domain.CampaignMessage;
 
 import java.util.Date;
 import java.util.Map;
@@ -18,7 +16,7 @@ public abstract class MessageCampaignScheduler {
 
     protected MotechSchedulerService schedulerService;
 
-    public abstract void scheduleJob(Campaign campaign, CampaignMessage message);
+    public abstract void scheduleJobs();
 
     public void scheduleJobOn(Time startTime, Date startDate, Map<String, Object> params) {
 
@@ -33,9 +31,6 @@ public abstract class MessageCampaignScheduler {
 
         CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, startDate, null);
         schedulerService.scheduleJob(schedulableJob);
-
     }
-
-
 }
 
