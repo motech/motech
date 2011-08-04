@@ -1,7 +1,6 @@
 package org.motechproject.server.pillreminder.util;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -10,7 +9,7 @@ import java.util.Date;
 public class Util {
 
     public static DateTime currentDateTime() {
-        return new DateTime(DateTimeZone.UTC);
+        return new DateTime();
     }
 
     public static Date newDate(int year, int month, int day) {
