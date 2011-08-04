@@ -14,12 +14,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.motechproject.server.pillreminder.util.Util.getDateAfter;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -73,18 +70,6 @@ public class AllPillRegimensIT {
         PillRegimen returnedRegimen = allPillRegimens.findByExternalId("1234");
         assertNotNull(returnedRegimen);
         assertEquals(returnedRegimen.getExternalId(), "1234");
-    }
-
-    @Test
-    public void shouldGetMedicinesForGivenDosage() {
-        PillRegimen pillRegimen = setUpPillRegimen();
-        allPillRegimens.add(pillRegimen);
-        Dosage[] dosages = pillRegimen.getDosages().toArray(new Dosage[0]);
-
-        List<String> medicines = allPillRegimens.medicinesFor(pillRegimen.getId(), dosages[0].getId());
-
-        assertTrue(medicines.contains("m1"));
-        assertTrue(medicines.contains("m2"));
     }
 
     @Test

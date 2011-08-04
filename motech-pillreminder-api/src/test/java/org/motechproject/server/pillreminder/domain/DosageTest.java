@@ -50,18 +50,6 @@ public class DosageTest {
         assertEquals(new Date(2011, 11, 11), dosage.getEndDate());
     }
 
-    @Test
-    public void shouldReturnMedicineNames() {
-        Set<Medicine> medicines = new HashSet<Medicine>();
-        medicines.add(new Medicine("medicine1", getDate(2010, 10, 10), getDate(2011, 10, 10)));
-        medicines.add(new Medicine("medicine2", getDate(2010, 11, 11), getDate(2011, 11, 11)));
-        Dosage dosage = new Dosage(new Time(9, 5), medicines);
-
-        List<String> medicineNames = dosage.getMedicineNames();
-        assertTrue(medicineNames.contains("medicine1"));
-        assertTrue(medicineNames.contains("medicine2"));
-    }
-
     private Date getDate(Integer year, Integer month, Integer day) {
         Calendar cal = Calendar.getInstance();
         cal.set(year, month, day);

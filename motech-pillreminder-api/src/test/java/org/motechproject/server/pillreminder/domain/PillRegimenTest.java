@@ -3,7 +3,6 @@ package org.motechproject.server.pillreminder.domain;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.motechproject.model.Time;
-import org.motechproject.server.pillreminder.builder.test.DosageBuilder;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -82,49 +81,4 @@ public class PillRegimenTest {
         assertEquals(dosage1, regimen.getDosage("1"));
         assertEquals(dosage2, regimen.getDosage("2"));
     }
-
-    @Test
-    public void shouldGetPreviousAndNextDosagesGivenCurrentDosage() {
-        Dosage morningDosage = DosageBuilder.newDosage().withDosageTime(new Time(07, 00)).build();
-        Dosage afternoonDosage = DosageBuilder.newDosage().withDosageTime(new Time(12, 00)).build();
-        Dosage nightDosage = DosageBuilder.newDosage().withDosageTime(new Time(20, 00)).build();
-
-        Set<Dosage> dosages = new HashSet<Dosage>();
-        dosages.add(morningDosage);
-        dosages.add(afternoonDosage);
-        dosages.add(nightDosage);
-
-        PillRegimen regimen = new PillRegimen();
-        regimen.setDosages(dosages);
-
-        assertEquals(afternoonDosage, regimen.getPreviousDosage(nightDosage));
-        assertEquals(morningDosage, regimen.getPreviousDosage(afternoonDosage));
-        assertEquals(nightDosage, regimen.getPreviousDosage(morningDosage));
-
-        assertEquals(morningDosage, regimen.getNextDosage(nightDosage));
-        assertEquals(nightDosage, regimen.getNextDosage(afternoonDosage));
-        assertEquals(afternoonDosage, regimen.getNextDosage(morningDosage));
-    }
-
-    @Test
-    public void previousAndNextDosagesIsSameAsCurrentDosageWhenItsTheOnlyDosageForARegimen() {
-        Dosage morningDosage = DosageBuilder.newDosage().withDosageTime(new Time(07, 00)).build();
-
-        Set<Dosage> dosages = new HashSet<Dosage>();
-        dosages.add(morningDosage);
-
-        PillRegimen regimen = new PillRegimen();
-        regimen.setDosages(dosages);
-
-        assertEquals(morningDosage, regimen.getPreviousDosage(morningDosage));
-        assertEquals(morningDosage, regimen.getNextDosage(morningDosage));
-    }
-
-    @Test
-    public void previousAndNextDosagesRetunsNullWhenNoDosagesArePresentForARegimen() {
-        PillRegimen regimen = new PillRegimen();
-        assertEquals(null, regimen.getPreviousDosage(new Dosage()));
-        assertEquals(null, regimen.getNextDosage(new Dosage()));
-    }
-
 }

@@ -9,7 +9,6 @@ import org.motechproject.server.pillreminder.domain.PillRegimen;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import java.util.Collections;
 import java.util.List;
 
 public class AllPillRegimens extends MotechAuditableRepository<PillRegimen> {
@@ -26,17 +25,10 @@ public class AllPillRegimens extends MotechAuditableRepository<PillRegimen> {
         return regimens.isEmpty() ? null : regimens.get(0);
     }
 
-    public List<String> medicinesFor(String regimenId, String dosageId) {
-        PillRegimen pillRegimen = get(regimenId);
-        Dosage dosage = pillRegimen.getDosage(dosageId);
-        return dosage != null ? dosage.getMedicineNames() : Collections.EMPTY_LIST;
-    }
-
     public void stopTodaysReminders(String regimenId, String dosageId) {
         PillRegimen pillRegimen = get(regimenId);
         Dosage dosage = pillRegimen.getDosage(dosageId);
         dosage.updateLastTakenDate();
         update(pillRegimen);
     }
-
 }

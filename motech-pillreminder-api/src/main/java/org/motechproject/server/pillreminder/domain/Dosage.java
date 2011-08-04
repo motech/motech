@@ -93,14 +93,6 @@ public class Dosage {
             medicine.validate();
     }
 
-    @JsonIgnore
-    public List<String> getMedicineNames() {
-        List<String> medicineNames = new ArrayList<String>();
-        for (Medicine medicine : medicines)
-            medicineNames.add(medicine.getName());
-        return medicineNames;
-    }
-
     public void updateLastTakenDate() {
         lastTakenDate = new Date();
     }
