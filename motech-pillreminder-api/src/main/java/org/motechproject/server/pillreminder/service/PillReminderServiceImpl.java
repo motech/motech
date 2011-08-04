@@ -8,9 +8,11 @@ import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.pillreminder.EventKeys;
 import org.motechproject.server.pillreminder.builder.DosageResponseBuilder;
 import org.motechproject.server.pillreminder.builder.PillRegimenBuilder;
+import org.motechproject.server.pillreminder.builder.PillRegimenResponseBuilder;
 import org.motechproject.server.pillreminder.builder.SchedulerPayloadBuilder;
 import org.motechproject.server.pillreminder.contract.DosageResponse;
 import org.motechproject.server.pillreminder.contract.PillRegimenRequest;
+import org.motechproject.server.pillreminder.contract.PillRegimenResponse;
 import org.motechproject.server.pillreminder.dao.AllPillRegimens;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
@@ -47,7 +49,7 @@ public class PillReminderServiceImpl implements PillReminderService {
 
             MotechEvent motechEvent = new MotechEvent(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, eventParams);
             String cronJobExpression = new CronJobExpressionBuilder(
-                    dosage.getStartTime(),
+                    dosage.getDosageTime(),
                     pillRegimen.getReminderRepeatWindowInHours(),
                     pillRegimen.getReminderRepeatIntervalInMinutes()).build();
 
@@ -63,16 +65,20 @@ public class PillReminderServiceImpl implements PillReminderService {
     }
 
     @Override
-    public List<String> medicinesFor(String pillRegimenId, String dosageId) {
-        return allPillRegimens.medicinesFor(pillRegimenId, dosageId);
-    }
-
-    @Override
     public void stopTodaysReminders(String pillRegimenId, String dosageId) {
         allPillRegimens.stopTodaysReminders(pillRegimenId, dosageId);
     }
 
     @Override
+    public PillRegimenResponse getPillRegimen(String pillRegimenId) {
+        PillRegimen pillRegimen = allPillRegimens.get(pillRegimenId);
+        return pillRegimen == null ? null : new PillRegimenResponseBuilder().createFrom(pillRegimen);
+    }
+
+    public List<String> medicinesFor(String pillRegimenId, String dosageId) {
+        return allPillRegimens.medicinesFor(pillRegimenId, dosageId);
+    }
+
     public DosageResponse getPreviousDosage(String pillRegimenId, String currentDosageId) {
         PillRegimen pillRegimen = allPillRegimens.get(pillRegimenId);
         Dosage currentDosage = pillRegimen.getDosage(currentDosageId);
@@ -80,12 +86,11 @@ public class PillReminderServiceImpl implements PillReminderService {
         return new DosageResponseBuilder().createFrom(previousDosage);
     }
 
-    @Override
     public DateTime getNextDosageTime(String pillRegimenId, String currentDosageId) {
         PillRegimen pillRegimen = allPillRegimens.get(pillRegimenId);
         Dosage currentDosage = pillRegimen.getDosage(currentDosageId);
         Dosage nextDosage = pillRegimen.getNextDosage(currentDosage);
-        return nextDosage == null ? null : nextDosage.getStartTime().getDateTime(Util.currentDateTime());
+        return nextDosage == null ? null : nextDosage.getDosageTime().getDateTime(Util.currentDateTime());
     }
 
     private void destroy(String externalID) {

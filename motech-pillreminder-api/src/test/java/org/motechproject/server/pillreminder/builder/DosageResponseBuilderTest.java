@@ -4,6 +4,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.motechproject.model.Time;
 import org.motechproject.server.pillreminder.contract.DosageResponse;
+import org.motechproject.server.pillreminder.contract.MedicineResponse;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.Medicine;
 
@@ -25,12 +26,12 @@ public class DosageResponseBuilderTest {
         DosageResponse dosageResponse = new DosageResponseBuilder().createFrom(dosage);
 
         Assert.assertEquals("dosageId", dosageResponse.getDosageId());
-        Assert.assertEquals(10, dosageResponse.getStartHour());
-        Assert.assertEquals(5, dosageResponse.getStartMinute());
+        Assert.assertEquals(10, dosageResponse.getDosageHour());
+        Assert.assertEquals(5, dosageResponse.getDosageMinute());
 
-        List<String> dosageResponseMedicines = dosageResponse.getMedicines();
+        List<MedicineResponse> dosageResponseMedicines = dosageResponse.getMedicines();
         Assert.assertEquals(2, dosageResponseMedicines.size());
-        Assert.assertTrue(dosageResponseMedicines.contains("medicine1"));
-        Assert.assertTrue(dosageResponseMedicines.contains("medicine2"));
+        Assert.assertEquals("medicine1", dosageResponseMedicines.get(0).getName());
+        Assert.assertEquals("medicine2", dosageResponseMedicines.get(1).getName());
     }
 }

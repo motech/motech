@@ -101,8 +101,8 @@ public class PillRegimen extends MotechAuditableDataObject {
             @Override
             public int compare(Dosage d1, Dosage d2) {
                 Date today = new Date();
-                Date d1TimeOfDate = d1.getStartTime().getTimeOfDate(today);
-                Date d2TimeOfDate = d2.getStartTime().getTimeOfDate(today);
+                Date d1TimeOfDate = d1.getDosageTime().getTimeOfDate(today);
+                Date d2TimeOfDate = d2.getDosageTime().getTimeOfDate(today);
                 return d1TimeOfDate.compareTo(d2TimeOfDate);
             }
         });

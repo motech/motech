@@ -8,8 +8,8 @@ import java.util.Date;
 public class DosageBuilder {
     private Dosage dosage = new Dosage();
 
-    public DosageBuilder withCurrentDosageDate(Date currentDosageDate) {
-        dosage.setCurrentDosageDate(currentDosageDate);
+    public DosageBuilder withLastTakenDate(Date lastTakenDate) {
+        dosage.setLastTakenDate(lastTakenDate);
         return this;
     }
 
@@ -18,8 +18,8 @@ public class DosageBuilder {
         return this;
     }
 
-    public DosageBuilder withStartTime(Time startTime) {
-        dosage.setStartTime(startTime);
+    public DosageBuilder withDosageTime(Time dosageTime) {
+        dosage.setDosageTime(dosageTime);
         return this;
     }
 

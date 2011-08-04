@@ -2,7 +2,6 @@ package org.motechproject.server.pillreminder.domain;
 
 import org.junit.Test;
 import org.motechproject.model.Time;
-import org.motechproject.server.pillreminder.util.Util;
 
 import java.util.*;
 
@@ -49,18 +48,6 @@ public class DosageTest {
         Dosage dosage = new Dosage(new Time(9, 5), medicines);
 
         assertEquals(new Date(2011, 11, 11), dosage.getEndDate());
-    }
-
-    @Test
-    public void shouldGetIsTakenOnADosage() {
-        Set<Medicine> medicines = new HashSet<Medicine>();
-        Date today = new Date();
-        Time nineIneTheMorning = new Time(9, 0);
-
-        medicines.add(new Medicine("medicine1", today, Util.getDateAfter(today, 2)));
-        Dosage dosage = new Dosage(nineIneTheMorning, medicines);
-
-        assertTrue(dosage.isTaken(nineIneTheMorning));
     }
 
     @Test

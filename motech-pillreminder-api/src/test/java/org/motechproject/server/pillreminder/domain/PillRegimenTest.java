@@ -85,9 +85,9 @@ public class PillRegimenTest {
 
     @Test
     public void shouldGetPreviousAndNextDosagesGivenCurrentDosage() {
-        Dosage morningDosage = DosageBuilder.newDosage().withStartTime(new Time(07, 00)).build();
-        Dosage afternoonDosage = DosageBuilder.newDosage().withStartTime(new Time(12, 00)).build();
-        Dosage nightDosage = DosageBuilder.newDosage().withStartTime(new Time(20, 00)).build();
+        Dosage morningDosage = DosageBuilder.newDosage().withDosageTime(new Time(07, 00)).build();
+        Dosage afternoonDosage = DosageBuilder.newDosage().withDosageTime(new Time(12, 00)).build();
+        Dosage nightDosage = DosageBuilder.newDosage().withDosageTime(new Time(20, 00)).build();
 
         Set<Dosage> dosages = new HashSet<Dosage>();
         dosages.add(morningDosage);
@@ -108,7 +108,7 @@ public class PillRegimenTest {
 
     @Test
     public void previousAndNextDosagesIsSameAsCurrentDosageWhenItsTheOnlyDosageForARegimen() {
-        Dosage morningDosage = DosageBuilder.newDosage().withStartTime(new Time(07, 00)).build();
+        Dosage morningDosage = DosageBuilder.newDosage().withDosageTime(new Time(07, 00)).build();
 
         Set<Dosage> dosages = new HashSet<Dosage>();
         dosages.add(morningDosage);

@@ -3,24 +3,21 @@ package org.motechproject.server.pillreminder.domain;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.motechproject.model.Time;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Dosage {
-    public static final String DATE_FORMAT = "dd/MM/yyyy";
     private String id;
-    private Time startTime;
-    private Date currentDosageDate;
+    private Time dosageTime;
+    private Date lastTakenDate;
     private Set<Medicine> medicines;
 
     public Dosage() {
     }
 
-    public Dosage(Time startTime, Set<Medicine> medicines) {
+    public Dosage(Time dosageTime, Set<Medicine> medicines) {
         this.id = UUID.randomUUID().toString();
-        this.startTime = startTime;
+        this.dosageTime = dosageTime;
         this.medicines = medicines;
-        this.currentDosageDate = getStartDate();
     }
 
     public Set<Medicine> getMedicines() {
@@ -31,12 +28,12 @@ public class Dosage {
         this.medicines = medicines;
     }
 
-    public Time getStartTime() {
-        return startTime;
+    public Time getDosageTime() {
+        return dosageTime;
     }
 
-    public void setStartTime(Time startTime) {
-        this.startTime = startTime;
+    public void setDosageTime(Time dosageTime) {
+        this.dosageTime = dosageTime;
     }
 
     public String getId() {
@@ -47,18 +44,12 @@ public class Dosage {
         this.id = id;
     }
 
-    public Date getCurrentDosageDate() {
-        return currentDosageDate;
+    public Date getLastTakenDate() {
+        return lastTakenDate;
     }
 
-    public void setCurrentDosageDate(Date currentDosageDate) {
-        this.currentDosageDate = currentDosageDate;
-    }
-
-    public boolean isTaken(Time dosageWindow) {
-        String dosageDate = new SimpleDateFormat(DATE_FORMAT).format(this.currentDosageDate);
-        String today = new SimpleDateFormat(DATE_FORMAT).format(new Date());
-        return dosageDate.equals(today) && startTime.equals(dosageWindow);
+    public void setLastTakenDate(Date lastTakenDate) {
+        this.lastTakenDate = lastTakenDate;
     }
 
     @JsonIgnore
@@ -110,7 +101,7 @@ public class Dosage {
         return medicineNames;
     }
 
-    public void updateCurrentDate() {
-        currentDosageDate = new Date();
+    public void updateLastTakenDate() {
+        lastTakenDate = new Date();
     }
 }

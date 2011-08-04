@@ -9,10 +9,7 @@ import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.pillreminder.EventKeys;
-import org.motechproject.server.pillreminder.contract.DosageRequest;
-import org.motechproject.server.pillreminder.contract.DosageResponse;
-import org.motechproject.server.pillreminder.contract.MedicineRequest;
-import org.motechproject.server.pillreminder.contract.PillRegimenRequest;
+import org.motechproject.server.pillreminder.contract.*;
 import org.motechproject.server.pillreminder.dao.AllPillRegimens;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.Medicine;
@@ -28,7 +25,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.server.pillreminder.util.Util.getDateAfter;
 
 public class PillReminderServiceTest {
-    PillReminderService service;
+    PillReminderServiceImpl service;
     @Mock
     private AllPillRegimens allPillRegimens;
     @Mock
@@ -108,6 +105,26 @@ public class PillReminderServiceTest {
     }
 
     @Test
+    public void shouldGetPillRegimenGivenARegimenId() {
+        String dosageId = "dosageId";
+        String pillRegimenId = "pillRegimenId";
+
+        Dosage dosage = new Dosage(new Time(20, 05), new HashSet<Medicine>());
+        dosage.setId(dosageId);
+
+        HashSet<Dosage> dosages = new HashSet<Dosage>();
+        dosages.add(dosage);
+
+        PillRegimen pillRegimen = new PillRegimen("patientId", 2, 15, dosages);
+        pillRegimen.setId(pillRegimenId);
+        when(allPillRegimens.get(pillRegimenId)).thenReturn(pillRegimen);
+
+        PillRegimenResponse pillRegimenResponse = service.getPillRegimen(pillRegimenId);
+        assertEquals(pillRegimenId, pillRegimenResponse.getPillRegimenId());
+        assertEquals(dosageId, pillRegimenResponse.getDosages().get(0).getDosageId());
+    }
+
+    @Test
     public void shouldGetPreviousDosageGivenCurrentDosageForARegimen() {
         String currentDosageId = "currentDosageId";
         String previousDosageId = "previousDosageId";
@@ -140,7 +157,7 @@ public class PillReminderServiceTest {
 
         when(currentDosage.getId()).thenReturn(currentDosageId);
         when(nextDosage.getId()).thenReturn(nextDosageId);
-        when(nextDosage.getStartTime()).thenReturn(new Time(10, 20));
+        when(nextDosage.getDosageTime()).thenReturn(new Time(10, 20));
         when(pillRegimen.getDosage(currentDosageId)).thenReturn(currentDosage);
         when(pillRegimen.getNextDosage(currentDosage)).thenReturn(nextDosage);
         when(allPillRegimens.get(pillRegimenId)).thenReturn(pillRegimen);

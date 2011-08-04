@@ -8,7 +8,7 @@ import org.motechproject.server.pillreminder.domain.Dosage;
 public class PillReminderTimeUtils {
 
     public int timesPillRemindersSent(Dosage dosage, int pillWindowInHours, int retryInterval) {
-        Time dosageStartTime = dosage.getStartTime();
+        Time dosageStartTime = dosage.getDosageTime();
         DateTime now = Util.currentDateTime();
         int minsSinceDosage = Math.min(getOffsetOfCurrentTimeFromDosageStartTime(dosageStartTime, now), pillWindowInHours * 60);
         return (minsSinceDosage / retryInterval);
@@ -25,11 +25,11 @@ public class PillReminderTimeUtils {
     }
 
     public boolean isDosageTaken(Dosage dosage, int pillWindow) {
-        DateTime dosageConsumedDate = new DateTime(dosage.getCurrentDosageDate());
+        DateTime dosageConsumedDate = new DateTime(dosage.getLastTakenDate());
 
         DateTime windowStartTime = new DateTime()
-                .withHourOfDay(dosage.getStartTime().getHour())
-                .withMinuteOfHour(dosage.getStartTime().getMinute());
+                .withHourOfDay(dosage.getDosageTime().getHour())
+                .withMinuteOfHour(dosage.getDosageTime().getMinute());
 
         DateTime windowEndTime = windowStartTime.plusHours(pillWindow);
 

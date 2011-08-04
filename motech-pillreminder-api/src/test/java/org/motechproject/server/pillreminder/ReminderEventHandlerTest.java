@@ -142,14 +142,14 @@ public class ReminderEventHandlerTest {
 
     private Dosage buildDosageNotYetTaken(String dosageId) {
         return org.motechproject.server.pillreminder.builder.test.DosageBuilder.newDosage()
-                .withCurrentDosageDate(DateUtils.addDays(new Date(), -1))
+                .withLastTakenDate(DateUtils.addDays(new Date(), -1))
                 .withId(dosageId)
                 .build();
     }
 
     private Dosage buildDosageTaken(String dosageId) {
         return org.motechproject.server.pillreminder.builder.test.DosageBuilder.newDosage()
-                .withCurrentDosageDate(new Date())
+                .withLastTakenDate(new Date())
                 .withId(dosageId)
                 .build();
     }

@@ -27,7 +27,7 @@ public class DosageBuilderTest {
 
         Dosage dosage = builder.createFrom(dosageRequest);
 
-        assertEquals(new Time(9, 5), dosage.getStartTime());
+        assertEquals(new Time(9, 5), dosage.getDosageTime());
         assertEquals(1, dosage.getMedicines().size());
         for (Medicine medicine : dosage.getMedicines()) {
             assertEquals("m1", medicine.getName());

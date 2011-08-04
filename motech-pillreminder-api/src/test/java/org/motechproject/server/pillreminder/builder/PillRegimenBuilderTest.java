@@ -39,7 +39,7 @@ public class PillRegimenBuilderTest {
         assertEquals(20, pillRegimen.getReminderRepeatIntervalInMinutes());
         assertEquals(1, pillRegimen.getDosages().size());
         for (Dosage dosage : pillRegimen.getDosages()) {
-            assertEquals(new Time(10, 5), dosage.getStartTime());
+            assertEquals(new Time(10, 5), dosage.getDosageTime());
             assertEquals(1, dosage.getMedicines().size());
             for (Medicine medicine : dosage.getMedicines()) {
                 assertEquals("m1", medicine.getName());
