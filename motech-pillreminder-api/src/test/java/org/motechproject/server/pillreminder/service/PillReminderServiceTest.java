@@ -108,6 +108,7 @@ public class PillReminderServiceTest {
     public void shouldGetPillRegimenGivenARegimenId() {
         String dosageId = "dosageId";
         String pillRegimenId = "pillRegimenId";
+        String patientId = "patientId";
 
         Dosage dosage = new Dosage(new Time(20, 05), new HashSet<Medicine>());
         dosage.setId(dosageId);
@@ -117,9 +118,9 @@ public class PillReminderServiceTest {
 
         PillRegimen pillRegimen = new PillRegimen("patientId", 2, 15, dosages);
         pillRegimen.setId(pillRegimenId);
-        when(allPillRegimens.get(pillRegimenId)).thenReturn(pillRegimen);
+        when(allPillRegimens.findByExternalId(patientId)).thenReturn(pillRegimen);
 
-        PillRegimenResponse pillRegimenResponse = service.getPillRegimen(pillRegimenId);
+        PillRegimenResponse pillRegimenResponse = service.getPillRegimen(patientId);
         assertEquals(pillRegimenId, pillRegimenResponse.getPillRegimenId());
         assertEquals(dosageId, pillRegimenResponse.getDosages().get(0).getDosageId());
     }

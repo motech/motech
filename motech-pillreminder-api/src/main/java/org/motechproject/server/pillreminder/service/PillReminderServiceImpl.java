@@ -70,8 +70,8 @@ public class PillReminderServiceImpl implements PillReminderService {
     }
 
     @Override
-    public PillRegimenResponse getPillRegimen(String pillRegimenId) {
-        PillRegimen pillRegimen = allPillRegimens.get(pillRegimenId);
+    public PillRegimenResponse getPillRegimen(String externalId) {
+        PillRegimen pillRegimen = allPillRegimens.findByExternalId(externalId);
         return pillRegimen == null ? null : new PillRegimenResponseBuilder().createFrom(pillRegimen);
     }
 
