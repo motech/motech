@@ -1,7 +1,6 @@
 package org.motechproject.server.pillreminder;
 
 
-import org.apache.commons.lang.time.DateUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -14,8 +13,8 @@ import org.motechproject.server.pillreminder.dao.AllPillRegimens;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
 import org.motechproject.server.pillreminder.util.PillReminderTimeUtils;
+import org.motechproject.util.DateUtil;
 
-import java.util.Date;
 import java.util.HashMap;
 
 import static junit.framework.Assert.assertEquals;
@@ -142,14 +141,14 @@ public class ReminderEventHandlerTest {
 
     private Dosage buildDosageNotYetTaken(String dosageId) {
         return org.motechproject.server.pillreminder.builder.test.DosageBuilder.newDosage()
-                .withLastTakenDate(DateUtils.addDays(new Date(), -1))
+                .withLastTakenDate(DateUtil.today().minusDays(1))
                 .withId(dosageId)
                 .build();
     }
 
     private Dosage buildDosageTaken(String dosageId) {
         return org.motechproject.server.pillreminder.builder.test.DosageBuilder.newDosage()
-                .withLastTakenDate(new Date())
+                .withLastTakenDate(DateUtil.today())
                 .withId(dosageId)
                 .build();
     }

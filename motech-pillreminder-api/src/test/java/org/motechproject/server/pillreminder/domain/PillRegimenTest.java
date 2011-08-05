@@ -1,22 +1,22 @@
 package org.motechproject.server.pillreminder.domain;
 
 import junit.framework.Assert;
+import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.motechproject.model.Time;
+import org.motechproject.util.DateUtil;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
-import static org.motechproject.server.pillreminder.util.Util.newDate;
 
 public class PillRegimenTest {
 
     @Test(expected = ValidationException.class)
     public void shouldNotValidateIfEndDateIsBeforeTheStartDate() {
-        Date startDate = newDate(2011, 1, 1);
-        Date endDate = newDate(2011, 0, 1);
+        LocalDate startDate = DateUtil.newDate(2011, 2, 1);
+        LocalDate endDate = DateUtil.newDate(2011, 1, 1);
 
         Set<Medicine> medicines = new HashSet<Medicine>();
         medicines.add(new Medicine("m1", startDate, endDate));
@@ -30,8 +30,8 @@ public class PillRegimenTest {
 
     @Test
     public void shouldValidateIfNoEndDateIsProvided() {
-        Date startDate = newDate(2011, 1, 1);
-        Date endDate = null;
+        LocalDate startDate = DateUtil.newDate(2011, 1, 1);
+        LocalDate endDate = null;
 
         Set<Medicine> medicines = new HashSet<Medicine>();
         medicines.add(new Medicine("m1", startDate, endDate));

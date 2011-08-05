@@ -1,14 +1,13 @@
 package org.motechproject.server.pillreminder.builder.test;
 
+import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
 import org.motechproject.server.pillreminder.domain.Dosage;
-
-import java.util.Date;
 
 public class DosageBuilder {
     private Dosage dosage = new Dosage();
 
-    public DosageBuilder withLastTakenDate(Date lastTakenDate) {
+    public DosageBuilder withLastTakenDate(LocalDate lastTakenDate) {
         dosage.setLastTakenDate(lastTakenDate);
         return this;
     }

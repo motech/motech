@@ -1,5 +1,6 @@
 package org.motechproject.server.pillreminder.service;
 
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
@@ -16,6 +17,7 @@ import org.motechproject.server.pillreminder.dao.AllPillRegimens;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.Medicine;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
+import org.motechproject.util.DateUtil;
 
 import java.util.*;
 
@@ -24,7 +26,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.server.pillreminder.util.Util.getDateAfter;
 
 public class PillReminderServiceTest {
     PillReminderServiceImpl service;
@@ -41,12 +42,12 @@ public class PillReminderServiceTest {
 
     @Test
     public void shouldCreateAPillRegimenFromRequestAndPersist() {
-        Date startDate = new Date();
-        Date endDate = getDateAfter(startDate, 2);
+        LocalDate startDate = DateUtil.today();
+        LocalDate endDate = startDate.plusDays(2);
         String externalId = "123";
 
         MedicineRequest medicineRequest1 = new MedicineRequest("m1", startDate, endDate);
-        MedicineRequest medicineRequest2 = new MedicineRequest("m2", getDateAfter(startDate, 1), getDateAfter(startDate, 4));
+        MedicineRequest medicineRequest2 = new MedicineRequest("m2", startDate.plusDays(1), startDate.plusDays(4));
         List<MedicineRequest> medicineRequests = asList(medicineRequest1, medicineRequest2);
 
         DosageRequest dosageRequest = new DosageRequest(9, 5, medicineRequests);
@@ -55,18 +56,18 @@ public class PillReminderServiceTest {
         service.createNew(pillRegimenRequest);
 
         verify(allPillRegimens).add(argThat(new PillRegimenArgumentMatcher()));
-        verify(schedulerService, times(1)).scheduleJob(argThat(new CronSchedulableJobArgumentMatcher(startDate, getDateAfter(startDate, 4))));
+        verify(schedulerService, times(1)).scheduleJob(argThat(new CronSchedulableJobArgumentMatcher(startDate.toDate(), startDate.plusDays(4).toDate())));
     }
 
     @Test
     public void shouldRenewAPillRegimenFromRequest() {
         String externalId = "123";
         String randomUID = "1234567890";
-        Date startDate = new Date();
-        Date endDate = getDateAfter(startDate, 2);
+        LocalDate startDate = DateUtil.today();
+        LocalDate endDate = startDate.plusDays(2);
 
         MedicineRequest medicineRequest1 = new MedicineRequest("m1", startDate, endDate);
-        MedicineRequest medicineRequest2 = new MedicineRequest("m2", getDateAfter(startDate, 1), getDateAfter(startDate, 4));
+        MedicineRequest medicineRequest2 = new MedicineRequest("m2", startDate.plusDays(1), startDate.plusDays(4));
         List<MedicineRequest> medicineRequests = asList(medicineRequest1, medicineRequest2);
 
         DosageRequest dosageRequest = new DosageRequest(9, 5, medicineRequests);
@@ -76,7 +77,7 @@ public class PillReminderServiceTest {
         Set<Dosage> dosages = new HashSet<Dosage>() {{
             add(dosage);
         }};
-        when(regimen.getDosages()).thenReturn((Set<Dosage>) dosages);
+        when(regimen.getDosages()).thenReturn(dosages);
         when(dosage.getId()).thenReturn(randomUID);
         when(allPillRegimens.findByExternalId(externalId)).thenReturn(regimen);
 
@@ -85,7 +86,7 @@ public class PillReminderServiceTest {
         verify(schedulerService).unscheduleJob(randomUID);
         verify(allPillRegimens).remove(regimen);
         verify(allPillRegimens).add(argThat(new PillRegimenArgumentMatcher()));
-        verify(schedulerService, times(1)).scheduleJob(argThat(new CronSchedulableJobArgumentMatcher(startDate, getDateAfter(startDate, 4))));
+        verify(schedulerService, times(1)).scheduleJob(argThat(new CronSchedulableJobArgumentMatcher(startDate.toDate(), startDate.plusDays(4).toDate())));
     }
 
     @Test

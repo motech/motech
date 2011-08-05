@@ -1,5 +1,6 @@
 package org.motechproject.server.pillreminder.builder;
 
+import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.motechproject.model.Time;
 import org.motechproject.server.pillreminder.contract.DosageRequest;
@@ -8,13 +9,12 @@ import org.motechproject.server.pillreminder.contract.PillRegimenRequest;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.Medicine;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
+import org.motechproject.util.DateUtil;
 
-import java.util.Date;
 import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
-import static org.motechproject.server.pillreminder.util.Util.newDate;
 
 public class PillRegimenBuilderTest {
 
@@ -22,8 +22,8 @@ public class PillRegimenBuilderTest {
 
     @Test
     public void shouldCreateAPillRegimenFromARequest() {
-        Date startDate = newDate(2011, 5, 20);
-        Date endDate = newDate(2011, 5, 21);
+        LocalDate startDate = DateUtil.newDate(2011, 5, 20);
+        LocalDate endDate = DateUtil.newDate(2011, 5, 21);
         String externalId = "123";
 
         MedicineRequest medicineRequest = new MedicineRequest("m1", startDate, endDate);

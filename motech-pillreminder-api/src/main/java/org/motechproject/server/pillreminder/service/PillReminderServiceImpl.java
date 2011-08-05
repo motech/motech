@@ -15,6 +15,7 @@ import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Date;
 import java.util.Map;
 
 public class PillReminderServiceImpl implements PillReminderService {
@@ -48,7 +49,8 @@ public class PillReminderServiceImpl implements PillReminderService {
                     pillRegimen.getReminderRepeatWindowInHours(),
                     pillRegimen.getReminderRepeatIntervalInMinutes()).build();
 
-            CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, dosage.getStartDate(), dosage.getEndDate());
+            Date endDate = dosage.getEndDate() == null ? null : dosage.getEndDate().toDate();
+            CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, dosage.getStartDate().toDate(), endDate);
             schedulerService.scheduleJob(schedulableJob);
         }
     }

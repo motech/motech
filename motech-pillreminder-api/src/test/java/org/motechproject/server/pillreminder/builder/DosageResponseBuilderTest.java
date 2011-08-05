@@ -1,14 +1,15 @@
 package org.motechproject.server.pillreminder.builder;
 
 import junit.framework.Assert;
+import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.motechproject.model.Time;
 import org.motechproject.server.pillreminder.contract.DosageResponse;
 import org.motechproject.server.pillreminder.contract.MedicineResponse;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.Medicine;
+import org.motechproject.util.DateUtil;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class DosageResponseBuilderTest {
 
     @Test
     public void shouldConstructADosageResponseGivenADosage() {
-        Date date = new Date();
+        LocalDate date = DateUtil.today();
         HashSet<Medicine> medicines = new HashSet<Medicine>();
         medicines.add(new Medicine("medicine1", date, date));
         medicines.add(new Medicine("medicine2", date, date));

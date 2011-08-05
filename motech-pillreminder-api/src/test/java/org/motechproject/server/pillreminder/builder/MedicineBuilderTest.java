@@ -1,13 +1,12 @@
 package org.motechproject.server.pillreminder.builder;
 
+import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.motechproject.server.pillreminder.contract.MedicineRequest;
 import org.motechproject.server.pillreminder.domain.Medicine;
-
-import java.util.Date;
+import org.motechproject.util.DateUtil;
 
 import static org.junit.Assert.assertEquals;
-import static org.motechproject.server.pillreminder.util.Util.getDateAfter;
 
 public class MedicineBuilderTest {
     private MedicineBuilder builder = new MedicineBuilder();
@@ -15,8 +14,8 @@ public class MedicineBuilderTest {
     @Test
     public void shouldBuildAMedicineFromRequest() {
         String medicineName = "paracetamol";
-        Date startDate = new Date();
-        Date endDate = getDateAfter(startDate, 2);
+        LocalDate startDate = DateUtil.today();
+        LocalDate endDate = startDate.plusDays(2);
         MedicineRequest medicineRequest = new MedicineRequest(medicineName, startDate, endDate);
 
         Medicine medicine = builder.createFrom(medicineRequest);

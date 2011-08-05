@@ -1,12 +1,13 @@
 package org.motechproject.server.pillreminder.contract;
 
-import java.util.Date;
+import org.joda.time.LocalDate;
+
 public class MedicineResponse {
     private String name;
-    private Date startDate;
-    private Date endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
-    public MedicineResponse(String name, Date startDate, Date endDate) {
+    public MedicineResponse(String name, LocalDate startDate, LocalDate endDate) {
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -16,11 +17,11 @@ public class MedicineResponse {
         return name;
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 }

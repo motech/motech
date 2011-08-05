@@ -1,5 +1,6 @@
 package org.motechproject.server.pillreminder.dao;
 
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,17 +8,16 @@ import org.motechproject.model.Time;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.Medicine;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
-import org.motechproject.server.pillreminder.util.Util;
+import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.*;
-import static org.motechproject.server.pillreminder.util.Util.getDateAfter;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/applicationPillReminderAPI.xml"})
@@ -25,13 +25,13 @@ public class AllPillRegimensIT {
     @Autowired
     private AllPillRegimens allPillRegimens;
 
-    private Date startDate;
-    private Date endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     @Before
     public void setUp() {
-        startDate = Util.newDate(2011, 1, 1);
-        endDate = Util.newDate(2011, 3, 1);
+        startDate = DateUtil.newDate(2011, 1, 1);
+        endDate = DateUtil.newDate(2011, 3, 1);
     }
 
     @Test
@@ -85,12 +85,12 @@ public class AllPillRegimensIT {
 
         PillRegimen dbRegimen = allPillRegimens.get(regimenId);
         Dosage dbDosage = dbRegimen.getDosage(dosageId);
-        assertTrue(Util.areDatesSame(new Date(), dbDosage.getLastTakenDate()));
+        assertEquals(DateUtil.today(), dbDosage.getLastTakenDate());
     }
 
     private PillRegimen setUpPillRegimen() {
         Medicine medicine = new Medicine("m1", startDate, endDate);
-        Medicine medicine2 = new Medicine("m2", startDate, getDateAfter(startDate, 3));
+        Medicine medicine2 = new Medicine("m2", startDate, startDate.plusMonths(3));
         Set<Medicine> medicines = new HashSet<Medicine>();
         medicines.add(medicine);
         medicines.add(medicine2);

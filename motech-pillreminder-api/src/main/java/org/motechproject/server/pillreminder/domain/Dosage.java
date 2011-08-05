@@ -1,14 +1,16 @@
 package org.motechproject.server.pillreminder.domain;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
+import org.motechproject.util.DateUtil;
 
 import java.util.*;
 
 public class Dosage {
     private String id;
     private Time dosageTime;
-    private Date lastTakenDate;
+    private LocalDate lastTakenDate;
     private Set<Medicine> medicines;
 
     public Dosage() {
@@ -44,16 +46,16 @@ public class Dosage {
         this.id = id;
     }
 
-    public Date getLastTakenDate() {
+    public LocalDate getLastTakenDate() {
         return lastTakenDate;
     }
 
-    public void setLastTakenDate(Date lastTakenDate) {
+    public void setLastTakenDate(LocalDate lastTakenDate) {
         this.lastTakenDate = lastTakenDate;
     }
 
     @JsonIgnore
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         List<Medicine> sortedList = new ArrayList<Medicine>(medicines);
         Collections.sort(sortedList, new Comparator<Medicine>() {
             @Override
@@ -65,7 +67,7 @@ public class Dosage {
     }
 
     @JsonIgnore
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         Set<Medicine> medicinesWithNonNullEndDate = getMedicinesWithNonNullEndDate();
         if (medicinesWithNonNullEndDate.isEmpty()) return null;
 
@@ -94,6 +96,6 @@ public class Dosage {
     }
 
     public void updateLastTakenDate() {
-        lastTakenDate = new Date();
+        lastTakenDate = DateUtil.today();
     }
 }

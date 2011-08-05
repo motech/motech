@@ -1,20 +1,20 @@
 package org.motechproject.server.pillreminder.contract;
 
+import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
 
-import java.util.Date;
 import java.util.List;
 
 public class DosageResponse {
     private String dosageId;
     private int dosageHour;
     private int dosageMinute;
-    private Date startDate;
-    private Date endDate;
-    private Date lastTakenDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private LocalDate lastTakenDate;
     private List<MedicineResponse> medicines;
 
-    public DosageResponse(String dosageId, Time dosageTime, Date startDate, Date endDate, Date lastTakenDate, List<MedicineResponse> medicines) {
+    public DosageResponse(String dosageId, Time dosageTime, LocalDate startDate, LocalDate endDate, LocalDate lastTakenDate, List<MedicineResponse> medicines) {
         this.dosageId = dosageId;
         this.dosageHour = dosageTime.getHour();
         this.dosageMinute = dosageTime.getMinute();
@@ -36,15 +36,15 @@ public class DosageResponse {
         return dosageMinute;
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public Date getLastTakenDate() {
+    public LocalDate getLastTakenDate() {
         return lastTakenDate;
     }
 
