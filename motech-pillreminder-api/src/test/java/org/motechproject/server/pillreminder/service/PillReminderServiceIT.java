@@ -17,6 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/applicationPillReminderAPI.xml"})
@@ -71,8 +72,8 @@ public class PillReminderServiceIT {
         pillReminderService.createNew(new PillRegimenRequest("12345678", 2, 15, dosageContracts));
 
         ArrayList<DosageRequest> newDosageContracts = new ArrayList<DosageRequest>();
-        newDosageContracts.add(new DosageRequest(9, 5, new ArrayList<MedicineRequest>()));
-        newDosageContracts.add(new DosageRequest(4, 5, new ArrayList<MedicineRequest>()));
+        newDosageContracts.add(new DosageRequest(9, 5, Arrays.asList(new MedicineRequest("m1", DateUtil.today(), DateUtil.today().plusDays(100)))));
+        newDosageContracts.add(new DosageRequest(4, 5, Arrays.asList(new MedicineRequest("m2", DateUtil.today(), DateUtil.today().plusDays(100)))));
         pillReminderService.renew(new PillRegimenRequest("12345678", 2, 15, newDosageContracts));
         Assert.assertEquals(scheduledJobsNum + 2, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
     }
