@@ -17,6 +17,6 @@ public class DosageResponseBuilder {
         for (Medicine medicine : dosage.getMedicines()) {
             medicines.add(medicineResponseBuilder.createFrom(medicine));
         }
-        return new DosageResponse(dosage.getId(), dosage.getDosageTime(), dosage.getStartDate(), dosage.getEndDate(), dosage.getLastTakenDate(), medicines);
+        return new DosageResponse(dosage.getId(), dosage.getDosageTime(), dosage.getStartDate(), dosage.getEndDate(), dosage.getResponseLastCapturedDate(), medicines);
     }
 }

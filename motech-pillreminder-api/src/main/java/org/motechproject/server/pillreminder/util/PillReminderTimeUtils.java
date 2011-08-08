@@ -25,7 +25,7 @@ public class PillReminderTimeUtils {
     }
 
     public boolean isDosageTaken(Dosage dosage, int pillWindow) {
-        DateTime dosageConsumedDate = new DateTime(dosage.getLastTakenDate());
+        DateTime dosageConsumedDate = new DateTime(dosage.getResponseLastCapturedDate());
 
         DateTime windowStartTime = new DateTime()
                 .withHourOfDay(dosage.getDosageTime().getHour())

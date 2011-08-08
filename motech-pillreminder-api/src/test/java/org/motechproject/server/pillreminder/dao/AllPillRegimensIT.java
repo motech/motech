@@ -85,7 +85,7 @@ public class AllPillRegimensIT {
 
         PillRegimen dbRegimen = allPillRegimens.get(regimenId);
         Dosage dbDosage = dbRegimen.getDosage(dosageId);
-        assertEquals(DateUtil.today(), dbDosage.getLastTakenDate());
+        assertEquals(DateUtil.today(), dbDosage.getResponseLastCapturedDate());
     }
 
     private PillRegimen setUpPillRegimen() {

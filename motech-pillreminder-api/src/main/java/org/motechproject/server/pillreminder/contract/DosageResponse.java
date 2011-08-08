@@ -11,16 +11,16 @@ public class DosageResponse {
     private int dosageMinute;
     private LocalDate startDate;
     private LocalDate endDate;
-    private LocalDate lastTakenDate;
+    private LocalDate responseLastCapturedDate;
     private List<MedicineResponse> medicines;
 
-    public DosageResponse(String dosageId, Time dosageTime, LocalDate startDate, LocalDate endDate, LocalDate lastTakenDate, List<MedicineResponse> medicines) {
+    public DosageResponse(String dosageId, Time dosageTime, LocalDate startDate, LocalDate endDate, LocalDate responseLastCapturedDate, List<MedicineResponse> medicines) {
         this.dosageId = dosageId;
         this.dosageHour = dosageTime.getHour();
         this.dosageMinute = dosageTime.getMinute();
         this.startDate = startDate;
         this.endDate = endDate;
-        this.lastTakenDate = lastTakenDate;
+        this.responseLastCapturedDate = responseLastCapturedDate;
         this.medicines = medicines;
     }
 
@@ -44,8 +44,8 @@ public class DosageResponse {
         return endDate;
     }
 
-    public LocalDate getLastTakenDate() {
-        return lastTakenDate;
+    public LocalDate getResponseLastCapturedDate() {
+        return responseLastCapturedDate;
     }
 
     public List<MedicineResponse> getMedicines() {

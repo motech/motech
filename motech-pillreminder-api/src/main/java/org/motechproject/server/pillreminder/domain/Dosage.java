@@ -10,7 +10,7 @@ import java.util.*;
 public class Dosage {
     private String id;
     private Time dosageTime;
-    private LocalDate lastTakenDate;
+    private LocalDate responseLastCapturedDate;
     private Set<Medicine> medicines;
 
     public Dosage() {
@@ -46,12 +46,12 @@ public class Dosage {
         this.id = id;
     }
 
-    public LocalDate getLastTakenDate() {
-        return lastTakenDate;
+    public LocalDate getResponseLastCapturedDate() {
+        return responseLastCapturedDate;
     }
 
-    public void setLastTakenDate(LocalDate lastTakenDate) {
-        this.lastTakenDate = lastTakenDate;
+    public void setResponseLastCapturedDate(LocalDate responseLastCapturedDate) {
+        this.responseLastCapturedDate = responseLastCapturedDate;
     }
 
     @JsonIgnore
@@ -95,7 +95,7 @@ public class Dosage {
             medicine.validate();
     }
 
-    public void updateLastTakenDate() {
-        lastTakenDate = DateUtil.today();
+    public void updateResponseLastCapturedDate() {
+        responseLastCapturedDate = DateUtil.today();
     }
 }

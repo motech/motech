@@ -7,8 +7,8 @@ import org.motechproject.server.pillreminder.domain.Dosage;
 public class DosageBuilder {
     private Dosage dosage = new Dosage();
 
-    public DosageBuilder withLastTakenDate(LocalDate lastTakenDate) {
-        dosage.setLastTakenDate(lastTakenDate);
+    public DosageBuilder withResponseLastCapturedDate(LocalDate responseLastCapturedDate) {
+        dosage.setResponseLastCapturedDate(responseLastCapturedDate);
         return this;
     }
 
