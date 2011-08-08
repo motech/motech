@@ -54,6 +54,7 @@ public class Dosage {
         this.responseLastCapturedDate = responseLastCapturedDate;
     }
 
+    @JsonIgnore
     public boolean isTodaysDosageResponseCaptured() {
         return getResponseLastCapturedDate() != null && getResponseLastCapturedDate().equals(DateUtil.today());
     }
