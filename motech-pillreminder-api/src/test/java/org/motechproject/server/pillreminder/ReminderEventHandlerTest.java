@@ -112,7 +112,6 @@ public class ReminderEventHandlerTest {
         assertEquals(timesToBeSent, event.getValue().getParameters().get(EventKeys.PILLREMINDER_TOTAL_TIMES_TO_SEND));
     }
 
-
     @Test
     public void shoulNotRaiseEventWhenDosageIsAlreadyTakenForCurrentPillWindow() {
         int pillWindow = 0;
@@ -124,7 +123,6 @@ public class ReminderEventHandlerTest {
 
         PillRegimen pillRegimen = buildPillRegimen(externalId, pillWindow, dosage, retryInterval);
 
-        when(pillRegimenTimeUtils.isDosageTaken(dosage, pillWindow)).thenReturn(true);
         when(allPillRegimens.findByExternalId(externalId)).thenReturn(pillRegimen);
 
         MotechEvent motechEvent = buildMotechEvent(externalId, dosageId);

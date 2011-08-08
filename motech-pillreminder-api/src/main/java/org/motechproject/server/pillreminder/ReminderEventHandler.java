@@ -34,15 +34,10 @@ public class ReminderEventHandler {
     public void handleEvent(MotechEvent motechEvent) {
         PillRegimen pillRegimen = getPillRegimen(motechEvent);
         Dosage dosage = getDosage(pillRegimen, motechEvent);
-        final int pillWindow = pillRegimen.getReminderRepeatWindowInHours();
 
-        if (shouldRaiseEvent(dosage, pillWindow)) {
+        if (!dosage.isTodaysDosageResponseCaptured()) {
             outboundEventGateway.sendEventMessage(createNewMotechEvent(dosage, pillRegimen, motechEvent));
         }
-    }
-
-    private boolean shouldRaiseEvent(Dosage dosage, int pillWindow) {
-        return !(pillReminderTimeUtils.isDosageTaken(dosage, pillWindow));
     }
 
     private MotechEvent createNewMotechEvent(Dosage dosage, PillRegimen pillRegimen, MotechEvent eventRaisedByScheduler) {

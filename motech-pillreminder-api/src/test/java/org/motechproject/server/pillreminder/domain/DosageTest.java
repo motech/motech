@@ -8,8 +8,7 @@ import org.motechproject.util.DateUtil;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 public class DosageTest {
     @Test
@@ -40,6 +39,24 @@ public class DosageTest {
         Dosage dosage = new Dosage(new Time(9, 5), medicines);
 
         assertNull(dosage.getEndDate());
+    }
+
+    @Test
+    public void isDosageCapturedForToday(){
+        Dosage dosage = new Dosage(new Time(9, 5), new HashSet<Medicine>());
+
+        assertFalse(dosage.isTodaysDosageResponseCaptured());
+
+        dosage.updateResponseLastCapturedDate();
+        assertTrue(dosage.isTodaysDosageResponseCaptured());
+    }
+
+    @Test
+    public void isDosageCapturedForTodayIsFalse_WhenCapturedForYesterday(){
+        Dosage dosage = new Dosage(new Time(9, 5), new HashSet<Medicine>());
+
+        dosage.setResponseLastCapturedDate(DateUtil.today().minusDays(1));
+        assertFalse(dosage.isTodaysDosageResponseCaptured());
     }
 
     @Test

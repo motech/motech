@@ -54,6 +54,10 @@ public class Dosage {
         this.responseLastCapturedDate = responseLastCapturedDate;
     }
 
+    public boolean isTodaysDosageResponseCaptured() {
+        return getResponseLastCapturedDate() != null && getResponseLastCapturedDate().equals(DateUtil.today());
+    }
+
     @JsonIgnore
     public LocalDate getStartDate() {
         List<Medicine> sortedList = new ArrayList<Medicine>(medicines);
