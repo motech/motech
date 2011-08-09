@@ -6,7 +6,7 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.1</version>
+        <version>0.1-SNAPSHOT</version>
     </parent>
     <groupId>motech-message-campaign</groupId>
     <artifactId>motech-message-campaign</artifactId>
@@ -50,7 +50,7 @@
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-scheduler</artifactId>
-            <version>0.1</version>
+            <version>0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>

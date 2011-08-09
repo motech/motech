@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.motechproject</groupId>
     <artifactId>motech</artifactId>
-    <version>0.1</version>
+    <version>0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>MOTECH</name>
 
@@ -301,11 +301,11 @@
                     <name>Motech Releases Repository</name>
                     <url>http://nexus.motechproject.org/content/repositories/releases</url>
                 </repository>
-                <!--<snapshotRepository>-->
-                    <!--<id>motech.nexus</id>-->
-                    <!--<name>Motech Snapshots Repository</name>-->
-                    <!--<url>http://nexus.motechproject.org/content/repositories/snapshots</url>-->
-                <!--</snapshotRepository>-->
+                <snapshotRepository>
+                    <id>motech.nexus</id>
+                    <name>Motech Snapshots Repository</name>
+                    <url>http://nexus.motechproject.org/content/repositories/snapshots</url>
+                </snapshotRepository>
             </distributionManagement>
         </profile>
         <profile>
@@ -314,7 +314,31 @@
                 <db.server>127.0.0.1</db.server>
                 <db.port>5984</db.port>
             </properties>
+            <distributionManagement>
+                <repository>
+                    <id>motech.nexus</id>
+                    <name>Motech Releases Repository</name>
+                    <url>http://nexus.motechproject.org/content/repositories/releases</url>
+                </repository>
+                <snapshotRepository>
+                    <id>motech.nexus</id>
+                    <name>Motech Snapshots Repository</name>
+                    <url>http://nexus.motechproject.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+            </distributionManagement>
             <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-release-plugin</artifactId>
+                            <version>2.1</version>
+                            <configuration>
+                                <preparationGoals>clean verify -P tw-ci</preparationGoals>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
