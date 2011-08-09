@@ -52,12 +52,12 @@ import static junit.framework.Assert.assertTrue;
  * this template use File | Settings | File Templates.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/applicationPlatformCommon.xml", "/persistenceIntegrationContext.xml" })
+@ContextConfiguration(locations = {"/applicationPlatformCommon.xml"})
 public class AuditablePersistenceIT {
 
     @Autowired
     private RuleRepository ruleRepository;
-    
+
     private Rule rule;
 
     @Before
@@ -76,18 +76,18 @@ public class AuditablePersistenceIT {
     public void testMotechPersistence() throws Exception {
         Audit audit = rule.getAudit();
         assertEquals(audit.getLastUpdated(), audit.getDateCreated());
-        
+
         Thread.sleep(1000);
         ruleRepository.update(rule);
         audit = rule.getAudit();
         assertTrue(audit.getLastUpdated().getTime() - audit.getDateCreated().getTime() >= 1000);
-        
+
         //fresh from db
         rule = ruleRepository.get(rule.getId());
         audit = rule.getAudit();
         assertTrue(audit.getLastUpdated().getTime() - audit.getDateCreated().getTime() >= 1000);
-        
+
         List<Rule> list = ruleRepository.getAll();
-        assertTrue(list.size()>0);
+        assertTrue(list.size() > 0);
     }
 }
