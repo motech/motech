@@ -42,13 +42,12 @@
 		</layout>
 	</appender>
 
-
 	<logger name="metrics">
-		<level value="DEBUG" />
+		<level value="WARN" />
 	</logger>
 
 	<logger name="org.motechproject">
-		<level value="DEBUG" />
+		<level value="WARN" />
 	</logger>
 	
 	<root>
