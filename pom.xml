@@ -8,6 +8,7 @@
     <packaging>pom</packaging>
     <name>MOTECH</name>
 
+
     <distributionManagement>
         <site>
             <id>www.motechproject.org</id>
@@ -106,6 +107,11 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.7.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>2.2</version>
             </plugin>
@@ -177,7 +183,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>2.9</version>
+                <version>2.7.2</version>
                 <configuration>
                     <xrefLocation>${project.reporting.outputDirectory}/../xref-test</xrefLocation>
                     <aggregate>true</aggregate>
@@ -242,7 +248,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>taglist-maven-plugin</artifactId>
-                <version>2.4</version>
             </plugin>
         </plugins>
     </reporting>
@@ -337,9 +342,8 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>2.9</version>
+                        <version>2.7.2</version>
                         <configuration>
-                            <encoding>UTF-8</encoding>
                             <excludes>
                                 <exclude>**/IVRServiceImplIT.java</exclude>
                                 <exclude>**/SchedulerGatewayIT.java</exclude>
@@ -365,7 +369,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.2</version>
+                        <version>1.1.1</version>
                         <executions>
                             <execution>
                                 <id>drop DB => rules</id>
@@ -376,8 +380,6 @@
                                 <configuration>
                                     <executable>curl</executable>
                                     <arguments>
-                                        <argument>-s</argument>
-                                        <argument>-S</argument>
                                         <argument>-X</argument>
                                         <argument>"DELETE"</argument>
                                         <argument>"http://${db.server}:${db.port}/rules"</argument>
@@ -393,8 +395,6 @@
                                 <configuration>
                                     <executable>curl</executable>
                                     <arguments>
-                                        <argument>-s</argument>
-                                        <argument>-S</argument>
                                         <argument>-X</argument>
                                         <argument>"DELETE"</argument>
                                         <argument>"http://${db.server}:${db.port}/trees"</argument>
@@ -410,8 +410,6 @@
                                 <configuration>
                                     <executable>curl</executable>
                                     <arguments>
-                                        <argument>-s</argument>
-                                        <argument>-S</argument>
                                         <argument>-X</argument>
                                         <argument>"DELETE"</argument>
                                         <argument>"http://${db.server}:${db.port}/test-tama"</argument>
@@ -427,8 +425,6 @@
                                 <configuration>
                                     <executable>curl</executable>
                                     <arguments>
-                                        <argument>-s</argument>
-                                        <argument>-S</argument>
                                         <argument>-X</argument>
                                         <argument>"DELETE"</argument>
                                         <argument>"http://${db.server}:${db.port}/test-appointments"</argument>
@@ -444,8 +440,6 @@
                                 <configuration>
                                     <executable>curl</executable>
                                     <arguments>
-                                        <argument>-s</argument>
-                                        <argument>-S</argument>
                                         <argument>-X</argument>
                                         <argument>"DELETE"</argument>
                                         <argument>"http://${db.server}:${db.port}/test-outbox"</argument>
@@ -461,8 +455,6 @@
                                 <configuration>
                                     <executable>curl</executable>
                                     <arguments>
-                                        <argument>-s</argument>
-                                        <argument>-S</argument>
                                         <argument>-X</argument>
                                         <argument>"DELETE"</argument>
                                         <argument>"http://${db.server}:${db.port}/motech-pillreminder"</argument>
@@ -478,8 +470,6 @@
                                 <configuration>
                                     <executable>curl</executable>
                                     <arguments>
-                                        <argument>-s</argument>
-                                        <argument>-S</argument>
                                         <argument>-X</argument>
                                         <argument>"DELETE"</argument>
                                         <argument>"http://${db.server}:${db.port}/motech-outbox"</argument>
@@ -495,8 +485,6 @@
                                 <configuration>
                                     <executable>curl</executable>
                                     <arguments>
-                                        <argument>-s</argument>
-                                        <argument>-S</argument>
                                         <argument>-X</argument>
                                         <argument>"DELETE"</argument>
                                         <argument>"http://${db.server}:${db.port}/motech-cmslite"</argument>
