@@ -43,7 +43,7 @@
 	</appender>
 
 	<logger name="bundle.loader.test">
-		<level value="DEBUG" />
+		<level value="WARN" />
 	</logger>
 	
 	<root>

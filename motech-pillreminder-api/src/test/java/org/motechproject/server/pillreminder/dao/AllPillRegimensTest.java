@@ -26,6 +26,4 @@ public class AllPillRegimensTest {
         allPillRegimens.add(pillRegimen);
         verify(couchDbConnector).create(pillRegimen);
     }
-
-
 }
