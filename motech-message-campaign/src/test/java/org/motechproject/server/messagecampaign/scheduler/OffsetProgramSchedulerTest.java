@@ -44,12 +44,14 @@ public class OffsetProgramSchedulerTest {
 
         Date jobDate1 = new DateTime(request.referenceDate()).plusDays(7).toDate();
         assertEquals("0 30/15 9-11 * * ?", allJobs.get(0).getCronExpression());
+        jobDate1.setSeconds(0); allJobs.get(0).getStartTime().setSeconds(0);
         assertEquals(jobDate1.toString(), allJobs.get(0).getStartTime().toString());
         assertEquals(MESSAGE_CAMPAIGN_EVENT_SUBJECT, allJobs.get(0).getMotechEvent().getSubject());
         assertMotechEvent(allJobs.get(0), "org.motechproject.server.messagecampaign.testCampaign.OM1.12345", "child-info-week-1");
 
         Date jobDate2 = new DateTime(request.referenceDate()).plusDays(14).toDate();
         assertEquals("0 30/15 9-11 * * ?", allJobs.get(1).getCronExpression());
+        jobDate2.setSeconds(0); allJobs.get(1).getStartTime().setSeconds(0);
         assertEquals(jobDate2.toString(), allJobs.get(1).getStartTime().toString());
         assertEquals(MESSAGE_CAMPAIGN_EVENT_SUBJECT, allJobs.get(1).getMotechEvent().getSubject());
         assertMotechEvent(allJobs.get(1), "org.motechproject.server.messagecampaign.testCampaign.OM2.12345", "child-info-week-1a");

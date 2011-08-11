@@ -287,8 +287,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         Trigger trigger;
         trigger = new SimpleTrigger(jobId, JOB_GROUP_NAME, jobStartDate, jobEndDate,
-                                    repeatingSchedulableJob.getRepeatCount(),
-                                    repeatingSchedulableJob.getRepeatInterval());
+        							jobRepeatCount,
+        							jobRepeatInterval);
 
         scheduleJob(jobDetail, trigger);
     }

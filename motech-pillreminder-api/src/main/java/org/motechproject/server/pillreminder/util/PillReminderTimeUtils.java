@@ -8,10 +8,10 @@ import org.motechproject.util.DateUtil;
 
     public class PillReminderTimeUtils {
 
-    public int timesPillRemindersSent(Dosage dosage, int pillWindowInHours, int retryInterval) {
+    public int timesPillRemindersSent(Dosage dosage, int pillWindowInHours, int retryIntervalInMinute) {
         Time dosageStartTime = dosage.getDosageTime();
         int minsSinceDosage = Math.min(getOffsetOfCurrentTimeFromDosageStartTime(dosageStartTime, DateUtil.now()), pillWindowInHours * 60);
-        return (minsSinceDosage / retryInterval);
+        return (minsSinceDosage / retryIntervalInMinute);
     }
 
     public int timesPillRemainderWillBeSent(int pillWindow, int retryInterval) {
