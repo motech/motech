@@ -70,6 +70,7 @@
         <module>motech-cmslite-api</module>
         <module>motech-scheduletracking-api</module>
         <module>motech-message-campaign</module>
+        <module>motech-mobileforms-api</module>
     </modules>
 
     <build>

@@ -1,0 +1,28 @@
+[
+    {
+        "name" : "GroupName-I",
+        "forms" : [
+            {
+                "name" : "MForm-I",
+                "fileName" :  "ClientDeath-1.xml"
+            },
+            {
+                "name" : "MForm-II",
+                "fileName" :  "PatientDeath-1.xml"
+            }
+        ]
+    } ,
+    {
+        "name" : "GroupName-II",
+        "forms" : [
+            {
+                "name" : "MForm-III",
+                "fileName" :  "ClientDeath-2.xml"
+            },
+            {
+                "name" : "MForm-IV",
+                "fileName" :  "PatientDeath-2.xml"
+            }
+        ]
+    }
+]
