@@ -47,7 +47,7 @@ public class DosageTest {
 
         assertFalse(dosage.isTodaysDosageResponseCaptured());
 
-        dosage.updateResponseLastCapturedDate();
+        dosage.setResponseLastCapturedDate(DateUtil.today());
         assertTrue(dosage.isTodaysDosageResponseCaptured());
     }
 
@@ -57,6 +57,28 @@ public class DosageTest {
 
         dosage.setResponseLastCapturedDate(DateUtil.today().minusDays(1));
         assertFalse(dosage.isTodaysDosageResponseCaptured());
+    }
+
+    @Test
+    public void shouldUpdateDosageLastCapturedDate_WhenNewLastCapturedDateIsLaterThanKnownLastCapturedDate() {
+        Dosage dosage = new Dosage(new Time(9, 5), new HashSet<Medicine>());
+
+        assertFalse(dosage.isTodaysDosageResponseCaptured());
+
+        dosage.updateResponseLastCapturedDate(DateUtil.today());
+        assertTrue(dosage.isTodaysDosageResponseCaptured());
+    }
+
+    @Test
+    public void shouldNotUpdateDosageLastCapturedDate_WhenNewLastCapturedDateIsEarlierThanKnownLastCapturedDate() {
+        Dosage dosage = new Dosage(new Time(9, 5), new HashSet<Medicine>());
+
+        dosage.updateResponseLastCapturedDate(DateUtil.today());
+        assertTrue(dosage.isTodaysDosageResponseCaptured());
+
+        dosage.updateResponseLastCapturedDate(DateUtil.today().minusDays(1));
+        assertTrue(dosage.isTodaysDosageResponseCaptured());
+
     }
 
     @Test

@@ -1,5 +1,6 @@
 package org.motechproject.server.pillreminder.service;
 
+import org.joda.time.LocalDate;
 import org.motechproject.builder.CronJobExpressionBuilder;
 import org.motechproject.builder.CronJobSimpleExpressionBuilder;
 import org.motechproject.model.CronSchedulableJob;
@@ -59,8 +60,8 @@ public class PillReminderServiceImpl implements PillReminderService {
     }
 
     @Override
-    public void stopTodaysReminders(String pillRegimenId, String dosageId) {
-        allPillRegimens.stopTodaysReminders(pillRegimenId, dosageId);
+    public void dosageStatusKnown(String pillRegimenId, String dosageId, LocalDate lastCapturedDate) {
+        allPillRegimens.updateLastCapturedDate(pillRegimenId, dosageId, lastCapturedDate);
     }
 
     @Override

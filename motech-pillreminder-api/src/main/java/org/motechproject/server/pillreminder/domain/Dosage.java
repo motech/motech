@@ -54,9 +54,15 @@ public class Dosage {
         this.responseLastCapturedDate = responseLastCapturedDate;
     }
 
+    public void updateResponseLastCapturedDate(LocalDate lastCapturedDate) {
+        if (responseLastCapturedDate == null || responseLastCapturedDate.isBefore(lastCapturedDate)) {
+            responseLastCapturedDate = lastCapturedDate;
+        }
+    }
+
     @JsonIgnore
     public boolean isTodaysDosageResponseCaptured() {
-        return getResponseLastCapturedDate() != null && getResponseLastCapturedDate().equals(DateUtil.today());
+        return responseLastCapturedDate != null && responseLastCapturedDate.equals(DateUtil.today());
     }
 
     @JsonIgnore
@@ -98,9 +104,5 @@ public class Dosage {
     public void validate() {
         for (Medicine medicine : getMedicines())
             medicine.validate();
-    }
-
-    public void updateResponseLastCapturedDate() {
-        responseLastCapturedDate = DateUtil.today();
     }
 }

@@ -91,8 +91,9 @@ public class PillReminderServiceTest {
 
     @Test
     public void shouldCallAllPillRegimensToUpdateDosageDate() {
-        service.stopTodaysReminders("pillRegimenId", "dosageId");
-        verify(allPillRegimens).stopTodaysReminders("pillRegimenId", "dosageId");
+        LocalDate today = DateUtil.today();
+        service.dosageStatusKnown("pillRegimenId", "dosageId", today);
+        verify(allPillRegimens).updateLastCapturedDate("pillRegimenId", "dosageId", today);
     }
 
     @Test

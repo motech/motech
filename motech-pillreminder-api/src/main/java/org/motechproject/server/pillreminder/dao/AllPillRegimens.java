@@ -3,6 +3,7 @@ package org.motechproject.server.pillreminder.dao;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
+import org.joda.time.LocalDate;
 import org.motechproject.dao.MotechAuditableRepository;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
@@ -25,10 +26,10 @@ public class AllPillRegimens extends MotechAuditableRepository<PillRegimen> {
         return regimens.isEmpty() ? null : regimens.get(0);
     }
 
-    public void stopTodaysReminders(String regimenId, String dosageId) {
+    public void updateLastCapturedDate(String regimenId, String dosageId, LocalDate lastCapturedDate) {
         PillRegimen pillRegimen = get(regimenId);
         Dosage dosage = pillRegimen.getDosage(dosageId);
-        dosage.updateResponseLastCapturedDate();
+        dosage.updateResponseLastCapturedDate(lastCapturedDate);
         update(pillRegimen);
     }
 }
