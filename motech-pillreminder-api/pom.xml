@@ -9,16 +9,6 @@
 	<artifactId>motech-pillreminder-api</artifactId>
 	<name>Motech Pill Reminder API</name>
 	<dependencies>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>motech-platform-common</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-        <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>motech-platform-server-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-scheduler</artifactId>

@@ -43,7 +43,7 @@
 
     <context:annotation-config />
 
-    <import resource="integrationCommon.xml"/>
+    <import resource="classpath*:integrationCommon.xml"/>
     <import resource="inboundEventChannelAdapter.xml"/>
     <import resource="outboundScheduleJobChannelAdapter.xml"/>
     <import resource="applicationPlatformCommon.xml"/>
