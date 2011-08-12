@@ -9,7 +9,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:**/applicationScheduleTracking.xml"})
+@ContextConfiguration(locations = {"classpath*:applicationScheduleTrackingAPI.xml"})
 public class ScheduleTrackingServiceTest {
     @Autowired
     private ScheduleTrackingService scheduleTrackingService;
