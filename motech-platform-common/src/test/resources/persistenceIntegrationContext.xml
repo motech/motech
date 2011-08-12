@@ -51,9 +51,5 @@
         <constructor-arg ref="couchDbInstance"/>
     </bean>
 
-    <bean id="actorRepository" class="org.motechproject.core.ActorRepository"/>
-
-    <bean id="visitRepository" class="org.motechproject.core.VisitRepository"/>
-
 </beans>
 
