@@ -31,6 +31,7 @@
  */
 package org.motechproject.server.osgi;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.osgi.framework.Bundle;
@@ -60,6 +61,7 @@ public class OsgiFrameworkServiceTest {
     private ApplicationContext applicationContext;
 
     @Test
+    @Ignore
     public void startStopTest() throws Exception {
         service.setApplicationContext(getWebApplicationContext());
 
