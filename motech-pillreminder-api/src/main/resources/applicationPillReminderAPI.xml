@@ -8,7 +8,7 @@
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.server.pillreminder" />
 
-    <import resource="classpath*:applicationPlatformScheduler.xml"/>
+    <import resource="classpath:applicationPlatformScheduler.xml"/>
 
     <bean id="pillReminderDbConnector" class="org.ektorp.impl.StdCouchDbConnector">
         <constructor-arg value="motech-pillreminder"/>

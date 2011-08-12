@@ -46,7 +46,7 @@
     <import resource="classpath*:integrationCommon.xml"/>
     <import resource="inboundEventChannelAdapter.xml"/>
     <import resource="outboundScheduleJobChannelAdapter.xml"/>
-    <import resource="applicationPlatformCommon.xml"/>
+    <import resource="classpath:applicationPlatformCommon.xml"/>
 
     <bean id="eventRelay" class="org.motechproject.server.event.ServerEventRelay" />
 
