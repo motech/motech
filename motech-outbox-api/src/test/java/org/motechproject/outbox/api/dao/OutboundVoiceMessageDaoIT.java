@@ -31,12 +31,6 @@
  */
 package org.motechproject.outbox.api.dao;
 
-import static org.junit.Assert.*;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.lang.time.DateUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -50,12 +44,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.Assert.*;
+
 /**
  * @author yyonkov
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/testOutboxCommon.xml"})
+@ContextConfiguration(locations={"/applicationOutboxAPI.xml"})
 public class OutboundVoiceMessageDaoIT {
 	@Autowired
 	private OutboundVoiceMessageDao outboundVoiceMessageDao;
