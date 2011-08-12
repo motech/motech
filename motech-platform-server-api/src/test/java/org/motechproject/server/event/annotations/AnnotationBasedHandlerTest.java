@@ -31,14 +31,6 @@
  */
 package org.motechproject.server.event.annotations;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.context.Context;
@@ -49,6 +41,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"/testAnnotatedHandlers.xml"})
@@ -102,7 +99,7 @@ public class AnnotationBasedHandlerTest {
 	public static void clear() {
 		test=false;
 	}
-	
+
 	@Test
 	public void testRegistry() {
 		EventListenerRegistry registry = Context.getInstance().getEventListenerRegistry();

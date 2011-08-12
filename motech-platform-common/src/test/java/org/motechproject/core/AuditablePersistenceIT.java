@@ -31,6 +31,7 @@
  */
 package org.motechproject.core;
 
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +39,9 @@ import org.junit.runner.RunWith;
 import org.motechproject.dao.RuleRepository;
 import org.motechproject.model.Audit;
 import org.motechproject.model.Rule;
+import org.motechproject.util.DateUtil;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -46,6 +50,8 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
  * Created by IntelliJ IDEA. User: rob Date: 2/28/11 Time: 1:47 PM To change
@@ -53,6 +59,7 @@ import static junit.framework.Assert.assertTrue;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/applicationPlatformCommon.xml"})
+@PrepareForTest(DateUtil.class)
 public class AuditablePersistenceIT {
 
     @Autowired
@@ -60,11 +67,14 @@ public class AuditablePersistenceIT {
 
     private Rule rule;
 
+    @org.junit.Rule
+    public PowerMockRule junitRule = new PowerMockRule();
+
     @Before
     public void setup() throws Exception {
+        mockStatic(DateUtil.class);
         rule = new Rule();
         rule.setContent("test");
-        ruleRepository.add(rule);
     }
 
     @After
@@ -74,18 +84,24 @@ public class AuditablePersistenceIT {
 
     @Test
     public void testMotechPersistence() throws Exception {
+        DateTime createDate = new DateTime(2011, 1, 1, 10, 20, 0, 0);
+        DateTime updateDate = new DateTime(2011, 1, 1, 10, 25, 0, 0);
+
+        when(DateUtil.now()).thenReturn(createDate);
+        ruleRepository.add(rule);
+
         Audit audit = rule.getAudit();
         assertEquals(audit.getLastUpdated(), audit.getDateCreated());
 
-        Thread.sleep(1000);
+        when(DateUtil.now()).thenReturn(updateDate);
         ruleRepository.update(rule);
         audit = rule.getAudit();
-        assertTrue(audit.getLastUpdated().getTime() - audit.getDateCreated().getTime() >= 1000);
+        assertEquals(5 * 60 * 1000, audit.getLastUpdated().getTime() - audit.getDateCreated().getTime());
 
         //fresh from db
         rule = ruleRepository.get(rule.getId());
         audit = rule.getAudit();
-        assertTrue(audit.getLastUpdated().getTime() - audit.getDateCreated().getTime() >= 1000);
+        assertEquals(5 * 60 * 1000, audit.getLastUpdated().getTime() - audit.getDateCreated().getTime());
 
         List<Rule> list = ruleRepository.getAll();
         assertTrue(list.size() > 0);

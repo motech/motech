@@ -31,16 +31,17 @@
  */
 package org.motechproject.dao;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.GenerateView;
 import org.motechproject.model.Audit;
 import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.util.DateUtil;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 
 public abstract class MotechAuditableRepository<T extends MotechAuditableDataObject> extends MotechBaseRepository<T> implements BaseDao<T> {
@@ -59,7 +60,7 @@ public abstract class MotechAuditableRepository<T extends MotechAuditableDataObj
     public void add(T entity) {
         super.add(entity);
         Audit audit = new Audit();
-        Date now = new Date();
+        Date now = DateUtil.now().toDate();
         audit.setId(entity.getId() + AUDIT_ID_SUFFIX);
         audit.setDateCreated(now);
         audit.setLastUpdated(now);
@@ -73,7 +74,7 @@ public abstract class MotechAuditableRepository<T extends MotechAuditableDataObj
     public void update(T entity) {
         super.update(entity);
         Audit audit = db.get(Audit.class, entity.getId() + AUDIT_ID_SUFFIX);
-        audit.setLastUpdated(new Date());
+        audit.setLastUpdated(DateUtil.now().toDate());
         db.update(audit);
         entity.setAudits(new TreeSet<Audit>());
         entity.getAudits().add(audit);

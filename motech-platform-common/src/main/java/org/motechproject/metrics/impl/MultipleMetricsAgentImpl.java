@@ -33,7 +33,7 @@ package org.motechproject.metrics.impl;
 
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.metrics.MetricsAgentBackend;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.motechproject.util.DateUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -88,7 +88,7 @@ public class MultipleMetricsAgentImpl implements MetricsAgent
     public void startTimer(String metric)
     {
         if (!timers.containsKey(metric)) {
-            timers.put(metric, System.currentTimeMillis());
+            timers.put(metric, DateUtil.now().getMillis());
         }
     }
 
@@ -102,7 +102,7 @@ public class MultipleMetricsAgentImpl implements MetricsAgent
     {
         if (timers.containsKey(metric)) {
             long startTime = timers.get(metric);
-            long endTime = System.currentTimeMillis();
+            long endTime = DateUtil.now().getMillis();
             long executionTime = endTime - startTime;
 
             for (MetricsAgentBackend agent : getMetricsAgents()) {

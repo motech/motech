@@ -31,17 +31,20 @@
  */
 package org.motechproject.metrics;
 
+import org.joda.time.DateTime;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.motechproject.metrics.impl.MultipleMetricsAgentImpl;
+import org.motechproject.util.DateUtil;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.rule.PowerMockRule;
 
-import static java.lang.Thread.sleep;
-import static org.junit.Assert.assertTrue;
+import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 /**
  * MultipleMetricsAgentImpl Tester.
@@ -50,7 +53,12 @@ import static org.mockito.Mockito.verify;
  * @since <pre>03/25/2011</pre>
  * @version 1.0
  */
+
+@PrepareForTest(DateUtil.class)
 public class MultipleMetricsAgentImplTest {
+
+    @Rule
+    public PowerMockRule rule = new PowerMockRule();
 
     @Test
     public void testLogEventNullParameters() throws Exception {
@@ -101,19 +109,24 @@ public class MultipleMetricsAgentImplTest {
     @Test
     public void testMultipleStartTimerCalls() throws InterruptedException
     {
+        mockStatic(DateUtil.class);
         MultipleMetricsAgentImpl metricsAgent = new MultipleMetricsAgentImpl();
 
         MetricsAgentBackend agent = mock(MetricsAgentBackend.class);
         ArgumentCaptor<Long> argument = ArgumentCaptor.forClass(Long.class);
         metricsAgent.addMetricAgent(agent);
 
+        DateTime date1 = new DateTime(2011, 1, 1, 10, 25, 30, 0);
+        DateTime date2 = new DateTime(2011, 1, 1, 10, 25, 31, 0);
+        when(DateUtil.now()).thenReturn(date1);
         metricsAgent.startTimer("test.metric");
-        sleep(1000);
+
+        when(DateUtil.now()).thenReturn(date2);
         metricsAgent.startTimer("test.metric");
         metricsAgent.stopTimer("test.metric");
 
         verify(agent).logTimedEvent(anyString(), argument.capture());
-        assertTrue(argument.getValue().longValue() >= 1000);
+        assertEquals(1000, argument.getValue().longValue());
     }
 
     @Test

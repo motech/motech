@@ -51,7 +51,6 @@ import java.util.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"/testApplicationContext.xml"})
-
 public class MotechSchedulerIT {
 
     @Autowired
@@ -101,7 +100,7 @@ public class MotechSchedulerIT {
         CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent,  String.format("%d %d %d * * ?", scheduledSecond, scheduledMinute, scheduledHour));
         motechScheduler.scheduleJob(cronSchedulableJob);
 
-        Thread.sleep(90000);
+        //Thread.sleep(90000);   // seems to pass without sleep
         if (!executed) {
             Assert.fail("scheduler job not handled ..........");
         }
