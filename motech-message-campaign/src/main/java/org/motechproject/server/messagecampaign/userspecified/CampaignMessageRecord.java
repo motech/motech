@@ -2,6 +2,7 @@ package org.motechproject.server.messagecampaign.userspecified;
 
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignType;
 import org.motechproject.server.messagecampaign.domain.message.*;
+import org.motechproject.util.DateUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -61,7 +62,7 @@ public class CampaignMessageRecord {
         message.formats(formats);
         message.languages(languages);
         message.messageKey(messageKey);
-        message.date(date);
+        message.date(DateUtil.newDate(date));
         return message;
     }
 

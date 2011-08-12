@@ -1,6 +1,6 @@
 package org.motechproject.server.messagecampaign.scheduler;
 
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.EventKeys;
@@ -11,7 +11,6 @@ import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMes
 import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.factory.WallTimeFactory;
 
-import java.util.Date;
 import java.util.HashMap;
 
 public class OffsetProgramScheduler extends MessageCampaignScheduler {
@@ -26,7 +25,7 @@ public class OffsetProgramScheduler extends MessageCampaignScheduler {
     }
 
     private void scheduleJob(OffsetCampaignMessage message) {
-        Date referenceDate = enrollRequest.referenceDate();
+        LocalDate referenceDate = enrollRequest.referenceDate();
         Time reminderTime = enrollRequest.reminderTime();
 
         String jobId = EventKeys.BASE_SUBJECT + campaign.name() + "." + message.name() + "." + enrollRequest.externalId();
@@ -38,14 +37,14 @@ public class OffsetProgramScheduler extends MessageCampaignScheduler {
                 .withMessageKey(message.messageKey())
                 .payload();
 
-        Date jobDate = jobDate(referenceDate, message.timeOffset());
+        LocalDate jobDate = jobDate(referenceDate, message.timeOffset());
         scheduleJobOn(reminderTime, jobDate, jobParams);
     }
 
-    private Date jobDate(Date referenceDate, String timeOffset) {
+    private LocalDate jobDate(LocalDate referenceDate, String timeOffset) {
         WallTime wallTime = WallTimeFactory.create(timeOffset);
         int offSetDays = wallTime.inDays();
-        return new DateTime(referenceDate).plusDays(offSetDays).toDate();
+        return referenceDate.plusDays(offSetDays);
     }
 
     @Override

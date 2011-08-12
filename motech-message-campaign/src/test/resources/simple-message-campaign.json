@@ -55,21 +55,21 @@
                 "name" : "Weekly Message #1",
                 "formats" : ["IVR", "SMS"],
                 "languages" : ["en"],
-                "messageKey": "child-info-week-{WeekOffset}-1",
+                "messageKey": "child-info-week-{Offset}-1",
                 "repeatInterval" : "1 Week"
             },
             {
                 "name" : "Weekly Message #2",
                 "formats" : ["SMS"],
                 "languages" : ["en"],
-                "messageKey": "child-info-week-{WeekOffset}-2",
+                "messageKey": "child-info-week-{Offset}-2",
                 "repeatInterval" : "9 Days"
             },
             {
                 "name" : "Weekly Message #3",
                 "formats" : ["SMS"],
                 "languages" : ["en"],
-                "messageKey": "child-info-week-{WeekOffset}-3",
+                "messageKey": "child-info-week-{Offset}-3",
                 "repeatInterval" : "12 Days"
             }
         ]

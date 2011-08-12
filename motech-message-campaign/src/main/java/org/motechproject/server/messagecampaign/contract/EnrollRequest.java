@@ -1,15 +1,15 @@
 package org.motechproject.server.messagecampaign.contract;
 
+import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
-
-import java.util.Date;
+import org.motechproject.util.DateUtil;
 
 public class EnrollRequest {
 
     private String externalId;
     private String campaignName;
     private Time reminderTime;
-    private Date referenceDate;
+    private LocalDate referenceDate;
 
     public void campaignName(String campaignName) {
         this.campaignName = campaignName;
@@ -35,13 +35,14 @@ public class EnrollRequest {
         return this.reminderTime;
     }
 
-    public Date referenceDate() {
-        if(referenceDate != null)
+    public LocalDate referenceDate() {
+        if(referenceDate != null) {
             return referenceDate;
-        return new Date();
+        }
+        return DateUtil.today();
     }
 
-    public void referenceDate(Date referenceDate) {
+    public void referenceDate(LocalDate referenceDate) {
         this.referenceDate = referenceDate;
     }
 }

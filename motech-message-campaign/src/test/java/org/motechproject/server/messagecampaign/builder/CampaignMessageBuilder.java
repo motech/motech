@@ -1,15 +1,14 @@
 package org.motechproject.server.messagecampaign.builder;
 
+import org.joda.time.LocalDate;
 import org.motechproject.server.messagecampaign.domain.message.AbsoluteCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 
-import java.util.Date;
-
 public class CampaignMessageBuilder {
 
-    public AbsoluteCampaignMessage absoluteCampaignMessage(String name, Date date, String messageKey) {
+    public AbsoluteCampaignMessage absoluteCampaignMessage(String name, LocalDate date, String messageKey) {
         AbsoluteCampaignMessage absoluteCampaignMessage = new AbsoluteCampaignMessage();
         absoluteCampaignMessage.name(name);
         absoluteCampaignMessage.date(date);

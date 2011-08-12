@@ -9,6 +9,7 @@ import org.motechproject.server.messagecampaign.builder.CampaignBuilder;
 import org.motechproject.server.messagecampaign.builder.EnrollRequestBuilder;
 import org.motechproject.server.messagecampaign.contract.EnrollRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.AbsoluteCampaign;
+import org.motechproject.util.DateUtil;
 
 import java.util.List;
 
@@ -38,12 +39,12 @@ public class AbsoluteProgramSchedulerTest {
         verify(schedulerService, times(2)).scheduleJob(capture.capture());
 
         List<CronSchedulableJob> allJobs = capture.getAllValues();
-        assertEquals(campaign.messages().get(0).date(), allJobs.get(0).getStartTime());
+        assertEquals(campaign.messages().get(0).date(), DateUtil.newDate(allJobs.get(0).getStartTime()));
         assertEquals("0 30/15 9-11 * * ?", allJobs.get(0).getCronExpression());
         assertEquals("org.motechproject.server.messagecampaign.scheduler-message", allJobs.get(0).getMotechEvent().getSubject());
         assertMotechEvent(allJobs.get(0), "org.motechproject.server.messagecampaign.testCampaign.AM1.12345", "random-1");
 
-        assertEquals(campaign.messages().get(1).date(), allJobs.get(1).getStartTime());
+        assertEquals(campaign.messages().get(1).date(), DateUtil.newDate(allJobs.get(1).getStartTime()));
         assertEquals("0 30/15 9-11 * * ?", allJobs.get(1).getCronExpression());
         assertEquals("org.motechproject.server.messagecampaign.scheduler-message", allJobs.get(1).getMotechEvent().getSubject());
         assertMotechEvent(allJobs.get(1), "org.motechproject.server.messagecampaign.testCampaign.AM2.12345", "random-2");

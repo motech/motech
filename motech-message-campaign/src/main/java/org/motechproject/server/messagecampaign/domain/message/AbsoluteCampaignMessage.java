@@ -1,16 +1,16 @@
 package org.motechproject.server.messagecampaign.domain.message;
 
-import java.util.Date;
+import org.joda.time.LocalDate;
 
 public class AbsoluteCampaignMessage extends CampaignMessage {
 
-    private Date date;
+    private LocalDate date;
 
-    public Date date() {
+    public LocalDate date() {
         return this.date;
     }
 
-    public void date(Date date) {
+    public void date(LocalDate date) {
         this.date = date;
     }
 }

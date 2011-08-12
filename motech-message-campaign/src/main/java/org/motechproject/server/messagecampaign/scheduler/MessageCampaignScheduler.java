@@ -1,5 +1,6 @@
 package org.motechproject.server.messagecampaign.scheduler;
 
+import org.joda.time.LocalDate;
 import org.motechproject.builder.CronJobExpressionBuilder;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
@@ -18,7 +19,7 @@ public abstract class MessageCampaignScheduler {
 
     public abstract void scheduleJobs();
 
-    public void scheduleJobOn(Time startTime, Date startDate, Map<String, Object> params) {
+    public void scheduleJobOn(Time startTime, LocalDate startDate, Map<String, Object> params) {
 
         String cronJobExpression = new CronJobExpressionBuilder(startTime,
                 REPEAT_WINDOW_IN_HOURS, REPEAT_INTERVAL_IN_MINUTES).build();
@@ -26,10 +27,11 @@ public abstract class MessageCampaignScheduler {
         scheduleJobOn(cronJobExpression, startDate, params);
     }
 
-    public void scheduleJobOn(String cronJobExpression, Date startDate, Map<String, Object> params) {
+    public void scheduleJobOn(String cronJobExpression, LocalDate startDate, Map<String, Object> params) {
         MotechEvent motechEvent = new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_EVENT_SUBJECT, params);
 
-        CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, startDate, null);
+        Date startDateAsDate = startDate == null ?  null : startDate.toDate();
+        CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, startDateAsDate, null);
         schedulerService.scheduleJob(schedulableJob);
     }
 }

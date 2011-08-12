@@ -8,6 +8,7 @@ import org.motechproject.server.messagecampaign.domain.message.AbsoluteCampaignM
 import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
+import org.motechproject.util.DateUtil;
 
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class CampaignRecordTest {
         assertEquals(messageRecord.formats(), message.formats());
         assertEquals(messageRecord.languages(), message.languages());
         assertEquals(messageRecord.messageKey(), message.messageKey());
-        assertEquals(messageRecord.date(), message.date());
+        assertEquals(DateUtil.newDate(messageRecord.date()), message.date());
     }
 
     @Test

@@ -5,6 +5,7 @@ import org.junit.runner.RunWith;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerServiceImpl;
 import org.motechproject.server.messagecampaign.contract.EnrollRequest;
+import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Component;
@@ -43,7 +44,7 @@ public class MessageCampaignServiceIT {
         EnrollRequest enrollRequest = new EnrollRequest();
         enrollRequest.campaignName("Relative Dates Message Program");
         enrollRequest.externalId("patient_Id2");
-        enrollRequest.referenceDate(Calendar.getInstance().getTime());
+        enrollRequest.referenceDate(DateUtil.today());
         enrollRequest.reminderTime(new Time(9, 30));
         messageCampaignService.enroll(enrollRequest);
         assertEquals(scheduledJobsNum + 3, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
@@ -56,7 +57,7 @@ public class MessageCampaignServiceIT {
         EnrollRequest enrollRequest = new EnrollRequest();
         enrollRequest.campaignName("Relative Parameterized Dates Message Program");
         enrollRequest.externalId("patiend_Id3");
-        enrollRequest.referenceDate(Calendar.getInstance().getTime());
+        enrollRequest.referenceDate(DateUtil.today());
         enrollRequest.reminderTime(new Time(9, 30));
         messageCampaignService.enroll(enrollRequest);
         assertEquals(scheduledJobsNum + 12, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
@@ -69,7 +70,7 @@ public class MessageCampaignServiceIT {
         EnrollRequest enrollRequest = new EnrollRequest();
         enrollRequest.campaignName("Cron based Message Program");
         enrollRequest.externalId("patiend_Id3");
-        enrollRequest.referenceDate(Calendar.getInstance().getTime());
+        enrollRequest.referenceDate(DateUtil.today());
         messageCampaignService.enroll(enrollRequest);
         assertEquals(scheduledJobsNum + 1, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
     }

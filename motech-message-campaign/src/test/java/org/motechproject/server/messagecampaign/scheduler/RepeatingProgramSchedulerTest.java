@@ -1,6 +1,7 @@
 package org.motechproject.server.messagecampaign.scheduler;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -42,7 +43,7 @@ public class RepeatingProgramSchedulerTest {
 
         List<CronSchedulableJob> allJobs = capture.getAllValues();
 
-        DateTime jobDate = new DateTime(request.referenceDate());
+        LocalDate jobDate = request.referenceDate();
         assertJob(allJobs.get(0), "org.motechproject.server.messagecampaign.testCampaign.OM1.12345.1", "child-info-week-1-1", jobDate.toDate());
         assertJob(allJobs.get(1), "org.motechproject.server.messagecampaign.testCampaign.OM1.12345.2", "child-info-week-2-1", jobDate.plusDays(7).toDate());
         assertJob(allJobs.get(2), "org.motechproject.server.messagecampaign.testCampaign.OM2.12345.1", "child-info-week-1-2", jobDate.toDate());

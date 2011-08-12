@@ -67,9 +67,9 @@ public class AllMessageCampaignsTest {
         assertEquals("5 weeks", campaign.maxDuration());
         List<RepeatingCampaignMessage> messages = campaign.messages();
         assertEquals(3, messages.size());
-        assertMessageWithParameterizedRelativeSchedule(messages.get(0), "Weekly Message #1", new String[]{"IVR", "SMS"}, "child-info-week-{WeekOffset}-1", "1 Week");
-        assertMessageWithParameterizedRelativeSchedule(messages.get(1), "Weekly Message #2", new String[]{"SMS"}, "child-info-week-{WeekOffset}-2", "9 Days");
-        assertMessageWithParameterizedRelativeSchedule(messages.get(2), "Weekly Message #3", new String[]{"SMS"}, "child-info-week-{WeekOffset}-3", "12 Days");
+        assertMessageWithParameterizedRelativeSchedule(messages.get(0), "Weekly Message #1", new String[]{"IVR", "SMS"}, "child-info-week-{Offset}-1", "1 Week");
+        assertMessageWithParameterizedRelativeSchedule(messages.get(1), "Weekly Message #2", new String[]{"SMS"}, "child-info-week-{Offset}-2", "9 Days");
+        assertMessageWithParameterizedRelativeSchedule(messages.get(2), "Weekly Message #3", new String[]{"SMS"}, "child-info-week-{Offset}-3", "12 Days");
     }
 
     @Test
@@ -86,7 +86,7 @@ public class AllMessageCampaignsTest {
 
     private void assertMessageWithAbsoluteSchedule(AbsoluteCampaignMessage message, String name, String[] formats, Object messageKey, Date date) {
         assertMessage(message, name, formats, messageKey);
-        assertEquals(date, message.date());
+        assertEquals(date, message.date().toDate());
     }
 
     private void assertMessageWithRelativeSchedule(OffsetCampaignMessage message, String name, String[] formats, Object messageKey, String timeOffset) {

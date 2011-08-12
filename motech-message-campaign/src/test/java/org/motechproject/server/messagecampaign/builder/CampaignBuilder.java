@@ -1,6 +1,5 @@
 package org.motechproject.server.messagecampaign.builder;
 
-import org.joda.time.DateTime;
 import org.motechproject.server.messagecampaign.domain.campaign.AbsoluteCampaign;
 import org.motechproject.server.messagecampaign.domain.campaign.CronBasedCampaign;
 import org.motechproject.server.messagecampaign.domain.campaign.OffsetCampaign;
@@ -9,8 +8,8 @@ import org.motechproject.server.messagecampaign.domain.message.AbsoluteCampaignM
 import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
+import org.motechproject.util.DateUtil;
 
-import java.util.Date;
 import java.util.LinkedList;
 
 public class CampaignBuilder {
@@ -19,10 +18,9 @@ public class CampaignBuilder {
     public AbsoluteCampaign defaultAbsoluteCampaign() {
         AbsoluteCampaign campaign = new AbsoluteCampaign();
         campaign.name("testCampaign");
-        Date tomorrow = new DateTime(new Date()).plusDays(1).toDate();
 
-        final AbsoluteCampaignMessage absoluteCampaignMessage1 = new CampaignMessageBuilder().absoluteCampaignMessage("AM1", new Date(), "random-1");
-        final AbsoluteCampaignMessage absoluteCampaignMessage2 = new CampaignMessageBuilder().absoluteCampaignMessage("AM2", tomorrow, "random-2");
+        final AbsoluteCampaignMessage absoluteCampaignMessage1 = new CampaignMessageBuilder().absoluteCampaignMessage("AM1", DateUtil.today(), "random-1");
+        final AbsoluteCampaignMessage absoluteCampaignMessage2 = new CampaignMessageBuilder().absoluteCampaignMessage("AM2", DateUtil.today().plusDays(1), "random-2");
 
         LinkedList<AbsoluteCampaignMessage> campaignMessages = new LinkedList<AbsoluteCampaignMessage>() {{
             add(absoluteCampaignMessage1);
