@@ -63,7 +63,12 @@ public class ServerEventRelay implements EventRelay
     private static final String ORIGINAL_PARAMETERS = "original-parameters";
 
     public ServerEventRelay() {
+    }
 
+    public ServerEventRelay(OutboundEventGateway outboundEventGateway, EventListenerRegistry eventListenerRegistry, MetricsAgent metricsAgent) {
+        this.outboundEventGateway = outboundEventGateway;
+        this.eventListenerRegistry = eventListenerRegistry;
+        this.metricsAgent = metricsAgent;
     }
 
     // @TODO either relayEvent should be made private, or this method moved out to it's own class.

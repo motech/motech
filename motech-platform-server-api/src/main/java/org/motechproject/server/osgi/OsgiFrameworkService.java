@@ -31,16 +31,6 @@
  */
 package org.motechproject.server.osgi;
 
-import java.io.File;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.ServletContext;
-
 import org.apache.commons.lang.StringUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -52,6 +42,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.context.WebApplicationContext;
+
+import javax.servlet.ServletContext;
+import java.io.File;
+import java.net.URL;
+import java.util.*;
 
 /**
  * 
@@ -80,7 +75,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
      * Initialize and start the OSGi framework
      */
     public void start() {
-        try {            
+        try {
             ServletContext servletContext = ((WebApplicationContext) applicationContext).getServletContext();
 
             osgiFramework.init();

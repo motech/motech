@@ -59,7 +59,6 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
     @Autowired
     private SchedulerFactoryBean schedulerFactoryBean;
 
-
     @Override
     public void scheduleJob(CronSchedulableJob cronSchedulableJob) {
 

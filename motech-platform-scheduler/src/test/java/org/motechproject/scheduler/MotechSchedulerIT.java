@@ -50,7 +50,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/testApplicationContext.xml"})
+@ContextConfiguration(locations={"/applicationPlatformScheduler.xml"})
 public class MotechSchedulerIT {
 
     @Autowired

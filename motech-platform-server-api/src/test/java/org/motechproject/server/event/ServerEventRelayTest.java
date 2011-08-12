@@ -37,8 +37,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.motechproject.model.MotechEvent;
+import org.mockito.Mockito;
 import org.motechproject.gateway.OutboundEventGateway;
+import org.motechproject.gateway.StubOutboundEventGateway;
+import org.motechproject.metrics.MetricsAgent;
+import org.motechproject.model.MotechEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -51,26 +54,22 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/testApplicationContext.xml" })
+@ContextConfiguration(locations = { "/applicationPlatformServerAPI.xml" })
 public class ServerEventRelayTest
 {
-
 	@Autowired
     EventListenerRegistry registry;
-
     @Autowired
+    MetricsAgent metricsAgent;
+
     ServerEventRelay eventRelay;
-
-    @Autowired
     OutboundEventGateway outboundEventGateway;
-
     MotechEvent motechEvent = null;
-
-    SampleEventListener sel = null;
-
 
     @Before
     public void setUp() throws Exception {
+        outboundEventGateway = Mockito.mock(StubOutboundEventGateway.class);
+        eventRelay = new ServerEventRelay(outboundEventGateway, registry, metricsAgent);
 
         // Create the scheduled event message object
         Map<String, Object> messageParameters = new HashMap<String, Object>();

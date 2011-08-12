@@ -51,7 +51,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 ////specifies the Spring configuration to load for this test fixture
-@ContextConfiguration(locations={"/testApplicationContext.xml"})
+@ContextConfiguration(locations={"/applicationPlatformServerAPI.xml"})
 public class EventListenerRegistryTest {
 	
 	@Autowired

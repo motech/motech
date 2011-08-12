@@ -3,10 +3,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-	<import resource="testApplicationContext.xml"/>
-
     <!-- handels @MotechListner annotations -->
     <bean class="org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor"/>
-    <bean id="my-handler" class="org.motechproject.server.event.annotations.AnnotationBasedHandlerTest$MyHandler"/>
+    <bean class="org.motechproject.server.event.annotations.AnnotationBasedHandlerTest$MyHandler"/>
 
 </beans>

@@ -31,23 +31,25 @@
  */
 package org.motechproject.server.event.annotations;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import org.motechproject.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Responsible for registering handlers based on annotations
  * @author yyonkov
  *
  */
+@Component
 public class EventAnnotationBeanPostProcessor implements BeanPostProcessor {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -96,7 +98,6 @@ public class EventAnnotationBeanPostProcessor implements BeanPostProcessor {
 
 	/**
 	 * Registers event handlers (hack because we are running spring embedded in an OSGi module)
-	 * @param applicationContext
 	 */
 	public static void registerHandlers(Map<String, Object> beans) {
 		EventAnnotationBeanPostProcessor processor = new EventAnnotationBeanPostProcessor();

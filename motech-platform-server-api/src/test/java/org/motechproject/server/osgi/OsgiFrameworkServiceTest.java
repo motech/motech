@@ -31,8 +31,6 @@
  */
 package org.motechproject.server.osgi;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.osgi.framework.Bundle;
@@ -46,8 +44,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 
+import static org.junit.Assert.*;
+
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/testApplicationContext.xml" })
+@ContextConfiguration(locations = {"/applicationPlatformServerAPI.xml"})
 public class OsgiFrameworkServiceTest {
 
     @Autowired
@@ -74,15 +74,15 @@ public class OsgiFrameworkServiceTest {
         for (Bundle bundle : bundles) {
             assertEquals(Bundle.ACTIVE, bundle.getState());
         }
-        
-        assertNotNull(service.getClassLoaderBySymbolicName("org.apache.felix.http.bridge"));       
+
+        assertNotNull(service.getClassLoaderBySymbolicName("org.apache.felix.http.bridge"));
 
         service.stop();
         assertEquals(Bundle.STOPPING, framework.getState());
     }
 
     private WebApplicationContext getWebApplicationContext() {
-        GenericWebApplicationContext wac = (GenericWebApplicationContext) BeanUtils.instantiateClass(GenericWebApplicationContext.class);
+        GenericWebApplicationContext wac = BeanUtils.instantiateClass(GenericWebApplicationContext.class);
         wac.setParent(applicationContext);
         wac.setServletContext(new MockServletContext());
         return wac;

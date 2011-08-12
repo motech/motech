@@ -29,12 +29,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-common</artifactId>
+            <artifactId>motech-platform-server-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-api</artifactId>
+            <artifactId>motech-platform-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

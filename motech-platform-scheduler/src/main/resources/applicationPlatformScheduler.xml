@@ -37,11 +37,10 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <import resource="classpath*:integrationCommon.xml"/>
-    <import resource="schedulerInboundChannelAdapter.xml"/>
-    <import resource="schedulerFiredEventChannelAdapter.xml"/>
-
     <context:annotation-config/>
+
+    <import resource="applicationPlatformServerAPI.xml"/>
+    <import resource="schedulerFiredEventChannelAdapter.xml"/>
 
     <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="configLocation">
@@ -53,5 +52,4 @@
     </bean>
 
     <bean id="schedulerService" class="org.motechproject.scheduler.MotechSchedulerServiceImpl"/>
-
 </beans>

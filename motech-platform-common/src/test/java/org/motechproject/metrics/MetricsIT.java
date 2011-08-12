@@ -49,7 +49,7 @@ import java.util.HashMap;
  * To change this template use File | Settings | File Templates.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/testMetricsIntegrationContext.xml"})
+@ContextConfiguration(locations={"/applicationPlatformCommon.xml"})
 public class MetricsIT {
     @Autowired
     private MetricsAgent metricsAgent;

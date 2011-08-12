@@ -45,7 +45,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * - start your soft phone
  * - run the initiateCallTest()
  * Your soft phone should start ringing. Answer the phone, you should hear a voice message specified in the voice XML document retrieved
- * from the URL specified as a value of the voiceXmlUrl property of the ivrService bean. See testApplicationContext.xml.
+ * from the URL specified as a value of the voiceXmlUrl property of the ivrService bean.
  *
  *
  */
