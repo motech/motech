@@ -11,8 +11,8 @@
     <groupId>motech-message-campaign</groupId>
     <artifactId>motech-message-campaign</artifactId>
     <name>Motech Message Campaign</name>
-    <description>Motech Pill Reminder</description>
-    <version>1.0</version>
+    <description>Motech Message Campaign</description>
+    <version>0.1-SNAPSHOT</version>
     <dependencies>
         <dependency>
             <groupId>com.google.code.gson</groupId>
