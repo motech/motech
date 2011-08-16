@@ -76,18 +76,6 @@
 			<version>1.4</version>
 		</dependency>
 		<dependency>
-			<groupId>org.ektorp</groupId>
-			<artifactId>org.ektorp</artifactId>
-			<version>1.1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.ektorp</groupId>
-			<artifactId>org.ektorp.spring</artifactId>
-			<version>1.1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.motechproject</groupId>
 			<artifactId>motech-platform-decisiontree-common</artifactId>
 			<version>0.1-SNAPSHOT</version>
