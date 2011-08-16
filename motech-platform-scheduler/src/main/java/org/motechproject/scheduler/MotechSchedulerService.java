@@ -91,4 +91,6 @@ public interface MotechSchedulerService {
     public void scheduleRunOnceJob(RunOnceSchedulableJob schedulableJob);
 
     public void unscheduleJob(String jobId);
+
+    public void unscheduleAllJobs(String jobIdPrefix);
 }

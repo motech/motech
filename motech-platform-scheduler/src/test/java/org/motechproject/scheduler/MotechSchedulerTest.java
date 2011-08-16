@@ -63,6 +63,7 @@ public class MotechSchedulerTest {
 
     private String uuidStr = UUID.randomUUID().toString();
 
+
     @Test
     public void scheduleTest() throws Exception {
 
@@ -352,6 +353,28 @@ public class MotechSchedulerTest {
         motechScheduler.unscheduleJob(uuidStr);
 
         assertEquals(scheduledJobsNum - 1, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
+    }
+
+    @Test
+    public void unscheduleJobsGivenAJobIdPrefix() throws Exception {
+
+        motechScheduler.scheduleJob(getJob("testJobId.1.1"));
+        motechScheduler.scheduleJob(getJob("testJobId.1.2"));
+        motechScheduler.scheduleJob(getJob("testJobId.1.3"));
+
+        int numOfScheduledJobs = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
+
+        motechScheduler.unscheduleAllJobs("testJobId");
+
+        assertEquals(numOfScheduledJobs - 3, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
+    }
+
+    private CronSchedulableJob getJob(String jobId) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        String testJobId1 = jobId;
+        params.put("JobID", testJobId1);
+        MotechEvent motechEvent = new MotechEvent("testEvent", params);
+        return new CronSchedulableJob(motechEvent, "0 0 12 * * ?");
     }
 
 }

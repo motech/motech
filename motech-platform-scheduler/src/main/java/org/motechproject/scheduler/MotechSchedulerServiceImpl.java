@@ -31,6 +31,7 @@
  */
 package org.motechproject.scheduler;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.RunOnceSchedulableJob;
@@ -354,6 +355,26 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             throw new MotechSchedulerException(errorMessage);
         }
 
+    }
+
+    @Override
+    public void unscheduleAllJobs(String jobIdPrefix) {
+
+        log.info("Unscheduling the Jobs given jobIdPrefix: " + jobIdPrefix);
+
+        try {
+            String[] triggerNames = schedulerFactoryBean.getScheduler().getTriggerNames(JOB_GROUP_NAME);
+            for(String triggerName : triggerNames) {
+                if (StringUtils.isNotEmpty(jobIdPrefix) && triggerName.contains(jobIdPrefix)) {
+                    unscheduleJob(triggerName);
+                }
+            }
+
+        } catch (SchedulerException e) {
+            String errorMessage = "Can not unschedule jobs given jobIdPrefix: " + jobIdPrefix + " " + e.getMessage();
+            log.error(errorMessage, e);
+            throw new MotechSchedulerException(errorMessage);
+        }
     }
 
     private void scheduleJob(JobDetail jobDetail, Trigger trigger) {
