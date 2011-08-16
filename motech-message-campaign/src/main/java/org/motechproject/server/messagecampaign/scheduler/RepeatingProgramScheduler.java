@@ -17,7 +17,7 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler {
 
     @Override
     protected void scheduleJob(CampaignMessage message) {
-        LocalDate startDate = enrollRequest.referenceDate();
+        LocalDate startDate = referenceDate();
         WallTime duration = WallTimeFactory.create(((RepeatingCampaign)campaign).maxDuration());
         LocalDate endDate = startDate.plusDays(duration.inDays());
         int repeatIntervalInDays = WallTimeFactory.create(((RepeatingCampaignMessage)message).repeatInterval()).inDays();

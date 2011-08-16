@@ -19,8 +19,8 @@ public class CampaignBuilder {
         AbsoluteCampaign campaign = new AbsoluteCampaign();
         campaign.name("testCampaign");
 
-        final AbsoluteCampaignMessage absoluteCampaignMessage1 = new CampaignMessageBuilder().absoluteCampaignMessage("AM1", DateUtil.today(), "random-1");
-        final AbsoluteCampaignMessage absoluteCampaignMessage2 = new CampaignMessageBuilder().absoluteCampaignMessage("AM2", DateUtil.today().plusDays(1), "random-2");
+        final AbsoluteCampaignMessage absoluteCampaignMessage1 = new CampaignMessageBuilder().absoluteCampaignMessage("AM1", DateUtil.today().plusDays(1), "random-1");
+        final AbsoluteCampaignMessage absoluteCampaignMessage2 = new CampaignMessageBuilder().absoluteCampaignMessage("AM2", DateUtil.today().plusDays(2), "random-2");
 
         LinkedList<AbsoluteCampaignMessage> campaignMessages = new LinkedList<AbsoluteCampaignMessage>() {{
             add(absoluteCampaignMessage1);

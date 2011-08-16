@@ -1,9 +1,9 @@
 package org.motechproject.server.messagecampaign.scheduler;
 
 import org.joda.time.LocalDate;
-import org.motechproject.builder.CronJobExpressionBuilder;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.EventKeys;
@@ -11,15 +11,13 @@ import org.motechproject.server.messagecampaign.builder.SchedulerPayloadBuilder;
 import org.motechproject.server.messagecampaign.contract.EnrollRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.Campaign;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
+import org.motechproject.util.DateUtil;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public abstract class MessageCampaignScheduler<T extends CampaignMessage> {
-    public static final int REPEAT_WINDOW_IN_HOURS = 2;
-    public static final int REPEAT_INTERVAL_IN_MINUTES = 15;
-
     protected MotechSchedulerService schedulerService;
     protected EnrollRequest enrollRequest;
     protected Campaign<T> campaign;
@@ -34,7 +32,7 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage> {
         for (CampaignMessage message : campaign.messages()) {
             scheduleJob(message);
         }
-    };
+    }
 
     public void rescheduleJobs() {
         String jobIdPrefix = String.format("%s%s.%s", EventKeys.BASE_SUBJECT, campaign.name(), enrollRequest.externalId());
@@ -46,6 +44,13 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage> {
 
     protected HashMap jobParams(CampaignMessage message) {
         return jobParams(message.messageKey());
+    }
+
+    protected LocalDate referenceDate() {
+        if(enrollRequest.referenceDate() != null) {
+            return enrollRequest.referenceDate();
+        }
+        return DateUtil.today();
     }
 
     protected HashMap jobParams(String messageKey) {
@@ -60,15 +65,15 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage> {
     }
 
     protected void scheduleJobOn(Time startTime, LocalDate startDate, Map<String, Object> params) {
+        MotechEvent motechEvent = new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, params);
 
-        String cronJobExpression = new CronJobExpressionBuilder(startTime,
-                REPEAT_WINDOW_IN_HOURS, REPEAT_INTERVAL_IN_MINUTES).build();
-
-        scheduleJobOn(cronJobExpression, startDate, params);
+        Date startDateTime = startDate == null ? null : DateUtil.newDateTime(startDate, startTime.getHour(), startTime.getMinute(), 0).toDate();
+        RunOnceSchedulableJob runOnceSchedulableJob = new RunOnceSchedulableJob(motechEvent, startDateTime);
+        schedulerService.scheduleRunOnceJob(runOnceSchedulableJob);
     }
 
     protected void scheduleJobOn(String cronJobExpression, LocalDate startDate, Map<String, Object> params) {
-        MotechEvent motechEvent = new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_CREATED_EVENT_SUBJECT, params);
+        MotechEvent motechEvent = new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, params);
 
         Date startDateAsDate = startDate == null ?  null : startDate.toDate();
         CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, startDateAsDate, null);

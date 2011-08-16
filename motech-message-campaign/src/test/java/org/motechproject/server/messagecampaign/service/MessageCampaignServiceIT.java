@@ -44,7 +44,7 @@ public class MessageCampaignServiceIT {
         EnrollRequest enrollRequest = new EnrollRequest();
         enrollRequest.campaignName("Relative Dates Message Program");
         enrollRequest.externalId("patient_Id2");
-        enrollRequest.referenceDate(DateUtil.today());
+        enrollRequest.referenceDate(DateUtil.today().plusDays(1));
         enrollRequest.reminderTime(new Time(9, 30));
         messageCampaignService.enroll(enrollRequest);
         assertEquals(scheduledJobsNum + 3, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
@@ -57,7 +57,7 @@ public class MessageCampaignServiceIT {
         EnrollRequest enrollRequest = new EnrollRequest();
         enrollRequest.campaignName("Relative Parameterized Dates Message Program");
         enrollRequest.externalId("patiend_Id3");
-        enrollRequest.referenceDate(DateUtil.today());
+        enrollRequest.referenceDate(DateUtil.today().plusDays(1));
         enrollRequest.reminderTime(new Time(9, 30));
         messageCampaignService.enroll(enrollRequest);
         assertEquals(scheduledJobsNum + 12, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);

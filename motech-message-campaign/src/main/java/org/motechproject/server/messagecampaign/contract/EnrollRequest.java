@@ -2,7 +2,6 @@ package org.motechproject.server.messagecampaign.contract;
 
 import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
-import org.motechproject.util.DateUtil;
 
 public class EnrollRequest {
 
@@ -36,10 +35,7 @@ public class EnrollRequest {
     }
 
     public LocalDate referenceDate() {
-        if(referenceDate != null) {
-            return referenceDate;
-        }
-        return DateUtil.today();
+        return referenceDate;
     }
 
     public void referenceDate(LocalDate referenceDate) {

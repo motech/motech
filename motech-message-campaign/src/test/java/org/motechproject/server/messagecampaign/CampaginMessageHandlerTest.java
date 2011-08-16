@@ -59,6 +59,6 @@ public class CampaginMessageHandlerTest {
         parameters.put(EventKeys.MESSAGE_KEY, "message-key");
         parameters.put(EventKeys.SCHEDULE_JOB_ID_KEY, "job-id");
         parameters.put(EventKeys.EXTERNAL_ID_KEY, "external-id");
-        return new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_CREATED_EVENT_SUBJECT, parameters);
+        return new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, parameters);
     }
 }

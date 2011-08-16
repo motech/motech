@@ -18,10 +18,9 @@ public class OffsetProgramScheduler extends MessageCampaignScheduler {
 
     @Override
     protected void scheduleJob(CampaignMessage message) {
-        LocalDate referenceDate = enrollRequest.referenceDate();
         Time reminderTime = enrollRequest.reminderTime();
         OffsetCampaignMessage offsetCampaignMessage = (OffsetCampaignMessage) message;
-        LocalDate jobDate = jobDate(referenceDate, offsetCampaignMessage.timeOffset());
+        LocalDate jobDate = jobDate(referenceDate(), offsetCampaignMessage.timeOffset());
 
         scheduleJobOn(reminderTime, jobDate, jobParams(message));
     }

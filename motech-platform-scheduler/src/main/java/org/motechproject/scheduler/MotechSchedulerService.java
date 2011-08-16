@@ -83,13 +83,13 @@ public interface MotechSchedulerService {
      */
     public void scheduleRepeatingJob(RepeatingSchedulableJob repeatingSchedulableJob);
 
+    public void scheduleRunOnceJob(RunOnceSchedulableJob schedulableJob);
+
     /**
      * Unschedules a job with the given job ID
      *
-     * @param schedulableJob
+     * @param jobId
      */
-    public void scheduleRunOnceJob(RunOnceSchedulableJob schedulableJob);
-
     public void unscheduleJob(String jobId);
 
     public void unscheduleAllJobs(String jobIdPrefix);

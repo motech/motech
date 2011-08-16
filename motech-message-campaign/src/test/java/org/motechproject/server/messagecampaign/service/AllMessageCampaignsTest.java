@@ -36,8 +36,8 @@ public class AllMessageCampaignsTest {
         assertEquals(campaignName, campaign.name());
         List<AbsoluteCampaignMessage> messages = campaign.messages();
         assertEquals(2, messages.size());
-        DateTime firstDate = new DateTime(2011, 6, 15, 0, 0, 0, 0);
-        DateTime secondDate = new DateTime(2011, 6, 22, 0, 0, 0, 0);
+        DateTime firstDate = new DateTime(2013, 6, 15, 0, 0, 0, 0);
+        DateTime secondDate = new DateTime(2013, 6, 22, 0, 0, 0, 0);
         assertMessageWithAbsoluteSchedule(messages.get(0), "First", new String[]{"IVR", "SMS"}, "random-1", firstDate.toDate());
         assertMessageWithAbsoluteSchedule(messages.get(1), "Second", new String[]{"IVR"}, "random-2", secondDate.toDate());
     }

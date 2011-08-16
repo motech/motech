@@ -16,6 +16,6 @@ public class CronBasedProgramScheduler extends MessageCampaignScheduler {
     protected void scheduleJob(CampaignMessage message) {
         CronBasedCampaignMessage cronBasedCampaignMessage = (CronBasedCampaignMessage) message;
 
-        scheduleJobOn(cronBasedCampaignMessage.cron(), enrollRequest.referenceDate(), jobParams(message));
+        scheduleJobOn(cronBasedCampaignMessage.cron(), referenceDate(), jobParams(message));
     }
 }

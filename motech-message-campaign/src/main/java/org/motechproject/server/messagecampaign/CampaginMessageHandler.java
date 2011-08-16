@@ -18,7 +18,7 @@ public class CampaginMessageHandler {
         this.allMessageCampaigns = allMessageCampaigns;
     }
 
-    @MotechListener(subjects = {EventKeys.MESSAGE_CAMPAIGN_CREATED_EVENT_SUBJECT})
+    @MotechListener(subjects = {EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT})
     public void handleEvent(MotechEvent motechEvent) {
         CampaignMessage campaignMessage = getCampaignMessage(motechEvent);
         outboundEventGateway.sendEventMessage(createNewMotechEvent(motechEvent, campaignMessage));
