@@ -68,7 +68,7 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage> {
     }
 
     protected void scheduleJobOn(String cronJobExpression, LocalDate startDate, Map<String, Object> params) {
-        MotechEvent motechEvent = new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_EVENT_SUBJECT, params);
+        MotechEvent motechEvent = new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_CREATED_EVENT_SUBJECT, params);
 
         Date startDateAsDate = startDate == null ?  null : startDate.toDate();
         CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, startDateAsDate, null);

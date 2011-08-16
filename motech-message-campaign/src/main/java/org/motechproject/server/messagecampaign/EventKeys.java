@@ -8,9 +8,14 @@ public class EventKeys {
 
     public final static String SCHEDULE_JOB_ID_KEY = "JobID";
     public final static String CAMPAIGN_NAME_KEY = "CampaignName";
+    public final static String MESSAGE_NAME_KEY = "MessageName";
+    public final static String MESSAGE_FORMATS = "MessageFormats";
+    public final static String MESSAGE_LANGUAGES = "MessageLanguages";
     public final static String EXTERNAL_ID_KEY = "ExternalID";
     public static final String MESSAGE_KEY = "MessageKey";
 
     public final static String BASE_SUBJECT = "org.motechproject.server.messagecampaign.";
-    public final static String MESSAGE_CAMPAIGN_EVENT_SUBJECT = BASE_SUBJECT + "scheduler-message";
+    public final static String MESSAGE_CAMPAIGN_CREATED_EVENT_SUBJECT = BASE_SUBJECT + "created-campaign-message";
+    public final static String MESSAGE_CAMPAIGN_FIRED_EVENT_SUBJECT = BASE_SUBJECT + "fired-campaign-message";
+
 }

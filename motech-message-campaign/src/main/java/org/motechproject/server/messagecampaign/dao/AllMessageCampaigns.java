@@ -2,8 +2,9 @@ package org.motechproject.server.messagecampaign.dao;
 
 import com.google.gson.reflect.TypeToken;
 import org.motechproject.dao.MotechJsonReader;
-import org.motechproject.server.messagecampaign.userspecified.CampaignRecord;
 import org.motechproject.server.messagecampaign.domain.campaign.Campaign;
+import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
+import org.motechproject.server.messagecampaign.userspecified.CampaignRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -25,14 +26,27 @@ public class AllMessageCampaigns {
         this.motechJsonReader = motechJsonReader;
     }
 
-    public Campaign get(String name) {
+    public Campaign get(String campaignName) {
         List<CampaignRecord> campaigns =
                 (List<CampaignRecord>) motechJsonReader.readFromFile(definitionFile(),
                         new TypeToken<List<CampaignRecord>>() {
                         }.getType());
 
         for (CampaignRecord campaign : campaigns) {
-            if (campaign.name().equals(name)) return campaign.build();
+            if (campaign.name().equals(campaignName)) return campaign.build();
+        }
+        return null;
+    }
+
+    public CampaignMessage get(String campaignName, String messageKey) {
+        Campaign campaign = get(campaignName);
+        if (campaign != null) {
+            for(Object message : campaign.messages()){
+                CampaignMessage campaignMessage = (CampaignMessage) message;
+                if(campaignMessage.messageKey().equals(messageKey)){
+                    return campaignMessage;
+                }
+            }
         }
         return null;
     }

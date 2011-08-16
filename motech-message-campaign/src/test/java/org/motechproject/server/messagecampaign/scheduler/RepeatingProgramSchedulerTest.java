@@ -21,7 +21,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class RepeatingProgramSchedulerTest {
 
-    public static final String MESSAGE_CAMPAIGN_EVENT_SUBJECT = "org.motechproject.server.messagecampaign.scheduler-message";
+    public static final String MESSAGE_CAMPAIGN_EVENT_SUBJECT = "org.motechproject.server.messagecampaign.created-campaign-message";
     private MotechSchedulerService schedulerService;
 
     @Before

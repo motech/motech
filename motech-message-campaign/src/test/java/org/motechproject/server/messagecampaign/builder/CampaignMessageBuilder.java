@@ -6,6 +6,8 @@ import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaign
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 
+import java.util.Arrays;
+
 public class CampaignMessageBuilder {
 
     public AbsoluteCampaignMessage absoluteCampaignMessage(String name, LocalDate date, String messageKey) {
@@ -35,6 +37,8 @@ public class CampaignMessageBuilder {
     public RepeatingCampaignMessage repeatingCampaignMessage(String name, String repeatInterval, String messageKey) {
         RepeatingCampaignMessage repeatingCampaignMessage = new RepeatingCampaignMessage();
         repeatingCampaignMessage.name(name);
+        repeatingCampaignMessage.formats(Arrays.asList("IVR"));
+        repeatingCampaignMessage.languages(Arrays.asList("en"));
         repeatingCampaignMessage.repeatInterval(repeatInterval);
         repeatingCampaignMessage.messageKey(messageKey);
         return repeatingCampaignMessage;

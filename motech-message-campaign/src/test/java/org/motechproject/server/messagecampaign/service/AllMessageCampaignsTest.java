@@ -13,8 +13,7 @@ import org.motechproject.server.messagecampaign.domain.message.*;
 
 import java.util.*;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.*;
 
 public class AllMessageCampaignsTest {
 
@@ -82,6 +81,29 @@ public class AllMessageCampaignsTest {
         List<CronBasedCampaignMessage> messages = campaign.messages();
         assertEquals(1, messages.size());
         assertMessageWithCronSchedule(messages.get(0), "First", new String[]{"IVR", "SMS"}, "cron-message", "0 11 11 11 11 ?");
+    }
+
+    @Test
+    public void getCampaignMessageGivenACampaignNameAndMessageKey(){
+        String campaignName = "Relative Dates Message Program";
+        String messageKey = "child-info-week-1";
+
+        CampaignMessage campaignMessage = allMessageCampaigns.get(campaignName, messageKey);
+        assertNotNull(campaignMessage);
+        assertEquals(campaignMessage.formats(), Arrays.asList("IVR"));
+        assertEquals(campaignMessage.languages(), Arrays.asList("en"));
+    }
+
+    @Test
+    public void getCampaignMessageGivenANonExistingCampaignNameAndMessageKey(){
+        String campaignName = "Relative Dates Message Program";
+        String messageKey = "child-info-week-1";
+
+        CampaignMessage campaignMessage = allMessageCampaigns.get("non-existing-campaign-name", messageKey);
+        assertNull(campaignMessage);
+
+        campaignMessage = allMessageCampaigns.get(campaignName, "non-existing-message-key");
+        assertNull(campaignMessage);
     }
 
     private void assertMessageWithAbsoluteSchedule(AbsoluteCampaignMessage message, String name, String[] formats, Object messageKey, Date date) {
