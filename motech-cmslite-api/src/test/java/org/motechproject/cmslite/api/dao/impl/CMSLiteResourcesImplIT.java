@@ -108,6 +108,39 @@ public class CMSLiteResourcesImplIT {
     @Test
     public void shouldSaveNewResource() {
         String pathToFile = "/background.wav";
+        ResourceQuery queryEnglish = addResource(pathToFile);
+        Resource enResource = cmsLiteDAO.getResource(queryEnglish);
+        assertNotNull(enResource);
+        assertEquals("en", enResource.getLanguage());
+        assertEquals("test-save", enResource.getName());
+        assertEquals("E70BCBFFEDE23037F521A19D7228C60E", enResource.getChecksum());
+
+        this.couchDbConnector.delete(enResource);
+    }
+
+    @Test
+    public void shouldUpdateResourceAttachment() {
+        String pathToFile = "/background.wav";
+        String pathToNewFile = "/10.wav";
+
+        ResourceQuery queryEnglish = addResource(pathToFile);
+        Resource enResource = cmsLiteDAO.getResource(queryEnglish);
+        assertNotNull(enResource);
+        assertEquals("en", enResource.getLanguage());
+        assertEquals("test-save", enResource.getName());
+        assertEquals("E70BCBFFEDE23037F521A19D7228C60E", enResource.getChecksum());
+
+        ResourceQuery newQueryEnglish = addResource(pathToNewFile);
+        Resource newResource = cmsLiteDAO.getResource(newQueryEnglish);
+        assertNotNull(newResource);
+        assertEquals("en", newResource.getLanguage());
+        assertEquals("test-save", newResource.getName());
+        assertEquals("B77E1F413455989CAA782037505F696E", newResource.getChecksum());
+
+        this.couchDbConnector.delete(newResource);
+    }
+
+    private ResourceQuery addResource(String pathToFile) {
         InputStream inputStreamToResource = this.getClass().getResourceAsStream(pathToFile);
 
         ResourceQuery queryEnglish = new ResourceQuery("test-save", "en");
@@ -117,14 +150,9 @@ public class CMSLiteResourcesImplIT {
             e.printStackTrace();
             assertFalse(true);
         }
-        Resource enResource = cmsLiteDAO.getResource(queryEnglish);
-        assertNotNull(enResource);
-        assertEquals("en", enResource.getLanguage());
-        assertEquals("test-save", enResource.getName());
-        assertEquals("E70BCBFFEDE23037F521A19D7228C60E", enResource.getChecksum());
-
-        this.couchDbConnector.delete(enResource);
+        return queryEnglish;
     }
+
 
     @After
     public void tearData() {

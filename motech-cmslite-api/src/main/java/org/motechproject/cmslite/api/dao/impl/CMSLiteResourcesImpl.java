@@ -43,13 +43,32 @@ public class CMSLiteResourcesImpl extends MotechAuditableRepository<Resource> im
         resource.setLanguage(query.getLanguage());
 
         try {
-            resource.setChecksum(checksum(inputStream));
-            db.create(resource);
-            AttachmentInputStream attachmentInputStream = new AttachmentInputStream(resource.getId(), inputStream, "audio/x-wav");
-            db.createAttachment(resource.getId(), resource.getRevision(), attachmentInputStream);
+            String checksum = checksum(inputStream);
+            Resource resourceFromDB = getResource(query);
+
+            boolean create = (resourceFromDB == null);
+            boolean sameAttachment = !create && !checksum.equals(resourceFromDB.getChecksum());
+
+            if (!create && !sameAttachment) return;
+
+            if (create) {
+                resource.setChecksum(checksum);
+                db.create(resource);
+                createAttachment(inputStream, resource);
+            } else {
+                resourceFromDB.setChecksum(checksum);
+                resourceFromDB.setInputStream(null);
+                db.update(resourceFromDB);
+                createAttachment(inputStream, resourceFromDB);
+            }
         } catch (Exception e) {
             throw new CMSLiteException(e.getMessage(), e);
         }
+    }
+
+    private void createAttachment(InputStream inputStream, Resource resource) {
+        AttachmentInputStream attachmentInputStream = new AttachmentInputStream(resource.getId(), inputStream, "audio/x-wav");
+        db.createAttachment(resource.getId(), resource.getRevision(), attachmentInputStream);
     }
 
     public String checksum(InputStream inputStream) throws NoSuchAlgorithmException, IOException {
