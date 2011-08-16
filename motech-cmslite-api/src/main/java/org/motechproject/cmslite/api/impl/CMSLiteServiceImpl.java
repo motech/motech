@@ -27,4 +27,9 @@ public class CMSLiteServiceImpl implements CMSLiteService{
 
     }
 
+    public void addContent(ResourceQuery query, InputStream inputStream) throws ResourceNotFoundException {
+        if(query == null) throw new IllegalArgumentException("Query should not be null");
+        cmsLiteResources.addResource(query, inputStream);
+    }
+
 }

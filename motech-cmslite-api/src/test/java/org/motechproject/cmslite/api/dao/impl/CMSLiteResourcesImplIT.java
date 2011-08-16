@@ -1,5 +1,6 @@
 package org.motechproject.cmslite.api.dao.impl;
 
+import junit.framework.Assert;
 import org.ektorp.AttachmentInputStream;
 import org.ektorp.CouchDbConnector;
 import org.junit.After;
@@ -101,6 +102,19 @@ public class CMSLiteResourcesImplIT {
         ResourceQuery query = new ResourceQuery("test", null);
         Resource resource = cmsLiteDAO.getResource(query);
         assertNull(resource);
+    }
+
+    @Test
+    public void shouldSaveNewResource() {
+        String pathToFile = "/testResource.png";
+        InputStream inputStreamToResource = this.getClass().getResourceAsStream(pathToFile);
+
+        ResourceQuery queryEnglish = new ResourceQuery("test-save", "en");
+        cmsLiteDAO.addResource(queryEnglish, inputStreamToResource);
+        Resource enResource = cmsLiteDAO.getResource(queryEnglish);
+        assertNotNull(enResource);
+        Assert.assertEquals("en", enResource.getLanguage());
+        Assert.assertEquals("test-save", enResource.getName());
     }
 
     @After
