@@ -16,6 +16,5 @@
     <context:component-scan base-package="org.motechproject.server.messagecampaign"/>
 
 
-    <import resource="classpath*:applicationPlatformCommon.xml"/>
-    <import resource="classpath*:applicationPlatformScheduler.xml"/>
+    <import resource="classpath:applicationPlatformScheduler.xml"/>
 </beans>
