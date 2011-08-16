@@ -15,6 +15,7 @@ public class Resource extends MotechAuditableDataObject {
     private InputStream inputStream;
     private String language;
     private String name;
+    private String checksum;
 
     @JsonProperty("type") private final String type = "RESOURCE";
 
@@ -41,5 +42,13 @@ public class Resource extends MotechAuditableDataObject {
 
     public InputStream getResourceAsInputStream() {
         return inputStream;
+    }
+
+    public String getChecksum() {
+        return checksum;
+    }
+
+    public void setChecksum(String checksum) {
+        this.checksum = checksum;
     }
 }

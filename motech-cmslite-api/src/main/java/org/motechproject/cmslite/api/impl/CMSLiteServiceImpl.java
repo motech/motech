@@ -1,6 +1,7 @@
 package org.motechproject.cmslite.api.impl;
 
 
+import org.motechproject.cmslite.api.CMSLiteException;
 import org.motechproject.cmslite.api.CMSLiteService;
 import org.motechproject.cmslite.api.ResourceNotFoundException;
 import org.motechproject.cmslite.api.ResourceQuery;
@@ -10,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.InputStream;
 
-public class CMSLiteServiceImpl implements CMSLiteService{
+public class CMSLiteServiceImpl implements CMSLiteService {
 
     @Autowired
     private CMSLiteResources cmsLiteResources;
@@ -20,15 +21,15 @@ public class CMSLiteServiceImpl implements CMSLiteService{
     }
 
     public InputStream getContent(ResourceQuery query) throws ResourceNotFoundException {
-        if(query == null) throw new IllegalArgumentException("Query should not be null");
+        if (query == null) throw new IllegalArgumentException("Query should not be null");
         Resource resource = cmsLiteResources.getResource(query);
-        if(resource != null) return resource.getResourceAsInputStream();
-        throw  new ResourceNotFoundException();
+        if (resource != null) return resource.getResourceAsInputStream();
+        throw new ResourceNotFoundException();
 
     }
 
-    public void addContent(ResourceQuery query, InputStream inputStream) throws ResourceNotFoundException {
-        if(query == null) throw new IllegalArgumentException("Query should not be null");
+    public void addContent(ResourceQuery query, InputStream inputStream) throws CMSLiteException {
+        if (query == null) throw new IllegalArgumentException("Query should not be null");
         cmsLiteResources.addResource(query, inputStream);
     }
 

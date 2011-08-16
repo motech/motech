@@ -5,13 +5,17 @@ import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
+import org.motechproject.cmslite.api.CMSLiteException;
 import org.motechproject.cmslite.api.ResourceQuery;
 import org.motechproject.cmslite.api.dao.CMSLiteResources;
 import org.motechproject.cmslite.api.model.Resource;
 import org.motechproject.dao.MotechAuditableRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import java.io.InputStream;
+import java.io.*;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public class CMSLiteResourcesImpl extends MotechAuditableRepository<Resource> implements CMSLiteResources {
@@ -33,13 +37,32 @@ public class CMSLiteResourcesImpl extends MotechAuditableRepository<Resource> im
         return fetchedResource;
     }
 
-    public void addResource(ResourceQuery query, InputStream inputStream) {
+    public void addResource(ResourceQuery query, InputStream inputStream) throws CMSLiteException {
         Resource resource = new Resource();
         resource.setName(query.getName());
         resource.setLanguage(query.getLanguage());
-        db.create(resource);
 
-        AttachmentInputStream attachmentInputStream = new AttachmentInputStream(resource.getId(), inputStream, "audio/x-wav");
-        db.createAttachment(resource.getId(), resource.getRevision(), attachmentInputStream);
+        try {
+            resource.setChecksum(checksum(inputStream));
+            db.create(resource);
+            AttachmentInputStream attachmentInputStream = new AttachmentInputStream(resource.getId(), inputStream, "audio/x-wav");
+            db.createAttachment(resource.getId(), resource.getRevision(), attachmentInputStream);
+        } catch (Exception e) {
+            throw new CMSLiteException(e.getMessage(), e);
+        }
+    }
+
+    public String checksum(InputStream inputStream) throws NoSuchAlgorithmException, IOException {
+        byte[] buffer = new byte[8192];
+        int read = 0;
+        MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+
+        inputStream.mark(inputStream.available() + 1);
+        while ((read = inputStream.read(buffer)) > 0) {
+            messageDigest.update(buffer, 0, read);
+        }
+        inputStream.reset();
+
+        return String.format("%1$032X", new BigInteger(1, messageDigest.digest()));
     }
 }

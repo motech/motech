@@ -1,12 +1,12 @@
 package org.motechproject.cmslite.api.dao.impl;
 
-import junit.framework.Assert;
 import org.ektorp.AttachmentInputStream;
 import org.ektorp.CouchDbConnector;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.cmslite.api.CMSLiteException;
 import org.motechproject.cmslite.api.ResourceNotFoundException;
 import org.motechproject.cmslite.api.ResourceQuery;
 import org.motechproject.cmslite.api.model.Resource;
@@ -22,6 +22,7 @@ import java.io.InputStream;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/applicationCmsLiteApi.xml")
@@ -106,15 +107,23 @@ public class CMSLiteResourcesImplIT {
 
     @Test
     public void shouldSaveNewResource() {
-        String pathToFile = "/testResource.png";
+        String pathToFile = "/background.wav";
         InputStream inputStreamToResource = this.getClass().getResourceAsStream(pathToFile);
 
         ResourceQuery queryEnglish = new ResourceQuery("test-save", "en");
-        cmsLiteDAO.addResource(queryEnglish, inputStreamToResource);
+        try {
+            cmsLiteDAO.addResource(queryEnglish, inputStreamToResource);
+        } catch (CMSLiteException e) {
+            e.printStackTrace();
+            assertFalse(true);
+        }
         Resource enResource = cmsLiteDAO.getResource(queryEnglish);
         assertNotNull(enResource);
-        Assert.assertEquals("en", enResource.getLanguage());
-        Assert.assertEquals("test-save", enResource.getName());
+        assertEquals("en", enResource.getLanguage());
+        assertEquals("test-save", enResource.getName());
+        assertEquals("E70BCBFFEDE23037F521A19D7228C60E", enResource.getChecksum());
+
+        this.couchDbConnector.delete(enResource);
     }
 
     @After
