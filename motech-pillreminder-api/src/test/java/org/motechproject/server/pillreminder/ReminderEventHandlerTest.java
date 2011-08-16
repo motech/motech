@@ -26,8 +26,8 @@ import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.pillreminder.builder.SchedulerPayloadBuilder;
-import org.motechproject.server.pillreminder.builder.TestDosageBuilder;
-import org.motechproject.server.pillreminder.builder.TestPillRegimenBuilder;
+import org.motechproject.server.pillreminder.builder.testbuilder.DosageBuilder;
+import org.motechproject.server.pillreminder.builder.testbuilder.PillRegimenBuilder;
 import org.motechproject.server.pillreminder.dao.AllPillRegimens;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
@@ -210,7 +210,7 @@ public class ReminderEventHandlerTest {
     }
 
     private Dosage buildDosageNotYetTaken(String dosageId) {
-        return TestDosageBuilder.newDosage()
+        return DosageBuilder.newDosage()
         		.withDosageTime(new Time(10, 25))
                 .withResponseLastCapturedDate(DateUtil.today().minusDays(1))
                 .withId(dosageId)
@@ -218,7 +218,7 @@ public class ReminderEventHandlerTest {
     }
 
     private Dosage buildDosageTaken(String dosageId) {
-        return TestDosageBuilder.newDosage()
+        return DosageBuilder.newDosage()
         		.withDosageTime(new Time(10, 25))
                 .withResponseLastCapturedDate(DateUtil.today())
                 .withId(dosageId)
@@ -226,7 +226,7 @@ public class ReminderEventHandlerTest {
     }
 
     private PillRegimen buildPillRegimen(String externalId, int pillWindow, Dosage dosage, int retryInterval) {
-        return TestPillRegimenBuilder.newPillRegimen()
+        return PillRegimenBuilder.newPillRegimen()
                 .withExternalId(externalId)
                 .withReminderRepeatWindowInHours(pillWindow)
                 .withReminderRepeatIntervalInMinutes(retryInterval)

@@ -1,4 +1,4 @@
-package org.motechproject.server.pillreminder.builder;
+package org.motechproject.server.pillreminder.builder.testbuilder;
 
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
@@ -6,27 +6,27 @@ import org.motechproject.server.pillreminder.domain.PillRegimen;
 import java.util.HashSet;
 import java.util.Set;
 
-public class TestPillRegimenBuilder {
+public class PillRegimenBuilder {
 
     private PillRegimen pillRegimen = new PillRegimen();
 
 
-    public TestPillRegimenBuilder withDosages(Set<Dosage> dosages) {
+    public PillRegimenBuilder withDosages(Set<Dosage> dosages) {
         pillRegimen.setDosages(dosages);
         return this;
     }
 
-    public TestPillRegimenBuilder withExternalId(String externalId) {
+    public PillRegimenBuilder withExternalId(String externalId) {
         pillRegimen.setExternalId(externalId);
         return this;
     }
 
-    public TestPillRegimenBuilder withReminderRepeatWindowInHours(int reminderRepeatWindowInHours) {
+    public PillRegimenBuilder withReminderRepeatWindowInHours(int reminderRepeatWindowInHours) {
         pillRegimen.setReminderRepeatWindowInHours(reminderRepeatWindowInHours);
         return this;
     }
 
-    public TestPillRegimenBuilder withReminderRepeatIntervalInMinutes(int reminderRepeatIntervalInMinutes) {
+    public PillRegimenBuilder withReminderRepeatIntervalInMinutes(int reminderRepeatIntervalInMinutes) {
         pillRegimen.setReminderRepeatIntervalInMinutes(reminderRepeatIntervalInMinutes);
         return this;
     }
@@ -35,11 +35,11 @@ public class TestPillRegimenBuilder {
         return pillRegimen;
     }
 
-    public static TestPillRegimenBuilder newPillRegimen() {
-        return new TestPillRegimenBuilder();
+    public static PillRegimenBuilder newPillRegimen() {
+        return new PillRegimenBuilder();
     }
 
-    public TestPillRegimenBuilder withSingleDosage(final Dosage dosage) {
+    public PillRegimenBuilder withSingleDosage(final Dosage dosage) {
         pillRegimen.setDosages(new HashSet<Dosage>() {{
             add(dosage);
         }});

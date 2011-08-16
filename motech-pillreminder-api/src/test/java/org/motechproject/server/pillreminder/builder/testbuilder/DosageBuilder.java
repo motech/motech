@@ -1,23 +1,23 @@
-package org.motechproject.server.pillreminder.builder;
+package org.motechproject.server.pillreminder.builder.testbuilder;
 
 import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
 import org.motechproject.server.pillreminder.domain.Dosage;
 
-public class TestDosageBuilder {
+public class DosageBuilder {
     private Dosage dosage = new Dosage();
 
-    public TestDosageBuilder withResponseLastCapturedDate(LocalDate responseLastCapturedDate) {
+    public DosageBuilder withResponseLastCapturedDate(LocalDate responseLastCapturedDate) {
         dosage.setResponseLastCapturedDate(responseLastCapturedDate);
         return this;
     }
 
-    public TestDosageBuilder withId(String id) {
+    public DosageBuilder withId(String id) {
         dosage.setId(id);
         return this;
     }
 
-    public TestDosageBuilder withDosageTime(Time dosageTime) {
+    public DosageBuilder withDosageTime(Time dosageTime) {
         dosage.setDosageTime(dosageTime);
         return this;
     }
@@ -25,8 +25,8 @@ public class TestDosageBuilder {
     public Dosage build() {
         return dosage;
     }
-    public static TestDosageBuilder newDosage() {
-        return new TestDosageBuilder();
+    public static DosageBuilder newDosage() {
+        return new DosageBuilder();
     }
 
 }
