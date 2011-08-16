@@ -53,6 +53,27 @@ public class MessageCampaignServiceImplTest {
         verify(mockAbsoluteProgramScheduler, times(1)).scheduleJobs();
     }
 
+    @Test
+    public void reEnrollTest() {
+        String campaignName = "campaign-name";
+        EnrollRequest enrollRequest = new EnrollRequest();
+        MessageCampaignServiceImpl messageCampaignService = new MessageCampaignServiceImpl(allMessageCampaigns, schedulerFactory);
+        AbsoluteProgramScheduler mockAbsoluteProgramScheduler = mock(AbsoluteProgramScheduler.class);
+        final AbsoluteCampaign absoluteCampaign = new AbsoluteCampaign();
+        final AbsoluteCampaignMessage absoluteCampaignMessage = new AbsoluteCampaignMessage();
+
+        absoluteCampaign.messages(new LinkedList<AbsoluteCampaignMessage>() {
+            {
+                add(absoluteCampaignMessage);
+            }
+        });
+        enrollRequest.campaignName(campaignName);
+        when(allMessageCampaigns.get(campaignName)).thenReturn(absoluteCampaign);
+        when(schedulerFactory.scheduler(enrollRequest, absoluteCampaign)).thenReturn(mockAbsoluteProgramScheduler);
+
+        messageCampaignService.reEnroll(enrollRequest);
+        verify(mockAbsoluteProgramScheduler, times(1)).rescheduleJobs();
+    }
 
     @Test(expected = MessageCampaignException.class)
     public void enrollWithUnknownCampaignTest() {

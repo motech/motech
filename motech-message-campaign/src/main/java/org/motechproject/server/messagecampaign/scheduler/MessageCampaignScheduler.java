@@ -36,6 +36,12 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage> {
         }
     };
 
+    public void rescheduleJobs() {
+        String jobIdPrefix = String.format("%s%s.%s", EventKeys.BASE_SUBJECT, campaign.name(), enrollRequest.externalId());
+        schedulerService.unscheduleAllJobs(jobIdPrefix);
+        scheduleJobs();
+    }
+
     protected abstract void scheduleJob(CampaignMessage message);
 
     protected HashMap jobParams(CampaignMessage message) {

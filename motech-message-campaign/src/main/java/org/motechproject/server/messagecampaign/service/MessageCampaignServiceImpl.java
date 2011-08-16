@@ -24,13 +24,23 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
     }
 
     public void enroll(EnrollRequest enrollRequest) {
+        MessageCampaignScheduler scheduler = getScheduler(enrollRequest);
+
+        scheduler.scheduleJobs();
+    }
+
+    public void reEnroll(EnrollRequest enrollRequest) {
+        MessageCampaignScheduler scheduler = getScheduler(enrollRequest);
+
+        scheduler.rescheduleJobs();
+    }
+
+    private MessageCampaignScheduler getScheduler(EnrollRequest enrollRequest) {
         Campaign<CampaignMessage> campaign = allMessageCampaigns.get(enrollRequest.campaignName());
 
         if (campaign == null)
             throw new MessageCampaignException("No campaign by name : " + enrollRequest.campaignName());
 
-        MessageCampaignScheduler scheduler = schedulerFactory.scheduler(enrollRequest, campaign);
-
-        scheduler.scheduleJobs();
+        return schedulerFactory.scheduler(enrollRequest, campaign);
     }
 }
