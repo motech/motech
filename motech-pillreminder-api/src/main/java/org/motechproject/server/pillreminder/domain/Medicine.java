@@ -2,12 +2,8 @@ package org.motechproject.server.pillreminder.domain;
 
 import org.joda.time.LocalDate;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Medicine {
     private String name;
-    private List<Status> statuses = new ArrayList<Status>();
     private LocalDate startDate;
     private LocalDate endDate;
 
@@ -42,14 +38,6 @@ public class Medicine {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public List<Status> getStatuses() {
-        return statuses;
-    }
-
-    public void setStatuses(List<Status> statuses) {
-        this.statuses = statuses;
     }
 
     public LocalDate getStartDate() {

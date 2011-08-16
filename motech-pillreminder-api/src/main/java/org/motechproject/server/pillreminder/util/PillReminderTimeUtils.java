@@ -6,7 +6,7 @@ import org.motechproject.model.Time;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.util.DateUtil;
 
-    public class PillReminderTimeUtils {
+public class PillReminderTimeUtils {
 
     public int timesPillRemindersSent(Dosage dosage, int pillWindowInHours, int retryIntervalInMinute) {
         Time dosageStartTime = dosage.getDosageTime();
@@ -21,6 +21,6 @@ import org.motechproject.util.DateUtil;
     private int getOffsetOfCurrentTimeFromDosageStartTime(Time dosageStartTime, DateTime now) {
         int hourDiff = now.getHourOfDay() - dosageStartTime.getHour();
         if (hourDiff < 0) hourDiff += 24;
-        return hourDiff * 60  + now.getMinuteOfHour() - dosageStartTime.getMinute();
+        return hourDiff * 60 + now.getMinuteOfHour() - dosageStartTime.getMinute();
     }
 }
