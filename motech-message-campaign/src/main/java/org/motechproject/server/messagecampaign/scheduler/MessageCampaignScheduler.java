@@ -7,19 +7,53 @@ import org.motechproject.model.MotechEvent;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.EventKeys;
+import org.motechproject.server.messagecampaign.builder.SchedulerPayloadBuilder;
+import org.motechproject.server.messagecampaign.contract.EnrollRequest;
+import org.motechproject.server.messagecampaign.domain.campaign.Campaign;
+import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
-public abstract class MessageCampaignScheduler {
+public abstract class MessageCampaignScheduler<T extends CampaignMessage> {
     public static final int REPEAT_WINDOW_IN_HOURS = 2;
     public static final int REPEAT_INTERVAL_IN_MINUTES = 15;
 
     protected MotechSchedulerService schedulerService;
+    protected EnrollRequest enrollRequest;
+    protected Campaign<T> campaign;
 
-    public abstract void scheduleJobs();
+    protected MessageCampaignScheduler(MotechSchedulerService schedulerService, EnrollRequest enrollRequest, Campaign<T> campaign) {
+        this.schedulerService = schedulerService;
+        this.campaign = campaign;
+        this.enrollRequest = enrollRequest;
+    }
 
-    public void scheduleJobOn(Time startTime, LocalDate startDate, Map<String, Object> params) {
+    public void scheduleJobs() {
+        for (CampaignMessage message : campaign.messages()) {
+            scheduleJob(message);
+        }
+    };
+
+    protected abstract void scheduleJob(CampaignMessage message);
+
+    protected HashMap jobParams(CampaignMessage message) {
+        return jobParams(message.messageKey());
+    }
+
+    protected HashMap jobParams(String messageKey) {
+        String jobId = EventKeys.BASE_SUBJECT + campaign.name() + "." + messageKey + "." + enrollRequest.externalId();
+
+        return new SchedulerPayloadBuilder()
+                .withJobId(jobId)
+                .withCampaignName(campaign.name())
+                .withMessageKey(messageKey)
+                .withExternalId(enrollRequest.externalId())
+                .payload();
+    }
+
+    protected void scheduleJobOn(Time startTime, LocalDate startDate, Map<String, Object> params) {
 
         String cronJobExpression = new CronJobExpressionBuilder(startTime,
                 REPEAT_WINDOW_IN_HOURS, REPEAT_INTERVAL_IN_MINUTES).build();
@@ -27,7 +61,7 @@ public abstract class MessageCampaignScheduler {
         scheduleJobOn(cronJobExpression, startDate, params);
     }
 
-    public void scheduleJobOn(String cronJobExpression, LocalDate startDate, Map<String, Object> params) {
+    protected void scheduleJobOn(String cronJobExpression, LocalDate startDate, Map<String, Object> params) {
         MotechEvent motechEvent = new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_EVENT_SUBJECT, params);
 
         Date startDateAsDate = startDate == null ?  null : startDate.toDate();

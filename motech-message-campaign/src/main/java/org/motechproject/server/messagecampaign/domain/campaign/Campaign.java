@@ -8,8 +8,6 @@ public abstract class Campaign<T extends CampaignMessage> {
 
     private String name;
 
-
-
     private CampaignType type;
 
     private List<CampaignMessage> messages;
@@ -21,8 +19,6 @@ public abstract class Campaign<T extends CampaignMessage> {
     public String name() {
         return name;
     }
-
-
 
     public CampaignType type() {
         return type;

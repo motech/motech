@@ -42,12 +42,12 @@ public class AbsoluteProgramSchedulerTest {
         assertEquals(campaign.messages().get(0).date(), DateUtil.newDate(allJobs.get(0).getStartTime()));
         assertEquals("0 30/15 9-11 * * ?", allJobs.get(0).getCronExpression());
         assertEquals("org.motechproject.server.messagecampaign.scheduler-message", allJobs.get(0).getMotechEvent().getSubject());
-        assertMotechEvent(allJobs.get(0), "org.motechproject.server.messagecampaign.testCampaign.AM1.12345", "random-1");
+        assertMotechEvent(allJobs.get(0), "org.motechproject.server.messagecampaign.testCampaign.random-1.12345", "random-1");
 
         assertEquals(campaign.messages().get(1).date(), DateUtil.newDate(allJobs.get(1).getStartTime()));
         assertEquals("0 30/15 9-11 * * ?", allJobs.get(1).getCronExpression());
         assertEquals("org.motechproject.server.messagecampaign.scheduler-message", allJobs.get(1).getMotechEvent().getSubject());
-        assertMotechEvent(allJobs.get(1), "org.motechproject.server.messagecampaign.testCampaign.AM2.12345", "random-2");
+        assertMotechEvent(allJobs.get(1), "org.motechproject.server.messagecampaign.testCampaign.random-2.12345", "random-2");
     }
 
     private void assertMotechEvent(CronSchedulableJob cronSchedulableJob, String expectedJobId, Object messageKey) {
