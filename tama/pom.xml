@@ -4,11 +4,11 @@
 	<parent>
 		<artifactId>motech</artifactId>
 		<groupId>org.motechproject</groupId>
-		<version>0.1-SNAPSHOT</version>
+		<version>0.2-SNAPSHOT</version>
 	</parent>
 	<groupId>org.motechproject</groupId>
 	<artifactId>tama</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.2-SNAPSHOT</version>
 	<name>TAMA</name>
 	<packaging>bundle</packaging>
 	<description>TAMA Server Side Logic</description>
@@ -51,25 +51,25 @@
 		<!--<dependency>-->
 			<!--<groupId>org.motechproject</groupId>-->
 			<!--<artifactId>motech-platform-server-api</artifactId>-->
-			<!--<version>0.1-SNAPSHOT</version>-->
+			<!--<version>0.2-SNAPSHOT</version>-->
 			<!--<scope>provided</scope>-->
         <!--</dependency>-->
 		<!--<dependency>-->
 			<!--<groupId>org.motechproject</groupId>-->
 			<!--<artifactId>motech-appointments-api</artifactId>-->
-			<!--<version>0.1-SNAPSHOT</version>-->
+			<!--<version>0.2-SNAPSHOT</version>-->
             <!--<scope>provided</scope>-->
 		<!--</dependency>-->
 		<!--<dependency>-->
 			<!--<groupId>org.motechproject</groupId>-->
 			<!--<artifactId>motech-outbox-api</artifactId>-->
-			<!--<version>0.1-SNAPSHOT</version>-->
+			<!--<version>0.2-SNAPSHOT</version>-->
             <!--<scope>provided</scope>-->
 		<!--</dependency>-->
 		<!--<dependency>-->
 			<!--<groupId>org.motechproject</groupId>-->
 			<!--<artifactId>motech-pillreminder-api</artifactId>-->
-			<!--<version>0.1-SNAPSHOT</version>-->
+			<!--<version>0.2-SNAPSHOT</version>-->
 			<!--<scope>provided</scope>-->
 		<!--</dependency>		-->
 		<dependency>
@@ -80,13 +80,13 @@
         <!--<dependency>-->
 			<!--<groupId>org.motechproject</groupId>-->
 			<!--<artifactId>motech-platform-common</artifactId>-->
-			<!--<version>0.1-SNAPSHOT</version>-->
+			<!--<version>0.2-SNAPSHOT</version>-->
 			<!--<scope>provided</scope>-->
 		<!--</dependency>-->
 		<!--<dependency>-->
 			<!--<groupId>org.motechproject</groupId>-->
 			<!--<artifactId>motech-platform-decisiontree-common</artifactId>-->
-			<!--<version>0.1-SNAPSHOT</version>-->
+			<!--<version>0.2-SNAPSHOT</version>-->
 		<!--</dependency>-->
 		<dependency>
 			<groupId>org.springframework</groupId>

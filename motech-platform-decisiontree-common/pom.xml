@@ -3,12 +3,12 @@
   <parent>
     <artifactId>motech</artifactId>
     <groupId>org.motechproject</groupId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
   </parent>
   <groupId>org.motechproject</groupId>
   <artifactId>motech-platform-decisiontree-common</artifactId>
   <name>Motech Platform Decision Tree Common</name>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.2-SNAPSHOT</version>
     <dependencies>
         <dependency>
 			<groupId>${project.groupId}</groupId>
