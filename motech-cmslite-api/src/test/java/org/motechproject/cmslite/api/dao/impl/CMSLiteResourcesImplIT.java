@@ -10,6 +10,7 @@ import org.motechproject.cmslite.api.ResourceNotFoundException;
 import org.motechproject.cmslite.api.ResourceQuery;
 import org.motechproject.cmslite.api.model.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -22,12 +23,14 @@ import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("/testCmsLiteConfiguration.xml")
+@ContextConfiguration("/applicationCmsLiteApi.xml")
 public class CMSLiteResourcesImplIT {
 
     @Autowired
     CMSLiteResourcesImpl cmsLiteDAO;
+
     @Autowired
+    @Qualifier("cmsLiteDatabase")
     protected CouchDbConnector couchDbConnector;
 
     private Resource resourceEnglish;
@@ -44,7 +47,7 @@ public class CMSLiteResourcesImplIT {
 
         couchDbConnector.create(resourceEnglish);
         couchDbConnector.createAttachment(resourceEnglish.getId(), resourceEnglish.getRevision(), new AttachmentInputStream(resourceEnglish.getId(), inputStreamToResource, "image/png"));
-        resourceEnglish = couchDbConnector.get(Resource.class,resourceEnglish.getId());
+        resourceEnglish = couchDbConnector.get(Resource.class, resourceEnglish.getId());
 
         resourceFrench = new Resource();
         resourceFrench.setLanguage("fr");
@@ -52,8 +55,7 @@ public class CMSLiteResourcesImplIT {
 
         couchDbConnector.create(resourceFrench);
         couchDbConnector.createAttachment(resourceFrench.getId(), resourceFrench.getRevision(), new AttachmentInputStream(resourceFrench.getId(), inputStreamToResource, "image/png"));
-        resourceFrench = couchDbConnector.get(Resource.class,resourceFrench.getId());
-
+        resourceFrench = couchDbConnector.get(Resource.class, resourceFrench.getId());
     }
 
     @Test

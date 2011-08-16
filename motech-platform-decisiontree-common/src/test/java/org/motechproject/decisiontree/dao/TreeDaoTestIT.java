@@ -31,23 +31,19 @@
  */
 package org.motechproject.decisiontree.dao;
 
-import static org.junit.Assert.*;
-
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.decisiontree.model.Node;
-import org.motechproject.decisiontree.model.Prompt;
-import org.motechproject.decisiontree.model.TextToSpeechPrompt;
-import org.motechproject.decisiontree.model.Transition;
-import org.motechproject.decisiontree.model.Tree;
+import org.motechproject.decisiontree.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * DAO IT test findByName()

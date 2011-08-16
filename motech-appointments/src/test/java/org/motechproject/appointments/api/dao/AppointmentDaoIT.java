@@ -50,7 +50,7 @@ import static junit.framework.Assert.assertNotNull;
  * @author yyonkov
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/testAppointmentsAPIContext.xml"})
+@ContextConfiguration(locations={"/applicationAppointments.xml"})
 public class AppointmentDaoIT {
 
 	@Autowired
