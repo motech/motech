@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 public class TrackedSchedulesJsonReaderTest {
     @Test
     public void records() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("simple-schedule.json", new MotechJsonReader());
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/simple-schedule.json", new MotechJsonReader());
         List<ScheduleRecord> records = jsonReader.records();
         assertEquals(1, records.size());
         ScheduleRecord scheduleRecord = records.get(0);

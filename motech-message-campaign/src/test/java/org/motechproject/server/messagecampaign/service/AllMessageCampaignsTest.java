@@ -23,7 +23,7 @@ public class AllMessageCampaignsTest {
     @Before
     public void setup() {
         Properties properties = new Properties();
-        properties.setProperty("messagecampaign.definition.file", "simple-message-campaign.json");
+        properties.setProperty("messagecampaign.definition.file", "/simple-message-campaign.json");
         MotechJsonReader motechJsonReader = new MotechJsonReader();
         allMessageCampaigns = new AllMessageCampaigns(properties, motechJsonReader);
     }

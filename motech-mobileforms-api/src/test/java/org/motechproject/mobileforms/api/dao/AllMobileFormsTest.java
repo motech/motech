@@ -17,7 +17,7 @@ public class AllMobileFormsTest {
     @Before
     public void setup() {
         Properties properties = new Properties();
-        properties.setProperty("forms.config.file", "forms-config.json");
+        properties.setProperty("forms.config.file", "/forms-config.json");
         MotechJsonReader motechJsonReader = new MotechJsonReader();
         allMobileForms = new AllMobileForms(properties, motechJsonReader);
     }

@@ -8,11 +8,10 @@
         <groupId>org.motechproject</groupId>
         <version>0.1-SNAPSHOT</version>
     </parent>
-    <groupId>motech-mforms-api</groupId>
-    <artifactId>motech-mforms-api</artifactId>
-    <name>Motech MForms API</name>
-    <description>Motech MForms API</description>
-    <version>1.0</version>
+    <artifactId>motech-mobileforms-api</artifactId>
+    <name>Motech Mobile Forms API</name>
+    <description>Motech Mobile Forms API</description>
+    <version>0.1-SNAPSHOT</version>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>

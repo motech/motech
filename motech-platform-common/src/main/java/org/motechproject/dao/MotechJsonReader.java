@@ -14,7 +14,7 @@ import java.util.Date;
 @Component
 public class MotechJsonReader {
     public Object readFromFile(String classpathFile, Type type) {
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream(classpathFile);
+        InputStream inputStream = getClass().getResourceAsStream(classpathFile);
         try {
             String jsonText = IOUtils.toString(inputStream);
             GsonBuilder gsonBuilder = new GsonBuilder();

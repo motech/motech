@@ -23,12 +23,14 @@ public class AllMobileForms {
     }
 
     public List<FormGroup> getAllFormGroups() {
-        return (List<FormGroup>) motechJsonReader.readFromFile(configFilePath(),
+
+        return (List<FormGroup>) motechJsonReader.readFromFile(configFile(),
                 new TypeToken<List<FormGroup>>() {
                 }.getType());
     }
 
-    private String configFilePath() {
+    private String configFile() {
         return this.properties.getProperty(FORMS_CONFIG_FILE);
+
     }
 }
