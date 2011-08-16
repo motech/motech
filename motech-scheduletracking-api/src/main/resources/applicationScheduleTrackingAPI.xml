@@ -12,9 +12,7 @@
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.scheduletracking.api"/>
 
-    <import resource="classpath*:applicationPlatformCommon.xml"/>
-    <import resource="classpath*:applicationPlatformServerAPI.xml"/>
-    <import resource="classpath*:applicationPlatformScheduler.xml"/>
+    <import resource="classpath:applicationPlatformScheduler.xml"/>
 
     <bean id="scheduleTrackingDbConnector" class="org.ektorp.impl.StdCouchDbConnector">
         <constructor-arg value="motech-scheduletracking"/>

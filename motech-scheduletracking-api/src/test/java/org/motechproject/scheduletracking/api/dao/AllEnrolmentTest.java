@@ -11,7 +11,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:applicationScheduleTrackingAPI.xml"})
+@ContextConfiguration(locations = {"/applicationScheduleTrackingAPI.xml"})
 public class AllEnrolmentTest {
     @Autowired
     private AllEnrolments allEnrolments;

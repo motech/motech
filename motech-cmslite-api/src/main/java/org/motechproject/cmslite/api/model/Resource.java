@@ -8,7 +8,7 @@ import org.motechproject.model.MotechAuditableDataObject;
 
 import java.io.InputStream;
 
-@TypeDiscriminator("doc.documentType == 'RESOURCE'")
+@TypeDiscriminator("doc.type === 'RESOURCE'")
 public class Resource extends MotechAuditableDataObject {
 
     @JsonIgnore
