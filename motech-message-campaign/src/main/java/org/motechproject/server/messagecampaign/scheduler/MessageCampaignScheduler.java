@@ -43,7 +43,7 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage> {
     }
 
     protected HashMap jobParams(String messageKey) {
-        String jobId = EventKeys.BASE_SUBJECT + campaign.name() + "." + messageKey + "." + enrollRequest.externalId();
+        String jobId = String.format("%s%s.%s.%s", EventKeys.BASE_SUBJECT, campaign.name(), enrollRequest.externalId(), messageKey);
 
         return new SchedulerPayloadBuilder()
                 .withJobId(jobId)

@@ -44,10 +44,10 @@ public class RepeatingProgramSchedulerTest {
         List<CronSchedulableJob> allJobs = capture.getAllValues();
 
         LocalDate jobDate = request.referenceDate();
-        assertJob(allJobs.get(0), "org.motechproject.server.messagecampaign.testCampaign.child-info-week-1-1.12345", "child-info-week-1-1", jobDate.toDate());
-        assertJob(allJobs.get(1), "org.motechproject.server.messagecampaign.testCampaign.child-info-week-2-1.12345", "child-info-week-2-1", jobDate.plusDays(7).toDate());
-        assertJob(allJobs.get(2), "org.motechproject.server.messagecampaign.testCampaign.child-info-week-1-2.12345", "child-info-week-1-2", jobDate.toDate());
-        assertJob(allJobs.get(3), "org.motechproject.server.messagecampaign.testCampaign.child-info-week-2-2.12345", "child-info-week-2-2", jobDate.plusDays(12).toDate());
+        assertJob(allJobs.get(0), "org.motechproject.server.messagecampaign.testCampaign.12345.child-info-week-1-1", "child-info-week-1-1", jobDate.toDate());
+        assertJob(allJobs.get(1), "org.motechproject.server.messagecampaign.testCampaign.12345.child-info-week-2-1", "child-info-week-2-1", jobDate.plusDays(7).toDate());
+        assertJob(allJobs.get(2), "org.motechproject.server.messagecampaign.testCampaign.12345.child-info-week-1-2", "child-info-week-1-2", jobDate.toDate());
+        assertJob(allJobs.get(3), "org.motechproject.server.messagecampaign.testCampaign.12345.child-info-week-2-2", "child-info-week-2-2", jobDate.plusDays(12).toDate());
     }
 
     private void assertJob(CronSchedulableJob cronSchedulableJob, String jobId, String messageKey, Date jobDate) {
