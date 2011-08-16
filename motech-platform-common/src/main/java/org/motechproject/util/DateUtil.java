@@ -4,8 +4,10 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Date;
-import java.util.ResourceBundle;
+import java.util.Properties;
 import java.util.TimeZone;
 
 public class DateUtil {
@@ -34,7 +36,13 @@ public class DateUtil {
     }
 
     private static DateTimeZone getTimeZone() {
-        String timeZoneString = ResourceBundle.getBundle("date").getString("timezone");
-        return DateTimeZone.forTimeZone(TimeZone.getTimeZone(timeZoneString));
+        try {
+            Properties dateProperties = new Properties();
+            dateProperties.load(new FileInputStream("date.properties"));
+            String timeZoneString = dateProperties.getProperty("timezone");
+            return DateTimeZone.forTimeZone(TimeZone.getTimeZone(timeZoneString));
+        } catch (IOException e) {
+            return null;
+        }
     }
 }
