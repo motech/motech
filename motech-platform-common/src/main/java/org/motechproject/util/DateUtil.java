@@ -4,7 +4,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Properties;
@@ -38,7 +37,7 @@ public class DateUtil {
     private static DateTimeZone getTimeZone() {
         try {
             Properties dateProperties = new Properties();
-            dateProperties.load(new FileInputStream("date.properties"));
+            dateProperties.load(DateUtil.class.getClassLoader().getResourceAsStream("date.properties"));
             String timeZoneString = dateProperties.getProperty("timezone");
             return DateTimeZone.forTimeZone(TimeZone.getTimeZone(timeZoneString));
         } catch (IOException e) {
