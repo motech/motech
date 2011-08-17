@@ -3,6 +3,7 @@ package org.motechproject.util;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
+import org.motechproject.MotechException;
 
 import java.io.IOException;
 import java.util.Date;
@@ -46,7 +47,7 @@ public class DateUtil {
             String timeZoneString = dateProperties.getProperty("timezone");
             dateTimeZone = DateTimeZone.forTimeZone(TimeZone.getTimeZone(timeZoneString));
         } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
+            throw new MotechException("Error while loading timezone from date.properties", e);
         }
         return null;
     }
