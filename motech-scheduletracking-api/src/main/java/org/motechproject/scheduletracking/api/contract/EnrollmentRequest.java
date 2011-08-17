@@ -2,11 +2,12 @@ package org.motechproject.scheduletracking.api.contract;
 
 import org.motechproject.model.Time;
 
-public class EnrolmentRequest {
+public class EnrollmentRequest
+{
     private String externalId;
     private String scheduleName;
-    private String enroledInMilestone;
-    private int enroledAt;
+    private String enrolledInMilestone;
+    private int enrolledAt;
     private Time preferredAlertTime;
 
     public String scheduleName() {
@@ -17,12 +18,12 @@ public class EnrolmentRequest {
         return externalId;
     }
 
-    public String enroledInMilestone() {
-        return enroledInMilestone;
+    public String enrolledInMilestone() {
+        return enrolledInMilestone;
     }
 
-    public int enroledAt() {
-        return enroledAt;
+    public int enrolledAt() {
+        return enrolledAt;
     }
 
     public Time preferredAlertTime() {

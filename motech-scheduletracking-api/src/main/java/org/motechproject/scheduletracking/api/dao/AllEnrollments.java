@@ -2,15 +2,15 @@ package org.motechproject.scheduletracking.api.dao;
 
 import org.ektorp.CouchDbConnector;
 import org.motechproject.dao.MotechAuditableRepository;
-import org.motechproject.scheduletracking.api.domain.enrolment.Enrolment;
+import org.motechproject.scheduletracking.api.domain.enrollment.Enrollment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AllEnrolments extends MotechAuditableRepository<Enrolment> {
+public class AllEnrollments extends MotechAuditableRepository<Enrollment> {
     @Autowired
-    public AllEnrolments(@Qualifier("scheduleTrackingDbConnector") CouchDbConnector db) {
-        super(Enrolment.class, db);
+    public AllEnrollments(@Qualifier("scheduleTrackingDbConnector") CouchDbConnector db) {
+        super(Enrollment.class, db);
     }
 }

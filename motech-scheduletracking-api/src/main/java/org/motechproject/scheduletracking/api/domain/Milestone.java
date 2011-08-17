@@ -1,6 +1,6 @@
 package org.motechproject.scheduletracking.api.domain;
 
-import org.motechproject.scheduletracking.api.domain.enrolment.Enrolment;
+import org.motechproject.scheduletracking.api.domain.enrollment.Enrollment;
 import org.motechproject.valueobjects.WallTime;
 
 import java.util.HashMap;
@@ -35,11 +35,11 @@ public class Milestone implements Referenceable {
         return refersTo;
     }
 
-    public WindowName applicableWindow(Enrolment enrolment) {
+    public WindowName applicableWindow(Enrollment enrollment) {
         Set<Map.Entry<WindowName, MilestoneWindow>> entries = windows.entrySet();
         for (Map.Entry<WindowName, MilestoneWindow> entry : entries) {
             MilestoneWindow milestoneWindow = entry.getValue();
-            if (milestoneWindow.isApplicableTo(enrolment)) return entry.getKey();
+            if (milestoneWindow.isApplicableTo(enrollment)) return entry.getKey();
         }
         return WindowName.Past;
     }

@@ -1,7 +1,7 @@
 package org.motechproject.scheduletracking.api.domain;
 
 import org.joda.time.LocalDate;
-import org.motechproject.scheduletracking.api.domain.enrolment.Enrolment;
+import org.motechproject.scheduletracking.api.domain.enrollment.Enrollment;
 import org.motechproject.valueobjects.WallTime;
 
 import java.util.Date;
@@ -35,11 +35,11 @@ public class Schedule implements Referenceable {
         return localDate.plusDays(totalDuration.inDays()).toDateTimeAtCurrentTime().toDate();
     }
 
-    public Alert alertFor(Enrolment enrolment) {
+    public Alert alertFor(Enrollment enrollment) {
         WindowName windowName = null;
         Milestone milestone = null;
         for (Milestone currentMilestone : milestones.values()) {
-            windowName = currentMilestone.applicableWindow(enrolment);
+            windowName = currentMilestone.applicableWindow(enrollment);
             milestone = currentMilestone;
             if (windowName != null) break;
         }

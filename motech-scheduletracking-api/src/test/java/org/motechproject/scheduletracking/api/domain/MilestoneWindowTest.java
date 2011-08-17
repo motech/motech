@@ -11,8 +11,8 @@ public class MilestoneWindowTest extends BaseScheduleTrackingTest {
     @Test
     public void isApplicableTo() {
         MilestoneWindow milestoneWindow = new MilestoneWindow(new WallTime(6, WallTimeUnit.Day), new WallTime(10, WallTimeUnit.Day));
-        assertTrue(milestoneWindow.isApplicableTo(enrolment(daysAgo(7))));
-        assertFalse(milestoneWindow.isApplicableTo(enrolment(daysAgo(1))));
-        assertFalse(milestoneWindow.isApplicableTo(enrolment(daysAgo(11))));
+        assertTrue(milestoneWindow.isApplicableTo(enrollment(daysAgo(7))));
+        assertFalse(milestoneWindow.isApplicableTo(enrollment(daysAgo(1))));
+        assertFalse(milestoneWindow.isApplicableTo(enrollment(daysAgo(11))));
     }
 }

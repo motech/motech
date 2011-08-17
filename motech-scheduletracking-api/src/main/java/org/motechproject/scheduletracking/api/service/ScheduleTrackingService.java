@@ -1,7 +1,7 @@
 package org.motechproject.scheduletracking.api.service;
 
-import org.motechproject.scheduletracking.api.contract.EnrolmentRequest;
+import org.motechproject.scheduletracking.api.contract.EnrollmentRequest;
 
 public interface ScheduleTrackingService {
-    public void enrol(EnrolmentRequest enrolmentRequest);
+    public void enroll(EnrollmentRequest enrollmentRequest);
 }

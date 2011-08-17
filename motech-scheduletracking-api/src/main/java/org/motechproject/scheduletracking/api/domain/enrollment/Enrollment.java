@@ -1,4 +1,4 @@
-package org.motechproject.scheduletracking.api.domain.enrolment;
+package org.motechproject.scheduletracking.api.domain.enrollment;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
@@ -11,20 +11,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 @TypeDiscriminator("doc.type === 'SCHEDULEENROLMENT'")
-public class Enrolment extends MotechAuditableDataObject {
+public class Enrollment extends MotechAuditableDataObject {
     @JsonProperty("type")
     private String type = "SCHEDULEENROLMENT";
     private String externalId;
-    private LocalDate enroledDate;
+    private LocalDate enrolledDate;
     private String scheduleName;
     private Map<WindowName, MilestoneFulfillment> fulfillments = new HashMap<WindowName, MilestoneFulfillment>();
 
-    private Enrolment() {
+    private Enrollment() {
     }
 
-    public Enrolment(String externalId, LocalDate enroledDate, String scheduleName) {
+    public Enrollment(String externalId, LocalDate enrolledDate, String scheduleName) {
         this.externalId = externalId;
-        this.enroledDate = enroledDate;
+        this.enrolledDate = enrolledDate;
         this.scheduleName = scheduleName;
     }
 
@@ -52,11 +52,11 @@ public class Enrolment extends MotechAuditableDataObject {
         this.externalId = externalId;
     }
 
-    public LocalDate getEnroledDate() {
-        return enroledDate;
+    public LocalDate getEnrolledDate() {
+        return enrolledDate;
     }
 
-    public void setEnroledDate(LocalDate enroledDate) {
-        this.enroledDate = enroledDate;
+    public void setEnrolledDate(LocalDate enrolledDate) {
+        this.enrolledDate = enrolledDate;
     }
 }
