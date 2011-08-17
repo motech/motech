@@ -31,7 +31,6 @@
  */
 package org.motechproject.server.event.annotations;
 
-import org.motechproject.context.Context;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.EventListener;
 import org.slf4j.LoggerFactory;
@@ -75,7 +74,7 @@ public abstract class MotechListenerAbstractProxy implements EventListener {
 		try {
 			callHandler(event);
 		} catch (Exception e) {
-			LoggerFactory.getLogger(bean.getClass()).error(String.format("An exception of type: %s(\"%s\") has been caught in: %s", e.getClass().getSimpleName(), e.getLocalizedMessage(), method.toGenericString()));
+			LoggerFactory.getLogger(bean.getClass()).error(e.toString());
 		}
 	}
 	/* (non-Javadoc)

@@ -10,6 +10,9 @@ import java.util.Properties;
 import java.util.TimeZone;
 
 public class DateUtil {
+
+    private static DateTimeZone dateTimeZone;
+
     public static DateTime now() {
         DateTimeZone timeZone = getTimeZone();
         return new DateTime(timeZone);
@@ -35,13 +38,16 @@ public class DateUtil {
     }
 
     private static DateTimeZone getTimeZone() {
+        if (dateTimeZone != null) return dateTimeZone;
+
         try {
             Properties dateProperties = new Properties();
-            dateProperties.load(DateUtil.class.getClassLoader().getResourceAsStream("date.properties"));
+            dateProperties.load(DateUtil.class.getResourceAsStream("/date.properties"));
             String timeZoneString = dateProperties.getProperty("timezone");
-            return DateTimeZone.forTimeZone(TimeZone.getTimeZone(timeZoneString));
+            dateTimeZone = DateTimeZone.forTimeZone(TimeZone.getTimeZone(timeZoneString));
         } catch (IOException e) {
-            return null;
+            throw new RuntimeException(e.getMessage());
         }
+        return null;
     }
 }
