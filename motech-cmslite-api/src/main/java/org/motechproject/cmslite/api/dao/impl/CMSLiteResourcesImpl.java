@@ -38,12 +38,13 @@ public class CMSLiteResourcesImpl extends MotechAuditableRepository<Resource> im
     }
 
     public void addResource(ResourceQuery query, InputStream inputStream) throws CMSLiteException {
+        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
         Resource resource = new Resource();
         resource.setName(query.getName());
         resource.setLanguage(query.getLanguage());
 
         try {
-            String checksum = checksum(inputStream);
+            String checksum = checksum(bufferedInputStream);
             Resource resourceFromDB = getResource(query);
 
             boolean create = (resourceFromDB == null);
@@ -54,12 +55,12 @@ public class CMSLiteResourcesImpl extends MotechAuditableRepository<Resource> im
             if (create) {
                 resource.setChecksum(checksum);
                 db.create(resource);
-                createAttachment(inputStream, resource);
+                createAttachment(bufferedInputStream, resource);
             } else {
                 resourceFromDB.setChecksum(checksum);
                 resourceFromDB.setInputStream(null);
                 db.update(resourceFromDB);
-                createAttachment(inputStream, resourceFromDB);
+                createAttachment(bufferedInputStream, resourceFromDB);
             }
         } catch (Exception e) {
             throw new CMSLiteException(e.getMessage(), e);

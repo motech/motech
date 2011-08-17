@@ -8,9 +8,11 @@ import org.motechproject.cmslite.api.ResourceQuery;
 import org.motechproject.cmslite.api.dao.CMSLiteResources;
 import org.motechproject.cmslite.api.model.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
 
+@Component
 public class CMSLiteServiceImpl implements CMSLiteService {
 
     @Autowired

@@ -22,4 +22,8 @@
         <constructor-arg ref="cmsLiteDatabase"/>
     </bean>
 
+    <bean id="cmsLiteService" class="org.motechproject.cmslite.api.impl.CMSLiteServiceImpl">
+        <constructor-arg ref="cmsLiteResources"/>
+    </bean>
+
 </beans>
