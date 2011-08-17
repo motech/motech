@@ -57,7 +57,7 @@ public class ReminderEventHandler {
 	private void scheduleRepeatReminders(MotechEvent motechEvent, PillRegimen pillRegimen, Dosage dosage) {
 		DateTime dosageTime = DateUtil.now().withHourOfDay(dosage.getDosageTime().getHour()).withMinuteOfHour(dosage.getDosageTime().getMinute());
 		Date startTime = dosageTime.plusMinutes(pillRegimen.getReminderRepeatIntervalInMinutes()).toDate();
-		Date endTime =   dosageTime.plusHours(pillRegimen.getReminderRepeatWindowInHours()).toDate();
+		Date endTime =   dosageTime.plusHours(pillRegimen.getReminderRepeatWindowInHours()).plusMinutes(1).toDate();
 		MotechEvent repeatingReminderEvent = createNewMotechEvent(dosage, pillRegimen, motechEvent, EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER);
 	
 		repeatingReminderEvent.getParameters().put(MotechSchedulerService.JOB_ID_KEY, dosage.getId() + DateUtil.now().getMillis());
