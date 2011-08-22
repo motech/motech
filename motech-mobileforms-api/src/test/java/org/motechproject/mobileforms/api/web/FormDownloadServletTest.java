@@ -21,15 +21,12 @@ public class FormDownloadServletTest {
 
     @Mock
     private HttpServletRequest request;
+    @Mock
     private HttpServletResponse response;
 
     @Before
     public void setUp() {
-        request = mock(HttpServletRequest.class);
-        response = mock(HttpServletResponse.class);
-
-        initMocks(request);
-        initMocks(response);
+        initMocks(this);
     }
 
     @Test
