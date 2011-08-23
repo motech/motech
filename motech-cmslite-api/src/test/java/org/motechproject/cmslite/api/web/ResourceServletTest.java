@@ -70,6 +70,9 @@ public class ResourceServletTest {
         try {
             resourceServlet.doGet(httpServletRequest, httpServletResponse);
             verify(httpServletResponse).setStatus(HttpServletResponse.SC_OK);
+            verify(httpServletResponse).setHeader("Content-Type", "audio/x-wav");
+            verify(httpServletResponse).setHeader("Accept-Ranges", "bytes");
+            verify(httpServletResponse).setContentLength(240044);
         } catch (ServletException e) {
             assertFalse(true);
         } catch (IOException e) {

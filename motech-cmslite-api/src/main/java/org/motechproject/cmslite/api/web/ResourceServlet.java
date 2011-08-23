@@ -37,16 +37,20 @@ public class ResourceServlet extends HttpServlet {
         ResourceQuery resourceQuery = resourceQuery(request);
 
         try {
+            logger.info("Getting resource for : " + resourceQuery.getLanguage() + ":" + resourceQuery.getName());
+            AttachmentInputStream contentStream = (AttachmentInputStream) cmsLiteService.getContent(resourceQuery);
+
+            AudioFormat audioFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 8000, 16, 1, 2, 8000, false);
+            long contentLength = contentStream.getContentLength();
 
             response.setStatus(HttpServletResponse.SC_OK);
             response.setHeader("Content-Type", "audio/x-wav");
+            response.setHeader("Accept-Ranges", "bytes");
+            response.setContentLength((int) contentLength);
 
-            logger.info("Getting resource for : " + resourceQuery.getLanguage() + ":" + resourceQuery.getName());
-            AttachmentInputStream audioStream = (AttachmentInputStream) cmsLiteService.getContent(resourceQuery);
+            AudioInputStream audioInputStream = new AudioInputStream(contentStream, audioFormat, contentLength);
+            AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, response.getOutputStream());
 
-            AudioFormat audioFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 8000, 16, 1, 2, 8000, false);
-            AudioInputStream audioInputStream1 = new AudioInputStream(audioStream, audioFormat, audioStream.getContentLength());
-            AudioSystem.write(audioInputStream1, AudioFileFormat.Type.WAVE, response.getOutputStream());
 
         } catch (ResourceNotFoundException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
