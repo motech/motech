@@ -1,45 +1,48 @@
-[{
-    name : "IPTI Schedule",
-    totalDuration: "52 Weeks",
-    milestones : [
-        {
-            name : "IPTI 1",
-            referenceDate : "IPTI Schedule",
-            scheduleWindows : {
-                earliest : "13 Weeks",
-                due : "14 Weeks",
-                late : "16 Weeks",
-                max : ""
-            },
-            data : {
-                Foo : "Bar"
-            },
-            alerts : [{
-                    window : "Late",
-                    startOffset : "0 Days",
-                    interval : "1 Day",
-                    count : "7"
+[
+    {
+        name : "IPTI Schedule",
+        totalDuration: "52 Weeks",
+        milestones : [
+            {
+                name : "IPTI 1",
+                referenceDate : "IPTI Schedule",
+                scheduleWindows : {
+                    earliest : "13 Weeks",
+                    due : "14 Weeks",
+                    late : "16 Weeks",
+                    max : ""
                 },
-                {
-                    window : "Late",
-                    startOffset : "1 Week",
-                    interval : "1 Week",
-                    count : "51"
-                }
-            ]
-        },
-        {
-            name : "IPTI 2",
-            referenceDate : "IPTI 1",
-            scheduleWindows : {
-                earliest : "1 Weeks",
-                due : "2 Weeks",
-                late : "3 Weeks",
-                max : ""
+                data : {
+                    Foo : "Bar"
+                },
+                alerts : [
+                    {
+                        window : "Late",
+                        startOffset : "0 Days",
+                        interval : "1 Day",
+                        count : "7"
+                    },
+                    {
+                        window : "Late",
+                        startOffset : "1 Week",
+                        interval : "1 Week",
+                        count : "51"
+                    }
+                ]
             },
-            data : {
-                doo : "Bar"
+            {
+                name : "IPTI 2",
+                referenceDate : "IPTI 1",
+                scheduleWindows : {
+                    earliest : "1 Weeks",
+                    due : "2 Weeks",
+                    late : "3 Weeks",
+                    max : ""
+                },
+                data : {
+                    doo : "Bar"
+                }
             }
-        }
-    ]
-}]
+        ]
+    }
+]

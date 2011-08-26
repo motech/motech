@@ -10,6 +10,7 @@ public class EnrolledEntityAlertEvent {
     private Map<String, Object> map;
     private static final String SCHEDULE_NAME_KEY = "ScheduleName";
     private static final String EXTERNAL_ID = "ExternalId";
+    public static final String JOB_ID_KEY = "JobID";
 
     public EnrolledEntityAlertEvent(MotechEvent motechEvent) {
         map = motechEvent.getParameters();
@@ -19,6 +20,7 @@ public class EnrolledEntityAlertEvent {
         map = new HashMap<String, Object>();
         map.put(SCHEDULE_NAME_KEY, scheduleName);
         map.put(EXTERNAL_ID, externalId);
+        map.put(JOB_ID_KEY, externalId);
     }
 
     public MotechEvent toMotechEvent() {
