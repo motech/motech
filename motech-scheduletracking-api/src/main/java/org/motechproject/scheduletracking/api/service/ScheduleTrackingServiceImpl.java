@@ -7,15 +7,16 @@ import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduletracking.api.contract.EnrollmentRequest;
 import org.motechproject.scheduletracking.api.dao.AllEnrollments;
 import org.motechproject.scheduletracking.api.dao.AllTrackedSchedules;
-import org.motechproject.scheduletracking.api.domain.enrollment.Enrollment;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.domain.ScheduleTrackingException;
+import org.motechproject.scheduletracking.api.domain.enrollment.Enrollment;
 import org.motechproject.scheduletracking.api.domain.factory.EnrollmentFactory;
 import org.motechproject.scheduletracking.api.events.EnrolledEntityAlertEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
@@ -28,8 +29,13 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
 
     @Override
     public void enroll(EnrollmentRequest enrollmentRequest) {
-        Schedule schedule = allTrackedSchedules.get(enrollmentRequest.scheduleName());
-        if (schedule == null) throw new ScheduleTrackingException("No schedule with name: %s", enrollmentRequest.scheduleName());
+        List<Enrollment> found = allEnrollments.findByExternalIdAndScheduleName(enrollmentRequest.getExternalId(), enrollmentRequest.getScheduleName());
+        if (found.size() > 0)
+            return;
+
+        Schedule schedule = allTrackedSchedules.get(enrollmentRequest.getScheduleName());
+        if (schedule == null)
+            throw new ScheduleTrackingException("No schedule with name: %s", enrollmentRequest.getScheduleName());
 
         Enrollment enrollment = EnrollmentFactory.newEnrolment(enrollmentRequest);
         allEnrollments.add(enrollment);

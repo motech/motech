@@ -9,7 +9,7 @@ import java.util.Map;
 public class EnrolledEntityAlertEvent {
     private Map<String, Object> map;
     private static final String SCHEDULE_NAME_KEY = "ScheduleName";
-    private static final String EXTERNAL_ID = "ExternalId";
+    private static final String ENROLLMENT_ID = "EnrollmentId";
     public static final String JOB_ID_KEY = "JobID";
 
     public EnrolledEntityAlertEvent(MotechEvent motechEvent) {
@@ -19,7 +19,7 @@ public class EnrolledEntityAlertEvent {
     public EnrolledEntityAlertEvent(String scheduleName, String externalId) {
         map = new HashMap<String, Object>();
         map.put(SCHEDULE_NAME_KEY, scheduleName);
-        map.put(EXTERNAL_ID, externalId);
+        map.put(ENROLLMENT_ID, externalId);
         map.put(JOB_ID_KEY, externalId);
     }
 
@@ -31,7 +31,7 @@ public class EnrolledEntityAlertEvent {
         return (String) map.get(SCHEDULE_NAME_KEY);
     }
 
-    public String externalId() {
-        return (String) map.get(EXTERNAL_ID);
+    public String enrollmentId() {
+        return (String) map.get(ENROLLMENT_ID);
     }
 }
