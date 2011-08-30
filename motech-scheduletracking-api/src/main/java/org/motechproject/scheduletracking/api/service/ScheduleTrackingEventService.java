@@ -13,6 +13,8 @@ import org.motechproject.server.event.annotations.MotechListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class ScheduleTrackingEventService {
     private AllTrackedSchedules allTrackedSchedules;
@@ -31,8 +33,8 @@ public class ScheduleTrackingEventService {
         EnrolledEntityAlertEvent enrolledEntityAlertEvent = new EnrolledEntityAlertEvent(motechEvent);
         Schedule schedule = allTrackedSchedules.get(enrolledEntityAlertEvent.scheduleName());
         Enrollment enrollment = allEnrollments.get(enrolledEntityAlertEvent.enrollmentId());
-        Alert alert = schedule.alertFor(enrollment);
-        if (alert != null) {
+        List<Alert> alerts = enrollment.alertsFor(schedule);
+        for (Alert alert : alerts) {
             outboundEventGateway.sendEventMessage(new MilestoneEvent(alert).toMotechEvent());
         }
     }

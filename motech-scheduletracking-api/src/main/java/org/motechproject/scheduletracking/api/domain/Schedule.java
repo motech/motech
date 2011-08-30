@@ -18,7 +18,7 @@ public class Schedule implements Referenceable {
         this.totalDuration = totalDuration;
     }
 
-    public String name() {
+    public String getName() {
         return name;
     }
 
@@ -35,15 +35,11 @@ public class Schedule implements Referenceable {
         return localDate.plusDays(totalDuration.inDays()).toDateTimeAtCurrentTime().toDate();
     }
 
-    public Alert alertFor(Enrollment enrollment) {
-        WindowName windowName = null;
-        Milestone milestone = null;
-        for (Milestone currentMilestone : milestones.values()) {
-            windowName = currentMilestone.applicableWindow(enrollment);
-            milestone = currentMilestone;
-            if (windowName != null) break;
-        }
-        if (windowName == null) return null;
-        return new Alert(windowName, milestone);
+    public Enrollment newEnrollment(String externalId, LocalDate enrollDate) {
+        return new Enrollment(externalId, enrollDate, getName());
+    }
+
+    public Enrollment newEnrollment(String externalId) {
+        return newEnrollment(externalId, LocalDate.now());
     }
 }

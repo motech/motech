@@ -1,13 +1,11 @@
 package org.motechproject.scheduletracking.api.dao;
 
+import org.joda.time.LocalDate;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.model.Time;
-import org.motechproject.scheduletracking.api.contract.EnrollmentRequest;
 import org.motechproject.scheduletracking.api.domain.enrollment.Enrollment;
-import org.motechproject.scheduletracking.api.domain.factory.EnrollmentFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -16,6 +14,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -27,8 +26,7 @@ public class AllEnrollmentsTest {
 
     @Before
     public void setUp() {
-        EnrollmentRequest enrollmentRequest = new EnrollmentRequest("123", "schedule-1", "milestone-1", 12, new Time(1, 1));
-        enrollment = EnrollmentFactory.newEnrolment(enrollmentRequest);
+        enrollment = new Enrollment("1324324", LocalDate.now(), "foo");
         allEnrollments.add(enrollment);
     }
 
@@ -39,6 +37,12 @@ public class AllEnrollmentsTest {
         Enrollment found = enrollments.get(0);
         assertThat(found.getExternalId(), is(equalTo(enrollment.getExternalId())));
         assertThat(found.getScheduleName(), is(equalTo(enrollment.getScheduleName())));
+    }
+
+    @Test
+    public void addEnrolment() {
+        assertNotNull(enrollment.getId());
+        assertNotNull(allEnrollments.get(enrollment.getId()));
     }
 
     @After

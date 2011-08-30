@@ -3,6 +3,7 @@ package org.motechproject.scheduletracking.api.events;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduletracking.api.domain.Alert;
 import org.motechproject.scheduletracking.api.service.EventKeys;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;

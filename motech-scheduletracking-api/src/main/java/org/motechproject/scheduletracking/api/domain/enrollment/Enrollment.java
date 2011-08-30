@@ -4,10 +4,14 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.LocalDate;
 import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.scheduletracking.api.domain.Alert;
+import org.motechproject.scheduletracking.api.domain.Milestone;
+import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.domain.WindowName;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @TypeDiscriminator("doc.type === 'SCHEDULEENROLMENT'")
@@ -58,5 +62,14 @@ public class Enrollment extends MotechAuditableDataObject {
 
     public void setEnrolledDate(LocalDate enrolledDate) {
         this.enrolledDate = enrolledDate;
+    }
+
+    public List<Alert> alertsFor(Schedule schedule) {
+        ArrayList<Alert> alerts = new ArrayList<Alert>();
+
+        WindowName windowName = null;
+        Milestone milestone = null;
+        alerts.add(new Alert(windowName, schedule.milestone("One")));
+        return alerts;
     }
 }
