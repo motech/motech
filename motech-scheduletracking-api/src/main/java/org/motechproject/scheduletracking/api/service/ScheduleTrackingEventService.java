@@ -33,7 +33,7 @@ public class ScheduleTrackingEventService {
         EnrolledEntityAlertEvent enrolledEntityAlertEvent = new EnrolledEntityAlertEvent(motechEvent);
         Schedule schedule = allTrackedSchedules.get(enrolledEntityAlertEvent.scheduleName());
         Enrollment enrollment = allEnrollments.get(enrolledEntityAlertEvent.enrollmentId());
-        List<Alert> alerts = enrollment.alertsFor(schedule);
+        List<Alert> alerts = enrollment.getAlerts(schedule);
         for (Alert alert : alerts) {
             outboundEventGateway.sendEventMessage(new MilestoneEvent(alert).toMotechEvent());
         }

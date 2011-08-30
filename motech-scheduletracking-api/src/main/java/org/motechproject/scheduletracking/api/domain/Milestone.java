@@ -1,9 +1,8 @@
 package org.motechproject.scheduletracking.api.domain;
 
-import org.motechproject.scheduletracking.api.domain.enrollment.Enrollment;
+import org.joda.time.LocalDate;
 import org.motechproject.valueobjects.WallTime;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -35,11 +34,11 @@ public class Milestone implements Referenceable {
         return refersTo;
     }
 
-    public WindowName applicableWindow(Enrollment enrollment) {
+    public WindowName applicableWindow(LocalDate enrolledDate) {
         Set<Map.Entry<WindowName, MilestoneWindow>> entries = windows.entrySet();
         for (Map.Entry<WindowName, MilestoneWindow> entry : entries) {
             MilestoneWindow milestoneWindow = entry.getValue();
-            if (milestoneWindow.isApplicableTo(enrollment)) return entry.getKey();
+            if (milestoneWindow.isApplicableTo(enrolledDate)) return entry.getKey();
         }
         return WindowName.Past;
     }

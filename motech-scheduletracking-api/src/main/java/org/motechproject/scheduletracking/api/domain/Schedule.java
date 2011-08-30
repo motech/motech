@@ -4,9 +4,7 @@ import org.joda.time.LocalDate;
 import org.motechproject.scheduletracking.api.domain.enrollment.Enrollment;
 import org.motechproject.valueobjects.WallTime;
 
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Schedule implements Referenceable {
     private String name;
@@ -16,6 +14,17 @@ public class Schedule implements Referenceable {
     public Schedule(String name, WallTime totalDuration) {
         this.name = name;
         this.totalDuration = totalDuration;
+    }
+
+    public List<Alert> alertsFor(LocalDate enrolledDate) {
+        ArrayList<Alert> alerts = new ArrayList<Alert>();
+
+        for (Milestone currentMilestone : milestones.values()) {
+            WindowName windowName = currentMilestone.applicableWindow(enrolledDate);
+            alerts.add(new Alert(windowName, currentMilestone));
+        }
+
+        return alerts;
     }
 
     public String getName() {
