@@ -1,8 +1,6 @@
 package org.motechproject.scheduletracking.api.domain;
 
-import org.joda.time.LocalDate;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.motechproject.scheduletracking.api.BaseScheduleTrackingTest;
 import org.motechproject.scheduletracking.api.domain.enrollment.Enrollment;
@@ -38,13 +36,41 @@ public class ScheduleTest extends BaseScheduleTrackingTest {
     }
 
     @Test
-    @Ignore("Work in progress - puneet")
-    public void alertsFor() {
-        LocalDate twoWeeksAgo = LocalDate.now().minusWeeks(2);
+    public void shouldAlertsIfAMilestoneIsAtLeastDue() {
         Schedule schedule = new Schedule("foo", wallTimeOf(10));
         schedule.addMilestone(new Milestone("One", schedule, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4)));
 
-        List<Alert> alerts = schedule.alertsFor(twoWeeksAgo);
+        List<Alert> alerts = schedule.alertsFor(weeksAgo(2));
+        assertThat(alerts.size(), is(equalTo(0)));
+
+        alerts = schedule.alertsFor(weeksAgo(3));
         assertThat(alerts.size(), is(equalTo(1)));
+        assertThat(alerts.get(0).windowName(), is(equalTo(WindowName.Due)));
+    }
+
+    @Test
+    public void alertsForASingleMilestone() {
+        Schedule schedule = new Schedule("foo", wallTimeOf(10));
+        schedule.addMilestone(new Milestone("One", schedule, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4)));
+
+        List<Alert> alerts = schedule.alertsFor(weeksAgo(3));
+        assertThat(alerts.size(), is(equalTo(1)));
+        assertThat(alerts.get(0).windowName(), is(equalTo(WindowName.Due)));
+    }
+
+    @Test
+    public void alertsForAScheduleWithMultipleMilestones() {
+        Schedule schedule = new Schedule("Schedule", wallTimeOf(52));
+        schedule.addMilestone(new Milestone("First", schedule, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4)));
+        schedule.addMilestone(new Milestone("Second", schedule, wallTimeOf(11), wallTimeOf(12), wallTimeOf(13), wallTimeOf(14)));
+
+        List<Alert> alerts = schedule.alertsFor(weeksAgo(3));
+        assertThat(alerts.size(), is(equalTo(1)));
+        assertThat(alerts.get(0).windowName(), is(equalTo(WindowName.Due)));
+
+        alerts = schedule.alertsFor(weeksAgo(13));
+        assertThat(alerts.size(), is(equalTo(2)));
+        assertThat(alerts.get(0).windowName(), is(equalTo(WindowName.Past)));
+        assertThat(alerts.get(1).windowName(), is(equalTo(WindowName.Due)));
     }
 }

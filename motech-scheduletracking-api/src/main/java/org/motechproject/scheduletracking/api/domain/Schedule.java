@@ -17,11 +17,13 @@ public class Schedule implements Referenceable {
     }
 
     public List<Alert> alertsFor(LocalDate enrolledDate) {
-        ArrayList<Alert> alerts = new ArrayList<Alert>();
+        List<Alert> alerts = new ArrayList<Alert>();
 
-        for (Milestone currentMilestone : milestones.values()) {
-            WindowName windowName = currentMilestone.applicableWindow(enrolledDate);
-            alerts.add(new Alert(windowName, currentMilestone));
+        for (Milestone milestone : milestones.values()) {
+            WindowName windowName = milestone.applicableWindow(enrolledDate);
+            if (WindowName.Due.compareTo(windowName) <= 0) {
+                alerts.add(new Alert(windowName, milestone));
+            }
         }
 
         return alerts;
