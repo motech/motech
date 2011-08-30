@@ -37,7 +37,7 @@ import org.ektorp.support.CouchDbDocument;
 import org.ektorp.support.TypeDiscriminator;
 
 
-public class Audit extends CouchDbDocument {
+public class Audit extends CouchDbDocument implements Comparable<Audit> {
 
     private static final long serialVersionUID = 1L;
 
@@ -69,5 +69,9 @@ public class Audit extends CouchDbDocument {
     public void setDateCreated(Date dateCreated) {
         this.dateCreated = dateCreated;
     }
-    
+    @Override
+    public int compareTo(Audit o) {
+    	if (getLastUpdated() == null) return -1;
+    	return getLastUpdated().compareTo(o.getLastUpdated());
+    }
 }

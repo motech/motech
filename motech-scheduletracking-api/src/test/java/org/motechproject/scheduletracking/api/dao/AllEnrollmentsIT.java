@@ -19,7 +19,7 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:applicationScheduleTrackingAPI.xml", "classpath*:applicationPlatformScheduler.xml"})
-public class AllEnrollmentsTest {
+public class AllEnrollmentsIT {
     @Autowired
     private AllEnrollments allEnrollments;
     private Enrollment enrollment;

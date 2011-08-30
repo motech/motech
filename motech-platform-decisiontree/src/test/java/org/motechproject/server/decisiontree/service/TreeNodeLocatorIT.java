@@ -51,7 +51,7 @@ import static org.junit.Assert.assertNull;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"/applicationDecisionTree.xml"})
-public class TreeNodeLocatorTest {
+public class TreeNodeLocatorIT {
 	Tree tree;
 	@Autowired
     TreeNodeLocator locator;

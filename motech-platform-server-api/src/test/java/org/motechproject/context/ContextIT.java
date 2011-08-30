@@ -42,7 +42,7 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/applicationPlatformServerAPI.xml" })
-public class ContextTest {
+public class ContextIT {
 
     @Test
     public void testMetricsAgentContext() throws Exception {
