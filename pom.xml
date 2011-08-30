@@ -366,6 +366,23 @@
                                 </configuration>
                             </execution>
                             <execution>
+                                <id>drop DB => scheduletracking</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>curl</executable>
+                                    <arguments>
+                                        <argument>-s</argument>
+                                        <argument>-S</argument>
+                                        <argument>-X</argument>
+                                        <argument>DELETE</argument>
+                                        <argument>http://${db.server}:${db.port}/motech-scheduletracking</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
                                 <id>drop DB => test-tama</id>
                                 <phase>post-integration-test</phase>
                                 <goals>

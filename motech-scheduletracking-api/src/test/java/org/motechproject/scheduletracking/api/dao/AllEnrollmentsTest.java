@@ -2,7 +2,6 @@ package org.motechproject.scheduletracking.api.dao;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.model.Time;
@@ -34,7 +33,6 @@ public class AllEnrollmentsTest {
     }
 
     @Test
-    @Ignore("Fixing it - puneet.irfn")
     public void shouldFindByExternalIdAndScheduleName() throws Exception {
         List<Enrollment> enrollments = allEnrollments.findByExternalIdAndScheduleName(enrollment.getExternalId(), enrollment.getScheduleName());
         assertThat(enrollments.size(), is(equalTo(1)));
