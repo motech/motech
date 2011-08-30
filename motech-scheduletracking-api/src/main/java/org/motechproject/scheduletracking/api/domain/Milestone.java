@@ -17,6 +17,7 @@ public class Milestone implements Referenceable {
         this.name = name;
         this.refersTo = refersTo;
 
+        windows.put(WindowName.Waiting, new MilestoneWindow(WallTime.START_OF_TIME, earliest));
         windows.put(WindowName.Upcoming, new MilestoneWindow(earliest, due));
         windows.put(WindowName.Due, new MilestoneWindow(due, late));
         windows.put(WindowName.Late, new MilestoneWindow(late, max == null ? late : max));

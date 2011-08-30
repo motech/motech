@@ -6,6 +6,8 @@ public class WallTime {
     private int value;
     private WallTimeUnit unit;
 
+    public static final WallTime START_OF_TIME = new WallTime(0, WallTimeUnit.Day);
+
     public WallTime() {
     }
 
