@@ -304,12 +304,6 @@
                         <version>2.9</version>
                         <configuration>
                             <encoding>UTF-8</encoding>
-                            <excludes>
-                                <exclude>**/IVRServiceImplIT.java</exclude>
-                                <exclude>**/SchedulerGatewayIT.java</exclude>
-                                <exclude>**/PillReminderDaoIT.java</exclude>
-                                <exclude>**/GeneratePillReminderIT.java</exclude>
-                            </excludes>
                         </configuration>
                         <executions>
                             <execution>
