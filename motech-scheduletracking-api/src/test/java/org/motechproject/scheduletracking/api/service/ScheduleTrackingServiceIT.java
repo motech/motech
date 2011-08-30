@@ -22,7 +22,7 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:applicationScheduleTrackingAPI.xml", "classpath*:applicationPlatformScheduler.xml"})
-public class ScheduleTrackingServiceTest {
+public class ScheduleTrackingServiceIT {
     @Autowired
     private ScheduleTrackingService scheduleTrackingService;
     @Autowired

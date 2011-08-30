@@ -27,7 +27,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/applicationCmsLiteApi.xml")
-public class ResourceServletTest {
+public class ResourceServletIT {
 
     public static final String CONTEXT_PATH = "/tama";
     public static final String WAVE_FILE = "background.wav";

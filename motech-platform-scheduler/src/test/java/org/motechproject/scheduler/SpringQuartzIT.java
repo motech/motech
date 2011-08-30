@@ -57,7 +57,7 @@ import static org.junit.Assert.assertEquals;
 // specifies the Spring configuration to load for this test fixture
 @ContextConfiguration(locations={"/applicationPlatformScheduler.xml"})
 
-public class SpringQuartzTest {
+public class SpringQuartzIT {
 
     @Autowired
     private SchedulerFactoryBean schedulerFactoryBean;

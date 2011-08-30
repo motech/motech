@@ -55,7 +55,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/applicationPlatformServerAPI.xml" })
-public class ServerEventRelayTest
+public class ServerEventRelayIT
 {
 	@Autowired
     EventListenerRegistry registry;

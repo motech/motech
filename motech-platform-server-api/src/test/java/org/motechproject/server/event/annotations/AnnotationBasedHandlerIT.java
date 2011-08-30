@@ -50,7 +50,7 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/applicationPlatformServerAPI.xml", "/testAnnotatedHandlers.xml"})
-public class AnnotationBasedHandlerTest {
+public class AnnotationBasedHandlerIT {
 
     static boolean test = false;
 
