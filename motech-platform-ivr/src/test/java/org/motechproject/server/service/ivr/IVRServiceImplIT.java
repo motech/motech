@@ -30,6 +30,7 @@ package org.motechproject.server.service.ivr; /**
  * OF SUCH DAMAGE.
  */
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +58,7 @@ public class IVRServiceImplIT {
     @Autowired
     private IVRService ivrService;
 
-    @Test
+    @Test @Ignore
     public void initiateCallTest() throws Exception{
 
         //CallRequest initiateCallData = new CallRequest(1L, "SIP/1001", 5000, "http://10.0.1.29:8080/TamaIVR/r/wt");
