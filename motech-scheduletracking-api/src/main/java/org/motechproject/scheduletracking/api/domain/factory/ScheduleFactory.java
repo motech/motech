@@ -12,34 +12,26 @@ import java.util.List;
 
 public class ScheduleFactory {
     public static Schedule create(ScheduleRecord scheduleRecord) {
-        List<MilestoneRecord> milestoneRecords = scheduleRecord.milestoneRecords();
-        Schedule schedule = new Schedule(scheduleRecord.name(), WallTimeFactory.create(scheduleRecord.totalDuration()));
-        for (MilestoneRecord milestoneRecord : milestoneRecords) {
-            ScheduleWindowsRecord scheduleWindowsRecord = milestoneRecord.scheduleWindowsRecord();
+        List<MilestoneRecord> milestones = scheduleRecord.milestoneRecords();
 
-            Referenceable referenceable;
-            Milestone referencedMilestone = schedule.milestone(milestoneRecord.referenceDate());
-            if (scheduleRecord.name().equals(milestoneRecord.referenceDate())) {
-                referenceable = schedule;
-            }
-            else if (referencedMilestone != null) {
-                referenceable = referencedMilestone;
-            }
-            else {
-                throw new ScheduleTrackingException("Reference Date in milestone: %s doesn't match any preceding milestones or the schedule name", milestoneRecord.name());
-            }
+        Milestone lastMilestone = new NullMilestone();
 
-            Milestone milestone = new Milestone(milestoneRecord.name(), referenceable, wallTime(scheduleWindowsRecord.earliest()), wallTime(scheduleWindowsRecord.due()), wallTime(scheduleWindowsRecord.late()), wallTime(scheduleWindowsRecord.max()));
+        int index = milestones.size() - 1;
+        do {
+            MilestoneRecord milestoneRecord = milestones.get(index--);
+            ScheduleWindowsRecord windowsRecord = milestoneRecord.scheduleWindowsRecord();
+            Milestone milestone = new Milestone(milestoneRecord.name(), lastMilestone, wallTime(windowsRecord.earliest()), wallTime(windowsRecord.due()), wallTime(windowsRecord.late()), wallTime(windowsRecord.max()));
+
             milestone.data(milestoneRecord.data());
-
-            schedule.addMilestone(milestone);
-
             for (AlertRecord alertRecord : milestoneRecord.alerts()) {
                 MilestoneWindow milestoneWindow = milestone.window(WindowName.valueOf(alertRecord.window()));
                 milestoneWindow.addAlert(new AlertConfiguration(WallTimeFactory.create(alertRecord.startOffset()), WallTimeFactory.create(alertRecord.interval()), Integer.parseInt(alertRecord.count())));
             }
-        }
-        return schedule;
+
+            lastMilestone = milestone;
+        } while (index >= 0);
+
+        return new Schedule(scheduleRecord.name(), WallTimeFactory.create(scheduleRecord.totalDuration()), lastMilestone);
     }
 
     private static WallTime wallTime(String userDefinedTime) {

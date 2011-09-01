@@ -32,7 +32,7 @@ public class Enrollment extends MotechAuditableDataObject {
         this.externalId = externalId;
         this.enrolledDate = enrolledDate;
         this.scheduleName = schedule.getName();
-        this.nextMilestone = schedule.getFirstMilestone();
+        this.nextMilestone = schedule.getFirstMilestone().name();
     }
 
     public List<Alert> getAlerts(Schedule schedule) {

@@ -1,36 +1,37 @@
 package org.motechproject.scheduletracking.api.domain.factory;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.motechproject.dao.MotechJsonReader;
 import org.motechproject.scheduletracking.api.dao.TrackedSchedulesJsonReader;
 import org.motechproject.scheduletracking.api.dao.TrackedSchedulesJsonReaderImpl;
 import org.motechproject.scheduletracking.api.domain.Milestone;
+import org.motechproject.scheduletracking.api.domain.NullMilestone;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.userspecified.MilestoneRecord;
 import org.motechproject.scheduletracking.api.userspecified.ScheduleRecord;
 import org.motechproject.scheduletracking.api.userspecified.ScheduleWindowsRecord;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class ScheduleFactoryTest {
     @Test
-    @Ignore("work in progress - puneet")
     public void create() {
-        ScheduleRecord scheduleRecord = new ScheduleRecord("IPTI Schedule", "10 Weeks");
+        ScheduleRecord scheduleRecord = new ScheduleRecord("Vaccination Schedule", "10 Weeks");
         ScheduleWindowsRecord scheduleWindowsRecord = new ScheduleWindowsRecord("1 Week", "2 Weeks", "3 Weeks", "4 Weeks");
-        MilestoneRecord milestoneRecord = new MilestoneRecord("IPTI One", "IPTI Schedule", scheduleWindowsRecord);
+        MilestoneRecord milestoneRecord = new MilestoneRecord("IPTI One", scheduleWindowsRecord);
         scheduleRecord.addMilestoneRecord(milestoneRecord);
 
         Schedule schedule = ScheduleFactory.create(scheduleRecord);
-        assertNotNull(schedule);
-        String firstMilestone = schedule.getFirstMilestone();
-        assertThat(firstMilestone, is(equalTo("IPTI One")));
-        Milestone milestone = schedule.milestone(firstMilestone);
-        assertNotNull(milestone);
-        assertThat(schedule, is(equalTo(milestone.refersTo())));
+        assertThat(schedule, is(notNullValue()));
+        assertThat(schedule.getName(), is(equalTo(scheduleRecord.name())));
+
+        Milestone firstMilestone = schedule.getFirstMilestone();
+        assertThat(firstMilestone, is(notNullValue()));
+        assertThat(firstMilestone.name(), is(equalTo("IPTI One")));
+
+        assertEquals(firstMilestone.getNextMilestone().name(), new NullMilestone().name());
     }
 
     @Test
@@ -40,6 +41,14 @@ public class ScheduleFactoryTest {
         Schedule schedule = ScheduleFactory.create(scheduleRecord);
 
         assertThat(schedule, is(notNullValue()));
+        assertThat(schedule.getName(), is(equalTo(scheduleRecord.name())));
 
+        Milestone firstMilestone = schedule.getFirstMilestone();
+        assertThat(firstMilestone.name(), is(equalTo(scheduleRecord.milestoneRecords().get(0).name())));
+        assertThat(firstMilestone.getNextMilestone().name(), is(equalTo(scheduleRecord.milestoneRecords().get(1).name())));
+
+        Milestone secondMilestone = firstMilestone.getNextMilestone();
+        assertThat(secondMilestone.name(), is(equalTo(scheduleRecord.milestoneRecords().get(1).name())));
+        assertThat(secondMilestone.getNextMilestone().name(), is(equalTo(new NullMilestone().name())));
     }
 }

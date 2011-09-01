@@ -22,7 +22,6 @@ public class EnrollmentTest extends BaseScheduleTrackingTest {
     }
 
     @Test
-    @Ignore("work in progress - puneet")
     public void shouldSetTheFirstMilestoneAsNextMilestoneOnCreation() {
         assertThat(enrollment.getNextMilestone(), is(equalTo("First Shot")));
     }

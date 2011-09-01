@@ -6,12 +6,13 @@ import org.motechproject.valueobjects.WallTime;
 
 import java.util.*;
 
-public class Schedule implements Referenceable {
+public class Schedule extends Referenceable {
     private String name;
     private WallTime totalDuration;
     private Map<String, Milestone> milestones = new LinkedHashMap<String, Milestone>();
 
-    public Schedule(String name, WallTime totalDuration) {
+    public Schedule(String name, WallTime totalDuration, Referenceable firstMilestone) {
+        super(firstMilestone);
         this.name = name;
         this.totalDuration = totalDuration;
     }
@@ -29,8 +30,8 @@ public class Schedule implements Referenceable {
         return alerts;
     }
 
-    public String getFirstMilestone() {
-        return "";
+    public Milestone getFirstMilestone() {
+        return (Milestone) getNext();
     }
 
     public String getName() {

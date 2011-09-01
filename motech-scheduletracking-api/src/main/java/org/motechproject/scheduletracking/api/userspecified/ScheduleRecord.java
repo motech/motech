@@ -8,9 +8,6 @@ public class ScheduleRecord {
     private String totalDuration;
     private List<MilestoneRecord> milestones = new ArrayList<MilestoneRecord>();
 
-    private ScheduleRecord() {
-    }
-
     public ScheduleRecord(String name, String totalDuration) {
         this.name = name;
         this.totalDuration = totalDuration;

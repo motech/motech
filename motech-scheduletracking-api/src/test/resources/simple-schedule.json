@@ -5,7 +5,6 @@
         milestones : [
             {
                 name : "IPTI 1",
-                referenceDate : "IPTI Schedule",
                 scheduleWindows : {
                     earliest : "13 Weeks",
                     due : "14 Weeks",
@@ -32,7 +31,6 @@
             },
             {
                 name : "IPTI 2",
-                referenceDate : "IPTI 1",
                 scheduleWindows : {
                     earliest : "1 Weeks",
                     due : "2 Weeks",

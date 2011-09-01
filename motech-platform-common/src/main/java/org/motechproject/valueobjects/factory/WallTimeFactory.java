@@ -11,13 +11,17 @@ public class WallTimeFactory {
         String inLowerCase = userReadableForm.trim().toLowerCase();
         StringTokenizer tokenizer = new StringTokenizer(inLowerCase);
         if (tokenizer.countTokens() == 0) return null;
-        if (tokenizer.countTokens() > 2) throw new ParseException(String.format("Could not parse: \"%s\" to time interval", inLowerCase));
+        if (tokenizer.countTokens() > 2) {
+            throw new ParseException(String.format("Could not parse: \"%s\" to time interval", inLowerCase));
+        }
         String valueInString = tokenizer.nextToken();
         String timeUnit = tokenizer.nextToken();
 
         WallTimeUnit[] values = WallTimeUnit.values();
         for (WallTimeUnit wallTimeUnit : values) {
-            if (timeUnit.contains(wallTimeUnit.toString().toLowerCase())) return new WallTime(Integer.parseInt(valueInString), wallTimeUnit);
+            if (timeUnit.contains(wallTimeUnit.toString().toLowerCase())) {
+                return new WallTime(Integer.parseInt(valueInString), wallTimeUnit);
+            }
         }
         throw new ParseException(String.format("Could not parse %s into time.", userReadableForm));
     }
