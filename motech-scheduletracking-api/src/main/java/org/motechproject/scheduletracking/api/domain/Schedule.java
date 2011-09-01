@@ -29,6 +29,10 @@ public class Schedule implements Referenceable {
         return alerts;
     }
 
+    public String getFirstMilestone() {
+        return "";
+    }
+
     public String getName() {
         return name;
     }
@@ -47,7 +51,7 @@ public class Schedule implements Referenceable {
     }
 
     public Enrollment newEnrollment(String externalId, LocalDate enrollDate) {
-        return new Enrollment(externalId, enrollDate, getName());
+        return new Enrollment(externalId, enrollDate, this);
     }
 
     public Enrollment newEnrollment(String externalId) {

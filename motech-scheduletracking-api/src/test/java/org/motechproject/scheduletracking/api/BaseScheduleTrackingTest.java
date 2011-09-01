@@ -1,6 +1,8 @@
 package org.motechproject.scheduletracking.api;
 
 import org.joda.time.LocalDate;
+import org.motechproject.scheduletracking.api.domain.Milestone;
+import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.domain.enrollment.Enrollment;
 import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.WallTimeUnit;
@@ -20,5 +22,15 @@ public abstract class BaseScheduleTrackingTest {
 
     protected WallTime wallTimeOf(int numberOfWeeks) {
         return new WallTime(numberOfWeeks, WallTimeUnit.Week);
+    }
+
+    protected Schedule createSchedule() {
+        Schedule schedule = new Schedule("Yellow Fever Vaccination", wallTimeOf(52));
+        Milestone firstShot = new Milestone("First Shot", schedule, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        schedule.addMilestone(firstShot);
+        Milestone secondShot = new Milestone("Second Shot", firstShot, wallTimeOf(11), wallTimeOf(12), wallTimeOf(13), wallTimeOf(14));
+        schedule.addMilestone(secondShot);
+
+        return schedule;
     }
 }

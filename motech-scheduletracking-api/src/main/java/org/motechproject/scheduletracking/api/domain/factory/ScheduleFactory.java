@@ -12,19 +12,24 @@ import java.util.List;
 
 public class ScheduleFactory {
     public static Schedule create(ScheduleRecord scheduleRecord) {
-        Schedule schedule = new Schedule(scheduleRecord.name(), WallTimeFactory.create(scheduleRecord.totalDuration()));
         List<MilestoneRecord> milestoneRecords = scheduleRecord.milestoneRecords();
+        Schedule schedule = new Schedule(scheduleRecord.name(), WallTimeFactory.create(scheduleRecord.totalDuration()));
         for (MilestoneRecord milestoneRecord : milestoneRecords) {
             ScheduleWindowsRecord scheduleWindowsRecord = milestoneRecord.scheduleWindowsRecord();
 
-            Referenceable referenceable = null;
+            Referenceable referenceable;
             Milestone referencedMilestone = schedule.milestone(milestoneRecord.referenceDate());
-            if (scheduleRecord.name().equals(milestoneRecord.referenceDate())) referenceable = schedule;
-            else if (referencedMilestone != null) referenceable = referencedMilestone;
-            else throw new ScheduleTrackingException("Reference Date in milestone: %s doesn't match any preceding milestones or the schedule name", milestoneRecord.name());
+            if (scheduleRecord.name().equals(milestoneRecord.referenceDate())) {
+                referenceable = schedule;
+            }
+            else if (referencedMilestone != null) {
+                referenceable = referencedMilestone;
+            }
+            else {
+                throw new ScheduleTrackingException("Reference Date in milestone: %s doesn't match any preceding milestones or the schedule name", milestoneRecord.name());
+            }
 
-            Milestone milestone = new Milestone(milestoneRecord.name(), referenceable, wallTime(scheduleWindowsRecord.earliest()),
-                    wallTime(scheduleWindowsRecord.due()), wallTime(scheduleWindowsRecord.late()), wallTime(scheduleWindowsRecord.max()));
+            Milestone milestone = new Milestone(milestoneRecord.name(), referenceable, wallTime(scheduleWindowsRecord.earliest()), wallTime(scheduleWindowsRecord.due()), wallTime(scheduleWindowsRecord.late()), wallTime(scheduleWindowsRecord.max()));
             milestone.data(milestoneRecord.data());
 
             schedule.addMilestone(milestone);

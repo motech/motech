@@ -12,22 +12,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@TypeDiscriminator("doc.type === 'SCHEDULEENROLMENT'")
+@TypeDiscriminator("doc.type === 'SCHEDULE_ENROLMENT'")
 public class Enrollment extends MotechAuditableDataObject {
     @JsonProperty("type")
-    private String type = "SCHEDULEENROLMENT";
+    private String type = "SCHEDULE_ENROLMENT";
     private String externalId;
     private LocalDate enrolledDate;
     private String scheduleName;
     private Map<WindowName, MilestoneFulfillment> fulfillments = new HashMap<WindowName, MilestoneFulfillment>();
+    private String nextMilestone;
 
     private Enrollment() {
     }
 
     public Enrollment(String externalId, LocalDate enrolledDate, String scheduleName) {
+    }
+
+    public Enrollment(String externalId, LocalDate enrolledDate, Schedule schedule) {
         this.externalId = externalId;
         this.enrolledDate = enrolledDate;
-        this.scheduleName = scheduleName;
+        this.scheduleName = schedule.getName();
+        this.nextMilestone = schedule.getFirstMilestone();
     }
 
     public List<Alert> getAlerts(Schedule schedule) {
@@ -39,6 +44,10 @@ public class Enrollment extends MotechAuditableDataObject {
 //        Milestone milestone = null;
 //        alerts.add(new Alert(windowName, schedule.milestone("One")));
 //        return alerts;
+    }
+
+    public String fulfillMilestone(Schedule schedule) {
+        return "";
     }
 
     public String getScheduleName() {
@@ -71,5 +80,9 @@ public class Enrollment extends MotechAuditableDataObject {
 
     public void setEnrolledDate(LocalDate enrolledDate) {
         this.enrolledDate = enrolledDate;
+    }
+
+    public String getNextMilestone() {
+        return nextMilestone;
     }
 }

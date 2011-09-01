@@ -27,8 +27,7 @@ public class MotechJsonReader {
     }
 
     private class DateDeserializer implements JsonDeserializer<Date> {
-        public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-                throws JsonParseException {
+        public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonPrimitive asJsonPrimitive = json.getAsJsonPrimitive();
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             Date date = null;

@@ -36,20 +36,16 @@ public class ScheduleTest extends BaseScheduleTrackingTest {
     }
 
     @Test
-    public void shouldAlertsIfAMilestoneIsAtLeastDue() {
+    public void shouldNotHaveAlertsIfNoMilestoneIsAtLeastDue() {
         Schedule schedule = new Schedule("foo", wallTimeOf(10));
         schedule.addMilestone(new Milestone("One", schedule, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4)));
 
         List<Alert> alerts = schedule.alertsFor(weeksAgo(2));
         assertThat(alerts.size(), is(equalTo(0)));
-
-        alerts = schedule.alertsFor(weeksAgo(3));
-        assertThat(alerts.size(), is(equalTo(1)));
-        assertThat(alerts.get(0).windowName(), is(equalTo(WindowName.Due)));
     }
 
     @Test
-    public void alertsForASingleMilestone() {
+    public void alertsForAScheduleWithSingleMilestone() {
         Schedule schedule = new Schedule("foo", wallTimeOf(10));
         schedule.addMilestone(new Milestone("One", schedule, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4)));
 
