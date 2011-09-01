@@ -29,13 +29,14 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.service.ivr.voxeo;
+package org.motechproject.server.voxeo;
 
 import org.motechproject.server.service.ivr.CallDetailRecord;
+import org.motechproject.server.service.ivr.CallInitiationException;
 import org.motechproject.server.service.ivr.CallRequest;
 import org.motechproject.server.service.ivr.IVRService;
-import org.motechproject.server.service.ivr.voxeo.dao.AllPhoneCalls;
-import org.motechproject.server.service.ivr.voxeo.domain.PhoneCall;
+import org.motechproject.server.voxeo.dao.AllPhoneCalls;
+import org.motechproject.server.voxeo.domain.PhoneCall;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,7 @@ import java.util.Date;
  * Date: 07/03/11
  *
  */
-public class IVRServiceVoxeoImpl implements IVRService
+public class IVRServiceImpl implements IVRService
 {
     @Autowired
     private AllPhoneCalls allPhoneCalls;
@@ -82,7 +83,11 @@ public class IVRServiceVoxeoImpl implements IVRService
         String vxmlURL =  "vxml=" + URLEncoder.encode(callRequest.getVxmlUrl());
         String externalId = "externalId=" + phoneCall.getId();
 
-        voxeoURL += "?tokenid=" + tokenId + "&" + phonenum + "&" + vxmlURL + "&" + externalId;
+        if (0 != callRequest.getTimeOut()) {
+            voxeoURL += "?tokenid=" + tokenId + "&" + phonenum + "&" + vxmlURL + "&" + externalId + "&timeout=" + callRequest.getTimeOut();
+        } else {
+            voxeoURL += "?tokenid=" + tokenId + "&" + phonenum + "&" + vxmlURL + "&" + externalId;
+        }
 
         log.info("Initiating call to: " + callRequest.getPhone() + " VXML URL: " + callRequest.getVxmlUrl());
         log.info("Voxeo URL: " + voxeoURL);
@@ -98,7 +103,10 @@ public class IVRServiceVoxeoImpl implements IVRService
 			while ((line = br.readLine()) != null)
 				result += line;
 
-            log.info("Voxeo result: " + result);
+            if ("success" != result) {
+                log.error("Voxeo result: " + result);
+                throw new CallInitiationException("Could not initiate call: non-success return from Voxeo");
+            }
 		} catch (MalformedURLException e) {
 			log.error("MalformedURLException: ", e);
 		} catch (Exception e) {

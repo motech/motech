@@ -1,4 +1,4 @@
-package org.motechproject.server.service.ivr.voxeo.domain;
+package org.motechproject.server.voxeo.domain;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;

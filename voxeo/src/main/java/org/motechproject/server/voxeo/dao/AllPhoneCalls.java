@@ -1,10 +1,10 @@
-package org.motechproject.server.service.ivr.voxeo.dao;
+package org.motechproject.server.voxeo.dao;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
 import org.motechproject.dao.MotechAuditableRepository;
-import org.motechproject.server.service.ivr.voxeo.domain.PhoneCall;
+import org.motechproject.server.voxeo.domain.PhoneCall;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
