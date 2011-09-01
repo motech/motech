@@ -25,18 +25,15 @@ public class Enrollment extends MotechAuditableDataObject {
     private Enrollment() {
     }
 
-    public Enrollment(String externalId, LocalDate enrolledDate, String scheduleName) {
-    }
-
-    public Enrollment(String externalId, LocalDate enrolledDate, Schedule schedule) {
+    public Enrollment(String externalId, LocalDate enrolledDate, String scheduleName, String firstMilestone) {
         this.externalId = externalId;
         this.enrolledDate = enrolledDate;
-        this.scheduleName = schedule.getName();
-        this.nextMilestone = schedule.getFirstMilestone().name();
+        this.scheduleName = scheduleName;
+        this.nextMilestone = firstMilestone;
     }
 
     public List<Alert> getAlerts(Schedule schedule) {
-        return schedule.alertsFor(getEnrolledDate());
+        return schedule.alertsFor(getEnrolledDate(), nextMilestone);
 
 //        ArrayList<Alert> alerts = new ArrayList<Alert>();
 //

@@ -14,7 +14,7 @@ public class ScheduleFactory {
     public static Schedule create(ScheduleRecord scheduleRecord) {
         List<MilestoneRecord> milestones = scheduleRecord.milestoneRecords();
 
-        Milestone lastMilestone = new NullMilestone();
+        Milestone lastMilestone = null;
 
         int index = milestones.size() - 1;
         do {

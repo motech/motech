@@ -26,7 +26,7 @@ public class AllEnrollmentsIT {
 
     @Before
     public void setUp() {
-        enrollment = new Enrollment("1324324", LocalDate.now(), "foo");
+        enrollment = new Enrollment("1324324", LocalDate.now(), "Schedule Name", "First Milestone");
         allEnrollments.add(enrollment);
     }
 

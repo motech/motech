@@ -23,7 +23,7 @@ public class Milestone extends Referenceable {
     }
 
     public Milestone(String name, WallTime earliest, WallTime due, WallTime late, WallTime max) {
-        this(name, new NullMilestone(), earliest, due, late, max);
+        this(name, null, earliest, due, late, max);
     }
 
     public MilestoneWindow window(WindowName windowName) {

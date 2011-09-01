@@ -33,8 +33,9 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
         if (found.size() > 0) return;
 
         Schedule schedule = allTrackedSchedules.get(enrollmentRequest.getScheduleName());
-        if (schedule == null)
+        if (schedule == null) {
             throw new ScheduleTrackingException("No schedule with name: %s", enrollmentRequest.getScheduleName());
+        }
 
         Enrollment enrollment = schedule.newEnrollment(enrollmentRequest.getExternalId(), LocalDate.now());
         allEnrollments.add(enrollment);

@@ -5,14 +5,12 @@ import org.motechproject.dao.MotechJsonReader;
 import org.motechproject.scheduletracking.api.dao.TrackedSchedulesJsonReader;
 import org.motechproject.scheduletracking.api.dao.TrackedSchedulesJsonReaderImpl;
 import org.motechproject.scheduletracking.api.domain.Milestone;
-import org.motechproject.scheduletracking.api.domain.NullMilestone;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.userspecified.MilestoneRecord;
 import org.motechproject.scheduletracking.api.userspecified.ScheduleRecord;
 import org.motechproject.scheduletracking.api.userspecified.ScheduleWindowsRecord;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class ScheduleFactoryTest {
@@ -31,7 +29,7 @@ public class ScheduleFactoryTest {
         assertThat(firstMilestone, is(notNullValue()));
         assertThat(firstMilestone.name(), is(equalTo("IPTI One")));
 
-        assertEquals(firstMilestone.getNextMilestone().name(), new NullMilestone().name());
+        assertThat(firstMilestone.getNextMilestone(), is(nullValue()));
     }
 
     @Test
@@ -49,6 +47,6 @@ public class ScheduleFactoryTest {
 
         Milestone secondMilestone = firstMilestone.getNextMilestone();
         assertThat(secondMilestone.name(), is(equalTo(scheduleRecord.milestoneRecords().get(1).name())));
-        assertThat(secondMilestone.getNextMilestone().name(), is(equalTo(new NullMilestone().name())));
+        assertThat(secondMilestone.getNextMilestone(), is(nullValue()));
     }
 }
