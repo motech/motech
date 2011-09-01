@@ -50,12 +50,6 @@
 		</dependency>
 		<!--<dependency>-->
 			<!--<groupId>org.motechproject</groupId>-->
-			<!--<artifactId>motech-platform-server-api</artifactId>-->
-			<!--<version>0.2-SNAPSHOT</version>-->
-			<!--<scope>provided</scope>-->
-        <!--</dependency>-->
-		<!--<dependency>-->
-			<!--<groupId>org.motechproject</groupId>-->
 			<!--<artifactId>motech-appointments-api</artifactId>-->
 			<!--<version>0.2-SNAPSHOT</version>-->
             <!--<scope>provided</scope>-->
@@ -72,10 +66,17 @@
 			<!--<version>0.2-SNAPSHOT</version>-->
 			<!--<scope>provided</scope>-->
 		<!--</dependency>		-->
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-server-api</artifactId>
+            <version>0.2-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.motechproject</groupId>
-			<artifactId>tama-api</artifactId>
-			<version>${project.version}</version>
+			<artifactId>motech-platform-ivr</artifactId>
+			<version>0.2-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
         <!--<dependency>-->
 			<!--<groupId>org.motechproject</groupId>-->
