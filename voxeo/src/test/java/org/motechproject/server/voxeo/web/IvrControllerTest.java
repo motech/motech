@@ -31,22 +31,16 @@
  */
 package org.motechproject.server.voxeo.web;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.appointments.api.AppointmentService;
-import org.motechproject.appointments.api.model.Appointment;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
 
 /**
  *
@@ -55,12 +49,8 @@ import java.util.Date;
 public class IvrControllerTest
 {
 
-
     @InjectMocks
-    VxmlController vxmlController = new VxmlController();
-
-    @Mock
-    private AppointmentService appointmentService;
+    IvrController ivrController = new IvrController();
 
     @Mock
     private HttpServletRequest request;
@@ -70,7 +60,6 @@ public class IvrControllerTest
 
     @Before
     public void initMocks() {
-
         MockitoAnnotations.initMocks(this);
      }
 
@@ -78,122 +67,5 @@ public class IvrControllerTest
     public void testAppointmentReminder () {
 
         String appointmentId = "aID";
-
-        Appointment appointment = new Appointment();
-        Date appointmentDate = new Date(12345L);
-        appointment.setScheduledDate(appointmentDate);
-
-        Mockito.when(request.getParameter("aptId")).thenReturn(appointmentId);
-        Mockito.when(appointmentService.getAppointment(appointmentId)).thenReturn(appointment);
-
-        ModelAndView modelAndView = vxmlController.appointmentreminder(request, response);
-
-        Assert.assertEquals("appointment_reminder", modelAndView.getViewName());
-
-        Assert.assertEquals(appointmentDate, modelAndView.getModelMap().get("appointmentDueDate"));
-
-    }
-
-    @Test
-    public void testAppointmentReminderNoId () {
-
-        Mockito.when(request.getParameter("aptId")).thenReturn(null);
-
-        ModelAndView modelAndView = vxmlController.appointmentreminder(request, response);
-
-        Assert.assertEquals("appointment_reminder_generic", modelAndView.getViewName());
-
-    }
-
-    @Test
-    public void testAppointmentReminderNoAppointment () {
-
-        String appointmentId = "nID";
-
-        Mockito.when(request.getParameter("aptId")).thenReturn(appointmentId);
-        Mockito.when(appointmentService.getAppointment(appointmentId)).thenReturn(null);
-
-        ModelAndView modelAndView = vxmlController.appointmentreminder(request, response);
-
-        Assert.assertEquals("ar_error", modelAndView.getViewName());
-
-    }
-
-    @Test
-    public void testAppointmentReminderGetAppointmentException () {
-
-        String appointmentId = "eID";
-
-        Appointment appointment = new Appointment();
-
-        Mockito.when(request.getParameter("aptId")).thenReturn(appointmentId);
-        Mockito.when(appointmentService.getAppointment(appointmentId)).thenThrow(new RuntimeException());
-
-        ModelAndView modelAndView = vxmlController.appointmentreminder(request, response);
-
-        Assert.assertEquals("ar_error", modelAndView.getViewName());
-
-    }
-
-
-    @Test
-    public void testScheduleAppointmentReminder () {
-
-        String appointmentId = "aID";
-
-        Appointment appointment = new Appointment();
-        Date appointmentDate = new Date(12345L);
-        appointment.setScheduledDate(appointmentDate);
-
-        Mockito.when(request.getParameter("aptId")).thenReturn(appointmentId);
-        Mockito.when(appointmentService.getAppointment(appointmentId)).thenReturn(appointment);
-
-        ModelAndView modelAndView = vxmlController.scheduleappointmentreminder(request, response);
-
-        Assert.assertEquals("schedule_appointment_reminder", modelAndView.getViewName());
-
-        Assert.assertEquals(appointmentDate, modelAndView.getModelMap().get("appointmentDueDate"));
-
-    }
-
-    @Test
-    public void testScheduleAppointmentReminderNoId () {
-
-        Mockito.when(request.getParameter("aptId")).thenReturn(null);
-
-        ModelAndView modelAndView = vxmlController.scheduleappointmentreminder(request, response);
-
-        Assert.assertEquals("ar_error", modelAndView.getViewName());
-
-    }
-
-    @Test
-    public void testScheduleAppointmentReminderNoAppointment () {
-
-        String appointmentId = "nID";
-
-        Mockito.when(request.getParameter("aptId")).thenReturn(appointmentId);
-        Mockito.when(appointmentService.getAppointment(appointmentId)).thenReturn(null);
-
-        ModelAndView modelAndView = vxmlController.scheduleappointmentreminder(request, response);
-
-        Assert.assertEquals("ar_error", modelAndView.getViewName());
-
-    }
-
-    @Test
-    public void testScheduleAppointmentReminderGetAppointmentException () {
-
-        String appointmentId = "eID";
-
-        Appointment appointment = new Appointment();
-
-        Mockito.when(request.getParameter("aptId")).thenReturn(appointmentId);
-        Mockito.when(appointmentService.getAppointment(appointmentId)).thenThrow(new RuntimeException());
-
-        ModelAndView modelAndView = vxmlController.scheduleappointmentreminder(request, response);
-
-        Assert.assertEquals("ar_error", modelAndView.getViewName());
-
     }
 }
