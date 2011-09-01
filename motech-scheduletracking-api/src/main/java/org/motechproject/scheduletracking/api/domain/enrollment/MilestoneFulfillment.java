@@ -3,20 +3,20 @@ package org.motechproject.scheduletracking.api.domain.enrollment;
 import org.joda.time.LocalDate;
 
 public class MilestoneFulfillment {
-    private LocalDate date;
+    private LocalDate dateFulfilled;
 
     private MilestoneFulfillment() {
     }
 
-    public MilestoneFulfillment(LocalDate date) {
-        this.date = date;
+    public MilestoneFulfillment(LocalDate dateFulfilled) {
+        this.dateFulfilled = dateFulfilled;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public LocalDate getDateFulfilled() {
+        return dateFulfilled;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setDateFulfilled(LocalDate dateFulfilled) {
+        this.dateFulfilled = dateFulfilled;
     }
 }

@@ -5,6 +5,6 @@
 
     <!-- handels @MotechListner annotations -->
     <bean class="org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor"/>
-    <bean class="org.motechproject.server.event.annotations.AnnotationBasedHandlerTest$MyHandler"/>
+    <bean class="org.motechproject.server.event.annotations.AnnotationBasedHandlerIT$MyHandler"/>
 
 </beans>

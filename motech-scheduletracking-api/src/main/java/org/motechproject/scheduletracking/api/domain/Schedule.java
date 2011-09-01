@@ -4,30 +4,45 @@ import org.joda.time.LocalDate;
 import org.motechproject.scheduletracking.api.domain.enrollment.Enrollment;
 import org.motechproject.valueobjects.WallTime;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 
-public class Schedule implements Referenceable {
+public class Schedule extends Referenceable {
     private String name;
     private WallTime totalDuration;
-    private Map<String, Milestone> milestones = new LinkedHashMap<String, Milestone>();
 
-    public Schedule(String name, WallTime totalDuration) {
+    public Schedule(String name, WallTime totalDuration, Milestone firstMilestone) {
+        super(firstMilestone);
         this.name = name;
         this.totalDuration = totalDuration;
     }
 
-    public String name() {
+    public List<Alert> alertsFor(LocalDate enrolledDate, String dueMilestoneName) {
+        List<Alert> alerts = new ArrayList<Alert>();
+
+        Milestone dueMilestone = milestone(dueMilestoneName);
+
+        WindowName windowName = dueMilestone.applicableWindow(enrolledDate);
+        if (WindowName.Due.compareTo(windowName) <= 0) {
+            alerts.add(new Alert(windowName, dueMilestone));
+        }
+
+        return alerts;
+    }
+
+    public Milestone getFirstMilestone() {
+        return getNext();
+    }
+
+    public String getName() {
         return name;
     }
 
-    public void addMilestone(Milestone milestone) {
-        milestones.put(milestone.name(), milestone);
-    }
-
     public Milestone milestone(String name) {
-        return milestones.get(name);
+        Milestone result = getFirstMilestone();
+        while (result != null && !result.name().equals(name)) result = result.getNext();
+        return result;
     }
 
     public Date endDate() {
@@ -35,15 +50,19 @@ public class Schedule implements Referenceable {
         return localDate.plusDays(totalDuration.inDays()).toDateTimeAtCurrentTime().toDate();
     }
 
-    public Alert alertFor(Enrollment enrollment) {
-        WindowName windowName = null;
-        Milestone milestone = null;
-        for (Milestone currentMilestone : milestones.values()) {
-            windowName = currentMilestone.applicableWindow(enrollment);
-            milestone = currentMilestone;
-            if (windowName != null) break;
-        }
-        if (windowName == null) return null;
-        return new Alert(windowName, milestone);
+    public Enrollment newEnrollment(String externalId, LocalDate enrollDate) {
+        return new Enrollment(externalId, enrollDate, getName(), getFirstMilestone().name());
+    }
+
+    public Enrollment newEnrollment(String externalId) {
+        return newEnrollment(externalId, LocalDate.now());
+    }
+
+    public String nextMilestone(String milestoneName) {
+        Milestone milestone = milestone(milestoneName);
+        Milestone next = milestone.getNext();
+
+        if (next == null) return null;
+        return next.name();
     }
 }

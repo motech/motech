@@ -16,8 +16,7 @@ public class TrackedSchedulesJsonReaderImpl implements TrackedSchedulesJsonReade
     private MotechJsonReader motechJsonReader;
 
     @Autowired
-    public TrackedSchedulesJsonReaderImpl(@Value("#{scheduletracking['trackedschedule.definition.file']}") String definitionFileName,
-                                          MotechJsonReader motechJsonReader) {
+    public TrackedSchedulesJsonReaderImpl(@Value("#{scheduletracking['trackedschedule.definition.file']}") String definitionFileName, MotechJsonReader motechJsonReader) {
         this.definitionFile = definitionFileName;
         this.motechJsonReader = motechJsonReader;
         if (definitionFileName == null) throw new NullPointerException();

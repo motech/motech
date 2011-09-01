@@ -5,13 +5,15 @@ import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduletracking.api.dao.AllEnrollments;
 import org.motechproject.scheduletracking.api.dao.AllTrackedSchedules;
 import org.motechproject.scheduletracking.api.domain.Alert;
-import org.motechproject.scheduletracking.api.domain.enrollment.Enrollment;
 import org.motechproject.scheduletracking.api.domain.Schedule;
+import org.motechproject.scheduletracking.api.domain.enrollment.Enrollment;
 import org.motechproject.scheduletracking.api.events.EnrolledEntityAlertEvent;
 import org.motechproject.scheduletracking.api.events.MilestoneEvent;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class ScheduleTrackingEventService {
@@ -30,11 +32,10 @@ public class ScheduleTrackingEventService {
     public void raiseAlertForEnrolledEntity(MotechEvent motechEvent) {
         EnrolledEntityAlertEvent enrolledEntityAlertEvent = new EnrolledEntityAlertEvent(motechEvent);
         Schedule schedule = allTrackedSchedules.get(enrolledEntityAlertEvent.scheduleName());
-        Enrollment enrollment = allEnrollments.get(enrolledEntityAlertEvent.externalId());
-        Alert alert = schedule.alertFor(enrollment);
-        if (alert != null) {
-            MilestoneEvent milestoneEvent = new MilestoneEvent(alert);
-            outboundEventGateway.sendEventMessage(milestoneEvent.toMotechEvent());
+        Enrollment enrollment = allEnrollments.get(enrolledEntityAlertEvent.enrollmentId());
+        List<Alert> alerts = enrollment.getAlerts(schedule);
+        for (Alert alert : alerts) {
+            outboundEventGateway.sendEventMessage(new MilestoneEvent(alert).toMotechEvent());
         }
     }
 }

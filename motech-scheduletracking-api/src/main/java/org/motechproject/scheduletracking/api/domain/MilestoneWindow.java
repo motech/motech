@@ -1,8 +1,8 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
-import org.motechproject.scheduletracking.api.domain.enrollment.Enrollment;
 import org.motechproject.valueobjects.WallTime;
 
 import java.util.ArrayList;
@@ -23,10 +23,10 @@ public class MilestoneWindow {
         alertConfigurations.add(alertConfiguration);
     }
 
-    public boolean isApplicableTo(Enrollment enrollment) {
+    public boolean isApplicableTo(LocalDate enrolledDate) {
         LocalDate now = LocalDate.now();
-        LocalDate enrolledDate = enrollment.getEnrolledDate();
-        int daysElapsed = toDays(new Period(enrolledDate, now));
+
+        int daysElapsed = Days.daysBetween(enrolledDate, now).getDays();
         int startOnDay = toDays(begin.asPeriod());
         int endsOnDay = toDays(end.asPeriod());
         return daysElapsed >= startOnDay && daysElapsed <= endsOnDay;

@@ -304,12 +304,6 @@
                         <version>2.9</version>
                         <configuration>
                             <encoding>UTF-8</encoding>
-                            <excludes>
-                                <exclude>**/IVRServiceImplIT.java</exclude>
-                                <exclude>**/SchedulerGatewayIT.java</exclude>
-                                <exclude>**/PillReminderDaoIT.java</exclude>
-                                <exclude>**/GeneratePillReminderIT.java</exclude>
-                            </excludes>
                         </configuration>
                         <executions>
                             <execution>
@@ -362,6 +356,23 @@
                                         <argument>-X</argument>
                                         <argument>DELETE</argument>
                                         <argument>http://${db.server}:${db.port}/trees</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>drop DB => scheduletracking</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>curl</executable>
+                                    <arguments>
+                                        <argument>-s</argument>
+                                        <argument>-S</argument>
+                                        <argument>-X</argument>
+                                        <argument>DELETE</argument>
+                                        <argument>http://${db.server}:${db.port}/motech-scheduletracking</argument>
                                     </arguments>
                                 </configuration>
                             </execution>

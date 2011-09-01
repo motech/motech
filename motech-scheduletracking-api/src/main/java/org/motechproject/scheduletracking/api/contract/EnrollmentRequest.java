@@ -17,11 +17,11 @@ public class EnrollmentRequest {
         this.preferredAlertTime = preferredAlertTime;
     }
 
-    public String scheduleName() {
+    public String getScheduleName() {
         return scheduleName;
     }
 
-    public String externalId() {
+    public String getExternalId() {
         return externalId;
     }
 

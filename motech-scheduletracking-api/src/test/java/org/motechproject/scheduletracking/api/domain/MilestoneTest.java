@@ -3,18 +3,18 @@ package org.motechproject.scheduletracking.api.domain;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.scheduletracking.api.BaseScheduleTrackingTest;
-import org.motechproject.valueobjects.WallTime;
-import org.motechproject.valueobjects.WallTimeUnit;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 public class MilestoneTest extends BaseScheduleTrackingTest {
     private Milestone milestone;
+    private Milestone anotherMilestone;
 
     @Before
     public void setUp() {
-        Schedule schedule = new Schedule("S1", new WallTime(2, WallTimeUnit.Week));
-        milestone = new Milestone("M1", schedule, new WallTime(1, WallTimeUnit.Week), new WallTime(2, WallTimeUnit.Week), new WallTime(3, WallTimeUnit.Week), null);
+        milestone = new Milestone("M1", null, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        anotherMilestone = new Milestone("M1", null, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), null);
     }
 
     @Test
@@ -23,13 +23,20 @@ public class MilestoneTest extends BaseScheduleTrackingTest {
     }
 
     @Test
-    public void fallsIn() {
-        assertEquals(WindowName.Upcoming, milestone.applicableWindow(enrollment(daysAgo(9))));
-        assertEquals(WindowName.Upcoming, milestone.applicableWindow(enrollment(daysAgo(7))));
-        assertEquals(WindowName.Upcoming, milestone.applicableWindow(enrollment(daysAgo(14))));
-        assertEquals(WindowName.Due, milestone.applicableWindow(enrollment(daysAgo(16))));
-        assertEquals(WindowName.Due, milestone.applicableWindow(enrollment(daysAgo(15))));
-        assertEquals(WindowName.Due, milestone.applicableWindow(enrollment(daysAgo(21))));
-        assertEquals(WindowName.Past, milestone.applicableWindow(enrollment(daysAgo(22))));
+    public void verifyTheStateOfAMilestone() {
+        assertEquals(WindowName.Waiting, milestone.applicableWindow(daysAgo(2)));
+        assertEquals(WindowName.Waiting, milestone.applicableWindow(daysAgo(7)));
+        assertEquals(WindowName.Upcoming, milestone.applicableWindow(daysAgo(8)));
+        assertEquals(WindowName.Upcoming, milestone.applicableWindow(daysAgo(9)));
+        assertEquals(WindowName.Upcoming, milestone.applicableWindow(daysAgo(14)));
+        assertEquals(WindowName.Due, milestone.applicableWindow(daysAgo(16)));
+        assertEquals(WindowName.Due, milestone.applicableWindow(daysAgo(15)));
+        assertEquals(WindowName.Due, milestone.applicableWindow(daysAgo(21)));
+        assertEquals(WindowName.Late, milestone.applicableWindow(daysAgo(22)));
+        assertEquals(WindowName.Past, milestone.applicableWindow(daysAgo(30)));
+
+        assertEquals(WindowName.Due, anotherMilestone.applicableWindow(daysAgo(21)));
+        assertEquals(WindowName.Past, anotherMilestone.applicableWindow(daysAgo(22)));
+        assertEquals(WindowName.Past, anotherMilestone.applicableWindow(daysAgo(30)));
     }
 }
