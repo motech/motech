@@ -6,7 +6,6 @@ import org.joda.time.LocalDate;
 import org.motechproject.model.MotechAuditableDataObject;
 import org.motechproject.scheduletracking.api.domain.Alert;
 import org.motechproject.scheduletracking.api.domain.Schedule;
-import org.motechproject.scheduletracking.api.domain.WindowName;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +18,7 @@ public class Enrollment extends MotechAuditableDataObject {
     private String externalId;
     private LocalDate enrolledDate;
     private String scheduleName;
-    private Map<WindowName, MilestoneFulfillment> fulfillments = new HashMap<WindowName, MilestoneFulfillment>();
+    private Map<String, MilestoneFulfillment> fulfillments = new HashMap<String, MilestoneFulfillment>();
     private String nextMilestone;
 
     private Enrollment() {
@@ -34,17 +33,13 @@ public class Enrollment extends MotechAuditableDataObject {
 
     public List<Alert> getAlerts(Schedule schedule) {
         return schedule.alertsFor(getEnrolledDate(), nextMilestone);
-
-//        ArrayList<Alert> alerts = new ArrayList<Alert>();
-//
-//        WindowName windowName = null;
-//        Milestone milestone = null;
-//        alerts.add(new Alert(windowName, schedule.milestone("One")));
-//        return alerts;
     }
 
     public String fulfillMilestone(Schedule schedule) {
-        return "";
+        MilestoneFulfillment fulfillment = new MilestoneFulfillment(LocalDate.now());
+        fulfillments.put(nextMilestone, fulfillment);
+        nextMilestone = schedule.nextMilestone(nextMilestone);
+        return nextMilestone;
     }
 
     public String getScheduleName() {
@@ -81,5 +76,9 @@ public class Enrollment extends MotechAuditableDataObject {
 
     public String getNextMilestone() {
         return nextMilestone;
+    }
+
+    public Map<String, MilestoneFulfillment> getFulfillments() {
+        return fulfillments;
     }
 }

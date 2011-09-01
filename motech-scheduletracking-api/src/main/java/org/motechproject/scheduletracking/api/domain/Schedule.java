@@ -12,7 +12,7 @@ public class Schedule extends Referenceable {
     private String name;
     private WallTime totalDuration;
 
-    public Schedule(String name, WallTime totalDuration, Referenceable firstMilestone) {
+    public Schedule(String name, WallTime totalDuration, Milestone firstMilestone) {
         super(firstMilestone);
         this.name = name;
         this.totalDuration = totalDuration;
@@ -32,7 +32,7 @@ public class Schedule extends Referenceable {
     }
 
     public Milestone getFirstMilestone() {
-        return (Milestone) getNext();
+        return getNext();
     }
 
     public String getName() {
@@ -41,7 +41,7 @@ public class Schedule extends Referenceable {
 
     public Milestone milestone(String name) {
         Milestone result = getFirstMilestone();
-        while (result != null && !result.name().equals(name)) result = (Milestone) result.getNext();
+        while (result != null && !result.name().equals(name)) result = result.getNext();
         return result;
     }
 
@@ -56,5 +56,13 @@ public class Schedule extends Referenceable {
 
     public Enrollment newEnrollment(String externalId) {
         return newEnrollment(externalId, LocalDate.now());
+    }
+
+    public String nextMilestone(String milestoneName) {
+        Milestone milestone = milestone(milestoneName);
+        Milestone next = milestone.getNext();
+
+        if (next == null) return null;
+        return next.name();
     }
 }

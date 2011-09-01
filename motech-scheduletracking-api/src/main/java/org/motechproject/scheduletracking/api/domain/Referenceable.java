@@ -1,13 +1,13 @@
 package org.motechproject.scheduletracking.api.domain;
 
 public abstract class Referenceable {
-    private Referenceable next;
+    private Milestone next;
 
-    public Referenceable(Referenceable next) {
+    public Referenceable(Milestone next) {
         this.next = next;
     }
 
-    protected Referenceable getNext() {
+    protected Milestone getNext() {
         return next;
     }
 }

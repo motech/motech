@@ -12,7 +12,7 @@ public class Milestone extends Referenceable {
     private Map<WindowName, MilestoneWindow> windows = new LinkedHashMap<WindowName, MilestoneWindow>();
     private Map<String, String> data;
 
-    public Milestone(String name, Referenceable next, WallTime earliest, WallTime due, WallTime late, WallTime max) {
+    public Milestone(String name, Milestone next, WallTime earliest, WallTime due, WallTime late, WallTime max) {
         super(next);
         this.name = name;
 
@@ -52,6 +52,6 @@ public class Milestone extends Referenceable {
     }
 
     public Milestone getNextMilestone() {
-        return (Milestone) getNext();
+        return getNext();
     }
 }

@@ -39,6 +39,12 @@ public class ScheduleTest extends BaseScheduleTrackingTest {
     }
 
     @Test
+    public void shouldFulfillAParticularMilestone() {
+        assertThat(schedule.nextMilestone("First Shot"), is(equalTo("Second Shot")));
+        assertThat(schedule.nextMilestone("Second Shot"), is(nullValue()));
+    }
+
+    @Test
     public void shouldNotHaveAlertsIfNoMilestoneIsAtLeastDue() {
         Milestone milestone = new Milestone("One", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         Schedule schedule = new Schedule("foo", wallTimeOf(10), milestone);
