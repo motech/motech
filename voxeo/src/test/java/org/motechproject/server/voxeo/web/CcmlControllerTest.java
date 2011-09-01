@@ -29,7 +29,7 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.tama.web;
+package org.motechproject.server.voxeo.web;
 
 import org.junit.Assert;
 import org.junit.Before;
