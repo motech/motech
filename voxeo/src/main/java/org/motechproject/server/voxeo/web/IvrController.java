@@ -36,6 +36,7 @@ import org.motechproject.context.EventContext;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.service.ivr.CallDetailRecord;
+import org.motechproject.server.service.ivr.CallRequest;
 import org.motechproject.server.service.ivr.IVREventDelegate;
 import org.motechproject.server.voxeo.dao.AllPhoneCalls;
 import org.motechproject.server.voxeo.domain.PhoneCall;
@@ -65,7 +66,7 @@ public class IvrController extends MultiActionController
 
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
 	
-	public ModelAndView incoming(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ModelAndView incoming(HttpServletRequest request, HttpServletResponse response) {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
         
@@ -86,6 +87,8 @@ public class IvrController extends MultiActionController
             phoneCall.setId(sessionId);
             phoneCall.setSessionId(sessionId);
             phoneCall.setDirection(PhoneCall.Direction.INCOMING);
+            CallRequest callRequest = new CallRequest();
+            phoneCall.setCallRequest(callRequest);
 
             try {
                 allPhoneCalls.add(phoneCall);
@@ -103,15 +106,23 @@ public class IvrController extends MultiActionController
 
         phoneCall.addEvent(event);
 
-        // TODO: Catch update exception, reload the call, re-add the event and retry the save.
-        allPhoneCalls.update(phoneCall);
-
         updateState(phoneCall, event);
+
+        // TODO: I should retry a couple of times with exponential backoff. Or move events to a seperate document
+        try {
+            allPhoneCalls.update(phoneCall);
+        } catch (UpdateConflictException e) {
+            // I eat this exception since it means there was a race condition and the document has already been created.
+            // I can continue with the new version
+            phoneCall = allPhoneCalls.findBySessionId(sessionId);
+            phoneCall.addEvent(event);
+            allPhoneCalls.update(phoneCall);
+        }
 
         return mav;
     }
 
-    public ModelAndView outgoing(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ModelAndView outgoing(HttpServletRequest request, HttpServletResponse response) {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
 
@@ -132,8 +143,12 @@ public class IvrController extends MultiActionController
         if (null == phoneCall) {
             // This shouldn't happen
             phoneCall = new PhoneCall();
+            phoneCall.setStartDate(new Date());
             phoneCall.setSessionId(sessionId);
+            phoneCall.setDirection(PhoneCall.Direction.OUTGOING);
             phoneCall.setId(externalId);
+            CallRequest callRequest = new CallRequest();
+            phoneCall.setCallRequest(callRequest);
 
             logger.error("Outgoing call without a phone call record. (externalId: " + externalId);
         }
@@ -146,10 +161,18 @@ public class IvrController extends MultiActionController
 
         phoneCall.addEvent(event);
 
-        // TODO: Catch update exception, reload the call, re-add the event and retry the save.
-        allPhoneCalls.update(phoneCall);
-
         updateState(phoneCall, event);
+
+        // TODO: I should retry a couple of times with exponential backoff. Or move events to a seperate document
+        try {
+            allPhoneCalls.update(phoneCall);
+        } catch (UpdateConflictException e) {
+            // I eat this exception since it means there was a race condition and the document has already been created.
+            // I can continue with the new version
+            phoneCall = allPhoneCalls.findBySessionId(sessionId);
+            phoneCall.addEvent(event);
+            allPhoneCalls.update(phoneCall);
+        }
 
         return mav;
     }

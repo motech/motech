@@ -49,11 +49,6 @@ public class CcxmlController implements Controller
 
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
 
-    private String incomingVxml;
-    private String timeout;
-    private String baseUrl;
-    private String callTimeout;
-
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) {
         logger.info("Generate CCXML");
@@ -61,7 +56,14 @@ public class CcxmlController implements Controller
         response.setContentType("text/xml");
         response.setCharacterEncoding("UTF-8");
 
+        String incomingVxml = request.getParameter("incomingVXML");
+        String timeout = request.getParameter("timeout");
+        String baseUrl = request.getParameter("baseUrl");
+        String callTimeout = request.getParameter("callTimeout");
+
         ModelAndView mav = new ModelAndView();
+
+        mav.setViewName("ccxml");
 
 		mav.addObject("incomingVXML", incomingVxml);
         mav.addObject("timeout", timeout);

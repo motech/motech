@@ -3,11 +3,10 @@ package org.motechproject.server.voxeo.domain;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechAuditableDataObject;
-import org.motechproject.server.service.ivr.CallRequest;
 import org.motechproject.server.service.ivr.CallDetailRecord;
+import org.motechproject.server.service.ivr.CallRequest;
 
-import java.util.Date;
-import java.util.Set;
+import java.util.*;
 
 @TypeDiscriminator("doc.type === 'CALL_DETAIL_RECORD'")
 public class PhoneCall extends MotechAuditableDataObject {
@@ -76,6 +75,10 @@ public class PhoneCall extends MotechAuditableDataObject {
 
     public Integer getDuration()
     {
+        if (null == endDate || null == startDate) {
+            return null;
+        }
+
         return new Integer((int) ((endDate.getTime() - startDate.getTime()) / 1000));
     }
 
@@ -118,6 +121,28 @@ public class PhoneCall extends MotechAuditableDataObject {
     }
 
     public void addEvent(PhoneCallEvent phoneCallEvent) {
+        if (null == events) {
+            events = new HashSet<PhoneCallEvent>();
+        }
         events.add(phoneCallEvent);
+    }
+
+    public Set<PhoneCallEvent> getEvents() {
+        Set<PhoneCallEvent> ret = events;
+        if (null == events) {
+            ret = Collections.<PhoneCallEvent>emptySet();
+        }
+
+        return ret;
+    }
+
+    public PhoneCallEvent getEvent(PhoneCallEvent.Status status) {
+        for (PhoneCallEvent event : events) {
+            if (status == event.getStatus()) {
+                return event;
+            }
+        }
+
+        return null;
     }
 }

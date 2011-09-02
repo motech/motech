@@ -90,6 +90,8 @@ public class CallRequest implements Serializable {
         this.onFailureEvent = null;
     }
 
+    public CallRequest(){ }
+
     public long getMessageId() {
         return messageId;
     }
