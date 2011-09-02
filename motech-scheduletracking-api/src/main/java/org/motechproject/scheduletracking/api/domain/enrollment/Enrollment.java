@@ -62,7 +62,11 @@ public class Enrollment extends MotechAuditableDataObject {
         return externalId;
     }
 
-    public void setExternalId(String externalId) {
+    public void setNextMilestone(String nextMilestone) {
+		this.nextMilestone = nextMilestone;
+	}
+
+	public void setExternalId(String externalId) {
         this.externalId = externalId;
     }
 
