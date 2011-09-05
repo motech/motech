@@ -24,9 +24,4 @@ public class ScheduleRecord {
     public String totalDuration() {
         return totalDuration;
     }
-
-    public ScheduleRecord addMilestoneRecord(MilestoneRecord milestoneRecord) {
-        milestoneRecords().add(milestoneRecord);
-        return this;
-    }
 }
