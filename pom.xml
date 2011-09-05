@@ -484,6 +484,23 @@
                                     </arguments>
                                 </configuration>
                             </execution>
+                            <execution>
+                                <id>drop DB => motech-alert</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>curl</executable>
+                                    <arguments>
+                                        <argument>-s</argument>
+                                        <argument>-S</argument>
+                                        <argument>-X</argument>
+                                        <argument>DELETE</argument>
+                                        <argument>http://${db.server}:${db.port}/motech-alert</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
                         </executions>
                     </plugin>
                 </plugins>
