@@ -6,20 +6,18 @@ import org.joda.time.DateTime;
 import org.motechproject.model.MotechBaseDataObject;
 
 @TypeDiscriminator("doc.documentType == 'Alert'")
-public class Alert extends MotechBaseDataObject implements Comparable<Alert>{
-    private static final long serialVersionUID = 2783402492572161397L;
-
+public class Alert extends MotechBaseDataObject implements Comparable<Alert> {
     @JsonProperty("type")
-    String type = "Alert";
+    private String type = "Alert";
 
-    String id;
-    String externalId;
-    String name;
-    AlertType alertType;
-    DateTime dateTime;
-    int priority;
-    AlertStatus status;
-    String description;
+    private String id;
+    private String externalId;
+    private String name;
+    private AlertType alertType;
+    private DateTime dateTime;
+    private int priority;
+    private AlertStatus status;
+    private String description;
 
     public String getId() {
         return id;
@@ -31,6 +29,10 @@ public class Alert extends MotechBaseDataObject implements Comparable<Alert>{
 
     public String getName() {
         return name;
+    }
+
+    public AlertType getAlertType() {
+        return alertType;
     }
 
     public DateTime getDateTime() {
@@ -77,10 +79,6 @@ public class Alert extends MotechBaseDataObject implements Comparable<Alert>{
         this.description = description;
     }
 
-    public AlertType getAlertType() {
-        return alertType;
-    }
-
     public void setAlertType(AlertType alertType) {
         this.alertType = alertType;
     }
@@ -98,6 +96,6 @@ public class Alert extends MotechBaseDataObject implements Comparable<Alert>{
 
     @Override
     public int compareTo(Alert o) {
-        return new Integer(this.getPriority()).compareTo(new Integer(o.getPriority()));
+        return new Integer(this.priority).compareTo(new Integer(o.priority));
     }
 }

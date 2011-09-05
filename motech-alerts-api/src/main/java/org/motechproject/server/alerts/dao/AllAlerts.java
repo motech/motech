@@ -23,7 +23,7 @@ public class AllAlerts extends MotechBaseRepository<Alert> {
     }
 
     @View(name = "all", map = "function(doc) {if (doc.type == 'Alert') {emit(null, doc._id);}}")
-    public List<Alert> getAllAlerts(int limit) {
+    private List<Alert> getAll(int limit) {
         ViewQuery q = createQuery("all").limit(limit).includeDocs(true);
         return db.queryView(q, Alert.class);
     }
@@ -52,11 +52,11 @@ public class AllAlerts extends MotechBaseRepository<Alert> {
         return db.queryView(q, Alert.class);
     }
 
-    public List<Alert> listAlerts(String externalId, AlertType alertType, AlertStatus alertStatus, Integer alertPriority, int maxNumberOfResults) {
+    public List<Alert> listAlerts(String externalId, AlertType alertType, AlertStatus alertStatus, Integer alertPriority, int limit) {
         List<Alert> alerts = null;
 
         if (noFilters(externalId, alertType, alertStatus, alertPriority)) {
-            List<Alert> allAlerts = getAllAlerts(maxNumberOfResults);
+            List<Alert> allAlerts = getAll(limit);
             Collections.sort(allAlerts);
             return allAlerts;
         }
