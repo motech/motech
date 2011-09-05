@@ -1,9 +1,5 @@
 package org.motechproject.server.alerts.dao;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
@@ -14,74 +10,87 @@ import org.motechproject.server.alerts.domain.AlertType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class AllAlerts extends MotechBaseRepository<Alert> {
 
-	@Autowired
-	public AllAlerts(@Qualifier("alertDbConnector") CouchDbConnector db) {
-		super(Alert.class, db);
-		initStandardDesignDocument();
-	}
-	
-	@View(name = "findByExternalId", map = "function(doc) {if (doc.type == 'Alert') {emit(doc.externalId, doc._id);}}")
-	private List<Alert> findByExternalId(String externalId) {
-		ViewQuery q = createQuery("findByExternalId").key(externalId).includeDocs(true);
-        List<Alert> alerts = db.queryView(q, Alert.class);
-        return alerts.isEmpty() ? null : alerts;
-	}
-	
-	@View(name = "findByAlertType", map = "function(doc) {if (doc.type == 'Alert') {emit(doc.alertType, doc._id);}}")
-	private List<Alert> findByAlertType(AlertType alertType) {
-		ViewQuery q = createQuery("findByAlertType").key(alertType).includeDocs(true);
-        List<Alert> alerts = db.queryView(q, Alert.class);
-        return alerts.isEmpty() ? null : alerts;
-	}
-	
-	@View(name = "findByAlertStatus", map = "function(doc) {if (doc.type == 'Alert') {emit(doc.status, doc._id);}}")
-	private List<Alert> findByAlertStatus(AlertStatus alertStatus) {
-		ViewQuery q = createQuery("findByAlertStatus").key(alertStatus).includeDocs(true);
-        List<Alert> alerts = db.queryView(q, Alert.class);
-        return alerts.isEmpty() ? null : alerts;
-	}
-	
-	@View(name = "findByAlertPriority", map = "function(doc) {if (doc.type == 'Alert') {emit(doc.priority, doc._id);}}")
-	private List<Alert> findByAlertPriority(int priority) {
-		ViewQuery q = createQuery("findByAlertPriority").key(priority).includeDocs(true);
-        List<Alert> alerts = db.queryView(q, Alert.class);
-        return alerts.isEmpty() ? null : alerts;
-	}	
-	
-	public List<Alert> listAlerts(String externalId, AlertType alertType, AlertStatus alertStatus, Integer alertPriority) {
-		List<Alert> alerts = new ArrayList<Alert>();
-		
-		if (externalId != null) {
-			alerts = findByExternalId(externalId);
-		}
-		
-		if (alertType != null) {
-			alerts.retainAll(findByAlertType(alertType));
-		}
-		
-		if (alertStatus != null) {
-			alerts.retainAll(findByAlertStatus(alertStatus));
-		}
-		
-		if (alertPriority != null) {
-			alerts.retainAll(findByAlertPriority(alertPriority));
-		}
-		
-		return alerts;
-	}
+    @Autowired
+    public AllAlerts(@Qualifier("alertDbConnector") CouchDbConnector db) {
+        super(Alert.class, db);
+        initStandardDesignDocument();
+    }
 
+    @View(name = "all", map = "function(doc) {if (doc.type == 'Alert') {emit(null, doc._id);}}")
+    public List<Alert> getAllAlerts(int limit) {
+        ViewQuery q = createQuery("all").limit(limit).includeDocs(true);
+        return db.queryView(q, Alert.class);
+    }
 
-//	@View(name = "listAlerts", map = "function(doc) {if (doc.type == 'Alert') {emit([doc.externalId, doc.alertType, doc.status, doc.priority], doc._id);}}")
-//	public List<Alert> listAlerts(String externalId, AlertType alertType, AlertStatus status, Integer priority, int max) {
-//		ComplexKey key = ComplexKey.of( (externalId==null? ComplexKey.emptyObject():externalId),
-//										(alertType == null? ComplexKey.emptyObject(): alertType),
-//										(status == null? ComplexKey.emptyObject(): status),
-//										(priority == null? ComplexKey.emptyObject(): priority));
-//		ViewQuery q = createQuery("listAlerts").key(key).includeDocs(true);
-//		
-//        List<Alert> alerts = db.queryView(q, Alert.class);
-//        return alerts.isEmpty() ? null : alerts;
-//	}
+    @View(name = "findByExternalId", map = "function(doc) {if (doc.type == 'Alert') {emit(doc.externalId, doc._id);}}")
+    private List<Alert> findByExternalId(String externalId) {
+        ViewQuery q = createQuery("findByExternalId").key(externalId).includeDocs(true);
+        return db.queryView(q, Alert.class);
+    }
+
+    @View(name = "findByAlertType", map = "function(doc) {if (doc.type == 'Alert') {emit(doc.alertType, doc._id);}}")
+    private List<Alert> findByAlertType(AlertType alertType) {
+        ViewQuery q = createQuery("findByAlertType").key(alertType).includeDocs(true);
+        return db.queryView(q, Alert.class);
+    }
+
+    @View(name = "findByAlertStatus", map = "function(doc) {if (doc.type == 'Alert') {emit(doc.status, doc._id);}}")
+    private List<Alert> findByAlertStatus(AlertStatus alertStatus) {
+        ViewQuery q = createQuery("findByAlertStatus").key(alertStatus).includeDocs(true);
+        return db.queryView(q, Alert.class);
+    }
+
+    @View(name = "findByAlertPriority", map = "function(doc) {if (doc.type == 'Alert') {emit(doc.priority, doc._id);}}")
+    private List<Alert> findByAlertPriority(int priority) {
+        ViewQuery q = createQuery("findByAlertPriority").key(priority).includeDocs(true);
+        return db.queryView(q, Alert.class);
+    }
+
+    public List<Alert> listAlerts(String externalId, AlertType alertType, AlertStatus alertStatus, Integer alertPriority, int maxNumberOfResults) {
+        List<Alert> alerts = null;
+
+        if (noFilters(externalId, alertType, alertStatus, alertPriority)) {
+            List<Alert> allAlerts = getAllAlerts(maxNumberOfResults);
+            Collections.sort(allAlerts);
+            return allAlerts;
+        }
+
+        if (externalId != null)
+            alerts = addToAlertList(alerts, findByExternalId(externalId));
+
+        if (alertType != null)
+            alerts = addToAlertList(alerts, findByAlertType(alertType));
+
+        if (alertStatus != null)
+            alerts = addToAlertList(alerts, findByAlertStatus(alertStatus));
+
+        if (alertPriority != null)
+            alerts = addToAlertList(alerts, findByAlertPriority(alertPriority));
+
+        Collections.sort(alerts);
+        return alerts;
+    }
+
+    private List<Alert> addToAlertList(List<Alert> alerts, List<Alert> alertListToRetain) {
+        if (noFilterAppliedYet(alerts))
+            alerts = new ArrayList<Alert>(alertListToRetain);
+        else
+            alerts.retainAll(alertListToRetain);
+
+        return alerts;
+    }
+
+    private boolean noFilterAppliedYet(List<Alert> alerts) {
+        return alerts == null;
+    }
+
+    private boolean noFilters(String externalId, AlertType alertType, AlertStatus alertStatus, Integer alertPriority) {
+        return externalId == null && alertType == null && alertStatus == null && alertPriority == null;
+    }
 }
