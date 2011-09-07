@@ -17,13 +17,12 @@ import static junit.framework.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/applicationContextAlert.xml"})
-
-public class AlertServiceImplIT {
-
+public class AlertServiceIT {
     @Autowired
     AllAlerts allAlerts;
     @Autowired
     private AlertServiceImpl alertService;
+
     private Alert alert;
 
     @After
