@@ -2,7 +2,6 @@ package org.motechproject.server.logging.service;
 
 import org.joda.time.DateTime;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.server.logging.dao.AllEventLogs;
@@ -25,12 +24,8 @@ public class EventLoggingServiceIT {
     private EventLoggingServiceImpl service;
     @Autowired
     private AllEventLogs allEventLogs;
+
     private EventLog log;
-
-    @Before
-    public void setUp() {
-
-    }
 
     @After
     public void tearDown() {
