@@ -11,7 +11,6 @@ import java.util.Properties;
 import java.util.TimeZone;
 
 public class DateUtil {
-
     private static DateTimeZone dateTimeZone;
 
     public static DateTime now() {
@@ -49,6 +48,6 @@ public class DateUtil {
         } catch (IOException e) {
             throw new MotechException("Error while loading timezone from date.properties", e);
         }
-        return null;
+        return dateTimeZone;
     }
 }
