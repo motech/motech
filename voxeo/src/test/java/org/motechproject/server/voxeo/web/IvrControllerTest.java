@@ -264,7 +264,7 @@ public class IvrControllerTest
         assertNull(phoneCall.getEndDate());
     }
 
-        @Test
+    @Test
     public void testOutgoingFailedBusy() {
 
         String status = "FAILED";

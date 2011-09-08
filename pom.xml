@@ -95,6 +95,7 @@
         <module>motech-message-campaign</module>
         <module>motech-mobileforms-api</module>
         <module>voxeo</module>
+        <module>motech-demo</module>
     </modules>
 
     <build>
