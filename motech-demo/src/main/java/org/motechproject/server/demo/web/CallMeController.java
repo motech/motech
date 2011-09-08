@@ -31,15 +31,17 @@
  */
 package org.motechproject.server.demo.web;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang.StringUtils;
-import org.motechproject.server.tama.service.AuthenticationService;
+import org.motechproject.server.demo.service.DemoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Spring MVC controller implementation provides method to handle HTTP requests and generate
@@ -49,42 +51,28 @@ import org.springframework.web.servlet.mvc.Controller;
 public class CallMeController implements Controller {
 
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
-	
-	/**
-	 * If the passcode and phone number match the record in our data store, 
-	 * redirect to the success view; otherwise, show the login view
-	 */
+
+    @Autowired
+    private DemoService demoService;
+
 	@Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("text/html");
         response.setCharacterEncoding("UTF-8");
 
-        String callerId = request.getParameter("phone");
+        String phoneNumber = request.getParameter("phone");
+        int delay = Integer.parseInt(request.getParameter("callDelay"));
+
+        Calendar now = Calendar.getInstance();
+        now.add(Calendar.MINUTE, delay);
+        Date callTime = now.getTime();
 
 		ModelAndView mav = new ModelAndView();
-		mav.addObject("contextPath", request.getContextPath());
 
-		boolean verified = false;
-		String patientId = "";
-		
-		if (StringUtils.isNotEmpty(callerId) && StringUtils.isNotEmpty(passcode)) {
-			try{
-				patientId = authenticationService.getPatientIdByPhoneNumber(callerId);
-				if (StringUtils.isNotEmpty(patientId)) {
-					verified = authenticationService.verifyPasscode(patientId, passcode);
-					if (!verified) {
-						logger.debug("Wrong passcode.");
-					}
-				}
-			} catch (Exception e){
-				logger.error("Login error. CallerID[" + callerId + "]" , e);
-			}
-		}
-		if (verified) {
-			mav.setViewName(successView + "?pId=" + patientId);
-		} else {
-			mav.setViewName(formView);
-		}
+        demoService.schedulePhoneCall(phoneNumber, callTime);
+
+        mav.setViewName("successView");
+
 		return mav;
 	}	
 }

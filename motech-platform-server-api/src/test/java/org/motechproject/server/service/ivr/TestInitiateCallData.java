@@ -47,9 +47,8 @@ public class TestInitiateCallData {
         int timeOut = Integer.MAX_VALUE;
         String vxmlUrl = "http://test.test/vxml";
 
-        CallRequest callRequest = new CallRequest(messageId,phone, timeOut,vxmlUrl);
+        CallRequest callRequest = new CallRequest(phone, timeOut,vxmlUrl);
 
-        assertEquals(messageId, callRequest.getMessageId());
         assertEquals(phone, callRequest.getPhone());
         assertEquals(timeOut, callRequest.getTimeOut());
         assertEquals(vxmlUrl, callRequest.getVxmlUrl());
@@ -62,7 +61,7 @@ public class TestInitiateCallData {
         int timeOut = Integer.MAX_VALUE;
         String vxmlUrl = "http://test.test/vxml";
 
-        CallRequest callRequest = new CallRequest(messageId,phone, timeOut,vxmlUrl);
+        CallRequest callRequest = new CallRequest(phone, timeOut,vxmlUrl);
 
     }
 
@@ -73,7 +72,7 @@ public class TestInitiateCallData {
         int timeOut = Integer.MAX_VALUE;
         String vxmlUrl= null;
 
-        CallRequest callRequest = new CallRequest(messageId,phone, timeOut,vxmlUrl);
+        CallRequest callRequest = new CallRequest(phone, timeOut,vxmlUrl);
 
     }
 }

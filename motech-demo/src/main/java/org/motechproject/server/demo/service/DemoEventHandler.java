@@ -1,4 +1,4 @@
-package org.motechproject.server.service.ivr; /**
+/**
  * MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
  *
  * Copyright (c) 2011 Grameen Foundation USA.  All rights reserved.
@@ -29,45 +29,48 @@ package org.motechproject.server.service.ivr; /**
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
+package org.motechproject.server.demo.service;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.motechproject.context.Context;
+import org.motechproject.gateway.MotechSchedulerGateway;
+import org.motechproject.model.MotechEvent;
+import org.motechproject.server.demo.EventKeys;
+import org.motechproject.server.event.annotations.MotechListener;
+import org.motechproject.server.service.ivr.CallInitiationException;
+import org.motechproject.server.service.ivr.CallRequest;
+import org.motechproject.server.service.ivr.IVRService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * This is an interactive test. In order to run that test please make sure that Asterisk, Voiceglue and VXML application
- * are properly configures, up and running. Your SIP phone configured to use the "SIP/1001" account and that account registered
- * in Asterisk.
- *
- * In order to run unit test
- * - start your soft phone
- * - run the initiateCallTest()
- * Your soft phone should start ringing. Answer the phone, you should hear a voice message specified in the voice XML document retrieved
- * from the URL specified as a value of the voiceXmlUrl property of the ivrService bean.
- *
- *
+ * 
  */
+public class DemoEventHandler
+{
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/testIVRAppContext.xml"})
-public class IVRServiceImplIT {
+    private IVRService ivrService = Context.getInstance().getIvrService();
+    private MotechSchedulerGateway schedulerGateway = Context.getInstance().getMotechSchedulerGateway();
 
-    @Autowired
-    private IVRService ivrService;
+    private String vxmlUrl;
 
-    @Test @Ignore
-    public void initiateCallTest() throws Exception{
+	@MotechListener(subjects = { EventKeys.CALL_EVENT_SUBJECT })
+	public void call(MotechEvent event) {
 
-        //CallRequest initiateCallData = new CallRequest(1L, "SIP/1001", 5000, "http://10.0.1.29:8080/TamaIVR/r/wt");
-        //CallRequest initiateCallData = new CallRequest(1L, "SIP/1001", 5000, "http://10.0.1.29:8080/m/module/ar/vxml/ar?r=1");
-        CallRequest initiateCallData = new CallRequest("SIP/1001", 5000, "http://motech.2paths.com:8080/module/ar/vxml/ar?r=1");
+        String phoneNumber = EventKeys.getPhoneNumber(event);
+        if (null == phoneNumber || 0 == phoneNumber.length()) {
+            logger.error("Can not handle Event: " + event.getSubject()
+                    + ". The event is invalid - missing the "
+                    + EventKeys.PHONE_KEY + " parameter");
+            return;
+        }
 
+		try {
+			CallRequest callRequest = new CallRequest(phoneNumber, 30, vxmlUrl);
 
-        ivrService.initiateCall(initiateCallData);
+			ivrService.initiateCall(callRequest);
+		} catch (CallInitiationException e) {
+			logger.error("Unable to initiate call to PhoneNumber:" + phoneNumber, e);
+		}
     }
-
-
 }

@@ -48,8 +48,8 @@ import org.springframework.web.servlet.DispatcherServlet;
  */
 public class Activator implements BundleActivator {
 	private static Logger logger = LoggerFactory.getLogger(Activator.class);
-	private static final String CONTEXT_CONFIG_LOCATION = "classpath:applicationQuinn.xml";
-	private static final String SERVLET_URL_MAPPING = "/quinn";
+	private static final String CONTEXT_CONFIG_LOCATION = "classpath:applicationDemo.xml";
+	private static final String SERVLET_URL_MAPPING = "/demo";
 	private ServiceTracker tracker;
 
 	@Override
