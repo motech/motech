@@ -70,6 +70,11 @@
             <version>1.1.1</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.0</version>
+        </dependency>
     </dependencies>
 
     <properties>
@@ -94,6 +99,8 @@
         <module>motech-scheduletracking-api</module>
         <module>motech-message-campaign</module>
         <module>motech-mobileforms-api</module>
+        <module>motech-alerts-api</module>
+        <module>motech-event-tracking-api</module>
         <module>voxeo</module>
         <module>motech-demo</module>
     </modules>
@@ -477,6 +484,23 @@
                                         <argument>-X</argument>
                                         <argument>DELETE</argument>
                                         <argument>http://${db.server}:${db.port}/motech-cmslite</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>drop DB => motech-alert</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>curl</executable>
+                                    <arguments>
+                                        <argument>-s</argument>
+                                        <argument>-S</argument>
+                                        <argument>-X</argument>
+                                        <argument>DELETE</argument>
+                                        <argument>http://${db.server}:${db.port}/motech-alert</argument>
                                     </arguments>
                                 </configuration>
                             </execution>

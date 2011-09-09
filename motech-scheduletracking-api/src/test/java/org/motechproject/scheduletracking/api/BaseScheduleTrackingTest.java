@@ -20,7 +20,7 @@ public abstract class BaseScheduleTrackingTest {
     }
 
     protected Schedule createSchedule() {
-        Milestone secondShot = new Milestone("Second Shot", wallTimeOf(11), wallTimeOf(12), wallTimeOf(13), wallTimeOf(14));
+        Milestone secondShot = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         Milestone firstShot = new Milestone("First Shot", secondShot, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         return new Schedule("Yellow Fever Vaccination", wallTimeOf(52), firstShot);
     }

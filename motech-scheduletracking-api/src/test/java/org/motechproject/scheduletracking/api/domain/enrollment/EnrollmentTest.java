@@ -5,9 +5,9 @@ import org.junit.Test;
 import org.motechproject.scheduletracking.api.BaseScheduleTrackingTest;
 import org.motechproject.scheduletracking.api.domain.Alert;
 import org.motechproject.scheduletracking.api.domain.Schedule;
+import org.motechproject.scheduletracking.api.domain.WindowName;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -35,11 +35,22 @@ public class EnrollmentTest extends BaseScheduleTrackingTest {
     }
 
     @Test
+    public void shouldTakeIntoAccountPreviousFulfilledMilestoneWhileCalculatingAlertsForSubsequentMilestones() {
+        enrollment = new Enrollment("ID-074285", weeksAgo(7), schedule.getName(), schedule.getFirstMilestone().name());
+        enrollment.fulfillMilestone(schedule, weeksAgo(3));
+
+        List<Alert> alerts = enrollment.getAlerts(schedule);
+        assertThat(alerts.size(), is(equalTo(1)));
+        assertThat(alerts.get(0).windowName(), is(equalTo(WindowName.Due)));
+    }
+
+
+    @Test
     public void shouldMarkAMilestoneAsFulfilled() {
         String nextMilestone = enrollment.fulfillMilestone(schedule);
 
         assertThat(nextMilestone, is(equalTo("Second Shot")));
-        Map<String, MilestoneFulfillment> fulfillments = enrollment.getFulfillments();
+        List<MilestoneFulfillment> fulfillments = enrollment.getFulfillments();
         assertThat(fulfillments.size(), is(equalTo(1)));
     }
 }

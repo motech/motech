@@ -25,6 +25,7 @@ public class TrackedSchedulesJsonReaderTest {
 
         MilestoneRecord firstMilestone = milestones.get(0);
         assertThat(firstMilestone.name(), is(equalTo("IPTI 1")));
+        assertThat(firstMilestone.referenceDate(), is(equalTo("IPTI Schedule")));
 
         MilestoneRecord secondMilestone = milestones.get(1);
         assertThat(secondMilestone.name(), is(equalTo("IPTI 2")));

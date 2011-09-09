@@ -7,9 +7,8 @@ import org.motechproject.model.MotechAuditableDataObject;
 import org.motechproject.scheduletracking.api.domain.Alert;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 @TypeDiscriminator("doc.type === 'SCHEDULE_ENROLMENT'")
 public class Enrollment extends MotechAuditableDataObject {
@@ -18,7 +17,7 @@ public class Enrollment extends MotechAuditableDataObject {
     private String externalId;
     private LocalDate enrolledDate;
     private String scheduleName;
-    private Map<String, MilestoneFulfillment> fulfillments = new HashMap<String, MilestoneFulfillment>();
+    private List<MilestoneFulfillment> fulfillments = new LinkedList<MilestoneFulfillment>();
     private String nextMilestone;
 
     private Enrollment() {
@@ -32,14 +31,23 @@ public class Enrollment extends MotechAuditableDataObject {
     }
 
     public List<Alert> getAlerts(Schedule schedule) {
-        return schedule.alertsFor(getEnrolledDate(), nextMilestone);
+        LocalDate dateLastFulfilled = getEnrolledDate();
+
+        if (!fulfillments.isEmpty()) {
+            MilestoneFulfillment fulfillment = fulfillments.get(fulfillments.size() - 1);
+            dateLastFulfilled = fulfillment.getDateFulfilled();
+        }
+
+        return schedule.alertsFor(dateLastFulfilled, nextMilestone);
     }
 
     public String fulfillMilestone(Schedule schedule) {
-        MilestoneFulfillment fulfillment = new MilestoneFulfillment(LocalDate.now());
-        fulfillments.put(nextMilestone, fulfillment);
-        nextMilestone = schedule.nextMilestone(nextMilestone);
-        return nextMilestone;
+        return fulfillMilestone(schedule, LocalDate.now());
+    }
+
+    public String fulfillMilestone(Schedule schedule, LocalDate fulfilledOn) {
+        fulfillments.add(new MilestoneFulfillment(nextMilestone, fulfilledOn));
+        return nextMilestone = schedule.nextMilestone(nextMilestone);
     }
 
     public String getScheduleName() {
@@ -62,6 +70,10 @@ public class Enrollment extends MotechAuditableDataObject {
         return externalId;
     }
 
+    public void setNextMilestone(String nextMilestone) {
+        this.nextMilestone = nextMilestone;
+    }
+
     public void setExternalId(String externalId) {
         this.externalId = externalId;
     }
@@ -78,7 +90,7 @@ public class Enrollment extends MotechAuditableDataObject {
         return nextMilestone;
     }
 
-    public Map<String, MilestoneFulfillment> getFulfillments() {
+    public List<MilestoneFulfillment> getFulfillments() {
         return fulfillments;
     }
 }

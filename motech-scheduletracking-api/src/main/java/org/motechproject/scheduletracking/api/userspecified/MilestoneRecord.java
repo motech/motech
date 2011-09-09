@@ -7,6 +7,7 @@ import java.util.Map;
 
 public class MilestoneRecord {
     private String name;
+    private String referenceDate;
     private ScheduleWindowsRecord scheduleWindows;
     private List<AlertRecord> alerts = new ArrayList<AlertRecord>();
     private Map<String, String> data = new HashMap<String, String>();
@@ -14,13 +15,18 @@ public class MilestoneRecord {
     private MilestoneRecord() {
     }
 
-    public MilestoneRecord(String name, ScheduleWindowsRecord scheduleWindows) {
+    public MilestoneRecord(String name, String referenceDate, ScheduleWindowsRecord scheduleWindows) {
         this.name = name;
+        this.referenceDate = referenceDate;
         this.scheduleWindows = scheduleWindows;
     }
 
     public String name() {
         return name;
+    }
+
+    public String referenceDate() {
+        return referenceDate;
     }
 
     public ScheduleWindowsRecord scheduleWindowsRecord() {
