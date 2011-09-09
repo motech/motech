@@ -100,7 +100,7 @@
         <module>motech-message-campaign</module>
         <module>motech-mobileforms-api</module>
         <module>motech-alerts-api</module>
-        <module>motech-eventlogging-api</module>
+        <module>motech-event-tracking-api</module>
     </modules>
 
     <build>
@@ -499,23 +499,6 @@
                                         <argument>-X</argument>
                                         <argument>DELETE</argument>
                                         <argument>http://${db.server}:${db.port}/motech-alert</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>drop DB => motech-eventlogging</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <executable>curl</executable>
-                                    <arguments>
-                                        <argument>-s</argument>
-                                        <argument>-S</argument>
-                                        <argument>-X</argument>
-                                        <argument>DELETE</argument>
-                                        <argument>http://${db.server}:${db.port}/motech-eventlogging</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
