@@ -71,9 +71,9 @@ public class TreeEventProcessorTest {
                     Action.newBuilder().setEventId("eventafter2").build()
             ))
             .setTransitions(new Object[][]{
-                    {"1", Transition.newBuilder().setName("tr1").setActions(Arrays.<Action>asList(
+                    {"1", new Transition().setName("tr1").setActions(Arrays.<Action>asList(
                             Action.newBuilder().setEventId("eventr1").build()
-                    )).build()}
+                    ))}
             });
 
     @InjectMocks
@@ -117,7 +117,7 @@ public class TreeEventProcessorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testActionsEdgeCase2() {
-        treeEventProcessor.sendTransitionActions(Transition.newBuilder().build(), null);
+        treeEventProcessor.sendTransitionActions(new Transition(), null);
     }
 
     @Test(expected = IllegalArgumentException.class)

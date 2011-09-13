@@ -60,12 +60,12 @@ public class TreeNodeLocatorIT {
 	public void setUp() {
 		tree = Tree.newBuilder().setName("tree1").setRootNode(
 					new Node().setTransitions(new Object[][]{
-                            {"1", Transition.newBuilder().setName("t1").setDestinationNode(new Node().setTransitions(new Object[][]{
-                                    {"1", Transition.newBuilder().setName("sick1").setDestinationNode(new Node()).build()},
-                                    {"2", Transition.newBuilder().setName("sick2").setDestinationNode(new Node()).build()},
-                                    {"3", Transition.newBuilder().setName("sick3").setDestinationNode(new Node()).build()},
-                            })).build()},
-                            {"2", Transition.newBuilder().setName("ill").setDestinationNode(new Node()).build()}
+                            {"1", new Transition().setName("t1").setDestinationNode(new Node().setTransitions(new Object[][]{
+                                    {"1", new Transition().setName("sick1").setDestinationNode(new Node())},
+                                    {"2", new Transition().setName("sick2").setDestinationNode(new Node())},
+                                    {"3", new Transition().setName("sick3").setDestinationNode(new Node())},
+                            }))},
+                            {"2", new Transition().setName("ill").setDestinationNode(new Node())}
                     }))
 				.build();
 	}

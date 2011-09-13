@@ -64,25 +64,24 @@ public class TreeDaoTestIT {
                     .setRootNode(new Node()
                             .setPrompts(Arrays.<Prompt>asList(TextToSpeechPrompt.newBuilder().setMessage("if you are you sick select 1, if not select 2").build()))
                             .setTransitions(new Object[][]{
-                                    {"1", Transition.newBuilder().setName("pressed1")
+                                    {"1", new Transition().setName("pressed1")
                                             .setDestinationNode(new Node()
                                                     .setPrompts(Arrays.<Prompt>asList(TextToSpeechPrompt.newBuilder().setMessage("if you are dying select 1, if not select 3").build()))
                                                     .setTransitions(new Object[][]{
-                                                            {"1", Transition.newBuilder().setName("pressed1").setDestinationNode(
+                                                            {"1", new Transition().setName("pressed1").setDestinationNode(
                                                                     new Node().setPrompts(Arrays.<Prompt>asList(
                                                                             TextToSpeechPrompt.newBuilder().setMessage("come to the hospital now").build()
                                                                     ))
-                                                            ).build()},
-                                                            {"3", Transition.newBuilder().setName("pressed3").setDestinationNode(
+                                                            )},
+                                                            {"3", new Transition().setName("pressed3").setDestinationNode(
                                                                     new Node().setPrompts(Arrays.<Prompt>asList(
                                                                             TextToSpeechPrompt.newBuilder().setMessage("be patient, we will call you").build()
                                                                     ))
-                                                            ).build()}
+                                                            )}
                                                     })
-                                            ).build()},
-                                    {"2", Transition.newBuilder().setName("pressed2")
-                                            .setDestinationNode(new Node().setPrompts(Arrays.<Prompt>asList(TextToSpeechPrompt.newBuilder().setMessage("Check with us again").build())))
-                                            .build()}
+                                            )},
+                                    {"2", new Transition().setName("pressed2")
+                                            .setDestinationNode(new Node().setPrompts(Arrays.<Prompt>asList(TextToSpeechPrompt.newBuilder().setMessage("Check with us again").build())))}
                             }))
                     .build();
             tree.setName(NAME + i);

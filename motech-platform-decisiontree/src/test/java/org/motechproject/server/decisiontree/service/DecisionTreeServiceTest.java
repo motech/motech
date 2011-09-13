@@ -40,10 +40,10 @@ public class DecisionTreeServiceTest {
         rootNode = new Node()
                 .setTreeCommands(new RootNodeCommand())
                 .setTransitions(new Object[][]{
-                        {"1", Transition.newBuilder()
+                        {"1", new Transition()
                                 .setName("pillTakenOnTime")
                                 .setDestinationNode(nextNode)
-                                .build()
+
                         }
                 });
 

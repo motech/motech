@@ -61,12 +61,10 @@ public class BuildersTest {
                                 .setMessage("haha")
                                 .build()))
                         .setTransitions(new Object[][]{
-                                {"1", Transition.newBuilder()
-                                        .setName("sick")
-                                        .build()},
-                                {"2", Transition.newBuilder()
-                                        .setName("healthy")
-                                        .build()}
+                                {"1", new Transition()
+                                        .setName("sick")},
+                                {"2", new Transition()
+                                        .setName("healthy")}
                         })
                 )
                 .build();
