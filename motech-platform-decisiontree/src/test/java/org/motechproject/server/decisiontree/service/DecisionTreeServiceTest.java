@@ -3,7 +3,6 @@ package org.motechproject.server.decisiontree.service;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.motechproject.decisiontree.dao.TreeDao;
 import org.motechproject.decisiontree.model.ITreeCommand;
@@ -11,8 +10,6 @@ import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.decisiontree.model.Tree;
 import org.motechproject.server.decisiontree.TreeNodeLocator;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Arrays;
 
@@ -38,10 +35,9 @@ public class DecisionTreeServiceTest {
     @Before
     public void SetUp() {
         initMocks(this);
-        nextNode = Node.newBuilder()
-                .setTreeCommands(new NextCommand())
-                .build();
-        rootNode = Node.newBuilder()
+        nextNode = new Node()
+                .setTreeCommands(new NextCommand());
+        rootNode = new Node()
                 .setTreeCommands(new RootNodeCommand())
                 .setTransitions(new Object[][]{
                         {"1", Transition.newBuilder()
@@ -49,8 +45,7 @@ public class DecisionTreeServiceTest {
                                 .setDestinationNode(nextNode)
                                 .build()
                         }
-                })
-                .build();
+                });
 
         pillReminderTree = Tree.newBuilder()
                 .setName("PillReminderTree")
@@ -62,7 +57,7 @@ public class DecisionTreeServiceTest {
     }
 
     @Test
-    public void shouldFetchCommandForRootNode () {
+    public void shouldFetchCommandForRootNode() {
         when(treeNodeLocator.findNode(pillReminderTree, "")).thenReturn(rootNode);
         Node nextNode = decisionTreeService.getNode(pillReminderTree.getName(), "");
         assertEquals(RootNodeCommand.class, nextNode.getTreeCommands().get(0).getClass());
@@ -76,15 +71,12 @@ public class DecisionTreeServiceTest {
     }
 
     private class RootNodeCommand implements ITreeCommand {
-        @Override
         public String[] execute(Object obj) {
             return null;
         }
     }
 
     private class NextCommand implements ITreeCommand {
-
-        @Override
         public String[] execute(Object obj) {
             return null;
         }

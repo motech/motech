@@ -31,50 +31,52 @@
  */
 package org.motechproject.decisiontree.model;
 
-import static org.junit.Assert.*;
-import java.util.Arrays;
 import org.junit.Test;
-import org.motechproject.decisiontree.model.Action;
+
+import java.util.Arrays;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 
 /**
  * Test model Builders
- * @author yyonkov
  *
+ * @author yyonkov
  */
 public class BuildersTest {
-	/**
-	 * Example of how to use Builders for easy tree building
-	 */
-	@Test
-	public void testTreeBuilder() {
-		Tree t = Tree.newBuilder()
-					.setName("tree1")
-					.setDescription("desc")
-					.setRootNode(Node.newBuilder()
-							.setActionsBefore(Arrays.asList(Action.newBuilder()
-									.setEventId("event_x")
-									.build()))
-							.setPrompts(Arrays.asList(TextToSpeechPrompt.newBuilder()
-									.setMessage("haha")
-									.build()))
-							.setTransitions(new Object[][]{
-									{"1",Transition.newBuilder()
-										.setName("sick")
-										.build()},
-									{"2",Transition.newBuilder()
-										.setName("healthy")
-										.build()}
-									})
-							.build())
-					.build();
+    /**
+     * Example of how to use Builders for easy tree building
+     */
+    @Test
+    public void testTreeBuilder() {
+        Tree t = Tree.newBuilder()
+                .setName("tree1")
+                .setDescription("desc")
+                .setRootNode(new Node()
+                        .setActionsBefore(Arrays.asList(Action.newBuilder()
+                                .setEventId("event_x")
+                                .build()))
+                        .setPrompts(Arrays.asList(TextToSpeechPrompt.newBuilder()
+                                .setMessage("haha")
+                                .build()))
+                        .setTransitions(new Object[][]{
+                                {"1", Transition.newBuilder()
+                                        .setName("sick")
+                                        .build()},
+                                {"2", Transition.newBuilder()
+                                        .setName("healthy")
+                                        .build()}
+                        })
+                )
+                .build();
 //		System.out.print(t);
-		assertNotNull(t);
-		assertEquals("tree1", t.getName());
-		assertEquals("desc",t.getDescription());
-		assertNotNull(t.getRootNode());
-		assertNotNull(t.getRootNode().getTransitions());
-		assertEquals(2,t.getRootNode().getTransitions().size());		
-	}
+        assertNotNull(t);
+        assertEquals("tree1", t.getName());
+        assertEquals("desc", t.getDescription());
+        assertNotNull(t.getRootNode());
+        assertNotNull(t.getRootNode().getTransitions());
+        assertEquals(2, t.getRootNode().getTransitions().size());
+    }
 
 }

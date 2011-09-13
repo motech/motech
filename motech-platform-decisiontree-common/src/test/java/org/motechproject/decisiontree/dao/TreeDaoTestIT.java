@@ -47,59 +47,60 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * DAO IT test findByName()
- * @author yyonkov
  *
+ * @author yyonkov
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/testDecisionTreeCommon.xml"})
+@ContextConfiguration(locations = {"/testDecisionTreeCommon.xml"})
 public class TreeDaoTestIT {
-	@Autowired
-	private TreeDao treeDao;
-	private final String NAME = "TREE"; 
+    @Autowired
+    private TreeDao treeDao;
+    private final String NAME = "TREE";
 
-	@Before
-	public void setUp() throws Exception {
-		for(int i = 0; i<10; i++) {
-			Tree tree = Tree.newBuilder()
-							.setRootNode(Node.newBuilder()
-									.setPrompts(Arrays.<Prompt>asList( TextToSpeechPrompt.newBuilder().setMessage("if you are you sick select 1, if not select 2").build()))
-									.setTransitions(new Object[][] {
-											{"1", 	Transition.newBuilder().setName("pressed1")
-												.setDestinationNode(Node.newBuilder()
-														.setPrompts(Arrays.<Prompt>asList( TextToSpeechPrompt.newBuilder().setMessage("if you are dying select 1, if not select 3").build()))
-														.setTransitions(new Object[][] {
-																{"1", 	Transition.newBuilder().setName("pressed1").setDestinationNode(
-																		Node.newBuilder().setPrompts(Arrays.<Prompt>asList( 
-																				TextToSpeechPrompt.newBuilder().setMessage("come to the hospital now").build()
-																		)).build()
-																).build() },
-																{"3", 	Transition.newBuilder().setName("pressed3").setDestinationNode(
-																		Node.newBuilder().setPrompts(Arrays.<Prompt>asList( 
-																				TextToSpeechPrompt.newBuilder().setMessage("be patient, we will call you").build()
-																		)).build()
-																).build() }
-													}).build()
-											).build() },
-											{"2",	Transition.newBuilder().setName("pressed2")
-													.setDestinationNode(Node.newBuilder().setPrompts(Arrays.<Prompt>asList(TextToSpeechPrompt.newBuilder().setMessage("Check with us again").build())).build())
-											.build()}
-									})
-							.build())
-						.build();
-			tree.setName(NAME+i);
-			treeDao.add(tree);
-		}
-	}
-	@After
-	public void tearDown() throws Exception {
-		for(Tree t : treeDao.getAll()) {
-			treeDao.remove(t);
-		}
-	}
-	@Test
-	public void testFindByName() {
-		List<Tree> trees = treeDao.findByName(NAME+5);
-		System.out.print(trees.get(0));
-		assertEquals(1, trees.size());
-	}
+    @Before
+    public void setUp() throws Exception {
+        for (int i = 0; i < 10; i++) {
+            Tree tree = Tree.newBuilder()
+                    .setRootNode(new Node()
+                            .setPrompts(Arrays.<Prompt>asList(TextToSpeechPrompt.newBuilder().setMessage("if you are you sick select 1, if not select 2").build()))
+                            .setTransitions(new Object[][]{
+                                    {"1", Transition.newBuilder().setName("pressed1")
+                                            .setDestinationNode(new Node()
+                                                    .setPrompts(Arrays.<Prompt>asList(TextToSpeechPrompt.newBuilder().setMessage("if you are dying select 1, if not select 3").build()))
+                                                    .setTransitions(new Object[][]{
+                                                            {"1", Transition.newBuilder().setName("pressed1").setDestinationNode(
+                                                                    new Node().setPrompts(Arrays.<Prompt>asList(
+                                                                            TextToSpeechPrompt.newBuilder().setMessage("come to the hospital now").build()
+                                                                    ))
+                                                            ).build()},
+                                                            {"3", Transition.newBuilder().setName("pressed3").setDestinationNode(
+                                                                    new Node().setPrompts(Arrays.<Prompt>asList(
+                                                                            TextToSpeechPrompt.newBuilder().setMessage("be patient, we will call you").build()
+                                                                    ))
+                                                            ).build()}
+                                                    })
+                                            ).build()},
+                                    {"2", Transition.newBuilder().setName("pressed2")
+                                            .setDestinationNode(new Node().setPrompts(Arrays.<Prompt>asList(TextToSpeechPrompt.newBuilder().setMessage("Check with us again").build())))
+                                            .build()}
+                            }))
+                    .build();
+            tree.setName(NAME + i);
+            treeDao.add(tree);
+        }
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        for (Tree t : treeDao.getAll()) {
+            treeDao.remove(t);
+        }
+    }
+
+    @Test
+    public void testFindByName() {
+        List<Tree> trees = treeDao.findByName(NAME + 5);
+        System.out.print(trees.get(0));
+        assertEquals(1, trees.size());
+    }
 }
