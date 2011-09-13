@@ -1,20 +1,5 @@
 package org.motechproject.server.decisiontree.web;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,11 +9,22 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.decisiontree.model.*;
-import org.motechproject.decisiontree.model.Action;
 import org.motechproject.server.decisiontree.TreeNodeLocator;
 import org.motechproject.server.decisiontree.service.DecisionTreeService;
 import org.motechproject.server.decisiontree.service.TreeEventProcessor;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class VxmlControllerTest {
@@ -97,9 +93,7 @@ public class VxmlControllerTest {
         transition.setDestinationNode(new Node());
         Prompt p = new TextToSpeechPrompt();
         p.setName("p");
-        List<Prompt> pl = new ArrayList<Prompt>();
-        pl.add(p);
-        transition.getDestinationNode().setPrompts(pl);
+        transition.getDestinationNode().setPrompts(p);
         node.addTransition("1", transition);
 
 
@@ -373,9 +367,7 @@ public class VxmlControllerTest {
         transition.setDestinationNode(new Node());
         Prompt p = new TextToSpeechPrompt();
         p.setName("p");
-        List<Prompt> pl = new ArrayList<Prompt>();
-        pl.add(p);
-        transition.getDestinationNode().setPrompts(pl);
+        transition.getDestinationNode().setPrompts(p);
         node.addTransition("1", transition);
 
 

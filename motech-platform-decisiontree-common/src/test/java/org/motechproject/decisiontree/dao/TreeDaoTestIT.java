@@ -35,12 +35,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.decisiontree.model.*;
+import org.motechproject.decisiontree.model.Node;
+import org.motechproject.decisiontree.model.TextToSpeechPrompt;
+import org.motechproject.decisiontree.model.Transition;
+import org.motechproject.decisiontree.model.Tree;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -62,26 +64,22 @@ public class TreeDaoTestIT {
         for (int i = 0; i < 10; i++) {
             Tree tree = Tree.newBuilder()
                     .setRootNode(new Node()
-                            .setPrompts(Arrays.<Prompt>asList(TextToSpeechPrompt.newBuilder().setMessage("if you are you sick select 1, if not select 2").build()))
+                            .setPrompts(TextToSpeechPrompt.newBuilder().setMessage("if you are you sick select 1, if not select 2").build())
                             .setTransitions(new Object[][]{
                                     {"1", new Transition().setName("pressed1")
                                             .setDestinationNode(new Node()
-                                                    .setPrompts(Arrays.<Prompt>asList(TextToSpeechPrompt.newBuilder().setMessage("if you are dying select 1, if not select 3").build()))
+                                                    .setPrompts(TextToSpeechPrompt.newBuilder().setMessage("if you are dying select 1, if not select 3").build())
                                                     .setTransitions(new Object[][]{
                                                             {"1", new Transition().setName("pressed1").setDestinationNode(
-                                                                    new Node().setPrompts(Arrays.<Prompt>asList(
-                                                                            TextToSpeechPrompt.newBuilder().setMessage("come to the hospital now").build()
-                                                                    ))
+                                                                    new Node().setPrompts(TextToSpeechPrompt.newBuilder().setMessage("come to the hospital now").build())
                                                             )},
                                                             {"3", new Transition().setName("pressed3").setDestinationNode(
-                                                                    new Node().setPrompts(Arrays.<Prompt>asList(
-                                                                            TextToSpeechPrompt.newBuilder().setMessage("be patient, we will call you").build()
-                                                                    ))
+                                                                    new Node().setPrompts(TextToSpeechPrompt.newBuilder().setMessage("be patient, we will call you").build())
                                                             )}
                                                     })
                                             )},
                                     {"2", new Transition().setName("pressed2")
-                                            .setDestinationNode(new Node().setPrompts(Arrays.<Prompt>asList(TextToSpeechPrompt.newBuilder().setMessage("Check with us again").build())))}
+                                            .setDestinationNode(new Node().setPrompts(TextToSpeechPrompt.newBuilder().setMessage("Check with us again").build()))}
                             }))
                     .build();
             tree.setName(NAME + i);

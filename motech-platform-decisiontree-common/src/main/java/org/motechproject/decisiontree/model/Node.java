@@ -38,7 +38,13 @@ public class Node {
         return prompts == null ? Collections.<Prompt>emptyList() : prompts;
     }
 
-    public Node setPrompts(List<Prompt> prompts) {
+    @JsonIgnore
+    public Node setPrompts(Prompt... prompts) {
+        setPrompts(Arrays.asList(prompts));
+        return this;
+    }
+
+    private Node setPrompts(List<Prompt> prompts) {
         this.prompts = prompts;
         return this;
     }
