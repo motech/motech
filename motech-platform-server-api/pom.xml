@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>motech</artifactId>
 		<groupId>org.motechproject</groupId>
-		<version>0.2-SNAPSHOT</version>
+		<version>0.3-SNAPSHOT</version>
 	</parent>
 	<artifactId>motech-platform-server-api</artifactId>
 	<name>Motech Platform Server API</name>

@@ -4,12 +4,12 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.2-SNAPSHOT</version>
+        <version>0.3-SNAPSHOT</version>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-outbox-api</artifactId>
     <name>Motech Outbox API</name>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.3-SNAPSHOT</version>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
