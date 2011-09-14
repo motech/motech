@@ -57,9 +57,8 @@ public class BuildersTest {
                         .setActionsBefore(Arrays.asList(Action.newBuilder()
                                 .setEventId("event_x")
                                 .build()))
-                        .setPrompts(TextToSpeechPrompt.newBuilder()
-                                .setMessage("haha")
-                                .build())
+                        .setPrompts(new TextToSpeechPrompt()
+                                .setMessage("haha"))
                         .setTransitions(new Object[][]{
                                 {"1", new Transition()
                                         .setName("sick")},

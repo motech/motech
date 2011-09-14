@@ -10,49 +10,22 @@ public class AudioPrompt extends Prompt {
     private String audioFileUrl;
     private String altMessage; //Text To Speech Alternate if audio file not available
 
-    public static class Builder {
-    	private AudioPrompt obj;
-		public Builder() {
-			obj = new AudioPrompt();
-		} 
-		public Prompt build() {
-			return obj;
-		}
-	    public Builder setName(String name) {
-	        obj.setName(name);
-	        return this;
-	    }			
-	    public Builder setAudioFileUrl(String audioFileUrl) {
-	        obj.audioFileUrl = audioFileUrl;
-	        return this;
-	    }
-	    public Builder setAltMessage(String altMessage) {
-	        obj.altMessage = altMessage;
-	        return this;
-	    }
-        public Builder setAudioCommand(ITreeCommand command) {
-            obj.command = command;
-            return this;
-        }
-    }
-    public static Builder newBuilder() {
-    	return new Builder();
-    }    
-
     public String getAudioFileUrl() {
         return audioFileUrl;
     }
 
-    public void setAudioFileUrl(String audioFileUrl) {
+    public AudioPrompt setAudioFileUrl(String audioFileUrl) {
         this.audioFileUrl = audioFileUrl;
+        return this;
     }
 
     public String getAltMessage() {
         return altMessage;
     }
 
-    public void setAltMessage(String altMessage) {
+    public AudioPrompt setAltMessage(String altMessage) {
         this.altMessage = altMessage;
+        return this;
     }
 
     @Override
