@@ -47,10 +47,9 @@ public class DecisionTreeServiceTest {
                         }
                 });
 
-        pillReminderTree = Tree.newBuilder()
+        pillReminderTree = new Tree()
                 .setName("PillReminderTree")
-                .setRootNode(rootNode)
-                .build();
+                .setRootNode(rootNode);
 
         when(treeDao.findByName(pillReminderTree.getName())).thenReturn(Arrays.asList(pillReminderTree));
         decisionTreeService = new DecisionTreeServiceImpl(treeDao, treeNodeLocator);

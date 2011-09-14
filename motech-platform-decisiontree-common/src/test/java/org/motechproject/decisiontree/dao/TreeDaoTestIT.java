@@ -62,7 +62,7 @@ public class TreeDaoTestIT {
     @Before
     public void setUp() throws Exception {
         for (int i = 0; i < 10; i++) {
-            Tree tree = Tree.newBuilder()
+            Tree tree = new Tree()
                     .setRootNode(new Node()
                             .setPrompts(new TextToSpeechPrompt().setMessage("if you are you sick select 1, if not select 2"))
                             .setTransitions(new Object[][]{
@@ -80,8 +80,7 @@ public class TreeDaoTestIT {
                                             )},
                                     {"2", new Transition().setName("pressed2")
                                             .setDestinationNode(new Node().setPrompts(new TextToSpeechPrompt().setMessage("Check with us again")))}
-                            }))
-                    .build();
+                            }));
             tree.setName(NAME + i);
             treeDao.add(tree);
         }

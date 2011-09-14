@@ -50,7 +50,7 @@ public class BuildersTest {
      */
     @Test
     public void testTreeBuilder() {
-        Tree t = Tree.newBuilder()
+        Tree t = new Tree()
                 .setName("tree1")
                 .setDescription("desc")
                 .setRootNode(new Node()
@@ -65,8 +65,7 @@ public class BuildersTest {
                                 {"2", new Transition()
                                         .setName("healthy")}
                         })
-                )
-                .build();
+                );
 //		System.out.print(t);
         assertNotNull(t);
         assertEquals("tree1", t.getName());
