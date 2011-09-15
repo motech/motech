@@ -1,4 +1,4 @@
-package org.motechproject.builder;
+package org.motechproject.scheduler.builder;
 
 import org.motechproject.model.Time;
 

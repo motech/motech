@@ -22,6 +22,12 @@ public class DateUtil {
         return new LocalDate(getTimeZone());
     }
 
+    public static LocalDate tomorrow() {
+        LocalDate localDate = new LocalDate(getTimeZone());
+        localDate.plusDays(1);
+        return localDate;
+    }
+
     public static LocalDate newDate(int year, int month, int day) {
         return new LocalDate(getTimeZone()).withYear(year).withMonthOfYear(month).withDayOfMonth(day);
     }

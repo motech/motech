@@ -63,19 +63,19 @@ public class GenerateOutboundVoiceMessagesIT {
         VoiceMessageType messageType = new VoiceMessageType();
         messageType.setVoiceMessageTypeName("Type1");
         messageType.setPriority(MessagePriority.HIGH);
-        messageType.setvXmlTemplateName("appointmentReminder");
+        messageType.setTemplateName("appointmentReminder");
         messageType.setCanBeSaved(true);
 
         VoiceMessageType messageType1 = new VoiceMessageType();
         messageType1.setVoiceMessageTypeName("Type2");
         messageType1.setPriority(MessagePriority.HIGH);
-        messageType1.setvXmlTemplateName("appointmentReminder");
+        messageType1.setTemplateName("appointmentReminder");
         messageType1.setCanBeReplayed(true);
 
         VoiceMessageType messageType2 = new VoiceMessageType();
         messageType2.setVoiceMessageTypeName("Type3");
         messageType2.setPriority(MessagePriority.HIGH);
-        messageType2.setvXmlTemplateName("appointmentReminder");
+        messageType2.setTemplateName("appointmentReminder");
         messageType2.setCanBeSaved(true);
         messageType2.setCanBeReplayed(true);
 

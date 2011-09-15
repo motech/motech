@@ -40,13 +40,12 @@ import org.motechproject.outbox.api.model.MessagePriority;
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
 import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.model.VoiceMessageType;
+import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -59,14 +58,16 @@ import static org.junit.Assert.*;
 public class OutboundVoiceMessageDaoIT {
 	@Autowired
 	private OutboundVoiceMessageDao outboundVoiceMessageDao;
-	private String partyId1 = "0001";
+
+    private String partyId1 = "0001";
 	private String partyId2 = "0002";
+
 	@Before
 	public void setUp() {
 		VoiceMessageType messageType = new VoiceMessageType();
 		messageType.setVoiceMessageTypeName("Play something");
 		messageType.setPriority(MessagePriority.HIGH);
-		messageType.setvXmlTemplateName("appointmentReminder");
+		messageType.setTemplateName("appointmentReminder");
 		
 		// create messages
 		Date now = DateUtils.truncate(new Date(), Calendar.DATE);
@@ -79,15 +80,44 @@ public class OutboundVoiceMessageDaoIT {
 			msg.setStatus((i&1)>0?OutboundVoiceMessageStatus.PENDING:OutboundVoiceMessageStatus.SAVED);
 			outboundVoiceMessageDao.add(msg);
 		}
-		
 	}
+
 	@After
 	public void tearDown() {
 		for(OutboundVoiceMessage msg : outboundVoiceMessageDao.getAll()) {
 			outboundVoiceMessageDao.remove(msg);
 		}
 	}
-	@Test
+
+    @Test
+    public void shouldSaveTheListSpecifiedAsAParameter() {
+        VoiceMessageType messageType = new VoiceMessageType();
+        messageType.setVoiceMessageTypeName("Play something");
+        messageType.setPriority(MessagePriority.HIGH);
+        messageType.setTemplateName("playSequentially");
+
+        String patientId = "Patient1";
+        OutboundVoiceMessage messageWithAudioFiles = new OutboundVoiceMessage();
+        messageWithAudioFiles.setPartyId(patientId);
+        messageWithAudioFiles.setVoiceMessageType(messageType);
+
+        HashMap<String, Object> parameters = new HashMap<String, Object>();
+        List<String> sequenceOfFilesToPlay = Arrays.asList("file1.wav", "file2.wav", "file3.wav");
+        parameters.put("audioFiles", sequenceOfFilesToPlay);
+        messageWithAudioFiles.setParameters(parameters);
+        messageWithAudioFiles.setStatus(OutboundVoiceMessageStatus.PENDING);
+        messageWithAudioFiles.setExpirationDate(DateUtils.addDays(DateUtil.now().toDate(), 10));
+
+        outboundVoiceMessageDao.add(messageWithAudioFiles);
+
+        List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getPendingMessages(patientId);
+        assertEquals(1, messages.size());
+        OutboundVoiceMessage message = messages.get(0);
+        assertTrue(message.getParameters().containsKey("audioFiles"));
+        assertEquals(message.getParameters().get("audioFiles"), sequenceOfFilesToPlay);
+    }
+
+    @Test
 	public void testGetNextPendingMessage() {
 		List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getPendingMessages(partyId1);
 		assertNotNull(messages);
@@ -98,6 +128,7 @@ public class OutboundVoiceMessageDaoIT {
 //			System.out.println(m);
 		}
 	}
+
 	@Test
 	public void testGetSavedMessage() {
 		List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getSavedMessages(partyId1);
@@ -109,6 +140,7 @@ public class OutboundVoiceMessageDaoIT {
 //			System.out.println(m);
 		}
 	}
+
 	@Test
 	public void testGet() {
 		int count = outboundVoiceMessageDao.getPendingMessagesCount(partyId1);

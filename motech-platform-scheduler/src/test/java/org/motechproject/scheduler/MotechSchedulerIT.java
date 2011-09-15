@@ -34,6 +34,7 @@ package org.motechproject.scheduler;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.drools.time.impl.CronExpression;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -45,6 +46,7 @@ import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.server.event.EventListenerRegistry;
 import org.motechproject.server.event.annotations.MotechListenerEventProxy;
+import org.motechproject.util.DateUtil;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -101,7 +103,7 @@ public class MotechSchedulerIT {
 
     @Test
     @Ignore
-    public void scheduleCronJobTest() throws Exception{
+    public void scheduleCronJobTest(){
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("JobID", UUID.randomUUID().toString());
