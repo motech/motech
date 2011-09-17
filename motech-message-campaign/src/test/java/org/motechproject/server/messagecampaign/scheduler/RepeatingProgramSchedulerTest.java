@@ -9,7 +9,7 @@ import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.builder.CampaignBuilder;
 import org.motechproject.server.messagecampaign.builder.EnrollRequestBuilder;
-import org.motechproject.server.messagecampaign.contract.EnrollRequest;
+import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.RepeatingCampaign;
 import org.motechproject.util.DateUtil;
 
@@ -33,13 +33,13 @@ public class RepeatingProgramSchedulerTest {
 
     @Test
     public void shouldScheduleJobs() {
-        EnrollRequest request = new EnrollRequestBuilder().withDefaults().build();
-        request.referenceDate(DateUtil.today().plusDays(1));
+        CampaignRequest request = new EnrollRequestBuilder().withDefaults().build();
+        request.setReferenceDate(DateUtil.today().plusDays(1));
         RepeatingCampaign campaign = new CampaignBuilder().defaultRepeatingCampaign();
 
         RepeatingProgramScheduler repeatingProgramScheduler = new RepeatingProgramScheduler(schedulerService, request, campaign);
 
-        repeatingProgramScheduler.scheduleJobs();
+        repeatingProgramScheduler.start();
         ArgumentCaptor<RunOnceSchedulableJob> capture = ArgumentCaptor.forClass(RunOnceSchedulableJob.class);
         verify(schedulerService, times(4)).scheduleRunOnceJob(capture.capture());
 
@@ -54,13 +54,13 @@ public class RepeatingProgramSchedulerTest {
 
     @Test
     public void shouldRescheduleJobs() {
-        EnrollRequest request = new EnrollRequestBuilder().withDefaults().build();
-        request.referenceDate(DateUtil.today().plusDays(1));
+        CampaignRequest request = new EnrollRequestBuilder().withDefaults().build();
+        request.setReferenceDate(DateUtil.today().plusDays(1));
         RepeatingCampaign campaign = new CampaignBuilder().defaultRepeatingCampaign();
 
         RepeatingProgramScheduler repeatingProgramScheduler = new RepeatingProgramScheduler(schedulerService, request, campaign);
 
-        repeatingProgramScheduler.rescheduleJobs();
+        repeatingProgramScheduler.restart();
         ArgumentCaptor<RunOnceSchedulableJob> capture = ArgumentCaptor.forClass(RunOnceSchedulableJob.class);
         verify(schedulerService, times(1)).unscheduleAllJobs("org.motechproject.server.messagecampaign.testCampaign.12345");
         verify(schedulerService, times(4)).scheduleRunOnceJob(capture.capture());

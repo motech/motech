@@ -19,9 +19,9 @@ public class CampaignRecord {
 
     public Campaign build() {
         Campaign campaign = type.instance();
-        campaign.messages(buildCampaignMessages());
-        campaign.name(this.name());
-        campaign.type(this.type);
+        campaign.setMessages(buildCampaignMessages());
+        campaign.setName(this.name());
+        campaign.setType(this.type);
         if (type == CampaignType.OFFSET) {
             ((OffsetCampaign) campaign).maxDuration(maxDuration);
         }

@@ -17,7 +17,7 @@ public class CampaignBuilder {
 
     public AbsoluteCampaign defaultAbsoluteCampaign() {
         AbsoluteCampaign campaign = new AbsoluteCampaign();
-        campaign.name("testCampaign");
+        campaign.setName("testCampaign");
 
         final AbsoluteCampaignMessage absoluteCampaignMessage1 = new CampaignMessageBuilder().absoluteCampaignMessage("AM1", DateUtil.today().plusDays(1), "random-1");
         final AbsoluteCampaignMessage absoluteCampaignMessage2 = new CampaignMessageBuilder().absoluteCampaignMessage("AM2", DateUtil.today().plusDays(2), "random-2");
@@ -27,13 +27,13 @@ public class CampaignBuilder {
             add(absoluteCampaignMessage2);
         }};
 
-        campaign.messages(campaignMessages);
+        campaign.setMessages(campaignMessages);
         return campaign;
     }
 
     public CronBasedCampaign defaultCronBasedCampaign() {
         CronBasedCampaign campaign = new CronBasedCampaign();
-        campaign.name("testCampaign");
+        campaign.setName("testCampaign");
 
         final CronBasedCampaignMessage campaignMessage1 = new CampaignMessageBuilder().cronBasedCampaignMessage("CM1", "0 11 11 11 11 ?", "cron-message1");
         final CronBasedCampaignMessage campaignMessage2 = new CampaignMessageBuilder().cronBasedCampaignMessage("CM2", "0 11 11 11 12 ?", "cron-message2");
@@ -43,13 +43,13 @@ public class CampaignBuilder {
             add(campaignMessage2);
         }};
 
-        campaign.messages(campaignMessages);
+        campaign.setMessages(campaignMessages);
         return campaign;
     }
 
     public OffsetCampaign defaultOffsetCampaign() {
         OffsetCampaign campaign = new OffsetCampaign();
-        campaign.name("testCampaign");
+        campaign.setName("testCampaign");
 
         final OffsetCampaignMessage offsetCampaignMessage1 = new CampaignMessageBuilder().offsetCampaignMessage("OM1", "1 Week", "child-info-week-1");
         final OffsetCampaignMessage offsetCampaignMessage2 = new CampaignMessageBuilder().offsetCampaignMessage("OM2", "2 Weeks", "child-info-week-1a");
@@ -59,13 +59,13 @@ public class CampaignBuilder {
             add(offsetCampaignMessage2);
         }};
 
-        campaign.messages(campaignMessages);
+        campaign.setMessages(campaignMessages);
         return campaign;
     }
 
     public RepeatingCampaign defaultRepeatingCampaign() {
         RepeatingCampaign campaign = new RepeatingCampaign();
-        campaign.name("testCampaign");
+        campaign.setName("testCampaign");
         campaign.maxDuration("2 Weeks");
 
         final RepeatingCampaignMessage repeatingCampaignMessage1 = new CampaignMessageBuilder().repeatingCampaignMessage("OM1", "1 Week", "child-info-week-{Offset}-1");
@@ -76,7 +76,7 @@ public class CampaignBuilder {
             add(repeatingCampaignMessage2);
         }};
 
-        campaign.messages(campaignMessages);
+        campaign.setMessages(campaignMessages);
         return campaign;
     }
 }

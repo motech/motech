@@ -1,38 +1,42 @@
 package org.motechproject.server.messagecampaign.service;
 
-import org.motechproject.server.messagecampaign.contract.EnrollRequest;
+import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.MessageCampaignException;
 import org.motechproject.server.messagecampaign.domain.campaign.Campaign;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.scheduler.MessageCampaignScheduler;
-import org.motechproject.server.messagecampaign.scheduler.MessageCampaignSchedulerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class MessageCampaignServiceImpl implements MessageCampaignService {
+    private MotechSchedulerService schedulerService;
     private AllMessageCampaigns allMessageCampaigns;
-    private MessageCampaignSchedulerFactory schedulerFactory;
 
     @Autowired
-    public MessageCampaignServiceImpl(AllMessageCampaigns allMessageCampaigns, MessageCampaignSchedulerFactory schedulerFactory) {
+    public MessageCampaignServiceImpl(AllMessageCampaigns allMessageCampaigns, MotechSchedulerService schedulerService) {
         this.allMessageCampaigns = allMessageCampaigns;
-        this.schedulerFactory = schedulerFactory;
+        this.schedulerService = schedulerService;
     }
 
-    public void enroll(EnrollRequest enrollRequest) {
-        getScheduler(enrollRequest).scheduleJobs();
+    public void startFor(CampaignRequest request) {
+        getCampaignFor(request).start();
     }
 
-    public void reEnroll(EnrollRequest enrollRequest) {
-        getScheduler(enrollRequest).rescheduleJobs();
+    public void restartFor(CampaignRequest request) {
+        getCampaignFor(request).restart();
     }
 
-    private MessageCampaignScheduler getScheduler(EnrollRequest enrollRequest) {
+    public void stopFor(CampaignRequest request) {
+        getCampaignFor(request).stop();
+    }
+
+    private MessageCampaignScheduler getCampaignFor(CampaignRequest enrollRequest) {
         Campaign<CampaignMessage> campaign = allMessageCampaigns.get(enrollRequest.campaignName());
         if (campaign == null)
             throw new MessageCampaignException("No campaign by name : " + enrollRequest.campaignName());
-        return schedulerFactory.scheduler(enrollRequest, campaign);
+        return campaign.getScheduler(schedulerService, enrollRequest);
     }
 }

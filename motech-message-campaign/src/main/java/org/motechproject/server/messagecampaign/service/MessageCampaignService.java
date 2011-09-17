@@ -1,9 +1,10 @@
 package org.motechproject.server.messagecampaign.service;
 
-import org.motechproject.server.messagecampaign.contract.EnrollRequest;
+import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 
 public interface MessageCampaignService {
-    void enroll(EnrollRequest enrollRequest);
-    void reEnroll(EnrollRequest enrollRequest);
+    void startFor(CampaignRequest enrollRequest);
+    void restartFor(CampaignRequest enrollRequest);
+    void stopFor(CampaignRequest enrollRequest);
 
 }

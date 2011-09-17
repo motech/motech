@@ -7,7 +7,7 @@ import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.builder.CampaignBuilder;
 import org.motechproject.server.messagecampaign.builder.EnrollRequestBuilder;
-import org.motechproject.server.messagecampaign.contract.EnrollRequest;
+import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.OffsetCampaign;
 import org.motechproject.util.DateUtil;
 
@@ -31,12 +31,12 @@ public class OffsetProgramSchedulerTest {
 
     @Test
     public void shouldScheduleJobs() {
-        EnrollRequest request = new EnrollRequestBuilder().withDefaults().build();
+        CampaignRequest request = new EnrollRequestBuilder().withDefaults().build();
         OffsetCampaign campaign = new CampaignBuilder().defaultOffsetCampaign();
 
         OffsetProgramScheduler offsetProgramScheduler = new OffsetProgramScheduler(schedulerService, request, campaign);
 
-        offsetProgramScheduler.scheduleJobs();
+        offsetProgramScheduler.start();
         ArgumentCaptor<RunOnceSchedulableJob> capture = ArgumentCaptor.forClass(RunOnceSchedulableJob.class);
         verify(schedulerService, times(2)).scheduleRunOnceJob(capture.capture());
 

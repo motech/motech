@@ -1,7 +1,7 @@
 package org.motechproject.server.messagecampaign.builder;
 
 import org.motechproject.model.Time;
-import org.motechproject.server.messagecampaign.contract.EnrollRequest;
+import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 
 public class EnrollRequestBuilder {
 
@@ -16,11 +16,11 @@ public class EnrollRequestBuilder {
         return this;
     }
 
-    public EnrollRequest build() {
-        EnrollRequest request = new EnrollRequest();
-        request.campaignName(this.campaignName);
-        request.externalId(this.externalId);
-        request.reminderTime(this.reminderTime);
+    public CampaignRequest build() {
+        CampaignRequest request = new CampaignRequest();
+        request.setCampaignName(this.campaignName);
+        request.setExternalId(this.externalId);
+        request.setReminderTime(this.reminderTime);
         return request;
     }
 }
