@@ -34,7 +34,7 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage> {
     }
 
     public void stop() {
-        String jobIdPrefix = String.format("%s.%s.%s", EventKeys.BASE_SUBJECT, campaign.name(), campaignRequest.externalId());
+        String jobIdPrefix = String.format("%s%s.%s", EventKeys.BASE_SUBJECT, campaign.name(), campaignRequest.externalId());
         schedulerService.unscheduleAllJobs(jobIdPrefix);
     }
 
@@ -64,7 +64,7 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage> {
     }
 
     protected HashMap jobParams(String messageKey) {
-        String jobId = String.format("%s.%s.%s.%s", EventKeys.BASE_SUBJECT, campaign.name(), campaignRequest.externalId(), messageKey);
+        String jobId = String.format("%s%s.%s.%s", EventKeys.BASE_SUBJECT, campaign.name(), campaignRequest.externalId(), messageKey);
         return new SchedulerPayloadBuilder()
                 .withJobId(jobId)
                 .withCampaignName(campaign.name())
