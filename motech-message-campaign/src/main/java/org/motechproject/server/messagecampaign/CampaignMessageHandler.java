@@ -7,13 +7,13 @@ import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class CampaginMessageHandler {
+public class CampaignMessageHandler {
 
     private OutboundEventGateway outboundEventGateway;
     private AllMessageCampaigns allMessageCampaigns;
 
     @Autowired
-    public CampaginMessageHandler(OutboundEventGateway outboundEventGateway, AllMessageCampaigns allMessageCampaigns) {
+    public CampaignMessageHandler(OutboundEventGateway outboundEventGateway, AllMessageCampaigns allMessageCampaigns) {
         this.outboundEventGateway = outboundEventGateway;
         this.allMessageCampaigns = allMessageCampaigns;
     }

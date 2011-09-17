@@ -29,9 +29,8 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage> {
     }
 
     public void scheduleJobs() {
-        for (CampaignMessage message : campaign.messages()) {
+        for (CampaignMessage message : campaign.messages())
             scheduleJob(message);
-        }
     }
 
     public void rescheduleJobs() {
@@ -47,15 +46,11 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage> {
     }
 
     protected LocalDate referenceDate() {
-        if(enrollRequest.referenceDate() != null) {
-            return enrollRequest.referenceDate();
-        }
-        return DateUtil.today();
+        return enrollRequest.referenceDate() != null ? enrollRequest.referenceDate() : DateUtil.today();
     }
 
     protected HashMap jobParams(String messageKey) {
         String jobId = String.format("%s%s.%s.%s", EventKeys.BASE_SUBJECT, campaign.name(), enrollRequest.externalId(), messageKey);
-
         return new SchedulerPayloadBuilder()
                 .withJobId(jobId)
                 .withCampaignName(campaign.name())
@@ -66,7 +61,6 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage> {
 
     protected void scheduleJobOn(Time startTime, LocalDate startDate, Map<String, Object> params) {
         MotechEvent motechEvent = new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, params);
-
         Date startDateTime = startDate == null ? null : DateUtil.newDateTime(startDate, startTime.getHour(), startTime.getMinute(), 0).toDate();
         RunOnceSchedulableJob runOnceSchedulableJob = new RunOnceSchedulableJob(motechEvent, startDateTime);
         schedulerService.scheduleRunOnceJob(runOnceSchedulableJob);
@@ -74,8 +68,7 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage> {
 
     protected void scheduleJobOn(String cronJobExpression, LocalDate startDate, Map<String, Object> params) {
         MotechEvent motechEvent = new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, params);
-
-        Date startDateAsDate = startDate == null ?  null : startDate.toDate();
+        Date startDateAsDate = startDate == null ? null : startDate.toDate();
         CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, startDateAsDate, null);
         schedulerService.scheduleJob(schedulableJob);
     }

@@ -12,35 +12,27 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MessageCampaignServiceImpl implements MessageCampaignService {
-
     private AllMessageCampaigns allMessageCampaigns;
     private MessageCampaignSchedulerFactory schedulerFactory;
 
     @Autowired
-    public MessageCampaignServiceImpl(AllMessageCampaigns allMessageCampaigns,
-                                      MessageCampaignSchedulerFactory schedulerFactory) {
+    public MessageCampaignServiceImpl(AllMessageCampaigns allMessageCampaigns, MessageCampaignSchedulerFactory schedulerFactory) {
         this.allMessageCampaigns = allMessageCampaigns;
         this.schedulerFactory = schedulerFactory;
     }
 
     public void enroll(EnrollRequest enrollRequest) {
-        MessageCampaignScheduler scheduler = getScheduler(enrollRequest);
-
-        scheduler.scheduleJobs();
+        getScheduler(enrollRequest).scheduleJobs();
     }
 
     public void reEnroll(EnrollRequest enrollRequest) {
-        MessageCampaignScheduler scheduler = getScheduler(enrollRequest);
-
-        scheduler.rescheduleJobs();
+        getScheduler(enrollRequest).rescheduleJobs();
     }
 
     private MessageCampaignScheduler getScheduler(EnrollRequest enrollRequest) {
         Campaign<CampaignMessage> campaign = allMessageCampaigns.get(enrollRequest.campaignName());
-
         if (campaign == null)
             throw new MessageCampaignException("No campaign by name : " + enrollRequest.campaignName());
-
         return schedulerFactory.scheduler(enrollRequest, campaign);
     }
 }

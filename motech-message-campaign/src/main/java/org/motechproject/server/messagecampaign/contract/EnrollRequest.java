@@ -4,7 +4,6 @@ import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
 
 public class EnrollRequest {
-
     private String externalId;
     private String campaignName;
     private Time reminderTime;

@@ -24,7 +24,6 @@ public class OffsetCampaign extends Campaign<OffsetCampaignMessage> {
         return maxDuration;
     }
 
-
     public void maxDuration(String maxDuration) {
         this.maxDuration = maxDuration;
     }
