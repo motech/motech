@@ -54,4 +54,50 @@
             <version>3.0.5.RELEASE</version>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>drop DB => test-scheduletracking</id>
+                        <phase>pre-integration-test</phase>
+                        <configuration>
+                            <target>
+                                <exec executable="curl">
+                                    <arg value="-s"/>
+                                    <arg value="-S"/>
+                                    <arg value="-X"/>
+                                    <arg value="DELETE"/>
+                                    <arg value="http://${db.server}:${db.port}/test-scheduletracking"/>
+                                </exec>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>drop DB => motech-scheduletracking</id>
+                        <phase>pre-integration-test</phase>
+                        <configuration>
+                            <target>
+                                <exec executable="curl">
+                                    <arg value="-s"/>
+                                    <arg value="-S"/>
+                                    <arg value="-X"/>
+                                    <arg value="DELETE"/>
+                                    <arg value="http://${db.server}:${db.port}/motech-scheduletracking"/>
+                                </exec>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
