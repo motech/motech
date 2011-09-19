@@ -1,12 +1,11 @@
 package org.motechproject.scheduler.builder;
 
-import org.apache.commons.lang.time.DateUtils;
+import org.joda.time.Duration;
 import org.joda.time.LocalDate;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.motechproject.model.Time;
 import org.motechproject.util.DateUtil;
-import org.quartz.CronExpression;
+import org.quartz.SimpleTrigger;
 
 import static org.junit.Assert.assertEquals;
 
@@ -23,16 +22,15 @@ public class CronJobSimpleExpressionBuilderTest {
         assertEquals("0 25 10 */7 * ?", expression);
     }
 
-    @Ignore
     @Test
-    public void shouldScheduleJobEvery7Days() throws Exception {
-        CronExpression cronExpression = new CronExpression("0 0 0 */7 * ?");
+    public void shouldScheduleJobEverySevenDays() {
+        SimpleTrigger trigger = new SimpleTrigger("triggerName", "groupName", DateUtil.today().toDate(), null, SimpleTrigger.REPEAT_INDEFINITELY, Duration.standardDays(7).getMillis());
         LocalDate today = DateUtil.today();
         LocalDate nextDate = today.plusDays(7);
         LocalDate nextToNextDate = nextDate.plusDays(7);
-        System.out.println(cronExpression.getNextValidTimeAfter(DateUtils.addHours(today.toDate(), -1)));
-        System.out.println(cronExpression.getNextValidTimeAfter(DateUtils.addHours(nextDate.toDate(), -1)));
-        assertEquals(nextDate.toDate(), cronExpression.getNextValidTimeAfter(DateUtils.addHours(today.toDate(), -1)));
-        assertEquals(nextToNextDate.toDate(), cronExpression.getNextValidTimeAfter(DateUtils.addHours(nextDate.toDate(), -1)));
+
+        assertEquals(nextDate.toDate(), trigger.getFireTimeAfter(today.toDate()));
+        assertEquals(nextToNextDate.toDate(), trigger.getFireTimeAfter(nextDate.toDate()));
     }
+
 }
