@@ -7,7 +7,7 @@ import org.motechproject.server.alerts.domain.AlertType;
 import java.util.List;
 
 public interface AlertService {
-    void register(String externalId, AlertType type, AlertStatus status, Integer priority);
+    void createAlert(Alert alert);
     List<Alert> getBy(String externalId, AlertType type, AlertStatus status, Integer priority, int limit);
     void changeStatus(String id, AlertStatus status);
 }

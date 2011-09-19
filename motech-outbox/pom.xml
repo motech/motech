@@ -6,11 +6,11 @@
 	<parent>
 		<artifactId>motech</artifactId>
 		<groupId>org.motechproject</groupId>
-		<version>0.2-SNAPSHOT</version>
+		<version>0.3-SNAPSHOT</version>
 	</parent>
 	<groupId>org.motechproject</groupId>
 	<artifactId>motech-outbox</artifactId>
-	<version>0.2-SNAPSHOT</version>
+	<version>0.3-SNAPSHOT</version>
 	<name>Motech Outbox</name>
 	<packaging>bundle</packaging>
 	<dependencies>
@@ -91,7 +91,7 @@
 						<Import-Package>
 							*;org.ektorp;org.ektorp.impl;org.ektorp.spring;resolution:=optional
                         </Import-Package>
-						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+						<Embed-Dependency>!*</Embed-Dependency>>
 						<Embed-Transitive>true</Embed-Transitive>
 					</instructions>
 				</configuration>

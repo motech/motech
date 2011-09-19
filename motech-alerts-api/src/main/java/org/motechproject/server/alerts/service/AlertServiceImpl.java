@@ -22,13 +22,7 @@ public class AlertServiceImpl implements AlertService {
     }
 
     @Override
-    public void register(String externalId, AlertType type, AlertStatus status, Integer priority) {
-        Alert alert = new Alert();
-        alert.setExternalId(externalId);
-        alert.setAlertType(type);
-        alert.setStatus(status);
-        alert.setPriority(priority);
-
+    public void createAlert(Alert alert) {
         allAlerts.add(alert);
     }
 

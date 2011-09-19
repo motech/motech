@@ -3,18 +3,27 @@ package org.motechproject.server.messagecampaign.contract;
 import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
 
-public class EnrollRequest {
-
+public class CampaignRequest {
     private String externalId;
     private String campaignName;
     private Time reminderTime;
     private LocalDate referenceDate;
 
-    public void campaignName(String campaignName) {
+    public CampaignRequest() {
+    }
+
+    public CampaignRequest(String externalId, String campaignName, Time reminderTime, LocalDate referenceDate) {
+        this.externalId = externalId;
+        this.campaignName = campaignName;
+        this.reminderTime = reminderTime;
+        this.referenceDate = referenceDate;
+    }
+
+    public void setCampaignName(String campaignName) {
         this.campaignName = campaignName;
     }
 
-    public void externalId(String externalId) {
+    public void setExternalId(String externalId) {
         this.externalId = externalId;
     }
 
@@ -26,7 +35,7 @@ public class EnrollRequest {
         return this.externalId;
     }
 
-    public void reminderTime(Time reminderTime) {
+    public void setReminderTime(Time reminderTime) {
         this.reminderTime = reminderTime;
     }
 
@@ -38,7 +47,7 @@ public class EnrollRequest {
         return referenceDate;
     }
 
-    public void referenceDate(LocalDate referenceDate) {
+    public void setReferenceDate(LocalDate referenceDate) {
         this.referenceDate = referenceDate;
     }
 }

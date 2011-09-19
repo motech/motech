@@ -31,10 +31,10 @@
  */
 package org.motechproject.decisiontree.dao;
 
-import java.util.List;
-
 import org.motechproject.dao.BaseDao;
 import org.motechproject.decisiontree.model.Tree;
+
+import java.util.List;
 
 /**
  * Tree DAO interface CRUD + able to find Trees by name

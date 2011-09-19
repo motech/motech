@@ -5,7 +5,7 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.2-SNAPSHOT</version>
+        <version>0.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -13,12 +13,12 @@
     <artifactId>motech-cmslite-api</artifactId>
 
     <name>Motech CMS lite API</name>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.3-SNAPSHOT</version>
     <dependencies>
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-common</artifactId>
-            <version>0.2-SNAPSHOT</version>
+            <version>0.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -56,4 +56,32 @@
             <version>2.5</version>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.6</version>
+                    <executions>
+                        <execution>
+                            <id>drop DB => motech-cmslite</id>
+                            <phase>pre-integration-test</phase>
+                            <configuration>
+                                <target>
+                                    <exec executable="curl">
+                                        <arg value="-s"/>
+                                        <arg value="-S"/>
+                                        <arg value="-X"/>
+                                        <arg value="DELETE"/>
+                                        <arg value="http://${db.server}:${db.port}/motech-cmslite"/>
+                                    </exec>
+                                </target>
+                            </configuration>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+        </plugins>
+    </build>
 </project>

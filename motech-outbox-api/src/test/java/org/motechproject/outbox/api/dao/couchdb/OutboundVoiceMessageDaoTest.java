@@ -74,7 +74,7 @@ public class OutboundVoiceMessageDaoTest {
 		
 		VoiceMessageType mt = new VoiceMessageType();
 		mt.setPriority(priority);
-		mt.setvXmlTemplateName("http://motech.2paths.com");
+		mt.setTemplateName("http://motech.2paths.com");
 		OutboundVoiceMessage msg = new OutboundVoiceMessage();
 		msg.setPartyId(PARTY_ID);
 		msg.setStatus(OutboundVoiceMessageStatus.PENDING);

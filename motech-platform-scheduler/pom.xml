@@ -5,11 +5,11 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.2-SNAPSHOT</version>
+        <version>0.3-SNAPSHOT</version>
     </parent>
     <artifactId>motech-platform-scheduler</artifactId>
     <packaging>jar</packaging>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.3-SNAPSHOT</version>
     <name>Motech Platform Scheduler</name>
 
     <properties>
@@ -91,35 +91,35 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.dstovall</groupId>
-                <artifactId>onejar-maven-plugin</artifactId>
-                <version>1.4.4</version>
-                <executions>
-                    <execution>
-                        <configuration>
-                            <mainClass>org.motechproject.scheduler.MotechScheduler</mainClass>
-                            <!-- Optional, default is false -->
-                            <attachToBuild>true</attachToBuild>
-                            <!-- Optional, default is "onejar" -->
-                            <classifier>onejar</classifier>
-                        </configuration>
-                        <goals>
-                            <goal>one-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-    	</plugins>
-    </build>
+    <!--<build>-->
+        <!--<plugins>-->
+            <!--<plugin>-->
+                <!--<groupId>org.dstovall</groupId>-->
+                <!--<artifactId>onejar-maven-plugin</artifactId>-->
+                <!--<version>1.4.4</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<configuration>-->
+                            <!--<mainClass>org.motechproject.scheduler.MotechScheduler</mainClass>-->
+                            <!--&lt;!&ndash; Optional, default is false &ndash;&gt;-->
+                            <!--<attachToBuild>true</attachToBuild>-->
+                            <!--&lt;!&ndash; Optional, default is "onejar" &ndash;&gt;-->
+                            <!--<classifier>onejar</classifier>-->
+                        <!--</configuration>-->
+                        <!--<goals>-->
+                            <!--<goal>one-jar</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
+    	<!--</plugins>-->
+    <!--</build>-->
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>onejar-maven-plugin.googlecode.com</id>
-            <url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url>
-        </pluginRepository>
-    </pluginRepositories>
+    <!--<pluginRepositories>-->
+        <!--<pluginRepository>-->
+            <!--<id>onejar-maven-plugin.googlecode.com</id>-->
+            <!--<url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url>-->
+        <!--</pluginRepository>-->
+    <!--</pluginRepositories>-->
 
 </project>

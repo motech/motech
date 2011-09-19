@@ -3,87 +3,87 @@ package org.motechproject.server.messagecampaign.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.server.messagecampaign.contract.EnrollRequest;
+import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.MessageCampaignException;
 import org.motechproject.server.messagecampaign.domain.campaign.AbsoluteCampaign;
-import org.motechproject.server.messagecampaign.domain.message.AbsoluteCampaignMessage;
-import org.motechproject.server.messagecampaign.scheduler.AbsoluteProgramScheduler;
-import org.motechproject.server.messagecampaign.scheduler.MessageCampaignSchedulerFactory;
-
-import java.util.LinkedList;
+import org.motechproject.server.messagecampaign.scheduler.MessageCampaignScheduler;
 
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class MessageCampaignServiceImplTest {
-
+    private MessageCampaignServiceImpl messageCampaignService;
     @Mock
     private AllMessageCampaigns allMessageCampaigns;
-
     @Mock
-    private MessageCampaignSchedulerFactory schedulerFactory;
+    private MotechSchedulerService schedulerService;
+    @Mock
+    private MessageCampaignScheduler scheduler;
 
     @Before
     public void setUp() {
-        allMessageCampaigns = mock(AllMessageCampaigns.class);
-        schedulerFactory = mock(MessageCampaignSchedulerFactory.class);
         initMocks(this);
+        messageCampaignService = new MessageCampaignServiceImpl(allMessageCampaigns, schedulerService);
     }
 
     @Test
-    public void enrollTest() {
+    public void shouldCallCampaignSchedulerToStart() {
         String campaignName = "campaign-name";
-        EnrollRequest enrollRequest = new EnrollRequest();
-        MessageCampaignServiceImpl messageCampaignService = new MessageCampaignServiceImpl(allMessageCampaigns, schedulerFactory);
-        AbsoluteProgramScheduler mockAbsoluteProgramScheduler = mock(AbsoluteProgramScheduler.class);
-        final AbsoluteCampaign absoluteCampaign = new AbsoluteCampaign();
-        final AbsoluteCampaignMessage absoluteCampaignMessage = new AbsoluteCampaignMessage();
+        CampaignRequest campaignRequest = new CampaignRequest();
+        campaignRequest.setCampaignName(campaignName);
+        AbsoluteCampaign absoluteCampaign = mock(AbsoluteCampaign.class);
 
-        absoluteCampaign.messages(new LinkedList<AbsoluteCampaignMessage>() {
-            {
-                add(absoluteCampaignMessage);
-            }
-        });
-        enrollRequest.campaignName(campaignName);
         when(allMessageCampaigns.get(campaignName)).thenReturn(absoluteCampaign);
-        when(schedulerFactory.scheduler(enrollRequest, absoluteCampaign)).thenReturn(mockAbsoluteProgramScheduler);
+        when(absoluteCampaign.getScheduler(schedulerService,campaignRequest)).thenReturn(scheduler);
 
-        messageCampaignService.enroll(enrollRequest);
-        verify(mockAbsoluteProgramScheduler, times(1)).scheduleJobs();
+        messageCampaignService.startFor(campaignRequest);
+
+        verify(absoluteCampaign).getScheduler(schedulerService,campaignRequest);
+        verify(scheduler).start();
     }
 
     @Test
-    public void reEnrollTest() {
-        String campaignName = "campaign-name";
-        EnrollRequest enrollRequest = new EnrollRequest();
-        MessageCampaignServiceImpl messageCampaignService = new MessageCampaignServiceImpl(allMessageCampaigns, schedulerFactory);
-        AbsoluteProgramScheduler mockAbsoluteProgramScheduler = mock(AbsoluteProgramScheduler.class);
-        final AbsoluteCampaign absoluteCampaign = new AbsoluteCampaign();
-        final AbsoluteCampaignMessage absoluteCampaignMessage = new AbsoluteCampaignMessage();
+    public void shouldCallCampaignSchedulerToReStart() {
+         String campaignName = "campaign-name";
+        CampaignRequest campaignRequest = new CampaignRequest();
+        campaignRequest.setCampaignName(campaignName);
+        AbsoluteCampaign absoluteCampaign = mock(AbsoluteCampaign.class);
 
-        absoluteCampaign.messages(new LinkedList<AbsoluteCampaignMessage>() {
-            {
-                add(absoluteCampaignMessage);
-            }
-        });
-        enrollRequest.campaignName(campaignName);
         when(allMessageCampaigns.get(campaignName)).thenReturn(absoluteCampaign);
-        when(schedulerFactory.scheduler(enrollRequest, absoluteCampaign)).thenReturn(mockAbsoluteProgramScheduler);
+        when(absoluteCampaign.getScheduler(schedulerService,campaignRequest)).thenReturn(scheduler);
 
-        messageCampaignService.reEnroll(enrollRequest);
-        verify(mockAbsoluteProgramScheduler, times(1)).rescheduleJobs();
+        messageCampaignService.restartFor(campaignRequest);
+
+        verify(absoluteCampaign).getScheduler(schedulerService, campaignRequest);
+        verify(scheduler).restart();
+    }
+
+    @Test
+    public void shouldCallCampaignSchedulerToStop() {
+         String campaignName = "campaign-name";
+        CampaignRequest campaignRequest = new CampaignRequest();
+        campaignRequest.setCampaignName(campaignName);
+        AbsoluteCampaign absoluteCampaign = mock(AbsoluteCampaign.class);
+
+        when(allMessageCampaigns.get(campaignName)).thenReturn(absoluteCampaign);
+        when(absoluteCampaign.getScheduler(schedulerService,campaignRequest)).thenReturn(scheduler);
+
+        messageCampaignService.stopFor(campaignRequest);
+
+        verify(absoluteCampaign).getScheduler(schedulerService,campaignRequest);
+        verify(scheduler).stop();
     }
 
     @Test(expected = MessageCampaignException.class)
     public void enrollWithUnknownCampaignTest() {
         String campaignName = "non-existent-campaign-name";
-        EnrollRequest enrollRequest = new EnrollRequest();
-        MessageCampaignServiceImpl messageCampaignService = new MessageCampaignServiceImpl(allMessageCampaigns, schedulerFactory);
-        enrollRequest.campaignName(campaignName);
+        CampaignRequest enrollRequest = new CampaignRequest();
+        enrollRequest.setCampaignName(campaignName);
 
         when(allMessageCampaigns.get(campaignName)).thenReturn(null);
 
-        messageCampaignService.enroll(enrollRequest);
+        messageCampaignService.startFor(enrollRequest);
     }
 }

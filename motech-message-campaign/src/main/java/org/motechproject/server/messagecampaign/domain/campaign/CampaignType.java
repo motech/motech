@@ -2,17 +2,28 @@ package org.motechproject.server.messagecampaign.domain.campaign;
 
 public enum CampaignType {
 
-    ABSOLUTE, OFFSET, REPEATING, CRON;
-
-    public Campaign instance() {
-        switch (this) {
-            case ABSOLUTE: return new AbsoluteCampaign();
-            case OFFSET: return new OffsetCampaign();
-            case REPEATING: return new RepeatingCampaign();
-            case CRON: return new CronBasedCampaign();
-            default: return null;
-
+    ABSOLUTE {
+        @Override
+        public Campaign instance() {
+            return new AbsoluteCampaign();
         }
-    }
+    }, OFFSET {
+        @Override
+        public Campaign instance() {
+            return new OffsetCampaign();
+        }
+    }, REPEATING {
+        @Override
+        public Campaign instance() {
+            return new RepeatingCampaign();
+        }
+    }, CRON {
+        @Override
+        public Campaign instance() {
+            return new CronBasedCampaign();
+        }
+    };
+
+    public abstract Campaign instance();
 
 }

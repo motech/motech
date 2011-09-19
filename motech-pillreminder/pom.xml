@@ -4,7 +4,7 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.2-SNAPSHOT</version>
+        <version>0.3-SNAPSHOT</version>
     </parent>
     <artifactId>motech-pillreminder</artifactId>
     <name>Motech Pill Reminder</name>
@@ -103,7 +103,7 @@
                         <Import-Package>
                             *;org.motechproject.context;org.ektorp;org.ektorp.impl;org.ektorp.spring;resolution:=optional
                         </Import-Package>
-                        <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+                        <Embed-Dependency>!*</Embed-Dependency>>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>

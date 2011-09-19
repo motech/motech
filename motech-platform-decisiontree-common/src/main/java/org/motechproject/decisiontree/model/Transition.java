@@ -12,55 +12,32 @@ public class Transition {
     private String name;
     private Node destinationNode;
     private List<Action> actions;
- 
-    public static class Builder {
-    	private Transition obj;
-		public Builder() {
-			obj = new Transition();
-		} 
-		public Transition build() {
-			return obj;
-		}
-	    public Builder setName(String name) {
-	    	obj.name = name;
-	    	return this;
-	    }
-	    public Builder setDestinationNode(Node destinationNode) {
-	    	obj.destinationNode = destinationNode;
-	    	return this;
-	    }
-	    public Builder setActions(List<Action> actions) {
-	    	obj.actions = actions;
-	    	return this;
-	    }
-    }
-    
-    public static Builder newBuilder() {
-    	return new Builder();
-    }
-    
+
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public Transition setName(String name) {
         this.name = name;
+        return this;
     }
 
     public Node getDestinationNode() {
         return destinationNode;
     }
 
-    public void setDestinationNode(Node destinationNode) {
+    public Transition setDestinationNode(Node destinationNode) {
         this.destinationNode = destinationNode;
+        return this;
     }
 
     public List<Action> getActions() {
         return actions==null?Collections.<Action>emptyList():actions;
     }
 
-    public void setActions(List<Action> actions) {
+    public Transition setActions(List<Action> actions) {
         this.actions = actions;
+        return this;
     }
 
     @Override

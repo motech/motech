@@ -1,10 +1,10 @@
 package org.motechproject.scheduletracking.api.service;
 
 import org.joda.time.LocalDate;
-import org.motechproject.builder.CronJobExpressionBuilder;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.scheduler.builder.CronJobExpressionBuilder;
 import org.motechproject.scheduletracking.api.contract.EnrollmentRequest;
 import org.motechproject.scheduletracking.api.dao.AllEnrollments;
 import org.motechproject.scheduletracking.api.dao.AllTrackedSchedules;

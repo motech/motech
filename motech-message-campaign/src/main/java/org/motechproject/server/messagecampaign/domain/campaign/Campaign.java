@@ -1,38 +1,37 @@
 package org.motechproject.server.messagecampaign.domain.campaign;
 
+import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
+import org.motechproject.server.messagecampaign.scheduler.MessageCampaignScheduler;
 
 import java.util.List;
 
 public abstract class Campaign<T extends CampaignMessage> {
-
     private String name;
-
     private CampaignType type;
-
     private List<CampaignMessage> messages;
-
-    public void name(String name) {
-        this.name = name;
-    }
 
     public String name() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public CampaignType type() {
         return type;
     }
 
-    public abstract void messages(List<T> messages);
-
-    public abstract List<T> messages();
-
-    public void type(CampaignType type) {
+    public void setType(CampaignType type) {
         this.type = type;
     }
 
-    public void addMessage(CampaignMessage message){
-        messages.add(message);
-    }
+    public abstract void setMessages(List<T> messages);
+
+    public abstract List<T> messages();
+
+    public abstract MessageCampaignScheduler getScheduler(MotechSchedulerService motechSchedulerService, CampaignRequest enrollRequest);
+
 }

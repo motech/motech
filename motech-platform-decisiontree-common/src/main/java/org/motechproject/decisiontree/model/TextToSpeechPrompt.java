@@ -7,39 +7,14 @@ package org.motechproject.decisiontree.model;
 public class TextToSpeechPrompt extends Prompt {
 
     private String message;
-
-    public static class Builder {
-    	private TextToSpeechPrompt obj;
-		public Builder() {
-			obj = new TextToSpeechPrompt();
-		} 
-		public Prompt build() {
-			return obj;
-		}
-	    public Builder setName(String name) {
-	        obj.setName(name);
-	        return this;
-	    }		
-	    public Builder setMessage(String message) {
-	        obj.message = message;
-	        return this;
-	    }
-        public Builder setTTSCommand(ITreeCommand command) {
-            obj.command = command;
-            return this;
-        }
-    }
-    
-    public static Builder newBuilder() {
-    	return new Builder();
-    }        
     
     public String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
+    public TextToSpeechPrompt setMessage(String message) {
         this.message = message;
+        return this;
     }
 
     @Override

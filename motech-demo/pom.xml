@@ -4,14 +4,14 @@
 	<parent>
 		<artifactId>motech</artifactId>
 		<groupId>org.motechproject</groupId>
-		<version>0.2-SNAPSHOT</version>
+		<version>0.3-SNAPSHOT</version>
 	</parent>
 	<groupId>org.motechproject</groupId>
-	<artifactId>quinn</artifactId>
+	<artifactId>motech-demo</artifactId>
 	<version>0.2-SNAPSHOT</version>
-	<name>Quinn</name>
+	<name>Motech Demo App</name>
 	<packaging>bundle</packaging>
-	<description>Dr. Quinn the medicine demo</description>
+	<description>Motech Demo Application</description>
 	<dependencies>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -94,7 +94,7 @@
 						<Import-Package>
 							*;org.ektorp;org.ektorp.impl;org.ektorp.spring;resolution:=optional
                         </Import-Package>
-						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+						<Embed-Dependency>!*</Embed-Dependency>>
 						<Embed-Transitive>true</Embed-Transitive>
 					</instructions>
 				</configuration>

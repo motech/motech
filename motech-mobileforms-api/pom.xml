@@ -6,12 +6,12 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.2-SNAPSHOT</version>
+        <version>0.3-SNAPSHOT</version>
     </parent>
     <artifactId>motech-mobileforms-api</artifactId>
     <name>Motech Mobile Forms API</name>
     <description>Motech Mobile Forms API</description>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.3-SNAPSHOT</version>
     <dependencies>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -21,7 +21,7 @@
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-common</artifactId>
-            <version>0.2-SNAPSHOT</version>
+            <version>0.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

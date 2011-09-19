@@ -1,11 +1,10 @@
 package org.motechproject.server.pillreminder.service;
 
 import org.joda.time.LocalDate;
-import org.motechproject.builder.CronJobExpressionBuilder;
-import org.motechproject.builder.CronJobSimpleExpressionBuilder;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.scheduler.builder.CronJobSimpleExpressionBuilder;
 import org.motechproject.server.pillreminder.EventKeys;
 import org.motechproject.server.pillreminder.builder.PillRegimenBuilder;
 import org.motechproject.server.pillreminder.builder.PillRegimenResponseBuilder;

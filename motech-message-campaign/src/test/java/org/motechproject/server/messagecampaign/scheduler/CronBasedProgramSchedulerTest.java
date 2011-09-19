@@ -7,7 +7,7 @@ import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.builder.CampaignBuilder;
 import org.motechproject.server.messagecampaign.builder.EnrollRequestBuilder;
-import org.motechproject.server.messagecampaign.contract.EnrollRequest;
+import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.CronBasedCampaign;
 import org.motechproject.util.DateUtil;
 
@@ -29,12 +29,12 @@ public class CronBasedProgramSchedulerTest {
 
     @Test
     public void shouldScheduleJobs() {
-        EnrollRequest request = new EnrollRequestBuilder().withDefaults().build();
+        CampaignRequest request = new EnrollRequestBuilder().withDefaults().build();
         CronBasedCampaign campaign = new CampaignBuilder().defaultCronBasedCampaign();
 
         CronBasedProgramScheduler cronBasedProgramScheduler = new CronBasedProgramScheduler(schedulerService, request, campaign);
 
-        cronBasedProgramScheduler.scheduleJobs();
+        cronBasedProgramScheduler.start();
         ArgumentCaptor<CronSchedulableJob> capture = ArgumentCaptor.forClass(CronSchedulableJob.class);
         verify(schedulerService, times(2)).scheduleJob(capture.capture());
 

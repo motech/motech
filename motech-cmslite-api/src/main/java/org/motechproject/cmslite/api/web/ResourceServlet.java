@@ -35,6 +35,7 @@ public class ResourceServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         CMSLiteService cmsLiteService = (CMSLiteService) getContext().getBean("cmsLiteService");
         ResourceQuery resourceQuery = resourceQuery(request);
+        AudioInputStream audioInputStream = null;
 
         try {
             logger.info("Getting resource for : " + resourceQuery.getLanguage() + ":" + resourceQuery.getName());
@@ -48,14 +49,20 @@ public class ResourceServlet extends HttpServlet {
             response.setHeader("Accept-Ranges", "bytes");
             response.setContentLength((int) contentLength);
 
-            AudioInputStream audioInputStream = new AudioInputStream(contentStream, audioFormat, contentLength);
+            audioInputStream = new AudioInputStream(contentStream, audioFormat, contentLength);
             AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, response.getOutputStream());
 
 
         } catch (ResourceNotFoundException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             logger.error("Resource not found for : " + resourceQuery.getLanguage() + ":" + resourceQuery.getName() + "\n" + Arrays.toString(e.getStackTrace()));
+        } finally {
+            if(audioInputStream != null) audioInputStream.close();
+            request.getInputStream().close();
+            response.getOutputStream().flush();
+            response.getOutputStream().close();
         }
+
     }
 
     private ResourceQuery resourceQuery(HttpServletRequest request) {

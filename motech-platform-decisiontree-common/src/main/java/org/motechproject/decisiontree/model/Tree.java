@@ -15,56 +15,32 @@ public class Tree extends MotechAuditableDataObject {
     private String name;
     private String description;
     private Node rootNode;
-    
-    public static class Builder {
-    	private Tree obj;
-		public Builder() {
-			obj = new Tree();
-		}
-	    public Builder setName(String name) {
-	        obj.name = name;
-	        return this;
-	    }
-	    public Builder setDescription(String description) {
-	        obj.description = description;
-	        return this;
-	    }
-	    public Builder setRootNode(Node rootNode) {
-	        obj.rootNode = rootNode;
-	        return this;
-	    }
-
-    	public Tree build() {
-    		return obj;
-    	}
-    }
-
-    public static Builder newBuilder() {
-    	return new Builder();
-    }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public Tree setName(String name) {
         this.name = name;
+        return this;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public Tree setDescription(String description) {
         this.description = description;
+        return this;
     }
 
     public Node getRootNode() {
         return rootNode;
     }
 
-    public void setRootNode(Node rootNode) {
+    public Tree setRootNode(Node rootNode) {
         this.rootNode = rootNode;
+        return this;
     }
 
     @Override

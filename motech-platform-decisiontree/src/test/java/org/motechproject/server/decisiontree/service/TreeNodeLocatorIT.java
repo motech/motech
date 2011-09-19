@@ -58,16 +58,15 @@ public class TreeNodeLocatorIT {
 	
 	@Before
 	public void setUp() {
-		tree = Tree.newBuilder().setName("tree1").setRootNode(
-					Node.newBuilder().setTransitions(new Object[][] {
-						{"1",Transition.newBuilder().setName("t1").setDestinationNode(Node.newBuilder().setTransitions(new Object[][] {
-								{"1", Transition.newBuilder().setName("sick1").setDestinationNode(Node.newBuilder().build()).build()},
-								{"2", Transition.newBuilder().setName("sick2").setDestinationNode(Node.newBuilder().build()).build()},
-								{"3", Transition.newBuilder().setName("sick3").setDestinationNode(Node.newBuilder().build()).build()},
-							}).build()).build()},
-						{"2",Transition.newBuilder().setName("ill").setDestinationNode(Node.newBuilder().build()).build()}
-					}).build())
-				.build();
+		tree = new Tree().setName("tree1").setRootNode(
+					new Node().setTransitions(new Object[][]{
+                            {"1", new Transition().setName("t1").setDestinationNode(new Node().setTransitions(new Object[][]{
+                                    {"1", new Transition().setName("sick1").setDestinationNode(new Node())},
+                                    {"2", new Transition().setName("sick2").setDestinationNode(new Node())},
+                                    {"3", new Transition().setName("sick3").setDestinationNode(new Node())},
+                            }))},
+                            {"2", new Transition().setName("ill").setDestinationNode(new Node())}
+                    }));
 	}
 
 	@Test

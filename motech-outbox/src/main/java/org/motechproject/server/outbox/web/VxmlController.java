@@ -157,7 +157,7 @@ public class VxmlController extends MultiActionController {
 
          logger.debug(voiceMessage.toString());
 
-        String templateName = voiceMessageType.getvXmlTemplateName();
+        String templateName = voiceMessageType.getTemplateName();
         if (templateName == null) {
             templateName = voiceMessageType.getVoiceMessageTypeName();
         }
@@ -413,7 +413,7 @@ public class VxmlController extends MultiActionController {
         }
 
 
-        String templateName = voiceMessageType.getvXmlTemplateName();
+        String templateName = voiceMessageType.getTemplateName();
         if (templateName == null) {
             templateName = voiceMessageType.getVoiceMessageTypeName();
         }

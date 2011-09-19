@@ -6,7 +6,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import java.util.*;
 
 /**
- * 
+ *
  */
 public class Node {
 
@@ -16,82 +16,57 @@ public class Node {
     private Map<String, Transition> transitions;
     private List<ITreeCommand> treeCommands = new ArrayList<ITreeCommand>();
 
-    public static class Builder {
-    	private Node obj;
-		public Builder() {
-			obj = new Node();
-		} 
-		public Node build() {
-			return obj;
-		}
-	    public Builder setActionsBefore(List<Action> actionsBefore) {
-	    	obj.actionsBefore = actionsBefore;
-	    	return this;
-	    }
-	    public Builder setActionsAfter(List<Action> actionsAfter) {
-	    	obj.actionsAfter = actionsAfter;
-	    	return this;
-	    }
-        public Builder setTreeCommands(ITreeCommand... treeCommands) {
-            for(ITreeCommand treeCommand : treeCommands) {
-                obj.treeCommands.add(treeCommand);
-            }
-            return this;
-        }
-	    public Builder setPrompts(List<Prompt> prompts) {
-	    	obj.prompts = prompts;
-	    	return this;
-	    }
-	    /**
-	     * @param transitions an Object[][] array containing {Key,Transition} array pairs
-	     * @return a Builder
-	     */
-	    @SuppressWarnings("unchecked")
-		public Builder setTransitions(Object[][] transitions) {
-	    	obj.transitions = ArrayUtils.toMap(transitions);
-	    	return this;
-	    }
-
-        public Builder setTransitions(Map<String, Transition> transitions) {
-	    	obj.transitions = transitions;
-	    	return this;
-	    }
-    }
-
-    public static Builder newBuilder() {
-    	return new Builder();
-    }
-    
     public List<Action> getActionsBefore() {
-        return actionsBefore==null?Collections.<Action>emptyList():actionsBefore;
+        return actionsBefore == null ? Collections.<Action>emptyList() : actionsBefore;
     }
 
-    public void setActionsBefore(List<Action> actionsBefore) {
+    public Node setActionsBefore(List<Action> actionsBefore) {
         this.actionsBefore = actionsBefore;
+        return this;
     }
 
     public List<Action> getActionsAfter() {
-        return actionsAfter==null?Collections.<Action>emptyList():actionsAfter;
+        return actionsAfter == null ? Collections.<Action>emptyList() : actionsAfter;
     }
 
-    public void setActionsAfter(List<Action> actionsAfter) {
+    public Node setActionsAfter(List<Action> actionsAfter) {
         this.actionsAfter = actionsAfter;
+        return this;
     }
 
     public List<Prompt> getPrompts() {
-        return prompts==null?Collections.<Prompt>emptyList():prompts;
+        return prompts == null ? Collections.<Prompt>emptyList() : prompts;
     }
 
-    public void setPrompts(List<Prompt> prompts) {
+    @JsonIgnore
+    public Node setPrompts(Prompt... prompts) {
+        setPrompts(Arrays.asList(prompts));
+        return this;
+    }
+
+    private Node setPrompts(List<Prompt> prompts) {
         this.prompts = prompts;
+        return this;
     }
 
     public Map<String, Transition> getTransitions() {
-        return transitions==null?Collections.<String, Transition>emptyMap():transitions;
+        return transitions == null ? Collections.<String, Transition>emptyMap() : transitions;
     }
 
-    public void setTransitions(Map<String, Transition> transitions) {
+    /**
+     * @param transitions an Object[][] array containing {Key,Transition} array pairs
+     * @return a Builder
+     */
+    @JsonIgnore
+    @SuppressWarnings("unchecked")
+    public Node setTransitions(Object[][] transitions) {
+        this.transitions = ArrayUtils.toMap(transitions);
+        return this;
+    }
+
+    public Node setTransitions(Map<String, Transition> transitions) {
         this.transitions = transitions;
+        return this;
     }
 
     @JsonIgnore
@@ -99,17 +74,19 @@ public class Node {
         return treeCommands;
     }
 
-    public void setTreeCommands(ITreeCommand... treeCommands) {
-        for(ITreeCommand treeCommand : treeCommands) {
-                this.treeCommands.add(treeCommand);
-            }
+    public Node setTreeCommands(ITreeCommand... treeCommands) {
+        for (ITreeCommand treeCommand : treeCommands) {
+            this.treeCommands.add(treeCommand);
+        }
+        return this;
     }
 
-    public void addTransition(String transitionKey, Transition transition) {
+    public Node addTransition(String transitionKey, Transition transition) {
         if (transitions == null) {
             transitions = new HashMap<String, Transition>();
         }
         transitions.put(transitionKey, transition);
+        return this;
     }
 
     @JsonIgnore

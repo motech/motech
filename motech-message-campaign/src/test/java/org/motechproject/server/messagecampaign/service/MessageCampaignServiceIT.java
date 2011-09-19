@@ -4,15 +4,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerServiceImpl;
-import org.motechproject.server.messagecampaign.contract.EnrollRequest;
+import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
-import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.Calendar;
 
 import static org.junit.Assert.assertEquals;
 
@@ -29,11 +26,11 @@ public class MessageCampaignServiceIT {
     public void testEnrollForAbsoluteProgram() throws Exception {
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 
-        EnrollRequest enrollRequest = new EnrollRequest();
-        enrollRequest.campaignName("Absolute Dates Message Program");
-        enrollRequest.externalId("patient_Id1");
-        enrollRequest.reminderTime(new Time(9, 30));
-        messageCampaignService.enroll(enrollRequest);
+        CampaignRequest enrollRequest = new CampaignRequest();
+        enrollRequest.setCampaignName("Absolute Dates Message Program");
+        enrollRequest.setExternalId("patient_Id1");
+        enrollRequest.setReminderTime(new Time(9, 30));
+        messageCampaignService.startFor(enrollRequest);
         assertEquals(scheduledJobsNum + 2, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
     }
 
@@ -41,12 +38,12 @@ public class MessageCampaignServiceIT {
     public void testEnrollForOffsetProgram() throws Exception {
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 
-        EnrollRequest enrollRequest = new EnrollRequest();
-        enrollRequest.campaignName("Relative Dates Message Program");
-        enrollRequest.externalId("patient_Id2");
-        enrollRequest.referenceDate(DateUtil.today().plusDays(1));
-        enrollRequest.reminderTime(new Time(9, 30));
-        messageCampaignService.enroll(enrollRequest);
+        CampaignRequest enrollRequest = new CampaignRequest();
+        enrollRequest.setCampaignName("Relative Dates Message Program");
+        enrollRequest.setExternalId("patient_Id2");
+        enrollRequest.setReferenceDate(DateUtil.today().plusDays(1));
+        enrollRequest.setReminderTime(new Time(9, 30));
+        messageCampaignService.startFor(enrollRequest);
         assertEquals(scheduledJobsNum + 3, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
     }
 
@@ -54,12 +51,12 @@ public class MessageCampaignServiceIT {
     public void testEnrollForRepeatingProgram() throws Exception {
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 
-        EnrollRequest enrollRequest = new EnrollRequest();
-        enrollRequest.campaignName("Relative Parameterized Dates Message Program");
-        enrollRequest.externalId("patiend_Id3");
-        enrollRequest.referenceDate(DateUtil.today().plusDays(1));
-        enrollRequest.reminderTime(new Time(9, 30));
-        messageCampaignService.enroll(enrollRequest);
+        CampaignRequest enrollRequest = new CampaignRequest();
+        enrollRequest.setCampaignName("Relative Parameterized Dates Message Program");
+        enrollRequest.setExternalId("patiend_Id3");
+        enrollRequest.setReferenceDate(DateUtil.today().plusDays(1));
+        enrollRequest.setReminderTime(new Time(9, 30));
+        messageCampaignService.startFor(enrollRequest);
         assertEquals(scheduledJobsNum + 12, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
     }
 
@@ -67,11 +64,11 @@ public class MessageCampaignServiceIT {
     public void testEnrollForCronBasedProgram() throws Exception {
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 
-        EnrollRequest enrollRequest = new EnrollRequest();
-        enrollRequest.campaignName("Cron based Message Program");
-        enrollRequest.externalId("patiend_Id3");
-        enrollRequest.referenceDate(DateUtil.today());
-        messageCampaignService.enroll(enrollRequest);
+        CampaignRequest enrollRequest = new CampaignRequest();
+        enrollRequest.setCampaignName("Cron based Message Program");
+        enrollRequest.setExternalId("patiend_Id3");
+        enrollRequest.setReferenceDate(DateUtil.today());
+        messageCampaignService.startFor(enrollRequest);
         assertEquals(scheduledJobsNum + 1, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
     }
 }

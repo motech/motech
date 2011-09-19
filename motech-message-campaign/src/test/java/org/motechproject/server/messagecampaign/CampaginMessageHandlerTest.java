@@ -25,12 +25,12 @@ public class CampaginMessageHandlerTest {
     private OutboundEventGateway outboundEventGateway;
     @Mock
     private AllMessageCampaigns allMessageCampaigns;
-    private CampaginMessageHandler campaginMessageHandler;
+    private CampaignMessageHandler campaginMessageHandler;
 
     @Before
     public void setUp() {
         initMocks(this);
-        campaginMessageHandler = new CampaginMessageHandler(outboundEventGateway, allMessageCampaigns);
+        campaginMessageHandler = new CampaignMessageHandler(outboundEventGateway, allMessageCampaigns);
     }
 
     @Test

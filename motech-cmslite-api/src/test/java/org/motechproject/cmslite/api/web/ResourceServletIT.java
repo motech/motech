@@ -75,6 +75,8 @@ public class ResourceServletIT {
             verify(httpServletResponse).setHeader("Content-Type", "audio/x-wav");
             verify(httpServletResponse).setHeader("Accept-Ranges", "bytes");
             verify(httpServletResponse).setContentLength(240044);
+            verify(servletOutputStream).flush();
+            verify(servletOutputStream).close();
         } catch (ServletException e) {
             assertFalse(true);
         } catch (IOException e) {
