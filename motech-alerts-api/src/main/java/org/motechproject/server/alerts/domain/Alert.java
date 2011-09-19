@@ -19,6 +19,17 @@ public class Alert extends MotechBaseDataObject implements Comparable<Alert> {
     private AlertStatus status;
     private String description;
 
+    public Alert(String externalId, AlertType alertType, AlertStatus status, int priority) {
+        this.externalId = externalId;
+        this.alertType =  alertType;
+        this.status = status;
+        this.priority = priority;
+    }
+
+    public Alert(){
+
+    }
+
     public String getId() {
         return id;
     }
