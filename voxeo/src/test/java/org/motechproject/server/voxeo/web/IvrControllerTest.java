@@ -279,14 +279,14 @@ public class IvrControllerTest
         phoneCall.setStartDate(new Date(new Long(timestamp)));
 
         CallRequest callRequest = new CallRequest();
-        callRequest.setOnSuccessEvent(new MotechEvent("subject"));
+        callRequest.setOnBusyEvent(new MotechEvent("subject"));
         phoneCall.setCallRequest(callRequest);
 
         Mockito.when(allPhoneCalls.get(externalId)).thenReturn(phoneCall);
 
         ivrController.outgoing(request, response);
 
-        PhoneCallEvent event = phoneCall.getEvent(PhoneCallEvent.Status.CONNECTED);
+        PhoneCallEvent event = phoneCall.getEvent(PhoneCallEvent.Status.FAILED);
         assertNotNull(event);
 
         verify(allPhoneCalls, times(1)).update(phoneCall);
@@ -301,9 +301,9 @@ public class IvrControllerTest
         assertEquals(new Long(timestamp), event.getTimestamp());
 
         assertEquals(new Date(new Long(timestamp)), phoneCall.getStartDate());
-        assertEquals(new Date(new Long(timestamp)), phoneCall.getAnswerDate());
-        assertNull(phoneCall.getDuration());
-        assertNull(phoneCall.getEndDate());
+        assertNull(phoneCall.getAnswerDate());
+        assertNotNull(phoneCall.getDuration());
+        assertNotNull(phoneCall.getEndDate());
     }
 
     private void setIncomingRequestParameters(String sessionId, String status, String callerId, String timestamp) {
