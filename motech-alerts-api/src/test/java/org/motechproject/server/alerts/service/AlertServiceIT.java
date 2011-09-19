@@ -32,7 +32,7 @@ public class AlertServiceIT {
 
     @Test
     public void shouldRegisterSuccessfully() {
-        Alert alert = new Alert("111", AlertType.CRITICAL, AlertStatus.NEW, 1);
+        alert = new Alert("111", AlertType.CRITICAL, AlertStatus.NEW, 1);
         alertService.createAlert(alert);
 
         List<Alert> all = allAlerts.getAll();
@@ -43,7 +43,7 @@ public class AlertServiceIT {
 
     @Test
     public void shouldChangeStatus() {
-        Alert alert = new Alert("111", AlertType.CRITICAL, AlertStatus.NEW, 1);
+        alert = new Alert("111", AlertType.CRITICAL, AlertStatus.NEW, 1);
         alertService.createAlert(alert);
         alert = allAlerts.getAll().get(0);
         assertEquals(AlertStatus.NEW, alert.getStatus());
