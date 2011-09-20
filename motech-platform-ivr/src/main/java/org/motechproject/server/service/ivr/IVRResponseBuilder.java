@@ -5,24 +5,26 @@ import java.util.List;
 
 public interface IVRResponseBuilder {
 
-	public abstract IVRResponseBuilder withPlayTexts(String... playTexts);
+    public abstract IVRResponseBuilder withPlayTexts(String... playTexts);
 
-	public abstract IVRResponseBuilder withPlayAudios(
-			String... playAudios);
+    public abstract IVRResponseBuilder withPlayAudios(String... playAudios);
 
-	public abstract IVRResponseBuilder collectDtmf(int dtmfLength);
+    public abstract IVRResponseBuilder collectDtmf(int dtmfLength);
 
-	public abstract IVRResponseBuilder withHangUp();
+    public abstract IVRResponseBuilder withHangUp();
 
-	public abstract String create(IVRMessage ivrMessage, String sessionId, String languageCode);
-	public abstract String createWithDefaultLanguage(IVRMessage ivrMessage, String sessionId);
+    IVRResponseBuilder withNextUrl(String nextUrl);
 
-	public abstract boolean isHangUp();
+    public abstract String create(IVRMessage ivrMessage, String sessionId, String languageCode);
 
-	public abstract boolean isCollectDtmf();
+    public abstract String createWithDefaultLanguage(IVRMessage ivrMessage, String sessionId);
 
-	public abstract List<String> getPlayTexts();
+    public abstract boolean isHangUp();
 
-	public abstract List<String> getPlayAudios();
+    public abstract boolean isCollectDtmf();
+
+    public abstract List<String> getPlayTexts();
+
+    public abstract List<String> getPlayAudios();
 
 }
