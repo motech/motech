@@ -24,7 +24,7 @@ public abstract class BaseEventAction extends BaseAction {
 
         EventDataBuilder builder = new EventDataBuilder(sessionId, name.toString(), externalId, requestParams, DateUtil.now());
         builder.withResponseXML(responseXML)
-                .withCallDirection(callDirection.toString())
+                .withCallDirection(callDirection)
                 .withCallerId(callerId)
                 .withData(eventData);
         eventService.publishEvent(builder.build());

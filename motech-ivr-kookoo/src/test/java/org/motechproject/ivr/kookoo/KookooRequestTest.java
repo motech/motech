@@ -2,6 +2,7 @@ package org.motechproject.ivr.kookoo;
 
 import org.junit.Test;
 import org.motechproject.server.service.ivr.IVRRequest;
+import org.motechproject.server.service.ivr.IVRSession;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -40,6 +41,7 @@ public class KookooRequestTest {
         IVRRequest ivrRequest = new KookooRequest("sid", "cid", "someEvent", "4%23");
         ivrRequest.setParameter("hero", "batman");
         ivrRequest.setParameter("villain", "joker");
+        ivrRequest.setParameter(IVRSession.IVRCallAttribute.IS_OUTBOUND_CALL, "true");
         assertEquals(IVRRequest.CallDirection.Outbound, ivrRequest.getCallDirection());
     }
 

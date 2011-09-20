@@ -32,16 +32,6 @@
 
 package org.motechproject.ivr.kookoo;
 
-import static org.mockito.Matchers.anyMap;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.MockitoAnnotations.initMocks;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -53,6 +43,16 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.motechproject.server.service.ivr.CallRequest;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import static org.mockito.Matchers.anyMap;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
+
 /**
  * IVR Service Unit Tests
  * 
@@ -62,6 +62,21 @@ public class KookooCallServiceImplTest {
 
 	private KookooCallServiceImpl ivrService = new KookooCallServiceImpl();
 	private final String CALLBACK_URL = "http://localhost/tama/ivr/reply";
+
+    private Properties properties;
+    private String phoneNumber;
+    @Mock
+    private HttpClient httpClient;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        phoneNumber = "9876543211";
+        properties = new Properties();
+        properties.setProperty(KookooCallServiceImpl.KOOKOO_OUTBOUND_URL, "http://kookoo/outbound.php");
+        properties.setProperty(KookooCallServiceImpl.KOOKOO_API_KEY, "KKbedce53758c2e0b0e9eed7191ec2a466");
+        ivrService = new KookooCallServiceImpl(properties, httpClient);
+    }
 
 	@Test
 	public void testInitiateCall() throws Exception {
@@ -84,26 +99,11 @@ public class KookooCallServiceImplTest {
 
 	}
 
-    private Properties properties;
-    private String phoneNumber;
-    @Mock
-    private HttpClient httpClient;
-
-    @Before
-    public void setUp() {
-        initMocks(this);
-        phoneNumber = "9876543211";
-        properties = new Properties();
-        properties.setProperty(KookooCallServiceImpl.KOOKOO_OUTBOUND_URL, "http://kookoo/outbound.php");
-        properties.setProperty(KookooCallServiceImpl.KOOKOO_API_KEY, "KKbedce53758c2e0b0e9eed7191ec2a466");
-        ivrService = new KookooCallServiceImpl(properties, httpClient);
-    }
-
     @Test
     public void shouldMakeACallWithThePhoneNumberAndEmptyTamaDataParamsProvided() throws IOException {
         Map<String, String> params = new HashMap<String, String>();
         ivrService.initiateCall(new CallRequest(phoneNumber, params, CALLBACK_URL));
-        verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://kookoo/outbound.php?api_key=KKbedce53758c2e0b0e9eed7191ec2a466&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FtamaData%3D%7B%7D&phone_no=9876543211")));
+        verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://kookoo/outbound.php?api_key=KKbedce53758c2e0b0e9eed7191ec2a466&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FtamaData%3D%7B%22is_outbound_call%22%3A%22true%22%7D&phone_no=9876543211")));
     }
 
     @Test
@@ -111,7 +111,7 @@ public class KookooCallServiceImplTest {
         Map<String, String> params = new HashMap<String, String>();
         params.put("hero", "batman");
         ivrService.initiateCall(new CallRequest(phoneNumber, params, CALLBACK_URL));
-        verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://kookoo/outbound.php?api_key=KKbedce53758c2e0b0e9eed7191ec2a466&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FtamaData%3D%7B%22hero%22%3A%22batman%22%7D&phone_no=9876543211")));
+        verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://kookoo/outbound.php?api_key=KKbedce53758c2e0b0e9eed7191ec2a466&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FtamaData%3D%7B%22hero%22%3A%22batman%22%2C%22is_outbound_call%22%3A%22true%22%7D&phone_no=9876543211")));
     }
 
 

@@ -3,6 +3,7 @@ package org.motechproject.ivr.eventlogging;
 import org.joda.time.DateTime;
 import org.motechproject.eventtracking.domain.Event;
 import org.motechproject.ivr.IVRCallEvent;
+import org.motechproject.server.service.ivr.IVRRequest;
 import org.motechproject.util.DateUtil;
 
 import java.util.HashMap;
@@ -14,7 +15,7 @@ public class EventDataBuilder {
 	Map<String, String> eventData = new HashMap<String, String>();
 	
 	public EventDataBuilder(String sessionId, String eventName, String externalId, Map<String, String> requestParam, DateTime dateTime) {
-		callEvent = new IVRCallEvent(sessionId, eventName, externalId, requestParam, DateUtil.now(), eventData);
+		callEvent = new IVRCallEvent(sessionId, eventName, externalId, requestParam, dateTime, eventData);
 	}
 
 	public EventDataBuilder withCallerId(String callerId) {
@@ -22,8 +23,8 @@ public class EventDataBuilder {
 		return this;
 	}
 	
-	public EventDataBuilder withCallDirection(String callDirection) {
-		eventData.put(EventLogConstants.CALL_DIRECTION, callDirection);
+	public EventDataBuilder withCallDirection(IVRRequest.CallDirection callDirection) {
+		eventData.put(EventLogConstants.CALL_DIRECTION, callDirection.name());
 		return this;
 	}
 	

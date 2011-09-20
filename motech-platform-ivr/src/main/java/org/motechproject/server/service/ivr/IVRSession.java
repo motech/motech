@@ -15,6 +15,7 @@ public class IVRSession {
         public static final String PREFERRED_LANGUAGE_CODE = "preferred_lang_code";
         public static final String EXTERNAL_ID = "external_id";
         public static final String CURRENT_DECISION_TREE_POSITION = "current_decision_tree_position";
+        public static final String IS_OUTBOUND_CALL = "is_outbound_call";
     }
 
     private HttpSession session;

@@ -18,18 +18,16 @@ public interface IVRRequest {
 	public void setEvent(String event);
 
 	public String getData();
+
 	public String getInput();
 
 	public void setData(String data);
 
 	public IVREvent callEvent();
-	public boolean hasNoData();
-	
+
 	public String getParameter(String key);
+
 	public void setParameter(String key, String value);
 	
-	/*public void setTamaData(String tamaData);
-	public Map getTamaParams();
-	public boolean hasNoTamaData(); */
 	public CallDirection getCallDirection();
 }

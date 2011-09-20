@@ -1,40 +1,41 @@
 package org.motechproject.ivr.kookoo;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.motechproject.server.service.ivr.IVREvent;
 import org.motechproject.server.service.ivr.IVRRequest;
+import org.motechproject.server.service.ivr.IVRSession;
 
-public class KookooRequest implements IVRRequest{
+import java.util.HashMap;
+import java.util.Map;
 
-	private static final String POUND_SYMBOL = "%23";
-	private String sid;
+public class KookooRequest implements IVRRequest {
+
+    private static final String POUND_SYMBOL = "%23";
+    private String sid;
     private String cid;
     private String event;
     private String data;
     Map<String, String> dataMap = new HashMap<String, String>();
 
-	@Override
-	public String getCallerId() {
-			return cid;
-	}
-	
-	@Override
-	public String getParameter(String key) {
-		return dataMap.get(key);
-	}
-	
-	@Override
-	public void setParameter(String key, String value) {
-		dataMap.put(key, value);
-	}
+    @Override
+    public String getCallerId() {
+        return cid;
+    }
 
-	@Override
-	public String getEvent() {
+    @Override
+    public String getParameter(String key) {
+        return dataMap.get(key);
+    }
+
+    @Override
+    public void setParameter(String key, String value) {
+        dataMap.put(key, value);
+    }
+
+    @Override
+    public String getEvent() {
         return event;
     }
 
@@ -72,9 +73,9 @@ public class KookooRequest implements IVRRequest{
     public String getData() {
         return data;
     }
-    
+
     public String getInput() {
-    	return data.replace(POUND_SYMBOL, "");
+        return data.replace(POUND_SYMBOL, "");
     }
 
     public void setData(String data) {
@@ -89,31 +90,23 @@ public class KookooRequest implements IVRRequest{
         return StringUtils.isBlank(this.data);
     }
 
-	public String getPayloadJson() {
-		JSONObject object = new JSONObject();
-		for (String key : dataMap.keySet()){
-			try {
-				object.put(key, dataMap.get(key));
-			} catch (JSONException e) {
-				throw new RuntimeException(e);
-			}        
-		}
-		return object.toString();
+    public String getPayloadJson() {
+        JSONObject object = new JSONObject();
+        for (String key : dataMap.keySet()) {
+            try {
+                object.put(key, dataMap.get(key));
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return object.toString();
     }
 
     public Map getPayloadParams() {
         return dataMap;
     }
 
-    public boolean hasNoPayload() {
-        return dataMap.size()==0;
-    }
     public CallDirection getCallDirection() {
-    	return hasNoPayload()?CallDirection.Inbound: CallDirection.Outbound;
+        return dataMap!=null && "true".equals(dataMap.get(IVRSession.IVRCallAttribute.IS_OUTBOUND_CALL)) ? CallDirection.Outbound: CallDirection.Inbound;
     }
-    /*
-        public static final String POUND_SYMBOL = "%23";
-    
-    public static enum CallDirection {Inbound, Outbound};
-
-*/}
+}
