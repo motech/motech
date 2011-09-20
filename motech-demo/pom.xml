@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>org.motechproject</groupId>
 	<artifactId>motech-demo</artifactId>
-	<version>0.2-SNAPSHOT</version>
+	<version>0.3-SNAPSHOT</version>
 	<name>Motech Demo App</name>
 	<packaging>bundle</packaging>
 	<description>Motech Demo Application</description>
