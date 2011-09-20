@@ -42,6 +42,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.motechproject.server.service.ivr.CallRequest;
+import org.motechproject.server.service.ivr.IVRCallIdentifiers;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -51,6 +52,7 @@ import java.util.Properties;
 import static org.mockito.Matchers.anyMap;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
@@ -61,12 +63,19 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class KookooCallServiceImplTest {
 
 	private KookooCallServiceImpl ivrService = new KookooCallServiceImpl();
+
 	private final String CALLBACK_URL = "http://localhost/tama/ivr/reply";
 
     private Properties properties;
+
+
     private String phoneNumber;
+
     @Mock
     private HttpClient httpClient;
+
+    @Mock
+    private IVRCallIdentifiers ivrCallIdFactory;
 
     @Before
     public void setUp() {
@@ -75,45 +84,43 @@ public class KookooCallServiceImplTest {
         properties = new Properties();
         properties.setProperty(KookooCallServiceImpl.KOOKOO_OUTBOUND_URL, "http://kookoo/outbound.php");
         properties.setProperty(KookooCallServiceImpl.KOOKOO_API_KEY, "KKbedce53758c2e0b0e9eed7191ec2a466");
-        ivrService = new KookooCallServiceImpl(properties, httpClient);
+
+        when(ivrCallIdFactory.getNew()).thenReturn("UUID");
+        ivrService = new KookooCallServiceImpl(properties, httpClient, ivrCallIdFactory);
     }
 
-	@Test
+    @Test
 	public void testInitiateCall() throws Exception {
-
 		CallRequest callRequest = new CallRequest("1001", null, CALLBACK_URL);
+
 		ivrService = Mockito.spy(ivrService);
 		Mockito.doNothing().when(ivrService)
 				.dial(Mockito.anyString(), anyMap(), Mockito.anyString());
 
 		ivrService.initiateCall(callRequest);
 		Mockito.verify(ivrService, Mockito.times(1)).dial(
-				Matchers.eq(callRequest.getPhone()), Mockito.anyMap(), Mockito.eq(CALLBACK_URL));
-
+                Matchers.eq(callRequest.getPhone()), Mockito.anyMap(), Mockito.eq(CALLBACK_URL));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testInitiateCallNullCallData() throws Exception {
-
 		ivrService.initiateCall(null);
-
 	}
 
     @Test
-    public void shouldMakeACallWithThePhoneNumberAndEmptyTamaDataParamsProvided() throws IOException {
+    public void shouldMakeACallWithMandatoryParameters() throws IOException {
         Map<String, String> params = new HashMap<String, String>();
         ivrService.initiateCall(new CallRequest(phoneNumber, params, CALLBACK_URL));
-        verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://kookoo/outbound.php?api_key=KKbedce53758c2e0b0e9eed7191ec2a466&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FtamaData%3D%7B%22is_outbound_call%22%3A%22true%22%7D&phone_no=9876543211")));
+        verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://kookoo/outbound.php?api_key=KKbedce53758c2e0b0e9eed7191ec2a466&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FtamaData%3D%7B%22is_outbound_call%22%3A%22true%22%2C%22call_id%22%3A%22UUID%22%7D&phone_no=9876543211")));
     }
 
     @Test
-    public void shouldMakeACallWithPhoneNumberAndSomeTamaDataParams() throws IOException {
+    public void shouldMakeACallWithMandatoryAndCustomParameters() throws IOException {
         Map<String, String> params = new HashMap<String, String>();
         params.put("hero", "batman");
         ivrService.initiateCall(new CallRequest(phoneNumber, params, CALLBACK_URL));
-        verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://kookoo/outbound.php?api_key=KKbedce53758c2e0b0e9eed7191ec2a466&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FtamaData%3D%7B%22hero%22%3A%22batman%22%2C%22is_outbound_call%22%3A%22true%22%7D&phone_no=9876543211")));
+        verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://kookoo/outbound.php?api_key=KKbedce53758c2e0b0e9eed7191ec2a466&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FtamaData%3D%7B%22hero%22%3A%22batman%22%2C%22is_outbound_call%22%3A%22true%22%2C%22call_id%22%3A%22UUID%22%7D&phone_no=9876543211")));
     }
-
 
     public class GetMethodMatcher extends ArgumentMatcher<GetMethod> {
         private String url;

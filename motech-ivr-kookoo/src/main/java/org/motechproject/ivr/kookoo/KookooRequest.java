@@ -109,4 +109,5 @@ public class KookooRequest implements IVRRequest {
     public CallDirection getCallDirection() {
         return dataMap!=null && "true".equals(dataMap.get(IVRSession.IVRCallAttribute.IS_OUTBOUND_CALL)) ? CallDirection.Outbound: CallDirection.Inbound;
     }
+
 }

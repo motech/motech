@@ -5,6 +5,7 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.json.JSONObject;
 import org.motechproject.server.service.ivr.CallRequest;
+import org.motechproject.server.service.ivr.IVRCallIdentifiers;
 import org.motechproject.server.service.ivr.IVRService;
 import org.motechproject.server.service.ivr.IVRSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,25 +19,33 @@ import java.util.Properties;
 
 @Service
 public class KookooCallServiceImpl implements IVRService {
-    public static final String KOOKOO_OUTBOUND_URL = "kookoo.outbound.url";
-    public static final String KOOKOO_API_KEY = "kookoo.api.key";
 
+    public static final String KOOKOO_OUTBOUND_URL = "kookoo.outbound.url";
+
+    public static final String KOOKOO_API_KEY = "kookoo.api.key";
+    public static final String CALL_ID_KEY = "call_id";
 
     @Autowired
     @Qualifier("ivrProperties")
     private Properties properties;
+
+    @Autowired
+    private IVRCallIdentifiers ivrCallIdentifiers;
+
     private HttpClient httpClient = new HttpClient();
 
     public KookooCallServiceImpl() {
     }
 
-    public KookooCallServiceImpl(Properties properties, HttpClient httpClient) {
+    public KookooCallServiceImpl(Properties properties, HttpClient httpClient, IVRCallIdentifiers ivrCallIdentifiers) {
         this.properties = properties;
         this.httpClient = httpClient;
+        this.ivrCallIdentifiers = ivrCallIdentifiers;
     }
 
     public void dial(String phoneNumber, Map<String, String> params, String callBackUrl) {
         try {
+            params.put(CALL_ID_KEY, ivrCallIdentifiers.getNew());
             JSONObject json = new JSONObject(params);
             String applicationUrl = callBackUrl + "?tamaData=" + json.toString();
             applicationUrl = URLEncoder.encode(applicationUrl, "UTF-8");
