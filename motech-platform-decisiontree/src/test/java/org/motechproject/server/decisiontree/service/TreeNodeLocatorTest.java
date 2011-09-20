@@ -33,27 +33,18 @@ package org.motechproject.server.decisiontree.service;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.decisiontree.model.Tree;
 import org.motechproject.server.decisiontree.TreeNodeLocator;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-/**
- * @author yyonkov
- * 
- */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/applicationDecisionTree.xml"})
-public class TreeNodeLocatorIT {
+public class TreeNodeLocatorTest {
+
 	Tree tree;
-	@Autowired
+
     TreeNodeLocator locator;
 	
 	@Before
@@ -67,6 +58,7 @@ public class TreeNodeLocatorIT {
                             }))},
                             {"2", new Transition().setName("ill").setDestinationNode(new Node())}
                     }));
+        locator = new TreeNodeLocator();
 	}
 
 	@Test

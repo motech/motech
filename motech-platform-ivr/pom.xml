@@ -5,44 +5,48 @@
 		<artifactId>motech</artifactId>
 		<groupId>org.motechproject</groupId>
 		<version>0.3-SNAPSHOT</version>
+		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>motech-platform-ivr</artifactId>
 	<name>Motech Platform Server IVR</name>
-
     <dependencies>
-        <dependency>
-        	<groupId>org.motechproject</groupId>
-        	<artifactId>motech-platform-server-api</artifactId>
-        	<version>0.3-SNAPSHOT</version>
-        	<scope>provided</scope>
+	    <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-common</artifactId>
+            <version>0.3-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-            <version>3.0.5.RELEASE</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>3.0.5.RELEASE</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.3</version>
-         </dependency>
-        <dependency>
-            <groupId>org.asteriskjava</groupId>
-            <artifactId>asterisk-java</artifactId>
-            <version>1.0.0.M3</version>
-        </dependency>
-        <dependency>
-            <groupId>junit-addons</groupId>
-            <artifactId>junit-addons</artifactId>
-            <version>1.4</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.asteriskjava</groupId>
+			<artifactId>asterisk-java</artifactId>
+			<version>1.0.0.M3</version>
+		</dependency>
+		<dependency>
+			<groupId>junit-addons</groupId>
+			<artifactId>junit-addons</artifactId>
+			<version>1.4</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>

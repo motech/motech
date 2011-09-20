@@ -45,7 +45,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.mock;
 
 
@@ -58,7 +58,8 @@ import static org.mockito.Mockito.mock;
 @ContextConfiguration(locations={"/testIVRAppContext.xml"})
 public class TestIVRService {
 
-    @Autowired
+    private static final String CALLBACK_URL = "http://localhost";
+	@Autowired
     private IVRServiceAsteriskImpl ivrService;
 
     @Test
@@ -67,7 +68,7 @@ public class TestIVRService {
         AsteriskServer asteriskServerMock = mock(AsteriskServer.class);
         ivrService.setAsteriskServer(asteriskServerMock);
 
-        CallRequest callRequest = new CallRequest(1L,"1001", Integer.MAX_VALUE, "");
+        CallRequest callRequest = new CallRequest("1001", null, CALLBACK_URL);
 
         ivrService.initiateCall(callRequest);
 
@@ -75,7 +76,7 @@ public class TestIVRService {
                 .originateToApplicationAsync(Matchers.eq(callRequest.getPhone()),
                         Mockito.anyString(),
                         Mockito.anyString(),
-                        eq((long) callRequest.getTimeOut()),
+                        anyLong(),
                         Mockito.any(MotechAsteriskCallBackImpl.class));
 
     }
@@ -83,7 +84,7 @@ public class TestIVRService {
     @Test (expected = CallInitiationException.class)
     public void testInitiateCallManagerException() throws Exception {
 
-        CallRequest callRequest = new CallRequest(1L,"1001", Integer.MAX_VALUE,"");
+        CallRequest callRequest = new CallRequest("1001",null, CALLBACK_URL);
 
         AsteriskServer asteriskServerMock = mock(AsteriskServer.class);
         Mockito.doThrow(new ManagerCommunicationException("", new Exception())).when(asteriskServerMock)
@@ -91,7 +92,7 @@ public class TestIVRService {
                         Matchers.eq(callRequest.getPhone()),
                         Mockito.anyString(),
                         Mockito.anyString(),
-                        eq((long) callRequest.getTimeOut()),
+                        anyLong(),
                         Mockito.any(MotechAsteriskCallBackImpl.class));
 
         ivrService.setAsteriskServer(asteriskServerMock);
@@ -102,7 +103,7 @@ public class TestIVRService {
                 .originateToApplicationAsync(Matchers.eq(callRequest.getPhone()),
                         Mockito.anyString(),
                         Mockito.anyString(),
-                        eq((long) callRequest.getTimeOut()),
+                        anyLong(),
                         Mockito.any(MotechAsteriskCallBackImpl.class));
 
     }
@@ -110,7 +111,7 @@ public class TestIVRService {
 @Test (expected = CallInitiationException.class)
     public void testInitiateCallChannelException() throws Exception {
 
-        CallRequest callRequest = new CallRequest(1L,"0000", Integer.MAX_VALUE, "");
+        CallRequest callRequest = new CallRequest("0000", null, CALLBACK_URL);
 
         AsteriskServer asteriskServerMock = mock(AsteriskServer.class);
         Mockito.doThrow(new NoSuchChannelException("no channel")).when(asteriskServerMock)
@@ -118,7 +119,7 @@ public class TestIVRService {
                         Matchers.eq(callRequest.getPhone()),
                         Mockito.anyString(),
                         Mockito.anyString(),
-                        eq((long) callRequest.getTimeOut()),
+                        anyLong(),
                         Mockito.any(MotechAsteriskCallBackImpl.class));
 
         ivrService.setAsteriskServer(asteriskServerMock);
@@ -129,7 +130,7 @@ public class TestIVRService {
                 .originateToApplicationAsync(Matchers.eq(callRequest.getPhone()),
                         Mockito.anyString(),
                         Mockito.anyString(),
-                        eq((long) callRequest.getTimeOut()),
+                        anyLong(),
                         Mockito.any(MotechAsteriskCallBackImpl.class));
 
     }

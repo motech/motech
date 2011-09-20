@@ -86,7 +86,7 @@ public class OutboxExecutionHandler {
 
         try {
             String vxmlUrl = OUTBOX_VXML_BASE_URL + "?pId=" + partyId + "&ln=" + language;
-            CallRequest callRequest = new CallRequest(1l, phoneNumber, timeOut, vxmlUrl);
+            CallRequest callRequest = new CallRequest(phoneNumber, null, vxmlUrl);
 
             Map<String, Object> messageParameters = new HashMap<String, Object>();
             messageParameters.put(EventKeys.PARTY_ID_KEY, partyId);

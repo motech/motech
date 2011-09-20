@@ -31,9 +31,11 @@
  */
 package org.motechproject.server.service.ivr;
 
-import org.motechproject.model.MotechEvent;
-
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.motechproject.model.MotechEvent;
 
 /**
  * This class is used to request a call from the IVR system
@@ -49,12 +51,12 @@ import java.io.Serializable;
  */
 public class CallRequest implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private long messageId;
     private String phone;
-    private int timeOut; //how long IVR will wait for the channel to be answered before its considered to have failed (in ms)
-    private String vxmlUrl;
+    private String callBackUrl;
+    
+    private Map<String, String> payload = new HashMap<String, String>();
 
     private MotechEvent onSuccessEvent;
     private MotechEvent onBusyEvent;
@@ -66,44 +68,30 @@ public class CallRequest implements Serializable {
      *
      * @param messageId
      * @param phone
-     * @param timeOut
-     * @param vxmlUrl
+     * @param callBackUrl
      */
-    public CallRequest(long messageId, String phone, int timeOut, String vxmlUrl) {
+    public CallRequest(String phone, Map<String, String> params, String callBackUrl) {
 
-         if (phone == null) {
+        if (phone == null) {
             throw new IllegalArgumentException("phone can not be null");
         }
-
-        if (vxmlUrl == null) {
-            throw new IllegalArgumentException("vxmlUrl can not be null");
+        if (callBackUrl == null) {
+        	throw new IllegalArgumentException("callBackUrl can not be null");
         }
-
-        this.messageId = messageId;
         this.phone = phone;
-        this.timeOut = timeOut;
-        this.vxmlUrl = vxmlUrl;
-
+        if (params != null)
+        	this.payload.putAll(params);
+        this.callBackUrl = callBackUrl;
+        
         this.onSuccessEvent = null;
         this.onBusyEvent = null;
         this.onNoAnswerEvent = null;
         this.onFailureEvent = null;
     }
 
-    public long getMessageId() {
-        return messageId;
-    }
 
     public String getPhone() {
         return phone;
-    }
-
-    public int getTimeOut() {
-        return timeOut;
-    }
-
-    public String getVxmlUrl() {
-        return vxmlUrl;
     }
 
     public MotechEvent getOnSuccessEvent()
@@ -145,4 +133,17 @@ public class CallRequest implements Serializable {
     {
         this.onFailureEvent = onFailureEvent;
     }
+
+	public Map<String, String> getPayload() {
+		return payload;
+	}
+
+	public void setPayload(Map<String, String> payload) {
+		this.payload = payload;
+	}
+
+    public String getCallBackUrl() {
+		return callBackUrl;
+	}
+
 }

@@ -63,7 +63,7 @@ public class IVRServiceImplIT {
 
         //CallRequest initiateCallData = new CallRequest(1L, "SIP/1001", 5000, "http://10.0.1.29:8080/TamaIVR/r/wt");
         //CallRequest initiateCallData = new CallRequest(1L, "SIP/1001", 5000, "http://10.0.1.29:8080/m/module/ar/vxml/ar?r=1");
-        CallRequest initiateCallData = new CallRequest(1L, "SIP/1001", 5000, "http://motech.2paths.com:8080/module/ar/vxml/ar?r=1");
+        CallRequest initiateCallData = new CallRequest("SIP/1001",  null, "http://motech.2paths.com:8080/module/ar/vxml/ar?r=1");
 
 
         ivrService.initiateCall(initiateCallData);
