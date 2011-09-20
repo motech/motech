@@ -7,9 +7,11 @@
         <version>0.3-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
+    <groupId>org.motechproject</groupId>
     <artifactId>motech-ivr-kookoo</artifactId>
     <name>KooKoo IVR Provider</name>
     <description>KooKoo IVR Provider</description>
+    <version>0.3-SNAPSHOT</version>
     <properties>
         <spring.version>3.0.5.RELEASE</spring.version>
         <slf4j.version>1.6.1</slf4j.version>
