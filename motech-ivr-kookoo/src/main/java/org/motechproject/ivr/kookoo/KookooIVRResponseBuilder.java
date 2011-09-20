@@ -42,7 +42,7 @@ public class KookooIVRResponseBuilder implements IVRResponseBuilder {
     }
 
     @Override
-	public KookooIVRResponseBuilder collectDtmf(int dtmfLength) {
+	public KookooIVRResponseBuilder collectDtmf(Integer dtmfLength) {
         collectDtmf = true;
         this.dtmfLength = dtmfLength;
         return this;

@@ -39,7 +39,8 @@ public class DecisionTreeBasedResponseBuilder {
         if (hasTransitions) {
             ivrResponseBuilder.collectDtmf(maxLenOfTransitionOptions(node));
         } else {
-            ivrResponseBuilder.withPlayAudios(message.getSignatureMusic()).withHangUp();
+            ivrResponseBuilder.withPlayAudios(message.getSignatureMusic());
+            ivrResponseBuilder.withHangUp();
         }
         return ivrResponseBuilder;
     }

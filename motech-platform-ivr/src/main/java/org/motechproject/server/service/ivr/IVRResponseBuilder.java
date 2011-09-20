@@ -9,7 +9,7 @@ public interface IVRResponseBuilder {
 
     public abstract IVRResponseBuilder withPlayAudios(String... playAudios);
 
-    public abstract IVRResponseBuilder collectDtmf(int dtmfLength);
+    public abstract IVRResponseBuilder collectDtmf(Integer dtmfLength);
 
     public abstract IVRResponseBuilder withHangUp();
 
