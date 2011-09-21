@@ -6,11 +6,17 @@ import org.motechproject.eventtracking.domain.Event;
 import java.util.Map;
 
 public class IVRCallEvent implements Event {
+
     private String sessionId;
+
     String eventName;
+
     String externalID;
+
     DateTime dateTime;
+
     Map<String, String> data;
+
     Map<String, String> requestParams;
 
     public IVRCallEvent() {
