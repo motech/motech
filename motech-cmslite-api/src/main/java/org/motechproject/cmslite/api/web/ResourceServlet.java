@@ -16,7 +16,10 @@ import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
+
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Arrays;
 
 public class ResourceServlet extends HttpServlet {
@@ -40,19 +43,19 @@ public class ResourceServlet extends HttpServlet {
         try {
             logger.info("Getting resource for : " + resourceQuery.getLanguage() + ":" + resourceQuery.getName());
             AttachmentInputStream contentStream = (AttachmentInputStream) cmsLiteService.getContent(resourceQuery);
-
-            AudioFormat audioFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 8000, 16, 1, 2, 8000, false);
             long contentLength = contentStream.getContentLength();
 
             response.setStatus(HttpServletResponse.SC_OK);
             response.setHeader("Content-Type", "audio/x-wav");
             response.setHeader("Accept-Ranges", "bytes");
             response.setContentLength((int) contentLength);
-
-            audioInputStream = new AudioInputStream(contentStream, audioFormat, contentLength);
-            AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, response.getOutputStream());
-
-
+            
+            OutputStream fo = response.getOutputStream();
+    		byte [] buffer = new byte [1024*4];
+    		int read ;
+    		while((read=contentStream.read(buffer))>=0){
+    			fo.write(buffer,0,read);
+    		}
         } catch (ResourceNotFoundException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             logger.error("Resource not found for : " + resourceQuery.getLanguage() + ":" + resourceQuery.getName() + "\n" + Arrays.toString(e.getStackTrace()));
