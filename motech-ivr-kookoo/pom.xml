@@ -1,23 +1,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
         <version>0.3-SNAPSHOT</version>
-        <relativePath>..</relativePath>
     </parent>
+    <modelVersion>4.0.0</modelVersion>
+
     <groupId>org.motechproject</groupId>
     <artifactId>motech-ivr-kookoo</artifactId>
+
     <name>KooKoo IVR Provider</name>
     <description>KooKoo IVR Provider</description>
     <version>0.3-SNAPSHOT</version>
+
     <properties>
         <spring.version>3.0.5.RELEASE</spring.version>
         <slf4j.version>1.6.1</slf4j.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-security.version>3.0.5.RELEASE</spring-security.version>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.ozonetel.kookoo</groupId>
