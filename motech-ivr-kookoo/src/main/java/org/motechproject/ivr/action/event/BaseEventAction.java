@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class BaseEventAction extends BaseAction {
     @Autowired
@@ -21,7 +22,6 @@ public abstract class BaseEventAction extends BaseAction {
     Map<String, String> eventData = new HashMap<String, String>();
 
     protected void publishIVREvent(String sessionId, IVREvent name, String externalId, Map<String, String> requestParams, IVRRequest.CallDirection callDirection, String callerId, String inputData, String responseXML) {
-
         EventDataBuilder builder = new EventDataBuilder(sessionId, name.toString(), externalId, requestParams, DateUtil.now());
         builder.withResponseXML(responseXML)
                 .withCallDirection(callDirection)
@@ -34,9 +34,18 @@ public abstract class BaseEventAction extends BaseAction {
         String responseXML = handle(ivrRequest, request, response);
         IVRSession ivrSession = getIVRSession(request);
         String patientId = ivrSession.isValid() ? ivrSession.getExternalId() : "Unknown";
-        publishIVREvent(ivrRequest.getSessionId(), ivrRequest.callEvent(), patientId, request.getParameterMap(), ivrRequest.getCallDirection(), ivrRequest.getCallerId(), ivrRequest.getData(), responseXML);
+        Map<String, String> requestParams = convertParams(request.getParameterMap());
+        publishIVREvent(ivrRequest.getSessionId(), ivrRequest.callEvent(), patientId, requestParams, ivrRequest.getCallDirection(), ivrRequest.getCallerId(), ivrRequest.getData(), responseXML);
         postHandle(ivrRequest, request, response);
         return responseXML;
+    }
+
+    private Map<String, String> convertParams(Map requestParameterMap) {
+        Map<String, String> params = new HashMap<String, String>();
+        for (Map.Entry<String, String[]> e : (Set<Map.Entry<String, String[]>>) requestParameterMap.entrySet()) {
+            params.put(e.getKey(), e.getValue()[0]);
+        }
+        return params;
     }
 
     public void postHandle(IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
