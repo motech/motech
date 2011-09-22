@@ -17,11 +17,12 @@ public class KookooRequest implements IVRRequest {
     private String cid;
     private String event;
     private String data;
-    Map<String, String> dataMap = new HashMap<String, String>();
+    private String callId;
+    private Map<String, String> dataMap = new HashMap<String, String>();
 
     @Override
     public String getCallerId() {
-        return cid;
+        return callId;
     }
 
     @Override
@@ -51,6 +52,11 @@ public class KookooRequest implements IVRRequest {
 
     public String getSessionId() {
         return sid;
+    }
+
+    @Override
+    public String getCallId() {
+        return callId;
     }
 
     public void setSid(String sid) {

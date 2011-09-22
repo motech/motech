@@ -3,7 +3,10 @@ package org.motechproject.ivr.action.event;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.mockito.Mock;
+import org.motechproject.eventtracking.service.EventService;
+import org.motechproject.server.service.ivr.IVRCallIdentifiers;
 import org.motechproject.server.service.ivr.IVRMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +24,10 @@ public abstract class BaseActionTest {
     protected HttpSession session;
     @Mock
     protected IVRMessage messages;
+    @Mock
+    protected EventService eventService;
+    @Mock
+    protected IVRCallIdentifiers callIdentifiers;
 
     @Before
     public void setUp() {

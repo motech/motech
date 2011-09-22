@@ -8,7 +8,9 @@ import javax.servlet.http.HttpSession;
 
 public class IVRSession {
     public static class IVRCallAttribute {
+
         public static final String CALL_STATE = "call_state";
+        public static final String CALL_ID = "call_id";
         public static final String CALLER_ID = "caller_id";
         public static final String NUMBER_OF_ATTEMPTS = "number_of_retries";
         public static final String CALL_TIME = "call_time";
@@ -33,7 +35,11 @@ public class IVRSession {
     }
 
     public void set(String key, Object value) {
-        session.setAttribute(key, value);
+        if (sessionExists()) session.setAttribute(key, value);
+    }
+
+    public String getCallId() {
+        return sessionExists() ? (String) session.getAttribute(IVRCallAttribute.CALL_ID) : "";
     }
 
     public void renew(HttpServletRequest request) {
@@ -46,7 +52,7 @@ public class IVRSession {
             session.invalidate();
     }
 
-    public boolean isValid() {
+    public boolean sessionExists() {
         return session != null;
     }
 
