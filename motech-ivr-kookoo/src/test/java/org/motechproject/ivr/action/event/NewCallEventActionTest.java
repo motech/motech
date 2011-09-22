@@ -91,7 +91,6 @@ public class NewCallEventActionTest extends BaseActionTest {
         @Override
         public boolean matches(Object o) {
             IVRCallEvent event = (IVRCallEvent) o;
-            System.out.println(event.getCallId());
             return "external_id".equals(event.getExternalID())
                     && "call_id".equals(event.getCallId());
         }
@@ -101,7 +100,6 @@ public class NewCallEventActionTest extends BaseActionTest {
         @Override
         public boolean matches(Object o) {
             IVRCallEvent event = (IVRCallEvent) o;
-            System.out.println(event.getCallId());
             return "external_id".equals(event.getExternalID())
                     && event.getCallId() == null;
         }
