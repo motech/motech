@@ -4,7 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.eventtracking.domain.Event;
 import org.motechproject.eventtracking.service.EventService;
 import org.motechproject.ivr.action.BaseAction;
-import org.motechproject.ivr.eventlogging.EventDataBuilder;
+import org.motechproject.ivr.eventlogging.IVRCallEventBuilder;
 import org.motechproject.server.service.ivr.IVRCallIdentifiers;
 import org.motechproject.server.service.ivr.IVRRequest;
 import org.motechproject.server.service.ivr.IVRSession;
@@ -46,7 +46,7 @@ public abstract class BaseEventAction extends BaseAction {
         String callId = getCallId(ivrRequest, ivrSession);
         Map<String, String> requestParams = getParams(request);
 
-        EventDataBuilder builder = new EventDataBuilder(callId, externalId, ivrRequest.callEvent().toString(), requestParams, DateUtil.now());
+        IVRCallEventBuilder builder = new IVRCallEventBuilder(callId, externalId, ivrRequest.callEvent().toString(), requestParams, DateUtil.now());
         Event callEvent = builder.withCallerId(ivrRequest.getCallerId())
                 .withCallDirection(ivrRequest.getCallDirection())
                 .withResponseXML(responseXML)

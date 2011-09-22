@@ -8,39 +8,39 @@ import org.motechproject.server.service.ivr.IVRRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EventDataBuilder {
+public class IVRCallEventBuilder {
 
     private IVRCallEvent callEvent;
 
     Map<String, String> eventData = new HashMap<String, String>();
 
-    public EventDataBuilder(String callId, String externalId, String callEventName, Map<String, String> requestParams, DateTime dateTime) {
+    public IVRCallEventBuilder(String callId, String externalId, String callEventName, Map<String, String> requestParams, DateTime dateTime) {
         callEvent = new IVRCallEvent(callId, callEventName, externalId, requestParams, dateTime, eventData);
     }
 
-    public EventDataBuilder withCallerId(String callerId) {
+    public IVRCallEventBuilder withCallerId(String callerId) {
         eventData.put(EventLogConstants.CALLER_ID, callerId);
         return this;
     }
 
-    public EventDataBuilder withCallDirection(IVRRequest.CallDirection callDirection) {
+    public IVRCallEventBuilder withCallDirection(IVRRequest.CallDirection callDirection) {
         eventData.put(EventLogConstants.CALL_DIRECTION, callDirection.name());
         return this;
     }
 
-    public EventDataBuilder withResponseXML(String responseXML) {
+    public IVRCallEventBuilder withResponseXML(String responseXML) {
         eventData.put(EventLogConstants.RESPONSE_XML, responseXML);
+        return this;
+    }
+
+    public IVRCallEventBuilder withData(Map<String, String> eventData) {
+        for (String key : eventData.keySet()) {
+            this.eventData.put(key, eventData.get(key));
+        }
         return this;
     }
 
     public Event build() {
         return callEvent;
-    }
-
-    public EventDataBuilder withData(Map<String, String> eventData) {
-        for (String key : eventData.keySet()) {
-            this.eventData.put(key, eventData.get(key));
-        }
-        return this;
     }
 }
