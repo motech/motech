@@ -55,11 +55,11 @@ public abstract class BaseEventAction extends BaseAction {
     }
 
     private String getExternalId(IVRSession ivrSession) {
-        return ivrSession.isValid() ? ivrSession.getExternalId() : "Unknown";
+        return ivrSession.sessionExists() ? ivrSession.getExternalId() : "Unknown";
     }
 
     private String getCallId(IVRRequest ivrRequest, IVRSession ivrSession) {
-        if (ivrSession.isValid() && StringUtils.isNotBlank(ivrSession.getCallId()))
+        if (ivrSession.sessionExists() && StringUtils.isNotBlank(ivrSession.getCallId()))
             return ivrSession.getCallId();
         String callId = StringUtils.isNotBlank(ivrRequest.getCallId()) ? ivrRequest.getCallId() : ivrCallIdentifiers.getNew();
         ivrSession.set(IVRSession.IVRCallAttribute.CALL_ID, callId);
