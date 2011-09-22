@@ -30,7 +30,7 @@ public class DecisionTreeBasedResponseBuilderTest {
         initMocks(this);
         when(ivrSession.getPreferredLanguageCode()).thenReturn("en");
         when(ivrContext.ivrSession()).thenReturn(ivrSession);
-        treeBasedResponseBuilder = new DecisionTreeBasedResponseBuilder(ivrResponseBuilder, ivrMessage);
+        treeBasedResponseBuilder = new DecisionTreeBasedResponseBuilder(ivrMessage);
     }
 
     @Test
@@ -55,7 +55,7 @@ public class DecisionTreeBasedResponseBuilderTest {
     }
 
     private IVRResponseBuilder nextResponse(Node rootNode, boolean retryOnIncorrectUserAction) {
-        return treeBasedResponseBuilder.ivrResponse(rootNode, ivrContext, retryOnIncorrectUserAction);
+        return treeBasedResponseBuilder.ivrResponse(rootNode, ivrContext, ivrResponseBuilder, retryOnIncorrectUserAction);
     }
 
     @Test

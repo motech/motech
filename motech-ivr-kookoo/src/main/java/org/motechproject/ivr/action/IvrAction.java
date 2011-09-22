@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.decisiontree.model.ITreeCommand;
 import org.motechproject.decisiontree.model.NodeInfo;
 import org.motechproject.decisiontree.model.Tree;
+import org.motechproject.ivr.kookoo.KookooIVRResponseBuilder;
 import org.motechproject.server.decisiontree.DecisionTreeBasedResponseBuilder;
 import org.motechproject.server.service.ivr.*;
 
@@ -43,7 +44,7 @@ public class IvrAction {
         }
 
         ivrSession.currentDecisionTreePath(nodeInfo.path());
-        IVRResponseBuilder ivrResponseBuilder = responseBuilder.ivrResponse(nodeInfo.node(), ivrContext, retryOnIncorrectUserAction);
+        IVRResponseBuilder ivrResponseBuilder = responseBuilder.ivrResponse(nodeInfo.node(), ivrContext, new KookooIVRResponseBuilder(), retryOnIncorrectUserAction);
         return ivrResponseBuilder.create(ivrMessage, ivrRequest.getSessionId(), ivrSession.getPreferredLanguageCode());
     }
 }

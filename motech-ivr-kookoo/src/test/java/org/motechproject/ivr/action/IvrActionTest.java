@@ -2,9 +2,11 @@ package org.motechproject.ivr.action;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.motechproject.decisiontree.model.*;
+import org.motechproject.ivr.kookoo.KookooIVRResponseBuilder;
 import org.motechproject.ivr.kookoo.KookooRequest;
 import org.motechproject.server.decisiontree.DecisionTreeBasedResponseBuilder;
 import org.motechproject.server.service.ivr.*;
@@ -43,7 +45,7 @@ public class IvrActionTest {
         when(ivrRequest.getCallerId()).thenReturn("12312");
         when(ivrRequest.getData()).thenReturn("");
         when(ivrRequest.getEvent()).thenReturn(IVREvent.NEW_CALL.name());
-        when(responseBuilder.ivrResponse(any(Node.class), any(IVRContext.class), Mockito.anyBoolean())).thenReturn(ivrResponseBuilder);
+        when(responseBuilder.ivrResponse(any(Node.class), any(IVRContext.class), any(KookooIVRResponseBuilder.class), Mockito.anyBoolean())).thenReturn(ivrResponseBuilder);
         when(ivrResponseBuilder.create(ivrMessage, null, "en")).thenReturn("");
         commandForTamaIvrActionTest = new CommandForTamaIvrActionTest();
         when(treeChooser.getTree(any(IVRContext.class))).thenReturn(new TestTreeForTamaIvrActionTest().getTree());

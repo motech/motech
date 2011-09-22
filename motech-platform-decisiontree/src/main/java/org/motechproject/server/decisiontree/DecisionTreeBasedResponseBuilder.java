@@ -12,15 +12,13 @@ import java.util.List;
 @Component
 public class DecisionTreeBasedResponseBuilder {
 	IVRMessage message;
-	IVRResponseBuilder ivrResponseBuilder;
-	
+
 	@Autowired 
-	public DecisionTreeBasedResponseBuilder(IVRResponseBuilder ivrResponseBuilder, IVRMessage message) {
-		this.ivrResponseBuilder = ivrResponseBuilder;
+	public DecisionTreeBasedResponseBuilder(IVRMessage message) {
 		this.message = message;
 	}
 	
-    public IVRResponseBuilder ivrResponse(Node node, IVRContext ivrContext, boolean retryOnIncorrectUserAction) {
+    public IVRResponseBuilder ivrResponse(Node node, IVRContext ivrContext, IVRResponseBuilder ivrResponseBuilder, boolean retryOnIncorrectUserAction) {
         List<Prompt> prompts = node.getPrompts();
         boolean hasTransitions = node.hasTransitions();
         for (Prompt prompt : prompts) {

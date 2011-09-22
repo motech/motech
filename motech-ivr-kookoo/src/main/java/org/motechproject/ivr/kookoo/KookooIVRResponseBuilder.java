@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
 public class KookooIVRResponseBuilder implements IVRResponseBuilder {
     private boolean isHangUp;
     private boolean collectDtmf;
