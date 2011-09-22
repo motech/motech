@@ -19,9 +19,7 @@ import java.util.Properties;
 
 @Service
 public class KookooCallServiceImpl implements IVRService {
-
     public static final String KOOKOO_OUTBOUND_URL = "kookoo.outbound.url";
-
     public static final String KOOKOO_API_KEY = "kookoo.api.key";
     public static final String CALL_ID_KEY = "call_id";
 

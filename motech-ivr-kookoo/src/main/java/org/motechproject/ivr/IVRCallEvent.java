@@ -7,38 +7,38 @@ import java.util.Map;
 
 public class IVRCallEvent implements Event {
 
-    private String sessionId;
+    private String callId;
 
-    String eventName;
+    private String callEvent;
 
-    String externalID;
+    private String externalID;
 
-    DateTime dateTime;
+    private DateTime dateTime;
 
-    Map<String, String> data;
+    private Map<String, String> data;
 
-    Map<String, String> requestParams;
+    private Map<String, String> requestParams;
 
     public IVRCallEvent() {
     }
 
-    public IVRCallEvent(String sessionId, String eventName, String externalID, Map<String, String> requestParams,
+    public IVRCallEvent(String callId, String callEvent, String externalID, Map<String, String> requestParams,
                         DateTime dateTime, Map<String, String> data) {
         super();
-        this.sessionId = sessionId;
-        this.eventName = eventName;
+        this.callId = callId;
+        this.callEvent = callEvent;
         this.externalID = externalID;
         this.requestParams = requestParams;
         this.dateTime = dateTime;
         this.data = data;
     }
 
-    public String getEventName() {
-        return eventName;
+    public String getCallEvent() {
+        return callEvent;
     }
 
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
+    public void setCallEvent(String callEvent) {
+        this.callEvent = callEvent;
     }
 
     public String getExternalID() {
@@ -69,11 +69,12 @@ public class IVRCallEvent implements Event {
         return requestParams;
     }
 
-    public String getSessionId() {
-        return sessionId;
+    public String getCallId() {
+        return callId;
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public void setCallId(String callId) {
+        this.callId = callId;
     }
+
 }

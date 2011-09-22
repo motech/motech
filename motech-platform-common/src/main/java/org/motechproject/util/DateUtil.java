@@ -6,6 +6,7 @@ import org.joda.time.LocalDate;
 import org.motechproject.MotechException;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.Properties;
 import java.util.TimeZone;
@@ -45,10 +46,11 @@ public class DateUtil {
 
     private static DateTimeZone getTimeZone() {
         if (dateTimeZone != null) return dateTimeZone;
-
         try {
             Properties dateProperties = new Properties();
-            dateProperties.load(DateUtil.class.getResourceAsStream("/date.properties"));
+            InputStream resourceAsStream = DateUtil.class.getResourceAsStream("/date.properties");
+            if(resourceAsStream == null) return DateTimeZone.getDefault();
+            dateProperties.load(resourceAsStream);
             String timeZoneString = dateProperties.getProperty("timezone");
             dateTimeZone = DateTimeZone.forTimeZone(TimeZone.getTimeZone(timeZoneString));
         } catch (IOException e) {

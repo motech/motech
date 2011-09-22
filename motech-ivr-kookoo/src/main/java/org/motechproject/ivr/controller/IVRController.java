@@ -31,9 +31,9 @@ public class IVRController {
     public String reply(@ModelAttribute KookooRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
         try {
             BaseEventAction action = actions.findFor(ivrRequest.callEvent());
-            final String handle = action.handleInternal(ivrRequest, request, response);
-            logger.info(String.format(" XML returned: %s", handle));
-            return handle;
+            final String xmlResponse = action.handleInternal(ivrRequest, request, response);
+            logger.info(String.format(" XML returned: %s", response));
+            return xmlResponse;
         } catch (Exception e) {
             logger.error("Failed to handled incoming request", e);
             throw new IVRException("Failed to handled incoming request", e);
