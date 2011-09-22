@@ -20,9 +20,24 @@ public class KookooRequest implements IVRRequest {
     private String callId;
     private Map<String, String> dataMap = new HashMap<String, String>();
 
+    public KookooRequest() {
+    }
+
+    public KookooRequest(String sid, String cid, String event, String data) {
+        this.sid = sid;
+        this.cid = cid;
+        this.event = event;
+        this.data = data;
+    }
+
+    @Override
+    public String getCallId() {
+        return callId;
+    }
+
     @Override
     public String getCallerId() {
-        return callId;
+        return cid;
     }
 
     @Override
@@ -40,23 +55,8 @@ public class KookooRequest implements IVRRequest {
         return event;
     }
 
-    public KookooRequest() {
-    }
-
-    public KookooRequest(String sid, String cid, String event, String data) {
-        this.sid = sid;
-        this.cid = cid;
-        this.event = event;
-        this.data = data;
-    }
-
     public String getSessionId() {
         return sid;
-    }
-
-    @Override
-    public String getCallId() {
-        return callId;
     }
 
     public void setSid(String sid) {
