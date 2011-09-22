@@ -37,9 +37,10 @@ public class EventDataBuilder {
         return callEvent;
     }
 
-    public void withData(Map<String, String> eventData) {
+    public EventDataBuilder withData(Map<String, String> eventData) {
         for (String key : eventData.keySet()) {
             this.eventData.put(key, eventData.get(key));
         }
+        return this;
     }
 }

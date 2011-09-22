@@ -1,6 +1,7 @@
 package org.motechproject.ivr.action.event;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.eventtracking.domain.Event;
 import org.motechproject.eventtracking.service.EventService;
 import org.motechproject.ivr.action.BaseAction;
 import org.motechproject.ivr.eventlogging.EventDataBuilder;
@@ -46,11 +47,11 @@ public abstract class BaseEventAction extends BaseAction {
         Map<String, String> requestParams = getParams(request);
 
         EventDataBuilder builder = new EventDataBuilder(callId, externalId, ivrRequest.callEvent().toString(), requestParams, DateUtil.now());
-        builder.withCallerId(ivrRequest.getCallerId())
+        Event callEvent = builder.withCallerId(ivrRequest.getCallerId())
                 .withCallDirection(ivrRequest.getCallDirection())
                 .withResponseXML(responseXML)
-                .withData(eventData);
-        eventService.publishEvent(builder.build());
+                .withData(eventData).build();
+        eventService.publishEvent(callEvent);
     }
 
     private String getExternalId(IVRSession ivrSession) {
@@ -58,7 +59,7 @@ public abstract class BaseEventAction extends BaseAction {
     }
 
     private String getCallId(IVRRequest ivrRequest, IVRSession ivrSession) {
-        if (StringUtils.isNotBlank(ivrSession.getCallId()))
+        if (ivrSession.isValid() && StringUtils.isNotBlank(ivrSession.getCallId()))
             return ivrSession.getCallId();
         String callId = StringUtils.isNotBlank(ivrRequest.getCallId()) ? ivrRequest.getCallId() : ivrCallIdentifiers.getNew();
         ivrSession.set(IVRSession.IVRCallAttribute.CALL_ID, callId);
