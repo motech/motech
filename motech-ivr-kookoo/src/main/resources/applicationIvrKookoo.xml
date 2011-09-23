@@ -9,7 +9,7 @@
     <context:component-scan base-package="org.motechproject.ivr"/>
     <context:component-scan base-package="org.motechproject.server.service.ivr"/>
 
-    <bean id="actions" class="org.motechproject.ivr.action.Actions">
+    <bean id="actions" class="org.motechproject.ivr.kookoo.action.Actions">
         <constructor-arg>
             <map>
                 <entry key="newcall" value-ref="newCallEventAction"/>

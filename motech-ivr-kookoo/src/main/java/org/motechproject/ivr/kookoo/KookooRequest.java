@@ -1,8 +1,5 @@
 package org.motechproject.ivr.kookoo;
 
-import org.apache.commons.lang.StringUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.motechproject.server.service.ivr.IVREvent;
 import org.motechproject.server.service.ivr.IVRRequest;
 import org.motechproject.server.service.ivr.IVRSession;
@@ -17,7 +14,6 @@ public class KookooRequest implements IVRRequest {
     private String cid;
     private String event;
     private String data;
-    private String callId;
     private Map<String, String> dataMap = new HashMap<String, String>();
 
     public KookooRequest() {
@@ -28,11 +24,6 @@ public class KookooRequest implements IVRRequest {
         this.cid = cid;
         this.event = event;
         this.data = data;
-    }
-
-    @Override
-    public String getCallId() {
-        return callId;
     }
 
     @Override
@@ -55,25 +46,12 @@ public class KookooRequest implements IVRRequest {
         return event;
     }
 
-    public String getSessionId() {
-        return sid;
-    }
-
-    public void setSid(String sid) {
-        this.sid = sid;
-    }
-
-    public String getCid() {
-        return cid;
-    }
-
-    public void setCid(String cid) {
-        this.cid = cid;
-    }
-
-
     public void setEvent(String event) {
         this.event = event;
+    }
+
+    public String getSessionId() {
+        return sid;
     }
 
     public String getData() {
@@ -90,26 +68,6 @@ public class KookooRequest implements IVRRequest {
 
     public IVREvent callEvent() {
         return IVREvent.keyOf(this.event);
-    }
-
-    public boolean hasNoData() {
-        return StringUtils.isBlank(this.data);
-    }
-
-    public String getPayloadJson() {
-        JSONObject object = new JSONObject();
-        for (String key : dataMap.keySet()) {
-            try {
-                object.put(key, dataMap.get(key));
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return object.toString();
-    }
-
-    public Map getPayloadParams() {
-        return dataMap;
     }
 
     public CallDirection getCallDirection() {

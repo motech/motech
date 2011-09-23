@@ -63,6 +63,7 @@ public class KookooCallServiceImpl implements IVRService {
     @Override
     public void initiateCall(CallRequest callRequest) {
         if (callRequest == null) throw new IllegalArgumentException("Missing call request");
+
         callRequest.getPayload().put(IVRSession.IVRCallAttribute.IS_OUTBOUND_CALL, "true");
         dial(callRequest.getPhone(), callRequest.getPayload(), callRequest.getCallBackUrl());
     }

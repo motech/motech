@@ -1,12 +1,12 @@
 package org.motechproject.server.service.ivr;
 
 public interface IVRRequest {
+
     public static enum CallDirection {
 		Inbound, Outbound;
     };
-	public String getSessionId();
 
-    public String getCallId();
+	public String getSessionId();
 
 	public String getCallerId();
 

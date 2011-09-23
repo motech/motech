@@ -5,7 +5,6 @@ import com.ozonetel.kookoo.Response;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.server.service.ivr.IVRMessage;
 import org.motechproject.server.service.ivr.IVRResponseBuilder;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
