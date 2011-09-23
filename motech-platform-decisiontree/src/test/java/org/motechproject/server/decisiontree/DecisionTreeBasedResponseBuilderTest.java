@@ -5,10 +5,7 @@ import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.decisiontree.model.*;
-import org.motechproject.server.service.ivr.IVRContext;
-import org.motechproject.server.service.ivr.IVRMessage;
-import org.motechproject.server.service.ivr.IVRResponseBuilder;
-import org.motechproject.server.service.ivr.IVRSession;
+import org.motechproject.server.service.ivr.*;
 
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -23,14 +20,14 @@ public class DecisionTreeBasedResponseBuilderTest {
     @Mock
     private IVRResponseBuilder ivrResponseBuilder;
     @Mock
-    private IVRMessage ivrMessage;
+    private PostTreeCallContinuation postTreeCallContinuation;
 
     @Before
     public void setUp() {
         initMocks(this);
         when(ivrSession.getPreferredLanguageCode()).thenReturn("en");
         when(ivrContext.ivrSession()).thenReturn(ivrSession);
-        treeBasedResponseBuilder = new DecisionTreeBasedResponseBuilder(ivrMessage);
+        treeBasedResponseBuilder = new DecisionTreeBasedResponseBuilder(postTreeCallContinuation);
     }
 
     @Test
@@ -59,24 +56,11 @@ public class DecisionTreeBasedResponseBuilderTest {
     }
 
     @Test
-    public void shouldAddHangupIfTheNodeDoesNotHaveAnyTransitions() {
+    public void shouldHandOverControlToCallContinuationIfTheNodeDoesNotHaveAnyTransitions() {
         Node rootNode = new Node()
                 .setPrompts(new AudioPrompt().setName("foo"));
         nextResponse(rootNode, false);
-
-        verify(ivrResponseBuilder, times(1)).withHangUp();
-        verify(ivrResponseBuilder, never()).collectDtmf(Matchers.<Integer>any());
-    }
-
-    @Test
-    public void shouldAddSignatureMusicIfNodeDoesNotHaveAnyTransitions() {
-        String SIGNATURE_MUSIC_URL = "signature_music.wav";
-        when(ivrMessage.getSignatureMusic()).thenReturn(SIGNATURE_MUSIC_URL);
-        Node rootNode = new Node()
-                .setPrompts(new AudioPrompt().setName("foo"));
-        nextResponse(rootNode, false);
-
-        verify(ivrResponseBuilder).withPlayAudios(SIGNATURE_MUSIC_URL);
+        verify(postTreeCallContinuation, times(1)).continueCall(ivrContext, ivrResponseBuilder);
     }
 
     @Test

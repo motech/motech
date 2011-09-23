@@ -4,6 +4,7 @@ import org.motechproject.decisiontree.model.*;
 import org.motechproject.server.service.ivr.IVRContext;
 import org.motechproject.server.service.ivr.IVRMessage;
 import org.motechproject.server.service.ivr.IVRResponseBuilder;
+import org.motechproject.server.service.ivr.PostTreeCallContinuation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,11 +12,11 @@ import java.util.List;
 
 @Component
 public class DecisionTreeBasedResponseBuilder {
-	IVRMessage message;
+    PostTreeCallContinuation postTreeCallContinuation;
 
-	@Autowired 
-	public DecisionTreeBasedResponseBuilder(IVRMessage message) {
-		this.message = message;
+	@Autowired
+	public DecisionTreeBasedResponseBuilder(PostTreeCallContinuation postTreeCallContinuation) {
+        this.postTreeCallContinuation = postTreeCallContinuation;
 	}
 	
     public IVRResponseBuilder ivrResponse(Node node, IVRContext ivrContext, IVRResponseBuilder ivrResponseBuilder, boolean retryOnIncorrectUserAction) {
@@ -37,8 +38,7 @@ public class DecisionTreeBasedResponseBuilder {
         if (hasTransitions) {
             ivrResponseBuilder.collectDtmf(maxLenOfTransitionOptions(node));
         } else {
-            ivrResponseBuilder.withPlayAudios(message.getSignatureMusic());
-            ivrResponseBuilder.withHangUp();
+            postTreeCallContinuation.continueCall(ivrContext, ivrResponseBuilder);
         }
         return ivrResponseBuilder;
     }
