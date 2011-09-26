@@ -6,9 +6,13 @@ public interface IVRRequest {
 		Inbound, Outbound;
     };
 
-	public String getSessionId();
+	public String getSid();
 
-	public String getCallerId();
+    public void setSid(String sid);
+
+	public String getCid();
+
+    public void setCid(String cid);
 
 	public String getEvent();
 
@@ -16,9 +20,9 @@ public interface IVRRequest {
 
 	public String getData();
 
-	public String getInput();
+    public void setData(String data);
 
-	public void setData(String data);
+	public String getInput();
 
 	public IVREvent callEvent();
 

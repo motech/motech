@@ -36,18 +36,18 @@ public class NewCallEventAction extends BaseEventAction {
 
     @Override
     public String handle(IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
-        if (!userService.isRegisteredUser(ivrRequest.getCallerId())) {
+        if (!userService.isRegisteredUser(ivrRequest.getCid())) {
             return userNotFoundAction.handle(ivrRequest, request, response);
         }
         IVRSession ivrSession = createIVRSession(request);
-        ivrSession.set(IVRCallAttribute.CALLER_ID, ivrRequest.getCallerId());
+        ivrSession.set(IVRCallAttribute.CALLER_ID, ivrRequest.getCid());
         ivrSession.setState(IVRCallState.COLLECT_PIN);
         createCallDetailRecord(ivrRequest);
         return dtmfResponseWithWav(ivrRequest, messages.getSignatureMusic());
     }
 
     private void createCallDetailRecord(IVRRequest ivrRequest) {
-        CallDetailRecord callDetailRecord = CallDetailRecord.create(ivrRequest.getSessionId(), ivrRequest.getCallerId());
+        CallDetailRecord callDetailRecord = CallDetailRecord.create(ivrRequest.getSid(), ivrRequest.getCid());
         allCallDetailRecords.add(new KookooCallDetailRecord(callDetailRecord));
     }
 }

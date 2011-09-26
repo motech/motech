@@ -39,7 +39,7 @@ public class NewCallEventActionTest extends BaseActionTest {
     @Test
     public void shouldAskUserNotFoundActionToHandleIfUserIsNotRegistered() {
         IVRRequest ivrRequest = new KookooRequest();
-        when(userService.isRegisteredUser(ivrRequest.getCallerId())).thenReturn(false);
+        when(userService.isRegisteredUser(ivrRequest.getCid())).thenReturn(false);
 
         action.handle(ivrRequest, request, response);
         verify(userNotFoundAction).handle(ivrRequest, request, response);
@@ -48,11 +48,11 @@ public class NewCallEventActionTest extends BaseActionTest {
     @Test
     public void shouldSetAttributesInSessionAndSendDtmfResponseWithWav() {
         IVRRequest ivrRequest = new KookooRequest();
-        when(userService.isRegisteredUser(ivrRequest.getCallerId())).thenReturn(true);
+        when(userService.isRegisteredUser(ivrRequest.getCid())).thenReturn(true);
         when(request.getSession()).thenReturn(session);
 
         String xmlResponse = action.handle(ivrRequest, request, response);
-        verify(session).setAttribute(IVRSession.IVRCallAttribute.CALLER_ID, ivrRequest.getCallerId());
+        verify(session).setAttribute(IVRSession.IVRCallAttribute.CALLER_ID, ivrRequest.getCid());
         verify(session).setAttribute(IVRSession.IVRCallAttribute.CALL_STATE, IVRCallState.COLLECT_PIN);
         assertEquals("<response><collectdtmf><playaudio/></collectdtmf></response>", sanitize(xmlResponse));
     }

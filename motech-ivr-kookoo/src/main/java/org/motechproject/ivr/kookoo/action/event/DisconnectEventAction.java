@@ -23,7 +23,7 @@ public class DisconnectEventAction extends BaseEventAction {
 
     @Override
     public String handle(IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
-        String callerId = ivrRequest.getCallerId();
+        String callerId = ivrRequest.getCid();
         KookooCallDetailRecord callDetailRecord = allCallDetailRecords.findByCallId(callerId);
         callDetailRecord.callEnded();
         raiseDisconnectEvent(getIVRSession(request), callDetailRecord);

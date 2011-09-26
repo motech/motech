@@ -56,7 +56,7 @@ public abstract class BaseEventAction extends BaseAction {
     private void publishCallEvent(IVRRequest ivrRequest, HttpServletRequest request, String responseXML) {
         addCallEventData(CallEventConstants.RESPONSE_XML, responseXML);
         CallEvent callEvent = new CallEvent(ivrRequest.callEvent().key(), callEventData);
-        updateCallDetailRecord(ivrRequest.getSessionId(), callEvent);
+        updateCallDetailRecord(ivrRequest.getSid(), callEvent);
     }
 
     private void updateCallDetailRecord(String callId, CallEvent callEvent) {

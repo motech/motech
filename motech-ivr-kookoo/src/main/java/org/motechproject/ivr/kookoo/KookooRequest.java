@@ -27,8 +27,13 @@ public class KookooRequest implements IVRRequest {
     }
 
     @Override
-    public String getCallerId() {
+    public String getCid() {
         return cid;
+    }
+
+    @Override
+    public void setCid(String cid) {
+        this.cid = cid;
     }
 
     @Override
@@ -50,8 +55,13 @@ public class KookooRequest implements IVRRequest {
         this.event = event;
     }
 
-    public String getSessionId() {
+    public String getSid() {
         return sid;
+    }
+
+    @Override
+    public void setSid(String sid) {
+        this.sid = sid;
     }
 
     public String getData() {

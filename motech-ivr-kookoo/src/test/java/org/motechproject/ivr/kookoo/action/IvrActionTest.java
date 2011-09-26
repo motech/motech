@@ -41,7 +41,7 @@ public class IvrActionTest {
     @Before
     public void setup() {
         initMocks(this);
-        when(ivrRequest.getCallerId()).thenReturn("12312");
+        when(ivrRequest.getCid()).thenReturn("12312");
         when(ivrRequest.getData()).thenReturn("");
         when(ivrRequest.getEvent()).thenReturn(IVREvent.NEW_CALL.name());
         when(responseBuilder.ivrResponse(any(Node.class), any(IVRContext.class), any(KookooIVRResponseBuilder.class), Mockito.anyBoolean())).thenReturn(ivrResponseBuilder);

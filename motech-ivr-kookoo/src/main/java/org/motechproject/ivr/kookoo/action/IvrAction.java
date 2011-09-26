@@ -45,6 +45,6 @@ public class IvrAction {
 
         ivrSession.currentDecisionTreePath(nodeInfo.path());
         IVRResponseBuilder ivrResponseBuilder = responseBuilder.ivrResponse(nodeInfo.node(), ivrContext, new KookooIVRResponseBuilder(), retryOnIncorrectUserAction);
-        return ivrResponseBuilder.create(ivrMessage, ivrRequest.getSessionId(), ivrSession.getPreferredLanguageCode());
+        return ivrResponseBuilder.create(ivrMessage, ivrRequest.getSid(), ivrSession.getPreferredLanguageCode());
     }
 }

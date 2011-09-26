@@ -18,11 +18,11 @@ public abstract class BaseAction {
     public static final String POUND_SYMBOL = "%23";
 
     protected String hangUpResponseWith(IVRRequest ivrRequest) {
-        return new KookooIVRResponseBuilder().withHangUp().createWithDefaultLanguage(messages, ivrRequest.getSessionId());
+        return new KookooIVRResponseBuilder().withHangUp().createWithDefaultLanguage(messages, ivrRequest.getSid());
     }
 
     protected String dtmfResponseWithWav(IVRRequest ivrRequest, String wavFile) {
-        return new KookooIVRResponseBuilder().collectDtmf().withPlayAudios(wavFile).createWithDefaultLanguage(messages, ivrRequest.getSessionId() );
+        return new KookooIVRResponseBuilder().collectDtmf().withPlayAudios(wavFile).createWithDefaultLanguage(messages, ivrRequest.getSid() );
     }
 
     protected IVRSession getIVRSession(HttpServletRequest request) {
