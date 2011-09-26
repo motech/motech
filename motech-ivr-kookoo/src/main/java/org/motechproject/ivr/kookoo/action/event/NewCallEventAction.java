@@ -24,7 +24,8 @@ public class NewCallEventAction extends BaseEventAction {
 
     @Autowired
     public NewCallEventAction(IVRMessage messages, UserNotFoundAction userNotFoundAction, UserService userService,
-                              EventService eventService, IVRCallIdentifiers callIdentifiers, AllKooKooCallDetailRecords allKooKooCallDetailRecords) {
+                              EventService eventService, IVRCallIdentifiers callIdentifiers,
+                              AllKooKooCallDetailRecords allKooKooCallDetailRecords) {
 
         super(eventService, callIdentifiers, allKooKooCallDetailRecords);
         this.userService = userService;

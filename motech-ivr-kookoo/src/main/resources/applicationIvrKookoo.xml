@@ -6,8 +6,15 @@
 
     <context:annotation-config/>
 
-    <context:component-scan base-package="org.motechproject.ivr"/>
+    <context:component-scan base-package="org.motechproject.ivr.kookoo"/>
     <context:component-scan base-package="org.motechproject.server.service.ivr"/>
+
+    <import resource="classpath:applicationPlatformCommon.xml"/>
+
+    <bean id="kookooIvrDbConnector" class="org.ektorp.impl.StdCouchDbConnector">
+        <constructor-arg value="motech-ivr-kookoo"/>
+        <constructor-arg ref="couchDbInstance"/>
+    </bean>
 
     <bean id="actions" class="org.motechproject.ivr.kookoo.action.Actions">
         <constructor-arg>
