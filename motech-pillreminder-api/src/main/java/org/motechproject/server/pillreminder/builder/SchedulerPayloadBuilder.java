@@ -8,7 +8,7 @@ import static org.motechproject.server.pillreminder.EventKeys.SCHEDULE_JOB_ID_KE
 
 public class SchedulerPayloadBuilder {
 
-    private HashMap params = new HashMap();
+    private HashMap<String, Object> params = new HashMap<String, Object>();
 
     public SchedulerPayloadBuilder withJobId(String id) {
         params.put(SCHEDULE_JOB_ID_KEY, id);
@@ -30,7 +30,7 @@ public class SchedulerPayloadBuilder {
         return this;
     }
 
-    public HashMap payload() {
+    public HashMap<String, Object> payload() {
         return params;
     }
 }
