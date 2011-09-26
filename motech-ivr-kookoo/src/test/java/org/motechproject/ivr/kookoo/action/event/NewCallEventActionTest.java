@@ -2,9 +2,12 @@ package org.motechproject.ivr.kookoo.action.event;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.motechproject.ivr.kookoo.KookooRequest;
 import org.motechproject.ivr.kookoo.action.UserNotFoundAction;
+import org.motechproject.ivr.kookoo.domain.KookooCallDetailRecord;
 import org.motechproject.ivr.kookoo.repository.AllKooKooCallDetailRecords;
 import org.motechproject.ivr.kookoo.service.UserService;
 import org.motechproject.server.service.ivr.IVRCallState;
@@ -14,7 +17,6 @@ import org.motechproject.server.service.ivr.IVRSession;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
-import static org.mockito.MockitoAnnotations.initMocks;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 
@@ -32,7 +34,7 @@ public class NewCallEventActionTest extends BaseActionTest {
 
     @Before
     public void setUp() {
-        initMocks(this);
+        super.setUp();
         action = new NewCallEventAction(ivrMessages, userNotFoundAction, userService, eventService, callIdentifiers, allCallDetailRecords);
     }
 
@@ -43,6 +45,25 @@ public class NewCallEventActionTest extends BaseActionTest {
 
         action.handle(ivrRequest, request, response);
         verify(userNotFoundAction).handle(ivrRequest, request, response);
+    }
+
+    @Test
+    public void shouldLogNewCallEvent() {
+        IVRRequest ivrRequest = new KookooRequest();
+        String callId = "callId";
+        String callerId = "callerId";
+
+        ivrRequest.setSid(callId);
+        ivrRequest.setCid(callerId);
+        Mockito.when(userService.isRegisteredUser(callerId)).thenReturn(true);
+
+        action.handle(ivrRequest, request, response);
+
+        ArgumentCaptor<KookooCallDetailRecord> callDetailRecordCapture = ArgumentCaptor.forClass(KookooCallDetailRecord.class);
+        verify(allCallDetailRecords).add(callDetailRecordCapture.capture());
+
+        KookooCallDetailRecord capturedCallDetailRecord = callDetailRecordCapture.getValue();
+        assertEquals(callId, capturedCallDetailRecord.getCallDetailRecord().getCallId());
     }
 
     @Test

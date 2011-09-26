@@ -31,6 +31,8 @@ public abstract class BaseActionTest {
     @Before
     public void setUp() {
         initMocks(this);
+        when(request.getSession()).thenReturn(session);
+        when(request.getSession(false)).thenReturn(session);
         mockIVRMessage();
     }
 

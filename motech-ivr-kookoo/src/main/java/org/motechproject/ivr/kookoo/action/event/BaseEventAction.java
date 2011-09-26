@@ -24,7 +24,7 @@ public abstract class BaseEventAction extends BaseAction {
     protected IVRCallIdentifiers ivrCallIdentifiers;
 
     @Autowired
-    private AllKooKooCallDetailRecords allKooKooCallDetailRecords;
+    protected AllKooKooCallDetailRecords allKooKooCallDetailRecords;
 
     private Map<String, String> callEventData = new HashMap<String, String>();
 

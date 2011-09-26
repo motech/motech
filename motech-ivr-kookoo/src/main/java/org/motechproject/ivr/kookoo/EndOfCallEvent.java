@@ -12,4 +12,12 @@ public class EndOfCallEvent implements Event {
         this.callId = callId;
         this.referenceId = referenceId;
     }
+
+    public String getCallId() {
+        return callId;
+    }
+
+    public String getReferenceId() {
+        return referenceId;
+    }
 }

@@ -1,5 +1,6 @@
 package org.motechproject.ivr.kookoo.action.event;
 
+import org.motechproject.eventtracking.service.EventService;
 import org.motechproject.ivr.kookoo.EndOfCallEvent;
 import org.motechproject.ivr.kookoo.domain.KookooCallDetailRecord;
 import org.motechproject.ivr.kookoo.repository.AllKooKooCallDetailRecords;
@@ -14,18 +15,18 @@ import javax.servlet.http.HttpServletResponse;
 @Service
 public class DisconnectEventAction extends BaseEventAction {
 
-    private final AllKooKooCallDetailRecords allCallDetailRecords;
 
     @Autowired
-    public DisconnectEventAction(AllKooKooCallDetailRecords allCallDetailRecords) {
-        this.allCallDetailRecords = allCallDetailRecords;
+    public DisconnectEventAction(EventService eventService, AllKooKooCallDetailRecords allKooKooCallDetailRecords) {
+        this.eventService = eventService;
+        this.allKooKooCallDetailRecords = allKooKooCallDetailRecords;
     }
 
     @Override
     public String handle(IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
-        String callerId = ivrRequest.getCid();
-        KookooCallDetailRecord callDetailRecord = allCallDetailRecords.findByCallId(callerId);
-        callDetailRecord.callEnded();
+        String callId = ivrRequest.getSid();
+        KookooCallDetailRecord callDetailRecord = allKooKooCallDetailRecords.findByCallId(callId);
+        callDetailRecord.close();
         raiseDisconnectEvent(getIVRSession(request), callDetailRecord);
         return null;
     }

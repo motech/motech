@@ -14,6 +14,9 @@ public class CallEvent {
 
     private Map<String, String> data;
 
+    private CallEvent(){
+    }
+
     public CallEvent(String name, Map<String, String> data) {
         this(name, DateUtil.now(), data);
     }
