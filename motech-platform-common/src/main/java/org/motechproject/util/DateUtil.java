@@ -24,9 +24,7 @@ public class DateUtil {
     }
 
     public static LocalDate tomorrow() {
-        LocalDate localDate = new LocalDate(getTimeZone());
-        localDate.plusDays(1);
-        return localDate;
+        return today().plusDays(1);
     }
 
     public static LocalDate newDate(int year, int month, int day) {
