@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.motechproject.server.alerts.domain.Alert;
 import org.motechproject.server.alerts.domain.AlertStatus;
 import org.motechproject.server.alerts.domain.AlertType;
+import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -28,13 +29,14 @@ public class AllAlertsIT {
 	private Alert alert3 = new Alert();
 
     private static int MAX_RECORDS = 10;
+    private final DateTime alert1DateTime = DateUtil.newDateTime(DateUtil.newDate(2011, 9, 26), 15, 33, 20);
 
-	@Before
+    @Before
 	public void setUp() {
         alert1.setId("1");
-		alert1.setName("Test Alert 1");
-		alert1.setDescription("Test Alert1 Description");
-		alert1.setDateTime(new DateTime());
+        alert1.setName("Test Alert 1");
+        alert1.setDescription("Test Alert1 Description");
+        alert1.setDateTime(alert1DateTime);
 		alert1.setExternalId("111");
 		alert1.setPriority(2);
 		alert1.setStatus(AlertStatus.NEW);
@@ -64,8 +66,8 @@ public class AllAlertsIT {
 	
 	@After
 	public void tearDown() {
-		allAlerts.remove(alert1);
-		allAlerts.remove(alert2);
+		if (allAlerts.contains("1")) allAlerts.remove(alert1);
+		if (allAlerts.contains("2")) allAlerts.remove(alert2);
         if (allAlerts.contains("3")) allAlerts.remove(alert3);
 	}
 
@@ -144,4 +146,13 @@ public class AllAlertsIT {
         assertEquals("1", listAlerts.get(1).getId());
     }
 
+    @Test
+    public void shouldNotChangeDateTimeWhenChangingTheStatus() {
+        final Alert alert = allAlerts.get(alert1.getId());
+        alert.setStatus(AlertStatus.CLOSED);
+        allAlerts.update(alert);
+
+        assertEquals(alert1DateTime, alert.getDateTime());
+        allAlerts.remove(alert);
+    }
 }

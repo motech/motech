@@ -4,6 +4,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.model.MotechBaseDataObject;
+import org.motechproject.util.DateUtil;
 
 @TypeDiscriminator("doc.documentType == 'Alert'")
 public class Alert extends MotechBaseDataObject implements Comparable<Alert> {
@@ -47,7 +48,7 @@ public class Alert extends MotechBaseDataObject implements Comparable<Alert> {
     }
 
     public DateTime getDateTime() {
-        return dateTime;
+        return DateUtil.setTimeZone(dateTime);
     }
 
     public int getPriority() {

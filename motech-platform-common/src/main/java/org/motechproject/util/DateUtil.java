@@ -39,6 +39,10 @@ public class DateUtil {
                 .withHourOfDay(hour).withMinuteOfHour(minute).withSecondOfMinute(second);
     }
 
+    public static DateTime setTimeZone(DateTime dateTime) {
+        return dateTime.toDateTime(getTimeZone());
+    }
+
     public static LocalDate newDate(Date date) {
         if (date == null) return null;
         return new LocalDate(date.getTime(), getTimeZone());
