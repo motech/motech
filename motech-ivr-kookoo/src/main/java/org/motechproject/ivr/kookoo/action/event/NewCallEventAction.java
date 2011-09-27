@@ -36,13 +36,13 @@ public class NewCallEventAction extends BaseEventAction {
 
     @Override
     public String handle(IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
+        createCallDetailRecord(ivrRequest);
         if (!userService.isRegisteredUser(ivrRequest.getCid())) {
             return userNotFoundAction.handle(ivrRequest, request, response);
         }
         IVRSession ivrSession = createIVRSession(request);
         ivrSession.set(IVRCallAttribute.CALLER_ID, ivrRequest.getCid());
         ivrSession.setState(IVRCallState.COLLECT_PIN);
-        createCallDetailRecord(ivrRequest);
         return dtmfResponseWithWav(ivrRequest, messages.getSignatureMusic());
     }
 

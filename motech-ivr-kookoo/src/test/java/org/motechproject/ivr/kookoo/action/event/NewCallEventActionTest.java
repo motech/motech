@@ -67,6 +67,25 @@ public class NewCallEventActionTest extends BaseActionTest {
     }
 
     @Test
+    public void shouldLogNewCallEvent_WhenUserIsNotRegistered() {
+        IVRRequest ivrRequest = new KookooRequest();
+        String callId = "callId";
+        String callerId = "callerId";
+
+        ivrRequest.setSid(callId);
+        ivrRequest.setCid(callerId);
+        Mockito.when(userService.isRegisteredUser(callerId)).thenReturn(false);
+
+        action.handle(ivrRequest, request, response);
+
+        ArgumentCaptor<KookooCallDetailRecord> callDetailRecordCapture = ArgumentCaptor.forClass(KookooCallDetailRecord.class);
+        verify(allCallDetailRecords).add(callDetailRecordCapture.capture());
+
+        KookooCallDetailRecord capturedCallDetailRecord = callDetailRecordCapture.getValue();
+        assertEquals(callId, capturedCallDetailRecord.getCallDetailRecord().getCallId());
+    }
+
+    @Test
     public void shouldSetAttributesInSessionAndSendDtmfResponseWithWav() {
         IVRRequest ivrRequest = new KookooRequest();
         when(userService.isRegisteredUser(ivrRequest.getCid())).thenReturn(true);

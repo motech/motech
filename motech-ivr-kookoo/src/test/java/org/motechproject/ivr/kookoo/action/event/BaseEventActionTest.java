@@ -35,7 +35,7 @@ public class BaseEventActionTest extends BaseActionTest {
     }
 
     @Test
-    public void shouldPublishEventinCallRecord() {
+    public void shouldPublishEventInCallRecord() {
         IVRRequest ivrRequest = new KookooRequest();
         ivrRequest.setSid("callId");
         ivrRequest.setEvent(IVREvent.NEW_CALL.key());
