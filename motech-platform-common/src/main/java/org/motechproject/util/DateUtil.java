@@ -41,6 +41,10 @@ public class DateUtil {
         return dateTime.toDateTime(getTimeZone());
     }
 
+    public static DateTime newDateTime(Date date){
+        return new DateTime(date, getTimeZone()).withMillisOfSecond(0);
+    }
+
     public static LocalDate newDate(Date date) {
         if (date == null) return null;
         return new LocalDate(date.getTime(), getTimeZone());
