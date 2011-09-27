@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.model.Time;
+import org.motechproject.server.pillreminder.domain.DailyScheduleDetails;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.Medicine;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
@@ -36,7 +37,7 @@ public class AllPillRegimensIT {
 
     @Test
     public void shouldSaveThePillRegimenWithoutDosage() {
-        PillRegimen pillRegimen = new PillRegimen("1234", 5, 20, null);
+        PillRegimen pillRegimen = new PillRegimen("1234", null, new DailyScheduleDetails(20, 5));
 
         allPillRegimens.add(pillRegimen);
 
@@ -51,8 +52,9 @@ public class AllPillRegimensIT {
         assertNotNull(pillRegimen.getId());
 
         PillRegimen pillRegimenFromDB = allPillRegimens.get(pillRegimen.getId());
-        assertEquals(5, pillRegimenFromDB.getReminderRepeatWindowInHours());
-        assertEquals(20, pillRegimenFromDB.getReminderRepeatIntervalInMinutes());
+        DailyScheduleDetails scheduleDetailsFromDB = (DailyScheduleDetails) pillRegimenFromDB.getScheduleDetails();
+        assertEquals(5, scheduleDetailsFromDB.getPillWindowInHours());
+        assertEquals(20, scheduleDetailsFromDB.getRepeatIntervalInMinutes());
 
         Object[] dosagesFromDB = pillRegimenFromDB.getDosages().toArray();
         assertEquals(1, dosagesFromDB.length);
@@ -65,7 +67,7 @@ public class AllPillRegimensIT {
 
     @Test
     public void shouldGetPillRegimenByExternalId() {
-        PillRegimen pillRegimen = new PillRegimen("1234", 5, 20, null);
+        PillRegimen pillRegimen = new PillRegimen("1234", null, new DailyScheduleDetails(20, 5));
         allPillRegimens.add(pillRegimen);
         PillRegimen returnedRegimen = allPillRegimens.findByExternalId("1234");
         assertNotNull(returnedRegimen);
@@ -98,6 +100,6 @@ public class AllPillRegimensIT {
         Dosage dosage = new Dosage(new Time(9, 5), medicines);
         Set<Dosage> dosages = new HashSet<Dosage>();
         dosages.add(dosage);
-        return new PillRegimen("1234", 5, 20, dosages);
+        return new PillRegimen("1234", dosages, new DailyScheduleDetails(20, 5));
     }
 }

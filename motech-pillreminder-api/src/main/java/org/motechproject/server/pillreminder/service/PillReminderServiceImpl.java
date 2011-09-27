@@ -11,6 +11,7 @@ import org.motechproject.server.pillreminder.builder.PillRegimenResponseBuilder;
 import org.motechproject.server.pillreminder.builder.SchedulerPayloadBuilder;
 import org.motechproject.server.pillreminder.contract.DailyPillRegimenRequest;
 import org.motechproject.server.pillreminder.contract.PillRegimenResponse;
+import org.motechproject.server.pillreminder.contract.WeeklyPillRegimenRequest;
 import org.motechproject.server.pillreminder.dao.AllPillRegimens;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
@@ -50,6 +51,11 @@ public class PillReminderServiceImpl implements PillReminderService {
                 CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, dosage.getStartDate().toDate(), endDate);
                 schedulerService.scheduleJob(schedulableJob);
         }
+    }
+
+    @Override
+    public void createNew(WeeklyPillRegimenRequest weeklyPillRegimenRequest) {
+
     }
 
     @Override

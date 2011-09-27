@@ -6,6 +6,7 @@ import org.motechproject.model.Time;
 import org.motechproject.server.pillreminder.contract.DailyPillRegimenRequest;
 import org.motechproject.server.pillreminder.contract.DosageRequest;
 import org.motechproject.server.pillreminder.contract.MedicineRequest;
+import org.motechproject.server.pillreminder.domain.DailyScheduleDetails;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.Medicine;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
@@ -35,8 +36,9 @@ public class PillRegimenBuilderTest {
         PillRegimen pillRegimen = builder.createFrom(dailyPillRegimenRequest);
 
         assertEquals(externalId, pillRegimen.getExternalId());
-        assertEquals(5, pillRegimen.getReminderRepeatWindowInHours());
-        assertEquals(20, pillRegimen.getReminderRepeatIntervalInMinutes());
+        DailyScheduleDetails scheduleDetails = (DailyScheduleDetails) pillRegimen.getScheduleDetails();
+        assertEquals(5, scheduleDetails.getPillWindowInHours());
+        assertEquals(20, scheduleDetails.getRepeatIntervalInMinutes());
         assertEquals(1, pillRegimen.getDosages().size());
         for (Dosage dosage : pillRegimen.getDosages()) {
             assertEquals(new Time(10, 5), dosage.getDosageTime());

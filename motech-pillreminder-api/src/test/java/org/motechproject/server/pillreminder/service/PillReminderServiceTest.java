@@ -14,6 +14,7 @@ import org.motechproject.server.pillreminder.contract.DosageRequest;
 import org.motechproject.server.pillreminder.contract.MedicineRequest;
 import org.motechproject.server.pillreminder.contract.PillRegimenResponse;
 import org.motechproject.server.pillreminder.dao.AllPillRegimens;
+import org.motechproject.server.pillreminder.domain.DailyScheduleDetails;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.Medicine;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
@@ -108,7 +109,7 @@ public class PillReminderServiceTest {
         HashSet<Dosage> dosages = new HashSet<Dosage>();
         dosages.add(dosage);
 
-        PillRegimen pillRegimen = new PillRegimen("patientId", 2, 15, dosages);
+        PillRegimen pillRegimen = new PillRegimen("patientId", dosages, new DailyScheduleDetails(15, 2));
         pillRegimen.setId(pillRegimenId);
         when(allPillRegimens.findByExternalId(patientId)).thenReturn(pillRegimen);
 

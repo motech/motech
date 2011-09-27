@@ -2,6 +2,7 @@ package org.motechproject.server.pillreminder.builder;
 
 import org.motechproject.server.pillreminder.contract.DailyPillRegimenRequest;
 import org.motechproject.server.pillreminder.contract.DosageRequest;
+import org.motechproject.server.pillreminder.domain.DailyScheduleDetails;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
 
@@ -16,6 +17,8 @@ public class PillRegimenBuilder {
         Set<Dosage> dosages = new HashSet<Dosage>();
         for (DosageRequest dosageRequest : dailyPillRegimenRequest.getDosageRequests())
             dosages.add(dosageBuilder.createFrom(dosageRequest));
-        return new PillRegimen(dailyPillRegimenRequest.getExternalId(), dailyPillRegimenRequest.getPillWindowInHours(), dailyPillRegimenRequest.getReminderRepeatIntervalInMinutes(), dosages);
+        final int pillWindowInHours = dailyPillRegimenRequest.getPillWindowInHours();
+        final int reminderRepeatIntervalInMinutes = dailyPillRegimenRequest.getReminderRepeatIntervalInMinutes();
+        return new PillRegimen(dailyPillRegimenRequest.getExternalId(), dosages, new DailyScheduleDetails(reminderRepeatIntervalInMinutes, pillWindowInHours));
     }
 }

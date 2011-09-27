@@ -3,6 +3,7 @@ package org.motechproject.server.pillreminder.builder;
 import org.junit.Test;
 import org.motechproject.model.Time;
 import org.motechproject.server.pillreminder.contract.PillRegimenResponse;
+import org.motechproject.server.pillreminder.domain.DailyScheduleDetails;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.Medicine;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
@@ -19,7 +20,7 @@ public class PillRegimenResponseBuilderTest {
     public void shouldCreateAPillRegimenResponse() {
 
         final Dosage dosage = new Dosage(new Time(10, 5), new HashSet<Medicine>());
-        PillRegimen pillRegimen = new PillRegimen("123", 5, 20, new HashSet<Dosage>(){{this.add(dosage);}});
+        PillRegimen pillRegimen = new PillRegimen("123", new HashSet<Dosage>(){{this.add(dosage);}}, new DailyScheduleDetails(20, 5));
         pillRegimen.setId("pillRegimenId");
 
         PillRegimenResponse pillRegimenResponse = builder.createFrom(pillRegimen);

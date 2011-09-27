@@ -4,6 +4,7 @@ import org.ektorp.CouchDbConnector;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.motechproject.server.pillreminder.domain.DailyScheduleDetails;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
 
 import static org.mockito.Mockito.verify;
@@ -22,7 +23,7 @@ public class AllPillRegimensTest {
 
     @Test
     public void shouldAddPillRegimen() {
-        PillRegimen pillRegimen = new PillRegimen("123", 5, 10, null);
+        PillRegimen pillRegimen = new PillRegimen("123", null, new DailyScheduleDetails(10, 5));
         allPillRegimens.add(pillRegimen);
         verify(couchDbConnector).create(pillRegimen);
     }
