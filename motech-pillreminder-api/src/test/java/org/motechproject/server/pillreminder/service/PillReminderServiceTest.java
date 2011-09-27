@@ -9,9 +9,9 @@ import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.pillreminder.EventKeys;
+import org.motechproject.server.pillreminder.contract.DailyPillRegimenRequest;
 import org.motechproject.server.pillreminder.contract.DosageRequest;
 import org.motechproject.server.pillreminder.contract.MedicineRequest;
-import org.motechproject.server.pillreminder.contract.PillRegimenRequest;
 import org.motechproject.server.pillreminder.contract.PillRegimenResponse;
 import org.motechproject.server.pillreminder.dao.AllPillRegimens;
 import org.motechproject.server.pillreminder.domain.Dosage;
@@ -51,9 +51,9 @@ public class PillReminderServiceTest {
         List<MedicineRequest> medicineRequests = asList(medicineRequest1, medicineRequest2);
 
         DosageRequest dosageRequest = new DosageRequest(9, 5, medicineRequests);
-        PillRegimenRequest pillRegimenRequest = new PillRegimenRequest(externalId, 5, 20, asList(dosageRequest));
+        DailyPillRegimenRequest dailyPillRegimenRequest = new DailyPillRegimenRequest(externalId, 5, 20, asList(dosageRequest));
 
-        service.createNew(pillRegimenRequest);
+        service.createNew(dailyPillRegimenRequest);
 
         verify(allPillRegimens).add(argThat(new PillRegimenArgumentMatcher()));
         verify(schedulerService, times(1)).scheduleJob(argThat(new CronSchedulableJobArgumentMatcher(startDate.toDate(), startDate.plusDays(4).toDate())));
@@ -71,7 +71,7 @@ public class PillReminderServiceTest {
         List<MedicineRequest> medicineRequests = asList(medicineRequest1, medicineRequest2);
 
         DosageRequest dosageRequest = new DosageRequest(9, 5, medicineRequests);
-        PillRegimenRequest pillRegimenRequest = new PillRegimenRequest(externalId, 5, 20, asList(dosageRequest));
+        DailyPillRegimenRequest dailyPillRegimenRequest = new DailyPillRegimenRequest(externalId, 5, 20, asList(dosageRequest));
         PillRegimen regimen = mock(PillRegimen.class);
         final Dosage dosage = mock(Dosage.class);
         Set<Dosage> dosages = new HashSet<Dosage>() {{
@@ -81,7 +81,7 @@ public class PillReminderServiceTest {
         when(dosage.getId()).thenReturn(randomUID);
         when(allPillRegimens.findByExternalId(externalId)).thenReturn(regimen);
 
-        service.renew(pillRegimenRequest);
+        service.renew(dailyPillRegimenRequest);
 
         verify(schedulerService).unscheduleJob(randomUID);
         verify(allPillRegimens).remove(regimen);

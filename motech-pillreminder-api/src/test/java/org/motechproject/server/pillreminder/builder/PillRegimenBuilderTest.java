@@ -3,9 +3,9 @@ package org.motechproject.server.pillreminder.builder;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.motechproject.model.Time;
+import org.motechproject.server.pillreminder.contract.DailyPillRegimenRequest;
 import org.motechproject.server.pillreminder.contract.DosageRequest;
 import org.motechproject.server.pillreminder.contract.MedicineRequest;
-import org.motechproject.server.pillreminder.contract.PillRegimenRequest;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.Medicine;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
@@ -30,9 +30,9 @@ public class PillRegimenBuilderTest {
         List<MedicineRequest> medicineRequests = asList(medicineRequest);
 
         DosageRequest dosageRequest = new DosageRequest(10, 5, medicineRequests);
-        PillRegimenRequest pillRegimenRequest = new PillRegimenRequest(externalId, 5, 20, asList(dosageRequest));
+        DailyPillRegimenRequest dailyPillRegimenRequest = new DailyPillRegimenRequest(externalId, 5, 20, asList(dosageRequest));
 
-        PillRegimen pillRegimen = builder.createFrom(pillRegimenRequest);
+        PillRegimen pillRegimen = builder.createFrom(dailyPillRegimenRequest);
 
         assertEquals(externalId, pillRegimen.getExternalId());
         assertEquals(5, pillRegimen.getReminderRepeatWindowInHours());

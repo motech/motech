@@ -2,15 +2,15 @@ package org.motechproject.server.pillreminder.contract;
 
 import java.util.List;
 
-public class PillRegimenRequest {
+public class DailyPillRegimenRequest {
     private String externalId;
-    private int reminderRepeatWindowInHours;
+    private int pillWindowInHours;
     private int reminderRepeatIntervalInMinutes;
     private List<DosageRequest> dosageRequests;
 
-    public PillRegimenRequest(String externalId, int reminderRepeatWindowInHours, int reminderRepeatIntervalInMinutes, List<DosageRequest> dosageRequests) {
+    public DailyPillRegimenRequest(String externalId, int pillWindowInHours, int reminderRepeatIntervalInMinutes, List<DosageRequest> dosageRequests) {
         this.externalId = externalId;
-        this.reminderRepeatWindowInHours = reminderRepeatWindowInHours;
+        this.pillWindowInHours = pillWindowInHours;
         this.reminderRepeatIntervalInMinutes = reminderRepeatIntervalInMinutes;
         this.dosageRequests = dosageRequests;
     }
@@ -19,8 +19,8 @@ public class PillRegimenRequest {
         return externalId;
     }
 
-    public int getReminderRepeatWindowInHours() {
-        return reminderRepeatWindowInHours;
+    public int getPillWindowInHours() {
+        return pillWindowInHours;
     }
 
     public int getReminderRepeatIntervalInMinutes() {

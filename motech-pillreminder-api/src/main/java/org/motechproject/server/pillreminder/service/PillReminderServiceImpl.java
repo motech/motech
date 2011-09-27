@@ -9,7 +9,7 @@ import org.motechproject.server.pillreminder.EventKeys;
 import org.motechproject.server.pillreminder.builder.PillRegimenBuilder;
 import org.motechproject.server.pillreminder.builder.PillRegimenResponseBuilder;
 import org.motechproject.server.pillreminder.builder.SchedulerPayloadBuilder;
-import org.motechproject.server.pillreminder.contract.PillRegimenRequest;
+import org.motechproject.server.pillreminder.contract.DailyPillRegimenRequest;
 import org.motechproject.server.pillreminder.contract.PillRegimenResponse;
 import org.motechproject.server.pillreminder.dao.AllPillRegimens;
 import org.motechproject.server.pillreminder.domain.Dosage;
@@ -31,9 +31,9 @@ public class PillReminderServiceImpl implements PillReminderService {
     }
 
     @Override
-    public void createNew(PillRegimenRequest pillRegimenRequest) {
+    public void createNew(DailyPillRegimenRequest dailyPillRegimenRequest) {
         PillRegimenBuilder builder = new PillRegimenBuilder();
-        PillRegimen pillRegimen = builder.createFrom(pillRegimenRequest);
+        PillRegimen pillRegimen = builder.createFrom(dailyPillRegimenRequest);
         pillRegimen.validate();
         allPillRegimens.add(pillRegimen);
 
@@ -44,18 +44,18 @@ public class PillReminderServiceImpl implements PillReminderService {
                     .withPillRegimenId(pillRegimen.getId())
                     .withExternalId(pillRegimen.getExternalId()).payload();
 
-            MotechEvent motechEvent = new MotechEvent(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, eventParams);
-            String cronJobExpression = new CronJobSimpleExpressionBuilder(dosage.getDosageTime()).build();
-            Date endDate = dosage.getEndDate() == null ? null : dosage.getEndDate().toDate();
-            CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, dosage.getStartDate().toDate(), endDate);
-            schedulerService.scheduleJob(schedulableJob);
+                MotechEvent motechEvent = new MotechEvent(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, eventParams);
+                String cronJobExpression = new CronJobSimpleExpressionBuilder(dosage.getDosageTime()).build();
+                Date endDate = dosage.getEndDate() == null ? null : dosage.getEndDate().toDate();
+                CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, dosage.getStartDate().toDate(), endDate);
+                schedulerService.scheduleJob(schedulableJob);
         }
     }
 
     @Override
-    public void renew(PillRegimenRequest newScheduleRequest) {
-        destroy(newScheduleRequest.getExternalId());
-        createNew(newScheduleRequest);
+    public void renew(DailyPillRegimenRequest newDailyScheduleRequest) {
+        destroy(newDailyScheduleRequest.getExternalId());
+        createNew(newDailyScheduleRequest);
     }
 
     @Override
