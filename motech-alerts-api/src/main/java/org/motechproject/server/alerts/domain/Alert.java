@@ -25,6 +25,7 @@ public class Alert extends MotechBaseDataObject implements Comparable<Alert> {
         this.alertType =  alertType;
         this.status = status;
         this.priority = priority;
+        this.dateTime = DateUtil.now();
     }
 
     public Alert(){
