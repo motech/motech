@@ -64,19 +64,6 @@ public class PillReminderServiceIT {
     }
 
     @Test
-    public void shouldSaveTheWeeklyPillRegimenAndScheduleJob() throws SchedulerException {
-        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
-
-        pillReminderService.createNew(new WeeklyPillRegimenRequest("1234", new Time(10, 30), DayOfTheWeek.WEDNESDAY, 3, 15, DateUtil.today()));
-
-        final PillRegimen pillRegimen = allPillRegimens.get("1234");
-        Assert.assertEquals("1234", pillRegimen.getExternalId());
-        Assert.assertEquals("1234", pillRegimen.getDosages());
-
-        Assert.assertEquals(scheduledJobsNum + 1, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
-    }
-
-    @Test
     public void shouldRenewThePillRegimenAndScheduleJob() throws SchedulerException {
 
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;

@@ -1,11 +1,14 @@
 package org.motechproject.server.pillreminder.domain;
 
 public class DailyScheduleDetails extends ScheduleDetails {
-
     private int pillWindowInHours;
 
-    public DailyScheduleDetails(int repeatInterval, int pillWindowInHours) {
-        super(repeatInterval);
+    protected DailyScheduleDetails() {
+        super();
+    }
+
+    public DailyScheduleDetails(int repeatIntervalInMinutes, int pillWindowInHours) {
+        super(repeatIntervalInMinutes);
         this.pillWindowInHours = pillWindowInHours;
     }
 

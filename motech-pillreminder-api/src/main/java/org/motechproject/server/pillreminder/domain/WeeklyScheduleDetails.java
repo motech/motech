@@ -1,8 +1,11 @@
 package org.motechproject.server.pillreminder.domain;
 
 public class WeeklyScheduleDetails extends ScheduleDetails {
-
     private int retries;
+
+    protected WeeklyScheduleDetails() {
+        super();
+    }
 
     public WeeklyScheduleDetails(int repeatInterval, int retries) {
         super(repeatInterval);
