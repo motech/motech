@@ -2,8 +2,7 @@ package org.motechproject.ivr.kookoo.action.event;
 
 import org.motechproject.eventtracking.service.EventService;
 import org.motechproject.ivr.kookoo.action.UserNotFoundAction;
-import org.motechproject.ivr.kookoo.domain.KookooCallDetailRecord;
-import org.motechproject.ivr.kookoo.repository.AllKooKooCallDetailRecords;
+import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
 import org.motechproject.ivr.kookoo.service.UserService;
 import org.motechproject.server.service.ivr.*;
 import org.motechproject.server.service.ivr.IVRSession.IVRCallAttribute;
@@ -16,22 +15,22 @@ import javax.servlet.http.HttpServletResponse;
 @Service
 public class NewCallEventAction extends BaseEventAction {
 
+    @Autowired
     private UserNotFoundAction userNotFoundAction;
 
+    @Autowired
     private UserService userService;
 
-    private final AllKooKooCallDetailRecords allCallDetailRecords;
+    public NewCallEventAction(){
+    }
 
-    @Autowired
     public NewCallEventAction(IVRMessage messages, UserNotFoundAction userNotFoundAction, UserService userService,
-                              EventService eventService, IVRCallIdentifiers callIdentifiers,
-                              AllKooKooCallDetailRecords allKooKooCallDetailRecords) {
-
-        super(eventService, callIdentifiers, allKooKooCallDetailRecords);
-        this.userService = userService;
-        this.allCallDetailRecords = allKooKooCallDetailRecords;
+                              EventService eventService, KookooCallDetailRecordsService kookooCallDetailRecordsService) {
         this.messages = messages;
+        this.userService = userService;
         this.userNotFoundAction = userNotFoundAction;
+        this.kookooCallDetailRecordsService = kookooCallDetailRecordsService;
+        this.eventService = eventService;
     }
 
     @Override
@@ -52,6 +51,6 @@ public class NewCallEventAction extends BaseEventAction {
             callDetailRecord = CallDetailRecord.newIncomingCallRecord(ivrRequest.getSid(), ivrRequest.getCid());
         else
             callDetailRecord = CallDetailRecord.newOutgoingCallRecord(ivrRequest.getSid(), ivrRequest.getCid());
-        allCallDetailRecords.add(new KookooCallDetailRecord(callDetailRecord));
+        kookooCallDetailRecordsService.create(callDetailRecord);
     }
 }

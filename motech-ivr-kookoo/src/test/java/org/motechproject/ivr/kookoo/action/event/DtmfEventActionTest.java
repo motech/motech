@@ -27,7 +27,7 @@ public class DtmfEventActionTest extends BaseActionTest {
     public void setUp() {
         super.setUp();
         MockitoAnnotations.initMocks(this);
-        eventAction = new DtmfEventAction(authenticateAction, null, null);
+        eventAction = new DtmfEventAction(authenticateAction);
     }
 
     @Test

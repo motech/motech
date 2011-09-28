@@ -15,16 +15,21 @@ import javax.servlet.http.HttpServletResponse;
 
 @Service
 public class DtmfEventAction extends BaseEventAction {
-    private AuthenticateAction authenticateAction;
-    private TreeChooser treeChooser;
-    private DecisionTreeBasedResponseBuilder responseBuilder;
- 
+
     @Autowired
-    public DtmfEventAction(AuthenticateAction authenticateAction,
-                           TreeChooser treeChooser, DecisionTreeBasedResponseBuilder ivrResponseBuilder) {
+    private AuthenticateAction authenticateAction;
+
+    @Autowired
+    private TreeChooser treeChooser;
+
+    @Autowired
+    private DecisionTreeBasedResponseBuilder responseBuilder;
+
+    public DtmfEventAction() {
+    }
+
+    public DtmfEventAction(AuthenticateAction authenticateAction) {
         this.authenticateAction = authenticateAction;
-        this.treeChooser = treeChooser;
-        this.responseBuilder = ivrResponseBuilder;
     }
 
     @Override

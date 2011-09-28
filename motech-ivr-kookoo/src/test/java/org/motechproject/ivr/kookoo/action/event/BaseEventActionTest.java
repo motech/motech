@@ -3,10 +3,11 @@ package org.motechproject.ivr.kookoo.action.event;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.ivr.kookoo.KookooRequest;
 import org.motechproject.ivr.kookoo.domain.KookooCallDetailRecord;
-import org.motechproject.ivr.kookoo.repository.AllKooKooCallDetailRecords;
+import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
 import org.motechproject.server.service.ivr.CallDetailRecord;
 import org.motechproject.server.service.ivr.CallEvent;
 import org.motechproject.server.service.ivr.IVREvent;
@@ -14,8 +15,6 @@ import org.motechproject.server.service.ivr.IVRRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
@@ -26,12 +25,12 @@ public class BaseEventActionTest extends BaseActionTest {
     private TestEventAction testEventAction;
 
     @Mock
-    private AllKooKooCallDetailRecords allKooKooCallDetailRecords;
+    private KookooCallDetailRecordsService kookooCallDetailRecordsService;
 
     @Before
     public void setUp(){
         super.setUp();
-        testEventAction = new TestEventAction(allKooKooCallDetailRecords);
+        testEventAction = new TestEventAction(kookooCallDetailRecordsService);
     }
 
     @Test
@@ -41,22 +40,20 @@ public class BaseEventActionTest extends BaseActionTest {
         ivrRequest.setEvent(IVREvent.NEW_CALL.key());
         KookooCallDetailRecord kooKooCallDetailRecord = new KookooCallDetailRecord(CallDetailRecord.newIncomingCallRecord("callId", "phoneNumber"));
 
-        when(allKooKooCallDetailRecords.findByCallId("callId")).thenReturn(kooKooCallDetailRecord);
+        when(kookooCallDetailRecordsService.findByCallId("callId")).thenReturn(kooKooCallDetailRecord);
         testEventAction.handleInternal(ivrRequest, request, response);
 
-        ArgumentCaptor<KookooCallDetailRecord> kookooCallDetailRecordArgumentCaptor = ArgumentCaptor.forClass(KookooCallDetailRecord.class);
-        verify(allKooKooCallDetailRecords).update(kookooCallDetailRecordArgumentCaptor.capture());
+        ArgumentCaptor<CallEvent> kookooCallDetailRecordArgumentCaptor = ArgumentCaptor.forClass(CallEvent.class);
+        verify(kookooCallDetailRecordsService).appendEvent(Matchers.same("callId"), kookooCallDetailRecordArgumentCaptor.capture());
 
-        KookooCallDetailRecord kookooCallDetailRecord = kookooCallDetailRecordArgumentCaptor.getValue();
-        List<CallEvent> callEvents = kookooCallDetailRecord.getCallDetailRecord().getCallEvents();
-        assertEquals(1, callEvents.size());
-        assertEquals("NewCall", callEvents.get(0).getName());
+        CallEvent callEvent = kookooCallDetailRecordArgumentCaptor.getValue();
+        assertEquals("NewCall", callEvent.getName());
     }
 
     private static class TestEventAction extends BaseEventAction {
 
-        TestEventAction(AllKooKooCallDetailRecords allKooKooCallDetailRecords){
-            super(null, null, allKooKooCallDetailRecords);
+        TestEventAction(KookooCallDetailRecordsService kookooCallDetailRecordsService){
+            super(kookooCallDetailRecordsService);
         }
 
         @Override

@@ -1,5 +1,6 @@
 package org.motechproject.ivr.kookoo.domain;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechBaseDataObject;
@@ -12,6 +13,8 @@ public class KookooCallDetailRecord extends MotechBaseDataObject {
 
     @JsonProperty("type")
     private String type = "KookooCallDetailRecord";
+
+    private String vendorCallId;
 
     private CallDetailRecord callDetailRecord;
 
@@ -44,5 +47,18 @@ public class KookooCallDetailRecord extends MotechBaseDataObject {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getVendorCallId() {
+        return vendorCallId;
+    }
+
+    public void setVendorCallId(String vendorCallId) {
+        this.vendorCallId = vendorCallId;
+    }
+
+    @JsonIgnore
+    public String getCallId() {
+        return this.getId();
     }
 }

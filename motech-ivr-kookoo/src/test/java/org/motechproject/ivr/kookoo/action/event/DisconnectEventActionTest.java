@@ -8,7 +8,7 @@ import org.motechproject.eventtracking.service.EventService;
 import org.motechproject.ivr.kookoo.EndOfCallEvent;
 import org.motechproject.ivr.kookoo.KookooRequest;
 import org.motechproject.ivr.kookoo.domain.KookooCallDetailRecord;
-import org.motechproject.ivr.kookoo.repository.AllKooKooCallDetailRecords;
+import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
 import org.motechproject.server.service.ivr.CallDetailRecord;
 import org.motechproject.server.service.ivr.IVREvent;
 import org.motechproject.server.service.ivr.IVRRequest;
@@ -27,13 +27,10 @@ public class DisconnectEventActionTest extends BaseActionTest {
 
     @Mock
     private KookooCallDetailRecord kooKooCallDetailRecord;
-
     @Mock
-    private AllKooKooCallDetailRecords allKooKooCallDetailRecords;
-
+    private KookooCallDetailRecordsService kookooCallDetailRecordsService;
     @Mock
     private EventService eventService;
-
 
     @Before
     public void setUp() {
@@ -43,10 +40,10 @@ public class DisconnectEventActionTest extends BaseActionTest {
         ivrRequest.setCid("callerId");
         ivrRequest.setEvent(IVREvent.NEW_CALL.key());
 
-        action = new DisconnectEventAction(eventService, allKooKooCallDetailRecords);
+        action = new DisconnectEventAction(eventService, kookooCallDetailRecordsService);
         CallDetailRecord callDetailRecord = CallDetailRecord.newIncomingCallRecord("callId", "phoneNumber");
         when(kooKooCallDetailRecord.getCallDetailRecord()).thenReturn(callDetailRecord);
-        when(allKooKooCallDetailRecords.findByCallId("callId")).thenReturn(kooKooCallDetailRecord);
+        when(kookooCallDetailRecordsService.findByCallId("callId")).thenReturn(kooKooCallDetailRecord);
         when(session.getAttribute(IVRSession.IVRCallAttribute.EXTERNAL_ID)).thenReturn("externalId");
     }
 

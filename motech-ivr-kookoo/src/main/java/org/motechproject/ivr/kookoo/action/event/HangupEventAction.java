@@ -3,7 +3,7 @@ package org.motechproject.ivr.kookoo.action.event;
 import org.motechproject.eventtracking.service.EventService;
 import org.motechproject.ivr.kookoo.EndOfCallEvent;
 import org.motechproject.ivr.kookoo.domain.KookooCallDetailRecord;
-import org.motechproject.ivr.kookoo.repository.AllKooKooCallDetailRecords;
+import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
 import org.motechproject.server.service.ivr.IVRRequest;
 import org.motechproject.server.service.ivr.IVRSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +15,12 @@ import javax.servlet.http.HttpServletResponse;
 @Service
 public class HangupEventAction extends BaseEventAction {
 
-    @Autowired
-    public HangupEventAction(EventService eventService, AllKooKooCallDetailRecords allKooKooCallDetailRecords) {
+    public HangupEventAction() {
+    }
+
+    public HangupEventAction(EventService eventService, KookooCallDetailRecordsService kookooCallDetailRecordsService) {
         this.eventService = eventService;
-        this.allKooKooCallDetailRecords = allKooKooCallDetailRecords;
+        this.kookooCallDetailRecordsService = kookooCallDetailRecordsService;
     }
 
     @Override
@@ -29,11 +31,10 @@ public class HangupEventAction extends BaseEventAction {
     @Override
     public void postHandle(IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
         String callId = ivrRequest.getSid();
-        KookooCallDetailRecord callDetailRecord = allKooKooCallDetailRecords.findByCallId(callId);
+        KookooCallDetailRecord callDetailRecord = kookooCallDetailRecordsService.findByCallId(callId);
         callDetailRecord.close();
         raiseDisconnectEvent(getIVRSession(request), callDetailRecord);
         getIVRSession(request).close();
-        return;
     }
 
     private void raiseDisconnectEvent(IVRSession ivrSession, KookooCallDetailRecord kookooCallDetailRecord) {

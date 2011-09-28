@@ -7,13 +7,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.motechproject.ivr.kookoo.KookooRequest;
 import org.motechproject.ivr.kookoo.action.UserNotFoundAction;
-import org.motechproject.ivr.kookoo.domain.KookooCallDetailRecord;
-import org.motechproject.ivr.kookoo.repository.AllKooKooCallDetailRecords;
+import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
 import org.motechproject.ivr.kookoo.service.UserService;
-import org.motechproject.server.service.ivr.IVRCallState;
-import org.motechproject.server.service.ivr.IVRMessage;
-import org.motechproject.server.service.ivr.IVRRequest;
-import org.motechproject.server.service.ivr.IVRSession;
+import org.motechproject.server.service.ivr.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
@@ -30,12 +26,12 @@ public class NewCallEventActionTest extends BaseActionTest {
     @Mock
     private UserNotFoundAction userNotFoundAction;
     @Mock
-    private AllKooKooCallDetailRecords allCallDetailRecords;
+    private KookooCallDetailRecordsService kookooCallDetailRecordsService;
 
     @Before
     public void setUp() {
         super.setUp();
-        action = new NewCallEventAction(ivrMessages, userNotFoundAction, userService, eventService, callIdentifiers, allCallDetailRecords);
+        action = new NewCallEventAction(ivrMessages, userNotFoundAction, userService, eventService, kookooCallDetailRecordsService);
     }
 
     @Test
@@ -59,12 +55,12 @@ public class NewCallEventActionTest extends BaseActionTest {
 
         action.handle(ivrRequest, request, response);
 
-        ArgumentCaptor<KookooCallDetailRecord> callDetailRecordCapture = ArgumentCaptor.forClass(KookooCallDetailRecord.class);
-        verify(allCallDetailRecords).add(callDetailRecordCapture.capture());
+        ArgumentCaptor<CallDetailRecord> callDetailRecordCapture = ArgumentCaptor.forClass(CallDetailRecord.class);
+        verify(kookooCallDetailRecordsService).create(callDetailRecordCapture.capture());
 
-        KookooCallDetailRecord capturedCallDetailRecord = callDetailRecordCapture.getValue();
-        assertEquals(callId, capturedCallDetailRecord.getCallDetailRecord().getCallId());
-        assertEquals(IVRRequest.CallDirection.Inbound, capturedCallDetailRecord.getCallDetailRecord().getCallDirection());
+        CallDetailRecord capturedCallDetailRecord = callDetailRecordCapture.getValue();
+        assertEquals(callId, capturedCallDetailRecord.getCallId());
+        assertEquals(IVRRequest.CallDirection.Inbound, capturedCallDetailRecord.getCallDirection());
     }
 
     @Test
@@ -80,12 +76,12 @@ public class NewCallEventActionTest extends BaseActionTest {
 
         action.handle(ivrRequest, request, response);
 
-        ArgumentCaptor<KookooCallDetailRecord> callDetailRecordCapture = ArgumentCaptor.forClass(KookooCallDetailRecord.class);
-        verify(allCallDetailRecords).add(callDetailRecordCapture.capture());
+        ArgumentCaptor<CallDetailRecord> callDetailRecordCapture = ArgumentCaptor.forClass(CallDetailRecord.class);
+        verify(kookooCallDetailRecordsService).create(callDetailRecordCapture.capture());
 
-        KookooCallDetailRecord capturedCallDetailRecord = callDetailRecordCapture.getValue();
-        assertEquals(callId, capturedCallDetailRecord.getCallDetailRecord().getCallId());
-        assertEquals(IVRRequest.CallDirection.Outbound, capturedCallDetailRecord.getCallDetailRecord().getCallDirection());
+        CallDetailRecord capturedCallDetailRecord = callDetailRecordCapture.getValue();
+        assertEquals(callId, capturedCallDetailRecord.getCallId());
+        assertEquals(IVRRequest.CallDirection.Outbound, capturedCallDetailRecord.getCallDirection());
     }
 
     @Test
@@ -100,11 +96,11 @@ public class NewCallEventActionTest extends BaseActionTest {
 
         action.handle(ivrRequest, request, response);
 
-        ArgumentCaptor<KookooCallDetailRecord> callDetailRecordCapture = ArgumentCaptor.forClass(KookooCallDetailRecord.class);
-        verify(allCallDetailRecords).add(callDetailRecordCapture.capture());
+        ArgumentCaptor<CallDetailRecord> callDetailRecordCapture = ArgumentCaptor.forClass(CallDetailRecord.class);
+        verify(kookooCallDetailRecordsService).create(callDetailRecordCapture.capture());
 
-        KookooCallDetailRecord capturedCallDetailRecord = callDetailRecordCapture.getValue();
-        assertEquals(callId, capturedCallDetailRecord.getCallDetailRecord().getCallId());
+        CallDetailRecord capturedCallDetailRecord = callDetailRecordCapture.getValue();
+        assertEquals(callId, capturedCallDetailRecord.getCallId());
     }
 
     @Test
