@@ -12,6 +12,7 @@ import org.motechproject.ivr.kookoo.repository.AllKooKooCallDetailRecords;
 import org.motechproject.server.service.ivr.CallDetailRecord;
 import org.motechproject.server.service.ivr.IVREvent;
 import org.motechproject.server.service.ivr.IVRRequest;
+import org.motechproject.server.service.ivr.IVRSession;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
@@ -45,7 +46,7 @@ public class HangupEventActionTest extends BaseActionTest {
         CallDetailRecord callDetailRecord = CallDetailRecord.newIncomingCallRecord("callId", "phoneNumber");
         when(kooKooCallDetailRecord.getCallDetailRecord()).thenReturn(callDetailRecord);
         when(allKooKooCallDetailRecords.findByCallId("callId")).thenReturn(kooKooCallDetailRecord);
-        when(session.getAttribute("reference-id")).thenReturn("referenceId");
+        when(session.getAttribute(IVRSession.IVRCallAttribute.EXTERNAL_ID)).thenReturn("externalId");
     }
 
     @Test
@@ -62,6 +63,6 @@ public class HangupEventActionTest extends BaseActionTest {
         verify(eventService).publishEvent(endOfCallEventArgumentCaptor.capture());
         EndOfCallEvent event = endOfCallEventArgumentCaptor.getValue();
         assertEquals("callId", event.getCallId());
-        assertEquals("referenceId", event.getReferenceId());
+        assertEquals("externalId", event.getExternalId());
     }
 }

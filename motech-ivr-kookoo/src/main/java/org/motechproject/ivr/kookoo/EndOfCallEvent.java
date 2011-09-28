@@ -6,18 +6,18 @@ public class EndOfCallEvent implements Event {
 
     private final String callId;
 
-    private final String referenceId;
+    private final String externalId;
 
-    public EndOfCallEvent(String callId, String referenceId) {
+    public EndOfCallEvent(String callId, String externalId) {
         this.callId = callId;
-        this.referenceId = referenceId;
+        this.externalId = externalId;
     }
 
     public String getCallId() {
         return callId;
     }
 
-    public String getReferenceId() {
-        return referenceId;
+    public String getExternalId() {
+        return externalId;
     }
 }

@@ -37,8 +37,7 @@ public class HangupEventAction extends BaseEventAction {
     }
 
     private void raiseDisconnectEvent(IVRSession ivrSession, KookooCallDetailRecord kookooCallDetailRecord) {
-        String referenceId = (String) ivrSession.get("reference-id");
         String callId = kookooCallDetailRecord.getCallDetailRecord().getCallId();
-        eventService.publishEvent(new EndOfCallEvent(callId, referenceId));
+        eventService.publishEvent(new EndOfCallEvent(callId, ivrSession.getExternalId()));
     }
 }
