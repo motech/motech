@@ -39,7 +39,7 @@ public class BaseEventActionTest extends BaseActionTest {
         IVRRequest ivrRequest = new KookooRequest();
         ivrRequest.setSid("callId");
         ivrRequest.setEvent(IVREvent.NEW_CALL.key());
-        KookooCallDetailRecord kooKooCallDetailRecord = new KookooCallDetailRecord(CallDetailRecord.create("callId", "phoneNumber"));
+        KookooCallDetailRecord kooKooCallDetailRecord = new KookooCallDetailRecord(CallDetailRecord.newIncomingCallRecord("callId", "phoneNumber"));
 
         when(allKooKooCallDetailRecords.findByCallId("callId")).thenReturn(kooKooCallDetailRecord);
         testEventAction.handleInternal(ivrRequest, request, response);

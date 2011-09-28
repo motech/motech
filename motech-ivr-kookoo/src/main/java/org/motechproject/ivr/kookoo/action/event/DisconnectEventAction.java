@@ -24,16 +24,16 @@ public class DisconnectEventAction extends BaseEventAction {
 
     @Override
     public String handle(IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
-        String callId = ivrRequest.getSid();
-        KookooCallDetailRecord callDetailRecord = allKooKooCallDetailRecords.findByCallId(callId);
-        callDetailRecord.close();
-        raiseDisconnectEvent(getIVRSession(request), callDetailRecord);
         return null;
     }
 
     @Override
     public void postHandle(IVRRequest ivrRequest, HttpServletRequest request,
                            HttpServletResponse response) {
+        String callId = ivrRequest.getSid();
+        KookooCallDetailRecord callDetailRecord = allKooKooCallDetailRecords.findByCallId(callId);
+        callDetailRecord.close();
+        raiseDisconnectEvent(getIVRSession(request), callDetailRecord);
         getIVRSession(request).close();
     }
 

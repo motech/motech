@@ -48,7 +48,7 @@ public class NewCallEventActionTest extends BaseActionTest {
     }
 
     @Test
-    public void shouldLogNewCallEvent() {
+    public void shouldLogNewCallEvent_ForIncomingCall() {
         IVRRequest ivrRequest = new KookooRequest();
         String callId = "callId";
         String callerId = "callerId";
@@ -64,6 +64,28 @@ public class NewCallEventActionTest extends BaseActionTest {
 
         KookooCallDetailRecord capturedCallDetailRecord = callDetailRecordCapture.getValue();
         assertEquals(callId, capturedCallDetailRecord.getCallDetailRecord().getCallId());
+        assertEquals(IVRRequest.CallDirection.Inbound, capturedCallDetailRecord.getCallDetailRecord().getCallDirection());
+    }
+
+    @Test
+    public void shouldLogNewCallEvent_ForOutgoingCall() {
+        IVRRequest ivrRequest = new KookooRequest();
+        String callId = "callId";
+        String callerId = "callerId";
+
+        ivrRequest.setSid(callId);
+        ivrRequest.setCid(callerId);
+        ivrRequest.setParameter(IVRSession.IVRCallAttribute.IS_OUTBOUND_CALL, "true");
+        Mockito.when(userService.isRegisteredUser(callerId)).thenReturn(true);
+
+        action.handle(ivrRequest, request, response);
+
+        ArgumentCaptor<KookooCallDetailRecord> callDetailRecordCapture = ArgumentCaptor.forClass(KookooCallDetailRecord.class);
+        verify(allCallDetailRecords).add(callDetailRecordCapture.capture());
+
+        KookooCallDetailRecord capturedCallDetailRecord = callDetailRecordCapture.getValue();
+        assertEquals(callId, capturedCallDetailRecord.getCallDetailRecord().getCallId());
+        assertEquals(IVRRequest.CallDirection.Outbound, capturedCallDetailRecord.getCallDetailRecord().getCallDirection());
     }
 
     @Test

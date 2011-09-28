@@ -45,7 +45,7 @@ public class KookooCallServiceImpl implements IVRService {
         try {
             params.put(CALL_ID_KEY, ivrCallIdentifiers.getNew());
             JSONObject json = new JSONObject(params);
-            String applicationUrl = callBackUrl + "?tamaData=" + json.toString();
+            String applicationUrl = callBackUrl + "?dataMap=" + json.toString();
             applicationUrl = URLEncoder.encode(applicationUrl, "UTF-8");
 
             GetMethod getMethod = new GetMethod(properties.get(KOOKOO_OUTBOUND_URL).toString());

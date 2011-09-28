@@ -111,7 +111,7 @@ public class KookooCallServiceImplTest {
     public void shouldMakeACallWithMandatoryParameters() throws IOException {
         Map<String, String> params = new HashMap<String, String>();
         ivrService.initiateCall(new CallRequest(phoneNumber, params, CALLBACK_URL));
-        verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://kookoo/outbound.php?api_key=KKbedce53758c2e0b0e9eed7191ec2a466&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FtamaData%3D%7B%22is_outbound_call%22%3A%22true%22%2C%22call_id%22%3A%22UUID%22%7D&phone_no=9876543211")));
+        verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://kookoo/outbound.php?api_key=KKbedce53758c2e0b0e9eed7191ec2a466&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FdataMap%3D%7B%22is_outbound_call%22%3A%22true%22%2C%22call_id%22%3A%22UUID%22%7D&phone_no=9876543211")));
     }
 
     @Test
@@ -119,7 +119,7 @@ public class KookooCallServiceImplTest {
         Map<String, String> params = new HashMap<String, String>();
         params.put("hero", "batman");
         ivrService.initiateCall(new CallRequest(phoneNumber, params, CALLBACK_URL));
-        verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://kookoo/outbound.php?api_key=KKbedce53758c2e0b0e9eed7191ec2a466&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FtamaData%3D%7B%22hero%22%3A%22batman%22%2C%22is_outbound_call%22%3A%22true%22%2C%22call_id%22%3A%22UUID%22%7D&phone_no=9876543211")));
+        verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://kookoo/outbound.php?api_key=KKbedce53758c2e0b0e9eed7191ec2a466&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FdataMap%3D%7B%22hero%22%3A%22batman%22%2C%22is_outbound_call%22%3A%22true%22%2C%22call_id%22%3A%22UUID%22%7D&phone_no=9876543211")));
     }
 
     public class GetMethodMatcher extends ArgumentMatcher<GetMethod> {

@@ -26,17 +26,6 @@ public class CallDetailRecord {
     private CallDetailRecord() {
     }
 
-    public static CallDetailRecord create(String callId, String phoneNumber) {
-        CallDetailRecord callDetailRecord = new CallDetailRecord();
-        callDetailRecord.startDate = DateUtil.today().toDate();
-        callDetailRecord.disposition = Disposition.ANSWERED;
-        callDetailRecord.answerDate = callDetailRecord.startDate;
-        callDetailRecord.phoneNumber = phoneNumber;
-        callDetailRecord.callId = callId;
-        callDetailRecord.callDirection = IVRRequest.CallDirection.Inbound;
-        return callDetailRecord;
-    }
-
     public CallDetailRecord(Date startDate, Date endDate, Date answerDate,
                             Disposition disposition, Integer duration) {
         this.startDate = startDate;
@@ -48,6 +37,25 @@ public class CallDetailRecord {
 
     public CallDetailRecord(Disposition disposition, String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public static CallDetailRecord newIncomingCallRecord(String callId, String phoneNumber) {
+        return create(callId, phoneNumber, IVRRequest.CallDirection.Inbound);
+    }
+
+    public static CallDetailRecord newOutgoingCallRecord(String callId, String phoneNumber) {
+        return create(callId, phoneNumber, IVRRequest.CallDirection.Outbound);
+    }
+
+    private static CallDetailRecord create(String callId, String phoneNumber, IVRRequest.CallDirection callDirection){
+        CallDetailRecord callDetailRecord = new CallDetailRecord();
+        callDetailRecord.startDate = DateUtil.today().toDate();
+        callDetailRecord.disposition = Disposition.ANSWERED;
+        callDetailRecord.answerDate = callDetailRecord.startDate;
+        callDetailRecord.phoneNumber = phoneNumber;
+        callDetailRecord.callId = callId;
+        callDetailRecord.callDirection = callDirection;
+        return callDetailRecord;
     }
 
     public Date getStartDate() {

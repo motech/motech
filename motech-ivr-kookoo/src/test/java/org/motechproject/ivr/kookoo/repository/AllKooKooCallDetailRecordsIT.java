@@ -25,7 +25,7 @@ public class AllKooKooCallDetailRecordsIT {
 
     @Test
     public void shouldFindCallDetailRecordByCallId() {
-        CallDetailRecord callDetailRecord = CallDetailRecord.create("callId", "phoneNumber");
+        CallDetailRecord callDetailRecord = CallDetailRecord.newIncomingCallRecord("callId", "phoneNumber");
         allKooKooCallDetailRecords.add(new KookooCallDetailRecord(callDetailRecord));
 
         KookooCallDetailRecord kookooCallDetailRecord = allKooKooCallDetailRecords.findByCallId("callId");

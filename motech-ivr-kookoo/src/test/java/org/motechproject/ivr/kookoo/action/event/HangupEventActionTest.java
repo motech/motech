@@ -17,10 +17,9 @@ import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+public class HangupEventActionTest extends BaseActionTest {
 
-public class DisconnectEventActionTest extends BaseActionTest {
-
-    private DisconnectEventAction action;
+    private HangupEventAction action;
 
     private IVRRequest ivrRequest;
 
@@ -42,7 +41,7 @@ public class DisconnectEventActionTest extends BaseActionTest {
         ivrRequest.setCid("callerId");
         ivrRequest.setEvent(IVREvent.NEW_CALL.key());
 
-        action = new DisconnectEventAction(eventService, allKooKooCallDetailRecords);
+        action = new HangupEventAction(eventService, allKooKooCallDetailRecords);
         CallDetailRecord callDetailRecord = CallDetailRecord.newIncomingCallRecord("callId", "phoneNumber");
         when(kooKooCallDetailRecord.getCallDetailRecord()).thenReturn(callDetailRecord);
         when(allKooKooCallDetailRecords.findByCallId("callId")).thenReturn(kooKooCallDetailRecord);

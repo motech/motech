@@ -47,7 +47,11 @@ public class NewCallEventAction extends BaseEventAction {
     }
 
     private void createCallDetailRecord(IVRRequest ivrRequest) {
-        CallDetailRecord callDetailRecord = CallDetailRecord.create(ivrRequest.getSid(), ivrRequest.getCid());
+        CallDetailRecord callDetailRecord = null;
+        if (IVRRequest.CallDirection.Inbound.equals(ivrRequest.getCallDirection()))
+            callDetailRecord = CallDetailRecord.newIncomingCallRecord(ivrRequest.getSid(), ivrRequest.getCid());
+        else
+            callDetailRecord = CallDetailRecord.newOutgoingCallRecord(ivrRequest.getSid(), ivrRequest.getCid());
         allCallDetailRecords.add(new KookooCallDetailRecord(callDetailRecord));
     }
 }
