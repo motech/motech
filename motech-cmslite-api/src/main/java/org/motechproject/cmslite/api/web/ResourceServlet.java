@@ -53,7 +53,8 @@ public class ResourceServlet extends HttpServlet {
     		byte [] buffer = new byte [1024*4];
     		int read ;
     		while((read=contentStream.read(buffer))>=0){
-    			fo.write(buffer,0,read);
+    			if (read>0)
+    				fo.write(buffer,0,read);
     		}
         } catch (ResourceNotFoundException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
