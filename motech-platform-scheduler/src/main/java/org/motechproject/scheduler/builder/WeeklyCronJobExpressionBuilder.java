@@ -11,7 +11,7 @@ public class WeeklyCronJobExpressionBuilder {
     }
 
     public String build() {
-        return String.format(CRON_JOB_EXPR, ((dayOfWeekFromJodaDate+6) % 7)+1);
+        return String.format(CRON_JOB_EXPR, ((dayOfWeekFromJodaDate) % 7)+1);
     }
 
 }
