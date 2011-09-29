@@ -32,7 +32,7 @@ public class NewCallEventActionTest extends BaseActionTest {
     @Before
     public void setUp() {
         super.setUp();
-        action = new NewCallEventAction(ivrMessages, userNotFoundAction, userService, eventService, kookooCallDetailRecordsService);
+        action = new NewCallEventAction(ivrMessages, userNotFoundAction, userService, kookooCallDetailRecordsService);
     }
 
     @Test

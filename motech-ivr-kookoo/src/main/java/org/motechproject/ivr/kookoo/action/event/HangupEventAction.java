@@ -1,7 +1,5 @@
 package org.motechproject.ivr.kookoo.action.event;
 
-import org.motechproject.eventtracking.service.EventService;
-import org.motechproject.ivr.kookoo.EndOfCallEvent;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
 import org.motechproject.server.service.ivr.IVRRequest;
 import org.motechproject.server.service.ivr.IVRSession;
@@ -16,8 +14,7 @@ public class HangupEventAction extends BaseEventAction {
     public HangupEventAction() {
     }
 
-    public HangupEventAction(EventService eventService, KookooCallDetailRecordsService kookooCallDetailRecordsService) {
-        this.eventService = eventService;
+    public HangupEventAction(KookooCallDetailRecordsService kookooCallDetailRecordsService) {
         this.kookooCallDetailRecordsService = kookooCallDetailRecordsService;
     }
 
@@ -35,7 +32,6 @@ public class HangupEventAction extends BaseEventAction {
     }
 
     private void raiseDisconnectEvent(String callId, IVRSession ivrSession) {
-        kookooCallDetailRecordsService.findByCallId(callId).close();
-        eventService.publishEvent(new EndOfCallEvent(callId, ivrSession.getExternalId()));
+        kookooCallDetailRecordsService.close(callId, ivrSession.getExternalId());
     }
 }

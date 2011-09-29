@@ -37,10 +37,10 @@ public class IVRControllerTest {
     public void setUp() {
         initMocks(this);
         controller = new IVRController(actions, kookooCallService);
-        when(ivrRequest.callEvent()).thenReturn(IVREvent.HANGUP);
-        when(request.getCookies()).thenReturn(new Cookie[0]);
-        when(actions.findFor(IVREvent.HANGUP)).thenReturn(action);
-         when(ivrRequest.getParameter("CallId")).thenReturn(null);
+        when(ivrRequest.callEvent()).thenReturn(IVREvent.NEW_CALL);
+        when(actions.findFor(IVREvent.NEW_CALL)).thenReturn(action);
+        when(ivrRequest.getEvent()).thenReturn(IVREvent.NEW_CALL.key());
+        when(request.getCookies()).thenReturn(new Cookie[]{new Cookie("CallId","callId")});
     }
 
     @Test
@@ -60,25 +60,11 @@ public class IVRControllerTest {
         verify(kookooCallService).generateCallId(ivrRequest);
     }
 
-    @Test
-    public void shouldNotGenerateNewCallId_WhenCallIdIsPresentInRequestAsACookie() {
-        when(request.getCookies()).thenReturn(new Cookie[]{new Cookie("CallId","callId")});
-
-        controller.reply(ivrRequest, request, response);
-        verify(kookooCallService, never()).generateCallId(ivrRequest);
-    }
 
     @Test
-    public void shouldNotGenerateNewCallId_WhenCallIdIsPresentInRequestAsParameter() {
-        when(ivrRequest.getParameter("CallId")).thenReturn("callId");
-
-        controller.reply(ivrRequest, request, response);
-        verify(kookooCallService, never()).generateCallId(ivrRequest);
-    }
-
-    @Test
-    public void shouldSetCallIdInCookie_WhenCallIdNotPresentInRequestAsACookie() {
+    public void shouldSetCallIdInCookie_ForNewCall() {
         when(kookooCallService.generateCallId(ivrRequest)).thenReturn("callId");
+
         controller.reply(ivrRequest, request, response);
 
         ArgumentCaptor<Cookie> cookieCapture = ArgumentCaptor.forClass(Cookie.class);

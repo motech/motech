@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static junit.framework.Assert.assertEquals;
+import static org.mockito.Matchers.anyMap;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
 
@@ -38,16 +39,12 @@ public class BaseEventActionTest extends BaseActionTest {
         IVRRequest ivrRequest = new KookooRequest();
         ivrRequest.setEvent(IVREvent.NEW_CALL.key());
 
-        KookooCallDetailRecord kooKooCallDetailRecord = new KookooCallDetailRecord(CallDetailRecord.newIncomingCallRecord("callId", "phoneNumber"));
-        when(kookooCallDetailRecordsService.findByCallId("callId")).thenReturn(kooKooCallDetailRecord);
+        KookooCallDetailRecord kooKooCallDetailRecord = new KookooCallDetailRecord(CallDetailRecord.newIncomingCallRecord("phoneNumber"));
+        when(kookooCallDetailRecordsService.get("callId")).thenReturn(kooKooCallDetailRecord);
 
         testEventAction.handle("callId", ivrRequest, request, response);
 
-        ArgumentCaptor<CallEvent> kookooCallDetailRecordArgumentCaptor = ArgumentCaptor.forClass(CallEvent.class);
-        verify(kookooCallDetailRecordsService).appendEvent(Matchers.same("callId"), kookooCallDetailRecordArgumentCaptor.capture());
-
-        CallEvent callEvent = kookooCallDetailRecordArgumentCaptor.getValue();
-        assertEquals("NewCall", callEvent.getName());
+        verify(kookooCallDetailRecordsService).appendEvent(Matchers.same("callId"), Matchers.same("NewCall"),anyMap());
     }
 
     private static class TestEventAction extends BaseEventAction {

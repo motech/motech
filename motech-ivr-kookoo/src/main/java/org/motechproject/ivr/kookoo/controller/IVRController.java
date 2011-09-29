@@ -6,6 +6,7 @@ import org.motechproject.ivr.kookoo.KookooCallServiceImpl;
 import org.motechproject.ivr.kookoo.KookooRequest;
 import org.motechproject.ivr.kookoo.action.Actions;
 import org.motechproject.ivr.kookoo.action.event.BaseEventAction;
+import org.motechproject.server.service.ivr.IVREvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -38,9 +39,8 @@ public class IVRController {
     public String reply(@ModelAttribute KookooRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
         try {
             BaseEventAction action = actions.findFor(ivrRequest.callEvent());
-            String callId = getCallId(ivrRequest, request);
+            String callId = establishCallId(ivrRequest, request, response);
             final String xmlResponse = action.handle(callId, ivrRequest, request, response);
-            setCallIdCookie(callId, request, response);
             logger.info(String.format(" XML returned: %s", response));
             return xmlResponse;
         } catch (Exception e) {
@@ -49,28 +49,36 @@ public class IVRController {
         }
     }
 
-    private String getCallId(KookooRequest ivrRequest, HttpServletRequest request) {
-        if(getCallIdFromCookie(request) != null){
+    private String establishCallId(KookooRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
+        if (IVREvent.NEW_CALL.key().equalsIgnoreCase(ivrRequest.getEvent())) {
+            String callId = createCallRecord(ivrRequest);
+            setCallIdCookie(callId, response);
+            return callId;
+        } else {
             return getCallIdFromCookie(request);
-        }else if(ivrRequest.getParameter("CallId") != null){
-            return ivrRequest.getParameter("CallId");
         }
-        return kookooCallService.generateCallId(ivrRequest);
+    }
+
+    private String createCallRecord(KookooRequest ivrRequest) {
+        try{
+            return kookooCallService.generateCallId(ivrRequest);
+        }catch (Exception e){
+            logger.error(e.getStackTrace());
+        }
+        return null;
     }
 
     private String getCallIdFromCookie(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        for(Cookie cookie : cookies){
-            if("CallId".equals(cookie.getName())){
+        for (Cookie cookie : cookies) {
+            if ("CallId".equals(cookie.getName())) {
                 return cookie.getValue();
             }
         }
         return null;
     }
 
-    private void setCallIdCookie(String callId, HttpServletRequest request, HttpServletResponse response) {
-        if(getCallIdFromCookie(request) == null){
-            response.addCookie(new Cookie("CallId",callId));
-        }
+    private void setCallIdCookie(String callId, HttpServletResponse response) {
+        response.addCookie(new Cookie("CallId", callId));
     }
 }

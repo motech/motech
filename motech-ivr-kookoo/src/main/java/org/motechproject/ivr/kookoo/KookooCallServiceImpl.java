@@ -70,12 +70,6 @@ public class KookooCallServiceImpl implements IVRService {
     }
 
     public String generateCallId(IVRRequest ivrRequest) {
-        CallDetailRecord callDetailRecord = null;
-        if (IVRRequest.CallDirection.Inbound.equals(ivrRequest.getCallDirection())) {
-            callDetailRecord = CallDetailRecord.newIncomingCallRecord(ivrRequest.getSid(), ivrRequest.getCid());
-        } else {
-            callDetailRecord = CallDetailRecord.newOutgoingCallRecord(ivrRequest.getSid(), ivrRequest.getCid());
-        }
-        return kookooCallDetailRecordsService.create(callDetailRecord);
+        return kookooCallDetailRecordsService.create(ivrRequest.getSid(), ivrRequest.getCid(), ivrRequest.getCallDirection());
     }
 }

@@ -19,7 +19,6 @@ public class CallDetailRecord {
     private String errorMessage;
     private String phoneNumber;
 
-    private String callId;
     private IVRRequest.CallDirection callDirection;
     private List<CallEvent> callEvents = new ArrayList<CallEvent>();
 
@@ -39,21 +38,20 @@ public class CallDetailRecord {
         this.errorMessage = errorMessage;
     }
 
-    public static CallDetailRecord newIncomingCallRecord(String callId, String phoneNumber) {
-        return create(callId, phoneNumber, IVRRequest.CallDirection.Inbound);
+    public static CallDetailRecord newIncomingCallRecord(String phoneNumber) {
+        return create(phoneNumber, IVRRequest.CallDirection.Inbound);
     }
 
-    public static CallDetailRecord newOutgoingCallRecord(String callId, String phoneNumber) {
-        return create(callId, phoneNumber, IVRRequest.CallDirection.Outbound);
+    public static CallDetailRecord newOutgoingCallRecord(String phoneNumber) {
+        return create(phoneNumber, IVRRequest.CallDirection.Outbound);
     }
 
-    private static CallDetailRecord create(String callId, String phoneNumber, IVRRequest.CallDirection callDirection){
+    private static CallDetailRecord create(String phoneNumber, IVRRequest.CallDirection callDirection){
         CallDetailRecord callDetailRecord = new CallDetailRecord();
         callDetailRecord.startDate = DateUtil.today().toDate();
         callDetailRecord.disposition = Disposition.ANSWERED;
         callDetailRecord.answerDate = callDetailRecord.startDate;
         callDetailRecord.phoneNumber = phoneNumber;
-        callDetailRecord.callId = callId;
         callDetailRecord.callDirection = callDirection;
         return callDetailRecord;
     }
@@ -90,9 +88,6 @@ public class CallDetailRecord {
         return callDirection;
     }
 
-    public String getCallId() {
-        return callId;
-    }
 
     public List<CallEvent> getCallEvents() {
         return callEvents;
@@ -100,10 +95,6 @@ public class CallDetailRecord {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    public void setCallId(String callId) {
-        this.callId = callId;
     }
 
     public void setCallEvents(List<CallEvent> callEvents) {

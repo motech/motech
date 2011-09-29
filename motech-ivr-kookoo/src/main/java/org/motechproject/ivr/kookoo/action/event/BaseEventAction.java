@@ -1,10 +1,9 @@
 package org.motechproject.ivr.kookoo.action.event;
 
-import org.motechproject.eventtracking.service.EventService;
+import org.apache.log4j.Logger;
 import org.motechproject.ivr.kookoo.action.BaseAction;
 import org.motechproject.ivr.kookoo.eventlogging.CallEventConstants;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
-import org.motechproject.server.service.ivr.CallEvent;
 import org.motechproject.server.service.ivr.IVRRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,8 +14,7 @@ import java.util.Map;
 
 public abstract class BaseEventAction extends BaseAction {
 
-    @Autowired
-    protected EventService eventService;
+    private Logger logger = Logger.getLogger(this.getClass());
 
     @Autowired
     protected KookooCallDetailRecordsService kookooCallDetailRecordsService;
@@ -30,7 +28,11 @@ public abstract class BaseEventAction extends BaseAction {
 
     public String handle(String callId, IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
         String responseXML = createResponse(ivrRequest, request, response);
-        publishCallEvent(callId, ivrRequest, responseXML);
+        try {
+            publishCallEvent(callId, ivrRequest, responseXML);
+        } catch (Exception e) {
+            logger.error(e.getStackTrace());
+        }
         postHandle(callId, ivrRequest, request, response);
         return responseXML;
     }
@@ -38,8 +40,7 @@ public abstract class BaseEventAction extends BaseAction {
     protected void publishCallEvent(String callId, IVRRequest ivrRequest, String responseXML) {
         Map<String, String> callEventData = callEventData(ivrRequest);
         callEventData.put(CallEventConstants.RESPONSE_XML, responseXML);
-        CallEvent callEvent = new CallEvent(ivrRequest.callEvent().key(), callEventData);
-        kookooCallDetailRecordsService.appendEvent(callId, callEvent);
+        kookooCallDetailRecordsService.appendEvent(callId, ivrRequest.getEvent(), callEventData(ivrRequest));
     }
 
     protected Map<String, String> callEventData(IVRRequest ivrRequest) {
