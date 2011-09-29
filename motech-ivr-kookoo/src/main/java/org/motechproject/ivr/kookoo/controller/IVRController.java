@@ -31,7 +31,7 @@ public class IVRController {
     public String reply(@ModelAttribute KookooRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
         try {
             BaseEventAction action = actions.findFor(ivrRequest.callEvent());
-            final String xmlResponse = action.handleInternal(ivrRequest, request, response);
+            final String xmlResponse = action.handle(ivrRequest, request, response);
             logger.info(String.format(" XML returned: %s", response));
             return xmlResponse;
         } catch (Exception e) {

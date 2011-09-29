@@ -20,8 +20,10 @@ public class KookooCallDetailRecordsServiceImpl implements KookooCallDetailRecor
         return allKooKooCallDetailRecords.findByCallId(callId);
     }
 
-    public void create(CallDetailRecord callDetailRecord) {
-        allCallDetailRecords.add(new KookooCallDetailRecord(callDetailRecord));
+    public String create(CallDetailRecord callDetailRecord) {
+        KookooCallDetailRecord record = new KookooCallDetailRecord(callDetailRecord);
+        allCallDetailRecords.add(record);
+        return record.getCallId();
     }
 
     @Override

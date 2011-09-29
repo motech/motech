@@ -33,7 +33,8 @@ public abstract class BaseAction {
         return new IVRSession(request.getSession());
     }
 
-    abstract public String handle(IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response);
+    abstract public String createResponse(IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response);
+
     public String getKey() {
         return StringUtils.EMPTY;
     }

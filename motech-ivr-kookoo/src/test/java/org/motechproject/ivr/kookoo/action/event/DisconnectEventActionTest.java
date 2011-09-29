@@ -14,6 +14,8 @@ import org.motechproject.server.service.ivr.IVREvent;
 import org.motechproject.server.service.ivr.IVRRequest;
 import org.motechproject.server.service.ivr.IVRSession;
 
+import javax.servlet.http.Cookie;
+
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -36,11 +38,12 @@ public class DisconnectEventActionTest extends BaseActionTest {
     public void setUp() {
         super.setUp();
         ivrRequest = new KookooRequest();
-        ivrRequest.setSid("callId");
-        ivrRequest.setCid("callerId");
-        ivrRequest.setEvent(IVREvent.NEW_CALL.key());
-
+        ivrRequest.setEvent(IVREvent.DISCONNECT.key());
         action = new DisconnectEventAction(eventService, kookooCallDetailRecordsService);
+
+        Cookie cookie = new Cookie("CallId", "callId");
+        when(request.getCookies()).thenReturn(new Cookie[]{cookie});
+
         CallDetailRecord callDetailRecord = CallDetailRecord.newIncomingCallRecord("callId", "phoneNumber");
         when(kooKooCallDetailRecord.getCallDetailRecord()).thenReturn(callDetailRecord);
         when(kookooCallDetailRecordsService.findByCallId("callId")).thenReturn(kooKooCallDetailRecord);
@@ -49,13 +52,13 @@ public class DisconnectEventActionTest extends BaseActionTest {
 
     @Test
     public void shouldCloseTheRecord() {
-        action.handleInternal(ivrRequest, request, response);
+        action.handle(ivrRequest, request, response);
         verify(kooKooCallDetailRecord).close();
     }
 
     @Test
     public void shouldRaiseEndOfCallEvent() {
-        action.handleInternal(ivrRequest, request, response);
+        action.handle(ivrRequest, request, response);
 
         ArgumentCaptor<EndOfCallEvent> endOfCallEventArgumentCaptor = ArgumentCaptor.forClass(EndOfCallEvent.class);
         verify(eventService).publishEvent(endOfCallEventArgumentCaptor.capture());

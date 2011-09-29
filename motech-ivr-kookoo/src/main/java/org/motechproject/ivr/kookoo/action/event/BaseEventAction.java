@@ -8,6 +8,7 @@ import org.motechproject.server.service.ivr.CallEvent;
 import org.motechproject.server.service.ivr.IVRRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
@@ -21,8 +22,6 @@ public abstract class BaseEventAction extends BaseAction {
     @Autowired
     protected KookooCallDetailRecordsService kookooCallDetailRecordsService;
 
-    private Map<String, String> callEventData = new HashMap<String, String>();
-
     public BaseEventAction() {
     }
 
@@ -30,23 +29,39 @@ public abstract class BaseEventAction extends BaseAction {
         this.kookooCallDetailRecordsService = kookooCallDetailRecordsService;
     }
 
-    public String handleInternal(IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
-        String responseXML = handle(ivrRequest, request, response);
-        publishCallEvent(ivrRequest, request, responseXML);
+    public String handle(IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
+        String responseXML = createResponse(ivrRequest, request, response);
+        publishCallEvent(ivrRequest, request, response, responseXML);
         postHandle(ivrRequest, request, response);
         return responseXML;
+    }
+
+    protected void publishCallEvent(IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response, String responseXML) {
+        String callId = getCallIdFromCookie(request);
+        publishCallEvent(callId, ivrRequest, responseXML);
+    }
+
+    protected void publishCallEvent(String callId, IVRRequest ivrRequest, String responseXML) {
+        Map<String, String> callEventData = callEventData(ivrRequest);
+        callEventData.put(CallEventConstants.RESPONSE_XML, responseXML);
+
+        CallEvent callEvent = new CallEvent(ivrRequest.callEvent().key(), callEventData);
+        kookooCallDetailRecordsService.appendEvent(callId, callEvent);
+    }
+
+    protected Map<String, String> callEventData(IVRRequest ivrRequest) {
+        return new HashMap<String, String>();
     }
 
     public void postHandle(IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
     }
 
-    protected void addCallEventData(String key, String value) {
-        callEventData.put(key, value);
-    }
-
-    private void publishCallEvent(IVRRequest ivrRequest, HttpServletRequest request, String responseXML) {
-        addCallEventData(CallEventConstants.RESPONSE_XML, responseXML);
-        CallEvent callEvent = new CallEvent(ivrRequest.callEvent().key(), callEventData);
-        kookooCallDetailRecordsService.appendEvent(ivrRequest.getSid(), callEvent);
+    protected String getCallIdFromCookie(HttpServletRequest request) {
+        for(Cookie cookie : request.getCookies()){
+            if("CallId".equals(cookie.getName())){
+                return cookie.getValue();
+            }
+        }
+        return null;
     }
 }

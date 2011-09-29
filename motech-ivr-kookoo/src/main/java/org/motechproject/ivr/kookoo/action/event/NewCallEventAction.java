@@ -9,6 +9,7 @@ import org.motechproject.server.service.ivr.IVRSession.IVRCallAttribute;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -21,7 +22,7 @@ public class NewCallEventAction extends BaseEventAction {
     @Autowired
     private UserService userService;
 
-    public NewCallEventAction(){
+    public NewCallEventAction() {
     }
 
     public NewCallEventAction(IVRMessage messages, UserNotFoundAction userNotFoundAction, UserService userService,
@@ -34,23 +35,28 @@ public class NewCallEventAction extends BaseEventAction {
     }
 
     @Override
-    public String handle(IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
-        createCallDetailRecord(ivrRequest);
+    public String createResponse(IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
         if (!userService.isRegisteredUser(ivrRequest.getCid())) {
-            return userNotFoundAction.handle(ivrRequest, request, response);
+            return userNotFoundAction.createResponse(ivrRequest, request, response);
         }
         IVRSession ivrSession = createIVRSession(request);
         ivrSession.set(IVRCallAttribute.CALLER_ID, ivrRequest.getCid());
         ivrSession.setState(IVRCallState.COLLECT_PIN);
+
         return dtmfResponseWithWav(ivrRequest, messages.getSignatureMusic());
     }
 
-    private void createCallDetailRecord(IVRRequest ivrRequest) {
+    @Override
+    protected void publishCallEvent(IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response, String responseXML) {
         CallDetailRecord callDetailRecord = null;
-        if (IVRRequest.CallDirection.Inbound.equals(ivrRequest.getCallDirection()))
+        String callId = null;
+        if (IVRRequest.CallDirection.Inbound.equals(ivrRequest.getCallDirection())) {
             callDetailRecord = CallDetailRecord.newIncomingCallRecord(ivrRequest.getSid(), ivrRequest.getCid());
-        else
+            callId = kookooCallDetailRecordsService.create(callDetailRecord);
+        } else {
             callDetailRecord = CallDetailRecord.newOutgoingCallRecord(ivrRequest.getSid(), ivrRequest.getCid());
-        kookooCallDetailRecordsService.create(callDetailRecord);
+        }
+        response.addCookie(new Cookie("CallId", callId));
+        super.publishCallEvent(callId, ivrRequest, responseXML);
     }
 }

@@ -20,7 +20,7 @@ public class AllKooKooCallDetailRecords extends MotechBaseRepository<KookooCallD
         this.initStandardDesignDocument();
     }
 
-    @View(name = "findByCallId", map = "function(doc) {if (doc.type == 'KookooCallDetailRecord') {emit(doc.callDetailRecord.callId, doc._id);}}")
+    @View(name = "findByCallId", map = "function(doc) {if (doc.type == 'KookooCallDetailRecord') {emit(doc._id, doc._id);}}")
     public KookooCallDetailRecord findByCallId(String callId) {
         ViewQuery q = createQuery("findByCallId").key(callId).includeDocs(true);
         List<KookooCallDetailRecord> callDetailRecords = db.queryView(q, KookooCallDetailRecord.class);

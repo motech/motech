@@ -39,11 +39,11 @@ public class IVRControllerTest {
     public void shouldDelegateToActionsToHandleTheRequest() {
         when(ivrRequest.callEvent()).thenReturn(IVREvent.HANGUP);
         when(actions.findFor(IVREvent.HANGUP)).thenReturn(action);
-        when(action.handleInternal(ivrRequest, request, response)).thenReturn("reply");
+        when(action.handle(ivrRequest, request, response)).thenReturn("reply");
 
         String reply = controller.reply(ivrRequest, request, response);
 
-        verify(action).handleInternal(ivrRequest, request, response);
+        verify(action).handle(ivrRequest, request, response);
         assertEquals("reply", reply);
     }
 }

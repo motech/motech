@@ -6,6 +6,6 @@ import org.motechproject.server.service.ivr.CallEvent;
 
 public interface KookooCallDetailRecordsService {
     public KookooCallDetailRecord findByCallId(String callId);
-    public void create(CallDetailRecord callDetailRecord);
+    public String create(CallDetailRecord callDetailRecord);
     public void appendEvent(String callId, CallEvent callEvent);
 }

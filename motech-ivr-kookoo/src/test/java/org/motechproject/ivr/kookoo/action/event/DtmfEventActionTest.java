@@ -34,11 +34,11 @@ public class DtmfEventActionTest extends BaseActionTest {
     public void shouldDelegateToAuthenticateActionIfCollectPin() {
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(IVRCallAttribute.CALL_STATE)).thenReturn(IVRCallState.COLLECT_PIN);
-        when(authenticateAction.handle(any(IVRRequest.class), any(HttpServletRequest.class), any(HttpServletResponse.class))).thenReturn("OK");
+        when(authenticateAction.createResponse(any(IVRRequest.class), any(HttpServletRequest.class), any(HttpServletResponse.class))).thenReturn("OK");
 
-        String handle = eventAction.handle(ivrRequest, request, response);
+        String handle = eventAction.createResponse(ivrRequest, request, response);
 
         assertEquals("OK", handle);
-        verify(authenticateAction).handle(ivrRequest, request, response);
+        verify(authenticateAction).createResponse(ivrRequest, request, response);
     }
 }

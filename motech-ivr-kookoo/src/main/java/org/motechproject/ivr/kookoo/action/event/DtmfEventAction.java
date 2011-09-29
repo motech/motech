@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class DtmfEventAction extends BaseEventAction {
@@ -33,13 +35,21 @@ public class DtmfEventAction extends BaseEventAction {
     }
 
     @Override
-    public String handle(IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
+    public String createResponse(IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
         IVRSession ivrSession = getIVRSession(request);
-        addCallEventData(CallEventConstants.DTMF_DATA, ivrRequest.getData());
         if (ivrSession.isAuthentication()) {
-            return authenticateAction.handle(ivrRequest, request, response);
+            return authenticateAction.createResponse(ivrRequest, request, response);
         } else {
             return new IvrAction(treeChooser, messages, responseBuilder).handle(ivrRequest, ivrSession);
         }
-    } 
+    }
+
+    @Override
+    protected Map<String, String> callEventData(final IVRRequest ivrRequest) {
+        return new HashMap<String, String>() {
+            {
+                put(CallEventConstants.DTMF_DATA, ivrRequest.getData());
+            }
+        };
+    }
 }
