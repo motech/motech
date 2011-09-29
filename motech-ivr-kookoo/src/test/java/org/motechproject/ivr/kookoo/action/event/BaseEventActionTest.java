@@ -13,7 +13,6 @@ import org.motechproject.server.service.ivr.CallEvent;
 import org.motechproject.server.service.ivr.IVREvent;
 import org.motechproject.server.service.ivr.IVRRequest;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -39,12 +38,10 @@ public class BaseEventActionTest extends BaseActionTest {
         IVRRequest ivrRequest = new KookooRequest();
         ivrRequest.setEvent(IVREvent.NEW_CALL.key());
 
-        Cookie cookie = new Cookie("CallId", "callId");
-        when(request.getCookies()).thenReturn(new Cookie[]{cookie});
         KookooCallDetailRecord kooKooCallDetailRecord = new KookooCallDetailRecord(CallDetailRecord.newIncomingCallRecord("callId", "phoneNumber"));
         when(kookooCallDetailRecordsService.findByCallId("callId")).thenReturn(kooKooCallDetailRecord);
 
-        testEventAction.handle(ivrRequest, request, response);
+        testEventAction.handle("callId", ivrRequest, request, response);
 
         ArgumentCaptor<CallEvent> kookooCallDetailRecordArgumentCaptor = ArgumentCaptor.forClass(CallEvent.class);
         verify(kookooCallDetailRecordsService).appendEvent(Matchers.same("callId"), kookooCallDetailRecordArgumentCaptor.capture());

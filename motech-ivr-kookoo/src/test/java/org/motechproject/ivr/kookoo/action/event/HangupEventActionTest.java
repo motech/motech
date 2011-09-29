@@ -40,8 +40,6 @@ public class HangupEventActionTest extends BaseActionTest {
         ivrRequest.setEvent(IVREvent.HANGUP.key());
         action = new HangupEventAction(eventService, kookooCallDetailRecordsService);
 
-        Cookie cookie = new Cookie("CallId", "callId");
-        when(request.getCookies()).thenReturn(new Cookie[]{cookie});
 
         when(kookooCallDetailRecordsService.findByCallId("callId")).thenReturn(kooKooCallDetailRecord);
         CallDetailRecord callDetailRecord = CallDetailRecord.newIncomingCallRecord("callId", "phoneNumber");
@@ -51,13 +49,13 @@ public class HangupEventActionTest extends BaseActionTest {
 
     @Test
     public void shouldCloseTheRecord() {
-        action.handle(ivrRequest, request, response);
+        action.handle("callId", ivrRequest, request, response);
         verify(kooKooCallDetailRecord).close();
     }
 
     @Test
     public void shouldRaiseEndOfCallEvent() {
-        action.handle(ivrRequest, request, response);
+        action.handle("callId", ivrRequest, request, response);
 
         ArgumentCaptor<EndOfCallEvent> endOfCallEventArgumentCaptor = ArgumentCaptor.forClass(EndOfCallEvent.class);
         verify(eventService).publishEvent(endOfCallEventArgumentCaptor.capture());

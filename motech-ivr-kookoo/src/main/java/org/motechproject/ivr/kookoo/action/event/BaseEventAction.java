@@ -8,7 +8,6 @@ import org.motechproject.server.service.ivr.CallEvent;
 import org.motechproject.server.service.ivr.IVRRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
@@ -29,22 +28,16 @@ public abstract class BaseEventAction extends BaseAction {
         this.kookooCallDetailRecordsService = kookooCallDetailRecordsService;
     }
 
-    public String handle(IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
+    public String handle(String callId, IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
         String responseXML = createResponse(ivrRequest, request, response);
-        publishCallEvent(ivrRequest, request, response, responseXML);
-        postHandle(ivrRequest, request, response);
-        return responseXML;
-    }
-
-    protected void publishCallEvent(IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response, String responseXML) {
-        String callId = getCallIdFromCookie(request);
         publishCallEvent(callId, ivrRequest, responseXML);
+        postHandle(callId, ivrRequest, request, response);
+        return responseXML;
     }
 
     protected void publishCallEvent(String callId, IVRRequest ivrRequest, String responseXML) {
         Map<String, String> callEventData = callEventData(ivrRequest);
         callEventData.put(CallEventConstants.RESPONSE_XML, responseXML);
-
         CallEvent callEvent = new CallEvent(ivrRequest.callEvent().key(), callEventData);
         kookooCallDetailRecordsService.appendEvent(callId, callEvent);
     }
@@ -53,15 +46,6 @@ public abstract class BaseEventAction extends BaseAction {
         return new HashMap<String, String>();
     }
 
-    public void postHandle(IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
-    }
-
-    protected String getCallIdFromCookie(HttpServletRequest request) {
-        for(Cookie cookie : request.getCookies()){
-            if("CallId".equals(cookie.getName())){
-                return cookie.getValue();
-            }
-        }
-        return null;
+    public void postHandle(String callId, IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
     }
 }

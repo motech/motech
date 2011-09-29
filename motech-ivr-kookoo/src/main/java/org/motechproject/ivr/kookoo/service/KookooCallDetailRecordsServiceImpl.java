@@ -23,7 +23,7 @@ public class KookooCallDetailRecordsServiceImpl implements KookooCallDetailRecor
     public String create(CallDetailRecord callDetailRecord) {
         KookooCallDetailRecord record = new KookooCallDetailRecord(callDetailRecord);
         allCallDetailRecords.add(record);
-        return record.getCallId();
+        return record.getId();
     }
 
     @Override

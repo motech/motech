@@ -4,10 +4,8 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.json.JSONObject;
-import org.motechproject.server.service.ivr.CallRequest;
-import org.motechproject.server.service.ivr.IVRCallIdentifiers;
-import org.motechproject.server.service.ivr.IVRService;
-import org.motechproject.server.service.ivr.IVRSession;
+import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
+import org.motechproject.server.service.ivr.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -29,6 +27,9 @@ public class KookooCallServiceImpl implements IVRService {
 
     @Autowired
     private IVRCallIdentifiers ivrCallIdentifiers;
+
+    @Autowired
+    private KookooCallDetailRecordsService kookooCallDetailRecordsService;
 
     private HttpClient httpClient = new HttpClient();
 
@@ -66,5 +67,15 @@ public class KookooCallServiceImpl implements IVRService {
 
         callRequest.getPayload().put(IVRSession.IVRCallAttribute.IS_OUTBOUND_CALL, "true");
         dial(callRequest.getPhone(), callRequest.getPayload(), callRequest.getCallBackUrl());
+    }
+
+    public String generateCallId(IVRRequest ivrRequest) {
+        CallDetailRecord callDetailRecord = null;
+        if (IVRRequest.CallDirection.Inbound.equals(ivrRequest.getCallDirection())) {
+            callDetailRecord = CallDetailRecord.newIncomingCallRecord(ivrRequest.getSid(), ivrRequest.getCid());
+        } else {
+            callDetailRecord = CallDetailRecord.newOutgoingCallRecord(ivrRequest.getSid(), ivrRequest.getCid());
+        }
+        return kookooCallDetailRecordsService.create(callDetailRecord);
     }
 }

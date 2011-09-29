@@ -27,15 +27,14 @@ public class DisconnectEventAction extends BaseEventAction {
     }
 
     @Override
-    public void postHandle(IVRRequest ivrRequest, HttpServletRequest request,
+    public void postHandle(String callId, IVRRequest ivrRequest, HttpServletRequest request,
                            HttpServletResponse response) {
         IVRSession ivrSession = getIVRSession(request);
-        raiseDisconnectEvent(ivrSession, request);
+        raiseDisconnectEvent(callId, ivrSession);
         ivrSession.close();
     }
 
-    private void raiseDisconnectEvent(IVRSession ivrSession, HttpServletRequest request) {
-        String callId = getCallIdFromCookie(request);
+    private void raiseDisconnectEvent(String callId, IVRSession ivrSession) {
         kookooCallDetailRecordsService.findByCallId(callId).close();
         eventService.publishEvent(new EndOfCallEvent(callId, ivrSession.getExternalId()));
     }

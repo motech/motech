@@ -9,7 +9,6 @@ import org.motechproject.server.service.ivr.IVRSession.IVRCallAttribute;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -44,19 +43,5 @@ public class NewCallEventAction extends BaseEventAction {
         ivrSession.setState(IVRCallState.COLLECT_PIN);
 
         return dtmfResponseWithWav(ivrRequest, messages.getSignatureMusic());
-    }
-
-    @Override
-    protected void publishCallEvent(IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response, String responseXML) {
-        CallDetailRecord callDetailRecord = null;
-        String callId = null;
-        if (IVRRequest.CallDirection.Inbound.equals(ivrRequest.getCallDirection())) {
-            callDetailRecord = CallDetailRecord.newIncomingCallRecord(ivrRequest.getSid(), ivrRequest.getCid());
-            callId = kookooCallDetailRecordsService.create(callDetailRecord);
-        } else {
-            callDetailRecord = CallDetailRecord.newOutgoingCallRecord(ivrRequest.getSid(), ivrRequest.getCid());
-        }
-        response.addCookie(new Cookie("CallId", callId));
-        super.publishCallEvent(callId, ivrRequest, responseXML);
     }
 }

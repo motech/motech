@@ -52,13 +52,13 @@ public class DisconnectEventActionTest extends BaseActionTest {
 
     @Test
     public void shouldCloseTheRecord() {
-        action.handle(ivrRequest, request, response);
+        action.handle("callId", ivrRequest, request, response);
         verify(kooKooCallDetailRecord).close();
     }
 
     @Test
     public void shouldRaiseEndOfCallEvent() {
-        action.handle(ivrRequest, request, response);
+        action.handle("callId", ivrRequest, request, response);
 
         ArgumentCaptor<EndOfCallEvent> endOfCallEventArgumentCaptor = ArgumentCaptor.forClass(EndOfCallEvent.class);
         verify(eventService).publishEvent(endOfCallEventArgumentCaptor.capture());

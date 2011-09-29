@@ -1,19 +1,16 @@
 package org.motechproject.ivr.kookoo.action.event;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.motechproject.ivr.kookoo.KookooRequest;
 import org.motechproject.ivr.kookoo.action.UserNotFoundAction;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
 import org.motechproject.ivr.kookoo.service.UserService;
-import org.motechproject.server.service.ivr.*;
-
-import javax.servlet.http.Cookie;
+import org.motechproject.server.service.ivr.IVRCallState;
+import org.motechproject.server.service.ivr.IVRMessage;
+import org.motechproject.server.service.ivr.IVRRequest;
+import org.motechproject.server.service.ivr.IVRSession;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
@@ -45,90 +42,6 @@ public class NewCallEventActionTest extends BaseActionTest {
 
         action.createResponse(ivrRequest, request, response);
         verify(userNotFoundAction).createResponse(ivrRequest, request, response);
-    }
-
-    @Test
-    public void shouldLogNewCallEvent_ForIncomingCall() {
-        IVRRequest ivrRequest = new KookooRequest();
-        String callId = "callId";
-        String callerId = "callerId";
-        ivrRequest.setEvent(IVREvent.NEW_CALL.key());
-
-        ivrRequest.setSid(callId);
-        ivrRequest.setCid(callerId);
-        Mockito.when(userService.isRegisteredUser(callerId)).thenReturn(true);
-
-        action.handle(ivrRequest, request, response);
-
-        ArgumentCaptor<CallDetailRecord> callDetailRecordCapture = ArgumentCaptor.forClass(CallDetailRecord.class);
-        verify(kookooCallDetailRecordsService).create(callDetailRecordCapture.capture());
-
-        CallDetailRecord capturedCallDetailRecord = callDetailRecordCapture.getValue();
-        assertEquals(callId, capturedCallDetailRecord.getCallId());
-        assertEquals(IVRRequest.CallDirection.Inbound, capturedCallDetailRecord.getCallDirection());
-    }
-
-    @Test
-    public void shouldAddCallIdIntoCookie_ForIncomingCall() {
-        IVRRequest ivrRequest = new KookooRequest();
-        String callId = "callId";
-        String callerId = "callerId";
-        ivrRequest.setEvent(IVREvent.NEW_CALL.key());
-
-        Mockito.when(userService.isRegisteredUser(callerId)).thenReturn(true);
-        when(kookooCallDetailRecordsService.create(Matchers.<CallDetailRecord>any())).thenReturn(callId);
-
-        action.handle(ivrRequest, request, response);
-
-        ArgumentCaptor<Cookie> cookieCapture = ArgumentCaptor.forClass(Cookie.class);
-        verify(response).addCookie(cookieCapture.capture());
-
-        Cookie cookie = cookieCapture.getValue();
-        assertEquals("CallId", cookie.getName());
-        assertEquals(callId, cookie.getValue());
-    }
-
-    @Test
-    @Ignore
-    public void shouldLogNewCallEvent_ForOutgoingCall() {
-        IVRRequest ivrRequest = new KookooRequest();
-        String callId = "callId";
-        String callerId = "callerId";
-
-        ivrRequest.setSid(callId);
-        ivrRequest.setCid(callerId);
-        ivrRequest.setParameter(IVRSession.IVRCallAttribute.IS_OUTBOUND_CALL, "true");
-        Mockito.when(userService.isRegisteredUser(callerId)).thenReturn(true);
-
-        action.createResponse(ivrRequest, request, response);
-
-        ArgumentCaptor<CallDetailRecord> callDetailRecordCapture = ArgumentCaptor.forClass(CallDetailRecord.class);
-        verify(kookooCallDetailRecordsService).create(callDetailRecordCapture.capture());
-
-        CallDetailRecord capturedCallDetailRecord = callDetailRecordCapture.getValue();
-        assertEquals(callId, capturedCallDetailRecord.getCallId());
-        assertEquals(IVRRequest.CallDirection.Outbound, capturedCallDetailRecord.getCallDirection());
-    }
-
-    @Test
-    public void shouldLogNewCallEvent_WhenUserIsNotRegistered() {
-        IVRRequest ivrRequest = new KookooRequest();
-        String callId = "callId";
-        String callerId = "callerId";
-        ivrRequest.setEvent(IVREvent.NEW_CALL.key());
-
-
-        ivrRequest.setSid(callId);
-        ivrRequest.setCid(callerId);
-        Mockito.when(userService.isRegisteredUser(callerId)).thenReturn(false);
-
-        action.handle(ivrRequest, request, response);
-
-        ArgumentCaptor<CallDetailRecord> callDetailRecordCapture = ArgumentCaptor.forClass(CallDetailRecord.class);
-        verify(kookooCallDetailRecordsService).create(callDetailRecordCapture.capture());
-
-        CallDetailRecord capturedCallDetailRecord = callDetailRecordCapture.getValue();
-        assertEquals(callId, capturedCallDetailRecord.getCallId());
     }
 
     @Test
