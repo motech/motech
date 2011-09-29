@@ -26,10 +26,12 @@ public class AllKooKooCallDetailRecordsIT {
     @Test
     public void shouldFindCallDetailRecordByCallId() {
         CallDetailRecord callDetailRecord = CallDetailRecord.newIncomingCallRecord("phoneNumber");
-        allKooKooCallDetailRecords.add(new KookooCallDetailRecord(callDetailRecord));
+        KookooCallDetailRecord kookooCallDetailRecord = new KookooCallDetailRecord(callDetailRecord);
 
-        KookooCallDetailRecord kookooCallDetailRecord = allKooKooCallDetailRecords.findByCallId("callId");
-        assertNotNull(kookooCallDetailRecord);
+        allKooKooCallDetailRecords.add(kookooCallDetailRecord);
+
+        KookooCallDetailRecord result = allKooKooCallDetailRecords.findByCallId(kookooCallDetailRecord.getCallId());
+        assertNotNull(result);
 
         ivrKookooCouchDbConnector.delete(kookooCallDetailRecord);
     }
