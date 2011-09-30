@@ -1,13 +1,18 @@
 package org.motechproject.ivr.kookoo;
 
+import org.apache.log4j.Logger;
+import org.json.JSONObject;
 import org.motechproject.server.service.ivr.IVREvent;
 import org.motechproject.server.service.ivr.IVRRequest;
 import org.motechproject.server.service.ivr.IVRSession;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class KookooRequest implements IVRRequest {
+	
+	private Logger log = Logger.getLogger(KookooRequest.class);
 
     private static final String POUND_SYMBOL = "%23";
     private String sid;
@@ -83,5 +88,18 @@ public class KookooRequest implements IVRRequest {
     public CallDirection getCallDirection() {
         return dataMap!=null && "true".equals(dataMap.get(IVRSession.IVRCallAttribute.IS_OUTBOUND_CALL)) ? CallDirection.Outbound: CallDirection.Inbound;
     }
+    
+    public void setDataMap(String jsonDataMap){
+    	try {
+    		JSONObject jsonObject = new JSONObject(jsonDataMap);
+    	for (Iterator<String> i = jsonObject.keys(); i.hasNext();) {
+    		String key = i.next();
+    		dataMap.put(key, jsonObject.getString(key));
+    	}
+    	} catch (Exception ignore) {
+    		log.warn("Not able to read json data", ignore);
+		}
+    }
+    
 
 }

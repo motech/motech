@@ -44,5 +44,14 @@ public class KookooRequestTest {
         ivrRequest.setParameter(IVRSession.IVRCallAttribute.IS_OUTBOUND_CALL, "true");
         assertEquals(IVRRequest.CallDirection.Outbound, ivrRequest.getCallDirection());
     }
+    
+    @Test 
+    public void shouldReadDataMapFromJsonString() {
+    	String json = "{\"regimen_id\":\"23423423423\", \"dosage_id\":\"34324234\"}";
+    	KookooRequest ivrRequest = new KookooRequest("sid", "cid", "someEvent", "4%23");
+    	ivrRequest.setDataMap(json);
+    	assertEquals("23423423423", ivrRequest.getParameter("regimen_id"));
+    	assertEquals("34324234", ivrRequest.getParameter("dosage_id"));
+    }
 
 }
