@@ -41,7 +41,7 @@ public class IVRController {
             BaseEventAction action = actions.findFor(ivrRequest.callEvent());
             String callId = establishCallId(ivrRequest, request, response);
             final String xmlResponse = action.handle(callId, ivrRequest, request, response);
-            logger.info(String.format(" XML returned: %s", response));
+            logger.info(String.format(" XML returned: %s", xmlResponse));
             return xmlResponse;
         } catch (Exception e) {
             logger.error("Failed to handled incoming request", e);
