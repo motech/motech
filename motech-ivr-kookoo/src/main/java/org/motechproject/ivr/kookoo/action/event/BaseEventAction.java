@@ -40,7 +40,7 @@ public abstract class BaseEventAction extends BaseAction {
     protected void publishCallEvent(String callId, IVRRequest ivrRequest, String responseXML) {
         Map<String, String> callEventData = callEventData(ivrRequest);
         callEventData.put(CallEventConstants.RESPONSE_XML, responseXML);
-        kookooCallDetailRecordsService.appendEvent(callId, ivrRequest.getEvent(), callEventData(ivrRequest));
+        kookooCallDetailRecordsService.appendEvent(callId, ivrRequest.getEvent(), callEventData);
     }
 
     protected Map<String, String> callEventData(IVRRequest ivrRequest) {

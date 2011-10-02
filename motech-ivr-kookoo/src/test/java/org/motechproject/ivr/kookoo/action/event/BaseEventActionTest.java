@@ -2,21 +2,18 @@ package org.motechproject.ivr.kookoo.action.event;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.ivr.kookoo.KookooRequest;
 import org.motechproject.ivr.kookoo.domain.KookooCallDetailRecord;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
 import org.motechproject.server.service.ivr.CallDetailRecord;
-import org.motechproject.server.service.ivr.CallEvent;
 import org.motechproject.server.service.ivr.IVREvent;
 import org.motechproject.server.service.ivr.IVRRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.anyMap;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;

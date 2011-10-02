@@ -37,10 +37,16 @@ public class DtmfEventAction extends BaseEventAction {
     @Override
     public String createResponse(IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
         IVRSession ivrSession = getIVRSession(request);
+        return new IvrAction(treeChooser, messages, responseBuilder).handle(ivrRequest, ivrSession);
+    }
+
+    @Override
+    public String handle(String callId, IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
+        IVRSession ivrSession = getIVRSession(request);
         if (ivrSession.isAuthentication()) {
-            return authenticateAction.createResponse(ivrRequest, request, response);
+            return authenticateAction.handle(callId, ivrRequest, request, response);
         } else {
-            return new IvrAction(treeChooser, messages, responseBuilder).handle(ivrRequest, ivrSession);
+            return super.handle(callId, ivrRequest, request, response);
         }
     }
 

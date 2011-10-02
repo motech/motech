@@ -1,4 +1,8 @@
 package org.motechproject.ivr.kookoo.action;
 
-public abstract class AuthenticateAction extends BaseAction {
+import org.motechproject.ivr.kookoo.action.event.BaseEventAction;
+
+public abstract class AuthenticateAction extends BaseEventAction {
+
+
 }

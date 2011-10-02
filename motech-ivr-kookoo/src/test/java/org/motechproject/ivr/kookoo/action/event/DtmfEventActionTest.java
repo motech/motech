@@ -9,11 +9,8 @@ import org.motechproject.server.service.ivr.IVRCallState;
 import org.motechproject.server.service.ivr.IVRRequest;
 import org.motechproject.server.service.ivr.IVRSession.IVRCallAttribute;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class DtmfEventActionTest extends BaseActionTest {
     private DtmfEventAction eventAction;
@@ -34,11 +31,9 @@ public class DtmfEventActionTest extends BaseActionTest {
     public void shouldDelegateToAuthenticateActionIfCollectPin() {
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(IVRCallAttribute.CALL_STATE)).thenReturn(IVRCallState.COLLECT_PIN);
-        when(authenticateAction.createResponse(any(IVRRequest.class), any(HttpServletRequest.class), any(HttpServletResponse.class))).thenReturn("OK");
 
-        String handle = eventAction.createResponse(ivrRequest, request, response);
+        String handle = eventAction.handle("callId", ivrRequest, request, response);
 
-        assertEquals("OK", handle);
-        verify(authenticateAction).createResponse(ivrRequest, request, response);
+        verify(authenticateAction).handle("callId", ivrRequest, request, response);
     }
 }
