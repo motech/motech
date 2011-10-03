@@ -51,7 +51,7 @@ public class DtmfEventAction extends BaseEventAction {
     }
 
     @Override
-    protected Map<String, String> callEventData(final IVRRequest ivrRequest) {
+    protected Map<String, String> callEventData(final IVRRequest ivrRequest, HttpServletRequest request) {
         return new HashMap<String, String>() {
             {
                 put(CallEventConstants.DTMF_DATA, ivrRequest.getData());

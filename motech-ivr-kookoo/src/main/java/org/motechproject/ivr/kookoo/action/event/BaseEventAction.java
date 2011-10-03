@@ -29,7 +29,7 @@ public abstract class BaseEventAction extends BaseAction {
     public String handle(String callId, IVRRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
         String responseXML = createResponse(ivrRequest, request, response);
         try {
-            publishCallEvent(callId, ivrRequest, responseXML);
+            publishCallEvent(callId, ivrRequest, request, responseXML);
         } catch (Exception e) {
             logger.error(e.getStackTrace());
         }
@@ -37,13 +37,13 @@ public abstract class BaseEventAction extends BaseAction {
         return responseXML;
     }
 
-    protected void publishCallEvent(String callId, IVRRequest ivrRequest, String responseXML) {
-        Map<String, String> callEventData = callEventData(ivrRequest);
+    protected void publishCallEvent(String callId, IVRRequest ivrRequest, HttpServletRequest request, String responseXML) {
+        Map<String, String> callEventData = callEventData(ivrRequest, request);
         callEventData.put(CallEventConstants.RESPONSE_XML, responseXML);
         kookooCallDetailRecordsService.appendEvent(callId, ivrRequest.getEvent(), callEventData);
     }
 
-    protected Map<String, String> callEventData(IVRRequest ivrRequest) {
+    protected Map<String, String> callEventData(IVRRequest ivrRequest, HttpServletRequest request) {
         return new HashMap<String, String>();
     }
 
