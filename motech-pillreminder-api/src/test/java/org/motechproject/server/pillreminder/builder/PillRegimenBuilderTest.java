@@ -1,6 +1,7 @@
 package org.motechproject.server.pillreminder.builder;
 
 import org.joda.time.LocalDate;
+import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.model.Time;
 import org.motechproject.server.pillreminder.contract.DailyPillRegimenRequest;
@@ -20,20 +21,27 @@ import static org.junit.Assert.assertEquals;
 public class PillRegimenBuilderTest {
 
     private PillRegimenBuilder builder = new PillRegimenBuilder();
+    private String externalId;
+    private DosageRequest dosageRequest;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
-    @Test
-    public void shouldCreateAPillRegimenFromARequest() {
-        LocalDate startDate = DateUtil.newDate(2011, 5, 20);
-        LocalDate endDate = DateUtil.newDate(2011, 5, 21);
-        String externalId = "123";
+    @Before
+    public void setUp() {
+        startDate = DateUtil.newDate(2011, 5, 20);
+        endDate = DateUtil.newDate(2011, 5, 21);
+        externalId = "123";
 
         MedicineRequest medicineRequest = new MedicineRequest("m1", startDate, endDate);
         List<MedicineRequest> medicineRequests = asList(medicineRequest);
 
-        DosageRequest dosageRequest = new DosageRequest(10, 5, medicineRequests);
-        DailyPillRegimenRequest dailyPillRegimenRequest = new DailyPillRegimenRequest(externalId, 5, 20, asList(dosageRequest));
+        dosageRequest = new DosageRequest(10, 5, medicineRequests);
+    }
 
-        PillRegimen pillRegimen = builder.createFrom(dailyPillRegimenRequest);
+    @Test
+    public void shouldCreateDailyPillRegimen() {
+        DailyPillRegimenRequest dailyPillRegimenRequest = new DailyPillRegimenRequest(externalId, 5, 20, asList(dosageRequest));
+        PillRegimen pillRegimen = builder.createDailyPillRegimenFrom(dailyPillRegimenRequest);
 
         assertEquals(externalId, pillRegimen.getExternalId());
         DailyScheduleDetails scheduleDetails = (DailyScheduleDetails) pillRegimen.getScheduleDetails();

@@ -1,8 +1,8 @@
 package org.motechproject.server.pillreminder.builder.testbuilder;
 
+import org.motechproject.server.pillreminder.domain.DailyScheduleDetails;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
-import org.motechproject.server.pillreminder.domain.ScheduleDetails;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,7 +22,7 @@ public class PillRegimenBuilder {
         return this;
     }
 
-    public PillRegimenBuilder withScheduleDetails(ScheduleDetails scheduleDetails) {
+    public PillRegimenBuilder withScheduleDetails(DailyScheduleDetails scheduleDetails) {
         pillRegimen.setScheduleDetails(scheduleDetails);
         return this;
     }

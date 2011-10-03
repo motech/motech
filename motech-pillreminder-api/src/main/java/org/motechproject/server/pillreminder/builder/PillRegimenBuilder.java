@@ -13,12 +13,17 @@ public class PillRegimenBuilder {
 
     private DosageBuilder dosageBuilder = new DosageBuilder();
 
-    public PillRegimen createFrom(DailyPillRegimenRequest dailyPillRegimenRequest) {
-        Set<Dosage> dosages = new HashSet<Dosage>();
-        for (DosageRequest dosageRequest : dailyPillRegimenRequest.getDosageRequests())
-            dosages.add(dosageBuilder.createFrom(dosageRequest));
+    public PillRegimen createDailyPillRegimenFrom(DailyPillRegimenRequest dailyPillRegimenRequest) {
         final int pillWindowInHours = dailyPillRegimenRequest.getPillWindowInHours();
         final int reminderRepeatIntervalInMinutes = dailyPillRegimenRequest.getReminderRepeatIntervalInMinutes();
-        return new PillRegimen(dailyPillRegimenRequest.getExternalId(), dosages, new DailyScheduleDetails(reminderRepeatIntervalInMinutes, pillWindowInHours));
+        final DailyScheduleDetails scheduleDetails = new DailyScheduleDetails(reminderRepeatIntervalInMinutes, pillWindowInHours);
+        return new PillRegimen(dailyPillRegimenRequest.getExternalId(), getDosages(dailyPillRegimenRequest), scheduleDetails);
+    }
+
+    private Set<Dosage> getDosages(DailyPillRegimenRequest pillRegimenRequest) {
+        Set<Dosage> dosages = new HashSet<Dosage>();
+        for (DosageRequest dosageRequest : pillRegimenRequest.getDosageRequests())
+            dosages.add(dosageBuilder.createFrom(dosageRequest));
+        return dosages;
     }
 }

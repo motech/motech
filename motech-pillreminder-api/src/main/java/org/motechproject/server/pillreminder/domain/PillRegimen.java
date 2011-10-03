@@ -12,13 +12,13 @@ public class PillRegimen extends MotechAuditableDataObject {
     @JsonProperty("type")
     private String type = "PILLREGIMEN";
     private String externalId;
-    private ScheduleDetails scheduleDetails;
+    private DailyScheduleDetails scheduleDetails;
     private Set<Dosage> dosages;
 
     public PillRegimen() {
     }
 
-    public PillRegimen(String externalId, Set<Dosage> dosages, ScheduleDetails scheduleDetails) {
+    public PillRegimen(String externalId, Set<Dosage> dosages, DailyScheduleDetails scheduleDetails) {
         this.externalId = externalId;
         this.dosages = dosages;
         this.scheduleDetails = scheduleDetails;
@@ -40,11 +40,11 @@ public class PillRegimen extends MotechAuditableDataObject {
         this.dosages = dosages;
     }
 
-    public ScheduleDetails getScheduleDetails() {
+    public DailyScheduleDetails getScheduleDetails() {
         return scheduleDetails;
     }
 
-    public void setScheduleDetails(ScheduleDetails scheduleDetails) {
+    public void setScheduleDetails(DailyScheduleDetails scheduleDetails) {
         this.scheduleDetails = scheduleDetails;
     }
 

@@ -1,17 +1,31 @@
 package org.motechproject.scheduler.builder;
 
 
-public class WeeklyCronJobExpressionBuilder {
+import org.motechproject.model.DayOfWeek;
+import org.motechproject.model.Time;
 
-    private final String CRON_JOB_EXPR = "0 0 0 ? * %d";
-    
-    int dayOfWeekFromJodaDate;
-    public WeeklyCronJobExpressionBuilder(int dayOfWeekFromJodaDate	) {
-    	this.dayOfWeekFromJodaDate = dayOfWeekFromJodaDate;
+public class WeeklyCronJobExpressionBuilder {
+    private int quartzDayOfWeek;
+    private int hour;
+    private int minute;
+
+    public WeeklyCronJobExpressionBuilder(DayOfWeek dayOfWeek) {
+        quartzDayOfWeek = (dayOfWeek.getValue() % 7) + 1;
+    }
+
+    public WeeklyCronJobExpressionBuilder(int dayOfWeekNumber) {
+        quartzDayOfWeek = dayOfWeekNumber;
+    }
+
+    public WeeklyCronJobExpressionBuilder withTime(Time time) {
+        this.hour = time.getHour();
+        this.minute = time.getMinute();
+        return this;
     }
 
     public String build() {
-        return String.format(CRON_JOB_EXPR, ((dayOfWeekFromJodaDate) % 7)+1);
-    }
+        String CRON_JOB_EXPR = "0 %d %d ? * %d";
 
+        return String.format(CRON_JOB_EXPR, minute, hour, quartzDayOfWeek);
+    }
 }

@@ -1,14 +1,14 @@
 package org.motechproject.server.pillreminder.domain;
 
-public class DailyScheduleDetails extends ScheduleDetails {
+public class DailyScheduleDetails {
     private int pillWindowInHours;
+    private int repeatIntervalInMinutes;
 
     protected DailyScheduleDetails() {
-        super();
     }
 
     public DailyScheduleDetails(int repeatIntervalInMinutes, int pillWindowInHours) {
-        super(repeatIntervalInMinutes);
+        this.repeatIntervalInMinutes = repeatIntervalInMinutes;
         this.pillWindowInHours = pillWindowInHours;
     }
 
@@ -18,5 +18,13 @@ public class DailyScheduleDetails extends ScheduleDetails {
 
     public void setPillWindowInHours(int pillWindowInHours) {
         this.pillWindowInHours = pillWindowInHours;
+    }
+
+    public int getRepeatIntervalInMinutes() {
+        return repeatIntervalInMinutes;
+    }
+
+    public void setRepeatIntervalInMinutes(int repeatIntervalInMinutes) {
+        this.repeatIntervalInMinutes = repeatIntervalInMinutes;
     }
 }
