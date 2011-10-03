@@ -24,6 +24,14 @@ public class KookooCallDetailRecordsServiceImpl implements KookooCallDetailRecor
     @Autowired
     private EventService eventService;
 
+    public KookooCallDetailRecordsServiceImpl(){
+    }
+
+    public KookooCallDetailRecordsServiceImpl(AllKooKooCallDetailRecords allKooKooCallDetailRecords, EventService eventService) {
+        this.allKooKooCallDetailRecords = allKooKooCallDetailRecords;
+        this.eventService = eventService;
+    }
+
     public KookooCallDetailRecord get(String callId) {
         return allKooKooCallDetailRecords.findByCallId(callId);
     }
@@ -51,7 +59,9 @@ public class KookooCallDetailRecordsServiceImpl implements KookooCallDetailRecor
 
     @Override
     public void close(String callId, String externalId) {
-        get(callId).close();
+        KookooCallDetailRecord kookooCallDetailRecord = get(callId);
+        kookooCallDetailRecord.close();
+        allKooKooCallDetailRecords.update(kookooCallDetailRecord);
         eventService.publishEvent(new CallDetailRecordEvent(callId, externalId));
     }
 }

@@ -12,6 +12,7 @@ import java.util.Properties;
 import java.util.TimeZone;
 
 public class DateUtil {
+
     private static DateTimeZone dateTimeZone;
 
     public static DateTime now() {
@@ -41,8 +42,8 @@ public class DateUtil {
         return dateTime.toDateTime(getTimeZone());
     }
 
-    public static DateTime newDateTime(Date date){
-        return new DateTime(date, getTimeZone()).withMillisOfSecond(0);
+    public static DateTime newDateTime(Date date) {
+        return new DateTime(date.getTime(), getTimeZone()).withMillisOfSecond(0);
     }
 
     public static LocalDate newDate(Date date) {
@@ -55,7 +56,7 @@ public class DateUtil {
         try {
             Properties dateProperties = new Properties();
             InputStream resourceAsStream = DateUtil.class.getResourceAsStream("/date.properties");
-            if(resourceAsStream == null) return DateTimeZone.getDefault();
+            if (resourceAsStream == null) return DateTimeZone.getDefault();
             dateProperties.load(resourceAsStream);
             String timeZoneString = dateProperties.getProperty("timezone");
             dateTimeZone = DateTimeZone.forTimeZone(TimeZone.getTimeZone(timeZoneString));
