@@ -48,7 +48,7 @@ public class CallDetailRecord {
 
     private static CallDetailRecord create(String phoneNumber, IVRRequest.CallDirection callDirection){
         CallDetailRecord callDetailRecord = new CallDetailRecord();
-        callDetailRecord.startDate = DateUtil.today().toDate();
+        callDetailRecord.startDate = DateUtil.now().toDate();
         callDetailRecord.disposition = Disposition.ANSWERED;
         callDetailRecord.answerDate = callDetailRecord.startDate;
         callDetailRecord.phoneNumber = phoneNumber;
