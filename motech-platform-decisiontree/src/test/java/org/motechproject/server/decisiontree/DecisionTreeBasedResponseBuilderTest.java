@@ -30,6 +30,10 @@ public class DecisionTreeBasedResponseBuilderTest {
         treeBasedResponseBuilder = new DecisionTreeBasedResponseBuilder(postTreeCallContinuation);
     }
 
+    private IVRResponseBuilder nextResponse(Node rootNode, boolean retryOnIncorrectUserAction) {
+        return treeBasedResponseBuilder.ivrResponse(rootNode, ivrContext, ivrResponseBuilder, retryOnIncorrectUserAction);
+    }
+    
     @Test
     public void shouldAddCollectDtmfIfTheNodeHasTransitions() {
         Node rootNode = new Node()
@@ -49,10 +53,6 @@ public class DecisionTreeBasedResponseBuilderTest {
         verify(ivrResponseBuilder).collectDtmf(1);
         verify(ivrResponseBuilder).withPlayAudios("foo");
         verify(ivrResponseBuilder, never()).withPlayTexts(Matchers.<String>any());
-    }
-
-    private IVRResponseBuilder nextResponse(Node rootNode, boolean retryOnIncorrectUserAction) {
-        return treeBasedResponseBuilder.ivrResponse(rootNode, ivrContext, ivrResponseBuilder, retryOnIncorrectUserAction);
     }
 
     @Test
@@ -129,6 +129,15 @@ public class DecisionTreeBasedResponseBuilderTest {
                 .setPrompts(new AudioPrompt().setName("hello"), menu);
         nextResponse(rootNode, true);
         verify(mockCommand, times(1)).execute(any());
+    }
+    
+    @Test 
+    public void shouldGotoUrlWhenNodeHasSingleURLTransition() {
+        Node rootNode = new Node()
+                .setPrompts(new AudioPrompt().setName("hello"))
+                .setTransitions(new Object[][]{{"", new URLTransition("/test")}});        
+        nextResponse(rootNode, true);
+    	verify(ivrResponseBuilder, times(1)).withNextUrl("/test");
     }
 
     class ReturnEmptyCommand implements ITreeCommand {

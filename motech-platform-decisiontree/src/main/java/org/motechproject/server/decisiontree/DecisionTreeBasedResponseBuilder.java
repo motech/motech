@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class DecisionTreeBasedResponseBuilder {
@@ -39,6 +40,14 @@ public class DecisionTreeBasedResponseBuilder {
             ivrResponseBuilder.collectDtmf(maxLenOfTransitionOptions(node));
         } else {
             postTreeCallContinuation.continueCall(ivrContext, ivrResponseBuilder);
+        } 
+        if (node.getTransitions().size() == 1){
+        	Map<String, Transition> transitions = node.getTransitions();
+        	Transition transition = transitions.get(transitions.keySet().iterator().next());
+        	if (transition instanceof URLTransition) {
+        		URLTransition urlTransition = (URLTransition)transition;
+        		ivrResponseBuilder.withNextUrl(urlTransition.getUrl());
+        	}
         }
         return ivrResponseBuilder;
     }
