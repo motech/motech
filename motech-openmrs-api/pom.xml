@@ -84,7 +84,7 @@
                         <configuration>
                             <driver>com.mysql.jdbc.Driver</driver>
                             <username>root</username>
-                            <password>password</password>
+                            <password/>
                             <url>jdbc:mysql://localhost:3306</url>
                         </configuration>
                         <executions>
