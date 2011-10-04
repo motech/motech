@@ -102,6 +102,8 @@
         <module>motech-alerts-api</module>
         <module>motech-event-tracking-api</module>
         <module>motech-ivr-kookoo</module>
+        <module>motech-mrs-api</module>
+        <module>motech-openmrs-api</module>
     </modules>
 
     <build>
