@@ -6,11 +6,13 @@ import org.joda.time.LocalDate;
 import org.motechproject.MotechException;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.Properties;
 import java.util.TimeZone;
 
 public class DateUtil {
+
     private static DateTimeZone dateTimeZone;
 
     public static DateTime now() {
@@ -23,9 +25,7 @@ public class DateUtil {
     }
 
     public static LocalDate tomorrow() {
-        LocalDate localDate = new LocalDate(getTimeZone());
-        localDate.plusDays(1);
-        return localDate;
+        return today().plusDays(1);
     }
 
     public static LocalDate newDate(int year, int month, int day) {
@@ -38,6 +38,14 @@ public class DateUtil {
                 .withHourOfDay(hour).withMinuteOfHour(minute).withSecondOfMinute(second);
     }
 
+    public static DateTime setTimeZone(DateTime dateTime) {
+        return dateTime.toDateTime(getTimeZone());
+    }
+
+    public static DateTime newDateTime(Date date) {
+        return new DateTime(date.getTime(), getTimeZone()).withMillisOfSecond(0);
+    }
+
     public static LocalDate newDate(Date date) {
         if (date == null) return null;
         return new LocalDate(date.getTime(), getTimeZone());
@@ -45,10 +53,11 @@ public class DateUtil {
 
     private static DateTimeZone getTimeZone() {
         if (dateTimeZone != null) return dateTimeZone;
-
         try {
             Properties dateProperties = new Properties();
-            dateProperties.load(DateUtil.class.getResourceAsStream("/date.properties"));
+            InputStream resourceAsStream = DateUtil.class.getResourceAsStream("/date.properties");
+            if (resourceAsStream == null) return DateTimeZone.getDefault();
+            dateProperties.load(resourceAsStream);
             String timeZoneString = dateProperties.getProperty("timezone");
             dateTimeZone = DateTimeZone.forTimeZone(TimeZone.getTimeZone(timeZoneString));
         } catch (IOException e) {

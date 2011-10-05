@@ -24,7 +24,7 @@ public class PillRegimenTest {
         Set<Dosage> dosages = new HashSet<Dosage>();
         dosages.add(new Dosage(new Time(9, 5), medicines));
 
-        PillRegimen regimen = new PillRegimen("1", 5, 10, dosages);
+        PillRegimen regimen = new PillRegimen("1", dosages, new DailyScheduleDetails(10, 5));
         regimen.validate();
     }
 
@@ -39,7 +39,7 @@ public class PillRegimenTest {
         Set<Dosage> dosages = new HashSet<Dosage>();
         dosages.add(new Dosage(new Time(9, 5), medicines));
 
-        PillRegimen regimen = new PillRegimen("1", 5, 10, dosages);
+        PillRegimen regimen = new PillRegimen("1", dosages, new DailyScheduleDetails(10, 5));
 
         try {
             regimen.validate();

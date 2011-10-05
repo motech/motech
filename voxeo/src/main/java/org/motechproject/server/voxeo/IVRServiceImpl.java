@@ -80,7 +80,7 @@ public class IVRServiceImpl implements IVRService
         String voxeoURL = "http://api.voxeo.net/SessionControl/CCXML10.start";
         //String tokenid = "tokenid=b418dfa2e50c744a8e631ea7edcc2050113f414661e4f700c0b0772381b163f0111974aa74ef9438ce6544fb";
         String phonenum = "phonenum=" + callRequest.getPhone();
-        String vxmlURL =  "vxml=" + URLEncoder.encode(callRequest.getVxmlUrl());
+        String vxmlURL =  "vxml=" + URLEncoder.encode(callRequest.getCallBackUrl());
         String externalId = "externalId=" + phoneCall.getId();
 
         if (0 != callRequest.getTimeOut()) {
@@ -89,7 +89,7 @@ public class IVRServiceImpl implements IVRService
             voxeoURL += "?tokenid=" + tokenId + "&" + phonenum + "&" + vxmlURL + "&" + externalId;
         }
 
-        log.info("Initiating call to: " + callRequest.getPhone() + " VXML URL: " + callRequest.getVxmlUrl());
+        log.info("Initiating call to: " + callRequest.getPhone() + " VXML URL: " + callRequest.getCallBackUrl());
         log.info("Voxeo URL: " + voxeoURL);
 
         try {

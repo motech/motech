@@ -33,7 +33,11 @@ package org.motechproject.server.service.ivr.asterisk;
 
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.net.URLCodec;
-import org.asteriskjava.live.*;
+import org.asteriskjava.live.AsteriskServer;
+import org.asteriskjava.live.DefaultAsteriskServer;
+import org.asteriskjava.live.ManagerCommunicationException;
+import org.asteriskjava.live.NoSuchChannelException;
+import org.asteriskjava.live.OriginateCallback;
 import org.motechproject.server.service.ivr.CallInitiationException;
 import org.motechproject.server.service.ivr.CallRequest;
 import org.motechproject.server.service.ivr.IVRService;
@@ -48,6 +52,8 @@ import org.slf4j.LoggerFactory;
  */
 public class IVRServiceAsteriskImpl implements IVRService
 {
+	public static final String VXML_URL = "vxml.url";
+	public static final String VXML_TIMEOUT = "vxml.timeout";
 
     private final String asteriskApplication = "Agi";
 
@@ -56,6 +62,8 @@ public class IVRServiceAsteriskImpl implements IVRService
 
     private AsteriskServer asteriskServer;
     private String agiUrl;
+    private long timeout;
+    private String vxmlBaseURL;
 
 
     public IVRServiceAsteriskImpl(String asteriskServerHost, String asteriskUserName, String asteriskUserPassword) {
@@ -81,9 +89,9 @@ public class IVRServiceAsteriskImpl implements IVRService
 
             String encodedVxmlUrl;
             try {
-                encodedVxmlUrl = urlCodec.encode(callRequest.getVxmlUrl());
+                encodedVxmlUrl = urlCodec.encode(getVxmlUrl());
             } catch (EncoderException e) {
-                String errorMessage = "Invalid Voice XML URL: " + callRequest.getVxmlUrl();
+                String errorMessage = "Invalid Voice XML URL: " + getVxmlUrl();
                 log.error(errorMessage);
                 throw new IllegalArgumentException(errorMessage);
             }
@@ -93,7 +101,7 @@ public class IVRServiceAsteriskImpl implements IVRService
             log.info("Initiating call to: " + destinationPhone + " VXML URL: " + data);
 
             asteriskServer.originateToApplicationAsync(destinationPhone, asteriskApplication,
-                                                       data, callRequest.getTimeOut(), asteriskCallBack);
+                                                       data, getTimeOut(), asteriskCallBack);
         } catch (ManagerCommunicationException e) {
             String errorMessage = "Can not initiate call: " + e.getMessage();
             throw new CallInitiationException(errorMessage, e);
@@ -103,7 +111,16 @@ public class IVRServiceAsteriskImpl implements IVRService
         }
     }
 
-    public void setAgiUrl(String agiUrl) {
+    private String getVxmlUrl() {
+    	//TODO: construct the vxml url.
+    	return vxmlBaseURL;
+	}
+
+	private long getTimeOut() {
+    	return timeout;
+	}
+
+	public void setAgiUrl(String agiUrl) {
         this.agiUrl = agiUrl;
     }
 
@@ -118,4 +135,11 @@ public class IVRServiceAsteriskImpl implements IVRService
         return asteriskServer;
     }
 
+	public void setTimeout(long timeout) {
+		this.timeout = timeout;
+	}
+
+	public void setVxmlBaseURL(String vxmlBaseURL) {
+		this.vxmlBaseURL = vxmlBaseURL;
+	}
 }

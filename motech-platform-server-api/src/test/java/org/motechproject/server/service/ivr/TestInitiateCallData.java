@@ -40,39 +40,28 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestInitiateCallData {
 
-    @Test
+    private static final String CALLBACK_URL = "http://10.0.1.29:8080/m/module/ar/vxml/ar?r=1";
+
+	@Test
     public void TestConstructor() {
-        long messageId = 1L;
         String phone = "1001";
         int timeOut = Integer.MAX_VALUE;
-        String vxmlUrl = "http://test.test/vxml";
 
-        CallRequest callRequest = new CallRequest(phone, timeOut,vxmlUrl);
+        CallRequest callRequest = new CallRequest(phone, timeOut, CALLBACK_URL);
 
         assertEquals(phone, callRequest.getPhone());
-        assertEquals(timeOut, callRequest.getTimeOut());
-        assertEquals(vxmlUrl, callRequest.getVxmlUrl());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void TestConstructorNullPhone() {
-        long messageId = 1L;
         String phone = null;
         int timeOut = Integer.MAX_VALUE;
-        String vxmlUrl = "http://test.test/vxml";
 
-        CallRequest callRequest = new CallRequest(phone, timeOut,vxmlUrl);
-
+        CallRequest callRequest = new CallRequest(phone, timeOut, CALLBACK_URL);
     }
-
     @Test(expected = IllegalArgumentException.class)
-    public void TestConstructorNullVxmlUrl() {
-        long messageId = 1L;
-        String phone = "1001";
-        int timeOut = Integer.MAX_VALUE;
-        String vxmlUrl= null;
-
-        CallRequest callRequest = new CallRequest(phone, timeOut,vxmlUrl);
-
-    }
+	public void TestConstructorNullVxmlUrl() {
+	    String phone = "1001";
+	    CallRequest callRequest = new CallRequest(phone, Integer.MAX_VALUE, null);
+	 }
 }

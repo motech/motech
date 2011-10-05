@@ -17,6 +17,7 @@ import org.motechproject.server.pillreminder.builder.SchedulerPayloadBuilder;
 import org.motechproject.server.pillreminder.builder.testbuilder.DosageBuilder;
 import org.motechproject.server.pillreminder.builder.testbuilder.PillRegimenBuilder;
 import org.motechproject.server.pillreminder.dao.AllPillRegimens;
+import org.motechproject.server.pillreminder.domain.DailyScheduleDetails;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
 import org.motechproject.server.pillreminder.util.PillReminderTimeUtils;
@@ -228,8 +229,7 @@ public class ReminderEventHandlerTest {
     private PillRegimen buildPillRegimen(String externalId, int pillWindow, Dosage dosage, int retryInterval) {
         return PillRegimenBuilder.newPillRegimen()
                 .withExternalId(externalId)
-                .withReminderRepeatWindowInHours(pillWindow)
-                .withReminderRepeatIntervalInMinutes(retryInterval)
+                .withScheduleDetails(new DailyScheduleDetails(retryInterval, pillWindow))
                 .withSingleDosage(dosage)
                 .build();
     }
