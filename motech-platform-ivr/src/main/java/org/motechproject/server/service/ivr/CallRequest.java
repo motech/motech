@@ -31,11 +31,11 @@
  */
 package org.motechproject.server.service.ivr;
 
+import org.motechproject.model.MotechEvent;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.motechproject.model.MotechEvent;
 
 /**
  * This class is used to request a call from the IVR system
@@ -54,6 +54,7 @@ public class CallRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
     private String phone;
+    private int timeOut;
     private String callBackUrl;
     
     private Map<String, String> payload = new HashMap<String, String>();
@@ -66,10 +67,29 @@ public class CallRequest implements Serializable {
     /**
      * Generate a call request for the IVR system
      *
-     * @param messageId
      * @param phone
      * @param callBackUrl
      */
+    public CallRequest(String phone, int timeOut, String callBackUrl) {
+
+        if (phone == null) {
+            throw new IllegalArgumentException("phone can not be null");
+        }
+
+        if (callBackUrl == null) {
+        	throw new IllegalArgumentException("callBackUrl can not be null");
+        }
+
+        this.phone = phone;
+        this.timeOut = timeOut;
+        this.callBackUrl = callBackUrl;
+
+        this.onSuccessEvent = null;
+        this.onBusyEvent = null;
+        this.onNoAnswerEvent = null;
+        this.onFailureEvent = null;
+    }
+
     public CallRequest(String phone, Map<String, String> params, String callBackUrl) {
 
         if (phone == null) {
@@ -78,9 +98,13 @@ public class CallRequest implements Serializable {
         if (callBackUrl == null) {
         	throw new IllegalArgumentException("callBackUrl can not be null");
         }
+
         this.phone = phone;
+        this.timeOut = 0;
+
         if (params != null)
         	this.payload.putAll(params);
+
         this.callBackUrl = callBackUrl;
         
         this.onSuccessEvent = null;
@@ -89,6 +113,7 @@ public class CallRequest implements Serializable {
         this.onFailureEvent = null;
     }
 
+    public CallRequest() {}
 
     public String getPhone() {
         return phone;
@@ -146,4 +171,13 @@ public class CallRequest implements Serializable {
 		return callBackUrl;
 	}
 
+    public int getTimeOut()
+    {
+        return timeOut;
+    }
+
+    public void setTimeOut(int timeOut)
+    {
+        this.timeOut = timeOut;
+    }
 }

@@ -76,7 +76,7 @@ public class MotechAsteriskCallBackImplTest {
     public void setUp() throws Exception {
         event = new MotechEvent("", null);
 
-        callRequest = new CallRequest( "", null, "http://localhost");
+        callRequest = new CallRequest( "", 0, "http://localhost");
 
         motechAsteriskCallBack = new MotechAsteriskCallBackImpl(callRequest);
 

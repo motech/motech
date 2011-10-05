@@ -1,4 +1,4 @@
-package org.motechproject.server.service.ivr; /**
+/**
  * MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
  *
  * Copyright (c) 2011 Grameen Foundation USA.  All rights reserved.
@@ -29,44 +29,50 @@ package org.motechproject.server.service.ivr; /**
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
+package org.motechproject.server.demo.web;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.motechproject.server.demo.service.DemoService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.Controller;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
- * This is an interactive test. In order to run that test please make sure that Asterisk, Voiceglue and VXML application
- * are properly configures, up and running. Your SIP phone configured to use the "SIP/1001" account and that account registered
- * in Asterisk.
- *
- * In order to run unit test
- * - start your soft phone
- * - run the initiateCallTest()
- * Your soft phone should start ringing. Answer the phone, you should hear a voice message specified in the voice XML document retrieved
- * from the URL specified as a value of the voiceXmlUrl property of the ivrService bean.
- *
+ * Spring MVC controller implementation provides method to handle HTTP requests and generate
+ * IVR entry VXML documents
  *
  */
+public class CallMeController implements Controller {
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/testIVRAppContext.xml"})
-public class IVRServiceImplIT {
+    private Logger logger = LoggerFactory.getLogger((this.getClass()));
 
     @Autowired
-    private IVRService ivrService;
+    private DemoService demoService;
 
-    @Test @Ignore
-    public void initiateCallTest() throws Exception{
+	@Override
+	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        response.setContentType("text/html");
+        response.setCharacterEncoding("UTF-8");
 
-        //CallRequest initiateCallData = new CallRequest(1L, "SIP/1001", 5000, "http://10.0.1.29:8080/TamaIVR/r/wt");
-        //CallRequest initiateCallData = new CallRequest(1L, "SIP/1001", 5000, "http://10.0.1.29:8080/m/module/ar/vxml/ar?r=1");
-        CallRequest initiateCallData = new CallRequest("SIP/1001", 5000, "http://motech.2paths.com:8080/module/ar/vxml/ar?r=1");
+        String phoneNumber = request.getParameter("phone");
+        int delay = Integer.parseInt(request.getParameter("callDelay"));
 
-        ivrService.initiateCall(initiateCallData);
-    }
+        Calendar now = Calendar.getInstance();
+        now.add(Calendar.MINUTE, delay);
+        Date callTime = now.getTime();
 
+		ModelAndView mav = new ModelAndView();
 
+        demoService.schedulePhoneCall(phoneNumber, callTime);
+
+        mav.setViewName("successView");
+
+		return mav;
+	}	
 }

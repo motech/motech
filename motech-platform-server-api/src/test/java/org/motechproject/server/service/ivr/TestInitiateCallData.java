@@ -45,19 +45,23 @@ public class TestInitiateCallData {
 	@Test
     public void TestConstructor() {
         String phone = "1001";
-        CallRequest callRequest = new CallRequest(phone, null, CALLBACK_URL);
+        int timeOut = Integer.MAX_VALUE;
+
+        CallRequest callRequest = new CallRequest(phone, timeOut, CALLBACK_URL);
+
         assertEquals(phone, callRequest.getPhone());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void TestConstructorNullPhone() {
         String phone = null;
-        CallRequest callRequest = new CallRequest(phone, null, CALLBACK_URL);
+        int timeOut = Integer.MAX_VALUE;
+
+        CallRequest callRequest = new CallRequest(phone, timeOut, CALLBACK_URL);
     }
     @Test(expected = IllegalArgumentException.class)
 	public void TestConstructorNullVxmlUrl() {
 	    String phone = "1001";
-	    CallRequest callRequest = new CallRequest(phone, null, null);
+	    CallRequest callRequest = new CallRequest(phone, Integer.MAX_VALUE, null);
 	 }
-
 }

@@ -1,19 +1,7 @@
 package org.motechproject.server.pillreminder;
 
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.only;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-
-import java.util.HashMap;
-
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -34,6 +22,15 @@ import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
 import org.motechproject.server.pillreminder.util.PillReminderTimeUtils;
 import org.motechproject.util.DateUtil;
+
+import java.util.Date;
+import java.util.HashMap;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ReminderEventHandlerTest {
 
@@ -164,7 +161,7 @@ public class ReminderEventHandlerTest {
         MotechEvent motechEvent = buildMotechEvent(externalId, dosageId);
         pillReminderEventHandler.handleEvent(motechEvent);
         
-        verify(schedulerService).scheduleRepeatingJob(argThat(new RepeatingSchedulableJobArgumentMatcher(new Time(10, 25+  retryInterval))));
+        verify(schedulerService).scheduleRepeatingJob(argThat(new RepeatingSchedulableJobArgumentMatcher(new Time(10, 25 + retryInterval))));
     }
 
     @Test
@@ -199,9 +196,12 @@ public class ReminderEventHandlerTest {
 
 		@Override
         public boolean matches(Object o) {
+            DateTime dosageTime = DateUtil.now().withHourOfDay(time.getHour()).withMinuteOfHour(time.getMinute());
+            Date startTime = dosageTime.toDate();
+
         	RepeatingSchedulableJob job = (RepeatingSchedulableJob)o;
-        	return job.getStartTime().getHours() == time.getHour() 
-        			&& job.getStartTime().getMinutes() == time.getMinute();
+        	return job.getStartTime().getHours() == startTime.getHours()
+        			&& job.getStartTime().getMinutes() == startTime.getMinutes();
         }
     }
     

@@ -68,7 +68,7 @@ public class TestIVRService {
         AsteriskServer asteriskServerMock = mock(AsteriskServer.class);
         ivrService.setAsteriskServer(asteriskServerMock);
 
-        CallRequest callRequest = new CallRequest("1001", null, CALLBACK_URL);
+        CallRequest callRequest = new CallRequest("1001", Integer.MAX_VALUE, CALLBACK_URL);
 
         ivrService.initiateCall(callRequest);
 
@@ -84,7 +84,7 @@ public class TestIVRService {
     @Test (expected = CallInitiationException.class)
     public void testInitiateCallManagerException() throws Exception {
 
-        CallRequest callRequest = new CallRequest("1001",null, CALLBACK_URL);
+        CallRequest callRequest = new CallRequest("1001", Integer.MAX_VALUE, CALLBACK_URL);
 
         AsteriskServer asteriskServerMock = mock(AsteriskServer.class);
         Mockito.doThrow(new ManagerCommunicationException("", new Exception())).when(asteriskServerMock)
@@ -111,7 +111,7 @@ public class TestIVRService {
 @Test (expected = CallInitiationException.class)
     public void testInitiateCallChannelException() throws Exception {
 
-        CallRequest callRequest = new CallRequest("0000", null, CALLBACK_URL);
+        CallRequest callRequest = new CallRequest("0000", Integer.MAX_VALUE, CALLBACK_URL);
 
         AsteriskServer asteriskServerMock = mock(AsteriskServer.class);
         Mockito.doThrow(new NoSuchChannelException("no channel")).when(asteriskServerMock)

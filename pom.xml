@@ -59,18 +59,6 @@
             <version>1.2.16</version>
         </dependency>
         <dependency>
-            <groupId>org.ektorp</groupId>
-            <artifactId>org.ektorp</artifactId>
-            <version>1.1.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ektorp</groupId>
-            <artifactId>org.ektorp.spring</artifactId>
-            <version>1.1.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
             <version>2.0</version>
@@ -101,6 +89,8 @@
         <module>motech-mobileforms-api</module>
         <module>motech-alerts-api</module>
         <module>motech-event-tracking-api</module>
+        <module>voxeo</module>
+        <module>motech-demo</module>
         <module>motech-ivr-kookoo</module>
         <module>motech-mrs-api</module>
         <module>motech-openmrs-api</module>
