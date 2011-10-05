@@ -1,0 +1,15 @@
+package org.motechproject.util;
+
+import org.joda.time.LocalDate;
+import org.junit.Test;
+import org.motechproject.model.DayOfWeek;
+
+import static junit.framework.Assert.assertEquals;
+
+public class DateUtilTest {
+    @Test
+    public void shouldReturnDateOnASpecifiedDayInThePast() {
+        LocalDate pastDate = DateUtil.pastDateWith(DayOfWeek.Monday, 4);
+        assertEquals(DateUtil.newDate(2011, 9, 26), pastDate);
+    }
+}

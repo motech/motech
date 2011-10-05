@@ -1,6 +1,7 @@
 package org.motechproject.model;
 
 import org.junit.Test;
+import org.motechproject.util.DateUtil;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -25,6 +26,12 @@ public class DayOfWeekTest {
         assertEquals(DayOfWeek.Friday, DayOfWeek.getDayOfWeek(5));
         assertEquals(DayOfWeek.Saturday, DayOfWeek.getDayOfWeek(6));
         assertEquals(DayOfWeek.Sunday, DayOfWeek.getDayOfWeek(7));
+    }
+
+    @Test
+    public void shouldReturnDayOfWeekForTheSpecifiedDate() {
+        DayOfWeek dayOfWeek = DayOfWeek.getDayOfWeek(DateUtil.newDate(2011, 10, 5));
+        assertEquals(DayOfWeek.Wednesday, dayOfWeek);
     }
 
     @Test(expected = IllegalArgumentException.class)

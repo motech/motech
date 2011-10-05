@@ -1,5 +1,7 @@
 package org.motechproject.model;
 
+import org.joda.time.LocalDate;
+
 public enum DayOfWeek {
     Monday(1),
     Tuesday(2),
@@ -26,5 +28,9 @@ public enum DayOfWeek {
         }
 
         throw new IllegalArgumentException("Not a valid day");
+    }
+
+    public static DayOfWeek getDayOfWeek(LocalDate date) {
+        return DayOfWeek.getDayOfWeek(date.dayOfWeek().get());
     }
 }

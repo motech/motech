@@ -3,7 +3,9 @@ package org.motechproject.util;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
+import org.joda.time.Period;
 import org.motechproject.MotechException;
+import org.motechproject.model.DayOfWeek;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,6 +52,18 @@ public class DateUtil {
         if (date == null) return null;
         return new LocalDate(date.getTime(), getTimeZone());
     }
+
+    public static LocalDate pastDateWith(DayOfWeek dayOfWeek, int minNumberOfDaysAgo) {
+        LocalDate today = DateUtil.today();
+        LocalDate startDate = today.withDayOfWeek(dayOfWeek.getValue());
+
+        Period period = new Period(startDate, today);
+        if (period.getDays() > minNumberOfDaysAgo) return startDate;
+
+        startDate = startDate.minusDays(1);
+        return startDate.withDayOfWeek(dayOfWeek.getValue());
+    }
+
 
     private static DateTimeZone getTimeZone() {
         if (dateTimeZone != null) return dateTimeZone;
