@@ -2,7 +2,6 @@ package org.motechproject.server.decisiontree;
 
 import org.motechproject.decisiontree.model.*;
 import org.motechproject.server.service.ivr.IVRContext;
-import org.motechproject.server.service.ivr.IVRMessage;
 import org.motechproject.server.service.ivr.IVRResponseBuilder;
 import org.motechproject.server.service.ivr.PostTreeCallContinuation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,19 +19,20 @@ public class DecisionTreeBasedResponseBuilder {
         this.postTreeCallContinuation = postTreeCallContinuation;
 	}
 	
-    public IVRResponseBuilder ivrResponse(Node node, IVRContext ivrContext, IVRResponseBuilder ivrResponseBuilder, boolean retryOnIncorrectUserAction) {
+    public IVRResponseBuilder ivrResponse(Node node, IVRContext ivrContext, IVRResponseBuilder ivrResponseBuilder, boolean playOnlyQuestionPrompts) {
         List<Prompt> prompts = node.getPrompts();
         boolean hasTransitions = node.hasTransitions();
         for (Prompt prompt : prompts) {
-            if (retryOnIncorrectUserAction && !(prompt instanceof MenuAudioPrompt) && prompt instanceof AudioPrompt) continue;
-            ITreeCommand command = prompt.getCommand();
-            boolean isAudioPrompt = prompt instanceof AudioPrompt;
-            if (command == null) {
-                buildPrompts(ivrResponseBuilder, prompt.getName(), isAudioPrompt);
-            } else {
-                String[] promptsFromCommand = command.execute(ivrContext);
-                for (String promptFromCommand : promptsFromCommand) {
-                    buildPrompts(ivrResponseBuilder, promptFromCommand, isAudioPrompt);
+            if (isQuestionPrompt(prompt) || !playOnlyQuestionPrompts) {
+                ITreeCommand command = prompt.getCommand();
+                boolean isAudioPrompt = prompt instanceof AudioPrompt;
+                if (command == null) {
+                    buildPrompts(ivrResponseBuilder, prompt.getName(), isAudioPrompt);
+                } else {
+                    String[] promptsFromCommand = command.execute(ivrContext);
+                    for (String promptFromCommand : promptsFromCommand) {
+                        buildPrompts(ivrResponseBuilder, promptFromCommand, isAudioPrompt);
+                    }
                 }
             }
         }
@@ -50,6 +50,10 @@ public class DecisionTreeBasedResponseBuilder {
         	}
         }
         return ivrResponseBuilder;
+    }
+
+    private boolean isQuestionPrompt(Prompt prompt) {
+        return (prompt instanceof MenuAudioPrompt) || !(prompt instanceof AudioPrompt);
     }
 
     private int maxLenOfTransitionOptions(Node node) {

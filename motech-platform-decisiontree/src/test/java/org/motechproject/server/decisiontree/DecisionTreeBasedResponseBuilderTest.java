@@ -30,8 +30,8 @@ public class DecisionTreeBasedResponseBuilderTest {
         treeBasedResponseBuilder = new DecisionTreeBasedResponseBuilder(postTreeCallContinuation);
     }
 
-    private IVRResponseBuilder nextResponse(Node rootNode, boolean retryOnIncorrectUserAction) {
-        return treeBasedResponseBuilder.ivrResponse(rootNode, ivrContext, ivrResponseBuilder, retryOnIncorrectUserAction);
+    private IVRResponseBuilder nextResponse(Node rootNode, boolean playOnlyQuestionPrompts) {
+        return treeBasedResponseBuilder.ivrResponse(rootNode, ivrContext, ivrResponseBuilder, playOnlyQuestionPrompts);
     }
     
     @Test
