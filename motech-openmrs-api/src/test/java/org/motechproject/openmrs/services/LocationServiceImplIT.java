@@ -1,6 +1,5 @@
 package org.motechproject.openmrs.services;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.mrs.services.Location;
@@ -23,7 +22,6 @@ public class LocationServiceImplIT {
     private org.openmrs.api.LocationService mrsLocationService;
 
     @Test
-    @Ignore
     public void testSaveLocation() {
         Context.openSession();
         Context.authenticate("admin", "P@ssw0rd");
