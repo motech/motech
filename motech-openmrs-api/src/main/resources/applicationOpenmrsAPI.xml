@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+    <aop:aspectj-autoproxy/>
     <bean id="context" class="org.motechproject.openmrs.Context" init-method="initialize">
         <constructor-arg value="jdbc:mysql://${openmrs.host}:3306/${openmrs.database}?autoReconnect=true"/>
         <constructor-arg value="${openmrs.db.username}"/>
@@ -10,14 +11,21 @@
         <constructor-arg value="${openmrs.admin.password}"/>
     </bean>
 
-    <bean id="serviceContext"  class="org.openmrs.api.context.ServiceContext"  factory-bean="context" factory-method="getServiceContext"/>
 
-    <bean class="org.openmrs.api.PatientService" factory-bean="serviceContext" factory-method="getPatientService"/>
-    <bean class="org.openmrs.api.PersonService" factory-bean="serviceContext" factory-method="getPersonService"/>
-    <bean class="org.openmrs.api.UserService" factory-bean="serviceContext" factory-method="getUserService"/>
+    <bean class="org.openmrs.api.PatientService" factory-bean="context" factory-method="getPatientService"/>
+    <bean class="org.openmrs.api.PatientService"  factory-bean="context" factory-method="getPatientService"/>
+    <bean class="org.openmrs.api.PersonService" factory-bean="context" factory-method="getPersonService"/>
+    <bean class="org.openmrs.api.UserService" factory-bean="context" factory-method="getUserService"/>
+    <bean class="org.openmrs.api.AdministrationService" factory-bean="context" factory-method="getAdministrationService"/>
+    <bean class="org.openmrs.api.LocationService" factory-bean="context" factory-method="getLocationService"/>
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="location" value="classpath:openmrs.properties"/>
     </bean>
 
+    <bean class="org.motechproject.openmrs.services.LocationServiceImpl"/>
+    <bean class="org.motechproject.openmrs.advice.ApiAuthorization" depends-on="context">
+        <constructor-arg value="${openmrs.admin.username}"/>
+        <constructor-arg value="${openmrs.admin.password}"/>
+    </bean>
 </beans>

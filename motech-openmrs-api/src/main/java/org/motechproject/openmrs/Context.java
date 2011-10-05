@@ -2,7 +2,8 @@ package org.motechproject.openmrs;
 
 
 import org.apache.log4j.Logger;
-import org.openmrs.api.context.ServiceContext;
+import org.openmrs.api.LocationService;
+import org.openmrs.module.ModuleFactory;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.InputRequiredException;
 
@@ -39,11 +40,26 @@ public class Context {
         logger.warn(format("openmrs data folder is  set to %s", path));
         properties.setProperty(APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, path);
         startup(url, user, password, properties);
-        openSession();
-        authenticate(openmrsUser, openmrsPassword);
+        logger.warn(format("loaded %d modules", ModuleFactory.getLoadedModules().size()));
     }
 
-    public ServiceContext getServiceContext(){
-        return ServiceContext.getInstance();
+    public org.openmrs.api.PatientService getPatientService() {
+        return org.openmrs.api.context.Context.getPatientService();
+    }
+
+    public org.openmrs.api.PersonService getPersonService() {
+        return org.openmrs.api.context.Context.getPersonService();
+    }
+
+    public org.openmrs.api.UserService getUserService() {
+        return org.openmrs.api.context.Context.getUserService();
+    }
+
+    public org.openmrs.api.AdministrationService getAdministrationService() {
+        return org.openmrs.api.context.Context.getAdministrationService();
+    }
+
+    public LocationService getLocationService() {
+        return org.openmrs.api.context.Context.getLocationService();
     }
 }
