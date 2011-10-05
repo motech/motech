@@ -87,6 +87,7 @@ public class IvrController extends MultiActionController
             phoneCall.setId(sessionId);
             phoneCall.setSessionId(sessionId);
             phoneCall.setDirection(PhoneCall.Direction.INCOMING);
+
             CallRequest callRequest = new CallRequest();
             phoneCall.setCallRequest(callRequest);
 
@@ -147,8 +148,6 @@ public class IvrController extends MultiActionController
             phoneCall.setSessionId(sessionId);
             phoneCall.setDirection(PhoneCall.Direction.OUTGOING);
             phoneCall.setId(externalId);
-            CallRequest callRequest = new CallRequest();
-            phoneCall.setCallRequest(callRequest);
 
             logger.error("Outgoing call without a phone call record. (externalId: " + externalId);
         }
@@ -179,8 +178,6 @@ public class IvrController extends MultiActionController
 
     private void updateState(PhoneCall phoneCall, PhoneCallEvent event)
     {
-        // TODO: Check to see if the event matches a requested notification in the CallRequest and if so publish it
-        // Also set some times in the phone call record that will be useful when creating the CDR
         MotechEvent motechEvent = null;
 
         switch (event.getStatus()) {

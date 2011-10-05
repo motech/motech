@@ -1,5 +1,6 @@
 package org.motechproject.server.pillreminder.builder.testbuilder;
 
+import org.motechproject.server.pillreminder.domain.DailyScheduleDetails;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
 
@@ -21,13 +22,8 @@ public class PillRegimenBuilder {
         return this;
     }
 
-    public PillRegimenBuilder withReminderRepeatWindowInHours(int reminderRepeatWindowInHours) {
-        pillRegimen.setReminderRepeatWindowInHours(reminderRepeatWindowInHours);
-        return this;
-    }
-
-    public PillRegimenBuilder withReminderRepeatIntervalInMinutes(int reminderRepeatIntervalInMinutes) {
-        pillRegimen.setReminderRepeatIntervalInMinutes(reminderRepeatIntervalInMinutes);
+    public PillRegimenBuilder withScheduleDetails(DailyScheduleDetails scheduleDetails) {
+        pillRegimen.setScheduleDetails(scheduleDetails);
         return this;
     }
 

@@ -58,14 +58,14 @@ public class VxmlControllerTest {
     @Test
     public void nodeTest() {
 
-        Node chieldNode = new Node();
-        Transition chieldTransition = new Transition();
-        chieldTransition.setDestinationNode(new Node());
-        chieldNode.addTransition("1", chieldTransition);
+        Node childNode = new Node();
+        Transition childTransition = new Transition();
+        childTransition.setDestinationNode(new Node());
+        childNode.addTransition("1", childTransition);
 
         Node node = new Node();
         Transition transition = new Transition();
-        transition.setDestinationNode(chieldNode);
+        transition.setDestinationNode(childNode);
         node.addTransition("1", transition);
 
 

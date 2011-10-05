@@ -91,6 +91,9 @@
         <module>motech-event-tracking-api</module>
         <module>voxeo</module>
         <module>motech-demo</module>
+        <module>motech-ivr-kookoo</module>
+        <module>motech-mrs-api</module>
+        <module>motech-openmrs-api</module>
     </modules>
 
     <build>

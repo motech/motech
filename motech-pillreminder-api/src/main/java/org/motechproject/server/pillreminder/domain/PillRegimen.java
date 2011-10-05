@@ -12,18 +12,16 @@ public class PillRegimen extends MotechAuditableDataObject {
     @JsonProperty("type")
     private String type = "PILLREGIMEN";
     private String externalId;
-    private int reminderRepeatWindowInHours;
-    private int reminderRepeatIntervalInMinutes;
+    private DailyScheduleDetails scheduleDetails;
     private Set<Dosage> dosages;
 
     public PillRegimen() {
     }
 
-    public PillRegimen(String externalId, int reminderRepeatWindowInHours, int reminderRepeatIntervalInMinutes, Set<Dosage> dosages) {
+    public PillRegimen(String externalId, Set<Dosage> dosages, DailyScheduleDetails scheduleDetails) {
         this.externalId = externalId;
-        this.reminderRepeatWindowInHours = reminderRepeatWindowInHours;
-        this.reminderRepeatIntervalInMinutes = reminderRepeatIntervalInMinutes;
         this.dosages = dosages;
+        this.scheduleDetails = scheduleDetails;
     }
 
     public String getExternalId() {
@@ -42,20 +40,12 @@ public class PillRegimen extends MotechAuditableDataObject {
         this.dosages = dosages;
     }
 
-    public int getReminderRepeatWindowInHours() {
-        return reminderRepeatWindowInHours;
+    public DailyScheduleDetails getScheduleDetails() {
+        return scheduleDetails;
     }
 
-    public void setReminderRepeatWindowInHours(int reminderRepeatWindowInHours) {
-        this.reminderRepeatWindowInHours = reminderRepeatWindowInHours;
-    }
-
-    public int getReminderRepeatIntervalInMinutes() {
-        return reminderRepeatIntervalInMinutes;
-    }
-
-    public void setReminderRepeatIntervalInMinutes(int reminderRepeatIntervalInMinutes) {
-        this.reminderRepeatIntervalInMinutes = reminderRepeatIntervalInMinutes;
+    public void setScheduleDetails(DailyScheduleDetails scheduleDetails) {
+        this.scheduleDetails = scheduleDetails;
     }
 
     public String getType() {

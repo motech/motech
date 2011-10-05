@@ -177,7 +177,8 @@ public class IvrControllerTest
         phoneCall.setDirection(PhoneCall.Direction.INCOMING);
         phoneCall.setStartDate(new Date(new Long(timestamp)));
 
-        phoneCall.setCallRequest(new CallRequest());
+        CallRequest callRequest = new CallRequest();
+        phoneCall.setCallRequest(callRequest);
 
         Mockito.when(allPhoneCalls.findBySessionId(sessionId)).thenReturn(phoneCall);
 
@@ -205,7 +206,7 @@ public class IvrControllerTest
         phoneCall.setDirection(PhoneCall.Direction.INCOMING);
         phoneCall.setStartDate(new Date(new Long(timestamp)));
 
-        CallRequest callRequest = new CallRequest();
+        CallRequest callRequest = new CallRequest("1001", 0, "http://localhost");
         callRequest.setOnSuccessEvent(new MotechEvent("subject"));
         phoneCall.setCallRequest(callRequest);
 
@@ -236,7 +237,7 @@ public class IvrControllerTest
         phoneCall.setDirection(PhoneCall.Direction.OUTGOING);
         phoneCall.setStartDate(new Date(new Long(timestamp)));
 
-        CallRequest callRequest = new CallRequest();
+        CallRequest callRequest = new CallRequest("1001", 0, "http://localhost");
         callRequest.setOnSuccessEvent(new MotechEvent("subject"));
         phoneCall.setCallRequest(callRequest);
 
@@ -278,7 +279,7 @@ public class IvrControllerTest
         phoneCall.setDirection(PhoneCall.Direction.OUTGOING);
         phoneCall.setStartDate(new Date(new Long(timestamp)));
 
-        CallRequest callRequest = new CallRequest();
+        CallRequest callRequest = new CallRequest("1001", 0, "http://localhost");
         callRequest.setOnBusyEvent(new MotechEvent("subject"));
         phoneCall.setCallRequest(callRequest);
 
