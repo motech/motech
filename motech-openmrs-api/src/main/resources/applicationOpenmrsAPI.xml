@@ -13,10 +13,10 @@
 
 
     <bean class="org.openmrs.api.PatientService" factory-bean="context" factory-method="getPatientService"/>
-    <bean class="org.openmrs.api.PatientService"  factory-bean="context" factory-method="getPatientService"/>
     <bean class="org.openmrs.api.PersonService" factory-bean="context" factory-method="getPersonService"/>
     <bean class="org.openmrs.api.UserService" factory-bean="context" factory-method="getUserService"/>
-    <bean class="org.openmrs.api.AdministrationService" factory-bean="context" factory-method="getAdministrationService"/>
+    <bean class="org.openmrs.api.AdministrationService" factory-bean="context"
+          factory-method="getAdministrationService"/>
     <bean class="org.openmrs.api.LocationService" factory-bean="context" factory-method="getLocationService"/>
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -24,8 +24,13 @@
     </bean>
 
     <bean class="org.motechproject.openmrs.services.LocationServiceImpl"/>
-    <bean class="org.motechproject.openmrs.advice.ApiAuthorization" depends-on="context">
-        <constructor-arg value="${openmrs.admin.username}"/>
-        <constructor-arg value="${openmrs.admin.password}"/>
+    <bean class="org.motechproject.openmrs.services.UserServiceImpl"/>
+
+    <bean class="org.motechproject.openmrs.security.OpenMRSSession" scope="session">
+        <aop:scoped-proxy/>
     </bean>
+    <bean class="org.motechproject.openmrs.advice.ApiSessionAdvice" depends-on="context" scope="prototype"/>
+
+
+    <bean id="openMRSAuthenticationProvider" class="org.motechproject.openmrs.security.OpenMRSAuthenticationProvider"/>
 </beans>

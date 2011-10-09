@@ -1,4 +1,4 @@
 package org.motechproject.openmrs.advice;
 
-public @interface ApiAuthorize {
+public @interface ApiSession {
 }
