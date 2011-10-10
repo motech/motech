@@ -2,6 +2,7 @@ package org.motechproject.openmrs.services;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.mrs.services.Facility;
@@ -52,6 +53,7 @@ public class FacilityServiceImplIT extends OpenMRSAbstractSessionContext {
         endSession();
     }
 
+    @Ignore
     @Test
     public void testSaveLocation() {
         Facility facility = new Facility("my facility", "ghana", "region", "district", "kaseena");
@@ -69,6 +71,7 @@ public class FacilityServiceImplIT extends OpenMRSAbstractSessionContext {
         assertEquals(facility.getName(), savedFacility.getName());
     }
 
+    @Ignore
     @Test
     public void testGetLocations() {
         int size = facilityService.getFacilities().size();
