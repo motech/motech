@@ -36,12 +36,12 @@ public class DecisionTreeBasedResponseBuilder {
                 }
             }
         }
-        if (hasTransitions) {
+        if (hasTransitions && !hasUrlTransition(node)) {
             ivrResponseBuilder.collectDtmf(maxLenOfTransitionOptions(node));
         } else {
             postTreeCallContinuation.continueCall(ivrContext, ivrResponseBuilder);
         } 
-        if (node.getTransitions().size() == 1){
+        if (hasUrlTransition(node)){
         	Map<String, Transition> transitions = node.getTransitions();
         	Transition transition = transitions.get(transitions.keySet().iterator().next());
         	if (transition instanceof URLTransition) {
@@ -50,6 +50,16 @@ public class DecisionTreeBasedResponseBuilder {
         	}
         }
         return ivrResponseBuilder;
+    }
+
+    private boolean hasUrlTransition(Node node) {
+        if (node.getTransitions().size() == 1){
+            Map<String, Transition> transitions = node.getTransitions();
+            Transition transition = transitions.get(transitions.keySet().iterator().next());
+            if (transition instanceof URLTransition)
+                return true;
+        }
+        return false;
     }
 
     private boolean isQuestionPrompt(Prompt prompt) {
