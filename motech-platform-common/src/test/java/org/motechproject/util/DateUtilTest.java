@@ -9,7 +9,7 @@ import static junit.framework.Assert.assertEquals;
 public class DateUtilTest {
     @Test
     public void shouldReturnDateOnASpecifiedDayInThePast() {
-        LocalDate pastDate = DateUtil.pastDateWith(DayOfWeek.Monday, 4);
+        LocalDate pastDate = DateUtil.pastDateWith(DateUtil.newDate(2011, 10, 5), DayOfWeek.Monday, 4);
         assertEquals(DateUtil.newDate(2011, 9, 26), pastDate);
     }
 }

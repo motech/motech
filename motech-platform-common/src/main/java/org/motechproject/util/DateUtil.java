@@ -54,16 +54,18 @@ public class DateUtil {
     }
 
     public static LocalDate pastDateWith(DayOfWeek dayOfWeek, int minNumberOfDaysAgo) {
-        LocalDate today = DateUtil.today();
-        LocalDate startDate = today.withDayOfWeek(dayOfWeek.getValue());
+        return pastDateWith(DateUtil.today(), dayOfWeek, minNumberOfDaysAgo);
+    }
 
-        Period period = new Period(startDate, today);
+    public static LocalDate pastDateWith(LocalDate date, DayOfWeek dayOfWeek, int minNumberOfDaysAgo) {
+        LocalDate startDate = date.withDayOfWeek(dayOfWeek.getValue());
+
+        Period period = new Period(startDate, date);
         if (period.getDays() > minNumberOfDaysAgo) return startDate;
 
         startDate = startDate.minusDays(1);
         return startDate.withDayOfWeek(dayOfWeek.getValue());
     }
-
 
     private static DateTimeZone getTimeZone() {
         if (dateTimeZone != null) return dateTimeZone;
