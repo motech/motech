@@ -24,7 +24,7 @@ public class OpenMRSSession {
     public MRSUser authenticate() {
         Context.authenticate(this.userName, this.password);
         User user = Context.getAuthenticatedUser();
-        return new MRSUser(user.getUsername(), null);
+        return new OpenMRSUser(user);
     }
 
     public void close() {
