@@ -4,7 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
     <aop:aspectj-autoproxy/>
 
-    <bean id="context" class="org.motechproject.openmrs.Context" init-method="initialize">
+    <bean id="context" class="org.motechproject.openmrs.Context" init-method="initialize" scope="singleton">
         <constructor-arg value="jdbc:mysql://${openmrs.host}:3306/${openmrs.database}?autoReconnect=true"/>
         <constructor-arg value="${openmrs.db.username}"/>
         <constructor-arg value="${openmrs.db.password}"/>
@@ -13,12 +13,12 @@
     </bean>
 
 
-    <bean class="org.openmrs.api.PatientService" factory-bean="context" factory-method="getPatientService"/>
-    <bean class="org.openmrs.api.PersonService" factory-bean="context" factory-method="getPersonService"/>
-    <bean class="org.openmrs.api.UserService" factory-bean="context" factory-method="getUserService"/>
+    <bean class="org.openmrs.api.PatientService" factory-bean="context" factory-method="getPatientService" scope="singleton"/>
+    <bean class="org.openmrs.api.PersonService" factory-bean="context" factory-method="getPersonService"  scope="singleton"/>
+    <bean class="org.openmrs.api.UserService" factory-bean="context" factory-method="getUserService"  scope="singleton"/>
     <bean class="org.openmrs.api.AdministrationService" factory-bean="context"
-          factory-method="getAdministrationService"/>
-    <bean class="org.openmrs.api.LocationService" factory-bean="context" factory-method="getLocationService"/>
+          factory-method="getAdministrationService"  scope="singleton"/>
+    <bean class="org.openmrs.api.LocationService" factory-bean="context" factory-method="getLocationService"  scope="singleton"/>
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="location" value="classpath:openmrs.properties"/>
