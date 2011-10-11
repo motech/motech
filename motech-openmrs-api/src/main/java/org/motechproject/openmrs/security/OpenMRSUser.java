@@ -11,13 +11,17 @@ import java.util.List;
 import java.util.Map;
 
 public class OpenMRSUser extends MRSUser{
+
+    private String password;
+
     private static Map<String, String> roleAuthorityMapping = new HashMap<String,String>(){{
         put("System Developer", "SuperAdmin");
         put("Create/Edit MoTeCH Data", "CallCenterAdmin");
     }};
 
-    public OpenMRSUser(User user) {
-        super(user.getName(), authoritiesFor(user));
+    public OpenMRSUser(User user, String password) {
+        super(user.getSystemId(), authoritiesFor(user));
+        this.password = password;
     }
 
     private static List<GrantedAuthority> authoritiesFor(User user) {
@@ -33,4 +37,8 @@ public class OpenMRSUser extends MRSUser{
         return authorities;
     }
 
+    @Override
+    public String getPassword() {
+        return password;
+    }
 }

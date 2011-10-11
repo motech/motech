@@ -15,17 +15,17 @@ public class OpenMRSSession {
     public void authenticate() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         MRSUser principal = (MRSUser) authentication.getPrincipal();
-        login(principal.getUsername(), principal.getPassword());
+        Context.authenticate(principal.getUsername(), principal.getPassword());
     }
 
     public void close() {
         Context.closeSession();
     }
 
-    public static MRSUser login(String userName, String password) {
+    public static OpenMRSUser login(String userName, String password) {
         Context.openSession();
         Context.authenticate(userName, password);
-        OpenMRSUser openMRSUser = new OpenMRSUser(Context.getAuthenticatedUser());
+        OpenMRSUser openMRSUser = new OpenMRSUser(Context.getAuthenticatedUser(), password);
         Context.closeSession();
         return openMRSUser;
     }

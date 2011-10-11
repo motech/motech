@@ -2,15 +2,16 @@ package org.motechproject.openmrs.services;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.mrs.services.Facility;
 import org.motechproject.mrs.services.FacilityService;
+import org.motechproject.openmrs.OpenMRSTestAuthenticationProvider;
 import org.motechproject.openmrs.security.OpenMRSSession;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -26,8 +27,11 @@ import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.Matchers.equalTo;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:applicationOpenmrsAPI.xml", "classpath*:openMRSTestSessionScope.xml"})
+@ContextConfiguration(locations = {"classpath*:applicationOpenmrsAPI.xml"})
 public class FacilityServiceImplIT {
+    @Autowired
+    private GenericApplicationContext applicationContext;
+
     @Autowired
     FacilityService facilityService;
 
@@ -37,23 +41,20 @@ public class FacilityServiceImplIT {
     @Autowired
     OpenMRSSession openMRSSession;
 
-
     @Before
     public void setUp() {
         ResourceBundle resourceBundle = ResourceBundle.getBundle("openmrs");
-        OpenMRSSession.login(resourceBundle.getString("openmrs.admin.username"),
-                resourceBundle.getString("openmrs.admin.password"));
+        OpenMRSTestAuthenticationProvider.login(resourceBundle.getString("openmrs.admin.username"), resourceBundle.getString("openmrs.admin.password"));
         openMRSSession.open();
-
+        openMRSSession.authenticate();
     }
 
     @After
-    public void tearDown() {
+    public void tearDown(){
         openMRSSession.close();
     }
 
     @Test
-    @Ignore
     public void testSaveLocation() {
         Facility facility = new Facility("my facility", "ghana", "region", "district", "kaseena");
         final Facility savedFacility = facilityService.saveFacility(facility);
@@ -70,7 +71,6 @@ public class FacilityServiceImplIT {
         assertEquals(facility.getName(), savedFacility.getName());
     }
 
-    @Ignore
     @Test
     public void testGetLocations() {
         int size = facilityService.getFacilities().size();

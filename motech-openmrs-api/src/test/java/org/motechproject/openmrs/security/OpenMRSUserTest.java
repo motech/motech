@@ -14,7 +14,7 @@ public class OpenMRSUserTest {
         user.setRoles(new HashSet<Role>(){{
             add(new Role("System Developer"));
         }});
-        new OpenMRSUser(user).getAuthorities().contains(new GrantedAuthorityImpl("SuperAdmin"));
+        new OpenMRSUser(user, "password").getAuthorities().contains(new GrantedAuthorityImpl("SuperAdmin"));
     }
 
     @Test
@@ -23,6 +23,6 @@ public class OpenMRSUserTest {
         user.setRoles(new HashSet<Role>(){{
             add(new Role("Create/Edit MoTeCH Data"));
         }});
-        new OpenMRSUser(user).getAuthorities().contains(new GrantedAuthorityImpl("CallCenterAdmin"));
+        new OpenMRSUser(user, "password").getAuthorities().contains(new GrantedAuthorityImpl("CallCenterAdmin"));
     }
 }

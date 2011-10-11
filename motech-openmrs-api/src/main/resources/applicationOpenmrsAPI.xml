@@ -12,13 +12,11 @@
         <constructor-arg value="${openmrs.admin.password}"/>
     </bean>
 
-
     <bean class="org.openmrs.api.PatientService" factory-bean="context" factory-method="getPatientService" scope="singleton"/>
-    <bean class="org.openmrs.api.PersonService" factory-bean="context" factory-method="getPersonService"  scope="singleton"/>
-    <bean class="org.openmrs.api.UserService" factory-bean="context" factory-method="getUserService"  scope="singleton"/>
-    <bean class="org.openmrs.api.AdministrationService" factory-bean="context"
-          factory-method="getAdministrationService"  scope="singleton"/>
-    <bean class="org.openmrs.api.LocationService" factory-bean="context" factory-method="getLocationService"  scope="singleton"/>
+    <bean class="org.openmrs.api.PersonService" factory-bean="context" factory-method="getPersonService" scope="singleton"/>
+    <bean class="org.openmrs.api.UserService" factory-bean="context" factory-method="getUserService" scope="singleton"/>
+    <bean class="org.openmrs.api.AdministrationService" factory-bean="context" factory-method="getAdministrationService" scope="singleton"/>
+    <bean class="org.openmrs.api.LocationService" factory-bean="context" factory-method="getLocationService" scope="singleton"/>
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="location" value="classpath:openmrs.properties"/>
@@ -29,7 +27,6 @@
 
     <bean class="org.motechproject.openmrs.security.OpenMRSSession"/>
     <bean class="org.motechproject.openmrs.advice.ApiSessionAdvice" depends-on="context" scope="prototype"/>
-
 
     <bean id="openMRSAuthenticationProvider" class="org.motechproject.openmrs.security.OpenMRSAuthenticationProvider"/>
 </beans>

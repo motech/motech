@@ -2,7 +2,6 @@ package org.motechproject.openmrs.services;
 
 import org.motechproject.mrs.services.Facility;
 import org.motechproject.mrs.services.FacilityService;
-import org.motechproject.openmrs.advice.ApiSession;
 import org.openmrs.Location;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,7 +13,6 @@ public class FacilityServiceImpl implements FacilityService {
     private org.openmrs.api.LocationService locationService;
 
     @Override
-    @ApiSession
     public Facility saveFacility(Facility facility) {
         Location location = new Location();
         location.setName(facility.getName());
@@ -29,7 +27,6 @@ public class FacilityServiceImpl implements FacilityService {
     }
 
     @Override
-    @ApiSession
     public List<Facility> getFacilities() {
         List<Location> locations = locationService.getAllLocations();
         List<Facility> facilities = new ArrayList<Facility>();
