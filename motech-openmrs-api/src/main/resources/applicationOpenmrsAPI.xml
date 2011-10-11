@@ -27,9 +27,7 @@
 
     <bean class="org.motechproject.openmrs.services.UserServiceImpl"/>
 
-    <bean class="org.motechproject.openmrs.security.OpenMRSSession" scope="session">
-        <aop:scoped-proxy/>
-    </bean>
+    <bean class="org.motechproject.openmrs.security.OpenMRSSession"/>
     <bean class="org.motechproject.openmrs.advice.ApiSessionAdvice" depends-on="context" scope="prototype"/>
 
 

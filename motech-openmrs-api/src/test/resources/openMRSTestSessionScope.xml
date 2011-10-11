@@ -15,6 +15,4 @@
         </property>
     </bean>
 
-    <bean id="openMRSAuthenticationProviderForTests" class="org.motechproject.openmrs.OpenMRSAuthenticationProviderForTests"/>
-
 </beans>

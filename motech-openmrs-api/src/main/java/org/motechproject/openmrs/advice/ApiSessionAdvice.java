@@ -12,7 +12,7 @@ public class ApiSessionAdvice {
     @Autowired
     private OpenMRSSession session;
 
-    @Pointcut("execution(@org.motechproject.openmrs.advice.ApiSession * *.*(..))")
+    @Pointcut("@annotation(org.motechproject.openmrs.advice.ApiSession)")
     private void openmrsSession() {
     }
 

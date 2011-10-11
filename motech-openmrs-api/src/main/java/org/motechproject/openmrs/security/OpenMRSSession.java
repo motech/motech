@@ -1,33 +1,32 @@
 package org.motechproject.openmrs.security;
 
 import org.motechproject.mrs.security.MRSUser;
-import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 
 public class OpenMRSSession {
-
-    private String userName;
-    private String password;
 
     public void open() {
         Context.openSession();
     }
 
-    public MRSUser authenticate(String userName, String password) {
-        this.userName = userName;
-        this.password = password;
-        open();
-        return authenticate();
-    }
-
-    public MRSUser authenticate() {
-        Context.authenticate(this.userName, this.password);
-        User user = Context.getAuthenticatedUser();
-        return new OpenMRSUser(user);
+    public void authenticate() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        MRSUser principal = (MRSUser) authentication.getPrincipal();
+        login(principal.getUsername(), principal.getPassword());
     }
 
     public void close() {
         Context.closeSession();
+    }
+
+    public static MRSUser login(String userName, String password) {
+        Context.openSession();
+        Context.authenticate(userName, password);
+        OpenMRSUser openMRSUser = new OpenMRSUser(Context.getAuthenticatedUser());
+        Context.closeSession();
+        return openMRSUser;
     }
 }

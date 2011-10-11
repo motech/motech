@@ -7,8 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.mrs.services.Facility;
 import org.motechproject.mrs.services.FacilityService;
-import org.motechproject.openmrs.OpenMRSAbstractSessionContext;
-import org.motechproject.openmrs.OpenMRSAuthenticationProviderForTests;
+import org.motechproject.openmrs.security.OpenMRSSession;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:applicationOpenmrsAPI.xml", "classpath*:openMRSTestSessionScope.xml"})
-public class FacilityServiceImplIT extends OpenMRSAbstractSessionContext {
+public class FacilityServiceImplIT {
     @Autowired
     FacilityService facilityService;
 
@@ -36,25 +35,25 @@ public class FacilityServiceImplIT extends OpenMRSAbstractSessionContext {
     LocationService mrsLocationService;
 
     @Autowired
-    OpenMRSAuthenticationProviderForTests openMRSAuthenticationProvider;
+    OpenMRSSession openMRSSession;
+
 
     @Before
     public void setUp() {
         ResourceBundle resourceBundle = ResourceBundle.getBundle("openmrs");
-        startSession();
-        startRequest();
-        openMRSAuthenticationProvider.authenticate(resourceBundle.getString("openmrs.admin.username"),
+        OpenMRSSession.login(resourceBundle.getString("openmrs.admin.username"),
                 resourceBundle.getString("openmrs.admin.password"));
+        openMRSSession.open();
+
     }
 
     @After
     public void tearDown() {
-        endRequest();
-        endSession();
+        openMRSSession.close();
     }
 
-    @Ignore
     @Test
+    @Ignore
     public void testSaveLocation() {
         Facility facility = new Facility("my facility", "ghana", "region", "district", "kaseena");
         final Facility savedFacility = facilityService.saveFacility(facility);
@@ -92,11 +91,11 @@ public class FacilityServiceImplIT extends OpenMRSAbstractSessionContext {
     }
 
     private void authorizeAndRollback(DirtyData dirtyData) {
-        Context.openSession();
+        openMRSSession.open();
         ResourceBundle resourceBundle = ResourceBundle.getBundle("openmrs");
         Context.authenticate(resourceBundle.getString("openmrs.admin.username"), resourceBundle.getString("openmrs.admin.password"));
         dirtyData.rollback();
-        Context.closeSession();
+        openMRSSession.close();
     }
 
     interface DirtyData {
