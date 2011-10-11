@@ -3,7 +3,6 @@ package org.motechproject.util;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
-import org.joda.time.Period;
 import org.motechproject.MotechException;
 import org.motechproject.model.DayOfWeek;
 
@@ -14,8 +13,11 @@ import java.util.Properties;
 import java.util.TimeZone;
 
 public class DateUtil {
+    private static Boolean testMode = null;
+    private static LocalDate userDefinedToday = null;
 
     private static DateTimeZone dateTimeZone;
+    private static Properties dateProperties;
 
     public static DateTime now() {
         DateTimeZone timeZone = getTimeZone();
@@ -23,6 +25,7 @@ public class DateUtil {
     }
 
     public static LocalDate today() {
+          if (getTestMode()) return userDefinedToday;
         return new LocalDate(getTimeZone());
     }
 
@@ -53,22 +56,13 @@ public class DateUtil {
         return new LocalDate(date.getTime(), getTimeZone());
     }
 
-    public static LocalDate pastDateWith(DayOfWeek dayOfWeek, int minNumberOfDaysAgo) {
-        return pastDateWith(DateUtil.today(), dayOfWeek, minNumberOfDaysAgo);
+    public static LocalDate pastDateWith(DayOfWeek dayOfWeek, LocalDate afterThisDate) {
+        return pastDateWith(dayOfWeek, afterThisDate, DateUtil.today());
     }
 
-    public static LocalDate pastDateWith(LocalDate refDate, DayOfWeek dayOfWeek, int minNumberOfDaysAgo) {
-        LocalDate returnDate = pastDateWith(refDate, dayOfWeek);
-
-        Period period = new Period(returnDate, refDate);
-        if (period.getDays() > minNumberOfDaysAgo) return returnDate;
-
-        return pastDateWith(returnDate, dayOfWeek);
-    }
-
-    private static LocalDate pastDateWith(LocalDate refDate, DayOfWeek dayOfWeek) {
-        LocalDate returnDate = refDate.withDayOfWeek(dayOfWeek.getValue());
-        if (returnDate.compareTo(refDate) >= 0) {
+    public static LocalDate pastDateWith(DayOfWeek dayOfWeek, LocalDate afterThisDate, LocalDate beforeThisDate) {
+        LocalDate returnDate = beforeThisDate.withDayOfWeek(dayOfWeek.getValue());
+        if (returnDate.compareTo(beforeThisDate) > 0 || returnDate.compareTo(afterThisDate) < 0) {
             returnDate = returnDate.minusWeeks(1);
         }
         return returnDate;
@@ -77,15 +71,40 @@ public class DateUtil {
     private static DateTimeZone getTimeZone() {
         if (dateTimeZone != null) return dateTimeZone;
         try {
-            Properties dateProperties = new Properties();
-            InputStream resourceAsStream = DateUtil.class.getResourceAsStream("/date.properties");
-            if (resourceAsStream == null) return DateTimeZone.getDefault();
-            dateProperties.load(resourceAsStream);
-            String timeZoneString = dateProperties.getProperty("timezone");
+            Properties properties = getProperties();
+            if (properties == null) return DateTimeZone.getDefault();
+
+            String timeZoneString = properties.getProperty("timezone");
             dateTimeZone = DateTimeZone.forTimeZone(TimeZone.getTimeZone(timeZoneString));
         } catch (IOException e) {
-            throw new MotechException("Error while loading timezone from date.properties", e);
+            throw new MotechException("Error while loading timezone from date.getProperties", e);
         }
         return dateTimeZone;
+    }
+
+    private static Boolean getTestMode() {
+        if (testMode != null) return testMode;
+        try {
+            Properties properties = getProperties();
+            if (properties == null) return false;
+
+            testMode = Boolean.parseBoolean(properties.getProperty("test.mode"));
+            userDefinedToday = LocalDate.parse(properties.getProperty("dateutil.today"));
+        } catch (IOException e) {
+            throw new MotechException("Error while loading test.mode and dateutil.today from ivr.getProperties", e);
+        }
+        return testMode;
+    }
+
+    private static Properties getProperties() throws IOException {
+        if (dateProperties != null) return dateProperties;
+        
+        dateProperties = new Properties();
+        InputStream resourceAsStream = DateUtil.class.getResourceAsStream("/date.properties");
+
+        if (resourceAsStream == null) return null;
+
+        dateProperties.load(resourceAsStream);
+        return dateProperties;
     }
 }
