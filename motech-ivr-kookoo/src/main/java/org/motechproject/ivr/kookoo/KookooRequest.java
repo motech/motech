@@ -14,7 +14,7 @@ public class KookooRequest implements IVRRequest {
 	
 	private Logger log = Logger.getLogger(KookooRequest.class);
 
-    private static final String POUND_SYMBOL = "%23";
+    private static final String POUND_SYMBOL = "#";
     private String sid;
     private String cid;
     private String event;
