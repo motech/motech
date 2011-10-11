@@ -6,18 +6,11 @@ import org.openmrs.User;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class OpenMRSUser extends MRSUser{
 
     private String password;
-
-    private static Map<String, String> roleAuthorityMapping = new HashMap<String,String>(){{
-        put("System Developer", "SuperAdmin");
-        put("Create/Edit MoTeCH Data", "CallCenterAdmin");
-    }};
 
     public OpenMRSUser(User user, String password) {
         super(user.getSystemId(), authoritiesFor(user));
@@ -30,7 +23,7 @@ public class OpenMRSUser extends MRSUser{
             authorities.add(new GrantedAuthority() {
                 @Override
                 public String getAuthority() {
-                    return roleAuthorityMapping.get(role.getRole());
+                    return role.getRole();
                 }
             });
         }
