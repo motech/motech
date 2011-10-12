@@ -8,6 +8,7 @@ import org.motechproject.server.pillreminder.EventKeys;
 import org.motechproject.server.pillreminder.builder.SchedulerPayloadBuilder;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
+import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -46,6 +47,7 @@ public class PillRegimenJobScheduler {
         MotechEvent motechEvent = new MotechEvent(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, eventParams);
         String cronJobExpression = new CronJobSimpleExpressionBuilder(dosage.getDosageTime()).build();
         Date endDate = dosage.getEndDate() == null ? null : dosage.getEndDate().toDate();
-        return new CronSchedulableJob(motechEvent, cronJobExpression, dosage.getStartDate().toDate(), endDate);
+        Date startDate = DateUtil.newDateTime(dosage.getStartDate().toDate()).isBefore(DateUtil.now()) ? DateUtil.now().toDate() : dosage.getStartDate().toDate();
+        return new CronSchedulableJob(motechEvent, cronJobExpression, startDate, endDate);
     }
 }

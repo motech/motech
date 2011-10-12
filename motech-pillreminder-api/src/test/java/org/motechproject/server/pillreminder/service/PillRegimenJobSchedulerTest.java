@@ -1,8 +1,14 @@
 package org.motechproject.server.pillreminder.service;
 
+import org.drools.lang.DRLParser.when_part_return;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.internal.exceptions.util.ScenarioPrinter;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
@@ -12,15 +18,22 @@ import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.Medicine;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
 import org.motechproject.util.DateUtil;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.util.Date;
 import java.util.HashSet;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(DateUtil.class)
 public class PillRegimenJobSchedulerTest {
 
     private PillRegimen pillRegimen;
@@ -76,10 +89,11 @@ public class PillRegimenJobSchedulerTest {
 
     @Test
     public void shouldSetUpCorrectCronExpressionForDailyJob() {
+        final LocalDate today = DateUtil.today();
         pillRegimen = new PillRegimen(externalId, dosages, new DailyScheduleDetails(15, 2));
         pillRegimen.setId(pillRegimenId);
         final HashSet<Medicine> medicines = new HashSet<Medicine>() {{
-            add(new Medicine("med1", DateUtil.today(), null));
+            add(new Medicine("med1", today.minusDays(1), null));
         }};
         final Dosage dosage1 = new Dosage(new Time(10, 5), medicines);
 
@@ -89,10 +103,12 @@ public class PillRegimenJobSchedulerTest {
                 return super.getSchedulableDailyJob(pillRegimenId, externalId, dosage);
             }
         };
+        
 
         final CronSchedulableJob schedulableJob = jobScheduler.getSchedulableDailyJob(pillRegimenId, externalId, dosage1);
         assertEquals(String.format("0 %d %d * * ?", 5, 10), schedulableJob.getCronExpression()) ;
         assertEquals(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, schedulableJob.getMotechEvent().getSubject()) ;
+        assertTrue(schedulableJob.getStartTime().getTime() > today.minusDays(1).toDate().getTime());
     }
 }
 
