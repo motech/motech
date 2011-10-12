@@ -6,6 +6,7 @@ import org.joda.time.LocalDate;
 import org.motechproject.MotechException;
 import org.motechproject.model.DayOfWeek;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
@@ -25,7 +26,7 @@ public class DateUtil {
     }
 
     public static LocalDate today() {
-          if (getTestMode()) return userDefinedToday;
+        if (getTestMode()) return userDefinedToday;
         return new LocalDate(getTimeZone());
     }
 
@@ -71,7 +72,7 @@ public class DateUtil {
     private static DateTimeZone getTimeZone() {
         if (dateTimeZone != null) return dateTimeZone;
         try {
-            Properties properties = getProperties();
+            Properties properties = getProperties(false);
             if (properties == null) return DateTimeZone.getDefault();
 
             String timeZoneString = properties.getProperty("timezone");
@@ -83,9 +84,8 @@ public class DateUtil {
     }
 
     private static Boolean getTestMode() {
-        if (testMode != null) return testMode;
         try {
-            Properties properties = getProperties();
+            Properties properties = getProperties(true);
             if (properties == null) return false;
 
             testMode = Boolean.parseBoolean(properties.getProperty("test.mode"));
@@ -96,15 +96,15 @@ public class DateUtil {
         return testMode;
     }
 
-    private static Properties getProperties() throws IOException {
-        if (dateProperties != null) return dateProperties;
-        
+    private static Properties getProperties(boolean reload) throws IOException {
+        if (!reload && dateProperties != null) return dateProperties;
+
         dateProperties = new Properties();
-        InputStream resourceAsStream = DateUtil.class.getResourceAsStream("/date.properties");
+        InputStream fileStream = new FileInputStream(DateUtil.class.getResource("/date.properties").getFile());
+        if (fileStream == null) return null;
 
-        if (resourceAsStream == null) return null;
-
-        dateProperties.load(resourceAsStream);
+        dateProperties.load(fileStream);
+        fileStream.close();
         return dateProperties;
     }
 }
