@@ -76,12 +76,6 @@
 			<artifactId>activemq-core</artifactId>
 			<version>5.4.2</version>
 		</dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>2.0</version>
-            <scope>provided</scope>
-        </dependency>
 	</dependencies>
 	<build>
 		<plugins>
