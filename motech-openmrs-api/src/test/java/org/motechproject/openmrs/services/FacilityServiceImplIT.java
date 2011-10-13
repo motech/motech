@@ -90,6 +90,21 @@ public class FacilityServiceImplIT {
 
     }
 
+    @Test
+    public void testGetLocation() {
+        String facilityName = "my facility";
+        Facility facility = new Facility(facilityName, "ghana", "region", "district", "kaseena");
+        final Facility savedFacility = facilityService.saveFacility(facility);
+        final Facility returnedFacility = facilityService.getFacility(facilityName);
+        assertEquals(savedFacility, returnedFacility);
+
+        authorizeAndRollback(new DirtyData() {
+            public void rollback() {
+                mrsLocationService.purgeLocation(mrsLocationService.getLocation(Integer.parseInt(savedFacility.getId())));
+            }
+        });
+    }
+
     private void authorizeAndRollback(DirtyData dirtyData) {
         openMRSSession.open();
         ResourceBundle resourceBundle = ResourceBundle.getBundle("openmrs");

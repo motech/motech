@@ -6,4 +6,6 @@ public interface FacilityService {
     Facility saveFacility(Facility facility);
 
     List<Facility> getFacilities();
+
+    Facility getFacility(String name);
 }

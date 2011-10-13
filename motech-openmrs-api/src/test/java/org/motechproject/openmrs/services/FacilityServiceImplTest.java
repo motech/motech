@@ -68,7 +68,7 @@ public class FacilityServiceImplTest {
     }
 
     @Test
-    public void testGetLocation() {
+    public void testGetFacilities() {
         Integer locationId = 100;
         String name = "name";
         String country = "country";
@@ -80,5 +80,20 @@ public class FacilityServiceImplTest {
         when(mockLocationService.getAllLocations()).thenReturn(locations);
         List<Facility> returnedFacilities = facilityService.getFacilities();
         assertEquals(Arrays.asList(new Facility(String.valueOf(locationId), name, country, region, district, province)), returnedFacilities);
+    }
+
+    @Test
+    public void testGetAFacilityByName() {
+        Integer locationId = 100;
+        String name = "name";
+        String country = "country";
+        String region = "region";
+        String district = "district";
+        String province = "province";
+
+        Location location = this.createALocation(locationId, name, country, region, district, province);
+        when(mockLocationService.getLocation(name)).thenReturn(location);
+        Facility returnedFacility = facilityService.getFacility(name);
+        assertEquals(new Facility(String.valueOf(locationId), name, country, region, district, province), returnedFacility);
     }
 }
