@@ -40,7 +40,9 @@ public class FacilityServiceImpl implements FacilityService {
     @Override
     public Facility getFacility(String name) {
         final Location location = locationService.getLocation(name);
+        if(location != null)
         return new Facility(String.valueOf(location.getId()), location.getName(),
                     location.getCountry(), location.getAddress6(), location.getCountyDistrict(), location.getStateProvince());
+        return null;
     }
 }

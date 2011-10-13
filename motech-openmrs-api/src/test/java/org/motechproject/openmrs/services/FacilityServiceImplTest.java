@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -95,5 +96,12 @@ public class FacilityServiceImplTest {
         when(mockLocationService.getLocation(name)).thenReturn(location);
         Facility returnedFacility = facilityService.getFacility(name);
         assertEquals(new Facility(String.valueOf(locationId), name, country, region, district, province), returnedFacility);
+    }
+
+    @Test
+    public void testGetAFacilityByNameForANonExistentFacililty() {
+        String name = "name";
+        when(mockLocationService.getLocation(name)).thenReturn(null);
+        assertNull(facilityService.getFacility(name));
     }
 }
