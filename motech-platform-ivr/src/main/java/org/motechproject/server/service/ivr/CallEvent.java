@@ -54,4 +54,8 @@ public class CallEvent {
     public void setData(Map<String, String> data) {
         this.data = data;
     }
+
+    public void appendData(Map<String, String> map) {
+        data.putAll(map);
+    }
 }

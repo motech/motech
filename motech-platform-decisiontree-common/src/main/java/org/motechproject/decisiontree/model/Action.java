@@ -1,11 +1,7 @@
 package org.motechproject.decisiontree.model;
 
 
-/**
- *
- */
 public class Action {
-
     private String eventId;
 
     public static class Builder {

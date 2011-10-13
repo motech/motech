@@ -71,9 +71,8 @@ public class TreeEventProcessorTest {
                     Action.newBuilder().setEventId("eventafter2").build()
             ))
             .setTransitions(new Object[][]{
-                    {"1", new Transition().setName("tr1").setActions(Arrays.<Action>asList(
-                            Action.newBuilder().setEventId("eventr1").build()
-                    ))}
+                    {"1", new Transition().setName("tr1").setActions(Action.newBuilder().setEventId("eventr1").build()
+                    )}
             });
 
     @InjectMocks

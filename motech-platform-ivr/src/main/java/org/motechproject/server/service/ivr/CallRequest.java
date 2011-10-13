@@ -71,7 +71,6 @@ public class CallRequest implements Serializable {
      * @param callBackUrl
      */
     public CallRequest(String phone, int timeOut, String callBackUrl) {
-
         if (phone == null) {
             throw new IllegalArgumentException("phone can not be null");
         }
@@ -83,15 +82,9 @@ public class CallRequest implements Serializable {
         this.phone = phone;
         this.timeOut = timeOut;
         this.callBackUrl = callBackUrl;
-
-        this.onSuccessEvent = null;
-        this.onBusyEvent = null;
-        this.onNoAnswerEvent = null;
-        this.onFailureEvent = null;
     }
 
     public CallRequest(String phone, Map<String, String> params, String callBackUrl) {
-
         if (phone == null) {
             throw new IllegalArgumentException("phone can not be null");
         }
@@ -106,11 +99,6 @@ public class CallRequest implements Serializable {
         	this.payload.putAll(params);
 
         this.callBackUrl = callBackUrl;
-        
-        this.onSuccessEvent = null;
-        this.onBusyEvent = null;
-        this.onNoAnswerEvent = null;
-        this.onFailureEvent = null;
     }
 
     public CallRequest() {}

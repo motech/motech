@@ -1,9 +1,15 @@
 package org.motechproject.ivr.kookoo;
 
-import com.ozonetel.kookoo.Response;
-
 public class KookooResponseFactory {
-    public static Response create() {
-        return new Response();
+    public static KookooIVRResponseBuilder hangUpResponseWith(String callId) {
+        return new KookooIVRResponseBuilder().withHangUp().withSid(callId);
+    }
+
+    public static KookooIVRResponseBuilder dtmfResponseWithWav(String callId, String wavFile) {
+        return new KookooIVRResponseBuilder().withPlayAudios(wavFile).withSid(callId);
+    }
+
+    public static KookooIVRResponseBuilder empty(String callId) {
+        return new KookooIVRResponseBuilder().withSid(callId);
     }
 }

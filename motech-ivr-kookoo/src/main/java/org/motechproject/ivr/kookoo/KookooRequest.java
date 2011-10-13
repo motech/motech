@@ -1,18 +1,17 @@
 package org.motechproject.ivr.kookoo;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
+import org.motechproject.server.service.ivr.CallDirection;
 import org.motechproject.server.service.ivr.IVREvent;
-import org.motechproject.server.service.ivr.IVRRequest;
-import org.motechproject.server.service.ivr.IVRSession;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class KookooRequest implements IVRRequest {
-	
-	private Logger log = Logger.getLogger(KookooRequest.class);
+public class KookooRequest {
+    private Logger log = Logger.getLogger(KookooRequest.class);
 
     private static final String POUND_SYMBOL = "#";
     private String sid;
@@ -31,29 +30,24 @@ public class KookooRequest implements IVRRequest {
         this.data = data;
     }
 
-    @Override
     public String getCid() {
         return cid;
     }
 
-    @Override
     public void setCid(String cid) {
         this.cid = cid;
     }
 
-    @Override
     public String getParameter(String key) {
         return dataMap.get(key);
     }
 
-    @Override
     public void setParameter(String key, String value) {
         dataMap.put(key, value);
     }
 
-    @Override
     public String getEvent() {
-        return event;
+        return event == null ? IVREvent.GotDTMF.toString() : event;
     }
 
     public void setEvent(String event) {
@@ -64,7 +58,6 @@ public class KookooRequest implements IVRRequest {
         return sid;
     }
 
-    @Override
     public void setSid(String sid) {
         this.sid = sid;
     }
@@ -82,24 +75,29 @@ public class KookooRequest implements IVRRequest {
     }
 
     public IVREvent callEvent() {
-        return IVREvent.keyOf(this.event);
+        return Enum.valueOf(IVREvent.class, this.event);
     }
 
     public CallDirection getCallDirection() {
-        return dataMap!=null && "true".equals(dataMap.get(IVRSession.IVRCallAttribute.IS_OUTBOUND_CALL)) ? CallDirection.Outbound: CallDirection.Inbound;
+        return dataMap != null && "true".equals(dataMap.get(KookooCallServiceImpl.IS_OUTBOUND_CALL)) ? CallDirection.Outbound : CallDirection.Inbound;
     }
-    
-    public void setDataMap(String jsonDataMap){
-    	try {
-    		JSONObject jsonObject = new JSONObject(jsonDataMap);
-    	for (Iterator<String> i = jsonObject.keys(); i.hasNext();) {
-    		String key = i.next();
-    		dataMap.put(key, jsonObject.getString(key));
-    	}
-    	} catch (Exception ignore) {
-    		log.warn("Not able to read json data", ignore);
-		}
-    }
-    
 
+    public void setDataMap(String jsonDataMap) {
+        try {
+            JSONObject jsonObject = new JSONObject(jsonDataMap);
+            for (Iterator<String> i = jsonObject.keys(); i.hasNext(); ) {
+                String key = i.next();
+                dataMap.put(key, jsonObject.getString(key));
+            }
+        } catch (Exception ignore) {
+            log.warn("Not able to read json data", ignore);
+        }
+    }
+
+    public void setDefaults() {
+        if (StringUtils.isEmpty(event)) {
+            data = "";
+            event = IVREvent.GotDTMF.toString();
+        }
+    }
 }

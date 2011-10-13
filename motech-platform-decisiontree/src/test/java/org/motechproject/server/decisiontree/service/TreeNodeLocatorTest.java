@@ -43,40 +43,42 @@ import static org.junit.Assert.assertNull;
 
 public class TreeNodeLocatorTest {
 
-	Tree tree;
+    Tree tree;
 
     TreeNodeLocator locator;
-	
-	@Before
-	public void setUp() {
-		tree = new Tree().setName("tree1").setRootNode(
-					new Node().setTransitions(new Object[][]{
-                            {"1", new Transition().setName("t1").setDestinationNode(new Node().setTransitions(new Object[][]{
-                                    {"1", new Transition().setName("sick1").setDestinationNode(new Node())},
-                                    {"2", new Transition().setName("sick2").setDestinationNode(new Node())},
-                                    {"3", new Transition().setName("sick3").setDestinationNode(new Node())},
-                            }))},
-                            {"2", new Transition().setName("ill").setDestinationNode(new Node())}
-                    }));
-        locator = new TreeNodeLocator();
-	}
 
-	@Test
-	public void testFindNode() {
-//		System.out.print(tree);
-		assertNotNull(locator.findNode(tree, "/1/2"));
-		assertNotNull(locator.findNode(tree, "/1/2/"));
-		assertNotNull(locator.findNode(tree, "//1/2"));
-		assertNotNull(locator.findNode(tree, "//1/2/"));
-		assertNull(locator.findNode(tree, "/2/1/2/"));
-		assertNull(locator.findNode(tree, "3"));		
-	}
-	@Test(expected=IllegalArgumentException.class)
-	public void testTreeNull() {
-		locator.findNode(null, "");
-	}
-	@Test(expected=IllegalArgumentException.class)
-	public void testPathNull() {
-		locator.findNode(tree, null);
-	}
+    @Before
+    public void setUp() {
+        tree = new Tree().setName("tree1").setRootNode(
+                new Node().setTransitions(new Object[][]{
+                        {"1", new Transition().setName("t1").setDestinationNode(new Node().setTransitions(new Object[][]{
+                                {"1", new Transition().setName("sick1").setDestinationNode(new Node())},
+                                {"2", new Transition().setName("sick2").setDestinationNode(new Node())},
+                                {"3", new Transition().setName("sick3").setDestinationNode(new Node())},
+                        }))},
+                        {"2", new Transition().setName("ill").setDestinationNode(new Node())}
+                }));
+        locator = new TreeNodeLocator();
+    }
+
+    @Test
+    public void testFindNode() {
+        assertNotNull(locator.findNode(tree, "/"));
+        assertNotNull(locator.findNode(tree, "/1/2"));
+        assertNotNull(locator.findNode(tree, "/1/2/"));
+        assertNotNull(locator.findNode(tree, "//1/2"));
+        assertNotNull(locator.findNode(tree, "//1/2/"));
+        assertNull(locator.findNode(tree, "/2/1/2/"));
+        assertNull(locator.findNode(tree, "3"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testTreeNull() {
+        locator.findNode(null, "");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testPathNull() {
+        locator.findNode(tree, null);
+    }
 }

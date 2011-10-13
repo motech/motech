@@ -1,11 +1,12 @@
-package org.motechproject.server.decisiontree;
+package org.motechproject.ivr.kookoo.domain;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.decisiontree.model.*;
-import org.motechproject.server.service.ivr.*;
+import org.motechproject.ivr.kookoo.KooKooIVRContext;
+import org.motechproject.ivr.kookoo.KookooIVRResponseBuilder;
 
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -14,26 +15,17 @@ public class DecisionTreeBasedResponseBuilderTest {
     private DecisionTreeBasedResponseBuilder treeBasedResponseBuilder;
 
     @Mock
-    private IVRContext ivrContext;
+    private KookooIVRResponseBuilder ivrResponseBuilder;
     @Mock
-    private IVRSession ivrSession;
-    @Mock
-    private IVRResponseBuilder ivrResponseBuilder;
-    @Mock
-    private PostTreeCallContinuation postTreeCallContinuation;
+    private KooKooIVRContext ivrContext;
 
     @Before
     public void setUp() {
         initMocks(this);
-        when(ivrSession.getPreferredLanguageCode()).thenReturn("en");
-        when(ivrContext.ivrSession()).thenReturn(ivrSession);
-        treeBasedResponseBuilder = new DecisionTreeBasedResponseBuilder(postTreeCallContinuation);
+        when(ivrContext.preferredLanguage()).thenReturn("en");
+        treeBasedResponseBuilder = new DecisionTreeBasedResponseBuilder();
     }
 
-    private IVRResponseBuilder nextResponse(Node rootNode, boolean playOnlyQuestionPrompts) {
-        return treeBasedResponseBuilder.ivrResponse(rootNode, ivrContext, ivrResponseBuilder, playOnlyQuestionPrompts);
-    }
-    
     @Test
     public void shouldAddCollectDtmfIfTheNodeHasTransitions() {
         Node rootNode = new Node()
@@ -50,17 +42,13 @@ public class DecisionTreeBasedResponseBuilderTest {
 
         nextResponse(rootNode, false);
 
-        verify(ivrResponseBuilder).collectDtmf(1);
+        verify(ivrResponseBuilder).collectDtmfLength(1);
         verify(ivrResponseBuilder).withPlayAudios("foo");
         verify(ivrResponseBuilder, never()).withPlayTexts(Matchers.<String>any());
     }
 
-    @Test
-    public void shouldHandOverControlToCallContinuationIfTheNodeDoesNotHaveAnyTransitions() {
-        Node rootNode = new Node()
-                .setPrompts(new AudioPrompt().setName("foo"));
-        nextResponse(rootNode, false);
-        verify(postTreeCallContinuation, times(1)).continueCall(ivrContext, ivrResponseBuilder);
+    private KookooIVRResponseBuilder nextResponse(Node rootNode, boolean retryOnIncorrectUserAction) {
+        return treeBasedResponseBuilder.ivrResponse(rootNode, ivrContext, ivrResponseBuilder, retryOnIncorrectUserAction);
     }
 
     @Test
@@ -111,7 +99,7 @@ public class DecisionTreeBasedResponseBuilderTest {
                                                 .setPrompts(new AudioPrompt().setName("baz")))
                                 }});
 
-        IVRResponseBuilder responseBuilder = nextResponse(rootNode, true);
+        KookooIVRResponseBuilder responseBuilder = nextResponse(rootNode, true);
         verify(responseBuilder,times(1)).withPlayAudios(Matchers.<String>any());
         verify(responseBuilder).withPlayAudios("menu");
     }
@@ -130,15 +118,6 @@ public class DecisionTreeBasedResponseBuilderTest {
         nextResponse(rootNode, true);
         verify(mockCommand, times(1)).execute(any());
     }
-    
-    @Test 
-    public void shouldGotoUrlWhenNodeHasSingleURLTransition() {
-        Node rootNode = new Node()
-                .setPrompts(new AudioPrompt().setName("hello"))
-                .setTransitions(new Object[][]{{"", new URLTransition("/test")}});        
-        nextResponse(rootNode, true);
-    	verify(ivrResponseBuilder, times(1)).withNextUrl("/test");
-    }
 
     class ReturnEmptyCommand implements ITreeCommand {
         @Override
@@ -153,4 +132,5 @@ public class DecisionTreeBasedResponseBuilderTest {
             return new String[]{"a", "b"};
         }
     }
+
 }

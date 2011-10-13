@@ -1,5 +1,6 @@
 package org.motechproject.decisiontree.model;
 
+import org.apache.commons.lang.StringUtils;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechAuditableDataObject;
 import org.motechproject.server.decisiontree.TreeNodeLocator;
@@ -75,6 +76,7 @@ public class Tree extends MotechAuditableDataObject {
     }
 
     public NodeInfo currentNodeInfo(String currentPosition) {
+        currentPosition = currentPosition == null ? "" : currentPosition;
         Node node = new TreeNodeLocator().findNode(this, currentPosition);
         return new NodeInfo(currentPosition, node);
     }
@@ -84,6 +86,9 @@ public class Tree extends MotechAuditableDataObject {
     }
 
     public NodeInfo nextNodeInfo(String currentPosition, String transitionInput) {
+        currentPosition = currentPosition == null ? "" : currentPosition;
+        transitionInput = transitionInput == null ? "" : transitionInput;
+
         String path = String.format("%s/%s", currentPosition, transitionInput);
         Node node = new TreeNodeLocator().findNode(this, path);
         return new NodeInfo(path, node);

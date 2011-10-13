@@ -1,84 +1,72 @@
 package org.motechproject.ivr.kookoo.controller;
 
 import org.apache.log4j.Logger;
-import org.motechproject.ivr.kookoo.IVRException;
-import org.motechproject.ivr.kookoo.KookooCallServiceImpl;
+import org.motechproject.ivr.kookoo.KooKooIVRContext;
 import org.motechproject.ivr.kookoo.KookooRequest;
-import org.motechproject.ivr.kookoo.action.Actions;
-import org.motechproject.ivr.kookoo.action.event.BaseEventAction;
+import org.motechproject.ivr.kookoo.extensions.CallFlowController;
+import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
 import org.motechproject.server.service.ivr.IVREvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Controller
 @RequestMapping("/ivr")
 public class IVRController {
-
     Logger logger = Logger.getLogger(this.getClass());
-
-    private Actions actions;
-
-    private KookooCallServiceImpl kookooCallService;
+    private CallFlowController callFlowController;
+    private KookooCallDetailRecordsService kookooCallDetailRecordsService;
 
     @Autowired
-    public IVRController(Actions actions, KookooCallServiceImpl kookooCallService) {
-        this.actions = actions;
-        this.kookooCallService = kookooCallService;
+    public IVRController(CallFlowController callFlowController, KookooCallDetailRecordsService kookooCallDetailRecordsService) {
+        this.callFlowController = callFlowController;
+        this.kookooCallDetailRecordsService = kookooCallDetailRecordsService;
     }
 
     @RequestMapping(value = "reply", method = RequestMethod.GET)
-    @ResponseBody
-    public String reply(@ModelAttribute KookooRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
+    public String reply(KookooRequest kookooRequest, HttpServletRequest request, HttpServletResponse response) {
+        KooKooIVRContext kooKooIVRContext = new KooKooIVRContext(kookooRequest, request, response);
+        return reply(kooKooIVRContext);
+    }
+
+    String reply(KooKooIVRContext ivrContext) {
         try {
-            BaseEventAction action = actions.findFor(ivrRequest.callEvent());
-            String callId = establishCallId(ivrRequest, request, response);
-            final String xmlResponse = action.handle(callId, ivrRequest, request, response);
-            logger.info(String.format(" XML returned: %s", xmlResponse));
-            return xmlResponse;
+            logger.info(ivrContext.allCookies());
+            ivrContext.setDefaults();
+            switch (Enum.valueOf(IVREvent.class, ivrContext.ivrEvent())) {
+                case NewCall:
+                    ivrContext.initialize();
+                    String kooKooCallDetailRecordId = kookooCallDetailRecordsService.create(ivrContext.callId(), ivrContext.callerId(), ivrContext.callDirection());
+                    ivrContext.callDetailRecordId(kooKooCallDetailRecordId);
+                    break;
+                case Disconnect:
+                case Hangup:
+                    kookooCallDetailRecordsService.close(ivrContext.callDetailRecordId(), ivrContext.externalId(), ivrContext.ivrEvent());
+                    ivrContext.invalidateSession();
+                    String url = AllIVRURLs.springTranferUrlToEmptyResponse();
+                    logger.info(String.format("Transferring to %s", url));
+                    return url;
+                case GotDTMF:
+                    kookooCallDetailRecordsService.appendEvent(ivrContext.callDetailRecordId(), ivrContext.ivrEvent());
+            }
+            String url = callFlowController.urlFor(ivrContext);
+            if (AllIVRURLs.DECISION_TREE_URL.equals(url)) {
+                String treeName = callFlowController.decisionTreeName(ivrContext);
+                ivrContext.treeName(treeName);
+            }
+
+            String transferURL = AllIVRURLs.springTransferUrl(url, ivrContext.ivrEvent().toLowerCase());
+            logger.info(String.format("Transferring to %s", transferURL));
+            return transferURL;
         } catch (Exception e) {
             logger.error("Failed to handled incoming request", e);
-            throw new IVRException("Failed to handled incoming request", e);
+            String url = AllIVRURLs.springTranferUrlToUnhandledError();
+            logger.info(String.format("Transferring to %s", url));
+            return url;
         }
-    }
-
-    private String establishCallId(KookooRequest ivrRequest, HttpServletRequest request, HttpServletResponse response) {
-        if (IVREvent.NEW_CALL.key().equalsIgnoreCase(ivrRequest.getEvent())) {
-            String callId = createCallRecord(ivrRequest);
-            setCallIdCookie(callId, response);
-            return callId;
-        } else {
-            return getCallIdFromCookie(request);
-        }
-    }
-
-    private String createCallRecord(KookooRequest ivrRequest) {
-        try{
-            return kookooCallService.generateCallId(ivrRequest);
-        }catch (Exception e){
-            logger.error(e.getStackTrace());
-        }
-        return null;
-    }
-
-    private String getCallIdFromCookie(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            if ("CallId".equals(cookie.getName())) {
-                return cookie.getValue();
-            }
-        }
-        return null;
-    }
-
-    private void setCallIdCookie(String callId, HttpServletResponse response) {
-        response.addCookie(new Cookie("CallId", callId));
     }
 }

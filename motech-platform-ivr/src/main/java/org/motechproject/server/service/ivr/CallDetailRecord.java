@@ -19,7 +19,7 @@ public class CallDetailRecord {
     private String errorMessage;
     private String phoneNumber;
 
-    private IVRRequest.CallDirection callDirection;
+    private CallDirection callDirection;
     private List<CallEvent> callEvents = new ArrayList<CallEvent>();
 
     private CallDetailRecord() {
@@ -39,14 +39,14 @@ public class CallDetailRecord {
     }
 
     public static CallDetailRecord newIncomingCallRecord(String phoneNumber) {
-        return create(phoneNumber, IVRRequest.CallDirection.Inbound);
+        return create(phoneNumber, CallDirection.Inbound);
     }
 
     public static CallDetailRecord newOutgoingCallRecord(String phoneNumber) {
-        return create(phoneNumber, IVRRequest.CallDirection.Outbound);
+        return create(phoneNumber, CallDirection.Outbound);
     }
 
-    private static CallDetailRecord create(String phoneNumber, IVRRequest.CallDirection callDirection){
+    private static CallDetailRecord create(String phoneNumber, CallDirection callDirection){
         CallDetailRecord callDetailRecord = new CallDetailRecord();
         callDetailRecord.startDate = DateUtil.now().toDate();
         callDetailRecord.disposition = Disposition.ANSWERED;
@@ -84,7 +84,7 @@ public class CallDetailRecord {
         return phoneNumber;
     }
 
-    public IVRRequest.CallDirection getCallDirection() {
+    public CallDirection getCallDirection() {
         return callDirection;
     }
 
@@ -101,7 +101,7 @@ public class CallDetailRecord {
         this.callEvents = callEvents;
     }
 
-    public void setCallDirection(IVRRequest.CallDirection callDirection) {
+    public void setCallDirection(CallDirection callDirection) {
         this.callDirection = callDirection;
     }
 
@@ -131,5 +131,9 @@ public class CallDetailRecord {
 
     public void addCallEvent(CallEvent callEvent) {
         callEvents.add(callEvent);
+    }
+
+    public CallEvent lastCallEvent() {
+        return callEvents.get(callEvents.size() - 1);
     }
 }

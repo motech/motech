@@ -1,6 +1,7 @@
 package org.motechproject.decisiontree.model;
 
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,11 +33,11 @@ public class Transition {
     }
 
     public List<Action> getActions() {
-        return actions==null?Collections.<Action>emptyList():actions;
+        return actions == null ? Collections.<Action>emptyList() : actions;
     }
 
-    public Transition setActions(List<Action> actions) {
-        this.actions = actions;
+    public Transition setActions(Action... actions) {
+        this.actions = Arrays.asList(actions);
         return this;
     }
 

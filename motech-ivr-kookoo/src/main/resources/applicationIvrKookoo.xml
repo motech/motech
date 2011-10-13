@@ -6,19 +6,9 @@
 
     <context:annotation-config/>
 
-    <context:component-scan base-package="org.motechproject.ivr.kookoo"/>
-    <context:component-scan base-package="org.motechproject.server.service.ivr"/>
+    <context:component-scan base-package="org.motechproject.ivr.*"/>
+    <context:component-scan base-package="org.motechproject.eventtracking.*"/>
+    <context:component-scan base-package="org.motechproject.server.*"/>
 
     <import resource="ivrKookooRepositories.xml"/>
-
-    <bean id="actions" class="org.motechproject.ivr.kookoo.action.Actions">
-        <constructor-arg>
-            <map>
-                <entry key="newcall" value-ref="newCallEventAction"/>
-                <entry key="gotdtmf" value-ref="dtmfEventAction"/>
-                <entry key="disconnect" value-ref="disconnectEventAction"/>
-                <entry key="hangup" value-ref="hangupEventAction"/>
-            </map>
-        </constructor-arg>
-    </bean>
 </beans>

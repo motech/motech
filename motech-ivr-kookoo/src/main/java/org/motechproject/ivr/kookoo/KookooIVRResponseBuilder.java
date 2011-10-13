@@ -4,109 +4,96 @@ import com.ozonetel.kookoo.CollectDtmf;
 import com.ozonetel.kookoo.Response;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.server.service.ivr.IVRMessage;
-import org.motechproject.server.service.ivr.IVRResponseBuilder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class KookooIVRResponseBuilder implements IVRResponseBuilder {
+public class KookooIVRResponseBuilder {
     private boolean isHangUp;
-    private boolean collectDtmf;
     private int dtmfLength;
     private List<String> playTexts = new ArrayList<String>();
     private List<String> playAudios = new ArrayList<String>();
-    private String nextUrl;
+    private String sid;
+    private String language;
 
     public KookooIVRResponseBuilder() {
     }
 
-    @Override
+    public KookooIVRResponseBuilder withDefaultLanguage() {
+        return language("en");
+    }
+
+    public KookooIVRResponseBuilder language(String code) {
+        this.language = code;
+        return this;
+    }
+
 	public KookooIVRResponseBuilder withPlayTexts(String... playTexts) {
-        for (String playText : playTexts)
-            this.playTexts.add(playText);
+        Collections.addAll(this.playTexts, playTexts);
         return this;
     }
 
-    @Override
 	public KookooIVRResponseBuilder withPlayAudios(String... playAudios) {
-        for (String playAudio : playAudios)
-            this.playAudios.add(playAudio);
+        Collections.addAll(this.playAudios, playAudios);
         return this;
     }
 
-    public KookooIVRResponseBuilder collectDtmf() {
-        collectDtmf = true;
-        return this;
-    }
-
-    @Override
-	public KookooIVRResponseBuilder collectDtmf(Integer dtmfLength) {
-        collectDtmf = true;
+	public KookooIVRResponseBuilder collectDtmfLength(Integer dtmfLength) {
         this.dtmfLength = dtmfLength;
         return this;
     }
 
-    @Override
 	public KookooIVRResponseBuilder withHangUp() {
         this.isHangUp = true;
         return this;
     }
 
-    @Override
-    public IVRResponseBuilder withNextUrl(String nextUrl) {
-        this.nextUrl = nextUrl;
+    public KookooIVRResponseBuilder withSid(String sid) {
+        this.sid = sid;
         return this;
     }
-
-    @Override
-    public String createWithDefaultLanguage(IVRMessage ivrMessage, String sessionId) {
-    	return create(ivrMessage, sessionId, "en");
-    }
     
-    @Override
-	public String create(IVRMessage ivrMessage, String sid, String preferredLangCode) {
-        Response response = KookooResponseFactory.create();
+	public String create(IVRMessage ivrMessage) {
+        if (StringUtils.isEmpty(language)) withDefaultLanguage();
+        Response response = new Response();
         if (StringUtils.isNotBlank(sid)) response.setSid(sid);
 
-        if (collectDtmf) {
+        if (isCollectDtmf()) {
             CollectDtmf collectDtmf = KookooCollectDtmfFactory.create();
             if(dtmfLength > 0) collectDtmf.setMaxDigits(dtmfLength);
             for (String playText : playTexts) collectDtmf.addPlayText(ivrMessage.getText(playText));
-            for (String playAudio : playAudios) collectDtmf.addPlayAudio(ivrMessage.getWav(playAudio, preferredLangCode));
+            for (String playAudio : playAudios) collectDtmf.addPlayAudio(ivrMessage.getWav(playAudio, language));
 
             response.addCollectDtmf(collectDtmf);
         } else {
             for (String playText : playTexts)
                 response.addPlayText(ivrMessage.getText(playText));
             for (String playAudio : playAudios)
-                response.addPlayAudio(ivrMessage.getWav(playAudio, preferredLangCode));
+                response.addPlayAudio(ivrMessage.getWav(playAudio, language));
         }
 
-        if (StringUtils.isNotEmpty(nextUrl)) {
-            response.addGotoNEXTURL(nextUrl);
-        }
-        
         if (isHangUp) response.addHangup();
         return response.getXML();
     }
 
-    @Override
 	public boolean isHangUp() {
         return isHangUp;
     }
 
-    @Override
 	public boolean isCollectDtmf() {
-        return collectDtmf;
+        return playAudios.size() != 0 || playTexts.size() != 0;
     }
 
-    @Override
 	public List<String> getPlayTexts() {
         return playTexts;
     }
 
-    @Override
 	public List<String> getPlayAudios() {
         return playAudios;
+    }
+
+    public String sid() {
+        return sid;
     }
 }

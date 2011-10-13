@@ -2,74 +2,59 @@ package org.motechproject.ivr.kookoo.controller;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.ivr.kookoo.KookooCallServiceImpl;
-import org.motechproject.ivr.kookoo.KookooRequest;
-import org.motechproject.ivr.kookoo.action.Actions;
-import org.motechproject.ivr.kookoo.action.event.BaseEventAction;
+import org.motechproject.ivr.kookoo.KooKooIVRContextForTest;
+import org.motechproject.ivr.kookoo.extensions.CallFlowController;
+import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
+import org.motechproject.server.service.ivr.CallDirection;
 import org.motechproject.server.service.ivr.IVREvent;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static junit.framework.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class IVRControllerTest {
-    IVRController controller;
     @Mock
-    private KookooRequest ivrRequest;
+    KookooCallDetailRecordsService callDetailRecordsService;
     @Mock
-    private HttpServletRequest request;
-    @Mock
-    private HttpServletResponse response;
-    @Mock
-    private Actions actions;
-    @Mock
-    private BaseEventAction action;
-    @Mock
-    private KookooCallServiceImpl kookooCallService;
+    private CallFlowController callFlowController;
+    private IVRController ivrController;
+    private KooKooIVRContextForTest ivrContextForTest;
 
     @Before
     public void setUp() {
         initMocks(this);
-        controller = new IVRController(actions, kookooCallService);
-        when(ivrRequest.callEvent()).thenReturn(IVREvent.NEW_CALL);
-        when(actions.findFor(IVREvent.NEW_CALL)).thenReturn(action);
-        when(ivrRequest.getEvent()).thenReturn(IVREvent.NEW_CALL.key());
-        when(request.getCookies()).thenReturn(new Cookie[]{new Cookie("CallId","callId")});
+        ivrController = new IVRController(callFlowController, callDetailRecordsService);
     }
 
     @Test
-    public void shouldDelegateToActionsToHandleTheRequest() {
-        when(kookooCallService.generateCallId(ivrRequest)).thenReturn("callId");
-        when(action.handle("callId", ivrRequest, request, response)).thenReturn("reply");
+    public void newCallShouldCreateNewCallDetailRecord() {
+        String callerId = "98675";
+        CallDirection callDirection = CallDirection.Inbound;
+        String callId = "123";
+        String kooKooCallDetailRecordId = "32432545";
+        String treeName = "fooTree";
 
-        String reply = controller.reply(ivrRequest, request, response);
+        ivrContextForTest = new KooKooIVRContextForTest().callerId(callerId).ivrEvent(IVREvent.NewCall).callDirection(callDirection);
+        ivrContextForTest.callId(callId);
+        when(callFlowController.urlFor(ivrContextForTest)).thenReturn(AllIVRURLs.DECISION_TREE_URL);
+        when(callFlowController.decisionTreeName(ivrContextForTest)).thenReturn(treeName);
+        when(callDetailRecordsService.create(callId, callerId, callDirection)).thenReturn(kooKooCallDetailRecordId);
 
-        verify(action).handle("callId", ivrRequest, request, response);
-        assertEquals("reply", reply);
+        ivrController.reply(ivrContextForTest);
+        assertEquals(kooKooCallDetailRecordId, ivrContextForTest.callDetailRecordId());
+        assertEquals(treeName, ivrContextForTest.treeName());
     }
 
     @Test
-    public void shouldGenerateCallId_ForNewCall() {
-        controller.reply(ivrRequest, request, response);
-        verify(kookooCallService).generateCallId(ivrRequest);
-    }
-
-
-    @Test
-    public void shouldSetCallIdInCookie_ForNewCall() {
-        when(kookooCallService.generateCallId(ivrRequest)).thenReturn("callId");
-
-        controller.reply(ivrRequest, request, response);
-
-        ArgumentCaptor<Cookie> cookieCapture = ArgumentCaptor.forClass(Cookie.class);
-        verify(response).addCookie(cookieCapture.capture());
-        assertEquals("CallId", cookieCapture.getValue().getName());
-        assertEquals("callId", cookieCapture.getValue().getValue());
+    public void disconnectShouldInvalidateSessionAndCloseCallRecord() {
+        String externalId = "455345";
+        String callDetailRecordId = "4324234";
+        ivrContextForTest = new KooKooIVRContextForTest().externalId(externalId).ivrEvent(IVREvent.Disconnect);
+        ivrContextForTest.callDetailRecordId(callDetailRecordId);
+        ivrController.reply(ivrContextForTest);
+        assertEquals(true, ivrContextForTest.sessionInvalidated());
+        verify(callDetailRecordsService).close(callDetailRecordId, externalId, IVREvent.Disconnect.toString());
     }
 }

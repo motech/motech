@@ -27,12 +27,9 @@ public class AllKooKooCallDetailRecordsIT {
     public void shouldFindCallDetailRecordByCallId() {
         CallDetailRecord callDetailRecord = CallDetailRecord.newIncomingCallRecord("phoneNumber");
         KookooCallDetailRecord kookooCallDetailRecord = new KookooCallDetailRecord(callDetailRecord);
-
         allKooKooCallDetailRecords.add(kookooCallDetailRecord);
-
-        KookooCallDetailRecord result = allKooKooCallDetailRecords.findByCallId(kookooCallDetailRecord.getCallId());
+        KookooCallDetailRecord result = allKooKooCallDetailRecords.get(kookooCallDetailRecord.getId());
         assertNotNull(result);
-
         ivrKookooCouchDbConnector.delete(kookooCallDetailRecord);
     }
 }

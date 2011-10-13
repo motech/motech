@@ -13,17 +13,9 @@ import java.util.List;
 
 @Component
 public class AllKooKooCallDetailRecords extends MotechBaseRepository<KookooCallDetailRecord> {
-
     @Autowired
     public AllKooKooCallDetailRecords(@Qualifier("kookooIvrDbConnector") CouchDbConnector db) {
         super(KookooCallDetailRecord.class, db);
         this.initStandardDesignDocument();
-    }
-
-    @View(name = "findByCallId", map = "function(doc) {if (doc.type == 'KookooCallDetailRecord') {emit(doc._id, doc._id);}}")
-    public KookooCallDetailRecord findByCallId(String callId) {
-        ViewQuery q = createQuery("findByCallId").key(callId).includeDocs(true);
-        List<KookooCallDetailRecord> callDetailRecords = db.queryView(q, KookooCallDetailRecord.class);
-        return (callDetailRecords == null || callDetailRecords.isEmpty()) ? null : callDetailRecords.get(0);
     }
 }

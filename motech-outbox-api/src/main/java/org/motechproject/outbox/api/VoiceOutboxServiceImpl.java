@@ -2,6 +2,7 @@ package org.motechproject.outbox.api;
 
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.context.EventContext;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
@@ -16,9 +17,7 @@ import org.springframework.util.Assert;
 import java.util.Calendar;
 import java.util.List;
 
-/**
- *
- */
+//TODO: The API of VoiceOutboxService is anemic (exposes the domain model, just a wrapper over the dao)
 public class VoiceOutboxServiceImpl implements VoiceOutboxService {
 
     final Logger log = LoggerFactory.getLogger(VoiceOutboxServiceImpl.class);
@@ -26,18 +25,18 @@ public class VoiceOutboxServiceImpl implements VoiceOutboxService {
 
     /**
      * Should be configurable externally.
-     * if pendingMessages > maxNumberOfPendingMessages we need to emit event 
+     * if pendingMessages > maxNumberOfPendingMessages we need to emit event
      */
     private int maxNumberOfPendingMessages;
-    
+
     @Autowired(required = false)
     private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
 
-	@Autowired
+    @Autowired
     private OutboundVoiceMessageDao outboundVoiceMessageDao;
 
-	@Override
-	@SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings("unchecked")
     public void addMessage(OutboundVoiceMessage outboundVoiceMessage) {
 
         log.info("Add message: " + outboundVoiceMessage);
@@ -46,14 +45,14 @@ public class VoiceOutboxServiceImpl implements VoiceOutboxService {
             throw new IllegalArgumentException("OutboundVoiceMessage can not be null.");
         }
         outboundVoiceMessageDao.add(outboundVoiceMessage);
-        
+
         //sends max-pending-messages event if needed
         String pId = outboundVoiceMessage.getPartyId();
         Assert.hasText(pId, "VoiceMessage must have a valid partyId");
         int msgNum = outboundVoiceMessageDao.getPendingMessagesCount(pId);
-        if(maxNumberOfPendingMessages==msgNum) {
-        	log.warn(String.format("Max number (%d) of pending messages reached!", msgNum));
-			eventRelay.sendEventMessage( new MotechEvent(EventKeys.OUTBOX_MAX_PENDING_MESSAGES_EVENT_SUBJECT, ArrayUtils.toMap(new Object[][] {{EventKeys.PARTY_ID_KEY, pId}})));
+        if (maxNumberOfPendingMessages == msgNum) {
+            log.warn(String.format("Max number (%d) of pending messages reached!", msgNum));
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.OUTBOX_MAX_PENDING_MESSAGES_EVENT_SUBJECT, ArrayUtils.toMap(new Object[][]{{EventKeys.PARTY_ID_KEY, pId}})));
         }
     }
 
@@ -100,7 +99,7 @@ public class VoiceOutboxServiceImpl implements VoiceOutboxService {
     @Override
     public OutboundVoiceMessage getMessageById(String outboundVoiceMessageId) {
 
-         log.info("Get message by ID: " + outboundVoiceMessageId);
+        log.info("Get message by ID: " + outboundVoiceMessageId);
 
         if (outboundVoiceMessageId == null || outboundVoiceMessageId.isEmpty()) {
             throw new IllegalArgumentException("outboundVoiceMessageId can not be null or empty.");
@@ -124,9 +123,9 @@ public class VoiceOutboxServiceImpl implements VoiceOutboxService {
     @Override
     public void setMessageStatus(String outboundVoiceMessageId, OutboundVoiceMessageStatus status) {
 
-        log.info("Set status: "+ status +" to the message ID: " + outboundVoiceMessageId);
+        log.info("Set status: " + status + " to the message ID: " + outboundVoiceMessageId);
 
-         if (outboundVoiceMessageId == null || outboundVoiceMessageId.isEmpty()) {
+        if (outboundVoiceMessageId == null || outboundVoiceMessageId.isEmpty()) {
             throw new IllegalArgumentException("outboundVoiceMessageId can not be null or empty.");
         }
 
@@ -141,7 +140,7 @@ public class VoiceOutboxServiceImpl implements VoiceOutboxService {
 
         log.info("Save in the outbox message ID: " + outboundVoiceMessageId);
 
-         if (outboundVoiceMessageId == null || outboundVoiceMessageId.isEmpty()) {
+        if (outboundVoiceMessageId == null || outboundVoiceMessageId.isEmpty()) {
             throw new IllegalArgumentException("outboundVoiceMessageId can not be null or empty.");
         }
 
@@ -176,15 +175,21 @@ public class VoiceOutboxServiceImpl implements VoiceOutboxService {
     public void setNumDayskeepSavedMessages(int numDayskeepSavedMessages) {
         this.numDayskeepSavedMessages = numDayskeepSavedMessages;
     }
-    
-    @Override
-	public void setMaxNumberOfPendingMessages(int maxNumberOfPendingMessages) {
-		this.maxNumberOfPendingMessages = maxNumberOfPendingMessages;
-	}
 
-	@Override
-	public int getMaxNumberOfPendingMessages() {
-		return this.maxNumberOfPendingMessages;
-	}    
-	
+    @Override
+    public void setMaxNumberOfPendingMessages(int maxNumberOfPendingMessages) {
+        this.maxNumberOfPendingMessages = maxNumberOfPendingMessages;
+    }
+
+    @Override
+    public int getMaxNumberOfPendingMessages() {
+        return this.maxNumberOfPendingMessages;
+    }
+
+    @Override
+    public OutboundVoiceMessage nextMessage(String lastMessageId, String partyId) {
+        if(StringUtils.isNotEmpty(lastMessageId))
+            setMessageStatus(lastMessageId, OutboundVoiceMessageStatus.PLAYED);
+        return getNextPendingMessage(partyId);
+    }
 }

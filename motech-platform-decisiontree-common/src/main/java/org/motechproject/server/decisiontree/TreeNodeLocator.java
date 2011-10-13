@@ -51,7 +51,7 @@ public class TreeNodeLocator {
 	 */
 	public Node findNode(Tree tree, String path) {
 		if(tree==null || path==null) {
-			throw new IllegalArgumentException("tree: "+tree+" path: "+path);
+			throw new IllegalArgumentException(String.format("tree: %s path: %s", tree, path));
 		}
 		Node node = tree.getRootNode();
 		if(node!=null) {

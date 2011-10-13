@@ -8,9 +8,10 @@ import org.motechproject.server.service.ivr.CallDetailRecord;
 import org.motechproject.server.service.ivr.CallEvent;
 import org.motechproject.util.DateUtil;
 
+import java.util.Map;
+
 @TypeDiscriminator("doc.type === 'KookooCallDetailRecord'")
 public class KookooCallDetailRecord extends MotechBaseDataObject {
-
     @JsonProperty("type")
     private String type = "KookooCallDetailRecord";
 
@@ -57,8 +58,8 @@ public class KookooCallDetailRecord extends MotechBaseDataObject {
         this.vendorCallId = vendorCallId;
     }
 
-    @JsonIgnore
-    public String getCallId() {
-        return this.getId();
+    public void appendToLastEvent(Map<String, String> map) {
+        CallEvent callEvent = callDetailRecord.lastCallEvent();
+        callEvent.appendData(map);
     }
 }
