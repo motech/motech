@@ -1,8 +1,6 @@
 package org.motechproject.util;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
+import org.joda.time.*;
 import org.motechproject.MotechException;
 import org.motechproject.model.DayOfWeek;
 
@@ -57,18 +55,6 @@ public class DateUtil {
         return new LocalDate(date.getTime(), getTimeZone());
     }
 
-    public static LocalDate pastDateWith(DayOfWeek dayOfWeek, LocalDate afterThisDate) {
-        return pastDateWith(dayOfWeek, afterThisDate, DateUtil.today());
-    }
-
-    public static LocalDate pastDateWith(DayOfWeek dayOfWeek, LocalDate afterThisDate, LocalDate beforeThisDate) {
-        LocalDate returnDate = beforeThisDate.withDayOfWeek(dayOfWeek.getValue());
-        if (returnDate.compareTo(beforeThisDate) > 0 || returnDate.compareTo(afterThisDate) < 0) {
-            returnDate = returnDate.minusWeeks(1);
-        }
-        return returnDate;
-    }
-
     private static DateTimeZone getTimeZone() {
         if (dateTimeZone != null) return dateTimeZone;
         try {
@@ -101,7 +87,6 @@ public class DateUtil {
 
         dateProperties = new Properties();
         InputStream fileStream = new FileInputStream(DateUtil.class.getResource("/date.properties").getFile());
-        if (fileStream == null) return null;
 
         dateProperties.load(fileStream);
         fileStream.close();
