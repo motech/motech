@@ -22,6 +22,7 @@ public abstract class SafeIVRController {
 
     protected SafeIVRController(IVRMessage ivrMessage, KookooCallDetailRecordsService callDetailRecordsService) {
         this.ivrMessage = ivrMessage;
+        if (callDetailRecordsService == null) throw new NullPointerException(String.format("%s cannot be null", KookooCallDetailRecordsService.class.getName()));
         this.callDetailRecordsService = callDetailRecordsService;
     }
 
@@ -36,12 +37,12 @@ public abstract class SafeIVRController {
         try {
             //next line is slightly bad but better than duplicate code, need function pointers
             KookooIVRResponseBuilder kookooIVRResponseBuilder = NEW_CALL_URL_ACTION.equalsIgnoreCase(ivrContext.ivrEvent()) ? newCall(ivrContext) : gotDTMF(ivrContext);
+            if (kookooIVRResponseBuilder.isHangUp()) closeCallRecord(ivrContext);
             String responseXML = kookooIVRResponseBuilder.create(ivrMessage);
             logger.info(String.format(" XML returned: %s", responseXML));
             return responseXML;
-        } catch (HangupException he) {
-            return closeCallRecord(ivrContext);
         } catch (Exception e) {
+            closeCallRecord(ivrContext);
             logger.error(String.format("Failed to process incoming %s request", ivrContext.ivrEvent()), e);
             String url = AllIVRURLs.springTranferUrlToUnhandledError();
             logger.info(String.format("Transferring to %s", url));
@@ -49,12 +50,9 @@ public abstract class SafeIVRController {
         }
     }
 
-    private String closeCallRecord(KooKooIVRContext kooKooIVRContext) {
-        logger.info("Hanging up");
+    private void closeCallRecord(KooKooIVRContext kooKooIVRContext) {
         callDetailRecordsService.close(kooKooIVRContext.callDetailRecordId(), kooKooIVRContext.externalId(), "Hangup");
         kooKooIVRContext.invalidateSession();
-        KookooIVRResponseBuilder kookooIVRResponseBuilder = KookooResponseFactory.hangUpResponseWith(kooKooIVRContext.callId());
-        return kookooIVRResponseBuilder.create(null);
     }
 
     @RequestMapping(value = GOT_DTMF_URL_ACTION, method = RequestMethod.GET)
@@ -76,11 +74,11 @@ public abstract class SafeIVRController {
         return "";
     }
 
-    public KookooIVRResponseBuilder newCall(KooKooIVRContext kooKooIVRContext) throws HangupException {
+    public KookooIVRResponseBuilder newCall(KooKooIVRContext kooKooIVRContext) {
         throw new UnsupportedOperationException("The extending controller should have implemeted this kookoo event.");
     }
 
-    public KookooIVRResponseBuilder gotDTMF(KooKooIVRContext kooKooIVRContext) throws HangupException {
+    public KookooIVRResponseBuilder gotDTMF(KooKooIVRContext kooKooIVRContext) {
         throw new UnsupportedOperationException("The extending controller should have implemeted this kookoo event.");
     }
 }

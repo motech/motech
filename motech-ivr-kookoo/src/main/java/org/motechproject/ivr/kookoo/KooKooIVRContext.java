@@ -86,7 +86,7 @@ public class KooKooIVRContext {
     }
 
     public String externalId() {
-        return cookies.getValue(EXTERNAL_ID);
+        return (String) request.getSession().getAttribute(EXTERNAL_ID);
     }
 
     public void invalidateSession() {
