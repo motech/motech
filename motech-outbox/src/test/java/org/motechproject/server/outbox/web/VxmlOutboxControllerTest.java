@@ -53,11 +53,11 @@ import static org.mockito.Mockito.*;
  *
  */
 @RunWith(MockitoJUnitRunner.class)
-public class VxmlControllerTest {
+public class VxmlOutboxControllerTest {
 
 
     @InjectMocks
-    VxmlController vxmlController = new VxmlController();
+    VxmlOutboxController vxmlOutboxController = new VxmlOutboxController();
 
     @Mock
     private VoiceOutboxService voiceOutboxService;
@@ -88,7 +88,7 @@ public class VxmlControllerTest {
 
         when(voiceOutboxService.getNextPendingMessage(anyString())).thenReturn(voiceMessage);
 
-        ModelAndView modelAndView = vxmlController.outboxMessage(request, response);
+        ModelAndView modelAndView = vxmlOutboxController.outboxMessage(request, response);
 
         Assert.assertEquals(voiceMessageTypeName, modelAndView.getViewName());
 
@@ -101,9 +101,9 @@ public class VxmlControllerTest {
 
         when(voiceOutboxService.getNextPendingMessage(anyString())).thenThrow(new RuntimeException());
 
-        ModelAndView modelAndView = vxmlController.outboxMessage(request, response);
+        ModelAndView modelAndView = vxmlOutboxController.outboxMessage(request, response);
 
-        Assert.assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
+        Assert.assertEquals(VxmlOutboxController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
 
 
     }
@@ -112,9 +112,9 @@ public class VxmlControllerTest {
     public void testNextOutboxMessageNoMessage() {
 
 
-        ModelAndView modelAndView = vxmlController.outboxMessage(request, response);
+        ModelAndView modelAndView = vxmlOutboxController.outboxMessage(request, response);
 
-        Assert.assertEquals(VxmlController.NO_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
+        Assert.assertEquals(VxmlOutboxController.NO_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
 
 
     }
@@ -128,9 +128,9 @@ public class VxmlControllerTest {
 
         when(voiceOutboxService.getNextPendingMessage(anyString())).thenReturn(voiceMessage);
 
-        ModelAndView modelAndView = vxmlController.outboxMessage(request, response);
+        ModelAndView modelAndView = vxmlOutboxController.outboxMessage(request, response);
 
-        Assert.assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
+        Assert.assertEquals(VxmlOutboxController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
 
 
     }
@@ -149,7 +149,7 @@ public class VxmlControllerTest {
         Mockito.when(request.getParameter("mId")).thenReturn(messageId);
         when(voiceOutboxService.getMessageById(messageId)).thenReturn(voiceMessage);
 
-        ModelAndView modelAndView = vxmlController.outboxMessage(request, response);
+        ModelAndView modelAndView = vxmlOutboxController.outboxMessage(request, response);
 
         Assert.assertEquals(voiceMessageTypeName, modelAndView.getViewName());
 
@@ -165,9 +165,9 @@ public class VxmlControllerTest {
         Mockito.when(request.getParameter("mId")).thenReturn(messageId);
         when(voiceOutboxService.getMessageById(messageId)).thenThrow(new RuntimeException());
 
-        ModelAndView modelAndView = vxmlController.outboxMessage(request, response);
+        ModelAndView modelAndView = vxmlOutboxController.outboxMessage(request, response);
 
-        Assert.assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
+        Assert.assertEquals(VxmlOutboxController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
 
     }
 
@@ -185,7 +185,7 @@ public class VxmlControllerTest {
         when(request.getParameter("pId")).thenReturn(partyId);
         when(voiceOutboxService.getNextSavedMessage(partyId)).thenReturn(voiceMessage);
 
-        ModelAndView modelAndView = vxmlController.savedMessage(request, response);
+        ModelAndView modelAndView = vxmlOutboxController.savedMessage(request, response);
 
         Assert.assertEquals(voiceMessageTypeName, modelAndView.getViewName());
 
@@ -197,9 +197,9 @@ public class VxmlControllerTest {
 
         when(voiceOutboxService.getNextSavedMessage(anyString())).thenThrow(new RuntimeException());
 
-        ModelAndView modelAndView = vxmlController.savedMessage(request, response);
+        ModelAndView modelAndView = vxmlOutboxController.savedMessage(request, response);
 
-        Assert.assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
+        Assert.assertEquals(VxmlOutboxController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
 
     }
 
@@ -209,9 +209,9 @@ public class VxmlControllerTest {
         String partyId = "1";
         when(voiceOutboxService.getNextSavedMessage(partyId)).thenReturn(null);
 
-        ModelAndView modelAndView = vxmlController.savedMessage(request, response);
+        ModelAndView modelAndView = vxmlOutboxController.savedMessage(request, response);
 
-        Assert.assertEquals(VxmlController.NO_SAVED_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
+        Assert.assertEquals(VxmlOutboxController.NO_SAVED_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
 
     }
 
@@ -225,9 +225,9 @@ public class VxmlControllerTest {
             when(request.getParameter("pId")).thenReturn(partyId);
             when(voiceOutboxService.getNextSavedMessage(partyId)).thenReturn(voiceMessage);
 
-            ModelAndView modelAndView = vxmlController.savedMessage(request, response);
+            ModelAndView modelAndView = vxmlOutboxController.savedMessage(request, response);
 
-            Assert.assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
+            Assert.assertEquals(VxmlOutboxController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
 
         }
 
@@ -244,9 +244,9 @@ public class VxmlControllerTest {
         when(request.getParameter("mId")).thenReturn(messageId);
         when(voiceOutboxService.getMessageById(messageId)).thenReturn(voiceMessage);
 
-        ModelAndView modelAndView = vxmlController.messageMenu(request, response);
+        ModelAndView modelAndView = vxmlOutboxController.messageMenu(request, response);
 
-        Assert.assertEquals(VxmlController.MESSAGE_MENU_TEMPLATE_NAME, modelAndView.getViewName());
+        Assert.assertEquals(VxmlOutboxController.MESSAGE_MENU_TEMPLATE_NAME, modelAndView.getViewName());
         verify(voiceOutboxService).setMessageStatus(messageId, OutboundVoiceMessageStatus.PLAYED);
     }
 
@@ -261,9 +261,9 @@ public class VxmlControllerTest {
         when(request.getParameter("mId")).thenReturn(messageId);
         when(voiceOutboxService.getMessageById(messageId)).thenReturn(voiceMessage);
 
-        ModelAndView modelAndView = vxmlController.messageMenu(request, response);
+        ModelAndView modelAndView = vxmlOutboxController.messageMenu(request, response);
 
-        Assert.assertEquals(VxmlController.SAVED_MESSAGE_MENU_TEMPLATE_NAME, modelAndView.getViewName());
+        Assert.assertEquals(VxmlOutboxController.SAVED_MESSAGE_MENU_TEMPLATE_NAME, modelAndView.getViewName());
         verify(voiceOutboxService, times(0)).setMessageStatus(anyString(), Matchers.<OutboundVoiceMessageStatus>any());
     }
 
@@ -274,9 +274,9 @@ public class VxmlControllerTest {
 
         Mockito.when(request.getParameter("mId")).thenReturn(null);
 
-        ModelAndView modelAndView = vxmlController.messageMenu(request, response);
+        ModelAndView modelAndView = vxmlOutboxController.messageMenu(request, response);
 
-        Assert.assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
+        Assert.assertEquals(VxmlOutboxController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
     }
 
     @Test
@@ -287,9 +287,9 @@ public class VxmlControllerTest {
         Mockito.when(request.getParameter("mId")).thenReturn(messageId);
         when(voiceOutboxService.getMessageById(anyString())).thenThrow(new RuntimeException());
 
-        ModelAndView modelAndView = vxmlController.messageMenu(request, response);
+        ModelAndView modelAndView = vxmlOutboxController.messageMenu(request, response);
 
-        Assert.assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
+        Assert.assertEquals(VxmlOutboxController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
     }
 
     @Test
@@ -300,9 +300,9 @@ public class VxmlControllerTest {
         Mockito.when(request.getParameter("mId")).thenReturn(messageId);
         when(voiceOutboxService.getMessageById(messageId)).thenReturn(null);
 
-        ModelAndView modelAndView = vxmlController.messageMenu(request, response);
+        ModelAndView modelAndView = vxmlOutboxController.messageMenu(request, response);
 
-        Assert.assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
+        Assert.assertEquals(VxmlOutboxController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
     }
 
 
@@ -320,9 +320,9 @@ public class VxmlControllerTest {
         Mockito.when(request.getParameter("mId")).thenReturn(messageId);
         when(voiceOutboxService.getMessageById(messageId)).thenReturn(new OutboundVoiceMessage());
 
-        ModelAndView modelAndView = vxmlController.save(request, response);
+        ModelAndView modelAndView = vxmlOutboxController.save(request, response);
         verify(voiceOutboxService).saveMessage(messageId);
-        Assert.assertEquals(VxmlController.MESSAGE_SAVED_CONFIRMATION_TEMPLATE_NAME, modelAndView.getViewName());
+        Assert.assertEquals(VxmlOutboxController.MESSAGE_SAVED_CONFIRMATION_TEMPLATE_NAME, modelAndView.getViewName());
 
     }
 
@@ -332,13 +332,13 @@ public class VxmlControllerTest {
         String messageId = "mID";
 
 
-        Mockito.when(request.getParameter(VxmlController.MESSAGE_ID_PARAM)).thenReturn(messageId);
+        Mockito.when(request.getParameter(VxmlOutboxController.MESSAGE_ID_PARAM)).thenReturn(messageId);
         when(voiceOutboxService.getMessageById(messageId)).thenReturn(new OutboundVoiceMessage());
         doThrow(new RuntimeException()).when(voiceOutboxService).saveMessage(messageId);
 
-        ModelAndView modelAndView = vxmlController.save(request, response);
+        ModelAndView modelAndView = vxmlOutboxController.save(request, response);
 
-        Assert.assertEquals(VxmlController.SAVE_MESSAGE_ERROR_TEMPLATE_NAME, modelAndView.getViewName());
+        Assert.assertEquals(VxmlOutboxController.SAVE_MESSAGE_ERROR_TEMPLATE_NAME, modelAndView.getViewName());
         verify(voiceOutboxService).saveMessage(messageId);
 
     }
@@ -346,11 +346,11 @@ public class VxmlControllerTest {
     @Test
     public void testSaveOutboxMessageNoMessageId() {
 
-        Mockito.when(request.getParameter(VxmlController.MESSAGE_ID_PARAM)).thenReturn(null);
+        Mockito.when(request.getParameter(VxmlOutboxController.MESSAGE_ID_PARAM)).thenReturn(null);
 
-        ModelAndView modelAndView = vxmlController.save(request, response);
+        ModelAndView modelAndView = vxmlOutboxController.save(request, response);
 
-        Assert.assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
+        Assert.assertEquals(VxmlOutboxController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
         verify(voiceOutboxService, times(0)).saveMessage(anyString());
     }
 
@@ -363,9 +363,9 @@ public class VxmlControllerTest {
            when(request.getParameter("mId")).thenReturn(messageId);
            when(voiceOutboxService.getMessageById(messageId)).thenReturn(new OutboundVoiceMessage());
 
-           ModelAndView modelAndView = vxmlController.remove(request, response);
+           ModelAndView modelAndView = vxmlOutboxController.remove(request, response);
            verify(voiceOutboxService).setMessageStatus(messageId, OutboundVoiceMessageStatus.PLAYED);
-           Assert.assertEquals(VxmlController.MESSAGE_REMOVED_CONFIRMATION_TEMPLATE_NAME, modelAndView.getViewName());
+           Assert.assertEquals(VxmlOutboxController.MESSAGE_REMOVED_CONFIRMATION_TEMPLATE_NAME, modelAndView.getViewName());
 
        }
 
@@ -377,23 +377,23 @@ public class VxmlControllerTest {
         String messageId = "mID";
 
 
-        Mockito.when(request.getParameter(VxmlController.MESSAGE_ID_PARAM)).thenReturn(messageId);
+        Mockito.when(request.getParameter(VxmlOutboxController.MESSAGE_ID_PARAM)).thenReturn(messageId);
         doThrow(new RuntimeException()).when(voiceOutboxService).setMessageStatus(anyString(), Matchers.<OutboundVoiceMessageStatus>any());
 
-        ModelAndView modelAndView = vxmlController.remove(request, response);
+        ModelAndView modelAndView = vxmlOutboxController.remove(request, response);
 
-        Assert.assertEquals(VxmlController.REMOVE_SAVED_MESSAGE_ERROR_TEMPLATE_NAME, modelAndView.getViewName());
+        Assert.assertEquals(VxmlOutboxController.REMOVE_SAVED_MESSAGE_ERROR_TEMPLATE_NAME, modelAndView.getViewName());
 
     }
 
     @Test
     public void testRemoveOutboxMessageNoMessageId() {
 
-        Mockito.when(request.getParameter(VxmlController.MESSAGE_ID_PARAM)).thenReturn(null);
+        Mockito.when(request.getParameter(VxmlOutboxController.MESSAGE_ID_PARAM)).thenReturn(null);
 
-        ModelAndView modelAndView = vxmlController.remove(request, response);
+        ModelAndView modelAndView = vxmlOutboxController.remove(request, response);
 
-        Assert.assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
+        Assert.assertEquals(VxmlOutboxController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
         verify(voiceOutboxService, times(0)).setMessageStatus(anyString(), Matchers.<OutboundVoiceMessageStatus>any());
     }
 

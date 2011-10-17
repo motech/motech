@@ -51,7 +51,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Igor (iopushnyev@2paths.com)
  */
-public class VxmlController extends MultiActionController {
+public class VxmlOutboxController extends MultiActionController {
 
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
 
