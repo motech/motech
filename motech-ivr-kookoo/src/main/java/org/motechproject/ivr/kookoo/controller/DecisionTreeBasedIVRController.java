@@ -49,7 +49,10 @@ public class DecisionTreeBasedIVRController extends SafeIVRController {
         kooKooIVRContext.currentDecisionTreePath(nodeInfo.path());
         DecisionTreeBasedResponseBuilder decisionTreeBasedResponseBuilder = new DecisionTreeBasedResponseBuilder();
         KookooIVRResponseBuilder ivrResponseBuilder = decisionTreeBasedResponseBuilder.ivrResponse(nodeInfo.node(), kooKooIVRContext, new KookooIVRResponseBuilder(), retryOnIncorrectUserAction);
-        if (!ivrResponseBuilder.isCollectDtmf()) callFlowController.treeComplete(currentTreeName, kooKooIVRContext);
+        if (!ivrResponseBuilder.isCollectDtmf()){
+            kooKooIVRContext.currentDecisionTreePath("");
+            callFlowController.treeComplete(currentTreeName, kooKooIVRContext);
+        }
         return ivrResponseBuilder.withSid(kooKooIVRContext.callId()).language(kooKooIVRContext.preferredLanguage());
     }
 }
