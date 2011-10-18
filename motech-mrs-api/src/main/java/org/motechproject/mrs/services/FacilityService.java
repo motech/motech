@@ -7,5 +7,5 @@ public interface FacilityService {
 
     List<Facility> getFacilities();
 
-    Facility getFacility(String name);
+    List<Facility> getFacilities(String name);
 }

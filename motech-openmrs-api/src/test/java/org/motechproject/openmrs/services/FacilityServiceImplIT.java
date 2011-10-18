@@ -91,12 +91,12 @@ public class FacilityServiceImplIT {
     }
 
     @Test
-    public void testGetLocation() {
+    public void testGetLocationsByName() {
         String facilityName = "my facility";
         Facility facility = new Facility(facilityName, "ghana", "region", "district", "kaseena");
         final Facility savedFacility = facilityService.saveFacility(facility);
-        final Facility returnedFacility = facilityService.getFacility(facilityName);
-        assertEquals(savedFacility, returnedFacility);
+        final List<Facility> facilities = facilityService.getFacilities(facilityName);
+        assertEquals(Arrays.asList(savedFacility), facilities);
 
         authorizeAndRollback(new DirtyData() {
             public void rollback() {

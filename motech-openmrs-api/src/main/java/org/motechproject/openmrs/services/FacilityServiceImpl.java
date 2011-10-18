@@ -22,6 +22,10 @@ public class FacilityServiceImpl implements FacilityService {
         location.setCountyDistrict(facility.getCountyDistrict());
 
         Location savedLocation = this.locationService.saveLocation(location);
+        return createFacility(savedLocation);
+    }
+
+    private Facility createFacility(Location savedLocation) {
         return new Facility(String.valueOf(savedLocation.getId()), savedLocation.getName(), savedLocation.getCountry(),
                 savedLocation.getAddress6(), savedLocation.getCountyDistrict(), savedLocation.getStateProvince());
     }
@@ -31,18 +35,18 @@ public class FacilityServiceImpl implements FacilityService {
         List<Location> locations = locationService.getAllLocations();
         List<Facility> facilities = new ArrayList<Facility>();
         for (Location location : locations) {
-            facilities.add(new Facility(String.valueOf(location.getId()), location.getName(),
-                    location.getCountry(), location.getAddress6(), location.getCountyDistrict(), location.getStateProvince()));
+            facilities.add(createFacility(location));
         }
         return facilities;
     }
 
     @Override
-    public Facility getFacility(String name) {
-        final Location location = locationService.getLocation(name);
-        if(location != null)
-        return new Facility(String.valueOf(location.getId()), location.getName(),
-                    location.getCountry(), location.getAddress6(), location.getCountyDistrict(), location.getStateProvince());
-        return null;
+    public List<Facility> getFacilities(String name) {
+        final List<Location> locations = locationService.getLocations(name);
+        final ArrayList<Facility> facilities = new ArrayList<Facility>();
+        for (Location location : locations) {
+            facilities.add(createFacility(location));
+        }
+        return facilities;
     }
 }

@@ -12,10 +12,10 @@ import org.openmrs.api.LocationService;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -93,15 +93,15 @@ public class FacilityServiceImplTest {
         String province = "province";
 
         Location location = this.createALocation(locationId, name, country, region, district, province);
-        when(mockLocationService.getLocation(name)).thenReturn(location);
-        Facility returnedFacility = facilityService.getFacility(name);
-        assertEquals(new Facility(String.valueOf(locationId), name, country, region, district, province), returnedFacility);
+        when(mockLocationService.getLocations(name)).thenReturn(Arrays.asList(location));
+        final List<Facility> facilities = facilityService.getFacilities(name);
+        assertEquals(Arrays.asList(new Facility(String.valueOf(locationId), name, country, region, district, province)), facilities);
     }
 
     @Test
     public void testGetAFacilityByNameForANonExistentFacililty() {
         String name = "name";
         when(mockLocationService.getLocation(name)).thenReturn(null);
-        assertNull(facilityService.getFacility(name));
+        assertEquals(Collections.EMPTY_LIST, facilityService.getFacilities(name));
     }
 }
