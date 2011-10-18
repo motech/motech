@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>motech</artifactId>
@@ -69,16 +68,16 @@
                 <version>1.6</version>
                 <executions>
                     <execution>
-                        <id>drop DB => motech-pillreminder</id>
+                        <id>drop DB =&gt; motech-pillreminder</id>
                         <phase>pre-integration-test</phase>
                         <configuration>
                             <target>
                                 <exec executable="curl">
-                                    <arg value="-s"/>
-                                    <arg value="-S"/>
-                                    <arg value="-X"/>
-                                    <arg value="DELETE"/>
-                                    <arg value="http://${db.server}:${db.port}/motech-pillreminder"/>
+                                    <arg value="-s" />
+                                    <arg value="-S" />
+                                    <arg value="-X" />
+                                    <arg value="DELETE" />
+                                    <arg value="http://${db.server}:${db.port}/motech-pillreminder" />
                                 </exec>
                             </target>
                         </configuration>
@@ -87,16 +86,16 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>drop DB => motech-ivr-kookoo</id>
+                        <id>drop DB =&gt; motech-ivr-kookoo</id>
                         <phase>pre-integration-test</phase>
                         <configuration>
                             <target>
                                 <exec executable="curl">
-                                    <arg value="-s"/>
-                                    <arg value="-S"/>
-                                    <arg value="-X"/>
-                                    <arg value="DELETE"/>
-                                    <arg value="http://${db.server}:${db.port}/motech-ivr-kookoo"/>
+                                    <arg value="-s" />
+                                    <arg value="-S" />
+                                    <arg value="-X" />
+                                    <arg value="DELETE" />
+                                    <arg value="http://${db.server}:${db.port}/motech-ivr-kookoo" />
                                 </exec>
                             </target>
                         </configuration>
