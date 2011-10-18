@@ -61,6 +61,10 @@ public class KooKooIVRContext {
         return cookies.getValue(PREFERRED_LANGUAGE_CODE);
     }
 
+    public void preferredLanguage(String languageCode) {
+        cookies.add(PREFERRED_LANGUAGE_CODE, languageCode);
+    }
+
     public void callDetailRecordId(String kooKooCallDetailRecordId) {
         cookies.add(CALL_DETAIL_RECORD_ID, kooKooCallDetailRecordId);
     }
