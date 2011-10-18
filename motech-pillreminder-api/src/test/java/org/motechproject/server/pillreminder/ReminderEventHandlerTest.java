@@ -160,8 +160,13 @@ public class ReminderEventHandlerTest {
 
         MotechEvent motechEvent = buildMotechEvent(externalId, dosageId);
         pillReminderEventHandler.handleEvent(motechEvent);
-        
-        verify(schedulerService).scheduleRepeatingJob(argThat(new RepeatingSchedulableJobArgumentMatcher(new Time(10, 25 + retryInterval))));
+
+        ArgumentCaptor<RepeatingSchedulableJob> captor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
+        verify(schedulerService).scheduleRepeatingJob(captor.capture());
+
+        assertEquals(10, captor.getValue().getStartTime().getHours());
+        assertEquals(29, captor.getValue().getStartTime().getMinutes());
+        assertEquals(dosage.getId() + ReminderEventHandler.PILL_REMINDER_REPEAT_JOB_SUFFIX, captor.getValue().getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
     }
 
     @Test
@@ -182,7 +187,7 @@ public class ReminderEventHandlerTest {
         when(pillRegimenTimeUtils.timesPillRemindersSent(dosage, pillWindow, retryInterval)).thenReturn(1);
         
         pillReminderEventHandler.handleEvent(motechEvent);
-        
+
         verify(schedulerService, never()).scheduleRepeatingJob(Matchers.<RepeatingSchedulableJob>any());
     }
 

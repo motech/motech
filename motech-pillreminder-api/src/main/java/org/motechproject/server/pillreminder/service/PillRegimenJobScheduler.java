@@ -5,6 +5,7 @@ import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.builder.CronJobSimpleExpressionBuilder;
 import org.motechproject.server.pillreminder.EventKeys;
+import org.motechproject.server.pillreminder.ReminderEventHandler;
 import org.motechproject.server.pillreminder.builder.SchedulerPayloadBuilder;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
@@ -32,8 +33,10 @@ public class PillRegimenJobScheduler {
     }
 
     public void unscheduleJobs(PillRegimen regimen) {
-        for (Dosage dosage : regimen.getDosages())
+        for (Dosage dosage : regimen.getDosages()) {
             schedulerService.unscheduleJob(dosage.getId());
+            schedulerService.unscheduleJob(dosage.getId() + ReminderEventHandler.PILL_REMINDER_REPEAT_JOB_SUFFIX);
+        }
     }
 
     protected CronSchedulableJob getSchedulableDailyJob(String pillRegimenId, String externalId, Dosage dosage) {

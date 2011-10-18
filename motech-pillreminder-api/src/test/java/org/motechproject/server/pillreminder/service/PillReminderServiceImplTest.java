@@ -90,6 +90,33 @@ public class PillReminderServiceImplTest {
     }
 
     @Test
+    public void shouldUnschedulePillReminderJobs() {
+        String externalId = "123";
+        LocalDate startDate = DateUtil.today();
+        LocalDate endDate = startDate.plusDays(2);
+
+        MedicineRequest medicineRequest1 = new MedicineRequest("m1", startDate, endDate);
+        MedicineRequest medicineRequest2 = new MedicineRequest("m2", startDate.plusDays(1), startDate.plusDays(4));
+        List<MedicineRequest> medicineRequests = asList(medicineRequest1, medicineRequest2);
+
+        DosageRequest dosageRequest = new DosageRequest(9, 5, medicineRequests);
+        DailyPillRegimenRequest dailyPillRegimenRequest = new DailyPillRegimenRequest(externalId, 5, 20, asList(dosageRequest));
+        Set<Dosage> dosages = new HashSet<Dosage>() {{
+            final Dosage dosage = new Dosage(new Time(10, 30), null);
+            dosage.setId("dosage");
+            add(dosage);
+        }};
+
+        PillRegimen pillRegimen = new PillRegimen(externalId, dosages, new DailyScheduleDetails(20, 2));
+
+        when(allPillRegimens.findByExternalId(externalId)).thenReturn(pillRegimen);
+
+        service.unscheduleJobs(externalId);
+
+        verify(pillRegimenJobScheduler).unscheduleJobs(pillRegimen);
+    }
+
+    @Test
     public void shouldCallAllPillRegimensToUpdateDosageDate() {
         LocalDate today = DateUtil.today();
         service.dosageStatusKnown("pillRegimenId", "dosageId", today);

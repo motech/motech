@@ -13,6 +13,7 @@ import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.pillreminder.EventKeys;
+import org.motechproject.server.pillreminder.ReminderEventHandler;
 import org.motechproject.server.pillreminder.domain.DailyScheduleDetails;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.Medicine;
@@ -21,6 +22,7 @@ import org.motechproject.util.DateUtil;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.quartz.SchedulerException;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -30,6 +32,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(PowerMockRunner.class)
@@ -84,7 +87,9 @@ public class PillRegimenJobSchedulerTest {
         pillRegimen.setId(pillRegimenId);
         jobScheduler.unscheduleJobs(pillRegimen);
         verify(schedulerService, times(1)).unscheduleJob("dosage1");
+        verify(schedulerService, times(1)).unscheduleJob("dosage1" + ReminderEventHandler.PILL_REMINDER_REPEAT_JOB_SUFFIX);
         verify(schedulerService, times(1)).unscheduleJob("dosage2");
+        verify(schedulerService, times(1)).unscheduleJob("dosage2" + ReminderEventHandler.PILL_REMINDER_REPEAT_JOB_SUFFIX);
     }
 
     @Test

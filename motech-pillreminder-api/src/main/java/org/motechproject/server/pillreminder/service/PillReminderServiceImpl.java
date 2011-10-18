@@ -44,6 +44,12 @@ public class PillReminderServiceImpl implements PillReminderService {
         return pillRegimen == null ? null : new PillRegimenResponseBuilder().createFrom(pillRegimen);
     }
 
+    @Override
+    public void unscheduleJobs(String externalID) {
+        PillRegimen regimen = allPillRegimens.findByExternalId(externalID);
+        pillRegimenJobScheduler.unscheduleJobs(regimen);
+    }
+
     private void destroy(String externalID) {
         PillRegimen regimen = allPillRegimens.findByExternalId(externalID);
         pillRegimenJobScheduler.unscheduleJobs(regimen);
