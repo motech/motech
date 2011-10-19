@@ -55,6 +55,7 @@ public class MotechScheduler {
     private final static String UNSCHEDULE_TEST_INPUT_PARAM = "-c";
 
     private final static String TEST_EVENT_NAME = "testEvent";
+    public static final String SUBJECT = "test";
 
     /**
      *
@@ -94,7 +95,7 @@ public class MotechScheduler {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(MotechSchedulerService.JOB_ID_KEY, TEST_EVENT_NAME);
-        MotechEvent motechEvent = new MotechEvent("test", params);
+        MotechEvent motechEvent = new MotechEvent(SUBJECT, params);
         CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, "0/5 * * * * ?");
 
         try {
@@ -108,7 +109,7 @@ public class MotechScheduler {
     private void unscheduleTestEvent() {
         try {
             log.info("Unscheduling the test job: " + TEST_EVENT_NAME);
-            schedulerService.unscheduleJob(TEST_EVENT_NAME);
+            schedulerService.unscheduleJob(SUBJECT, TEST_EVENT_NAME);
         } catch (Exception e) {
             log.warn("Can not unschedule the test job: " + TEST_EVENT_NAME +" " + e.getMessage());
         }
