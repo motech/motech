@@ -39,14 +39,15 @@ public class DecisionTreeBasedIVRController extends SafeIVRController {
         if (nodeInfo.node() == null) {
             nodeInfo = tree.currentNodeInfo(currentPosition);
             retryOnIncorrectUserAction = true;
-        } else if (!retryOnIncorrectUserAction) {
+        }
+        if (!retryOnIncorrectUserAction) {
             List<ITreeCommand> treeCommands = nodeInfo.node().getTreeCommands();
             for (ITreeCommand command : treeCommands) {
                 command.execute(kooKooIVRContext);
             }
         }
-
         kooKooIVRContext.currentDecisionTreePath(nodeInfo.path());
+
         DecisionTreeBasedResponseBuilder decisionTreeBasedResponseBuilder = new DecisionTreeBasedResponseBuilder();
         KookooIVRResponseBuilder ivrResponseBuilder = decisionTreeBasedResponseBuilder.ivrResponse(nodeInfo.node(), kooKooIVRContext, new KookooIVRResponseBuilder(), retryOnIncorrectUserAction);
         if (!ivrResponseBuilder.isCollectDtmf()){

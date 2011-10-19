@@ -10,7 +10,6 @@ import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
 import org.motechproject.server.service.ivr.IVRMessage;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -56,8 +55,16 @@ public class DecisionTreeBasedIVRControllerTest {
 
     @Test
     public void shouldChangeCurrentNodePath() {
+        ivrContext.userInput("1");
         controller.gotDTMF(ivrContext);
-        assertEquals("/", ivrContext.currentTreePosition());
+        assertEquals("/1", ivrContext.currentTreePosition());
+    }
+
+    @Test
+    public void shouldNotChangeCurrentTreePositionWhenUserInputIsInvalid() {
+        ivrContext.userInput("56").currentDecisionTreePath("/1");
+        controller.gotDTMF(ivrContext);
+        assertEquals("/1", ivrContext.currentTreePosition());
     }
 
     @Test
@@ -77,11 +84,22 @@ public class DecisionTreeBasedIVRControllerTest {
                                     {
                                             "1",
                                             new Transition().setDestinationNode(
-                                                    new Node().setPrompts(new AudioPrompt().setName("bar")))},
+                                                    new Node().setPrompts(new MenuAudioPrompt().setName("bar"))
+                                                            .setTransitions(
+                                                                    new Object[][]{
+                                                                            {
+                                                                                    "1",
+                                                                                    new Transition().setDestinationNode(
+                                                                                            new Node().setPrompts(new AudioPrompt().setName("bar")))},
+                                                                            {
+                                                                                    "2",
+                                                                                    new Transition().setDestinationNode(
+                                                                                            new Node().setPrompts(new AudioPrompt().setName("baz")))}}))},
                                     {
                                             "2",
                                             new Transition().setDestinationNode(
-                                                    new Node().setPrompts(new AudioPrompt().setName("baz")))}});
+                                                    new Node().setPrompts(new AudioPrompt().setName("baz")))
+                                    }});
         }
 
         public Tree getTree() {
