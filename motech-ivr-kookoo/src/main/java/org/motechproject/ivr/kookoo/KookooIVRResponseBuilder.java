@@ -82,7 +82,7 @@ public class KookooIVRResponseBuilder {
     }
 
 	public boolean isCollectDtmf() {
-        return playAudios.size() != 0 || playTexts.size() != 0;
+        return dtmfLength > 0;
     }
 
 	public List<String> getPlayTexts() {

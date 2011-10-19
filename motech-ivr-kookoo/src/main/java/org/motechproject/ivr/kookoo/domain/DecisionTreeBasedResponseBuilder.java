@@ -9,17 +9,12 @@ public class DecisionTreeBasedResponseBuilder {
     public KookooIVRResponseBuilder ivrResponse(Node node, Object customData, KookooIVRResponseBuilder ivrResponseBuilder, boolean retryOnIncorrectUserAction) {
         List<Prompt> prompts = node.getPrompts();
         for (Prompt prompt : prompts) {
-            if (retryOnIncorrectUserAction && !(prompt instanceof MenuAudioPrompt) && prompt instanceof AudioPrompt) continue;
+            boolean isAudioPrompt = prompt.getClass().equals(AudioPrompt.class);
+            boolean shouldNotBuildPrompt = retryOnIncorrectUserAction && isAudioPrompt;
+            if (shouldNotBuildPrompt) continue;
             ITreeCommand command = prompt.getCommand();
-            boolean isAudioPrompt = prompt instanceof AudioPrompt;
-            if (command == null) {
-                buildPrompts(ivrResponseBuilder, prompt.getName(), isAudioPrompt);
-            } else {
-                String[] promptsFromCommand = command.execute(customData);
-                for (String promptFromCommand : promptsFromCommand) {
-                    buildPrompts(ivrResponseBuilder, promptFromCommand, isAudioPrompt);
-                }
-            }
+            boolean isAudioPromptOrMenuAudioPrompt = prompt instanceof AudioPrompt;
+            buildPrompts(ivrResponseBuilder, isAudioPromptOrMenuAudioPrompt, command == null ? new String[]{prompt.getName()} : command.execute(customData));
         }
         if (node.hasTransitions()) {
             ivrResponseBuilder.collectDtmfLength(maxLenOfTransitionOptions(node));
@@ -35,8 +30,8 @@ public class DecisionTreeBasedResponseBuilder {
         return maxLen;
     }
 
-    private void buildPrompts(KookooIVRResponseBuilder ivrResponseBuilder, String promptName, boolean isAudioPrompt) {
-        if (isAudioPrompt) ivrResponseBuilder.withPlayAudios(promptName);
-        else ivrResponseBuilder.withPlayTexts(promptName);
+    private void buildPrompts(KookooIVRResponseBuilder ivrResponseBuilder, boolean isAudioPrompt, String... promptNames) {
+        if (isAudioPrompt) ivrResponseBuilder.withPlayAudios(promptNames);
+        else ivrResponseBuilder.withPlayTexts(promptNames);
     }
 }
