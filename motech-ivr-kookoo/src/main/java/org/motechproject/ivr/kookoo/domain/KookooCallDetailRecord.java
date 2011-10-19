@@ -19,11 +19,12 @@ public class KookooCallDetailRecord extends MotechBaseDataObject {
 
     private CallDetailRecord callDetailRecord;
 
-    public KookooCallDetailRecord(){
+    private KookooCallDetailRecord(){
     }
 
-    public KookooCallDetailRecord(CallDetailRecord callDetailRecord) {
+    public KookooCallDetailRecord(CallDetailRecord callDetailRecord, String vendorCallId) {
         this.callDetailRecord = callDetailRecord;
+        this.vendorCallId = vendorCallId;
     }
 
     public CallDetailRecord getCallDetailRecord() {
@@ -58,8 +59,8 @@ public class KookooCallDetailRecord extends MotechBaseDataObject {
         this.vendorCallId = vendorCallId;
     }
 
-    public void appendToLastEvent(Map<String, String> map) {
+    public void appendToLastEvent(String key, String value) {
         CallEvent callEvent = callDetailRecord.lastCallEvent();
-        callEvent.appendData(map);
+        callEvent.appendData(key, value);
     }
 }

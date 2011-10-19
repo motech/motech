@@ -90,12 +90,26 @@ public class KookooIVRResponseBuilderTest {
     @Test
     public void transitionsWithoutAudioPromptsShouldImplyNoUserResponse() {
         builder = new KookooIVRResponseBuilder().withSid("sid");
-        assertFalse(builder.isCollectDtmf());
+        assertTrue(builder.isEmpty());
     }
 
     @Test
     public void transitionsWithDtmfLengthGreaterThanZeroShouldImplyDtmfEvent() {
         builder = new KookooIVRResponseBuilder().withSid("sid").collectDtmfLength(4);
-        assertTrue(builder.isCollectDtmf());
+        assertTrue(builder.isCollectDTMF());
+        assertEquals(false, builder.isNotEmpty());
+        assertEquals(true, builder.withPlayAudios("foo").isNotEmpty());
+    }
+
+    @Test
+    public void donotCollectDTMFIfHangupIsSpecified() {
+        builder.withHangUp().withPlayAudios("foo");
+        assertEquals(false, builder.isCollectDTMF());
+    }
+
+    @Test
+    public void collectDTMFIfResponseIsNotEmpty() {
+        builder.withPlayAudios("foo");
+        assertEquals(true, builder.isNotEmpty());
     }
 }

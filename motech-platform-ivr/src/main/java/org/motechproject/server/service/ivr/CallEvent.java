@@ -3,32 +3,27 @@ package org.motechproject.server.service.ivr;
 import org.joda.time.DateTime;
 import org.motechproject.util.DateUtil;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class CallEvent {
-
     private String name;
-
     private DateTime timeStamp;
-
-    private Map<String, String> data;
+    private CallEventCustomData callEventCustomData = new CallEventCustomData();
 
     private CallEvent(){
     }
 
-    public CallEvent(String name, Map<String, String> data) {
-        this(name, DateUtil.now(), data);
+    public CallEvent(String name) {
+        this(name, DateUtil.now());
     }
 
-    private CallEvent(String name, DateTime timeStamp, Map<String, String> data) {
+    private CallEvent(String name, DateTime timeStamp) {
         this.name = name;
         this.timeStamp = timeStamp;
-        this.data = data;
     }
 
     public static CallEvent newDialEvent() {
-        return new CallEvent("Dial", DateUtil.now(), new HashMap<String, String>());
+        return new CallEvent("Dial", DateUtil.now());
     }
 
     public String getName() {
@@ -47,15 +42,15 @@ public class CallEvent {
         this.timeStamp = timeStamp;
     }
 
-    public Map<String, String> getData() {
-        return data;
+    public CallEventCustomData getData() {
+        return callEventCustomData;
     }
 
-    public void setData(Map<String, String> data) {
-        this.data = data;
+    public void setData(CallEventCustomData callEventCustomData) {
+        this.callEventCustomData = callEventCustomData;
     }
 
-    public void appendData(Map<String, String> map) {
-        data.putAll(map);
+    public void appendData(String key, String value) {
+        callEventCustomData.add(key, value);
     }
 }

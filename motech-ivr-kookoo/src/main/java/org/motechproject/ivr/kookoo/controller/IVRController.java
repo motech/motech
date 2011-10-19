@@ -37,7 +37,8 @@ public class IVRController {
         try {
             logger.info(ivrContext.allCookies());
             ivrContext.setDefaults();
-            switch (Enum.valueOf(IVREvent.class, ivrContext.ivrEvent())) {
+            IVREvent ivrEvent = Enum.valueOf(IVREvent.class, ivrContext.ivrEvent());
+            switch (ivrEvent) {
                 case NewCall:
                     ivrContext.initialize();
                     String kooKooCallDetailRecordId = kookooCallDetailRecordsService.create(ivrContext.callId(), ivrContext.callerId(), ivrContext.callDirection());
@@ -45,13 +46,13 @@ public class IVRController {
                     break;
                 case Disconnect:
                 case Hangup:
-                    kookooCallDetailRecordsService.close(ivrContext.callDetailRecordId(), ivrContext.externalId(), ivrContext.ivrEvent());
+                    kookooCallDetailRecordsService.close(ivrContext.callDetailRecordId(), ivrContext.externalId(), ivrEvent);
                     ivrContext.invalidateSession();
                     String url = AllIVRURLs.springTranferUrlToEmptyResponse();
                     logger.info(String.format("Transferring to %s", url));
                     return url;
                 case GotDTMF:
-                    kookooCallDetailRecordsService.appendEvent(ivrContext.callDetailRecordId(), ivrContext.ivrEvent());
+                    kookooCallDetailRecordsService.appendEvent(ivrContext.callDetailRecordId(), ivrEvent, ivrContext.userInput());
             }
             String url = callFlowController.urlFor(ivrContext);
             if (AllIVRURLs.DECISION_TREE_URL.equals(url)) {

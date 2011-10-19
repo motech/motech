@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+//TODO: This class should be renamed to KookooIVRResponse, as it represents the response which is implemented as builder
 public class KookooIVRResponseBuilder {
     private boolean isHangUp;
     private int dtmfLength;
@@ -59,7 +60,7 @@ public class KookooIVRResponseBuilder {
         Response response = new Response();
         if (StringUtils.isNotBlank(sid)) response.setSid(sid);
 
-        if (isCollectDtmf()) {
+        if (isCollectDTMF()) {
             CollectDtmf collectDtmf = KookooCollectDtmfFactory.create();
             if(dtmfLength > 0) collectDtmf.setMaxDigits(dtmfLength);
             for (String playText : playTexts) collectDtmf.addPlayText(ivrMessage.getText(playText));
@@ -81,8 +82,16 @@ public class KookooIVRResponseBuilder {
         return isHangUp;
     }
 
-	public boolean isCollectDtmf() {
+	public boolean isCollectDTMF() {
         return dtmfLength > 0;
+    }
+
+    public boolean isNotEmpty() {
+        return playAudios.size() != 0 || playTexts.size() != 0;
+    }
+
+    public boolean isEmpty() {
+        return !isNotEmpty();
     }
 
 	public List<String> getPlayTexts() {

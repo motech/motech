@@ -50,7 +50,7 @@ public class DecisionTreeBasedIVRController extends SafeIVRController {
 
         DecisionTreeBasedResponseBuilder decisionTreeBasedResponseBuilder = new DecisionTreeBasedResponseBuilder();
         KookooIVRResponseBuilder ivrResponseBuilder = decisionTreeBasedResponseBuilder.ivrResponse(nodeInfo.node(), kooKooIVRContext, new KookooIVRResponseBuilder(), retryOnIncorrectUserAction);
-        if (!ivrResponseBuilder.isCollectDtmf()){
+        if (!ivrResponseBuilder.isCollectDTMF()){
             kooKooIVRContext.currentDecisionTreePath("");
             callFlowController.treeComplete(currentTreeName, kooKooIVRContext);
         }
