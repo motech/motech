@@ -2,7 +2,6 @@ package org.motechproject.openmrs.services;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.mrs.model.Facility;
@@ -28,7 +27,6 @@ import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.Matchers.equalTo;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@Ignore
 @ContextConfiguration(locations = {"classpath*:applicationOpenmrsAPI.xml"})
 public class OpenMRSFacilityAdapterIT {
     @Autowired
