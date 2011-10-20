@@ -12,6 +12,7 @@ maven-eclipse.xml
 *.ipr
 *.iws
 *.class
+*.log
 out/
 Error_log/
 test-output/

@@ -69,7 +69,7 @@ public class MotechSchedulerIT {
 
     @Autowired
     private EventListenerRegistry eventListenerRegistry;
-       
+
     @Autowired
     private SchedulerFactoryBean schedulerFactoryBean;
 
@@ -80,7 +80,7 @@ public class MotechSchedulerIT {
     private long scheduledSecond;
 
     private boolean executed;
-      
+
 
     @Before
     public void setUp() {
@@ -170,8 +170,8 @@ public class MotechSchedulerIT {
 
         assertEquals(scheduledJobsNum + 1, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
 
-        CronTrigger trigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger(uuidStr, MotechSchedulerServiceImpl.JOB_GROUP_NAME);
-        JobDetail jobDetail = schedulerFactoryBean.getScheduler().getJobDetail(uuidStr, MotechSchedulerServiceImpl.JOB_GROUP_NAME);
+        CronTrigger trigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger("testEvent-" + uuidStr, MotechSchedulerServiceImpl.JOB_GROUP_NAME);
+        JobDetail jobDetail = schedulerFactoryBean.getScheduler().getJobDetail("testEvent-" + uuidStr, MotechSchedulerServiceImpl.JOB_GROUP_NAME);
         JobDataMap jobDataMap = jobDetail.getJobDataMap();
 
         assertEquals(newCronExpression, trigger.getCronExpression());
@@ -226,7 +226,7 @@ public class MotechSchedulerIT {
 
         motechScheduler.updateScheduledJob(motechEvent);
 
-        JobDataMap jobDataMap = schedulerFactoryBean.getScheduler().getJobDetail(uuidStr, MotechSchedulerServiceImpl.JOB_GROUP_NAME).getJobDataMap();
+        JobDataMap jobDataMap = schedulerFactoryBean.getScheduler().getJobDetail("testEvent-" + uuidStr, MotechSchedulerServiceImpl.JOB_GROUP_NAME).getJobDataMap();
 
         assertEquals(patientId, jobDataMap.getString(patientIdKeyName));
     }
@@ -252,10 +252,10 @@ public class MotechSchedulerIT {
 
         String newCronExpression = "0 0 10 * * ?";
 
-        motechScheduler.rescheduleJob(uuidStr, newCronExpression);
+        motechScheduler.rescheduleJob("testEvent", uuidStr, newCronExpression);
         assertEquals(scheduledJobsNum, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
 
-        CronTrigger trigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger(uuidStr, MotechSchedulerServiceImpl.JOB_GROUP_NAME);
+        CronTrigger trigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger("testEvent-" +uuidStr, MotechSchedulerServiceImpl.JOB_GROUP_NAME);
         String triggerCronExpression = trigger.getCronExpression();
 
         assertEquals(newCronExpression, triggerCronExpression);
@@ -264,12 +264,12 @@ public class MotechSchedulerIT {
 
     @Test(expected = IllegalArgumentException.class)
     public void rescheduleJobNullJobIdTest() {
-        motechScheduler.rescheduleJob(null, "");
+        motechScheduler.rescheduleJob(null, null, "");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void rescheduleJobNullCronExpressionTest() {
-        motechScheduler.rescheduleJob("", null);
+        motechScheduler.rescheduleJob("", "", null);
     }
 
     @Test(expected = MotechSchedulerException.class)
@@ -282,12 +282,12 @@ public class MotechSchedulerIT {
 
         motechScheduler.scheduleJob(cronSchedulableJob);
 
-        motechScheduler.rescheduleJob(uuidStr, "?");
+        motechScheduler.rescheduleJob("testEvent", uuidStr, "?");
     }
 
     @Test(expected = MotechSchedulerException.class)
     public void rescheduleNotExistingJobTest() {
-        motechScheduler.rescheduleJob("0", "?");
+        motechScheduler.rescheduleJob("", "0", "?");
     }
 
 
@@ -441,6 +441,6 @@ public class MotechSchedulerIT {
     }
 
 
-    
-    
+
+
 }

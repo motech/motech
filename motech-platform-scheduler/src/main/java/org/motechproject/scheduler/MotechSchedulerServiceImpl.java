@@ -171,16 +171,16 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
 
     @Override
-    public void rescheduleJob(String jobId, String cronExpression) {
+    public void rescheduleJob(String subject, String externalId, String cronExpression) {
 
-        log.info("Rescheduling the Job: " + jobId + " new cron expression: " + cronExpression);
-
-        if (jobId == null ) {
+        log.info("Rescheduling the Job: " + subject + "-" + externalId + " new cron expression: " + cronExpression);
+        if (externalId == null || subject == null ) {
             String errorMessage = "Job ID can not be null";
             log.error(errorMessage);
             throw new IllegalArgumentException(errorMessage );
         }
 
+        String jobId = subject + "-" + externalId;
         if (cronExpression == null) {
             String errorMessage = "Cron expression can not be null";
             log.error(errorMessage);
