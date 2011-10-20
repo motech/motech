@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.ivr.kookoo.domain.KookooCallDetailRecord;
 import org.motechproject.server.service.ivr.CallDetailRecord;
+import org.motechproject.server.service.ivr.CallEvent;
+import org.motechproject.server.service.ivr.IVREvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
@@ -26,7 +28,10 @@ public class AllKooKooCallDetailRecordsIT {
     @Test
     public void shouldFindCallDetailRecordByCallId() {
         CallDetailRecord callDetailRecord = CallDetailRecord.newIncomingCallRecord("phoneNumber");
-        KookooCallDetailRecord kookooCallDetailRecord = new KookooCallDetailRecord(callDetailRecord);
+        CallEvent callEvent = new CallEvent(IVREvent.GotDTMF.toString());
+        callEvent.appendData(IVREvent.GotDTMF.toString(), "1234");
+        callDetailRecord.addCallEvent(callEvent);
+        KookooCallDetailRecord kookooCallDetailRecord = new KookooCallDetailRecord(callDetailRecord, "dfdsfds");
         allKooKooCallDetailRecords.add(kookooCallDetailRecord);
         KookooCallDetailRecord result = allKooKooCallDetailRecords.get(kookooCallDetailRecord.getId());
         assertNotNull(result);

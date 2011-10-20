@@ -34,8 +34,8 @@ public class PillRegimenJobScheduler {
 
     public void unscheduleJobs(PillRegimen regimen) {
         for (Dosage dosage : regimen.getDosages()) {
-            schedulerService.unscheduleJob(dosage.getId());
-            schedulerService.unscheduleJob(dosage.getId() + ReminderEventHandler.PILL_REMINDER_REPEAT_JOB_SUFFIX);
+            schedulerService.unscheduleJob(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, dosage.getId());
+            schedulerService.unscheduleJob(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, dosage.getId() + ReminderEventHandler.PILL_REMINDER_REPEAT_JOB_SUFFIX);
         }
     }
 

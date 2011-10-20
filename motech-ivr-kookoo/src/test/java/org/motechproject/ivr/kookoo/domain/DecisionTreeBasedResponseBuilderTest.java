@@ -82,7 +82,7 @@ public class DecisionTreeBasedResponseBuilderTest {
                                                 .setPrompts(new AudioPrompt().setName("baz")))
                                 }});
         nextResponse(rootNode, false);
-        verify(ivrResponseBuilder,times(2)).withPlayAudios(Matchers.<String>any());
+        verify(ivrResponseBuilder,times(1)).withPlayAudios("a", "b");
     }
 
     @Test

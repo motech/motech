@@ -1,8 +1,11 @@
 package org.motechproject.ivr.kookoo.controller;
 
 import org.apache.log4j.Logger;
-import org.motechproject.ivr.kookoo.*;
+import org.motechproject.ivr.kookoo.KooKooIVRContext;
+import org.motechproject.ivr.kookoo.KookooIVRResponseBuilder;
+import org.motechproject.ivr.kookoo.KookooRequest;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
+import org.motechproject.server.service.ivr.IVREvent;
 import org.motechproject.server.service.ivr.IVRMessage;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,9 +39,11 @@ public abstract class SafeIVRController {
     String safeCall(KooKooIVRContext ivrContext) {
         try {
             //next line is slightly bad but better than duplicate code, need function pointers
-            KookooIVRResponseBuilder kookooIVRResponseBuilder = NEW_CALL_URL_ACTION.equalsIgnoreCase(ivrContext.ivrEvent()) ? newCall(ivrContext) : gotDTMF(ivrContext);
-            if (kookooIVRResponseBuilder.isHangUp()) closeCallRecord(ivrContext);
+            boolean isNewCall = NEW_CALL_URL_ACTION.equalsIgnoreCase(ivrContext.ivrEvent());
+            KookooIVRResponseBuilder kookooIVRResponseBuilder = isNewCall ? newCall(ivrContext) : gotDTMF(ivrContext);
             String responseXML = kookooIVRResponseBuilder.create(ivrMessage);
+            callDetailRecordsService.appendToLastCallEvent(ivrContext.callDetailRecordId(), kookooIVRResponseBuilder, responseXML);
+            if (kookooIVRResponseBuilder.isHangUp()) closeCallRecord(ivrContext);
             logger.info(String.format(" XML returned: %s", responseXML));
             return responseXML;
         } catch (Exception e) {
@@ -51,7 +56,7 @@ public abstract class SafeIVRController {
     }
 
     private void closeCallRecord(KooKooIVRContext kooKooIVRContext) {
-        callDetailRecordsService.close(kooKooIVRContext.callDetailRecordId(), kooKooIVRContext.externalId(), "Hangup");
+        callDetailRecordsService.close(kooKooIVRContext.callDetailRecordId(), kooKooIVRContext.externalId(), IVREvent.Hangup);
         kooKooIVRContext.invalidateSession();
     }
 

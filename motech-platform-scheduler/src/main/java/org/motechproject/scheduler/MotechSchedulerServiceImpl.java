@@ -79,7 +79,8 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             throw new IllegalArgumentException(errorMessage);
         }
 
-        String jobId = (String)motechEvent.getParameters().get(JOB_ID_KEY);
+        String externalId = (String) motechEvent.getParameters().get(JOB_ID_KEY);
+        String jobId = motechEvent.getSubject() + "-" + externalId;
         JobDetail jobDetail = new JobDetail(jobId, JOB_GROUP_NAME, MotechScheduledJob.class);
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
@@ -114,7 +115,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         }
 
         if (existingTrigger != null) {
-            unscheduleJob(jobId);
+            unscheduleJob( motechEvent.getSubject() , externalId);
         }
 
         scheduleJob(jobDetail, trigger);
@@ -134,7 +135,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
         }
 
         Scheduler scheduler = schedulerFactoryBean.getScheduler();
-        String jobId = (String)motechEvent.getParameters().get(JOB_ID_KEY);
+        String jobId =  motechEvent.getSubject() + "-" + (String)motechEvent.getParameters().get(JOB_ID_KEY);
         Trigger trigger;
 
         try {
@@ -281,7 +282,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             jobRepeatCount = MAX_REPEAT_COUNT;
         }
 
-        String jobId = (String)motechEvent.getParameters().get(JOB_ID_KEY);
+        String jobId =  motechEvent.getSubject() + "-" + (String)motechEvent.getParameters().get(JOB_ID_KEY) + "r";
         JobDetail jobDetail = new JobDetail(jobId, JOB_GROUP_NAME, MotechScheduledJob.class);
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
@@ -326,7 +327,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
              throw new IllegalArgumentException();
         }
 
-        String jobId = (String)motechEvent.getParameters().get(JOB_ID_KEY);
+        String jobId =  motechEvent.getSubject() + "-" + (String)motechEvent.getParameters().get(JOB_ID_KEY);
         JobDetail jobDetail = new JobDetail(jobId, JOB_GROUP_NAME, MotechScheduledJob.class);
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
@@ -337,10 +338,24 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
     }
 
     @Override
-    public void unscheduleJob(String jobId) {
+    public void unscheduleRepeatingJob(String subject, String externalId) {
 
-        log.info("Unscheduling the Job: " + jobId);
+        log.info("Unscheduling repeating the Job: " + subject + "-" + externalId);
 
+        String jobId = subject + "-" + externalId + "r";
+        unscheduleJob(jobId);
+    }
+
+    @Override
+    public void unscheduleJob(String subject, String externalId) {
+
+        log.info("Unscheduling the Job: " + subject + "-" + externalId);
+
+        String jobId = subject + "-" + externalId;
+        unscheduleJob(jobId);
+    }
+
+    private void unscheduleJob(String jobId) {
         if (jobId == null) {
             String errorMessage = "Scheduled Job ID can not be null";
             log.error(errorMessage);
@@ -354,7 +369,6 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             log.error(errorMessage, e);
             throw new MotechSchedulerException(errorMessage);
         }
-
     }
 
     @Override

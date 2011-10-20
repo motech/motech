@@ -63,6 +63,7 @@ import java.util.*;
 @ContextConfiguration(locations={"/applicationPlatformScheduler.xml"})
 public class MotechSchedulerIT {
 
+    public static final String SUBJECT = "testEvent";
     @Autowired
     private MotechSchedulerService motechScheduler;
 
@@ -406,13 +407,13 @@ public class MotechSchedulerIT {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("JobID", uuidStr);
-        MotechEvent motechEvent = new MotechEvent("testEvent", params);
+        MotechEvent motechEvent = new MotechEvent(SUBJECT, params);
         CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, "0 0 12 * * ?");
 
         motechScheduler.scheduleJob(cronSchedulableJob);
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 
-        motechScheduler.unscheduleJob(uuidStr);
+        motechScheduler.unscheduleJob(SUBJECT, uuidStr);
 
         assertEquals(scheduledJobsNum - 1, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
     }

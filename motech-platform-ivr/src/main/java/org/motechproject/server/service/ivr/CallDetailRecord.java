@@ -36,6 +36,7 @@ public class CallDetailRecord {
 
     public CallDetailRecord(Disposition disposition, String errorMessage) {
         this.errorMessage = errorMessage;
+        this.disposition = disposition;
     }
 
     public static CallDetailRecord newIncomingCallRecord(String phoneNumber) {
@@ -134,6 +135,6 @@ public class CallDetailRecord {
     }
 
     public CallEvent lastCallEvent() {
-        return callEvents.get(callEvents.size() - 1);
+        return callEvents.size() == 0 ? null : callEvents.get(callEvents.size() - 1);
     }
 }

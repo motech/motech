@@ -6,6 +6,7 @@ import org.motechproject.ivr.kookoo.KooKooIVRContext;
 import org.motechproject.ivr.kookoo.KookooRequest;
 import org.motechproject.ivr.kookoo.KookooResponseFactory;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
+import org.motechproject.server.service.ivr.IVREvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -33,7 +34,7 @@ public class StandardResponseController {
     public String hangup(KookooRequest kookooRequest, HttpServletRequest request, HttpServletResponse response) {
         try {
             KooKooIVRContext ivrContext = new KooKooIVRContext(kookooRequest, request, response);
-            kookooCallDetailRecordsService.close(ivrContext.callDetailRecordId(), ivrContext.externalId(), "Hangup");
+            kookooCallDetailRecordsService.close(ivrContext.callDetailRecordId(), ivrContext.externalId(), IVREvent.Hangup);
             ivrContext.invalidateSession();
             return KookooResponseFactory.hangUpResponseWith(ivrContext.callId()).create(null);
         } catch (Exception e) {

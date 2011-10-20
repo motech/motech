@@ -87,10 +87,12 @@ public interface MotechSchedulerService {
 
     /**
      * Unschedules a job with the given job ID
-     *
-     * @param jobId
+     *  @param subject : String representing domain operation eg. "pill-reminder", "outbox-call" or motechEvent.getSubject()
+     * @param externalId  : domain specific id as String.
      */
-    public void unscheduleJob(String jobId);
+    public void unscheduleJob(String subject, String externalId);
 
     public void unscheduleAllJobs(String jobIdPrefix);
+
+    void unscheduleRepeatingJob(String subject, String externalId);
 }

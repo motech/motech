@@ -9,9 +9,7 @@ import org.motechproject.server.service.ivr.IVRMessage;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -28,12 +26,8 @@ public class KookooIVRResponseBuilderTest {
     @Before
     public void setUp() {
         initMocks(this);
-        builder = emptyBuilder();
+        builder = new KookooIVRResponseBuilder().withSid("sid");
         Mockito.when(messages.getWav(anyString(), anyString())).thenReturn("");
-    }
-
-    private KookooIVRResponseBuilder emptyBuilder() {
-        return new KookooIVRResponseBuilder().withSid("sid");
     }
 
     @Test
@@ -43,7 +37,7 @@ public class KookooIVRResponseBuilderTest {
         String response = builder.withPlayTexts("nova").create(messages);
         assertTrue(response.contains("nova"));
 
-        builder = emptyBuilder();
+        builder = new KookooIVRResponseBuilder().withSid("sid");
         response = builder.create(messages);
         assertFalse(response.contains("<playtext>"));
     }
@@ -54,7 +48,7 @@ public class KookooIVRResponseBuilderTest {
         String response = builder.withPlayAudios("nova").create(messages);
         assertTrue(response.contains("nova"));
 
-        builder = emptyBuilder();
+        builder = new KookooIVRResponseBuilder().withSid("sid");
         response = builder.create(messages);
         assertFalse(response.contains("<playaudio>"));
     }
@@ -62,7 +56,7 @@ public class KookooIVRResponseBuilderTest {
     @Test
     public void shouldAddCollectDTMFWithCharacterLimit() {
         mockStatic(KookooResponseFactory.class);
-        String response = emptyBuilder().collectDtmfLength(4).withPlayAudios("foo").create(messages);
+        String response = new KookooIVRResponseBuilder().withSid("sid").collectDtmfLength(4).withPlayAudios("foo").create(messages);
         assertTrue(response.contains("l=\"4\""));
     }
 
@@ -95,8 +89,27 @@ public class KookooIVRResponseBuilderTest {
 
     @Test
     public void transitionsWithoutAudioPromptsShouldImplyNoUserResponse() {
-        assertEquals(false, builder.isCollectDtmf());
-        builder = emptyBuilder();
-        assertEquals(true, builder.withPlayAudios("foo").isCollectDtmf());
+        builder = new KookooIVRResponseBuilder().withSid("sid");
+        assertTrue(builder.isEmpty());
+    }
+
+    @Test
+    public void transitionsWithDtmfLengthGreaterThanZeroShouldImplyDtmfEvent() {
+        builder = new KookooIVRResponseBuilder().withSid("sid").collectDtmfLength(4);
+        assertTrue(builder.isCollectDTMF());
+        assertEquals(false, builder.isNotEmpty());
+        assertEquals(true, builder.withPlayAudios("foo").isNotEmpty());
+    }
+
+    @Test
+    public void donotCollectDTMFIfHangupIsSpecified() {
+        builder.withHangUp().withPlayAudios("foo");
+        assertEquals(false, builder.isCollectDTMF());
+    }
+
+    @Test
+    public void collectDTMFIfResponseIsNotEmpty() {
+        builder.withPlayAudios("foo");
+        assertEquals(true, builder.isNotEmpty());
     }
 }

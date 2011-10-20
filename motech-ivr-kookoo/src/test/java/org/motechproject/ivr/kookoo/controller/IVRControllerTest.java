@@ -55,6 +55,6 @@ public class IVRControllerTest {
         ivrContextForTest.callDetailRecordId(callDetailRecordId);
         ivrController.reply(ivrContextForTest);
         assertEquals(true, ivrContextForTest.sessionInvalidated());
-        verify(callDetailRecordsService).close(callDetailRecordId, externalId, IVREvent.Disconnect.toString());
+        verify(callDetailRecordsService).close(callDetailRecordId, externalId, IVREvent.Disconnect);
     }
 }
