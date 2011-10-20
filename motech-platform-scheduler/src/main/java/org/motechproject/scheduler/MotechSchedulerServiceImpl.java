@@ -52,6 +52,7 @@ import java.util.Date;
 public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
     public static final String JOB_GROUP_NAME = "default";
+    public static final String REPEAT_JOB_SUFFIX = "-repeat";
 
     final Logger log = LoggerFactory.getLogger(MotechSchedulerServiceImpl.class);
 
@@ -282,7 +283,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
             jobRepeatCount = MAX_REPEAT_COUNT;
         }
 
-        String jobId =  motechEvent.getSubject() + "-" + (String)motechEvent.getParameters().get(JOB_ID_KEY) + "r";
+        String jobId =  motechEvent.getSubject() + "-" + (String)motechEvent.getParameters().get(JOB_ID_KEY) + REPEAT_JOB_SUFFIX;
         JobDetail jobDetail = new JobDetail(jobId, JOB_GROUP_NAME, MotechScheduledJob.class);
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
@@ -342,7 +343,7 @@ public class MotechSchedulerServiceImpl implements MotechSchedulerService {
 
         log.info("Unscheduling repeating the Job: " + subject + "-" + externalId);
 
-        String jobId = subject + "-" + externalId + "r";
+        String jobId = subject + "-" + externalId + REPEAT_JOB_SUFFIX;
         unscheduleJob(jobId);
     }
 

@@ -18,7 +18,6 @@ import java.util.Date;
 
 public class ReminderEventHandler {
 
-    public static final String PILL_REMINDER_REPEAT_JOB_SUFFIX = "-repeat-job";
     @Autowired
     private OutboundEventGateway outboundEventGateway;
 
@@ -61,7 +60,7 @@ public class ReminderEventHandler {
         Date endTime = dosageTime.plusHours(scheduleDetails.getPillWindowInHours()).plusMinutes(1).toDate();
         MotechEvent repeatingReminderEvent = createNewMotechEvent(dosage, pillRegimen, motechEvent, EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER);
 
-        repeatingReminderEvent.getParameters().put(MotechSchedulerService.JOB_ID_KEY, dosage.getId() + PILL_REMINDER_REPEAT_JOB_SUFFIX);
+        repeatingReminderEvent.getParameters().put(MotechSchedulerService.JOB_ID_KEY, dosage.getId());
         RepeatingSchedulableJob retryRemindersJob = new RepeatingSchedulableJob(repeatingReminderEvent,
                 startTime, endTime, scheduleDetails.getRepeatIntervalInMinutes() * 60 * 1000);
         schedulerService.scheduleRepeatingJob(retryRemindersJob);

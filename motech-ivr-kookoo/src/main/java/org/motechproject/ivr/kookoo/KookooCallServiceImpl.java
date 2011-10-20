@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 @Service
 public class KookooCallServiceImpl implements IVRService {
@@ -24,6 +25,7 @@ public class KookooCallServiceImpl implements IVRService {
     private Properties properties;
 
     private HttpClient httpClient = new HttpClient();
+    private Logger log = Logger.getLogger(KookooCallServiceImpl.class.getName());
 
     public KookooCallServiceImpl() {
     }
@@ -49,6 +51,7 @@ public class KookooCallServiceImpl implements IVRService {
                     new NameValuePair("url", applicationUrl),
                     new NameValuePair("phone_no", callRequest.getPhone())
             });
+            log.info("Dialing " + getMethod.getPath() + " " + getMethod.getQueryString());
             httpClient.executeMethod(getMethod);
         } catch (IOException e) {
             throw new RuntimeException(e);

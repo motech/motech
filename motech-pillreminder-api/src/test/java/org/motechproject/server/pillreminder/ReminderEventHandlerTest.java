@@ -166,7 +166,7 @@ public class ReminderEventHandlerTest {
 
         assertEquals(10, captor.getValue().getStartTime().getHours());
         assertEquals(29, captor.getValue().getStartTime().getMinutes());
-        assertEquals(dosage.getId() + ReminderEventHandler.PILL_REMINDER_REPEAT_JOB_SUFFIX, captor.getValue().getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
+        assertEquals(dosage.getId(), captor.getValue().getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
     }
 
     @Test
