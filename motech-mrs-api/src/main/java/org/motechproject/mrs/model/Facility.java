@@ -1,4 +1,4 @@
-package org.motechproject.mrs.services;
+package org.motechproject.mrs.model;
 
 public class Facility {
     private String id;

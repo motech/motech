@@ -67,11 +67,11 @@ public interface MotechSchedulerService {
      * Reschedules a job with the given job ID to be fired according to the given Cron Expression
      *
      * Previous version of the configured Motech Scheduled Even that will be created when the job is fired remains us it was
-     *
-     * @param jobId
+     * @param subject
+     * @param externalId
      * @param cronExpression
      */
-    public void rescheduleJob(String jobId, String cronExpression);
+    public void rescheduleJob(String subject, String externalId, String cronExpression);
 
     /**
      * Schedules the given schedulable job. The Job ID by which the job will be referencing in the future should be provided
@@ -87,10 +87,12 @@ public interface MotechSchedulerService {
 
     /**
      * Unschedules a job with the given job ID
-     *
-     * @param jobId
+     *  @param subject : String representing domain operation eg. "pill-reminder", "outbox-call" or motechEvent.getSubject()
+     * @param externalId  : domain specific id as String.
      */
-    public void unscheduleJob(String jobId);
+    public void unscheduleJob(String subject, String externalId);
 
     public void unscheduleAllJobs(String jobIdPrefix);
+
+    void unscheduleRepeatingJob(String subject, String externalId);
 }

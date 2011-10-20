@@ -86,10 +86,10 @@ public class PillRegimenJobSchedulerTest {
         pillRegimen = new PillRegimen(externalId, dosages, new DailyScheduleDetails(15, 2));
         pillRegimen.setId(pillRegimenId);
         jobScheduler.unscheduleJobs(pillRegimen);
-        verify(schedulerService, times(1)).unscheduleJob("dosage1");
-        verify(schedulerService, times(1)).unscheduleJob("dosage1" + ReminderEventHandler.PILL_REMINDER_REPEAT_JOB_SUFFIX);
-        verify(schedulerService, times(1)).unscheduleJob("dosage2");
-        verify(schedulerService, times(1)).unscheduleJob("dosage2" + ReminderEventHandler.PILL_REMINDER_REPEAT_JOB_SUFFIX);
+        verify(schedulerService, times(1)).unscheduleJob(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, "dosage1");
+        verify(schedulerService, times(1)).unscheduleJob(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, "dosage1" + ReminderEventHandler.PILL_REMINDER_REPEAT_JOB_SUFFIX);
+        verify(schedulerService, times(1)).unscheduleJob(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, "dosage2");
+        verify(schedulerService, times(1)).unscheduleJob(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, "dosage2" + ReminderEventHandler.PILL_REMINDER_REPEAT_JOB_SUFFIX);
     }
 
     @Test
