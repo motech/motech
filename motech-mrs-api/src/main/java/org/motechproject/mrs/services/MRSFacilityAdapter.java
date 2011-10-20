@@ -1,5 +1,7 @@
 package org.motechproject.mrs.services;
 
+import org.motechproject.mrs.model.Facility;
+
 import java.util.List;
 
 public interface MRSFacilityAdapter {

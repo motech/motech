@@ -1,6 +1,6 @@
 package org.motechproject.openmrs.services;
 
-import org.motechproject.mrs.services.Facility;
+import org.motechproject.mrs.model.Facility;
 import org.motechproject.mrs.services.MRSFacilityAdapter;
 import org.openmrs.Location;
 import org.springframework.beans.factory.annotation.Autowired;

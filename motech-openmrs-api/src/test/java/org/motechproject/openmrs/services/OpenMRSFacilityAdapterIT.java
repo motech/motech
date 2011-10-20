@@ -4,7 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.mrs.services.Facility;
+import org.motechproject.mrs.model.Facility;
 import org.motechproject.mrs.services.MRSFacilityAdapter;
 import org.motechproject.openmrs.OpenMRSTestAuthenticationProvider;
 import org.motechproject.openmrs.security.OpenMRSSession;

@@ -1,7 +1,7 @@
 package org.motechproject.openmrs.model;
 
+import org.motechproject.mrs.model.Facility;
 import org.motechproject.mrs.model.Patient;
-import org.motechproject.mrs.services.Facility;
 
 import java.util.Date;
 

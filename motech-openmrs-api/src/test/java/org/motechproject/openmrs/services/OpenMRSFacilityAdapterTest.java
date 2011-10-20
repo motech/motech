@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.motechproject.mrs.services.Facility;
+import org.motechproject.mrs.model.Facility;
 import org.motechproject.mrs.services.MRSFacilityAdapter;
 import org.openmrs.Location;
 import org.openmrs.api.LocationService;
