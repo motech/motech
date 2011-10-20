@@ -21,7 +21,7 @@
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="location" value="classpath:openmrs.properties"/>
     </bean>
-    <bean class="org.motechproject.openmrs.services.FacilityServiceImpl"/>
+    <bean class="org.motechproject.openmrs.services.OpenMRSFacilityAdapter"/>
 
     <bean class="org.motechproject.openmrs.services.UserServiceImpl"/>
 

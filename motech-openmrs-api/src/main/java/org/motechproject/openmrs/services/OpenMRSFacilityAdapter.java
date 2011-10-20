@@ -1,14 +1,14 @@
 package org.motechproject.openmrs.services;
 
 import org.motechproject.mrs.services.Facility;
-import org.motechproject.mrs.services.FacilityService;
+import org.motechproject.mrs.services.MRSFacilityAdapter;
 import org.openmrs.Location;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FacilityServiceImpl implements FacilityService {
+public class OpenMRSFacilityAdapter implements MRSFacilityAdapter {
     @Autowired
     private org.openmrs.api.LocationService locationService;
 

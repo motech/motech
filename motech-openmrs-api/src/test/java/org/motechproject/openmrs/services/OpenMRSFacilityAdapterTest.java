@@ -6,7 +6,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.mrs.services.Facility;
-import org.motechproject.mrs.services.FacilityService;
+import org.motechproject.mrs.services.MRSFacilityAdapter;
 import org.openmrs.Location;
 import org.openmrs.api.LocationService;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -21,17 +21,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class FacilityServiceImplTest {
+public class OpenMRSFacilityAdapterTest {
 
     @Mock
     LocationService mockLocationService;
 
-    FacilityService facilityService = new FacilityServiceImpl();
+    MRSFacilityAdapter MRSFacilityAdapter = new OpenMRSFacilityAdapter();
 
     @Before
     public void setUp() {
         initMocks(this);
-        ReflectionTestUtils.setField(facilityService, "locationService", mockLocationService);
+        ReflectionTestUtils.setField(MRSFacilityAdapter, "locationService", mockLocationService);
     }
 
     @Test
@@ -45,7 +45,7 @@ public class FacilityServiceImplTest {
         Location location = mock(Location.class);
         when(mockLocationService.saveLocation(Matchers.<Location>any())).thenReturn(location);
 
-        facilityService.saveFacility(facility);
+        MRSFacilityAdapter.saveFacility(facility);
 
         ArgumentCaptor<Location> locationCaptor = ArgumentCaptor.forClass(Location.class);
         verify(mockLocationService).saveLocation(locationCaptor.capture());
@@ -79,7 +79,7 @@ public class FacilityServiceImplTest {
 
         List<Location> locations = Arrays.asList(this.createALocation(locationId, name, country, region, district, province));
         when(mockLocationService.getAllLocations()).thenReturn(locations);
-        List<Facility> returnedFacilities = facilityService.getFacilities();
+        List<Facility> returnedFacilities = MRSFacilityAdapter.getFacilities();
         assertEquals(Arrays.asList(new Facility(String.valueOf(locationId), name, country, region, district, province)), returnedFacilities);
     }
 
@@ -94,7 +94,7 @@ public class FacilityServiceImplTest {
 
         Location location = this.createALocation(locationId, name, country, region, district, province);
         when(mockLocationService.getLocations(name)).thenReturn(Arrays.asList(location));
-        final List<Facility> facilities = facilityService.getFacilities(name);
+        final List<Facility> facilities = MRSFacilityAdapter.getFacilities(name);
         assertEquals(Arrays.asList(new Facility(String.valueOf(locationId), name, country, region, district, province)), facilities);
     }
 
@@ -102,6 +102,6 @@ public class FacilityServiceImplTest {
     public void testGetAFacilityByNameForANonExistentFacililty() {
         String name = "name";
         when(mockLocationService.getLocation(name)).thenReturn(null);
-        assertEquals(Collections.EMPTY_LIST, facilityService.getFacilities(name));
+        assertEquals(Collections.EMPTY_LIST, MRSFacilityAdapter.getFacilities(name));
     }
 }

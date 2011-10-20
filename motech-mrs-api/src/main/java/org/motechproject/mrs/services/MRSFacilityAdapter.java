@@ -2,7 +2,7 @@ package org.motechproject.mrs.services;
 
 import java.util.List;
 
-public interface FacilityService {
+public interface MRSFacilityAdapter {
     Facility saveFacility(Facility facility);
 
     List<Facility> getFacilities();

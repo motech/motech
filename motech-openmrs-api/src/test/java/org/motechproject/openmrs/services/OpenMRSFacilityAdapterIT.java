@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.mrs.services.Facility;
-import org.motechproject.mrs.services.FacilityService;
+import org.motechproject.mrs.services.MRSFacilityAdapter;
 import org.motechproject.openmrs.OpenMRSTestAuthenticationProvider;
 import org.motechproject.openmrs.security.OpenMRSSession;
 import org.openmrs.api.LocationService;
@@ -28,12 +28,12 @@ import static org.hamcrest.Matchers.equalTo;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:applicationOpenmrsAPI.xml"})
-public class FacilityServiceImplIT {
+public class OpenMRSFacilityAdapterIT {
     @Autowired
     private GenericApplicationContext applicationContext;
 
     @Autowired
-    FacilityService facilityService;
+    MRSFacilityAdapter MRSFacilityAdapter;
 
     @Autowired
     LocationService mrsLocationService;
@@ -57,7 +57,7 @@ public class FacilityServiceImplIT {
     @Test
     public void testSaveLocation() {
         Facility facility = new Facility("my facility", "ghana", "region", "district", "kaseena");
-        final Facility savedFacility = facilityService.saveFacility(facility);
+        final Facility savedFacility = MRSFacilityAdapter.saveFacility(facility);
         authorizeAndRollback(new DirtyData() {
             public void rollback() {
                 mrsLocationService.purgeLocation(mrsLocationService.getLocation(Integer.parseInt(savedFacility.getId())));
@@ -73,11 +73,11 @@ public class FacilityServiceImplIT {
 
     @Test
     public void testGetLocations() {
-        int size = facilityService.getFacilities().size();
+        int size = MRSFacilityAdapter.getFacilities().size();
         String facilityName = "my facility";
         Facility facility = new Facility(facilityName, "ghana", "region", "district", "kaseena");
-        final Facility savedFacility = facilityService.saveFacility(facility);
-        List<Facility> facilities = facilityService.getFacilities();
+        final Facility savedFacility = MRSFacilityAdapter.saveFacility(facility);
+        List<Facility> facilities = MRSFacilityAdapter.getFacilities();
         authorizeAndRollback(new DirtyData() {
             public void rollback() {
                 mrsLocationService.purgeLocation(mrsLocationService.getLocation(Integer.parseInt(savedFacility.getId())));
@@ -94,8 +94,8 @@ public class FacilityServiceImplIT {
     public void testGetLocationsByName() {
         String facilityName = "my facility";
         Facility facility = new Facility(facilityName, "ghana", "region", "district", "kaseena");
-        final Facility savedFacility = facilityService.saveFacility(facility);
-        final List<Facility> facilities = facilityService.getFacilities(facilityName);
+        final Facility savedFacility = MRSFacilityAdapter.saveFacility(facility);
+        final List<Facility> facilities = MRSFacilityAdapter.getFacilities(facilityName);
         assertEquals(Arrays.asList(savedFacility), facilities);
 
         authorizeAndRollback(new DirtyData() {
