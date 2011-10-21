@@ -45,6 +45,7 @@ import org.motechproject.dao.MotechAuditableRepository;
 import org.motechproject.outbox.api.dao.InvalidDataException;
 import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
+import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -68,9 +69,7 @@ public class OutboundVoiceMessageDaoImpl extends
 	
 	private List<OutboundVoiceMessage> getMessages(String view, String partyId) {
 		ComplexKey startKey = ComplexKey.of(partyId, new Date());
-		char[] chars = partyId.toCharArray();
-		chars[chars.length-1]++;
-		ComplexKey endKey = ComplexKey.of(new String(chars));
+		ComplexKey endKey = ComplexKey.of(partyId, DateUtil.now().plusYears(1).toDate());
 		ViewQuery q = createQuery(view).startKey(startKey).endKey(endKey).includeDocs(true);
 		List<OutboundVoiceMessage> messages = db.queryView(q, OutboundVoiceMessage.class);
 		if(messages.size()>0) {
@@ -125,9 +124,7 @@ public class OutboundVoiceMessageDaoImpl extends
 	@Override
 	public int getPendingMessagesCount(String partyId) {
 		ComplexKey startKey = ComplexKey.of(partyId, new Date());
-		char[] chars = partyId.toCharArray();
-		chars[chars.length-1]++;
-		ComplexKey endKey = ComplexKey.of(new String(chars));
+		ComplexKey endKey = ComplexKey.of(partyId, DateUtil.now().plusYears(1).toDate());
 		ViewQuery q = createQuery("getPendingMessages").startKey(startKey).endKey(endKey);
 		return db.queryView(q).getSize();
 	}
