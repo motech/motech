@@ -17,7 +17,7 @@ public class OpenMRSUserTest {
             add(new Role("Provider"));
             add(new Role("System Developer"));
         }});
-        Collection<GrantedAuthority> authorities = new OpenMRSUser(user, "password").getAuthorities();
+        Collection<GrantedAuthority> authorities = new OpenMRSSecurityUser(user, "password").getAuthorities();
         authorities.contains(new GrantedAuthorityImpl("System Developer"));
         authorities.contains(new GrantedAuthorityImpl("Provider"));
     }

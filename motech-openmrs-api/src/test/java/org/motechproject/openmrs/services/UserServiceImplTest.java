@@ -20,13 +20,13 @@ public class UserServiceImplTest {
 
     @Test
     public void testChangeCurrentUserPassword() throws Exception {
-        new UserServiceImpl(userService).changeCurrentUserPassword("p1", "p2");
+        new OpenMRSUserAdaptor(userService).changeCurrentUserPassword("p1", "p2");
         verify(userService).changePassword("p1","p2");
     }
 
     @Test(expected = MRSException.class)
     public void testChangeCurrentUserPasswordFailed() throws Exception {
         doThrow(mock(DAOException.class)).when(userService).changePassword("p1","p2");
-        new UserServiceImpl(userService).changeCurrentUserPassword("p1", "p2");
+        new OpenMRSUserAdaptor(userService).changeCurrentUserPassword("p1", "p2");
     }
 }

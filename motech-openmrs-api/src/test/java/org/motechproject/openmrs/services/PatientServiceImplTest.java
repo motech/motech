@@ -7,7 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.mrs.model.Facility;
-import org.motechproject.mrs.services.PatientService;
+import org.motechproject.mrs.services.MRSPatientAdaptor;
 import org.motechproject.openmrs.model.OpenMRSPatient;
 import org.motechproject.openmrs.model.PatientType;
 import org.openmrs.Patient;
@@ -28,7 +28,7 @@ public class PatientServiceImplTest {
     @Mock
     org.openmrs.api.PatientService mockPatientService;
 
-    PatientService<OpenMRSPatient> openMrsPatientService = new PatientServiceImpl();
+    MRSPatientAdaptor<OpenMRSPatient> openMrsPatientService = new OpenMRSPatientAdaptor();
 
     @Before
     public void setUp() {

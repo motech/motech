@@ -1,16 +1,16 @@
 package org.motechproject.openmrs.services;
 
 import org.motechproject.mrs.services.MRSException;
-import org.motechproject.mrs.services.UserService;
+import org.motechproject.mrs.services.MRSUserAdaptor;
 import org.openmrs.api.APIException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class UserServiceImpl implements UserService {
+public class OpenMRSUserAdaptor implements MRSUserAdaptor {
 
     private org.openmrs.api.UserService userService;
 
     @Autowired
-    public UserServiceImpl(org.openmrs.api.UserService userService) {
+    public OpenMRSUserAdaptor(org.openmrs.api.UserService userService) {
         this.userService = userService;
     }
 

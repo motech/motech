@@ -9,7 +9,7 @@ public class Patient {
     private String firstName;
     private String middleName;
     private String lastName;
-    private String prefferedName;
+    private String preferredName;
     private Date dateOfBirth;
     private String gender;
     private String address;
@@ -17,18 +17,18 @@ public class Patient {
     public Patient() {
     }
 
-    public Patient(String firstName, String middleName, String lastName, String prefferedName, Date dateOfBirth, String gender, String address) {
+    public Patient(String firstName, String middleName, String lastName, String preferredName, Date dateOfBirth, String gender, String address) {
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
-        this.prefferedName = prefferedName;
+        this.preferredName = preferredName;
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.address = address;
     }
 
-    public Patient(String id, String firstName, String middleName, String lastName, String prefferedName, Date dateOfBirth, String gender, String address) {
-        this(firstName, middleName, lastName, prefferedName, dateOfBirth, gender, address);
+    public Patient(String id, String firstName, String middleName, String lastName, String preferredName, Date dateOfBirth, String gender, String address) {
+        this(firstName, middleName, lastName, preferredName, dateOfBirth, gender, address);
         this.id = id;
     }
 
@@ -48,8 +48,8 @@ public class Patient {
         return lastName;
     }
 
-    public String getPrefferedName() {
-        return prefferedName;
+    public String getPreferredName() {
+        return preferredName;
     }
 
     public Date getDateOfBirth() {
@@ -79,7 +79,7 @@ public class Patient {
         if (id != null ? !id.equals(patient.id) : patient.id != null) return false;
         if (lastName != null ? !lastName.equals(patient.lastName) : patient.lastName != null) return false;
         if (middleName != null ? !middleName.equals(patient.middleName) : patient.middleName != null) return false;
-        if (prefferedName != null ? !prefferedName.equals(patient.prefferedName) : patient.prefferedName != null)
+        if (preferredName != null ? !preferredName.equals(patient.preferredName) : patient.preferredName != null)
             return false;
 
         return true;
@@ -91,7 +91,7 @@ public class Patient {
         result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
         result = 31 * result + (middleName != null ? middleName.hashCode() : 0);
         result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
-        result = 31 * result + (prefferedName != null ? prefferedName.hashCode() : 0);
+        result = 31 * result + (preferredName != null ? preferredName.hashCode() : 0);
         result = 31 * result + (dateOfBirth != null ? dateOfBirth.hashCode() : 0);
         result = 31 * result + (gender != null ? gender.hashCode() : 0);
         result = 31 * result + (address != null ? address.hashCode() : 0);
