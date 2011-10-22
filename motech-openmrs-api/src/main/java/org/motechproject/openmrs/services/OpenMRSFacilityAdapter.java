@@ -25,11 +25,6 @@ public class OpenMRSFacilityAdapter implements MRSFacilityAdapter {
         return createFacility(savedLocation);
     }
 
-    private Facility createFacility(Location savedLocation) {
-        return new Facility(String.valueOf(savedLocation.getId()), savedLocation.getName(), savedLocation.getCountry(),
-                savedLocation.getAddress6(), savedLocation.getCountyDistrict(), savedLocation.getStateProvince());
-    }
-
     @Override
     public List<Facility> getFacilities() {
         List<Location> locations = locationService.getAllLocations();
@@ -48,5 +43,10 @@ public class OpenMRSFacilityAdapter implements MRSFacilityAdapter {
             facilities.add(createFacility(location));
         }
         return facilities;
+    }
+
+    private Facility createFacility(Location savedLocation) {
+        return new Facility(String.valueOf(savedLocation.getId()), savedLocation.getName(), savedLocation.getCountry(),
+                savedLocation.getAddress6(), savedLocation.getCountyDistrict(), savedLocation.getStateProvince());
     }
 }

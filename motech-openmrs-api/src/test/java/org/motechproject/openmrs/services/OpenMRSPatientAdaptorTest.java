@@ -23,7 +23,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class PatientServiceImplTest {
+public class OpenMRSPatientAdaptorTest {
 
     @Mock
     org.openmrs.api.PatientService mockPatientService;

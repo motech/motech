@@ -1,8 +1,5 @@
 package org.motechproject.mrs.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class User {
     private String id;
     private String firstName;
@@ -10,7 +7,7 @@ public class User {
     private String lastName;
     private String email;
     private String phoneNumber;
-    private List<UserAttribute> attributes = new ArrayList<UserAttribute>();
+    private String role;
 
     public User id(String id) {
         this.id = id;
@@ -40,5 +37,34 @@ public class User {
     public User phoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
         return this;
+    }
+
+    public User role(String role) {
+        this.role = role;
+        return this;
+    }
+
+    public String firstName() {
+        return firstName;
+    }
+
+    public String middleName() {
+        return middleName;
+    }
+
+    public String lastName() {
+        return lastName;
+    }
+
+    public String role() {
+        return role;
+    }
+
+    public String phoneNumber() {
+        return phoneNumber;
+    }
+
+    public String email() {
+        return email;
     }
 }
