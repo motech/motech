@@ -10,16 +10,18 @@ public class Password {
             'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8',
             '9', '0'};
 
+    private static final char[] PASSWORD_NUMBER_CHARS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+
     public Password(Integer length) {
         this.length = length;
     }
 
     public String create() {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < length; i++) {
-            int charIndex = (int) (Math.random() * PASSWORD_CHARS.length);
-            sb.append(PASSWORD_CHARS[charIndex]);
+        for (int i = 0; i < length - 1; i++) {
+            sb.append(PASSWORD_CHARS[((int) (Math.random() * PASSWORD_CHARS.length))]);
         }
+        sb.append(PASSWORD_NUMBER_CHARS[((int) (Math.random() * PASSWORD_NUMBER_CHARS.length))]);
         return sb.toString();
     }
 
