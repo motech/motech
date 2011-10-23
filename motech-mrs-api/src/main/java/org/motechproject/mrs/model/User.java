@@ -67,4 +67,8 @@ public class User {
     public String email() {
         return email;
     }
+
+    public String fullName() {
+        return firstName + " " + middleName + " " + lastName;
+    }
 }

@@ -1,6 +1,7 @@
 package org.motechproject.openmrs.model;
 
 public interface Constants {
+    Integer PASSWORD_LENGTH = 8;
     String PERSON_ATTRIBUTE_INSURED = "Insured";
     String PERSON_ATTRIBUTE_PHONE_NUMBER = "Phone Number";
     String PERSON_ATTRIBUTE_STAFF_TYPE = "Staff Type";
@@ -14,6 +15,5 @@ public interface Constants {
     String PERSON_ATTRIBUTE_DELIVERY_DAY = "Delivery Day";
     String PERSON_ATTRIBUTE_DELIVERY_TIME = "Delivery Time";
     String PERSON_ATTRIBUTE_EMAIL = "Email";
-
-    Integer PASSWORD_LENGTH = 8;
+    String PERSON_UNKNOWN_GENDER = "?";
 }

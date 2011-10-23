@@ -73,11 +73,12 @@ public class OpenMRSUserAdaptorTest {
 
         org.openmrs.User capturedUser = captor.getValue();
         Person person = capturedUser.getPerson();
-        assertEquals("Jack",person.getGivenName());
-        assertEquals("H",person.getMiddleName());
-        assertEquals("Daniels",person.getFamilyName());
-        assertEquals("FA",person.getAttribute(staffTypeAttribute).getValue());
-        assertEquals("012345",person.getAttribute(phoneAttribute).getValue());
-        assertEquals("jack@daniels.com",person.getAttribute(emailAttribute).getValue());
+        assertEquals("Jack", person.getGivenName());
+        assertEquals("H", person.getMiddleName());
+        assertEquals("Daniels", person.getFamilyName());
+        assertEquals("FA", person.getAttribute(staffTypeAttribute).getValue());
+        assertEquals("012345", person.getAttribute(phoneAttribute).getValue());
+        assertEquals("jack@daniels.com", person.getAttribute(emailAttribute).getValue());
+        assertEquals("?", person.getGender());
     }
 }

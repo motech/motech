@@ -40,6 +40,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
 
         PersonName personName = new PersonName(mrsUser.firstName(), mrsUser.middleName(), mrsUser.lastName());
         person.addName(personName);
+        person.setGender(Constants.PERSON_UNKNOWN_GENDER);
         addAttribute(person, Constants.PERSON_ATTRIBUTE_PHONE_NUMBER, mrsUser.phoneNumber());
         addAttribute(person, Constants.PERSON_ATTRIBUTE_STAFF_TYPE, mrsUser.role());
         addAttribute(person, Constants.PERSON_ATTRIBUTE_EMAIL, mrsUser.email());
@@ -57,6 +58,5 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         PersonAttributeType attributeType = personService.getPersonAttributeTypeByName(name);
         person.addAttribute(new PersonAttribute(attributeType, value));
     }
-
 
 }
