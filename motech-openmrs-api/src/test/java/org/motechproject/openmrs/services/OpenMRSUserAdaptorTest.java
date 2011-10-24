@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.mrs.model.User;
+import org.motechproject.mrs.model.UserAttribute;
 import org.motechproject.mrs.services.MRSException;
 import org.motechproject.openmrs.model.Constants;
 import org.openmrs.Person;
@@ -52,16 +53,20 @@ public class OpenMRSUserAdaptorTest {
         User mrsUser = new User();
         Role role = new Role();
 
-        when(userService.getRole(OpenmrsConstants.PROVIDER_ROLE)).thenReturn(role);
+        when(userService.getRole(mrsUser.securityRole())).thenReturn(role);
         PersonAttributeType phoneAttribute = mock(PersonAttributeType.class);
         PersonAttributeType staffTypeAttribute = mock(PersonAttributeType.class);
         PersonAttributeType emailAttribute = mock(PersonAttributeType.class);
 
-        when(personService.getPersonAttributeTypeByName(Constants.PERSON_ATTRIBUTE_STAFF_TYPE)).thenReturn(staffTypeAttribute);
-        when(personService.getPersonAttributeTypeByName(Constants.PERSON_ATTRIBUTE_PHONE_NUMBER)).thenReturn(phoneAttribute);
-        when(personService.getPersonAttributeTypeByName(Constants.PERSON_ATTRIBUTE_EMAIL)).thenReturn(emailAttribute);
+        when(personService.getPersonAttributeTypeByName("Staff Type")).thenReturn(staffTypeAttribute);
+        when(personService.getPersonAttributeTypeByName("Phone Number")).thenReturn(phoneAttribute);
+        when(personService.getPersonAttributeTypeByName("Email")).thenReturn(emailAttribute);
 
-        mrsUser.firstName("Jack").middleName("H").lastName("Daniels").role("FA").phoneNumber("012345").email("jack@daniels.com");
+        mrsUser.firstName("Jack").middleName("H").lastName("Daniels").securityRole("provider");
+        mrsUser.addAttribute(new UserAttribute("Staff Type","FA"));
+        mrsUser.addAttribute(new UserAttribute("Phone Number","012345"));
+        mrsUser.addAttribute(new UserAttribute("Email","jack@daniels.com"));
+
         adaptor.saveUser(mrsUser);
 
         ArgumentCaptor<org.openmrs.User> captor = ArgumentCaptor.forClass(org.openmrs.User.class);

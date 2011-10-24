@@ -1,13 +1,15 @@
 package org.motechproject.mrs.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class User {
     private String id;
     private String firstName;
     private String middleName;
     private String lastName;
-    private String email;
-    private String phoneNumber;
-    private String role;
+    private String securityRole;
+    private List<UserAttribute> attributes = new ArrayList<UserAttribute>();
 
     public User id(String id) {
         this.id = id;
@@ -29,21 +31,6 @@ public class User {
         return this;
     }
 
-    public User email(String email) {
-        this.email = email;
-        return this;
-    }
-
-    public User phoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-        return this;
-    }
-
-    public User role(String role) {
-        this.role = role;
-        return this;
-    }
-
     public String firstName() {
         return firstName;
     }
@@ -56,19 +43,23 @@ public class User {
         return lastName;
     }
 
-    public String role() {
-        return role;
-    }
-
-    public String phoneNumber() {
-        return phoneNumber;
-    }
-
-    public String email() {
-        return email;
-    }
-
     public String fullName() {
         return firstName + " " + middleName + " " + lastName;
+    }
+
+    public List<UserAttribute> attributes() {
+        return attributes;
+    }
+
+    public void addAttribute(UserAttribute userAttribute) {
+        attributes.add(userAttribute);
+    }
+
+    public String securityRole() {
+        return securityRole;
+    }
+
+    public void securityRole(String securityRole) {
+        this.securityRole = securityRole;
     }
 }

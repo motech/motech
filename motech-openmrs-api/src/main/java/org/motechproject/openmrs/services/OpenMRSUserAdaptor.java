@@ -1,6 +1,7 @@
 package org.motechproject.openmrs.services;
 
 import org.motechproject.mrs.model.User;
+import org.motechproject.mrs.model.UserAttribute;
 import org.motechproject.mrs.services.MRSException;
 import org.motechproject.mrs.services.MRSUserAdaptor;
 import org.motechproject.openmrs.model.Constants;
@@ -9,7 +10,6 @@ import org.openmrs.*;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
-import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.UUID;
@@ -41,22 +41,18 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         PersonName personName = new PersonName(mrsUser.firstName(), mrsUser.middleName(), mrsUser.lastName());
         person.addName(personName);
         person.setGender(Constants.PERSON_UNKNOWN_GENDER);
-        addAttribute(person, Constants.PERSON_ATTRIBUTE_PHONE_NUMBER, mrsUser.phoneNumber());
-        addAttribute(person, Constants.PERSON_ATTRIBUTE_STAFF_TYPE, mrsUser.role());
-        addAttribute(person, Constants.PERSON_ATTRIBUTE_EMAIL, mrsUser.email());
 
-        Role role = userService.getRole(OpenmrsConstants.PROVIDER_ROLE);
+        for (UserAttribute attribute : mrsUser.attributes()) {
+            PersonAttributeType attributeType = personService.getPersonAttributeTypeByName(attribute.name());
+            person.addAttribute(new PersonAttribute(attributeType, attribute.value()));
+        }
+        Role role = userService.getRole(mrsUser.securityRole());
         user.setSystemId(UUID.randomUUID().toString());
         user.setPerson(person);
         user.addRole(role);
 
         userService.saveUser(user, new Password(Constants.PASSWORD_LENGTH).create());
         return user.getSystemId();
-    }
-
-    private void addAttribute(Person person, String name, String value) {
-        PersonAttributeType attributeType = personService.getPersonAttributeTypeByName(name);
-        person.addAttribute(new PersonAttribute(attributeType, value));
     }
 
 }
