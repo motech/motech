@@ -62,4 +62,8 @@ public class User {
     public void securityRole(String securityRole) {
         this.securityRole = securityRole;
     }
+
+    public String id() {
+        return id;
+    }
 }
