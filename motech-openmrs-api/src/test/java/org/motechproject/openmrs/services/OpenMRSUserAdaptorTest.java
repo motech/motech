@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.motechproject.mrs.exception.UserAlreadyExistsException;
 import org.motechproject.mrs.model.User;
 import org.motechproject.mrs.model.UserAttribute;
 import org.motechproject.mrs.services.MRSException;
@@ -49,7 +50,7 @@ public class OpenMRSUserAdaptorTest {
     }
 
     @Test
-    public void shouldSaveANewUser() {
+    public void shouldSaveANewUser() throws UserAlreadyExistsException {
         User mrsUser = new User();
         Role role = new Role();
 
