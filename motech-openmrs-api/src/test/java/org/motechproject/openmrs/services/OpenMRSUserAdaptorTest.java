@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.motechproject.mrs.exception.UserAlreadyExistsException;
 import org.motechproject.mrs.model.User;
 import org.motechproject.mrs.model.UserAttribute;
 import org.motechproject.mrs.services.MRSException;
@@ -49,7 +50,7 @@ public class OpenMRSUserAdaptorTest {
     }
 
     @Test
-    public void shouldSaveANewUser() {
+    public void shouldSaveANewUser() throws UserAlreadyExistsException {
         User mrsUser = new User();
         Role role = new Role();
 
@@ -63,16 +64,16 @@ public class OpenMRSUserAdaptorTest {
         when(personService.getPersonAttributeTypeByName("Email")).thenReturn(emailAttribute);
 
         mrsUser.firstName("Jack").middleName("H").lastName("Daniels").securityRole("provider");
-        mrsUser.addAttribute(new UserAttribute("Staff Type","FA"));
-        mrsUser.addAttribute(new UserAttribute("Phone Number","012345"));
-        mrsUser.addAttribute(new UserAttribute("Email","jack@daniels.com"));
+        mrsUser.addAttribute(new UserAttribute("Staff Type", "FA"));
+        mrsUser.addAttribute(new UserAttribute("Phone Number", "012345"));
+        mrsUser.addAttribute(new UserAttribute("Email", "jack@daniels.com"));
 
         adaptor.saveUser(mrsUser);
 
         ArgumentCaptor<org.openmrs.User> captor = ArgumentCaptor.forClass(org.openmrs.User.class);
         ArgumentCaptor<String> passwordCaptor = ArgumentCaptor.forClass(String.class);
         verify(userService).saveUser(captor.capture(), passwordCaptor.capture());
-
+        verify(userService).generateSystemId();
         String capturedPassword = passwordCaptor.getValue();
         assertEquals(8, capturedPassword.length());
 

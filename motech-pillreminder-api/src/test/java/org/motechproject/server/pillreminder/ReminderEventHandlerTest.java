@@ -28,7 +28,6 @@ import java.util.HashMap;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -123,6 +122,30 @@ public class ReminderEventHandlerTest {
 
         assertNotNull(event.getValue().getParameters());
         assertEquals(timesToBeSent, event.getValue().getParameters().get(EventKeys.PILLREMINDER_TOTAL_TIMES_TO_SEND));
+    }
+
+    @Test
+    public void shouldRaiseEventWithInformationAboutTheRetryIntervalTime() {
+        int pillWindow = 0;
+        String externalId = "externalId";
+        String dosageId = "dosageId";
+        ArgumentCaptor<MotechEvent> event = ArgumentCaptor.forClass(MotechEvent.class);
+        int retryInterval = 4;
+
+        Dosage dosage = buildDosageNotYetTaken(dosageId);
+        PillRegimen pillRegimen = buildPillRegimen(externalId, pillWindow, dosage, retryInterval);
+
+        when(allPillRegimens.findByExternalId(externalId)).thenReturn(pillRegimen);
+
+        MotechEvent motechEvent = buildMotechEvent(externalId, dosageId);
+        pillReminderEventHandler.handleEvent(motechEvent);
+
+        verify(allPillRegimens, atLeastOnce()).findByExternalId(externalId);
+        verify(pillRegimenTimeUtils, atLeastOnce()).timesPillRemainderWillBeSent(pillWindow, retryInterval);
+        verify(outboundEventGateway, times(1)).sendEventMessage(event.capture());
+
+        assertNotNull(event.getValue().getParameters());
+        assertEquals(retryInterval, event.getValue().getParameters().get(EventKeys.PILLREMINDER_RETRY_INTERVAL));
     }
 
     @Test
