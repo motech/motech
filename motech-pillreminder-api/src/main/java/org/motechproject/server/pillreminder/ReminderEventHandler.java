@@ -15,6 +15,7 @@ import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
+import java.util.Map;
 
 public class ReminderEventHandler {
 
@@ -75,13 +76,15 @@ public class ReminderEventHandler {
 
     private MotechEvent createNewMotechEvent(Dosage dosage, PillRegimen pillRegimen, MotechEvent eventRaisedByScheduler, String subject) {
         MotechEvent motechEvent = new MotechEvent(subject);
-        motechEvent.getParameters().putAll(eventRaisedByScheduler.getParameters());
+        Map<String,Object> eventParams = motechEvent.getParameters();
         DailyScheduleDetails scheduleDetails = pillRegimen.getScheduleDetails();
         int pillWindow = scheduleDetails.getPillWindowInHours();
         int retryInterval = scheduleDetails.getRepeatIntervalInMinutes();
 
-        motechEvent.getParameters().put(EventKeys.PILLREMINDER_TIMES_SENT, pillReminderTimeUtils.timesPillRemindersSent(dosage, pillWindow, retryInterval));
-        motechEvent.getParameters().put(EventKeys.PILLREMINDER_TOTAL_TIMES_TO_SEND, pillReminderTimeUtils.timesPillRemainderWillBeSent(pillWindow, retryInterval));
+        eventParams.putAll(eventRaisedByScheduler.getParameters());
+        eventParams.put(EventKeys.PILLREMINDER_TIMES_SENT, pillReminderTimeUtils.timesPillRemindersSent(dosage, pillWindow, retryInterval));
+        eventParams.put(EventKeys.PILLREMINDER_TOTAL_TIMES_TO_SEND, pillReminderTimeUtils.timesPillRemainderWillBeSent(pillWindow, retryInterval));
+        eventParams.put(EventKeys.PILLREMINDER_RETRY_INTERVAL, retryInterval);
         return motechEvent;
     }
 
