@@ -12,13 +12,15 @@ import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
 import org.motechproject.server.pillreminder.util.PillReminderTimeUtils;
 import org.motechproject.util.DateUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
 import java.util.Map;
 
 public class ReminderEventHandler {
-
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private OutboundEventGateway outboundEventGateway;
 
@@ -44,13 +46,17 @@ public class ReminderEventHandler {
 
     @MotechListener(subjects = {EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER})
     public void handleEvent(MotechEvent motechEvent) {
-        PillRegimen pillRegimen = getPillRegimen(motechEvent);
-        Dosage dosage = getDosage(pillRegimen, motechEvent);
+        try {
+            PillRegimen pillRegimen = getPillRegimen(motechEvent);
+            Dosage dosage = getDosage(pillRegimen, motechEvent);
 
-        if (!dosage.isTodaysDosageResponseCaptured()) {
-            outboundEventGateway.sendEventMessage(createNewMotechEvent(dosage, pillRegimen, motechEvent, EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT));
-            if (isFirstReminder(dosage, pillRegimen))
-                scheduleRepeatReminders(motechEvent, pillRegimen, dosage);
+            if (!dosage.isTodaysDosageResponseCaptured()) {
+                outboundEventGateway.sendEventMessage(createNewMotechEvent(dosage, pillRegimen, motechEvent, EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT));
+                if (isFirstReminder(dosage, pillRegimen))
+                    scheduleRepeatReminders(motechEvent, pillRegimen, dosage);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to handle PillReminder, it would not be retried", e);
         }
     }
 

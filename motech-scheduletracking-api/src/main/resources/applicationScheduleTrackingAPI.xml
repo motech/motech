@@ -7,12 +7,12 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd"
        xmlns:util="http://www.springframework.org/schema/util">
 
+    <import resource="classpath:applicationPlatformScheduler.xml"/>
+    <import resource="classpath:applicationPlatformCommon.xml"/>
     <util:properties id="scheduletracking" location="classpath:/scheduletracking.properties"/>
 
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.scheduletracking.api"/>
-
-    <import resource="classpath:applicationPlatformScheduler.xml"/>
 
     <bean id="scheduleTrackingDbConnector" class="org.ektorp.impl.StdCouchDbConnector">
         <constructor-arg value="motech-scheduletracking"/>

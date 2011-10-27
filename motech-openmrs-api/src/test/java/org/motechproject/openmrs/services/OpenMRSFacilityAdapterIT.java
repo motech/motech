@@ -27,7 +27,7 @@ import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.Matchers.equalTo;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:applicationOpenmrsAPI.xml"})
+@ContextConfiguration(locations = {"classpath:applicationOpenmrsAPI.xml"})
 public class OpenMRSFacilityAdapterIT {
     @Autowired
     private GenericApplicationContext applicationContext;

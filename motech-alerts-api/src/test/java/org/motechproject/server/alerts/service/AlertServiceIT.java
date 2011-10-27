@@ -1,6 +1,7 @@
 package org.motechproject.server.alerts.service;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.server.alerts.dao.AllAlerts;
@@ -24,6 +25,14 @@ public class AlertServiceIT {
     private AlertServiceImpl alertService;
 
     private Alert alert;
+
+    @Before
+    public void setUp() {
+        List<Alert> list = allAlerts.listAlerts(null, null, null, null, 100);
+        for (Alert alert : list) {
+            allAlerts.remove(alert);
+        }
+    }
 
     @After
     public void tearDown() {

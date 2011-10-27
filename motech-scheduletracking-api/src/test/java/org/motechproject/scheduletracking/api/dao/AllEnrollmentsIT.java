@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.scheduletracking.api.domain.enrollment.Enrollment;
+import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -18,7 +19,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:applicationScheduleTrackingAPI.xml", "classpath*:applicationPlatformScheduler.xml"})
+@ContextConfiguration(locations = {"classpath:testApplicationContext.xml"})
 public class AllEnrollmentsIT {
     @Autowired
     private AllEnrollments allEnrollments;
@@ -26,7 +27,7 @@ public class AllEnrollmentsIT {
 
     @Before
     public void setUp() {
-        enrollment = new Enrollment("1324324", LocalDate.now(), "Schedule Name", "First Milestone");
+        enrollment = new Enrollment("1324324", DateUtil.today(), "Schedule Name", "First Milestone");
         allEnrollments.add(enrollment);
     }
 

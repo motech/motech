@@ -1,5 +1,6 @@
 package org.motechproject.server.alerts.dao;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -28,12 +29,16 @@ public class AllAlertsIT {
 	private Alert alert2 = new Alert();
 	private Alert alert3 = new Alert();
 
-    private static int MAX_RECORDS = 10;
+    private static int MAX_RECORDS = 100;
     private final DateTime alert1DateTime = DateUtil.newDateTime(DateUtil.newDate(2011, 9, 26), 15, 33, 20);
 
     @Before
 	public void setUp() {
-        alert1.setId("1");
+        List<Alert> list = allAlerts.listAlerts(null, null, null, null, MAX_RECORDS);
+        for (Alert alert : list) {
+            allAlerts.remove(alert);
+        }
+
         alert1.setName("Test Alert 1");
         alert1.setDescription("Test Alert1 Description");
         alert1.setDateTime(alert1DateTime);
@@ -42,7 +47,6 @@ public class AllAlertsIT {
 		alert1.setStatus(AlertStatus.NEW);
 		alert1.setAlertType(AlertType.HIGH);
 
-        alert2.setId("2");
         alert2.setName("Test Alert 2");
         alert2.setDescription("Test Alert2 Description");
         alert2.setDateTime(new DateTime());
@@ -51,7 +55,6 @@ public class AllAlertsIT {
 		alert2.setStatus(AlertStatus.CLOSED);
 		alert2.setAlertType(AlertType.CRITICAL);
         
-        alert3.setId("3");
 		alert3.setName("Test Alert 3");
 		alert3.setDescription("Test alert3 Description");
 		alert3.setDateTime(new DateTime());
@@ -60,15 +63,15 @@ public class AllAlertsIT {
 		alert3.setStatus(AlertStatus.NEW);
 		alert3.setAlertType(AlertType.CRITICAL);
 
-		allAlerts.add(alert1);
+        allAlerts.add(alert1);
         allAlerts.add(alert2);
-	}
+    }
 	
 	@After
 	public void tearDown() {
-		if (allAlerts.contains("1")) allAlerts.remove(alert1);
-		if (allAlerts.contains("2")) allAlerts.remove(alert2);
-        if (allAlerts.contains("3")) allAlerts.remove(alert3);
+		if (allAlerts.contains(alert1.getId())) allAlerts.remove(alert1);
+		if (allAlerts.contains(alert2.getId())) allAlerts.remove(alert2);
+        if (StringUtils.isNotEmpty(alert3.getId()) && allAlerts.contains(alert3.getId())) allAlerts.remove(alert3);
 	}
 
 	@Test
@@ -87,28 +90,28 @@ public class AllAlertsIT {
     public void shouldFilterAlertsBasedOnExternalId() {
         List<Alert> listAlerts = allAlerts.listAlerts("222", null, null, null, MAX_RECORDS);
         assertEquals(1, listAlerts.size());
-        assertEquals("2", listAlerts.get(0).getId());
+        assertEquals(alert2.getId(), listAlerts.get(0).getId());
     }
 
     @Test
     public void shouldFilterAlertsBasedOnAlertType() {
         List<Alert> listAlerts = allAlerts.listAlerts(null, AlertType.CRITICAL, null, null, MAX_RECORDS);
         assertEquals(1, listAlerts.size());
-        assertEquals("2", listAlerts.get(0).getId());
+        assertEquals(alert2.getId(), listAlerts.get(0).getId());
     }
 
     @Test
     public void shouldFilterAlertsBasedOnAlertStatus() {
         List<Alert> listAlerts = allAlerts.listAlerts(null, null, AlertStatus.NEW, null, MAX_RECORDS);
         assertEquals(1, listAlerts.size());
-        assertEquals("1", listAlerts.get(0).getId());
+        assertEquals(alert1.getId(), listAlerts.get(0).getId());
     }
 
     @Test
     public void shouldFilterAlertsBasedOnAlertPriority() {
         List<Alert> listAlerts = allAlerts.listAlerts(null, null, null, 1, MAX_RECORDS);
         assertEquals(1, listAlerts.size());
-        assertEquals("2", listAlerts.get(0).getId());
+        assertEquals(alert2.getId(), listAlerts.get(0).getId());
     }
 
     @Test
@@ -117,7 +120,7 @@ public class AllAlertsIT {
         
         List<Alert> listAlerts = allAlerts.listAlerts("111", AlertType.CRITICAL, null, null, MAX_RECORDS);
         assertEquals(1, listAlerts.size());
-        assertEquals("3", listAlerts.get(0).getId());
+        assertEquals(alert3.getId(), listAlerts.get(0).getId());
     }
 
     @Test
@@ -132,8 +135,8 @@ public class AllAlertsIT {
     public void shouldSortAlertsWhenNoFiltersAreSprecified() {
         List<Alert> listAlerts = allAlerts.listAlerts(null, null, null, null, MAX_RECORDS);
         assertEquals(2, listAlerts.size());
-        assertEquals("2", listAlerts.get(0).getId());
-        assertEquals("1", listAlerts.get(1).getId());
+        assertEquals(alert2.getId(), listAlerts.get(0).getId());
+        assertEquals(alert1.getId(), listAlerts.get(1).getId());
     }
 
     @Test
@@ -142,8 +145,8 @@ public class AllAlertsIT {
         
         List<Alert> listAlerts = allAlerts.listAlerts("111", null, AlertStatus.NEW, null, MAX_RECORDS);
         assertEquals(2, listAlerts.size());
-        assertEquals("3", listAlerts.get(0).getId());
-        assertEquals("1", listAlerts.get(1).getId());
+        assertEquals(alert3.getId(), listAlerts.get(0).getId());
+        assertEquals(alert1.getId(), listAlerts.get(1).getId());
     }
 
     @Test

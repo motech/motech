@@ -52,9 +52,6 @@ import java.util.Map;
 
 import static org.mockito.Mockito.*;
 
-/**
- *
- */
 public class ReminderCRUDEventHandlerTest
 {
 

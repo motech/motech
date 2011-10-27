@@ -6,8 +6,9 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
     <context:annotation-config/>
-    <context:component-scan base-package="org.motechproject.server.pillreminder" />
+    <context:component-scan base-package="org.motechproject.server.pillreminder"/>
 
+    <import resource="classpath:applicationPlatformCommon.xml"/>
     <import resource="classpath:applicationPlatformScheduler.xml"/>
 
     <bean id="pillReminderDbConnector" class="org.ektorp.impl.StdCouchDbConnector">
@@ -15,15 +16,14 @@
         <constructor-arg ref="couchDbInstance"/>
     </bean>
 
-    <bean id="allPillRegimens" class="org.motechproject.server.pillreminder.dao.AllPillRegimens" >
+    <bean id="allPillRegimens" class="org.motechproject.server.pillreminder.dao.AllPillRegimens">
         <constructor-arg ref="pillReminderDbConnector"/>
     </bean>
 
     <bean id="pillReminderService" class="org.motechproject.server.pillreminder.service.PillReminderServiceImpl">
-        <constructor-arg ref ="allPillRegimens"/>
+        <constructor-arg ref="allPillRegimens"/>
         <constructor-arg ref="schedulerService"/>
     </bean>
 
-     <bean id="pillReminderEventHandler" class="org.motechproject.server.pillreminder.ReminderEventHandler"/>
-
+    <bean id="pillReminderEventHandler" class="org.motechproject.server.pillreminder.ReminderEventHandler"/>
 </beans>

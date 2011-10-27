@@ -1,40 +1,6 @@
-/**
- * MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
- *
- * Copyright (c) 2011 Grameen Foundation USA.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * 3. Neither the name of Grameen Foundation USA, nor its respective contributors
- * may be used to endorse or promote products derived from this software without
- * specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY GRAMEEN FOUNDATION USA AND ITS CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL GRAMEEN FOUNDATION USA OR ITS CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
- * OF SUCH DAMAGE.
- */
 package org.motechproject.scheduler;
 
-import static org.junit.Assert.assertEquals;
-
 import org.apache.commons.lang.time.DateUtils;
-import org.drools.time.impl.CronExpression;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -46,7 +12,6 @@ import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.server.event.EventListenerRegistry;
 import org.motechproject.server.event.annotations.MotechListenerEventProxy;
-import org.motechproject.util.DateUtil;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -59,8 +24,10 @@ import org.springframework.util.ReflectionUtils;
 import java.lang.reflect.Method;
 import java.util.*;
 
+import static org.junit.Assert.assertEquals;
+
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/applicationPlatformScheduler.xml"})
+@ContextConfiguration(locations = {"/testApplicationContext.xml"})
 public class MotechSchedulerIT {
 
     public static final String SUBJECT = "testEvent";
@@ -104,7 +71,7 @@ public class MotechSchedulerIT {
 
     @Test
     @Ignore
-    public void scheduleCronJobTest(){
+    public void scheduleCronJobTest() {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("JobID", UUID.randomUUID().toString());
@@ -114,7 +81,7 @@ public class MotechSchedulerIT {
         Method handlerMethod = ReflectionUtils.findMethod(MotechSchedulerIT.class, "handleEvent", MotechEvent.class);
         eventListenerRegistry.registerListener(new MotechListenerEventProxy("handleEvent", this, handlerMethod), testSubject);
 
-        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent,  String.format("%d %d %d * * ?", scheduledSecond, scheduledMinute, scheduledHour));
+        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, String.format("%d %d %d * * ?", scheduledSecond, scheduledMinute, scheduledHour));
         motechScheduler.scheduleJob(cronSchedulableJob);
 
         //Thread.sleep(90000);   // seems to pass without sleep
@@ -127,6 +94,7 @@ public class MotechSchedulerIT {
         System.out.println(motechEvent.getSubject());
         executed = true;
     }
+
     @Test
     public void scheduleTest() throws Exception {
 
@@ -255,7 +223,7 @@ public class MotechSchedulerIT {
         motechScheduler.rescheduleJob("testEvent", uuidStr, newCronExpression);
         assertEquals(scheduledJobsNum, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
 
-        CronTrigger trigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger("testEvent-" +uuidStr, MotechSchedulerServiceImpl.JOB_GROUP_NAME);
+        CronTrigger trigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger("testEvent-" + uuidStr, MotechSchedulerServiceImpl.JOB_GROUP_NAME);
         String triggerCronExpression = trigger.getCronExpression();
 
         assertEquals(newCronExpression, triggerCronExpression);
@@ -439,8 +407,6 @@ public class MotechSchedulerIT {
         MotechEvent motechEvent = new MotechEvent("testEvent", params);
         return new CronSchedulableJob(motechEvent, "0 0 12 * * ?");
     }
-
-
 
 
 }

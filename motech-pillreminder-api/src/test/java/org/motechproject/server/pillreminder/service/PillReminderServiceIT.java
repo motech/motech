@@ -22,9 +22,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/applicationPillReminderAPI.xml"})
+@ContextConfiguration(locations = {"/testApplicationContext.xml"})
 public class PillReminderServiceIT {
-
     @Autowired
     private org.motechproject.server.pillreminder.service.PillReminderService pillReminderService;
     @Autowired
@@ -38,8 +37,8 @@ public class PillReminderServiceIT {
 
     @Before
     public void setUp() {
-        startDate = DateUtil.newDate(2011, 01, 20);
-        endDate = DateUtil.newDate(2012, 01, 20);
+        startDate = DateUtil.newDate(2011, 1, 20);
+        endDate = DateUtil.newDate(2012, 1, 20);
     }
 
     @Test

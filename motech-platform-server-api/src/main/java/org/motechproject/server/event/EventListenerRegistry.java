@@ -53,9 +53,12 @@ public class EventListenerRegistry {
     @Autowired
     private MetricsAgent metricsAgent;
 
-    // Todo This needs to be moved out.  To get this bean to autowire it's dependency I need to load it in the
-    // servers spring context.  Lame
-    private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
+    public EventListenerRegistry() {
+    }
+
+    public EventListenerRegistry(MetricsAgent metricsAgent) {
+        this.metricsAgent = metricsAgent;
+    }
 
     /**
      * Register an event listener to be notified when events of a given type are received via the Server JMS Event Queue

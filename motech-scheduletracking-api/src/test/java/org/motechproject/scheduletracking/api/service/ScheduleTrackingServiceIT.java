@@ -21,7 +21,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:applicationScheduleTrackingAPI.xml", "classpath*:applicationPlatformScheduler.xml"})
+@ContextConfiguration(locations = {"classpath:testApplicationContext.xml"})
 public class ScheduleTrackingServiceIT {
     @Autowired
     private ScheduleTrackingService scheduleTrackingService;

@@ -31,6 +31,7 @@
  */
 package org.motechproject.server.event.annotations;
 
+import org.motechproject.MotechException;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.EventListener;
 import org.slf4j.LoggerFactory;
@@ -75,6 +76,7 @@ public abstract class MotechListenerAbstractProxy implements EventListener {
 			callHandler(event);
 		} catch (Exception e) {
 			LoggerFactory.getLogger(bean.getClass()).error(e.toString());
+            throw new MotechException("Failed to handle event", e);
 		}
 	}
 	/* (non-Javadoc)

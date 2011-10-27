@@ -33,9 +33,11 @@ package org.motechproject.server.event;
 
 import junitx.util.PrivateAccessor;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
+import org.motechproject.metrics.impl.MultipleMetricsAgentImpl;
 import org.motechproject.model.MotechEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -49,24 +51,17 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-////specifies the Spring configuration to load for this test fixture
-@ContextConfiguration(locations={"/applicationPlatformServerAPI.xml"})
-public class EventListenerRegistryIT {
-	
-	@Autowired
+public class EventListenerRegistryTest {
 	private EventListenerRegistry registry;
 
-    @After
-    public void tearDown() throws NoSuchFieldException
-    {
-        PrivateAccessor.setField(registry, "listenerTree", new EventListenerTree());
+    @Before
+    public void setUp() {
+        registry = new EventListenerRegistry(new MultipleMetricsAgentImpl());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testNullEventListenerRegistration() {
         EventListener sel = null;
-
         registry.registerListener(sel, "org.motechproject.server.someevent");
     }
 

@@ -52,8 +52,7 @@ import java.util.Map;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/integrationCommon.xml",
-                                 "/outboundScheduleJobChannelAdapter.xml"})
+@ContextConfiguration(locations={"/testApplicationContext.xml"})
 public class SchedulerGatewayIT {
 
     @Autowired

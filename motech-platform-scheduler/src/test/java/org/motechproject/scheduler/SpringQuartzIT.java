@@ -31,15 +31,12 @@
  */
 package org.motechproject.scheduler;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
-import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
@@ -50,23 +47,18 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- *
- */
 @RunWith(SpringJUnit4ClassRunner.class)
-// specifies the Spring configuration to load for this test fixture
-@ContextConfiguration(locations={"/applicationPlatformScheduler.xml"})
-
+@ContextConfiguration(locations = {"/testApplicationContext.xml"})
 public class SpringQuartzIT {
 
     @Autowired
     private SchedulerFactoryBean schedulerFactoryBean;
 
-     String groupName = "group1";
+    String groupName = "group1";
 
 
     @Test
-    public void scheduleUnscheduleTest() throws Exception{
+    public void scheduleUnscheduleTest() throws Exception {
 
         String uuidStr = UUID.randomUUID().toString();
 
@@ -74,7 +66,7 @@ public class SpringQuartzIT {
         job.getJobDataMap().put("eventType", "PillReminder");
         job.getJobDataMap().put("patientId", "001");
 
-        Trigger trigger = new SimpleTrigger(uuidStr, groupName, new Date(new Date().getTime()+3000));
+        Trigger trigger = new SimpleTrigger(uuidStr, groupName, new Date(new Date().getTime() + 3000));
 
         Scheduler scheduler = schedulerFactoryBean.getScheduler();
 
