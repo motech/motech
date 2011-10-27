@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.HashMap;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
@@ -35,24 +36,30 @@ public class AlertServiceIT {
     }
 
     @After
-    public void tearDown() {
+    public void tearDown
+            () {
         if (alert != null) allAlerts.remove(alert);
     }
 
     @Test
     public void shouldRegisterSuccessfully() {
-        alert = new Alert("111", AlertType.CRITICAL, AlertStatus.NEW, 1);
+        HashMap<String, String> alertData = new HashMap<String, String>();
+        alertData.put("Status", "Open");
+        alertData.put("Note", "This is an Alert!");
+        alert = new Alert("111", AlertType.CRITICAL, AlertStatus.NEW, 1, alertData);
         alertService.createAlert(alert);
 
         List<Alert> all = allAlerts.getAll();
         assertEquals(1, all.size());
         alert = all.get(0);
         assertEquals("111", alert.getExternalId());
+        assertEquals("Open", alert.getData().get("Status"));
+        assertEquals("This is an Alert!", alert.getData().get("Note"));
     }
 
     @Test
     public void shouldChangeStatus() {
-        alert = new Alert("111", AlertType.CRITICAL, AlertStatus.NEW, 1);
+        alert = new Alert("111", AlertType.CRITICAL, AlertStatus.NEW, 1, new HashMap<String, String>());
         alertService.createAlert(alert);
         alert = allAlerts.getAll().get(0);
         assertEquals(AlertStatus.NEW, alert.getStatus());
