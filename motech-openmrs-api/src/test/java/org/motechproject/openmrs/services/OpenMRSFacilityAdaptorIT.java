@@ -30,9 +30,6 @@ import static org.hamcrest.Matchers.equalTo;
 @ContextConfiguration(locations = {"classpath:applicationOpenmrsAPI.xml"})
 public class OpenMRSFacilityAdaptorIT {
     @Autowired
-    private GenericApplicationContext applicationContext;
-
-    @Autowired
     MRSFacilityAdaptor MRSFacilityAdaptor;
 
     @Autowired

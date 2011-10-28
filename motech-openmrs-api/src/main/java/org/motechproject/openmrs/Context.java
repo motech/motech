@@ -2,7 +2,7 @@ package org.motechproject.openmrs;
 
 
 import org.apache.log4j.Logger;
-import org.openmrs.api.LocationService;
+import org.openmrs.api.*;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.InputRequiredException;
@@ -43,23 +43,28 @@ public class Context {
         logger.warn(format("loaded %d modules", ModuleFactory.getLoadedModules().size()));
     }
 
-    public org.openmrs.api.PatientService getPatientService() {
+    public PatientService getPatientService() {
         return org.openmrs.api.context.Context.getPatientService();
     }
 
-    public org.openmrs.api.PersonService getPersonService() {
+    public PersonService getPersonService() {
         return org.openmrs.api.context.Context.getPersonService();
     }
 
-    public org.openmrs.api.UserService getUserService() {
+    public UserService getUserService() {
         return org.openmrs.api.context.Context.getUserService();
     }
 
-    public org.openmrs.api.AdministrationService getAdministrationService() {
+    public AdministrationService getAdministrationService() {
         return org.openmrs.api.context.Context.getAdministrationService();
     }
 
     public LocationService getLocationService() {
         return org.openmrs.api.context.Context.getLocationService();
     }
+
+    public OpenmrsService getService(Class clazz) {
+        return (OpenmrsService) org.openmrs.api.context.Context.getService(clazz);
+    }
+
 }
