@@ -7,6 +7,12 @@
     <packaging>pom</packaging>
     <name>MOTECH</name>
 
+    <properties>
+        <db.server>localhost</db.server>
+        <db.port>5984</db.port>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <distributionManagement>
         <site>
             <id>www.motechproject.org</id>
@@ -68,10 +74,6 @@
             <version>2.2</version>
         </dependency>
     </dependencies>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
     <modules>
         <module>motech-platform-common</module>
