@@ -1,8 +1,9 @@
 package org.motechproject.util;
 
-import org.joda.time.*;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.motechproject.MotechException;
-import org.motechproject.model.DayOfWeek;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,8 +13,6 @@ import java.util.Properties;
 import java.util.TimeZone;
 
 public class DateUtil {
-    private static Boolean testMode = null;
-    private static LocalDate userDefinedToday = null;
 
     private static DateTimeZone dateTimeZone;
     private static Properties dateProperties;
@@ -24,7 +23,7 @@ public class DateUtil {
     }
 
     public static LocalDate today() {
-        if (getTestMode()) return userDefinedToday;
+        if (getTestMode()) return getTestDate();
         return new LocalDate(getTimeZone());
     }
 
@@ -73,13 +72,19 @@ public class DateUtil {
         try {
             Properties properties = getProperties(true);
             if (properties == null) return false;
-
-            testMode = Boolean.parseBoolean(properties.getProperty("test.mode"));
-            userDefinedToday = LocalDate.parse(properties.getProperty("dateutil.today"));
+            return Boolean.parseBoolean(properties.getProperty("test.mode"));
         } catch (IOException e) {
-            throw new MotechException("Error while loading test.mode and dateutil.today from ivr.getProperties", e);
+            throw new MotechException("Error while loading test.mode from ivr.getProperties", e);
         }
-        return testMode;
+    }
+
+    private static LocalDate getTestDate() {
+        try {
+            Properties properties = getProperties(true);
+            return LocalDate.parse(properties.getProperty("dateutil.today"));
+        } catch (IOException e) {
+            throw new MotechException("Error while loading dateutil.today from ivr.getProperties", e);
+        }
     }
 
     private static Properties getProperties(boolean reload) throws IOException {
