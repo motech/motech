@@ -27,16 +27,14 @@ public class Alert extends MotechBaseDataObject implements Comparable<Alert> {
 
     public Alert(String externalId, AlertType alertType, AlertStatus status, int priority, HashMap<String, String> data) {
         this.externalId = externalId;
-        this.alertType =  alertType;
+        this.alertType = alertType;
         this.status = status;
         this.priority = priority;
         this.dateTime = DateUtil.now();
         this.data = data;
     }
 
-    public Alert(){
-
-        data = new HashMap<String, String>();
+    public Alert() {
     }
 
     public String getId() {
