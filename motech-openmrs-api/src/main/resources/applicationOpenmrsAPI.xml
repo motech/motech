@@ -22,7 +22,7 @@
         <property name="location" value="classpath:openmrs.properties"/>
     </bean>
 
-    <bean class="org.motechproject.openmrs.services.OpenMRSFacilityAdapter"/>
+    <bean class="org.motechproject.openmrs.services.OpenMRSFacilityAdaptor"/>
     <bean class="org.motechproject.openmrs.services.OpenMRSUserAdaptor"/>
     <bean class="org.motechproject.openmrs.security.OpenMRSSession"/>
     <bean class="org.motechproject.openmrs.advice.ApiSessionAdvice" depends-on="context" scope="prototype"/>
