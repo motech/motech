@@ -88,7 +88,7 @@ public class ResourceServletIT {
         InputStream inputStreamToResource = this.getClass().getResourceAsStream(pathToFile);
         ResourceQuery queryEnglish = new ResourceQuery(WAVE_FILE, LANGUAGE);
         try {
-            cmsLiteDAO.addResource(queryEnglish, inputStreamToResource);
+            cmsLiteDAO.addResource(queryEnglish, inputStreamToResource, null);
         } catch (CMSLiteException e) {
             e.printStackTrace();
             assertFalse(true);

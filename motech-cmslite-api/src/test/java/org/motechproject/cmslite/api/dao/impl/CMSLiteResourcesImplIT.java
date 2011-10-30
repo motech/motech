@@ -4,7 +4,6 @@ import org.ektorp.AttachmentInputStream;
 import org.ektorp.CouchDbConnector;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.cmslite.api.CMSLiteException;
@@ -61,7 +60,7 @@ public class CMSLiteResourcesImplIT {
         resourceFrench = couchDbConnector.get(Resource.class, resourceFrench.getId());
     }
 
-    @Test @Ignore
+    @Test 
     public void shouldGetResourceByNameAndLanguageIfTheyArePresent() throws IOException {
         ResourceQuery query = new ResourceQuery("test", "en");
         Resource resource = cmsLiteDAO.getResource(query);
@@ -72,7 +71,7 @@ public class CMSLiteResourcesImplIT {
         assertNotNull(resource.getResourceAsInputStream());
     }
 
-    @Test @Ignore
+    @Test 
     public void shouldReturnNullWhenNameOrLanguageIsNotPresentInTheDB() {
         ResourceQuery query = new ResourceQuery("test", "ger");
         Resource resource = cmsLiteDAO.getResource(query);
@@ -82,7 +81,7 @@ public class CMSLiteResourcesImplIT {
         assertNull(resource);
     }
 
-    @Test @Ignore
+    @Test 
     public void shouldNotRetrieveAResourceIfCaseDoesNotMatch() {
         ResourceQuery query = new ResourceQuery("test", "En");
         Resource resource = cmsLiteDAO.getResource(query);
@@ -92,24 +91,24 @@ public class CMSLiteResourcesImplIT {
         assertNull(resource);
     }
 
-    @Test @Ignore
+    @Test 
     public void shouldReturnNoResourceWhenNameIsNull() throws ResourceNotFoundException {
         ResourceQuery query = new ResourceQuery(null, "en");
         Resource resource = cmsLiteDAO.getResource(query);
         assertNull(resource);
     }
 
-    @Test @Ignore
+    @Test 
     public void shouldReturnNoResourceWhenLanguageIsNull() throws ResourceNotFoundException {
         ResourceQuery query = new ResourceQuery("test", null);
         Resource resource = cmsLiteDAO.getResource(query);
         assertNull(resource);
     }
 
-    @Test @Ignore
+    @Test 
     public void shouldSaveNewResource() {
         String pathToFile = "/background.wav";
-        ResourceQuery queryEnglish = addResource(pathToFile);
+        ResourceQuery queryEnglish = addResource(pathToFile, "E70BCBFFEDE23037F521A19D7228C60E");
         Resource enResource = cmsLiteDAO.getResource(queryEnglish);
         assertNotNull(enResource);
         assertEquals("en", enResource.getLanguage());
@@ -119,19 +118,19 @@ public class CMSLiteResourcesImplIT {
         this.couchDbConnector.delete(enResource);
     }
 
-    @Test @Ignore
+    @Test 
     public void shouldUpdateResourceAttachment() {
         String pathToFile = "/background.wav";
         String pathToNewFile = "/10.wav";
 
-        ResourceQuery queryEnglish = addResource(pathToFile);
+        ResourceQuery queryEnglish = addResource(pathToFile, "E70BCBFFEDE23037F521A19D7228C60E");
         Resource enResource = cmsLiteDAO.getResource(queryEnglish);
         assertNotNull(enResource);
         assertEquals("en", enResource.getLanguage());
         assertEquals("test-save", enResource.getName());
         assertEquals("E70BCBFFEDE23037F521A19D7228C60E", enResource.getChecksum());
 
-        ResourceQuery newQueryEnglish = addResource(pathToNewFile);
+        ResourceQuery newQueryEnglish = addResource(pathToNewFile, "B77E1F413455989CAA782037505F696E");
         Resource newResource = cmsLiteDAO.getResource(newQueryEnglish);
         assertNotNull(newResource);
         assertEquals("en", newResource.getLanguage());
@@ -141,12 +140,12 @@ public class CMSLiteResourcesImplIT {
         this.couchDbConnector.delete(newResource);
     }
 
-    private ResourceQuery addResource(String pathToFile) {
+    private ResourceQuery addResource(String pathToFile, String checksum) {
         InputStream inputStreamToResource = this.getClass().getResourceAsStream(pathToFile);
 
         ResourceQuery queryEnglish = new ResourceQuery("test-save", "en");
         try {
-            cmsLiteDAO.addResource(queryEnglish, inputStreamToResource);
+            cmsLiteDAO.addResource(queryEnglish, inputStreamToResource, checksum);
         } catch (CMSLiteException e) {
             e.printStackTrace();
             assertFalse(true);
