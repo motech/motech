@@ -3,8 +3,8 @@ package org.motechproject.mobileforms.api.web;
 import com.jcraft.jzlib.JZlib;
 import com.jcraft.jzlib.ZOutputStream;
 import org.fcitmuk.epihandy.EpihandyXformSerializer;
-import org.motechproject.mobileforms.api.dao.AllMobileForms;
-import org.motechproject.mobileforms.api.domain.FormGroup;
+import org.motechproject.mobileforms.api.service.MobileFormsService;
+import org.motechproject.mobileforms.api.valueobjects.GroupNameAndForms;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -13,21 +13,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 
 public class FormDownloadServlet extends HttpServlet {
 
     public static final byte ACTION_DOWNLOAD_STUDY_LIST = 2;
+    public static final byte ACTION_DOWNLOAD_USERS_AND_FORMS = 11;
     public static final byte RESPONSE_ERROR = 0;
     public static final byte RESPONSE_SUCCESS = 1;
 
     private static ApplicationContext context;
 
     synchronized static public ApplicationContext getContext() {
-        if (context == null){
+        if (context == null) {
             context = new ClassPathXmlApplicationContext("applicationMobileFormsAPI.xml");
         }
         return context;
@@ -50,12 +47,16 @@ public class FormDownloadServlet extends HttpServlet {
             String locale = dataInput.readUTF();
 
             byte action = dataInput.readByte();
-            EpihandyXformSerializer epiSerializer = new EpihandyXformSerializer();
+            EpihandyXformSerializer epiSerializer = serializer();
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
+            MobileFormsService mobileFormsService = getContext().getBean("mobileFormsService", MobileFormsService.class);
             if (action == ACTION_DOWNLOAD_STUDY_LIST) {
-                AllMobileForms allMobileForms = (AllMobileForms) getContext().getBean("allMobileForms");
-                epiSerializer.serializeStudies(byteArrayOutputStream, prepareEPIFormList(allMobileForms.getAllFormGroups()));
+                epiSerializer.serializeStudies(byteArrayOutputStream, mobileFormsService.getAllFormGroups());
+            } else if (action == ACTION_DOWNLOAD_USERS_AND_FORMS) {
+                int studyIndex = dataInput.readInt();
+                GroupNameAndForms groupNameAndForms = mobileFormsService.getForms(studyIndex);
+                epiSerializer.serializeForms(byteArrayOutputStream, groupNameAndForms.getForms(), studyIndex, groupNameAndForms.getGroupName());
             }
             dataOutput.writeByte(RESPONSE_SUCCESS);
             dataOutput.write(byteArrayOutputStream.toByteArray());
@@ -70,14 +71,9 @@ public class FormDownloadServlet extends HttpServlet {
         }
     }
 
-    private List<Object[]> prepareEPIFormList(List<FormGroup> allFormGroups) {
-        List<Object[]> result = new ArrayList<Object[]>();
-        if (allFormGroups == null) {
-            return Collections.emptyList();
-        }
-        for (int index = 0; index < allFormGroups.size(); index++) {
-            result.add(new Object[]{index, allFormGroups.get(index).getName()});
-        }
-        return result;
+    protected EpihandyXformSerializer serializer() {
+        return new EpihandyXformSerializer();
     }
+
+
 }

@@ -1,6 +1,6 @@
 [
     {
-        "name" : "GroupName-I",
+        "name" : "GroupNameI",
         "forms" : [
             {
                 "name" : "MForm-I",
@@ -13,7 +13,7 @@
         ]
     } ,
     {
-        "name" : "GroupName-II",
+        "name" : "GroupNameII",
         "forms" : [
             {
                 "name" : "MForm-III",

@@ -1,0 +1,24 @@
+[
+    {
+        "name" : "GroupNameI",
+        "forms" : [
+            {
+                "name" : "MForm-I",
+                "fileName" :  "DummyForm-1.xml"
+            }
+        ]
+    } ,
+    {
+        "name" : "GroupNameII",
+        "forms" : [
+            {
+                "name" : "MForm-II",
+                "fileName" :  "DummyForm-2.xml"
+            },
+            {
+                "name" : "MForm-III",
+                "fileName" :  "DummyForm-3.xml"
+            }
+        ]
+    }
+]
