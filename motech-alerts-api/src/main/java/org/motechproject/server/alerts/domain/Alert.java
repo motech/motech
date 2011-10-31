@@ -6,6 +6,9 @@ import org.joda.time.DateTime;
 import org.motechproject.model.MotechBaseDataObject;
 import org.motechproject.util.DateUtil;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @TypeDiscriminator("doc.documentType == 'Alert'")
 public class Alert extends MotechBaseDataObject implements Comparable<Alert> {
     @JsonProperty("type")
@@ -19,17 +22,19 @@ public class Alert extends MotechBaseDataObject implements Comparable<Alert> {
     private int priority;
     private AlertStatus status;
     private String description;
+    private Map<String, String> data;
 
-    public Alert(String externalId, AlertType alertType, AlertStatus status, int priority) {
+
+    public Alert(String externalId, AlertType alertType, AlertStatus status, int priority, HashMap<String, String> data) {
         this.externalId = externalId;
-        this.alertType =  alertType;
+        this.alertType = alertType;
         this.status = status;
         this.priority = priority;
         this.dateTime = DateUtil.now();
+        this.data = data;
     }
 
-    public Alert(){
-
+    public Alert() {
     }
 
     public String getId() {
@@ -110,5 +115,13 @@ public class Alert extends MotechBaseDataObject implements Comparable<Alert> {
     @Override
     public int compareTo(Alert o) {
         return new Integer(this.priority).compareTo(new Integer(o.priority));
+    }
+
+    public Map<String, String> getData() {
+        return data;
+    }
+
+    public void setData(Map<String, String> data) {
+        this.data = data;
     }
 }

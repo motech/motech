@@ -11,5 +11,5 @@ public interface CMSLiteResources {
 
     Resource getResource(ResourceQuery query);
 
-    void addResource(ResourceQuery query, InputStream inputStream) throws CMSLiteException;
+    void addResource(ResourceQuery query, InputStream inputStream, String checksum) throws CMSLiteException;
 }

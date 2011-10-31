@@ -40,6 +40,7 @@ public class Resource extends MotechAuditableDataObject {
         return language;
     }
 
+    @JsonIgnore
     public InputStream getResourceAsInputStream() {
         return inputStream;
     }

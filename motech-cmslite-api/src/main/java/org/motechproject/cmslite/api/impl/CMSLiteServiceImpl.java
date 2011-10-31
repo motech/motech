@@ -30,9 +30,9 @@ public class CMSLiteServiceImpl implements CMSLiteService {
 
     }
 
-    public void addContent(ResourceQuery query, InputStream inputStream) throws CMSLiteException {
+    public void addContent(ResourceQuery query, InputStream inputStream, String md5Checksum) throws CMSLiteException {
         if (query == null) throw new IllegalArgumentException("Query should not be null");
-        cmsLiteResources.addResource(query, inputStream);
+        cmsLiteResources.addResource(query, inputStream, md5Checksum);
     }
 
 }

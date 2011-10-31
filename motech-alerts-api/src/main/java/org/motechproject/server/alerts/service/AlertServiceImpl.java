@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Map;
 
 public class AlertServiceImpl implements AlertService {
     private AllAlerts allAlerts;
@@ -33,14 +34,27 @@ public class AlertServiceImpl implements AlertService {
 
     @Override
     public void changeStatus(String id, AlertStatus status) {
+        Alert alert = getAlert(id);
+        alert.setStatus(status);
+        allAlerts.update(alert);
+    }
+
+    @Override
+    public void setData(String id, String key, String value) {
+        Alert alert = getAlert(id);
+        final Map<String, String> data = alert.getData();
+        data.put(key, value);
+        allAlerts.update(alert);
+    }
+
+    private Alert getAlert(String id) {
         Alert alert = null;
         try {
             alert = allAlerts.get(id);
+            return alert;
         } catch (DocumentNotFoundException e) {
             logger.error(String.format("No Alert found for the given id: {0}.", id), e);
-            return;
         }
-        alert.setStatus(status);
-        allAlerts.update(alert);
+        return null;
     }
 }

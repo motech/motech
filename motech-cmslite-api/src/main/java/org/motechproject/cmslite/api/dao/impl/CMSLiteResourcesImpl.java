@@ -37,15 +37,16 @@ public class CMSLiteResourcesImpl extends MotechAuditableRepository<Resource> im
         return fetchedResource;
     }
 
-    public void addResource(ResourceQuery query, InputStream inputStream) throws CMSLiteException {
+    public void addResource(ResourceQuery query, InputStream inputStream, String checksum) throws CMSLiteException {
         BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
         Resource resource = new Resource();
         resource.setName(query.getName());
         resource.setLanguage(query.getLanguage());
 
+        Resource resourceFromDB = null;
         try {
-            String checksum = checksum(bufferedInputStream);
-            Resource resourceFromDB = getResource(query);
+//            String checksum = checksum(bufferedInputStream);
+            resourceFromDB = getResource(query);
 
             boolean create = (resourceFromDB == null);
             boolean sameAttachment = !create && !checksum.equals(resourceFromDB.getChecksum());
@@ -58,16 +59,23 @@ public class CMSLiteResourcesImpl extends MotechAuditableRepository<Resource> im
                 createAttachment(bufferedInputStream, resource);
             } else {
                 resourceFromDB.setChecksum(checksum);
-                resourceFromDB.setInputStream(null);
                 db.update(resourceFromDB);
                 createAttachment(bufferedInputStream, resourceFromDB);
             }
         } catch (Exception e) {
             throw new CMSLiteException(e.getMessage(), e);
+        } finally {
+            try {
+                if (resourceFromDB != null) {
+                    resourceFromDB.getResourceAsInputStream().close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    private void createAttachment(InputStream inputStream, Resource resource) {
+    private void createAttachment(InputStream inputStream, Resource resource) throws IOException {
         AttachmentInputStream attachmentInputStream = new AttachmentInputStream(resource.getId(), inputStream, "audio/x-wav");
         db.createAttachment(resource.getId(), resource.getRevision(), attachmentInputStream);
     }
