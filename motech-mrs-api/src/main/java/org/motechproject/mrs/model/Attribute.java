@@ -1,10 +1,10 @@
 package org.motechproject.mrs.model;
 
-public class UserAttribute {
+public class Attribute {
     private String name;
     private String value;
 
-    public UserAttribute(String name, String value) {
+    public Attribute(String name, String value) {
         this.name = name;
         this.value = value;
     }

@@ -1,23 +1,19 @@
 package org.motechproject.openmrs.services;
 
-import ch.lambdaj.function.argument.Argument;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
 import org.motechproject.mrs.model.User;
-import org.motechproject.mrs.model.UserAttribute;
+import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.services.MRSException;
-import org.motechproject.openmrs.model.Constants;
 import org.openmrs.Person;
-import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Role;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.db.DAOException;
-import org.openmrs.util.OpenmrsConstants;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -64,9 +60,9 @@ public class OpenMRSUserAdaptorTest {
         when(personService.getPersonAttributeTypeByName("Email")).thenReturn(emailAttribute);
 
         mrsUser.firstName("Jack").middleName("H").lastName("Daniels").securityRole("provider");
-        mrsUser.addAttribute(new UserAttribute("Staff Type", "FA"));
-        mrsUser.addAttribute(new UserAttribute("Phone Number", "012345"));
-        mrsUser.addAttribute(new UserAttribute("Email", "jack@daniels.com"));
+        mrsUser.addAttribute(new Attribute("Staff Type", "FA"));
+        mrsUser.addAttribute(new Attribute("Phone Number", "012345"));
+        mrsUser.addAttribute(new Attribute("Email", "jack@daniels.com"));
 
         adaptor.saveUser(mrsUser);
 

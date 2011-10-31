@@ -1,7 +1,7 @@
-
 package org.motechproject.mrs.model;
 
 import java.util.Date;
+import java.util.List;
 
 public class Patient {
 
@@ -13,6 +13,7 @@ public class Patient {
     private Date dateOfBirth;
     private String gender;
     private String address;
+    private List<Attribute> attributes;
 
     public Patient() {
     }
@@ -64,6 +65,13 @@ public class Patient {
         return address;
     }
 
+    public List<Attribute> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(List<Attribute> attributes) {
+        this.attributes = attributes;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -73,6 +81,7 @@ public class Patient {
         Patient patient = (Patient) o;
 
         if (address != null ? !address.equals(patient.address) : patient.address != null) return false;
+        if (attributes != null ? !attributes.equals(patient.attributes) : patient.attributes != null) return false;
         if (dateOfBirth != null ? !dateOfBirth.equals(patient.dateOfBirth) : patient.dateOfBirth != null) return false;
         if (firstName != null ? !firstName.equals(patient.firstName) : patient.firstName != null) return false;
         if (gender != null ? !gender.equals(patient.gender) : patient.gender != null) return false;
@@ -95,6 +104,7 @@ public class Patient {
         result = 31 * result + (dateOfBirth != null ? dateOfBirth.hashCode() : 0);
         result = 31 * result + (gender != null ? gender.hashCode() : 0);
         result = 31 * result + (address != null ? address.hashCode() : 0);
+        result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
         return result;
     }
 }

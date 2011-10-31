@@ -2,7 +2,7 @@ package org.motechproject.openmrs.services;
 
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
 import org.motechproject.mrs.model.User;
-import org.motechproject.mrs.model.UserAttribute;
+import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.services.MRSException;
 import org.motechproject.mrs.services.MRSUserAdaptor;
 import org.motechproject.openmrs.model.Constants;
@@ -45,7 +45,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         person.addName(personName);
         person.setGender(Constants.PERSON_UNKNOWN_GENDER);
 
-        for (UserAttribute attribute : mrsUser.attributes()) {
+        for (Attribute attribute : mrsUser.attributes()) {
             PersonAttributeType attributeType = personService.getPersonAttributeTypeByName(attribute.name());
             person.addAttribute(new PersonAttribute(attributeType, attribute.value()));
         }

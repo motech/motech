@@ -9,7 +9,7 @@ public class User {
     private String middleName;
     private String lastName;
     private String securityRole;
-    private List<UserAttribute> attributes = new ArrayList<UserAttribute>();
+    private List<Attribute> attributes = new ArrayList<Attribute>();
 
     public User id(String id) {
         this.id = id;
@@ -47,12 +47,12 @@ public class User {
         return firstName + " " + middleName + " " + lastName;
     }
 
-    public List<UserAttribute> attributes() {
+    public List<Attribute> attributes() {
         return attributes;
     }
 
-    public void addAttribute(UserAttribute userAttribute) {
-        attributes.add(userAttribute);
+    public void addAttribute(Attribute attribute) {
+        attributes.add(attribute);
     }
 
     public String securityRole() {
