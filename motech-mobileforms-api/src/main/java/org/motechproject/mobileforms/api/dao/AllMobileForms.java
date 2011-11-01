@@ -9,9 +9,10 @@ import org.motechproject.mobileforms.api.domain.Form;
 import org.motechproject.mobileforms.api.domain.FormGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.Properties;
 
 import static ch.lambdaj.Lambda.convert;
 
-@Component
+@Repository
 public class AllMobileForms {
     public static final String FORMS_CONFIG_FILE = "forms.config.file";
     public static final String XFORMS_FOLDER = "xforms";
@@ -33,6 +34,7 @@ public class AllMobileForms {
         this.motechJsonReader = motechJsonReader;
     }
 
+    @PostConstruct
     public void initialize(){
         List<FormGroup> formGroupsFromConfigFile = (List<FormGroup>) motechJsonReader.readFromFile(configFile(), new TypeToken<List<FormGroup>>(){}.getType());
         this.formGroups = convert(formGroupsFromConfigFile, new Converter<FormGroup, FormGroup>() {
@@ -58,7 +60,6 @@ public class AllMobileForms {
 
     private String configFile() {
         return this.properties.getProperty(FORMS_CONFIG_FILE);
-
     }
 
     private String getFileContent(String fileName, String formGroupName) {

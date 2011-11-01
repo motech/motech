@@ -5,10 +5,10 @@ import org.junit.Test;
 import org.motechproject.dao.MotechJsonReader;
 import org.motechproject.mobileforms.api.domain.Form;
 import org.motechproject.mobileforms.api.domain.FormGroup;
+import org.motechproject.mobileforms.api.utils.TestUtilities;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -24,7 +24,7 @@ public class AllMobileFormsTest {
 
     @Before
     public void setup() {
-        allMobileForms = new AllMobileForms(setupPropertiesWithFormConfigFileName("/dummy-forms.json"), new MotechJsonReader());
+        allMobileForms = new AllMobileForms(TestUtilities.setupProperties("forms.config.file", "/dummy-forms.json"), new MotechJsonReader());
         allMobileForms.initialize();
         formsOfGroupOne = Arrays.asList(new Form("MForm-I", "DummyForm-1.xml", "<form>DummyForm1</form>"));
         formsOfGroupTwo = Arrays.asList(new Form("MForm-II", "DummyForm-2.xml", "<form>DummyForm2</form>"),
@@ -45,11 +45,4 @@ public class AllMobileFormsTest {
         assertThat(allMobileForms.getGroup(0), is(equalTo(formGroupOne)));
         assertThat(allMobileForms.getGroup(1), is(equalTo(formGroupTwo)));
     }
-
-    private Properties setupPropertiesWithFormConfigFileName(String dummyFormConfigFileName) {
-        Properties properties = new Properties();
-        properties.setProperty("forms.config.file", dummyFormConfigFileName);
-        return properties;
-    }
-
 }

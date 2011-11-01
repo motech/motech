@@ -6,8 +6,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
-public class IOUtilities {
+public class TestUtilities {
 
     public static <T> List<T[]> slice(T[] array, int index){
         List<T[]> arrayList = new ArrayList<T[]>();
@@ -43,4 +44,11 @@ public class IOUtilities {
         }
         return output.toByteArray();
     }
+
+    public static Properties setupProperties(String name, String value) {
+        Properties properties = new Properties();
+        properties.setProperty(name, value);
+        return properties;
+    }
+
 }

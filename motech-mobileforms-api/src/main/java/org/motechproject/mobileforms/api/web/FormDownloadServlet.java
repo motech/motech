@@ -4,6 +4,7 @@ import com.jcraft.jzlib.JZlib;
 import com.jcraft.jzlib.ZOutputStream;
 import org.fcitmuk.epihandy.EpihandyXformSerializer;
 import org.motechproject.mobileforms.api.service.MobileFormsService;
+import org.motechproject.mobileforms.api.service.UsersService;
 import org.motechproject.mobileforms.api.valueobjects.GroupNameAndForms;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -47,16 +48,13 @@ public class FormDownloadServlet extends HttpServlet {
             String locale = dataInput.readUTF();
 
             byte action = dataInput.readByte();
-            EpihandyXformSerializer epiSerializer = serializer();
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-            MobileFormsService mobileFormsService = getContext().getBean("mobileFormsService", MobileFormsService.class);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            MobileFormsService mobileFormsService = getContext().getBean("mobileFormsServiceImpl", MobileFormsService.class);
             if (action == ACTION_DOWNLOAD_STUDY_LIST) {
-                epiSerializer.serializeStudies(byteArrayOutputStream, mobileFormsService.getAllFormGroups());
+                handleDownloadStudies(byteArrayOutputStream, mobileFormsService);
             } else if (action == ACTION_DOWNLOAD_USERS_AND_FORMS) {
-                int studyIndex = dataInput.readInt();
-                GroupNameAndForms groupNameAndForms = mobileFormsService.getForms(studyIndex);
-                epiSerializer.serializeForms(byteArrayOutputStream, groupNameAndForms.getForms(), studyIndex, groupNameAndForms.getGroupName());
+                handleDownloadUsersAndForms(byteArrayOutputStream, dataInput, mobileFormsService);
             }
             dataOutput.writeByte(RESPONSE_SUCCESS);
             dataOutput.write(byteArrayOutputStream.toByteArray());
@@ -69,6 +67,26 @@ public class FormDownloadServlet extends HttpServlet {
             zOutput.finish();
             response.flushBuffer();
         }
+    }
+
+    private ByteArrayOutputStream handleDownloadStudies(ByteArrayOutputStream byteArrayOutputStream,
+                                                        MobileFormsService mobileFormsService) throws Exception {
+        EpihandyXformSerializer epiSerializer = serializer();
+        epiSerializer.serializeStudies(byteArrayOutputStream, mobileFormsService.getAllFormGroups());
+        return byteArrayOutputStream;
+    }
+
+    private ByteArrayOutputStream handleDownloadUsersAndForms(ByteArrayOutputStream byteArrayOutputStream,
+                                                              DataInputStream dataInput,
+                                                              MobileFormsService mobileFormsService) throws Exception {
+        EpihandyXformSerializer epiSerializer = serializer();
+        UsersService usersService = getContext().getBean("usersServiceImpl", UsersService.class);
+        epiSerializer.serializeUsers(byteArrayOutputStream, usersService.getUsers());
+
+        int studyIndex = dataInput.readInt();
+        GroupNameAndForms groupNameAndForms = mobileFormsService.getForms(studyIndex);
+        epiSerializer.serializeForms(byteArrayOutputStream, groupNameAndForms.getForms(), studyIndex, groupNameAndForms.getGroupName());
+        return byteArrayOutputStream;
     }
 
     protected EpihandyXformSerializer serializer() {

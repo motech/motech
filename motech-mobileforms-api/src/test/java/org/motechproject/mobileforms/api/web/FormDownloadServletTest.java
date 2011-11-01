@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.motechproject.mobileforms.api.service.MobileFormsService;
+import org.motechproject.mobileforms.api.service.UsersService;
 import org.motechproject.mobileforms.api.valueobjects.GroupNameAndForms;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -17,6 +18,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,6 +43,9 @@ public class FormDownloadServletTest {
     private MobileFormsService mobileFormsService;
 
     @Mock
+    private UsersService usersService;
+
+    @Mock
     private EpihandyXformSerializer epihandyXformSerializer;
 
     @Before
@@ -51,7 +56,8 @@ public class FormDownloadServletTest {
         ReflectionTestUtils.setField(this.formDownloadServlet, "context", applicationContext);
         doReturn(epihandyXformSerializer).when(this.formDownloadServlet).serializer();
 
-        when(applicationContext.getBean("mobileFormsService", MobileFormsService.class)).thenReturn(mobileFormsService);
+        when(applicationContext.getBean("mobileFormsServiceImpl", MobileFormsService.class)).thenReturn(mobileFormsService);
+        when(applicationContext.getBean("usersServiceImpl", UsersService.class)).thenReturn(usersService);
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
     }
@@ -83,11 +89,11 @@ public class FormDownloadServletTest {
             verify(epihandyXformSerializer).serializeStudies(outputStreamArgumentCaptor.capture(), dataArgumentCaptor.capture());
             assertThat(outputStreamArgumentCaptor.getValue().toString(), is(equalTo(dataExpectedToBeReturned)));
 
-            assertThat(((List<Object[]>)dataArgumentCaptor.getValue()).size(), is(equalTo(2)));
-            assertTrue(Arrays.equals(((List<Object[]>)dataArgumentCaptor.getValue()).get(0), new Object[]{0, studyCategoryOne}));
-            assertTrue(Arrays.equals(((List<Object[]>)dataArgumentCaptor.getValue()).get(1), new Object[]{1, studyCategoryTwo}));
+            assertThat(((List<Object[]>) dataArgumentCaptor.getValue()).size(), is(equalTo(2)));
+            assertTrue(Arrays.equals(((List<Object[]>) dataArgumentCaptor.getValue()).get(0), new Object[]{0, studyCategoryOne}));
+            assertTrue(Arrays.equals(((List<Object[]>) dataArgumentCaptor.getValue()).get(1), new Object[]{1, studyCategoryTwo}));
 
-            assertThat(responseSentToMobile, is(equalTo((char)FormDownloadServlet.RESPONSE_SUCCESS + dataExpectedToBeReturned)));
+            assertThat(responseSentToMobile, is(equalTo((char) FormDownloadServlet.RESPONSE_SUCCESS + dataExpectedToBeReturned)));
 
         } catch (Exception e) {
             assertFalse("Test failed, cause: " + e.getMessage(), true);
@@ -95,19 +101,41 @@ public class FormDownloadServletTest {
     }
 
     @Test
-    public void shouldReturnListOfFormsForTheGivenStudyName(){
-        String formOneContent = "FormOne";
-        String formTwoConent = "FromTwo";
-        String groupName = "GroupOne";
-        Integer groupIndex = 2;
+    public void shouldReturnListOfFormsForTheGivenStudyNameWithListOfUserAccounts() {
+        final String formOneContent = "FormOne";
+        final String formTwoConent = "FromTwo";
+        final String groupName = "GroupOne";
+        final Integer groupIndex = 2;
         final String dataExpectedToBeReturned = "Mock - List of forms";
-        when(mobileFormsService.getForms(groupIndex)).thenReturn(new GroupNameAndForms(groupName, Arrays.asList(formOneContent, formTwoConent)));
+        final String userDetailsExpectedToBeReturned = "Mock - User details";
+        List<Object[]> userDetails = new ArrayList<Object[]>();
+        userDetails.add(new Object[]{"username", "password", "salt"});
+        when(usersService.getUsers()).thenReturn(userDetails);
+        final List<String> formContents = Arrays.asList(formOneContent, formTwoConent);
+        when(mobileFormsService.getForms(groupIndex)).thenReturn(new GroupNameAndForms(groupName, formContents));
 
         try {
+
+            doAnswer(new Answer() {
+                @Override
+                public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                    ((ByteArrayOutputStream) invocationOnMock.getArguments()[0]).write(userDetailsExpectedToBeReturned.getBytes());
+                    List<Object[]> userDetails = (List<Object[]>) invocationOnMock.getArguments()[1];
+                    assertThat(userDetails.size(), is(equalTo(1)));
+                    assertThat(userDetails.get(0)[0], is(equalTo(userDetails.get(0)[0])));
+                    assertThat(userDetails.get(0)[1], is(equalTo(userDetails.get(0)[1])));
+                    assertThat(userDetails.get(0)[2], is(equalTo(userDetails.get(0)[2])));
+                    return null;
+                }
+            }).when(epihandyXformSerializer).serializeUsers(any(OutputStream.class), Matchers.anyObject());
+
             doAnswer(new Answer() {
                 @Override
                 public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
                     ((ByteArrayOutputStream) invocationOnMock.getArguments()[0]).write(dataExpectedToBeReturned.getBytes());
+                    assertThat((List<String>) invocationOnMock.getArguments()[1], is(equalTo(formContents)));
+                    assertThat((Integer) invocationOnMock.getArguments()[2], is(equalTo(groupIndex)));
+                    assertThat((String)invocationOnMock.getArguments()[3], is(equalTo(groupName)));
                     return null;
                 }
             }).when(epihandyXformSerializer).serializeForms(any(OutputStream.class), Matchers.anyObject(), anyInt(), anyString());
@@ -117,8 +145,7 @@ public class FormDownloadServletTest {
             formDownloadServlet.doPost(request, response);
             String responseSentToMobile = readResponse(response);
 
-            verifyIfSerializerWasCalledWithRightArguments(dataExpectedToBeReturned, Arrays.asList(formOneContent, formTwoConent), groupIndex, groupName);
-            assertThat(responseSentToMobile, is(equalTo((char)FormDownloadServlet.RESPONSE_SUCCESS + dataExpectedToBeReturned)));
+            assertThat(responseSentToMobile, is(equalTo((char) FormDownloadServlet.RESPONSE_SUCCESS + userDetailsExpectedToBeReturned + dataExpectedToBeReturned)));
 
         } catch (Exception e) {
 
@@ -126,19 +153,6 @@ public class FormDownloadServletTest {
         }
 
     }
-
-    private void verifyIfSerializerWasCalledWithRightArguments(String dataExpectedToBeReturned, List<String> contentsOfForms, Integer groupIndex, String groupName) throws Exception {
-        ArgumentCaptor<OutputStream> outputStreamArgumentCaptor = ArgumentCaptor.forClass(OutputStream.class);
-        ArgumentCaptor<Object> dataArgumentCaptor = ArgumentCaptor.forClass(Object.class);
-        ArgumentCaptor<Integer> studyIdArgumentCaptor = ArgumentCaptor.forClass(Integer.class);
-        ArgumentCaptor<String> studyNameArgumentCaptor = ArgumentCaptor.forClass(String.class);
-        verify(epihandyXformSerializer).serializeForms(outputStreamArgumentCaptor.capture(), dataArgumentCaptor.capture(), studyIdArgumentCaptor.capture(), studyNameArgumentCaptor.capture());
-        assertThat(outputStreamArgumentCaptor.getValue().toString(), is(equalTo(dataExpectedToBeReturned)));
-        assertThat((List<String>) dataArgumentCaptor.getValue(), is(equalTo(contentsOfForms)));
-        assertThat(studyIdArgumentCaptor.getValue(), is(equalTo(groupIndex)));
-        assertThat(studyNameArgumentCaptor.getValue(), is(equalTo(groupName)));
-    }
-
 
     private String readResponse(MockHttpServletResponse response) throws IOException {
         return new BufferedReader(new InputStreamReader(new ZInputStream(new ByteArrayInputStream(response.getContentAsByteArray())))).readLine();

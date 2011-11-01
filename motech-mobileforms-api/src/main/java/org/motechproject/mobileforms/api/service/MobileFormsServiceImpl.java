@@ -5,7 +5,7 @@ import org.motechproject.mobileforms.api.domain.Form;
 import org.motechproject.mobileforms.api.domain.FormGroup;
 import org.motechproject.mobileforms.api.valueobjects.GroupNameAndForms;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
 import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
 
-@Component
+@Service
 public class MobileFormsServiceImpl implements MobileFormsService {
 
     private AllMobileForms allMobileForms;
