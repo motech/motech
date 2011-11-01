@@ -157,18 +157,6 @@
                    <encoding>UTF-8</encoding>
                </configuration>
                <executions>
-                   <execution>
-                       <id>integration-test</id>
-                       <goals>
-                           <goal>integration-test</goal>
-                       </goals>
-                   </execution>
-                   <execution>
-                       <id>verify</id>
-                       <goals>
-                           <goal>verify</goal>
-                       </goals>
-                   </execution>
                </executions>
            </plugin>
         </plugins>
