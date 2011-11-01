@@ -3,7 +3,7 @@ package org.motechproject.mobileforms.api.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.mobileforms.api.utils.PasswordEncoder;
+import org.motechproject.mobileforms.api.utils.Encoder;
 import org.motechproject.mobileforms.api.utils.TestUtilities;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public class UsersServiceImplTest {
     private UsersService usersService;
 
     @Mock
-    private PasswordEncoder passwordEncoder;
+    private Encoder passwordEncoder;
 
     @Before
     public void setUp() {

@@ -2,9 +2,11 @@ package org.motechproject.mobileforms.api.dao;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.motechproject.dao.MotechJsonReader;
 import org.motechproject.mobileforms.api.domain.Form;
 import org.motechproject.mobileforms.api.domain.FormGroup;
+import org.motechproject.mobileforms.api.utils.IOUtils;
 import org.motechproject.mobileforms.api.utils.TestUtilities;
 
 import java.util.Arrays;
@@ -13,9 +15,13 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class AllMobileFormsTest {
 
+    @Mock
+    private IOUtils ioUtils;
     private AllMobileForms allMobileForms;
     private List<Form> formsOfGroupOne;
     private List<Form> formsOfGroupTwo;
@@ -24,14 +30,18 @@ public class AllMobileFormsTest {
 
     @Before
     public void setup() {
-        allMobileForms = new AllMobileForms(TestUtilities.setupProperties("forms.config.file", "/dummy-forms.json"), new MotechJsonReader());
+        initMocks(this);
+        allMobileForms = new AllMobileForms(TestUtilities.setupProperties("forms.config.file", "/forms-config.json"), new MotechJsonReader(), ioUtils);
+        when(ioUtils.getFileContent("ClientDeath-1.xml", "GroupNameI")).thenReturn("<form>DummyForm1</form>");
+        when(ioUtils.getFileContent("PatientDeath-1.xml", "GroupNameI")).thenReturn("<form>DummyForm2</form>");
+        when(ioUtils.getFileContent("ClientDeath-2.xml", "GroupNameII")).thenReturn("<form>DummyForm3</form>");
+
         allMobileForms.initialize();
-        formsOfGroupOne = Arrays.asList(new Form("MForm-I", "DummyForm-1.xml", "<form>DummyForm1</form>"));
-        formsOfGroupTwo = Arrays.asList(new Form("MForm-II", "DummyForm-2.xml", "<form>DummyForm2</form>"),
-                                        new Form("MForm-III", "DummyForm-3.xml", "<form>DummyForm3</form>"));
+        formsOfGroupOne = Arrays.asList(new Form("MForm-I", "ClientDeath-1.xml", "<form>DummyForm1</form>"),
+                                        new Form("MForm-II", "PatientDeath-1.xml", "<form>DummyForm2</form>"));
+        formsOfGroupTwo = Arrays.asList(new Form("MForm-III", "ClientDeath-2.xml", "<form>DummyForm3</form>"));
         formGroupOne = new FormGroup("GroupNameI", formsOfGroupOne);
         formGroupTwo = new FormGroup("GroupNameII", formsOfGroupTwo);
-
     }
 
     @Test

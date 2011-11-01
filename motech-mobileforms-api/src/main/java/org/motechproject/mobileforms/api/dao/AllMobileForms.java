@@ -2,19 +2,15 @@ package org.motechproject.mobileforms.api.dao;
 
 import ch.lambdaj.function.convert.Converter;
 import com.google.gson.reflect.TypeToken;
-import org.apache.commons.io.FileUtils;
-import org.motechproject.MotechException;
 import org.motechproject.dao.MotechJsonReader;
 import org.motechproject.mobileforms.api.domain.Form;
 import org.motechproject.mobileforms.api.domain.FormGroup;
+import org.motechproject.mobileforms.api.utils.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -23,15 +19,16 @@ import static ch.lambdaj.Lambda.convert;
 @Repository
 public class AllMobileForms {
     public static final String FORMS_CONFIG_FILE = "forms.config.file";
-    public static final String XFORMS_FOLDER = "xforms";
     private Properties properties;
     private MotechJsonReader motechJsonReader;
+    private IOUtils ioUtils;
     private List<FormGroup> formGroups;
 
     @Autowired
-    public AllMobileForms(@Qualifier(value = "mobileFormsProperties") Properties properties, MotechJsonReader motechJsonReader) {
+    public AllMobileForms(@Qualifier(value = "mobileFormsProperties") Properties properties, MotechJsonReader motechJsonReader, IOUtils ioUtils) {
         this.properties = properties;
         this.motechJsonReader = motechJsonReader;
+        this.ioUtils = ioUtils;
     }
 
     @PostConstruct
@@ -43,7 +40,7 @@ public class AllMobileForms {
                 return new FormGroup(formGroup.getName(), ch.lambdaj.Lambda.convert(formGroup.getForms(), new Converter<Form, Form>() {
                     @Override
                     public Form convert(Form form) {
-                        return new Form(form.getName(), form.getFileName(), getFileContent(form.getFileName(), formGroup.getName()));
+                        return new Form(form.getName(), form.getFileName(), ioUtils.getFileContent(form.getFileName(), formGroup.getName()));
                     }
                 }));
             }
@@ -62,16 +59,5 @@ public class AllMobileForms {
         return this.properties.getProperty(FORMS_CONFIG_FILE);
     }
 
-    private String getFileContent(String fileName, String formGroupName) {
-        List<String> paths = new ArrayList<String>();
-        paths.add(XFORMS_FOLDER);
-        paths.add(formGroupName);
-        paths.add(fileName);
-        String xformFilePath = StringUtils.collectionToDelimitedString(paths, File.separator);
-        try {
-            return FileUtils.readFileToString(new File(getClass().getClassLoader().getResource(xformFilePath).toURI().getPath()));
-        } catch (Exception e) {
-            throw new MotechException("Encountered error while loading openxdata forms", e);
-        }
-    }
+
 }
