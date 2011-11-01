@@ -7,6 +7,8 @@ import org.motechproject.model.Time;
 import org.motechproject.util.DateUtil;
 import org.quartz.SimpleTrigger;
 
+import java.util.Date;
+
 import static org.junit.Assert.assertEquals;
 
 public class CronJobSimpleExpressionBuilderTest {
@@ -26,11 +28,14 @@ public class CronJobSimpleExpressionBuilderTest {
     public void shouldScheduleJobEverySevenDays() {
         SimpleTrigger trigger = new SimpleTrigger("triggerName", "groupName", DateUtil.today().toDate(), null, SimpleTrigger.REPEAT_INDEFINITELY, Duration.standardDays(7).getMillis());
         LocalDate today = DateUtil.today();
-        LocalDate nextDate = today.plusDays(7);
-        LocalDate nextToNextDate = nextDate.plusDays(7);
+        Date yesterday = today.plusDays(-1).toDate();
 
-        assertEquals(nextDate.toDate(), trigger.getFireTimeAfter(today.toDate()));
-        assertEquals(nextToNextDate.toDate(), trigger.getFireTimeAfter(nextDate.toDate()));
+        Date firstFireTime = trigger.getFireTimeAfter(yesterday);
+        Date secondFireTime = trigger.getFireTimeAfter(firstFireTime);
+        Date thirdFireTime = trigger.getFireTimeAfter(secondFireTime);
+
+        assertEquals(Duration.standardDays(7).getMillis(), secondFireTime.getTime() - firstFireTime.getTime());
+        assertEquals(Duration.standardDays(7).getMillis(), thirdFireTime.getTime() - secondFireTime.getTime());
     }
 
 }
