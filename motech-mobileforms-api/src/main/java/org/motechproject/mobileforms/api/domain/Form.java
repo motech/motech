@@ -1,6 +1,10 @@
 package org.motechproject.mobileforms.api.domain;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class Form {
+    private Integer formId;
     private String name;
     private String fileName;
     private String content;
@@ -14,6 +18,17 @@ public class Form {
         this.name = name;
         this.fileName = fileName;
         this.content = content;
+        this.formId = extractId(content);
+    }
+
+    private Integer extractId(String content){
+       Matcher matcher = Pattern.compile("<xf:xforms.*?id=\"(.*?)\"", Pattern.CASE_INSENSITIVE).matcher(content);
+       Integer formId = null;
+       if (matcher.find()) {
+           String formIdString = matcher.group(1);
+           formId = Integer.valueOf(formIdString);
+       }
+       return formId;
     }
 
     public String getName() {
@@ -49,5 +64,9 @@ public class Form {
         result = 31 * result + (fileName != null ? fileName.hashCode() : 0);
         result = 31 * result + (content != null ? content.hashCode() : 0);
         return result;
+    }
+
+    public Integer formId() {
+        return formId;
     }
 }
