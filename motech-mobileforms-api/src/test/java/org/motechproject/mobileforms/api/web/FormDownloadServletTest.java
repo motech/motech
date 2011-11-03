@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -31,45 +32,36 @@ import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class FormDownloadServletTest {
-
     private FormDownloadServlet formDownloadServlet;
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
-
     @Mock
     private ApplicationContext applicationContext;
-
     @Mock
     private MobileFormsService mobileFormsService;
-
     @Mock
     private UsersService usersService;
-
     @Mock
-    private EpihandyXformSerializer epihandyXformSerializer;
+    private EpihandyXformSerializer epihandySerializer;
 
     @Before
     public void setUp() {
         initMocks(this);
-        FormDownloadServlet formDownloadServlet = new FormDownloadServlet();
-        this.formDownloadServlet = spy(formDownloadServlet);
-        ReflectionTestUtils.setField(this.formDownloadServlet, "context", applicationContext);
-        doReturn(epihandyXformSerializer).when(this.formDownloadServlet).serializer();
-
-        when(applicationContext.getBean("mobileFormsServiceImpl", MobileFormsService.class)).thenReturn(mobileFormsService);
-        when(applicationContext.getBean("usersServiceImpl", UsersService.class)).thenReturn(usersService);
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
+        formDownloadServlet = spy(new FormDownloadServlet());
+        ReflectionTestUtils.setField(formDownloadServlet, "context", applicationContext);
+        ReflectionTestUtils.setField(formDownloadServlet, "mobileFormsService", mobileFormsService);
+        ReflectionTestUtils.setField(formDownloadServlet, "usersService", usersService);
+        doReturn(epihandySerializer).when(formDownloadServlet).serializer();
     }
 
     @Test
     public void shouldReturnListOfStudyNames() {
-        String studyCategoryOne = "StudyOne";
-        String studyCategoryTwo = "StudyTwo";
+        String studyOne = "StudyOne";
+        String studyTwo = "StudyTwo";
         final String dataExpectedToBeReturned = "Mock - List of form groups";
-
-        when(mobileFormsService.getAllFormGroups()).thenReturn(
-                Arrays.asList(new Object[]{0, studyCategoryOne}, new Object[]{1, studyCategoryTwo}));
+        when(mobileFormsService.getAllFormGroups()).thenReturn(asList(new Object[]{0, studyOne}, new Object[]{1, studyTwo}));
         try {
             doAnswer(new Answer() {
                 @Override
@@ -77,24 +69,21 @@ public class FormDownloadServletTest {
                     ((ByteArrayOutputStream) invocationOnMock.getArguments()[0]).write(dataExpectedToBeReturned.getBytes());
                     return null;
                 }
-            }).when(epihandyXformSerializer).serializeStudies(any(OutputStream.class), Matchers.anyObject());
-
-            setupRequestWithActionOtherRequestParamenters(request, "username", "password", FormDownloadServlet.ACTION_DOWNLOAD_STUDY_LIST, null);
+            }).when(epihandySerializer).serializeStudies(any(OutputStream.class), Matchers.anyObject());
+            setupRequestWithActionOtherRequestParameters(request, "username", "password", FormDownloadServlet.ACTION_DOWNLOAD_STUDY_LIST, null);
 
             formDownloadServlet.doPost(request, response);
             String responseSentToMobile = readResponse(response);
 
             ArgumentCaptor<OutputStream> outputStreamArgumentCaptor = ArgumentCaptor.forClass(OutputStream.class);
             ArgumentCaptor<Object> dataArgumentCaptor = ArgumentCaptor.forClass(Object.class);
-            verify(epihandyXformSerializer).serializeStudies(outputStreamArgumentCaptor.capture(), dataArgumentCaptor.capture());
+
+            verify(epihandySerializer).serializeStudies(outputStreamArgumentCaptor.capture(), dataArgumentCaptor.capture());
             assertThat(outputStreamArgumentCaptor.getValue().toString(), is(equalTo(dataExpectedToBeReturned)));
-
             assertThat(((List<Object[]>) dataArgumentCaptor.getValue()).size(), is(equalTo(2)));
-            assertTrue(Arrays.equals(((List<Object[]>) dataArgumentCaptor.getValue()).get(0), new Object[]{0, studyCategoryOne}));
-            assertTrue(Arrays.equals(((List<Object[]>) dataArgumentCaptor.getValue()).get(1), new Object[]{1, studyCategoryTwo}));
-
+            assertTrue(Arrays.equals(((List<Object[]>) dataArgumentCaptor.getValue()).get(0), new Object[]{0, studyOne}));
+            assertTrue(Arrays.equals(((List<Object[]>) dataArgumentCaptor.getValue()).get(1), new Object[]{1, studyTwo}));
             assertThat(responseSentToMobile, is(equalTo((char) FormDownloadServlet.RESPONSE_SUCCESS + dataExpectedToBeReturned)));
-
         } catch (Exception e) {
             assertFalse("Test failed, cause: " + e.getMessage(), true);
         }
@@ -103,19 +92,20 @@ public class FormDownloadServletTest {
     @Test
     public void shouldReturnListOfFormsForTheGivenStudyNameWithListOfUserAccounts() {
         final String formOneContent = "FormOne";
-        final String formTwoConent = "FromTwo";
+        final String formTwoContent = "FromTwo";
         final String groupName = "GroupOne";
         final Integer groupIndex = 2;
         final String dataExpectedToBeReturned = "Mock - List of forms";
         final String userDetailsExpectedToBeReturned = "Mock - User details";
+
         List<Object[]> userDetails = new ArrayList<Object[]>();
         userDetails.add(new Object[]{"username", "password", "salt"});
         when(usersService.getUsers()).thenReturn(userDetails);
-        final List<String> formContents = Arrays.asList(formOneContent, formTwoConent);
+
+        final List<String> formContents = Arrays.asList(formOneContent, formTwoContent);
         when(mobileFormsService.getForms(groupIndex)).thenReturn(new GroupNameAndForms(groupName, formContents));
 
         try {
-
             doAnswer(new Answer() {
                 @Override
                 public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
@@ -127,7 +117,7 @@ public class FormDownloadServletTest {
                     assertThat(userDetails.get(0)[2], is(equalTo(userDetails.get(0)[2])));
                     return null;
                 }
-            }).when(epihandyXformSerializer).serializeUsers(any(OutputStream.class), Matchers.anyObject());
+            }).when(epihandySerializer).serializeUsers(any(OutputStream.class), Matchers.anyObject());
 
             doAnswer(new Answer() {
                 @Override
@@ -138,27 +128,24 @@ public class FormDownloadServletTest {
                     assertThat((String)invocationOnMock.getArguments()[3], is(equalTo(groupName)));
                     return null;
                 }
-            }).when(epihandyXformSerializer).serializeForms(any(OutputStream.class), Matchers.anyObject(), anyInt(), anyString());
+            }).when(epihandySerializer).serializeForms(any(OutputStream.class), Matchers.anyObject(), anyInt(), anyString());
 
-            setupRequestWithActionOtherRequestParamenters(request, "username", "password", FormDownloadServlet.ACTION_DOWNLOAD_USERS_AND_FORMS, groupIndex);
+            setupRequestWithActionOtherRequestParameters(request, "username", "password", FormDownloadServlet.ACTION_DOWNLOAD_USERS_AND_FORMS, groupIndex);
 
             formDownloadServlet.doPost(request, response);
             String responseSentToMobile = readResponse(response);
 
             assertThat(responseSentToMobile, is(equalTo((char) FormDownloadServlet.RESPONSE_SUCCESS + userDetailsExpectedToBeReturned + dataExpectedToBeReturned)));
-
         } catch (Exception e) {
-
             assertFalse("Test failed, cause: " + e.getMessage(), true);
         }
-
     }
 
     private String readResponse(MockHttpServletResponse response) throws IOException {
         return new BufferedReader(new InputStreamReader(new ZInputStream(new ByteArrayInputStream(response.getContentAsByteArray())))).readLine();
     }
 
-    private void setupRequestWithActionOtherRequestParamenters(MockHttpServletRequest request, String userName, String password, byte actionCode, Integer groupIndex) throws IOException {
+    private void setupRequestWithActionOtherRequestParameters(MockHttpServletRequest request, String userName, String password, byte actionCode, Integer groupIndex) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
         dataOutputStream.writeUTF(userName);
