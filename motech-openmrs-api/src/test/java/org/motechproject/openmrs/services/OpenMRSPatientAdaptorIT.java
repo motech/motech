@@ -1,6 +1,9 @@
 package org.motechproject.openmrs.services;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.mrs.model.Facility;
 import org.motechproject.mrs.model.Patient;
 import org.motechproject.mrs.services.MRSFacilityAdaptor;
@@ -9,12 +12,27 @@ import org.motechproject.openmrs.OpenMRSIntegrationTestBase;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Date;
 
 import static java.lang.Integer.parseInt;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"classpath:applicationOpenmrsAPI.xml"})
 public class OpenMRSPatientAdaptorIT extends OpenMRSIntegrationTestBase {
+
+    @Before
+    public void setUp() {
+        super.setUp();
+    }
+
+    @After
+    public void tearDown() {
+        super.tearDown();
+    }
+
     @Autowired
     MRSPatientAdaptor mrsPatientAdaptor;
 
@@ -49,8 +67,6 @@ public class OpenMRSPatientAdaptorIT extends OpenMRSIntegrationTestBase {
                 openmrsLocationService.purgeLocation(openmrsLocationService.getLocation(parseInt(savedFacility.getId())));
             }
         });
-
-
         patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthdate, gender, savedFacility, savedPatient);
     }
 }

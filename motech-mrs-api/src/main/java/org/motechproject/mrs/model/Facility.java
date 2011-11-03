@@ -8,8 +8,8 @@ public class Facility {
     private String countyDistrict;
     private String stateProvince;
 
-    public Facility(String name) {
-        this.name = name;
+    public Facility(String id) {
+        this.id = id;
     }
 
     public Facility(String name, String country, String region, String countyDistrict, String stateProvince) {

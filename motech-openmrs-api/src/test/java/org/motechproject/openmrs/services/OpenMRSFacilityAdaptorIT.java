@@ -1,11 +1,16 @@
 package org.motechproject.openmrs.services;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.motechproject.mrs.model.Facility;
 import org.motechproject.mrs.services.MRSFacilityAdaptor;
 import org.motechproject.openmrs.OpenMRSIntegrationTestBase;
 import org.openmrs.api.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,13 +22,24 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.Matchers.equalTo;
 
-
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"classpath:applicationOpenmrsAPI.xml"})
 public class OpenMRSFacilityAdaptorIT extends OpenMRSIntegrationTestBase {
     @Autowired
     MRSFacilityAdaptor mrsFacilityAdaptor;
 
     @Autowired
     LocationService mrsLocationService;
+
+    @Before
+    public void setUp() {
+        super.setUp();
+    }
+
+    @After
+    public void tearDown() {
+        super.tearDown();
+    }
 
     @Test
     public void testSaveLocation() {
