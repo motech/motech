@@ -1,8 +1,6 @@
 package org.motechproject.mobileforms.api.web;
 
 import com.jcraft.jzlib.ZInputStream;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.fcitmuk.epihandy.EpihandyXformSerializer;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,8 +66,8 @@ public class FormDownloadServletIT {
     public void shouldReturnListOfUserAccountsTogetherWithTheListOfFormsOfTheGroup_GivenTheIndexOfTheGroup(){
         String motechUserSalt = "7357658437bd298b4a48b7357489357";
         String guyzbUserSalt = "135df6eacf3e3f21866ecff10378035edbf7";
-        List<Object[]> expectedUserAccounts = Arrays.asList(new Object[]{1, "motech", sha("ghs", motechUserSalt), motechUserSalt},
-                                                            new Object[]{2, "guyzb", sha("daniel123", guyzbUserSalt), guyzbUserSalt});
+        List<Object[]> expectedUserAccounts = Arrays.asList(new Object[]{1, "motech", "6f6347e4b28216556ec7dfa14d7dfadb873a15", motechUserSalt},
+                                                            new Object[]{2, "guyzb", "730c0e85d51b5c293b6ec8f22579ec7b67c5d8", guyzbUserSalt});
         String expectedFormContent = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
                 "<xf:xforms xmlns:xf=\"http://www.w3.org/2002/xforms\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" id=\"7\">\n" +
                 "  <xf:model>\n" +
@@ -132,9 +130,5 @@ public class FormDownloadServletIT {
             dataOutputStream.writeInt(groupIndex);
         }
         request.setContent(byteArrayOutputStream.toByteArray());
-    }
-
-    private String sha(String pass, String salt){
-        return new String(Hex.encodeHex(DigestUtils.sha(pass + salt)));
     }
 }
