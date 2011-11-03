@@ -25,4 +25,10 @@ public class UtilsTest {
         assertThat(new IOUtils().getFileContent("ClientDeath-2.xml", "GroupNameII"), is(equalTo(expectedFileContent)));
     }
 
+    @Test
+    public void shouldReturnSha1HashedStringGivenAPasswordAndSalt(){
+        // retaining the hashing with bug (leading zero missing for single digit hex) to be consistent with the mobile client code
+        assertThat(new Encoder().sha("ghs", "7357658437bd298b4a48b7357489357"), is(equalTo("6f6347e4b28216556ec7dfa14d7dfadb873a15")));
+    }
+
 }
