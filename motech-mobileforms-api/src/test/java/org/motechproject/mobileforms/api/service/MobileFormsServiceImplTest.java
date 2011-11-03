@@ -3,10 +3,10 @@ package org.motechproject.mobileforms.api.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.mobileforms.api.dao.AllMobileForms;
+import org.motechproject.mobileforms.api.repository.AllMobileForms;
 import org.motechproject.mobileforms.api.domain.Form;
 import org.motechproject.mobileforms.api.domain.FormGroup;
-import org.motechproject.mobileforms.api.valueobjects.GroupNameAndForms;
+import org.motechproject.mobileforms.api.vo.Study;
 
 import java.util.Arrays;
 import java.util.List;
@@ -63,8 +63,8 @@ public class MobileFormsServiceImplTest {
         when(allMobileForms.getGroup(0)).thenReturn(new FormGroup(formGroupOneName, Arrays.asList(new Form("From-1", "Form-1.xml", formOneContent), new Form("Form-2", "Form-2.xml", formTwoContent))));
         when(allMobileForms.getGroup(1)).thenReturn(new FormGroup(formGroupTwoName, Arrays.asList(new Form("From-3", "Form-3.xml", formThreeContent))));
 
-        assertThat(mobileFormsService.getForms(0), is(equalTo(new GroupNameAndForms(formGroupOneName, Arrays.asList(formOneContent, formTwoContent)))));
-        assertThat(mobileFormsService.getForms(1), is(equalTo(new GroupNameAndForms(formGroupTwoName, Arrays.asList(formThreeContent)))));
+        assertThat(mobileFormsService.getForms(0), is(equalTo(new Study(formGroupOneName, Arrays.asList(formOneContent, formTwoContent)))));
+        assertThat(mobileFormsService.getForms(1), is(equalTo(new Study(formGroupTwoName, Arrays.asList(formThreeContent)))));
 
     }
 
@@ -78,7 +78,7 @@ public class MobileFormsServiceImplTest {
         FormGroup group2 = new FormGroup("g2", Arrays.asList(form3, form4));
         when(allMobileForms.getAllFormGroups()).thenReturn(Arrays.asList(group1, group2));
 
-        Map<Integer, String> formDefinitionMap = mobileFormsService.getAllForms();
+        Map<Integer, String> formDefinitionMap = mobileFormsService.getFormIdMap();
 
         assertEquals("f1_content", formDefinitionMap.get(1));
         assertEquals("f2_content", formDefinitionMap.get(2));
@@ -89,7 +89,7 @@ public class MobileFormsServiceImplTest {
     private Form makeTestForm(Integer formId, String content) {
         Form form = mock(Form.class);
         when(form.formId()).thenReturn(formId);
-        when(form.getContent()).thenReturn(content);
+        when(form.content()).thenReturn(content);
         return form;
     }
 }

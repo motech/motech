@@ -1,4 +1,4 @@
-package org.motechproject.mobileforms.api.dao;
+package org.motechproject.mobileforms.api.repository;
 
 import ch.lambdaj.function.convert.Converter;
 import com.google.gson.reflect.TypeToken;
@@ -40,7 +40,7 @@ public class AllMobileForms {
                 return new FormGroup(formGroup.getName(), ch.lambdaj.Lambda.convert(formGroup.getForms(), new Converter<Form, Form>() {
                     @Override
                     public Form convert(Form form) {
-                        return new Form(form.getName(), form.getFileName(), ioUtils.getFileContent(form.getFileName(), formGroup.getName()));
+                        return new Form(form.name(), form.fileName(), ioUtils.getFileContent(form.fileName(), formGroup.getName()));
                     }
                 }));
             }

@@ -1,4 +1,4 @@
-package org.motechproject.mobileforms.api.dao;
+package org.motechproject.mobileforms.api.repository;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -11,7 +11,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.motechproject.mobileforms.api.service.MobileFormsService;
 import org.motechproject.mobileforms.api.service.UsersService;
-import org.motechproject.mobileforms.api.valueobjects.GroupNameAndForms;
+import org.motechproject.mobileforms.api.vo.Study;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -70,7 +70,7 @@ public class FormDownloadServletTest {
                     return null;
                 }
             }).when(epihandySerializer).serializeStudies(any(OutputStream.class), Matchers.anyObject());
-            setupRequestWithActionOtherRequestParameters(request, "username", "password", FormDownloadServlet.ACTION_DOWNLOAD_STUDY_LIST, null);
+            populateHttpRequest(request, "username", "password", FormDownloadServlet.ACTION_DOWNLOAD_STUDY_LIST, null);
 
             formDownloadServlet.doPost(request, response);
             String responseSentToMobile = readResponse(response);
@@ -103,7 +103,7 @@ public class FormDownloadServletTest {
         when(usersService.getUsers()).thenReturn(userDetails);
 
         final List<String> formContents = Arrays.asList(formOneContent, formTwoContent);
-        when(mobileFormsService.getForms(groupIndex)).thenReturn(new GroupNameAndForms(groupName, formContents));
+        when(mobileFormsService.getForms(groupIndex)).thenReturn(new Study(groupName, formContents));
 
         try {
             doAnswer(new Answer() {
@@ -130,7 +130,7 @@ public class FormDownloadServletTest {
                 }
             }).when(epihandySerializer).serializeForms(any(OutputStream.class), Matchers.anyObject(), anyInt(), anyString());
 
-            setupRequestWithActionOtherRequestParameters(request, "username", "password", FormDownloadServlet.ACTION_DOWNLOAD_USERS_AND_FORMS, groupIndex);
+            populateHttpRequest(request, "username", "password", FormDownloadServlet.ACTION_DOWNLOAD_USERS_AND_FORMS, groupIndex);
 
             formDownloadServlet.doPost(request, response);
             String responseSentToMobile = readResponse(response);
@@ -145,7 +145,9 @@ public class FormDownloadServletTest {
         return new BufferedReader(new InputStreamReader(new ZInputStream(new ByteArrayInputStream(response.getContentAsByteArray())))).readLine();
     }
 
-    private void setupRequestWithActionOtherRequestParameters(MockHttpServletRequest request, String userName, String password, byte actionCode, Integer groupIndex) throws IOException {
+    private void populateHttpRequest(MockHttpServletRequest request, String userName,
+                                     String password, byte actionCode,
+                                     Integer groupIndex) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
         dataOutputStream.writeUTF(userName);

@@ -1,12 +1,12 @@
 package org.motechproject.mobileforms.api.service;
 
-import org.motechproject.mobileforms.api.valueobjects.GroupNameAndForms;
+import org.motechproject.mobileforms.api.vo.Study;
 
 import java.util.List;
 import java.util.Map;
 
 public interface MobileFormsService {
     List<Object[]> getAllFormGroups();
-    GroupNameAndForms getForms(Integer formGroupIndex);
-    Map<Integer,String> getAllForms();
+    Study getForms(Integer formGroupIndex);
+    Map<Integer,String> getFormIdMap();
 }

@@ -1,9 +1,9 @@
 package org.motechproject.mobileforms.api.service;
 
-import org.motechproject.mobileforms.api.dao.AllMobileForms;
+import org.motechproject.mobileforms.api.repository.AllMobileForms;
 import org.motechproject.mobileforms.api.domain.Form;
 import org.motechproject.mobileforms.api.domain.FormGroup;
-import org.motechproject.mobileforms.api.valueobjects.GroupNameAndForms;
+import org.motechproject.mobileforms.api.vo.Study;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,18 +31,18 @@ public class MobileFormsServiceImpl implements MobileFormsService {
     }
 
     @Override
-    public GroupNameAndForms getForms(Integer formGroupIndex) {
+    public Study getForms(Integer formGroupIndex) {
         FormGroup formGroup = allMobileForms.getGroup(formGroupIndex);
-        return new GroupNameAndForms(formGroup.getName(), extract(formGroup.getForms(), on(Form.class).getContent()));
+        return new Study(formGroup.getName(), extract(formGroup.getForms(), on(Form.class).content()));
     }
 
     @Override
-    public Map<Integer, String> getAllForms() {
-        Map<Integer, String> formMap = new HashMap<Integer, String>();
+    public Map<Integer, String> getFormIdMap() {
+        Map<Integer, String> formIdMap = new HashMap<Integer, String>();
         for (FormGroup formGroup : allMobileForms.getAllFormGroups())
             for (Form form : formGroup.getForms())
-                formMap.put(form.formId(), form.getContent());
-        return formMap;
+                formIdMap.put(form.formId(), form.content());
+        return formIdMap;
     }
 
     private List<Object[]> extractStudyNamesWithIndex(List<FormGroup> allFormGroups) {

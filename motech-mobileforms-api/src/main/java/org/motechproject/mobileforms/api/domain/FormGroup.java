@@ -3,7 +3,6 @@ package org.motechproject.mobileforms.api.domain;
 import java.util.List;
 
 public class FormGroup {
-
     private String name;
     private List<Form> forms;
 
@@ -24,12 +23,9 @@ public class FormGroup {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof FormGroup)) return false;
-
         FormGroup formGroup = (FormGroup) o;
-
         if (forms != null ? !forms.equals(formGroup.forms) : formGroup.forms != null) return false;
         if (name != null ? !name.equals(formGroup.name) : formGroup.name != null) return false;
-
         return true;
     }
 

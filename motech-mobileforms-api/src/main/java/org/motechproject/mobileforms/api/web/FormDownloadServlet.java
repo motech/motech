@@ -3,7 +3,9 @@ package org.motechproject.mobileforms.api.web;
 import com.jcraft.jzlib.JZlib;
 import com.jcraft.jzlib.ZOutputStream;
 import org.fcitmuk.epihandy.EpihandyXformSerializer;
-import org.motechproject.mobileforms.api.valueobjects.GroupNameAndForms;
+import org.motechproject.mobileforms.api.vo.Study;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 
 public class FormDownloadServlet extends BaseFormServlet {
+    private final Logger log = LoggerFactory.getLogger(FormUploadServlet.class);
+
     public static final byte ACTION_DOWNLOAD_STUDY_LIST = 2;
     public static final byte ACTION_DOWNLOAD_USERS_AND_FORMS = 11;
 
@@ -32,6 +36,8 @@ public class FormDownloadServlet extends BaseFormServlet {
             dataOutput.writeByte(RESPONSE_SUCCESS);
             dataOutput.write(byteStream.toByteArray());
             response.setStatus(HttpServletResponse.SC_OK);
+            log.info("successfully downloaded the xforms");
+
         } catch (Exception e) {
             dataOutput.writeByte(RESPONSE_ERROR);
             throw new ServletException(FAILED_TO_SERIALIZE_DATA, e);
@@ -51,7 +57,7 @@ public class FormDownloadServlet extends BaseFormServlet {
         EpihandyXformSerializer epiSerializer = serializer();
         epiSerializer.serializeUsers(byteStream, usersService.getUsers());
         int studyIndex = dataInput.readInt();
-        GroupNameAndForms groupNameAndForms = mobileFormsService.getForms(studyIndex);
-        epiSerializer.serializeForms(byteStream, groupNameAndForms.getForms(), studyIndex, groupNameAndForms.getGroupName());
+        Study groupNameAndForms = mobileFormsService.getForms(studyIndex);
+        epiSerializer.serializeForms(byteStream, groupNameAndForms.forms(), studyIndex, groupNameAndForms.name());
     }
 }
