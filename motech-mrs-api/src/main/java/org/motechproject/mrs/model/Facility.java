@@ -52,14 +52,14 @@ public class Facility {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Facility)) return false;
 
         Facility facility = (Facility) o;
 
         if (country != null ? !country.equals(facility.country) : facility.country != null) return false;
         if (countyDistrict != null ? !countyDistrict.equals(facility.countyDistrict) : facility.countyDistrict != null)
             return false;
-        if (!id.equals(facility.id)) return false;
+        if (id != null ? !id.equals(facility.id) : facility.id != null) return false;
         if (name != null ? !name.equals(facility.name) : facility.name != null) return false;
         if (region != null ? !region.equals(facility.region) : facility.region != null) return false;
         if (stateProvince != null ? !stateProvince.equals(facility.stateProvince) : facility.stateProvince != null)
@@ -70,7 +70,7 @@ public class Facility {
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
+        int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (country != null ? country.hashCode() : 0);
         result = 31 * result + (region != null ? region.hashCode() : 0);

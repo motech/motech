@@ -2,6 +2,8 @@ package org.motechproject.mrs.services;
 
 import org.motechproject.mrs.model.Patient;
 
-public interface MRSPatientAdaptor<P extends Patient> {
-    P savePatient(P patient);
+public interface MRSPatientAdaptor {
+    Patient savePatient(Patient patient);
+
+    Patient getPatient(String patientId);
 }

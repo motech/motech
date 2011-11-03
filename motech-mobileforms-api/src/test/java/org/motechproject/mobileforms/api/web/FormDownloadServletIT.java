@@ -68,16 +68,17 @@ public class FormDownloadServletIT {
         String guyzbUserSalt = "135df6eacf3e3f21866ecff10378035edbf7";
         List<Object[]> expectedUserAccounts = Arrays.asList(new Object[]{1, "motech", "6f6347e4b28216556ec7dfa14d7dfadb873a15", motechUserSalt},
                                                             new Object[]{2, "guyzb", "730c0e85d51b5c293b6ec8f22579ec7b67c5d8", guyzbUserSalt});
-        String expectedFormContent = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
-                "<xf:xforms xmlns:xf=\"http://www.w3.org/2002/xforms\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" id=\"7\">\n" +
-                "  <xf:model>\n" +
-                "    <xf:instance id=\"death\">\n" +
-                "      <death id=\"7\" name=\"Client Death\">\n" +
-                "        <staffId/>\n" +
-                "      </death>\n" +
-                "    </xf:instance>\n" +
-                "    <xf:bind id=\"staffId\" nodeset=\"/death/staffId\" required=\"true()\" type=\"xsd:int\" constraint=\". &lt; 2147483647\" message=\"Number too large. Keep under 2147483647\"/>\n" +
-                "  </xf:model>\n" +
+        String newLine = System.getProperty("line.separator");
+        String expectedFormContent = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" + newLine +
+                "<xf:xforms xmlns:xf=\"http://www.w3.org/2002/xforms\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" id=\"7\">" + newLine +
+                "  <xf:model>" + newLine +
+                "    <xf:instance id=\"death\">" + newLine +
+                "      <death id=\"7\" name=\"Client Death\">" + newLine +
+                "        <staffId/>" + newLine +
+                "      </death>" + newLine +
+                "    </xf:instance>" + newLine +
+                "    <xf:bind id=\"staffId\" nodeset=\"/death/staffId\" required=\"true()\" type=\"xsd:int\" constraint=\". &lt; 2147483647\" message=\"Number too large. Keep under 2147483647\"/>" + newLine +
+                "  </xf:model>" + newLine +
                 "</xf:xforms>";
 
         int groupIndex = 1;

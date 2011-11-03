@@ -1,65 +1,72 @@
 package org.motechproject.openmrs.services;
 
-import org.apache.commons.lang.StringUtils;
+import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.Patient;
 import org.motechproject.mrs.services.MRSPatientAdaptor;
-import org.openmrs.Person;
-import org.openmrs.PersonAddress;
+import org.motechproject.openmrs.IdentifierType;
+import org.motechproject.openmrs.helper.PatientHelper;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.PersonService;
+import org.openmrs.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+
+import static ch.lambdaj.Lambda.on;
+import static ch.lambdaj.Lambda.project;
 
 public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
 
     @Autowired
     PatientService patientService;
 
+    @Autowired
+    PersonService personService;
+
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    OpenMRSFacilityAdaptor facilityAdaptor;
+
+    @Autowired
+    PatientHelper patientHelper;
+
+    @Override
+    public Patient getPatient(String patientId) {
+        return getMrsPatient(patientService.getPatient(Integer.parseInt(patientId)));
+    }
+
     @Override
     public Patient savePatient(Patient patient) {
-        final Person person = new Person();
-        for (PersonName name : getAllNames(patient)) {
-            person.addName(name);
-        }
-        final org.openmrs.Patient savedPatient = patientService.savePatient(new org.openmrs.Patient(person));
+        final org.openmrs.Patient openMRSPatient = patientHelper.buildOpenMrsPatient(patient, userService.generateSystemId(),
+                getPatientIdentifierType(IdentifierType.IDENTIFIER_MOTECH_ID),
+                facilityAdaptor.getFacility(Integer.parseInt(patient.getFacility().getId())), getAllPersonAttributeTypes());
 
-        PersonName preferredName = getPreferredName(savedPatient);
-        return new Patient(preferredName.getGivenName(), preferredName.getMiddleName(), preferredName.getFamilyName(),
-                null, savedPatient.getBirthdate(), savedPatient.getGender(), getAddress(savedPatient));
+        return getMrsPatient(patientService.savePatient(openMRSPatient));
     }
 
-    private List<PersonName> getAllNames(Patient patient) {
-        final List<PersonName> personNames = new ArrayList<PersonName>();
-        personNames.add(new PersonName(patient.getFirstName(), patient.getMiddleName(), patient.getLastName()));
-        if (StringUtils.isNotEmpty(patient.getPreferredName())) {
-            final PersonName personName = new PersonName(patient.getPreferredName(), patient.getMiddleName(), patient.getLastName());
-            personName.setPreferred(true);
-            personNames.add(personName);
-        }
-        return personNames;
+    private Patient getMrsPatient(org.openmrs.Patient savedPatient) {
+        final List<Attribute> attributes = project(savedPatient.getAttributes(), Attribute.class,
+                on(PersonAttribute.class).getAttributeType().toString(), on(PersonAttribute.class).getValue());
+        PersonName firstName = patientHelper.getFirstName(savedPatient);
+        final PatientIdentifier patientIdentifier = savedPatient.getPatientIdentifier();
+        return new Patient(String.valueOf(savedPatient.getId()), firstName.getGivenName(),
+                firstName.getMiddleName(), firstName.getFamilyName(), patientHelper.getPreferredName(savedPatient),
+                savedPatient.getBirthdate(), savedPatient.getGender(), patientHelper.getAddress(savedPatient), attributes,
+                (patientIdentifier != null) ? facilityAdaptor.createFacility(patientIdentifier.getLocation()) : null);
     }
 
-    private PersonName getPreferredName(org.openmrs.Patient patient) {
-        final Set<PersonName> personNames = patient.getNames();
-        PersonName preferredName = personNames.iterator().next();
-        for (PersonName personName : personNames) {
-            if (personName.isPreferred()) {
-                preferredName = personName;
-                break;
-            }
-        }
-        return preferredName;
+    public PatientIdentifierType getPatientIdentifierType(IdentifierType identifierType) {
+        return patientService.getPatientIdentifierTypeByName(identifierType.getName());
     }
 
-    private String getAddress(org.openmrs.Patient patient) {
-        String address = null;
-        final Set<PersonAddress> addresses = patient.getAddresses();
-        if (!addresses.isEmpty()) {
-            address = addresses.iterator().next().getAddress1();
-        }
-        return address;
+    private List<PersonAttributeType> getAllPersonAttributeTypes() {
+        return personService.getAllPersonAttributeTypes(false);
     }
 }

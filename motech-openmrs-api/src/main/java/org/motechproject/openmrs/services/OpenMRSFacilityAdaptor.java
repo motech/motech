@@ -45,7 +45,11 @@ public class OpenMRSFacilityAdaptor implements MRSFacilityAdaptor {
         return facilities;
     }
 
-    private Facility createFacility(Location savedLocation) {
+    public Location getFacility(Integer facilityId) {
+        return locationService.getLocation(facilityId);
+    }
+
+    public Facility createFacility(Location savedLocation) {
         return new Facility(String.valueOf(savedLocation.getId()), savedLocation.getName(), savedLocation.getCountry(),
                 savedLocation.getAddress6(), savedLocation.getCountyDistrict(), savedLocation.getStateProvince());
     }

@@ -13,12 +13,15 @@ public class Patient {
     private Date dateOfBirth;
     private String gender;
     private String address;
+    private Facility facility;
     private List<Attribute> attributes;
 
-    public Patient() {
-    }
 
-    public Patient(String firstName, String middleName, String lastName, String preferredName, Date dateOfBirth, String gender, String address) {
+    public Patient(String id, String firstName, String middleName, String lastName, String preferredName, Date dateOfBirth, String gender, String address, List<Attribute> attributes, Facility facility) {
+        this(id, firstName, middleName, lastName, preferredName, dateOfBirth, gender, address, facility);
+        this.attributes = attributes;
+    }
+    public Patient(String firstName, String middleName, String lastName, String preferredName, Date dateOfBirth, String gender, String address, Facility facility) {
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
@@ -26,10 +29,11 @@ public class Patient {
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.address = address;
+        this.facility = facility;
     }
 
-    public Patient(String id, String firstName, String middleName, String lastName, String preferredName, Date dateOfBirth, String gender, String address) {
-        this(firstName, middleName, lastName, preferredName, dateOfBirth, gender, address);
+    public Patient(String id, String firstName, String middleName, String lastName, String preferredName, Date dateOfBirth, String gender, String address, Facility facility) {
+        this(firstName, middleName, lastName, preferredName, dateOfBirth, gender, address, facility);
         this.id = id;
     }
 
@@ -69,10 +73,6 @@ public class Patient {
         return attributes;
     }
 
-    public void setAttributes(List<Attribute> attributes) {
-        this.attributes = attributes;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -106,5 +106,9 @@ public class Patient {
         result = 31 * result + (address != null ? address.hashCode() : 0);
         result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
         return result;
+    }
+
+    public Facility getFacility() {
+        return facility;
     }
 }
