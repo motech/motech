@@ -1,7 +1,6 @@
 package org.motechproject.openmrs.helper;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.Facility;
@@ -63,10 +62,8 @@ public class PatientHelperTest {
         assertThat(patientHelper.getAddress(patient), is(equalTo(expectedAddress)));
     }
 
-    @Ignore("to be fixed.")
     @Test
     public void shouldBuildOpenMrsPatientModel() {
-        final Person person = new Person();
         final String first = "First";
         final String middle = "Middle";
         final String last = "Last";
@@ -83,8 +80,8 @@ public class PatientHelperTest {
         final String motechId = "1000";
         final PatientIdentifierType patientIndentifierType = new PatientIdentifierType(2000);
         final Location location = new Location(3000);
-        PersonAttributeType attributeType1 = new PersonAttributeType() {{ setName(attributeName1); }};
-        PersonAttributeType attributeType2 = new PersonAttributeType() {{ setName("name2"); }};
+        PersonAttributeType attributeType1 = new PersonAttributeType() {{ setName(attributeName1); setPersonAttributeTypeId(1000);}};
+        PersonAttributeType attributeType2 = new PersonAttributeType() {{ setName("name2"); setPersonAttributeTypeId(1001);}};
         final List<PersonAttributeType> allPersonAttributeTypes = Arrays.asList(attributeType1, attributeType2);
 
         Patient returnedPatient = patientHelper.buildOpenMrsPatient(patient1, motechId, patientIndentifierType, location, allPersonAttributeTypes);
