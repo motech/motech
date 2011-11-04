@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.motechproject.cmslite.api.CMSLiteException;
 import org.motechproject.cmslite.api.CMSLiteService;
 import org.motechproject.cmslite.api.ResourceQuery;
-import org.motechproject.cmslite.api.dao.impl.CMSLiteResourcesImpl;
+import org.motechproject.cmslite.api.dao.AllResources;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -44,7 +44,7 @@ public class ResourceServletIT {
     @Autowired
     CMSLiteService cmsLiteService;
     @Autowired
-    CMSLiteResourcesImpl cmsLiteDAO;
+    AllResources allResources;
 
     private ResourceServlet resourceServlet;
 
@@ -88,7 +88,7 @@ public class ResourceServletIT {
         InputStream inputStreamToResource = this.getClass().getResourceAsStream(pathToFile);
         ResourceQuery queryEnglish = new ResourceQuery(WAVE_FILE, LANGUAGE);
         try {
-            cmsLiteDAO.addResource(queryEnglish, inputStreamToResource, null);
+            allResources.addResource(queryEnglish, inputStreamToResource, null);
         } catch (CMSLiteException e) {
             e.printStackTrace();
             assertFalse(true);

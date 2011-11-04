@@ -1,4 +1,4 @@
-package org.motechproject.cmslite.api.dao.impl;
+package org.motechproject.cmslite.api.dao;
 
 import org.ektorp.AttachmentInputStream;
 import org.ektorp.CouchDbConnector;
@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.motechproject.cmslite.api.CMSLiteException;
 import org.motechproject.cmslite.api.ResourceNotFoundException;
 import org.motechproject.cmslite.api.ResourceQuery;
+import org.motechproject.cmslite.api.dao.AllResources;
 import org.motechproject.cmslite.api.model.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,10 +27,10 @@ import static org.junit.Assert.assertFalse;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/applicationCmsLiteApi.xml")
-public class CMSLiteResourcesImplIT {
+public class AllResourcesIT {
 
     @Autowired
-    CMSLiteResourcesImpl cmsLiteDAO;
+    AllResources allResources;
 
     @Autowired
     @Qualifier("cmsLiteDatabase")
@@ -63,7 +64,7 @@ public class CMSLiteResourcesImplIT {
     @Test 
     public void shouldGetResourceByNameAndLanguageIfTheyArePresent() throws IOException {
         ResourceQuery query = new ResourceQuery("test", "en");
-        Resource resource = cmsLiteDAO.getResourceFromDB(query);
+        Resource resource = allResources.getResource(query);
 
         assertNotNull(resource);
         assertEquals("test", resource.getName());
@@ -74,34 +75,34 @@ public class CMSLiteResourcesImplIT {
     @Test 
     public void shouldReturnNullWhenNameOrLanguageIsNotPresentInTheDB() {
         ResourceQuery query = new ResourceQuery("test", "ger");
-        Resource resource = cmsLiteDAO.getResourceFromDB(query);
+        Resource resource = allResources.getResource(query);
         assertNull(resource);
         query = new ResourceQuery("testNone", "en");
-        resource = cmsLiteDAO.getResourceFromDB(query);
+        resource = allResources.getResource(query);
         assertNull(resource);
     }
 
     @Test 
     public void shouldNotRetrieveAResourceIfCaseDoesNotMatch() {
         ResourceQuery query = new ResourceQuery("test", "En");
-        Resource resource = cmsLiteDAO.getResourceFromDB(query);
+        Resource resource = allResources.getResource(query);
         assertNull(resource);
         query = new ResourceQuery("Test", "en");
-        resource = cmsLiteDAO.getResourceFromDB(query);
+        resource = allResources.getResource(query);
         assertNull(resource);
     }
 
     @Test 
     public void shouldReturnNoResourceWhenNameIsNull() throws ResourceNotFoundException {
         ResourceQuery query = new ResourceQuery(null, "en");
-        Resource resource = cmsLiteDAO.getResourceFromDB(query);
+        Resource resource = allResources.getResource(query);
         assertNull(resource);
     }
 
     @Test 
     public void shouldReturnNoResourceWhenLanguageIsNull() throws ResourceNotFoundException {
         ResourceQuery query = new ResourceQuery("test", null);
-        Resource resource = cmsLiteDAO.getResourceFromDB(query);
+        Resource resource = allResources.getResource(query);
         assertNull(resource);
     }
 
@@ -109,7 +110,7 @@ public class CMSLiteResourcesImplIT {
     public void shouldSaveNewResource() {
         String pathToFile = "/background.wav";
         ResourceQuery queryEnglish = addResource(pathToFile, "E70BCBFFEDE23037F521A19D7228C60E");
-        Resource enResource = cmsLiteDAO.getResourceFromDB(queryEnglish);
+        Resource enResource = allResources.getResource(queryEnglish);
         assertNotNull(enResource);
         assertEquals("en", enResource.getLanguage());
         assertEquals("test-save", enResource.getName());
@@ -124,14 +125,14 @@ public class CMSLiteResourcesImplIT {
         String pathToNewFile = "/10.wav";
 
         ResourceQuery queryEnglish = addResource(pathToFile, "E70BCBFFEDE23037F521A19D7228C60E");
-        Resource enResource = cmsLiteDAO.getResourceFromDB(queryEnglish);
+        Resource enResource = allResources.getResource(queryEnglish);
         assertNotNull(enResource);
         assertEquals("en", enResource.getLanguage());
         assertEquals("test-save", enResource.getName());
         assertEquals("E70BCBFFEDE23037F521A19D7228C60E", enResource.getChecksum());
 
         ResourceQuery newQueryEnglish = addResource(pathToNewFile, "B77E1F413455989CAA782037505F696E");
-        Resource newResource = cmsLiteDAO.getResourceFromDB(newQueryEnglish);
+        Resource newResource = allResources.getResource(newQueryEnglish);
         assertNotNull(newResource);
         assertEquals("en", newResource.getLanguage());
         assertEquals("test-save", newResource.getName());
@@ -145,7 +146,7 @@ public class CMSLiteResourcesImplIT {
 
         ResourceQuery queryEnglish = new ResourceQuery("test-save", "en");
         try {
-            cmsLiteDAO.addResource(queryEnglish, inputStreamToResource, checksum);
+            allResources.addResource(queryEnglish, inputStreamToResource, checksum);
         } catch (CMSLiteException e) {
             e.printStackTrace();
             assertFalse(true);
