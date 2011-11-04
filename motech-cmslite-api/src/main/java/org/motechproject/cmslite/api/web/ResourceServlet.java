@@ -2,9 +2,9 @@ package org.motechproject.cmslite.api.web;
 
 import org.apache.log4j.Logger;
 import org.ektorp.AttachmentInputStream;
-import org.motechproject.cmslite.api.CMSLiteService;
-import org.motechproject.cmslite.api.ResourceNotFoundException;
-import org.motechproject.cmslite.api.ResourceQuery;
+import org.motechproject.cmslite.api.model.ResourceNotFoundException;
+import org.motechproject.cmslite.api.model.ResourceQuery;
+import org.motechproject.cmslite.api.service.CMSLiteService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

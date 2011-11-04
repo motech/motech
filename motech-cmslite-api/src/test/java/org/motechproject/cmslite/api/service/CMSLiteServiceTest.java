@@ -1,12 +1,10 @@
-package org.motechproject.cmslite;
+package org.motechproject.cmslite.api.service;
 
 import org.junit.Test;
-import org.motechproject.cmslite.api.CMSLiteService;
-import org.motechproject.cmslite.api.ResourceNotFoundException;
-import org.motechproject.cmslite.api.ResourceQuery;
 import org.motechproject.cmslite.api.dao.AllResources;
-import org.motechproject.cmslite.api.impl.CMSLiteServiceImpl;
 import org.motechproject.cmslite.api.model.Resource;
+import org.motechproject.cmslite.api.model.ResourceNotFoundException;
+import org.motechproject.cmslite.api.model.ResourceQuery;
 
 import java.io.IOException;
 import java.io.InputStream;

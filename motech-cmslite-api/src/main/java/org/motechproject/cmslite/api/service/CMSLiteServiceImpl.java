@@ -1,10 +1,9 @@
-package org.motechproject.cmslite.api.impl;
+package org.motechproject.cmslite.api.service;
 
 
-import org.motechproject.cmslite.api.CMSLiteException;
-import org.motechproject.cmslite.api.CMSLiteService;
-import org.motechproject.cmslite.api.ResourceNotFoundException;
-import org.motechproject.cmslite.api.ResourceQuery;
+import org.motechproject.cmslite.api.model.CMSLiteException;
+import org.motechproject.cmslite.api.model.ResourceNotFoundException;
+import org.motechproject.cmslite.api.model.ResourceQuery;
 import org.motechproject.cmslite.api.dao.AllResources;
 import org.motechproject.cmslite.api.model.Resource;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package org.motechproject.cmslite.api;
+package org.motechproject.cmslite.api.model;
 
 
 public class ResourceNotFoundException extends Exception{
