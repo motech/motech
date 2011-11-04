@@ -24,7 +24,7 @@ public class CMSLiteServiceImpl implements CMSLiteService {
 
     public InputStream getContent(ResourceQuery query) throws ResourceNotFoundException {
         if (query == null) throw new IllegalArgumentException("Query should not be null");
-        Resource resource = cmsLiteResources.getResource(query);
+        Resource resource = cmsLiteResources.getResourceFromDB(query);
         if (resource != null) return resource.getResourceAsInputStream();
         throw new ResourceNotFoundException();
 

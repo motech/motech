@@ -26,11 +26,11 @@ public class CMSLiteServiceTest {
         InputStream inputStreamToResource = mock(InputStream.class);
 
         resource.setInputStream(inputStreamToResource);
-        when(mockResources.getResource(query)).thenReturn(resource);
+        when(mockResources.getResourceFromDB(query)).thenReturn(resource);
 
         InputStream content = cmsLiteService.getContent(query);
 
-        verify(mockResources).getResource(query);
+        verify(mockResources).getResourceFromDB(query);
         assertEquals(inputStreamToResource, content);
     }
 
@@ -40,7 +40,7 @@ public class CMSLiteServiceTest {
         CMSLiteResources mockResources = mock(CMSLiteResources.class);
         CMSLiteService cmsLiteService = new CMSLiteServiceImpl(mockResources);
 
-        when(mockResources.getResource(query)).thenReturn(null);
+        when(mockResources.getResourceFromDB(query)).thenReturn(null);
 
         cmsLiteService.getContent(query);
 
@@ -53,7 +53,7 @@ public class CMSLiteServiceTest {
         CMSLiteService cmsLiteService = new CMSLiteServiceImpl(mockResources);
 
         cmsLiteService.getContent(null);
-        verify(mockResources,never()).getResource(null);
+        verify(mockResources,never()).getResourceFromDB(null);
 
         fail("Should have thrown IllegalArgumentException when query is null");
     }

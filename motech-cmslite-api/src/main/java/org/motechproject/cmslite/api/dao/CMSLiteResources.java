@@ -8,8 +8,7 @@ import org.motechproject.cmslite.api.model.Resource;
 import java.io.InputStream;
 
 public interface CMSLiteResources {
-
-    Resource getResource(ResourceQuery query);
+    Resource getResourceFromDB(ResourceQuery query);
 
     void addResource(ResourceQuery query, InputStream inputStream, String checksum) throws CMSLiteException;
 }

@@ -12,12 +12,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -45,7 +39,7 @@ public class ResourceServlet extends HttpServlet {
             long contentLength = contentStream.getContentLength();
 
             response.setStatus(HttpServletResponse.SC_OK);
-            response.setHeader("Content-Type", "audio/x-wav");
+            response.setHeader("Content-Type", contentStream.getContentType());
             response.setHeader("Accept-Ranges", "bytes");
             response.setContentLength((int) contentLength);
             

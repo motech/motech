@@ -12,7 +12,9 @@ import org.motechproject.cmslite.api.model.Resource;
 import org.motechproject.dao.MotechAuditableRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -25,7 +27,7 @@ public class CMSLiteResourcesImpl extends MotechAuditableRepository<Resource> im
     }
 
     @View(name = "by_name_and_language", map = "function(doc) { if (doc.type=='RESOURCE') { emit([doc.name, doc.language], doc); } }")
-    public Resource getResource(ResourceQuery resourceQuery) {
+    public Resource getResourceFromDB(ResourceQuery resourceQuery) {
         ViewQuery query = new ViewQuery().designDocId("_design/Resource").viewName("by_name_and_language").key(ComplexKey.of(resourceQuery.getName(), resourceQuery.getLanguage()));
         List<Resource> result = db.queryView(query, Resource.class);
 
@@ -39,29 +41,20 @@ public class CMSLiteResourcesImpl extends MotechAuditableRepository<Resource> im
 
     public void addResource(ResourceQuery query, InputStream inputStream, String checksum) throws CMSLiteException {
         BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-        Resource resource = new Resource();
-        resource.setName(query.getName());
-        resource.setLanguage(query.getLanguage());
+        Resource resource = query.getResource();
 
         Resource resourceFromDB = null;
         try {
 //            String checksum = checksum(bufferedInputStream);
-            resourceFromDB = getResource(query);
+            resourceFromDB = getResourceFromDB(query);
 
-            boolean create = (resourceFromDB == null);
+            boolean create = resourceFromDB == null;
             boolean sameAttachment = !create && !checksum.equals(resourceFromDB.getChecksum());
 
             if (!create && !sameAttachment) return;
 
-            if (create) {
-                resource.setChecksum(checksum);
-                db.create(resource);
-                createAttachment(bufferedInputStream, resource);
-            } else {
-                resourceFromDB.setChecksum(checksum);
-                db.update(resourceFromDB);
-                createAttachment(bufferedInputStream, resourceFromDB);
-            }
+            createOrUpdateResource(checksum, bufferedInputStream, resource, resourceFromDB, create);
+
         } catch (Exception e) {
             throw new CMSLiteException(e.getMessage(), e);
         } finally {
@@ -73,6 +66,25 @@ public class CMSLiteResourcesImpl extends MotechAuditableRepository<Resource> im
                 e.printStackTrace();
             }
         }
+    }
+
+    private void createOrUpdateResource(String checksum, BufferedInputStream bufferedInputStream, Resource resource, Resource resourceFromDB, boolean resourceDoesNotExist) throws IOException {
+        if (resourceDoesNotExist)
+            createResource(checksum, bufferedInputStream, resource);
+        else
+            updateResource(checksum, bufferedInputStream, resourceFromDB);
+    }
+
+    private void updateResource(String checksum, BufferedInputStream bufferedInputStream, Resource resourceFromDB) throws IOException {
+        resourceFromDB.setChecksum(checksum);
+        db.update(resourceFromDB);
+        createAttachment(bufferedInputStream, resourceFromDB);
+    }
+
+    private void createResource(String checksum, BufferedInputStream bufferedInputStream, Resource resource) throws IOException {
+        resource.setChecksum(checksum);
+        db.create(resource);
+        createAttachment(bufferedInputStream, resource);
     }
 
     private void createAttachment(InputStream inputStream, Resource resource) throws IOException {
