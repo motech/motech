@@ -21,10 +21,10 @@ public abstract class BaseFormServlet extends HttpServlet {
     public static final String FAILED_TO_SERIALIZE_DATA = "failed to serialize data";
     public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
 
-    protected ApplicationContext context;
     protected UsersService usersService;
-    protected MobileFormsService mobileFormsService;
+    protected ApplicationContext context;
     protected StudyProcessor studyProcessor;
+    protected MobileFormsService mobileFormsService;
 
     protected BaseFormServlet() {
         context =  new ClassPathXmlApplicationContext("applicationMobileFormsAPI.xml");

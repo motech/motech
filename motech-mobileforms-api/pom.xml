@@ -63,5 +63,10 @@
             <version>2.6</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.8.3</version>
+        </dependency>
     </dependencies>
 </project>
