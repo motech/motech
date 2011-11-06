@@ -68,4 +68,7 @@ public class AllMobileForms {
     }
 
 
+    public Form getFormByName(String formName) {
+        return null;  //To change body of created methods use File | Settings | File Templates.
+    }
 }

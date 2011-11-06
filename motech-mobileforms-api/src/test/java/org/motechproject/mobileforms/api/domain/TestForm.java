@@ -1,6 +1,6 @@
 package org.motechproject.mobileforms.api.domain;
 
-public class TestForm implements FormBean{
+public class TestForm extends FormBean{
     private String patientid;
     private String country;
     private String district;

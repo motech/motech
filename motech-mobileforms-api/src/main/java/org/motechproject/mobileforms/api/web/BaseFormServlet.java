@@ -1,9 +1,11 @@
 package org.motechproject.mobileforms.api.web;
 
 import org.fcitmuk.epihandy.EpihandyXformSerializer;
-import org.motechproject.mobileforms.api.callbacks.StudyProcessor;
+import org.motechproject.mobileforms.api.callbacks.FormProcessor;
+import org.motechproject.mobileforms.api.domain.FormBean;
 import org.motechproject.mobileforms.api.service.MobileFormsService;
 import org.motechproject.mobileforms.api.service.UsersService;
+import org.motechproject.mobileforms.api.validator.FormValidator;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -23,14 +25,14 @@ public abstract class BaseFormServlet extends HttpServlet {
 
     protected UsersService usersService;
     protected ApplicationContext context;
-    protected StudyProcessor studyProcessor;
+    protected FormProcessor formProcessor;
     protected MobileFormsService mobileFormsService;
 
     protected BaseFormServlet() {
         context =  new ClassPathXmlApplicationContext("applicationMobileFormsAPI.xml");
         mobileFormsService = context.getBean("mobileFormsServiceImpl", MobileFormsService.class);
         usersService = context.getBean("usersServiceImpl", UsersService.class);
-        studyProcessor = context.getBean("studyProcessor", StudyProcessor.class);
+        formProcessor = context.getBean("formProcessor", FormProcessor.class);
     }
 
     protected EpihandyXformSerializer serializer() {
@@ -46,4 +48,8 @@ public abstract class BaseFormServlet extends HttpServlet {
 
     @Override
     protected abstract void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
+
+    protected FormValidator getValidatorFor(FormBean formBean) throws ClassNotFoundException {
+        return (FormValidator) context.getBean(Class.forName(formBean.getValidator()));
+    }
 }

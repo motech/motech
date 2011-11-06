@@ -1,4 +1,4 @@
 package org.motechproject.mobileforms.api.domain;
 
-public class ClientDeathForm implements FormBean{
+public class ClientDeathForm extends FormBean{
 }

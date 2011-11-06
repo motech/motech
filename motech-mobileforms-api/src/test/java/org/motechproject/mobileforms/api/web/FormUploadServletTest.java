@@ -6,17 +6,19 @@ import org.fcitmuk.epihandy.ResponseHeader;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.mobileforms.api.callbacks.StudyProcessor;
+import org.motechproject.mobileforms.api.callbacks.FormProcessor;
+import org.motechproject.mobileforms.api.domain.FormBean;
+import org.motechproject.mobileforms.api.domain.FormError;
 import org.motechproject.mobileforms.api.service.MobileFormsService;
 import org.motechproject.mobileforms.api.service.UsersService;
+import org.motechproject.mobileforms.api.validator.FormValidator;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -38,7 +40,8 @@ public class FormUploadServletTest {
     @Mock
     private EpihandyXformSerializer epihandySerializer;
     @Mock
-    private StudyProcessor studyProcessor;
+    private FormProcessor formProcessor;
+
     private Integer groupIndex = 2;
 
     @Before
@@ -50,21 +53,34 @@ public class FormUploadServletTest {
         ReflectionTestUtils.setField(formUploadServlet, "context", applicationContext);
         ReflectionTestUtils.setField(formUploadServlet, "mobileFormsService", mobileFormsService);
         ReflectionTestUtils.setField(formUploadServlet, "usersService", usersService);
-        ReflectionTestUtils.setField(formUploadServlet, "studyProcessor", studyProcessor);
+        ReflectionTestUtils.setField(formUploadServlet, "formProcessor", formProcessor);
         doReturn(epihandySerializer).when(formUploadServlet).serializer();
     }
 
     @Test
     public void shouldProcessUploadedForms() throws Exception {
-        int processedForms = 6;
-        int failedForms = 0;
+        int processedForms = 1;
+        int failedForms = 1;
+        String validatorClass = "org.motechproject.mobileforms.api.validator.TestANCVisitFormValidator";
+        FormBean successForm = mock(FormBean.class);
+        FormBean failureForm = mock(FormBean.class);
+        FormValidator formValidator = mock(FormValidator.class);
+
+        List<FormBean> formBeans = Arrays.asList(successForm, failureForm);
         Map<Integer, String> formIdMap = new HashMap<Integer, String>();
-        when(studyProcessor.formsCount()).thenReturn(processedForms);
+
+        when(formProcessor.formBeans()).thenReturn(formBeans);
+        when(successForm.getValidator()).thenReturn(validatorClass);
+        when(failureForm.getValidator()).thenReturn(validatorClass);
+        when(applicationContext.getBean(Class.forName(validatorClass))).thenReturn(formValidator);
+        when(formValidator.validate(successForm)).thenReturn(Collections.EMPTY_LIST);
+        when(formValidator.validate(failureForm)).thenReturn(Arrays.asList(new FormError("","")));
         when(mobileFormsService.getFormIdMap()).thenReturn(formIdMap);
 
         populateHttpRequest(request, "username", "password", groupIndex);
 
         formUploadServlet.doPost(request, response);
+
         String responseSentToMobile = readResponse(response);
         byte[] expected = new byte[9];
         expected[0] = ResponseHeader.STATUS_SUCCESS;
@@ -73,7 +89,7 @@ public class FormUploadServletTest {
 
         assertEquals(new String(expected), new String(responseSentToMobile.getBytes("UTF8")));
 
-        verify(epihandySerializer).addDeserializationListener(studyProcessor);
+        verify(epihandySerializer).addDeserializationListener(formProcessor);
         verify(epihandySerializer).deserializeStudiesWithEvents(any(DataInputStream.class), eq(formIdMap));
 
     }

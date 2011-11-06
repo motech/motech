@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mobileforms.api.domain.TestForm;
 
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
 
 public class FormDataParserTest {
@@ -29,9 +31,9 @@ public class FormDataParserTest {
                  "<formName>patientreg</formName>" +
                  "</patientreg>";
 
-        TestForm actual = (TestForm) parser.parse(xml, "org.motechproject.mobileforms.api.domain.TestForm");
-        assertEquals("uganda",actual.getCountry());
-        assertEquals("patientreg",actual.getFormName());
-        assertEquals("data", actual.getFormType());
+        Map map = parser.parse(xml);
+        assertEquals("uganda",map.get("country"));
+        assertEquals("patientreg",map.get("formName"));
+        assertEquals("data", map.get("formType"));
     }
 }
