@@ -60,8 +60,8 @@ public class MobileFormsServiceImplTest {
         String formGroupOneName = "FormGroup-1";
         String formGroupTwoName = "FormGroup-2";
 
-        when(allMobileForms.getGroup(0)).thenReturn(new FormGroup(formGroupOneName, Arrays.asList(new Form("From-1", "Form-1.xml", formOneContent), new Form("Form-2", "Form-2.xml", formTwoContent))));
-        when(allMobileForms.getGroup(1)).thenReturn(new FormGroup(formGroupTwoName, Arrays.asList(new Form("From-3", "Form-3.xml", formThreeContent))));
+        when(allMobileForms.getFormGroup(0)).thenReturn(new FormGroup(formGroupOneName, Arrays.asList(new Form("From-1", "Form-1.xml", formOneContent, null, null), new Form("Form-2", "Form-2.xml", formTwoContent, null, null))));
+        when(allMobileForms.getFormGroup(1)).thenReturn(new FormGroup(formGroupTwoName, Arrays.asList(new Form("From-3", "Form-3.xml", formThreeContent, null, null))));
 
         assertThat(mobileFormsService.getForms(0), is(equalTo(new Study(formGroupOneName, Arrays.asList(formOneContent, formTwoContent)))));
         assertThat(mobileFormsService.getForms(1), is(equalTo(new Study(formGroupTwoName, Arrays.asList(formThreeContent)))));
@@ -88,7 +88,7 @@ public class MobileFormsServiceImplTest {
 
     private Form makeTestForm(Integer formId, String content) {
         Form form = mock(Form.class);
-        when(form.formId()).thenReturn(formId);
+        when(form.id()).thenReturn(formId);
         when(form.content()).thenReturn(content);
         return form;
     }

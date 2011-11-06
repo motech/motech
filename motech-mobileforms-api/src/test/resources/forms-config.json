@@ -6,13 +6,13 @@
                 "name" : "MForm-I",
                 "fileName" :  "ClientDeath-1.xml",
                 "bean":"org.motechproject.mobileforms.api.domain.ClientDeathFormBean",
-                "validator": "org.motechproject.mobileforms.api.validator.TestMForm1Validator"
+                "validator": "org.motechproject.mobileforms.api.validator.TestClientDeathFormValidator"
             },
             {
                 "name" : "MForm-II",
                 "fileName" :  "ANCVisit-1.xml",
                 "bean":"org.motechproject.mobileforms.api.domain.ANCVisitFormBean",
-                "validator": "org.motechproject.mobileforms.api.validator.TestMForm2Validator"
+                "validator": "org.motechproject.mobileforms.api.validator.TestANCVisitFormValidator"
             }
         ]
     } ,
@@ -23,7 +23,7 @@
                 "name" : "MForm-III",
                 "fileName" :  "ClientDeath-2.xml",
                 "bean":"org.motechproject.mobileforms.api.domain.ClientDeathFormBean",
-                "validator": "org.motechproject.mobileforms.api.validator.TestMForm3Validator"
+                "validator": "org.motechproject.mobileforms.api.validator.TestClientDeathFormValidator"
             }
         ]
     }

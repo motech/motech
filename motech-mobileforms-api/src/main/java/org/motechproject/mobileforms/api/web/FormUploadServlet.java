@@ -37,6 +37,9 @@ public class FormUploadServlet extends BaseFormServlet {
             Integer processedForms = studyProcessor.formsCount();
             log.info("successfully uploaded " + processedForms + " forms");
 
+            for (Study study : studyProcessor.studies()) {
+
+            }
             dataOutput.writeByte(ResponseHeader.STATUS_SUCCESS);
             dataOutput.writeInt(processedForms);
             dataOutput.writeInt(faultyForms);

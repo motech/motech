@@ -1,5 +1,6 @@
 package org.motechproject.mobileforms.api.repository;
 
+import ch.lambdaj.Lambda;
 import ch.lambdaj.function.convert.Converter;
 import com.google.gson.reflect.TypeToken;
 import org.motechproject.dao.MotechJsonReader;
@@ -32,17 +33,24 @@ public class AllMobileForms {
     }
 
     @PostConstruct
-    public void initialize(){
-        List<FormGroup> formGroupsFromConfigFile = (List<FormGroup>) motechJsonReader.readFromFile(configFile(), new TypeToken<List<FormGroup>>(){}.getType());
+    public void initialize() {
+        List<FormGroup> formGroupsFromConfigFile = (List<FormGroup>) motechJsonReader.readFromFile(configFile(), new TypeToken<List<FormGroup>>() {
+        }.getType());
         this.formGroups = convert(formGroupsFromConfigFile, new Converter<FormGroup, FormGroup>() {
             @Override
-            public FormGroup convert(final FormGroup formGroup) {
-                return new FormGroup(formGroup.getName(), ch.lambdaj.Lambda.convert(formGroup.getForms(), new Converter<Form, Form>() {
-                    @Override
-                    public Form convert(Form form) {
-                        return new Form(form.name(), form.fileName(), ioUtils.getFileContent(form.fileName(), formGroup.getName()));
-                    }
-                }));
+            public FormGroup convert(final FormGroup formGroup) {return new FormGroup(formGroup.getName(),
+                        Lambda.convert(formGroup.getForms(),
+                                new Converter<Form, Form>() {
+                                    @Override
+                                    public Form convert(Form form) {
+                                        return new Form(
+                                                form.name(),
+                                                form.fileName(),
+                                                ioUtils.getFileContent(form.fileName(), formGroup.getName()),
+                                                form.bean(),
+                                                form.validator());
+                                    }
+                                }));
             }
         });
     }
@@ -51,8 +59,8 @@ public class AllMobileForms {
         return formGroups;
     }
 
-    public FormGroup getGroup(Integer indexOfFormGroupList) {
-        return formGroups.get(indexOfFormGroupList);
+    public FormGroup getFormGroup(Integer index) {
+        return formGroups.get(index);
     }
 
     private String configFile() {

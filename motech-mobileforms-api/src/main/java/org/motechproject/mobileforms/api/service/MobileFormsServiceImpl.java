@@ -32,7 +32,7 @@ public class MobileFormsServiceImpl implements MobileFormsService {
 
     @Override
     public Study getForms(Integer formGroupIndex) {
-        FormGroup formGroup = allMobileForms.getGroup(formGroupIndex);
+        FormGroup formGroup = allMobileForms.getFormGroup(formGroupIndex);
         return new Study(formGroup.getName(), extract(formGroup.getForms(), on(Form.class).content()));
     }
 
@@ -41,7 +41,7 @@ public class MobileFormsServiceImpl implements MobileFormsService {
         Map<Integer, String> formIdMap = new HashMap<Integer, String>();
         for (FormGroup formGroup : allMobileForms.getAllFormGroups())
             for (Form form : formGroup.getForms())
-                formIdMap.put(form.formId(), form.content());
+                formIdMap.put(form.id(), form.content());
         return formIdMap;
     }
 

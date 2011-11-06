@@ -5,7 +5,7 @@ import org.motechproject.mobileforms.api.domain.FormError;
 
 import java.util.List;
 
-public class TestMForm3Validator implements FormValidator{
+public class TestANCVisitFormValidator implements FormValidator{
     @Override
     public List<FormError> validate(FormBean formBean) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.

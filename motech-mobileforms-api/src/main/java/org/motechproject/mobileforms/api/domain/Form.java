@@ -4,10 +4,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Form {
-    private Integer formId;
+    private Integer id;
     private String name;
+    private String bean;
     private String content;
     private String fileName;
+    private String validator;
+
     public static final String XF_XFORMS_ID = "<xf:xforms.*?id=\"(.*?)\"";
 
     public Form(String name, String fileName) {
@@ -15,10 +18,12 @@ public class Form {
         this.fileName = fileName;
     }
 
-    public Form(String name, String fileName, String content) {
+    public Form(String name, String fileName, String content, String bean, String validator) {
         this(name, fileName);
         this.content = content;
-        this.formId = extractId(content);
+        this.bean = bean;
+        this.validator = validator;
+        this.id = extractId(content);
     }
 
     public String name() {
@@ -29,12 +34,20 @@ public class Form {
         return fileName;
     }
 
-    public Integer formId() {
-        return formId;
+    public Integer id() {
+        return id;
     }
 
     public String content() {
         return content;
+    }
+
+    public String bean() {
+        return bean;
+    }
+
+    public String validator() {
+        return validator;
     }
 
     private Integer extractId(String content) {

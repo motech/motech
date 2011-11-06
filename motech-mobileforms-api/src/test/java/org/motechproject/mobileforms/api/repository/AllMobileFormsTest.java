@@ -19,7 +19,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class AllMobileFormsTest {
-
     @Mock
     private IOUtils ioUtils;
     private AllMobileForms allMobileForms;
@@ -37,9 +36,9 @@ public class AllMobileFormsTest {
         when(ioUtils.getFileContent("ClientDeath-2.xml", "GroupNameII")).thenReturn("<form>DummyForm3</form>");
 
         allMobileForms.initialize();
-        formsOfGroupOne = Arrays.asList(new Form("MForm-I", "ClientDeath-1.xml", "<form>DummyForm1</form>"),
-                                        new Form("MForm-II", "ANCVisit-1.xml", "<form>DummyForm2</form>"));
-        formsOfGroupTwo = Arrays.asList(new Form("MForm-III", "ClientDeath-2.xml", "<form>DummyForm3</form>"));
+        formsOfGroupOne = Arrays.asList(new Form("MForm-I", "ClientDeath-1.xml", "<form>DummyForm1</form>", null, null),
+                                        new Form("MForm-II", "ANCVisit-1.xml", "<form>DummyForm2</form>", null, null));
+        formsOfGroupTwo = Arrays.asList(new Form("MForm-III", "ClientDeath-2.xml", "<form>DummyForm3</form>", null, null));
         formGroupOne = new FormGroup("GroupNameI", formsOfGroupOne);
         formGroupTwo = new FormGroup("GroupNameII", formsOfGroupTwo);
     }
@@ -52,7 +51,7 @@ public class AllMobileFormsTest {
 
     @Test
     public void shouldReturnTheGroupGivenTheIndexOfListOfFormGroups(){
-        assertThat(allMobileForms.getGroup(0), is(equalTo(formGroupOne)));
-        assertThat(allMobileForms.getGroup(1), is(equalTo(formGroupTwo)));
+        assertThat(allMobileForms.getFormGroup(0), is(equalTo(formGroupOne)));
+        assertThat(allMobileForms.getFormGroup(1), is(equalTo(formGroupTwo)));
     }
 }
