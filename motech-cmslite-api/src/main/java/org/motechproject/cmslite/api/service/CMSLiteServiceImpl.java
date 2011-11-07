@@ -1,17 +1,15 @@
 package org.motechproject.cmslite.api.service;
 
 
+import org.motechproject.cmslite.api.dao.AllResources;
 import org.motechproject.cmslite.api.model.CMSLiteException;
+import org.motechproject.cmslite.api.model.Resource;
 import org.motechproject.cmslite.api.model.ResourceNotFoundException;
 import org.motechproject.cmslite.api.model.ResourceQuery;
-import org.motechproject.cmslite.api.dao.AllResources;
-import org.motechproject.cmslite.api.model.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
 
-@Component
 public class CMSLiteServiceImpl implements CMSLiteService {
     private AllResources allResources;
 
