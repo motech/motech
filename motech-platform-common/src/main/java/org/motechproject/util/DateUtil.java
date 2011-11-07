@@ -8,6 +8,7 @@ import org.motechproject.MotechException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
 import java.util.TimeZone;
@@ -55,16 +56,26 @@ public class DateUtil {
     }
 
     private static DateTimeZone getTimeZone() {
-        if (dateTimeZone != null) return dateTimeZone;
-        try {
-            Properties properties = getProperties(false);
-            if (properties == null) return DateTimeZone.getDefault();
+        /* This is an old article, but I think it is still true.
+        http://www.javaworld.com/javaworld/jw-10-2003/jw-1003-time.html?page=5
 
-            String timeZoneString = properties.getProperty("timezone");
-            dateTimeZone = DateTimeZone.forTimeZone(TimeZone.getTimeZone(timeZoneString));
-        } catch (IOException e) {
-            throw new MotechException("Error while loading timezone from date.getProperties", e);
-        }
+        You can also set the user.timezone property by using the java.lang.System class's setProperty method:
+
+        System.setProperty("user.timezone","Asia/Jerusalem");
+
+        If none of the available time zone IDs is suitable for you, then you can create a custom TimeZone and set it as
+        the default time zone using the java.util.TimeZone class's setDefault method—as I did in my ItsInitializer
+         class previously listed in this article.
+
+        Remember, most time- and date-related classes in J2SE contain time zone information, including the formatting
+        classes, like java.text.DateFormat, so they are all affected by the JVM's default time zone. While you can
+        ensure correct time zone information for these classes when you create instances of them, it's easier to set
+        the default time zone for the entire JVM once, which ensures that all these classes will use the same default
+        time zone. But, as they say in the classics, "your mileage may vary" (YMMV).
+        */
+        TimeZone tz = Calendar.getInstance().getTimeZone();
+        dateTimeZone = DateTimeZone.forTimeZone(tz);
+
         return dateTimeZone;
     }
 
