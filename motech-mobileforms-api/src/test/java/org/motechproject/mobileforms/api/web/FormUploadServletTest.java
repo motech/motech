@@ -17,6 +17,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import javax.servlet.ServletContext;
 import java.io.*;
 import java.util.*;
 
@@ -41,7 +42,8 @@ public class FormUploadServletTest {
     private EpihandyXformSerializer epihandySerializer;
     @Mock
     private FormProcessor formProcessor;
-
+    @Mock
+    private ServletContext mockServletContext;
     private Integer groupIndex = 2;
 
     @Before
@@ -50,6 +52,8 @@ public class FormUploadServletTest {
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
         formUploadServlet = spy(new FormUploadServlet());
+        doReturn(mockServletContext).when(formUploadServlet).getServletContext();
+
         ReflectionTestUtils.setField(formUploadServlet, "context", applicationContext);
         ReflectionTestUtils.setField(formUploadServlet, "mobileFormsService", mobileFormsService);
         ReflectionTestUtils.setField(formUploadServlet, "usersService", usersService);
@@ -72,7 +76,7 @@ public class FormUploadServletTest {
         when(formProcessor.formBeans()).thenReturn(formBeans);
         when(successForm.getValidator()).thenReturn(validatorClass);
         when(failureForm.getValidator()).thenReturn(validatorClass);
-        when(applicationContext.getBean(Class.forName(validatorClass))).thenReturn(formValidator);
+        when(mockServletContext.getAttribute(validatorClass)).thenReturn(formValidator);
         when(formValidator.validate(successForm)).thenReturn(Collections.EMPTY_LIST);
         when(formValidator.validate(failureForm)).thenReturn(Arrays.asList(new FormError("","")));
         when(mobileFormsService.getFormIdMap()).thenReturn(formIdMap);

@@ -6,6 +6,8 @@ import org.motechproject.mobileforms.api.domain.FormBean;
 import org.motechproject.mobileforms.api.service.MobileFormsService;
 import org.motechproject.mobileforms.api.service.UsersService;
 import org.motechproject.mobileforms.api.validator.FormValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -17,11 +19,13 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 public abstract class BaseFormServlet extends HttpServlet {
+
     public static final byte RESPONSE_ERROR = 0;
     public static final byte RESPONSE_SUCCESS = 1;
 
     public static final String FAILED_TO_SERIALIZE_DATA = "failed to serialize data";
     public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
+    private final Logger log = LoggerFactory.getLogger(FormProcessor.class);
 
     protected UsersService usersService;
     protected ApplicationContext context;
@@ -50,6 +54,6 @@ public abstract class BaseFormServlet extends HttpServlet {
     protected abstract void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
 
     protected FormValidator getValidatorFor(FormBean formBean) throws ClassNotFoundException {
-        return (FormValidator) context.getBean(Class.forName(formBean.getValidator()));
+        return (FormValidator) getServletContext().getAttribute(formBean.getValidator());
     }
 }
