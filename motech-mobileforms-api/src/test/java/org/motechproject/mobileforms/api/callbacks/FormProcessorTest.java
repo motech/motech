@@ -39,6 +39,7 @@ public class FormProcessorTest {
         Map map = new HashMap();
         map.put("formName","formName");
         map.put("country","india");
+        map.put("district","katpadi");
 
         when(formDataParser.parse("xml")).thenReturn(map);
         Form form = mock(Form.class);
@@ -53,5 +54,7 @@ public class FormProcessorTest {
         assertEquals("formName",testForm.getFormName());
         assertEquals("validator",testForm.getValidator());
         assertEquals("india",testForm.getCountry());
+        assertEquals("katpadi",testForm.getDistrict());
     }
+
 }

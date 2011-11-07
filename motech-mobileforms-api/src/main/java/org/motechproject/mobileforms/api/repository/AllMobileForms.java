@@ -38,7 +38,8 @@ public class AllMobileForms {
         }.getType());
         this.formGroups = convert(formGroupsFromConfigFile, new Converter<FormGroup, FormGroup>() {
             @Override
-            public FormGroup convert(final FormGroup formGroup) {return new FormGroup(formGroup.getName(),
+            public FormGroup convert(final FormGroup formGroup) {
+                return new FormGroup(formGroup.getName(),
                         Lambda.convert(formGroup.getForms(),
                                 new Converter<Form, Form>() {
                                     @Override
@@ -67,8 +68,10 @@ public class AllMobileForms {
         return this.properties.getProperty(FORMS_CONFIG_FILE);
     }
 
-
     public Form getFormByName(String formName) {
-        return null;  //To change body of created methods use File | Settings | File Templates.
+        for (FormGroup formGroup : formGroups)
+            for (Form form : formGroup.getForms())
+                if (form.name().equalsIgnoreCase(formName)) return form;
+        return null;
     }
 }
