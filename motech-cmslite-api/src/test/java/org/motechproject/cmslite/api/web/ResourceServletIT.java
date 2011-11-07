@@ -5,10 +5,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.motechproject.cmslite.api.dao.AllStreamContents;
 import org.motechproject.cmslite.api.model.CMSLiteException;
-import org.motechproject.cmslite.api.model.ResourceQuery;
+import org.motechproject.cmslite.api.model.StreamContent;
 import org.motechproject.cmslite.api.service.CMSLiteService;
-import org.motechproject.cmslite.api.dao.AllResources;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -44,7 +44,7 @@ public class ResourceServletIT {
     @Autowired
     CMSLiteService cmsLiteService;
     @Autowired
-    AllResources allResources;
+    AllStreamContents allStreamContents;
 
     private ResourceServlet resourceServlet;
 
@@ -86,9 +86,9 @@ public class ResourceServletIT {
 
     private void addResource(String pathToFile) {
         InputStream inputStreamToResource = this.getClass().getResourceAsStream(pathToFile);
-        ResourceQuery queryEnglish = new ResourceQuery(WAVE_FILE, LANGUAGE);
         try {
-            allResources.addResource(queryEnglish, inputStreamToResource, null);
+            StreamContent streamContent = new StreamContent(LANGUAGE, WAVE_FILE, inputStreamToResource, null, "audio/x-wav");
+            allStreamContents.addStreamContent(streamContent);
         } catch (CMSLiteException e) {
             e.printStackTrace();
             assertFalse(true);
