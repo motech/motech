@@ -5,7 +5,6 @@ public class TestForm extends FormBean{
     private String country;
     private String district;
     private String formType;
-    private String formName;
 
     public String getPatientid() {
         return patientid;
@@ -37,13 +36,5 @@ public class TestForm extends FormBean{
 
     public void setFormType(String formType) {
         this.formType = formType;
-    }
-
-    public String getFormName() {
-        return formName;
-    }
-
-    public void setFormName(String formName) {
-        this.formName = formName;
     }
 }

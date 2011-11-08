@@ -49,7 +49,8 @@ public class AllMobileForms {
                                                 form.fileName(),
                                                 ioUtils.getFileContent(form.fileName(), formGroup.getName()),
                                                 form.bean(),
-                                                form.validator());
+                                                form.validator(),
+                                                formGroup.getName());
                                     }
                                 }));
             }

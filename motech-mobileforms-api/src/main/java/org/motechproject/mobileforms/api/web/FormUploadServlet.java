@@ -2,10 +2,12 @@ package org.motechproject.mobileforms.api.web;
 
 import com.jcraft.jzlib.JZlib;
 import com.jcraft.jzlib.ZOutputStream;
+import org.apache.commons.lang.StringUtils;
 import org.fcitmuk.epihandy.EpihandyXformSerializer;
 import org.fcitmuk.epihandy.ResponseHeader;
 import org.motechproject.mobileforms.api.domain.FormBean;
 import org.motechproject.mobileforms.api.domain.FormError;
+import org.motechproject.model.MotechEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,8 +17,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FormUploadServlet extends BaseFormServlet {
 
@@ -39,7 +44,7 @@ public class FormUploadServlet extends BaseFormServlet {
             for (FormBean formBean : formBeans) {
                 List<FormError> formErrors = getValidatorFor(formBean).validate(formBean);
                 if (formErrors.isEmpty()) {
-                    publish(formBean);
+                    formPublisher.publish(formBean);
                     success++;
                 } else {
                     allErrors.addAll(formErrors);
@@ -73,10 +78,7 @@ public class FormUploadServlet extends BaseFormServlet {
     }
 
     private void writeErrors(DataOutputStream dataOutput, List<FormError> allErrors) {
-        //To change body of created methods use File | Settings | File Templates.
+
     }
 
-    private void publish(FormBean formBean) {
-        //To change body of created methods use File | Settings | File Templates.
-    }
 }

@@ -2,6 +2,7 @@ package org.motechproject.mobileforms.api.web;
 
 import org.fcitmuk.epihandy.EpihandyXformSerializer;
 import org.motechproject.mobileforms.api.callbacks.FormProcessor;
+import org.motechproject.mobileforms.api.callbacks.FormPublisher;
 import org.motechproject.mobileforms.api.domain.FormBean;
 import org.motechproject.mobileforms.api.service.MobileFormsService;
 import org.motechproject.mobileforms.api.service.UsersService;
@@ -31,12 +32,14 @@ public abstract class BaseFormServlet extends HttpServlet {
     protected ApplicationContext context;
     protected FormProcessor formProcessor;
     protected MobileFormsService mobileFormsService;
+    protected FormPublisher formPublisher;
 
     protected BaseFormServlet() {
         context =  new ClassPathXmlApplicationContext("applicationMobileFormsAPI.xml");
         mobileFormsService = context.getBean("mobileFormsServiceImpl", MobileFormsService.class);
         usersService = context.getBean("usersServiceImpl", UsersService.class);
         formProcessor = context.getBean("formProcessor", FormProcessor.class);
+        formPublisher = context.getBean("formPublisher", FormPublisher.class);
     }
 
     protected EpihandyXformSerializer serializer() {

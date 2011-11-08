@@ -9,6 +9,7 @@ public class Form {
     private String bean;
     private String content;
     private String fileName;
+    private String studyName;
     private String validator;
 
     public static final String XF_XFORMS_ID = "<xf:xforms.*?id=\"(.*?)\"";
@@ -18,11 +19,12 @@ public class Form {
         this.fileName = fileName;
     }
 
-    public Form(String name, String fileName, String content, String bean, String validator) {
+    public Form(String name, String fileName, String content, String bean, String validator, String studyName) {
         this(name, fileName);
         this.content = content;
         this.bean = bean;
         this.validator = validator;
+        this.studyName = studyName;
         this.id = extractId(content);
     }
 
@@ -77,5 +79,9 @@ public class Form {
         result = 31 * result + (fileName != null ? fileName.hashCode() : 0);
         result = 31 * result + (content != null ? content.hashCode() : 0);
         return result;
+    }
+
+    public String studyName() {
+        return studyName;
     }
 }

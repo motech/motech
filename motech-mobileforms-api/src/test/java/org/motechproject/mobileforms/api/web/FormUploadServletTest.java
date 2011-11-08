@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.mobileforms.api.callbacks.FormProcessor;
+import org.motechproject.mobileforms.api.callbacks.FormPublisher;
 import org.motechproject.mobileforms.api.domain.FormBean;
 import org.motechproject.mobileforms.api.domain.FormError;
 import org.motechproject.mobileforms.api.service.MobileFormsService;
@@ -43,7 +44,10 @@ public class FormUploadServletTest {
     @Mock
     private FormProcessor formProcessor;
     @Mock
+    private FormPublisher formPublisher;
+    @Mock
     private ServletContext mockServletContext;
+
     private Integer groupIndex = 2;
 
     @Before
@@ -58,6 +62,7 @@ public class FormUploadServletTest {
         ReflectionTestUtils.setField(formUploadServlet, "mobileFormsService", mobileFormsService);
         ReflectionTestUtils.setField(formUploadServlet, "usersService", usersService);
         ReflectionTestUtils.setField(formUploadServlet, "formProcessor", formProcessor);
+        ReflectionTestUtils.setField(formUploadServlet, "formPublisher", formPublisher);
         doReturn(epihandySerializer).when(formUploadServlet).serializer();
     }
 
@@ -95,6 +100,7 @@ public class FormUploadServletTest {
 
         verify(epihandySerializer).addDeserializationListener(formProcessor);
         verify(epihandySerializer).deserializeStudiesWithEvents(any(DataInputStream.class), eq(formIdMap));
+        verify(formPublisher).publish(successForm);
 
     }
 

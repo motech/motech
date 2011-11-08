@@ -38,10 +38,10 @@ public class FormProcessor extends DeserializationListenerAdapter {
         try {
             Map data = parser.parse(formXml);
             Form form = allMobileForms.getFormByName((String) data.get(marker));
-
             FormBean formBean = (FormBean) Class.forName(form.bean()).newInstance();
             formBean.setValidator(form.validator());
-            formBean.setName(form.name());
+            formBean.setFormName(form.name());
+            formBean.setStudyName(form.studyName());
             BeanUtils.populate(formBean, data);
             formBeans.add(formBean);
 
