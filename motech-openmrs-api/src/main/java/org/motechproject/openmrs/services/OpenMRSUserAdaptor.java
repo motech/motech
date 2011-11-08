@@ -15,6 +15,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
@@ -62,4 +63,15 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         return user.getSystemId();
     }
 
+    public String setNewPasswordForUser(String emailID) throws UsernameNotFoundException {
+        org.openmrs.User userByUsername = userService.getUserByUsername(emailID);
+        if (userByUsername == null) {
+            throw new UsernameNotFoundException("The user with mentioned User Id was not found");
+        }
+        String newPassword = new Password(Constants.PASSWORD_LENGTH).create();
+        userService.changePassword(userByUsername,newPassword);
+        return newPassword;
+    }
+
 }
+

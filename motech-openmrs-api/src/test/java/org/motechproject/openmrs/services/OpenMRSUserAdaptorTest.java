@@ -1,6 +1,7 @@
 package org.motechproject.openmrs.services;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -8,12 +9,15 @@ import org.motechproject.mrs.exception.UserAlreadyExistsException;
 import org.motechproject.mrs.model.User;
 import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.services.MRSException;
+import org.motechproject.openmrs.model.Constants;
+import org.motechproject.openmrs.model.Password;
 import org.openmrs.Person;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Role;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.db.DAOException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -83,4 +87,38 @@ public class OpenMRSUserAdaptorTest {
         assertEquals("jack@daniels.com", person.getAttribute(emailAttribute).getValue());
         assertEquals("?", person.getGender());
     }
+
+    @Test
+    public void shouldResetPasswordGivenUserEmailId() throws UsernameNotFoundException, UserAlreadyExistsException {
+        User mrsUser = new User();
+        Role role = new Role();
+        final String emailId = "jack@daniels.com";
+
+        when(userService.getRole(mrsUser.securityRole())).thenReturn(role);
+        PersonAttributeType phoneAttribute = mock(PersonAttributeType.class);
+        PersonAttributeType staffTypeAttribute = mock(PersonAttributeType.class);
+        PersonAttributeType emailAttribute = mock(PersonAttributeType.class);
+
+        when(personService.getPersonAttributeTypeByName("Staff Type")).thenReturn(staffTypeAttribute);
+        when(personService.getPersonAttributeTypeByName("Phone Number")).thenReturn(phoneAttribute);
+        when(personService.getPersonAttributeTypeByName("Email")).thenReturn(emailAttribute);
+
+        mrsUser.firstName("Jack").middleName("H").lastName("Daniels").securityRole("provider");
+        mrsUser.addAttribute(new Attribute("Staff Type", "FA"));
+        mrsUser.addAttribute(new Attribute("Phone Number", "012345"));
+        mrsUser.addAttribute(new Attribute("Email", emailId));
+
+        adaptor.saveUser(mrsUser);
+
+        org.openmrs.User mockOpenMRSUser = mock(org.openmrs.User.class);
+        when(userService.getUserByUsername(emailId)).thenReturn(mockOpenMRSUser);
+
+        String newPassword = adaptor.setNewPasswordForUser(emailId);
+        verify(userService).changePassword(mockOpenMRSUser, newPassword);
+
+        adaptor.changeCurrentUserPassword(newPassword, "p2");
+        verify(userService).changePassword(newPassword, "p2");
+
+    }
+
 }
