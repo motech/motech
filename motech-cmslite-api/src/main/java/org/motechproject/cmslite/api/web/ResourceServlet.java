@@ -3,7 +3,6 @@ package org.motechproject.cmslite.api.web;
 import org.apache.log4j.Logger;
 import org.ektorp.AttachmentInputStream;
 import org.motechproject.cmslite.api.model.ResourceNotFoundException;
-import org.motechproject.cmslite.api.model.ResourceQuery;
 import org.motechproject.cmslite.api.service.CMSLiteService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -35,26 +34,26 @@ public class ResourceServlet extends HttpServlet {
         AttachmentInputStream contentStream = null;
         try {
             logger.info("Getting resource for : " + resourceQuery.getLanguage() + ":" + resourceQuery.getName());
-            contentStream = (AttachmentInputStream) cmsLiteService.getContent(resourceQuery);
+            contentStream = (AttachmentInputStream) cmsLiteService.getContent(resourceQuery.getLanguage(), resourceQuery.getName());
             long contentLength = contentStream.getContentLength();
 
             response.setStatus(HttpServletResponse.SC_OK);
             response.setHeader("Content-Type", contentStream.getContentType());
             response.setHeader("Accept-Ranges", "bytes");
             response.setContentLength((int) contentLength);
-            
+
             OutputStream fo = response.getOutputStream();
-    		byte [] buffer = new byte [1024*4];
-    		int read ;
-    		while((read=contentStream.read(buffer))>=0){
-    			if (read>0)
-    				fo.write(buffer,0,read);
-    		}
+            byte[] buffer = new byte[1024 * 4];
+            int read;
+            while ((read = contentStream.read(buffer)) >= 0) {
+                if (read > 0)
+                    fo.write(buffer, 0, read);
+            }
         } catch (ResourceNotFoundException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             logger.error("Resource not found for : " + resourceQuery.getLanguage() + ":" + resourceQuery.getName() + "\n" + Arrays.toString(e.getStackTrace()));
         } finally {
-            if(contentStream != null) contentStream.close();
+            if (contentStream != null) contentStream.close();
             request.getInputStream().close();
             response.getOutputStream().flush();
             response.getOutputStream().close();
@@ -69,6 +68,6 @@ public class ResourceServlet extends HttpServlet {
         String[] resourcePaths = requestURL.replace(contextPathOnly, "").replace(servletPathOnly, "").substring(1).split("/");
         String language = resourcePaths[0];
         String name = resourcePaths[1];
-        return new ResourceQuery(name, language);
+        return new ResourceQuery(language, name);
     }
 }
