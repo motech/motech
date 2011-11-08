@@ -16,7 +16,12 @@
         <constructor-arg ref="cmsLiteDatabase"/>
     </bean>
 
+    <bean id="allStringContents" class="org.motechproject.cmslite.api.dao.AllStringContents">
+        <constructor-arg ref="cmsLiteDatabase"/>
+    </bean>
+
     <bean id="cmsLiteService" class="org.motechproject.cmslite.api.service.CMSLiteServiceImpl">
         <constructor-arg ref="allStreamContents"/>
+        <constructor-arg ref="allStringContents"/>
     </bean>
 </beans>

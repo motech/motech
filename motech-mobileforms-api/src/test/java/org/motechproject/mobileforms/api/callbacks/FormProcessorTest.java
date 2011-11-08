@@ -46,12 +46,14 @@ public class FormProcessorTest {
         when(form.bean()).thenReturn("org.motechproject.mobileforms.api.domain.TestForm");
         when(form.validator()).thenReturn("validator");
         when(form.name()).thenReturn("formName");
+        when(form.studyName()).thenReturn("studyName");
         when(allMobileForms.getFormByName("formName")).thenReturn(form);
 
         formProcessor.formProcessed(null, null, "xml");
 
         TestForm testForm  = (TestForm) formProcessor.formBeans().get(0);
         assertEquals("formName",testForm.getFormName());
+        assertEquals("studyName",testForm.getStudyName());
         assertEquals("validator",testForm.getValidator());
         assertEquals("india",testForm.getCountry());
         assertEquals("katpadi",testForm.getDistrict());

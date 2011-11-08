@@ -4,9 +4,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.cmslite.api.dao.AllStreamContents;
+import org.motechproject.cmslite.api.dao.AllStringContents;
 import org.motechproject.cmslite.api.model.CMSLiteException;
-import org.motechproject.cmslite.api.model.ResourceNotFoundException;
+import org.motechproject.cmslite.api.model.ContentNotFoundException;
 import org.motechproject.cmslite.api.model.StreamContent;
+import org.motechproject.cmslite.api.model.StringContent;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +21,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class CMSLiteServiceImplTest {
     @Mock
     private AllStreamContents allStreamContents;
+    @Mock
+    private AllStringContents allStringContents;
 
     private CMSLiteService cmsLiteService;
 
@@ -26,41 +30,85 @@ public class CMSLiteServiceImplTest {
     public void setUp() {
         initMocks(this);
 
-        cmsLiteService = new CMSLiteServiceImpl(allStreamContents);
+        cmsLiteService = new CMSLiteServiceImpl(allStreamContents, allStringContents);
     }
 
     @Test
-    public void shouldReturnInputStreamToContentIfContentExists() throws IOException, ResourceNotFoundException {
+    public void shouldReturnStreamContentIfContentExists() throws IOException, ContentNotFoundException {
         String language = "language";
         String name = "name";
 
         InputStream inputStreamToResource = mock(InputStream.class);
         StreamContent streamContent = new StreamContent(language, name, inputStreamToResource, "checksum", "audio/x-wav");
 
-        when(allStreamContents.getStreamContent(language, name)).thenReturn(streamContent);
+        when(allStreamContents.getContent(language, name)).thenReturn(streamContent);
 
-        InputStream content = cmsLiteService.getContent(language, name);
+        StreamContent content = cmsLiteService.getStreamContent(language, name);
 
-        verify(allStreamContents).getStreamContent(language, name);
-        assertEquals(inputStreamToResource, content);
+        verify(allStreamContents).getContent(language, name);
+        assertEquals(streamContent, content);
     }
 
-    @Test(expected = ResourceNotFoundException.class)
-    public void shouldThrowExceptionIfContentDoesNotExist() throws ResourceNotFoundException {
+    @Test
+    public void shouldReturnStringContentIfContentExists() throws IOException, ContentNotFoundException {
+        String language = "language";
+        String name = "name";
+
+        InputStream inputStreamToResource = mock(InputStream.class);
+        StringContent stringContent = new StringContent(language, name, "value");
+
+        when(allStringContents.getContent(language, name)).thenReturn(stringContent);
+
+        StringContent content = cmsLiteService.getStringContent(language, name);
+
+        verify(allStringContents).getContent(language, name);
+        assertEquals(stringContent, content);
+    }
+
+    @Test(expected = ContentNotFoundException.class)
+    public void shouldThrowExceptionIfStreamContentDoesNotExist() throws ContentNotFoundException {
         String language = "language";
         String name = "test1";
 
-        when(allStreamContents.getStreamContent(language, name)).thenReturn(null);
+        when(allStreamContents.getContent(language, name)).thenReturn(null);
 
-        cmsLiteService.getContent(language, name);
+        cmsLiteService.getStreamContent(language, name);
 
-        fail("Should have thrown ResourceNotFoundException when query is null");
+        fail("Should have thrown ContentNotFoundException when query is null");
+    }
+
+    @Test(expected = ContentNotFoundException.class)
+    public void shouldThrowExceptionIfStringContentDoesNotExist() throws ContentNotFoundException {
+        String language = "language";
+        String name = "test1";
+
+        when(allStringContents.getContent(language, name)).thenReturn(null);
+
+        cmsLiteService.getStringContent(language, name);
+
+        fail("Should have thrown ContentNotFoundException when query is null");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIllegalArgumentExceptionWhenQueryIsNull() throws ResourceNotFoundException {
-        cmsLiteService.getContent(null, null);
-        verify(allStreamContents, never()).getStreamContent(null, null);
+    public void shouldThrowIllegalArgumentExceptionWhileGettingContentWhenBothLanguageAndNameAreNull() throws ContentNotFoundException {
+        cmsLiteService.getStreamContent(null, null);
+        verify(allStreamContents, never()).getContent(null, null);
+
+        fail("Should have thrown IllegalArgumentException when query is null");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowIllegalArgumentExceptionWhileGettingContentWhenLanguageIsNull() throws ContentNotFoundException {
+        cmsLiteService.getStringContent(null, "name");
+        verify(allStringContents, never()).getContent(null, "name");
+
+        fail("Should have thrown IllegalArgumentException when query is null");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowIllegalArgumentExceptionWhileGettingContentWhenNameIsNull() throws ContentNotFoundException {
+        cmsLiteService.getStringContent("en", null);
+        verify(allStringContents, never()).getContent("en", null);
 
         fail("Should have thrown IllegalArgumentException when query is null");
     }
@@ -70,7 +118,15 @@ public class CMSLiteServiceImplTest {
         StreamContent streamContent = new StreamContent("language", "name", null, "checksum", "audio/x-wav");
         cmsLiteService.addContent(streamContent);
 
-        verify(allStreamContents).addStreamContent(streamContent);
+        verify(allStreamContents).addContent(streamContent);
+    }
+
+    @Test
+    public void shouldAddStringContent() throws CMSLiteException {
+        StringContent stringContent = new StringContent("language", "name", "value");
+        cmsLiteService.addContent(stringContent);
+
+        verify(allStringContents).addContent(stringContent);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -80,4 +136,19 @@ public class CMSLiteServiceImplTest {
         fail("Should have thrown IllegalArgumentException when content is null.");
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhileAddingContentWhenLanguageIsNull
+            () throws CMSLiteException {
+        cmsLiteService.addContent(new StringContent(null, "name", "value"));
+
+        fail("Should have thrown IllegalArgumentException when language is null.");
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhileAddingContentWhenNameIsNull
+            () throws CMSLiteException {
+        cmsLiteService.addContent(new StringContent("language", null, "value"));
+
+        fail("Should have thrown IllegalArgumentException when name is null.");
+    }
 }
