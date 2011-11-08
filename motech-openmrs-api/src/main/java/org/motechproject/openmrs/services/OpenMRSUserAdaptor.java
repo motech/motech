@@ -63,6 +63,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         return user.getSystemId();
     }
 
+    @Override
     public String setNewPasswordForUser(String emailID) throws UsernameNotFoundException {
         org.openmrs.User userByUsername = userService.getUserByUsername(emailID);
         if (userByUsername == null) {
