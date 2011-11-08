@@ -28,7 +28,8 @@
 		<constructor-arg ref="osgiConfig" />
 	</bean>
 
-    <bean id="osgiFrameworkService" class="org.motechproject.server.osgi.OsgiFrameworkService">
+    <bean id="osgiFrameworkService" class="org.motechproject.server.osgi.OsgiFrameworkService"
+            init-method="start" destroy-method="stop">
 		<property name="internalBundleFolder" value="/WEB-INF/bundles" />
 		<property name="externalBundleFolder" value="#{systemProperties['user.home']}/.motech/bundles" />
 		<property name="bundleLoaders">
