@@ -5,13 +5,13 @@ import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechAuditableDataObject;
 
 @TypeDiscriminator("doc.type === 'CONTENT'")
-public class Content extends MotechAuditableDataObject {
+public abstract class Content extends MotechAuditableDataObject {
     @JsonProperty
     private String language;
     @JsonProperty
     private String name;
 
-    public Content() {
+    protected Content() {
     }
 
     protected Content(String language, String name) {

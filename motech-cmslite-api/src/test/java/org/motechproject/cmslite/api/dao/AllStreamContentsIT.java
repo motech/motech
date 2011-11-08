@@ -2,6 +2,7 @@ package org.motechproject.cmslite.api.dao;
 
 import org.ektorp.AttachmentInputStream;
 import org.ektorp.CouchDbConnector;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.cmslite.api.model.CMSLiteException;
@@ -27,25 +28,66 @@ public class AllStreamContentsIT {
 
     private StreamContent englishContent;
 
+    @After
+    public void tearDown() {
+        if (englishContent != null && couchDbConnector.contains(englishContent.getId())) {
+            StreamContent streamContent = couchDbConnector.get(StreamContent.class, englishContent.getId());
+            couchDbConnector.delete(streamContent.getId(), streamContent.getRevision());
+        }
+    }
+
     @Test
     public void shouldAddStreamContent() throws CMSLiteException {
         String pathToFile = "/testResource.png";
         InputStream inputStreamToResource = this.getClass().getResourceAsStream(pathToFile);
         englishContent = new StreamContent("en", "test", inputStreamToResource, "checksum", "image/png");
 
-        allStreamContents.addStreamContent(englishContent);
+        allStreamContents.addContent(englishContent);
 
         StreamContent streamContent = couchDbConnector.get(StreamContent.class, englishContent.getId());
         assertNotNull(streamContent);
         assertEquals(englishContent.getName(), streamContent.getName());
         assertEquals(englishContent.getLanguage(), streamContent.getLanguage());
         assertEquals(englishContent.getChecksum(), streamContent.getChecksum());
+    }
+
+    @Test
+    public void shouldUpdateStreamContentAttachment() throws CMSLiteException {
+        InputStream inputStreamToResource1 = this.getClass().getResourceAsStream("/background.wav");
+        StreamContent file1 = new StreamContent("en", "test", inputStreamToResource1, "checksum1", "audio/x-wav");
+        allStreamContents.addContent(file1);
+        StreamContent streamContent1 = couchDbConnector.get(StreamContent.class, file1.getId());
+        assertNotNull(streamContent1);
+        assertEquals(file1.getName(), streamContent1.getName());
+        assertEquals(file1.getLanguage(), streamContent1.getLanguage());
+        assertEquals(file1.getChecksum(), streamContent1.getChecksum());
+
+        String id1 = file1.getId();
+        InputStream inputStreamToResource = this.getClass().getResourceAsStream("/10.wav");
+        StreamContent file2 = new StreamContent("en", "test", inputStreamToResource, "checksum2", "audio/x-wav");
+        allStreamContents.addContent(file2);
+        StreamContent streamContent = couchDbConnector.get(StreamContent.class, id1);
+        assertNotNull(streamContent);
+        assertEquals(file2.getName(), streamContent.getName());
+        assertEquals(file2.getLanguage(), streamContent.getLanguage());
+        assertEquals(file2.getChecksum(), streamContent.getChecksum());
 
         couchDbConnector.delete(streamContent);
     }
 
     @Test
     public void shouldGetStreamContent() {
+        createStreamContent();
+
+        StreamContent streamContent = allStreamContents.getContent(englishContent.getLanguage(), englishContent.getName());
+        assertNotNull(streamContent);
+        assertEquals(englishContent.getName(), streamContent.getName());
+        assertEquals(englishContent.getLanguage(), streamContent.getLanguage());
+        assertEquals(englishContent.getChecksum(), streamContent.getChecksum());
+        assertNotNull(englishContent.getInputStream());
+    }
+
+    private void createStreamContent() {
         String pathToFile = "/testResource.png";
         InputStream inputStreamToResource = this.getClass().getResourceAsStream(pathToFile);
         englishContent = new StreamContent("en", "test", inputStreamToResource, "checksum", "image/png");
@@ -53,13 +95,5 @@ public class AllStreamContentsIT {
         couchDbConnector.create(englishContent);
         AttachmentInputStream attachmentInputStream = new AttachmentInputStream(englishContent.getId(), inputStreamToResource, englishContent.getContentType());
         couchDbConnector.createAttachment(englishContent.getId(), englishContent.getRevision(), attachmentInputStream);
-
-        StreamContent streamContent = allStreamContents.getStreamContent(englishContent.getLanguage(), englishContent.getName());
-        assertNotNull(streamContent);
-        assertEquals(englishContent.getName(), streamContent.getName());
-        assertEquals(englishContent.getLanguage(), streamContent.getLanguage());
-        assertEquals(englishContent.getChecksum(), streamContent.getChecksum());
-
-        couchDbConnector.delete(streamContent);
     }
 }

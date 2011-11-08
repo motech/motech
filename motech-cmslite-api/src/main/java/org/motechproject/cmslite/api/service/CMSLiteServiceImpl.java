@@ -2,44 +2,48 @@ package org.motechproject.cmslite.api.service;
 
 
 import org.motechproject.cmslite.api.dao.AllStreamContents;
+import org.motechproject.cmslite.api.dao.AllStringContents;
+import org.motechproject.cmslite.api.dao.BaseContentRepository;
 import org.motechproject.cmslite.api.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.InputStream;
-
 public class CMSLiteServiceImpl implements CMSLiteService {
     private AllStreamContents allStreamContents;
+    private AllStringContents allStringContents;
 
     @Autowired
-    public CMSLiteServiceImpl(AllStreamContents allStreamContents) {
+    public CMSLiteServiceImpl(AllStreamContents allStreamContents, AllStringContents allStringContents) {
         this.allStreamContents = allStreamContents;
+        this.allStringContents = allStringContents;
     }
 
     @Override
-    public InputStream getContent(String language, String name) throws ResourceNotFoundException {
+    public StringContent getStringContent(String language, String name) throws ContentNotFoundException {
+        return (StringContent) getContent(language, name, allStringContents);
+    }
+
+    @Override
+    public StreamContent getStreamContent(String language, String name) throws ContentNotFoundException {
+        return (StreamContent) getContent(language, name, allStreamContents);
+    }
+
+    private Content getContent(String language, String name, BaseContentRepository contentRepository) throws ContentNotFoundException {
         if (language == null || name == null)
             throw new IllegalArgumentException("Language and Name should not be null");
-        StreamContent resource = allStreamContents.getStreamContent(language, name);
-        if (resource != null) return resource.getInputStream();
+        Content content = contentRepository.getContent(language, name);
+        if (content != null) return content;
 
-        throw new ResourceNotFoundException();
+        throw new ContentNotFoundException();
     }
 
     @Override
     public void addContent(Content content) throws CMSLiteException {
-        if (content == null) throw new IllegalArgumentException("Content should not be null");
+        if (content == null || content.getLanguage() == null || content.getName() == null) throw new IllegalArgumentException("Content or language or name should not be null");
 
         if (content instanceof StreamContent)
-            addStreamContent((StreamContent) content);
+            allStreamContents.addContent((StreamContent) content);
         else if (content instanceof StringContent)
-            addStringContent((StringContent) content);
+            allStringContents.addContent((StringContent) content);
     }
 
-    private void addStringContent(StringContent content) {
-        //To change body of created methods use File | Settings | File Templates.
-    }
-
-    private void addStreamContent(StreamContent content) throws CMSLiteException {
-        allStreamContents.addStreamContent(content);
-    }
 }

@@ -43,4 +43,12 @@ public class StreamContent extends Content {
     public String getContentType() {
         return contentType;
     }
+
+    public void setChecksum(String checksum) {
+        this.checksum = checksum;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
 }
