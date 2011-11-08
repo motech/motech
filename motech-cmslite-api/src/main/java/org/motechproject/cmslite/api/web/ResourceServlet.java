@@ -34,7 +34,7 @@ public class ResourceServlet extends HttpServlet {
         ResourceQuery resourceQuery = resourceQuery(request);
         try {
             logger.info("Getting resource for : " + resourceQuery.getType() + ":" + resourceQuery.getLanguage() + ":" + resourceQuery.getName());
-            if ("stream".equals(resourceQuery.getType().toLowerCase())) {
+            if ("stream".equalsIgnoreCase(resourceQuery.getType())) {
                 addStreamContentToResponse(response, cmsLiteService, resourceQuery);
             } else {
                 addStringContentToResponse(response, cmsLiteService, resourceQuery);

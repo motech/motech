@@ -14,7 +14,7 @@ public class StreamContent extends Content {
     private String checksum;
     @JsonProperty
     private String contentType;
-    @JsonProperty("type")
+    @JsonProperty
     private String type = "STREAM_CONTENT";
 
     public StreamContent() {
