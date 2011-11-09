@@ -9,20 +9,17 @@ public class DateTimeSourceFactoryTest {
     public void createWithoutTestMode() throws Exception {
         DateTimeSource dateTimeSource = DateTimeSourceFactory.create();
         assertEquals(DefaultDateTimeSource.class, dateTimeSource.getClass());
-        assertEquals("India Standard Time", dateTimeSource.timeZone().toTimeZone().getDisplayName());
     }
 
     @Test
     public void defaultsToNonTestMode() {
         DateTimeSource dateTimeSource = DateTimeSourceFactory.create("nonexistentfile");
         assertEquals(DefaultDateTimeSource.class, dateTimeSource.getClass());
-        assertEquals("India Standard Time", dateTimeSource.timeZone().toTimeZone().getDisplayName());
     }
 
     @Test
     public void testMode() {
         DateTimeSource dateTimeSource = DateTimeSourceFactory.create("/dateForTestMode.properties");
         assertEquals(ExternalDateTimeSource.class, dateTimeSource.getClass());
-        assertEquals("India Standard Time", dateTimeSource.timeZone().toTimeZone().getDisplayName());
     }
 }
