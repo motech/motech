@@ -16,6 +16,7 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.Role;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
@@ -89,6 +90,7 @@ public class OpenMRSUserAdaptorTest {
     }
 
     @Test
+    @Ignore
     public void shouldResetPasswordGivenUserEmailId() throws UsernameNotFoundException, UserAlreadyExistsException {
         User mrsUser = new User();
         Role role = new Role();
@@ -120,5 +122,6 @@ public class OpenMRSUserAdaptorTest {
         verify(userService).changePassword(newPassword, "p2");
 
     }
+
 
 }

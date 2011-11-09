@@ -14,8 +14,10 @@ import org.openmrs.Role;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
+import org.openmrs.api.context.Context;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.motechproject.openmrs.security.*;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
@@ -63,16 +65,55 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         return user.getSystemId();
     }
 
+//    @Override
+//    public String setNewPasswordForUser(String emailID) throws UsernameNotFoundException {
+//        org.openmrs.User userByUsername = userService.getUserByUsername(emailID);
+//        String newPassword = new Password(Constants.PASSWORD_LENGTH).create();
+//        if (userByUsername == null) {
+//            throw new UsernameNotFoundException("The user with mentioned User Id was not found");
+//        }
+//        userService.changePassword(userByUsername,newPassword);
+//        return newPassword;
+//    }
+
     @Override
     public String setNewPasswordForUser(String emailID) throws UsernameNotFoundException {
+
+        Context.openSession();
+        Context.authenticate("admin","P@ssw0rd");
         org.openmrs.User userByUsername = userService.getUserByUsername(emailID);
-        if (userByUsername == null) {
-            throw new UsernameNotFoundException("The user with mentioned User Id was not found");
-        }
         String newPassword = new Password(Constants.PASSWORD_LENGTH).create();
-        userService.changePassword(userByUsername,newPassword);
+        try {
+        System.out.println("inside the setPassword**********1212121***************");
+            Context.getUserService().changePassword(userByUsername,newPassword);
+        } finally {
+            Context.closeSession();
+        }
         return newPassword;
     }
+
+
+//    @Override
+//    public String setNewPasswordForUser(String emailID) throws UsernameNotFoundException {
+//        System.out.println("inside the setPassword*************************");
+//
+//        OpenMRSSession openMRSSession = new OpenMRSSession();
+//        org.openmrs.User userByUsername = userService.getUserByUsername(emailID);
+//        String newPassword = new Password(Constants.PASSWORD_LENGTH).create();
+//        try {
+//            openMRSSession.login("admin", "P@ssw0rd");
+//            openMRSSession.open();
+//            openMRSSession.authenticate();
+//        System.out.println("inside the setPassword**********1212121***************");
+//
+//            Context.getUserService().changePassword(userByUsername,newPassword);
+//        } finally {
+//            openMRSSession.close();
+//
+//        }
+//        return newPassword;
+//    }
+
 
 }
 
