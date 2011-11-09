@@ -15,11 +15,11 @@ public class AllIVRURLs {
         return String.format("forward:/%s/%s", url, event).replaceAll("//", "/");
     }
 
-    public static String springTranferUrlToUnhandledError() {
+    public static String springTransferUrlToUnhandledError() {
         return toForwardURL(STANDARD_RESPONSE_CONTROLLER, HANGUP_RESPONSE);
     }
 
-    public static String springTranferUrlToEmptyResponse() {
+    public static String springTransferUrlToEmptyResponse() {
         return toForwardURL(STANDARD_RESPONSE_CONTROLLER, EMPTY_RESPONSE);
     }
 }

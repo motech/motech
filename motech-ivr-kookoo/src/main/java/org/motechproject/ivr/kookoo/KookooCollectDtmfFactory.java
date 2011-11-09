@@ -6,5 +6,4 @@ public class KookooCollectDtmfFactory {
     public static CollectDtmf create() {
         return new CollectDtmf();
     }
-
 }
