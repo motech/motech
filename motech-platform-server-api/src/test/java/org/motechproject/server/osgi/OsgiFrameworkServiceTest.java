@@ -48,7 +48,7 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testApplicationContext.xml"})
+@ContextConfiguration(locations = {"/testPlatformServerApplicationContext.xml"})
 public class OsgiFrameworkServiceTest {
 
     @Autowired

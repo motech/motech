@@ -20,7 +20,7 @@ import java.util.Properties;
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testApplicationContext.xml"})
+@ContextConfiguration(locations = {"/testPlatformServerApplicationContext.xml"})
 public class ServerEventRelayTransactionIT {
     @Autowired
     OutboundEventGateway outboundEventGateway;
@@ -70,7 +70,8 @@ public class ServerEventRelayTransactionIT {
         MotechEvent motechEvent = new MotechEvent(EventHandlerForServerEventRelayTransactionIT.FAILING_EVENT_SUBJECT);
         outboundEventGateway.sendEventMessage(motechEvent);
         Thread.sleep(redeliveryDelayInMillis * 2);
-        assertEquals(true, handler.retries() >= 2);
+        int retries = handler.retries();
+        assertEquals(Integer.toString(retries), true, retries >= 2);
     }
 
     @Test

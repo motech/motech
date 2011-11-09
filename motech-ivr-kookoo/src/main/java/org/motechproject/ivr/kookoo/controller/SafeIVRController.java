@@ -5,7 +5,6 @@ import org.motechproject.ivr.kookoo.KooKooIVRContext;
 import org.motechproject.ivr.kookoo.KookooIVRResponseBuilder;
 import org.motechproject.ivr.kookoo.KookooRequest;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
-import org.motechproject.server.service.ivr.IVREvent;
 import org.motechproject.server.service.ivr.IVRMessage;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,10 +20,12 @@ public abstract class SafeIVRController {
 
     protected Logger logger = Logger.getLogger(this.getClass());
     protected IVRMessage ivrMessage;
+    private StandardResponseController standardResponseController;
     private KookooCallDetailRecordsService callDetailRecordsService;
 
-    protected SafeIVRController(IVRMessage ivrMessage, KookooCallDetailRecordsService callDetailRecordsService) {
+    protected SafeIVRController(IVRMessage ivrMessage, KookooCallDetailRecordsService callDetailRecordsService, StandardResponseController standardResponseController) {
         this.ivrMessage = ivrMessage;
+        this.standardResponseController = standardResponseController;
         if (callDetailRecordsService == null) throw new NullPointerException(String.format("%s cannot be null", KookooCallDetailRecordsService.class.getName()));
         this.callDetailRecordsService = callDetailRecordsService;
     }
@@ -43,21 +44,13 @@ public abstract class SafeIVRController {
             KookooIVRResponseBuilder kookooIVRResponseBuilder = isNewCall ? newCall(ivrContext) : gotDTMF(ivrContext);
             String responseXML = kookooIVRResponseBuilder.create(ivrMessage);
             callDetailRecordsService.appendToLastCallEvent(ivrContext.callDetailRecordId(), kookooIVRResponseBuilder, responseXML);
-            if (kookooIVRResponseBuilder.isHangUp()) closeCallRecord(ivrContext);
+            if (kookooIVRResponseBuilder.isHangUp()) standardResponseController.prepareForHangup(ivrContext);
             logger.info(String.format(" XML returned: %s", responseXML));
             return responseXML;
         } catch (Exception e) {
-            closeCallRecord(ivrContext);
             logger.error(String.format("Failed to process incoming %s request", ivrContext.ivrEvent()), e);
-            String url = AllIVRURLs.springTranferUrlToUnhandledError();
-            logger.info(String.format("Transferring to %s", url));
-            return url;
+            return standardResponseController.hangup(ivrContext);
         }
-    }
-
-    private void closeCallRecord(KooKooIVRContext kooKooIVRContext) {
-        callDetailRecordsService.close(kooKooIVRContext.callDetailRecordId(), kooKooIVRContext.externalId(), IVREvent.Hangup);
-        kooKooIVRContext.invalidateSession();
     }
 
     @RequestMapping(value = GOT_DTMF_URL_ACTION, method = RequestMethod.GET)
