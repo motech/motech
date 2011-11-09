@@ -100,6 +100,7 @@
         <module>motech-ivr-kookoo</module>
         <module>motech-mrs-api</module>
         <module>motech-openmrs-api</module>
+        <module>motech-openmrs-omod</module>
     </modules>
 
     <build>
