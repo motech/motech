@@ -28,11 +28,11 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class VxmlControllerTest {
-	private final String treeName = "treeName";
+    private final String treeName = "treeName";
     private final String patientId = "001";
-    private Map<String,Object> params = new HashMap<String, Object>();
+    private Map<String, Object> params = new HashMap<String, Object>();
     private final String errorCodeKey = "errorCode";
-	private final String transitionPath ="/";
+    private final String transitionPath = "/";
 
     @InjectMocks
     VxmlController vxmlController = new VxmlController();
@@ -53,7 +53,7 @@ public class VxmlControllerTest {
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
         params.put(VxmlController.TREE_NAME_PARAM, treeName);
-     }
+    }
 
     @Test
     public void nodeTest() {
@@ -85,7 +85,7 @@ public class VxmlControllerTest {
 
     }
 
-@Test
+    @Test
     public void leafTest() {
 
         Node node = new Node();
@@ -143,7 +143,7 @@ public class VxmlControllerTest {
     @Test
     public void nodeTestInvalidTransitionKeyType() {
 
-        String transitionKey ="1";
+        String transitionKey = "1";
 
 
         Node destinationNode = new Node();
@@ -155,7 +155,6 @@ public class VxmlControllerTest {
         Transition transition = new Transition();
         transition.setDestinationNode(destinationNode);
         node.addTransition(transitionKey, transition);
-
 
 
         when(request.getParameter(VxmlController.TREE_NAME_PARAM)).thenReturn(treeName);
@@ -196,7 +195,7 @@ public class VxmlControllerTest {
     }
 
     @Test
-    public void nodeTestException () {
+    public void nodeTestException() {
 
         when(request.getParameter(VxmlController.TREE_NAME_PARAM)).thenReturn(treeName);
         when(request.getParameter(VxmlController.PATIENT_ID_PARAM)).thenReturn("PATIENT_ID");
@@ -254,7 +253,7 @@ public class VxmlControllerTest {
 
     @Test
     public void rootNodeTestException() {
-    	
+
         when(request.getParameter(VxmlController.TREE_NAME_PARAM)).thenReturn(treeName);
         when(request.getParameter(VxmlController.PATIENT_ID_PARAM)).thenReturn("PATIENT_ID");
         when(request.getParameter(VxmlController.LANGUAGE_PARAM)).thenReturn("en");
@@ -275,7 +274,7 @@ public class VxmlControllerTest {
         ModelAndView modelAndView = vxmlController.node(request, response);
 
         assertNotNull(modelAndView);
-        verify(decisionTreeService,times(0)).getNode(anyString(), anyString());
+        verify(decisionTreeService, times(0)).getNode(anyString(), anyString());
         assertEquals(VxmlController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
         assertEquals(VxmlController.Errors.NULL_PATIENTID_LANGUAGE_OR_TREENAME_PARAM, modelAndView.getModel().get(errorCodeKey));
     }
@@ -329,7 +328,7 @@ public class VxmlControllerTest {
 
     }
 
-@Test
+    @Test
     public void sendActionsAfterTest() {
 
         Node node = new Node();

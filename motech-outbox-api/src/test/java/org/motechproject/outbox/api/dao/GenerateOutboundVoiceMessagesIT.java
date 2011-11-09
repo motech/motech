@@ -1,37 +1,6 @@
-/**
- * MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
- *
- * Copyright (c) 2011 Grameen Foundation USA.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * 3. Neither the name of Grameen Foundation USA, nor its respective contributors
- * may be used to endorse or promote products derived from this software without
- * specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY GRAMEEN FOUNDATION USA AND ITS CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL GRAMEEN FOUNDATION USA OR ITS CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
- * OF SUCH DAMAGE.
- */
 package org.motechproject.outbox.api.dao;
 
-import org.apache.commons.lang.time.DateUtils;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,11 +8,14 @@ import org.motechproject.outbox.api.model.MessagePriority;
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
 import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.model.VoiceMessageType;
+import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class is not a real integration test. The main purpose of this class is to generate test data for outbox IVR test.
@@ -79,13 +51,13 @@ public class GenerateOutboundVoiceMessagesIT {
         messageType2.setCanBeSaved(true);
         messageType2.setCanBeReplayed(true);
 
-        Date now = DateUtils.truncate(new Date(), Calendar.DATE);
+        DateTime now = DateUtil.now();
 
         OutboundVoiceMessage msg1 = new OutboundVoiceMessage();
         msg1.setVoiceMessageType(messageType);
         msg1.setPartyId(partyId1);
-        msg1.setCreationTime(now);
-        msg1.setExpirationDate(DateUtils.addDays(now, 2));
+        msg1.setCreationTime(now.toDate());
+        msg1.setExpirationDate(now.plusDays(2).toDate());
         msg1.setStatus(OutboundVoiceMessageStatus.PENDING);
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("message", "with doctor John Doe");
@@ -96,8 +68,8 @@ public class GenerateOutboundVoiceMessagesIT {
         OutboundVoiceMessage msg2 = new OutboundVoiceMessage();
         msg2.setVoiceMessageType(messageType1);
         msg2.setPartyId(partyId1);
-        msg2.setCreationTime(now);
-        msg2.setExpirationDate(DateUtils.addDays(now, 2));
+        msg2.setCreationTime(now.toDate());
+        msg2.setExpirationDate(now.plusDays(2).toDate());
         msg2.setStatus(OutboundVoiceMessageStatus.PENDING);
         params.clear();
         params.put("message", "with doctor Simpson");
@@ -108,8 +80,8 @@ public class GenerateOutboundVoiceMessagesIT {
         OutboundVoiceMessage msg3 = new OutboundVoiceMessage();
         msg3.setVoiceMessageType(messageType2);
         msg3.setPartyId(partyId1);
-        msg3.setCreationTime(now);
-        msg3.setExpirationDate(DateUtils.addDays(now, 2));
+        msg3.setCreationTime(now.toDate());
+        msg3.setExpirationDate(now.plusDays(2).toDate());
         msg3.setStatus(OutboundVoiceMessageStatus.PENDING);
         params.clear();
         params.put("message", "with doctor House");

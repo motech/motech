@@ -32,6 +32,7 @@
 package org.motechproject.outbox.api.dao;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,13 +71,13 @@ public class OutboundVoiceMessageDaoIT {
 		messageType.setTemplateName("appointmentReminder");
 		
 		// create messages
-		Date now = DateUtils.truncate(new Date(), Calendar.DATE);
+        DateTime now = DateUtil.now();
 		for(int i = 0; i<20; i++) {
 			OutboundVoiceMessage msg = new OutboundVoiceMessage();
 			msg.setVoiceMessageType(messageType);
 			msg.setPartyId(i<10?partyId1:partyId2);
-			msg.setCreationTime(DateUtils.addDays(now, i)); 
-			msg.setExpirationDate(DateUtils.addDays(now, 1-2*(i&2)));
+			msg.setCreationTime(now.plusDays(2).toDate());
+			msg.setExpirationDate(now.plusDays(1-2*(i&2)).toDate());
 			msg.setStatus((i&1)>0?OutboundVoiceMessageStatus.PENDING:OutboundVoiceMessageStatus.SAVED);
 			outboundVoiceMessageDao.add(msg);
 		}
@@ -106,7 +107,7 @@ public class OutboundVoiceMessageDaoIT {
         parameters.put("audioFiles", sequenceOfFilesToPlay);
         messageWithAudioFiles.setParameters(parameters);
         messageWithAudioFiles.setStatus(OutboundVoiceMessageStatus.PENDING);
-        messageWithAudioFiles.setExpirationDate(DateUtils.addDays(DateUtil.now().toDate(), 10));
+        messageWithAudioFiles.setExpirationDate(DateUtil.now().plusDays(10).toDate());
 
         outboundVoiceMessageDao.add(messageWithAudioFiles);
 

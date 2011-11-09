@@ -28,19 +28,26 @@ public class StandardResponseController {
         this.kookooCallDetailRecordsService = kookooCallDetailRecordsService;
     }
 
-
     @RequestMapping(value = AllIVRURLs.HANGUP_RESPONSE, method = RequestMethod.GET)
     @ResponseBody
     public String hangup(KookooRequest kookooRequest, HttpServletRequest request, HttpServletResponse response) {
+        KooKooIVRContext ivrContext = new KooKooIVRContext(kookooRequest, request, response);
+        return hangup(ivrContext);
+    }
+
+    public String hangup(KooKooIVRContext ivrContext) {
         try {
-            KooKooIVRContext ivrContext = new KooKooIVRContext(kookooRequest, request, response);
-            kookooCallDetailRecordsService.close(ivrContext.callDetailRecordId(), ivrContext.externalId(), IVREvent.Hangup);
-            ivrContext.invalidateSession();
+            prepareForHangup(ivrContext);
             return KookooResponseFactory.hangUpResponseWith(ivrContext.callId()).create(null);
         } catch (Exception e) {
             logger.error("Failed to even send hang-up response", e);
             throw new IVRException("Failed to even send hang-up response", e);
         }
+    }
+
+    public void prepareForHangup(KooKooIVRContext ivrContext) {
+        kookooCallDetailRecordsService.close(ivrContext.callDetailRecordId(), ivrContext.externalId(), IVREvent.Hangup);
+        ivrContext.invalidateSession();
     }
 
     @RequestMapping(value = AllIVRURLs.EMPTY_RESPONSE, method = RequestMethod.GET)
