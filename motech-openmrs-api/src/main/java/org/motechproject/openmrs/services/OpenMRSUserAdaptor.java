@@ -84,7 +84,6 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         org.openmrs.User userByUsername = userService.getUserByUsername(emailID);
         String newPassword = new Password(Constants.PASSWORD_LENGTH).create();
         try {
-        System.out.println("inside the setPassword**********1212121***************");
             Context.getUserService().changePassword(userByUsername,newPassword);
         } finally {
             Context.closeSession();
