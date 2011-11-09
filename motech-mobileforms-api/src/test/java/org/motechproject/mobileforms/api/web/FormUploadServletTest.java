@@ -10,6 +10,7 @@ import org.motechproject.mobileforms.api.callbacks.FormProcessor;
 import org.motechproject.mobileforms.api.callbacks.FormPublisher;
 import org.motechproject.mobileforms.api.domain.FormBean;
 import org.motechproject.mobileforms.api.domain.FormError;
+import org.motechproject.mobileforms.api.domain.FormOutput;
 import org.motechproject.mobileforms.api.service.MobileFormsService;
 import org.motechproject.mobileforms.api.service.UsersService;
 import org.motechproject.mobileforms.api.validator.FormValidator;
@@ -22,7 +23,6 @@ import javax.servlet.ServletContext;
 import java.io.*;
 import java.util.*;
 
-import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -47,6 +47,8 @@ public class FormUploadServletTest {
     private FormPublisher formPublisher;
     @Mock
     private ServletContext mockServletContext;
+    @Mock
+    private FormOutput formOutput;
 
     private Integer groupIndex = 2;
 
@@ -64,48 +66,41 @@ public class FormUploadServletTest {
         ReflectionTestUtils.setField(formUploadServlet, "formProcessor", formProcessor);
         ReflectionTestUtils.setField(formUploadServlet, "formPublisher", formPublisher);
         doReturn(epihandySerializer).when(formUploadServlet).serializer();
+        doReturn(formOutput).when(formUploadServlet).getFormOutput();
     }
 
     @Test
     public void shouldProcessUploadedForms() throws Exception {
-        int processedForms = 1;
-        int failedForms = 1;
         String validatorClass = "org.motechproject.mobileforms.api.validator.TestANCVisitFormValidator";
         FormBean successForm = mock(FormBean.class);
         FormBean failureForm = mock(FormBean.class);
         FormValidator formValidator = mock(FormValidator.class);
 
         List<FormBean> formBeans = Arrays.asList(successForm, failureForm);
+        List<FormError> formErrors = Arrays.asList(new FormError("", ""));
         Map<Integer, String> formIdMap = new HashMap<Integer, String>();
 
         when(formProcessor.formBeans()).thenReturn(formBeans);
         when(successForm.getValidator()).thenReturn(validatorClass);
         when(failureForm.getValidator()).thenReturn(validatorClass);
+        when(successForm.getXmlContent()).thenReturn("xml");
+        when(failureForm.getXmlContent()).thenReturn("xml");
         when(mockServletContext.getAttribute(validatorClass)).thenReturn(formValidator);
         when(formValidator.validate(successForm)).thenReturn(Collections.EMPTY_LIST);
-        when(formValidator.validate(failureForm)).thenReturn(Arrays.asList(new FormError("","")));
+        when(formValidator.validate(failureForm)).thenReturn(formErrors);
         when(mobileFormsService.getFormIdMap()).thenReturn(formIdMap);
 
         populateHttpRequest(request, "username", "password", groupIndex);
 
         formUploadServlet.doPost(request, response);
 
-        String responseSentToMobile = readResponse(response);
-        byte[] expected = new byte[9];
-        expected[0] = ResponseHeader.STATUS_SUCCESS;
-        expected[4] = (byte) processedForms;
-        expected[8] = (byte) failedForms;
-
-        assertEquals(new String(expected), new String(responseSentToMobile.getBytes("UTF8")));
-
+        verify(formOutput).add(successForm,Collections.EMPTY_LIST);
+        verify(formOutput).add(failureForm, formErrors);
+        verify(formOutput).populate(any(DataOutputStream.class));
+        verify(formPublisher).publish(successForm);
         verify(epihandySerializer).addDeserializationListener(formProcessor);
         verify(epihandySerializer).deserializeStudiesWithEvents(any(DataInputStream.class), eq(formIdMap));
-        verify(formPublisher).publish(successForm);
 
-    }
-
-    private String readResponse(MockHttpServletResponse response) throws IOException {
-        return new BufferedReader(new InputStreamReader(new ZInputStream(new ByteArrayInputStream(response.getContentAsByteArray())))).readLine();
     }
 
     private void populateHttpRequest(MockHttpServletRequest request, String userName, String password, Integer groupIndex)

@@ -7,8 +7,12 @@ public class Study {
     private String name;
     private List<String> forms = new ArrayList<String>();
 
-    public Study(String name, List<String> forms) {
+    public Study(String name) {
         this.name = name;
+    }
+
+    public Study(String name, List<String> forms) {
+        this(name);
         this.forms = forms;
     }
 

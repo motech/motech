@@ -8,4 +8,13 @@ public class FormError {
         this.parameter = parameter;
         this.error = error;
     }
+
+    public String getParameter() {
+        return parameter;
+    }
+
+    public String getError() {
+        return error;
+    }
+
 }

@@ -57,6 +57,7 @@ public class FormProcessorTest {
         assertEquals("validator",testForm.getValidator());
         assertEquals("india",testForm.getCountry());
         assertEquals("katpadi",testForm.getDistrict());
+        assertEquals("xml",testForm.getXmlContent());
     }
 
 }

@@ -1,9 +1,10 @@
 package org.motechproject.mobileforms.api.domain;
 
 public class FormBean {
-    private String validator;
-    private String formName;
     private String studyName;
+    private String formName;
+    private String xmlContent;
+    private String validator;
 
     public void setValidator(String validator){
         this.validator = validator;
@@ -28,4 +29,13 @@ public class FormBean {
     public void setStudyName(String studyName) {
         this.studyName = studyName;
     }
+
+    public String getXmlContent() {
+        return xmlContent;
+    }
+
+    public void setXmlContent(String xmlContent) {
+        this.xmlContent = xmlContent;
+    }
+
 }

@@ -4,6 +4,7 @@ import org.fcitmuk.epihandy.EpihandyXformSerializer;
 import org.motechproject.mobileforms.api.callbacks.FormProcessor;
 import org.motechproject.mobileforms.api.callbacks.FormPublisher;
 import org.motechproject.mobileforms.api.domain.FormBean;
+import org.motechproject.mobileforms.api.domain.FormOutput;
 import org.motechproject.mobileforms.api.service.MobileFormsService;
 import org.motechproject.mobileforms.api.service.UsersService;
 import org.motechproject.mobileforms.api.validator.FormValidator;
@@ -31,8 +32,8 @@ public abstract class BaseFormServlet extends HttpServlet {
     protected UsersService usersService;
     protected ApplicationContext context;
     protected FormProcessor formProcessor;
-    protected MobileFormsService mobileFormsService;
     protected FormPublisher formPublisher;
+    protected MobileFormsService mobileFormsService;
 
     protected BaseFormServlet() {
         context =  new ClassPathXmlApplicationContext("applicationMobileFormsAPI.xml");
@@ -58,5 +59,13 @@ public abstract class BaseFormServlet extends HttpServlet {
 
     protected FormValidator getValidatorFor(FormBean formBean) throws ClassNotFoundException {
         return (FormValidator) getServletContext().getAttribute(formBean.getValidator());
+    }
+
+    protected byte readActionByte(DataInputStream dataInput) throws IOException {
+        return dataInput.readByte();
+    }
+
+    protected FormOutput getFormOutput() {
+        return new FormOutput();
     }
 }

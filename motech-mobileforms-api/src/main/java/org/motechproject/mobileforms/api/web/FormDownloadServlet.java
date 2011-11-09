@@ -25,7 +25,7 @@ public class FormDownloadServlet extends BaseFormServlet {
         DataOutputStream dataOutput = new DataOutputStream(zOutput);
         try {
             readParameters(dataInput);
-            byte action = dataInput.readByte();
+            byte action = readActionByte(dataInput);
             ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 
             if (action == ACTION_DOWNLOAD_STUDY_LIST)
