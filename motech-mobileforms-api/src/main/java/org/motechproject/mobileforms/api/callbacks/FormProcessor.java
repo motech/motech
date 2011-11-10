@@ -1,6 +1,8 @@
 package org.motechproject.mobileforms.api.callbacks;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.converters.DateConverter;
 import org.fcitmuk.epihandy.DeserializationListenerAdapter;
 import org.fcitmuk.epihandy.FormData;
 import org.fcitmuk.epihandy.StudyData;
@@ -22,6 +24,8 @@ import java.util.Map;
 public class FormProcessor extends DeserializationListenerAdapter {
     private final Logger log = LoggerFactory.getLogger(FormProcessor.class);
 
+    public static final String DATE_PATTERN = "yyyy-MM-dd";
+
     private List<FormBean> formBeans = new ArrayList<FormBean>();
 
     @Autowired
@@ -32,6 +36,12 @@ public class FormProcessor extends DeserializationListenerAdapter {
 
     @Value("#{mobileFormsProperties['forms.xml.form.name']}")
     private String marker;
+
+    public FormProcessor() {
+        DateConverter dateConverter = new DateConverter();
+        dateConverter.setPattern(DATE_PATTERN);
+        ConvertUtils.register(dateConverter, java.util.Date.class);
+    }
 
     @Override
     public void formProcessed(StudyData studyData, FormData formData, String formXml) {

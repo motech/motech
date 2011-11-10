@@ -9,6 +9,7 @@ import org.motechproject.mobileforms.api.parser.FormDataParser;
 import org.motechproject.mobileforms.api.repository.AllMobileForms;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +41,9 @@ public class FormProcessorTest {
         map.put("formName","formName");
         map.put("country","india");
         map.put("district","katpadi");
+        map.put("patientid","12");
+        map.put("birthDate","1990-06-03");
+
 
         when(formDataParser.parse("xml")).thenReturn(map);
         Form form = mock(Form.class);
@@ -57,7 +61,10 @@ public class FormProcessorTest {
         assertEquals("validator",testForm.getValidator());
         assertEquals("india",testForm.getCountry());
         assertEquals("katpadi",testForm.getDistrict());
+        assertEquals(new Integer(12),testForm.getPatientid());
         assertEquals("xml",testForm.getXmlContent());
+        assertEquals("1990-06-03", new SimpleDateFormat(FormProcessor.DATE_PATTERN).format(testForm.getBirthDate()));
+
     }
 
 }

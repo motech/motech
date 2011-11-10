@@ -1,16 +1,19 @@
 package org.motechproject.mobileforms.api.domain;
 
+import java.util.Date;
+
 public class TestForm extends FormBean{
-    private String patientid;
+    private Integer patientid;
     private String country;
     private String district;
     private String formType;
+    private Date birthDate;
 
-    public String getPatientid() {
+    public Integer getPatientid() {
         return patientid;
     }
 
-    public void setPatientid(String patientid) {
+    public void setPatientid(Integer patientid) {
         this.patientid = patientid;
     }
 
@@ -36,5 +39,13 @@ public class TestForm extends FormBean{
 
     public void setFormType(String formType) {
         this.formType = formType;
+    }
+
+    public Date getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
     }
 }
