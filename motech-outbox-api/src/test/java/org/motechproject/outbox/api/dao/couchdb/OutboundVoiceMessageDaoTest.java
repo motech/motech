@@ -32,16 +32,9 @@
 package org.motechproject.outbox.api.dao.couchdb;
 
 
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang.time.DateUtils;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,58 +47,62 @@ import org.motechproject.outbox.api.model.OutboundVoiceMessage;
 import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.model.VoiceMessageType;
 
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 /**
  * @author yyonkov
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class OutboundVoiceMessageDaoTest {
-	private static final String PARTY_ID = "001";
-	@Mock
-	CouchDbConnector db;
-	List<OutboundVoiceMessage> messages = new ArrayList<OutboundVoiceMessage>();
-	
-	static OutboundVoiceMessage buildMessage(
-			Date creationTime,
-			MessagePriority priority ) {
-		
-		VoiceMessageType mt = new VoiceMessageType();
-		mt.setPriority(priority);
-		mt.setTemplateName("http://motech.2paths.com");
-		OutboundVoiceMessage msg = new OutboundVoiceMessage();
-		msg.setPartyId(PARTY_ID);
-		msg.setStatus(OutboundVoiceMessageStatus.PENDING);
-		msg.setCreationTime(creationTime);
-		msg.setExpirationDate(new Date());
-		msg.setVoiceMessageType(mt);
-		return msg;
-	}
-	
-	
-	@Before
-	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
-		Date now = DateUtils.truncate(new Date(), Calendar.DATE);
-		for(int i = 0; i<10; i++) {
-			messages.add(buildMessage(DateUtils.addDays(now, i>>2), (i&1)>0 ? MessagePriority.HIGH: MessagePriority.LOW));
-		}
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Test
-	public void testSortingMessages() {
-		OutboundVoiceMessageDao dao = new OutboundVoiceMessageDaoImpl(db);
-		when(db.queryView(any(ViewQuery.class), any(Class.class))).thenReturn(messages);
-		ArrayList<OutboundVoiceMessage> msgs = (ArrayList<OutboundVoiceMessage>) dao.getPendingMessages(PARTY_ID);
-		for(int i=1; i<msgs.size(); i++) {
-			// check for creation date order
-			assertTrue(msgs.get(i-1).getCreationTime().compareTo(msgs.get(i).getCreationTime())>=0);
-			// if creation date is the same, check for priority order 
-			assertTrue((msgs.get(i-1).getCreationTime().compareTo(msgs.get(i).getCreationTime())!=0) || (msgs.get(i-1).getVoiceMessageType().getPriority().compareTo(msgs.get(i).getVoiceMessageType().getPriority())>=0));
+    private static final String PARTY_ID = "001";
+    @Mock
+    CouchDbConnector db;
+    List<OutboundVoiceMessage> messages = new ArrayList<OutboundVoiceMessage>();
+
+    static OutboundVoiceMessage buildMessage(
+            Date creationTime,
+            MessagePriority priority) {
+
+        VoiceMessageType mt = new VoiceMessageType();
+        mt.setPriority(priority);
+        mt.setTemplateName("http://motech.2paths.com");
+        OutboundVoiceMessage msg = new OutboundVoiceMessage();
+        msg.setPartyId(PARTY_ID);
+        msg.setStatus(OutboundVoiceMessageStatus.PENDING);
+        msg.setCreationTime(creationTime);
+        msg.setExpirationDate(new Date());
+        msg.setVoiceMessageType(mt);
+        return msg;
+    }
+
+
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        DateTime now = org.motechproject.util.DateUtil.now();
+        for (int i = 0; i < 10; i++) {
+            messages.add(buildMessage(now.plusDays(i >> 2).toDate(), (i & 1) > 0 ? MessagePriority.HIGH : MessagePriority.LOW));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testSortingMessages() {
+        OutboundVoiceMessageDao dao = new OutboundVoiceMessageDaoImpl(db);
+        when(db.queryView(any(ViewQuery.class), any(Class.class))).thenReturn(messages);
+        ArrayList<OutboundVoiceMessage> msgs = (ArrayList<OutboundVoiceMessage>) dao.getPendingMessages(PARTY_ID);
+        for (int i = 1; i < msgs.size(); i++) {
+            // check for creation date order
+            assertTrue(msgs.get(i - 1).getCreationTime().compareTo(msgs.get(i).getCreationTime()) >= 0);
+            // if creation date is the same, check for priority order
+            assertTrue((msgs.get(i - 1).getCreationTime().compareTo(msgs.get(i).getCreationTime()) != 0) || (msgs.get(i - 1).getVoiceMessageType().getPriority().compareTo(msgs.get(i).getVoiceMessageType().getPriority()) >= 0));
 //			System.out.println(msgs.get(i));
-		}
-	}
+        }
+    }
 }

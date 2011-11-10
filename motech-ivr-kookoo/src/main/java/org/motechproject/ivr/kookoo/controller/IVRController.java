@@ -48,7 +48,7 @@ public class IVRController {
                 case Hangup:
                     kookooCallDetailRecordsService.close(ivrContext.callDetailRecordId(), ivrContext.externalId(), ivrEvent);
                     ivrContext.invalidateSession();
-                    String url = AllIVRURLs.springTranferUrlToEmptyResponse();
+                    String url = AllIVRURLs.springTransferUrlToEmptyResponse();
                     logger.info(String.format("Transferring to %s", url));
                     return url;
                 case GotDTMF:
@@ -65,7 +65,7 @@ public class IVRController {
             return transferURL;
         } catch (Exception e) {
             logger.error("Failed to handled incoming request", e);
-            String url = AllIVRURLs.springTranferUrlToUnhandledError();
+            String url = AllIVRURLs.springTransferUrlToUnhandledError();
             logger.info(String.format("Transferring to %s", url));
             return url;
         }

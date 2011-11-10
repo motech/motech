@@ -19,7 +19,7 @@ import java.util.Map;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testApplicationContext.xml"})
+@ContextConfiguration(locations = {"/testPlatformServerApplicationContext.xml"})
 public class AnnotationBasedHandlerIT {
 
     static boolean test = false;

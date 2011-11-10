@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testApplicationContext.xml"})
+@ContextConfiguration(locations = {"/testPillReminderAPIApplicationContext.xml"})
 public class AllPillRegimensIT {
     @Autowired
     private AllPillRegimens allPillRegimens;

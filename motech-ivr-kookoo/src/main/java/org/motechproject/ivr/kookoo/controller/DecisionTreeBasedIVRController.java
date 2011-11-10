@@ -22,8 +22,8 @@ public class DecisionTreeBasedIVRController extends SafeIVRController {
     private CallFlowController callFlowController;
 
     @Autowired
-    public DecisionTreeBasedIVRController(CallFlowController callFlowController, IVRMessage ivrMessage, KookooCallDetailRecordsService callDetailRecordsService) {
-        super(ivrMessage, callDetailRecordsService);
+    public DecisionTreeBasedIVRController(CallFlowController callFlowController, IVRMessage ivrMessage, KookooCallDetailRecordsService callDetailRecordsService, StandardResponseController standardResponseController) {
+        super(ivrMessage, callDetailRecordsService, standardResponseController);
         this.callFlowController = callFlowController;
     }
 

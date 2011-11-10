@@ -20,6 +20,8 @@ public class DecisionTreeBasedIVRControllerTest {
     private CallFlowController callFlowController;
     @Mock
     private KookooCallDetailRecordsService callDetailRecordsService;
+    @Mock
+    private StandardResponseController standardResponseController;
 
     KooKooIVRContextForTest ivrContext;
     private DecisionTreeBasedIVRController controller;
@@ -35,7 +37,7 @@ public class DecisionTreeBasedIVRControllerTest {
         commandForTamaIvrActionTest = new CommandForTamaIvrActionTest();
 
         when(callFlowController.getTree(treeName, ivrContext)).thenReturn(new TestTreeForTamaIvrActionTest().getTree());
-        controller = new DecisionTreeBasedIVRController(callFlowController, ivrMessage, callDetailRecordsService);
+        controller = new DecisionTreeBasedIVRController(callFlowController, ivrMessage, callDetailRecordsService, standardResponseController);
     }
 
     @Test

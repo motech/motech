@@ -1,10 +1,5 @@
 package org.motechproject.decisiontree.model;
 
-
-
-/**
- *
- */
 public class AudioPrompt extends Prompt {
 
     private String audioFileUrl;

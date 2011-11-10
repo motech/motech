@@ -1,6 +1,7 @@
 package org.motechproject.ivr.kookoo;
 
 import com.ozonetel.kookoo.CollectDtmf;
+import com.ozonetel.kookoo.Dial;
 import com.ozonetel.kookoo.Response;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.server.service.ivr.IVRMessage;
@@ -17,6 +18,7 @@ public class KookooIVRResponseBuilder {
     private List<String> playAudios = new ArrayList<String>();
     private String sid;
     private String language;
+    private String phoneNumber;
 
     public KookooIVRResponseBuilder() {
     }
@@ -54,7 +56,7 @@ public class KookooIVRResponseBuilder {
         this.sid = sid;
         return this;
     }
-    
+
 	public String create(IVRMessage ivrMessage) {
         if (StringUtils.isEmpty(language)) withDefaultLanguage();
         Response response = new Response();
@@ -72,6 +74,11 @@ public class KookooIVRResponseBuilder {
                 response.addPlayText(ivrMessage.getText(playText));
             for (String playAudio : playAudios)
                 response.addPlayAudio(ivrMessage.getWav(playAudio, language));
+            if (phoneNumber != null){
+                Dial dial = new Dial();
+                dial.setNumber(phoneNumber);
+                response.addDial(dial);
+            }
         }
 
         if (isHangUp) response.addHangup();
@@ -100,6 +107,15 @@ public class KookooIVRResponseBuilder {
 
 	public List<String> getPlayAudios() {
         return playAudios;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public KookooIVRResponseBuilder withPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+        return this;
     }
 
     public String sid() {

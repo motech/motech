@@ -53,7 +53,7 @@ public class DecisionTreeBasedResponseBuilderTest {
 
     @Test
     public void whenAudioCommandReturnsNullThenItShouldNotGetAddedToResponse() {
-        Node rootNode =  new Node()
+        Node rootNode = new Node()
                 .setPrompts(new AudioPrompt().setCommand(new ReturnEmptyCommand()))
                 .setTransitions(new Object[][]{
                         {"1", new Transition()
@@ -82,7 +82,7 @@ public class DecisionTreeBasedResponseBuilderTest {
                                                 .setPrompts(new AudioPrompt().setName("baz")))
                                 }});
         nextResponse(rootNode, false);
-        verify(ivrResponseBuilder,times(1)).withPlayAudios("a", "b");
+        verify(ivrResponseBuilder, times(1)).withPlayAudios("a", "b");
     }
 
     @Test
@@ -100,7 +100,7 @@ public class DecisionTreeBasedResponseBuilderTest {
                                 }});
 
         KookooIVRResponseBuilder responseBuilder = nextResponse(rootNode, true);
-        verify(responseBuilder,times(1)).withPlayAudios(Matchers.<String>any());
+        verify(responseBuilder, times(1)).withPlayAudios(Matchers.<String>any());
         verify(responseBuilder).withPlayAudios("menu");
     }
 
@@ -116,6 +116,22 @@ public class DecisionTreeBasedResponseBuilderTest {
         Node rootNode = new Node()
                 .setPrompts(new AudioPrompt().setName("hello"), menu);
         nextResponse(rootNode, true);
+        verify(mockCommand, times(1)).execute(any());
+    }
+
+    @Test
+    public void shouldExecuteCommandsOnDialPrompt() {
+        ITreeCommand mockCommand = mock(ITreeCommand.class);
+        when(mockCommand.execute(any())).thenReturn(new String[]{});
+
+        final DialPrompt dialPrompt = new DialPrompt();
+        dialPrompt.setCommand(mockCommand);
+
+        Node rootNode = new Node()
+                .setPrompts(dialPrompt);
+
+        nextResponse(rootNode, true);
+
         verify(mockCommand, times(1)).execute(any());
     }
 
