@@ -7,8 +7,8 @@
 	<package>${modulePackage}</package>
 	<author>Motech</author>
 	<description>${project.description}</description>
-	<activator>${modulePackage}.MotechModuleActivator</activator>
-	<require_version>1.5.0.10342</require_version>
+	<activator>${modulePackage}.listener.MotechModuleActivator</activator>
+	<require_version>1.8.2</require_version>
 
 
 </module>
