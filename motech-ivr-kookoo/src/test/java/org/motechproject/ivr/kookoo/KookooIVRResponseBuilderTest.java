@@ -112,4 +112,10 @@ public class KookooIVRResponseBuilderTest {
         builder.withPlayAudios("foo");
         assertEquals(true, builder.isNotEmpty());
     }
+
+    @Test
+    public void shouldAddDialWhenPhoneNumberIsSet(){
+        String response = builder.withPhoneNumber("1234567890").create(messages);
+        assertTrue(response.contains("<dial>1234567890</dial>"));
+    }
 }
