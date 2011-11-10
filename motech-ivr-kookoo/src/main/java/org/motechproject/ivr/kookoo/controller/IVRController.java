@@ -44,8 +44,6 @@ public class IVRController {
                     String kooKooCallDetailRecordId = kookooCallDetailRecordsService.create(ivrContext.callId(), ivrContext.callerId(), ivrContext.callDirection());
                     ivrContext.callDetailRecordId(kooKooCallDetailRecordId);
                     break;
-                case Dial:
-                                        
                 case Disconnect:
                 case Hangup:
                     kookooCallDetailRecordsService.close(ivrContext.callDetailRecordId(), ivrContext.externalId(), ivrEvent);
