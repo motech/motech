@@ -18,16 +18,18 @@ public class KookooRequest {
     private String cid;
     private String event;
     private String data;
+    private String status;
     private Map<String, String> dataMap = new HashMap<String, String>();
 
     public KookooRequest() {
     }
 
-    public KookooRequest(String sid, String cid, String event, String data) {
+    public KookooRequest(String sid, String cid, String event, String data, String status) {
         this.sid = sid;
         this.cid = cid;
         this.event = event;
         this.data = data;
+        this.status = status;
     }
 
     public String getCid() {
@@ -52,6 +54,14 @@ public class KookooRequest {
 
     public void setEvent(String event) {
         this.event = event;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getSid() {
