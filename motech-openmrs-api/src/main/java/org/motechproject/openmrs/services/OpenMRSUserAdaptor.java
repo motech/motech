@@ -74,9 +74,17 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
     @Override
     public String setNewPasswordForUser(String emailID) throws UsernameNotFoundException {
 
+        org.openmrs.User userByUsername;
         Context.openSession();
         Context.authenticate("admin","P@ssw0rd");
-        org.openmrs.User userByUsername = userService.getUserByUsername(emailID);
+        try{
+            userByUsername = userService.getUserByUsername(emailID);
+        }catch(Exception e)
+        {
+            Context.closeSession();
+            throw new UsernameNotFoundException("User was not found");
+        }
+
         String newPassword = new Password(Constants.PASSWORD_LENGTH).create();
         try {
             Context.getUserService().changePassword(userByUsername,newPassword);
