@@ -14,7 +14,8 @@ public class DecisionTreeBasedResponseBuilder {
             if (shouldNotBuildPrompt) continue;
             ITreeCommand command = prompt.getCommand();
             boolean isAudioPromptOrMenuAudioPrompt = prompt instanceof AudioPrompt;
-            buildPrompts(ivrResponseBuilder, isAudioPromptOrMenuAudioPrompt, command == null ? new String[]{prompt.getName()} : command.execute(customData));
+            boolean isDialPrompt = prompt instanceof TextToSpeechPrompt;
+            buildPrompts(ivrResponseBuilder, isAudioPromptOrMenuAudioPrompt, isDialPrompt, command == null ? new String[]{prompt.getName()} : command.execute(customData));
         }
         if (node.hasTransitions()) {
             ivrResponseBuilder.collectDtmfLength(maxLenOfTransitionOptions(node));
@@ -30,8 +31,8 @@ public class DecisionTreeBasedResponseBuilder {
         return maxLen;
     }
 
-    private void buildPrompts(KookooIVRResponseBuilder ivrResponseBuilder, boolean isAudioPrompt, String... promptNames) {
+    private void buildPrompts(KookooIVRResponseBuilder ivrResponseBuilder, boolean isAudioPrompt, boolean isTextToSpeechPrompt, String... promptNames) {
         if (isAudioPrompt) ivrResponseBuilder.withPlayAudios(promptNames);
-        else ivrResponseBuilder.withPlayTexts(promptNames);
+        else if(isTextToSpeechPrompt) ivrResponseBuilder.withPlayTexts(promptNames);
     }
 }
