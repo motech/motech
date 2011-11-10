@@ -17,7 +17,8 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.motechproject.openmrs.security.*;
+
+import java.util.HashMap;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
@@ -41,12 +42,13 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
     }
 
     @Override
-    public String saveUser(User mrsUser) throws UserAlreadyExistsException {
+    public HashMap saveUser(User mrsUser) throws UserAlreadyExistsException {
         org.openmrs.User user = new org.openmrs.User();
         org.openmrs.Person person = new org.openmrs.Person();
         PersonName personName = new PersonName(mrsUser.firstName(), mrsUser.middleName(), mrsUser.lastName());
         person.addName(personName);
         person.setGender(Constants.PERSON_UNKNOWN_GENDER);
+        final String password = new Password(Constants.PASSWORD_LENGTH).create();
 
         for (Attribute attribute : mrsUser.attributes()) {
             PersonAttributeType attributeType = personService.getPersonAttributeTypeByName(attribute.name());
@@ -61,20 +63,13 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         user.setSystemId(userId);
         user.setPerson(person);
 
-        userService.saveUser(user, new Password(Constants.PASSWORD_LENGTH).create());
-        return user.getSystemId();
-    }
+        HashMap userMap = new HashMap();
+        userMap.put("userLoginId",user.getSystemId());
+        userMap.put("password",password);
 
-//    @Override
-//    public String setNewPasswordForUser(String emailID) throws UsernameNotFoundException {
-//        org.openmrs.User userByUsername = userService.getUserByUsername(emailID);
-//        String newPassword = new Password(Constants.PASSWORD_LENGTH).create();
-//        if (userByUsername == null) {
-//            throw new UsernameNotFoundException("The user with mentioned User Id was not found");
-//        }
-//        userService.changePassword(userByUsername,newPassword);
-//        return newPassword;
-//    }
+        userService.saveUser(user, password);
+        return userMap;
+    }
 
     @Override
     public String setNewPasswordForUser(String emailID) throws UsernameNotFoundException {
@@ -90,29 +85,5 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         }
         return newPassword;
     }
-
-
-//    @Override
-//    public String setNewPasswordForUser(String emailID) throws UsernameNotFoundException {
-//        System.out.println("inside the setPassword*************************");
-//
-//        OpenMRSSession openMRSSession = new OpenMRSSession();
-//        org.openmrs.User userByUsername = userService.getUserByUsername(emailID);
-//        String newPassword = new Password(Constants.PASSWORD_LENGTH).create();
-//        try {
-//            openMRSSession.login("admin", "P@ssw0rd");
-//            openMRSSession.open();
-//            openMRSSession.authenticate();
-//        System.out.println("inside the setPassword**********1212121***************");
-//
-//            Context.getUserService().changePassword(userByUsername,newPassword);
-//        } finally {
-//            openMRSSession.close();
-//
-//        }
-//        return newPassword;
-//    }
-
-
 }
 

@@ -20,7 +20,11 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.util.HashMap;
+
 import static junit.framework.Assert.assertEquals;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -69,7 +73,7 @@ public class OpenMRSUserAdaptorTest {
         mrsUser.addAttribute(new Attribute("Phone Number", "012345"));
         mrsUser.addAttribute(new Attribute("Email", "jack@daniels.com"));
 
-        adaptor.saveUser(mrsUser);
+        HashMap userMap = adaptor.saveUser(mrsUser);
 
         ArgumentCaptor<org.openmrs.User> captor = ArgumentCaptor.forClass(org.openmrs.User.class);
         ArgumentCaptor<String> passwordCaptor = ArgumentCaptor.forClass(String.class);
@@ -87,6 +91,8 @@ public class OpenMRSUserAdaptorTest {
         assertEquals("012345", person.getAttribute(phoneAttribute).getValue());
         assertEquals("jack@daniels.com", person.getAttribute(emailAttribute).getValue());
         assertEquals("?", person.getGender());
+
+//        assertEquals("jack@daniels.com",userMap.get("userLoginId"));
     }
 
     @Test
