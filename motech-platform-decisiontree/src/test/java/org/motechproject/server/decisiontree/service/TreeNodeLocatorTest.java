@@ -33,11 +33,13 @@ package org.motechproject.server.decisiontree.service;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.motechproject.decisiontree.model.AudioPrompt;
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.decisiontree.model.Tree;
 import org.motechproject.server.decisiontree.TreeNodeLocator;
 
+import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -80,5 +82,14 @@ public class TreeNodeLocatorTest {
     @Test(expected = IllegalArgumentException.class)
     public void testPathNull() {
         locator.findNode(tree, null);
+    }
+
+    @Test
+    public void addPrompts() {
+        final Node rootNode = tree.getRootNode();
+        rootNode.setPrompts(new AudioPrompt());
+        rootNode.addPrompts(new AudioPrompt());
+
+        assertEquals(2, rootNode.getPrompts().size());
     }
 }

@@ -12,7 +12,7 @@ public class Node {
 
     private List<Action> actionsBefore;
     private List<Action> actionsAfter;
-    private List<Prompt> prompts;
+    private List<Prompt> prompts = new ArrayList<Prompt>();
     private Map<String, Transition> transitions;
     private List<ITreeCommand> treeCommands = new ArrayList<ITreeCommand>();
 
@@ -35,7 +35,7 @@ public class Node {
     }
 
     public List<Prompt> getPrompts() {
-        return prompts == null ? Collections.<Prompt>emptyList() : prompts;
+        return prompts;
     }
 
     @JsonIgnore
@@ -44,8 +44,14 @@ public class Node {
         return this;
     }
 
+    @JsonIgnore
+    public Node addPrompts(Prompt... prompts) {
+        this.prompts.addAll(Arrays.asList(prompts));
+        return this;
+    }
+
     private Node setPrompts(List<Prompt> prompts) {
-        this.prompts = prompts;
+        this.prompts.addAll(prompts);
         return this;
     }
 
