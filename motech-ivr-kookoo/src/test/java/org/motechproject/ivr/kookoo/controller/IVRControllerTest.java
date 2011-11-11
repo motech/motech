@@ -57,4 +57,13 @@ public class IVRControllerTest {
         assertEquals(true, ivrContextForTest.sessionInvalidated());
         verify(callDetailRecordsService).close(callDetailRecordId, externalId, IVREvent.Disconnect);
     }
+
+    @Test
+    public void shouldRedirectToDialControllerURLWhenDialEventIsEncountered() {
+        ivrContextForTest = new KooKooIVRContextForTest().ivrEvent(IVREvent.Dial);
+        when(callFlowController.urlFor(ivrContextForTest)).thenReturn("/ivr/dial");
+
+        String replyURL = ivrController.reply(ivrContextForTest);
+        assertEquals("forward:/ivr/dial/gotdtmf", replyURL);
+    }
 }

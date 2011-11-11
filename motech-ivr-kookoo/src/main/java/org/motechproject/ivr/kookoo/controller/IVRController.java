@@ -51,6 +51,8 @@ public class IVRController {
                     String url = AllIVRURLs.springTransferUrlToEmptyResponse();
                     logger.info(String.format("Transferring to %s", url));
                     return url;
+                case Dial:
+                    return AllIVRURLs.springTransferUrl(callFlowController.urlFor(ivrContext), IVREvent.GotDTMF.toString().toLowerCase());
                 case GotDTMF:
                     kookooCallDetailRecordsService.appendEvent(ivrContext.callDetailRecordId(), ivrEvent, ivrContext.userInput());
             }
