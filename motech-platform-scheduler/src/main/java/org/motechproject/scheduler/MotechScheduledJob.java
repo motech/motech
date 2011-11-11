@@ -35,7 +35,6 @@ import org.motechproject.model.MotechEvent;
 import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Map;
@@ -57,7 +56,6 @@ public class MotechScheduledJob implements Job {
             JobDetail jobDetail = jobExecutionContext.getJobDetail();
             JobDataMap jobDataMap = jobDetail.getJobDataMap();
 
-
             String jobId = jobDetail.getName();
             String eventType = jobDataMap.getString(MotechEvent.EVENT_TYPE_KEY_NAME);
             Map<String, Object> params = jobDataMap.getWrappedMap();
@@ -65,6 +63,10 @@ public class MotechScheduledJob implements Job {
             params.put("JobID", jobId);
 
             MotechEvent motechEvent = new MotechEvent(eventType, params);
+            Trigger trigger = jobExecutionContext.getTrigger();
+            motechEvent.setStartTime(trigger.getStartTime())
+                    .setEndTime(trigger.getEndTime())
+                    .setLastEvent(trigger.mayFireAgain());
 
             log.info("Sending Motech Event Message: " + motechEvent);
 

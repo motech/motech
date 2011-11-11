@@ -32,6 +32,7 @@
 package org.motechproject.model;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,6 +54,9 @@ public final class MotechEvent implements Serializable {
 
     private String subject;
     private Map<String, Object> parameters;
+    private Date startTime;
+    private Date endTime;
+    private boolean isLastEvent;
 
     /**
      * Constructor with subject only (parameters can be added interactively)
@@ -97,6 +101,33 @@ public final class MotechEvent implements Serializable {
      */
     public Map<String, Object> getParameters() {
         return parameters!=null?parameters:(parameters = new HashMap<String, Object>());
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public MotechEvent setStartTime(Date startDate) {
+        this.startTime = startDate;
+        return this;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public MotechEvent setEndTime(Date endDate) {
+        this.endTime = endDate;
+        return this;
+    }
+
+    public boolean isLastEvent() {
+        return isLastEvent;
+    }
+
+    public MotechEvent setLastEvent(boolean lastEvent) {
+        isLastEvent = lastEvent;
+        return this;
     }
 
     @Override

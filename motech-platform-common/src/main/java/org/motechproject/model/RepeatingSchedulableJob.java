@@ -50,7 +50,7 @@ public class RepeatingSchedulableJob implements Serializable {
 
     public RepeatingSchedulableJob(MotechEvent motechEvent,
                                    Date startTime, Date endTime,
-                                   int repeatCount, long repeatInterval) {
+                                   Integer repeatCount, long repeatInterval) {
         this.motechEvent = motechEvent;
 		this.startTime = startTime;
 		this.endTime = endTime;

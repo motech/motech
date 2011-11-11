@@ -1,5 +1,6 @@
 package org.motechproject.server.messagecampaign.scheduler;
 
+import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
@@ -22,13 +23,7 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler {
         LocalDate endDate = startDate.plusDays(duration.inDays());
         int repeatIntervalInDays = WallTimeFactory.create(((RepeatingCampaignMessage)message).repeatInterval()).inDays();
 
-        LocalDate jobDate = startDate;
-        Integer index = 1;
-        while (jobDate.isBefore(endDate)) {
-            String messageKey = message.messageKey().replace("{Offset}", index.toString());
-            scheduleJobOn(campaignRequest.reminderTime(), jobDate, jobParams(messageKey));
-            jobDate = jobDate.plusDays(repeatIntervalInDays);
-            index++;
-        }
+        long repeatInterval = Days.days(repeatIntervalInDays).toStandardSeconds().getSeconds() * 1000L;
+        scheduleRepeatingJob(startDate, endDate, repeatInterval, jobParams(message.messageKey()));
     }
 }
