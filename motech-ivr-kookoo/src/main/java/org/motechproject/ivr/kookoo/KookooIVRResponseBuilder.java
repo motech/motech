@@ -74,7 +74,7 @@ public class KookooIVRResponseBuilder {
                 response.addPlayText(ivrMessage.getText(playText));
             for (String playAudio : playAudios)
                 response.addPlayAudio(ivrMessage.getWav(playAudio, language));
-            if (phoneNumber != null){
+            if (StringUtils.isNotEmpty(phoneNumber)){
                 Dial dial = new Dial();
                 dial.setNumber(phoneNumber);
                 response.addDial(dial);
@@ -114,7 +114,9 @@ public class KookooIVRResponseBuilder {
     }
 
     public KookooIVRResponseBuilder withPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+        if (StringUtils.isNotEmpty(phoneNumber)) {
+            this.phoneNumber = phoneNumber;
+        }
         return this;
     }
 
