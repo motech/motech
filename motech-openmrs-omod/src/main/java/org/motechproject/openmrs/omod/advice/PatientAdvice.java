@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.aop.AfterReturningAdvice;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 public class PatientAdvice implements AfterReturningAdvice{
 
@@ -13,7 +14,7 @@ public class PatientAdvice implements AfterReturningAdvice{
 
     @Override
     public void afterReturning(Object returnValue, Method method, Object[] args, Object target) throws Throwable {
-        Patient patient = (Patient) returnValue;
-        log.info("intercepting method invocation: " + patient.getId());
+        List<Patient> patients = (List<Patient>) returnValue;
+        log.info("intercepting method invocation: " + patients.size());
     }
 }
