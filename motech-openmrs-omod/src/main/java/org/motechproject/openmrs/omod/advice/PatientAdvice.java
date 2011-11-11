@@ -7,9 +7,9 @@ import org.springframework.aop.AfterReturningAdvice;
 
 import java.lang.reflect.Method;
 
-public class PatientService implements AfterReturningAdvice{
+public class PatientAdvice implements AfterReturningAdvice{
 
-    private Logger log = LoggerFactory.getLogger(PatientService.class);
+    private Logger log = LoggerFactory.getLogger(PatientAdvice.class);
 
     @Override
     public void afterReturning(Object returnValue, Method method, Object[] args, Object target) throws Throwable {

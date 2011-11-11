@@ -13,4 +13,9 @@
            http://jax-ws.dev.java.net/spring/core.xsd
            http://jax-ws.dev.java.net/spring/servlet
            http://jax-ws.dev.java.net/spring/servlet.xsd">
+
+    <bean id="encounterAdvice" class="org.motechproject.openmrs.omod.advice.EncounterAdvice"/>
+    <bean id="obsAdvice" class="org.motechproject.openmrs.omod.advice.ObsAdvice"/>
+    <bean id="patientAdvice" class="org.motechproject.openmrs.omod.advice.PatientAdvice"/>
+
 </beans>
