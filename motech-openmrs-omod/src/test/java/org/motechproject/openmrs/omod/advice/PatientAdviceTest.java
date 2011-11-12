@@ -13,6 +13,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
+import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -36,15 +37,18 @@ public class PatientAdviceTest {
 
     @Test
     public void shouldPublishEventForPatientRelatedOperations() throws Throwable {
-        Method method1 = PatientService.class.getDeclaredMethods()[0];
-        String methodName = method1.getName();
+        Method method = PatientService.class.getDeclaredMethods()[0];
+        String methodName = method.getName();
         Patient patient = mock(Patient.class);
 
-        patientAdvice.afterReturning(Arrays.asList(patient), method1, null, null);
+        patientAdvice.afterReturning(patient, method, null, null);
 
         ArgumentCaptor<MotechEvent> captor = ArgumentCaptor.forClass(MotechEvent.class);
         verify(eventRelay).sendEventMessage(captor.capture());
         MotechEvent captured = captor.getValue();
-        assertThat((String) captured.getParameters().get("method"), is(equalTo(methodName)));
+
+        assertEquals(PatientAdvice.class.getName(),captured.getSubject());
+        assertThat((String) captured.getParameters().get(BaseAdvice.ADVICE_EVENT_METHOD_INVOKED), is(equalTo(methodName)));
+        assertThat((Patient) captured.getParameters().get(BaseAdvice.ADVICE_EVENT_RETURNED_VALUE), is(equalTo(patient)));
     }
 }
