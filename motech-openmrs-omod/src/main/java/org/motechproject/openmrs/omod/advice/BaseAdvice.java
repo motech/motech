@@ -1,11 +1,11 @@
 package org.motechproject.openmrs.omod.advice;
 
-import org.motechproject.context.EventContext;
-import org.motechproject.event.EventRelay;
-import org.motechproject.model.MotechEvent;
+import org.motechproject.openmrs.omod.domain.OmodEvent;
+import org.motechproject.openmrs.omod.service.OmodPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.AfterReturningAdvice;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -17,11 +17,8 @@ public abstract class BaseAdvice implements AfterReturningAdvice {
     public static final String ADVICE_EVENT_RETURNED_VALUE = "returnedValue";
     public static final String ADVICE_EVENT_METHOD_INVOKED = "methodInvoked";
 
-    private EventRelay eventRelay;
-
-    public BaseAdvice() {
-        this.eventRelay = EventContext.getInstance().getEventRelay();
-    }
+    @Autowired
+    private OmodPublisher publisher;
 
     @Override
     public void afterReturning(Object returnValue, Method method, Object[] args, Object target) throws Throwable {
@@ -30,7 +27,7 @@ public abstract class BaseAdvice implements AfterReturningAdvice {
         params.put(ADVICE_EVENT_METHOD_INVOKED, methodName);
         params.put(ADVICE_EVENT_RETURNED_VALUE, returnValue);
 
-        eventRelay.sendEventMessage(new MotechEvent(this.getClass().getName(), params));
+        publisher.send(new OmodEvent(this.getClass().getName(), params));
         log.info("intercepting service: " + methodName + "|" + params);
     }
 }
