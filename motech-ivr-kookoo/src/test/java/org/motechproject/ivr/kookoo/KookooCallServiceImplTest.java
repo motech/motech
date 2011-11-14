@@ -30,8 +30,8 @@ public class KookooCallServiceImplTest {
         initMocks(this);
         phoneNumber = "9876543211";
         Properties properties = new Properties();
-        properties.setProperty(KookooCallServiceImpl.KOOKOO_OUTBOUND_URL, "http://kookoo/outbound.php");
-        properties.setProperty(KookooCallServiceImpl.KOOKOO_API_KEY, "KKbedce53758c2e0b0e9eed7191ec2a466");
+        properties.setProperty(KookooCallServiceImpl.OUTBOUND_URL, "http://kookoo/outbound.php");
+        properties.setProperty(KookooCallServiceImpl.API_KEY, "KKbedce53758c2e0b0e9eed7191ec2a466");
 
         ivrService = new KookooCallServiceImpl(properties, httpClient);
     }

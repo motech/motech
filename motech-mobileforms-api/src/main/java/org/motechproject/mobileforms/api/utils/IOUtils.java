@@ -9,7 +9,6 @@ import java.io.File;
 import static ch.lambdaj.Lambda.join;
 import static java.util.Arrays.asList;
 
-@Component
 public class IOUtils {
     public static final String XFORMS_FOLDER = "xforms";
 

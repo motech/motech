@@ -25,13 +25,18 @@ public class AllMobileForms {
     private IOUtils ioUtils;
     private List<FormGroup> formGroups;
 
-    @Autowired
-    public AllMobileForms(@Qualifier(value = "mobileFormsProperties") Properties properties, MotechJsonReader motechJsonReader, IOUtils ioUtils) {
+    AllMobileForms(Properties properties, MotechJsonReader motechJsonReader, IOUtils ioUtils) {
         this.properties = properties;
         this.motechJsonReader = motechJsonReader;
         this.ioUtils = ioUtils;
     }
 
+    @Autowired
+    public AllMobileForms(@Qualifier(value = "mobileFormsProperties") Properties properties) {
+        this(properties, new MotechJsonReader(), new IOUtils());
+    }
+
+    //TODO: Why postconstruct and not called directly from constructor
     @PostConstruct
     public void initialize() {
         List<FormGroup> formGroupsFromConfigFile = (List<FormGroup>) motechJsonReader.readFromFile(configFile(), new TypeToken<List<FormGroup>>() {
