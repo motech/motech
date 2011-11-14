@@ -39,7 +39,11 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
 
     @Override
     public Patient getPatient(String patientId) {
-        return getMrsPatient(patientService.getPatient(Integer.parseInt(patientId)));
+        org.openmrs.Patient patient = patientService.getPatient(Integer.parseInt(patientId));
+        if (patient == null) {
+            return null;
+        }
+        return getMrsPatient(patient);
     }
 
     @Override

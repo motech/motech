@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -102,6 +103,13 @@ public class OpenMRSPatientAdaptorTest {
 
         verify(mockPatientService).getPatient(patientId);
         patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthdate, gender, facility, returnedPatient);
+    }
+
+    @Test
+    public void shouldReturnNullIfPatientByIdIsNotFound() {
+        int patientId = 12;
+        when(mockPatientService.getPatient(patientId)).thenReturn(null);
+        assertNull(openMRSPatientAdaptor.getPatient(String.valueOf(patientId)));
     }
 
     @Test
