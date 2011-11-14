@@ -10,6 +10,10 @@
     <activator>${modulePackage}.listener.MotechModuleActivator</activator>
     <require_version>1.8.2</require_version>
 
+    <require_modules>
+		<require_module version="2.1">org.openmrs.module.idgen</require_module>
+	</require_modules>
+
     <advice>
         <point>org.openmrs.api.ObsService</point>
         <class>${modulePackage}.advice.ObsAdvice</class>
@@ -26,7 +30,7 @@
     <!-- http://localhost:8080/openmrs/ms/identifier/-->
     <servlet>
         <servlet-name>identifier</servlet-name>
-        <servlet-class>org.motechproject.openmrs.omod.web.servlet.MotechIDServlet</servlet-class>
+        <servlet-class>org.motechproject.openmrs.omod.web.servlet.OmodServlet</servlet-class>
     </servlet>
 
 </module>
