@@ -1,5 +1,6 @@
 package org.motechproject.openmrs.services;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.Patient;
 import org.motechproject.mrs.services.MRSPatientAdaptor;
@@ -15,6 +16,7 @@ import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.on;
@@ -44,6 +46,19 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
             return null;
         }
         return getMrsPatient(patient);
+    }
+
+    @Override
+    public Patient getPatientByMotechId(String motechId) {
+        PatientIdentifierType motechIdType = patientService.getPatientIdentifierTypeByName(IdentifierType.IDENTIFIER_MOTECH_ID.getName());
+        List<PatientIdentifierType> idTypes = new ArrayList<PatientIdentifierType>();
+        idTypes.add(motechIdType);
+
+        List<org.openmrs.Patient> patients = patientService.getPatients(null, motechId, idTypes, true);
+        if (CollectionUtils.isEmpty(patients)) {
+            return null;
+        }
+        return getMrsPatient(patients.get(0));
     }
 
     @Override

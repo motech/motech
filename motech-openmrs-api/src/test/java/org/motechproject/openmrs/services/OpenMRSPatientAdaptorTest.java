@@ -1,5 +1,6 @@
 package org.motechproject.openmrs.services;
 
+import org.apache.commons.collections.ListUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -21,8 +22,10 @@ import org.openmrs.api.UserService;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
@@ -103,6 +106,42 @@ public class OpenMRSPatientAdaptorTest {
 
         verify(mockPatientService).getPatient(patientId);
         patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthdate, gender, facility, returnedPatient);
+    }
+
+    @Test
+    public void shouldGetPatientByMotechId() {
+        final Person person = new Person();
+        final String first = "First";
+        final String middle = "Middle";
+        final String last = "Last";
+        final String address1 = "a good street in ghana";
+        final Date birthdate = new Date(1970, 3, 11);
+        final boolean birthdateEstimated = true;
+        final String gender = "male";
+        final Facility facility = new Facility("1000", "name", "country", "region", "district", "province");
+        String motechId = "11";
+        PatientIdentifierType motechIdType = mock(PatientIdentifierType.class);
+
+        final org.openmrs.Patient mrsPatient = patientTestUtil.setUpOpenMRSPatient(person, first, middle, last, address1, birthdate, birthdateEstimated, gender, facility);
+        List<PatientIdentifierType> idTypes = Arrays.asList(motechIdType);
+        when(mockPatientService.getPatients(null, motechId, idTypes, true)).thenReturn(Arrays.asList(mrsPatient));
+        when(mockPatientService.getPatientIdentifierTypeByName(IdentifierType.IDENTIFIER_MOTECH_ID.getName())).thenReturn(motechIdType);
+        when(mockFacilityAdapter.createFacility(any(Location.class))).thenReturn(facility);
+        Patient returnedPatient = openMRSPatientAdaptor.getPatientByMotechId(motechId);
+
+        patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthdate, gender, facility, returnedPatient);
+    }
+
+    @Test
+    public void shouldReturnNullGetPatientByMotechId() {
+        String motechId = "11";
+        PatientIdentifierType motechIdType = mock(PatientIdentifierType.class);
+
+        List<PatientIdentifierType> idTypes = Arrays.asList(motechIdType);
+        when(mockPatientService.getPatients(null, motechId, idTypes, true)).thenReturn(ListUtils.EMPTY_LIST);
+        when(mockPatientService.getPatientIdentifierTypeByName(IdentifierType.IDENTIFIER_MOTECH_ID.getName())).thenReturn(motechIdType);
+        assertNull(openMRSPatientAdaptor.getPatientByMotechId(motechId));
+
     }
 
     @Test

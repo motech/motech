@@ -6,4 +6,6 @@ public interface MRSPatientAdaptor {
     Patient savePatient(Patient patient);
 
     Patient getPatient(String patientId);
+
+    Patient getPatientByMotechId(String motechId);
 }
