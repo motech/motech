@@ -24,8 +24,8 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 
 public class OmodIdentifierServletTest {
-    private static final String ID_GENERATOR = "IdGenerator";
-    private static final String ID_TYPE = "idType";
+    private static final String ID_GENERATOR = "generator";
+    private static final String ID_TYPE = "type";
 
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;

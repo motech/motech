@@ -15,10 +15,13 @@ import java.io.PrintWriter;
 
 
 public class OmodIdentifierServlet extends HttpServlet {
+
     private Logger log = LoggerFactory.getLogger(OmodIdentifierServlet.class);
+
+    private static final String ID_GENERATOR = "generator";
+    private static final String ID_TYPE = "type";
+
     private OmodIdentifierService omodIdentifierService;
-    private static final String ID_GENERATOR = "IdGenerator";
-    private static final String ID_TYPE = "idType";
 
     protected OmodIdentifierService getOmodIdentifierService() {
         return new OmodIdentifierService();
@@ -26,14 +29,13 @@ public class OmodIdentifierServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        log.info("ID GENERATOR SERVLET INVOKED");
-
+        log.info("Generating id ...");
         String generatedId = getOmodIdentifierService().getIdFor(request.getParameter(ID_GENERATOR), request.getParameter(ID_TYPE));
-
         response.setContentType("text/html");
         PrintWriter writer = response.getWriter();
         writer.write(generatedId);
         writer.close();
         response.setStatus(HttpServletResponse.SC_OK);
+        log.info("Generated id: " + generatedId);
     }
 }

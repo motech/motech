@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 public class OmodIdentifierService {
     private static final String AUTO_GENERATED = "AUTO GENERATED";
     private IdentifierSourceService idSourceService;
