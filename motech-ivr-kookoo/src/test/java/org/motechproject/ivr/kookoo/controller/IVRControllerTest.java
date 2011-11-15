@@ -64,6 +64,6 @@ public class IVRControllerTest {
         when(callFlowController.urlFor(ivrContextForTest)).thenReturn("/ivr/dial");
 
         String replyURL = ivrController.reply(ivrContextForTest);
-        assertEquals("forward:/ivr/dial/gotdtmf", replyURL);
+        assertEquals("forward:/ivr/dial/dial", replyURL);
     }
 }

@@ -6,9 +6,9 @@
         <version>0.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>motech-openmrs</artifactId>
+    <artifactId>motech-openmrs-omod</artifactId>
     <packaging>omod</packaging>
-    <name>motech-openmrs</name>
+    <name>motech-openmrs-omod</name>
     <url>http://maven.apache.org</url>
     <description>Motech Platform</description>
 
@@ -52,6 +52,30 @@
             <version>1.2.16</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>3.0.5.RELEASE</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <scope>provided</scope>
+            <version>3.0.5.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
+            <scope>provided</scope>
+            <version>3.0.5.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <scope>provided</scope>
+            <version>3.0.5.RELEASE</version>
+        </dependency>
         <!--TEST-->
         <dependency>
             <groupId>org.openmrs.test</groupId>
@@ -64,6 +88,18 @@
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
             <version>1.9.4-mod</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>1.4.9</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <version>1.4.9</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

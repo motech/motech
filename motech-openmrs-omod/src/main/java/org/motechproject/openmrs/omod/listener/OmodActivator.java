@@ -5,9 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class MotechModuleActivator implements ModuleActivator {
+public class OmodActivator implements ModuleActivator {
 
-    private static final Logger log = LoggerFactory.getLogger(MotechModuleActivator.class);
+    private static final Logger log = LoggerFactory.getLogger(OmodActivator.class);
 
     @Override
     public void willRefreshContext() {

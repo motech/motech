@@ -12,13 +12,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class BaseAdvice implements AfterReturningAdvice {
-    private Logger log = LoggerFactory.getLogger(BaseAdvice.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BaseAdvice.class);
 
     public static final String ADVICE_EVENT_RETURNED_VALUE = "returnedValue";
+
     public static final String ADVICE_EVENT_METHOD_INVOKED = "methodInvoked";
 
     @Autowired
-    private OmodPublisher publisher = new OmodPublisher();
+    protected OmodPublisher publisher;
 
     @Override
     public void afterReturning(Object returnValue, Method method, Object[] args, Object target) throws Throwable {
@@ -28,6 +29,6 @@ public abstract class BaseAdvice implements AfterReturningAdvice {
         params.put(ADVICE_EVENT_RETURNED_VALUE, returnValue);
 
         publisher.send(new OmodEvent(this.getClass().getName(), params));
-        log.info("intercepting service: " + methodName + "|" + params);
+        LOG.info("intercepting service: " + methodName + "|" + params);
     }
 }

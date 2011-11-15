@@ -7,7 +7,7 @@
     <package>${modulePackage}</package>
     <author>Motech</author>
     <description>${project.description}</description>
-    <activator>${modulePackage}.listener.MotechModuleActivator</activator>
+    <activator>${modulePackage}.listener.OmodActivator</activator>
     <require_version>1.8.2</require_version>
 
     <require_modules>
@@ -30,7 +30,7 @@
     <!-- http://localhost:8080/openmrs/ms/identifier/-->
     <servlet>
         <servlet-name>identifier</servlet-name>
-        <servlet-class>org.motechproject.openmrs.omod.web.servlet.OmodServlet</servlet-class>
+        <servlet-class>org.motechproject.openmrs.omod.web.servlet.OmodIdentifierServlet</servlet-class>
     </servlet>
 
 </module>

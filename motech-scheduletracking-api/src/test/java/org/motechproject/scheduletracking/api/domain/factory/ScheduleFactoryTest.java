@@ -16,7 +16,7 @@ import static org.junit.Assert.assertThat;
 public class ScheduleFactoryTest {
     @Test
     public void records() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/simple-schedule.json", new MotechJsonReader());
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/simple-schedule.json");
         ScheduleRecord scheduleRecord = jsonReader.records().get(0);
         Schedule schedule = ScheduleFactory.create(scheduleRecord);
 

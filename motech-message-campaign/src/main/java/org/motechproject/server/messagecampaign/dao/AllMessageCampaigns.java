@@ -20,10 +20,14 @@ public class AllMessageCampaigns {
     private Properties properties;
     private MotechJsonReader motechJsonReader;
 
-    @Autowired
-    public AllMessageCampaigns(@Qualifier(value = "messageCampaignProperties") Properties properties, MotechJsonReader motechJsonReader) {
+    public AllMessageCampaigns(Properties properties, MotechJsonReader motechJsonReader) {
         this.properties = properties;
         this.motechJsonReader = motechJsonReader;
+    }
+
+    @Autowired
+    public AllMessageCampaigns(@Qualifier(value = "messageCampaignProperties") Properties properties) {
+        this(properties, new MotechJsonReader());
     }
 
     public Campaign get(String campaignName) {
