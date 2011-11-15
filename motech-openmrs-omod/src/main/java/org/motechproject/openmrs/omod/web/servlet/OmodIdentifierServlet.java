@@ -17,17 +17,23 @@ import java.io.PrintWriter;
 public class OmodIdentifierServlet extends HttpServlet {
     private Logger log = LoggerFactory.getLogger(OmodIdentifierServlet.class);
     private OmodIdentifierService omodIdentifierService;
+    private static final String ID_GENERATOR = "IdGenerator";
+    private static final String ID_TYPE = "idType";
 
-    public OmodIdentifierServlet() {
-          omodIdentifierService = new OmodIdentifierService();
+    protected OmodIdentifierService getOmodIdentifierService() {
+        return new OmodIdentifierService();
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("text/xml");
-        PrintWriter writer = resp.getWriter();
-        writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?><ids><id></id></ids>");
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        log.info("ID GENERATOR SERVLET INVOKED");
+
+        String generatedId = getOmodIdentifierService().getIdFor(request.getParameter(ID_GENERATOR), request.getParameter(ID_TYPE));
+
+        response.setContentType("text/html");
+        PrintWriter writer = response.getWriter();
+        writer.write(generatedId);
         writer.close();
-        log.info("called servlet");
+        response.setStatus(HttpServletResponse.SC_OK);
     }
 }
