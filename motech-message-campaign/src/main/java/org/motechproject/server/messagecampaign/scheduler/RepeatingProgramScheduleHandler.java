@@ -9,7 +9,6 @@ import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 import org.motechproject.util.DateUtil;
-import org.motechproject.valueobjects.factory.WallTimeFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +38,7 @@ public class RepeatingProgramScheduleHandler {
         log.info("handled internal repeating campaign event and forwarding: " + event.getParameters().hashCode());
 
         RepeatingCampaignMessage repeatingCampaignMessage = (RepeatingCampaignMessage) getCampaignMessage(event);
-        int repeatIntervalInDays = WallTimeFactory.create(repeatingCampaignMessage.repeatInterval()).inDays();
+        int repeatIntervalInDays = repeatingCampaignMessage.repeatIntervalInDays();
         String messageKey = (String) event.getParameters().get(MESSAGE_KEY);
         Integer interval = (daysBetween(newDateTime(event.getStartTime()).withTimeAtStartOfDay(),
                 DateUtil.now().withTimeAtStartOfDay()).getDays() / repeatIntervalInDays) + 1;

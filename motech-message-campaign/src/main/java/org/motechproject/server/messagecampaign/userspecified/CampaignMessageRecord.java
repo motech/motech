@@ -12,6 +12,7 @@ public class CampaignMessageRecord {
     private String name;
     private List<String> formats;
     private List<String> languages;
+    private List<String> weekDaysApplicable;
     private String messageKey;
     private Date date;
     private String timeOffset;
@@ -47,12 +48,11 @@ public class CampaignMessageRecord {
     }
 
     private CampaignMessage buildRepeating() {
-        RepeatingCampaignMessage message = new RepeatingCampaignMessage();
+        RepeatingCampaignMessage message = new RepeatingCampaignMessage(repeatInterval, weekDaysApplicable);
         message.name(name);
         message.formats(formats);
         message.languages(languages);
         message.messageKey(messageKey);
-        message.repeatInterval(repeatInterval);
         return message;
     }
 
@@ -125,8 +125,18 @@ public class CampaignMessageRecord {
         return timeOffset;
     }
 
+    public CampaignMessageRecord repeatInterval(String repeatInterval) {
+        this.repeatInterval = repeatInterval;
+        return this;
+    }
+
     public CampaignMessageRecord timeOffset(String timeOffset) {
         this.timeOffset = timeOffset;
+        return this;
+    }
+
+    public CampaignMessageRecord weekDaysApplicable(List<String> weekDaysApplicable) {
+        this.weekDaysApplicable = weekDaysApplicable;
         return this;
     }
 
@@ -140,5 +150,9 @@ public class CampaignMessageRecord {
 
     public String cron() {
         return cron;
+    }
+
+    public List<String> weekDaysApplicable() {
+        return weekDaysApplicable;
     }
 }

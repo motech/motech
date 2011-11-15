@@ -35,7 +35,7 @@ public class CampaignMessageBuilder {
     }
 
     public RepeatingCampaignMessage repeatingCampaignMessage(String name, String repeatInterval, String messageKey) {
-        RepeatingCampaignMessage repeatingCampaignMessage = new RepeatingCampaignMessage();
+        RepeatingCampaignMessage repeatingCampaignMessage = new RepeatingCampaignMessage(repeatInterval, null);
         repeatingCampaignMessage.name(name);
         repeatingCampaignMessage.formats(Arrays.asList("IVR"));
         repeatingCampaignMessage.languages(Arrays.asList("en"));

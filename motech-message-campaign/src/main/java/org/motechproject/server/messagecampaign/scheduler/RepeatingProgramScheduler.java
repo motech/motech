@@ -21,9 +21,8 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler {
         LocalDate startDate = referenceDate();
         WallTime duration = WallTimeFactory.create(((RepeatingCampaign)campaign).maxDuration());
         LocalDate endDate = startDate.plusDays(duration.inDays());
-        int repeatIntervalInDays = WallTimeFactory.create(((RepeatingCampaignMessage)message).repeatInterval()).inDays();
 
-        long repeatInterval = Days.days(repeatIntervalInDays).toStandardSeconds().getSeconds() * 1000L;
+        long repeatInterval = Days.days(((RepeatingCampaignMessage)message).repeatIntervalInDays()).toStandardSeconds().getSeconds() * 1000L;
         scheduleRepeatingJob(startDate, endDate, repeatInterval, jobParams(message.messageKey()));
     }
 }

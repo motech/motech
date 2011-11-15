@@ -71,6 +71,13 @@
                 "languages" : ["en"],
                 "messageKey": "child-info-week-{Offset}-3",
                 "repeatInterval" : "12 Days"
+            },
+            {
+                "name" : "Weekly Message #4",
+                "formats" : ["SMS"],
+                "languages" : ["en"],
+                "messageKey": "child-info-week-{Offset}-{weekDay}",
+                "weekDaysApplicable" : ["Monday", "Wednesday", "Friday"]
             }
         ]
     },

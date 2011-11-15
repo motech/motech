@@ -16,7 +16,6 @@ import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 import org.motechproject.util.DateTimeSourceUtil;
 import org.motechproject.util.datetime.DateTimeSource;
-import org.motechproject.valueobjects.factory.WallTimeFactory;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -48,7 +47,7 @@ public class RepeatingProgramScheduleHandlerTest {
     public void shouldHandleEventForRepeatCampaignScheduleAndUpdateMessageKey() {
 
         CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessage(campaignName, "2 Weeks", messageKey);
-        int repeatIntervalInDays = WallTimeFactory.create(((RepeatingCampaignMessage) campaignMessage).repeatInterval()).inDays();
+        int repeatIntervalInDays = ((RepeatingCampaignMessage) campaignMessage).repeatIntervalInDays();
         when(allMessageCampaigns.get(campaignName, messageKey)).thenReturn(campaignMessage);
 
         DateTime today = date(2011, 11, 14);

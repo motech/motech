@@ -1,14 +1,15 @@
 package org.motechproject.server.messagecampaign.userspecified;
 
 import org.junit.Test;
-import org.motechproject.server.messagecampaign.builder.CampaignRecordBuilder;
 import org.motechproject.server.messagecampaign.builder.CampaignMessageRecordBuilder;
+import org.motechproject.server.messagecampaign.builder.CampaignRecordBuilder;
 import org.motechproject.server.messagecampaign.domain.campaign.*;
 import org.motechproject.server.messagecampaign.domain.message.AbsoluteCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 import org.motechproject.util.DateUtil;
+import org.motechproject.valueobjects.factory.WallTimeFactory;
 
 import java.util.List;
 
@@ -67,7 +68,7 @@ public class CampaignRecordTest {
 
     @Test
     public void testBuildRepeatingCampaign() {
-        messageRecord = CampaignMessageRecordBuilder.createRepeatingCampaignMessageRecord("Message 1", "message-key");
+        messageRecord = CampaignMessageRecordBuilder.createRepeatingCampaignMessageRecord("Message 1", "message-key", "1 Weeks");
         campaignRecord = CampaignRecordBuilder.repeatingCampaignRecord("Campaign 1", messageRecord);
 
         Campaign campaign = campaignRecord.build();
@@ -84,7 +85,7 @@ public class CampaignRecordTest {
         assertEquals(messageRecord.formats(), message.formats());
         assertEquals(messageRecord.languages(), message.languages());
         assertEquals(messageRecord.messageKey(), message.messageKey());
-        assertEquals(messageRecord.repeatInterval(), message.repeatInterval());
+        assertEquals(WallTimeFactory.create(messageRecord.repeatInterval()).inDays(), message.repeatIntervalInDays());
 
     }
 

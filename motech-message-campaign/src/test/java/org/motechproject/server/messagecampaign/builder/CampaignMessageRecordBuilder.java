@@ -32,8 +32,12 @@ public class CampaignMessageRecordBuilder {
         return new CampaignMessageRecord().name(name).formats(formats).languages(languages).messageKey(messageKey);
     }
 
-    public static CampaignMessageRecord createRepeatingCampaignMessageRecord(String name, String messageKey) {
-        return createOffsetCampaignMessageRecord(name, messageKey);
+    private static CampaignMessageRecord createCampaignMessageRecord(String name, String messageKey, String repeatInterval) {
+        return new CampaignMessageRecord().name(name).formats(formats).languages(languages).messageKey(messageKey).repeatInterval(repeatInterval);
+    }
+
+    public static CampaignMessageRecord createRepeatingCampaignMessageRecord(String name, String messageKey, String repeatInterval) {
+        return createCampaignMessageRecord(name, messageKey, repeatInterval);
     }
 
     public static CampaignMessageRecord createCronBasedCampaignMessageRecord(String name, String messageKey) {
