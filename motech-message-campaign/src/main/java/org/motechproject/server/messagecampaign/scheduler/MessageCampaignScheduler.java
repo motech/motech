@@ -16,20 +16,20 @@ import java.util.Map;
 
 import static org.motechproject.server.messagecampaign.EventKeys.BASE_SUBJECT;
 
-public abstract class MessageCampaignScheduler<T extends CampaignMessage> {
+public abstract class MessageCampaignScheduler<T extends CampaignMessage, E extends Campaign<T>> {
     protected MotechSchedulerService schedulerService;
     protected CampaignRequest campaignRequest;
-    protected Campaign<T> campaign;
+    protected E campaign;
     final static String INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT = BASE_SUBJECT + "internal-repeating-campaign";
 
-    protected MessageCampaignScheduler(MotechSchedulerService schedulerService, CampaignRequest campaignRequest, Campaign<T> campaign) {
+    protected MessageCampaignScheduler(MotechSchedulerService schedulerService, CampaignRequest campaignRequest, E campaign) {
         this.schedulerService = schedulerService;
         this.campaign = campaign;
         this.campaignRequest = campaignRequest;
     }
 
     public void start() {
-        for (CampaignMessage message : campaign.messages())
+        for (T message : campaign.messages())
             scheduleJobFor(message);
     }
 
@@ -43,7 +43,7 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage> {
         start();
     }
 
-    protected abstract void scheduleJobFor(CampaignMessage message);
+    protected abstract void scheduleJobFor(T message);
 
     protected void scheduleJobOn(Time startTime, LocalDate startDate, Map<String, Object> params) {
         MotechEvent motechEvent = new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, params);
