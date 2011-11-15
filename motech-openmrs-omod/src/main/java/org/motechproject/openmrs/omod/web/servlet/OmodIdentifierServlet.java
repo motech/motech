@@ -18,26 +18,19 @@ import java.io.PrintWriter;
 public class OmodIdentifierServlet extends HttpServlet {
 
     private Logger log = LoggerFactory.getLogger(OmodIdentifierServlet.class);
-
     private static final String ID_GENERATOR = "generator";
     private static final String ID_TYPE = "type";
-
-    private OmodIdentifierService omodIdentifierService;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.info("Generating id ...");
-        Context.openSession();
-        Context.authenticate("admin", "P@ssw0rd");
-
         String generatedId = getOmodIdentifierService().getIdFor(request.getParameter(ID_GENERATOR), request.getParameter(ID_TYPE));
         response.setContentType("text/html");
         PrintWriter writer = response.getWriter();
         writer.write(generatedId);
         writer.close();
         response.setStatus(HttpServletResponse.SC_OK);
-        log.info("Generated id: " + generatedId);
-        Context.closeSession();
+        log.info("New id: " + generatedId);
     }
 
     protected OmodIdentifierService getOmodIdentifierService() {
