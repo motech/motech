@@ -1,6 +1,5 @@
 package org.motechproject.mobileforms.api.callbacks;
 
-import ch.lambdaj.function.argument.Argument;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -32,7 +31,7 @@ public class FormPublisherTest {
     public void shouldPublishFormBeanAsEventToRelay() {
         FormBean formBean = new FormBean();
         formBean.setStudyName("study1");
-        formBean.setFormName("form1");
+        formBean.setFormname("form1");
 
         publisher.publish(formBean);
 
