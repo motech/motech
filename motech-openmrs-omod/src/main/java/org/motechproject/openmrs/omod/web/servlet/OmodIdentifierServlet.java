@@ -1,6 +1,7 @@
 package org.motechproject.openmrs.omod.web.servlet;
 
 import org.motechproject.openmrs.omod.service.OmodIdentifierService;
+import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -23,13 +24,12 @@ public class OmodIdentifierServlet extends HttpServlet {
 
     private OmodIdentifierService omodIdentifierService;
 
-    protected OmodIdentifierService getOmodIdentifierService() {
-        return new OmodIdentifierService();
-    }
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.info("Generating id ...");
+        Context.openSession();
+        Context.authenticate("admin", "P@ssw0rd");
+
         String generatedId = getOmodIdentifierService().getIdFor(request.getParameter(ID_GENERATOR), request.getParameter(ID_TYPE));
         response.setContentType("text/html");
         PrintWriter writer = response.getWriter();
@@ -37,5 +37,10 @@ public class OmodIdentifierServlet extends HttpServlet {
         writer.close();
         response.setStatus(HttpServletResponse.SC_OK);
         log.info("Generated id: " + generatedId);
+        Context.closeSession();
+    }
+
+    protected OmodIdentifierService getOmodIdentifierService() {
+        return new OmodIdentifierService();
     }
 }
