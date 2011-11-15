@@ -4,11 +4,8 @@ import org.openmrs.patient.UnallowedIdentifierException;
 import org.openmrs.patient.impl.BaseHyphenatedIdentifierValidator;
 
 public class VerhoeffValidator extends BaseHyphenatedIdentifierValidator {
-
     public static final String ALLOWED_CHARS = "0123456789";
-
     public static final String VERHOEFF_NAME = "Verhoeff Check Digit Validator";
-
 
     @Override
     public String getAllowedCharacters() {
@@ -26,21 +23,12 @@ public class VerhoeffValidator extends BaseHyphenatedIdentifierValidator {
         return inv_table[checkDigit];
     }
 
-    /**
-     * Override to not expect hyphen and only allow only numeric check digits
-     * (using allowed characters).
-     */
     @Override
     public boolean isValid(String identifier) throws UnallowedIdentifierException {
         checkAllowedIdentifier(identifier);
         return isValidCheckDigit(identifier);
     }
 
-    /**
-     * Override to not add hyphen before check digit.
-     *
-     * @see org.openmrs.patient.impl.BaseHyphenatedIdentifierValidator#getValidIdentifier(java.lang.String)
-     */
     @Override
     public String getValidIdentifier(String undecoratedIdentifier) throws UnallowedIdentifierException {
         checkAllowedIdentifier(undecoratedIdentifier);
@@ -59,8 +47,7 @@ public class VerhoeffValidator extends BaseHyphenatedIdentifierValidator {
         for (int j = identifier.length() - 1; j >= 0; j--) {
             int number = Character.getNumericValue(identifier.charAt(j));
             if (number < 0 || number > 9) {
-                throw new UnallowedIdentifierException("\""
-                        + identifier.charAt(j) + "\" is an invalid character.");
+                throw new UnallowedIdentifierException("\"" + identifier.charAt(j) + "\" is an invalid character.");
             }
             checkDigit = d_table[checkDigit][p_table[i % 8][number]];
             i++;
