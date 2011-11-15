@@ -59,7 +59,7 @@ public class OpenMRSUserAdaptorTest {
         User mrsUser = new User();
         Role role = new Role();
 
-        when(userService.getRole(mrsUser.securityRole())).thenReturn(role);
+        when(userService.getRole(mrsUser.getSecurityRole())).thenReturn(role);
         PersonAttributeType phoneAttribute = mock(PersonAttributeType.class);
         PersonAttributeType staffTypeAttribute = mock(PersonAttributeType.class);
         PersonAttributeType emailAttribute = mock(PersonAttributeType.class);
@@ -102,7 +102,7 @@ public class OpenMRSUserAdaptorTest {
         Role role = new Role();
         final String emailId = "jack@daniels.com";
 
-        when(userService.getRole(mrsUser.securityRole())).thenReturn(role);
+        when(userService.getRole(mrsUser.getSecurityRole())).thenReturn(role);
         PersonAttributeType phoneAttribute = mock(PersonAttributeType.class);
         PersonAttributeType staffTypeAttribute = mock(PersonAttributeType.class);
         PersonAttributeType emailAttribute = mock(PersonAttributeType.class);

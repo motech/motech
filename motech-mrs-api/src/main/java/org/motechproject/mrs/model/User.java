@@ -9,6 +9,7 @@ public class User {
     private String middleName;
     private String lastName;
     private String securityRole;
+
     private List<Attribute> attributes = new ArrayList<Attribute>();
 
     public User id(String id) {
@@ -31,23 +32,23 @@ public class User {
         return this;
     }
 
-    public String firstName() {
+    public String getFirstName() {
         return firstName;
     }
 
-    public String middleName() {
+    public String getMiddleName() {
         return middleName;
     }
 
-    public String lastName() {
+    public String getLastName() {
         return lastName;
     }
 
-    public String fullName() {
+    public String getFullName() {
         return firstName + " " + middleName + " " + lastName;
     }
 
-    public List<Attribute> attributes() {
+    public List<Attribute> getAttributes() {
         return attributes;
     }
 
@@ -55,7 +56,7 @@ public class User {
         attributes.add(attribute);
     }
 
-    public String securityRole() {
+    public String getSecurityRole() {
         return securityRole;
     }
 
@@ -63,7 +64,11 @@ public class User {
         this.securityRole = securityRole;
     }
 
-    public String id() {
+    public String getId() {
         return id;
+    }
+
+    public void setAttributes(List<Attribute> attributes) {
+        this.attributes = attributes;
     }
 }
