@@ -5,6 +5,8 @@
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <context:component-scan base-package="org.motechproject.openmrs.omod"/>
-
+    <bean id="encounterAdvice" class="org.motechproject.openmrs.omod.advice.EncounterAdvice"/>
+    <bean id="obsAdvice" class="org.motechproject.openmrs.omod.advice.ObsAdvice"/>
+    <bean id="patientAdvice" class="org.motechproject.openmrs.omod.advice.PatientAdvice"/>
 
 </beans>

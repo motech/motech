@@ -23,11 +23,11 @@ public class FormOutputTest {
     public void shouldWriteSuccessCumErrorCounts() throws IOException {
         FormBean formBean1 = new FormBean();
         formBean1.setStudyName("study1");
-        formBean1.setFormName("form1");
+        formBean1.setFormname("form1");
         formBean1.setXmlContent("xml1");
         FormBean formBean2 = new FormBean();
         formBean2.setStudyName("study2");
-        formBean2.setFormName("form2");
+        formBean2.setFormname("form2");
         formBean2.setXmlContent("xml2");
         ByteArrayOutputStream actualByteStream = new ByteArrayOutputStream();
 

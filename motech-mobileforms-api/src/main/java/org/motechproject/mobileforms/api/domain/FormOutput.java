@@ -53,7 +53,7 @@ public class FormOutput {
         @Override
         public int compare(FormBean formBean, FormBean formBean1) {
             int comparison = formBean.getStudyName().compareToIgnoreCase(formBean1.getStudyName());
-            return comparison != 0 ? comparison : formBean.getFormName().compareToIgnoreCase(formBean1.getFormName());
+            return comparison != 0 ? comparison : formBean.getFormname().compareToIgnoreCase(formBean1.getFormname());
         }
     }
 }

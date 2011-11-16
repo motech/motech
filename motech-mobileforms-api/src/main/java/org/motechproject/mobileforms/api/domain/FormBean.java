@@ -1,25 +1,28 @@
 package org.motechproject.mobileforms.api.domain;
 
-public class FormBean {
+import java.io.Serializable;
+
+public class FormBean implements Serializable{
     private String studyName;
-    private String formName;
+    private String formname;
     private String xmlContent;
     private String validator;
+    private String formtype;
 
     public void setValidator(String validator){
         this.validator = validator;
     }
 
-    public void setFormName(String formName){
-        this.formName = formName;
+    public void setFormname(String formname){
+        this.formname = formname;
     }
 
     public String getValidator() {
         return validator;
     }
 
-    public String getFormName() {
-        return formName;
+    public String getFormname() {
+        return formname;
     }
 
     public String getStudyName() {
@@ -38,4 +41,11 @@ public class FormBean {
         this.xmlContent = xmlContent;
     }
 
+    public String getFormtype() {
+        return formtype;
+    }
+
+    public void setFormtype(String formtype) {
+        this.formtype = formtype;
+    }
 }

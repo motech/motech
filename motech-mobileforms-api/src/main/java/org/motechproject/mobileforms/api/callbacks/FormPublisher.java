@@ -24,7 +24,7 @@ public class FormPublisher {
     public void publish(FormBean formBean) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(FORM_BEAN, formBean);
-        String eventSubject = FORM_VALIDATION_SUCCESSFUL + "." + formBean.getStudyName() + "." + formBean.getFormName();
+        String eventSubject = FORM_VALIDATION_SUCCESSFUL + "." + formBean.getStudyName() + "." + formBean.getFormname();
         MotechEvent motechEvent = new MotechEvent(eventSubject, params);
         eventRelay.sendEventMessage(motechEvent);
     }

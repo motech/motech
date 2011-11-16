@@ -1,6 +1,7 @@
 package org.motechproject.openmrs.omod.web.servlet;
 
 import org.motechproject.openmrs.omod.service.OmodIdentifierService;
+import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -15,25 +16,33 @@ import java.io.PrintWriter;
 
 
 public class OmodIdentifierServlet extends HttpServlet {
-    private Logger log = LoggerFactory.getLogger(OmodIdentifierServlet.class);
-    private OmodIdentifierService omodIdentifierService;
-    private static final String ID_GENERATOR = "IdGenerator";
-    private static final String ID_TYPE = "idType";
 
-    protected OmodIdentifierService getOmodIdentifierService() {
-        return new OmodIdentifierService();
-    }
+    private Logger log = LoggerFactory.getLogger(OmodIdentifierServlet.class);
+    private static final String ID_GENERATOR = "generator";
+    private static final String ID_TYPE = "type";
+    private static final String USER = "user";
+    private static final String PASSWORD = "password";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        log.info("ID GENERATOR SERVLET INVOKED");
 
-        String generatedId = getOmodIdentifierService().getIdFor(request.getParameter(ID_GENERATOR), request.getParameter(ID_TYPE));
+        log.info("Generating id ...");
+        String generatedId = getOmodIdentifierService().getIdFor(
+                request.getParameter(ID_GENERATOR),
+                request.getParameter(ID_TYPE),
+                request.getParameter(USER),
+                request.getParameter(PASSWORD)
+        );
 
         response.setContentType("text/html");
         PrintWriter writer = response.getWriter();
         writer.write(generatedId);
         writer.close();
         response.setStatus(HttpServletResponse.SC_OK);
+        log.info("New id: " + generatedId);
+    }
+
+    protected OmodIdentifierService getOmodIdentifierService() {
+        return new OmodIdentifierService();
     }
 }
