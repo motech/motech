@@ -12,9 +12,10 @@ import java.util.List;
 
 public class OmodIdentifierService {
 
-    public String getIdFor(String generatorName, String patientIdTypeName) {
+    public String getIdFor(String generatorName, String patientIdTypeName, String user, String password) {
+
         Context.openSession();
-        Context.authenticate("admin", "P@ssw0rd");
+        Context.authenticate(user, password);
 
         IdentifierSourceService idSourceService = Context.getService(IdentifierSourceService.class);
         PatientService patientService = Context.getService(PatientService.class);

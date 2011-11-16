@@ -1,6 +1,5 @@
 package org.motechproject.openmrs.omod.service;
 
-import org.apache.poi.ss.usermodel.DateUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,13 +13,10 @@ import org.openmrs.module.idgen.service.IdentifierSourceService;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.JMock1Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -51,6 +47,8 @@ public class OmodIdentifierServiceTest {
         final String generatorName = "MoTeCH Staff ID Generator";
         final String patientIdTypeName = "MoTeCH Staff Id";
         final String expectedId = "12345";
+        final String omodUser = "user";
+        final String omodPassword = "password";
 
         IdentifierSource identifierGenerator = mock(SequentialIdentifierGenerator.class);
         PatientIdentifierType patientIdentifierType = new PatientIdentifierType();
@@ -66,11 +64,8 @@ public class OmodIdentifierServiceTest {
         when(identifierSourceService.getAllIdentifierSources(false)).thenReturn(idSources);
         when(identifierSourceService.generateIdentifier(identifierGenerator, "AUTO GENERATED")).thenReturn(expectedId);
 
-        String idGenerated = omodIdentifierService.getIdFor(generatorName, patientIdTypeName);
-
+        String idGenerated = omodIdentifierService.getIdFor(generatorName, patientIdTypeName, omodUser, omodPassword);
         assertEquals(expectedId, idGenerated);
-
     }
-
 
 }

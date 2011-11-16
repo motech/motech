@@ -20,11 +20,20 @@ public class OmodIdentifierServlet extends HttpServlet {
     private Logger log = LoggerFactory.getLogger(OmodIdentifierServlet.class);
     private static final String ID_GENERATOR = "generator";
     private static final String ID_TYPE = "type";
+    private static final String USER = "user";
+    private static final String PASSWORD = "password";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
         log.info("Generating id ...");
-        String generatedId = getOmodIdentifierService().getIdFor(request.getParameter(ID_GENERATOR), request.getParameter(ID_TYPE));
+        String generatedId = getOmodIdentifierService().getIdFor(
+                request.getParameter(ID_GENERATOR),
+                request.getParameter(ID_TYPE),
+                request.getParameter(USER),
+                request.getParameter(PASSWORD)
+        );
+
         response.setContentType("text/html");
         PrintWriter writer = response.getWriter();
         writer.write(generatedId);
