@@ -15,11 +15,15 @@ public class TrackedSchedulesJsonReaderImpl implements TrackedSchedulesJsonReade
     private String definitionFile;
     private MotechJsonReader motechJsonReader;
 
-    @Autowired
-    public TrackedSchedulesJsonReaderImpl(@Value("#{scheduletracking['trackedschedule.definition.file']}") String definitionFileName, MotechJsonReader motechJsonReader) {
+    TrackedSchedulesJsonReaderImpl(String definitionFileName, MotechJsonReader motechJsonReader) {
+        if (definitionFileName == null) throw new NullPointerException();
         this.definitionFile = definitionFileName;
         this.motechJsonReader = motechJsonReader;
-        if (definitionFileName == null) throw new NullPointerException();
+    }
+
+    @Autowired
+    public TrackedSchedulesJsonReaderImpl(@Value("#{scheduletracking['trackedschedule.definition.file']}") String definitionFileName) {
+        this(definitionFileName, new MotechJsonReader());
     }
 
     @Override

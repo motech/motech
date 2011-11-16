@@ -1,6 +1,7 @@
 package org.motechproject.openmrs.omod.web.servlet;
 
 import org.motechproject.openmrs.omod.service.OmodIdentifierService;
+import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -15,21 +16,33 @@ import java.io.PrintWriter;
 
 
 public class OmodIdentifierServlet extends HttpServlet {
-    private Logger log = LoggerFactory.getLogger(OmodIdentifierServlet.class);
-    private ApplicationContext context;
-    private OmodIdentifierService omodIdentifierService;
 
-    public OmodIdentifierServlet() {
-        context = new ClassPathXmlApplicationContext("moduleApplicationContext.xml");
-        omodIdentifierService = context.getBean("omodIdentifierService", OmodIdentifierService.class);
-    }
+    private Logger log = LoggerFactory.getLogger(OmodIdentifierServlet.class);
+    private static final String ID_GENERATOR = "generator";
+    private static final String ID_TYPE = "type";
+    private static final String USER = "user";
+    private static final String PASSWORD = "password";
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("text/xml");
-        PrintWriter writer = resp.getWriter();
-        writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?><ids><id>" + context.containsBean("omodIdentifierService")+ "</id></ids>");
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        log.info("Generating id ...");
+        String generatedId = getOmodIdentifierService().getIdFor(
+                request.getParameter(ID_GENERATOR),
+                request.getParameter(ID_TYPE),
+                request.getParameter(USER),
+                request.getParameter(PASSWORD)
+        );
+
+        response.setContentType("text/html");
+        PrintWriter writer = response.getWriter();
+        writer.write(generatedId);
         writer.close();
-        log.info("called servlet");
+        response.setStatus(HttpServletResponse.SC_OK);
+        log.info("New id: " + generatedId);
+    }
+
+    protected OmodIdentifierService getOmodIdentifierService() {
+        return new OmodIdentifierService();
     }
 }

@@ -18,8 +18,7 @@ public abstract class BaseAdvice implements AfterReturningAdvice {
 
     public static final String ADVICE_EVENT_METHOD_INVOKED = "methodInvoked";
 
-    @Autowired
-    protected OmodPublisher publisher;
+    protected OmodPublisher publisher = new OmodPublisher();
 
     @Override
     public void afterReturning(Object returnValue, Method method, Object[] args, Object target) throws Throwable {

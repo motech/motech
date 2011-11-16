@@ -24,7 +24,7 @@ public class EnrollmentIT {
 
     @Before
     public void setUp() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/simple-schedule.json", new MotechJsonReader());
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/simple-schedule.json");
         ScheduleRecord scheduleRecord = jsonReader.records().get(0);
         schedule = ScheduleFactory.create(scheduleRecord);
     }

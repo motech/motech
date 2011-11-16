@@ -7,32 +7,33 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.idgen.IdentifierSource;
 import org.openmrs.module.idgen.SequentialIdentifierGenerator;
 import org.openmrs.module.idgen.service.IdentifierSourceService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 public class OmodIdentifierService {
-    private static final String AUTO_GENERATED = "AUTO GENERATED";
-    private IdentifierSourceService idSourceService;
-    private PatientService patientService;
 
-    public OmodIdentifierService() {
-        idSourceService = Context.getService(IdentifierSourceService.class);
-        patientService = Context.getService(PatientService.class);
-    }
+    public String getIdFor(String generatorName, String patientIdTypeName, String user, String password) {
 
-    public String getIdFor(String generatorName, String patientIdTypeName) {
+        Context.openSession();
+        Context.authenticate(user, password);
+
+        IdentifierSourceService idSourceService = Context.getService(IdentifierSourceService.class);
+        PatientService patientService = Context.getService(PatientService.class);
+
+        String newId = StringUtils.EMPTY;
         PatientIdentifierType patientIdentifierType = patientService.getPatientIdentifierTypeByName(patientIdTypeName);
         List<IdentifierSource> idSources = idSourceService.getAllIdentifierSources(false);
+
         for (IdentifierSource idSource : idSources)
             if (idSource instanceof SequentialIdentifierGenerator
                     && idSource.getName().equals(generatorName)
-                    && idSource.getIdentifierType().equals(patientIdentifierType))
-                return idSourceService.generateIdentifier(idSource, AUTO_GENERATED);
-        return StringUtils.EMPTY;
+                    && idSource.getIdentifierType().equals(patientIdentifierType)) {
+                newId = idSourceService.generateIdentifier(idSource, "AUTO GENERATED");
+                break;
+            }
+
+        Context.closeSession();
+        return newId;
     }
 
 }
