@@ -57,7 +57,7 @@ public class MessageCampaignServiceIT {
         enrollRequest.setReferenceDate(DateUtil.today().plusDays(1));
         enrollRequest.setReminderTime(new Time(9, 30));
         messageCampaignService.startFor(enrollRequest);
-        assertEquals(scheduledJobsNum + 3, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
+        assertEquals(scheduledJobsNum + 4, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
     }
 
     @Test
