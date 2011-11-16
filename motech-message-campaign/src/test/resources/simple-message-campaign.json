@@ -76,7 +76,7 @@
                 "name" : "Weekly Message #4",
                 "formats" : ["SMS"],
                 "languages" : ["en"],
-                "messageKey": "child-info-week-{Offset}-{weekDay}",
+                "messageKey": "child-info-week-{Offset}-{WeekDay}",
                 "weekDaysApplicable" : ["Monday", "Wednesday", "Friday"]
             }
         ]

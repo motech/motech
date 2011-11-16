@@ -15,9 +15,7 @@ import java.util.HashMap;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class CampaginMessageHandlerTest {
@@ -35,7 +33,7 @@ public class CampaginMessageHandlerTest {
 
     @Test
     public void shouldFireEventForEachCampaignMessageScheduled() {
-        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessage("message-name", "2 Weeks", "message-key");
+        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessage("message-name", "2 Weeks", null, "message-key");
         ArgumentCaptor<MotechEvent> event = ArgumentCaptor.forClass(MotechEvent.class);
 
         when(allMessageCampaigns.get("campaign-name", "message-key")).thenReturn(campaignMessage);

@@ -3,7 +3,6 @@ package org.motechproject.server.messagecampaign.service;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.dao.MotechJsonReader;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.campaign.AbsoluteCampaign;
 import org.motechproject.server.messagecampaign.domain.campaign.CronBasedCampaign;
@@ -56,7 +55,7 @@ public class AllMessageCampaignsTest {
     }
 
     @Test
-    public void getRelativeParameterizedDatesMessageProgramTest() {
+    public void shouldTestRepeatingCampaignParameterizedIntervalOffsetAndWeekDay() {
         String campaignName = "Relative Parameterized Dates Message Program";
 
         RepeatingCampaign campaign = (RepeatingCampaign) allMessageCampaigns.get(campaignName);
@@ -68,7 +67,7 @@ public class AllMessageCampaignsTest {
         assertMessageWithParameterizedRelativeSchedule(messages.get(0), "Weekly Message #1", new String[]{"IVR", "SMS"}, "child-info-week-{Offset}-1", 7);
         assertMessageWithParameterizedRelativeSchedule(messages.get(1), "Weekly Message #2", new String[]{"SMS"}, "child-info-week-{Offset}-2", 9);
         assertMessageWithParameterizedRelativeSchedule(messages.get(2), "Weekly Message #3", new String[]{"SMS"}, "child-info-week-{Offset}-3", 12);
-        assertMessageWithParameterizedRelativeSchedule(messages.get(3), "Weekly Message #4", new String[]{"SMS"}, "child-info-week-{Offset}-{weekDay}", 1);
+        assertMessageWithParameterizedRelativeSchedule(messages.get(3), "Weekly Message #4", new String[]{"SMS"}, "child-info-week-{Offset}-{WeekDay}", 7);
     }
 
     @Test
@@ -118,7 +117,7 @@ public class AllMessageCampaignsTest {
 
     private void assertMessageWithParameterizedRelativeSchedule(RepeatingCampaignMessage message, String name, String[] formats, Object messageKey, int repeatInterval) {
         assertMessage(message, name, formats, messageKey);
-        assertEquals(repeatInterval, message.repeatIntervalInDays());
+        assertEquals(repeatInterval, message.repeatIntervalInDaysForOffset());
     }
 
     private void assertMessageWithCronSchedule(CronBasedCampaignMessage message, String name, String[] formats, Object messageKey, String cron) {

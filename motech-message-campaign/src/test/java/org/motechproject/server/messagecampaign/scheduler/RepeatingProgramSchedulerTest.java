@@ -16,6 +16,7 @@ import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.factory.WallTimeFactory;
 
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -37,21 +38,22 @@ public class RepeatingProgramSchedulerTest {
         request.setReferenceDate(DateUtil.today().plusDays(1));
         RepeatingCampaign campaign = new CampaignBuilder().defaultRepeatingCampaign();
 
-        WallTime duration = WallTimeFactory.create(((RepeatingCampaign) campaign).maxDuration());
+        WallTime duration = WallTimeFactory.create((campaign).maxDuration());
         RepeatingProgramScheduler repeatingProgramScheduler = new RepeatingProgramScheduler(schedulerService, request, campaign);
 
         repeatingProgramScheduler.start();
         ArgumentCaptor<RepeatingSchedulableJob> capture = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
-        verify(schedulerService, times(2)).scheduleRepeatingJob(capture.capture());
+        verify(schedulerService, times(3)).scheduleRepeatingJob(capture.capture());
 
-        RepeatingSchedulableJob job = capture.getAllValues().get(0);
         LocalDate startJobDate = request.referenceDate();
         LocalDate jobEndDate = startJobDate.plusDays(duration.inDays());
-        assertJob(job, "org.motechproject.server.messagecampaign.testCampaign.12345.child-info-week-{Offset}-1", "child-info-week-{Offset}-1",
-                startJobDate.toDate(), jobEndDate.toDate());
+        List<RepeatingSchedulableJob> jobs = capture.getAllValues();
 
-        RepeatingSchedulableJob job2 = capture.getAllValues().get(1);
-        assertJob(job2, "org.motechproject.server.messagecampaign.testCampaign.12345.child-info-week-{Offset}-2", "child-info-week-{Offset}-2",
+        assertJob(jobs.get(0), "org.motechproject.server.messagecampaign.testCampaign.12345.child-info-week-{Offset}-1", "child-info-week-{Offset}-1",
+                startJobDate.toDate(), jobEndDate.toDate());
+        assertJob(jobs.get(1), "org.motechproject.server.messagecampaign.testCampaign.12345.child-info-week-{Offset}-2", "child-info-week-{Offset}-2",
+                startJobDate.toDate(), jobEndDate.toDate());
+        assertJob(jobs.get(2), "org.motechproject.server.messagecampaign.testCampaign.12345.child-info-week-{Offset}-{WeekDay}", "child-info-week-{Offset}-{WeekDay}",
                 startJobDate.toDate(), jobEndDate.toDate());
     }
 
@@ -66,18 +68,19 @@ public class RepeatingProgramSchedulerTest {
         repeatingProgramScheduler.restart();
         ArgumentCaptor<RepeatingSchedulableJob> capture = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
         verify(schedulerService, times(1)).unscheduleAllJobs("org.motechproject.server.messagecampaign.testCampaign.12345");
-        verify(schedulerService, times(2)).scheduleRepeatingJob(capture.capture());
+        verify(schedulerService, times(3)).scheduleRepeatingJob(capture.capture());
 
         WallTime duration = WallTimeFactory.create((campaign).maxDuration());
 
-        RepeatingSchedulableJob job = capture.getAllValues().get(0);
         LocalDate startJobDate = request.referenceDate();
         LocalDate jobEndDate = startJobDate.plusDays(duration.inDays());
-        assertJob(job, "org.motechproject.server.messagecampaign.testCampaign.12345.child-info-week-{Offset}-1", "child-info-week-{Offset}-1",
-                startJobDate.toDate(), jobEndDate.toDate());
+        List<RepeatingSchedulableJob> jobs = capture.getAllValues();
 
-        RepeatingSchedulableJob job2 = capture.getAllValues().get(1);
-        assertJob(job2, "org.motechproject.server.messagecampaign.testCampaign.12345.child-info-week-{Offset}-2", "child-info-week-{Offset}-2",
+        assertJob(jobs.get(0), "org.motechproject.server.messagecampaign.testCampaign.12345.child-info-week-{Offset}-1", "child-info-week-{Offset}-1",
+                startJobDate.toDate(), jobEndDate.toDate());
+        assertJob(jobs.get(1), "org.motechproject.server.messagecampaign.testCampaign.12345.child-info-week-{Offset}-2", "child-info-week-{Offset}-2",
+                startJobDate.toDate(), jobEndDate.toDate());
+        assertJob(jobs.get(2), "org.motechproject.server.messagecampaign.testCampaign.12345.child-info-week-{Offset}-{WeekDay}", "child-info-week-{Offset}-{WeekDay}",
                 startJobDate.toDate(), jobEndDate.toDate());
     }
 

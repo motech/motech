@@ -85,7 +85,7 @@ public class CampaignRecordTest {
         assertEquals(messageRecord.formats(), message.formats());
         assertEquals(messageRecord.languages(), message.languages());
         assertEquals(messageRecord.messageKey(), message.messageKey());
-        assertEquals(WallTimeFactory.create(messageRecord.repeatInterval()).inDays(), message.repeatIntervalInDays());
+        assertEquals(WallTimeFactory.create(messageRecord.repeatInterval()).inDays(), message.repeatIntervalInDaysForOffset());
 
     }
 

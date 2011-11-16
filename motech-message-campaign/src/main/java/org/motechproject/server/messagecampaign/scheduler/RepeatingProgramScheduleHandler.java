@@ -12,6 +12,8 @@ import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 import static org.apache.commons.lang.StringUtils.replace;
 import static org.joda.time.Days.daysBetween;
 import static org.motechproject.server.messagecampaign.EventKeys.MESSAGE_KEY;
@@ -25,6 +27,7 @@ public class RepeatingProgramScheduleHandler {
     private AllMessageCampaigns allMessageCampaigns;
 
     public static final String OFFSET = "{Offset}";
+    public static final String WEEK_DAY = "{WeekDay}";
 
     @Autowired
     public RepeatingProgramScheduleHandler(OutboundEventGateway outboundEventGateway, AllMessageCampaigns allMessageCampaigns) {
@@ -34,19 +37,24 @@ public class RepeatingProgramScheduleHandler {
 
     @MotechListener(subjects = {RepeatingProgramScheduler.INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT})
     public void handleEvent(MotechEvent event) {
-
         log.info("handled internal repeating campaign event and forwarding: " + event.getParameters().hashCode());
 
         RepeatingCampaignMessage repeatingCampaignMessage = (RepeatingCampaignMessage) getCampaignMessage(event);
-        int repeatIntervalInDays = repeatingCampaignMessage.repeatIntervalInDays();
-        String messageKey = (String) event.getParameters().get(MESSAGE_KEY);
+
+        if(!repeatingCampaignMessage.isApplicable()) return;
+        int repeatIntervalInDays = repeatingCampaignMessage.repeatIntervalInDaysForOffset();
         Integer interval = (daysBetween(newDateTime(event.getStartTime()).withTimeAtStartOfDay(),
                 DateUtil.now().withTimeAtStartOfDay()).getDays() / repeatIntervalInDays) + 1;
 
-        event.getParameters().put(MESSAGE_KEY, replace(messageKey, OFFSET, interval.toString()));
+        replaceMessageKeyParams(event.getParameters(), OFFSET, interval.toString());
+        replaceMessageKeyParams(event.getParameters(), WEEK_DAY, DateUtil.now().dayOfWeek().getAsText());
         outboundEventGateway.sendEventMessage(new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, event.getParameters()));
     }
-        
+
+    private void replaceMessageKeyParams(Map<String, Object> parameters, String parameterName, String value) {
+        parameters.put(MESSAGE_KEY, replace(parameters.get(MESSAGE_KEY).toString(), parameterName, value));
+    }
+
     private CampaignMessage getCampaignMessage(MotechEvent motechEvent) {
         String campaignName = (String) motechEvent.getParameters().get(EventKeys.CAMPAIGN_NAME_KEY);
         String messageKey = (String) motechEvent.getParameters().get(EventKeys.MESSAGE_KEY);

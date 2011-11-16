@@ -12,6 +12,8 @@ import org.motechproject.util.DateUtil;
 
 import java.util.LinkedList;
 
+import static java.util.Arrays.asList;
+
 public class CampaignBuilder {
 
 
@@ -68,12 +70,14 @@ public class CampaignBuilder {
         campaign.setName("testCampaign");
         campaign.maxDuration("2 Weeks");
 
-        final RepeatingCampaignMessage repeatingCampaignMessage1 = new CampaignMessageBuilder().repeatingCampaignMessage("OM1", "1 Week", "child-info-week-{Offset}-1");
-        final RepeatingCampaignMessage repeatingCampaignMessage2 = new CampaignMessageBuilder().repeatingCampaignMessage("OM2", "12 Days", "child-info-week-{Offset}-2");
+        final RepeatingCampaignMessage repeatingCampaignMessage1 = new CampaignMessageBuilder().repeatingCampaignMessage("OM1", "1 Week", null, "child-info-week-{Offset}-1");
+        final RepeatingCampaignMessage repeatingCampaignMessage2 = new CampaignMessageBuilder().repeatingCampaignMessage("OM2", "12 Days", null, "child-info-week-{Offset}-2");
+        final RepeatingCampaignMessage repeatingCampaignMessage3 = new CampaignMessageBuilder().repeatingCampaignMessage("OM2", null, asList("Monday", "Wednesday"), "child-info-week-{Offset}-{WeekDay}");
 
         LinkedList<RepeatingCampaignMessage> campaignMessages = new LinkedList<RepeatingCampaignMessage>() {{
             add(repeatingCampaignMessage1);
             add(repeatingCampaignMessage2);
+            add(repeatingCampaignMessage3);
         }};
 
         campaign.setMessages(campaignMessages);

@@ -7,6 +7,7 @@ import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMes
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class CampaignMessageBuilder {
 
@@ -34,8 +35,8 @@ public class CampaignMessageBuilder {
         return offsetCampaignMessage;
     }
 
-    public RepeatingCampaignMessage repeatingCampaignMessage(String name, String repeatInterval, String messageKey) {
-        RepeatingCampaignMessage repeatingCampaignMessage = new RepeatingCampaignMessage(repeatInterval, null);
+    public RepeatingCampaignMessage repeatingCampaignMessage(String name, String repeatInterval, List<String> weekDays,String messageKey) {
+        RepeatingCampaignMessage repeatingCampaignMessage = new RepeatingCampaignMessage(repeatInterval, weekDays);
         repeatingCampaignMessage.name(name);
         repeatingCampaignMessage.formats(Arrays.asList("IVR"));
         repeatingCampaignMessage.languages(Arrays.asList("en"));
