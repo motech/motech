@@ -86,7 +86,7 @@ public class ServerEventRelay implements EventRelay
 
         	for (EventListener listener : listeners) {
                 if (listener.getIdentifier().equals(messageDestination)) {
-  		            MotechEvent _event = new MotechEvent(event.getSubject(),
+  		            MotechEvent _event = event.copy(event.getSubject(),
                                                          (Map<String, Object>)event.getParameters().get(ORIGINAL_PARAMETERS));
 
                     String timer = listener.getIdentifier() + ".handler." + event.getSubject();
@@ -140,7 +140,7 @@ public class ServerEventRelay implements EventRelay
     		parameters = new HashMap<String, Object>();
     		parameters.put(MESSAGE_DESTINATION, listener.getIdentifier());
             parameters.put(ORIGINAL_PARAMETERS, event.getParameters());
-    		enrichedEventMessage = new MotechEvent(event.getSubject(), parameters);
+    		enrichedEventMessage = event.copy(event.getSubject(), parameters);
     		
     		outboundEventGateway.sendEventMessage(enrichedEventMessage);
     	}

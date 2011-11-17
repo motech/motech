@@ -10,11 +10,12 @@ import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.metrics.impl.MultipleMetricsAgentImpl;
 import org.motechproject.model.MotechEvent;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class ServerEventRelayIT {
@@ -35,8 +36,6 @@ public class ServerEventRelayIT {
         Map<String, Object> messageParameters = new HashMap<String, Object>();
         messageParameters.put("test", "value");
         motechEvent = new MotechEvent("org.motechproject.server.someevent", messageParameters);
-
-
     }
 
     @Test
@@ -72,12 +71,20 @@ public class ServerEventRelayIT {
         firstListener = (String) event.getParameters().get("message-destination");
         assertTrue(event.getParameters().containsKey("message-destination"));
 
-        verify(outboundEventGateway, times(2)).sendEventMessage(argument.capture());
         event = argument.getAllValues().get(1);
         secondListener = (String) event.getParameters().get("message-destination");
         assertTrue(event.getParameters().containsKey("message-destination"));
 
         assertFalse(firstListener.equals(secondListener));
+        assertEvent(createEvent(motechEvent, "SampleEventListener"), argument.getAllValues().get(0));
+        assertEvent(createEvent(motechEvent, "FooEventListener"), argument.getAllValues().get(1));
+    }
+
+    private MotechEvent createEvent(MotechEvent motechEvent, String destination) {
+        Map params =  new HashMap();
+        params.put("message-destination", destination);
+        params.put("original-parameters", motechEvent.getParameters());
+        return motechEvent.copy(motechEvent.getSubject(), params);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -110,6 +117,22 @@ public class ServerEventRelayIT {
 
         verify(fel).handle(motechEvent);
         verify(sel, never()).handle(any(MotechEvent.class));
+    }
+
+    private void assertEvent(MotechEvent expected, MotechEvent copy) {
+        assertEquals(expected.getSubject(), copy.getSubject());
+        assertEquals(expected.getParameters(), copy.getParameters());
+        assertEquals(expected.isLastEvent(), copy.isLastEvent());
+        assertEventTime(copy, expected.getStartTime(), expected.getEndTime());
+    }
+
+    private void assertEventTime(MotechEvent copy, Date startDate, Date endDate) {
+        assertEquals(startDate, copy.getStartTime());
+        assertEquals(endDate, copy.getEndTime());
+        if (startDate != null)
+            assertNotSame(startDate, copy.getStartTime());
+        if (endDate != null)
+            assertNotSame(endDate, copy.getEndTime());
     }
 
     class FooEventListener implements EventListener {

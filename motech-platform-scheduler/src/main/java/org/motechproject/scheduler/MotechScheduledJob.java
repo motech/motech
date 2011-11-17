@@ -66,7 +66,7 @@ public class MotechScheduledJob implements Job {
             Trigger trigger = jobExecutionContext.getTrigger();
             motechEvent.setStartTime(trigger.getStartTime())
                     .setEndTime(trigger.getEndTime())
-                    .setLastEvent(trigger.mayFireAgain());
+                    .setLastEvent(!trigger.mayFireAgain());
 
             log.info("Sending Motech Event Message: " + motechEvent);
 

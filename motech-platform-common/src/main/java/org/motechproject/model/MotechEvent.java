@@ -130,6 +130,18 @@ public final class MotechEvent implements Serializable {
         return this;
     }
 
+    public MotechEvent copy(String subject, Map<String, Object> parameters) {
+        MotechEvent event = new MotechEvent(subject, parameters);
+        event.setStartTime(clone(this.startTime));
+        event.setEndTime(clone(this.endTime));
+        event.setLastEvent(isLastEvent());
+        return event;
+    }
+
+    private Date clone(Date date) {
+        return date != null ? (Date)date.clone() : null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
