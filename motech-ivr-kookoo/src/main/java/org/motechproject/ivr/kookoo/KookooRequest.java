@@ -3,8 +3,8 @@ package org.motechproject.ivr.kookoo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
-import org.motechproject.ivr.model.CallDirection;
-import org.motechproject.ivr.event.IVREvent;
+import org.motechproject.server.service.ivr.CallDirection;
+import org.motechproject.server.service.ivr.IVREvent;
 
 import java.util.HashMap;
 import java.util.Iterator;

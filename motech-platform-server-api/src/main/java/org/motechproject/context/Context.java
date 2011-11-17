@@ -5,7 +5,7 @@ import org.motechproject.server.event.EventListenerRegistry;
 import org.motechproject.gateway.MotechSchedulerGateway;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.server.ruleengine.KnowledgeBaseManager;
-import org.motechproject.ivr.service.IVRService;
+import org.motechproject.server.service.ivr.IVRService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class Context {

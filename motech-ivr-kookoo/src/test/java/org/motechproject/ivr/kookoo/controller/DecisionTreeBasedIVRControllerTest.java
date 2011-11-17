@@ -7,7 +7,7 @@ import org.motechproject.decisiontree.model.*;
 import org.motechproject.ivr.kookoo.KooKooIVRContextForTest;
 import org.motechproject.ivr.kookoo.extensions.CallFlowController;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
-import org.motechproject.ivr.message.IVRMessage;
+import org.motechproject.server.service.ivr.IVRMessage;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;

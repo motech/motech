@@ -19,7 +19,7 @@
 		<property name="externalRuleFolder" value="#{systemProperties['user.home']}/.motech/rules" />
 	</bean>
 
-    <!-- <bean id="ivrService" class="org.motechproject.ivr.asterisk.IVRServiceAsteriskImpl" > -->
+    <!-- <bean id="ivrService" class="org.motechproject.server.service.ivr.asterisk.IVRServiceAsteriskImpl" > -->
         <!--Asterisk Server host-->
     <!--    <constructor-arg  value="motech.2paths.com"/>                                                     -->
         <!--Asterisk Server user-->

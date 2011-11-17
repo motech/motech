@@ -38,7 +38,7 @@ import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.ivr.service.CallRequest;
+import org.motechproject.server.service.ivr.CallRequest;
 import org.motechproject.server.voxeo.dao.AllPhoneCalls;
 import org.motechproject.server.voxeo.domain.PhoneCall;
 import org.motechproject.server.voxeo.domain.PhoneCallEvent;

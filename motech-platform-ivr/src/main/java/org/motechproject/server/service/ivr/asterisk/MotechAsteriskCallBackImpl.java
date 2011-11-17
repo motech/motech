@@ -29,7 +29,7 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.ivr.asterisk;
+package org.motechproject.server.service.ivr.asterisk;
 
 import org.asteriskjava.live.AsteriskChannel;
 import org.asteriskjava.live.Disposition;
@@ -37,10 +37,10 @@ import org.asteriskjava.live.LiveException;
 import org.asteriskjava.live.OriginateCallback;
 import org.motechproject.context.EventContext;
 import org.motechproject.event.EventRelay;
-import org.motechproject.ivr.event.IVREventDelegate;
-import org.motechproject.ivr.model.CallDetailRecord;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.ivr.service.CallRequest;
+import org.motechproject.server.service.ivr.CallDetailRecord;
+import org.motechproject.server.service.ivr.CallRequest;
+import org.motechproject.server.service.ivr.IVREventDelegate;
 
 import java.util.Map;
 

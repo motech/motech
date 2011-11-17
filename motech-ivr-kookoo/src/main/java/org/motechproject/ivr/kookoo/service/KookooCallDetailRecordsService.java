@@ -1,9 +1,11 @@
 package org.motechproject.ivr.kookoo.service;
 
-import org.motechproject.ivr.event.IVREvent;
 import org.motechproject.ivr.kookoo.KookooIVRResponseBuilder;
 import org.motechproject.ivr.kookoo.domain.KookooCallDetailRecord;
-import org.motechproject.ivr.model.CallDirection;
+import org.motechproject.server.service.ivr.CallDirection;
+import org.motechproject.server.service.ivr.IVREvent;
+
+import java.util.Map;
 
 public interface KookooCallDetailRecordsService {
     public KookooCallDetailRecord get(String callDetailRecordId);

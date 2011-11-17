@@ -1,4 +1,4 @@
-package org.motechproject.ivr.event;
+package org.motechproject.server.service.ivr;
 
 import org.junit.Test;
 

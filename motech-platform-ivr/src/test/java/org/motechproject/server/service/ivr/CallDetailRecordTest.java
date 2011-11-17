@@ -1,8 +1,6 @@
-package org.motechproject.ivr.model;
+package org.motechproject.server.service.ivr;
 
 import org.junit.Test;
-import org.motechproject.ivr.event.CallEvent;
-import org.motechproject.ivr.model.CallDetailRecord;
 
 import static junit.framework.Assert.assertEquals;
 

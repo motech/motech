@@ -1,4 +1,4 @@
-package org.motechproject.ivr.model;
+package org.motechproject.server.service.ivr;
 
 public enum IVRStatus {
     Answered("answered"),

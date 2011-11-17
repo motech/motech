@@ -2,8 +2,8 @@ package org.motechproject.ivr.kookoo;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.ivr.model.CallDirection;
-import org.motechproject.ivr.event.IVREvent;
+import org.motechproject.server.service.ivr.CallDirection;
+import org.motechproject.server.service.ivr.IVREvent;
 
 import static junit.framework.Assert.assertEquals;
 

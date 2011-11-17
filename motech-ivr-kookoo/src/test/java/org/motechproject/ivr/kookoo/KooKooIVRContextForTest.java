@@ -1,7 +1,7 @@
 package org.motechproject.ivr.kookoo;
 
-import org.motechproject.ivr.model.CallDirection;
-import org.motechproject.ivr.event.IVREvent;
+import org.motechproject.server.service.ivr.CallDirection;
+import org.motechproject.server.service.ivr.IVREvent;
 import org.motechproject.util.Cookies;
 
 import javax.servlet.http.HttpServletRequest;

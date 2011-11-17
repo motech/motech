@@ -4,7 +4,7 @@ import com.ozonetel.kookoo.CollectDtmf;
 import com.ozonetel.kookoo.Dial;
 import com.ozonetel.kookoo.Response;
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.ivr.message.IVRMessage;
+import org.motechproject.server.service.ivr.IVRMessage;
 
 import java.util.ArrayList;
 import java.util.Collections;

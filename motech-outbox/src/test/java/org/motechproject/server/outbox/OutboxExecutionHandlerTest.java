@@ -43,8 +43,8 @@ import org.motechproject.gateway.MotechSchedulerGateway;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.outbox.api.EventKeys;
-import org.motechproject.ivr.service.CallRequest;
-import org.motechproject.ivr.service.IVRService;
+import org.motechproject.server.service.ivr.CallRequest;
+import org.motechproject.server.service.ivr.IVRService;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
