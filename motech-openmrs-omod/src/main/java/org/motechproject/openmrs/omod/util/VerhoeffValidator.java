@@ -1,10 +1,10 @@
-package org.motechproject.openmrs.util;
+package org.motechproject.openmrs.omod.util;
 
 import org.openmrs.patient.UnallowedIdentifierException;
 import org.openmrs.patient.impl.BaseHyphenatedIdentifierValidator;
-import org.springframework.stereotype.Component;
 
-@Component
+//@Component
+
 public class VerhoeffValidator extends BaseHyphenatedIdentifierValidator {
     public static final String ALLOWED_CHARS = "0123456789";
     public static final String VERHOEFF_NAME = "Verhoeff Check Digit Validator";
