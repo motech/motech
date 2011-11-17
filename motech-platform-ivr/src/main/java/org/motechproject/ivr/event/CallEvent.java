@@ -1,9 +1,7 @@
-package org.motechproject.server.service.ivr;
+package org.motechproject.ivr.event;
 
 import org.joda.time.DateTime;
 import org.motechproject.util.DateUtil;
-
-import java.util.Map;
 
 public class CallEvent {
     private String name;

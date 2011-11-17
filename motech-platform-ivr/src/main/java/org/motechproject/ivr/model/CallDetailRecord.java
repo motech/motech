@@ -1,5 +1,6 @@
-package org.motechproject.server.service.ivr;
+package org.motechproject.ivr.model;
 
+import org.motechproject.ivr.event.CallEvent;
 import org.motechproject.util.DateUtil;
 
 import java.util.ArrayList;

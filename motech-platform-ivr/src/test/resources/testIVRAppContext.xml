@@ -38,7 +38,7 @@
          http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
 
-    <bean id="ivrService" class="org.motechproject.server.service.ivr.asterisk.IVRServiceAsteriskImpl" >
+    <bean id="ivrService" class="org.motechproject.ivr.asterisk.IVRServiceAsteriskImpl" >
         <!--Asterisk Server host-->
         <constructor-arg  value="localhost"/>
         <!--Asterisk Server user-->

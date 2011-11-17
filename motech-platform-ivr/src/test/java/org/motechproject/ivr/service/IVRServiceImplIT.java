@@ -1,4 +1,4 @@
-/**
+package org.motechproject.ivr.service; /**
  * MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
  *
  * Copyright (c) 2011 Grameen Foundation USA.  All rights reserved.
@@ -29,23 +29,44 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.service.ivr;
 
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- *  Interface to IVR System
+ * This is an interactive test. In order to run that test please make sure that Asterisk, Voiceglue and VXML application
+ * are properly configures, up and running. Your SIP phone configured to use the "SIP/1001" account and that account registered
+ * in Asterisk.
+ *
+ * In order to run unit test
+ * - start your soft phone
+ * - run the initiateCallTest()
+ * Your soft phone should start ringing. Answer the phone, you should hear a voice message specified in the voice XML document retrieved
+ * from the URL specified as a value of the voiceXmlUrl property of the ivrService bean.
  *
  *
  */
-public interface IVRService {
 
-    /**
-     * Sends an initiate call command to IVR. The call should be made to the phone specified in the given CallRequest
-     *
-     *
-     * @param callRequest - data required by IVR phone system to start outbound call
-     * @throws CallInitiationException if the call can not be initiated
-     */
-    public void initiateCall(CallRequest callRequest);
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"/testIVRAppContext.xml"})
+public class IVRServiceImplIT {
+
+    @Autowired
+    private IVRService ivrService;
+
+    @Test @Ignore
+    public void initiateCallTest() throws Exception{
+
+        //CallRequest initiateCallData = new CallRequest(1L, "SIP/1001", 5000, "http://10.0.1.29:8080/TamaIVR/r/wt");
+        //CallRequest initiateCallData = new CallRequest(1L, "SIP/1001", 5000, "http://10.0.1.29:8080/m/module/ar/vxml/ar?r=1");
+        CallRequest initiateCallData = new CallRequest("SIP/1001", 5000, "http://motech.2paths.com:8080/module/ar/vxml/ar?r=1");
+
+        ivrService.initiateCall(initiateCallData);
+    }
+
 
 }
