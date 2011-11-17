@@ -2,6 +2,7 @@ package org.motechproject.ivr.kookoo;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.server.service.ivr.CallDirection;
+import org.motechproject.server.service.ivr.IVRStatus;
 import org.motechproject.util.Cookies;
 
 import javax.servlet.http.HttpServletRequest;
@@ -119,5 +120,9 @@ public class KooKooIVRContext {
 
     public String allCookies() {
         return cookies.toString();
+    }
+
+    public boolean isAnswered() {
+        return IVRStatus.isAnswered(kooKooRequest.getStatus());
     }
 }

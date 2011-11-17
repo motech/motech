@@ -12,7 +12,7 @@ public class KookooRequestTest {
 
     @Before
     public void setUp() {
-        ivrRequest = new KookooRequest("sid", "cid", "someEvent", "4#");
+        ivrRequest = new KookooRequest("sid", "cid", "someEvent", "4#", "someStatus");
     }
 
     @Test
