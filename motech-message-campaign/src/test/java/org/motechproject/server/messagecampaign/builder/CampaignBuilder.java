@@ -70,9 +70,9 @@ public class CampaignBuilder {
         campaign.setName("testCampaign");
         campaign.maxDuration("2 Weeks");
 
-        final RepeatingCampaignMessage repeatingCampaignMessage1 = new CampaignMessageBuilder().repeatingCampaignMessage("OM1", "1 Week", null, "child-info-week-{Offset}-1");
-        final RepeatingCampaignMessage repeatingCampaignMessage2 = new CampaignMessageBuilder().repeatingCampaignMessage("OM2", "12 Days", null, "child-info-week-{Offset}-2");
-        final RepeatingCampaignMessage repeatingCampaignMessage3 = new CampaignMessageBuilder().repeatingCampaignMessage("OM2", null, asList("Monday", "Wednesday"), "child-info-week-{Offset}-{WeekDay}");
+        final RepeatingCampaignMessage repeatingCampaignMessage1 = new CampaignMessageBuilder().repeatingCampaignMessageForInterval("OM1", "1 Week", "child-info-week-{Offset}-1");
+        final RepeatingCampaignMessage repeatingCampaignMessage2 = new CampaignMessageBuilder().repeatingCampaignMessageForInterval("OM2", "12 Days", "child-info-week-{Offset}-2");
+        final RepeatingCampaignMessage repeatingCampaignMessage3 = new CampaignMessageBuilder().repeatingCampaignMessageForDaysApplicable("OM2", asList("Monday", "Wednesday"), "child-info-week-{Offset}-{WeekDay}");
 
         LinkedList<RepeatingCampaignMessage> campaignMessages = new LinkedList<RepeatingCampaignMessage>() {{
             add(repeatingCampaignMessage1);

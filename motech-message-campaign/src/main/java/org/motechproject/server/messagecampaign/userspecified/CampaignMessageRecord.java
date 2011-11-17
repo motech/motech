@@ -7,12 +7,15 @@ import org.motechproject.util.DateUtil;
 import java.util.Date;
 import java.util.List;
 
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
 public class CampaignMessageRecord {
 
     private String name;
     private List<String> formats;
     private List<String> languages;
     private List<String> weekDaysApplicable;
+    private String calendarStartOfWeek;
     private String messageKey;
     private Date date;
     private String timeOffset;
@@ -48,12 +51,7 @@ public class CampaignMessageRecord {
     }
 
     private CampaignMessage buildRepeating() {
-        RepeatingCampaignMessage message = new RepeatingCampaignMessage(repeatInterval, weekDaysApplicable);
-        message.name(name);
-        message.formats(formats);
-        message.languages(languages);
-        message.messageKey(messageKey);
-        return message;
+        return RepeatingMessageMode.findMode(this).create(this);
     }
 
     private CampaignMessage buildAbsolute() {
@@ -140,6 +138,11 @@ public class CampaignMessageRecord {
         return this;
     }
 
+    public CampaignMessageRecord calendarStartOfWeek(String calendarStartOfWeek) {
+        this.calendarStartOfWeek = calendarStartOfWeek;
+        return this;
+    }
+
     public String repeatInterval() {
         return this.repeatInterval;
     }
@@ -154,5 +157,18 @@ public class CampaignMessageRecord {
 
     public List<String> weekDaysApplicable() {
         return weekDaysApplicable;
+    }
+
+    public String calendarStartOfWeek() {
+        return calendarStartOfWeek;
+    }
+
+     public  boolean validate( ) {
+        return !isEmpty(repeatInterval) ? (weekDaysApplicable() == null && calendarStartOfWeek() == null)
+                : (weekDaysApplicable() != null || calendarStartOfWeek() != null);
+    }
+
+    private  boolean anyOne(Object o1, Object o2) {
+        return (o1 != null && o2 == null) || (o1 == null && o2 != null);
     }
 }

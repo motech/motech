@@ -4,6 +4,7 @@ import org.motechproject.server.messagecampaign.userspecified.CampaignMessageRec
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class CampaignMessageRecordBuilder {
     private static ArrayList<String> formats = new ArrayList<String>() {{
@@ -36,8 +37,16 @@ public class CampaignMessageRecordBuilder {
         return new CampaignMessageRecord().name(name).formats(formats).languages(languages).messageKey(messageKey).repeatInterval(repeatInterval);
     }
 
-    public static CampaignMessageRecord createRepeatingCampaignMessageRecord(String name, String messageKey, String repeatInterval) {
+    public static CampaignMessageRecord createRepeatingMessageRecordWithInterval(String name, String messageKey, String repeatInterval) {
         return createCampaignMessageRecord(name, messageKey, repeatInterval);
+    }
+
+    public static CampaignMessageRecord createRepeatingMessageRecordWithWeekApplicableDays(String name, String messageKey, List<String> applicableWeekDays) {
+        return createCampaignMessageRecord(name, messageKey, null).weekDaysApplicable(applicableWeekDays);
+    }
+
+    public static CampaignMessageRecord createRepeatingMessageRecordWithCalendarWeek(String name, String messageKey, String calendarStartOfWeek, List<String> applicableWeekDays) {
+        return createRepeatingMessageRecordWithWeekApplicableDays(name, messageKey, applicableWeekDays).calendarStartOfWeek(calendarStartOfWeek);
     }
 
     public static CampaignMessageRecord createCronBasedCampaignMessageRecord(String name, String messageKey) {

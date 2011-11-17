@@ -1,10 +1,7 @@
 package org.motechproject.server.messagecampaign.builder;
 
 import org.joda.time.LocalDate;
-import org.motechproject.server.messagecampaign.domain.message.AbsoluteCampaignMessage;
-import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
-import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
-import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
+import org.motechproject.server.messagecampaign.domain.message.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,13 +32,27 @@ public class CampaignMessageBuilder {
         return offsetCampaignMessage;
     }
 
-    public RepeatingCampaignMessage repeatingCampaignMessage(String name, String repeatInterval, List<String> weekDays,String messageKey) {
-        RepeatingCampaignMessage repeatingCampaignMessage = new RepeatingCampaignMessage(repeatInterval, weekDays);
+    public RepeatingCampaignMessage repeatingCampaignMessageForInterval(String name, String repeatInterval, String messageKey) {
+        RepeatingCampaignMessage repeatingCampaignMessage = new RepeatingCampaignMessage(repeatInterval);
+        repeatingCampaignParams(name, messageKey, repeatingCampaignMessage);
+        return repeatingCampaignMessage.mode(RepeatingMessageMode.REPEAT_INTERVAL);
+    }
+
+    private RepeatingCampaignMessage repeatingCampaignParams(String name, String messageKey, RepeatingCampaignMessage repeatingCampaignMessage) {
         repeatingCampaignMessage.name(name);
         repeatingCampaignMessage.formats(Arrays.asList("IVR"));
         repeatingCampaignMessage.languages(Arrays.asList("en"));
-        repeatingCampaignMessage.repeatInterval(repeatInterval);
         repeatingCampaignMessage.messageKey(messageKey);
         return repeatingCampaignMessage;
+    }
+
+    public RepeatingCampaignMessage repeatingCampaignMessageForDaysApplicable(String name, List<String> weekDays,String messageKey) {
+        return repeatingCampaignMessageForCalendarWeek(name, null, weekDays, messageKey).mode(RepeatingMessageMode.WEEK_DAYS_SCHEDULE);
+    }
+
+    public RepeatingCampaignMessage repeatingCampaignMessageForCalendarWeek(String name, String calendarStartOfWeek, List<String> weekDays,String messageKey) {
+        RepeatingCampaignMessage repeatingCampaignMessage = new RepeatingCampaignMessage(calendarStartOfWeek, weekDays);
+        repeatingCampaignParams(name, messageKey, repeatingCampaignMessage);
+        return repeatingCampaignMessage.mode(RepeatingMessageMode.CALENDAR_WEEK_SCHEDULE);
     }
 }

@@ -49,7 +49,7 @@ public class RepeatingProgramScheduleHandlerTest {
     public void shouldHandleEventForRepeatCampaignScheduleAndUpdateMessageKey() {
 
         String jobMessageKey = messageKey;
-        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessage(campaignName, "2 Weeks", null, jobMessageKey);
+        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForInterval(campaignName, "2 Weeks", jobMessageKey);
         int repeatIntervalInDays = ((RepeatingCampaignMessage) campaignMessage).repeatIntervalInDaysForOffset();
         when(allMessageCampaigns.get(campaignName, jobMessageKey)).thenReturn(campaignMessage);
 
@@ -77,7 +77,7 @@ public class RepeatingProgramScheduleHandlerTest {
     public void shouldHandleEventForRepeatCampaignScheduleBasedOnWeeksDaysApplicableAndUpdateMessageKey() {
 
         String jobMessageKey = messageKeyWithDayOfWeek;
-        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessage(campaignName, null, 
+        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForDaysApplicable(campaignName,  
                 asList("Monday", "Wednesday", "Friday", "Saturday"), jobMessageKey);
         int repeatIntervalAs7 = ((RepeatingCampaignMessage) campaignMessage).repeatIntervalInDaysForOffset();
         when(allMessageCampaigns.get(campaignName, jobMessageKey)).thenReturn(campaignMessage);

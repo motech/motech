@@ -68,7 +68,7 @@ public class CampaignRecordTest {
 
     @Test
     public void testBuildRepeatingCampaign() {
-        messageRecord = CampaignMessageRecordBuilder.createRepeatingCampaignMessageRecord("Message 1", "message-key", "1 Weeks");
+        messageRecord = CampaignMessageRecordBuilder.createRepeatingMessageRecordWithInterval("Message 1", "message-key", "1 Weeks");
         campaignRecord = CampaignRecordBuilder.repeatingCampaignRecord("Campaign 1", messageRecord);
 
         Campaign campaign = campaignRecord.build();

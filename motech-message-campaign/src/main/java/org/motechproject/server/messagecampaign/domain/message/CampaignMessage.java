@@ -24,19 +24,23 @@ public class CampaignMessage {
         return messageKey;
     }
 
-    public void name(String name) {
+    public CampaignMessage name(String name) {
         this.name = name;
+        return this;
     }
 
-    public void formats(List<String> formats) {
+    public CampaignMessage formats(List<String> formats) {
         this.formats = formats;
+        return this;
     }
 
-    public void languages(List<String> languages) {
+    public CampaignMessage languages(List<String> languages) {
         this.languages = languages;
+        return this;
     }
 
-    public void messageKey(String messageKey) {
+    public CampaignMessage messageKey(String messageKey) {
         this.messageKey = messageKey;
+        return this;
     }
 }
