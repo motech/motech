@@ -76,7 +76,8 @@ public class PatientHelperTest {
         final String attributeValue1 = "value1";
         final List<Attribute> patientAttributes = Arrays.asList(new Attribute(attributeName1, attributeValue1));
         final String patientIdFromGenerator = "1";
-        org.motechproject.mrs.model.Patient patient1 = new org.motechproject.mrs.model.Patient(patientIdFromGenerator, first, middle, last, preferred, birthdate, gender, address, patientAttributes, facility);
+        Boolean birthDateEstimated = true;
+        org.motechproject.mrs.model.Patient patient1 = new org.motechproject.mrs.model.Patient(patientIdFromGenerator, first, middle, last, preferred, birthdate, birthDateEstimated, gender, address, patientAttributes, facility);
         final String motechId = "1000";
         final PatientIdentifierType patientIndentifierType = new PatientIdentifierType(2000);
         final Location location = new Location(3000);
@@ -91,11 +92,12 @@ public class PatientHelperTest {
         assertThat(returnedPatient.getPatientIdentifier().getLocation(), is(equalTo(location)));
         assertThat(returnedPatient.getGender(), is(equalTo(gender)));
         assertThat(returnedPatient.getBirthdate(), is(equalTo(birthdate)));
+        assertThat(returnedPatient.getBirthdateEstimated(), is(equalTo(birthDateEstimated)));
         assertThat(returnedPatient.getPersonAddress().getAddress1(), is(equalTo(address)));
         assertThat(returnedPatient.getAttributes().size(), is(1));
         assertThat(returnedPatient.getAttribute(attributeName1).getValue(), is(equalTo(attributeValue1)));
 
-        org.motechproject.mrs.model.Patient patient2 = new org.motechproject.mrs.model.Patient(first, middle, last, preferred, birthdate, gender, address, facility);
+        org.motechproject.mrs.model.Patient patient2 = new org.motechproject.mrs.model.Patient(first, middle, last, preferred, birthdate, birthDateEstimated, gender, address, facility);
         returnedPatient = patientHelper.buildOpenMrsPatient(patient2, motechId, patientIndentifierType, location, allPersonAttributeTypes);
 
         assertThat(returnedPatient.getPatientIdentifier().getIdentifier(), is(equalTo(motechId)));

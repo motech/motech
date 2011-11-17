@@ -2,9 +2,9 @@ package org.motechproject.server.voxeo.domain;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
+import org.motechproject.ivr.model.CallDetailRecord;
 import org.motechproject.model.MotechAuditableDataObject;
-import org.motechproject.server.service.ivr.CallDetailRecord;
-import org.motechproject.server.service.ivr.CallRequest;
+import org.motechproject.ivr.service.CallRequest;
 
 import java.util.*;
 

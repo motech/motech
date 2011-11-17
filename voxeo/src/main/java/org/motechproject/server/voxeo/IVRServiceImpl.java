@@ -31,10 +31,10 @@
  */
 package org.motechproject.server.voxeo;
 
-import org.motechproject.server.service.ivr.CallDetailRecord;
-import org.motechproject.server.service.ivr.CallInitiationException;
-import org.motechproject.server.service.ivr.CallRequest;
-import org.motechproject.server.service.ivr.IVRService;
+import org.motechproject.ivr.model.CallDetailRecord;
+import org.motechproject.ivr.model.CallInitiationException;
+import org.motechproject.ivr.service.CallRequest;
+import org.motechproject.ivr.service.IVRService;
 import org.motechproject.server.voxeo.dao.AllPhoneCalls;
 import org.motechproject.server.voxeo.domain.PhoneCall;
 import org.slf4j.Logger;
