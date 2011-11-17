@@ -29,7 +29,7 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.service.ivr.asterisk;
+package org.motechproject.ivr.asterisk;
 
 import junitx.util.PrivateAccessor;
 import org.asteriskjava.live.AsteriskChannel;
@@ -42,7 +42,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.server.service.ivr.CallRequest;
+import org.motechproject.ivr.service.CallRequest;
 
 import static org.mockito.Mockito.*;
 

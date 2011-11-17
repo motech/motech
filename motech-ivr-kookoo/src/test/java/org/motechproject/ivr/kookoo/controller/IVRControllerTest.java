@@ -3,11 +3,11 @@ package org.motechproject.ivr.kookoo.controller;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.motechproject.ivr.event.IVREvent;
 import org.motechproject.ivr.kookoo.KooKooIVRContextForTest;
 import org.motechproject.ivr.kookoo.extensions.CallFlowController;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
-import org.motechproject.server.service.ivr.CallDirection;
-import org.motechproject.server.service.ivr.IVREvent;
+import org.motechproject.ivr.model.CallDirection;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.verify;

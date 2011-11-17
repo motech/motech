@@ -36,13 +36,13 @@ import java.util.Map;
 
 import org.motechproject.context.Context;
 import org.motechproject.gateway.MotechSchedulerGateway;
+import org.motechproject.ivr.model.CallInitiationException;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.outbox.api.EventKeys;
 import org.motechproject.server.event.annotations.MotechListener;
-import org.motechproject.server.service.ivr.CallInitiationException;
-import org.motechproject.server.service.ivr.CallRequest;
-import org.motechproject.server.service.ivr.IVRService;
+import org.motechproject.ivr.service.CallRequest;
+import org.motechproject.ivr.service.IVRService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
