@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:util="http://www.springframework.org/schema/util"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
     <aop:aspectj-autoproxy/>
     <context:annotation-config/>
     <context:spring-configured/>
@@ -22,15 +23,14 @@
     <bean class="org.openmrs.api.AdministrationService" factory-bean="context" factory-method="getAdministrationService" scope="singleton"/>
     <bean class="org.openmrs.api.LocationService" factory-bean="context" factory-method="getLocationService" scope="singleton"/>
 
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="location" value="classpath:openmrs.properties"/>
-    </bean>
+    <util:properties id="openmrsProperties" location="classpath:openmrs.properties"/>
 
     <bean class="org.motechproject.openmrs.services.OpenMRSFacilityAdaptor"/>
     <bean class="org.motechproject.openmrs.services.OpenMRSPatientAdaptor"/>
     <bean class="org.motechproject.openmrs.services.OpenMRSUserAdaptor"/>
     <bean class="org.motechproject.openmrs.security.OpenMRSSession"/>
     <bean class="org.motechproject.openmrs.advice.ApiSessionAdvice" depends-on="context" scope="prototype"/>
+    <bean class="org.motechproject.openmrs.advice.LoginAsAdminAdvice" depends-on="context" scope="prototype"/>
 
     <bean id="openMRSAuthenticationProvider" class="org.motechproject.openmrs.security.OpenMRSAuthenticationProvider"/>
 

@@ -77,7 +77,7 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
         final PatientIdentifier patientIdentifier = savedPatient.getPatientIdentifier();
         return new Patient(String.valueOf(savedPatient.getId()), firstName.getGivenName(),
                 firstName.getMiddleName(), firstName.getFamilyName(), patientHelper.getPreferredName(savedPatient),
-                savedPatient.getBirthdate(), savedPatient.getGender(), patientHelper.getAddress(savedPatient), attributes,
+                savedPatient.getBirthdate(), savedPatient.getBirthdateEstimated(), savedPatient.getGender(), patientHelper.getAddress(savedPatient), attributes,
                 (patientIdentifier != null) ? facilityAdaptor.createFacility(patientIdentifier.getLocation()) : null);
     }
 
