@@ -2,15 +2,15 @@ package org.motechproject.ivr.kookoo.service;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.eventtracking.service.EventService;
+import org.motechproject.ivr.event.CallEvent;
+import org.motechproject.ivr.event.IVREvent;
 import org.motechproject.ivr.kookoo.CallDetailRecordEvent;
 import org.motechproject.ivr.kookoo.KookooIVRResponseBuilder;
 import org.motechproject.ivr.kookoo.domain.KookooCallDetailRecord;
 import org.motechproject.ivr.kookoo.eventlogging.CallEventConstants;
 import org.motechproject.ivr.kookoo.repository.AllKooKooCallDetailRecords;
-import org.motechproject.server.service.ivr.CallDetailRecord;
-import org.motechproject.server.service.ivr.CallDirection;
-import org.motechproject.server.service.ivr.CallEvent;
-import org.motechproject.server.service.ivr.IVREvent;
+import org.motechproject.ivr.model.CallDetailRecord;
+import org.motechproject.ivr.model.CallDirection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

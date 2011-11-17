@@ -1,4 +1,6 @@
-package org.motechproject.server.service.ivr;
+package org.motechproject.ivr.event;
+
+import org.motechproject.ivr.model.CallDetailRecord;
 
 /**
  * Created by IntelliJ IDEA.

@@ -29,39 +29,23 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.service.ivr;
+package org.motechproject.ivr.service;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 /**
+ *  Interface to IVR System
+ *
  *
  */
-public class TestInitiateCallData {
+public interface IVRService {
 
-    private static final String CALLBACK_URL = "http://10.0.1.29:8080/m/module/ar/vxml/ar?r=1";
+    /**
+     * Sends an initiate call command to IVR. The call should be made to the phone specified in the given CallRequest
+     *
+     *
+     * @param callRequest - data required by IVR phone system to start outbound call
+     * @throws org.motechproject.ivr.model.CallInitiationException if the call can not be initiated
+     */
+    public void initiateCall(CallRequest callRequest);
 
-	@Test
-    public void TestConstructor() {
-        String phone = "1001";
-        int timeOut = Integer.MAX_VALUE;
-
-        CallRequest callRequest = new CallRequest(phone, timeOut, CALLBACK_URL);
-
-        assertEquals(phone, callRequest.getPhone());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void TestConstructorNullPhone() {
-        String phone = null;
-        int timeOut = Integer.MAX_VALUE;
-
-        CallRequest callRequest = new CallRequest(phone, timeOut, CALLBACK_URL);
-    }
-    @Test(expected = IllegalArgumentException.class)
-	public void TestConstructorNullVxmlUrl() {
-	    String phone = "1001";
-	    CallRequest callRequest = new CallRequest(phone, Integer.MAX_VALUE, null);
-	 }
 }
