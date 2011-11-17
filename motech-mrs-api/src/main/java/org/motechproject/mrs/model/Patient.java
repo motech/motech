@@ -14,15 +14,14 @@ public class Patient {
     private String gender;
     private String address;
     private Facility facility;
-    private Boolean birthDateEstimated;
     private List<Attribute> attributes;
 
 
-    public Patient(String id, String firstName, String middleName, String lastName, String preferredName, Date dateOfBirth, Boolean birthDateEstimated, String gender, String address, List<Attribute> attributes, Facility facility) {
-        this(id, firstName, middleName, lastName, preferredName, dateOfBirth, birthDateEstimated, gender, address, facility);
+    public Patient(String id, String firstName, String middleName, String lastName, String preferredName, Date dateOfBirth, String gender, String address, List<Attribute> attributes, Facility facility) {
+        this(id, firstName, middleName, lastName, preferredName, dateOfBirth, gender, address, facility);
         this.attributes = attributes;
     }
-    public Patient(String firstName, String middleName, String lastName, String preferredName, Date dateOfBirth, Boolean birthDateEstimated, String gender, String address, Facility facility) {
+    public Patient(String firstName, String middleName, String lastName, String preferredName, Date dateOfBirth, String gender, String address, Facility facility) {
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
@@ -31,11 +30,10 @@ public class Patient {
         this.gender = gender;
         this.address = address;
         this.facility = facility;
-        this.birthDateEstimated = birthDateEstimated;
     }
 
-    public Patient(String id, String firstName, String middleName, String lastName, String preferredName, Date dateOfBirth, Boolean birthDateEstimated, String gender, String address, Facility facility) {
-        this(firstName, middleName, lastName, preferredName, dateOfBirth, birthDateEstimated, gender, address, facility);
+    public Patient(String id, String firstName, String middleName, String lastName, String preferredName, Date dateOfBirth, String gender, String address, Facility facility) {
+        this(firstName, middleName, lastName, preferredName, dateOfBirth, gender, address, facility);
         this.id = id;
     }
 
@@ -75,14 +73,6 @@ public class Patient {
         return attributes;
     }
 
-    public Facility getFacility() {
-        return facility;
-    }
-
-    public Boolean getBirthDateEstimated() {
-        return birthDateEstimated;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -92,10 +82,7 @@ public class Patient {
 
         if (address != null ? !address.equals(patient.address) : patient.address != null) return false;
         if (attributes != null ? !attributes.equals(patient.attributes) : patient.attributes != null) return false;
-        if (birthDateEstimated != null ? !birthDateEstimated.equals(patient.birthDateEstimated) : patient.birthDateEstimated != null)
-            return false;
         if (dateOfBirth != null ? !dateOfBirth.equals(patient.dateOfBirth) : patient.dateOfBirth != null) return false;
-        if (facility != null ? !facility.equals(patient.facility) : patient.facility != null) return false;
         if (firstName != null ? !firstName.equals(patient.firstName) : patient.firstName != null) return false;
         if (gender != null ? !gender.equals(patient.gender) : patient.gender != null) return false;
         if (id != null ? !id.equals(patient.id) : patient.id != null) return false;
@@ -117,9 +104,11 @@ public class Patient {
         result = 31 * result + (dateOfBirth != null ? dateOfBirth.hashCode() : 0);
         result = 31 * result + (gender != null ? gender.hashCode() : 0);
         result = 31 * result + (address != null ? address.hashCode() : 0);
-        result = 31 * result + (facility != null ? facility.hashCode() : 0);
-        result = 31 * result + (birthDateEstimated != null ? birthDateEstimated.hashCode() : 0);
         result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
         return result;
+    }
+
+    public Facility getFacility() {
+        return facility;
     }
 }

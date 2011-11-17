@@ -56,9 +56,8 @@ public class OpenMRSPatientAdaptorIT extends OpenMRSIntegrationTestBase {
         final String address1 = "a good street in ghana";
         final Date birthdate = new Date(1970, 3, 11);
         final String gender = "M";
-        Boolean birthDateEstimated = true;
 
-        final Patient patient = new Patient(first, middle, last, "", birthdate, birthDateEstimated, gender, address1, savedFacility);
+        final Patient patient = new Patient(first, middle, last, "", birthdate, gender, address1, savedFacility);
         final Patient savedPatient = mrsPatientAdaptor.savePatient(patient);
 
         authorizeAndRollback(new DirtyData() {
@@ -68,6 +67,6 @@ public class OpenMRSPatientAdaptorIT extends OpenMRSIntegrationTestBase {
                 openmrsLocationService.purgeLocation(openmrsLocationService.getLocation(parseInt(savedFacility.getId())));
             }
         });
-        patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthdate, birthDateEstimated, gender, savedFacility, savedPatient);
+        patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthdate, gender, savedFacility, savedPatient);
     }
 }
