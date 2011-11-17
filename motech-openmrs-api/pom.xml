@@ -92,6 +92,18 @@
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
         </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>1.4.9</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <version>1.4.9</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -118,68 +130,68 @@
     </build>
 
     <profiles>
-      <profile>
-        <id>IT</id>
-        <build>
-          <plugins>
-            <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>sql-maven-plugin</artifactId>
-              <version>1.5</version>
-              <dependencies>
-                <dependency>
-                  <groupId>mysql</groupId>
-                  <artifactId>mysql-connector-java</artifactId>
-                  <version>5.1.13</version>
-                </dependency>
-              </dependencies>
+        <profile>
+            <id>IT</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>sql-maven-plugin</artifactId>
+                        <version>1.5</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>mysql</groupId>
+                                <artifactId>mysql-connector-java</artifactId>
+                                <version>5.1.13</version>
+                            </dependency>
+                        </dependencies>
 
-              <configuration>
-                <driver>com.mysql.jdbc.Driver</driver>
-                <username>${mysql.user}</username>
-                <password>${mysql.password}</password>
-                <url>jdbc:mysql://localhost:3306</url>
-              </configuration>
-              <executions>
-                <execution>
-                  <id>drop-db</id>
-                  <phase>pre-integration-test</phase>
-                  <goals>
-                    <goal>execute</goal>
-                  </goals>
-                  <configuration>
-                    <autocommit>true</autocommit>
-                    <sqlCommand>
-                      drop database openmrs_api_test;
-                    </sqlCommand>
-                    <onError>continue</onError>
-                  </configuration>
-                </execution>
-                <execution>
-                  <id>create-db</id>
-                  <phase>pre-integration-test</phase>
-                  <goals>
-                    <goal>execute</goal>
-                  </goals>
-                  <configuration>
-                    <autocommit>true</autocommit>
-                    <sqlCommand>
-                      create database openmrs_api_test default charset utf8;
-                      grant all on openmrs_api_test.* to 'openmrs'@'localhost' identified by
-                      'password';
-                      grant all on openmrs_api_test.* to 'openmrs'@'%' identified by 'password';
-                      flush privileges;
-                      use openmrs_api_test;
-                    </sqlCommand>
-                    <srcFiles>
-                      <srcFile>${project.basedir}/src/test/sql/openmrs-1.8.sql</srcFile>
-                    </srcFiles>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-          </plugins>
-        </build>
-      </profile>
+                        <configuration>
+                            <driver>com.mysql.jdbc.Driver</driver>
+                            <username>${mysql.user}</username>
+                            <password>${mysql.password}</password>
+                            <url>jdbc:mysql://localhost:3306</url>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>drop-db</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>execute</goal>
+                                </goals>
+                                <configuration>
+                                    <autocommit>true</autocommit>
+                                    <sqlCommand>
+                                        drop database openmrs_api_test;
+                                    </sqlCommand>
+                                    <onError>continue</onError>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>create-db</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>execute</goal>
+                                </goals>
+                                <configuration>
+                                    <autocommit>true</autocommit>
+                                    <sqlCommand>
+                                        create database openmrs_api_test default charset utf8;
+                                        grant all on openmrs_api_test.* to 'openmrs'@'localhost' identified by
+                                        'password';
+                                        grant all on openmrs_api_test.* to 'openmrs'@'%' identified by 'password';
+                                        flush privileges;
+                                        use openmrs_api_test;
+                                    </sqlCommand>
+                                    <srcFiles>
+                                        <srcFile>${project.basedir}/src/test/sql/openmrs-1.8.sql</srcFile>
+                                    </srcFiles>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 </project>
