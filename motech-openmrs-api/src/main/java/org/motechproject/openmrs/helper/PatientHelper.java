@@ -56,6 +56,7 @@ public class PatientHelper {
         openMRSPatient.addIdentifier(new PatientIdentifier(getMotechId(patient, motechId), patientIdentifierType, location));
         openMRSPatient.setGender(patient.getGender());
         openMRSPatient.setBirthdate(patient.getDateOfBirth());
+        openMRSPatient.setBirthdateEstimated(patient.getBirthDateEstimated());
         setPatientAddress(openMRSPatient, patient.getAddress());
         setPersonAttributes(patient, openMRSPatient, allPersonAttributeTypes);
         return openMRSPatient;
