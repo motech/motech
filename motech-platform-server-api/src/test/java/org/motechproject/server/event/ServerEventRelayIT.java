@@ -70,14 +70,15 @@ public class ServerEventRelayIT {
         MotechEvent event = argument.getAllValues().get(0);
         firstListener = (String) event.getParameters().get("message-destination");
         assertTrue(event.getParameters().containsKey("message-destination"));
+        assertEvent(createEvent(motechEvent, "SampleEventListener"), event);
 
+        verify(outboundEventGateway, times(2)).sendEventMessage(argument.capture());
         event = argument.getAllValues().get(1);
         secondListener = (String) event.getParameters().get("message-destination");
         assertTrue(event.getParameters().containsKey("message-destination"));
+        assertEvent(createEvent(motechEvent, "FooEventListener"), event);
 
         assertFalse(firstListener.equals(secondListener));
-        assertEvent(createEvent(motechEvent, "SampleEventListener"), argument.getAllValues().get(0));
-        assertEvent(createEvent(motechEvent, "FooEventListener"), argument.getAllValues().get(1));
     }
 
     private MotechEvent createEvent(MotechEvent motechEvent, String destination) {
