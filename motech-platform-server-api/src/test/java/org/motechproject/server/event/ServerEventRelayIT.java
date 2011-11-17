@@ -12,8 +12,10 @@ import org.motechproject.model.MotechEvent;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -64,19 +66,22 @@ public class ServerEventRelayIT {
         stub(fel.getIdentifier()).toReturn("FooEventListener");
         registry.registerListener(fel, "org.motechproject.server.someevent");
 
+        List<String> registeredListeners = asList(sel.getIdentifier(), fel.getIdentifier());
+
         eventRelay.relayEvent(motechEvent);
 
         verify(outboundEventGateway, times(2)).sendEventMessage(argument.capture());
         MotechEvent event = argument.getAllValues().get(0);
         firstListener = (String) event.getParameters().get("message-destination");
         assertTrue(event.getParameters().containsKey("message-destination"));
-        assertEvent(createEvent(motechEvent, "SampleEventListener"), event);
+        assertTrue(registeredListeners.contains(firstListener));
+        assertEvent(createEvent(motechEvent, firstListener), event);
 
-        verify(outboundEventGateway, times(2)).sendEventMessage(argument.capture());
         event = argument.getAllValues().get(1);
         secondListener = (String) event.getParameters().get("message-destination");
         assertTrue(event.getParameters().containsKey("message-destination"));
-        assertEvent(createEvent(motechEvent, "FooEventListener"), event);
+        assertTrue(registeredListeners.contains(secondListener));
+        assertEvent(createEvent(motechEvent, secondListener), event);
 
         assertFalse(firstListener.equals(secondListener));
     }
