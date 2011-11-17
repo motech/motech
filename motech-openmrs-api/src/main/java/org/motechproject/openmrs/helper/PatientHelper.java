@@ -62,7 +62,7 @@ public class PatientHelper {
     }
 
     private String getMotechId(org.motechproject.mrs.model.Patient patient, String motechId) {
-        return patient.getId() != null ? patient.getId() : motechId;
+        return StringUtils.isNotEmpty(patient.getId()) ? patient.getId() : motechId;
     }
 
     private Person createPersonWithNames(org.motechproject.mrs.model.Patient patient) {

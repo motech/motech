@@ -95,7 +95,7 @@ public class PatientHelperTest {
         assertThat(returnedPatient.getAttributes().size(), is(1));
         assertThat(returnedPatient.getAttribute(attributeName1).getValue(), is(equalTo(attributeValue1)));
 
-        org.motechproject.mrs.model.Patient patient2 = new org.motechproject.mrs.model.Patient(first, middle, last, preferred, birthdate, gender, address, facility);
+        org.motechproject.mrs.model.Patient patient2 = new org.motechproject.mrs.model.Patient("", first, middle, last, preferred, birthdate, gender, address, facility);
         returnedPatient = patientHelper.buildOpenMrsPatient(patient2, motechId, patientIndentifierType, location, allPersonAttributeTypes);
 
         assertThat(returnedPatient.getPatientIdentifier().getIdentifier(), is(equalTo(motechId)));
