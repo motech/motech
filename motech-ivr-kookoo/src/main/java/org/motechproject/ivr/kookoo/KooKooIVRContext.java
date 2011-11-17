@@ -7,6 +7,7 @@ import org.motechproject.util.Cookies;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 public class KooKooIVRContext {
     private KookooRequest kooKooRequest;
@@ -20,6 +21,7 @@ public class KooKooIVRContext {
     public static final String EXTERNAL_ID = "external_id";
     public static final String POUND_SYMBOL = "%23";
     public static final String CALL_ID = "call_id";
+    public static final String LIST_OF_COMPLETED_TREES = "list_of_completed_trees";
 
     protected KooKooIVRContext() {
     }
@@ -78,6 +80,17 @@ public class KooKooIVRContext {
 
     public String treeName() {
         return (String) request.getAttribute(TREE_NAME_KEY);
+    }
+
+    public List<String> getListOfCompletedTrees() {
+        return (List<String>) request.getSession().getAttribute(LIST_OF_COMPLETED_TREES);
+    }
+
+    public void addToListOfCompletedTrees(String lastCompletedTreeName) {
+        Object listOfCompletedTreesSoFar = request.getSession().getAttribute(LIST_OF_COMPLETED_TREES);
+        List<String> listOfCompletedTrees = listOfCompletedTreesSoFar == null ? new ArrayList<String>() : (List<String>) listOfCompletedTreesSoFar;
+        listOfCompletedTrees.add(lastCompletedTreeName);
+        request.getSession().setAttribute(LIST_OF_COMPLETED_TREES, listOfCompletedTrees);
     }
 
     public KookooRequest kooKooRequest() {
