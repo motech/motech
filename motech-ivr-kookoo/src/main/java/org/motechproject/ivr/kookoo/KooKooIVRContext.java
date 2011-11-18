@@ -92,6 +92,10 @@ public class KooKooIVRContext {
         return (String) request.getSession().getAttribute(EXTERNAL_ID);
     }
 
+    public boolean isValidSession() {
+        return request.getSession(false) != null;
+    }
+
     public void invalidateSession() {
         request.getSession().invalidate();
     }
