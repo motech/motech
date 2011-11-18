@@ -3,11 +3,13 @@ package org.motechproject.server.messagecampaign.userspecified;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignType;
 import org.motechproject.server.messagecampaign.domain.message.*;
 import org.motechproject.util.DateUtil;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.motechproject.server.messagecampaign.domain.message.RepeatingMessageMode.*;
 
 public class CampaignMessageRecord {
 
@@ -51,7 +53,44 @@ public class CampaignMessageRecord {
     }
 
     private CampaignMessage buildRepeating() {
-        return RepeatingMessageMode.findMode(this).create(this);
+        return createRepeatingCampaignMessageFromRecord();
+    }
+
+    private RepeatingMessageMode findMode() {
+        if(validate()) {
+            if (!isEmpty(repeatInterval())) return REPEAT_INTERVAL;
+            else if (!isEmpty(calendarStartOfWeek())) return CALENDAR_WEEK_SCHEDULE;
+            else if (!CollectionUtils.isEmpty(weekDaysApplicable())) return WEEK_DAYS_SCHEDULE;
+        }
+        throw new IllegalArgumentException("expected repeatInterval or (calendarStartOfWeek, weekDaysApplicable) only");
+    }
+
+    public  boolean validate( ) {
+        return !isEmpty(repeatInterval()) ? (weekDaysApplicable() == null && calendarStartOfWeek() == null)
+                : (weekDaysApplicable() != null || calendarStartOfWeek() != null);
+    }
+
+    public RepeatingCampaignMessage createRepeatingCampaignMessageFromRecord(){
+
+        RepeatingMessageMode messageMode = this.findMode();
+        if(messageMode.equals(REPEAT_INTERVAL)) {
+            return buildDefaultValues(new RepeatingCampaignMessage(repeatInterval()));
+        }
+        else if(messageMode.equals(WEEK_DAYS_SCHEDULE)) {
+            return buildDefaultValues(new RepeatingCampaignMessage(weekDaysApplicable()));
+        }
+        else if(messageMode.equals(CALENDAR_WEEK_SCHEDULE)) {
+             return buildDefaultValues(new RepeatingCampaignMessage(calendarStartOfWeek(), weekDaysApplicable()));
+        }
+        return null;
+    }
+
+    public RepeatingCampaignMessage buildDefaultValues(RepeatingCampaignMessage message) {
+        message.name(name())
+                .formats(formats())
+                .languages(languages())
+                .messageKey(messageKey());
+        return message;
     }
 
     private CampaignMessage buildAbsolute() {
@@ -161,14 +200,5 @@ public class CampaignMessageRecord {
 
     public String calendarStartOfWeek() {
         return calendarStartOfWeek;
-    }
-
-     public  boolean validate( ) {
-        return !isEmpty(repeatInterval) ? (weekDaysApplicable() == null && calendarStartOfWeek() == null)
-                : (weekDaysApplicable() != null || calendarStartOfWeek() != null);
-    }
-
-    private  boolean anyOne(Object o1, Object o2) {
-        return (o1 != null && o2 == null) || (o1 == null && o2 != null);
     }
 }

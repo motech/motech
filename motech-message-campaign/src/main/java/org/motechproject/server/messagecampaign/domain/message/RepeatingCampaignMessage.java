@@ -7,6 +7,7 @@ import org.motechproject.valueobjects.factory.WallTimeFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.motechproject.server.messagecampaign.domain.message.RepeatingMessageMode.*;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 public class RepeatingCampaignMessage extends CampaignMessage {
@@ -21,15 +22,18 @@ public class RepeatingCampaignMessage extends CampaignMessage {
 
     public RepeatingCampaignMessage(String repeatInterval) {
         this.repeatInterval = repeatInterval;
+        this.repeatingMessageMode = REPEAT_INTERVAL;
     }
 
     public RepeatingCampaignMessage(List<String> weekDaysApplicable) {
         setWeekDaysApplicable(weekDaysApplicable);
+        this.repeatingMessageMode = WEEK_DAYS_SCHEDULE;
     }
 
     public RepeatingCampaignMessage(String calendarStartOfWeek, List<String> weekDaysApplicable) {
         this.calendarStartOfWeek = calendarStartOfWeek;
         setWeekDaysApplicable(weekDaysApplicable);
+        this.repeatingMessageMode = CALENDAR_WEEK_SCHEDULE;
     }
 
     public int repeatIntervalForSchedule() {
@@ -48,6 +52,10 @@ public class RepeatingCampaignMessage extends CampaignMessage {
 
     public void repeatInterval(String repeatInterval) {
         this.repeatInterval = repeatInterval;
+    }
+
+    public String repeatInterval() {
+        return this.repeatInterval;
     }
 
     public List<DayOfWeek> weekDaysApplicable() {
@@ -71,6 +79,10 @@ public class RepeatingCampaignMessage extends CampaignMessage {
         return this;
     }
 
+    public RepeatingMessageMode mode() {
+        return this.repeatingMessageMode;
+    }
+
     private void setWeekDaysApplicable(List<String> weekDaysApplicable) {
         if (isEmpty(weekDaysApplicable)) return;
 
@@ -84,4 +96,5 @@ public class RepeatingCampaignMessage extends CampaignMessage {
     private boolean isNotEmpty(String str) {
         return !StringUtils.isEmpty(str);
     }
+    
 }
