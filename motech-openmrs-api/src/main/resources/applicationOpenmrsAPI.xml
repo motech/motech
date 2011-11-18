@@ -9,6 +9,9 @@
     <context:spring-configured/>
     <context:component-scan base-package="org.motechproject.openmrs"/>
 
+    <context:property-placeholder location="classpath:openmrs.properties"/>
+    <util:properties id="openmrsProperties" location="classpath:openmrs.properties"/>
+
     <bean id="context" class="org.motechproject.openmrs.Context" init-method="initialize" scope="singleton">
         <constructor-arg value="jdbc:mysql://${openmrs.host}:3306/${openmrs.database}?autoReconnect=true"/>
         <constructor-arg value="${openmrs.db.username}"/>
@@ -17,13 +20,16 @@
         <constructor-arg value="${openmrs.admin.password}"/>
     </bean>
 
-    <bean class="org.openmrs.api.PatientService" factory-bean="context" factory-method="getPatientService" scope="singleton"/>
-    <bean class="org.openmrs.api.PersonService" factory-bean="context" factory-method="getPersonService" scope="singleton"/>
+    <bean class="org.openmrs.api.PatientService" factory-bean="context" factory-method="getPatientService"
+          scope="singleton"/>
+    <bean class="org.openmrs.api.PersonService" factory-bean="context" factory-method="getPersonService"
+          scope="singleton"/>
     <bean class="org.openmrs.api.UserService" factory-bean="context" factory-method="getUserService" scope="singleton"/>
-    <bean class="org.openmrs.api.AdministrationService" factory-bean="context" factory-method="getAdministrationService" scope="singleton"/>
-    <bean class="org.openmrs.api.LocationService" factory-bean="context" factory-method="getLocationService" scope="singleton"/>
+    <bean class="org.openmrs.api.AdministrationService" factory-bean="context" factory-method="getAdministrationService"
+          scope="singleton"/>
+    <bean class="org.openmrs.api.LocationService" factory-bean="context" factory-method="getLocationService"
+          scope="singleton"/>
 
-    <util:properties id="openmrsProperties" location="classpath:openmrs.properties"/>
 
     <bean class="org.motechproject.openmrs.services.OpenMRSFacilityAdaptor"/>
     <bean class="org.motechproject.openmrs.services.OpenMRSPatientAdaptor"/>
