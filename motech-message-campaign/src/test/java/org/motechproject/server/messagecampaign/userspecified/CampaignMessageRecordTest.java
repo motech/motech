@@ -6,13 +6,13 @@ import org.motechproject.model.DayOfWeek;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingMessageMode;
 import org.springframework.test.annotation.ExpectedException;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
 import static org.mockito.Mockito.when;
 import static org.motechproject.server.messagecampaign.builder.CampaignMessageRecordBuilder.*;
 import static org.motechproject.server.messagecampaign.domain.message.RepeatingMessageMode.*;
@@ -63,19 +63,19 @@ public class CampaignMessageRecordTest {
 
         CampaignMessageRecord record = createRepeatingMessageRecordWithInterval("n", "msgKey", "9 Weeks");
         RepeatingCampaignMessage message = record.createRepeatingCampaignMessageFromRecord();
-        assertMessage(REPEAT_INTERVAL, record, message);
+        assertMessage(REPEAT_INTERVAL, record, days(record.weekDaysApplicable()), message);
 
         record = createRepeatingMessageRecordWithWeekApplicableDays("n", "msgKey", asList("Friday"));
         message = record.createRepeatingCampaignMessageFromRecord();
-        assertMessage(WEEK_DAYS_SCHEDULE, record, message);
+        assertMessage(WEEK_DAYS_SCHEDULE, record, days(record.weekDaysApplicable()), message);
 
         record = createRepeatingMessageRecordWithCalendarWeek("n", "msgKey", "Sunday", asList("Friday"));
         message = record.createRepeatingCampaignMessageFromRecord();
-        assertMessage(CALENDAR_WEEK_SCHEDULE, record, message);
+        assertMessage(CALENDAR_WEEK_SCHEDULE, record, days(record.weekDaysApplicable()), message);
 
         record = createRepeatingMessageRecordWithCalendarWeek("n", "msgKey", "Sunday", null);
         message = record.createRepeatingCampaignMessageFromRecord();
-        assertMessage(CALENDAR_WEEK_SCHEDULE, record, message);
+        assertMessage(CALENDAR_WEEK_SCHEDULE, record, asList(DayOfWeek.values()), message);
     }
 
     @Test
@@ -86,17 +86,20 @@ public class CampaignMessageRecordTest {
         mock.createRepeatingCampaignMessageFromRecord();
     }
 
-    private void assertMessage(RepeatingMessageMode mode, CampaignMessageRecord record, RepeatingCampaignMessage actualMessage) {
+    private void assertMessage(RepeatingMessageMode mode, CampaignMessageRecord record, List<DayOfWeek> expectedApplicableDays, RepeatingCampaignMessage actualMessage) {
         assertEquals(mode, actualMessage.mode());
         assertEquals(record.repeatInterval(), actualMessage.repeatInterval());
         assertEquals(record.messageKey(), actualMessage.messageKey());
         assertEquals(record.calendarStartOfWeek(), actualMessage.calendarStartOfWeek());
+        assertEquals(expectedApplicableDays, actualMessage.weekDaysApplicable());
+    }
 
-        List<DayOfWeek> applicableDays = new ArrayList<DayOfWeek>();
-        if(record.weekDaysApplicable() != null) {
-            for (String day : record.weekDaysApplicable()) applicableDays.add(DayOfWeek.valueOf(day));
-            assertEquals(applicableDays, actualMessage.weekDaysApplicable());
-        }
-        else assertNull(actualMessage.weekDaysApplicable());
+    private List<DayOfWeek> days(List<String> days) {
+      if(!CollectionUtils.isEmpty(days)) {
+          List<DayOfWeek> applicableDays = new ArrayList<DayOfWeek>();
+          for (String day : days) applicableDays.add(DayOfWeek.valueOf(day));
+          return applicableDays;
+      }
+      return null;
     }
 }

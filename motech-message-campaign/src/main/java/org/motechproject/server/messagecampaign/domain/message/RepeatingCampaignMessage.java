@@ -1,12 +1,13 @@
 package org.motechproject.server.messagecampaign.domain.message;
 
-import org.apache.commons.lang.StringUtils;
 import org.motechproject.model.DayOfWeek;
 import org.motechproject.valueobjects.factory.WallTimeFactory;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.motechproject.server.messagecampaign.domain.message.RepeatingMessageMode.*;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -32,8 +33,9 @@ public class RepeatingCampaignMessage extends CampaignMessage {
 
     public RepeatingCampaignMessage(String calendarStartOfWeek, List<String> weekDaysApplicable) {
         this.calendarStartOfWeek = calendarStartOfWeek;
-        setWeekDaysApplicable(weekDaysApplicable);
         this.repeatingMessageMode = CALENDAR_WEEK_SCHEDULE;
+        if(isEmpty(weekDaysApplicable)) this.weekDaysApplicable = asList(DayOfWeek.values());
+        else setWeekDaysApplicable(weekDaysApplicable);
     }
 
     public int repeatIntervalForSchedule() {
@@ -44,10 +46,7 @@ public class RepeatingCampaignMessage extends CampaignMessage {
     }
 
     public int repeatIntervalInDaysForOffset() {
-        if (!isEmpty(weekDaysApplicable))
-            return WEEKLY_REPEAT_INTERVAL;
-        else
-            return WallTimeFactory.create(repeatInterval).inDays();
+       return this.repeatingMessageMode.repeatIntervalForOffSet(this);
     }
 
     public void repeatInterval(String repeatInterval) {
@@ -68,6 +67,10 @@ public class RepeatingCampaignMessage extends CampaignMessage {
 
     public String calendarStartOfWeek() {
         return this.calendarStartOfWeek;
+    }
+
+    public DayOfWeek calendarStartDayOfWeek() {
+        return DayOfWeek.valueOf(this.calendarStartOfWeek);
     }
 
     public boolean isApplicable() {
@@ -93,8 +96,7 @@ public class RepeatingCampaignMessage extends CampaignMessage {
         this.weekDaysApplicable = applicableDays;
     }
 
-    private boolean isNotEmpty(String str) {
-        return !StringUtils.isEmpty(str);
+    public Integer offset(Date startTime) {
+        return repeatingMessageMode.offset(this, startTime);
     }
-    
 }
