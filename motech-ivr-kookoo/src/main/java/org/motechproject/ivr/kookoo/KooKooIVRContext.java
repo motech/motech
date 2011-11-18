@@ -1,14 +1,12 @@
 package org.motechproject.ivr.kookoo;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.server.service.ivr.CallDirection;
-import org.motechproject.server.service.ivr.IVRStatus;
+import org.motechproject.ivr.model.CallDirection;
+import org.motechproject.ivr.model.IVRStatus;
 import org.motechproject.util.Cookies;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.Map;
 
 public class KooKooIVRContext {
     private KookooRequest kooKooRequest;

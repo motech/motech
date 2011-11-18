@@ -5,15 +5,14 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.eventtracking.service.EventService;
+import org.motechproject.ivr.event.CallEvent;
+import org.motechproject.ivr.event.IVREvent;
 import org.motechproject.ivr.kookoo.KookooIVRResponseBuilder;
 import org.motechproject.ivr.kookoo.domain.KookooCallDetailRecord;
 import org.motechproject.ivr.kookoo.eventlogging.CallEventConstants;
 import org.motechproject.ivr.kookoo.repository.AllKooKooCallDetailRecords;
-import org.motechproject.model.RunOnceSchedulableJob;
-import org.motechproject.server.service.ivr.CallDetailRecord;
-import org.motechproject.server.service.ivr.CallDirection;
-import org.motechproject.server.service.ivr.CallEvent;
-import org.motechproject.server.service.ivr.IVREvent;
+import org.motechproject.ivr.model.CallDetailRecord;
+import org.motechproject.ivr.model.CallDirection;
 
 import java.util.List;
 

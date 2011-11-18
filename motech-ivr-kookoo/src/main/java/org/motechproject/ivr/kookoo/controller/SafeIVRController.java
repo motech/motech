@@ -1,12 +1,12 @@
 package org.motechproject.ivr.kookoo.controller;
 
 import org.apache.log4j.Logger;
+import org.motechproject.ivr.event.IVREvent;
 import org.motechproject.ivr.kookoo.KooKooIVRContext;
 import org.motechproject.ivr.kookoo.KookooIVRResponseBuilder;
 import org.motechproject.ivr.kookoo.KookooRequest;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
-import org.motechproject.server.service.ivr.IVREvent;
-import org.motechproject.server.service.ivr.IVRMessage;
+import org.motechproject.ivr.message.IVRMessage;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
