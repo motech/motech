@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
@@ -41,7 +42,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
     }
 
     @Override
-    public HashMap saveUser(User mrsUser) throws UserAlreadyExistsException {
+    public Map saveUser(User mrsUser) throws UserAlreadyExistsException {
         org.openmrs.User user = new org.openmrs.User();
         org.openmrs.Person person = new org.openmrs.Person();
         PersonName personName = new PersonName(mrsUser.getFirstName(), mrsUser.getMiddleName(), mrsUser.getLastName());
@@ -62,7 +63,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         user.setSystemId(userId);
         user.setPerson(person);
 
-        HashMap userMap = new HashMap();
+        Map userMap = new HashMap();
         userMap.put("userLoginId", user.getSystemId());
         userMap.put("password", password);
 
@@ -95,21 +96,20 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
 
     @Override
     public List<User> getAllUsers() {
-        ArrayList<User> mrsUsers = new ArrayList<User>();
+        List<User> mrsUsers = new ArrayList<User>();
         List<org.openmrs.User> openMRSUsers = userService.getAllUsers();
-        for (org.openmrs.User user : openMRSUsers) {
+        for (org.openmrs.User openMRSUser : openMRSUsers) {
             User mrsUser = new User();
-            if (user.getSystemId().equals("daemon")||user.getSystemId().equals("admin"))
+            if (openMRSUser.getSystemId().equals("daemon") || openMRSUser.getSystemId().equals("admin"))
                 continue;
-            Person person = user.getPerson();
+            Person person = openMRSUser.getPerson();
             PersonName personName = person.getPersonName();
 
-            mrsUser.id(Integer.toString(user.getId())).firstName(personName.getGivenName()).middleName(personName.getMiddleName()).lastName(personName.getFamilyName());
+            mrsUser.id(Integer.toString(openMRSUser.getId())).firstName(personName.getGivenName()).middleName(personName.getMiddleName()).lastName(personName.getFamilyName());
 
             for (PersonAttribute personAttribute : person.getAttributes()) {
                 mrsUser.addAttribute(new Attribute(personAttribute.getAttributeType().getName(), personAttribute.getValue()));
             }
-
             mrsUsers.add(mrsUser);
         }
         return mrsUsers;

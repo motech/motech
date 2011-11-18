@@ -21,6 +21,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -73,7 +74,7 @@ public class OpenMRSUserAdaptorTest {
         mrsUser.addAttribute(new Attribute("Phone Number", "012345"));
         mrsUser.addAttribute(new Attribute("Email", "jack@daniels.com"));
 
-        HashMap userMap = openMrsUserAdaptor.saveUser(mrsUser);
+        Map userMap = openMrsUserAdaptor.saveUser(mrsUser);
 
         ArgumentCaptor<org.openmrs.User> captor = ArgumentCaptor.forClass(org.openmrs.User.class);
         ArgumentCaptor<String> passwordCaptor = ArgumentCaptor.forClass(String.class);
