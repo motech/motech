@@ -1,8 +1,8 @@
 package org.motechproject.openmrs.services;
 
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
-import org.motechproject.mrs.model.User;
 import org.motechproject.mrs.model.Attribute;
+import org.motechproject.mrs.model.User;
 import org.motechproject.mrs.services.MRSException;
 import org.motechproject.mrs.services.MRSUserAdaptor;
 import org.motechproject.openmrs.model.Constants;
@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 public class OpenMRSUserAdaptor implements MRSUserAdaptor {
     private UserService userService;
@@ -58,9 +56,9 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         user.addRole(role);
 
         String id = mrsUser.getId();
-        String userId = isNotBlank(id) ? id : userService.generateSystemId();
+
         if (userService.getUserByUsername(id) != null) throw new UserAlreadyExistsException();
-        user.setSystemId(userId);
+        user.setSystemId(id);
         user.setPerson(person);
 
         Map userMap = new HashMap();
