@@ -64,7 +64,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         user.setPerson(person);
 
         Map userMap = new HashMap();
-        userMap.put("userLoginId", user.getSystemId());
+        userMap.put("openMRSUser", user);
         userMap.put("password", password);
 
         userService.saveUser(user, password);
