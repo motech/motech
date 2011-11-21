@@ -8,15 +8,21 @@ public class CampaignRequest {
     private String campaignName;
     private Time reminderTime;
     private LocalDate referenceDate;
+    private Integer startOffset;
 
     public CampaignRequest() {
     }
 
     public CampaignRequest(String externalId, String campaignName, Time reminderTime, LocalDate referenceDate) {
+        this(externalId, campaignName, reminderTime, referenceDate, null);
+    }
+
+    public CampaignRequest(String externalId, String campaignName, Time reminderTime, LocalDate referenceDate, Integer startOffset) {
         this.externalId = externalId;
         this.campaignName = campaignName;
         this.reminderTime = reminderTime;
         this.referenceDate = referenceDate;
+        this.startOffset = startOffset;
     }
 
     public void setCampaignName(String campaignName) {
@@ -49,5 +55,9 @@ public class CampaignRequest {
 
     public void setReferenceDate(LocalDate referenceDate) {
         this.referenceDate = referenceDate;
+    }
+
+    public Integer startOffset() {
+        return startOffset != null ? startOffset : 1;
     }
 }

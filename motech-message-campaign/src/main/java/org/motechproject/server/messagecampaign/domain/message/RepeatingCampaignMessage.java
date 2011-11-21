@@ -96,7 +96,7 @@ public class RepeatingCampaignMessage extends CampaignMessage {
         this.weekDaysApplicable = applicableDays;
     }
 
-    public Integer offset(Date startTime) {
-        return repeatingMessageMode.offset(this, startTime);
+    public Integer offset(Date startTime, Integer startIntervalOffset) {
+        return repeatingMessageMode.offset(this, startTime, startIntervalOffset);
     }
 }
