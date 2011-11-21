@@ -60,4 +60,8 @@ public class CampaignRequest {
     public Integer startOffset() {
         return startOffset != null ? startOffset : 1;
     }
+
+    public void setStartOffset(Integer startOffset) {
+        this.startOffset =startOffset;
+    }
 }

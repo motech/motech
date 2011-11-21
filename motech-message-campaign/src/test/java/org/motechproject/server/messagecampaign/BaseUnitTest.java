@@ -10,7 +10,7 @@ import org.motechproject.util.datetime.DateTimeSourceFactory;
 
 public class BaseUnitTest {
 
-    final DateTimeSource dateTimeSource = DateTimeSourceFactory.create();
+    static final DateTimeSource dateTimeSource = DateTimeSourceFactory.create();
 
     public void mockCurrentDate(final DateTime currentDate) {
         DateTimeSourceUtil.SourceInstance = new DateTimeSource() {
