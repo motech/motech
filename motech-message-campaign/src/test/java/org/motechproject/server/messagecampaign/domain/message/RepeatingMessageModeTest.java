@@ -2,19 +2,18 @@ package org.motechproject.server.messagecampaign.domain.message;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.motechproject.server.messagecampaign.BaseUnitTest;
 import org.motechproject.server.messagecampaign.builder.CampaignMessageBuilder;
 
 import java.util.Date;
 
 import static java.lang.Integer.valueOf;
 import static junit.framework.Assert.assertEquals;
-import static org.motechproject.server.messagecampaign.TestUtils.date;
-import static org.motechproject.server.messagecampaign.TestUtils.mockCurrentDate;
 import static org.motechproject.server.messagecampaign.domain.message.RepeatingMessageMode.CALENDAR_WEEK_SCHEDULE;
 import static org.motechproject.util.DateUtil.newDate;
 import static org.motechproject.util.DateUtil.newDateTime;
 
-public class RepeatingMessageModeTest {
+public class RepeatingMessageModeTest extends BaseUnitTest {
 
     @Test
     public void shouldReturnOffsetForCalendarWeekWithTuesdayAsStartOfWeek() {
