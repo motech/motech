@@ -15,9 +15,7 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.replace;
-import static org.joda.time.Days.daysBetween;
 import static org.motechproject.server.messagecampaign.EventKeys.MESSAGE_KEY;
-import static org.motechproject.util.DateUtil.newDateTime;
 
 @Component
 public class RepeatingProgramScheduleHandler {
@@ -42,11 +40,9 @@ public class RepeatingProgramScheduleHandler {
         RepeatingCampaignMessage repeatingCampaignMessage = (RepeatingCampaignMessage) getCampaignMessage(event);
 
         if(!repeatingCampaignMessage.isApplicable()) return;
-        int repeatIntervalInDays = repeatingCampaignMessage.repeatIntervalInDaysForOffset();
-        Integer interval = (daysBetween(newDateTime(event.getStartTime()).withTimeAtStartOfDay(),
-                DateUtil.now().withTimeAtStartOfDay()).getDays() / repeatIntervalInDays) + 1;
+        Integer offset = repeatingCampaignMessage.offset(event.getStartTime()); 
 
-        replaceMessageKeyParams(event.getParameters(), OFFSET, interval.toString());
+        replaceMessageKeyParams(event.getParameters(), OFFSET, offset.toString());
         replaceMessageKeyParams(event.getParameters(), WEEK_DAY, DateUtil.now().dayOfWeek().getAsText());
         outboundEventGateway.sendEventMessage(new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, event.getParameters()));
     }

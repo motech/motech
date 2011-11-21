@@ -1,29 +1,41 @@
 package org.motechproject.server.messagecampaign.domain.message;
 
-import org.apache.commons.lang.StringUtils;
 import org.motechproject.model.DayOfWeek;
-import org.motechproject.util.DateUtil;
 import org.motechproject.valueobjects.factory.WallTimeFactory;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import static java.util.Arrays.asList;
+import static org.motechproject.server.messagecampaign.domain.message.RepeatingMessageMode.*;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 public class RepeatingCampaignMessage extends CampaignMessage {
 
+    private RepeatingMessageMode repeatingMessageMode;
+
     private String repeatInterval;
+    private String calendarStartOfWeek;
     private List<DayOfWeek> weekDaysApplicable;
     public static final int DAILY_REPEAT_INTERVAL = 1;
     public static final int WEEKLY_REPEAT_INTERVAL = 7;
 
-    public RepeatingCampaignMessage(String repeatInterval, List<String> weekDaysApplicable) {
-        if (StringUtils.isEmpty(repeatInterval) && isEmpty(weekDaysApplicable) ||
-                (isNotEmpty(repeatInterval) && !isEmpty(weekDaysApplicable)))
-            throw new IllegalArgumentException("repeatInterval or weekdaysApplicable is expected");
-
+    public RepeatingCampaignMessage(String repeatInterval) {
         this.repeatInterval = repeatInterval;
+        this.repeatingMessageMode = REPEAT_INTERVAL;
+    }
+
+    public RepeatingCampaignMessage(List<String> weekDaysApplicable) {
         setWeekDaysApplicable(weekDaysApplicable);
+        this.repeatingMessageMode = WEEK_DAYS_SCHEDULE;
+    }
+
+    public RepeatingCampaignMessage(String calendarStartOfWeek, List<String> weekDaysApplicable) {
+        this.calendarStartOfWeek = calendarStartOfWeek;
+        this.repeatingMessageMode = CALENDAR_WEEK_SCHEDULE;
+        if(isEmpty(weekDaysApplicable)) this.weekDaysApplicable = asList(DayOfWeek.values());
+        else setWeekDaysApplicable(weekDaysApplicable);
     }
 
     public int repeatIntervalForSchedule() {
@@ -34,27 +46,44 @@ public class RepeatingCampaignMessage extends CampaignMessage {
     }
 
     public int repeatIntervalInDaysForOffset() {
-        if (!isEmpty(weekDaysApplicable))
-            return WEEKLY_REPEAT_INTERVAL;
-        else
-            return WallTimeFactory.create(repeatInterval).inDays();
+       return this.repeatingMessageMode.repeatIntervalForOffSet(this);
     }
 
     public void repeatInterval(String repeatInterval) {
         this.repeatInterval = repeatInterval;
     }
 
-    public List<DayOfWeek> getWeekDaysApplicable() {
+    public String repeatInterval() {
+        return this.repeatInterval;
+    }
+
+    public List<DayOfWeek> weekDaysApplicable() {
         return weekDaysApplicable;
     }
 
-    public boolean isApplicable() {
-        if (isNotEmpty(repeatInterval)) return true;
+    public void calendarStartOfWeek(String calendarStartOfWeek) {
+        this.calendarStartOfWeek = calendarStartOfWeek;
+    }
 
-        int currentDayOfWeek = DateUtil.now().dayOfWeek().get();
-        for (DayOfWeek dayOfWeek : weekDaysApplicable)
-            if(dayOfWeek.getValue() == currentDayOfWeek) return true;
-        return false;
+    public String calendarStartOfWeek() {
+        return this.calendarStartOfWeek;
+    }
+
+    public DayOfWeek calendarStartDayOfWeek() {
+        return DayOfWeek.valueOf(this.calendarStartOfWeek);
+    }
+
+    public boolean isApplicable() {
+        return this.repeatingMessageMode.isApplicable(this);
+    }
+
+    public RepeatingCampaignMessage mode(RepeatingMessageMode repeatingMessageMode) {
+        this.repeatingMessageMode = repeatingMessageMode;
+        return this;
+    }
+
+    public RepeatingMessageMode mode() {
+        return this.repeatingMessageMode;
     }
 
     private void setWeekDaysApplicable(List<String> weekDaysApplicable) {
@@ -67,7 +96,7 @@ public class RepeatingCampaignMessage extends CampaignMessage {
         this.weekDaysApplicable = applicableDays;
     }
 
-    private boolean isNotEmpty(String str) {
-        return !StringUtils.isEmpty(str);
+    public Integer offset(Date startTime) {
+        return repeatingMessageMode.offset(this, startTime);
     }
 }

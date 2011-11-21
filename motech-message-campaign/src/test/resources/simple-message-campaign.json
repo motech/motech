@@ -78,6 +78,14 @@
                 "languages" : ["en"],
                 "messageKey": "child-info-week-{Offset}-{WeekDay}",
                 "weekDaysApplicable" : ["Monday", "Wednesday", "Friday"]
+            },
+            {
+                "name" : "Weekly Message #5",
+                "formats" : ["SMS"],
+                "languages" : ["en"],
+                "messageKey": "child-info-calendar-week-{Offset}-{WeekDay}",
+                "calendarStartOfWeek" : "SUN", 
+                "weekDaysApplicable" : ["Monday", "Wednesday", "Friday"]
             }
         ]
     },

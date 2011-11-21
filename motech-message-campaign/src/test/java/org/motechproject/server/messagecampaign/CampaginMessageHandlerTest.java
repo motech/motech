@@ -33,7 +33,7 @@ public class CampaginMessageHandlerTest {
 
     @Test
     public void shouldFireEventForEachCampaignMessageScheduled() {
-        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessage("message-name", "2 Weeks", null, "message-key");
+        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForInterval("message-name", "2 Weeks", "message-key");
         ArgumentCaptor<MotechEvent> event = ArgumentCaptor.forClass(MotechEvent.class);
 
         when(allMessageCampaigns.get("campaign-name", "message-key")).thenReturn(campaignMessage);

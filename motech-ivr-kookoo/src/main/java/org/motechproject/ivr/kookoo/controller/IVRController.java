@@ -46,8 +46,10 @@ public class IVRController {
                     break;
                 case Disconnect:
                 case Hangup:
-                    kookooCallDetailRecordsService.close(ivrContext.callDetailRecordId(), ivrContext.externalId(), ivrEvent);
-                    ivrContext.invalidateSession();
+                    if (ivrContext.isValidSession()) {
+                        kookooCallDetailRecordsService.close(ivrContext.callDetailRecordId(), ivrContext.externalId(), ivrEvent);
+                        ivrContext.invalidateSession();
+                    }
                     String url = AllIVRURLs.springTransferUrlToEmptyResponse();
                     logger.info(String.format("Transferring to %s", url));
                     return url;

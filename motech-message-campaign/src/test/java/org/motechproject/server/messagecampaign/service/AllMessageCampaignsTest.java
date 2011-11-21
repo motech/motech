@@ -63,11 +63,12 @@ public class AllMessageCampaignsTest {
         assertEquals(campaignName, campaign.name());
         assertEquals("5 weeks", campaign.maxDuration());
         List<RepeatingCampaignMessage> messages = campaign.messages();
-        assertEquals(4, messages.size());
+        assertEquals(5, messages.size());
         assertMessageWithParameterizedRelativeSchedule(messages.get(0), "Weekly Message #1", new String[]{"IVR", "SMS"}, "child-info-week-{Offset}-1", 7);
         assertMessageWithParameterizedRelativeSchedule(messages.get(1), "Weekly Message #2", new String[]{"SMS"}, "child-info-week-{Offset}-2", 9);
         assertMessageWithParameterizedRelativeSchedule(messages.get(2), "Weekly Message #3", new String[]{"SMS"}, "child-info-week-{Offset}-3", 12);
         assertMessageWithParameterizedRelativeSchedule(messages.get(3), "Weekly Message #4", new String[]{"SMS"}, "child-info-week-{Offset}-{WeekDay}", 7);
+        assertMessageWithParameterizedRelativeSchedule(messages.get(4), "Weekly Message #5", new String[]{"SMS"}, "child-info-calendar-week-{Offset}-{WeekDay}", 7);
     }
 
     @Test
