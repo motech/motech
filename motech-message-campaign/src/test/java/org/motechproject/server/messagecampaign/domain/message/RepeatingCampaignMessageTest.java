@@ -1,6 +1,7 @@
 package org.motechproject.server.messagecampaign.domain.message;
 
 import org.junit.Test;
+import org.motechproject.server.messagecampaign.BaseUnitTest;
 import org.motechproject.server.messagecampaign.builder.CampaignMessageBuilder;
 
 import java.util.List;
@@ -8,10 +9,8 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.motechproject.server.messagecampaign.TestUtils.date;
-import static org.motechproject.server.messagecampaign.TestUtils.mockCurrentDate;
 
-public class RepeatingCampaignMessageTest {
+public class RepeatingCampaignMessageTest extends BaseUnitTest {
 
     @Test
     public void shouldReturnRepeatIntervalInDays_WhenRepeatIntervalIsNotNull() {
