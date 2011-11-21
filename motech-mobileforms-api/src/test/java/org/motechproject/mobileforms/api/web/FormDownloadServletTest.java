@@ -9,6 +9,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.motechproject.mobileforms.api.domain.FormBean;
 import org.motechproject.mobileforms.api.service.MobileFormsService;
 import org.motechproject.mobileforms.api.service.UsersService;
 import org.motechproject.mobileforms.api.vo.Study;
@@ -102,7 +103,8 @@ public class FormDownloadServletTest {
         userDetails.add(new Object[]{"username", "password", "salt"});
         when(usersService.getUsers()).thenReturn(userDetails);
 
-        final List<String> formContents = Arrays.asList(formOneContent, formTwoContent);
+        final List<String> formXmlContents = Arrays.asList(formOneContent, formTwoContent);
+        final List<FormBean> formContents = Arrays.asList(new FormBean(formOneContent), new FormBean(formTwoContent));
         when(mobileFormsService.getForms(groupIndex)).thenReturn(new Study(groupName, formContents));
 
         try {
@@ -123,7 +125,7 @@ public class FormDownloadServletTest {
                 @Override
                 public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
                     ((ByteArrayOutputStream) invocationOnMock.getArguments()[0]).write(dataExpectedToBeReturned.getBytes());
-                    assertThat((List<String>) invocationOnMock.getArguments()[1], is(equalTo(formContents)));
+                    assertThat((List<String>) invocationOnMock.getArguments()[1], is(equalTo(formXmlContents)));
                     assertThat((Integer) invocationOnMock.getArguments()[2], is(equalTo(groupIndex)));
                     assertThat((String)invocationOnMock.getArguments()[3], is(equalTo(groupName)));
                     return null;

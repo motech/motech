@@ -1,17 +1,22 @@
 package org.motechproject.mobileforms.api.vo;
 
+import org.motechproject.mobileforms.api.domain.FormBean;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Study {
     private String name;
-    private List<String> forms = new ArrayList<String>();
+    private List<FormBean> forms = new ArrayList<FormBean>();
+
+    public Study() {
+    }
 
     public Study(String name) {
         this.name = name;
     }
 
-    public Study(String name, List<String> forms) {
+    public Study(String name, List<FormBean> forms) {
         this(name);
         this.forms = forms;
     }
@@ -20,11 +25,11 @@ public class Study {
         return name;
     }
 
-    public List<String> forms() {
+    public List<FormBean> forms() {
         return forms;
     }
 
-    public void addForm(String form) {
+    public void addForm(FormBean form) {
         forms.add(form);
     }
 
@@ -32,9 +37,12 @@ public class Study {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Study)) return false;
-        Study that = (Study) o;
-        if (forms != null ? !forms.equals(that.forms) : that.forms != null) return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+
+        Study study = (Study) o;
+
+        if (forms != null ? !forms.equals(study.forms) : study.forms != null) return false;
+        if (name != null ? !name.equals(study.name) : study.name != null) return false;
+
         return true;
     }
 

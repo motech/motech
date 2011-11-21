@@ -1,5 +1,6 @@
 package org.motechproject.mobileforms.api.callbacks;
 
+import org.fcitmuk.epihandy.StudyData;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -61,9 +62,11 @@ public class FormProcessorTest {
         when(form.studyName()).thenReturn("studyName");
         when(allMobileForms.getFormByName("formName")).thenReturn(form);
 
+        StudyData mockStudyData = mock(StudyData.class);
+        formProcessor.processingStudy(mockStudyData);
         formProcessor.formProcessed(null, null, "xml");
 
-        TestForm testForm = (TestForm) formProcessor.formBeans().get(0);
+        TestForm testForm = (TestForm) formProcessor.getStudies().get(0).forms().get(0);
         assertEquals("formName", testForm.getFormname());
         assertEquals("studyName", testForm.getStudyName());
         assertEquals("validator", testForm.getValidator());
@@ -106,9 +109,11 @@ public class FormProcessorTest {
         when(form.studyName()).thenReturn("studyName");
         when(allMobileForms.getFormByName("registerPatient-jf")).thenReturn(form);
 
+        StudyData mockStudyData = mock(StudyData.class);
+        formProcessor.processingStudy(mockStudyData);
         formProcessor.formProcessed(null, null, "xml");
 
-        RegisterClientBean registerClientBean = (RegisterClientBean) formProcessor.formBeans().get(0);
+        RegisterClientBean registerClientBean = (RegisterClientBean) formProcessor.getStudies().get(0).forms().get(0);
         assertThat(registerClientBean.getSender(), is(equalTo("0944442452")));
 
         assertThat(registerClientBean.getNhisExpires(), is(equalTo(null)));

@@ -3,6 +3,7 @@ package org.motechproject.mobileforms.api.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.motechproject.mobileforms.api.domain.FormBean;
 import org.motechproject.mobileforms.api.repository.AllMobileForms;
 import org.motechproject.mobileforms.api.domain.Form;
 import org.motechproject.mobileforms.api.domain.FormGroup;
@@ -63,8 +64,8 @@ public class MobileFormsServiceImplTest {
         when(allMobileForms.getFormGroup(0)).thenReturn(new FormGroup(formGroupOneName, Arrays.asList(new Form("From-1", "Form-1.xml", formOneContent, null, null, null), new Form("Form-2", "Form-2.xml", formTwoContent, null, null, null))));
         when(allMobileForms.getFormGroup(1)).thenReturn(new FormGroup(formGroupTwoName, Arrays.asList(new Form("From-3", "Form-3.xml", formThreeContent, null, null, null))));
 
-        assertThat(mobileFormsService.getForms(0), is(equalTo(new Study(formGroupOneName, Arrays.asList(formOneContent, formTwoContent)))));
-        assertThat(mobileFormsService.getForms(1), is(equalTo(new Study(formGroupTwoName, Arrays.asList(formThreeContent)))));
+        assertThat(mobileFormsService.getForms(0), is(equalTo(new Study(formGroupOneName, Arrays.asList(new FormBean(formOneContent), new FormBean(formTwoContent))))));
+        assertThat(mobileFormsService.getForms(1), is(equalTo(new Study(formGroupTwoName, Arrays.asList(new FormBean(formThreeContent))))));
 
     }
 

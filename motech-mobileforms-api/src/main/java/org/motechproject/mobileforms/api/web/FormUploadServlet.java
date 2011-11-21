@@ -6,6 +6,7 @@ import org.fcitmuk.epihandy.EpihandyXformSerializer;
 import org.motechproject.mobileforms.api.domain.FormBean;
 import org.motechproject.mobileforms.api.domain.FormError;
 import org.motechproject.mobileforms.api.domain.FormOutput;
+import org.motechproject.mobileforms.api.vo.Study;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,14 +31,20 @@ public class FormUploadServlet extends BaseFormServlet {
         try {
             readParameters(dataInput);
             readActionByte(dataInput);
-            List<FormBean> formBeans = extractBeans(dataInput);
-            for (FormBean formBean : formBeans) {
-                List<FormError> formErrors = getValidatorFor(formBean).validate(formBean);
-                if (formErrors.isEmpty())
-                    formPublisher.publish(formBean);
-                formOutput.add(formBean, formErrors);
+            List<Study> studies = extractBeans(dataInput);
+            for (Study study : studies) {
+                for (FormBean formBean : study.forms()) {
+                    List<FormError> formErrors = getValidatorFor(formBean).validate(formBean);
+                    if (formErrors.isEmpty())
+                        formPublisher.publish(formBean);
+                    else {
+                        formBean.setFormErrors(formErrors);
+                    }
+                }
+                formOutput.addStudy(study);
             }
-            formOutput.populate(dataOutput);
+
+            formOutput.writeFormErrors(dataOutput);
             response.setContentType(APPLICATION_OCTET_STREAM);
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (Exception e) {
@@ -50,11 +57,13 @@ public class FormUploadServlet extends BaseFormServlet {
         }
     }
 
-    private List<FormBean> extractBeans(DataInputStream dataInput) throws Exception {
+    private List<Study> extractBeans(DataInputStream dataInput) throws Exception {
         EpihandyXformSerializer serializer = serializer();
         serializer.addDeserializationListener(formProcessor);
         serializer.deserializeStudiesWithEvents(dataInput, mobileFormsService.getFormIdMap());
-        return formProcessor.formBeans();
+        return formProcessor.getStudies();
     }
+
+
 
 }
