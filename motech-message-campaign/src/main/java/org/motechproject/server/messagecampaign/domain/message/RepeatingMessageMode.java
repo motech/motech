@@ -25,9 +25,9 @@ public enum RepeatingMessageMode {
             return create(message.repeatInterval()).inDays();
         }
 
-        public Integer offset(RepeatingCampaignMessage message, Date startTime) {
+        public Integer offset(RepeatingCampaignMessage message, Date startTime, Integer startIntervalOffset) {
             return (daysBetween(newDateTime(startTime).withTimeAtStartOfDay(),
-                DateUtil.now().withTimeAtStartOfDay()).getDays() / repeatIntervalForOffSet(message)) + 1;
+                DateUtil.now().withTimeAtStartOfDay()).getDays() / repeatIntervalForOffSet(message)) + startIntervalOffset;
         }
 
     }, WEEK_DAYS_SCHEDULE {
@@ -40,9 +40,9 @@ public enum RepeatingMessageMode {
             return WEEKLY_REPEAT_INTERVAL;
         }
 
-        public Integer offset(RepeatingCampaignMessage message, Date startTime) {
+        public Integer offset(RepeatingCampaignMessage message, Date startTime, Integer startIntervalOffset) {
             return (daysBetween(newDateTime(startTime).withTimeAtStartOfDay(),
-                DateUtil.now().withTimeAtStartOfDay()).getDays() / repeatIntervalForOffSet(message)) + 1;
+                DateUtil.now().withTimeAtStartOfDay()).getDays() / repeatIntervalForOffSet(message)) + startIntervalOffset;
         }
 
     }, CALENDAR_WEEK_SCHEDULE {
@@ -55,7 +55,7 @@ public enum RepeatingMessageMode {
             return WEEKLY_REPEAT_INTERVAL;
         }
 
-        public Integer offset(RepeatingCampaignMessage message, Date cycleStartDate) {
+        public Integer offset(RepeatingCampaignMessage message, Date cycleStartDate, Integer startIntervalOffset) {
 
             LocalDate cycleStartLocalDate = DateUtil.newDate(cycleStartDate);
             LocalDate currentDate = DateUtil.today();
@@ -63,14 +63,13 @@ public enum RepeatingMessageMode {
             if(cycleStartDate.compareTo(currentDate.toDate()) > 0) throw new IllegalArgumentException("cycleStartDate cannot be in future");
 
             int daysDiff = new Period(cycleStartLocalDate, currentDate, PeriodType.days()).getDays();
-            int currWeek = 1;
             if (daysDiff > 0) {
                 int daysToFirstCalendarWeekEnd = daysToCalendarWeekEnd(cycleStartLocalDate, message.calendarStartDayOfWeek().getValue());
                 int daysAfterFirstCalendarWeekEnd = daysDiff > daysToFirstCalendarWeekEnd ? daysDiff - daysToFirstCalendarWeekEnd : 0;
                 int weeksAfterFirstSaturday = daysAfterFirstCalendarWeekEnd / 7 + (daysAfterFirstCalendarWeekEnd % 7 > 0 ? 1 : 0);
-                return weeksAfterFirstSaturday + currWeek;
+                return weeksAfterFirstSaturday + startIntervalOffset;
             }
-            return currWeek;
+            return startIntervalOffset;
         }
 
         private int daysToCalendarWeekEnd(LocalDate date, int calendarWeekStartDay) {
@@ -90,6 +89,6 @@ public enum RepeatingMessageMode {
     }
 
     public abstract boolean isApplicable(RepeatingCampaignMessage repeatingCampaignMessage);
-    public abstract Integer offset(RepeatingCampaignMessage repeatingCampaignMessage, Date startTime);
+    public abstract Integer offset(RepeatingCampaignMessage repeatingCampaignMessage, Date startTime, Integer startIntervalOffset);
     public abstract Integer repeatIntervalForOffSet(RepeatingCampaignMessage repeatingCampaignMessage);
 }

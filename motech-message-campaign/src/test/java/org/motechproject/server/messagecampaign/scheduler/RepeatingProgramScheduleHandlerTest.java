@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.gateway.OutboundEventGateway;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.server.messagecampaign.BaseUnitTest;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.builder.CampaignMessageBuilder;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
@@ -22,12 +23,10 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.server.messagecampaign.TestUtils.date;
-import static org.motechproject.server.messagecampaign.TestUtils.mockCurrentDate;
 import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduleHandler.OFFSET;
 import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduleHandler.WEEK_DAY;
 
-public class RepeatingProgramScheduleHandlerTest {
+public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
 
     @Mock
     AllMessageCampaigns allMessageCampaigns;
@@ -55,19 +54,19 @@ public class RepeatingProgramScheduleHandlerTest {
         Date nov112011 = today.toDate();
         Date may102012 = date(2012, 5, 10).toDate();
 
-        callHandleEvent(today, getMotechEvent(nov112011, may102012, jobMessageKey));
+        callHandleEvent(today, getMotechEvent(nov112011, may102012, jobMessageKey, 1));
         assertHandleEvent("message-key-1");
 
-        callHandleEvent(today.plusDays(repeatIntervalInDays - 1), getMotechEvent(nov112011, may102012, jobMessageKey));
-        assertHandleEvent("message-key-1");
-
-        callHandleEvent(today.plusDays(repeatIntervalInDays * 2), getMotechEvent(nov112011, may102012, jobMessageKey));
+        callHandleEvent(today.plusDays(repeatIntervalInDays - 1), getMotechEvent(nov112011, may102012, jobMessageKey, 3));
         assertHandleEvent("message-key-3");
 
-        callHandleEvent(today.plusDays(repeatIntervalInDays * 2 + 1), getMotechEvent(nov112011, may102012, jobMessageKey));
+        callHandleEvent(today.plusDays(repeatIntervalInDays * 2), getMotechEvent(nov112011, may102012, jobMessageKey, 1));
         assertHandleEvent("message-key-3");
 
-        callHandleEvent(today.plusDays(repeatIntervalInDays * 3), getMotechEvent(nov112011, may102012, jobMessageKey));
+        callHandleEvent(today.plusDays(repeatIntervalInDays * 2 + 1), getMotechEvent(nov112011, may102012, jobMessageKey, 4));
+        assertHandleEvent("message-key-6");
+
+        callHandleEvent(today.plusDays(repeatIntervalInDays * 3), getMotechEvent(nov112011, may102012, jobMessageKey, 1));
         assertHandleEvent("message-key-4");
     }
 
@@ -85,23 +84,23 @@ public class RepeatingProgramScheduleHandlerTest {
         Date may102012 = date(2012, 5, 10).toDate();
         assertEquals(7, repeatIntervalAs7);
 
-        callHandleEvent(today, getMotechEvent(nov162011, may102012, jobMessageKey));
+        callHandleEvent(today, getMotechEvent(nov162011, may102012, jobMessageKey, 1));
         assertHandleEvent("message-key-1-Wednesday");
 
-        callHandleEvent(today.plusDays(1), getMotechEvent(nov162011, may102012, jobMessageKey));
+        callHandleEvent(today.plusDays(1), getMotechEvent(nov162011, may102012, jobMessageKey, 2));
         assertHandleEvent_ThatItDoesntProceed();
 
-        callHandleEvent(today.plusDays(2), getMotechEvent(nov162011, may102012, jobMessageKey));
-        assertHandleEvent("message-key-1-Friday");
+        callHandleEvent(today.plusDays(2), getMotechEvent(nov162011, may102012, jobMessageKey, 2));
+        assertHandleEvent("message-key-2-Friday");
 
-        callHandleEvent(today.plusDays(3), getMotechEvent(nov162011, may102012, jobMessageKey));
-        assertHandleEvent("message-key-1-Saturday");
+        callHandleEvent(today.plusDays(3), getMotechEvent(nov162011, may102012, jobMessageKey, 2));
+        assertHandleEvent("message-key-2-Saturday");
 
-        callHandleEvent(today.plusDays(11), getMotechEvent(nov162011, may102012, jobMessageKey));
+        callHandleEvent(today.plusDays(11), getMotechEvent(nov162011, may102012, jobMessageKey, 5));
         assertHandleEvent_ThatItDoesntProceed();
 
-        callHandleEvent(today.plusDays(repeatIntervalAs7 * 3), getMotechEvent(nov162011, may102012, jobMessageKey));
-        assertHandleEvent("message-key-4-Wednesday");
+        callHandleEvent(today.plusDays(repeatIntervalAs7 * 3), getMotechEvent(nov162011, may102012, jobMessageKey, 5));
+        assertHandleEvent("message-key-8-Wednesday");
     }
 
     @Test
@@ -118,26 +117,26 @@ public class RepeatingProgramScheduleHandlerTest {
         Date may102012 = date(2012, 5, 10).toDate();
         assertEquals(7, repeatIntervalAs7);
 
-        callHandleEvent(today, getMotechEvent(nov182011, may102012, jobMessageKey));
+        callHandleEvent(today, getMotechEvent(nov182011, may102012, jobMessageKey, 1));
         assertHandleEvent("message-key-1-Friday");
 
-        callHandleEvent(today.plusDays(1), getMotechEvent(nov182011, may102012, jobMessageKey));
+        callHandleEvent(today.plusDays(1), getMotechEvent(nov182011, may102012, jobMessageKey, 1));
         assertHandleEvent_ThatItDoesntProceed();
 
-        callHandleEvent(today.plusDays(2), getMotechEvent(nov182011, may102012, jobMessageKey));
-        assertHandleEvent("message-key-1-Sunday");
+        callHandleEvent(today.plusDays(2), getMotechEvent(nov182011, may102012, jobMessageKey, 3));
+        assertHandleEvent("message-key-3-Sunday");
 
-        callHandleEvent(today.plusDays(3), getMotechEvent(nov182011, may102012, jobMessageKey));
-        assertHandleEvent("message-key-2-Monday");
+        callHandleEvent(today.plusDays(3), getMotechEvent(nov182011, may102012, jobMessageKey, 4));
+        assertHandleEvent("message-key-5-Monday");
 
         DateTime todayMockAs29Nov = today.plusDays(11);
-        callHandleEvent(todayMockAs29Nov, getMotechEvent(nov182011, may102012, jobMessageKey));
+        callHandleEvent(todayMockAs29Nov, getMotechEvent(nov182011, may102012, jobMessageKey, 1));
         assertHandleEvent_ThatItDoesntProceed();
 
-        callHandleEvent(todayMockAs29Nov.plusDays(3), getMotechEvent(nov182011, may102012, jobMessageKey));
-        assertHandleEvent("message-key-3-Friday");
+        callHandleEvent(todayMockAs29Nov.plusDays(3), getMotechEvent(nov182011, may102012, jobMessageKey, 2));
+        assertHandleEvent("message-key-4-Friday");
 
-        callHandleEvent(today.plusDays(repeatIntervalAs7 * 4), getMotechEvent(nov182011, may102012, jobMessageKey));
+        callHandleEvent(today.plusDays(repeatIntervalAs7 * 4), getMotechEvent(nov182011, may102012, jobMessageKey, 1));
         assertHandleEvent("message-key-5-Friday");
     }
 
@@ -174,12 +173,13 @@ public class RepeatingProgramScheduleHandlerTest {
         assertEquals(messageKey, params.get(EventKeys.MESSAGE_KEY));
     }
 
-    private MotechEvent getMotechEvent(Date startTime, Date endTime, String messageKey) {
+    private MotechEvent getMotechEvent(Date startTime, Date endTime, String messageKey, int startOffset) {
         HashMap<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(EventKeys.CAMPAIGN_NAME_KEY, campaignName);
         parameters.put(EventKeys.MESSAGE_KEY, messageKey);
         parameters.put(EventKeys.SCHEDULE_JOB_ID_KEY, "job-id");
         parameters.put(EventKeys.EXTERNAL_ID_KEY, "external-id");
+        parameters.put(EventKeys.REPEATING_START_OFFSET, startOffset);
         return new MotechEvent(RepeatingProgramScheduler.INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, parameters)
                 .setStartTime(startTime).setEndTime(endTime);
     }

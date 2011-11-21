@@ -5,13 +5,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.internal.matchers.Null;
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
-import org.motechproject.mrs.model.Facility;
-import org.motechproject.mrs.model.User;
 import org.motechproject.mrs.model.Attribute;
+import org.motechproject.mrs.model.User;
 import org.motechproject.mrs.services.MRSException;
-import org.motechproject.openmrs.model.Constants;
 import org.openmrs.*;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
@@ -19,12 +16,10 @@ import org.openmrs.api.db.DAOException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -73,12 +68,11 @@ public class OpenMRSUserAdaptorTest {
         mrsUser.addAttribute(new Attribute("Phone Number", "012345"));
         mrsUser.addAttribute(new Attribute("Email", "jack@daniels.com"));
 
-        HashMap userMap = openMrsUserAdaptor.saveUser(mrsUser);
+        Map userMap = openMrsUserAdaptor.saveUser(mrsUser);
 
         ArgumentCaptor<org.openmrs.User> captor = ArgumentCaptor.forClass(org.openmrs.User.class);
         ArgumentCaptor<String> passwordCaptor = ArgumentCaptor.forClass(String.class);
         verify(userService).saveUser(captor.capture(), passwordCaptor.capture());
-        verify(userService).generateSystemId();
         String capturedPassword = passwordCaptor.getValue();
         assertEquals(8, capturedPassword.length());
 
