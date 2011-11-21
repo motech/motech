@@ -25,8 +25,8 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
         LocalDate endDate = startDate.plusDays(duration.inDays());
 
         long repeatInterval = Days.days(message.repeatIntervalForSchedule()).toStandardSeconds().getSeconds() * 1000L;
-        Map<String, Object> paramss = jobParams(message.messageKey());
-        paramss.put(EventKeys.REPEATING_START_OFFSET, campaignRequest.startOffset());
-        scheduleRepeatingJob(startDate, endDate, repeatInterval, paramss);
+        Map<String, Object> params = jobParams(message.messageKey());
+        params.put(EventKeys.REPEATING_START_OFFSET, campaignRequest.startOffset());
+        scheduleRepeatingJob(startDate, endDate, repeatInterval, params);
     }
 }
