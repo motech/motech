@@ -98,7 +98,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         List<org.openmrs.User> openMRSUsers = userService.getAllUsers();
         for (org.openmrs.User openMRSUser : openMRSUsers) {
             User mrsUser = new User();
-            if (openMRSUser.getSystemId().equals("daemon") || openMRSUser.getSystemId().equals("admin"))
+            if (openMRSUser.getSystemId().equals("admin") || openMRSUser.getSystemId().equals("daemon"))
                 continue;
             Person person = openMRSUser.getPerson();
             PersonName personName = person.getPersonName();
