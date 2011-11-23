@@ -58,13 +58,13 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
         assertHandleEvent("message-key-1");
 
         callHandleEvent(today.plusDays(repeatIntervalInDays - 1), getMotechEvent(nov112011, may102012, jobMessageKey, 3));
-        assertHandleEvent("message-key-3");
+        assertHandleEvent("message-key-1");
 
         callHandleEvent(today.plusDays(repeatIntervalInDays * 2), getMotechEvent(nov112011, may102012, jobMessageKey, 1));
         assertHandleEvent("message-key-3");
 
         callHandleEvent(today.plusDays(repeatIntervalInDays * 2 + 1), getMotechEvent(nov112011, may102012, jobMessageKey, 4));
-        assertHandleEvent("message-key-6");
+        assertHandleEvent("message-key-3");
 
         callHandleEvent(today.plusDays(repeatIntervalInDays * 3), getMotechEvent(nov112011, may102012, jobMessageKey, 1));
         assertHandleEvent("message-key-4");

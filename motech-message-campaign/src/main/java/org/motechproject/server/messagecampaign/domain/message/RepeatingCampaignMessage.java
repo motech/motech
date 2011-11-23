@@ -1,6 +1,8 @@
 package org.motechproject.server.messagecampaign.domain.message;
 
 import org.motechproject.model.DayOfWeek;
+import org.motechproject.server.messagecampaign.contract.CampaignRequest;
+import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.factory.WallTimeFactory;
 
 import java.util.ArrayList;
@@ -98,5 +100,9 @@ public class RepeatingCampaignMessage extends CampaignMessage {
 
     public Integer offset(Date startTime, Integer startIntervalOffset) {
         return repeatingMessageMode.offset(this, startTime, startIntervalOffset);
+    }
+
+    public int duration(WallTime duration, CampaignRequest campaignRequest) {
+        return repeatingMessageMode.duration(duration, campaignRequest, this);
     }
 }

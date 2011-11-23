@@ -58,10 +58,21 @@ public class CampaignRequest {
     }
 
     public Integer startOffset() {
-        return startOffset != null ? startOffset : 1;
+        return startOffset;
     }
 
     public void setStartOffset(Integer startOffset) {
         this.startOffset =startOffset;
+    }
+
+    @Override
+    public String toString() {
+        return "CampaignRequest{" +
+                "externalId='" + externalId + '\'' +
+                ", campaignName='" + campaignName + '\'' +
+                ", reminderTime=" + reminderTime +
+                ", referenceDate=" + referenceDate +
+                ", startOffset=" + startOffset +
+                '}';
     }
 }

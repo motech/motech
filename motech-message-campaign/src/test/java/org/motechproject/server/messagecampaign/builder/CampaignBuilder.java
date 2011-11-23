@@ -11,6 +11,7 @@ import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaign
 import org.motechproject.util.DateUtil;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import static java.util.Arrays.asList;
 
@@ -65,22 +66,29 @@ public class CampaignBuilder {
         return campaign;
     }
 
-    public RepeatingCampaign defaultRepeatingCampaign() {
-        RepeatingCampaign campaign = new RepeatingCampaign();
-        campaign.setName("testCampaign");
-        campaign.maxDuration("2 Weeks");
+    public RepeatingCampaign defaultRepeatingCampaign(String maxDuration ) {
 
         final RepeatingCampaignMessage repeatingCampaignMessage1 = new CampaignMessageBuilder().repeatingCampaignMessageForInterval("OM1", "1 Week", "child-info-week-{Offset}-1");
         final RepeatingCampaignMessage repeatingCampaignMessage2 = new CampaignMessageBuilder().repeatingCampaignMessageForInterval("OM2", "12 Days", "child-info-week-{Offset}-2");
         final RepeatingCampaignMessage repeatingCampaignMessage3 = new CampaignMessageBuilder().repeatingCampaignMessageForDaysApplicable("OM2", asList("Monday", "Wednesday"), "child-info-week-{Offset}-{WeekDay}");
+        final RepeatingCampaignMessage repeatingCampaignMessage_CalendarWeek = new CampaignMessageBuilder().repeatingCampaignMessageForCalendarWeek("OM2", "Monday",
+                asList("Monday", "Wednesday"), "child-info-week-{Offset}-{WeekDay}");
 
         LinkedList<RepeatingCampaignMessage> campaignMessages = new LinkedList<RepeatingCampaignMessage>() {{
             add(repeatingCampaignMessage1);
             add(repeatingCampaignMessage2);
             add(repeatingCampaignMessage3);
+            add(repeatingCampaignMessage_CalendarWeek);
         }};
+        return repeatingCampaign("testCampaign", maxDuration, campaignMessages);
+    }
 
-        campaign.setMessages(campaignMessages);
+    public RepeatingCampaign repeatingCampaign(String campaingName, String duration, List<RepeatingCampaignMessage> messages) {
+        RepeatingCampaign campaign = new RepeatingCampaign();
+        campaign.setName(campaingName);
+        campaign.maxDuration(duration);
+        campaign.setMessages(messages);
         return campaign;
     }
+
 }
