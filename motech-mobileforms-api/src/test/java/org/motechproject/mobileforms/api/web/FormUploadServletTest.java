@@ -1,8 +1,6 @@
 package org.motechproject.mobileforms.api.web;
 
-import com.jcraft.jzlib.ZInputStream;
 import org.fcitmuk.epihandy.EpihandyXformSerializer;
-import org.fcitmuk.epihandy.ResponseHeader;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -14,13 +12,17 @@ import org.motechproject.mobileforms.api.domain.FormOutput;
 import org.motechproject.mobileforms.api.service.MobileFormsService;
 import org.motechproject.mobileforms.api.service.UsersService;
 import org.motechproject.mobileforms.api.validator.FormValidator;
+import org.motechproject.mobileforms.api.vo.Study;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.servlet.ServletContext;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 import static org.mockito.Mockito.*;
@@ -77,10 +79,11 @@ public class FormUploadServletTest {
         FormValidator formValidator = mock(FormValidator.class);
 
         List<FormBean> formBeans = Arrays.asList(successForm, failureForm);
-        List<FormError> formErrors = Arrays.asList(new FormError("", ""));
+        List<FormError> formErrors = Arrays.asList(new FormError("field_name", "error"));
         Map<Integer, String> formIdMap = new HashMap<Integer, String>();
+        Study study = new Study("study", formBeans);
 
-        when(formProcessor.formBeans()).thenReturn(formBeans);
+        when(formProcessor.getStudies()).thenReturn(Arrays.asList(study));
         when(successForm.getValidator()).thenReturn(validatorClass);
         when(failureForm.getValidator()).thenReturn(validatorClass);
         when(successForm.getXmlContent()).thenReturn("xml");
@@ -94,9 +97,10 @@ public class FormUploadServletTest {
 
         formUploadServlet.doPost(request, response);
 
-        verify(formOutput).add(successForm,Collections.EMPTY_LIST);
-        verify(formOutput).add(failureForm, formErrors);
-        verify(formOutput).populate(any(DataOutputStream.class));
+        verify(formOutput).addStudy(study);
+        verify(failureForm).setFormErrors(formErrors);
+        verify(successForm, never()).setFormErrors(anyList());
+        verify(formOutput).writeFormErrors(any(DataOutputStream.class));
         verify(formPublisher).publish(successForm);
         verify(epihandySerializer).addDeserializationListener(formProcessor);
         verify(epihandySerializer).deserializeStudiesWithEvents(any(DataInputStream.class), eq(formIdMap));

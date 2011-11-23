@@ -10,6 +10,7 @@ import org.motechproject.mobileforms.api.domain.FormBean;
 import org.motechproject.mobileforms.api.parser.FormDataParser;
 import org.motechproject.mobileforms.api.repository.AllMobileForms;
 import org.motechproject.mobileforms.api.utils.MapToBeanConvertor;
+import org.motechproject.mobileforms.api.vo.Study;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ import java.util.Map;
 public class FormProcessor extends DeserializationListenerAdapter {
     private final Logger log = LoggerFactory.getLogger(FormProcessor.class);
 
-    private List<FormBean> formBeans = new ArrayList<FormBean>();
+    private List<Study> studies = new ArrayList<Study>();
 
     @Autowired
     private FormDataParser parser;
@@ -40,6 +41,11 @@ public class FormProcessor extends DeserializationListenerAdapter {
     private String marker;
 
     @Override
+	public void processingStudy(StudyData studyData) {
+		studies.add(new Study());
+	}
+
+    @Override
     public void formProcessed(StudyData studyData, FormData formData, String formXml) {
         try {
             Map data = parser.parse(formXml);
@@ -52,15 +58,11 @@ public class FormProcessor extends DeserializationListenerAdapter {
             formBean.setXmlContent(formXml);
 
             mapToBeanConvertor.convert(formBean, handleEmptyStrings(data));
-            formBeans.add(formBean);
+            studies.get(studies.size() - 1).addForm(formBean);
 
         } catch (Exception e) {
             throw new MotechException("Exception occurred while parsing form xml", e);
         }
-    }
-
-    public List<FormBean> formBeans() {
-        return formBeans;
     }
 
     private Map<String, String> handleEmptyStrings(Map<String, String> attributes) {
@@ -71,6 +73,10 @@ public class FormProcessor extends DeserializationListenerAdapter {
             }
         }
         return attributeWithOutEmptyStringValue;
+    }
+
+    public List<Study> getStudies() {
+        return studies;
     }
 }
 

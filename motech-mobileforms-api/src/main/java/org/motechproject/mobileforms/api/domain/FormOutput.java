@@ -1,5 +1,6 @@
 package org.motechproject.mobileforms.api.domain;
 
+import ch.lambdaj.function.convert.Converter;
 import org.fcitmuk.epihandy.ResponseHeader;
 import org.motechproject.mobileforms.api.vo.Study;
 
@@ -7,53 +8,73 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.*;
 
+import static ch.lambdaj.Lambda.convert;
+import static ch.lambdaj.Lambda.join;
+
 public class FormOutput {
-    private Map<FormBean, List<FormError>> errorMap;
+    private List<Study> studies = new ArrayList<Study>();
 
-    public FormOutput() {
-        errorMap = new TreeMap<FormBean, List<FormError>>(new FormBeanComparator());
+    public void addStudy(Study study){
+        studies.add(study);
     }
 
-    public void add(FormBean formBean, List<FormError> errors) {
-        errorMap.put(formBean, errors);
-    }
-
-    public void populate(DataOutputStream dataOutput) throws IOException {
+    public void writeFormErrors(DataOutputStream dataOutput) throws IOException {
         int success = 0;
         int failures = 0;
-        Map<String, Study> studyMap = new HashMap<String, Study>();
-        for (FormBean formBean : errorMap.keySet()) {
-            if (errorMap.get(formBean).isEmpty()) {
-                success++;
-            } else {
-                String studyName = formBean.getStudyName();
-                if (!studyMap.containsKey(studyName)) studyMap.put(studyName, new Study(studyName));
-                studyMap.get(studyName).addForm(formBean.getXmlContent());
-                failures++;
+        List<FormErrorVO> errors = new ArrayList<FormErrorVO>();
+
+        for (int studyIndex = 0; studyIndex < studies.size(); studyIndex++) {
+            List<FormBean> forms = studies.get(studyIndex).forms();
+            for (int formIndex = 0; formIndex < forms.size(); formIndex++) {
+                FormBean formBean = forms.get(formIndex);
+                if (formBean.hasErrors()) {
+                    errors.add(new FormErrorVO(studyIndex, formIndex, formBean.getFormErrors()));
+                    failures++;
+                } else {
+                    success++;
+                }
             }
         }
+
         dataOutput.writeByte(ResponseHeader.STATUS_SUCCESS);
         dataOutput.writeInt(success);
         dataOutput.writeInt(failures);
 
-        int studyCount = 0;
-        for (String studyName : studyMap.keySet()) {
-            dataOutput.write((byte) studyCount);
-            int formCount = 0;
-            for (String formXML : studyMap.get(studyName).forms()) {
-                dataOutput.writeShort((short) formCount);
-                dataOutput.writeUTF(formXML);
-                formCount++;
-            }
-            studyCount++;
+        for (FormErrorVO error : errors) {
+            dataOutput.writeByte((byte) error.getStudyIndex());
+            dataOutput.writeShort((short) error.getFormIndex());
+            dataOutput.writeUTF(error.getMessage());
         }
+
     }
 
-    private class FormBeanComparator implements Comparator<FormBean> {
-        @Override
-        public int compare(FormBean formBean, FormBean formBean1) {
-            int comparison = formBean.getStudyName().compareToIgnoreCase(formBean1.getStudyName());
-            return comparison != 0 ? comparison : formBean.getFormname().compareToIgnoreCase(formBean1.getFormname());
+    private class FormErrorVO {
+        private int studyIndex;
+        private int formIndex;
+        private List<FormError> formErrors;
+
+        public FormErrorVO(int studyIndex, int formIndex, List<FormError> formErrors) {
+            this.studyIndex = studyIndex;
+            this.formIndex = formIndex;
+            this.formErrors = formErrors;
+        }
+
+
+        public int getStudyIndex() {
+            return studyIndex;
+        }
+
+        public int getFormIndex() {
+            return formIndex;
+        }
+
+        public String getMessage() {
+            return "Errors:" + join(convert(formErrors, new Converter<FormError, String>() {
+                @Override
+                public String convert(FormError formError) {
+                    return formError.getParameter() + "=" + formError.getError();
+                }
+            }), "\n");
         }
     }
 }

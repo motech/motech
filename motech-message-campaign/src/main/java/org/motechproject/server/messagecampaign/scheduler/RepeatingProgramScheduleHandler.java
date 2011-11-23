@@ -37,13 +37,15 @@ public class RepeatingProgramScheduleHandler {
     public void handleEvent(MotechEvent event) {
         log.info("handled internal repeating campaign event and forwarding: " + event.getParameters().hashCode());
 
+        Map<String, Object> params = event.getParameters();
         RepeatingCampaignMessage repeatingCampaignMessage = (RepeatingCampaignMessage) getCampaignMessage(event);
+        Integer startIntervalOffset = (Integer) params.get(EventKeys.REPEATING_START_OFFSET);
 
         if(!repeatingCampaignMessage.isApplicable()) return;
-        Integer offset = repeatingCampaignMessage.offset(event.getStartTime()); 
+        Integer offset = repeatingCampaignMessage.offset(event.getStartTime(), startIntervalOffset);
 
-        replaceMessageKeyParams(event.getParameters(), OFFSET, offset.toString());
-        replaceMessageKeyParams(event.getParameters(), WEEK_DAY, DateUtil.now().dayOfWeek().getAsText());
+        replaceMessageKeyParams(params, OFFSET, offset.toString());
+        replaceMessageKeyParams(params, WEEK_DAY, DateUtil.now().dayOfWeek().getAsText());
         outboundEventGateway.sendEventMessage(new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, event.getParameters()));
     }
 

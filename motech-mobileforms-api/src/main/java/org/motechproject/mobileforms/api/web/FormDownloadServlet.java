@@ -3,6 +3,7 @@ package org.motechproject.mobileforms.api.web;
 import com.jcraft.jzlib.JZlib;
 import com.jcraft.jzlib.ZOutputStream;
 import org.fcitmuk.epihandy.EpihandyXformSerializer;
+import org.motechproject.mobileforms.api.domain.FormBean;
 import org.motechproject.mobileforms.api.vo.Study;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.List;
+
+import static ch.lambdaj.Lambda.collect;
+import static ch.lambdaj.Lambda.on;
 
 public class FormDownloadServlet extends BaseFormServlet {
     private final Logger log = LoggerFactory.getLogger(FormUploadServlet.class);
@@ -58,6 +63,7 @@ public class FormDownloadServlet extends BaseFormServlet {
         epiSerializer.serializeUsers(byteStream, usersService.getUsers());
         int studyIndex = dataInput.readInt();
         Study groupNameAndForms = mobileFormsService.getForms(studyIndex);
-        epiSerializer.serializeForms(byteStream, groupNameAndForms.forms(), studyIndex, groupNameAndForms.name());
+        List<String> formsXmlContent = collect(groupNameAndForms.forms(), on(FormBean.class).getXmlContent());
+        epiSerializer.serializeForms(byteStream, formsXmlContent, studyIndex, groupNameAndForms.name());
     }
 }
