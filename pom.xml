@@ -121,6 +121,7 @@
         <module>motech-openmrs-api</module>
         <module>motech-openmrs-omod</module>
         <module>motech-sms-api</module>
+        <module>motech-sms-kookoo</module>
     </modules>
 
     <build>
