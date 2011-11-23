@@ -1,4 +1,4 @@
-package org.motechproject.openmrs.omod.util;
+package org.motechproject.openmrs.validator;
 
 import org.openmrs.patient.UnallowedIdentifierException;
 import org.openmrs.patient.impl.BaseHyphenatedIdentifierValidator;
