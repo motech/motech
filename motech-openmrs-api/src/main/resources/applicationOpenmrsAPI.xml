@@ -38,8 +38,6 @@
     <bean class="org.motechproject.openmrs.advice.ApiSessionAdvice" depends-on="context" scope="prototype"/>
     <bean class="org.motechproject.openmrs.advice.LoginAsAdminAdvice" depends-on="context" scope="prototype"/>
 
-    <bean class="org.motechproject.openmrs.validator.MotechIdVerhoeffValidator"/>
-    <bean class="org.motechproject.openmrs.validator.VerhoeffValidator"/>
     <bean id="openMRSAuthenticationProvider" class="org.motechproject.openmrs.security.OpenMRSAuthenticationProvider"/>
 
 </beans>
