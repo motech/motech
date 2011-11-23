@@ -6,10 +6,11 @@ import org.motechproject.model.MotechEvent;
 import org.motechproject.sms.api.EventKeys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 
-@Component
+@Service
 public class SMSService {
     private static final Logger LOG = Logger.getLogger(SMSService.class);
 
