@@ -5,6 +5,7 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.sms.api.EventKeys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,6 +36,7 @@ public class SMSHandler {
         this.properties = properties;
     }
 
+    @MotechListener(subjects = EventKeys.SEND_SMS_SUBJECT)
     public void sendSMS(MotechEvent motechEvent) throws Exception {
 
         final GetMethod request = new GetMethod(properties.getProperty(KOOKOO_OUTBOUND_SMS_URL));
