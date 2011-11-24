@@ -57,7 +57,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
 
         String id = mrsUser.getId();
 
-        if (userService.getUserByUsername(id) != null) throw new UserAlreadyExistsException();
+        if (getUserById(id) != null) throw new UserAlreadyExistsException();
         user.setSystemId(id);
         user.setPerson(person);
 
@@ -67,6 +67,14 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
 
         userService.saveUser(user, password);
         return userMap;
+    }
+
+    public User getUserById(String id) {
+        org.openmrs.User openMrsUser = userService.getUserByUsername(id);
+        if (openMrsUser != null) {
+            return openMrsToMrsUser(openMrsUser);
+        }
+        return null;
     }
 
     @Override
@@ -97,20 +105,26 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         List<User> mrsUsers = new ArrayList<User>();
         List<org.openmrs.User> openMRSUsers = userService.getAllUsers();
         for (org.openmrs.User openMRSUser : openMRSUsers) {
-            User mrsUser = new User();
-            if (openMRSUser.getSystemId().equals("admin") || openMRSUser.getSystemId().equals("daemon"))
-                continue;
-            Person person = openMRSUser.getPerson();
-            PersonName personName = person.getPersonName();
-
-            mrsUser.id(Integer.toString(openMRSUser.getId())).firstName(personName.getGivenName()).middleName(personName.getMiddleName()).lastName(personName.getFamilyName());
-
-            for (PersonAttribute personAttribute : person.getAttributes()) {
-                mrsUser.addAttribute(new Attribute(personAttribute.getAttributeType().getName(), personAttribute.getValue()));
-            }
-            mrsUsers.add(mrsUser);
+            User user = openMrsToMrsUser(openMRSUser);
+            if (user == null) continue;
+            mrsUsers.add(user);
         }
         return mrsUsers;
+    }
+
+    User openMrsToMrsUser(org.openmrs.User openMRSUser) {
+        User mrsUser = new User();
+        if (openMRSUser.getSystemId().equals("admin") || openMRSUser.getSystemId().equals("daemon"))
+            return null;
+        Person person = openMRSUser.getPerson();
+        PersonName personName = person.getPersonName();
+
+        mrsUser.id(Integer.toString(openMRSUser.getId())).firstName(personName.getGivenName()).middleName(personName.getMiddleName()).lastName(personName.getFamilyName());
+
+        for (PersonAttribute personAttribute : person.getAttributes()) {
+            mrsUser.addAttribute(new Attribute(personAttribute.getAttributeType().getName(), personAttribute.getValue()));
+        }
+        return mrsUser;
     }
 }
 

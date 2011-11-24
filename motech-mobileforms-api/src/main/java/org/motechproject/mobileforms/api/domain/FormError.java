@@ -36,4 +36,12 @@ public class FormError {
         result = 31 * result + (error != null ? error.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "FormError{" +
+                "parameter='" + parameter + '\'' +
+                ", error='" + error + '\'' +
+                '}';
+    }
 }

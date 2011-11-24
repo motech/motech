@@ -15,11 +15,11 @@ public class RequiredValidatorTest {
 
     @Test
     public void shouldReturnFieldErrorIfANullValueIsPassed(){
-        assertThat(new RequiredValidator().validate(null, "name", String.class, null), is(equalTo(new FormError("name", "name is mandatory"))));
+        assertThat(new RequiredValidator().validate(null, "name", String.class, null), is(equalTo(new FormError("name", "is mandatory"))));
     }
 
     @Test
     public void shouldReturnFieldErrorIfAEmptyStringIsPassed(){
-        assertThat(new RequiredValidator().validate("", "name", String.class, null), is(equalTo(new FormError("name", "name is mandatory"))));
+        assertThat(new RequiredValidator().validate("", "name", String.class, null), is(equalTo(new FormError("name", "is mandatory"))));
     }
 }

@@ -1,6 +1,7 @@
 package org.motechproject.mobileforms.api.validator;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.log4j.Logger;
 import org.motechproject.MotechException;
 import org.motechproject.mobileforms.api.domain.FormBean;
 import org.motechproject.mobileforms.api.domain.FormError;
@@ -13,20 +14,25 @@ import java.util.List;
 
 import static org.motechproject.mobileforms.api.utils.CollectionUtils.addIfNotNull;
 
-public abstract class FormValidator {
-    public List<FormError> validate(final FormBean formBean) {
+public abstract class FormValidator <V extends FormBean>{
+    private static Logger log = Logger.getLogger(FormValidator.class);
+
+    public List<FormError> validate(final V formBean) {
 
         List<FormError> formErrors = new ArrayList<FormError>();
         for (Field field : formBean.getClass().getDeclaredFields()) {
             String fieldName = null;
             try {
                 fieldName = field.getName();
-                Object value = PropertyUtils.getProperty(formBean, fieldName);
-                for (Annotation annotation : field.getAnnotations()) {
-                    FormError formError = getValidationHandler(annotation).validate(value, fieldName, field.getType(), annotation);
-                    addIfNotNull(formErrors, formError);
+                if (PropertyUtils.isReadable(formBean, fieldName)) {
+                    Object value = PropertyUtils.getProperty(formBean, fieldName);
+                    for (Annotation annotation : field.getAnnotations()) {
+                        FormError formError = getValidationHandler(annotation).validate(value, fieldName, field.getType(), annotation);
+                        addIfNotNull(formErrors, formError);
+                    }
                 }
             } catch (Exception e) {
+                log.error("Encountered exception while validating form submitted from mobile: ", e);
                 formErrors.add(new FormError(fieldName, "Server exception, contact your administrator"));
             }
         }

@@ -9,7 +9,7 @@ public class RequiredValidator implements FieldValidator<Required>{
     @Override
     public FormError validate(Object fieldValue, String fieldName, Class fieldType, Required annotation) {
         if (fieldValue == null || fieldType == String.class && StringUtils.isEmpty((String) fieldValue)) {
-            return new FormError(fieldName, fieldName + " is mandatory");
+            return new FormError(fieldName, "is mandatory");
         }
         return null;
     }

@@ -10,4 +10,6 @@ public interface MRSFacilityAdaptor {
     List<Facility> getFacilities();
 
     List<Facility> getFacilities(String name);
+
+    Facility getFacility(Integer facilityId);
 }

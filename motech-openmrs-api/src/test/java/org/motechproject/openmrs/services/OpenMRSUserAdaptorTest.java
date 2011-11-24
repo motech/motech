@@ -20,6 +20,9 @@ import java.util.List;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -169,6 +172,22 @@ public class OpenMRSUserAdaptorTest {
         assertEquals(expected.getFirstName(),actual.getFirstName());
         assertEquals(expected.getMiddleName(),actual.getMiddleName());
         assertEquals(expected.getLastName(),actual.getLastName());
+    }
+
+    @Test
+    public void shouldGetUserById(){
+        org.openmrs.User mockOpenMrsUser = mock(org.openmrs.User.class);
+        String userId = "1234567";
+        User mrsUser = mock(User.class);
+        OpenMRSUserAdaptor openMRSUserAdaptorSpy = spy(openMrsUserAdaptor);
+
+        when(userService.getUserByUsername(userId)).thenReturn(mockOpenMrsUser);
+        doReturn(mrsUser).when(openMRSUserAdaptorSpy).openMrsToMrsUser(mockOpenMrsUser);
+
+        assertThat(openMRSUserAdaptorSpy.getUserById(userId), is(mrsUser));
+
+        when(userService.getUserByUsername(userId)).thenReturn(null);
+        assertThat(openMRSUserAdaptorSpy.getUserById(userId), is(equalTo(null)));
 
     }
 
@@ -183,6 +202,5 @@ public class OpenMRSUserAdaptorTest {
         mrsUser.addAttribute(new Attribute("Email", email));
         return mrsUser;
     }
-
 
 }
