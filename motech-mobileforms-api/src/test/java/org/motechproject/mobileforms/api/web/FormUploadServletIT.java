@@ -89,7 +89,7 @@ public class FormUploadServletIT {
             assertThat(responseSentToMobile.readInt(), is(equalTo(expectedNoOfFailedForms)));
             assertThat(responseSentToMobile.readByte(), is(equalTo((byte) expectedStudyIndex)));
             assertThat(responseSentToMobile.readShort(), is(equalTo((short) expectedFormIndex)));
-            assertThat(responseSentToMobile.readUTF(), is(equalTo("Errors:firstName=firstName is invalid")));
+            assertThat(responseSentToMobile.readUTF(), is(equalTo("Errors:firstName=wrong format")));
 
         } catch (Exception e) {
             assertFalse(true);
