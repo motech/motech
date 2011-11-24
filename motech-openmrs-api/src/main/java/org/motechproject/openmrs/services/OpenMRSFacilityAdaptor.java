@@ -45,7 +45,12 @@ public class OpenMRSFacilityAdaptor implements MRSFacilityAdaptor {
         return facilities;
     }
 
-    public Location getFacility(Integer facilityId) {
+    @Override
+    public Facility getFacility(Integer facilityId) {
+        return createFacility(getLocation(facilityId));
+    }
+
+    public Location getLocation(Integer facilityId) {
         return locationService.getLocation(facilityId);
     }
 

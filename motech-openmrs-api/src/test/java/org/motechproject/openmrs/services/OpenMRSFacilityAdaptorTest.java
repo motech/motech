@@ -15,9 +15,10 @@ import java.util.Collections;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class OpenMRSFacilityAdaptorTest {
@@ -56,7 +57,7 @@ public class OpenMRSFacilityAdaptorTest {
         assertEquals(region, actualLocation.getAddress6());
     }
 
-    private Location createALocation(Integer id, String name, String country, String region, String district, String province){
+    static Location createALocation(Integer id, String name, String country, String region, String district, String province){
         Location location = new Location();
         location.setId(id);
         location.setName(name);
@@ -105,8 +106,24 @@ public class OpenMRSFacilityAdaptorTest {
     }
 
     @Test
+    public void shouldGetALocation(){
+        Integer locationId = 1000;
+        Location location = mock(Location.class);
+        when(mockLocationService.getLocation(locationId)).thenReturn(location);
+        assertThat(mrsFacilityAdaptor.getLocation(locationId), is(equalTo(location)));
+    }
+
+    @Test
     public void shouldGetAFacility() {
-        mrsFacilityAdaptor.getFacility(123);
-        verify(mockLocationService).getLocation(123);
+        int locationId = 1000;
+        String name = "name";
+        String country = "country";
+        String region = "region";
+        String district = "district";
+        String province = "province";
+        final Facility facility = new Facility(String.valueOf(locationId), name, country, region, district, province);
+        Location location = OpenMRSFacilityAdaptorTest.createALocation(locationId, name, country, region, district, province);
+        when(mockLocationService.getLocation(locationId)).thenReturn(location);
+        assertThat(mrsFacilityAdaptor.getFacility(locationId), is(equalTo(facility)));
     }
 }

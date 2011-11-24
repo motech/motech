@@ -1,17 +1,19 @@
 package org.motechproject.mobileforms.api.validator;
 
 import org.motechproject.mobileforms.api.domain.FormBean;
+import org.motechproject.mobileforms.api.validator.annotations.MaxLength;
 import org.motechproject.mobileforms.api.validator.annotations.RegEx;
 import org.motechproject.mobileforms.api.validator.annotations.Required;
 
 public class TestFormBean extends FormBean {
 
+    private static final String FIRST_NAME_PATTERN = "[A-Z,a-z, ]+";
     @Required
-    @RegEx(pattern = "[A-Z,a-z, ]+")
+    @RegEx(pattern = FIRST_NAME_PATTERN)
+    @MaxLength(size = 15)
     private String firstName;
+
     private String lastName;
-
-
 
     public String getFirstName() {
         return firstName;
