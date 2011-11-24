@@ -1,4 +1,4 @@
-package org.motechproject.openmrs.validator;
+package org.motechproject.openmrs.omod.validator;
 
 import org.openmrs.patient.UnallowedIdentifierException;
 

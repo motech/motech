@@ -1,7 +1,9 @@
 package org.motechproject.util;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeFieldType;
 import org.joda.time.LocalDate;
+
 import java.util.Date;
 
 public class DateUtil {
@@ -39,4 +41,12 @@ public class DateUtil {
         if (date == null) return null;
         return new LocalDate(date.getTime(), DateTimeSourceUtil.SourceInstance.timeZone());
     }
+
+    public static int daysToCalendarWeekEnd(LocalDate date, int calendarWeekStartDay) {
+        int currentDayOfWeek = date.get(DateTimeFieldType.dayOfWeek());
+        int calendarWeekEndDay = (calendarWeekStartDay + 6) % 7;
+        int intervalBetweenWeekEndAndCurrentDay = calendarWeekEndDay - currentDayOfWeek;
+        return intervalBetweenWeekEndAndCurrentDay >= 0 ? intervalBetweenWeekEndAndCurrentDay :
+                intervalBetweenWeekEndAndCurrentDay + 7;
+        }
 }

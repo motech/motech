@@ -84,7 +84,7 @@
                 "formats" : ["SMS"],
                 "languages" : ["en"],
                 "messageKey": "child-info-calendar-week-{Offset}-{WeekDay}",
-                "calendarStartOfWeek" : "SUN", 
+                "calendarStartOfWeek" : "Sunday", 
                 "weekDaysApplicable" : ["Monday", "Wednesday", "Friday"]
             }
         ]
