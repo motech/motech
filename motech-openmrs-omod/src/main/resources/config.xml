@@ -27,11 +27,5 @@
         <class>${modulePackage}.advice.PatientAdvice</class>
     </advice>
 
-    <!-- http://localhost:8080/openmrs/ms/identifier/-->
-    <servlet>
-        <servlet-name>identifier</servlet-name>
-        <servlet-class>org.motechproject.openmrs.omod.web.servlet.OmodIdentifierServlet</servlet-class>
-    </servlet>
-
 </module>
 
