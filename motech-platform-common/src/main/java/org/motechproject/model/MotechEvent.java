@@ -54,7 +54,6 @@ public final class MotechEvent implements Serializable {
 
     private String subject;
     private Map<String, Object> parameters;
-    private Date startTime;
     private Date endTime;
     private boolean isLastEvent;
 
@@ -103,15 +102,6 @@ public final class MotechEvent implements Serializable {
         return parameters!=null?parameters:(parameters = new HashMap<String, Object>());
     }
 
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public MotechEvent setStartTime(Date startDate) {
-        this.startTime = startDate;
-        return this;
-    }
-
     public Date getEndTime() {
         return endTime;
     }
@@ -132,7 +122,6 @@ public final class MotechEvent implements Serializable {
 
     public MotechEvent copy(String subject, Map<String, Object> parameters) {
         MotechEvent event = new MotechEvent(subject, parameters);
-        event.setStartTime(clone(this.startTime));
         event.setEndTime(clone(this.endTime));
         event.setLastEvent(isLastEvent());
         return event;
