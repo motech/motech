@@ -44,8 +44,8 @@ public class FormUploadServlet extends BaseFormServlet {
                 formOutput.addStudy(study);
             }
 
-            formOutput.writeFormErrors(dataOutput);
             response.setContentType(APPLICATION_OCTET_STREAM);
+            formOutput.writeFormErrors(dataOutput);
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (Exception e) {
             dataOutput.writeByte(RESPONSE_ERROR);

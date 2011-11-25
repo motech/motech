@@ -6,7 +6,10 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.motechproject.openmrs.security.OpenMRSSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 
+
+@Order(2)
 @Aspect
 public class ApiSessionAdvice {
     @Autowired

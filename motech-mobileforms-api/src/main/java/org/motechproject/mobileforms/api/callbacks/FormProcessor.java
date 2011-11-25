@@ -26,7 +26,7 @@ import java.util.Map;
 public class FormProcessor extends DeserializationListenerAdapter {
     private final Logger log = LoggerFactory.getLogger(FormProcessor.class);
 
-    private List<Study> studies = new ArrayList<Study>();
+    private List<Study> studies;
 
     @Autowired
     private FormDataParser parser;
@@ -63,6 +63,11 @@ public class FormProcessor extends DeserializationListenerAdapter {
         } catch (Exception e) {
             throw new MotechException("Exception occurred while parsing form xml", e);
         }
+    }
+
+    @Override
+    public void start() {
+        studies = new ArrayList<Study>();
     }
 
     private Map<String, String> handleEmptyStrings(Map<String, String> attributes) {

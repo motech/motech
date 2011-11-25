@@ -11,11 +11,13 @@ import org.motechproject.mobileforms.api.domain.TestForm;
 import org.motechproject.mobileforms.api.parser.FormDataParser;
 import org.motechproject.mobileforms.api.repository.AllMobileForms;
 import org.motechproject.mobileforms.api.utils.MapToBeanConvertor;
+import org.motechproject.mobileforms.api.vo.Study;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,6 +48,7 @@ public class FormProcessorTest {
 
     @Test
     public void shouldMakeFormBeansOutOfFormXML() {
+        formProcessor.start();
         Map map = new HashMap();
         map.put("formname", "formName");
         map.put("country", "india");
@@ -79,6 +82,7 @@ public class FormProcessorTest {
 
     @Test
     public void shouldRemoveEmptyStringValuesAndHandleEnumValueTypesWhilePopulatingBeanFromMap() throws InvocationTargetException, IllegalAccessException, ParseException {
+        formProcessor.start();
         Map<String, String> formAttributes = new HashMap<String, String>();
         formAttributes.put("addHistory", "");
         formAttributes.put("nhisExpires", "");
@@ -135,6 +139,13 @@ public class FormProcessorTest {
         assertThat(registerClientBean.getStaffId(), is(equalTo("3")));
         assertThat(registerClientBean.getAddress(), is(equalTo("Gh")));
         assertThat(registerClientBean.getFormname(), is(equalTo("registerPatient-jf")));
+    }
+
+    @Test
+    public void shouldInitializeEmptyListToStudiesWhileBeforeParsingTheXml(){
+        assertThat(formProcessor.getStudies(), is(equalTo(null)));
+        formProcessor.start();
+        assertThat(formProcessor.getStudies(), is(equalTo(Collections.<Study>emptyList())));
     }
 
 }
