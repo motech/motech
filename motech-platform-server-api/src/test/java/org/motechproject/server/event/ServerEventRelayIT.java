@@ -129,14 +129,11 @@ public class ServerEventRelayIT {
         assertEquals(expected.getSubject(), copy.getSubject());
         assertEquals(expected.getParameters(), copy.getParameters());
         assertEquals(expected.isLastEvent(), copy.isLastEvent());
-        assertEventTime(copy, expected.getStartTime(), expected.getEndTime());
+        assertEventTime(copy, expected.getEndTime());
     }
 
-    private void assertEventTime(MotechEvent copy, Date startDate, Date endDate) {
-        assertEquals(startDate, copy.getStartTime());
+    private void assertEventTime(MotechEvent copy, Date endDate) {
         assertEquals(endDate, copy.getEndTime());
-        if (startDate != null)
-            assertNotSame(startDate, copy.getStartTime());
         if (endDate != null)
             assertNotSame(endDate, copy.getEndTime());
     }

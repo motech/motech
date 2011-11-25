@@ -12,6 +12,7 @@ import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.replace;
@@ -40,13 +41,14 @@ public class RepeatingProgramScheduleHandler {
         Map<String, Object> params = event.getParameters();
         RepeatingCampaignMessage repeatingCampaignMessage = (RepeatingCampaignMessage) getCampaignMessage(event);
         Integer startIntervalOffset = (Integer) params.get(EventKeys.REPEATING_START_OFFSET);
+        Date startDate = (Date) params.get(EventKeys.START_DATE);
 
         if(!repeatingCampaignMessage.isApplicable()) return;
-        Integer offset = repeatingCampaignMessage.offset(event.getStartTime(), startIntervalOffset);
+        Integer offset = repeatingCampaignMessage.offset(startDate, startIntervalOffset);
 
         replaceMessageKeyParams(params, OFFSET, offset.toString());
         replaceMessageKeyParams(params, WEEK_DAY, DateUtil.now().dayOfWeek().getAsText());
-        outboundEventGateway.sendEventMessage(new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, event.getParameters()));
+        outboundEventGateway.sendEventMessage(event.copy(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, event.getParameters()));
     }
 
     private void replaceMessageKeyParams(Map<String, Object> parameters, String parameterName, String value) {

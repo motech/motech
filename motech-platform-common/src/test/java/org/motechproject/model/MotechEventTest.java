@@ -31,15 +31,14 @@ public class MotechEventTest {
 
     @Test
     public void shouldCopyMotechEvent() {
-        Date startDate = newDate(2011, 11, 17).toDate();
         Date endDate = newDate(2011, 11, 20).toDate();
 
-        MotechEvent event = new MotechEvent("subject", params("1", "2")).setStartTime(startDate)
+        MotechEvent event = new MotechEvent("subject", params("1", "2"))
                 .setEndTime(endDate).setLastEvent(true);
         Map paramsToReplace = params("3", "4");
         MotechEvent copy = event.copy("newsubject", paramsToReplace);
 
-        assertEvent(copy, startDate, endDate, paramsToReplace, true);
+        assertEvent(copy, endDate, paramsToReplace, true);
     }
 
     @Test
@@ -48,21 +47,18 @@ public class MotechEventTest {
         Map paramsToReplace = params("3", "4");
         MotechEvent copy = event.copy("newsubject", paramsToReplace);
 
-        assertEvent(copy, null, null, paramsToReplace, false);
+        assertEvent(copy, null, paramsToReplace, false);
     }
 
-    private void assertEvent(MotechEvent copy, Date startDate, Date endDate, Map paramsToReplace, boolean isLastEvent) {
+    private void assertEvent(MotechEvent copy, Date endDate, Map paramsToReplace, boolean isLastEvent) {
         assertEquals("newsubject", copy.getSubject());
         assertEquals(paramsToReplace, copy.getParameters());
         assertEquals(isLastEvent, copy.isLastEvent());
-        assertEventTime(copy, startDate, endDate);
+        assertEventTime(copy, endDate);
     }
 
-    private void assertEventTime(MotechEvent copy, Date startDate, Date endDate) {
-        assertEquals(startDate, copy.getStartTime());
+    private void assertEventTime(MotechEvent copy, Date endDate) {
         assertEquals(endDate, copy.getEndTime());
-        if (startDate != null)
-            assertNotSame(startDate, copy.getStartTime());
         if (endDate != null)
             assertNotSame(endDate, copy.getEndTime());
     }
