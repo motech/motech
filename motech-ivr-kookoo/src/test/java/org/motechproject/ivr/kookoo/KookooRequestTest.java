@@ -26,6 +26,27 @@ public class KookooRequestTest {
     }
 
     @Test
+    public void getCallerId_For10Digit_Numbers() {
+        String tenDigitNumber = "1234567890";
+        KookooRequest kookooRequest = new KookooRequest("", tenDigitNumber, "", "");
+        assertEquals("1234567890", kookooRequest.getCid());
+    }
+
+    @Test
+    public void getCallerId_For11Digit_Numbers() {
+        String elevenDigitNumber = "01234567890";
+        KookooRequest kookooRequest = new KookooRequest("", elevenDigitNumber, "", "");
+        assertEquals("1234567890", kookooRequest.getCid());
+    }
+
+    @Test
+    public void getCallerId_ForNumbers_StartingWith_CountryCode() {
+        String numberWithCountryCode = "+911234567890";
+        KookooRequest kookooRequest = new KookooRequest("", numberWithCountryCode, "", "");
+        assertEquals("1234567890", kookooRequest.getCid());
+    }
+
+    @Test
     public void callDirectionShouldBeInbound_WhenDirectionNotSpecifiedInTAMAData() {
         assertEquals(CallDirection.Inbound, ivrRequest.getCallDirection());
     }

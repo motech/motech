@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class KookooRequest {
+    private static final int LENGTH_OF_PHONE_NUMBER = 10;
     private Logger log = Logger.getLogger(KookooRequest.class);
 
     private static final String POUND_SYMBOL = "#";
@@ -33,7 +34,7 @@ public class KookooRequest {
     }
 
     public String getCid() {
-        return cid;
+        return StringUtils.isEmpty(cid) ? cid : cid.substring(cid.length() - LENGTH_OF_PHONE_NUMBER);
     }
 
     public void setCid(String cid) {
