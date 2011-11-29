@@ -5,7 +5,6 @@ import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.User;
 import org.motechproject.mrs.services.MRSException;
 import org.motechproject.mrs.services.MRSUserAdaptor;
-import org.motechproject.openmrs.model.Constants;
 import org.motechproject.openmrs.model.Password;
 import org.openmrs.*;
 import org.openmrs.api.APIException;
@@ -21,6 +20,9 @@ import java.util.List;
 import java.util.Map;
 
 public class OpenMRSUserAdaptor implements MRSUserAdaptor {
+    private static Integer PASSWORD_LENGTH = 8;
+    private static String PERSON_UNKNOWN_GENDER = "?";
+
     private UserService userService;
     private PersonService personService;
 
@@ -45,8 +47,8 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         org.openmrs.Person person = new org.openmrs.Person();
         PersonName personName = new PersonName(mrsUser.getFirstName(), mrsUser.getMiddleName(), mrsUser.getLastName());
         person.addName(personName);
-        person.setGender(Constants.PERSON_UNKNOWN_GENDER);
-        final String password = new Password(Constants.PASSWORD_LENGTH).create();
+        person.setGender(PERSON_UNKNOWN_GENDER);
+        final String password = new Password(PASSWORD_LENGTH).create();
 
         for (Attribute attribute : mrsUser.getAttributes()) {
             PersonAttributeType attributeType = personService.getPersonAttributeTypeByName(attribute.name());
@@ -61,7 +63,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         user.setSystemId(id);
         user.setPerson(person);
 
-        Map userMap = new HashMap();
+        HashMap<String, Object> userMap = new HashMap<String, Object>();
         userMap.put("openMRSUser", user);
         userMap.put("password", password);
 
@@ -90,7 +92,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
             throw new UsernameNotFoundException("User was not found");
         }
 
-        String newPassword = new Password(Constants.PASSWORD_LENGTH).create();
+        String newPassword = new Password(PASSWORD_LENGTH).create();
         try {
             Context.getUserService().changePassword(userByUsername, newPassword);
         } finally {
@@ -112,7 +114,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         return mrsUsers;
     }
 
-    User openMrsToMrsUser(org.openmrs.User openMRSUser) {
+    protected User openMrsToMrsUser(org.openmrs.User openMRSUser) {
         User mrsUser = new User();
         if (openMRSUser.getSystemId().equals("admin") || openMRSUser.getSystemId().equals("daemon"))
             return null;

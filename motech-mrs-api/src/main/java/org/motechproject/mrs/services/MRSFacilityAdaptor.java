@@ -9,7 +9,7 @@ public interface MRSFacilityAdaptor {
 
     List<Facility> getFacilities();
 
-    List<Facility> getFacilities(String name);
+    List<Facility> getFacilities(String locationName);
 
     Facility getFacility(Integer facilityId);
 }

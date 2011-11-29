@@ -36,8 +36,8 @@ public class OpenMRSFacilityAdaptor implements MRSFacilityAdaptor {
     }
 
     @Override
-    public List<Facility> getFacilities(String name) {
-        final List<Location> locations = locationService.getLocations(name);
+    public List<Facility> getFacilities(String locationName) {
+        final List<Location> locations = locationService.getLocations(locationName);
         final ArrayList<Facility> facilities = new ArrayList<Facility>();
         for (Location location : locations) {
             facilities.add(createFacility(location));
