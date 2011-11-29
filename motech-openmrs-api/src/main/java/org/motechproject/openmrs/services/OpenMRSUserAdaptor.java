@@ -59,15 +59,17 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
 
         String id = mrsUser.getId();
 
-        if (getUserById(id) != null) throw new UserAlreadyExistsException();
+        if (getUserById(id) != null) {
+            throw new UserAlreadyExistsException();
+        }
         user.setSystemId(id);
+        user.setUsername(mrsUser.getUserName());
         user.setPerson(person);
 
-        HashMap<String, Object> userMap = new HashMap<String, Object>();
-        userMap.put("openMRSUser", user);
+        Map<String, Object> userMap = new HashMap<String, Object>();
+        final org.openmrs.User savedUser = userService.saveUser(user, password);
+        userMap.put("openMRSUser", savedUser);
         userMap.put("password", password);
-
-        userService.saveUser(user, password);
         return userMap;
     }
 

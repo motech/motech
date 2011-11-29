@@ -4,12 +4,17 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
 import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.User;
 import org.motechproject.mrs.services.MRSException;
-import org.openmrs.*;
+import org.openmrs.Person;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
+import org.openmrs.PersonName;
+import org.openmrs.Role;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.db.DAOException;
@@ -20,36 +25,43 @@ import java.util.List;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class OpenMRSUserAdaptorTest {
     @Mock
-    private UserService userService;
+    private UserService mockUserService;
     @Mock
-    private PersonService personService;
+    private PersonService mockPersonService;
 
     private OpenMRSUserAdaptor openMrsUserAdaptor;
 
     @Before
     public void setUp() {
         initMocks(this);
-        openMrsUserAdaptor = new OpenMRSUserAdaptor(userService, personService);
+        openMrsUserAdaptor = new OpenMRSUserAdaptor(mockUserService, mockPersonService);
     }
 
     @Test
     public void testChangeCurrentUserPassword() throws Exception {
         openMrsUserAdaptor.changeCurrentUserPassword("p1", "p2");
-        verify(userService).changePassword("p1", "p2");
+        verify(mockUserService).changePassword("p1", "p2");
     }
 
     @Test(expected = MRSException.class)
     public void testChangeCurrentUserPasswordFailed() throws Exception {
-        doThrow(mock(DAOException.class)).when(userService).changePassword("p1", "p2");
-        new OpenMRSUserAdaptor(userService, personService).changeCurrentUserPassword("p1", "p2");
+        doThrow(mock(DAOException.class)).when(mockUserService).changePassword("p1", "p2");
+        new OpenMRSUserAdaptor(mockUserService, mockPersonService).changeCurrentUserPassword("p1", "p2");
     }
 
     @Test
@@ -57,39 +69,49 @@ public class OpenMRSUserAdaptorTest {
         User mrsUser = new User();
         Role role = new Role();
 
-        when(userService.getRole(mrsUser.getSecurityRole())).thenReturn(role);
+        when(mockUserService.getRole(mrsUser.getSecurityRole())).thenReturn(role);
         PersonAttributeType phoneAttribute = mock(PersonAttributeType.class);
         PersonAttributeType staffTypeAttribute = mock(PersonAttributeType.class);
         PersonAttributeType emailAttribute = mock(PersonAttributeType.class);
 
-        when(personService.getPersonAttributeTypeByName("Staff Type")).thenReturn(staffTypeAttribute);
-        when(personService.getPersonAttributeTypeByName("Phone Number")).thenReturn(phoneAttribute);
-        when(personService.getPersonAttributeTypeByName("Email")).thenReturn(emailAttribute);
+        when(mockPersonService.getPersonAttributeTypeByName("Staff Type")).thenReturn(staffTypeAttribute);
+        when(mockPersonService.getPersonAttributeTypeByName("Phone Number")).thenReturn(phoneAttribute);
+        when(mockPersonService.getPersonAttributeTypeByName("Email")).thenReturn(emailAttribute);
+        org.openmrs.User expectedUser = mock(org.openmrs.User.class);
+        when(mockUserService.saveUser(Matchers.<org.openmrs.User>any(), anyString())).thenReturn(expectedUser);
+        final String userName = "user@jackdaniels.com";
+        final String firstName = "Jack";
+        final String middleName = "H";
+        final String lastName = "Daniels";
+        final String securityRole = "provider";
+        final String staffType = "FA";
+        final String phoneNumber = "012345";
+        final String email = "jack@daniels.com";
+        mrsUser.firstName(firstName).middleName(middleName).lastName(lastName).securityRole(securityRole).userName(userName);
+        mrsUser.addAttribute(new Attribute("Staff Type", staffType));
+        mrsUser.addAttribute(new Attribute("Phone Number", phoneNumber));
+        mrsUser.addAttribute(new Attribute("Email", email));
 
-        mrsUser.firstName("Jack").middleName("H").lastName("Daniels").securityRole("provider");
-        mrsUser.addAttribute(new Attribute("Staff Type", "FA"));
-        mrsUser.addAttribute(new Attribute("Phone Number", "012345"));
-        mrsUser.addAttribute(new Attribute("Email", "jack@daniels.com"));
-
-        Map userMap = openMrsUserAdaptor.saveUser(mrsUser);
+        Map actualSavedParams = openMrsUserAdaptor.saveUser(mrsUser);
 
         ArgumentCaptor<org.openmrs.User> captor = ArgumentCaptor.forClass(org.openmrs.User.class);
         ArgumentCaptor<String> passwordCaptor = ArgumentCaptor.forClass(String.class);
-        verify(userService).saveUser(captor.capture(), passwordCaptor.capture());
+        verify(mockUserService).saveUser(captor.capture(), passwordCaptor.capture());
         String capturedPassword = passwordCaptor.getValue();
         assertEquals(8, capturedPassword.length());
 
         org.openmrs.User capturedUser = captor.getValue();
         Person person = capturedUser.getPerson();
-        assertEquals("Jack", person.getGivenName());
-        assertEquals("H", person.getMiddleName());
-        assertEquals("Daniels", person.getFamilyName());
-        assertEquals("FA", person.getAttribute(staffTypeAttribute).getValue());
-        assertEquals("012345", person.getAttribute(phoneAttribute).getValue());
-        assertEquals("jack@daniels.com", person.getAttribute(emailAttribute).getValue());
+        assertEquals(firstName, person.getGivenName());
+        assertEquals(middleName, person.getMiddleName());
+        assertEquals(lastName, person.getFamilyName());
+        assertEquals(staffType, person.getAttribute(staffTypeAttribute).getValue());
+        assertEquals(phoneNumber, person.getAttribute(phoneAttribute).getValue());
+        assertEquals(email, person.getAttribute(emailAttribute).getValue());
         assertEquals("?", person.getGender());
-
-//        assertEquals("jack@daniels.com",userMap.get("userLoginId"));
+        assertEquals(userName, capturedUser.getUsername());
+        assertEquals(expectedUser, actualSavedParams.get("openMRSUser"));
+        assertNotNull(actualSavedParams.get("password"));
     }
 
     @Test
@@ -99,14 +121,14 @@ public class OpenMRSUserAdaptorTest {
         Role role = new Role();
         final String emailId = "jack@daniels.com";
 
-        when(userService.getRole(mrsUser.getSecurityRole())).thenReturn(role);
+        when(mockUserService.getRole(mrsUser.getSecurityRole())).thenReturn(role);
         PersonAttributeType phoneAttribute = mock(PersonAttributeType.class);
         PersonAttributeType staffTypeAttribute = mock(PersonAttributeType.class);
         PersonAttributeType emailAttribute = mock(PersonAttributeType.class);
 
-        when(personService.getPersonAttributeTypeByName("Staff Type")).thenReturn(staffTypeAttribute);
-        when(personService.getPersonAttributeTypeByName("Phone Number")).thenReturn(phoneAttribute);
-        when(personService.getPersonAttributeTypeByName("Email")).thenReturn(emailAttribute);
+        when(mockPersonService.getPersonAttributeTypeByName("Staff Type")).thenReturn(staffTypeAttribute);
+        when(mockPersonService.getPersonAttributeTypeByName("Phone Number")).thenReturn(phoneAttribute);
+        when(mockPersonService.getPersonAttributeTypeByName("Email")).thenReturn(emailAttribute);
 
         mrsUser.firstName("Jack").middleName("H").lastName("Daniels").securityRole("provider");
         mrsUser.addAttribute(new Attribute("Staff Type", "FA"));
@@ -116,13 +138,13 @@ public class OpenMRSUserAdaptorTest {
         openMrsUserAdaptor.saveUser(mrsUser);
 
         org.openmrs.User mockOpenMRSUser = mock(org.openmrs.User.class);
-        when(userService.getUserByUsername(emailId)).thenReturn(mockOpenMRSUser);
+        when(mockUserService.getUserByUsername(emailId)).thenReturn(mockOpenMRSUser);
 
         String newPassword = openMrsUserAdaptor.setNewPasswordForUser(emailId);
-        verify(userService).changePassword(mockOpenMRSUser, newPassword);
+        verify(mockUserService).changePassword(mockOpenMRSUser, newPassword);
 
         openMrsUserAdaptor.changeCurrentUserPassword(newPassword, "p2");
-        verify(userService).changePassword(newPassword, "p2");
+        verify(mockUserService).changePassword(newPassword, "p2");
 
     }
 
@@ -144,9 +166,9 @@ public class OpenMRSUserAdaptorTest {
         when(phoneAttribute.getName()).thenReturn("Phone Number");
         when(staffTypeAttribute.getName()).thenReturn("Staff Type");
 
-        when(personService.getPersonAttributeTypeByName("Email")).thenReturn(emailAttribute);
-        when(personService.getPersonAttributeTypeByName("Phone Number")).thenReturn(phoneAttribute);
-        when(personService.getPersonAttributeTypeByName("Staff Type")).thenReturn(staffTypeAttribute);
+        when(mockPersonService.getPersonAttributeTypeByName("Email")).thenReturn(emailAttribute);
+        when(mockPersonService.getPersonAttributeTypeByName("Phone Number")).thenReturn(phoneAttribute);
+        when(mockPersonService.getPersonAttributeTypeByName("Staff Type")).thenReturn(staffTypeAttribute);
 
         Person person = new Person();
 
@@ -160,7 +182,7 @@ public class OpenMRSUserAdaptorTest {
         openMRSUser.setSystemId(id);
 
         List<org.openmrs.User> openMrsUsers = Arrays.asList(openMRSUser);
-        when(userService.getAllUsers()).thenReturn(openMrsUsers);
+        when(mockUserService.getAllUsers()).thenReturn(openMrsUsers);
         List<User> returnedUsers = openMrsUserAdaptor.getAllUsers();
 
         User actual = returnedUsers.get(0);
@@ -181,12 +203,12 @@ public class OpenMRSUserAdaptorTest {
         User mrsUser = mock(User.class);
         OpenMRSUserAdaptor openMRSUserAdaptorSpy = spy(openMrsUserAdaptor);
 
-        when(userService.getUserByUsername(userId)).thenReturn(mockOpenMrsUser);
+        when(mockUserService.getUserByUsername(userId)).thenReturn(mockOpenMrsUser);
         doReturn(mrsUser).when(openMRSUserAdaptorSpy).openMrsToMrsUser(mockOpenMrsUser);
 
         assertThat(openMRSUserAdaptorSpy.getUserById(userId), is(mrsUser));
 
-        when(userService.getUserByUsername(userId)).thenReturn(null);
+        when(mockUserService.getUserByUsername(userId)).thenReturn(null);
         assertThat(openMRSUserAdaptorSpy.getUserById(userId), is(equalTo(null)));
 
     }
