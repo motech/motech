@@ -43,7 +43,6 @@ public class PillRegimenJobScheduler {
         Map<String, Object> eventParams = new SchedulerPayloadBuilder()
                 .withJobId(dosage.getId())
                 .withDosageId(dosage.getId())
-                .withPillRegimenId(pillRegimenId)
                 .withExternalId(externalId)
                 .payload();
 

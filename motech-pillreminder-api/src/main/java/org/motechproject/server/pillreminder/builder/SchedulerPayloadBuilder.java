@@ -1,22 +1,15 @@
 package org.motechproject.server.pillreminder.builder;
 
+import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.pillreminder.EventKeys;
 
 import java.util.HashMap;
 
-import static org.motechproject.server.pillreminder.EventKeys.SCHEDULE_JOB_ID_KEY;
-
 public class SchedulerPayloadBuilder {
-
     private HashMap<String, Object> params = new HashMap<String, Object>();
 
     public SchedulerPayloadBuilder withJobId(String id) {
-        params.put(SCHEDULE_JOB_ID_KEY, id);
-        return this;
-    }
-
-    public SchedulerPayloadBuilder withPillRegimenId(String id) {
-        params.put(EventKeys.PILLREMINDER_ID_KEY, id);
+        params.put(MotechSchedulerService.JOB_ID_KEY, id);
         return this;
     }
 

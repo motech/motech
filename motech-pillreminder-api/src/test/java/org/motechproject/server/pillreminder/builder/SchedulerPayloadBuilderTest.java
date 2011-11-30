@@ -12,12 +12,8 @@ public class SchedulerPayloadBuilderTest {
     @Test
     public void shouldBuildASchedulerPayload() {
         HashMap payload = new SchedulerPayloadBuilder()
-                .withJobId("jobId")
-                .withPillRegimenId("pillRegimenId")
                 .withDosageId("dosageId")
                 .payload();
-        assertEquals(payload.get(EventKeys.SCHEDULE_JOB_ID_KEY), "jobId");
-        assertEquals(payload.get(EventKeys.PILLREMINDER_ID_KEY), "pillRegimenId");
         assertEquals(payload.get(EventKeys.DOSAGE_ID_KEY), "dosageId");
     }
 }
