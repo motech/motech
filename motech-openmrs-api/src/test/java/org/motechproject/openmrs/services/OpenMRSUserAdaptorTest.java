@@ -150,7 +150,8 @@ public class OpenMRSUserAdaptorTest {
 
     @Test
     public void shouldReturnAllUsers() {
-        String id = "1";
+        int id = 1;
+        String systemId = "1234";
         String firstName = "test";
         String middleName = "test";
         String lastName = "test";
@@ -174,30 +175,31 @@ public class OpenMRSUserAdaptorTest {
 
         person.addName(new PersonName(firstName, middleName, lastName));
         person.addAttribute(new PersonAttribute(emailAttribute, email));
-        person.addAttribute(new PersonAttribute(phoneAttribute,phoneNumber));
-        person.addAttribute(new PersonAttribute(staffTypeAttribute,staffType));
+        person.addAttribute(new PersonAttribute(phoneAttribute, phoneNumber));
+        person.addAttribute(new PersonAttribute(staffTypeAttribute, staffType));
 
         org.openmrs.User openMRSUser = new org.openmrs.User(Integer.valueOf(id));
         openMRSUser.setPerson(person);
-        openMRSUser.setSystemId(id);
+        openMRSUser.setSystemId(systemId);
+        openMRSUser.setId(id);
 
         List<org.openmrs.User> openMrsUsers = Arrays.asList(openMRSUser);
         when(mockUserService.getAllUsers()).thenReturn(openMrsUsers);
         List<User> returnedUsers = openMrsUserAdaptor.getAllUsers();
 
         User actual = returnedUsers.get(0);
-        User expected = createAUser(id, firstName, middleName, lastName, email, staffType, phoneNumber);
-        assertEquals(expected.getId(),actual.getId());
+        User expected = createAUser(systemId, firstName, middleName, lastName, email, staffType, phoneNumber);
+        assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getAttributes().size(), actual.getAttributes().size());
-        assertEquals(expected.getAttributes().get(0).value(),actual.getAttributes().get(0).value());
-        assertEquals(expected.getAttributes().get(0).name(),actual.getAttributes().get(0).name());
-        assertEquals(expected.getFirstName(),actual.getFirstName());
-        assertEquals(expected.getMiddleName(),actual.getMiddleName());
-        assertEquals(expected.getLastName(),actual.getLastName());
+        assertEquals(expected.getAttributes().get(0).value(), actual.getAttributes().get(0).value());
+        assertEquals(expected.getAttributes().get(0).name(), actual.getAttributes().get(0).name());
+        assertEquals(expected.getFirstName(), actual.getFirstName());
+        assertEquals(expected.getMiddleName(), actual.getMiddleName());
+        assertEquals(expected.getLastName(), actual.getLastName());
     }
 
     @Test
-    public void shouldGetUserById(){
+    public void shouldGetUserById() {
         org.openmrs.User mockOpenMrsUser = mock(org.openmrs.User.class);
         String userId = "1234567";
         User mrsUser = mock(User.class);

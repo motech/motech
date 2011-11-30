@@ -123,7 +123,8 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         Person person = openMRSUser.getPerson();
         PersonName personName = person.getPersonName();
 
-        mrsUser.id(Integer.toString(openMRSUser.getId())).firstName(personName.getGivenName()).middleName(personName.getMiddleName()).lastName(personName.getFamilyName());
+        mrsUser.id(openMRSUser.getSystemId()).firstName(personName.getGivenName()).middleName(personName.getMiddleName())
+                .lastName(personName.getFamilyName());
 
         for (PersonAttribute personAttribute : person.getAttributes()) {
             mrsUser.addAttribute(new Attribute(personAttribute.getAttributeType().getName(), personAttribute.getValue()));
