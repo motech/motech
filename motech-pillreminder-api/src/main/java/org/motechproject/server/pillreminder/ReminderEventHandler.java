@@ -15,25 +15,22 @@ import org.motechproject.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.Map;
 
+@Component
 public class ReminderEventHandler {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    @Autowired
     private OutboundEventGateway outboundEventGateway;
-
-    @Autowired
     private AllPillRegimens allPillRegimens;
-
-    @Autowired
     private MotechSchedulerService schedulerService;
-
     private PillReminderTimeUtils pillReminderTimeUtils;
 
-    public ReminderEventHandler() {
-        pillReminderTimeUtils = new PillReminderTimeUtils();
+    @Autowired
+    public ReminderEventHandler(OutboundEventGateway outboundEventGateway, MotechSchedulerService schedulerService, AllPillRegimens allPillRegimens) {
+        this(outboundEventGateway, allPillRegimens, new PillReminderTimeUtils(), schedulerService);
     }
 
     public ReminderEventHandler(OutboundEventGateway outboundEventGateway, AllPillRegimens allPillRegimens, PillReminderTimeUtils pillRegimenTimeUtils,
@@ -71,7 +68,6 @@ public class ReminderEventHandler {
         RepeatingSchedulableJob retryRemindersJob = new RepeatingSchedulableJob(repeatingReminderEvent,
                 startTime, endTime, scheduleDetails.getRepeatIntervalInMinutes() * 60 * 1000);
         schedulerService.scheduleRepeatingJob(retryRemindersJob);
-
     }
 
     private boolean isFirstReminder(Dosage dosage, PillRegimen pillRegimen) {

@@ -1,5 +1,6 @@
 package org.motechproject.util.datetime;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -28,7 +29,10 @@ public class ExternalDateTimeSource implements DateTimeSource {
 
     @Override
     public LocalDate today() {
-        LocalDate configuredDate = LocalDate.parse(configuration.currentValueFor(DateTimeConfiguration.TODAY_PROPERTY_NAME));
+        String configuredToday = configuration.currentValueFor(DateTimeConfiguration.TODAY_PROPERTY_NAME);
+        if (StringUtils.isEmpty(configuredToday)) return new LocalDate(timeZone());
+
+        LocalDate configuredDate = LocalDate.parse(configuredToday);
         return new LocalDate(timeZone).withYear(configuredDate.getYear()).withMonthOfYear(configuredDate.getMonthOfYear()).withDayOfMonth(configuredDate.getDayOfMonth());
     }
 }

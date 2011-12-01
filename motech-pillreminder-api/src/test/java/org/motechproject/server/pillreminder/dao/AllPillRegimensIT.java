@@ -52,7 +52,7 @@ public class AllPillRegimensIT {
         assertNotNull(pillRegimen.getId());
 
         PillRegimen pillRegimenFromDB = allPillRegimens.get(pillRegimen.getId());
-        DailyScheduleDetails scheduleDetailsFromDB = (DailyScheduleDetails) pillRegimenFromDB.getScheduleDetails();
+        DailyScheduleDetails scheduleDetailsFromDB = pillRegimenFromDB.getScheduleDetails();
         assertEquals(5, scheduleDetailsFromDB.getPillWindowInHours());
         assertEquals(20, scheduleDetailsFromDB.getRepeatIntervalInMinutes());
 

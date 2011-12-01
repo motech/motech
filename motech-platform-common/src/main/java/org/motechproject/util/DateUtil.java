@@ -3,6 +3,7 @@ package org.motechproject.util;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.LocalDate;
+import org.motechproject.model.Time;
 
 import java.util.Date;
 
@@ -48,5 +49,9 @@ public class DateUtil {
         int intervalBetweenWeekEndAndCurrentDay = calendarWeekEndDay - currentDayOfWeek;
         return intervalBetweenWeekEndAndCurrentDay >= 0 ? intervalBetweenWeekEndAndCurrentDay :
                 intervalBetweenWeekEndAndCurrentDay + 7;
-        }
+    }
+
+    public static DateTime newDateTime(LocalDate localDate, Time time) {
+        return newDateTime(localDate, time.getHour(), time.getMinute(), 0);
+    }
 }
