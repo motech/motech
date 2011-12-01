@@ -39,12 +39,11 @@ import java.util.Map;
 /**
  * Motech Scheduled Event data carrier class,
  * Instance of this class with event specific data will be send by Motech Scheduler when a scheduled event is fired
- *
+ * <p/>
  * This class is immutable
  *
  * @author Igor (iopushnyev@2paths.com)
- * Date: 16/02/11
- *
+ *         Date: 16/02/11
  */
 public final class MotechEvent implements Serializable {
 
@@ -77,16 +76,15 @@ public final class MotechEvent implements Serializable {
 
         this.subject = subject;
     }
-    
+
     /**
      * Constructor
-     * @param subject - event type: Pill Reminder, Appointment Reminder ...
+     * @param subject    - event type: Pill Reminder, Appointment Reminder ...
      * @param parameters - a Map<String, Object> of additional parameters
-     *
      * @throws IllegalArgumentException
      */
     public MotechEvent(String subject, Map<String, Object> parameters) {
-    	this(subject);
+        this(subject);
         this.parameters = parameters;
     }
 
@@ -99,7 +97,7 @@ public final class MotechEvent implements Serializable {
      * @return
      */
     public Map<String, Object> getParameters() {
-        return parameters!=null?parameters:(parameters = new HashMap<String, Object>());
+        return parameters != null ? parameters : (parameters = new HashMap<String, Object>());
     }
 
     public Date getEndTime() {
@@ -128,7 +126,7 @@ public final class MotechEvent implements Serializable {
     }
 
     private Date clone(Date date) {
-        return date != null ? (Date)date.clone() : null;
+        return date != null ? (Date) date.clone() : null;
     }
 
     @Override

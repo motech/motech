@@ -43,7 +43,7 @@ public class RepeatingProgramScheduleHandler {
         Integer startIntervalOffset = (Integer) params.get(EventKeys.REPEATING_START_OFFSET);
         Date startDate = (Date) params.get(EventKeys.START_DATE);
 
-        if(!repeatingCampaignMessage.isApplicable()) return;
+        if (!repeatingCampaignMessage.isApplicable()) return;
         Integer offset = repeatingCampaignMessage.offset(startDate, startIntervalOffset);
 
         replaceMessageKeyParams(params, OFFSET, offset.toString());

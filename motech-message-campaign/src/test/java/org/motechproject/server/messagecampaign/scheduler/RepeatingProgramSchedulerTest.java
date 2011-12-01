@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.builder.CampaignBuilder;
 import org.motechproject.server.messagecampaign.builder.CampaignMessageBuilder;
 import org.motechproject.server.messagecampaign.builder.EnrollRequestBuilder;
@@ -23,8 +22,8 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.server.messagecampaign.EventKeys.REPEATING_START_OFFSET;
 import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduler.DEFAULT_INTERVAL_OFFSET;
-import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduler.INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT;
 
 public class RepeatingProgramSchedulerTest {
 
@@ -168,8 +167,8 @@ public class RepeatingProgramSchedulerTest {
         verify(schedulerService, times(2)).scheduleRepeatingJob(capture.capture());
 
         List<RepeatingSchedulableJob> jobs = capture.getAllValues();
-        assertEquals(jobs.get(0).getMotechEvent().getParameters().get(EventKeys.REPEATING_START_OFFSET), 1);
-        assertEquals(jobs.get(1).getMotechEvent().getParameters().get(EventKeys.REPEATING_START_OFFSET), 1);
+        assertEquals(jobs.get(0).getMotechEvent().getParameters().get(REPEATING_START_OFFSET), 1);
+        assertEquals(jobs.get(1).getMotechEvent().getParameters().get(REPEATING_START_OFFSET), 1);
     }
     
     @Test
@@ -220,7 +219,7 @@ public class RepeatingProgramSchedulerTest {
     private void assertJob(RepeatingSchedulableJob actualJob, String expectedJobId, String messageKey, Date jobStartDate, Date jobEndDate, Integer startOffset) {
         assertDate(jobStartDate, actualJob.getStartTime());
         assertDate(jobEndDate, actualJob.getEndTime());
-        assertEquals(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, actualJob.getMotechEvent().getSubject());
+        assertEquals(RepeatingProgramScheduler.INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, actualJob.getMotechEvent().getSubject());
         assertMotechEvent(actualJob, expectedJobId, messageKey, startOffset);
     }
 

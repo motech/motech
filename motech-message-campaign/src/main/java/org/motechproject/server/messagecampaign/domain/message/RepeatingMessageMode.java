@@ -66,7 +66,7 @@ public enum RepeatingMessageMode {
         }
 
         public Integer offset(RepeatingCampaignMessage message, Date cycleStartDate, Integer startIntervalOffset) {
-
+                        
             LocalDate cycleStartLocalDate = DateUtil.newDate(cycleStartDate);
             LocalDate currentDate = DateUtil.today();
 

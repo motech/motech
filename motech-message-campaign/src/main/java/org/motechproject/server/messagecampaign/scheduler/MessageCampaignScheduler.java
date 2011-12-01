@@ -20,7 +20,7 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage, E exte
     protected MotechSchedulerService schedulerService;
     protected CampaignRequest campaignRequest;
     protected E campaign;
-    final static String INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT = BASE_SUBJECT + "internal-repeating-campaign";
+    public final static String INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT = BASE_SUBJECT + "internal-repeating-campaign";
 
     protected MessageCampaignScheduler(MotechSchedulerService schedulerService, CampaignRequest campaignRequest, E campaign) {
         this.schedulerService = schedulerService;
@@ -76,13 +76,17 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage, E exte
     }
 
     protected HashMap jobParams(String messageKey) {
-        String jobId = String.format("%s%s.%s.%s", BASE_SUBJECT, campaign.name(), campaignRequest.externalId(), messageKey);
+        String jobId = getJobId(messageKey);
         return new SchedulerPayloadBuilder()
                 .withJobId(jobId)
                 .withCampaignName(campaign.name())
                 .withMessageKey(messageKey)
                 .withExternalId(campaignRequest.externalId())
                 .payload();
+    }
+
+    protected String getJobId(String messageKey) {
+        return String.format("%s%s.%s.%s", BASE_SUBJECT, campaign.name(), campaignRequest.externalId(), messageKey);
     }
 }
 
