@@ -2,12 +2,12 @@ package org.motechproject.mrs.model;
 
 public class Facility {
     private String id;
+
     private String name;
     private String country;
     private String region;
     private String countyDistrict;
     private String stateProvince;
-
     public Facility(String id) {
         this.id = id;
     }
@@ -47,6 +47,10 @@ public class Facility {
 
     public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override

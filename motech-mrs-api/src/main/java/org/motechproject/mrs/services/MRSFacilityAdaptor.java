@@ -11,5 +11,5 @@ public interface MRSFacilityAdaptor {
 
     List<Facility> getFacilities(String locationName);
 
-    Facility getFacility(Integer facilityId);
+    Facility getFacility(String facilityId);
 }
