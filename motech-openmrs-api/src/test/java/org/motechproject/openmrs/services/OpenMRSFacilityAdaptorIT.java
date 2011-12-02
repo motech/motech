@@ -47,7 +47,7 @@ public class OpenMRSFacilityAdaptorIT extends OpenMRSIntegrationTestBase {
         final Facility savedFacility = mrsFacilityAdaptor.saveFacility(facility);
         authorizeAndRollback(new DirtyData() {
             public void rollback() {
-                mrsLocationService.purgeLocation(mrsLocationService.getLocation(savedFacility.getId()));
+                mrsLocationService.purgeLocation(mrsLocationService.getLocation(Integer.parseInt(savedFacility.getId())));
             }
         });
         assertNotNull(savedFacility);
@@ -67,7 +67,7 @@ public class OpenMRSFacilityAdaptorIT extends OpenMRSIntegrationTestBase {
         List<Facility> facilities = mrsFacilityAdaptor.getFacilities();
         authorizeAndRollback(new DirtyData() {
             public void rollback() {
-                mrsLocationService.purgeLocation(mrsLocationService.getLocation(savedFacility.getId()));
+                mrsLocationService.purgeLocation(mrsLocationService.getLocation(Integer.parseInt(savedFacility.getId())));
             }
         });
         int alteredSize = facilities.size();
@@ -87,7 +87,7 @@ public class OpenMRSFacilityAdaptorIT extends OpenMRSIntegrationTestBase {
 
         authorizeAndRollback(new DirtyData() {
             public void rollback() {
-                mrsLocationService.purgeLocation(mrsLocationService.getLocation(savedFacility.getId()));
+                mrsLocationService.purgeLocation(mrsLocationService.getLocation(Integer.parseInt(savedFacility.getId())));
             }
         });
     }
