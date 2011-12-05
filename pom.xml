@@ -14,13 +14,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <distributionManagement>
-        <site>
-            <id>www.motechproject.org</id>
-            <url>file:////var/www/site</url>
-        </site>
-    </distributionManagement>
-
     <repositories>
         <repository>
             <id>motech-repo</id>
