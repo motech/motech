@@ -40,6 +40,19 @@
         </pluginRepository>
     </pluginRepositories>
 
+    <distributionManagement>
+        <repository>
+            <id>motech.nexus</id>
+            <name>Motech Releases Repository</name>
+            <url>http://nexus.motechproject.org/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>motech.nexus</id>
+            <name>Motech Snapshots Repository</name>
+            <url>http://nexus.motechproject.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -310,8 +323,8 @@
     </mailingLists>
 
     <scm>
-        <connection>scm:git:http://github.com/motech/MOTECH.git</connection>
-        <developerConnection>scm:git:git@github.com:motech/MOTECH.git</developerConnection>
-        <url>http://github.com/motech/MOTECH</url>
+        <connection>scm:git:https://code.google.com/p/motech</connection>
+        <developerConnection>scm:git:https://code.google.com/p/motech</developerConnection>
+        <url>https://code.google.com/p/motech</url>
     </scm>
 </project>

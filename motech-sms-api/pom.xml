@@ -8,7 +8,7 @@
         <version>0.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <name>MoTeCH SMS API</name>
     <artifactId>motech-sms-api</artifactId>
 
     <name>Motech SMS API</name>
