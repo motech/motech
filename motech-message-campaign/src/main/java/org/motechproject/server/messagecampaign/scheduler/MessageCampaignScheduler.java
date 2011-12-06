@@ -59,13 +59,13 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage, E exte
         schedulerService.scheduleJob(schedulableJob);
     }
 
-    protected void scheduleRepeatingJob(LocalDate startDate, LocalDate endDate, long repeatInterval, Map<String, Object> params) {
-        scheduleRepeatingJob(startDate, endDate, repeatInterval, null, params);
+    protected void scheduleRepeatingJob(LocalDate startDate, Time reminderTime, LocalDate endDate, long repeatInterval, Map<String, Object> params) {
+        scheduleRepeatingJob(startDate, reminderTime, endDate, repeatInterval, null, params);
     }
 
-    protected void scheduleRepeatingJob(LocalDate startDate, LocalDate endDate, long repeatInterval, Integer repeatCount, Map<String, Object> params) {
+    protected void scheduleRepeatingJob(LocalDate startDate, Time reminderTime, LocalDate endDate, long repeatInterval, Integer repeatCount, Map<String, Object> params) {
         MotechEvent motechEvent = new MotechEvent(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, params);
-        Date startDateAsDate = startDate == null ? null : startDate.toDate();
+        Date startDateAsDate = startDate == null ? null : DateUtil.newDateTime(startDate, reminderTime).withMillisOfSecond(0).toDate();
         Date endDateAsDate = endDate == null ? null : endDate.toDate();
         RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(motechEvent, startDateAsDate, endDateAsDate, repeatCount, repeatInterval);
         schedulerService.scheduleRepeatingJob(schedulableJob);

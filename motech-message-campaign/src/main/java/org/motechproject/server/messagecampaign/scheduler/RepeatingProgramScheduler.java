@@ -36,7 +36,7 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
         Map<String, Object> params = jobParams(message.messageKey());
         params.put(EventKeys.REPEATING_START_OFFSET, startOffset(message));
         params.put(EventKeys.START_DATE, startDate.toDate());
-        scheduleRepeatingJob(startDate, endDate, repeatInterval, params);
+        scheduleRepeatingJob(startDate, campaignRequest.reminderTime(), endDate, repeatInterval, params);
     }
 
     private int startOffset(RepeatingCampaignMessage message) {
