@@ -128,6 +128,7 @@
         <module>motech-openmrs-omod</module>
         <module>motech-sms-api</module>
         <module>motech-sms-kookoo</module>
+        <module>motech-sms-http</module>
     </modules>
 
     <build>
