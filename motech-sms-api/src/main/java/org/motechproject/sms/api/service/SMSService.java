@@ -5,7 +5,6 @@ import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.sms.api.EventKeys;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -27,7 +26,7 @@ public class SMSService {
         eventData.put(EventKeys.NUMBER, number);
         eventData.put(EventKeys.MESSAGE, text);
 
-        MotechEvent smsEvent = new MotechEvent(EventKeys.SEND_SMS_SUBJECT, eventData);
+        MotechEvent smsEvent = new MotechEvent(EventKeys.SEND_SMS, eventData);
 
         LOG.info(String.format("Putting event on relay to send message %s to number %s", text, number));
         eventRelay.sendEventMessage(smsEvent);
