@@ -66,5 +66,4 @@ public abstract class MotechAuditableRepository<T extends MotechAuditableDataObj
         ViewQuery q = createQuery("all").includeDocs(true);
         return db.queryView(q, this.type);
     }
-
 }

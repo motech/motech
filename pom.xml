@@ -14,13 +14,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <distributionManagement>
-        <site>
-            <id>www.motechproject.org</id>
-            <url>file:////var/www/site</url>
-        </site>
-    </distributionManagement>
-
     <repositories>
         <repository>
             <id>motech-repo</id>
@@ -39,6 +32,20 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
+
+    <distributionManagement>
+        <repository>
+            <id>motech.nexus</id>
+            <name>Motech Releases Repository</name>
+            <url>http://nexus.motechproject.org/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>motech.nexus</id>
+            <name>Motech Snapshots Repository</name>
+            <url>http://nexus.motechproject.org/content/repositories/snapshots</url>
+            <uniqueVersion>true</uniqueVersion>
+        </snapshotRepository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
@@ -310,8 +317,8 @@
     </mailingLists>
 
     <scm>
-        <connection>scm:git:http://github.com/motech/MOTECH.git</connection>
-        <developerConnection>scm:git:git@github.com:motech/MOTECH.git</developerConnection>
-        <url>http://github.com/motech/MOTECH</url>
+        <connection>scm:git:https://code.google.com/p/motech</connection>
+        <developerConnection>scm:git:https://code.google.com/p/motech</developerConnection>
+        <url>https://code.google.com/p/motech</url>
     </scm>
 </project>

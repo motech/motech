@@ -57,9 +57,9 @@ public class OpenMRSFacilityAdaptorTest {
         assertEquals(region, actualLocation.getAddress6());
     }
 
-    static Location createALocation(Integer id, String name, String country, String region, String district, String province){
+    static Location createALocation(String id, String name, String country, String region, String district, String province){
         Location location = new Location();
-        location.setId(id);
+        location.setId(Integer.parseInt(id));
         location.setName(name);
         location.setCountry(country);
         location.setAddress6(region);
@@ -70,7 +70,7 @@ public class OpenMRSFacilityAdaptorTest {
 
     @Test
     public void testGetFacilities() {
-        Integer locationId = 100;
+        String locationId = "100";
         String name = "name";
         String country = "country";
         String region = "region";
@@ -80,12 +80,12 @@ public class OpenMRSFacilityAdaptorTest {
         List<Location> locations = Arrays.asList(this.createALocation(locationId, name, country, region, district, province));
         when(mockLocationService.getAllLocations()).thenReturn(locations);
         List<Facility> returnedFacilities = mrsFacilityAdaptor.getFacilities();
-        assertEquals(Arrays.asList(new Facility(String.valueOf(locationId), name, country, region, district, province)), returnedFacilities);
+        assertEquals(Arrays.asList(new Facility(locationId, name, country, region, district, province)), returnedFacilities);
     }
 
     @Test
     public void testGetAFacilityByName() {
-        Integer locationId = 100;
+        String locationId = "100";
         String name = "name";
         String country = "country";
         String region = "region";
@@ -95,7 +95,7 @@ public class OpenMRSFacilityAdaptorTest {
         Location location = this.createALocation(locationId, name, country, region, district, province);
         when(mockLocationService.getLocations(name)).thenReturn(Arrays.asList(location));
         final List<Facility> facilities = mrsFacilityAdaptor.getFacilities(name);
-        assertEquals(Arrays.asList(new Facility(String.valueOf(locationId), name, country, region, district, province)), facilities);
+        assertEquals(Arrays.asList(new Facility(locationId, name, country, region, district, province)), facilities);
     }
 
     @Test
@@ -110,27 +110,27 @@ public class OpenMRSFacilityAdaptorTest {
         Integer locationId = 1000;
         Location location = mock(Location.class);
         when(mockLocationService.getLocation(locationId)).thenReturn(location);
-        assertThat(mrsFacilityAdaptor.getLocation(locationId), is(equalTo(location)));
+        assertThat(mrsFacilityAdaptor.getLocation(locationId.toString()), is(equalTo(location)));
     }
 
     @Test
     public void shouldGetAFacility() {
-        int locationId = 1000;
+        Integer locationId = 1000;
         String name = "name";
         String country = "country";
         String region = "region";
         String district = "district";
         String province = "province";
-        final Facility facility = new Facility(String.valueOf(locationId), name, country, region, district, province);
-        Location location = OpenMRSFacilityAdaptorTest.createALocation(locationId, name, country, region, district, province);
+        final Facility facility = new Facility(locationId.toString(), name, country, region, district, province);
+        Location location = OpenMRSFacilityAdaptorTest.createALocation(locationId.toString(), name, country, region, district, province);
         when(mockLocationService.getLocation(locationId)).thenReturn(location);
-        assertThat(mrsFacilityAdaptor.getFacility(locationId), is(equalTo(facility)));
+        assertThat(mrsFacilityAdaptor.getFacility(locationId.toString()), is(equalTo(facility)));
     }
     
     @Test
     public void shouldReturnNullIfLocationWasNotFound() {
-        int locationId = 1000;
-        when(mockLocationService.getLocation(locationId)).thenReturn(null);
+        String locationId = "1000";
+        when(mockLocationService.getLocation(Integer.parseInt(locationId))).thenReturn(null);
         assertThat(mrsFacilityAdaptor.getFacility(locationId), is(equalTo(null)));
     }
 }

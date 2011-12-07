@@ -14,7 +14,12 @@ public class OpenMRSFacilityAdaptor implements MRSFacilityAdaptor {
 
     @Override
     public Facility saveFacility(Facility facility) {
+        String facilityId = facility.getId();
         Location location = new Location();
+        if(facilityId != null) {
+            location = locationService.getLocation(Integer.parseInt(facilityId));
+        }
+
         location.setName(facility.getName());
         location.setCountry(facility.getCountry());
         location.setAddress6(facility.getRegion());
@@ -46,13 +51,13 @@ public class OpenMRSFacilityAdaptor implements MRSFacilityAdaptor {
     }
 
     @Override
-    public Facility getFacility(Integer facilityId) {
+    public Facility getFacility(String facilityId) {
         final Location location = getLocation(facilityId);
         return (location != null) ? convertLocationToFacility(location) : null;
     }
 
-    public Location getLocation(Integer facilityId) {
-        return locationService.getLocation(facilityId);
+    public Location getLocation(String facilityId) {
+        return locationService.getLocation(Integer.parseInt(facilityId));
     }
 
     public Facility convertLocationToFacility(Location savedLocation) {

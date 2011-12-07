@@ -65,7 +65,7 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
     public Patient savePatient(Patient patient) {
         final org.openmrs.Patient openMRSPatient = patientHelper.buildOpenMrsPatient(patient, userService.generateSystemId(),
                 getPatientIdentifierType(IdentifierType.IDENTIFIER_MOTECH_ID),
-                facilityAdaptor.getLocation(Integer.parseInt(patient.getFacility().getId())), getAllPersonAttributeTypes());
+                facilityAdaptor.getLocation(patient.getFacility().getId()), getAllPersonAttributeTypes());
 
         return getMrsPatient(patientService.savePatient(openMRSPatient));
     }

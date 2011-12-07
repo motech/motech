@@ -27,7 +27,7 @@ public class DateUtil {
     public static DateTime newDateTime(LocalDate localDate, int hour, int minute, int second) {
         return new DateTime(DateTimeSourceUtil.SourceInstance.timeZone()).
                 withYear(localDate.getYear()).withMonthOfYear(localDate.getMonthOfYear()).withDayOfMonth(localDate.getDayOfMonth())
-                .withHourOfDay(hour).withMinuteOfHour(minute).withSecondOfMinute(second);
+                .withHourOfDay(hour).withMinuteOfHour(minute).withSecondOfMinute(second).withMillisOfSecond(0);
     }
 
     public static DateTime setTimeZone(DateTime dateTime) {
