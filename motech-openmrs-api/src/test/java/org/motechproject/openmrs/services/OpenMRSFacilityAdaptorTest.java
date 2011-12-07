@@ -126,4 +126,11 @@ public class OpenMRSFacilityAdaptorTest {
         when(mockLocationService.getLocation(locationId)).thenReturn(location);
         assertThat(mrsFacilityAdaptor.getFacility(locationId), is(equalTo(facility)));
     }
+    
+    @Test
+    public void shouldReturnNullIfLocationWasNotFound() {
+        int locationId = 1000;
+        when(mockLocationService.getLocation(locationId)).thenReturn(null);
+        assertThat(mrsFacilityAdaptor.getFacility(locationId), is(equalTo(null)));
+    }
 }

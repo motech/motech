@@ -22,7 +22,7 @@ public class OpenMRSFacilityAdaptor implements MRSFacilityAdaptor {
         location.setCountyDistrict(facility.getCountyDistrict());
 
         Location savedLocation = this.locationService.saveLocation(location);
-        return createFacility(savedLocation);
+        return convertLocationToFacility(savedLocation);
     }
 
     @Override
@@ -30,7 +30,7 @@ public class OpenMRSFacilityAdaptor implements MRSFacilityAdaptor {
         List<Location> locations = locationService.getAllLocations();
         List<Facility> facilities = new ArrayList<Facility>();
         for (Location location : locations) {
-            facilities.add(createFacility(location));
+            facilities.add(convertLocationToFacility(location));
         }
         return facilities;
     }
@@ -40,21 +40,22 @@ public class OpenMRSFacilityAdaptor implements MRSFacilityAdaptor {
         final List<Location> locations = locationService.getLocations(locationName);
         final ArrayList<Facility> facilities = new ArrayList<Facility>();
         for (Location location : locations) {
-            facilities.add(createFacility(location));
+            facilities.add(convertLocationToFacility(location));
         }
         return facilities;
     }
 
     @Override
     public Facility getFacility(Integer facilityId) {
-        return createFacility(getLocation(facilityId));
+        final Location location = getLocation(facilityId);
+        return (location != null) ? convertLocationToFacility(location) : null;
     }
 
     public Location getLocation(Integer facilityId) {
         return locationService.getLocation(facilityId);
     }
 
-    public Facility createFacility(Location savedLocation) {
+    public Facility convertLocationToFacility(Location savedLocation) {
         return new Facility(String.valueOf(savedLocation.getId()), savedLocation.getName(), savedLocation.getCountry(),
                 savedLocation.getAddress6(), savedLocation.getCountyDistrict(), savedLocation.getStateProvince());
     }
