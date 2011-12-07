@@ -3,12 +3,12 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.3-SNAPSHOT</version>
+        <version>0.4</version>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-outbox-api</artifactId>
     <name>Motech Outbox API</name>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.4</version>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>

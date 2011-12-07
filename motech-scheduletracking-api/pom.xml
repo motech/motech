@@ -3,12 +3,12 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.3-SNAPSHOT</version>
+        <version>0.4</version>
     </parent>
     <artifactId>motech-scheduletracking-api</artifactId>
     <name>Motech Schedule Tracking API</name>
     <description>Motech Schedule Tracking API</description>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.4</version>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
