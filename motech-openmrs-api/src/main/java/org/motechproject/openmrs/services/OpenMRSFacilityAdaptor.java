@@ -1,5 +1,6 @@
 package org.motechproject.openmrs.services;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.mrs.model.Facility;
 import org.motechproject.mrs.services.MRSFacilityAdaptor;
 import org.openmrs.Location;
@@ -52,15 +53,16 @@ public class OpenMRSFacilityAdaptor implements MRSFacilityAdaptor {
 
     @Override
     public Facility getFacility(String facilityId) {
+        if(StringUtils.isEmpty(facilityId)) return null;
         final Location location = getLocation(facilityId);
         return (location != null) ? convertLocationToFacility(location) : null;
     }
 
-    public Location getLocation(String facilityId) {
+    Location getLocation(String facilityId) {
         return locationService.getLocation(Integer.parseInt(facilityId));
     }
 
-    public Facility convertLocationToFacility(Location savedLocation) {
+    Facility convertLocationToFacility(Location savedLocation) {
         return new Facility(String.valueOf(savedLocation.getId()), savedLocation.getName(), savedLocation.getCountry(),
                 savedLocation.getAddress6(), savedLocation.getCountyDistrict(), savedLocation.getStateProvince());
     }
