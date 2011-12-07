@@ -52,7 +52,7 @@ public class SMSHandlerTest {
         final HashMap parameters = new HashMap(10);
         parameters.put(EventKeys.MESSAGE, MESSAGE);
         parameters.put(EventKeys.NUMBER, NUMBER);
-        motechEvent = new MotechEvent(EventKeys.SEND_SMS_SUBJECT, parameters);
+        motechEvent = new MotechEvent(EventKeys.SEND_SMS, parameters);
 
     }
 

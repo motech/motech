@@ -36,7 +36,7 @@ public class SMSHandler {
         this.properties = properties;
     }
 
-    @MotechListener(subjects = EventKeys.SEND_SMS_SUBJECT)
+    @MotechListener(subjects = EventKeys.SEND_SMS)
     public void sendSMS(MotechEvent motechEvent) throws Exception {
 
         final GetMethod request = new GetMethod(properties.getProperty(KOOKOO_OUTBOUND_SMS_URL));
