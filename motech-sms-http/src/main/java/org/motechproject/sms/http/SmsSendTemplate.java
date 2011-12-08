@@ -13,31 +13,30 @@ class SmsSendTemplate {
 
     static class Request {
         String urlPath;
-        String phoneNumberSeparator;
+        String recipientsSeparator;
         Map<String, String> queryParameters;
     }
 
-    static class Response {
-        String success;
-        String failure;
-    }
-
     Request request;
-    Response response;
 
     public HttpMethod generateRequestFor(List<String> recipients, String message) {
         GetMethod getMethod = new GetMethod(request.urlPath);
 
         List<NameValuePair> queryStringValues = new ArrayList<NameValuePair>();
         for (String key : request.queryParameters.keySet())
-            queryStringValues.add(new NameValuePair(key, variableOrLiteral(key)));
+            queryStringValues.add(new NameValuePair(key, variableOrLiteral(key, recipients, message)));
         getMethod.setQueryString(queryStringValues.toArray(new NameValuePair[queryStringValues.size()]));
 
         return getMethod;
     }
 
-    private String variableOrLiteral(String key) {
-        return request.queryParameters.get(key);
+    private String variableOrLiteral(String s, List<String> recipients, String message) {
+        String value = request.queryParameters.get(s);
+        if (value == "@message")
+            return message;
+        if (value == "@recipients")
+            return StringUtils.join(recipients.iterator(), request.recipientsSeparator);
+        return value;
     }
 }
 

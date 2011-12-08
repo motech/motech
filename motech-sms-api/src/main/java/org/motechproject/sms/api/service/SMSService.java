@@ -7,7 +7,7 @@ import org.motechproject.sms.api.EventKeys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.util.*;
 
 @Service
 public class SMSService {
@@ -20,15 +20,18 @@ public class SMSService {
         this.eventRelay = eventRelay;
     }
 
-    public void sendSMS(String number, String text)
-    {
-        final HashMap eventData = new HashMap(2);
-        eventData.put(EventKeys.NUMBER, number);
-        eventData.put(EventKeys.MESSAGE, text);
+    public void sendSMS(List<String> recipients, String message) {
+        Map<String, Object> eventData = new HashMap<String, Object>();
+        eventData.put(EventKeys.RECIPIENTS, recipients);
+        eventData.put(EventKeys.MESSAGE, message);
 
         MotechEvent smsEvent = new MotechEvent(EventKeys.SEND_SMS, eventData);
 
-        LOG.info(String.format("Putting event on relay to send message %s to number %s", text, number));
+        LOG.info(String.format("Putting event on relay to send message %s to number %s", message, recipients));
         eventRelay.sendEventMessage(smsEvent);
+    }
+
+    public void sendSMS(String recipient, String message) {
+        sendSMS(Arrays.asList(recipient), message);
     }
 }

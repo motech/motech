@@ -20,9 +20,6 @@ public class TemplateReaderTest {
 
         Map<String, String> queryParameters = (Map<String, String>) getField(request, "queryParameters");
         assertEquals("@message", queryParameters.get("message"));
-
-        SmsSendTemplate.Response response = (SmsSendTemplate.Response) getField(smsSendTemplate, "response");
-        assertEquals("500", getField(response, "failure"));
     }
 
 }

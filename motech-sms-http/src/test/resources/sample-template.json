@@ -6,11 +6,7 @@
             "message": "@message" ,
             "apiKey": "jdhf7yelkjae"
         },
-        "phoneNumberSeparator": "+"
-    },
-    "response" : {
-        "success": "kookoo_success" ,
-        "failure": "500"
+        "recipientsSeparator": "+"
     }
 }
 
