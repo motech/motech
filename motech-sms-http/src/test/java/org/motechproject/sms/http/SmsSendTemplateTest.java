@@ -32,7 +32,7 @@ public class SmsSendTemplateTest {
         SmsSendTemplate.Request request = new SmsSendTemplate.Request();
         setField(request, "urlPath", "http://smshost.com/sms/send");
         Map<String, String> queryParameters = new HashMap<String, String>() {{
-            put("message", "@message");
+            put("message", "$message");
         }};
         setField(request, "queryParameters", queryParameters);
         SmsSendTemplate smsSendTemplate = new SmsSendTemplate();
@@ -47,7 +47,7 @@ public class SmsSendTemplateTest {
         setField(request, "urlPath", "http://smshost.com/sms/send");
         setField(request, "recipientsSeparator", ",");
         Map<String, String> queryParameters = new HashMap<String, String>() {{
-            put("recipients", "@recipients");
+            put("recipients", "$recipients");
         }};
         setField(request, "queryParameters", queryParameters);
         SmsSendTemplate smsSendTemplate = new SmsSendTemplate();

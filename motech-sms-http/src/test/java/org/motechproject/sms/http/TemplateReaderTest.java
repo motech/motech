@@ -19,7 +19,7 @@ public class TemplateReaderTest {
         assertEquals("http://smshost.com/sms/send", (String) getField(request, "urlPath"));
 
         Map<String, String> queryParameters = (Map<String, String>) getField(request, "queryParameters");
-        assertEquals("@message", queryParameters.get("message"));
+        assertEquals("$message", queryParameters.get("message"));
     }
 
 }

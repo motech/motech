@@ -11,6 +11,9 @@ import java.util.Map;
 
 class SmsSendTemplate {
 
+    public static final String MESSAGE_PLACEHOLDER = "$message";
+    public static final String RECIPIENTS_PLACEHOLDER = "$recipients";
+
     static class Request {
         String urlPath;
         String recipientsSeparator;
@@ -32,9 +35,9 @@ class SmsSendTemplate {
 
     private String variableOrLiteral(String s, List<String> recipients, String message) {
         String value = request.queryParameters.get(s);
-        if (value == "@message")
+        if (value == MESSAGE_PLACEHOLDER)
             return message;
-        if (value == "@recipients")
+        if (value == RECIPIENTS_PLACEHOLDER)
             return StringUtils.join(recipients.iterator(), request.recipientsSeparator);
         return value;
     }
