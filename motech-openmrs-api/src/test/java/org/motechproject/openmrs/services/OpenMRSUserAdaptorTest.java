@@ -150,7 +150,7 @@ public class OpenMRSUserAdaptorTest {
 
     @Test
     public void shouldReturnAllUsers() {
-        int id = 1;
+        String id = "1";
         String systemId = "1234";
         String firstName = "test";
         String middleName = "test";
@@ -181,15 +181,16 @@ public class OpenMRSUserAdaptorTest {
         org.openmrs.User openMRSUser = new org.openmrs.User(Integer.valueOf(id));
         openMRSUser.setPerson(person);
         openMRSUser.setSystemId(systemId);
-        openMRSUser.setId(id);
+        openMRSUser.setId(Integer.parseInt(id));
 
         List<org.openmrs.User> openMrsUsers = Arrays.asList(openMRSUser);
         when(mockUserService.getAllUsers()).thenReturn(openMrsUsers);
         List<User> returnedUsers = openMrsUserAdaptor.getAllUsers();
 
         User actual = returnedUsers.get(0);
-        User expected = createAUser(systemId, firstName, middleName, lastName, email, staffType, phoneNumber);
+        User expected = createAUser(id, systemId, firstName, middleName, lastName, email, staffType, phoneNumber);
         assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getSystemId(), actual.getSystemId());
         assertEquals(expected.getAttributes().size(), actual.getAttributes().size());
         assertEquals(expected.getAttributes().get(0).value(), actual.getAttributes().get(0).value());
         assertEquals(expected.getAttributes().get(0).name(), actual.getAttributes().get(0).name());
@@ -199,7 +200,7 @@ public class OpenMRSUserAdaptorTest {
     }
 
     @Test
-    public void shouldGetUserById() {
+    public void shouldGetUserBySystemId() {
         org.openmrs.User mockOpenMrsUser = mock(org.openmrs.User.class);
         String userId = "1234567";
         User mrsUser = mock(User.class);
@@ -208,16 +209,17 @@ public class OpenMRSUserAdaptorTest {
         when(mockUserService.getUserByUsername(userId)).thenReturn(mockOpenMrsUser);
         doReturn(mrsUser).when(openMRSUserAdaptorSpy).openMrsToMrsUser(mockOpenMrsUser);
 
-        assertThat(openMRSUserAdaptorSpy.getUserById(userId), is(mrsUser));
+        assertThat(openMRSUserAdaptorSpy.getUserBySystemId(userId), is(mrsUser));
 
         when(mockUserService.getUserByUsername(userId)).thenReturn(null);
-        assertThat(openMRSUserAdaptorSpy.getUserById(userId), is(equalTo(null)));
+        assertThat(openMRSUserAdaptorSpy.getUserBySystemId(userId), is(equalTo(null)));
 
     }
 
-    private User createAUser(String id, String firstName, String middleName, String lastName, String email, String staffType, String phoneNumber) {
+    private User createAUser(String id, String systemId, String firstName, String middleName, String lastName, String email, String staffType, String phoneNumber) {
         User mrsUser = new User();
         mrsUser.id(id)
+                .systemId(systemId)
                 .firstName(firstName)
                 .middleName(middleName)
                 .lastName(lastName);

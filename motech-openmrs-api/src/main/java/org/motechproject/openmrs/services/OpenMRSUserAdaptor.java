@@ -1,5 +1,6 @@
 package org.motechproject.openmrs.services;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
 import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.User;
@@ -18,6 +19,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.lang.Integer.parseInt;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 public class OpenMRSUserAdaptor implements MRSUserAdaptor {
     private static Integer PASSWORD_LENGTH = 8;
@@ -43,38 +47,20 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
 
     @Override
     public Map saveUser(User mrsUser) throws UserAlreadyExistsException {
-        org.openmrs.User user = new org.openmrs.User();
-        org.openmrs.Person person = new org.openmrs.Person();
-        PersonName personName = new PersonName(mrsUser.getFirstName(), mrsUser.getMiddleName(), mrsUser.getLastName());
-        person.addName(personName);
-        person.setGender(PERSON_UNKNOWN_GENDER);
-        final String password = new Password(PASSWORD_LENGTH).create();
-
-        for (Attribute attribute : mrsUser.getAttributes()) {
-            PersonAttributeType attributeType = personService.getPersonAttributeTypeByName(attribute.name());
-            person.addAttribute(new PersonAttribute(attributeType, attribute.value()));
-        }
-        Role role = userService.getRole(mrsUser.getSecurityRole());
-        user.addRole(role);
-
-        String id = mrsUser.getId();
-
-        if (getUserById(id) != null) {
+        if (getUserBySystemId(mrsUser.getSystemId()) != null) {
             throw new UserAlreadyExistsException();
         }
-        user.setSystemId(id);
-        user.setUsername(mrsUser.getUserName());
-        user.setPerson(person);
-
-        Map<String, Object> userMap = new HashMap<String, Object>();
-        final org.openmrs.User savedUser = userService.saveUser(user, password);
-        userMap.put("openMRSUser", savedUser);
-        userMap.put("password", password);
-        return userMap;
+        return save(mrsUser);
     }
 
-    public User getUserById(String id) {
-        org.openmrs.User openMrsUser = userService.getUserByUsername(id);
+    @Override
+    public Map updateUser(User mrsUser) throws UserAlreadyExistsException {
+        return save(mrsUser);
+    }
+
+    @Override
+    public User getUserBySystemId(String systemId) {
+        org.openmrs.User openMrsUser = userService.getUserByUsername(systemId);
         if (openMrsUser != null) {
             return openMrsToMrsUser(openMrsUser);
         }
@@ -103,7 +89,6 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         return newPassword;
     }
 
-
     @Override
     public List<User> getAllUsers() {
         List<User> mrsUsers = new ArrayList<User>();
@@ -116,6 +101,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         return mrsUsers;
     }
 
+
     protected User openMrsToMrsUser(org.openmrs.User openMRSUser) {
         User mrsUser = new User();
         if (openMRSUser.getSystemId().equals("admin") || openMRSUser.getSystemId().equals("daemon"))
@@ -123,13 +109,42 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         Person person = openMRSUser.getPerson();
         PersonName personName = person.getPersonName();
 
-        mrsUser.id(openMRSUser.getSystemId()).firstName(personName.getGivenName()).middleName(personName.getMiddleName())
+        mrsUser.id(Integer.toString(openMRSUser.getId())).systemId(openMRSUser.getSystemId()).firstName(personName.getGivenName()).middleName(personName.getMiddleName())
                 .lastName(personName.getFamilyName());
 
         for (PersonAttribute personAttribute : person.getAttributes()) {
             mrsUser.addAttribute(new Attribute(personAttribute.getAttributeType().getName(), personAttribute.getValue()));
         }
         return mrsUser;
+    }
+
+    private Map save(User mrsUser) throws UserAlreadyExistsException {
+        org.openmrs.User user = new org.openmrs.User();
+        Person person = new Person();
+        PersonName personName = new PersonName(mrsUser.getFirstName(), mrsUser.getMiddleName(), mrsUser.getLastName());
+        person.addName(personName);
+        person.setGender(PERSON_UNKNOWN_GENDER);
+        final String password = new Password(PASSWORD_LENGTH).create();
+
+        for (Attribute attribute : mrsUser.getAttributes()) {
+            PersonAttributeType attributeType = personService.getPersonAttributeTypeByName(attribute.name());
+            person.addAttribute(new PersonAttribute(attributeType, attribute.value()));
+        }
+        Role role = userService.getRole(mrsUser.getSecurityRole());
+        user.addRole(role);
+
+        String systemId = mrsUser.getSystemId();
+
+        if(isNotEmpty(mrsUser.getId())) user.setId(parseInt(mrsUser.getId()));
+        user.setSystemId(systemId);
+        user.setUsername(mrsUser.getUserName());
+        user.setPerson(person);
+
+        Map<String, Object> userMap = new HashMap<String, Object>();
+        final org.openmrs.User savedUser = userService.saveUser(user, password);
+        userMap.put("openMRSUser", savedUser);
+        userMap.put("password", password);
+        return userMap;
     }
 }
 

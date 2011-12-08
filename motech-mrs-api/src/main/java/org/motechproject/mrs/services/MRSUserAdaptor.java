@@ -12,5 +12,6 @@ public interface MRSUserAdaptor {
     Map saveUser(User mrsUser) throws UserAlreadyExistsException;
     String setNewPasswordForUser(String emailID) throws UsernameNotFoundException;
     List<User> getAllUsers();
-    User getUserById(String id);
+    User getUserBySystemId(String id);
+    Map updateUser(User mrsUser) throws UserAlreadyExistsException;
 }

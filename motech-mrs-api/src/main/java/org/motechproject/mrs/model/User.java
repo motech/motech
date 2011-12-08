@@ -5,14 +5,16 @@ import java.util.List;
 
 public class User {
     private String id;
+
+    private String personId;
+
+    private String systemId;
     private String firstName;
     private String middleName;
     private String lastName;
     private String securityRole;
     private String userName;
-
     private List<Attribute> attributes = new ArrayList<Attribute>();
-
     public User id(String id) {
         this.id = id;
         return this;
@@ -81,5 +83,22 @@ public class User {
 
     public void setAttributes(List<Attribute> attributes) {
         this.attributes = attributes;
+    }
+
+    public String getSystemId() {
+        return systemId;
+    }
+
+    public User systemId(String systemId) {
+        this.systemId = systemId;
+        return this;
+    }
+
+    public String getPersonId() {
+        return personId;
+    }
+
+    public void setPersonId(String personId) {
+        this.personId = personId;
     }
 }
