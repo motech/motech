@@ -78,7 +78,7 @@ public class OpenMRSPatientAdaptorTest {
 
         final org.openmrs.Patient mrsPatient = patientTestUtil.setUpOpenMRSPatient(person, first, middle, last, address1, birthdate, birthdateEstimated, gender, facility);
         when(mockPatientService.savePatient(Matchers.<org.openmrs.Patient>any())).thenReturn(mrsPatient);
-        when(mockFacilityAdapter.createFacility(any(Location.class))).thenReturn(facility);
+        when(mockFacilityAdapter.convertLocationToFacility(any(Location.class))).thenReturn(facility);
 
         final Patient actualPatient = openMRSPatientAdaptor.savePatient(new Patient(first, middle, last, null, birthdate, birthdateEstimated, gender, address1, facility));
 
@@ -101,7 +101,7 @@ public class OpenMRSPatientAdaptorTest {
         final org.openmrs.Patient mrsPatient = patientTestUtil.setUpOpenMRSPatient(person, first, middle, last, address1, birthdate, birthdateEstimated, gender, facility);
         int patientId = 12;
         when(mockPatientService.getPatient(patientId)).thenReturn(mrsPatient);
-        when(mockFacilityAdapter.createFacility(any(Location.class))).thenReturn(facility);
+        when(mockFacilityAdapter.convertLocationToFacility(any(Location.class))).thenReturn(facility);
         Patient returnedPatient = openMRSPatientAdaptor.getPatient(String.valueOf(patientId));
 
         verify(mockPatientService).getPatient(patientId);
@@ -126,7 +126,7 @@ public class OpenMRSPatientAdaptorTest {
         List<PatientIdentifierType> idTypes = Arrays.asList(motechIdType);
         when(mockPatientService.getPatients(null, motechId, idTypes, true)).thenReturn(Arrays.asList(mrsPatient));
         when(mockPatientService.getPatientIdentifierTypeByName(IdentifierType.IDENTIFIER_MOTECH_ID.getName())).thenReturn(motechIdType);
-        when(mockFacilityAdapter.createFacility(any(Location.class))).thenReturn(facility);
+        when(mockFacilityAdapter.convertLocationToFacility(any(Location.class))).thenReturn(facility);
         Patient returnedPatient = openMRSPatientAdaptor.getPatientByMotechId(motechId);
 
         patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthdate, birthdateEstimated, gender, facility, returnedPatient);
