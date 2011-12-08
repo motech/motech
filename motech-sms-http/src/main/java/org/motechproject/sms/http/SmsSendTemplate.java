@@ -26,15 +26,15 @@ class SmsSendTemplate {
         GetMethod getMethod = new GetMethod(request.urlPath);
 
         List<NameValuePair> queryStringValues = new ArrayList<NameValuePair>();
-        for (String key : request.queryParameters.keySet())
-            queryStringValues.add(new NameValuePair(key, variableOrLiteral(key, recipients, message)));
+        for (String key : request.queryParameters.keySet()) {
+            String value = placeHolderOrLiteral(request.queryParameters.get(key), recipients, message);
+            queryStringValues.add(new NameValuePair(key, value));
+        }
         getMethod.setQueryString(queryStringValues.toArray(new NameValuePair[queryStringValues.size()]));
-
         return getMethod;
     }
 
-    private String variableOrLiteral(String s, List<String> recipients, String message) {
-        String value = request.queryParameters.get(s);
+    private String placeHolderOrLiteral(String value, List<String> recipients, String message) {
         if (value == MESSAGE_PLACEHOLDER)
             return message;
         if (value == RECIPIENTS_PLACEHOLDER)
@@ -42,4 +42,3 @@ class SmsSendTemplate {
         return value;
     }
 }
-
