@@ -68,28 +68,6 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
     }
 
     @Override
-    public String setNewPasswordForUser(String emailID) throws UsernameNotFoundException {
-
-        org.openmrs.User userByUsername;
-        Context.openSession();
-        Context.authenticate("admin", "P@ssw0rd");
-        try {
-            userByUsername = userService.getUserByUsername(emailID);
-        } catch (Exception e) {
-            Context.closeSession();
-            throw new UsernameNotFoundException("User was not found");
-        }
-
-        String newPassword = new Password(PASSWORD_LENGTH).create();
-        try {
-            Context.getUserService().changePassword(userByUsername, newPassword);
-        } finally {
-            Context.closeSession();
-        }
-        return newPassword;
-    }
-
-    @Override
     public List<User> getAllUsers() {
         List<User> mrsUsers = new ArrayList<User>();
         List<org.openmrs.User> openMRSUsers = userService.getAllUsers();
@@ -100,7 +78,6 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         }
         return mrsUsers;
     }
-
 
     protected User openMrsToMrsUser(org.openmrs.User openMRSUser) {
         User mrsUser = new User();
@@ -117,6 +94,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         }
         return mrsUser;
     }
+
 
     private Map save(User mrsUser) throws UserAlreadyExistsException {
         org.openmrs.User user = new org.openmrs.User();
@@ -145,6 +123,28 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         userMap.put("openMRSUser", savedUser);
         userMap.put("password", password);
         return userMap;
+    }
+
+    @Override
+    public String setNewPasswordForUser(String emailID) throws UsernameNotFoundException {
+
+        org.openmrs.User userByUsername;
+        Context.openSession();
+        Context.authenticate("admin", "P@ssw0rd");
+        try {
+            userByUsername = userService.getUserByUsername(emailID);
+        } catch (Exception e) {
+            Context.closeSession();
+            throw new UsernameNotFoundException("User was not found");
+        }
+
+        String newPassword = new Password(PASSWORD_LENGTH).create();
+        try {
+            Context.getUserService().changePassword(userByUsername, newPassword);
+        } finally {
+            Context.closeSession();
+        }
+        return newPassword;
     }
 }
 
