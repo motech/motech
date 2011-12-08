@@ -39,7 +39,6 @@ public class SMSHandlerTest {
     final String MESSAGE_PARAM = "message";
     final String PHONE_NO_PARAM = "phone_no";
     final String MESSAGE = "Test message for KooKoo";
-    final String NUMBER = "987654321";
     private MotechEvent motechEvent;
 
     @Before
@@ -51,16 +50,15 @@ public class SMSHandlerTest {
 
         final HashMap parameters = new HashMap(10);
         parameters.put(EventKeys.MESSAGE, MESSAGE);
-        parameters.put(EventKeys.NUMBER, NUMBER);
+        parameters.put(EventKeys.RECIPIENTS, Arrays.asList("987654321"));
         motechEvent = new MotechEvent(EventKeys.SEND_SMS, parameters);
-
     }
 
     @Test
     public void shouldSendSMSContactingKooKoo() throws Exception {
         kookooSmsHandler.sendSMS(motechEvent);
 
-        final String expectedURL = String.format("%s?%s=%s&%s=%s&%s=%s", OUTBOUND_SMS_URL, API_KEY_PARAM, API_KEY, MESSAGE_PARAM, MESSAGE, PHONE_NO_PARAM, NUMBER);
+        final String expectedURL = String.format("%s?%s=%s&%s=%s&%s=%s", OUTBOUND_SMS_URL, API_KEY_PARAM, API_KEY, MESSAGE_PARAM, MESSAGE, PHONE_NO_PARAM, "987654321");
         System.out.println("ExpectedURL: " + expectedURL);
         verify(httpClient).executeMethod(argThat(new GetMethodMatcher(expectedURL)));
     }

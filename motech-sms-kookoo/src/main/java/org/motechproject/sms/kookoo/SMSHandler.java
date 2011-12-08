@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Properties;
 
 @Component
@@ -38,14 +39,12 @@ public class SMSHandler {
 
     @MotechListener(subjects = EventKeys.SEND_SMS)
     public void sendSMS(MotechEvent motechEvent) throws Exception {
-
         final GetMethod request = new GetMethod(properties.getProperty(KOOKOO_OUTBOUND_SMS_URL));
-
-        final String phoneNumber = (String) motechEvent.getParameters().get(EventKeys.NUMBER);
+        final String phoneNumber = ((List<String>) motechEvent.getParameters().get(EventKeys.RECIPIENTS)).get(0);
         final String message = (String) motechEvent.getParameters().get(EventKeys.MESSAGE);
         final String kooKooAPIKey = properties.getProperty(KOOKOO_API_KEY);
 
-        request.setQueryString(new NameValuePair[] {
+        request.setQueryString(new NameValuePair[]{
                 new NameValuePair(API_KEY_PARAM, kooKooAPIKey),
                 new NameValuePair(MESSAGE_PARAM, message),
                 new NameValuePair(PHONE_NO_PARAM, phoneNumber),
@@ -54,8 +53,7 @@ public class SMSHandler {
             int responseCode = httpClient.executeMethod(request);
             String response = request.getResponseBodyAsString();
             LOG.info(String.format("The message to:\n%s has been sent with\nresponsecode: %d\nresponse: %s", phoneNumber, responseCode, response));
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             LOG.error(String.format("Message to:\n %s could not be sent.", phoneNumber));
             throw e;
         }
