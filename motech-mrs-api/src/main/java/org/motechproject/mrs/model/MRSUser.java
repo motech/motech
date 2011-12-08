@@ -3,7 +3,7 @@ package org.motechproject.mrs.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class User {
+public class MRSUser {
     private String id;
 
     private String personId;
@@ -15,32 +15,33 @@ public class User {
     private String securityRole;
     private String userName;
     private List<Attribute> attributes = new ArrayList<Attribute>();
-    public User id(String id) {
+
+    public MRSUser id(String id) {
         this.id = id;
         return this;
     }
 
-    public User firstName(String firstName) {
+    public MRSUser firstName(String firstName) {
         this.firstName = firstName;
         return this;
     }
 
-    public User middleName(String middleName) {
+    public MRSUser middleName(String middleName) {
         this.middleName = middleName;
         return this;
     }
 
-    public User lastName(String lastName) {
+    public MRSUser lastName(String lastName) {
         this.lastName = lastName;
         return this;
     }
 
-    public User userName(String userName) {
+    public MRSUser userName(String userName) {
         this.userName = userName;
         return this;
     }
 
-    public User securityRole(String securityRole) {
+    public MRSUser securityRole(String securityRole) {
         this.securityRole = securityRole;
         return this;
     }
@@ -89,7 +90,7 @@ public class User {
         return systemId;
     }
 
-    public User systemId(String systemId) {
+    public MRSUser systemId(String systemId) {
         this.systemId = systemId;
         return this;
     }

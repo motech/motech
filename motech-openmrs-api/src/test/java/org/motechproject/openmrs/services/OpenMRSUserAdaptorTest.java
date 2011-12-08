@@ -8,7 +8,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
 import org.motechproject.mrs.model.Attribute;
-import org.motechproject.mrs.model.User;
+import org.motechproject.mrs.model.MRSUser;
 import org.motechproject.mrs.services.MRSException;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
@@ -66,7 +66,7 @@ public class OpenMRSUserAdaptorTest {
 
     @Test
     public void shouldSaveANewUser() throws UserAlreadyExistsException {
-        User mrsUser = new User();
+        MRSUser mrsUser = new MRSUser();
         Role role = new Role();
 
         when(mockUserService.getRole(mrsUser.getSecurityRole())).thenReturn(role);
@@ -117,7 +117,7 @@ public class OpenMRSUserAdaptorTest {
     @Test
     @Ignore
     public void shouldResetPasswordGivenUserEmailId() throws UsernameNotFoundException, UserAlreadyExistsException {
-        User mrsUser = new User();
+        MRSUser mrsUser = new MRSUser();
         Role role = new Role();
         final String emailId = "jack@daniels.com";
 
@@ -185,10 +185,10 @@ public class OpenMRSUserAdaptorTest {
 
         List<org.openmrs.User> openMrsUsers = Arrays.asList(openMRSUser);
         when(mockUserService.getAllUsers()).thenReturn(openMrsUsers);
-        List<User> returnedUsers = openMrsUserAdaptor.getAllUsers();
+        List<MRSUser> returnedMRSUsers = openMrsUserAdaptor.getAllUsers();
 
-        User actual = returnedUsers.get(0);
-        User expected = createAUser(id, systemId, firstName, middleName, lastName, email, staffType, phoneNumber);
+        MRSUser actual = returnedMRSUsers.get(0);
+        MRSUser expected = createAUser(id, systemId, firstName, middleName, lastName, email, staffType, phoneNumber);
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getSystemId(), actual.getSystemId());
         assertEquals(expected.getAttributes().size(), actual.getAttributes().size());
@@ -203,7 +203,7 @@ public class OpenMRSUserAdaptorTest {
     public void shouldGetUserBySystemId() {
         org.openmrs.User mockOpenMrsUser = mock(org.openmrs.User.class);
         String userId = "1234567";
-        User mrsUser = mock(User.class);
+        MRSUser mrsUser = mock(MRSUser.class);
         OpenMRSUserAdaptor openMRSUserAdaptorSpy = spy(openMrsUserAdaptor);
 
         when(mockUserService.getUserByUsername(userId)).thenReturn(mockOpenMrsUser);
@@ -216,8 +216,8 @@ public class OpenMRSUserAdaptorTest {
 
     }
 
-    private User createAUser(String id, String systemId, String firstName, String middleName, String lastName, String email, String staffType, String phoneNumber) {
-        User mrsUser = new User();
+    private MRSUser createAUser(String id, String systemId, String firstName, String middleName, String lastName, String email, String staffType, String phoneNumber) {
+        MRSUser mrsUser = new MRSUser();
         mrsUser.id(id)
                 .systemId(systemId)
                 .firstName(firstName)

@@ -1,9 +1,8 @@
 package org.motechproject.openmrs.services;
 
-import org.apache.commons.lang.StringUtils;
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
 import org.motechproject.mrs.model.Attribute;
-import org.motechproject.mrs.model.User;
+import org.motechproject.mrs.model.MRSUser;
 import org.motechproject.mrs.services.MRSException;
 import org.motechproject.mrs.services.MRSUserAdaptor;
 import org.motechproject.openmrs.model.Password;
@@ -46,7 +45,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
     }
 
     @Override
-    public Map saveUser(User mrsUser) throws UserAlreadyExistsException {
+    public Map saveUser(MRSUser mrsUser) throws UserAlreadyExistsException {
         if (getUserBySystemId(mrsUser.getSystemId()) != null) {
             throw new UserAlreadyExistsException();
         }
@@ -54,12 +53,12 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
     }
 
     @Override
-    public Map updateUser(User mrsUser) throws UserAlreadyExistsException {
+    public Map updateUser(MRSUser mrsUser) throws UserAlreadyExistsException {
         return save(mrsUser);
     }
 
     @Override
-    public User getUserBySystemId(String systemId) {
+    public MRSUser getUserBySystemId(String systemId) {
         org.openmrs.User openMrsUser = userService.getUserByUsername(systemId);
         if (openMrsUser != null) {
             return openMrsToMrsUser(openMrsUser);
@@ -68,19 +67,20 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
     }
 
     @Override
-    public List<User> getAllUsers() {
-        List<User> mrsUsers = new ArrayList<User>();
+    public List<MRSUser> getAllUsers() {
+        List<MRSUser> mrsUsers = new ArrayList<MRSUser>();
         List<org.openmrs.User> openMRSUsers = userService.getAllUsers();
         for (org.openmrs.User openMRSUser : openMRSUsers) {
-            User user = openMrsToMrsUser(openMRSUser);
-            if (user == null) continue;
-            mrsUsers.add(user);
+            MRSUser mrsUser = openMrsToMrsUser(openMRSUser);
+            if (mrsUser == null) continue;
+            mrsUsers.add(mrsUser);
         }
         return mrsUsers;
     }
 
-    protected User openMrsToMrsUser(org.openmrs.User openMRSUser) {
-        User mrsUser = new User();
+
+    protected MRSUser openMrsToMrsUser(org.openmrs.User openMRSUser) {
+        MRSUser mrsUser = new MRSUser();
         if (openMRSUser.getSystemId().equals("admin") || openMRSUser.getSystemId().equals("daemon"))
             return null;
         Person person = openMRSUser.getPerson();
@@ -95,8 +95,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         return mrsUser;
     }
 
-
-    private Map save(User mrsUser) throws UserAlreadyExistsException {
+    private Map save(MRSUser mrsUser) throws UserAlreadyExistsException {
         org.openmrs.User user = new org.openmrs.User();
         Person person = new Person();
         PersonName personName = new PersonName(mrsUser.getFirstName(), mrsUser.getMiddleName(), mrsUser.getLastName());
