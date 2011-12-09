@@ -22,6 +22,11 @@ public class Patient {
         this(id, firstName, middleName, lastName, preferredName, dateOfBirth, birthDateEstimated, gender, address, facility);
         this.attributes = attributes;
     }
+
+    public Patient(String id) {
+        this.id = id;
+    }
+
     public Patient(String firstName, String middleName, String lastName, String preferredName, Date dateOfBirth, Boolean birthDateEstimated, String gender, String address, Facility facility) {
         this.firstName = firstName;
         this.middleName = middleName;

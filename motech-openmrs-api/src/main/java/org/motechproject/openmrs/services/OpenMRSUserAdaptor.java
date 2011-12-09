@@ -59,11 +59,15 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
 
     @Override
     public MRSUser getUserBySystemId(String systemId) {
-        org.openmrs.User openMrsUser = userService.getUserByUsername(systemId);
+        org.openmrs.User openMrsUser = getOpenMrsUserById(systemId);
         if (openMrsUser != null) {
             return openMrsToMrsUser(openMrsUser);
         }
         return null;
+    }
+
+    public org.openmrs.User getOpenMrsUserById(String id) {
+        return userService.getUserByUsername(id);
     }
 
     @Override

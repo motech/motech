@@ -41,11 +41,8 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
 
     @Override
     public Patient getPatient(String patientId) {
-        org.openmrs.Patient patient = patientService.getPatient(Integer.parseInt(patientId));
-        if (patient == null) {
-            return null;
-        }
-        return getMrsPatient(patient);
+        org.openmrs.Patient openMrsPatient = getOpenMrsPatient(patientId);
+        return (openMrsPatient == null) ? null : getMrsPatient(openMrsPatient);
     }
 
     @Override
@@ -70,7 +67,7 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
         return getMrsPatient(patientService.savePatient(openMRSPatient));
     }
 
-    private Patient getMrsPatient(org.openmrs.Patient savedPatient) {
+    public Patient getMrsPatient(org.openmrs.Patient savedPatient) {
         final List<Attribute> attributes = project(savedPatient.getAttributes(), Attribute.class,
                 on(PersonAttribute.class).getAttributeType().toString(), on(PersonAttribute.class).getValue());
         PersonName firstName = patientHelper.getFirstName(savedPatient);
@@ -88,4 +85,8 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
     private List<PersonAttributeType> getAllPersonAttributeTypes() {
         return personService.getAllPersonAttributeTypes(false);
     }
+    public org.openmrs.Patient getOpenMrsPatient(String patientId) {
+        return patientService.getPatient(Integer.parseInt(patientId));
+    }
+
 }

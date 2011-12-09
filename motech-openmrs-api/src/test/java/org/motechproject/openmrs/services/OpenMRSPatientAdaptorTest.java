@@ -188,6 +188,16 @@ public class OpenMRSPatientAdaptorTest {
         assertThat(openMRSPatientAdaptor.getPatientIdentifierType(IdentifierType.IDENTIFIER_MOTECH_ID), is(patientIdentiferTypeMock));
     }
 
+    @Test
+    public void shouldGetOpenMrsPatientById(){
+        org.openmrs.Patient mrsPatient = mock(org.openmrs.Patient.class);
+        Integer patientId = 1000;
+
+        when(mockPatientService.getPatient(patientId)).thenReturn(mrsPatient);
+        org.openmrs.Patient returnedPatient = openMRSPatientAdaptor.getOpenMrsPatient(String.valueOf(patientId));
+        assertThat(returnedPatient, is(equalTo(mrsPatient)));
+    }
+
     public static class PatientTestUtil {
         public org.openmrs.Patient setUpOpenMRSPatient(Person person, String first, String middle, String last, String address1, Date birthdate, boolean birthdateEstimated, String gender, Facility facility) {
             PersonName personName = new PersonName(first, middle, last);

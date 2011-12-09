@@ -199,6 +199,36 @@ public class OpenMRSUserAdaptorTest {
         assertEquals(expected.getLastName(), actual.getLastName());
     }
 
+
+    @Test
+    public void shouldGetUserById() {
+        org.openmrs.User mockOpenMrsUser = mock(org.openmrs.User.class);
+        String userId = "1234567";
+        MRSUser mrsUser = mock(MRSUser.class);
+        OpenMRSUserAdaptor openMRSUserAdaptorSpy = spy(openMrsUserAdaptor);
+
+        doReturn(mrsUser).when(openMRSUserAdaptorSpy).openMrsToMrsUser(mockOpenMrsUser);
+        doReturn(mockOpenMrsUser).when(openMRSUserAdaptorSpy).getOpenMrsUserById(userId);
+
+        assertThat(openMRSUserAdaptorSpy.getUserBySystemId(userId), is(mrsUser));
+
+        doReturn(null).when(openMRSUserAdaptorSpy).getOpenMrsUserById(userId);
+        assertThat(openMRSUserAdaptorSpy.getUserBySystemId(userId), is(equalTo(null)));
+
+    }
+
+    @Test
+    public void shouldGetOpenMrsUserById() {
+        org.openmrs.User mockOpenMrsUser = mock(org.openmrs.User.class);
+        String userId = "1234567";
+
+        when(mockUserService.getUserByUsername(userId)).thenReturn(mockOpenMrsUser);
+        assertThat(openMrsUserAdaptor.getOpenMrsUserById(userId), is(mockOpenMrsUser));
+
+        when(mockUserService.getUserByUsername(userId)).thenReturn(null);
+        assertThat(openMrsUserAdaptor.getUserBySystemId(userId), is(equalTo(null)));
+    }
+
     @Test
     public void shouldGetUserBySystemId() {
         org.openmrs.User mockOpenMrsUser = mock(org.openmrs.User.class);
