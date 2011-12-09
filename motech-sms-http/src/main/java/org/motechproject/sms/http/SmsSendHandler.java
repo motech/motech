@@ -17,15 +17,16 @@ import static org.motechproject.sms.api.service.SmsService.*;
 
 @Component
 public class SmsSendHandler implements SmsEventHandler {
-    private static Logger log = LoggerFactory.getLogger(SmsSendHandler.class);
+
     private SmsSendTemplate template;
-    private HttpClient httpClient;
+    private HttpClient commonsHttpClient;
+    private static Logger log = LoggerFactory.getLogger(SmsSendHandler.class);
 
     @Autowired
-    public SmsSendHandler(TemplateReader templateReader) {
+    public SmsSendHandler(TemplateReader templateReader, HttpClient commonsHttpClient) {
         String templateFile = "/sms-http-template.json";
         this.template = templateReader.getTemplate(templateFile);
-        this.httpClient = new HttpClient();
+        this.commonsHttpClient = commonsHttpClient;
     }
 
     @Override
@@ -34,7 +35,7 @@ public class SmsSendHandler implements SmsEventHandler {
         List<String> recipients = (List<String>) event.getParameters().get(RECIPIENTS);
         String message = (String) event.getParameters().get(MESSAGE);
         HttpMethod httpMethod = template.generateRequestFor(recipients, message);
-        int status = httpClient.executeMethod(httpMethod);
+        int status = commonsHttpClient.executeMethod(httpMethod);
         log.info("HTTP Status:"+status + "|Response:" + httpMethod.getResponseBodyAsString());
     }
 }

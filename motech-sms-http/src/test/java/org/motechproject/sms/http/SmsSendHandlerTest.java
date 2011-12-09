@@ -40,9 +40,9 @@ public class SmsSendHandlerTest {
         httpMethod = new GetMethod();
         when(template.generateRequestFor(Arrays.asList("0987654321"), "foo bar")).thenReturn(httpMethod);
         when(templateReader.getTemplate(null)).thenReturn(template);
-        handler = new SmsSendHandler(templateReader);
+        handler = new SmsSendHandler(templateReader, httpClient);
         setField(handler, "template", template);
-        setField(handler, "httpClient", httpClient);
+        setField(handler, "commonsHttpClient", httpClient);
     }
 
     @Test
