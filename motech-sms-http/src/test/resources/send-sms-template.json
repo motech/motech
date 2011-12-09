@@ -1,0 +1,16 @@
+{
+  "request": {
+    "url_path": "http://smshost.com/sms/send",
+    "parameters": [
+      { "number": "@numbers" },
+      { "message": "@message" },
+      { "api_key": "jdhf7yelkjae" }
+    ],
+    "number_separator": "+"
+  },
+  "response" : {
+      "success": "kookoo_success" ,
+      "failed": "500"
+  }
+}
+

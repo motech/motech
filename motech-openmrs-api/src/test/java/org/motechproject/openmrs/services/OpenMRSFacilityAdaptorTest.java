@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -125,5 +126,17 @@ public class OpenMRSFacilityAdaptorTest {
         Location location = OpenMRSFacilityAdaptorTest.createALocation(locationId.toString(), name, country, region, district, province);
         when(mockLocationService.getLocation(locationId)).thenReturn(location);
         assertThat(mrsFacilityAdaptor.getFacility(locationId.toString()), is(equalTo(facility)));
+    }
+    
+    @Test
+    public void shouldReturnNullIfLocationWasNotFound() {
+        String locationId = "1000";
+        when(mockLocationService.getLocation(Integer.parseInt(locationId))).thenReturn(null);
+        assertThat(mrsFacilityAdaptor.getFacility(locationId), is(equalTo(null)));
+    }
+
+    @Test
+    public void shouldReturnNullIfQueriedWithNullFacilityId() {
+        assertNull(mrsFacilityAdaptor.getFacility(null));
     }
 }

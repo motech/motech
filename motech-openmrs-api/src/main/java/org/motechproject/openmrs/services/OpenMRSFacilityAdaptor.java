@@ -1,5 +1,6 @@
 package org.motechproject.openmrs.services;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.mrs.model.Facility;
 import org.motechproject.mrs.services.MRSFacilityAdaptor;
 import org.openmrs.Location;
@@ -27,7 +28,7 @@ public class OpenMRSFacilityAdaptor implements MRSFacilityAdaptor {
         location.setCountyDistrict(facility.getCountyDistrict());
 
         Location savedLocation = this.locationService.saveLocation(location);
-        return createFacility(savedLocation);
+        return convertLocationToFacility(savedLocation);
     }
 
     @Override
@@ -35,7 +36,7 @@ public class OpenMRSFacilityAdaptor implements MRSFacilityAdaptor {
         List<Location> locations = locationService.getAllLocations();
         List<Facility> facilities = new ArrayList<Facility>();
         for (Location location : locations) {
-            facilities.add(createFacility(location));
+            facilities.add(convertLocationToFacility(location));
         }
         return facilities;
     }
@@ -45,21 +46,23 @@ public class OpenMRSFacilityAdaptor implements MRSFacilityAdaptor {
         final List<Location> locations = locationService.getLocations(locationName);
         final ArrayList<Facility> facilities = new ArrayList<Facility>();
         for (Location location : locations) {
-            facilities.add(createFacility(location));
+            facilities.add(convertLocationToFacility(location));
         }
         return facilities;
     }
 
     @Override
     public Facility getFacility(String facilityId) {
-        return createFacility(getLocation(facilityId));
+        if(StringUtils.isEmpty(facilityId)) return null;
+        final Location location = getLocation(facilityId);
+        return (location != null) ? convertLocationToFacility(location) : null;
     }
 
-    public Location getLocation(String facilityId) {
+    Location getLocation(String facilityId) {
         return locationService.getLocation(Integer.parseInt(facilityId));
     }
 
-    public Facility createFacility(Location savedLocation) {
+    Facility convertLocationToFacility(Location savedLocation) {
         return new Facility(String.valueOf(savedLocation.getId()), savedLocation.getName(), savedLocation.getCountry(),
                 savedLocation.getAddress6(), savedLocation.getCountyDistrict(), savedLocation.getStateProvince());
     }
