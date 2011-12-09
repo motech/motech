@@ -32,11 +32,8 @@ class SmsSendTemplate {
 
         List<NameValuePair> queryStringValues = new ArrayList<NameValuePair>();
         for (String key : request.queryParameters.keySet()) {
-            try {
-                String value = URIUtil.encodeQuery(placeHolderOrLiteral(request.queryParameters.get(key), recipients, message));
-                queryStringValues.add(new NameValuePair(key, value));
-            } catch (URIException e) {
-            }
+            String value = placeHolderOrLiteral(request.queryParameters.get(key), recipients, message);
+            queryStringValues.add(new NameValuePair(key, value));
         }
         getMethod.setQueryString(queryStringValues.toArray(new NameValuePair[queryStringValues.size()]));
         return getMethod;

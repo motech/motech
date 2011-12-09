@@ -55,18 +55,4 @@ public class SmsSendTemplateTest {
 
         assertEquals("http://smshost.com/sms/send?recipients=123,456,789", smsSendTemplate.generateRequestFor(Arrays.asList("123", "456", "789"), null).getURI().getURI());
     }
-
-    @Test
-    public void shouldEncodeQueryStringValues() throws URIException {
-        SmsSendTemplate.Request request = new SmsSendTemplate.Request();
-        setField(request, "urlPath", "url");
-        Map<String, String> queryParameters = new HashMap<String, String>() {{
-            put("message", "$message");
-        }};
-        setField(request, "queryParameters", queryParameters);
-        SmsSendTemplate smsSendTemplate = new SmsSendTemplate();
-        setField(smsSendTemplate, "request", request);
-
-        assertEquals("url?message=foo%20bar", smsSendTemplate.generateRequestFor(null, "foo bar").getURI().getURI());
-    }
 }
