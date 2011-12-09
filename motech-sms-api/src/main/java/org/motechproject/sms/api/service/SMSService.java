@@ -3,29 +3,35 @@ package org.motechproject.sms.api.service;
 import org.apache.log4j.Logger;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.sms.api.EventKeys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
-public class SMSService {
-    private static final Logger LOG = Logger.getLogger(SMSService.class);
+public class SmsService {
+    public static final String SEND_SMS = "SendSMS";
+    public static final String RECIPIENTS = "number";
+    public static final String MESSAGE = "message";
+
+    private static final Logger LOG = Logger.getLogger(SmsService.class);
 
     private EventRelay eventRelay;
 
     @Autowired
-    public SMSService(EventRelay eventRelay) {
+    public SmsService(EventRelay eventRelay) {
         this.eventRelay = eventRelay;
     }
 
     public void sendSMS(List<String> recipients, String message) {
         Map<String, Object> eventData = new HashMap<String, Object>();
-        eventData.put(EventKeys.RECIPIENTS, recipients);
-        eventData.put(EventKeys.MESSAGE, message);
+        eventData.put(RECIPIENTS, recipients);
+        eventData.put(MESSAGE, message);
 
-        MotechEvent smsEvent = new MotechEvent(EventKeys.SEND_SMS, eventData);
+        MotechEvent smsEvent = new MotechEvent(SEND_SMS, eventData);
 
         LOG.info(String.format("Putting event on relay to send message %s to number %s", message, recipients));
         eventRelay.sendEventMessage(smsEvent);

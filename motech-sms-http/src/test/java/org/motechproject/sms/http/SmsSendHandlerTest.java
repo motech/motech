@@ -8,8 +8,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
-import org.motechproject.sms.api.EventKeys;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -20,6 +18,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.sms.api.service.SmsService.*;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 public class SmsSendHandlerTest {
@@ -51,14 +50,14 @@ public class SmsSendHandlerTest {
         Method handleMethod = SmsSendHandler.class.getDeclaredMethod("handle", new Class[]{MotechEvent.class});
         assertTrue(handleMethod.isAnnotationPresent(MotechListener.class));
         MotechListener annotation = handleMethod.getAnnotation(MotechListener.class);
-        assertArrayEquals(new String[]{EventKeys.SEND_SMS}, annotation.subjects());
+        assertArrayEquals(new String[]{SEND_SMS}, annotation.subjects());
     }
 
     @Test
     public void shouldMakeRequest() throws IOException {
-        MotechEvent event = new MotechEvent(EventKeys.SEND_SMS, new HashMap<String, Object>() {{
-            put(EventKeys.RECIPIENTS, Arrays.asList("0987654321"));
-            put(EventKeys.MESSAGE, "foo bar");
+        MotechEvent event = new MotechEvent(SEND_SMS, new HashMap<String, Object>() {{
+            put(RECIPIENTS, Arrays.asList("0987654321"));
+            put(MESSAGE, "foo bar");
         }});
         handler.handle(event);
 

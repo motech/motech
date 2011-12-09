@@ -7,20 +7,18 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.sms.api.EventKeys;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.sms.api.service.SmsService.MESSAGE;
+import static org.motechproject.sms.api.service.SmsService.RECIPIENTS;
 
-public class SMSServiceTest {
-    private SMSService smsService;
+public class SmsServiceTest {
+    private SmsService smsService;
 
     @Mock
     private EventRelay eventRelay;
@@ -28,7 +26,7 @@ public class SMSServiceTest {
     @Before
     public void setup() {
         initMocks(this);
-        smsService = new SMSService(eventRelay);
+        smsService = new SmsService(eventRelay);
     }
 
     @Test
@@ -39,8 +37,8 @@ public class SMSServiceTest {
         verify(eventRelay).sendEventMessage(motechEventArgumentCaptor.capture());
 
         MotechEvent eventMessageSent = motechEventArgumentCaptor.getValue();
-        assertEquals("This is a test message", (String) eventMessageSent.getParameters().get(EventKeys.MESSAGE));
-        assertEquals(Arrays.asList("9876543210"), eventMessageSent.getParameters().get(EventKeys.RECIPIENTS));
+        assertEquals("This is a test message", (String) eventMessageSent.getParameters().get(MESSAGE));
+        assertEquals(Arrays.asList("9876543210"), eventMessageSent.getParameters().get(RECIPIENTS));
     }
 
     @Test
@@ -56,7 +54,7 @@ public class SMSServiceTest {
         verify(eventRelay).sendEventMessage(motechEventArgumentCaptor.capture());
 
         MotechEvent eventMessageSent = motechEventArgumentCaptor.getValue();
-        assertEquals("This is a test message", (String) eventMessageSent.getParameters().get(EventKeys.MESSAGE));
-        assertEquals(recipients, eventMessageSent.getParameters().get(EventKeys.RECIPIENTS));
+        assertEquals("This is a test message", (String) eventMessageSent.getParameters().get(MESSAGE));
+        assertEquals(recipients, eventMessageSent.getParameters().get(RECIPIENTS));
     }
 }

@@ -10,19 +10,21 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.sms.api.EventKeys;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Properties;
 
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.sms.api.service.SmsService.*;
 
-public class SMSHandlerTest {
-    private SMSHandler kookooSmsHandler;
+public class SmsSendHandlerTest {
+    private SmsSendHandler kookooSmsHandler;
 
     @Mock
     private HttpClient httpClient;
@@ -38,7 +40,7 @@ public class SMSHandlerTest {
     final String API_KEY_PROPERTY_KEY = "kookoo.api.key";
     final String MESSAGE_PARAM = "message";
     final String PHONE_NO_PARAM = "phone_no";
-    final String MESSAGE = "Test message for KooKoo";
+    final String message = "Test message for KooKoo";
     private MotechEvent motechEvent;
 
     @Before
@@ -46,19 +48,19 @@ public class SMSHandlerTest {
         initMocks(this);
         when(properties.getProperty(OUTBOUND_URL_PROPERTY_KEY)).thenReturn(OUTBOUND_SMS_URL);
         when(properties.getProperty(API_KEY_PROPERTY_KEY)).thenReturn(API_KEY);
-        kookooSmsHandler = new SMSHandler(httpClient, properties);
+        kookooSmsHandler = new SmsSendHandler(httpClient, properties);
 
         final HashMap parameters = new HashMap(10);
-        parameters.put(EventKeys.MESSAGE, MESSAGE);
-        parameters.put(EventKeys.RECIPIENTS, Arrays.asList("987654321"));
-        motechEvent = new MotechEvent(EventKeys.SEND_SMS, parameters);
+        parameters.put(MESSAGE, message);
+        parameters.put(RECIPIENTS, Arrays.asList("987654321"));
+        motechEvent = new MotechEvent(SEND_SMS, parameters);
     }
 
     @Test
     public void shouldSendSMSContactingKooKoo() throws Exception {
-        kookooSmsHandler.sendSMS(motechEvent);
+        kookooSmsHandler.handle(motechEvent);
 
-        final String expectedURL = String.format("%s?%s=%s&%s=%s&%s=%s", OUTBOUND_SMS_URL, API_KEY_PARAM, API_KEY, MESSAGE_PARAM, MESSAGE, PHONE_NO_PARAM, "987654321");
+        final String expectedURL = String.format("%s?%s=%s&%s=%s&%s=%s", OUTBOUND_SMS_URL, API_KEY_PARAM, API_KEY, MESSAGE_PARAM, message, PHONE_NO_PARAM, "987654321");
         System.out.println("ExpectedURL: " + expectedURL);
         verify(httpClient).executeMethod(argThat(new GetMethodMatcher(expectedURL)));
     }
@@ -67,7 +69,7 @@ public class SMSHandlerTest {
     public void shouldPropagateExceptionInCaseHttpCallThrowsException() throws  Exception {
         when(httpClient.executeMethod(Matchers.<HttpMethod>any())).thenThrow(new IOException("Some Unknown exception"));
         try {
-            kookooSmsHandler.sendSMS(motechEvent);
+            kookooSmsHandler.handle(motechEvent);
             fail("Should have propagated exception, but has eaten it.");
         } catch(Exception e) {
             System.out.println("Exception was thrown as expected.");

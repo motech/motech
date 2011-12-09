@@ -6,7 +6,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
-import org.motechproject.sms.api.EventKeys;
+import org.motechproject.sms.api.SmsEventHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -14,9 +14,11 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Properties;
 
+import static org.motechproject.sms.api.service.SmsService.*;
+
 @Component
-public class SMSHandler {
-    private static final Logger LOG = Logger.getLogger(SMSHandler.class);
+public class SmsSendHandler implements SmsEventHandler {
+    private static final Logger LOG = Logger.getLogger(SmsSendHandler.class);
 
     public static final String KOOKOO_OUTBOUND_SMS_URL = "kookoo.outbound.sms.url";
     public static final String KOOKOO_API_KEY = "kookoo.api.key";
@@ -28,20 +30,21 @@ public class SMSHandler {
     private Properties properties;
 
     @Autowired
-    public SMSHandler(@Qualifier("ivrProperties") Properties properties) {
+    public SmsSendHandler(@Qualifier("ivrProperties") Properties properties) {
         this(new HttpClient(), properties);
     }
 
-    public SMSHandler(HttpClient httpClient, Properties properties) {
+    public SmsSendHandler(HttpClient httpClient, Properties properties) {
         this.httpClient = httpClient;
         this.properties = properties;
     }
 
-    @MotechListener(subjects = EventKeys.SEND_SMS)
-    public void sendSMS(MotechEvent motechEvent) throws Exception {
+    @Override
+    @MotechListener(subjects = SEND_SMS)
+    public void handle(MotechEvent motechEvent) throws Exception {
         final GetMethod request = new GetMethod(properties.getProperty(KOOKOO_OUTBOUND_SMS_URL));
-        final String phoneNumber = ((List<String>) motechEvent.getParameters().get(EventKeys.RECIPIENTS)).get(0);
-        final String message = (String) motechEvent.getParameters().get(EventKeys.MESSAGE);
+        final String phoneNumber = ((List<String>) motechEvent.getParameters().get(RECIPIENTS)).get(0);
+        final String message = (String) motechEvent.getParameters().get(MESSAGE);
         final String kooKooAPIKey = properties.getProperty(KOOKOO_API_KEY);
 
         request.setQueryString(new NameValuePair[]{
