@@ -3,7 +3,7 @@ package org.motechproject.openmrs.helper;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mrs.model.Attribute;
-import org.motechproject.mrs.model.Facility;
+import org.motechproject.mrs.model.MRSFacility;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
@@ -71,7 +71,7 @@ public class PatientHelperTest {
         final Date birthdate = new Date(1970, 3, 11);
         final String gender = "male";
         final String address = "a good street in ghana";
-        final Facility facility = new Facility("1000", "name", "country", "region", "district", "province");
+        final MRSFacility facility = new MRSFacility("1000", "name", "country", "region", "district", "province");
         final String attributeName1 = "name1";
         final String attributeValue1 = "value1";
         final List<Attribute> patientAttributes = Arrays.asList(new Attribute(attributeName1, attributeValue1));

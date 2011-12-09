@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.motechproject.mrs.model.Facility;
+import org.motechproject.mrs.model.MRSFacility;
 import org.motechproject.mrs.model.Patient;
 import org.motechproject.openmrs.IdentifierType;
 import org.motechproject.openmrs.helper.PatientHelper;
@@ -74,7 +74,7 @@ public class OpenMRSPatientAdaptorTest {
         final Date birthdate = new Date(1970, 3, 11);
         final boolean birthdateEstimated = true;
         final String gender = "male";
-        final Facility facility = new Facility("1000", "name", "country", "region", "district", "province");
+        final MRSFacility facility = new MRSFacility("1000", "name", "country", "region", "district", "province");
 
         final org.openmrs.Patient mrsPatient = patientTestUtil.setUpOpenMRSPatient(person, first, middle, last, address1, birthdate, birthdateEstimated, gender, facility);
         when(mockPatientService.savePatient(Matchers.<org.openmrs.Patient>any())).thenReturn(mrsPatient);
@@ -96,7 +96,7 @@ public class OpenMRSPatientAdaptorTest {
         final Date birthdate = new Date(1970, 3, 11);
         final boolean birthdateEstimated = true;
         final String gender = "male";
-        final Facility facility = new Facility("1000", "name", "country", "region", "district", "province");
+        final MRSFacility facility = new MRSFacility("1000", "name", "country", "region", "district", "province");
 
         final org.openmrs.Patient mrsPatient = patientTestUtil.setUpOpenMRSPatient(person, first, middle, last, address1, birthdate, birthdateEstimated, gender, facility);
         int patientId = 12;
@@ -118,7 +118,7 @@ public class OpenMRSPatientAdaptorTest {
         final Date birthdate = new Date(1970, 3, 11);
         final boolean birthdateEstimated = true;
         final String gender = "male";
-        final Facility facility = new Facility("1000", "name", "country", "region", "district", "province");
+        final MRSFacility facility = new MRSFacility("1000", "name", "country", "region", "district", "province");
         String motechId = "11";
         PatientIdentifierType motechIdType = mock(PatientIdentifierType.class);
 
@@ -158,7 +158,7 @@ public class OpenMRSPatientAdaptorTest {
         String preferredName = "Preferred";
         final Date birthdate = new Date(1970, 3, 11);
         Boolean birthDateEstimated = true;
-        final Facility facility = new Facility("1000", "name", "country", "region", "district", "province");
+        final MRSFacility facility = new MRSFacility("1000", "name", "country", "region", "district", "province");
 
         final org.openmrs.Patient mockPatient = mock(org.openmrs.Patient.class);
         final HashSet<PersonName> names = new HashSet<PersonName>();
@@ -199,7 +199,7 @@ public class OpenMRSPatientAdaptorTest {
     }
 
     public static class PatientTestUtil {
-        public org.openmrs.Patient setUpOpenMRSPatient(Person person, String first, String middle, String last, String address1, Date birthdate, boolean birthdateEstimated, String gender, Facility facility) {
+        public org.openmrs.Patient setUpOpenMRSPatient(Person person, String first, String middle, String last, String address1, Date birthdate, boolean birthdateEstimated, String gender, MRSFacility facility) {
             PersonName personName = new PersonName(first, middle, last);
             person.addName(personName);
             setAddress(person, address1);
@@ -219,7 +219,7 @@ public class OpenMRSPatientAdaptorTest {
             person.setAddresses(addresses);
         }
 
-        public void verifyReturnedPatient(String first, String middle, String last, String address1, Date birthdate, Boolean birthDateEstimated, String gender, Facility facility, Patient actualPatient) {
+        public void verifyReturnedPatient(String first, String middle, String last, String address1, Date birthdate, Boolean birthDateEstimated, String gender, MRSFacility facility, Patient actualPatient) {
             assertThat(actualPatient.getFirstName(), is(first));
             assertThat(actualPatient.getLastName(), is(last));
             assertThat(actualPatient.getMiddleName(), is(middle));

@@ -1,15 +1,15 @@
 package org.motechproject.mrs.services;
 
-import org.motechproject.mrs.model.Facility;
+import org.motechproject.mrs.model.MRSFacility;
 
 import java.util.List;
 
 public interface MRSFacilityAdaptor {
-    Facility saveFacility(Facility facility);
+    MRSFacility saveFacility(MRSFacility facility);
 
-    List<Facility> getFacilities();
+    List<MRSFacility> getFacilities();
 
-    List<Facility> getFacilities(String locationName);
+    List<MRSFacility> getFacilities(String locationName);
 
-    Facility getFacility(String facilityId);
+    MRSFacility getFacility(String facilityId);
 }

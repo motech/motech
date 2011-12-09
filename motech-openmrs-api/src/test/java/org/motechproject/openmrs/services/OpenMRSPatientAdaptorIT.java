@@ -4,7 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.mrs.model.Facility;
+import org.motechproject.mrs.model.MRSFacility;
 import org.motechproject.mrs.model.Patient;
 import org.motechproject.mrs.services.MRSFacilityAdaptor;
 import org.motechproject.mrs.services.MRSPatientAdaptor;
@@ -47,7 +47,7 @@ public class OpenMRSPatientAdaptorIT extends OpenMRSIntegrationTestBase {
 
     @Test
     public void shouldSaveAPatientAndRetrieve() {
-        final Facility savedFacility = mrsFacilityAdaptor.saveFacility(new Facility("name", "country", "region", "district", "province"));
+        final MRSFacility savedFacility = mrsFacilityAdaptor.saveFacility(new MRSFacility("name", "country", "region", "district", "province"));
 
         final OpenMRSPatientAdaptorTest.PatientTestUtil patientTestUtil = new OpenMRSPatientAdaptorTest.PatientTestUtil();
         final String first = "First";

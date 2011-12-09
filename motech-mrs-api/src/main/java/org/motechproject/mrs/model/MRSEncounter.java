@@ -10,7 +10,7 @@ public class MRSEncounter {
 
     private String id;
     private MRSUser staff;
-    private Facility facility;
+    private MRSFacility facility;
     private Date date;
     private Patient patient;
     private Set<Observation> observations;
@@ -19,7 +19,7 @@ public class MRSEncounter {
     public MRSEncounter() {
     }
 
-    public MRSEncounter(MRSUser staff, Facility facility, Date date, Patient patient, Set<Observation> observations, String encounterType) {
+    public MRSEncounter(MRSUser staff, MRSFacility facility, Date date, Patient patient, Set<Observation> observations, String encounterType) {
         this.staff = staff;
         this.facility = facility;
         this.date = date;
@@ -28,7 +28,7 @@ public class MRSEncounter {
         this.encounterType = encounterType;
     }
 
-    public MRSEncounter(String id, MRSUser staff, Facility facility, Date date, Patient patient, Set<Observation> observations,String encounterType) {
+    public MRSEncounter(String id, MRSUser staff, MRSFacility facility, Date date, Patient patient, Set<Observation> observations,String encounterType) {
         this(staff,facility,date,patient,observations,encounterType);
         this.id = id;
     }
@@ -37,7 +37,7 @@ public class MRSEncounter {
         return staff;
     }
 
-    public Facility getFacility() {
+    public MRSFacility getFacility() {
         return facility;
     }
 
