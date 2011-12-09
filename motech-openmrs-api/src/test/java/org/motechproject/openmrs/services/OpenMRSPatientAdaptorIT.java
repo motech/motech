@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.mrs.model.MRSFacility;
-import org.motechproject.mrs.model.Patient;
+import org.motechproject.mrs.model.MRSPatient;
 import org.motechproject.mrs.services.MRSFacilityAdaptor;
 import org.motechproject.mrs.services.MRSPatientAdaptor;
 import org.motechproject.openmrs.OpenMRSIntegrationTestBase;
@@ -58,8 +58,8 @@ public class OpenMRSPatientAdaptorIT extends OpenMRSIntegrationTestBase {
         final String gender = "M";
         Boolean birthDateEstimated = true;
 
-        final Patient patient = new Patient(first, middle, last, "", birthdate, birthDateEstimated, gender, address1, savedFacility);
-        final Patient savedPatient = mrsPatientAdaptor.savePatient(patient);
+        final MRSPatient patient = new MRSPatient(first, middle, last, "", birthdate, birthDateEstimated, gender, address1, savedFacility);
+        final MRSPatient savedPatient = mrsPatientAdaptor.savePatient(patient);
 
         authorizeAndRollback(new DirtyData() {
             public void rollback() {

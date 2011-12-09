@@ -7,7 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.mrs.model.MRSFacility;
-import org.motechproject.mrs.model.Patient;
+import org.motechproject.mrs.model.MRSPatient;
 import org.motechproject.openmrs.IdentifierType;
 import org.motechproject.openmrs.helper.PatientHelper;
 import org.openmrs.Location;
@@ -80,7 +80,7 @@ public class OpenMRSPatientAdaptorTest {
         when(mockPatientService.savePatient(Matchers.<org.openmrs.Patient>any())).thenReturn(mrsPatient);
         when(mockFacilityAdapter.convertLocationToFacility(any(Location.class))).thenReturn(facility);
 
-        final Patient actualPatient = openMRSPatientAdaptor.savePatient(new Patient(first, middle, last, null, birthdate, birthdateEstimated, gender, address1, facility));
+        final MRSPatient actualPatient = openMRSPatientAdaptor.savePatient(new MRSPatient(first, middle, last, null, birthdate, birthdateEstimated, gender, address1, facility));
 
         verify(mockPatientService).savePatient(Matchers.<org.openmrs.Patient>any());
         patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthdate, birthdateEstimated, gender, facility, actualPatient);
@@ -102,7 +102,7 @@ public class OpenMRSPatientAdaptorTest {
         int patientId = 12;
         when(mockPatientService.getPatient(patientId)).thenReturn(mrsPatient);
         when(mockFacilityAdapter.convertLocationToFacility(any(Location.class))).thenReturn(facility);
-        Patient returnedPatient = openMRSPatientAdaptor.getPatient(String.valueOf(patientId));
+        MRSPatient returnedPatient = openMRSPatientAdaptor.getPatient(String.valueOf(patientId));
 
         verify(mockPatientService).getPatient(patientId);
         patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthdate, birthdateEstimated, gender, facility, returnedPatient);
@@ -127,7 +127,7 @@ public class OpenMRSPatientAdaptorTest {
         when(mockPatientService.getPatients(null, motechId, idTypes, true)).thenReturn(Arrays.asList(mrsPatient));
         when(mockPatientService.getPatientIdentifierTypeByName(IdentifierType.IDENTIFIER_MOTECH_ID.getName())).thenReturn(motechIdType);
         when(mockFacilityAdapter.convertLocationToFacility(any(Location.class))).thenReturn(facility);
-        Patient returnedPatient = openMRSPatientAdaptor.getPatientByMotechId(motechId);
+        MRSPatient returnedPatient = openMRSPatientAdaptor.getPatientByMotechId(motechId);
 
         patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthdate, birthdateEstimated, gender, facility, returnedPatient);
     }
@@ -166,7 +166,7 @@ public class OpenMRSPatientAdaptorTest {
         when(mockPatient.getNames()).thenReturn(names);
         when(mockPatientService.savePatient(Matchers.<org.openmrs.Patient>any())).thenReturn(mockPatient);
 
-        openMRSPatientAdaptor.savePatient(new Patient(first, null, last, preferredName, birthdate, birthDateEstimated, null, null, facility));
+        openMRSPatientAdaptor.savePatient(new MRSPatient(first, null, last, preferredName, birthdate, birthDateEstimated, null, null, facility));
 
         ArgumentCaptor<org.openmrs.Patient> captor = ArgumentCaptor.forClass(org.openmrs.Patient.class);
         verify(mockPatientService).savePatient(captor.capture());
@@ -219,7 +219,7 @@ public class OpenMRSPatientAdaptorTest {
             person.setAddresses(addresses);
         }
 
-        public void verifyReturnedPatient(String first, String middle, String last, String address1, Date birthdate, Boolean birthDateEstimated, String gender, MRSFacility facility, Patient actualPatient) {
+        public void verifyReturnedPatient(String first, String middle, String last, String address1, Date birthdate, Boolean birthDateEstimated, String gender, MRSFacility facility, MRSPatient actualPatient) {
             assertThat(actualPatient.getFirstName(), is(first));
             assertThat(actualPatient.getLastName(), is(last));
             assertThat(actualPatient.getMiddleName(), is(middle));
