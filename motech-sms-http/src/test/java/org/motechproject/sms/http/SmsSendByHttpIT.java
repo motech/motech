@@ -3,6 +3,7 @@ package org.motechproject.sms.http;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -31,6 +32,8 @@ public class SmsSendByHttpIT {
     private TemplateReader templateReader;
     @Mock
     private HttpClient mockHttpClient;
+    @Autowired
+    private HttpClient httpClient;
 
     @Before
     public void setup() {
@@ -50,5 +53,17 @@ public class SmsSendByHttpIT {
         ArgumentCaptor<HttpMethod> argumentCaptor = ArgumentCaptor.forClass(HttpMethod.class);
         verify(mockHttpClient).executeMethod(argumentCaptor.capture());
         assertEquals("http://smshost.com/sms/send?recipients=123+456&message=foobar", argumentCaptor.getValue().getURI().getURI());
+    }
+
+    @Test
+    @Ignore("use template for kookoo in sms-http-template.json")
+    public void shouldSendSmsThroughKookoo() throws IOException {
+        smsSendHandler = new SmsSendHandler(templateReader, httpClient);
+
+        MotechEvent motechEvent = new MotechEvent(SmsService.SEND_SMS, new HashMap<String, Object>() {{
+            put(SmsService.RECIPIENTS, Arrays.asList("9686202448"));
+            put(SmsService.MESSAGE, "business analyst");
+        }});
+        smsSendHandler.handle(motechEvent);
     }
 }
