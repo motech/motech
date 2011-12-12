@@ -1,19 +1,22 @@
 package org.motechproject.openmrs.services;
 
+import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.mrs.model.MRSObservation;
 import org.openmrs.*;
+import org.powermock.api.mockito.PowerMockito;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -96,10 +99,50 @@ public class OpenMRSObservationAdaptorTest {
         doReturn(openMrsObservation2).when(observationAdaptorSpy).createOpenMRSObservationForEncounter(observation2, encounter, patient, facility, staff);
 
         Set<Obs> openMrsObservations = observationAdaptorSpy.createOpenMRSObservationForEncounters(mrsObservations, encounter, patient, facility, staff);
-        assertThat(openMrsObservations, is(equalTo((Set<Obs>)new HashSet<Obs>() {{
+        assertThat(openMrsObservations, is(equalTo((Set<Obs>) new HashSet<Obs>() {{
             add(openMrsObservation1);
             add(openMrsObservation2);
         }})));
+
+    }
+
+
+    @Test
+    public void shouldConvertOpenMRSObservationsToMRSObservations() {
+        final Obs obs1 = new Obs();
+        final Obs obs2 = new Obs();
+
+        Concept concept1 = mock(Concept.class);
+        ConceptName conceptName = mock(ConceptName.class);
+        when(concept1.getName()).thenReturn(conceptName);
+        when(conceptName.getName()).thenReturn("name1");
+
+        Concept concept2 = mock(Concept.class);
+        ConceptName conceptName2 = mock(ConceptName.class);
+        when(concept2.getName()).thenReturn(conceptName2);
+        when(conceptName2.getName()).thenReturn("name2");
+
+        obs1.setId(1);
+        obs1.setConcept(concept1);
+        obs1.setEncounter(new Encounter());
+        obs1.setPerson(new Patient());
+        obs1.setObsDatetime(new Date());
+        obs1.setCreator(new User());
+
+        obs2.setId(2);
+        obs2.setConcept(concept2);
+        obs2.setEncounter(new Encounter());
+        obs2.setPerson(new Patient());
+        obs2.setObsDatetime(new Date());
+        obs2.setCreator(new User());
+
+        Set<Obs> openMRSObservations = new HashSet<Obs>() {{
+            add(obs1);
+            add(obs2);
+        }};
+        Set<MRSObservation> actualMrsObservations = observationAdaptor.convertOpenMRSToMRSObservations(openMRSObservations);
+
+        assertThat(actualMrsObservations.size(), Matchers.is(equalTo(2)));
 
     }
 

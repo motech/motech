@@ -49,9 +49,9 @@ public class OpenMRSObservationAdaptor implements MRSObservationAdaptor {
     public Set<MRSObservation> convertOpenMRSToMRSObservations(Set<Obs> openMrsObservations) {
         Set<MRSObservation> mrsObservations = new HashSet<MRSObservation>();
         for (Obs obs : openMrsObservations) {
-            mrsObservations.add(new MRSObservation(Integer.toString(obs.getId()), obs.getObsDatetime(), obs.getConcept().getName().getName(), obs.getValueText()));  // to check how to get the value without knowing its type
+            mrsObservations.add(new MRSObservation(Integer.toString(obs.getId()), obs.getObsDatetime(),obs.getConcept().getName().getName(), obs.getValueText()));  // to check how to get the value without knowing its type
         }
-        return mrsObservations;  //To change body of created methods use File | Settings | File Templates.
+        return mrsObservations;
     }
 
 
