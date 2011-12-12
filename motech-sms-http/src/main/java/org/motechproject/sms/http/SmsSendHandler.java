@@ -17,24 +17,31 @@ import static org.motechproject.sms.api.service.SmsService.*;
 
 @Component
 public class SmsSendHandler implements SmsEventHandler {
-    private static Logger log = LoggerFactory.getLogger(SmsSendHandler.class);
+
     private SmsSendTemplate template;
-    private HttpClient httpClient;
+    private HttpClient commonsHttpClient;
+    private static Logger log = LoggerFactory.getLogger(SmsSendHandler.class);
 
     @Autowired
-    public SmsSendHandler(TemplateReader templateReader) {
+    public SmsSendHandler(TemplateReader templateReader, HttpClient commonsHttpClient) {
         String templateFile = "/sms-http-template.json";
         this.template = templateReader.getTemplate(templateFile);
-        this.httpClient = new HttpClient();
+        this.commonsHttpClient = commonsHttpClient;
     }
 
     @Override
     @MotechListener(subjects = SEND_SMS)
-    public void handle(MotechEvent event) throws IOException {
+    public void handle(MotechEvent event) throws IOException, SmsDeliveryFailureException {
         List<String> recipients = (List<String>) event.getParameters().get(RECIPIENTS);
         String message = (String) event.getParameters().get(MESSAGE);
         HttpMethod httpMethod = template.generateRequestFor(recipients, message);
-        int status = httpClient.executeMethod(httpMethod);
-        log.info("HTTP Status:"+status + "|Response:" + httpMethod.getResponseBodyAsString());
+        int status = commonsHttpClient.executeMethod(httpMethod);
+        String response = httpMethod.getResponseBodyAsString();
+        log.info("HTTP Status:" + status + "|Response:" + response);
+
+        if (response != null && !response.equals(template.getResponse().success)) {
+            log.info("delivery failed, retrying...");
+            throw new SmsDeliveryFailureException();
+        }
     }
 }

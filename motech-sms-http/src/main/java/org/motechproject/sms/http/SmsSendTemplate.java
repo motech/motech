@@ -24,8 +24,13 @@ class SmsSendTemplate {
         String recipientsSeparator;
         Map<String, String> queryParameters;
     }
+    static class Response {
+        String success;
+    }
 
     Request request;
+
+    Response response;
 
     public HttpMethod generateRequestFor(List<String> recipients, String message) {
         GetMethod getMethod = new GetMethod(request.urlPath);
@@ -45,5 +50,13 @@ class SmsSendTemplate {
         if (value.equals(RECIPIENTS_PLACEHOLDER))
             return StringUtils.join(recipients.iterator(), request.recipientsSeparator);
         return value;
+    }
+
+    public Request getRequest() {
+        return request;
+    }
+
+    public Response getResponse() {
+        return response;
     }
 }

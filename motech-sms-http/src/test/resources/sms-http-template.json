@@ -1,0 +1,10 @@
+{
+    "request": {
+        "urlPath": "http://smshost.com/sms/send",
+        "queryParameters": {
+            "recipients": "$recipients" ,
+            "message": "$message"
+        },
+        "recipientsSeparator": "+"
+    }
+}

@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.motechproject.mrs.model.Facility;
+import org.motechproject.mrs.model.MRSFacility;
 import org.openmrs.Location;
 import org.openmrs.api.LocationService;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -42,7 +42,7 @@ public class OpenMRSFacilityAdaptorTest {
         String region = "region";
         String district = "district";
         String province = "province";
-        Facility facility = new Facility(name, country, region, district, province);
+        MRSFacility facility = new MRSFacility(name, country, region, district, province);
         Location location = mock(Location.class);
         when(mockLocationService.saveLocation(Matchers.<Location>any())).thenReturn(location);
 
@@ -80,8 +80,8 @@ public class OpenMRSFacilityAdaptorTest {
 
         List<Location> locations = Arrays.asList(this.createALocation(locationId, name, country, region, district, province));
         when(mockLocationService.getAllLocations()).thenReturn(locations);
-        List<Facility> returnedFacilities = mrsFacilityAdaptor.getFacilities();
-        assertEquals(Arrays.asList(new Facility(locationId, name, country, region, district, province)), returnedFacilities);
+        List<MRSFacility> returnedFacilities = mrsFacilityAdaptor.getFacilities();
+        assertEquals(Arrays.asList(new MRSFacility(locationId, name, country, region, district, province)), returnedFacilities);
     }
 
     @Test
@@ -95,8 +95,8 @@ public class OpenMRSFacilityAdaptorTest {
 
         Location location = this.createALocation(locationId, name, country, region, district, province);
         when(mockLocationService.getLocations(name)).thenReturn(Arrays.asList(location));
-        final List<Facility> facilities = mrsFacilityAdaptor.getFacilities(name);
-        assertEquals(Arrays.asList(new Facility(locationId, name, country, region, district, province)), facilities);
+        final List<MRSFacility> facilities = mrsFacilityAdaptor.getFacilities(name);
+        assertEquals(Arrays.asList(new MRSFacility(locationId, name, country, region, district, province)), facilities);
     }
 
     @Test
@@ -122,7 +122,7 @@ public class OpenMRSFacilityAdaptorTest {
         String region = "region";
         String district = "district";
         String province = "province";
-        final Facility facility = new Facility(locationId.toString(), name, country, region, district, province);
+        final MRSFacility facility = new MRSFacility(locationId.toString(), name, country, region, district, province);
         Location location = OpenMRSFacilityAdaptorTest.createALocation(locationId.toString(), name, country, region, district, province);
         when(mockLocationService.getLocation(locationId)).thenReturn(location);
         assertThat(mrsFacilityAdaptor.getFacility(locationId.toString()), is(equalTo(facility)));

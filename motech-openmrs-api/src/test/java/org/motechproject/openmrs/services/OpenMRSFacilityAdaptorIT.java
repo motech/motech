@@ -4,7 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.mrs.model.Facility;
+import org.motechproject.mrs.model.MRSFacility;
 import org.motechproject.mrs.services.MRSFacilityAdaptor;
 import org.motechproject.openmrs.OpenMRSIntegrationTestBase;
 import org.openmrs.api.LocationService;
@@ -43,8 +43,8 @@ public class OpenMRSFacilityAdaptorIT extends OpenMRSIntegrationTestBase {
 
     @Test
     public void testSaveLocation() {
-        Facility facility = new Facility("my facility", "ghana", "region", "district", "kaseena");
-        final Facility savedFacility = mrsFacilityAdaptor.saveFacility(facility);
+        MRSFacility facility = new MRSFacility("my facility", "ghana", "region", "district", "kaseena");
+        final MRSFacility savedFacility = mrsFacilityAdaptor.saveFacility(facility);
         authorizeAndRollback(new DirtyData() {
             public void rollback() {
                 mrsLocationService.purgeLocation(mrsLocationService.getLocation(Integer.parseInt(savedFacility.getId())));
@@ -62,16 +62,16 @@ public class OpenMRSFacilityAdaptorIT extends OpenMRSIntegrationTestBase {
     public void testGetLocations() {
         int size = mrsFacilityAdaptor.getFacilities().size();
         String facilityName = "my facility";
-        Facility facility = new Facility(facilityName, "ghana", "region", "district", "kaseena");
-        final Facility savedFacility = mrsFacilityAdaptor.saveFacility(facility);
-        List<Facility> facilities = mrsFacilityAdaptor.getFacilities();
+        MRSFacility facility = new MRSFacility(facilityName, "ghana", "region", "district", "kaseena");
+        final MRSFacility savedFacility = mrsFacilityAdaptor.saveFacility(facility);
+        List<MRSFacility> facilities = mrsFacilityAdaptor.getFacilities();
         authorizeAndRollback(new DirtyData() {
             public void rollback() {
                 mrsLocationService.purgeLocation(mrsLocationService.getLocation(Integer.parseInt(savedFacility.getId())));
             }
         });
         int alteredSize = facilities.size();
-        List<Facility> addedFacilities = select(facilities, having(on(Facility.class).getName(), equalTo(facilityName)));
+        List<MRSFacility> addedFacilities = select(facilities, having(on(MRSFacility.class).getName(), equalTo(facilityName)));
         assertEquals(size + 1, alteredSize);
         assertEquals(Arrays.asList(savedFacility), addedFacilities);
 
@@ -80,9 +80,9 @@ public class OpenMRSFacilityAdaptorIT extends OpenMRSIntegrationTestBase {
     @Test
     public void testGetLocationsByName() {
         String facilityName = "my facility";
-        Facility facility = new Facility(facilityName, "ghana", "region", "district", "kaseena");
-        final Facility savedFacility = mrsFacilityAdaptor.saveFacility(facility);
-        final List<Facility> facilities = mrsFacilityAdaptor.getFacilities(facilityName);
+        MRSFacility facility = new MRSFacility(facilityName, "ghana", "region", "district", "kaseena");
+        final MRSFacility savedFacility = mrsFacilityAdaptor.saveFacility(facility);
+        final List<MRSFacility> facilities = mrsFacilityAdaptor.getFacilities(facilityName);
         assertEquals(Arrays.asList(savedFacility), facilities);
 
         authorizeAndRollback(new DirtyData() {

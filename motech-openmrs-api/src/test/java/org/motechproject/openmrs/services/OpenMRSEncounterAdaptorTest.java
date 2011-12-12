@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.mrs.model.*;
-import org.motechproject.mrs.model.Patient;
+import org.motechproject.mrs.model.MRSPatient;
 import org.motechproject.mrs.model.MRSUser;
 import org.openmrs.*;
 import org.openmrs.api.EncounterService;
@@ -53,12 +53,12 @@ public class OpenMRSEncounterAdaptorTest {
         String staffId = "333";
         when(staff.getId()).thenReturn(staffId);
 
-        Facility facility = mock(Facility.class);
+        MRSFacility facility = mock(MRSFacility.class);
         String facilityId = "99";
         when(facility.getId()).thenReturn(facilityId);
 
         Date encounterDate = new Date(2001, 1, 1);
-        Patient patient = mock(Patient.class);
+        MRSPatient patient = mock(MRSPatient.class);
         String patientId = "199";
         when(patient.getId()).thenReturn(patientId);
 
@@ -113,8 +113,8 @@ public class OpenMRSEncounterAdaptorTest {
         Encounter openMrsEncounter = createOpenMRSEncounter(encounterDate, openMrsEncounterType, openMrsObservations, mockOpenMRSPatient, mockOpenMRSUser, mockLocation, encounterId);
 
         MRSUser mrsStaff = mock(MRSUser.class);
-        Facility mrsfacility = mock(Facility.class);
-        Patient mrspatient = mock(Patient.class);
+        MRSFacility mrsfacility = mock(MRSFacility.class);
+        MRSPatient mrspatient = mock(MRSPatient.class);
 
 
         Set<MRSObservation> mrsObservations = new HashSet<MRSObservation>() {{

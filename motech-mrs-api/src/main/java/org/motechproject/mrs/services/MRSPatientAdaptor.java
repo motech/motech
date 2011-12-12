@@ -1,11 +1,11 @@
 package org.motechproject.mrs.services;
 
-import org.motechproject.mrs.model.Patient;
+import org.motechproject.mrs.model.MRSPatient;
 
 public interface MRSPatientAdaptor {
-    Patient savePatient(Patient patient);
+    MRSPatient savePatient(MRSPatient patient);
 
-    Patient getPatient(String patientId);
+    MRSPatient getPatient(String patientId);
 
-    Patient getPatientByMotechId(String motechId);
+    MRSPatient getPatientByMotechId(String motechId);
 }
