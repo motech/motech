@@ -67,4 +67,7 @@ public class Context {
         return (OpenmrsService) org.openmrs.api.context.Context.getService(clazz);
     }
 
+    public EncounterService getEncounterService() {
+        return org.openmrs.api.context.Context.getEncounterService();
+    }
 }

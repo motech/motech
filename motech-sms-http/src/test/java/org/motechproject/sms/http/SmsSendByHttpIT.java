@@ -41,7 +41,7 @@ public class SmsSendByHttpIT {
     }
 
     @Test
-    public void shouldUseSmsHttpTemplateFileForGeneratingRequest() throws IOException {
+    public void shouldUseSmsHttpTemplateFileForGeneratingRequest() throws IOException, SmsDeliveryFailureException {
         smsSendHandler = new SmsSendHandler(templateReader, mockHttpClient);
 
         MotechEvent motechEvent = new MotechEvent(SmsService.SEND_SMS, new HashMap<String, Object>() {{
@@ -57,7 +57,7 @@ public class SmsSendByHttpIT {
 
     @Test
     @Ignore("use template for kookoo in sms-http-template.json")
-    public void shouldSendSmsThroughKookoo() throws IOException {
+    public void shouldSendSmsThroughKookoo() throws IOException, SmsDeliveryFailureException {
         smsSendHandler = new SmsSendHandler(templateReader, httpClient);
 
         MotechEvent motechEvent = new MotechEvent(SmsService.SEND_SMS, new HashMap<String, Object>() {{

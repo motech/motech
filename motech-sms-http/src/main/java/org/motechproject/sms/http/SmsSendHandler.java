@@ -31,11 +31,17 @@ public class SmsSendHandler implements SmsEventHandler {
 
     @Override
     @MotechListener(subjects = SEND_SMS)
-    public void handle(MotechEvent event) throws IOException {
+    public void handle(MotechEvent event) throws IOException, SmsDeliveryFailureException {
         List<String> recipients = (List<String>) event.getParameters().get(RECIPIENTS);
         String message = (String) event.getParameters().get(MESSAGE);
         HttpMethod httpMethod = template.generateRequestFor(recipients, message);
         int status = commonsHttpClient.executeMethod(httpMethod);
-        log.info("HTTP Status:"+status + "|Response:" + httpMethod.getResponseBodyAsString());
+        String response = httpMethod.getResponseBodyAsString();
+        log.info("HTTP Status:" + status + "|Response:" + response);
+
+        if (response != null && !response.equals(template.getResponse().success)) {
+            log.info("delivery failed, retrying...");
+            throw new SmsDeliveryFailureException();
+        }
     }
 }

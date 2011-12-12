@@ -7,6 +7,9 @@
             "apiKey": "jdhf7yelkjae"
         },
         "recipientsSeparator": "+"
+    },
+    "response": {
+        "success": "sent"
     }
 }
 

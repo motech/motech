@@ -2,8 +2,7 @@ package org.motechproject.openmrs.services;
 
 import org.motechproject.mrs.model.*;
 import org.motechproject.mrs.services.MRSEncounterAdaptor;
-import org.openmrs.Encounter;
-import org.openmrs.EncounterType;
+import org.openmrs.*;
 import org.openmrs.api.EncounterService;
 import org.springframework.beans.factory.annotation.Autowired;
 
