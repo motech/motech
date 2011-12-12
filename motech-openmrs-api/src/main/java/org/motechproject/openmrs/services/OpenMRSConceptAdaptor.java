@@ -4,7 +4,6 @@ import org.motechproject.mrs.services.MRSConceptAdaptor;
 import org.openmrs.Concept;
 import org.springframework.stereotype.Service;
 
-@Service
 public class OpenMRSConceptAdaptor implements MRSConceptAdaptor{
 
     public Concept getConceptByName(String conceptName) {
