@@ -51,4 +51,5 @@ public class OpenMRSEncounterAdaptor implements MRSEncounterAdaptor {
         openMrsEncounter.setObs(openMrsObservationAdaptor.getOpenMrsObservations(mrsEncounter.getObservations()));
         return openMrsEncounter;
     }
+
 }
