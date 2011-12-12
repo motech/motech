@@ -76,7 +76,7 @@ public class OpenMRSEncounterAdaptorTest {
         when(mockOpenMrsPatientAdaptor.getOpenMrsPatient(patientId)).thenReturn(expectedPatient);
 
         org.openmrs.User expectedCreator = mock(org.openmrs.User.class);
-        when(mockOpenMrsUserAdaptor.getOpenMrsUserById(staffId)).thenReturn(expectedCreator);
+        when(mockOpenMrsUserAdaptor.getOpenMrsUserByUserName(staffId)).thenReturn(expectedCreator);
 
         EncounterType expectedEncounterType = mock(EncounterType.class);
         when(mockEncounterService.getEncounterType(encounterType)).thenReturn(expectedEncounterType);
