@@ -46,7 +46,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
 
     @Override
     public Map saveUser(MRSUser mrsUser) throws UserAlreadyExistsException {
-        if (getUserBySystemId(mrsUser.getSystemId()) != null) {
+        if (getUserByUserName(mrsUser.getUserName()) != null) {
             throw new UserAlreadyExistsException();
         }
         return save(mrsUser);
@@ -58,16 +58,16 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
     }
 
     @Override
-    public MRSUser getUserBySystemId(String systemId) {
-        org.openmrs.User openMrsUser = getOpenMrsUserById(systemId);
+    public MRSUser getUserByUserName(String userName) {
+        org.openmrs.User openMrsUser = getOpenMrsUserByUserName(userName);
         if (openMrsUser != null) {
             return openMrsToMrsUser(openMrsUser);
         }
         return null;
     }
 
-    public org.openmrs.User getOpenMrsUserById(String id) {
-        return userService.getUserByUsername(id);
+    public org.openmrs.User getOpenMrsUserByUserName(String userName) {
+        return userService.getUserByUsername(userName);
     }
 
     @Override
@@ -81,7 +81,6 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         }
         return mrsUsers;
     }
-
 
     protected MRSUser openMrsToMrsUser(org.openmrs.User openMRSUser) {
         MRSUser mrsUser = new MRSUser();

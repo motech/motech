@@ -34,23 +34,21 @@ public class OpenMRSEncounterAdaptor implements MRSEncounterAdaptor {
         MRSUser staff = openMrsUserAdaptor.openMrsToMrsUser(openMrsEncounter.getCreator());
         MRSFacility facility = openMrsFacilityAdaptor.convertLocationToFacility(openMrsEncounter.getLocation());
         MRSPatient patient = openMrsPatientAdaptor.getMrsPatient(openMrsEncounter.getPatient());
-        Set<MRSObservation> observations = openMrsObservationAdaptor.convertOpenMRSToMRSObservations(openMrsEncounter.getObs());
+        Set<Observation> observations = openMrsObservationAdaptor.getObservations(openMrsEncounter.getObs());
         return new MRSEncounter(id, staff, facility, date, patient, observations, encounterType);
     }
 
     public Encounter mrsToOpenMrsEncounter(MRSEncounter mrsEncounter) {
         org.openmrs.Encounter openMrsEncounter = new org.openmrs.Encounter();
         EncounterType openMrsEncounterType = encounterService.getEncounterType(mrsEncounter.getEncounterType());
-        Patient patient = openMrsPatientAdaptor.getOpenMrsPatient(mrsEncounter.getPatient().getId());
-        Location location = openMrsFacilityAdaptor.getLocation(mrsEncounter.getFacility().getId());
-        User openMrsUser = openMrsUserAdaptor.getOpenMrsUserById(mrsEncounter.getStaff().getId());
         openMrsEncounter.setId(Integer.parseInt(mrsEncounter.getId()));
         openMrsEncounter.setEncounterType(openMrsEncounterType);
         openMrsEncounter.setEncounterDatetime(mrsEncounter.getDate());
-        openMrsEncounter.setPatient(patient);
-        openMrsEncounter.setLocation(location);
-        openMrsEncounter.setCreator(openMrsUser);
-        openMrsEncounter.setObs(openMrsObservationAdaptor.createOpenMRSObservationForEncounters(mrsEncounter.getObservations(), openMrsEncounter, patient, location, openMrsUser));
+        openMrsEncounter.setPatient(openMrsPatientAdaptor.getOpenMrsPatient(mrsEncounter.getPatient().getId()));
+        openMrsEncounter.setLocation(openMrsFacilityAdaptor.getLocation(mrsEncounter.getFacility().getId()));
+        openMrsEncounter.setCreator(openMrsUserAdaptor.getOpenMrsUserByUserName(mrsEncounter.getStaff().getId()));
+        openMrsEncounter.setObs(openMrsObservationAdaptor.getOpenMrsObservations(mrsEncounter.getObservations()));
         return openMrsEncounter;
     }
+
 }
