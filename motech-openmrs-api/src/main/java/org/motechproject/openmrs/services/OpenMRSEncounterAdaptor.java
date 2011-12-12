@@ -2,16 +2,13 @@ package org.motechproject.openmrs.services;
 
 import org.motechproject.mrs.model.*;
 import org.motechproject.mrs.services.MRSEncounterAdaptor;
-import org.openmrs.Encounter;
-import org.openmrs.EncounterType;
+import org.openmrs.*;
 import org.openmrs.api.EncounterService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.Set;
 
-@Service
 public class OpenMRSEncounterAdaptor implements MRSEncounterAdaptor {
     @Autowired
     private EncounterService encounterService;
@@ -37,20 +34,23 @@ public class OpenMRSEncounterAdaptor implements MRSEncounterAdaptor {
         MRSUser staff = openMrsUserAdaptor.openMrsToMrsUser(openMrsEncounter.getCreator());
         MRSFacility facility = openMrsFacilityAdaptor.convertLocationToFacility(openMrsEncounter.getLocation());
         MRSPatient patient = openMrsPatientAdaptor.getMrsPatient(openMrsEncounter.getPatient());
-        Set<MRSObservation> observations = openMrsObservationAdaptor.getObservations(openMrsEncounter.getObs());
+        Set<MRSObservation> observations = openMrsObservationAdaptor.convertOpenMRSToMRSObservations(openMrsEncounter.getObs());
         return new MRSEncounter(id, staff, facility, date, patient, observations, encounterType);
     }
 
     public Encounter mrsToOpenMrsEncounter(MRSEncounter mrsEncounter) {
         org.openmrs.Encounter openMrsEncounter = new org.openmrs.Encounter();
         EncounterType openMrsEncounterType = encounterService.getEncounterType(mrsEncounter.getEncounterType());
+        Patient patient = openMrsPatientAdaptor.getOpenMrsPatient(mrsEncounter.getPatient().getId());
+        Location location = openMrsFacilityAdaptor.getLocation(mrsEncounter.getFacility().getId());
+        User openMrsUser = openMrsUserAdaptor.getOpenMrsUserById(mrsEncounter.getStaff().getId());
         openMrsEncounter.setId(Integer.parseInt(mrsEncounter.getId()));
         openMrsEncounter.setEncounterType(openMrsEncounterType);
         openMrsEncounter.setEncounterDatetime(mrsEncounter.getDate());
-        openMrsEncounter.setPatient(openMrsPatientAdaptor.getOpenMrsPatient(mrsEncounter.getPatient().getId()));
-        openMrsEncounter.setLocation(openMrsFacilityAdaptor.getLocation(mrsEncounter.getFacility().getId()));
-        openMrsEncounter.setCreator(openMrsUserAdaptor.getOpenMrsUserById(mrsEncounter.getStaff().getId()));
-        openMrsEncounter.setObs(openMrsObservationAdaptor.getOpenMrsObservations(mrsEncounter.getObservations()));
+        openMrsEncounter.setPatient(patient);
+        openMrsEncounter.setLocation(location);
+        openMrsEncounter.setCreator(openMrsUser);
+        openMrsEncounter.setObs(openMrsObservationAdaptor.createOpenMRSObservationForEncounters(mrsEncounter.getObservations(), openMrsEncounter, patient, location, openMrsUser));
         return openMrsEncounter;
     }
 }

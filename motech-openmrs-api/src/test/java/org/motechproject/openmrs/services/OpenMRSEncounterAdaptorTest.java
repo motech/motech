@@ -81,11 +81,10 @@ public class OpenMRSEncounterAdaptorTest {
         EncounterType expectedEncounterType = mock(EncounterType.class);
         when(mockEncounterService.getEncounterType(encounterType)).thenReturn(expectedEncounterType);
 
-        Set<Obs> expectedObservations = new HashSet<Obs>(){{
-            add(new Obs());
-        }};
+        Set<Obs> expectedObservations = new HashSet<Obs>();
+        Encounter expectedEncounter = mock(Encounter.class);
 
-        when(mockOpenMrsObservationAdaptor.getOpenMrsObservations(observations)).thenReturn(expectedObservations);
+        when(mockOpenMrsObservationAdaptor.createOpenMRSObservationForEncounters(observations, expectedEncounter, expectedPatient, expectedLocation, expectedCreator)).thenReturn(expectedObservations);
 
         Encounter returnedEncounter = encounterAdaptor.mrsToOpenMrsEncounter(mrsEncounter);
 
@@ -125,7 +124,7 @@ public class OpenMRSEncounterAdaptorTest {
         when(mockOpenMrsUserAdaptor.openMrsToMrsUser(mockOpenMRSUser)).thenReturn(mrsStaff);
         when(mockOpenMrsFacilityAdaptor.convertLocationToFacility(mockLocation)).thenReturn(mrsfacility);
         when(mockOpenMrsPatientAdaptor.getMrsPatient(mockOpenMRSPatient)).thenReturn(mrspatient);
-        when(mockOpenMrsObservationAdaptor.getObservations(openMrsObservations)).thenReturn(mrsObservations);
+        when(mockOpenMrsObservationAdaptor.convertOpenMRSToMRSObservations(openMrsObservations)).thenReturn(mrsObservations);
 
         MRSEncounter mrsEncounter = encounterAdaptor.openMrsToMrsEncounter(openMrsEncounter);
 
