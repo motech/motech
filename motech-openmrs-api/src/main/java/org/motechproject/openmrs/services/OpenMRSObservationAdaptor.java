@@ -1,6 +1,7 @@
 package org.motechproject.openmrs.services;
 
 import org.motechproject.mrs.model.MRSObservation;
+import org.motechproject.mrs.services.MRSObservationAdaptor;
 import org.openmrs.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Service
-public class OpenMRSObservationAdaptor {
+public class OpenMRSObservationAdaptor implements MRSObservationAdaptor{
 
     @Autowired
     OpenMRSConceptAdaptor conceptAdaptor;

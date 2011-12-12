@@ -6,10 +6,12 @@ import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.api.EncounterService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.Set;
 
+@Service
 public class OpenMRSEncounterAdaptor implements MRSEncounterAdaptor {
     @Autowired
     private EncounterService encounterService;
