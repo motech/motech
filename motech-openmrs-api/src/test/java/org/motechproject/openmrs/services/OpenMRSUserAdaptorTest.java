@@ -179,6 +179,7 @@ public class OpenMRSUserAdaptorTest {
         person.addAttribute(new PersonAttribute(staffTypeAttribute, staffType));
 
         org.openmrs.User openMRSUser = new org.openmrs.User(Integer.valueOf(id));
+        person.setPersonId(1);
         openMRSUser.setPerson(person);
         openMRSUser.setSystemId(systemId);
         openMRSUser.setId(Integer.parseInt(id));
