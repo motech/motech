@@ -2,8 +2,7 @@ package org.motechproject.openmrs.services;
 
 import org.motechproject.mrs.model.*;
 import org.motechproject.mrs.services.MRSEncounterAdaptor;
-import org.openmrs.Encounter;
-import org.openmrs.EncounterType;
+import org.openmrs.*;
 import org.openmrs.api.EncounterService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -47,8 +46,9 @@ public class OpenMRSEncounterAdaptor implements MRSEncounterAdaptor {
         openMrsEncounter.setEncounterDatetime(mrsEncounter.getDate());
         openMrsEncounter.setPatient(openMrsPatientAdaptor.getOpenMrsPatient(mrsEncounter.getPatient().getId()));
         openMrsEncounter.setLocation(openMrsFacilityAdaptor.getLocation(mrsEncounter.getFacility().getId()));
-        openMrsEncounter.setCreator(openMrsUserAdaptor.getOpenMrsUserById(mrsEncounter.getStaff().getId()));
+        openMrsEncounter.setCreator(openMrsUserAdaptor.getOpenMrsUserByUserName(mrsEncounter.getStaff().getId()));
         openMrsEncounter.setObs(openMrsObservationAdaptor.getOpenMrsObservations(mrsEncounter.getObservations()));
         return openMrsEncounter;
     }
+
 }
