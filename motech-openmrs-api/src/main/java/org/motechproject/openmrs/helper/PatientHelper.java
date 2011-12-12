@@ -3,6 +3,7 @@ package org.motechproject.openmrs.helper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mrs.model.Attribute;
+import org.motechproject.mrs.model.MRSPatient;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -48,7 +49,7 @@ public class PatientHelper {
         return address;
     }
 
-    public Patient buildOpenMrsPatient(org.motechproject.mrs.model.Patient patient, String motechId,
+    public Patient buildOpenMrsPatient(MRSPatient patient, String motechId,
                                        PatientIdentifierType patientIdentifierType, Location location,
                                        List<PersonAttributeType> allPersonAttributeTypes) {
 
@@ -62,11 +63,11 @@ public class PatientHelper {
         return openMRSPatient;
     }
 
-    private String getMotechId(org.motechproject.mrs.model.Patient patient, String motechId) {
+    private String getMotechId(MRSPatient patient, String motechId) {
         return StringUtils.isNotEmpty(patient.getId()) ? patient.getId() : motechId;
     }
 
-    private Person createPersonWithNames(org.motechproject.mrs.model.Patient patient) {
+    private Person createPersonWithNames(MRSPatient patient) {
         final Person person = new Person();
         for (PersonName name : getAllNames(patient)) {
             person.addName(name);
@@ -74,7 +75,7 @@ public class PatientHelper {
         return person;
     }
 
-    private List<PersonName> getAllNames(org.motechproject.mrs.model.Patient patient) {
+    private List<PersonName> getAllNames(MRSPatient patient) {
         final List<PersonName> personNames = new ArrayList<PersonName>();
         personNames.add(new PersonName(patient.getFirstName(), patient.getMiddleName(), patient.getLastName()));
         if (StringUtils.isNotEmpty(patient.getPreferredName())) {
@@ -93,7 +94,7 @@ public class PatientHelper {
         }
     }
 
-    private void setPersonAttributes(org.motechproject.mrs.model.Patient patient, Patient openMRSPatient,
+    private void setPersonAttributes(MRSPatient patient, Patient openMRSPatient,
                                      List<PersonAttributeType> allPersonAttributeTypes) {
         if(CollectionUtils.isNotEmpty(patient.getAttributes())){
             for (Attribute attribute : patient.getAttributes()) {

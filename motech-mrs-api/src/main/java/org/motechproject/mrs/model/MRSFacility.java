@@ -1,6 +1,6 @@
 package org.motechproject.mrs.model;
 
-public class Facility {
+public class MRSFacility {
     private String id;
 
     private String name;
@@ -8,11 +8,11 @@ public class Facility {
     private String region;
     private String countyDistrict;
     private String stateProvince;
-    public Facility(String id) {
+    public MRSFacility(String id) {
         this.id = id;
     }
 
-    public Facility(String name, String country, String region, String countyDistrict, String stateProvince) {
+    public MRSFacility(String name, String country, String region, String countyDistrict, String stateProvince) {
         this.name = name;
         this.country = country;
         this.region = region;
@@ -20,7 +20,7 @@ public class Facility {
         this.stateProvince = stateProvince;
     }
 
-    public Facility(String id, String name, String country, String region, String countyDistrict, String stateProvince) {
+    public MRSFacility(String id, String name, String country, String region, String countyDistrict, String stateProvince) {
         this(name, country, region, countyDistrict, stateProvince);
         this.id = id;
     }
@@ -56,9 +56,9 @@ public class Facility {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Facility)) return false;
+        if (!(o instanceof MRSFacility)) return false;
 
-        Facility facility = (Facility) o;
+        MRSFacility facility = (MRSFacility) o;
 
         if (country != null ? !country.equals(facility.country) : facility.country != null) return false;
         if (countyDistrict != null ? !countyDistrict.equals(facility.countyDistrict) : facility.countyDistrict != null)

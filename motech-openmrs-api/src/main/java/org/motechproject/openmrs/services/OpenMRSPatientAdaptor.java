@@ -2,7 +2,7 @@ package org.motechproject.openmrs.services;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mrs.model.Attribute;
-import org.motechproject.mrs.model.Patient;
+import org.motechproject.mrs.model.MRSPatient;
 import org.motechproject.mrs.services.MRSPatientAdaptor;
 import org.motechproject.openmrs.IdentifierType;
 import org.motechproject.openmrs.helper.PatientHelper;
@@ -40,16 +40,13 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
     PatientHelper patientHelper;
 
     @Override
-    public Patient getPatient(String patientId) {
-        org.openmrs.Patient patient = patientService.getPatient(Integer.parseInt(patientId));
-        if (patient == null) {
-            return null;
-        }
-        return getMrsPatient(patient);
+    public MRSPatient getPatient(String patientId) {
+        org.openmrs.Patient openMrsPatient = getOpenMrsPatient(patientId);
+        return (openMrsPatient == null) ? null : getMrsPatient(openMrsPatient);
     }
 
     @Override
-    public Patient getPatientByMotechId(String motechId) {
+    public MRSPatient getPatientByMotechId(String motechId) {
         PatientIdentifierType motechIdType = patientService.getPatientIdentifierTypeByName(IdentifierType.IDENTIFIER_MOTECH_ID.getName());
         List<PatientIdentifierType> idTypes = new ArrayList<PatientIdentifierType>();
         idTypes.add(motechIdType);
@@ -62,7 +59,7 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
     }
 
     @Override
-    public Patient savePatient(Patient patient) {
+    public MRSPatient savePatient(MRSPatient patient) {
         final org.openmrs.Patient openMRSPatient = patientHelper.buildOpenMrsPatient(patient, userService.generateSystemId(),
                 getPatientIdentifierType(IdentifierType.IDENTIFIER_MOTECH_ID),
                 facilityAdaptor.getLocation(patient.getFacility().getId()), getAllPersonAttributeTypes());
@@ -70,12 +67,12 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
         return getMrsPatient(patientService.savePatient(openMRSPatient));
     }
 
-    private Patient getMrsPatient(org.openmrs.Patient savedPatient) {
+    public MRSPatient getMrsPatient(org.openmrs.Patient savedPatient) {
         final List<Attribute> attributes = project(savedPatient.getAttributes(), Attribute.class,
                 on(PersonAttribute.class).getAttributeType().toString(), on(PersonAttribute.class).getValue());
         PersonName firstName = patientHelper.getFirstName(savedPatient);
         final PatientIdentifier patientIdentifier = savedPatient.getPatientIdentifier();
-        return new Patient(String.valueOf(savedPatient.getId()), firstName.getGivenName(),
+        return new MRSPatient(String.valueOf(savedPatient.getId()), firstName.getGivenName(),
                 firstName.getMiddleName(), firstName.getFamilyName(), patientHelper.getPreferredName(savedPatient),
                 savedPatient.getBirthdate(), savedPatient.getBirthdateEstimated(), savedPatient.getGender(), patientHelper.getAddress(savedPatient), attributes,
                 (patientIdentifier != null) ? facilityAdaptor.convertLocationToFacility(patientIdentifier.getLocation()) : null);
@@ -88,4 +85,8 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
     private List<PersonAttributeType> getAllPersonAttributeTypes() {
         return personService.getAllPersonAttributeTypes(false);
     }
+    public org.openmrs.Patient getOpenMrsPatient(String patientId) {
+        return patientService.getPatient(Integer.parseInt(patientId));
+    }
+
 }

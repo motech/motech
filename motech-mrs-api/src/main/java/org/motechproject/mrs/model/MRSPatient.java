@@ -3,7 +3,7 @@ package org.motechproject.mrs.model;
 import java.util.Date;
 import java.util.List;
 
-public class Patient {
+public class MRSPatient {
 
     private String id;
     private String firstName;
@@ -13,16 +13,16 @@ public class Patient {
     private Date dateOfBirth;
     private String gender;
     private String address;
-    private Facility facility;
+    private MRSFacility facility;
     private Boolean birthDateEstimated;
     private List<Attribute> attributes;
 
 
-    public Patient(String id, String firstName, String middleName, String lastName, String preferredName, Date dateOfBirth, Boolean birthDateEstimated, String gender, String address, List<Attribute> attributes, Facility facility) {
+    public MRSPatient(String id, String firstName, String middleName, String lastName, String preferredName, Date dateOfBirth, Boolean birthDateEstimated, String gender, String address, List<Attribute> attributes, MRSFacility facility) {
         this(id, firstName, middleName, lastName, preferredName, dateOfBirth, birthDateEstimated, gender, address, facility);
         this.attributes = attributes;
     }
-    public Patient(String firstName, String middleName, String lastName, String preferredName, Date dateOfBirth, Boolean birthDateEstimated, String gender, String address, Facility facility) {
+    public MRSPatient(String firstName, String middleName, String lastName, String preferredName, Date dateOfBirth, Boolean birthDateEstimated, String gender, String address, MRSFacility facility) {
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
@@ -34,7 +34,7 @@ public class Patient {
         this.birthDateEstimated = birthDateEstimated;
     }
 
-    public Patient(String id, String firstName, String middleName, String lastName, String preferredName, Date dateOfBirth, Boolean birthDateEstimated, String gender, String address, Facility facility) {
+    public MRSPatient(String id, String firstName, String middleName, String lastName, String preferredName, Date dateOfBirth, Boolean birthDateEstimated, String gender, String address, MRSFacility facility) {
         this(firstName, middleName, lastName, preferredName, dateOfBirth, birthDateEstimated, gender, address, facility);
         this.id = id;
     }
@@ -75,7 +75,7 @@ public class Patient {
         return attributes;
     }
 
-    public Facility getFacility() {
+    public MRSFacility getFacility() {
         return facility;
     }
 
@@ -86,9 +86,9 @@ public class Patient {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Patient)) return false;
+        if (!(o instanceof MRSPatient)) return false;
 
-        Patient patient = (Patient) o;
+        MRSPatient patient = (MRSPatient) o;
 
         if (address != null ? !address.equals(patient.address) : patient.address != null) return false;
         if (attributes != null ? !attributes.equals(patient.attributes) : patient.attributes != null) return false;
