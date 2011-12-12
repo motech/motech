@@ -129,6 +129,7 @@
         <module>motech-sms-api</module>
         <module>motech-sms-kookoo</module>
         <module>motech-sms-http</module>
+        <module>motech-sms-smpp</module>
     </modules>
 
     <build>
