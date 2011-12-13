@@ -10,6 +10,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>motech-sms-smpp</artifactId>
+	<name>MoTeCH SMS SMPP</name>
 	<description>MoTeCH SMS SMPP</description>
 	<version>0.5-SNAPSHOT</version>
 
@@ -57,8 +58,14 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.motechproject</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>motech-platform-common</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>motech-platform-server-api</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
