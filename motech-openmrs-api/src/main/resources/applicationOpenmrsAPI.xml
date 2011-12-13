@@ -31,6 +31,9 @@
           scope="singleton"/>
     <bean class="org.openmrs.api.EncounterService" factory-bean="context" factory-method="getEncounterService"
           scope="singleton"/>
+    <bean class="org.openmrs.api.ObsService" factory-bean="context" factory-method="getObsService"
+          scope="singleton"/>
+
 
 
     <bean class="org.motechproject.openmrs.services.OpenMRSFacilityAdaptor"/>

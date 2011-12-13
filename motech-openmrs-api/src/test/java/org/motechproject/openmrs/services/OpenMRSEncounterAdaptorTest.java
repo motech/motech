@@ -84,7 +84,7 @@ public class OpenMRSEncounterAdaptorTest {
         Set<Obs> expectedObservations = new HashSet<Obs>();
         Encounter expectedEncounter = mock(Encounter.class);
 
-        when(mockOpenMrsObservationAdaptor.createOpenMRSObservationForEncounters(observations, expectedEncounter, expectedPatient, expectedLocation, expectedCreator)).thenReturn(expectedObservations);
+        when(mockOpenMrsObservationAdaptor.createOpenMRSObservationsForEncounter(observations, expectedEncounter, expectedPatient, expectedLocation, expectedCreator)).thenReturn(expectedObservations);
 
         Encounter returnedEncounter = encounterAdaptor.mrsToOpenMrsEncounter(mrsEncounter);
 
