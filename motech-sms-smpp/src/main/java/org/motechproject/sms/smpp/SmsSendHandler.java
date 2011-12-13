@@ -1,27 +1,25 @@
 package org.motechproject.sms.smpp;
 
 import org.motechproject.model.MotechEvent;
+import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.sms.api.SmsEventHandler;
-import org.smslib.Service;
-import org.smslib.smpp.BindAttributes;
-import org.smslib.smpp.jsmpp.JSMPPGateway;
+import org.motechproject.sms.api.service.SmsService;
+import org.smslib.OutboundMessage;
+
+import java.util.List;
 
 public class SmsSendHandler implements SmsEventHandler {
+	private ManagedSmslibService service;
 
-	private final String host = "localhost";
-	private final int port = 2715;
-	private final String systemId = "smppclient1";
-	private final String password = "password";
+	public SmsSendHandler(ManagedSmslibService service) {
+		this.service = service;
+	}
 
 	@Override
+	@MotechListener(subjects = SmsService.SEND_SMS)
 	public void handle(MotechEvent event) throws Exception {
-		JSMPPGateway jsmppGateway = new JSMPPGateway("smppcon", host, port, new BindAttributes(systemId, password, null, BindAttributes.BindType.TRANSCEIVER));
-		Service service = Service.getInstance();
-		service.addGateway(jsmppGateway);
-		
-		service.startService();
-		
-
-		service.stopService();
+		List<String> recipients = ((List<String>) event.getParameters().get(SmsService.RECIPIENTS));
+		String text = (String) event.getParameters().get(SmsService.MESSAGE);
+		service.sendMessage(recipients, text);
 	}
 }
