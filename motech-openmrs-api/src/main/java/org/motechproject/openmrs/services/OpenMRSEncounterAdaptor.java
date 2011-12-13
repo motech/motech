@@ -50,7 +50,7 @@ public class OpenMRSEncounterAdaptor implements MRSEncounterAdaptor {
         openMrsEncounter.setPatient(patient);
         openMrsEncounter.setLocation(facility);
         openMrsEncounter.setCreator(staff);
-        openMrsEncounter.setObs(openMrsObservationAdaptor.createOpenMRSObservationForEncounters(mrsEncounter.getObservations(), openMrsEncounter, patient, facility, staff));
+        openMrsEncounter.setObs(openMrsObservationAdaptor.createOpenMRSObservationsForEncounter(mrsEncounter.getObservations(), openMrsEncounter, patient, facility, staff));
         return openMrsEncounter;
     }
 
