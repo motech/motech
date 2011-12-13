@@ -1,5 +1,6 @@
 package org.motechproject.sms.http;
 
+import com.sun.org.apache.xalan.internal.xsltc.compiler.Template;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.junit.Before;
@@ -36,7 +37,7 @@ public class SmsSendHandlerTest {
     @Test
     public void shouldListenToSmsSendEvent() throws NoSuchMethodException {
         Method handleMethod = SmsSendHandler.class.getDeclaredMethod("handle", new Class[]{MotechEvent.class});
-        assertTrue("MotechListener annotation missing", handleMethod.isAnnotationPresent(MotechListener.class));
+        assertTrue(handleMethod.isAnnotationPresent(MotechListener.class));
         MotechListener annotation = handleMethod.getAnnotation(MotechListener.class);
         assertArrayEquals(new String[]{SEND_SMS}, annotation.subjects());
     }
