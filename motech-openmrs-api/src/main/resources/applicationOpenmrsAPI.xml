@@ -33,6 +33,8 @@
           scope="singleton"/>
     <bean class="org.openmrs.api.ObsService" factory-bean="context" factory-method="getObsService"
           scope="singleton"/>
+    <bean class="org.openmrs.api.ConceptService" factory-bean="context" factory-method="getConceptService"
+          scope="singleton"/>
 
 
 
