@@ -5,9 +5,6 @@ import java.util.List;
 
 public class MRSUser {
     private String id;
-
-    private String personId;
-
     private String systemId;
     private String firstName;
     private String middleName;
@@ -93,13 +90,5 @@ public class MRSUser {
     public MRSUser systemId(String systemId) {
         this.systemId = systemId;
         return this;
-    }
-
-    public String getPersonId() {
-        return personId;
-    }
-
-    public void setPersonId(String personId) {
-        this.personId = personId;
     }
 }
