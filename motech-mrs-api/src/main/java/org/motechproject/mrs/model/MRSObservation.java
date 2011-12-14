@@ -8,7 +8,7 @@ public class MRSObservation<T>{
     private Date date;
     private String conceptName;
     private T value;
-
+    
     public MRSObservation(Date date, String conceptName, T value) {
         this.date = date;
         this.conceptName = conceptName;

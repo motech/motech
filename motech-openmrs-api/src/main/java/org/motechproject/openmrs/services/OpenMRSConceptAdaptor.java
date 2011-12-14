@@ -1,12 +1,15 @@
 package org.motechproject.openmrs.services;
 
-import org.motechproject.mrs.services.MRSConceptAdaptor;
 import org.openmrs.Concept;
-import org.springframework.stereotype.Service;
+import org.openmrs.api.ConceptService;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class OpenMRSConceptAdaptor implements MRSConceptAdaptor{
+public class OpenMRSConceptAdaptor {
+
+    @Autowired
+    ConceptService conceptService;
 
     public Concept getConceptByName(String conceptName) {
-        return null;  //To change body of created methods use File | Settings | File Templates.
+        return conceptService.getConcept(conceptName);
     }
 }
