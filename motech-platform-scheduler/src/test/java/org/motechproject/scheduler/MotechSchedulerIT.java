@@ -197,10 +197,8 @@ public class MotechSchedulerIT {
 
     @Test(expected = IllegalArgumentException.class)
     public void updateScheduledJobNullTest() throws Exception {
-
         motechScheduler.updateScheduledJob(null);
     }
-
 
     @Test
     public void rescheduleJobHappyPathTest() throws Exception {
@@ -388,6 +386,4 @@ public class MotechSchedulerIT {
         MotechEvent motechEvent = new MotechEvent("testEvent", params);
         return new CronSchedulableJob(motechEvent, "0 0 12 * * ?");
     }
-
-
 }

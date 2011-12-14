@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class AllAlerts extends MotechBaseRepository<Alert> {
-
     @Autowired
     public AllAlerts(@Qualifier("alertDbConnector") CouchDbConnector db) {
         super(Alert.class, db);
