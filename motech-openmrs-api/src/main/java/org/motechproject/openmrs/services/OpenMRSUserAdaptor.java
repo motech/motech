@@ -1,5 +1,6 @@
 package org.motechproject.openmrs.services;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
 import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.MRSUser;
@@ -19,8 +20,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static ch.lambdaj.Lambda.having;
+import static ch.lambdaj.Lambda.on;
+import static ch.lambdaj.Lambda.select;
 import static java.lang.Integer.parseInt;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
+import static org.hamcrest.Matchers.equalTo;
 
 public class OpenMRSUserAdaptor implements MRSUserAdaptor {
     private static Integer PASSWORD_LENGTH = 8;
@@ -46,10 +51,16 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
 
     @Override
     public Map saveUser(MRSUser mrsUser) throws UserAlreadyExistsException {
-        if (getUserByUserName(mrsUser.getUserName()) != null) {
+        if (getUserByUserName(attrValue(mrsUser.getAttributes(), "Email")) != null) {
             throw new UserAlreadyExistsException();
         }
         return save(mrsUser);
+    }
+
+
+    private String attrValue(List<Attribute> attributes, String key) {
+        List<Attribute> filteredItems = select(attributes, having(on(Attribute.class).name(), equalTo(key)));
+        return CollectionUtils.isNotEmpty(filteredItems) ? filteredItems.get(0).value() : null;
     }
 
     @Override

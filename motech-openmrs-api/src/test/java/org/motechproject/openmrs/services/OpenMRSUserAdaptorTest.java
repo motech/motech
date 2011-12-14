@@ -16,6 +16,7 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.db.DAOException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -63,14 +64,18 @@ public class OpenMRSUserAdaptorTest {
     @Test(expected = UserAlreadyExistsException.class)
     public void shouldThrowUserAlreadyExistsExceptionIfUserAlreadyExist() throws UserAlreadyExistsException {
         String userName = "userName";
+        List<Attribute> attributes = new ArrayList<Attribute>();
+        String email = "test@gmail.com";
+        attributes.add(new Attribute("Email", email));
         MRSUser mrsUser = new MRSUser().userName(userName);
+        mrsUser.setAttributes(attributes);
         User mockUser = mock(User.class);
         Person person = new Person();
         person.addName(new PersonName("given", "middle", "family"));
 
         when(mockUser.getSystemId()).thenReturn("1");
         when(mockUser.getPerson()).thenReturn(person);
-        when(mockUserService.getUserByUsername(userName)).thenReturn(mockUser);
+        when(mockUserService.getUserByUsername(email)).thenReturn(mockUser);
         openMrsUserAdaptor.saveUser(mrsUser);
     }
 
