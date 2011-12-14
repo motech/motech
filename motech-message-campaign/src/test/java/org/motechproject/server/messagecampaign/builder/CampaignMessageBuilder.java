@@ -33,7 +33,7 @@ public class CampaignMessageBuilder {
     }
 
     public RepeatingCampaignMessage repeatingCampaignMessageForInterval(String name, String repeatInterval, String messageKey) {
-        RepeatingCampaignMessage repeatingCampaignMessage = new RepeatingCampaignMessage(repeatInterval);
+        RepeatingCampaignMessage repeatingCampaignMessage = new RepeatingCampaignMessage(repeatInterval, "0:0");
         repeatingCampaignParams(name, messageKey, repeatingCampaignMessage);
         return repeatingCampaignMessage.mode(RepeatingMessageMode.REPEAT_INTERVAL);
     }
@@ -51,7 +51,7 @@ public class CampaignMessageBuilder {
     }
 
     public RepeatingCampaignMessage repeatingCampaignMessageForCalendarWeek(String name, String calendarStartOfWeek, List<String> weekDays,String messageKey) {
-        RepeatingCampaignMessage repeatingCampaignMessage = new RepeatingCampaignMessage(calendarStartOfWeek, weekDays);
+        RepeatingCampaignMessage repeatingCampaignMessage = new RepeatingCampaignMessage(calendarStartOfWeek, weekDays, "0:0");
         repeatingCampaignParams(name, messageKey, repeatingCampaignMessage);
         return repeatingCampaignMessage.mode(RepeatingMessageMode.CALENDAR_WEEK_SCHEDULE);
     }

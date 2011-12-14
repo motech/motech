@@ -23,6 +23,7 @@ public class CampaignMessageRecord {
     private String timeOffset;
     private String repeatInterval;
     private String cron;
+    private String messageSendTime;
 
 
     public CampaignMessage build(CampaignType type) {
@@ -57,7 +58,7 @@ public class CampaignMessageRecord {
     }
 
     private RepeatingMessageMode findMode() {
-        if(validate()) {
+        if (validate()) {
             if (!isEmpty(repeatInterval())) return REPEAT_INTERVAL;
             else if (!isEmpty(calendarStartOfWeek())) return CALENDAR_WEEK_SCHEDULE;
             else if (!CollectionUtils.isEmpty(weekDaysApplicable())) return WEEK_DAYS_SCHEDULE;
@@ -65,22 +66,19 @@ public class CampaignMessageRecord {
         throw new IllegalArgumentException("expected repeatInterval or (calendarStartOfWeek, weekDaysApplicable) only");
     }
 
-    public  boolean validate( ) {
+    public boolean validate() {
         return !isEmpty(repeatInterval()) ? (weekDaysApplicable() == null && calendarStartOfWeek() == null)
                 : (weekDaysApplicable() != null || calendarStartOfWeek() != null);
     }
 
-    public RepeatingCampaignMessage createRepeatingCampaignMessageFromRecord(){
-
+    public RepeatingCampaignMessage createRepeatingCampaignMessageFromRecord() {
         RepeatingMessageMode messageMode = this.findMode();
-        if(messageMode.equals(REPEAT_INTERVAL)) {
-            return buildDefaultValues(new RepeatingCampaignMessage(repeatInterval()));
-        }
-        else if(messageMode.equals(WEEK_DAYS_SCHEDULE)) {
-            return buildDefaultValues(new RepeatingCampaignMessage(weekDaysApplicable()));
-        }
-        else if(messageMode.equals(CALENDAR_WEEK_SCHEDULE)) {
-             return buildDefaultValues(new RepeatingCampaignMessage(calendarStartOfWeek(), weekDaysApplicable()));
+        if (messageMode.equals(REPEAT_INTERVAL)) {
+            return buildDefaultValues(new RepeatingCampaignMessage(repeatInterval(), messageSendTime));
+        } else if (messageMode.equals(WEEK_DAYS_SCHEDULE)) {
+            return buildDefaultValues(new RepeatingCampaignMessage(weekDaysApplicable(), messageSendTime));
+        } else if (messageMode.equals(CALENDAR_WEEK_SCHEDULE)) {
+            return buildDefaultValues(new RepeatingCampaignMessage(calendarStartOfWeek(), weekDaysApplicable(), messageSendTime));
         }
         return null;
     }
@@ -188,6 +186,11 @@ public class CampaignMessageRecord {
 
     public void cron(String cron) {
         this.cron = cron;
+    }
+
+    public CampaignMessageRecord messageSendTime(String messageSendTime) {
+        this.messageSendTime = messageSendTime;
+        return this;
     }
 
     public String cron() {

@@ -14,8 +14,8 @@ public class RepeatingCampaignMessageTest extends BaseUnitTest {
 
     @Test
     public void shouldReturnRepeatIntervalInDays_WhenRepeatIntervalIsNotNull() {
-        assertThat(new RepeatingCampaignMessage("2 Weeks").repeatIntervalInDaysForOffset(), is(14));
-        assertThat(new RepeatingCampaignMessage("9 Days").repeatIntervalInDaysForOffset(), is(9));
+        assertThat(new RepeatingCampaignMessage("2 Weeks", "0:0").repeatIntervalInDaysForOffset(), is(14));
+        assertThat(new RepeatingCampaignMessage("9 Days", "0:0").repeatIntervalInDaysForOffset(), is(9));
     }
 
     @Test

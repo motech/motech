@@ -1,6 +1,7 @@
 package org.motechproject.server.messagecampaign.domain.message;
 
 import org.motechproject.model.DayOfWeek;
+import org.motechproject.model.Time;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.factory.WallTimeFactory;
@@ -20,21 +21,25 @@ public class RepeatingCampaignMessage extends CampaignMessage {
     private String repeatInterval;
     private String calendarStartOfWeek;
     private List<DayOfWeek> weekDaysApplicable;
+    private Time messageSendTime;
     public static final int DAILY_REPEAT_INTERVAL = 1;
     public static final int WEEKLY_REPEAT_INTERVAL = 7;
 
-    public RepeatingCampaignMessage(String repeatInterval) {
+    public RepeatingCampaignMessage(String repeatInterval, String messageSendTime) {
         this.repeatInterval = repeatInterval;
+        this.messageSendTime = Time.parseTime(messageSendTime, ":");
         this.repeatingMessageMode = REPEAT_INTERVAL;
     }
 
-    public RepeatingCampaignMessage(List<String> weekDaysApplicable) {
+    public RepeatingCampaignMessage(List<String> weekDaysApplicable, String messageSendTime) {
+        this.messageSendTime = Time.parseTime(messageSendTime, ":");
         setWeekDaysApplicable(weekDaysApplicable);
         this.repeatingMessageMode = WEEK_DAYS_SCHEDULE;
     }
 
-    public RepeatingCampaignMessage(String calendarStartOfWeek, List<String> weekDaysApplicable) {
+    public RepeatingCampaignMessage(String calendarStartOfWeek, List<String> weekDaysApplicable, String messageSendTime) {
         this.calendarStartOfWeek = calendarStartOfWeek;
+        this.messageSendTime = Time.parseTime(messageSendTime, ":");
         this.repeatingMessageMode = CALENDAR_WEEK_SCHEDULE;
         if(isEmpty(weekDaysApplicable)) this.weekDaysApplicable = asList(DayOfWeek.values());
         else setWeekDaysApplicable(weekDaysApplicable);
@@ -86,6 +91,10 @@ public class RepeatingCampaignMessage extends CampaignMessage {
 
     public RepeatingMessageMode mode() {
         return this.repeatingMessageMode;
+    }
+
+    public Time messageSendTime() {
+        return messageSendTime;
     }
 
     private void setWeekDaysApplicable(List<String> weekDaysApplicable) {
