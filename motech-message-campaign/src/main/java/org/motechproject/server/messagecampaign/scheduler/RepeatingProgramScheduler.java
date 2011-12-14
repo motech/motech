@@ -1,6 +1,5 @@
 package org.motechproject.server.messagecampaign.scheduler;
 
-import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.EventKeys;
@@ -32,11 +31,10 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
         if (startDate.compareTo(endDate) > 0)
             throw new IllegalArgumentException(format("startDate (%s) is after endDate (%s) for - (%s)", startDate, endDate, campaignRequest));
 
-        long repeatInterval = Days.days(message.repeatIntervalForSchedule()).toStandardSeconds().getSeconds() * 1000L;
         Map<String, Object> params = jobParams(message.messageKey());
         params.put(EventKeys.REPEATING_START_OFFSET, startOffset(message));
         params.put(EventKeys.START_DATE, startDate.toDate());
-        scheduleRepeatingJob(startDate, campaignRequest.reminderTime(), endDate, repeatInterval, params);
+        scheduleRepeatingJob(startDate, campaignRequest.reminderTime(), endDate, params);
     }
 
     private int startOffset(RepeatingCampaignMessage message) {

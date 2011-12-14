@@ -28,6 +28,11 @@ public class EnrollRequestBuilder {
         return this;
     }
 
+    public EnrollRequestBuilder withReminderTime(Time reminderTime) {
+        this.reminderTime = reminderTime;
+        return this;
+    }
+
     public CampaignRequest build() {
         CampaignRequest request = new CampaignRequest();
         request.setCampaignName(this.campaignName);
