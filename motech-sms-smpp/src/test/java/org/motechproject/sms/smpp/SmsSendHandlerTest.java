@@ -26,7 +26,6 @@ public class SmsSendHandlerTest {
 	@Before
 	public void setup() {
 		initMocks(this);
-
 		handler = new SmsSendHandler(managedSmslibService);
 	}
 
@@ -51,6 +50,6 @@ public class SmsSendHandlerTest {
 			put(MESSAGE, message);
 		}}));
 
-		verify(managedSmslibService).sendMessage(recipients, message);
+		verify(managedSmslibService).queueMessage(recipients, message);
 	}
 }
