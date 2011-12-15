@@ -130,6 +130,7 @@
         <module>motech-sms-kookoo</module>
         <module>motech-sms-http</module>
         <module>motech-sms-smpp</module>
+        <module>motech-testing-utils</module>
     </modules>
 
     <build>

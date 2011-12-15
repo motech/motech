@@ -2,8 +2,10 @@ package org.motechproject.server.messagecampaign.dao;
 
 import com.google.gson.reflect.TypeToken;
 import org.motechproject.dao.MotechJsonReader;
+import org.motechproject.model.DayOfWeek;
 import org.motechproject.server.messagecampaign.domain.campaign.Campaign;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
+import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 import org.motechproject.server.messagecampaign.userspecified.CampaignRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,9 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import static ch.lambdaj.Lambda.having;
-import static ch.lambdaj.Lambda.on;
-import static ch.lambdaj.Lambda.select;
+import static ch.lambdaj.Lambda.*;
 import static org.hamcrest.Matchers.equalTo;
 
 @Component
@@ -49,7 +49,7 @@ public class AllMessageCampaigns {
                     }.getType());
 
             for (CampaignRecord campaignRecord : campaignRecords) {
-                 campaigns.add(campaignRecord.build());
+                campaigns.add(campaignRecord.build());
             }
         }
 
@@ -71,5 +71,17 @@ public class AllMessageCampaigns {
 
     private String definitionFile() {
         return this.properties.getProperty(MESSAGECAMPAIGN_DEFINITION_FILE);
+    }
+
+    public List<DayOfWeek> getApplicableDaysForRepeatingCampaign(String campaignName, String messageName) {
+        Campaign campaign = get(campaignName);
+        if (campaign != null) {
+            for (Object message : campaign.messages()) {
+                RepeatingCampaignMessage campaignMessage = (RepeatingCampaignMessage) message;
+                if (campaignMessage.name().equals(messageName))
+                    return campaignMessage.weekDaysApplicable();
+            }
+        }
+        return null;
     }
 }

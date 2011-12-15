@@ -28,14 +28,14 @@ public class PillRegimenJobScheduler {
     public void scheduleDailyJob(PillRegimen pillRegimen) {
         for (Dosage dosage : pillRegimen.getDosages()) {
             CronSchedulableJob schedulableJob = getSchedulableDailyJob(pillRegimen.getId(), pillRegimen.getExternalId(), dosage);
-            schedulerService.scheduleJob(schedulableJob);
+            schedulerService.safeScheduleJob(schedulableJob);
         }
     }
 
     public void unscheduleJobs(PillRegimen regimen) {
         for (Dosage dosage : regimen.getDosages()) {
-            schedulerService.unscheduleJob(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, dosage.getId());
-            schedulerService.unscheduleRepeatingJob(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, dosage.getId());
+            schedulerService.safeUnscheduleJob(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, dosage.getId());
+            schedulerService.safeUnscheduleRepeatingJob(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, dosage.getId());
         }
     }
 

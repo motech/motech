@@ -1,6 +1,7 @@
 package org.motechproject.server.pillreminder.domain;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
 import org.motechproject.util.DateUtil;
@@ -104,5 +105,9 @@ public class Dosage {
     public void validate() {
         for (Medicine medicine : getMedicines())
             medicine.validate();
+    }
+
+    public DateTime todaysDosageTime() {
+        return DateUtil.now().withHourOfDay(dosageTime.getHour()).withMinuteOfHour(dosageTime.getMinute());
     }
 }
