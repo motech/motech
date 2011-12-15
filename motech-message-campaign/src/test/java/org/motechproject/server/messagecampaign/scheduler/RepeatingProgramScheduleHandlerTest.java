@@ -8,12 +8,12 @@ import org.mockito.Mock;
 import org.motechproject.gateway.OutboundEventGateway;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.Time;
-import org.motechproject.server.messagecampaign.BaseUnitTest;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.builder.CampaignMessageBuilder;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
+import org.motechproject.testing.utils.BaseUnitTest;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -29,7 +29,6 @@ import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgra
 import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduler.INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT;
 
 public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
-
     @Mock
     AllMessageCampaigns allMessageCampaigns;
     @Mock
@@ -37,8 +36,6 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
     RepeatingProgramScheduleHandler handler;
 
     String campaignName = "campaign-name";
-    private final String jobId = "job-id";
-    private final String externalId = "external-id";
 
     @Before
     public void setUp() {
@@ -80,7 +77,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
     public void shouldHandleEventForRepeatCampaignScheduleBasedOnWeeksDaysApplicableAndUpdateMessageKey() {
 
         String jobMessageKey = "message-key-" + OFFSET + "-" + WEEK_DAY;
-        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForDaysApplicable(campaignName,  
+        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForDaysApplicable(campaignName,
                 asList("Monday", "Wednesday", "Friday", "Saturday"), jobMessageKey);
         int repeatIntervalAs7 = ((RepeatingCampaignMessage) campaignMessage).repeatIntervalInDaysForOffset();
         when(allMessageCampaigns.get(campaignName, jobMessageKey)).thenReturn(campaignMessage);
@@ -153,16 +150,16 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
     }
 
     private void assertHandleEvent(String expectedMsgKey) {
-        assertHandleEvent(expectedMsgKey ,true);
+        assertHandleEvent(expectedMsgKey, true);
     }
 
     private void assertHandleEvent_ThatItDoesntProceed() {
-        assertHandleEvent(null ,false);
+        assertHandleEvent(null, false);
     }
 
     private void assertHandleEvent(String expectedMsgKey, boolean shouldFireToEventGateway) {
         ArgumentCaptor<MotechEvent> event = ArgumentCaptor.forClass(MotechEvent.class);
-        if(shouldFireToEventGateway) {
+        if (shouldFireToEventGateway) {
             verify(outboundEventGateway, times(1)).sendEventMessage(event.capture());
             assertOffsetForMessage(event, expectedMsgKey);
         } else
@@ -170,7 +167,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
     }
 
     private void assertOffsetForMessage(ArgumentCaptor<MotechEvent> event, String messageKey) {
-        Map<String,Object> params = event.getValue().getParameters();
+        Map<String, Object> params = event.getValue().getParameters();
         assertNotNull(params);
         assertEquals(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, event.getValue().getSubject());
         assertEquals(campaignName, params.get(EventKeys.CAMPAIGN_NAME_KEY));

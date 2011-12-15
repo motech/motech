@@ -9,6 +9,5 @@ public interface PillReminderService {
     void renew(DailyPillRegimenRequest newDailyScheduleRequest);
     void dosageStatusKnown(String pillRegimenId, String dosageId, LocalDate lastCapturedDate);
     PillRegimenResponse getPillRegimen(String externalId);
-    void unscheduleJobs(String externalID);
-
+    void remove(String externalID);
 }

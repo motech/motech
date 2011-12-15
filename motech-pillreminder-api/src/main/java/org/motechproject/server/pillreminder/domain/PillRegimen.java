@@ -2,7 +2,10 @@ package org.motechproject.server.pillreminder.domain;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
+import org.joda.time.DateTime;
 import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.model.Time;
+import org.motechproject.util.DateUtil;
 
 import java.util.Set;
 
@@ -66,5 +69,27 @@ public class PillRegimen extends MotechAuditableDataObject {
         for (Dosage dosage : dosages)
             if (dosage.getId().equals(dosageId)) return dosage;
         return null;
+    }
+
+    public boolean isFirstReminderFor(Dosage dosage) {
+        return numberOfTimesPillRemindersSentFor(dosage) == 0;
+    }
+
+    private int getOffsetOfCurrentTimeFromDosageStartTime(Time dosageStartTime, DateTime now) {
+        int hourDiff = now.getHourOfDay() - dosageStartTime.getHour();
+        if (hourDiff < 0) hourDiff += 24;
+        return hourDiff * 60 + now.getMinuteOfHour() - dosageStartTime.getMinute();
+    }
+
+    public int numberOfTimesPillRemindersSentFor(Dosage dosage) {
+        DailyScheduleDetails scheduleDetails = getScheduleDetails();
+        Time dosageStartTime = dosage.getDosageTime();
+        int minsSinceDosage = Math.min(getOffsetOfCurrentTimeFromDosageStartTime(dosageStartTime, DateUtil.now()), scheduleDetails.getPillWindowInHours() * 60);
+        return (minsSinceDosage / scheduleDetails.getRepeatIntervalInMinutes());
+    }
+
+    public int timesPillRemainderWillBeSent() {
+        DailyScheduleDetails scheduleDetails = getScheduleDetails();
+        return (scheduleDetails.getPillWindowInHours() * 60) / scheduleDetails.getRepeatIntervalInMinutes();
     }
 }

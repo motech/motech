@@ -80,7 +80,21 @@ public interface MotechSchedulerService {
      */
     public void unscheduleJob(String subject, String externalId);
 
+    /**
+     * Same as unscheduleJob except that it would not throw an exception if the job doesn't exist
+     * @param subject
+     * @param externalId
+     */
+    public void safeUnscheduleJob(String subject, String externalId);
+
     public void unscheduleAllJobs(String jobIdPrefix);
 
     void unscheduleRepeatingJob(String subject, String externalId);
+
+    /**
+     * Same as unscheduleRepeatingJob except that it would not throw an exception if the job doesn't exist
+     * @param subject
+     * @param externalId
+     */
+    public void safeUnscheduleRepeatingJob(String subject, String externalId);
 }

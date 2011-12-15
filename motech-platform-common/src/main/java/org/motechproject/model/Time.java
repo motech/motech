@@ -3,6 +3,7 @@ package org.motechproject.model;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
 
 public class Time implements Comparable<Time> {
     private Integer hour;
@@ -14,6 +15,10 @@ public class Time implements Comparable<Time> {
     public Time(Integer hour, Integer minute) {
         this.hour = hour;
         this.minute = minute;
+    }
+
+    public Time(LocalTime localTime) {
+        this(localTime.getHourOfDay(), localTime.getMinuteOfHour());
     }
 
     public Integer getHour() {
