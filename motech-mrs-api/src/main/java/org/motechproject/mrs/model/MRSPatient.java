@@ -39,6 +39,10 @@ public class MRSPatient {
         this.id = id;
     }
 
+    public MRSPatient(String id) {
+        this.id = id;
+    }
+
     public String getId() {
         return id;
     }

@@ -74,4 +74,8 @@ public class Context {
     public EncounterService getEncounterService() {
         return org.openmrs.api.context.Context.getEncounterService();
     }
+
+    public ConceptService getConceptService() {
+        return org.openmrs.api.context.Context.getConceptService();
+    }
 }

@@ -4,5 +4,5 @@ import org.motechproject.mrs.model.MRSEncounter;
 
 
 public interface MRSEncounterAdaptor {
-    public MRSEncounter saveEncounter(MRSEncounter MRSEncounter);
+    public MRSEncounter createEncounter(MRSEncounter MRSEncounter);
 }
