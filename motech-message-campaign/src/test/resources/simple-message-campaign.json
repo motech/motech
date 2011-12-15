@@ -57,7 +57,7 @@
                 "languages" : ["en"],
                 "messageKey": "child-info-week-{Offset}-1",
                 "repeatInterval" : "1 Week",
-                "messageSendTime" : "10:30"
+                "deliverTime" : "10:30"
             },
             {
                 "name" : "Weekly Message #2",
@@ -65,7 +65,7 @@
                 "languages" : ["en"],
                 "messageKey": "child-info-week-{Offset}-2",
                 "repeatInterval" : "9 Days",
-                "messageSendTime" : "10:30"
+                "deliverTime" : "10:30"
             },
             {
                 "name" : "Weekly Message #3",
@@ -73,7 +73,7 @@
                 "languages" : ["en"],
                 "messageKey": "child-info-week-{Offset}-3",
                 "repeatInterval" : "12 Days",
-                "messageSendTime" : "10:30"
+                "deliverTime" : "10:30"
             },
             {
                 "name" : "Weekly Message #4",
@@ -81,7 +81,7 @@
                 "languages" : ["en"],
                 "messageKey": "child-info-week-{Offset}-{WeekDay}",
                 "weekDaysApplicable" : ["Monday", "Wednesday", "Friday"],
-                "messageSendTime" : "10:30"
+                "deliverTime" : "10:30"
             },
             {
                 "name" : "Weekly Message #5",
@@ -90,7 +90,7 @@
                 "messageKey": "child-info-calendar-week-{Offset}-{WeekDay}",
                 "calendarStartOfWeek" : "Sunday", 
                 "weekDaysApplicable" : ["Monday", "Wednesday", "Friday"],
-                "messageSendTime" : "10:30"
+                "deliverTime" : "10:30"
             }
         ]
     },

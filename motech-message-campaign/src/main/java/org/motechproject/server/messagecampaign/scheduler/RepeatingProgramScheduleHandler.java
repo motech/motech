@@ -8,7 +8,6 @@ import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
-import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -43,12 +42,14 @@ public class RepeatingProgramScheduleHandler {
         Integer startIntervalOffset = (Integer) params.get(EventKeys.REPEATING_START_OFFSET);
         Date startDate = (Date) params.get(EventKeys.START_DATE);
 
-        if (!repeatingCampaignMessage.isApplicable()) return;
         Integer offset = repeatingCampaignMessage.offset(startDate, startIntervalOffset);
 
         replaceMessageKeyParams(params, OFFSET, offset.toString());
-        replaceMessageKeyParams(params, WEEK_DAY, DateUtil.now().dayOfWeek().getAsText());
-        outboundEventGateway.sendEventMessage(event.copy(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, event.getParameters()));
+        String nextApplicableDay = repeatingCampaignMessage.getNextApplicableDay();
+        if (nextApplicableDay != null) {
+            replaceMessageKeyParams(params, WEEK_DAY, nextApplicableDay);
+            outboundEventGateway.sendEventMessage(event.copy(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, event.getParameters()));
+        }
     }
 
     private void replaceMessageKeyParams(Map<String, Object> parameters, String parameterName, String value) {

@@ -42,17 +42,20 @@ public class ServerEventRelayTransactionIT {
     public void setUp() throws JMSException {
         handler.setupForFailure(false);
         queueExplorer = new ActiveMQQueueExplorer(cachingConnectionFactory);
+        ActiveMQQueue schedulerQueue = (ActiveMQQueue) applicationContext.getBean("schedulerQueue");
         eventQueue = (ActiveMQQueue) applicationContext.getBean("eventQueue");
+        queueExplorer.clear(schedulerQueue);
         queueExplorer.clear(eventQueue);
         redeliveryDelayInMillis = Integer.parseInt(activeMQProperties.getProperty("redeliveryDelayInMillis"));
     }
 
     @Test
     public void sucessfulHandlingOfEventShouldDestroyTheEvent() throws Exception {
+        int numberOfMessagesInQueue = queueExplorer.queueSize(eventQueue);
         MotechEvent motechEvent = new MotechEvent(EventHandlerForServerEventRelayTransactionIT.SUCCESSFUL_EVENT_SUBJECT);
         outboundEventGateway.sendEventMessage(motechEvent);
         Thread.sleep(redeliveryDelayInMillis);
-        assertEquals(0, queueExplorer.queueSize(eventQueue));
+        assertEquals(0, queueExplorer.queueSize(eventQueue) - numberOfMessagesInQueue);
     }
 
     @Test

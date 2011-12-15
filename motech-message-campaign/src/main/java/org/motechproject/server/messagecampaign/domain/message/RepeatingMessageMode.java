@@ -1,9 +1,11 @@
 package org.motechproject.server.messagecampaign.domain.message;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
 import org.motechproject.model.DayOfWeek;
+import org.motechproject.model.Time;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduler;
 import org.motechproject.util.DateUtil;
@@ -11,6 +13,7 @@ import org.motechproject.valueobjects.WallTime;
 
 import java.util.Date;
 
+import static org.joda.time.DateTimeConstants.SUNDAY;
 import static org.joda.time.Days.daysBetween;
 import static org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage.WEEKLY_REPEAT_INTERVAL;
 import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduler.DEFAULT_INTERVAL_OFFSET;
@@ -36,8 +39,12 @@ public enum RepeatingMessageMode {
             return maxDuration.inDays() - 1;
         }
 
-    }, WEEK_DAYS_SCHEDULE {
+        @Override
+        public String getNextApplicableDay(RepeatingCampaignMessage message) {
+            return (message.isApplicable()) ? DateUtil.now().dayOfWeek().getAsText() : null;
+        }
 
+    }, WEEK_DAYS_SCHEDULE {
         public boolean isApplicable(RepeatingCampaignMessage message) {
             return isWeekDayApplicable(message);
         }
@@ -55,8 +62,12 @@ public enum RepeatingMessageMode {
             return (maxDuration.inDays() - 1) - elapsedOffsetInDays;
         }
 
-    }, CALENDAR_WEEK_SCHEDULE {
+        @Override
+        public String getNextApplicableDay(RepeatingCampaignMessage message) {
+            return (message.isApplicable()) ? DateUtil.now().dayOfWeek().getAsText() : null;
+        }
 
+    }, CALENDAR_WEEK_SCHEDULE {
         public boolean isApplicable(RepeatingCampaignMessage message) {
             return isWeekDayApplicable(message);
         }
@@ -66,11 +77,12 @@ public enum RepeatingMessageMode {
         }
 
         public Integer offset(RepeatingCampaignMessage message, Date cycleStartDate, Integer startIntervalOffset) {
-                        
+
             LocalDate cycleStartLocalDate = DateUtil.newDate(cycleStartDate);
             LocalDate currentDate = DateUtil.today();
 
-            if (cycleStartDate.compareTo(currentDate.toDate()) > 0) throw new IllegalArgumentException("cycleStartDate cannot be in future");
+            if (cycleStartDate.compareTo(currentDate.toDate()) > 0)
+                throw new IllegalArgumentException("cycleStartDate cannot be in future");
 
             int daysDiff = new Period(cycleStartLocalDate, currentDate, PeriodType.days()).getDays();
             if (daysDiff > 0) {
@@ -83,11 +95,15 @@ public enum RepeatingMessageMode {
         }
 
         public int duration(WallTime maxDuration, CampaignRequest campaignRequest, RepeatingCampaignMessage message) {
-
             int actualMaxDurationDaysToAdd = maxDuration.inDays() - 1;
             int elapsedOffset = (defaultOffsetIfNotSet(campaignRequest.startOffset()) - 1) * repeatIntervalForOffSet(message);
             int daysToNormalizeForFirstWeek = daysToSubtractForRegisteredWeek(campaignRequest.referenceDate(), message.calendarStartDayOfWeek().getValue());
             return actualMaxDurationDaysToAdd - daysToNormalizeForFirstWeek - elapsedOffset;
+        }
+
+        @Override
+        public String getNextApplicableDay(RepeatingCampaignMessage message) {
+            return getNextApplicableDateTime(message);
         }
 
         private int daysToSubtractForRegisteredWeek(LocalDate startDate, int calendarStartDayOfWeek) {
@@ -108,6 +124,29 @@ public enum RepeatingMessageMode {
         return false;
     }
 
+    String getNextApplicableDateTime(RepeatingCampaignMessage message) {
+        DateTime dateTime = calculateNextPossible(DateUtil.now(), message);
+        DateTime nextPossibleDateLimit = DateUtil.now().dayOfMonth().addToCopy(1).minusMinutes(1);
+        if (dateTime.toDate().compareTo(DateUtil.now().toDate()) >= 0 && dateTime.isBefore(nextPossibleDateLimit))
+            return dateTime.dayOfWeek().getAsText();
+        return null;
+    }
+
+    private DateTime calculateNextPossible(DateTime fromDate, RepeatingCampaignMessage message) {
+        int dayOfWeek = fromDate.getDayOfWeek();
+        int noOfDaysToNearestCycleDate = 0;
+        for (int currentDayOfWeek = dayOfWeek, dayCount = 0; dayCount <= SUNDAY; dayCount++) {
+            if (message.weekDaysApplicable().contains(DayOfWeek.getDayOfWeek(currentDayOfWeek))) {
+                noOfDaysToNearestCycleDate = dayCount;
+                break;
+            }
+            if (currentDayOfWeek == SUNDAY) currentDayOfWeek = 1;
+            else currentDayOfWeek++;
+        }
+        Time time = message.deliverTime();
+        return fromDate.dayOfMonth().addToCopy(noOfDaysToNearestCycleDate).withHourOfDay(time.getHour()).withMinuteOfHour(time.getMinute());
+    }
+
     public abstract boolean isApplicable(RepeatingCampaignMessage repeatingCampaignMessage);
 
     public abstract Integer offset(RepeatingCampaignMessage repeatingCampaignMessage, Date startTime, Integer startIntervalOffset);
@@ -115,4 +154,6 @@ public enum RepeatingMessageMode {
     public abstract Integer repeatIntervalForOffSet(RepeatingCampaignMessage repeatingCampaignMessage);
 
     public abstract int duration(WallTime maxDuration, CampaignRequest campaignRequest, RepeatingCampaignMessage message);
+
+    public abstract String getNextApplicableDay(RepeatingCampaignMessage message);
 }

@@ -21,25 +21,25 @@ public class RepeatingCampaignMessage extends CampaignMessage {
     private String repeatInterval;
     private String calendarStartOfWeek;
     private List<DayOfWeek> weekDaysApplicable;
-    private Time messageSendTime;
+    private Time deliverTime;
     public static final int DAILY_REPEAT_INTERVAL = 1;
     public static final int WEEKLY_REPEAT_INTERVAL = 7;
 
-    public RepeatingCampaignMessage(String repeatInterval, String messageSendTime) {
+    public RepeatingCampaignMessage(String repeatInterval, String deliverTime) {
         this.repeatInterval = repeatInterval;
-        this.messageSendTime = Time.parseTime(messageSendTime, ":");
+        this.deliverTime = Time.parseTime(deliverTime, ":");
         this.repeatingMessageMode = REPEAT_INTERVAL;
     }
 
-    public RepeatingCampaignMessage(List<String> weekDaysApplicable, String messageSendTime) {
-        this.messageSendTime = Time.parseTime(messageSendTime, ":");
+    public RepeatingCampaignMessage(List<String> weekDaysApplicable, String deliverTime) {
+        this.deliverTime = Time.parseTime(deliverTime, ":");
         setWeekDaysApplicable(weekDaysApplicable);
         this.repeatingMessageMode = WEEK_DAYS_SCHEDULE;
     }
 
-    public RepeatingCampaignMessage(String calendarStartOfWeek, List<String> weekDaysApplicable, String messageSendTime) {
+    public RepeatingCampaignMessage(String calendarStartOfWeek, List<String> weekDaysApplicable, String deliverTime) {
         this.calendarStartOfWeek = calendarStartOfWeek;
-        this.messageSendTime = Time.parseTime(messageSendTime, ":");
+        this.deliverTime = Time.parseTime(deliverTime, ":");
         this.repeatingMessageMode = CALENDAR_WEEK_SCHEDULE;
         if(isEmpty(weekDaysApplicable)) this.weekDaysApplicable = asList(DayOfWeek.values());
         else setWeekDaysApplicable(weekDaysApplicable);
@@ -92,9 +92,14 @@ public class RepeatingCampaignMessage extends CampaignMessage {
     public RepeatingMessageMode mode() {
         return this.repeatingMessageMode;
     }
+    
+    public RepeatingCampaignMessage deliverTime(Time deliverTime) {
+        this.deliverTime = deliverTime;
+        return this;
+    }
 
-    public Time messageSendTime() {
-        return messageSendTime;
+    public Time deliverTime() {
+        return deliverTime;
     }
 
     private void setWeekDaysApplicable(List<String> weekDaysApplicable) {
@@ -113,5 +118,9 @@ public class RepeatingCampaignMessage extends CampaignMessage {
 
     public int duration(WallTime duration, CampaignRequest campaignRequest) {
         return repeatingMessageMode.duration(duration, campaignRequest, this);
+    }
+
+    public String getNextApplicableDay() {
+        return repeatingMessageMode.getNextApplicableDay(this);
     }
 }

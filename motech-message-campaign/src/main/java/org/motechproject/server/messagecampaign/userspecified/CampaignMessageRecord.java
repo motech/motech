@@ -23,7 +23,7 @@ public class CampaignMessageRecord {
     private String timeOffset;
     private String repeatInterval;
     private String cron;
-    private String messageSendTime;
+    private String deliverTime;
 
 
     public CampaignMessage build(CampaignType type) {
@@ -74,11 +74,11 @@ public class CampaignMessageRecord {
     public RepeatingCampaignMessage createRepeatingCampaignMessageFromRecord() {
         RepeatingMessageMode messageMode = this.findMode();
         if (messageMode.equals(REPEAT_INTERVAL)) {
-            return buildDefaultValues(new RepeatingCampaignMessage(repeatInterval(), messageSendTime));
+            return buildDefaultValues(new RepeatingCampaignMessage(repeatInterval(), deliverTime));
         } else if (messageMode.equals(WEEK_DAYS_SCHEDULE)) {
-            return buildDefaultValues(new RepeatingCampaignMessage(weekDaysApplicable(), messageSendTime));
+            return buildDefaultValues(new RepeatingCampaignMessage(weekDaysApplicable(), deliverTime));
         } else if (messageMode.equals(CALENDAR_WEEK_SCHEDULE)) {
-            return buildDefaultValues(new RepeatingCampaignMessage(calendarStartOfWeek(), weekDaysApplicable(), messageSendTime));
+            return buildDefaultValues(new RepeatingCampaignMessage(calendarStartOfWeek(), weekDaysApplicable(), deliverTime));
         }
         return null;
     }
@@ -188,8 +188,8 @@ public class CampaignMessageRecord {
         this.cron = cron;
     }
 
-    public CampaignMessageRecord messageSendTime(String messageSendTime) {
-        this.messageSendTime = messageSendTime;
+    public CampaignMessageRecord deliverTime(String deliverTime) {
+        this.deliverTime = deliverTime;
         return this;
     }
 

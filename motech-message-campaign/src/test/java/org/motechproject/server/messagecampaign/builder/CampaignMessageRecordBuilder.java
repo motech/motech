@@ -34,7 +34,7 @@ public class CampaignMessageRecordBuilder {
     }
 
     private static CampaignMessageRecord createCampaignMessageRecord(String name, String messageKey, String repeatInterval) {
-        return new CampaignMessageRecord().name(name).formats(formats).languages(languages).messageKey(messageKey).repeatInterval(repeatInterval).messageSendTime("10:30");
+        return new CampaignMessageRecord().name(name).formats(formats).languages(languages).messageKey(messageKey).repeatInterval(repeatInterval).deliverTime("10:30");
     }
 
     public static CampaignMessageRecord createRepeatingMessageRecordWithInterval(String name, String messageKey, String repeatInterval) {

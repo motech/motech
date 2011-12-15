@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.gateway.OutboundEventGateway;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.model.Time;
 import org.motechproject.server.messagecampaign.BaseUnitTest;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.builder.CampaignMessageBuilder;
@@ -49,7 +50,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
     public void shouldHandleEventForRepeatCampaignScheduleAndUpdateMessageKey() {
 
         String jobMessageKey = "message-key-" + OFFSET;
-        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForInterval(campaignName, "2 Weeks", jobMessageKey);
+        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForInterval(campaignName, "2 Weeks", jobMessageKey).deliverTime(new Time(10, 30));
         int repeatIntervalInDays = ((RepeatingCampaignMessage) campaignMessage).repeatIntervalInDaysForOffset();
         when(allMessageCampaigns.get(campaignName, jobMessageKey)).thenReturn(campaignMessage);
 
