@@ -1,5 +1,6 @@
 package org.motechproject.sms.smpp;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.model.MotechEvent;
@@ -21,6 +22,7 @@ public class SendSmsIT {
     private ManagedSmslibService service;
 
     @Test
+    @Ignore("run with smpp simulator; config in smpp.properties")
     public void shouldSendSms() throws Exception {
         smsSendHandler = new SmsSendHandler(service);
 
