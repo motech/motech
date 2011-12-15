@@ -16,5 +16,6 @@
     <bean id="smslibService" class="org.smslib.Service" factory-method="getInstance"/>
 
     <util:properties id="smppProperties" location="classpath:/smpp.properties"/>
+    <util:properties id="smsProperties" location="classpath:/sms.properties"/>
 
 </beans>
