@@ -1,13 +1,44 @@
 package org.motechproject.openmrs;
 
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.motechproject.mrs.services.MRSFacilityAdaptor;
+import org.motechproject.mrs.services.MRSPatientAdaptor;
+import org.motechproject.mrs.services.MRSUserAdaptor;
 import org.motechproject.openmrs.security.OpenMRSSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ResourceBundle;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"classpath:applicationOpenmrsAPI.xml"})
 public class OpenMRSIntegrationTestBase {
     @Autowired
     OpenMRSSession openMRSSession;
+
+    @Autowired
+    protected MRSUserAdaptor userAdaptor;
+
+    @Autowired
+    protected MRSPatientAdaptor patientAdaptor;
+
+    @Autowired
+    protected MRSFacilityAdaptor facilityAdaptor;
+
+    boolean doOnce = false;
+
+    @Before
+    public final void setUpBefore() {
+        setUp();
+        if (!doOnce) {
+            doOnceBefore();
+            doOnce = true;
+        }
+    }
+
+    public void doOnceBefore() {}
 
     public void setUp() {
         ResourceBundle resourceBundle = ResourceBundle.getBundle("openmrs");

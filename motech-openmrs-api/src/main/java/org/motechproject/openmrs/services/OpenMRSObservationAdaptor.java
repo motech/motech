@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.apache.commons.lang.math.NumberUtils.isNumber;
+
 public class OpenMRSObservationAdaptor {
 
     @Autowired
@@ -31,8 +33,8 @@ public class OpenMRSObservationAdaptor {
     }
 
     <T> void writeValueToOpenMRSObservation(T value, Obs openMRSObservation) {
-        if (value instanceof Double) {
-            openMRSObservation.setValueNumeric((Double) value);
+        if ((value instanceof Number) && isNumber(value.toString())) {
+            openMRSObservation.setValueNumeric(Double.parseDouble(value.toString()));
         } else if (value instanceof String) {
             openMRSObservation.setValueText((String) value);
         } else if (value instanceof Boolean) {
@@ -40,7 +42,7 @@ public class OpenMRSObservationAdaptor {
         } else if (value instanceof Date) {
             openMRSObservation.setValueDatetime((Date) value);
         } else {
-            throw new IllegalArgumentException("Invalid value of the createMRSObservation-" + value);
+            throw new IllegalArgumentException("Invalid value of the createMRSObservation- " + value);
         }
     }
 

@@ -1,7 +1,12 @@
 package org.motechproject.mrs.model;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import static ch.lambdaj.Lambda.*;
+import static org.hamcrest.Matchers.equalTo;
 
 public class MRSUser {
     private String id;
@@ -67,8 +72,10 @@ public class MRSUser {
         return attributes;
     }
 
-    public void addAttribute(Attribute attribute) {
+
+    public MRSUser addAttribute(Attribute attribute) {
         attributes.add(attribute);
+        return this;
     }
 
     public String getSecurityRole() {
@@ -90,5 +97,10 @@ public class MRSUser {
     public MRSUser systemId(String systemId) {
         this.systemId = systemId;
         return this;
+    }
+
+     public String attrValue(String key) {
+        List<Attribute> filteredItems = select(attributes, having(on(Attribute.class).name(), equalTo(key)));
+        return CollectionUtils.isNotEmpty(filteredItems) ? filteredItems.get(0).value() : null;
     }
 }

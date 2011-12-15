@@ -10,22 +10,18 @@ import org.motechproject.mrs.model.MRSFacility;
 import org.motechproject.mrs.model.MRSPatient;
 import org.motechproject.openmrs.IdentifierType;
 import org.motechproject.openmrs.helper.PatientHelper;
+import org.motechproject.openmrs.util.PatientTestUtil;
 import org.openmrs.Location;
-import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
-import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
@@ -33,9 +29,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class OpenMRSPatientAdaptorTest {
@@ -50,6 +44,7 @@ public class OpenMRSPatientAdaptorTest {
     private OpenMRSFacilityAdaptor mockFacilityAdapter;
 
     OpenMRSPatientAdaptor openMRSPatientAdaptor;
+    @Autowired
     PatientTestUtil patientTestUtil;
 
     @Before
@@ -196,37 +191,5 @@ public class OpenMRSPatientAdaptorTest {
         when(mockPatientService.getPatient(patientId)).thenReturn(mrsPatient);
         org.openmrs.Patient returnedPatient = openMRSPatientAdaptor.getOpenMrsPatient(String.valueOf(patientId));
         assertThat(returnedPatient, is(equalTo(mrsPatient)));
-    }
-
-    public static class PatientTestUtil {
-        public org.openmrs.Patient setUpOpenMRSPatient(Person person, String first, String middle, String last, String address1, Date birthdate, boolean birthdateEstimated, String gender, MRSFacility facility) {
-            PersonName personName = new PersonName(first, middle, last);
-            person.addName(personName);
-            setAddress(person, address1);
-            final org.openmrs.Patient mrsPatient = new org.openmrs.Patient(person);
-            mrsPatient.setBirthdate(birthdate);
-            mrsPatient.setBirthdateEstimated(birthdateEstimated);
-            mrsPatient.setGender(gender);
-            mrsPatient.addIdentifier(new PatientIdentifier(null, null, new Location(Integer.parseInt(facility.getId()))));
-            return mrsPatient;
-        }
-
-        private void setAddress(Person person, String address1) {
-            final PersonAddress address = new PersonAddress();
-            address.setAddress1(address1);
-            final HashSet<PersonAddress> addresses = new HashSet<PersonAddress>();
-            addresses.add(address);
-            person.setAddresses(addresses);
-        }
-
-        public void verifyReturnedPatient(String first, String middle, String last, String address1, Date birthdate, Boolean birthDateEstimated, String gender, MRSFacility facility, MRSPatient actualPatient) {
-            assertThat(actualPatient.getFirstName(), is(first));
-            assertThat(actualPatient.getLastName(), is(last));
-            assertThat(actualPatient.getMiddleName(), is(middle));
-            assertThat(actualPatient.getAddress(), is(address1));
-            assertThat(actualPatient.getDateOfBirth(), is(birthdate));
-            assertThat(actualPatient.getGender(), is(gender));
-            assertThat(actualPatient.getFacility(), is(equalTo(facility)));
-        }
     }
 }

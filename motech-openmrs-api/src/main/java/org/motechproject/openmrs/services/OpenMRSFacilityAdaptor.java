@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.mrs.model.MRSFacility;
 import org.motechproject.mrs.services.MRSFacilityAdaptor;
 import org.openmrs.Location;
+import org.openmrs.api.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.List;
 
 public class OpenMRSFacilityAdaptor implements MRSFacilityAdaptor {
     @Autowired
-    private org.openmrs.api.LocationService locationService;
+    private LocationService locationService;
 
     @Override
     public MRSFacility saveFacility(MRSFacility facility) {

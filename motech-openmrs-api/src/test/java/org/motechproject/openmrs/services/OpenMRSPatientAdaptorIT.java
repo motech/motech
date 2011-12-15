@@ -1,55 +1,31 @@
 package org.motechproject.openmrs.services;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.motechproject.mrs.model.MRSFacility;
 import org.motechproject.mrs.model.MRSPatient;
-import org.motechproject.mrs.services.MRSFacilityAdaptor;
-import org.motechproject.mrs.services.MRSPatientAdaptor;
 import org.motechproject.openmrs.OpenMRSIntegrationTestBase;
+import org.motechproject.openmrs.util.PatientTestUtil;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Date;
 
 import static java.lang.Integer.parseInt;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:applicationOpenmrsAPI.xml"})
 public class OpenMRSPatientAdaptorIT extends OpenMRSIntegrationTestBase {
 
-    @Before
-    public void setUp() {
-        super.setUp();
-    }
-
-    @After
-    public void tearDown() {
-        super.tearDown();
-    }
+    @Autowired
+    private LocationService locationService;
 
     @Autowired
-    MRSPatientAdaptor mrsPatientAdaptor;
-
-    @Autowired
-    MRSFacilityAdaptor mrsFacilityAdaptor;
-
-    @Autowired
-    private LocationService openmrsLocationService;
-
-    @Autowired
-    private PatientService openmrsPatientService;
+    private PatientService patientService;
 
     @Test
     public void shouldSaveAPatientAndRetrieve() {
-        final MRSFacility savedFacility = mrsFacilityAdaptor.saveFacility(new MRSFacility("name", "country", "region", "district", "province"));
+        final MRSFacility savedFacility = facilityAdaptor.saveFacility(new MRSFacility("name", "country", "region", "district", "province"));
 
-        final OpenMRSPatientAdaptorTest.PatientTestUtil patientTestUtil = new OpenMRSPatientAdaptorTest.PatientTestUtil();
+        final PatientTestUtil patientTestUtil = new PatientTestUtil();
         final String first = "First";
         final String middle = "Middle";
         final String last = "Last";
@@ -59,13 +35,13 @@ public class OpenMRSPatientAdaptorIT extends OpenMRSIntegrationTestBase {
         Boolean birthDateEstimated = true;
 
         final MRSPatient patient = new MRSPatient(first, middle, last, "", birthdate, birthDateEstimated, gender, address1, savedFacility);
-        final MRSPatient savedPatient = mrsPatientAdaptor.savePatient(patient);
+        final MRSPatient savedPatient = patientAdaptor.savePatient(patient);
 
         authorizeAndRollback(new DirtyData() {
             public void rollback() {
-                final org.openmrs.Patient openmrsPatient = openmrsPatientService.getPatient(parseInt(savedPatient.getId()));
-                openmrsPatientService.purgePatient(openmrsPatient);
-                openmrsLocationService.purgeLocation(openmrsLocationService.getLocation(parseInt(savedFacility.getId())));
+                final org.openmrs.Patient openmrsPatient = patientService.getPatient(parseInt(savedPatient.getId()));
+                patientService.purgePatient(openmrsPatient);
+                locationService.purgeLocation(locationService.getLocation(parseInt(savedFacility.getId())));
             }
         });
         patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthdate, birthDateEstimated, gender, savedFacility, savedPatient);

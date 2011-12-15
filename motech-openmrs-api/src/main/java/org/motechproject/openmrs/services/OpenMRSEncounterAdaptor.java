@@ -44,7 +44,6 @@ public class OpenMRSEncounterAdaptor implements MRSEncounterAdaptor {
         Patient patient = openMrsPatientAdaptor.getOpenMrsPatient(mrsEncounter.getPatient().getId());
         User staff = openMrsUserAdaptor.getOpenMrsUserByUserName(mrsEncounter.getStaff().getId());
         Location location = openMrsFacilityAdaptor.getLocation(mrsEncounter.getFacility().getId());
-        openMrsEncounter.setId(Integer.parseInt(mrsEncounter.getId()));
         openMrsEncounter.setEncounterType(openMrsEncounterType);
         openMrsEncounter.setEncounterDatetime(mrsEncounter.getDate());
         openMrsEncounter.setPatient(patient);

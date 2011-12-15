@@ -45,7 +45,6 @@ public class OpenMRSEncounterAdaptorTest {
         ReflectionTestUtils.setField(encounterAdaptor, "encounterService", mockEncounterService);
     }
 
-
     @Test
     public void shouldConvertMrsEncounterToOpenMrsEncounter() {
         String staffId = "333";
@@ -81,7 +80,6 @@ public class OpenMRSEncounterAdaptorTest {
 
         Encounter returnedEncounter = encounterAdaptor.mrsToOpenmrsEncounter(mrsEncounter);
 
-        assertThat(returnedEncounter.getEncounterId(), is(equalTo(100)));
         assertThat(returnedEncounter.getLocation(), is(equalTo(expectedLocation)));
         assertThat(returnedEncounter.getPatient(), is(equalTo(expectedPatient)));
         assertThat(returnedEncounter.getCreator(), is(equalTo(expectedCreator)));
