@@ -7,10 +7,10 @@ import org.joda.time.LocalTime;
 import org.junit.After;
 import org.motechproject.util.DateTimeSourceUtil;
 import org.motechproject.util.datetime.DateTimeSource;
-import org.motechproject.util.datetime.DateTimeSourceFactory;
+import org.motechproject.util.datetime.DefaultDateTimeSource;
 
 public class BaseUnitTest {
-    static final DateTimeSource dateTimeSource = DateTimeSourceFactory.create();
+    static final DateTimeSource dateTimeSource = new DefaultDateTimeSource();
 
     protected void mockCurrentDate(final DateTime currentDate) {
         DateTimeSourceUtil.SourceInstance = new DateTimeSource() {
