@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
@@ -29,7 +30,7 @@ public class ManagedSmslibService {
 	}
 
     private void registerGateway() {
-        JSMPPGateway jsmppGateway = new JSMPPGateway(GATEWAY_ID, property("host"), Integer.parseInt(property("port")), new BindAttributes(property("username"), property("password"), null, BindAttributes.BindType.TRANSCEIVER));
+        JSMPPGateway jsmppGateway = new JSMPPGateway(GATEWAY_ID, property("host"), Integer.parseInt(property("port")), new BindAttributes(property("system_id"), property("password"), null, BindAttributes.BindType.TRANSCEIVER));
         try {
             service.addGateway(jsmppGateway);
         } catch (GatewayException e) {
@@ -40,6 +41,11 @@ public class ManagedSmslibService {
     @PostConstruct
     public void connect() throws SMSLibException, IOException, InterruptedException {
         service.startService();
+    }
+
+    @PreDestroy
+    public void disconnect() throws SMSLibException, IOException, InterruptedException {
+        service.stopService();
     }
 
 	public void queueMessage(List<String> recipients, final String message) throws GatewayException, IOException, TimeoutException, InterruptedException {

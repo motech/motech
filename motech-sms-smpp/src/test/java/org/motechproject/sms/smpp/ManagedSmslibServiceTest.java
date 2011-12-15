@@ -8,6 +8,7 @@ import org.smslib.*;
 import org.smslib.smpp.jsmpp.JSMPPGateway;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -31,7 +32,7 @@ public class ManagedSmslibServiceTest {
         properties = new Properties();
         properties.setProperty("host", "smppserver.com");
         properties.setProperty("port", "8876");
-        properties.setProperty("username", "pavel");
+        properties.setProperty("system_id", "pavel");
         properties.setProperty("password", "wpsd");
 	}
 
@@ -39,6 +40,12 @@ public class ManagedSmslibServiceTest {
     public void shouldConnectOnApplicationStartup() throws NoSuchMethodException {
         Method connect = ManagedSmslibService.class.getDeclaredMethod("connect", new Class[]{});
         assertTrue("PostConstruct annotation missing", connect.isAnnotationPresent(PostConstruct.class));
+    }
+
+    @Test
+    public void shouldDisconnectOnApplicationShutdown() throws NoSuchMethodException {
+        Method disconnect = ManagedSmslibService.class.getDeclaredMethod("disconnect", new Class[]{});
+        assertTrue("PreDestroy annotation missing", disconnect.isAnnotationPresent(PreDestroy.class));
     }
 
     @Test
@@ -60,6 +67,13 @@ public class ManagedSmslibServiceTest {
 		ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, properties);
 		managedSmslibService.connect();
 		verify(smslibService).startService();
+	}
+
+	@Test
+	public void shouldTerminateSmppConnection() throws IOException, SMSLibException, InterruptedException {
+		ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, properties);
+        managedSmslibService.disconnect();
+		verify(smslibService).stopService();
 	}
 
     @Test
