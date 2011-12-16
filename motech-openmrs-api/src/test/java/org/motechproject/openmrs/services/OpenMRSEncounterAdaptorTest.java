@@ -4,10 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.mrs.model.*;
-import org.openmrs.Encounter;
-import org.openmrs.EncounterType;
-import org.openmrs.Location;
-import org.openmrs.Obs;
+import org.openmrs.*;
 import org.openmrs.api.EncounterService;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -68,7 +65,9 @@ public class OpenMRSEncounterAdaptorTest {
         when(mockOpenMrsPatientAdaptor.getOpenMrsPatient(patientId)).thenReturn(expectedPatient);
 
         org.openmrs.User expectedCreator = mock(org.openmrs.User.class);
+        Person expectedPerson = mock(Person.class);
         when(mockOpenMrsUserAdaptor.getOpenMrsUserByUserName(staffId)).thenReturn(expectedCreator);
+        when(expectedCreator.getPerson()).thenReturn(expectedPerson);
 
         EncounterType expectedEncounterType = mock(EncounterType.class);
         when(mockEncounterService.getEncounterType(encounterType)).thenReturn(expectedEncounterType);
@@ -83,6 +82,7 @@ public class OpenMRSEncounterAdaptorTest {
         assertThat(returnedEncounter.getLocation(), is(equalTo(expectedLocation)));
         assertThat(returnedEncounter.getPatient(), is(equalTo(expectedPatient)));
         assertThat(returnedEncounter.getCreator(), is(equalTo(expectedCreator)));
+        assertThat(returnedEncounter.getProvider(), is(equalTo(expectedPerson)));
         assertThat(returnedEncounter.getEncounterDatetime(), is(equalTo(encounterDate)));
         assertThat(returnedEncounter.getEncounterType(), is(equalTo(expectedEncounterType)));
         assertThat(returnedEncounter.getObs(), is(equalTo(expectedObservations)));
