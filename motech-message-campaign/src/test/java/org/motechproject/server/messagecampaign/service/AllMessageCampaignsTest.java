@@ -3,16 +3,20 @@ package org.motechproject.server.messagecampaign.service;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.motechproject.model.DayOfWeek;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.campaign.AbsoluteCampaign;
 import org.motechproject.server.messagecampaign.domain.campaign.CronBasedCampaign;
 import org.motechproject.server.messagecampaign.domain.campaign.OffsetCampaign;
 import org.motechproject.server.messagecampaign.domain.campaign.RepeatingCampaign;
 import org.motechproject.server.messagecampaign.domain.message.*;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.*;
+import static org.apache.commons.lang.builder.EqualsBuilder.reflectionEquals;
 
 public class AllMessageCampaignsTest {
 
@@ -84,7 +88,7 @@ public class AllMessageCampaignsTest {
     }
 
     @Test
-    public void getCampaignMessageGivenACampaignNameAndMessageKey(){
+    public void getCampaignMessageGivenACampaignNameAndMessageKey() {
         String campaignName = "Relative Dates Message Program";
         String messageKey = "child-info-week-1";
 
@@ -95,7 +99,7 @@ public class AllMessageCampaignsTest {
     }
 
     @Test
-    public void getCampaignMessageGivenANonExistingCampaignNameAndMessageKey(){
+    public void getCampaignMessageGivenANonExistingCampaignNameAndMessageKey() {
         String campaignName = "Relative Dates Message Program";
         String messageKey = "child-info-week-1";
 
@@ -104,6 +108,21 @@ public class AllMessageCampaignsTest {
 
         campaignMessage = allMessageCampaigns.get(campaignName, "non-existing-message-key");
         assertNull(campaignMessage);
+    }
+
+    @Test
+    public void shouldReturnApplicableDaysForMessageInACampaign() {
+        String campaignName = "Relative Parameterized Dates Message Program";
+
+        List<DayOfWeek> daysApplicable = allMessageCampaigns.getApplicableDaysForRepeatingCampaign(campaignName, "Weekly Message #4");
+        assertFalse("Expected DaysApplicable not to be empty", CollectionUtils.isEmpty(daysApplicable));
+        reflectionEquals(asList("Monday", "Wednesday", "Friday"), daysApplicable);
+
+        daysApplicable = allMessageCampaigns.getApplicableDaysForRepeatingCampaign(campaignName, "Weekly Message #1");
+        assertTrue("Expected DaysApplicable to be empty", CollectionUtils.isEmpty(daysApplicable));
+
+        daysApplicable = allMessageCampaigns.getApplicableDaysForRepeatingCampaign("Invalid Campaign Name", "Weekly Message #1");
+        assertTrue("Expected DaysApplicable to be empty", CollectionUtils.isEmpty(daysApplicable));
     }
 
     private void assertMessageWithAbsoluteSchedule(AbsoluteCampaignMessage message, String name, String[] formats, Object messageKey, Date date) {
