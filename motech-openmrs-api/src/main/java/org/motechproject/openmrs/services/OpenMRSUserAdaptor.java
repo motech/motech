@@ -51,7 +51,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
     }
 
     @Override
-    public Map<String, Object> updateUser(MRSUser mrsUser) throws UserAlreadyExistsException {
+    public Map<String, Object> updateUser(MRSUser mrsUser) {
         return save(mrsUser);
     }
 
@@ -101,7 +101,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         return (String) (roles != null && roles.size() > 0 ? ((Role) roles.toArray()[0]).getRole() : null);
     }
 
-    private Map<String, Object> save(MRSUser mrsUser) throws UserAlreadyExistsException {
+    private Map<String, Object> save(MRSUser mrsUser) {
 
         org.openmrs.User openMRSUser = mrsUserToOpenMRSUser(mrsUser);
         final String password = new Password(PASSWORD_LENGTH).create();
