@@ -1,4 +1,4 @@
-package org.motechproject.sms.smpp;
+package org.motechproject.sms.smpp.constants;
 
 public class EventKeys {
     public static final String RECIPIENT = "recipient";

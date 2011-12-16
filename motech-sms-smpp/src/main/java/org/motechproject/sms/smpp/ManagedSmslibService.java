@@ -1,6 +1,7 @@
 package org.motechproject.sms.smpp;
 
-import org.motechproject.gateway.OutboundEventGateway;
+import org.motechproject.sms.smpp.constants.SmppProperties;
+import org.motechproject.sms.smpp.constants.SmsProperties;
 import org.smslib.*;
 import org.smslib.smpp.BindAttributes;
 import org.smslib.smpp.jsmpp.JSMPPGateway;
@@ -17,48 +18,39 @@ import java.util.Properties;
 @Component
 public class ManagedSmslibService {
 	public static final String GATEWAY_ID = "smpp_gateway";
-	public static final String HOST = "host";
-	public static final String PORT = "port";
-	public static final String SYSTEM_ID = "system_id";
-	public static final String PASSWORD = "password";
-	public static final String MAX_RETRIES = "max_retries";
-	public static final String RETRY_INTERVAL_SECS = "retry_interval_secs";
+	private static final String temporaryGroup = "temporary_group";
 
 	private Service smslibService;
 	private Properties smsProperties;
 	private Properties smppProperties;
-	private OutboundEventGateway outboundEventGateway;
-	private static final String temporaryGroup = "temporary_group";
+	private OutboundNotification outboundNotification;
 
 	@Autowired
-	public ManagedSmslibService(Service smslibService, @Qualifier("smsProperties") Properties smsProperties, @Qualifier("smppProperties") Properties smppProperties, OutboundEventGateway outboundEventGateway) {
+	public ManagedSmslibService(Service smslibService, @Qualifier("smsProperties") Properties smsProperties, @Qualifier("smppProperties") Properties smppProperties, OutboundNotification outboundNotification) {
 		this.smslibService = smslibService;
 		this.smsProperties = smsProperties;
 		this.smppProperties = smppProperties;
-		this.outboundEventGateway = outboundEventGateway;
+		this.outboundNotification = outboundNotification;
 		configureSmsLib();
 		addNotificationListeners();
 		registerGateway();
 	}
 
 	private void addNotificationListeners() {
-		smslibService.setOutboundMessageNotification(new OutboundNotification(outboundEventGateway));
+		smslibService.setOutboundMessageNotification(outboundNotification);
 	}
 
 	private void configureSmsLib() {
-		String maxRetriesProperty = smsProperties.getProperty(MAX_RETRIES);
+		String maxRetriesProperty = smsProperties.getProperty(SmsProperties.MAX_RETRIES);
 		if (maxRetriesProperty != null)
-			smslibService.getSettings().OUTBOUND_RETRIES = Integer.parseInt(maxRetriesProperty);
-		String retryIntervalSecs = smsProperties.getProperty(RETRY_INTERVAL_SECS);
-		if (retryIntervalSecs != null)
-			smslibService.getSettings().OUTBOUND_RETRY_WAIT = Integer.parseInt(retryIntervalSecs) * 1000;
+			smslibService.getSettings().QUEUE_RETRIES = Integer.parseInt(maxRetriesProperty);
 	}
 
 	private void registerGateway() {
 		JSMPPGateway jsmppGateway = new JSMPPGateway(GATEWAY_ID,
-				smppProperties.getProperty(HOST),
-				Integer.parseInt(smppProperties.getProperty(PORT)),
-				new BindAttributes(smppProperties.getProperty(SYSTEM_ID), smppProperties.getProperty(PASSWORD), null, BindAttributes.BindType.TRANSCEIVER));
+				smppProperties.getProperty(SmppProperties.HOST),
+				Integer.parseInt(smppProperties.getProperty(SmppProperties.PORT)),
+				new BindAttributes(smppProperties.getProperty(SmppProperties.SYSTEM_ID), smppProperties.getProperty(SmppProperties.PASSWORD), null, BindAttributes.BindType.TRANSCEIVER));
 		try {
 			smslibService.addGateway(jsmppGateway);
 		} catch (GatewayException e) {
@@ -84,7 +76,7 @@ public class ManagedSmslibService {
 		smslibService.queueMessage(new OutboundMessage() {{
 			setRecipient(temporaryGroup);
 			setText(message);
-			//setGatewayId(GATEWAY_ID);
+			setGatewayId(GATEWAY_ID);
 		}});
 
 		smslibService.removeGroup(temporaryGroup);
