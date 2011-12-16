@@ -1,5 +1,6 @@
 package org.motechproject.openmrs.services;
 
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -98,7 +99,7 @@ public class OpenMRSEncounterAdaptorTest {
         org.openmrs.User mockOpenMRSUser = mock(org.openmrs.User.class);
         Location mockLocation = mock(Location.class);
         int encounterId = 12;
-        Date encounterDate = new Date(2011, 12, 12);
+        Date encounterDate = new LocalDate(2011, 12, 12).toDate();
 
         Encounter openMrsEncounter = createOpenMRSEncounter(encounterDate, openMrsEncounterType, openMrsObservations, mockOpenMRSPatient, mockOpenMRSUser, mockLocation, encounterId);
 

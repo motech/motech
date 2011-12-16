@@ -1,6 +1,7 @@
 package org.motechproject.openmrs.services;
 
 import org.apache.commons.collections.ListUtils;
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -66,19 +67,19 @@ public class OpenMRSPatientAdaptorTest {
         final String middle = "Middle";
         final String last = "Last";
         final String address1 = "a good street in ghana";
-        final Date birthdate = new Date(1970, 3, 11);
+        final Date birthDate = new LocalDate(1970, 3, 11).toDate();
         final boolean birthdateEstimated = true;
         final String gender = "male";
         final MRSFacility facility = new MRSFacility("1000", "name", "country", "region", "district", "province");
 
-        final org.openmrs.Patient mrsPatient = patientTestUtil.setUpOpenMRSPatient(person, first, middle, last, address1, birthdate, birthdateEstimated, gender, facility);
+        final org.openmrs.Patient mrsPatient = patientTestUtil.setUpOpenMRSPatient(person, first, middle, last, address1, birthDate, birthdateEstimated, gender, facility);
         when(mockPatientService.savePatient(Matchers.<org.openmrs.Patient>any())).thenReturn(mrsPatient);
         when(mockFacilityAdapter.convertLocationToFacility(any(Location.class))).thenReturn(facility);
 
-        final MRSPatient actualPatient = openMRSPatientAdaptor.savePatient(new MRSPatient(first, middle, last, null, birthdate, birthdateEstimated, gender, address1, facility));
+        final MRSPatient actualPatient = openMRSPatientAdaptor.savePatient(new MRSPatient(first, middle, last, null, birthDate, birthdateEstimated, gender, address1, facility));
 
         verify(mockPatientService).savePatient(Matchers.<org.openmrs.Patient>any());
-        patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthdate, birthdateEstimated, gender, facility, actualPatient);
+        patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthDate, birthdateEstimated, gender, facility, actualPatient);
     }
 
     @Test
@@ -88,19 +89,19 @@ public class OpenMRSPatientAdaptorTest {
         final String middle = "Middle";
         final String last = "Last";
         final String address1 = "a good street in ghana";
-        final Date birthdate = new Date(1970, 3, 11);
-        final boolean birthdateEstimated = true;
+        final Date birthDate = new LocalDate(1970, 3, 11).toDate();
+        final boolean birthDateEstimated = true;
         final String gender = "male";
         final MRSFacility facility = new MRSFacility("1000", "name", "country", "region", "district", "province");
 
-        final org.openmrs.Patient mrsPatient = patientTestUtil.setUpOpenMRSPatient(person, first, middle, last, address1, birthdate, birthdateEstimated, gender, facility);
+        final org.openmrs.Patient mrsPatient = patientTestUtil.setUpOpenMRSPatient(person, first, middle, last, address1, birthDate, birthDateEstimated, gender, facility);
         int patientId = 12;
         when(mockPatientService.getPatient(patientId)).thenReturn(mrsPatient);
         when(mockFacilityAdapter.convertLocationToFacility(any(Location.class))).thenReturn(facility);
         MRSPatient returnedPatient = openMRSPatientAdaptor.getPatient(String.valueOf(patientId));
 
         verify(mockPatientService).getPatient(patientId);
-        patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthdate, birthdateEstimated, gender, facility, returnedPatient);
+        patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthDate, birthDateEstimated, gender, facility, returnedPatient);
     }
 
     @Test
@@ -110,21 +111,21 @@ public class OpenMRSPatientAdaptorTest {
         final String middle = "Middle";
         final String last = "Last";
         final String address1 = "a good street in ghana";
-        final Date birthdate = new Date(1970, 3, 11);
-        final boolean birthdateEstimated = true;
+        final Date birthDate = new LocalDate(1970, 3, 11).toDate();
+        final boolean birthDateEstimated = true;
         final String gender = "male";
         final MRSFacility facility = new MRSFacility("1000", "name", "country", "region", "district", "province");
         String motechId = "11";
         PatientIdentifierType motechIdType = mock(PatientIdentifierType.class);
 
-        final org.openmrs.Patient mrsPatient = patientTestUtil.setUpOpenMRSPatient(person, first, middle, last, address1, birthdate, birthdateEstimated, gender, facility);
+        final org.openmrs.Patient mrsPatient = patientTestUtil.setUpOpenMRSPatient(person, first, middle, last, address1, birthDate, birthDateEstimated, gender, facility);
         List<PatientIdentifierType> idTypes = Arrays.asList(motechIdType);
         when(mockPatientService.getPatients(null, motechId, idTypes, true)).thenReturn(Arrays.asList(mrsPatient));
         when(mockPatientService.getPatientIdentifierTypeByName(IdentifierType.IDENTIFIER_MOTECH_ID.getName())).thenReturn(motechIdType);
         when(mockFacilityAdapter.convertLocationToFacility(any(Location.class))).thenReturn(facility);
         MRSPatient returnedPatient = openMRSPatientAdaptor.getPatientByMotechId(motechId);
 
-        patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthdate, birthdateEstimated, gender, facility, returnedPatient);
+        patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthDate, birthDateEstimated, gender, facility, returnedPatient);
     }
 
     @Test
@@ -151,7 +152,7 @@ public class OpenMRSPatientAdaptorTest {
         final String first = "First";
         final String last = "Last";
         String preferredName = "Preferred";
-        final Date birthdate = new Date(1970, 3, 11);
+        final Date birthDate = new LocalDate(1970, 3, 11).toDate();
         Boolean birthDateEstimated = true;
         final MRSFacility facility = new MRSFacility("1000", "name", "country", "region", "district", "province");
 
@@ -161,7 +162,7 @@ public class OpenMRSPatientAdaptorTest {
         when(mockPatient.getNames()).thenReturn(names);
         when(mockPatientService.savePatient(Matchers.<org.openmrs.Patient>any())).thenReturn(mockPatient);
 
-        openMRSPatientAdaptor.savePatient(new MRSPatient(first, null, last, preferredName, birthdate, birthDateEstimated, null, null, facility));
+        openMRSPatientAdaptor.savePatient(new MRSPatient(first, null, last, preferredName, birthDate, birthDateEstimated, null, null, facility));
 
         ArgumentCaptor<org.openmrs.Patient> captor = ArgumentCaptor.forClass(org.openmrs.Patient.class);
         verify(mockPatientService).savePatient(captor.capture());
