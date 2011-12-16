@@ -1,6 +1,7 @@
 package org.motechproject.openmrs.services;
 
 import org.hamcrest.Matchers;
+import org.joda.time.LocalDate;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,18 +48,18 @@ public class OpenMRSObservationAdaptorTest {
         Encounter encounter = mock(Encounter.class);
         User staff = mock(User.class);
 
-        Date observationDate = new Date(2011, 12, 31);
+        Date observationDate = new LocalDate(2011, 12, 31).toDate();
         String conceptName = "concept";
 
         String feverValue = "high";
         Double temperatureValue = 99.0;
         Boolean hivValue = false;
-        Date expectedDeliveryDateValue = new Date(2012, 12, 21);
+        Date expectedDeliveryDateValue = new LocalDate(2012, 12, 21).toDate();
 
         MRSObservation<String> fever = new MRSObservation<String>(observationDate, conceptName, feverValue);
         MRSObservation<Double> temperature = new MRSObservation<Double>(observationDate, conceptName, temperatureValue);
         MRSObservation<Boolean> hiv = new MRSObservation<Boolean>(observationDate, conceptName, hivValue);
-        MRSObservation<Date> expectedDelvieryDate = new MRSObservation<Date>(observationDate, conceptName, expectedDeliveryDateValue);
+        MRSObservation<Date> expectedDeliveryDate = new MRSObservation<Date>(observationDate, conceptName, expectedDeliveryDateValue);
 
         Concept concept = mock(Concept.class);
         when(mockConceptAdaptor.getConceptByName(conceptName)).thenReturn(concept);
@@ -75,8 +76,8 @@ public class OpenMRSObservationAdaptorTest {
         assertOpenMrsObservationProperties(openMrsObservation, hiv, patient, facility, encounter, staff, concept);
         assertThat(openMrsObservation.getValueAsBoolean(), is(equalTo(hivValue)));
 
-        openMrsObservation = observationAdaptor.<Date>createOpenMRSObservationForEncounter(expectedDelvieryDate, encounter, patient, facility, staff);
-        assertOpenMrsObservationProperties(openMrsObservation, expectedDelvieryDate, patient, facility, encounter, staff, concept);
+        openMrsObservation = observationAdaptor.<Date>createOpenMRSObservationForEncounter(expectedDeliveryDate, encounter, patient, facility, staff);
+        assertOpenMrsObservationProperties(openMrsObservation, expectedDeliveryDate, patient, facility, encounter, staff, concept);
         assertThat(openMrsObservation.getValueDatetime(), is(equalTo(expectedDeliveryDateValue)));
     }
 
@@ -182,7 +183,7 @@ public class OpenMRSObservationAdaptorTest {
         String feverValue = "high";
         Double temperatureValue = 99.0;
         Boolean hivValue = false;
-        Date expectedDeliveryDateValue = new Date(2012, 12, 21);
+        Date expectedDeliveryDateValue = new LocalDate(2012, 12, 21).toDate();
 
         observationAdaptor.writeValueToOpenMRSObservation(feverValue, fever);
         observationAdaptor.writeValueToOpenMRSObservation(temperatureValue, temperature);

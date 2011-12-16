@@ -99,7 +99,6 @@ public class OpenMRSUserAdaptorTest {
         when(mockPersonService.getPersonAttributeTypeByName(PERSON_ATTRIBUTE_TYPE_EMAIL)).thenReturn(emailAttribute);
     }
 
-
     @Test
     @Ignore
     public void shouldResetPasswordGivenUserEmailId() throws UsernameNotFoundException, UserAlreadyExistsException {
@@ -118,7 +117,6 @@ public class OpenMRSUserAdaptorTest {
         PersonAttributeType emailAttributeType = personAttributeType(PERSON_ATTRIBUTE_TYPE_EMAIL);
 
         mockPersonServiceForAttributes(phoneNumberAttributeType, staffTypeAttributeType, emailAttributeType);
-
 
         openMrsUserAdaptor.saveUser(mrsUser);
 

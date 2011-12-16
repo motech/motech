@@ -21,20 +21,24 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ManagedSmslibServiceTest {
 
-	@Mock
-	private Service smslibService;
+    @Mock
+    private Service smslibService;
 
-    private Properties properties;
+    private Properties smppProperties;
+    private Properties smsProperties;
 
     @Before
-	public void setup() {
-		initMocks(this);
-        properties = new Properties();
-        properties.setProperty("host", "smppserver.com");
-        properties.setProperty("port", "8876");
-        properties.setProperty("system_id", "pavel");
-        properties.setProperty("password", "wpsd");
-	}
+    public void setup() {
+        initMocks(this);
+
+        smppProperties = new Properties() {{
+            setProperty(ManagedSmslibService.HOST, "smppserver.com");
+            setProperty(ManagedSmslibService.PORT, "8876");
+            setProperty(ManagedSmslibService.SYSTEM_ID, "pavel");
+            setProperty(ManagedSmslibService.PASSWORD, "wpsd");
+        }};
+        smsProperties = new Properties();
+    }
 
     @Test
     public void shouldConnectOnApplicationStartup() throws NoSuchMethodException {
@@ -50,7 +54,7 @@ public class ManagedSmslibServiceTest {
 
     @Test
     public void shouldAddConfiguredJsmppGatewayDuringInitialization() throws GatewayException {
-        new ManagedSmslibService(smslibService, properties);
+        new ManagedSmslibService(smslibService, smsProperties, smppProperties);
 
         ArgumentCaptor<JSMPPGateway> jsmppGatewayCaptor = ArgumentCaptor.forClass(JSMPPGateway.class);
         verify(smslibService).addGateway(jsmppGatewayCaptor.capture());
@@ -62,23 +66,35 @@ public class ManagedSmslibServiceTest {
         assertEquals("wpsd", gateway.getBindAttributes().getPassword());
     }
 
-	@Test
-	public void shouldEstablishSmppConnection() throws SMSLibException, IOException, InterruptedException {
-		ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, properties);
-		managedSmslibService.connect();
-		verify(smslibService).startService();
-	}
+    @Test
+    public void shouldConfigureRetryCountAndRetryIntervalOnSmsLib() {
+        Service actualSmslibService = Service.getInstance();
+        Properties smsProperties = new Properties() {{
+            setProperty(ManagedSmslibService.MAX_RETRIES, "3");
+            setProperty(ManagedSmslibService.RETRY_INTERVAL_SECS, "10");
+        }};
+        new ManagedSmslibService(actualSmslibService, smsProperties, smppProperties);
+        assertEquals(3, actualSmslibService.getSettings().OUTBOUND_RETRIES);
+        assertEquals(10000, actualSmslibService.getSettings().OUTBOUND_RETRY_WAIT);
+    }
 
-	@Test
-	public void shouldTerminateSmppConnection() throws IOException, SMSLibException, InterruptedException {
-		ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, properties);
+    @Test
+    public void shouldEstablishSmppConnection() throws SMSLibException, IOException, InterruptedException {
+        ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, smsProperties, smppProperties);
+        managedSmslibService.connect();
+        verify(smslibService).startService();
+    }
+
+    @Test
+    public void shouldTerminateSmppConnection() throws IOException, SMSLibException, InterruptedException {
+        ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, smsProperties, smppProperties);
         managedSmslibService.disconnect();
-		verify(smslibService).stopService();
-	}
+        verify(smslibService).stopService();
+    }
 
     @Test
     public void shouldSendSmsAsynchronously() throws GatewayException, IOException, TimeoutException, InterruptedException {
-        ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, properties);
+        ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, smsProperties, smppProperties);
         managedSmslibService.queueMessage(Arrays.asList("recipient1", "recipient2"), "message");
 
         ArgumentCaptor groupNameCaptor = ArgumentCaptor.forClass(String.class);

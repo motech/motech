@@ -1,5 +1,6 @@
 package org.motechproject.openmrs.services;
 
+import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.motechproject.mrs.model.MRSFacility;
 import org.motechproject.mrs.model.MRSPatient;
@@ -30,11 +31,11 @@ public class OpenMRSPatientAdaptorIT extends OpenMRSIntegrationTestBase {
         final String middle = "Middle";
         final String last = "Last";
         final String address1 = "a good street in ghana";
-        final Date birthdate = new Date(1970, 3, 11);
+        final Date birthDate = new LocalDate(1970, 3, 11).toDate();
         final String gender = "M";
         Boolean birthDateEstimated = true;
 
-        final MRSPatient patient = new MRSPatient(first, middle, last, "", birthdate, birthDateEstimated, gender, address1, savedFacility);
+        final MRSPatient patient = new MRSPatient(first, middle, last, "", birthDate, birthDateEstimated, gender, address1, savedFacility);
         final MRSPatient savedPatient = patientAdaptor.savePatient(patient);
 
         authorizeAndRollback(new DirtyData() {
@@ -44,6 +45,6 @@ public class OpenMRSPatientAdaptorIT extends OpenMRSIntegrationTestBase {
                 locationService.purgeLocation(locationService.getLocation(parseInt(savedFacility.getId())));
             }
         });
-        patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthdate, birthDateEstimated, gender, savedFacility, savedPatient);
+        patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthDate, birthDateEstimated, gender, savedFacility, savedPatient);
     }
 }

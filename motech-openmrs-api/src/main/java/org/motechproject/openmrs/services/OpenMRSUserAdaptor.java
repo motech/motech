@@ -98,7 +98,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
     }
 
     public String getRoleFromOpenMRSUser(Set<Role> roles) {
-        return (String) (roles != null && roles.size() > 0 ? ((Role)roles.toArray()[0]).getRole() : null);
+        return (String) (roles != null && roles.size() > 0 ? ((Role) roles.toArray()[0]).getRole() : null);
     }
 
     private Map<String, Object> save(MRSUser mrsUser) throws UserAlreadyExistsException {
@@ -135,36 +135,28 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
     }
 
     private void clearAttributes(User user) {
-        Person person   = user.getPerson();
-        if(person.getNames() != null) person.getNames().clear();
-        if(person.getAttributes() != null) person.getAttributes().clear();
-        if(user.getRoles() != null) user.getRoles().clear();
+        Person person = user.getPerson();
+        if (person.getNames() != null) person.getNames().clear();
+        if (person.getAttributes() != null) person.getAttributes().clear();
+        if (user.getRoles() != null) user.getRoles().clear();
     }
 
     private org.openmrs.User getOrCreateUser(String dbId) {
         return isNotEmpty(dbId) ? userService.getUser(Integer.parseInt(dbId)) : new org.openmrs.User(new Person());
     }
-    
+
     @Override
     public String setNewPasswordForUser(String emailID) throws UsernameNotFoundException {
-
         org.openmrs.User userByUsername;
-        Context.openSession();
-        Context.authenticate("admin", "P@ssw0rd");
         try {
             userByUsername = userService.getUserByUsername(emailID);
         } catch (Exception e) {
-            Context.closeSession();
             throw new UsernameNotFoundException("User was not found");
         }
 
         String newPassword = new Password(PASSWORD_LENGTH).create();
-        try {
-            Context.getUserService().changePassword(userByUsername, newPassword);
-        } finally {
-            Context.closeSession();
-        }
+        Context.getUserService().changePassword(userByUsername, newPassword);
         return newPassword;
-    } 
+    }
 }
 

@@ -1,6 +1,7 @@
 package org.motechproject.openmrs.services;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -77,11 +78,11 @@ public class OpenMRSEncounterAdaptorIT extends OpenMRSIntegrationTestBase {
         final String middle = "Wilkinson";
         final String last = "no";
         final String address1 = "a good street in ghana";
-        final Date birthdate = new Date(1970, 3, 11);
+        final Date birthDate = new LocalDate(1970, 3, 11).toDate();
         final String gender = "M";
         Boolean birthDateEstimated = true;
 
-        final MRSPatient patient = new MRSPatient(randomId(), first, middle, last, "prefName", birthdate, birthDateEstimated, gender, address1, facility);
+        final MRSPatient patient = new MRSPatient(randomId(), first, middle, last, "prefName", birthDate, birthDateEstimated, gender, address1, facility);
         return patientAdaptor.savePatient(patient);
     }
 
