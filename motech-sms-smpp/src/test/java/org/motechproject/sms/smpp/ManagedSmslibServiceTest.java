@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.omg.PortableServer.Servant;
 import org.smslib.*;
 import org.smslib.smpp.jsmpp.JSMPPGateway;
 
@@ -18,7 +17,6 @@ import java.util.Properties;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ManagedSmslibServiceTest {
@@ -32,6 +30,7 @@ public class ManagedSmslibServiceTest {
     @Before
     public void setup() {
         initMocks(this);
+
         smppProperties = new Properties() {{
             setProperty(ManagedSmslibService.HOST, "smppserver.com");
             setProperty(ManagedSmslibService.PORT, "8876");

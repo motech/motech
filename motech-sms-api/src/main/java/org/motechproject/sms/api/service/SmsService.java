@@ -17,7 +17,7 @@ public class SmsService {
     public static final String RECIPIENTS = "number";
     public static final String MESSAGE = "message";
 
-    private static final Logger LOG = Logger.getLogger(SmsService.class);
+    private static final Logger log = Logger.getLogger(SmsService.class);
 
     private EventRelay eventRelay;
 
@@ -33,7 +33,7 @@ public class SmsService {
 
         MotechEvent smsEvent = new MotechEvent(SEND_SMS, eventData);
 
-        LOG.info(String.format("Putting event on relay to send message %s to number %s", message, recipients));
+        log.info(String.format("Putting event on relay to send message %s to number %s", message, recipients));
         eventRelay.sendEventMessage(smsEvent);
     }
 
