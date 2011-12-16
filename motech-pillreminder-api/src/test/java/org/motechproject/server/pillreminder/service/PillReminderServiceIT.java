@@ -43,7 +43,8 @@ public class PillReminderServiceIT {
 
     @Test
     public void shouldSaveTheDailyPillRegimenAndScheduleJob() throws SchedulerException {
-
+        String externalId = "1234";
+        allPillRegimens.removeAll("ExternalId", externalId);
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 
         ArrayList<MedicineRequest> medicineRequests = new ArrayList<MedicineRequest>();
@@ -55,7 +56,7 @@ public class PillReminderServiceIT {
         ArrayList<DosageRequest> dosageContracts = new ArrayList<DosageRequest>();
         dosageContracts.add(new DosageRequest(9, 5, medicineRequests));
 
-        pillReminderService.createNew(new DailyPillRegimenRequest("1234", 2, 15, dosageContracts));
+        pillReminderService.createNew(new DailyPillRegimenRequest(externalId, 2, 15, dosageContracts));
         Assert.assertEquals(scheduledJobsNum + 1, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
     }
 

@@ -75,6 +75,15 @@ public class AllPillRegimensIT {
     }
 
     @Test
+    public void addOrReplace() {
+        String externalId = "1234";
+        allPillRegimens.removeAll("ExternalId", externalId);
+        PillRegimen pillRegimen = new PillRegimen(externalId, null, new DailyScheduleDetails(20, 5));
+        allPillRegimens.add(pillRegimen);
+        allPillRegimens.addOrReplace(pillRegimen);
+    }
+
+    @Test
     public void shouldFindAndUpdateDosageCurrentDate() {
         PillRegimen pillRegimen = setUpPillRegimen();
         Dosage[] dosages =  pillRegimen.getDosages().toArray(new Dosage[0]);

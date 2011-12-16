@@ -78,7 +78,7 @@ public class PillRegimenJobSchedulerTest {
         pillRegimen = new PillRegimen(externalId, dosages, new DailyScheduleDetails(15, 2));
         pillRegimen.setId(pillRegimenId);
         jobScheduler.scheduleDailyJob(pillRegimen);
-        verify(schedulerService, times(2)).scheduleJob(any(CronSchedulableJob.class));
+        verify(schedulerService, times(2)).safeScheduleJob(any(CronSchedulableJob.class));
     }
 
     @Test
@@ -86,10 +86,10 @@ public class PillRegimenJobSchedulerTest {
         pillRegimen = new PillRegimen(externalId, dosages, new DailyScheduleDetails(15, 2));
         pillRegimen.setId(pillRegimenId);
         jobScheduler.unscheduleJobs(pillRegimen);
-        verify(schedulerService, times(1)).unscheduleJob(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, "dosage1");
-        verify(schedulerService, times(1)).unscheduleRepeatingJob(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, "dosage1");
-        verify(schedulerService, times(1)).unscheduleJob(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, "dosage2");
-        verify(schedulerService, times(1)).unscheduleRepeatingJob(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, "dosage2");
+        verify(schedulerService, times(1)).safeUnscheduleJob(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, "dosage1");
+        verify(schedulerService, times(1)).safeUnscheduleRepeatingJob(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, "dosage1");
+        verify(schedulerService, times(1)).safeUnscheduleJob(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, "dosage2");
+        verify(schedulerService, times(1)).safeUnscheduleRepeatingJob(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT_SCHEDULER, "dosage2");
     }
 
     @Test

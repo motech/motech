@@ -55,7 +55,7 @@ public class PillReminderServiceImplTest {
 
         service.createNew(dailyPillRegimenRequest);
 
-        verify(allPillRegimens).add(argThat(new PillRegimenArgumentMatcher()));
+        verify(allPillRegimens).addOrReplace(argThat(new PillRegimenArgumentMatcher()));
         verify(pillRegimenJobScheduler).scheduleDailyJob(argThat(new PillRegimenArgumentMatcher()));
     }
 
@@ -84,8 +84,8 @@ public class PillReminderServiceImplTest {
         service.renew(dailyPillRegimenRequest);
 
         verify(pillRegimenJobScheduler).unscheduleJobs(pillRegimen);
-        verify(allPillRegimens).remove(pillRegimen);
-        verify(allPillRegimens).add(argThat(new PillRegimenArgumentMatcher()));
+        verify(allPillRegimens).safeRemove(pillRegimen);
+        verify(allPillRegimens).addOrReplace(argThat(new PillRegimenArgumentMatcher()));
         verify(pillRegimenJobScheduler).scheduleDailyJob(argThat(new PillRegimenArgumentMatcher()));
     }
 
@@ -111,7 +111,7 @@ public class PillReminderServiceImplTest {
 
         when(allPillRegimens.findByExternalId(externalId)).thenReturn(pillRegimen);
 
-        service.unscheduleJobs(externalId);
+        service.remove(externalId);
 
         verify(pillRegimenJobScheduler).unscheduleJobs(pillRegimen);
     }

@@ -3,12 +3,14 @@ package org.motechproject.outbox.api;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.MotechObject;
 import org.motechproject.context.EventContext;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
 import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
+import org.motechproject.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,7 @@ import java.util.Calendar;
 import java.util.List;
 
 //TODO: The API of VoiceOutboxService is anemic (exposes the domain model, just a wrapper over the dao)
-public class VoiceOutboxServiceImpl implements VoiceOutboxService {
+public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxService {
 
     final Logger log = LoggerFactory.getLogger(VoiceOutboxServiceImpl.class);
     private int numDayskeepSavedMessages;
@@ -27,7 +29,7 @@ public class VoiceOutboxServiceImpl implements VoiceOutboxService {
      * Should be configurable externally.
      * if pendingMessages > maxNumberOfPendingMessages we need to emit event
      */
-    private int maxNumberOfPendingMessages;
+    private int maxNumberOfPendingMessages = Integer.MAX_VALUE;
 
     @Autowired(required = false)
     private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
@@ -38,12 +40,11 @@ public class VoiceOutboxServiceImpl implements VoiceOutboxService {
     @Override
     @SuppressWarnings("unchecked")
     public void addMessage(OutboundVoiceMessage outboundVoiceMessage) {
+        assertArgumentNotNull("OutboundVoiceMessage", outboundVoiceMessage);
+        logInfo("Add message: %s", outboundVoiceMessage);
 
-        log.info("Add message: " + outboundVoiceMessage);
-
-        if (outboundVoiceMessage == null) {
-            throw new IllegalArgumentException("OutboundVoiceMessage can not be null.");
-        }
+        outboundVoiceMessage.setStatus(OutboundVoiceMessageStatus.PENDING);
+        outboundVoiceMessage.setCreationTime(DateUtil.now().toDate());
         outboundVoiceMessageDao.add(outboundVoiceMessage);
 
         //sends max-pending-messages event if needed
@@ -188,7 +189,7 @@ public class VoiceOutboxServiceImpl implements VoiceOutboxService {
 
     @Override
     public OutboundVoiceMessage nextMessage(String lastMessageId, String partyId) {
-        if(StringUtils.isNotEmpty(lastMessageId))
+        if (StringUtils.isNotEmpty(lastMessageId))
             setMessageStatus(lastMessageId, OutboundVoiceMessageStatus.PLAYED);
         return getNextPendingMessage(partyId);
     }

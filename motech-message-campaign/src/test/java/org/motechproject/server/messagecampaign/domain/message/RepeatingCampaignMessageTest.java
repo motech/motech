@@ -1,8 +1,8 @@
 package org.motechproject.server.messagecampaign.domain.message;
 
 import org.junit.Test;
-import org.motechproject.server.messagecampaign.BaseUnitTest;
 import org.motechproject.server.messagecampaign.builder.CampaignMessageBuilder;
+import org.motechproject.testing.utils.BaseUnitTest;
 
 import java.util.List;
 

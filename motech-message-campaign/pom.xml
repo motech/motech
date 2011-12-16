@@ -38,5 +38,11 @@
             <artifactId>motech-platform-scheduler</artifactId>
             <version>0.5-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-testing-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

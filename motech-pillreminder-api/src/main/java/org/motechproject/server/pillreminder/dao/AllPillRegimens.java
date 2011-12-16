@@ -33,4 +33,8 @@ public class AllPillRegimens extends MotechAuditableRepository<PillRegimen> {
         dosage.updateResponseLastCapturedDate(lastCapturedDate);
         update(pillRegimen);
     }
+
+    public void addOrReplace(PillRegimen pillRegimen) {
+        addOrReplace(pillRegimen, "ExternalId", pillRegimen.getExternalId());
+    }
 }

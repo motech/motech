@@ -276,10 +276,26 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
     }
 
     @Override
+    public void safeUnscheduleRepeatingJob(String subject, String externalId) {
+        try {
+            unscheduleRepeatingJob(subject, externalId);
+        } catch (Exception ignored) {
+        }
+    }
+
+    @Override
     public void unscheduleJob(String subject, String externalId) {
         JobId jobId = new JobId(subject, externalId);
         logInfo("Unscheduling the Job: %s", jobId);
         unscheduleJob(jobId.value());
+    }
+
+    @Override
+    public void safeUnscheduleJob(String subject, String externalId) {
+        try {
+            unscheduleJob(subject, externalId);
+        } catch (Exception ignored) {
+        }
     }
 
     private void unscheduleJob(String jobId) {

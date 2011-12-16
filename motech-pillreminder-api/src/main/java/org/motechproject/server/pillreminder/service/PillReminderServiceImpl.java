@@ -25,13 +25,13 @@ public class PillReminderServiceImpl implements PillReminderService {
     public void createNew(DailyPillRegimenRequest dailyPillRegimenRequest) {
         PillRegimen pillRegimen = new PillRegimenBuilder().createDailyPillRegimenFrom(dailyPillRegimenRequest);
         pillRegimen.validate();
-        allPillRegimens.add(pillRegimen);
+        allPillRegimens.addOrReplace(pillRegimen);
         pillRegimenJobScheduler.scheduleDailyJob(pillRegimen);
     }
 
     @Override
     public void renew(DailyPillRegimenRequest dailyPillRegimenRequest) {
-        destroy(dailyPillRegimenRequest.getExternalId());
+        remove(dailyPillRegimenRequest.getExternalId());
         createNew(dailyPillRegimenRequest);
     }
 
@@ -47,14 +47,9 @@ public class PillReminderServiceImpl implements PillReminderService {
     }
 
     @Override
-    public void unscheduleJobs(String externalID) {
+    public void remove(String externalID) {
         PillRegimen regimen = allPillRegimens.findByExternalId(externalID);
         pillRegimenJobScheduler.unscheduleJobs(regimen);
-    }
-
-    private void destroy(String externalID) {
-        PillRegimen regimen = allPillRegimens.findByExternalId(externalID);
-        pillRegimenJobScheduler.unscheduleJobs(regimen);
-        allPillRegimens.remove(regimen);
+        allPillRegimens.safeRemove(regimen);
     }
 }
