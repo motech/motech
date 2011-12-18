@@ -21,6 +21,9 @@ public class OpenMRSEncounterAdaptor implements MRSEncounterAdaptor {
     @Autowired
     private OpenMRSObservationAdaptor openMrsObservationAdaptor;
 
+    public OpenMRSEncounterAdaptor() {
+    }
+
     @Override
     public MRSEncounter createEncounter(MRSEncounter MRSEncounter) {
         Encounter savedEncounter = encounterService.saveEncounter(mrsToOpenmrsEncounter(MRSEncounter));

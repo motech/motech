@@ -2,6 +2,7 @@ package org.motechproject.openmrs.services;
 
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
 import org.motechproject.mrs.model.Attribute;
+import org.motechproject.mrs.model.MRSPerson;
 import org.motechproject.mrs.model.MRSUser;
 import org.motechproject.mrs.services.MRSException;
 import org.motechproject.mrs.services.MRSUserAdaptor;
@@ -44,7 +45,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
 
     @Override
     public Map saveUser(MRSUser mrsUser) throws UserAlreadyExistsException {
-        if (getUserByUserName(mrsUser.attrValue("Email")) != null) {
+        if (getUserByUserName(mrsUser.getPerson().attrValue("Email")) != null) {
             throw new UserAlreadyExistsException();
         }
         return save(mrsUser);
@@ -87,12 +88,13 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         Person person = openMRSUser.getPerson();
         PersonName personName = person.getPersonName();
 
-        mrsUser.id(Integer.toString(openMRSUser.getId())).systemId(openMRSUser.getSystemId()).firstName(personName.getGivenName()).middleName(personName.getMiddleName())
-                .lastName(personName.getFamilyName()).userName(openMRSUser.getUsername());
-        mrsUser.securityRole(getRoleFromOpenMRSUser(openMRSUser.getRoles()));
+        MRSPerson mrsPerson = new MRSPerson().firstName(personName.getGivenName()).middleName(personName.getMiddleName())
+                .lastName(personName.getFamilyName());
+        mrsUser.id(Integer.toString(openMRSUser.getId())).systemId(openMRSUser.getSystemId()).userName(openMRSUser.getUsername()).person(mrsPerson).
+                securityRole(getRoleFromOpenMRSUser(openMRSUser.getRoles()));
 
         for (PersonAttribute personAttribute : person.getAttributes()) {
-            mrsUser.addAttribute(new Attribute(personAttribute.getAttributeType().getName(), personAttribute.getValue()));
+            mrsUser.getPerson().addAttribute(new Attribute(personAttribute.getAttributeType().getName(), personAttribute.getValue()));
         }
         return mrsUser;
     }
@@ -119,11 +121,12 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         Person person = user.getPerson();
         clearAttributes(user);
 
-        PersonName personName = new PersonName(mrsUser.getFirstName(), mrsUser.getMiddleName(), mrsUser.getLastName());
+        MRSPerson mrsPerson = mrsUser.getPerson();
+        PersonName personName = new PersonName(mrsPerson.getFirstName(), mrsPerson.getMiddleName(), mrsPerson.getLastName());
         person.addName(personName);
         person.setGender(PERSON_UNKNOWN_GENDER);
 
-        for (Attribute attribute : mrsUser.getAttributes()) {
+        for (Attribute attribute : mrsPerson.getAttributes()) {
             PersonAttributeType attributeType = personService.getPersonAttributeTypeByName(attribute.name());
             person.addAttribute(new PersonAttribute(attributeType, attribute.value()));
         }

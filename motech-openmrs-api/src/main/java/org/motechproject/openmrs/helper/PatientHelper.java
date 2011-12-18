@@ -4,6 +4,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.MRSPatient;
+import org.motechproject.mrs.model.MRSPerson;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -55,10 +56,10 @@ public class PatientHelper {
 
         final Patient openMRSPatient = new Patient(createPersonWithNames(patient));
         openMRSPatient.addIdentifier(new PatientIdentifier(getMotechId(patient, motechId), patientIdentifierType, location));
-        openMRSPatient.setGender(patient.getGender());
-        openMRSPatient.setBirthdate(patient.getDateOfBirth());
-        openMRSPatient.setBirthdateEstimated(patient.getBirthDateEstimated());
-        setPatientAddress(openMRSPatient, patient.getAddress());
+        openMRSPatient.setGender(patient.getPerson().getGender());
+        openMRSPatient.setBirthdate(patient.getPerson().getDateOfBirth());
+        openMRSPatient.setBirthdateEstimated(patient.getPerson().getBirthDateEstimated());
+        setPatientAddress(openMRSPatient, patient.getPerson().getAddress());
         setPersonAttributes(patient, openMRSPatient, allPersonAttributeTypes);
         return openMRSPatient;
     }
@@ -77,9 +78,10 @@ public class PatientHelper {
 
     private List<PersonName> getAllNames(MRSPatient patient) {
         final List<PersonName> personNames = new ArrayList<PersonName>();
-        personNames.add(new PersonName(patient.getFirstName(), patient.getMiddleName(), patient.getLastName()));
-        if (StringUtils.isNotEmpty(patient.getPreferredName())) {
-            final PersonName personName = new PersonName(patient.getPreferredName(), patient.getMiddleName(), patient.getLastName());
+        MRSPerson mrsPerson = patient.getPerson();
+        personNames.add(new PersonName(mrsPerson.getFirstName(), mrsPerson.getMiddleName(), mrsPerson.getLastName()));
+        if (StringUtils.isNotEmpty(mrsPerson.getPreferredName())) {
+            final PersonName personName = new PersonName(mrsPerson.getPreferredName(), mrsPerson.getMiddleName(), mrsPerson.getLastName());
             personName.setPreferred(true);
             personNames.add(personName);
         }
@@ -96,8 +98,9 @@ public class PatientHelper {
 
     private void setPersonAttributes(MRSPatient patient, Patient openMRSPatient,
                                      List<PersonAttributeType> allPersonAttributeTypes) {
-        if(CollectionUtils.isNotEmpty(patient.getAttributes())){
-            for (Attribute attribute : patient.getAttributes()) {
+        MRSPerson mrsPerson = patient.getPerson();
+        if(CollectionUtils.isNotEmpty(mrsPerson.getAttributes())){
+            for (Attribute attribute : mrsPerson.getAttributes()) {
                 PersonAttributeType attributeType = (PersonAttributeType) selectUnique(allPersonAttributeTypes,
                         having(on(PersonAttributeType.class).getName(), equalTo(attribute.name())));
                 openMRSPatient.addAttribute(new PersonAttribute(attributeType, attribute.value()));

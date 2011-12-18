@@ -48,7 +48,8 @@ public class OpenMRSEncounterAdaptorIT extends OpenMRSIntegrationTestBase {
     public void testSaveEncounterWithObservations() throws UserAlreadyExistsException {
         patientAlan = createPatient(facility);
 
-        MRSUser staff = new MRSUser().userName("SampleUserTest").systemId("1000544").firstName("SampleTest").securityRole("Provider");
+        MRSPerson mrsPerson = new MRSPerson().firstName("SampleTest");
+        MRSUser staff = new MRSUser().userName("SampleUserTest").systemId("1000544").securityRole("Provider").person(mrsPerson);
         MRSEncounter mrsEncounter = null;
         try {
             staff = (MRSUser) userAdaptor.saveUser(staff).get(USER_KEY);
@@ -82,7 +83,9 @@ public class OpenMRSEncounterAdaptorIT extends OpenMRSIntegrationTestBase {
         final String gender = "M";
         Boolean birthDateEstimated = true;
 
-        final MRSPatient patient = new MRSPatient(randomId(), first, middle, last, "prefName", birthDate, birthDateEstimated, gender, address1, facility);
+        MRSPerson mrsPerson = new MRSPerson().firstName(first).lastName(last).middleName(middle).preferredName("prefName").
+                birthDateEstimated(birthDateEstimated).dateOfBirth(birthDate).address(address1).gender(gender);
+        final MRSPatient patient = new MRSPatient(randomId(), mrsPerson, facility);
         return patientAdaptor.savePatient(patient);
     }
 

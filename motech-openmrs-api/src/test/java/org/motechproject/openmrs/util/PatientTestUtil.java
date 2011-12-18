@@ -2,6 +2,7 @@ package org.motechproject.openmrs.util;
 
 import org.motechproject.mrs.model.MRSFacility;
 import org.motechproject.mrs.model.MRSPatient;
+import org.motechproject.mrs.model.MRSPerson;
 import org.openmrs.*;
 
 import java.util.Date;
@@ -34,12 +35,13 @@ public class PatientTestUtil {
     }
 
     public void verifyReturnedPatient(String first, String middle, String last, String address1, Date birthdate, Boolean birthDateEstimated, String gender, MRSFacility facility, MRSPatient actualPatient) {
-        assertThat(actualPatient.getFirstName(), is(first));
-        assertThat(actualPatient.getLastName(), is(last));
-        assertThat(actualPatient.getMiddleName(), is(middle));
-        assertThat(actualPatient.getAddress(), is(address1));
-        assertThat(actualPatient.getDateOfBirth(), is(birthdate));
-        assertThat(actualPatient.getGender(), is(gender));
+        MRSPerson actualMRSPerson = actualPatient.getPerson();
+        assertThat(actualMRSPerson.getFirstName(), is(first));
+        assertThat(actualMRSPerson.getLastName(), is(last));
+        assertThat(actualMRSPerson.getMiddleName(), is(middle));
+        assertThat(actualMRSPerson.getAddress(), is(address1));
+        assertThat(actualMRSPerson.getDateOfBirth(), is(birthdate));
+        assertThat(actualMRSPerson.getGender(), is(gender));
         assertThat(actualPatient.getFacility(), is(equalTo(facility)));
     }
 }

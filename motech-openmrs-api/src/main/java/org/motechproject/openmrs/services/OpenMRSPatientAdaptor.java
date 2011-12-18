@@ -2,15 +2,13 @@ package org.motechproject.openmrs.services;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mrs.model.Attribute;
+import org.motechproject.mrs.model.MRSFacility;
 import org.motechproject.mrs.model.MRSPatient;
+import org.motechproject.mrs.model.MRSPerson;
 import org.motechproject.mrs.services.MRSPatientAdaptor;
 import org.motechproject.openmrs.IdentifierType;
 import org.motechproject.openmrs.helper.PatientHelper;
-import org.openmrs.PatientIdentifier;
-import org.openmrs.PatientIdentifierType;
-import org.openmrs.PersonAttribute;
-import org.openmrs.PersonAttributeType;
-import org.openmrs.PersonName;
+import org.openmrs.*;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
@@ -70,12 +68,13 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
     public MRSPatient getMrsPatient(org.openmrs.Patient savedPatient) {
         final List<Attribute> attributes = project(savedPatient.getAttributes(), Attribute.class,
                 on(PersonAttribute.class).getAttributeType().toString(), on(PersonAttribute.class).getValue());
-        PersonName firstName = patientHelper.getFirstName(savedPatient);
+        PersonName personName = patientHelper.getFirstName(savedPatient);
         final PatientIdentifier patientIdentifier = savedPatient.getPatientIdentifier();
-        return new MRSPatient(String.valueOf(savedPatient.getId()), firstName.getGivenName(),
-                firstName.getMiddleName(), firstName.getFamilyName(), patientHelper.getPreferredName(savedPatient),
-                savedPatient.getBirthdate(), savedPatient.getBirthdateEstimated(), savedPatient.getGender(), patientHelper.getAddress(savedPatient), attributes,
-                (patientIdentifier != null) ? facilityAdaptor.convertLocationToFacility(patientIdentifier.getLocation()) : null);
+        MRSFacility mrsFacility = (patientIdentifier != null) ? facilityAdaptor.convertLocationToFacility(patientIdentifier.getLocation()) : null;
+        MRSPerson mrsPerson = new MRSPerson().firstName(personName.getGivenName()).middleName(personName.getMiddleName()).lastName(personName.getFamilyName()).
+                              preferredName(patientHelper.getPreferredName(savedPatient)).birthDateEstimated(savedPatient.getBirthdateEstimated()).
+                              gender(savedPatient.getGender()).address(patientHelper.getAddress(savedPatient)).attributes(attributes).dateOfBirth(savedPatient.getBirthdate());
+        return new MRSPatient(String.valueOf(savedPatient.getId()), mrsPerson, mrsFacility);
     }
 
     public PatientIdentifierType getPatientIdentifierType(IdentifierType identifierType) {
