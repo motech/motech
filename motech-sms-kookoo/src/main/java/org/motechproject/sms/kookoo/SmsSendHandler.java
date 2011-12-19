@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.sms.api.SmsEventHandler;
+import org.motechproject.sms.api.constants.EventSubject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Properties;
 
-import static org.motechproject.sms.api.service.SmsService.*;
+import static org.motechproject.sms.api.service.SmsServiceImpl.*;
 
 @Component
 public class SmsSendHandler implements SmsEventHandler {
@@ -40,7 +41,7 @@ public class SmsSendHandler implements SmsEventHandler {
     }
 
     @Override
-    @MotechListener(subjects = SEND_SMS)
+    @MotechListener(subjects = EventSubject.SEND_SMS)
     public void handle(MotechEvent motechEvent) throws Exception {
         final GetMethod request = new GetMethod(properties.getProperty(KOOKOO_OUTBOUND_SMS_URL));
         final String phoneNumber = ((List<String>) motechEvent.getParameters().get(RECIPIENTS)).get(0);

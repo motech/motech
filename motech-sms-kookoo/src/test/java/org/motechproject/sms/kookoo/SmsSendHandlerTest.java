@@ -10,6 +10,7 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.sms.api.constants.EventSubject;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -21,7 +22,7 @@ import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.sms.api.service.SmsService.*;
+import static org.motechproject.sms.api.service.SmsServiceImpl.*;
 
 public class SmsSendHandlerTest {
     private SmsSendHandler kookooSmsHandler;
@@ -53,7 +54,7 @@ public class SmsSendHandlerTest {
         final HashMap parameters = new HashMap(10);
         parameters.put(MESSAGE, message);
         parameters.put(RECIPIENTS, Arrays.asList("987654321"));
-        motechEvent = new MotechEvent(SEND_SMS, parameters);
+        motechEvent = new MotechEvent(EventSubject.SEND_SMS, parameters);
     }
 
     @Test

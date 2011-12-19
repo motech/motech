@@ -9,7 +9,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.sms.api.service.SmsService;
+import org.motechproject.sms.api.constants.EventSubject;
+import org.motechproject.sms.api.service.SmsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -44,9 +45,9 @@ public class SmsSendByHttpIT {
     public void shouldUseSmsHttpTemplateFileForGeneratingRequest() throws IOException, SmsDeliveryFailureException {
         smsSendHandler = new SmsSendHandler(templateReader, mockHttpClient);
 
-        MotechEvent motechEvent = new MotechEvent(SmsService.SEND_SMS, new HashMap<String, Object>() {{
-            put(SmsService.RECIPIENTS, Arrays.asList("123", "456"));
-            put(SmsService.MESSAGE, "foobar");
+        MotechEvent motechEvent = new MotechEvent(EventSubject.SEND_SMS, new HashMap<String, Object>() {{
+            put(SmsServiceImpl.RECIPIENTS, Arrays.asList("123", "456"));
+            put(SmsServiceImpl.MESSAGE, "foobar");
         }});
         smsSendHandler.handle(motechEvent);
 
@@ -60,9 +61,9 @@ public class SmsSendByHttpIT {
     public void shouldSendSmsThroughKookoo() throws IOException, SmsDeliveryFailureException {
         smsSendHandler = new SmsSendHandler(templateReader, httpClient);
 
-        MotechEvent motechEvent = new MotechEvent(SmsService.SEND_SMS, new HashMap<String, Object>() {{
-            put(SmsService.RECIPIENTS, Arrays.asList("9686202448"));
-            put(SmsService.MESSAGE, "business analyst");
+        MotechEvent motechEvent = new MotechEvent(EventSubject.SEND_SMS, new HashMap<String, Object>() {{
+            put(SmsServiceImpl.RECIPIENTS, Arrays.asList("9686202448"));
+            put(SmsServiceImpl.MESSAGE, "business analyst");
         }});
         smsSendHandler.handle(motechEvent);
     }

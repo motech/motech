@@ -14,10 +14,10 @@ import java.util.Arrays;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.sms.api.service.SmsService.MESSAGE;
-import static org.motechproject.sms.api.service.SmsService.RECIPIENTS;
+import static org.motechproject.sms.api.service.SmsServiceImpl.MESSAGE;
+import static org.motechproject.sms.api.service.SmsServiceImpl.RECIPIENTS;
 
-public class SmsServiceTest {
+public class SmsServiceImplTest {
     private SmsService smsService;
 
     @Mock
@@ -26,7 +26,7 @@ public class SmsServiceTest {
     @Before
     public void setup() {
         initMocks(this);
-        smsService = new SmsService(eventRelay);
+        smsService = new SmsServiceImpl(eventRelay);
     }
 
     @Test

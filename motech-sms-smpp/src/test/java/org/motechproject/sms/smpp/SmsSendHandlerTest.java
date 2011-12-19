@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
+import org.motechproject.sms.api.constants.EventSubject;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -15,7 +16,8 @@ import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.sms.api.service.SmsService.*;
+import static org.motechproject.sms.api.service.SmsServiceImpl.MESSAGE;
+import static org.motechproject.sms.api.service.SmsServiceImpl.RECIPIENTS;
 
 public class SmsSendHandlerTest {
 	private SmsSendHandler handler;
@@ -34,7 +36,7 @@ public class SmsSendHandlerTest {
 		Method handleMethod = SmsSendHandler.class.getDeclaredMethod("handle", new Class[]{MotechEvent.class});
 		assertTrue("MotechListener annotation missing", handleMethod.isAnnotationPresent(MotechListener.class));
 		MotechListener annotation = handleMethod.getAnnotation(MotechListener.class);
-		assertArrayEquals(new String[]{SEND_SMS}, annotation.subjects());
+		assertArrayEquals(new String[]{EventSubject.SEND_SMS}, annotation.subjects());
 	}
 
 	@Test
@@ -45,7 +47,7 @@ public class SmsSendHandlerTest {
 
 		handler = new SmsSendHandler(managedSmslibService);
 
-		handler.handle(new MotechEvent(SEND_SMS, new HashMap<String, Object>() {{
+		handler.handle(new MotechEvent(EventSubject.SEND_SMS, new HashMap<String, Object>() {{
 			put(RECIPIENTS, recipients);
 			put(MESSAGE, message);
 		}}));

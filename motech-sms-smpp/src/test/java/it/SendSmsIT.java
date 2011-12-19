@@ -4,7 +4,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.sms.api.service.SmsService;
+import org.motechproject.sms.api.constants.EventSubject;
+import org.motechproject.sms.api.service.SmsServiceImpl;
 import org.motechproject.sms.smpp.ManagedSmslibService;
 import org.motechproject.sms.smpp.SmsSendHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +29,9 @@ public class SendSmsIT {
     public void shouldSendSms() throws Exception {
         smsSendHandler = new SmsSendHandler(service);
 
-        MotechEvent event = new MotechEvent(SmsService.SEND_SMS, new HashMap<String, Object>() {{
-            put(SmsService.RECIPIENTS, Arrays.asList("*-/*-/-!@#@"));
-            put(SmsService.MESSAGE, "goo bar");
+        MotechEvent event = new MotechEvent(EventSubject.SEND_SMS, new HashMap<String, Object>() {{
+            put(SmsServiceImpl.RECIPIENTS, Arrays.asList("*-/*-/-!@#@"));
+            put(SmsServiceImpl.MESSAGE, "goo bar");
         }});
         smsSendHandler.handle(event);
 	    Thread.sleep(100000000);
