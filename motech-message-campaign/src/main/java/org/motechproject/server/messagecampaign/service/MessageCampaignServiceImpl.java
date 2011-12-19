@@ -22,18 +22,20 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
     }
 
     public void startFor(CampaignRequest request) {
-        getCampaignFor(request).start();
+        getScheduler(request).start();
     }
 
-    public void restartFor(CampaignRequest request) {
-        getCampaignFor(request).restart();
+    public void stopFor(CampaignRequest request, String message) {
+        getScheduler(request).stop(message);
     }
 
-    public void stopFor(CampaignRequest request) {
-        getCampaignFor(request).stop();
+    @Override
+    public void stopAll(CampaignRequest enrollRequest) {
+        MessageCampaignScheduler scheduler = getScheduler(enrollRequest);
+        scheduler.stop();
     }
 
-    private MessageCampaignScheduler getCampaignFor(CampaignRequest enrollRequest) {
+    private MessageCampaignScheduler getScheduler(CampaignRequest enrollRequest) {
         Campaign<CampaignMessage> campaign = allMessageCampaigns.get(enrollRequest.campaignName());
         if (campaign == null)
             throw new MessageCampaignException("No campaign by name : " + enrollRequest.campaignName());

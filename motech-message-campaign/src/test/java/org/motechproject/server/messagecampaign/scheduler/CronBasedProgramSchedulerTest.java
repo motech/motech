@@ -42,12 +42,12 @@ public class CronBasedProgramSchedulerTest {
         assertEquals(campaign.messages().get(0).cron(), allJobs.get(0).getCronExpression());
         assertEquals(DateUtil.today(), DateUtil.newDate(allJobs.get(0).getStartTime()));
         assertEquals("org.motechproject.server.messagecampaign.send-campaign-message", allJobs.get(0).getMotechEvent().getSubject());
-        assertMotechEvent(allJobs.get(0), "org.motechproject.server.messagecampaign.testCampaign.12345.cron-message1", "cron-message1");
+        assertMotechEvent(allJobs.get(0), "testCampaign.12345.cron-message1", "cron-message1");
 
         assertEquals(campaign.messages().get(1).cron(), allJobs.get(1).getCronExpression());
         assertEquals(DateUtil.today(), DateUtil.newDate(allJobs.get(1).getStartTime()));
         assertEquals("org.motechproject.server.messagecampaign.send-campaign-message", allJobs.get(1).getMotechEvent().getSubject());
-        assertMotechEvent(allJobs.get(1), "org.motechproject.server.messagecampaign.testCampaign.12345.cron-message2", "cron-message2");
+        assertMotechEvent(allJobs.get(1), "testCampaign.12345.cron-message2", "cron-message2");
     }
 
     private void assertMotechEvent(CronSchedulableJob cronSchedulableJob, String expectedJobId, String messageKey) {

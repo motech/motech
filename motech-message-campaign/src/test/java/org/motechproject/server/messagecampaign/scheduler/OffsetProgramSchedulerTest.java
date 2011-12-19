@@ -45,12 +45,12 @@ public class OffsetProgramSchedulerTest {
         Date startDate1 = DateUtil.newDateTime(DateUtil.today().plusDays(7), request.reminderTime().getHour(), request.reminderTime().getMinute(), 0).toDate();
         assertEquals(startDate1.toString(), allJobs.get(0).getStartDate().toString());
         assertEquals(MESSAGE_CAMPAIGN_EVENT_SUBJECT, allJobs.get(0).getMotechEvent().getSubject());
-        assertMotechEvent(allJobs.get(0), "org.motechproject.server.messagecampaign.testCampaign.12345.child-info-week-1", "child-info-week-1");
+        assertMotechEvent(allJobs.get(0), "testCampaign.12345.child-info-week-1", "child-info-week-1");
 
         Date startDate2 = DateUtil.newDateTime(DateUtil.today().plusDays(14), request.reminderTime().getHour(), request.reminderTime().getMinute(), 0).toDate();
         assertEquals(startDate2.toString(), allJobs.get(1).getStartDate().toString());
         assertEquals(MESSAGE_CAMPAIGN_EVENT_SUBJECT, allJobs.get(1).getMotechEvent().getSubject());
-        assertMotechEvent(allJobs.get(1), "org.motechproject.server.messagecampaign.testCampaign.12345.child-info-week-1a", "child-info-week-1a");
+        assertMotechEvent(allJobs.get(1), "testCampaign.12345.child-info-week-1a", "child-info-week-1a");
     }
 
     private void assertMotechEvent(RunOnceSchedulableJob runOnceSchedulableJob, String expectedJobId, String messageKey) {

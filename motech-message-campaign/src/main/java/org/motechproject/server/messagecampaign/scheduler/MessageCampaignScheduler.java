@@ -8,6 +8,7 @@ import org.motechproject.server.messagecampaign.builder.SchedulerPayloadBuilder;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.Campaign;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
+import org.motechproject.server.messagecampaign.service.CampaignTypeHandlersRegistery;
 import org.motechproject.util.DateUtil;
 
 import java.util.Date;
@@ -33,14 +34,15 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage, E exte
             scheduleJobFor(message);
     }
 
-    public void stop() {
-        String jobIdPrefix = String.format("%s%s.%s", BASE_SUBJECT, campaign.name(), campaignRequest.externalId());
-        schedulerService.unscheduleAllJobs(jobIdPrefix);
+    public void stop(String messageName) {
+        MessageCampaignScheduledJobId jobId = new MessageCampaignScheduledJobId(campaign.name(), campaignRequest.externalId(), messageName);
+        schedulerService.safeUnscheduleJob(CampaignTypeHandlersRegistery.subjectFor(campaign), jobId.value());
     }
 
-    public void restart() {
-        stop();
-        start();
+    public void stop() {
+        for (T message : campaign.messages()) {
+            stop(message.name());
+        }
     }
 
     protected abstract void scheduleJobFor(T message);
@@ -59,18 +61,6 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage, E exte
         schedulerService.scheduleJob(schedulableJob);
     }
 
-    protected void scheduleRepeatingJob(LocalDate startDate, Time reminderTime, LocalDate endDate, Map<String, Object> params) {
-        MotechEvent motechEvent = new MotechEvent(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, params);
-        Date startDateAsDate = startDate == null ? null : DateUtil.newDateTime(startDate, reminderTime).withMillisOfSecond(0).toDate();
-        Date endDateAsDate = endDate == null ? null : endDate.toDate();
-        CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronExpressionFor(reminderTime), startDateAsDate, endDateAsDate);
-        schedulerService.scheduleJob(schedulableJob);
-    }
-
-    private String cronExpressionFor(Time reminderTime) {
-        return "0 " + reminderTime.getMinute() + " " + reminderTime.getHour() + " 1/1 * ? *";
-    }
-
     protected LocalDate referenceDate() {
         return campaignRequest.referenceDate() != null ? campaignRequest.referenceDate() : DateUtil.today();
     }
@@ -86,7 +76,8 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage, E exte
     }
 
     protected String getJobId(String messageKey) {
-        return String.format("%s%s.%s.%s", BASE_SUBJECT, campaign.name(), campaignRequest.externalId(), messageKey);
+        MessageCampaignScheduledJobId jobId = new MessageCampaignScheduledJobId(campaign.name(), campaignRequest.externalId(), messageKey);
+        return jobId.value();
     }
 }
 

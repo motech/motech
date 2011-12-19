@@ -45,22 +45,6 @@ public class MessageCampaignServiceImplTest {
     }
 
     @Test
-    public void shouldCallCampaignSchedulerToReStart() {
-         String campaignName = "campaign-name";
-        CampaignRequest campaignRequest = new CampaignRequest();
-        campaignRequest.setCampaignName(campaignName);
-        AbsoluteCampaign absoluteCampaign = mock(AbsoluteCampaign.class);
-
-        when(allMessageCampaigns.get(campaignName)).thenReturn(absoluteCampaign);
-        when(absoluteCampaign.getScheduler(schedulerService,campaignRequest)).thenReturn(scheduler);
-
-        messageCampaignService.restartFor(campaignRequest);
-
-        verify(absoluteCampaign).getScheduler(schedulerService, campaignRequest);
-        verify(scheduler).restart();
-    }
-
-    @Test
     public void shouldCallCampaignSchedulerToStop() {
          String campaignName = "campaign-name";
         CampaignRequest campaignRequest = new CampaignRequest();
@@ -70,10 +54,10 @@ public class MessageCampaignServiceImplTest {
         when(allMessageCampaigns.get(campaignName)).thenReturn(absoluteCampaign);
         when(absoluteCampaign.getScheduler(schedulerService,campaignRequest)).thenReturn(scheduler);
 
-        messageCampaignService.stopFor(campaignRequest);
+        messageCampaignService.stopFor(campaignRequest, "foo");
 
         verify(absoluteCampaign).getScheduler(schedulerService,campaignRequest);
-        verify(scheduler).stop();
+        verify(scheduler).stop("foo");
     }
 
     @Test(expected = MessageCampaignException.class)
