@@ -17,7 +17,7 @@ import java.util.HashMap;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:applicationSmsSmpp.xml"})
-public class SendSmsIT {
+public class SmsIT {
 
     private SmsSendHandler smsSendHandler;
 

@@ -3,7 +3,6 @@ package org.motechproject.sms.smpp;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.gateway.OutboundEventGateway;
 import org.motechproject.sms.smpp.constants.SmppProperties;
@@ -20,6 +19,7 @@ import java.util.Properties;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -57,9 +57,23 @@ public class ManagedSmslibServiceTest {
 		assertTrue("PreDestroy annotation missing", disconnect.isAnnotationPresent(PreDestroy.class));
 	}
 
+    @Test
+    public void shouldRegisterOutboundNotificationListener() {
+        OutboundMessageNotification outboundMessageNotification = mock(OutboundMessageNotification.class);
+        new ManagedSmslibService(smslibService, smsProperties, smppProperties, outboundMessageNotification, null);
+        verify(smslibService).setOutboundMessageNotification(outboundMessageNotification);
+    }
+
+    @Test
+    public void shouldRegisterInboundMessagesListener() {
+        InboundMessageNotification inboundMessageNotification = mock(InboundMessageNotification.class);
+        new ManagedSmslibService(smslibService, smsProperties, smppProperties, null, inboundMessageNotification);
+        verify(smslibService).setInboundMessageNotification(inboundMessageNotification);
+    }
+
 	@Test
 	public void shouldAddConfiguredJsmppGatewayDuringInitialization() throws GatewayException {
-		new ManagedSmslibService(smslibService, smsProperties, smppProperties, null);
+		new ManagedSmslibService(smslibService, smsProperties, smppProperties, null, null);
 
 		ArgumentCaptor<JSMPPGateway> jsmppGatewayCaptor = ArgumentCaptor.forClass(JSMPPGateway.class);
 		verify(smslibService).addGateway(jsmppGatewayCaptor.capture());
@@ -77,27 +91,27 @@ public class ManagedSmslibServiceTest {
 		Properties smsProperties = new Properties() {{
 			setProperty(SmsProperties.MAX_RETRIES, "5");
 		}};
-		new ManagedSmslibService(actualSmslibService, smsProperties, smppProperties, null);
+		new ManagedSmslibService(actualSmslibService, smsProperties, smppProperties, null, null);
 		assertEquals(5, actualSmslibService.getSettings().QUEUE_RETRIES);
 	}
 
 	@Test
 	public void shouldEstablishSmppConnection() throws SMSLibException, IOException, InterruptedException {
-		ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, smsProperties, smppProperties, null);
+		ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, smsProperties, smppProperties, null, null);
 		managedSmslibService.connect();
 		verify(smslibService).startService();
 	}
 
 	@Test
 	public void shouldTerminateSmppConnection() throws IOException, SMSLibException, InterruptedException {
-		ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, smsProperties, smppProperties, null);
+		ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, smsProperties, smppProperties, null, null);
 		managedSmslibService.disconnect();
 		verify(smslibService).stopService();
 	}
 
 	@Test
 	public void shouldSendSmsAsynchronously() throws GatewayException, IOException, TimeoutException, InterruptedException {
-		ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, smsProperties, smppProperties, null);
+		ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, smsProperties, smppProperties, null, null);
 		managedSmslibService.queueMessage(Arrays.asList("recipient1", "recipient2"), "message");
 
 		ArgumentCaptor groupNameCaptor = ArgumentCaptor.forClass(String.class);
@@ -113,12 +127,5 @@ public class ManagedSmslibServiceTest {
 		assertEquals(groupNameCaptor.getValue(), outboundMessageCaptor.getValue().getRecipient());
 
 		verify(smslibService).removeGroup((String) groupNameCaptor.getValue());
-	}
-
-	@Test
-	public void shouldSetOutboundNotificationListener() {
-		new ManagedSmslibService(smslibService, smsProperties, smppProperties, null);
-
-		verify(smslibService).setOutboundMessageNotification(Matchers.<IOutboundMessageNotification>any());
 	}
 }

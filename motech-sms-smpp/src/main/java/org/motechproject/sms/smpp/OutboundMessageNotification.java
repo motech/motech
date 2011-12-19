@@ -17,13 +17,13 @@ import java.util.HashMap;
 import java.util.Properties;
 
 @Component
-public class OutboundNotification implements IOutboundMessageNotification {
-	private static final Logger log = Logger.getLogger(OutboundNotification.class);
+public class OutboundMessageNotification implements IOutboundMessageNotification {
+	private static final Logger log = Logger.getLogger(OutboundMessageNotification.class);
 	private OutboundEventGateway outboundEventGateway;
 	private final Integer maxRetries;
 
 	@Autowired
-	public OutboundNotification(OutboundEventGateway outboundEventGateway, @Qualifier("smsProperties") Properties smsProperties) {
+	public OutboundMessageNotification(OutboundEventGateway outboundEventGateway, @Qualifier("smsProperties") Properties smsProperties) {
 		this.outboundEventGateway = outboundEventGateway;
 		this.maxRetries = Integer.parseInt(smsProperties.getProperty(SmsProperties.MAX_RETRIES));
 	}

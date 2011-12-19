@@ -23,21 +23,24 @@ public class ManagedSmslibService {
 	private Service smslibService;
 	private Properties smsProperties;
 	private Properties smppProperties;
-	private OutboundNotification outboundNotification;
+	private OutboundMessageNotification outboundMessageNotification;
+    private InboundMessageNotification inboundMessageNotification;
 
-	@Autowired
-	public ManagedSmslibService(Service smslibService, @Qualifier("smsProperties") Properties smsProperties, @Qualifier("smppProperties") Properties smppProperties, OutboundNotification outboundNotification) {
+    @Autowired
+	public ManagedSmslibService(Service smslibService, @Qualifier("smsProperties") Properties smsProperties, @Qualifier("smppProperties") Properties smppProperties, OutboundMessageNotification outboundMessageNotification, InboundMessageNotification inboundMessageNotification) {
 		this.smslibService = smslibService;
 		this.smsProperties = smsProperties;
 		this.smppProperties = smppProperties;
-		this.outboundNotification = outboundNotification;
-		configureSmsLib();
-		addNotificationListeners();
+		this.outboundMessageNotification = outboundMessageNotification;
+        this.inboundMessageNotification = inboundMessageNotification;
+        configureSmsLib();
+		registerListeners();
 		registerGateway();
 	}
 
-	private void addNotificationListeners() {
-		smslibService.setOutboundMessageNotification(outboundNotification);
+	private void registerListeners() {
+		smslibService.setOutboundMessageNotification(outboundMessageNotification);
+        smslibService.setInboundMessageNotification(inboundMessageNotification);
 	}
 
 	private void configureSmsLib() {

@@ -19,13 +19,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class OutboundNotificationTest {
+public class OutboundMessageNotificationTest {
 	@Mock
 	private AGateway gateway;
 	@Mock
 	private OutboundEventGateway outboundEventGateway;
 
-	private OutboundNotification outboundNotification;
+	private OutboundMessageNotification outboundMessageNotification;
 
 	@Before
 	public void setUp() {
@@ -33,7 +33,7 @@ public class OutboundNotificationTest {
 		Properties smsProperties = new Properties() {{
 			setProperty(SmsProperties.MAX_RETRIES, "4");
 		}};
-		outboundNotification = new OutboundNotification(outboundEventGateway, smsProperties);
+		outboundMessageNotification = new OutboundMessageNotification(outboundEventGateway, smsProperties);
 	}
 
 	@Test
@@ -45,7 +45,7 @@ public class OutboundNotificationTest {
 			setRetryCount(4);
 		}};
 
-		outboundNotification.process(gateway, message);
+		outboundMessageNotification.process(gateway, message);
 
 		ArgumentCaptor<MotechEvent> motechEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
 		verify(outboundEventGateway).sendEventMessage(motechEventArgumentCaptor.capture());
@@ -64,7 +64,7 @@ public class OutboundNotificationTest {
 			setRetryCount(1);
 		}};
 
-		outboundNotification.process(gateway, message);
+		outboundMessageNotification.process(gateway, message);
 
 		verifyZeroInteractions(outboundEventGateway);
 	}
@@ -77,7 +77,7 @@ public class OutboundNotificationTest {
 			setText("Test Message");
 		}};
 
-		outboundNotification.process(gateway, message);
+		outboundMessageNotification.process(gateway, message);
 
 		verifyZeroInteractions(outboundEventGateway);
 	}
