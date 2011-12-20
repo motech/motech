@@ -1,25 +1,24 @@
 package org.motechproject.sms.api.service;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.sms.api.constants.EventSubject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class SmsServiceImpl implements SmsService {
+
     public static final String RECIPIENTS = "number";
     public static final String MESSAGE = "message";
-
-    private static final Logger log = Logger.getLogger(SmsServiceImpl.class);
+    public static final String DELIVERY_TIME = "delivery_time";
 
     private EventRelay eventRelay;
+    private static final Logger log = Logger.getLogger(SmsServiceImpl.class);
 
     @Autowired
     public SmsServiceImpl(EventRelay eventRelay) {
@@ -27,19 +26,31 @@ public class SmsServiceImpl implements SmsService {
     }
 
     @Override
-    public void sendSMS(List<String> recipients, String message) {
-        Map<String, Object> eventData = new HashMap<String, Object>();
-        eventData.put(RECIPIENTS, recipients);
-        eventData.put(MESSAGE, message);
-
-        MotechEvent smsEvent = new MotechEvent(EventSubject.SEND_SMS, eventData);
-
-        log.info(String.format("Putting event on relay to send message %s to number %s", message, recipients));
-        eventRelay.sendEventMessage(smsEvent);
+    public void sendSMS(String recipient, String message) {
+        raiseSendSmsEvent(Arrays.asList(recipient), message, null);
     }
 
     @Override
-    public void sendSMS(String recipient, String message) {
-        sendSMS(Arrays.asList(recipient), message);
+    public void sendSMS(List<String> recipients, String message) {
+        raiseSendSmsEvent(recipients, message, null);
+    }
+
+    @Override
+    public void sendSMS(String recipient, String message, DateTime deliveryTime) {
+        raiseSendSmsEvent(Arrays.asList(recipient), message, deliveryTime);
+    }
+
+    @Override
+    public void sendSMS(ArrayList<String> recipients, String message, DateTime deliveryTime) {
+        raiseSendSmsEvent(recipients, message, deliveryTime);
+    }
+
+    private void raiseSendSmsEvent(final List<String> recipients, final String message, final DateTime deliveryTime) {
+        log.info(String.format("Putting event on relay to send message %s to number %s", message, recipients));
+        eventRelay.sendEventMessage(new MotechEvent(EventSubject.SEND_SMS, new HashMap<String, Object>() {{
+            put(RECIPIENTS, recipients);
+            put(MESSAGE, message);
+            put(DELIVERY_TIME, deliveryTime);
+        }}));
     }
 }

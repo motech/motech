@@ -1,5 +1,7 @@
 package org.motechproject.sms.smpp;
 
+import ch.lambdaj.Lambda;
+import org.joda.time.DateTime;
 import org.motechproject.sms.smpp.constants.SmppProperties;
 import org.motechproject.sms.smpp.constants.SmsProperties;
 import org.smslib.*;
@@ -15,9 +17,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
+import static ch.lambdaj.Lambda.forEach;
+import static ch.lambdaj.Lambda.on;
+import static ch.lambdaj.Lambda.select;
+
 @Component
 public class ManagedSmslibService {
-	public static final String GATEWAY_ID = "smpp_gateway";
+
+    public static final String GATEWAY_ID = "smpp_gateway";
 	private static final String temporaryGroup = "temporary_group";
 
 	private Service smslibService;
@@ -71,17 +78,33 @@ public class ManagedSmslibService {
 		smslibService.stopService();
 	}
 
-	public void queueMessage(List<String> recipients, final String message) throws GatewayException, IOException, TimeoutException, InterruptedException {
-		smslibService.createGroup(temporaryGroup);
-		for (String recipient : recipients)
-			smslibService.addToGroup(temporaryGroup, recipient);
+    public void queueMessage(List<String> recipients, final String message) {
+        createGroupOfRecipients(recipients);
 
-		smslibService.queueMessage(new OutboundMessage() {{
-			setRecipient(temporaryGroup);
-			setText(message);
-			setGatewayId(GATEWAY_ID);
-		}});
+        smslibService.queueMessage(new OutboundMessage() {{
+            setRecipient(temporaryGroup);
+            setText(message);
+            setGatewayId(GATEWAY_ID);
+        }});
+
+        smslibService.removeGroup(temporaryGroup);
+    }
+
+	public void queueMessageAt(List<String> recipients, final String message, DateTime dateTime) throws GatewayException, IOException, TimeoutException, InterruptedException {
+        createGroupOfRecipients(recipients);
+
+		smslibService.queueMessageAt(new OutboundMessage() {{
+            setRecipient(temporaryGroup);
+            setText(message);
+            setGatewayId(GATEWAY_ID);
+        }}, dateTime.toDate());
 
 		smslibService.removeGroup(temporaryGroup);
 	}
+
+    private void createGroupOfRecipients(List<String> recipients) {
+        smslibService.createGroup(temporaryGroup);
+        for (String recipient : recipients)
+            smslibService.addToGroup(temporaryGroup, recipient);
+    }
 }

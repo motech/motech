@@ -1,5 +1,6 @@
 package org.motechproject.sms.smpp;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -10,17 +11,18 @@ import org.motechproject.sms.api.constants.EventSubject;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.sms.api.service.SmsServiceImpl.DELIVERY_TIME;
 import static org.motechproject.sms.api.service.SmsServiceImpl.MESSAGE;
 import static org.motechproject.sms.api.service.SmsServiceImpl.RECIPIENTS;
 
 public class SmsSendHandlerTest {
-	private SmsSendHandler handler;
+
+    private SmsSendHandler handler;
 
 	@Mock
 	private ManagedSmslibService managedSmslibService;
@@ -41,17 +43,20 @@ public class SmsSendHandlerTest {
 
 	@Test
 	public void shouldSendMessageUsingSmpp() throws Exception {
-		final String recipient = "0987654321";
-		final String message = "foo bar";
-		final List<String> recipients = Arrays.asList(recipient);
-
-		handler = new SmsSendHandler(managedSmslibService);
-
 		handler.handle(new MotechEvent(EventSubject.SEND_SMS, new HashMap<String, Object>() {{
-			put(RECIPIENTS, recipients);
-			put(MESSAGE, message);
+			put(RECIPIENTS, Arrays.asList("0987654321"));
+			put(MESSAGE, "foo bar");
 		}}));
-
-		verify(managedSmslibService).queueMessage(recipients, message);
+		verify(managedSmslibService).queueMessage(Arrays.asList("0987654321"), "foo bar");
 	}
+
+    @Test
+    public void shouldScheduleMessageIfDeliveryTimeIsSpecified() throws Exception {
+        handler.handle(new MotechEvent(EventSubject.SEND_SMS, new HashMap<String, Object>() {{
+            put(RECIPIENTS, Arrays.asList("0987654321"));
+            put(MESSAGE, "foo bar");
+            put(DELIVERY_TIME, new DateTime(2011, 12, 22, 4, 40, 0, 0));
+        }}));
+        verify(managedSmslibService).queueMessageAt(Arrays.asList("0987654321"), "foo bar", new DateTime(2011, 12, 22, 4, 40, 0, 0));
+    }
 }

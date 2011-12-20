@@ -1,5 +1,6 @@
 package it;
 
+import org.joda.time.DateTime;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +33,7 @@ public class SmsIT {
         MotechEvent event = new MotechEvent(EventSubject.SEND_SMS, new HashMap<String, Object>() {{
             put(SmsServiceImpl.RECIPIENTS, Arrays.asList("*-/*-/-!@#@"));
             put(SmsServiceImpl.MESSAGE, "goo bar");
+            put(SmsServiceImpl.DELIVERY_TIME, DateTime.now().plusMinutes(1));
         }});
         smsSendHandler.handle(event);
 	    Thread.sleep(100000000);
