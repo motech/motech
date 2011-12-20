@@ -1,7 +1,6 @@
 package org.motechproject.openmrs.services;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -15,7 +14,7 @@ import org.openmrs.*;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.db.DAOException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.openmrs.util.OpenmrsConstants;
 
 import java.util.*;
 
@@ -101,39 +100,47 @@ public class OpenMRSUserAdaptorTest {
         when(mockPersonService.getPersonAttributeTypeByName(PERSON_ATTRIBUTE_TYPE_PHONE_NUMBER)).thenReturn(phoneAttribute);
         when(mockPersonService.getPersonAttributeTypeByName(PERSON_ATTRIBUTE_TYPE_EMAIL)).thenReturn(emailAttribute);
     }
+    
+    @Test
+    public void shouldAddProviderRoleWhileSavingANewUser() throws UserAlreadyExistsException {
+        MRSUser mrsUser = new MRSUser();
+        MRSPerson person = new MRSPerson();
+        String lastName = "Last";
+        String middleName = "Middle";
+        String firstName = "First";
+        String address = "No.1, 1st Street, Ghana - 1";
+        String email = "a@b.com";
+        String securityRole = "System Developer";
+        final Role mockRole = mock(Role.class);
+        Role mockProviderRole = mock(Role.class);
+
+        person.firstName(firstName).middleName(middleName).lastName(lastName).address(address);
+        mrsUser.person(person).userName(email).securityRole(securityRole);
+        when(mockUserService.getRole(securityRole)).thenReturn(mockRole);
+        when(mockUserService.getRole(OpenmrsConstants.PROVIDER_ROLE)).thenReturn(mockProviderRole);
+        final User user = openMrsUserAdaptor.mrsUserToOpenMRSUser(mrsUser);
+
+        assertEquals(2, user.getRoles().size());
+    }
 
     @Test
-    @Ignore
-    public void shouldResetPasswordGivenUserEmailId() throws UsernameNotFoundException, UserAlreadyExistsException {
+    public void shouldNotAddProviderRoleWhileSavingANewUserIfUserRoleIsAlreadyProvider() throws UserAlreadyExistsException {
         MRSUser mrsUser = new MRSUser();
-        Role role = new Role();
-        final String emailId = "jack@daniels.com";
+        MRSPerson person = new MRSPerson();
+        String lastName = "Last";
+        String middleName = "Middle";
+        String firstName = "First";
+        String address = "No.1, 1st Street, Ghana - 1";
+        String email = "a@b.com";
+        String securityRole = "Provider";
+        final Role mockRole = mock(Role.class);
 
-        when(mockUserService.getRole(mrsUser.getSecurityRole())).thenReturn(role);
+        person.firstName(firstName).middleName(middleName).lastName(lastName).address(address);
+        mrsUser.person(person).userName(email).securityRole(securityRole);
+        when(mockUserService.getRole(securityRole)).thenReturn(mockRole);
+        final User user = openMrsUserAdaptor.mrsUserToOpenMRSUser(mrsUser);
 
-        MRSPerson mrsPerson = new MRSPerson().firstName("Jack").middleName("H").lastName("Daniels").addAttribute(new Attribute("Staff Type", "FA"))
-                .addAttribute(new Attribute("Phone Number", "012345"))
-                .addAttribute(new Attribute("Email", emailId));
-        mrsUser.securityRole("provider").systemId("nonadmin");
-        mrsUser.person(mrsPerson);
-
-        PersonAttributeType phoneNumberAttributeType = personAttributeType(PERSON_ATTRIBUTE_TYPE_PHONE_NUMBER);
-        PersonAttributeType staffTypeAttributeType = personAttributeType(PERSON_ATTRIBUTE_TYPE_STAFF_TYPE);
-        PersonAttributeType emailAttributeType = personAttributeType(PERSON_ATTRIBUTE_TYPE_EMAIL);
-
-        mockPersonServiceForAttributes(phoneNumberAttributeType, staffTypeAttributeType, emailAttributeType);
-
-        openMrsUserAdaptor.saveUser(mrsUser);
-
-        org.openmrs.User mockOpenMRSUser = mock(org.openmrs.User.class);
-        when(mockUserService.getUserByUsername(emailId)).thenReturn(mockOpenMRSUser);
-
-        String newPassword = openMrsUserAdaptor.setNewPasswordForUser(emailId);
-        verify(mockUserService).changePassword(mockOpenMRSUser, newPassword);
-
-        openMrsUserAdaptor.changeCurrentUserPassword(newPassword, "p2");
-        verify(mockUserService).changePassword(newPassword, "p2");
-
+        assertEquals(1, user.getRoles().size());
     }
 
     @Test
