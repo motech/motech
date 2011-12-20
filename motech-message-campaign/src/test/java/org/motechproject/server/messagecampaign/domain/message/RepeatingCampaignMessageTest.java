@@ -51,19 +51,19 @@ public class RepeatingCampaignMessageTest extends BaseUnitTest {
 
         mockCurrentDate(date(2011, 12, 14).withHourOfDay(11));                  // Wednesday
         RepeatingCampaignMessage repeatingCampaignMessage = new RepeatingCampaignMessage("Sunday", weekDaysApplicable, "10:30");
-        assertThat(repeatingCampaignMessage.getNextApplicableDay(), is(equalTo(null)));
+        assertThat(repeatingCampaignMessage.applicableWeekDayInNext24Hours(), is(equalTo(null)));
 
         mockCurrentDate(date(2011, 12, 14).withHourOfDay(11));                  // Wednesday
         repeatingCampaignMessage = new RepeatingCampaignMessage("Sunday", weekDaysApplicable, "11:00");
-        assertThat(repeatingCampaignMessage.getNextApplicableDay(), is(equalTo("Wednesday")));
+        assertThat(repeatingCampaignMessage.applicableWeekDayInNext24Hours(), is(equalTo("Wednesday")));
 
         mockCurrentDate(date(2011, 12, 15).withHourOfDay(11));                  // Thursday
         repeatingCampaignMessage = new RepeatingCampaignMessage("Sunday", weekDaysApplicable, "10:30");
-        assertThat(repeatingCampaignMessage.getNextApplicableDay(), is(equalTo("Friday")));
+        assertThat(repeatingCampaignMessage.applicableWeekDayInNext24Hours(), is(equalTo("Friday")));
 
         mockCurrentDate(date(2011, 12, 16).withHourOfDay(11));                 // Friday
         repeatingCampaignMessage = new RepeatingCampaignMessage("Sunday", weekDaysApplicable, "10:30");
-        assertThat(repeatingCampaignMessage.getNextApplicableDay(), is(equalTo(null)));
+        assertThat(repeatingCampaignMessage.applicableWeekDayInNext24Hours(), is(equalTo(null)));
     }
 
     private CampaignMessageBuilder builder() {

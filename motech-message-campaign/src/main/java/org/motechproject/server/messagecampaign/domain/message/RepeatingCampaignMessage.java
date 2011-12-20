@@ -41,7 +41,7 @@ public class RepeatingCampaignMessage extends CampaignMessage {
         this.calendarStartOfWeek = calendarStartOfWeek;
         this.deliverTime = Time.parseTime(deliverTime, ":");
         this.repeatingMessageMode = CALENDAR_WEEK_SCHEDULE;
-        if(isEmpty(weekDaysApplicable)) this.weekDaysApplicable = asList(DayOfWeek.values());
+        if (isEmpty(weekDaysApplicable)) this.weekDaysApplicable = asList(DayOfWeek.values());
         else setWeekDaysApplicable(weekDaysApplicable);
     }
 
@@ -53,7 +53,7 @@ public class RepeatingCampaignMessage extends CampaignMessage {
     }
 
     public int repeatIntervalInDaysForOffset() {
-       return this.repeatingMessageMode.repeatIntervalForOffSet(this);
+        return this.repeatingMessageMode.repeatIntervalForOffSet(this);
     }
 
     public void repeatInterval(String repeatInterval) {
@@ -92,7 +92,7 @@ public class RepeatingCampaignMessage extends CampaignMessage {
     public RepeatingMessageMode mode() {
         return this.repeatingMessageMode;
     }
-    
+
     public RepeatingCampaignMessage deliverTime(Time deliverTime) {
         this.deliverTime = deliverTime;
         return this;
@@ -120,7 +120,7 @@ public class RepeatingCampaignMessage extends CampaignMessage {
         return repeatingMessageMode.duration(duration, campaignRequest, this);
     }
 
-    public String getNextApplicableDay() {
-        return repeatingMessageMode.getNextApplicableDay(this);
+    public String applicableWeekDayInNext24Hours() {
+        return repeatingMessageMode.applicableWeekDayInNext24Hours(this);
     }
 }
