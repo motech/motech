@@ -12,6 +12,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
@@ -59,10 +60,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
     @Override
     public MRSUser getUserByUserName(String userName) {
         org.openmrs.User openMrsUser = getOpenMrsUserByUserName(userName);
-        if (openMrsUser != null) {
-            return openMrsToMrsUser(openMrsUser);
-        }
-        return null;
+        return (openMrsUser != null) ? openMrsToMrsUser(openMrsUser) : null;
     }
 
     public org.openmrs.User getOpenMrsUserByUserName(String userName) {
@@ -100,7 +98,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
     }
 
     public String getRoleFromOpenMRSUser(Set<Role> roles) {
-        return (String) (roles != null && roles.size() > 0 ? ((Role) roles.toArray()[0]).getRole() : null);
+        return roles != null && !roles.isEmpty() ? roles.iterator().next().getRole() : null;
     }
 
     private Map<String, Object> save(MRSUser mrsUser) {
@@ -116,7 +114,6 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
     }
 
     org.openmrs.User mrsUserToOpenMRSUser(MRSUser mrsUser) {
-
         User user = getOrCreateUser(mrsUser.getId());
         Person person = user.getPerson();
         clearAttributes(user);
@@ -130,11 +127,19 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
             PersonAttributeType attributeType = personService.getPersonAttributeTypeByName(attribute.name());
             person.addAttribute(new PersonAttribute(attributeType, attribute.value()));
         }
+
         Role role = userService.getRole(mrsUser.getSecurityRole());
         user.addRole(role);
+        addProviderRole(user, role);
         user.setSystemId(mrsUser.getSystemId());
         user.setUsername(mrsUser.getUserName());
         return user;
+    }
+
+    private void addProviderRole(User user, Role role) {
+        if (!role.equals(OpenmrsConstants.PROVIDER_ROLE)) {
+            user.addRole(userService.getRole(OpenmrsConstants.PROVIDER_ROLE));
+        }
     }
 
     private void clearAttributes(User user) {
