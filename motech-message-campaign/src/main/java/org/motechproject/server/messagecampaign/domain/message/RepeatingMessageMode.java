@@ -40,7 +40,7 @@ public enum RepeatingMessageMode {
         }
 
         @Override
-        public String getNextApplicableDay(RepeatingCampaignMessage message) {
+        public String applicableWeekDayInNext24Hours(RepeatingCampaignMessage message) {
             return (message.isApplicable()) ? DateUtil.now().dayOfWeek().getAsText() : null;
         }
 
@@ -63,7 +63,7 @@ public enum RepeatingMessageMode {
         }
 
         @Override
-        public String getNextApplicableDay(RepeatingCampaignMessage message) {
+        public String applicableWeekDayInNext24Hours(RepeatingCampaignMessage message) {
             return (message.isApplicable()) ? DateUtil.now().dayOfWeek().getAsText() : null;
         }
 
@@ -102,8 +102,12 @@ public enum RepeatingMessageMode {
         }
 
         @Override
-        public String getNextApplicableDay(RepeatingCampaignMessage message) {
-            return getNextApplicableDateTime(message);
+        public String applicableWeekDayInNext24Hours(RepeatingCampaignMessage message) {
+            DateTime dateTime = calculateNextPossible(DateUtil.now(), message);
+            DateTime nextPossibleDateLimit = DateUtil.now().plusDays(1).minusMinutes(1);
+            if (dateTime.toDate().compareTo(DateUtil.now().toDate()) >= 0 && dateTime.isBefore(nextPossibleDateLimit))
+                return dateTime.dayOfWeek().getAsText();
+            return null;
         }
 
         private int daysToSubtractForRegisteredWeek(LocalDate startDate, int calendarStartDayOfWeek) {
@@ -124,15 +128,7 @@ public enum RepeatingMessageMode {
         return false;
     }
 
-    String getNextApplicableDateTime(RepeatingCampaignMessage message) {
-        DateTime dateTime = calculateNextPossible(DateUtil.now(), message);
-        DateTime nextPossibleDateLimit = DateUtil.now().dayOfMonth().addToCopy(1).minusMinutes(1);
-        if (dateTime.toDate().compareTo(DateUtil.now().toDate()) >= 0 && dateTime.isBefore(nextPossibleDateLimit))
-            return dateTime.dayOfWeek().getAsText();
-        return null;
-    }
-
-    private DateTime calculateNextPossible(DateTime fromDate, RepeatingCampaignMessage message) {
+    DateTime calculateNextPossible(DateTime fromDate, RepeatingCampaignMessage message) {
         int dayOfWeek = fromDate.getDayOfWeek();
         int noOfDaysToNearestCycleDate = 0;
         for (int currentDayOfWeek = dayOfWeek, dayCount = 0; dayCount <= SUNDAY; dayCount++) {
@@ -144,7 +140,7 @@ public enum RepeatingMessageMode {
             else currentDayOfWeek++;
         }
         Time time = message.deliverTime();
-        return fromDate.dayOfMonth().addToCopy(noOfDaysToNearestCycleDate).withHourOfDay(time.getHour()).withMinuteOfHour(time.getMinute());
+        return fromDate.plusDays(noOfDaysToNearestCycleDate).withHourOfDay(time.getHour()).withMinuteOfHour(time.getMinute());
     }
 
     public abstract boolean isApplicable(RepeatingCampaignMessage repeatingCampaignMessage);
@@ -155,5 +151,5 @@ public enum RepeatingMessageMode {
 
     public abstract int duration(WallTime maxDuration, CampaignRequest campaignRequest, RepeatingCampaignMessage message);
 
-    public abstract String getNextApplicableDay(RepeatingCampaignMessage message);
+    public abstract String applicableWeekDayInNext24Hours(RepeatingCampaignMessage message);
 }

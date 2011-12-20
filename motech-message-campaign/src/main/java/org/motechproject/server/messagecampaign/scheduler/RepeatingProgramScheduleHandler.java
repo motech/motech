@@ -45,7 +45,7 @@ public class RepeatingProgramScheduleHandler {
         Integer offset = repeatingCampaignMessage.offset(startDate, startIntervalOffset);
 
         replaceMessageKeyParams(params, OFFSET, offset.toString());
-        String nextApplicableDay = repeatingCampaignMessage.getNextApplicableDay();
+        String nextApplicableDay = repeatingCampaignMessage.applicableWeekDayInNext24Hours();
         if (nextApplicableDay != null) {
             replaceMessageKeyParams(params, WEEK_DAY, nextApplicableDay);
             outboundEventGateway.sendEventMessage(event.copy(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, event.getParameters()));
