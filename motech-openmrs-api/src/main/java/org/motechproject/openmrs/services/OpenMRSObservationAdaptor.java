@@ -3,7 +3,6 @@ package org.motechproject.openmrs.services;
 import org.motechproject.mrs.model.MRSObservation;
 import org.openmrs.*;
 import org.openmrs.api.ObsService;
-import org.openmrs.logic.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
@@ -67,18 +66,17 @@ public class OpenMRSObservationAdaptor {
     }
 
     MRSObservation convertOpenMRSToMRSObservation(Obs obs) {
-        switch (new Result(obs).getDatatype()) {
-            case BOOLEAN:
-                return createMRSObservation(obs, obs.getValueAsBoolean());
-            case DATETIME:
-                return createMRSObservation(obs, obs.getValueDatetime());
-            case NUMERIC:
-                return createMRSObservation(obs, obs.getValueNumeric());
-            case TEXT:
-                return createMRSObservation(obs, obs.getValueText());
-            default:
-                throw new IllegalArgumentException("Invalid value of the createMRSObservation from DB-" + obs);
-        }
+        ConceptDatatype datatype = obs.getConcept().getDatatype();
+        if (datatype.isBoolean())
+            return createMRSObservation(obs, obs.getValueAsBoolean());
+        else if (datatype.isDateTime())
+            return createMRSObservation(obs, obs.getValueDatetime());
+        else if (datatype.isNumeric())
+            return createMRSObservation(obs, obs.getValueNumeric());
+        else if (datatype.isText())
+            return createMRSObservation(obs, obs.getValueText());
+        else
+            throw new IllegalArgumentException("Invalid value of the createMRSObservation from DB-" + obs);
     }
 
     private MRSObservation createMRSObservation(Obs obs, Object value) {

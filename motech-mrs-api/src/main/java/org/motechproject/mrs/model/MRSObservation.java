@@ -35,4 +35,14 @@ public class MRSObservation<T>{
     public T getValue() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return "MRSObservation{" +
+                "id='" + id + '\'' +
+                ", date=" + date +
+                ", conceptName='" + conceptName + '\'' +
+                ", value=" + value +
+                '}';
+    }
 }
