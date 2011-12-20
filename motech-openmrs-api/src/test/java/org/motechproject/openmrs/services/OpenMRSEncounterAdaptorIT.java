@@ -10,6 +10,7 @@ import org.motechproject.mrs.exception.UserAlreadyExistsException;
 import org.motechproject.mrs.model.*;
 import org.motechproject.mrs.services.MRSEncounterAdaptor;
 import org.motechproject.openmrs.OpenMRSIntegrationTestBase;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
@@ -36,6 +37,8 @@ public class OpenMRSEncounterAdaptorIT extends OpenMRSIntegrationTestBase {
     PatientService patientService;
     @Autowired
     UserService userService;
+    @Autowired
+    ConceptService conceptService;
 
     MRSFacility facility;
     MRSPatient patientAlan;
@@ -47,6 +50,7 @@ public class OpenMRSEncounterAdaptorIT extends OpenMRSIntegrationTestBase {
     @Test
     @Transactional(readOnly = true)
     public void shouldSaveEncounterWithObservations() throws UserAlreadyExistsException {
+
         MRSPerson personCreator = new MRSPerson().firstName("SampleTest");
         MRSPerson personJohn = new MRSPerson().firstName("John");
         patientAlan = createPatient(facility);
@@ -55,10 +59,10 @@ public class OpenMRSEncounterAdaptorIT extends OpenMRSIntegrationTestBase {
         MRSPerson provider = userJohn.getPerson();
 
         Set<MRSObservation> observations = new HashSet<MRSObservation>();
-        observations.add(new MRSObservation(new Date(), "GRAVIDA", 100));
-        observations.add(new MRSObservation(new Date(), "PARITY", "test"));
-        observations.add(new MRSObservation(new Date(), "PARITY", new DateTime(2012, 11, 10, 1, 10).toDate()));
-        observations.add(new MRSObservation(new Date(), "PARITY", false));
+        observations.add(new MRSObservation(new Date(), "GRAVIDA", Double.valueOf("100.0")));
+        observations.add(new MRSObservation(new Date(), "SERIAL NUMBER", "free text data serail number"));
+        observations.add(new MRSObservation(new Date(), "NEXT ANC DATE", new DateTime(2012, 11, 10, 1, 10).toDate()));
+        observations.add(new MRSObservation(new Date(), "PREGNANCY STATUS", false));
         MRSEncounter expectedEncounter = new MRSEncounter(provider.getId(), userCreator.getId(), facility.getId(), new Date(), patientAlan.getId(), observations, "PEDSRETURN");
         MRSEncounter actualMRSEncounter = mrsEncounterAdaptor.createEncounter(expectedEncounter);
         
@@ -68,7 +72,7 @@ public class OpenMRSEncounterAdaptorIT extends OpenMRSIntegrationTestBase {
         assertEquals(expectedEncounter.getFacility().getId(), actualMRSEncounter.getFacility().getId());
         assertEquals(expectedEncounter.getEncounterType(), actualMRSEncounter.getEncounterType());
         assertEquals(expectedEncounter.getPatient().getId(), actualMRSEncounter.getPatient().getId());
-       // assertObservation(expectedEncounter.getObservations(), actualMRSEncounter.getObservations());
+        assertObservation(expectedEncounter.getObservations(), actualMRSEncounter.getObservations());
     }
 
     private MRSPatient createPatient(MRSFacility facility) {
@@ -90,7 +94,7 @@ public class OpenMRSEncounterAdaptorIT extends OpenMRSIntegrationTestBase {
     private void assertObservation(Set<MRSObservation> expectedSet, Set<MRSObservation> actualSet) {
         assertEquals(expectedSet.size(), actualSet.size());
         for(MRSObservation actual : actualSet) {
-            assertTrue("Observation not same", isObservationPresent(expectedSet, actual));
+            assertTrue("Observation not same" + actual + " - expected set is " + expectedSet, isObservationPresent(expectedSet, actual));
         }
     }
 
