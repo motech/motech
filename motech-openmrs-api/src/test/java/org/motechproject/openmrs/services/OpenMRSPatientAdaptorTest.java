@@ -13,10 +13,7 @@ import org.motechproject.mrs.model.MRSPerson;
 import org.motechproject.openmrs.IdentifierType;
 import org.motechproject.openmrs.helper.PatientHelper;
 import org.motechproject.openmrs.util.PatientTestUtil;
-import org.openmrs.Location;
-import org.openmrs.PatientIdentifierType;
-import org.openmrs.Person;
-import org.openmrs.PersonName;
+import org.openmrs.*;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
@@ -197,5 +194,23 @@ public class OpenMRSPatientAdaptorTest {
         when(mockPatientService.getPatient(patientId)).thenReturn(mrsPatient);
         org.openmrs.Patient returnedPatient = openMRSPatientAdaptor.getOpenMrsPatient(String.valueOf(patientId));
         assertThat(returnedPatient, is(equalTo(mrsPatient)));
+    }
+
+    @Test
+    public void shouldSearchByPatientNameOrId() {
+        OpenMRSPatientAdaptor openMRSPatientAdaptorSpy = spy(openMRSPatientAdaptor);
+        String nameOrId = "nameOrId";
+        Patient openMrsPatient1 = mock(Patient.class);
+        Patient openMrsPatient2 = mock(Patient.class);
+        List<Patient> patientsMatchingSearchQuery = Arrays.asList(openMrsPatient1, openMrsPatient2);
+        when(mockPatientService.getPatients(nameOrId)).thenReturn(patientsMatchingSearchQuery);
+
+        MRSPatient mrsPatient1 = new MRSPatient(new MRSPerson().firstName("Zef"), null);
+        MRSPatient mrsPatient2 = new MRSPatient(new MRSPerson().firstName("Abc"), null);
+        doReturn(mrsPatient1).when(openMRSPatientAdaptorSpy).getMrsPatient(openMrsPatient1);
+        doReturn(mrsPatient2).when(openMRSPatientAdaptorSpy).getMrsPatient(openMrsPatient2);
+
+        List<MRSPatient> returnedPatients = openMRSPatientAdaptorSpy.search(nameOrId);
+        assertThat(returnedPatients, is(equalTo(Arrays.asList(mrsPatient2, mrsPatient1))));
     }
 }

@@ -1,5 +1,6 @@
 package org.motechproject.openmrs.services;
 
+import ch.lambdaj.function.convert.Converter;
 import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.MRSFacility;
@@ -17,8 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ch.lambdaj.Lambda.on;
-import static ch.lambdaj.Lambda.project;
+import static ch.lambdaj.Lambda.*;
 
 public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
 
@@ -72,8 +72,8 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
         final PatientIdentifier patientIdentifier = savedPatient.getPatientIdentifier();
         MRSFacility mrsFacility = (patientIdentifier != null) ? facilityAdaptor.convertLocationToFacility(patientIdentifier.getLocation()) : null;
         MRSPerson mrsPerson = new MRSPerson().firstName(personName.getGivenName()).middleName(personName.getMiddleName()).lastName(personName.getFamilyName()).
-                              preferredName(patientHelper.getPreferredName(savedPatient)).birthDateEstimated(savedPatient.getBirthdateEstimated()).
-                              gender(savedPatient.getGender()).address(patientHelper.getAddress(savedPatient)).attributes(attributes).dateOfBirth(savedPatient.getBirthdate());
+                preferredName(patientHelper.getPreferredName(savedPatient)).birthDateEstimated(savedPatient.getBirthdateEstimated()).
+                gender(savedPatient.getGender()).address(patientHelper.getAddress(savedPatient)).attributes(attributes).dateOfBirth(savedPatient.getBirthdate());
         return new MRSPatient(String.valueOf(savedPatient.getId()), mrsPerson, mrsFacility);
     }
 
@@ -84,8 +84,18 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
     private List<PersonAttributeType> getAllPersonAttributeTypes() {
         return personService.getAllPersonAttributeTypes(false);
     }
+
     public org.openmrs.Patient getOpenMrsPatient(String patientId) {
         return patientService.getPatient(Integer.parseInt(patientId));
     }
 
+    @Override
+    public List<MRSPatient> search(String nameOrId) {
+        return sort(convert(patientService.getPatients(nameOrId), new Converter<Patient, MRSPatient>() {
+            @Override
+            public MRSPatient convert(Patient patient) {
+                return getMrsPatient(patient);
+            }
+        }), on(MRSPatient.class).getPerson().getFirstName());
+    }
 }
