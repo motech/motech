@@ -27,6 +27,16 @@ public class CMSLiteServiceImpl implements CMSLiteService {
         return (StreamContent) getContent(language, name, allStreamContents);
     }
 
+    @Override
+    public boolean isStreamContentAvailable(String language, String name) {
+        return allStreamContents.isContentAvailable(language, name);
+    }
+
+    @Override
+    public boolean isStringContentAvailable(String language, String name) {
+        return allStringContents.isContentAvailable(language, name);
+    }
+
     private Content getContent(String language, String name, BaseContentRepository contentRepository) throws ContentNotFoundException {
         if (language == null || name == null)
             throw new IllegalArgumentException("Language and Name should not be null");

@@ -14,8 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.InputStream;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/applicationCmsLiteApi.xml")
@@ -73,6 +72,17 @@ public class AllStreamContentsIT {
         assertEquals(file2.getChecksum(), streamContent.getChecksum());
 
         couchDbConnector.delete(streamContent);
+    }
+
+    @Test
+    public void shouldReturnTrueIfStreamContentAvailable(){
+        createStreamContent();
+        assertTrue(allStreamContents.isContentAvailable(englishContent.getLanguage(), englishContent.getName()));
+    }
+
+    @Test
+    public void shouldReturnFalseIfStreamContentNotAvailable(){
+        assertFalse(allStreamContents.isContentAvailable("en", "unknownContent"));
     }
 
     @Test

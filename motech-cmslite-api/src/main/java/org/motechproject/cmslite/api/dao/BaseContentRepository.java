@@ -13,4 +13,6 @@ public abstract class BaseContentRepository<T extends Content> extends MotechAud
     public abstract T getContent(String language, String name);
 
     public abstract void addContent(T content) throws CMSLiteException;
+
+    public abstract boolean isContentAvailable(String language, String name);
 }
