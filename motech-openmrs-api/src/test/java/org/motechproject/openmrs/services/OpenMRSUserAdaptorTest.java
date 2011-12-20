@@ -214,7 +214,7 @@ public class OpenMRSUserAdaptorTest {
     }
 
     @Test
-    public void shouldGetOpenMrsUserById() {
+    public void shouldGetOpenMrsUserBySytemId() {
         org.openmrs.User mockOpenMrsUser = mock(org.openmrs.User.class);
         String userId = "1234567";
 
@@ -256,6 +256,15 @@ public class OpenMRSUserAdaptorTest {
         return mrsUser;
     }
 
+
+    @Test
+    public void shouldGetOpenMRSUserById(){
+        int id = 10;
+        User user = mock(User.class);
+        when(mockUserService.getUser(id)).thenReturn(user);
+        User openMrsUserById = openMrsUserAdaptor.getOpenMrsUserById(Integer.toString(id));
+        assertThat(openMrsUserById,is(equalTo(user)));
+    }
 
     private void assertMRSUser(MRSUser actual, MRSUser expected) {
         MRSPerson expectedPerson = expected.getPerson();

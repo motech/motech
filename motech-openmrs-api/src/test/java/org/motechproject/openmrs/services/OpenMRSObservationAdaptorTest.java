@@ -46,7 +46,7 @@ public class OpenMRSObservationAdaptorTest {
         Patient patient = mock(Patient.class);
         Location facility = mock(Location.class);
         Encounter encounter = mock(Encounter.class);
-        User staff = mock(User.class);
+        User creator = mock(User.class);
 
         Date observationDate = new LocalDate(2011, 12, 31).toDate();
         String conceptName = "concept";
@@ -64,20 +64,20 @@ public class OpenMRSObservationAdaptorTest {
         Concept concept = mock(Concept.class);
         when(mockConceptAdaptor.getConceptByName(conceptName)).thenReturn(concept);
 
-        Obs openMrsObservation = observationAdaptor.<String>createOpenMRSObservationForEncounter(fever, encounter, patient, facility, staff);
-        assertOpenMrsObservationProperties(openMrsObservation, fever, patient, facility, encounter, staff, concept);
+        Obs openMrsObservation = observationAdaptor.<String>createOpenMRSObservationForEncounter(fever, encounter, patient, facility, creator);
+        assertOpenMrsObservationProperties(openMrsObservation, fever, patient, facility, encounter, creator, concept);
         assertThat(openMrsObservation.getValueText(), is(equalTo(feverValue)));
 
-        openMrsObservation = observationAdaptor.<Double>createOpenMRSObservationForEncounter(temperature, encounter, patient, facility, staff);
-        assertOpenMrsObservationProperties(openMrsObservation, temperature, patient, facility, encounter, staff, concept);
+        openMrsObservation = observationAdaptor.<Double>createOpenMRSObservationForEncounter(temperature, encounter, patient, facility, creator);
+        assertOpenMrsObservationProperties(openMrsObservation, temperature, patient, facility, encounter, creator, concept);
         assertThat(openMrsObservation.getValueNumeric(), is(equalTo(temperatureValue)));
 
-        openMrsObservation = observationAdaptor.<Boolean>createOpenMRSObservationForEncounter(hiv, encounter, patient, facility, staff);
-        assertOpenMrsObservationProperties(openMrsObservation, hiv, patient, facility, encounter, staff, concept);
+        openMrsObservation = observationAdaptor.<Boolean>createOpenMRSObservationForEncounter(hiv, encounter, patient, facility, creator);
+        assertOpenMrsObservationProperties(openMrsObservation, hiv, patient, facility, encounter, creator, concept);
         assertThat(openMrsObservation.getValueAsBoolean(), is(equalTo(hivValue)));
 
-        openMrsObservation = observationAdaptor.<Date>createOpenMRSObservationForEncounter(expectedDeliveryDate, encounter, patient, facility, staff);
-        assertOpenMrsObservationProperties(openMrsObservation, expectedDeliveryDate, patient, facility, encounter, staff, concept);
+        openMrsObservation = observationAdaptor.<Date>createOpenMRSObservationForEncounter(expectedDeliveryDate, encounter, patient, facility, creator);
+        assertOpenMrsObservationProperties(openMrsObservation, expectedDeliveryDate, patient, facility, encounter, creator, concept);
         assertThat(openMrsObservation.getValueDatetime(), is(equalTo(expectedDeliveryDateValue)));
     }
 
@@ -86,7 +86,7 @@ public class OpenMRSObservationAdaptorTest {
         Patient patient = mock(Patient.class);
         Location facility = mock(Location.class);
         Encounter encounter = mock(Encounter.class);
-        User staff = mock(User.class);
+        User creator = mock(User.class);
 
         OpenMRSObservationAdaptor observationAdaptorSpy = spy(observationAdaptor);
         final MRSObservation observation1 = mock(MRSObservation.class);
@@ -99,10 +99,10 @@ public class OpenMRSObservationAdaptorTest {
 
         final Obs openMrsObservation1 = mock(Obs.class);
         final Obs openMrsObservation2 = mock(Obs.class);
-        doReturn(openMrsObservation1).when(observationAdaptorSpy).createOpenMRSObservationForEncounter(observation1, encounter, patient, facility, staff);
-        doReturn(openMrsObservation2).when(observationAdaptorSpy).createOpenMRSObservationForEncounter(observation2, encounter, patient, facility, staff);
+        doReturn(openMrsObservation1).when(observationAdaptorSpy).createOpenMRSObservationForEncounter(observation1, encounter, patient, facility, creator);
+        doReturn(openMrsObservation2).when(observationAdaptorSpy).createOpenMRSObservationForEncounter(observation2, encounter, patient, facility, creator);
 
-        Set<Obs> openMrsObservations = observationAdaptorSpy.createOpenMRSObservationsForEncounter(mrsObservations, encounter, patient, facility, staff);
+        Set<Obs> openMrsObservations = observationAdaptorSpy.createOpenMRSObservationsForEncounter(mrsObservations, encounter, patient, facility, creator);
         assertThat(openMrsObservations, is(equalTo((Set<Obs>) new HashSet<Obs>() {{
             add(openMrsObservation1);
             add(openMrsObservation2);
@@ -216,26 +216,26 @@ public class OpenMRSObservationAdaptorTest {
 
         Encounter encounter = new Encounter();
         Patient patient = new Patient();
-        User user = new User();
+        User creator = new User();
         Location facility=new Location();
 
-        doReturn(openMRSObservation).when(observationAdaptorSpy).createOpenMRSObservationForEncounter(mrsObservation, encounter, patient, facility, user);
+        doReturn(openMRSObservation).when(observationAdaptorSpy).createOpenMRSObservationForEncounter(mrsObservation, encounter, patient, facility, creator);
         when(mockObservationService.saveObs(openMRSObservation, null)).thenReturn(savedOpenMRSObservation);
         doReturn(savedMRSObservation).when(observationAdaptorSpy).convertOpenMRSToMRSObservation(savedOpenMRSObservation);
 
-        MRSObservation returnedMRSObservation = observationAdaptorSpy.saveObservation(mrsObservation, encounter,patient,facility,user);
+        MRSObservation returnedMRSObservation = observationAdaptorSpy.saveObservation(mrsObservation, encounter,patient,facility,creator);
         Assert.assertThat(returnedMRSObservation, Matchers.is(equalTo(savedMRSObservation)));
     }
 
 
     private void assertOpenMrsObservationProperties(Obs openMrsObservation, MRSObservation mrsObservation, Patient patient,
-                                                    Location facility, Encounter encounter, User staff, Concept concept) {
+                                                    Location facility, Encounter encounter, User creator, Concept concept) {
         assertThat(openMrsObservation.getObsDatetime(), is(equalTo(mrsObservation.getDate())));
         assertThat(openMrsObservation.getConcept(), is(equalTo(concept)));
         assertThat(openMrsObservation.getPerson(), is(equalTo((Person) patient)));
         assertThat(openMrsObservation.getLocation(), is(equalTo(facility)));
         assertThat(openMrsObservation.getEncounter(), is(equalTo(encounter)));
-        assertThat(openMrsObservation.getCreator(), is(equalTo(staff)));
+        assertThat(openMrsObservation.getCreator(), is(equalTo(creator)));
     }
 
 

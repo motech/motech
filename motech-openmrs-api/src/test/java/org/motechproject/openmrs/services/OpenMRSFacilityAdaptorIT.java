@@ -1,7 +1,5 @@
 package org.motechproject.openmrs.services;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.mrs.model.MRSFacility;
 import org.motechproject.mrs.services.MRSFacilityAdaptor;
@@ -23,16 +21,6 @@ public class OpenMRSFacilityAdaptorIT extends OpenMRSIntegrationTestBase {
 
     @Autowired
     LocationService mrsLocationService;
-
-    @Before
-    public void setUp() {
-        super.setUp();
-    }
-
-    @After
-    public void tearDown() {
-        super.tearDown();
-    }
 
     @Test
     public void testSaveLocation() {

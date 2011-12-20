@@ -9,18 +9,21 @@ public class MRSEncounter {
     }
 
     private String id;
-    private MRSUser staff;
+    private MRSPerson provider;
+
+    private MRSUser creator;
+
     private MRSFacility facility;
     private Date date;
     private Set<MRSObservation> observations;
     private MRSPatient patient;
     private String encounterType;
-
     public MRSEncounter() {
     }
 
-    private MRSEncounter(MRSUser staff, MRSFacility facility, Date date, MRSPatient patient, Set<MRSObservation> observations, String encounterType) {
-        this.staff = staff;
+    private MRSEncounter(MRSPerson provider, MRSUser creator, MRSFacility facility, Date date, MRSPatient patient, Set<MRSObservation> observations, String encounterType) {
+        this.creator = creator;
+        this.provider = provider;
         this.facility = facility;
         this.date = date;
         this.patient = patient;
@@ -28,17 +31,21 @@ public class MRSEncounter {
         this.encounterType = encounterType;
     }
 
-    public MRSEncounter(String id, MRSUser staff, MRSFacility facility, Date date, MRSPatient patient, Set<MRSObservation> observations,String encounterType) {
-        this(staff,facility,date,patient,observations,encounterType);
+    public MRSEncounter(String id, MRSPerson provider, MRSUser staff, MRSFacility facility, Date date, MRSPatient patient, Set<MRSObservation> observations,String encounterType) {
+        this(provider, staff, facility, date, patient, observations, encounterType);
         this.id = id;
     }
 
-    public MRSEncounter(String staffId, String facilityId, Date date, String patientId, Set<MRSObservation> observations, String encounterType) {
-        this(new MRSUser().id(staffId), new MRSFacility(facilityId), date, new MRSPatient(patientId), observations, encounterType);
+    public MRSEncounter(String providerId, String creatorId, String facilityId, Date date, String patientId, Set<MRSObservation> observations, String encounterType) {
+        this(new MRSPerson().id(providerId) , new MRSUser().id(creatorId), new MRSFacility(facilityId), date, new MRSPatient(patientId), observations, encounterType);
     }
 
-    public MRSUser getStaff() {
-        return staff;
+    public MRSUser getCreator() {
+        return creator;
+    }
+
+    public MRSPerson getProvider() {
+        return provider;
     }
 
     public MRSFacility getFacility() {

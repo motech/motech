@@ -11,7 +11,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:applicationOpenmrsAPI.xml"})
+@ContextConfiguration(locations = {"classpath:testApplicationOpenmrsAPI.xml"})
 public class ContextIT {
     @Autowired
     private UserService userService;

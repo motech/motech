@@ -67,6 +67,11 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         return userService.getUserByUsername(userName);
     }
 
+    public org.openmrs.User getOpenMrsUserById(String id) {
+        return userService.getUser(Integer.valueOf(id));
+    }
+
+
     @Override
     public List<MRSUser> getAllUsers() {
         List<MRSUser> mrsUsers = new ArrayList<MRSUser>();
@@ -87,7 +92,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         PersonName personName = person.getPersonName();
 
         MRSPerson mrsPerson = new MRSPerson().firstName(personName.getGivenName()).middleName(personName.getMiddleName())
-                .lastName(personName.getFamilyName());
+                .lastName(personName.getFamilyName()).id(person.getId() != null ? Integer.toString(person.getId()): null);
         mrsUser.id(Integer.toString(openMRSUser.getId())).systemId(openMRSUser.getSystemId()).userName(openMRSUser.getUsername()).person(mrsPerson).
                 securityRole(getRoleFromOpenMRSUser(openMRSUser.getRoles()));
 

@@ -54,8 +54,8 @@ public class OpenMRSObservationAdaptor {
         return openMrsObservations;
     }
 
-    MRSObservation saveObservation(MRSObservation mrsObservation, Encounter encounter, Patient patient, Location facility, User staff) {
-        return convertOpenMRSToMRSObservation(obsService.saveObs(createOpenMRSObservationForEncounter(mrsObservation, encounter, patient, facility, staff), null));
+    MRSObservation saveObservation(MRSObservation mrsObservation, Encounter encounter, Patient patient, Location facility, User creator) {
+        return convertOpenMRSToMRSObservation(obsService.saveObs(createOpenMRSObservationForEncounter(mrsObservation, encounter, patient, facility, creator), null));
     }
 
     Set<MRSObservation> convertOpenMRSToMRSObservations(Set<Obs> openMrsObservations) {

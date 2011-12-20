@@ -3,8 +3,10 @@ package org.motechproject.openmrs.services;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.motechproject.mrs.model.MRSPerson;
 import org.openmrs.*;
+import org.openmrs.api.PersonService;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -14,6 +16,9 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class OpenMRSPersonAdaptorTest {
 
@@ -23,10 +28,15 @@ public class OpenMRSPersonAdaptorTest {
     public static final String PERSON_ATTRIBUTE_TYPE_PHONE_NUMBER = "Phone Number";
     public static final String PERSON_ATTRIBUTE_TYPE_STAFF_TYPE = "Staff Type";
 
+    @Mock
+    private PersonService mockPersonService;
+
 
     @Before
     public void setUp() {
-        openMRSPersonAdaptor = new OpenMRSPersonAdaptor();
+        initMocks(this);
+        openMRSPersonAdaptor = new OpenMRSPersonAdaptor(mockPersonService);
+
     }
 
 
@@ -48,7 +58,7 @@ public class OpenMRSPersonAdaptorTest {
 
         person.setAttributes(personAttributes(staffType, phoneNo, email));
 
-        MRSPerson mrsPerson = openMRSPersonAdaptor.convertOpenMRSToMRSPerson(person);
+        MRSPerson mrsPerson = openMRSPersonAdaptor.openMRSToMRSPerson(person);
 
         assertThat(mrsPerson.getFirstName(), is(equalTo(person.getGivenName())));
         assertThat(mrsPerson.getMiddleName(), is(equalTo(person.getMiddleName())));
@@ -61,6 +71,15 @@ public class OpenMRSPersonAdaptorTest {
         assertThat(mrsPerson.attrValue(PERSON_ATTRIBUTE_TYPE_PHONE_NUMBER),is(equalTo(phoneNo)));
         assertThat(mrsPerson.attrValue(PERSON_ATTRIBUTE_TYPE_STAFF_TYPE),is(equalTo(staffType)));
 
+    }
+
+    @Test
+    public void shouldGetPersonById(){
+        String id = "10";
+        Person person = mock(Person.class);
+        when(mockPersonService.getPerson(Integer.valueOf(id))).thenReturn(person);
+        Person openMRSPerson = openMRSPersonAdaptor.getPersonById(id);
+        assertThat(openMRSPerson,is(equalTo(person)));
     }
 
     private Set<PersonAttribute> personAttributes(String staffType, String phoneNo, String email) {
