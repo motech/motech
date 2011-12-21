@@ -4,10 +4,16 @@ package org.motechproject.sms.api.service;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.motechproject.context.EventContext;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,18 +22,25 @@ import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.sms.api.service.SmsServiceImpl.*;
+import static org.powermock.api.mockito.PowerMockito.when;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(EventContext.class)
 public class SmsServiceImplTest {
 
     private SmsService smsService;
-
+    @Mock
+    private EventContext eventContext;
     @Mock
     private EventRelay eventRelay;
 
     @Before
     public void setup() {
         initMocks(this);
-        smsService = new SmsServiceImpl(eventRelay);
+        PowerMockito.mockStatic(EventContext.class);
+        Mockito.when(EventContext.getInstance()).thenReturn(eventContext);
+        when(eventContext.getEventRelay()).thenReturn(eventRelay);
+        smsService = new SmsServiceImpl();
     }
 
     @Test

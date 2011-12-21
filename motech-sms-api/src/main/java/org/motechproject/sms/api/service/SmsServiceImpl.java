@@ -2,13 +2,16 @@ package org.motechproject.sms.api.service;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.motechproject.context.EventContext;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.sms.api.constants.EventSubject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class SmsServiceImpl implements SmsService {
@@ -20,9 +23,8 @@ public class SmsServiceImpl implements SmsService {
     private EventRelay eventRelay;
     private static final Logger log = Logger.getLogger(SmsServiceImpl.class);
 
-    @Autowired
-    public SmsServiceImpl(EventRelay eventRelay) {
-        this.eventRelay = eventRelay;
+    public SmsServiceImpl() {
+        this.eventRelay = EventContext.getInstance().getEventRelay();
     }
 
     @Override
