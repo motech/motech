@@ -2,6 +2,7 @@ package org.motechproject.dao;
 
 import com.google.gson.*;
 import org.apache.commons.io.IOUtils;
+import org.motechproject.MotechException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +22,9 @@ public class MotechJsonReader {
 
     public Object readFromFile(String classpathFile, Type ofType) {
         InputStream inputStream = getClass().getResourceAsStream(classpathFile);
+        if (inputStream == null) {
+            throw new MotechException("File not found in classpath: " + classpathFile);
+        }
         try {
             String jsonText = IOUtils.toString(inputStream);
             return from(jsonText, ofType, standardTypeAdapters);
@@ -29,17 +33,13 @@ public class MotechJsonReader {
         }
     }
 
-    public Object from(String text, Type ofType, Map<Type, Object> typeAdapters) {
+    private Object from(String text, Type ofType, Map<Type, Object> typeAdapters) {
         GsonBuilder gsonBuilder = new GsonBuilder();
         for (Map.Entry<Type, Object> entry : typeAdapters.entrySet()) {
             gsonBuilder.registerTypeAdapter(entry.getKey(), entry.getValue());
         }
         Gson gson = gsonBuilder.create();
         return gson.fromJson(text, ofType);
-    }
-
-    public Object from(String text, Type ofType) {
-        return from(text, ofType, new HashMap<Type, Object>());
     }
 
     private static class DateDeserializer implements JsonDeserializer<Date> {

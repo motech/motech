@@ -14,6 +14,7 @@ import org.smslib.smpp.jsmpp.JSMPPGateway;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Date;
@@ -21,8 +22,7 @@ import java.util.Properties;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ManagedSmslibServiceTest {
@@ -35,10 +35,10 @@ public class ManagedSmslibServiceTest {
 	private Properties smsProperties;
 
 	@Before
-	public void setup() {
+	public void setup() throws Exception {
 		initMocks(this);
-
-		smppProperties = new Properties() {{
+        mockServiceSettings();
+        smppProperties = new Properties() {{
 			setProperty(SmppProperties.HOST, "smppserver.com");
 			setProperty(SmppProperties.PASSWORD, "wpsd");
 			setProperty(SmppProperties.PORT, "8876");
@@ -47,7 +47,13 @@ public class ManagedSmslibServiceTest {
 		smsProperties = new Properties();
 	}
 
-	@Test
+    private void mockServiceSettings() throws Exception {
+        Constructor constructor = Settings.class.getDeclaredConstructors()[0];
+        constructor.setAccessible(true);
+        when(smslibService.getSettings()).thenReturn((Settings) constructor.newInstance());
+    }
+
+    @Test
 	public void shouldConnectOnApplicationStartup() throws NoSuchMethodException {
 		Method connect = ManagedSmslibService.class.getDeclaredMethod("connect", new Class[]{});
 		assertTrue("PostConstruct annotation missing", connect.isAnnotationPresent(PostConstruct.class));
@@ -95,6 +101,13 @@ public class ManagedSmslibServiceTest {
 		}};
 		new ManagedSmslibService(actualSmslibService, smsProperties, smppProperties, null, null);
 		assertEquals(5, actualSmslibService.getSettings().QUEUE_RETRIES);
+	}
+
+	@Test
+	public void shouldConfigurePersistenceFilePathOnSmsLib() {
+        Service actualSmslibService = Service.getInstance();
+		new ManagedSmslibService(actualSmslibService, smsProperties, smppProperties, null, null);
+		assertEquals(".", actualSmslibService.getSettings().QUEUE_DIRECTORY);
 	}
 
 	@Test

@@ -1,4 +1,4 @@
-package org.motechproject.cmslite.api.dao;
+package org.motechproject.cmslite.api.repository;
 
 import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
@@ -6,6 +6,7 @@ import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
 import org.motechproject.cmslite.api.model.CMSLiteException;
 import org.motechproject.cmslite.api.model.StringContent;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
@@ -14,7 +15,8 @@ import java.util.List;
 @Repository
 @View(name = "all", map = "function(doc) { if (doc.type == 'STRING_CONTENT') { emit(null, doc) } }")
 public class AllStringContents extends BaseContentRepository<StringContent> {
-    protected AllStringContents(CouchDbConnector db) {
+    @Autowired
+	protected AllStringContents(CouchDbConnector db) {
         super(StringContent.class, db);
     }
 
@@ -26,6 +28,12 @@ public class AllStringContents extends BaseContentRepository<StringContent> {
 
         if (result == null || result.isEmpty()) return null;
         return result.get(0);
+    }
+
+    @Override
+    public boolean isContentAvailable(String language, String name) {
+        ViewQuery query = createQuery("by_language_and_name").key(ComplexKey.of(language, name));
+        return db.queryView(query).getTotalRows() > 0;
     }
 
     @Override

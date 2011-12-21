@@ -10,4 +10,8 @@ public interface CMSLiteService {
     StringContent getStringContent(String language, String name) throws ContentNotFoundException;
 
     void addContent(Content content) throws CMSLiteException;
+
+    boolean isStreamContentAvailable(String language, String name);
+
+    boolean isStringContentAvailable(String language, String name);
 }

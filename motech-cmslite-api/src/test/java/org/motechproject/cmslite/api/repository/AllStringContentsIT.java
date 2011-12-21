@@ -1,4 +1,4 @@
-package org.motechproject.cmslite.api.dao;
+package org.motechproject.cmslite.api.repository;
 
 import org.ektorp.CouchDbConnector;
 import org.junit.Before;
@@ -11,8 +11,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/applicationCmsLiteApi.xml")
@@ -77,4 +76,17 @@ public class AllStringContentsIT {
 
         couchDbConnector.delete(fetchedContent);
     }
+
+    @Test
+    public void shouldReturnTrueIfStringContentAvailable() throws CMSLiteException {
+        allStringContents.addContent(stringContent);
+        assertTrue(allStringContents.isContentAvailable(stringContent.getLanguage(), stringContent.getName()));
+        couchDbConnector.delete(stringContent);
+    }
+
+    @Test
+    public void shouldReturnFalseIfStringContentNotAvailable() {
+        assertFalse(allStringContents.isContentAvailable("en", "unknownContent"));
+    }
+
 }

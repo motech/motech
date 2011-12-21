@@ -12,11 +12,11 @@
         <constructor-arg ref="couchDbInstance"/>
     </bean>
 
-    <bean id="allStreamContents" class="org.motechproject.cmslite.api.dao.AllStreamContents">
+    <bean id="allStreamContents" class="org.motechproject.cmslite.api.repository.AllStreamContents">
         <constructor-arg ref="cmsLiteDatabase"/>
     </bean>
 
-    <bean id="allStringContents" class="org.motechproject.cmslite.api.dao.AllStringContents">
+    <bean id="allStringContents" class="org.motechproject.cmslite.api.repository.AllStringContents">
         <constructor-arg ref="cmsLiteDatabase"/>
     </bean>
 

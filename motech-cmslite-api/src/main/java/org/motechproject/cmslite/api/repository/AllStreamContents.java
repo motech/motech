@@ -1,9 +1,6 @@
-package org.motechproject.cmslite.api.dao;
+package org.motechproject.cmslite.api.repository;
 
-import org.ektorp.AttachmentInputStream;
-import org.ektorp.ComplexKey;
-import org.ektorp.CouchDbConnector;
-import org.ektorp.ViewQuery;
+import org.ektorp.*;
 import org.ektorp.support.View;
 import org.motechproject.cmslite.api.model.CMSLiteException;
 import org.motechproject.cmslite.api.model.StreamContent;
@@ -35,6 +32,12 @@ public class AllStreamContents extends BaseContentRepository<StreamContent> {
         fetchedContent.setInputStream(attachmentInputStream);
 
         return fetchedContent;
+    }
+
+    @Override
+    public boolean isContentAvailable(String language, String name) {
+        ViewQuery query = createQuery("by_language_and_name").key(ComplexKey.of(language, name));
+        return db.queryView(query).getTotalRows() > 0;
     }
 
     @Override

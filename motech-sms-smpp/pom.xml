@@ -40,7 +40,7 @@
         </dependency>
 		<dependency>
 			<groupId>org.smslib</groupId>
-			<artifactId>smslib</artifactId>
+			<artifactId>smslib-patched</artifactId>
 			<version>3.5.1</version>
 		</dependency>
     </dependencies>

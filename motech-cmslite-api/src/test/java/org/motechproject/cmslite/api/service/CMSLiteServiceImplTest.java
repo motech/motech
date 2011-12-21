@@ -3,8 +3,8 @@ package org.motechproject.cmslite.api.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.cmslite.api.dao.AllStreamContents;
-import org.motechproject.cmslite.api.dao.AllStringContents;
+import org.motechproject.cmslite.api.repository.AllStreamContents;
+import org.motechproject.cmslite.api.repository.AllStringContents;
 import org.motechproject.cmslite.api.model.CMSLiteException;
 import org.motechproject.cmslite.api.model.ContentNotFoundException;
 import org.motechproject.cmslite.api.model.StreamContent;
@@ -13,6 +13,8 @@ import org.motechproject.cmslite.api.model.StringContent;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
@@ -143,7 +145,7 @@ public class CMSLiteServiceImplTest {
 
         fail("Should have thrown IllegalArgumentException when language is null.");
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhileAddingContentWhenNameIsNull
             () throws CMSLiteException {
@@ -151,4 +153,29 @@ public class CMSLiteServiceImplTest {
 
         fail("Should have thrown IllegalArgumentException when name is null.");
     }
+
+    @Test
+    public void shouldReturnTrueIfStreamContentAvailable() {
+        when(allStreamContents.isContentAvailable("language", "name")).thenReturn(true);
+        assertTrue(cmsLiteService.isStreamContentAvailable("language", "name"));
+    }
+
+    @Test
+    public void shouldReturnFalseIfStreamContentDoesNotAvailable() {
+        when(allStreamContents.isContentAvailable("language", "name")).thenReturn(false);
+        assertFalse(cmsLiteService.isStreamContentAvailable("language", "name"));
+    }
+
+    @Test
+    public void shouldReturnTrueIfStringContentAvailable(){
+        when(allStringContents.isContentAvailable("language", "name")).thenReturn(true);
+        assertTrue(cmsLiteService.isStringContentAvailable("language", "name"));
+    }
+
+    @Test
+    public void shouldReturnFalseIfStringContentNotAvailable(){
+        when(allStringContents.isContentAvailable("language", "name")).thenReturn(false);
+        assertFalse(cmsLiteService.isStringContentAvailable("language", "name"));
+    }
+
 }
