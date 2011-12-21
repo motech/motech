@@ -1,12 +1,10 @@
-package org.motechproject.cmslite.api.dao;
+package org.motechproject.cmslite.api.repository;
 
 import org.ektorp.CouchDbConnector;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.cmslite.api.model.CMSLiteException;
-import org.motechproject.cmslite.api.model.StreamContent;
 import org.motechproject.cmslite.api.model.StringContent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

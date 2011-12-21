@@ -1,4 +1,4 @@
-package org.motechproject.cmslite.api.dao;
+package org.motechproject.cmslite.api.repository;
 
 import org.ektorp.*;
 import org.ektorp.support.View;

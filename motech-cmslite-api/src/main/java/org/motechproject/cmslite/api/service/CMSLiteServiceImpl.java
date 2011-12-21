@@ -1,9 +1,9 @@
 package org.motechproject.cmslite.api.service;
 
 
-import org.motechproject.cmslite.api.dao.AllStreamContents;
-import org.motechproject.cmslite.api.dao.AllStringContents;
-import org.motechproject.cmslite.api.dao.BaseContentRepository;
+import org.motechproject.cmslite.api.repository.AllStreamContents;
+import org.motechproject.cmslite.api.repository.AllStringContents;
+import org.motechproject.cmslite.api.repository.BaseContentRepository;
 import org.motechproject.cmslite.api.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 

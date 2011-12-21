@@ -1,4 +1,4 @@
-package org.motechproject.cmslite.api.dao;
+package org.motechproject.cmslite.api.repository;
 
 import org.ektorp.AttachmentInputStream;
 import org.ektorp.CouchDbConnector;
