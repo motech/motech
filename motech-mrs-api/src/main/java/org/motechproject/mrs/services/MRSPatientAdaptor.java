@@ -11,5 +11,5 @@ public interface MRSPatientAdaptor {
 
     MRSPatient getPatientByMotechId(String motechId);
 
-    List<MRSPatient> search(String nameOrId);
+    List<MRSPatient> search(String name, String id);
 }

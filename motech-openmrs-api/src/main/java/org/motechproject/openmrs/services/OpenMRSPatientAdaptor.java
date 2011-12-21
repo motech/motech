@@ -16,6 +16,7 @@ import org.openmrs.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.*;
@@ -90,12 +91,13 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
     }
 
     @Override
-    public List<MRSPatient> search(String nameOrId) {
-        return sort(convert(patientService.getPatients(nameOrId), new Converter<Patient, MRSPatient>() {
-            @Override
-            public MRSPatient convert(Patient patient) {
-                return getMrsPatient(patient);
-            }
-        }), on(MRSPatient.class).getPerson().getFirstName());
+    public List<MRSPatient> search(String name, String id) {
+        return sort(convert(patientService.getPatients(name, id, Arrays.asList(patientService.getPatientIdentifierTypeByName(IdentifierType.IDENTIFIER_MOTECH_ID.getName())), false),
+                new Converter<Patient, MRSPatient>() {
+                    @Override
+                    public MRSPatient convert(Patient patient) {
+                        return getMrsPatient(patient);
+                    }
+                }), on(MRSPatient.class).getPerson().getFirstName());
     }
 }

@@ -199,18 +199,22 @@ public class OpenMRSPatientAdaptorTest {
     @Test
     public void shouldSearchByPatientNameOrId() {
         OpenMRSPatientAdaptor openMRSPatientAdaptorSpy = spy(openMRSPatientAdaptor);
-        String nameOrId = "nameOrId";
+        String name = "name";
+        String id = "1000";
         Patient openMrsPatient1 = mock(Patient.class);
         Patient openMrsPatient2 = mock(Patient.class);
         List<Patient> patientsMatchingSearchQuery = Arrays.asList(openMrsPatient1, openMrsPatient2);
-        when(mockPatientService.getPatients(nameOrId)).thenReturn(patientsMatchingSearchQuery);
+        PatientIdentifierType identifierTypeMock = mock(PatientIdentifierType.class);
+        when(mockPatientService.getPatientIdentifierTypeByName(IdentifierType.IDENTIFIER_MOTECH_ID.getName())).thenReturn(identifierTypeMock);
+        when(mockPatientService.getPatients(name, id, Arrays.asList(identifierTypeMock), false)).thenReturn(patientsMatchingSearchQuery);
 
         MRSPatient mrsPatient1 = new MRSPatient(new MRSPerson().firstName("Zef"), null);
         MRSPatient mrsPatient2 = new MRSPatient(new MRSPerson().firstName("Abc"), null);
         doReturn(mrsPatient1).when(openMRSPatientAdaptorSpy).getMrsPatient(openMrsPatient1);
         doReturn(mrsPatient2).when(openMRSPatientAdaptorSpy).getMrsPatient(openMrsPatient2);
 
-        List<MRSPatient> returnedPatients = openMRSPatientAdaptorSpy.search(nameOrId);
+        List<MRSPatient> returnedPatients = openMRSPatientAdaptorSpy.search(name, id);
         assertThat(returnedPatients, is(equalTo(Arrays.asList(mrsPatient2, mrsPatient1))));
+
     }
 }
