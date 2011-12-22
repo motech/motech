@@ -29,11 +29,12 @@ public class MilestoneTest extends BaseScheduleTrackingTest {
         assertEquals(WindowName.Upcoming, milestone.applicableWindow(daysAgo(8)));
         assertEquals(WindowName.Upcoming, milestone.applicableWindow(daysAgo(9)));
         assertEquals(WindowName.Upcoming, milestone.applicableWindow(daysAgo(14)));
-        assertEquals(WindowName.Due, milestone.applicableWindow(daysAgo(16)));
-        assertEquals(WindowName.Due, milestone.applicableWindow(daysAgo(15)));
+	    assertEquals(WindowName.Due, milestone.applicableWindow(daysAgo(15)));
+	    assertEquals(WindowName.Due, milestone.applicableWindow(daysAgo(16)));
         assertEquals(WindowName.Due, milestone.applicableWindow(daysAgo(21)));
         assertEquals(WindowName.Late, milestone.applicableWindow(daysAgo(22)));
-        assertEquals(WindowName.Past, milestone.applicableWindow(daysAgo(30)));
+        assertEquals(WindowName.Late, milestone.applicableWindow(daysAgo(28)));
+        assertEquals(WindowName.Past, milestone.applicableWindow(daysAgo(29)));
 
         assertEquals(WindowName.Due, anotherMilestone.applicableWindow(daysAgo(21)));
         assertEquals(WindowName.Past, anotherMilestone.applicableWindow(daysAgo(22)));

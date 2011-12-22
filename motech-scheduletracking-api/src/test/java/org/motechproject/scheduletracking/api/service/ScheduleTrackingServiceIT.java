@@ -33,9 +33,8 @@ public class ScheduleTrackingServiceIT {
     private SchedulerFactoryBean schedulerFactoryBean;
     private EnrollmentRequest enrollmentRequest;
     private Scheduler scheduler;
-    private int initialSize;
 
-    @Before
+	@Before
     public void setup() throws SchedulerException {
         enrollmentRequest = new EnrollmentRequest("job_001", "IPTI Schedule", "sd", 1, new Time(1, 1));
         scheduler = schedulerFactoryBean.getScheduler();

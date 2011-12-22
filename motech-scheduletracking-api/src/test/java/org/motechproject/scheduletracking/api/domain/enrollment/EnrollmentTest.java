@@ -44,7 +44,6 @@ public class EnrollmentTest extends BaseScheduleTrackingTest {
         assertThat(alerts.get(0).windowName(), is(equalTo(WindowName.Due)));
     }
 
-
     @Test
     public void shouldMarkAMilestoneAsFulfilled() {
         String nextMilestone = enrollment.fulfillMilestone(schedule);

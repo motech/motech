@@ -29,8 +29,8 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
 
     @Override
     public void enroll(EnrollmentRequest enrollmentRequest) {
-        List<Enrollment> found = allEnrollments.findByExternalIdAndScheduleName(enrollmentRequest.getExternalId(), enrollmentRequest.getScheduleName());
-        if (found.size() > 0) return;
+        List<Enrollment> enrollments = allEnrollments.findByExternalIdAndScheduleName(enrollmentRequest.getExternalId(), enrollmentRequest.getScheduleName());
+        if (enrollments.size() > 0) return;
 
         Schedule schedule = allTrackedSchedules.get(enrollmentRequest.getScheduleName());
         if (schedule == null) {
