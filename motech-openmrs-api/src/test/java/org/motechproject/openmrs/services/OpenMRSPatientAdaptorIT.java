@@ -80,29 +80,29 @@ public class OpenMRSPatientAdaptorIT extends OpenMRSIntegrationTestBase {
 
         assertThat(patientAdaptor.search("x", null), is(equalTo(Arrays.<MRSPatient>asList())));
 
-        returnedPatients = patientAdaptor.search(null, "12356");
-        new PatientTestUtil().verifyReturnedPatient(firstName1, middleName1, lastName1, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(0));
+        returnedPatients = patientAdaptor.search("All", null);
         assertThat(returnedPatients.size(), is(equalTo(1)));
+        new PatientTestUtil().verifyReturnedPatient(firstName1, middleName1, lastName1, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(0));
+
+        returnedPatients = patientAdaptor.search("Jo All", null);
+        assertThat(returnedPatients.size(), is(equalTo(1)));
+        new PatientTestUtil().verifyReturnedPatient(firstName1, middleName1, lastName1, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(0));
+
+        returnedPatients = patientAdaptor.search(null, "12356");
+        assertThat(returnedPatients.size(), is(equalTo(1)));
+        new PatientTestUtil().verifyReturnedPatient(firstName1, middleName1, lastName1, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(0));
 
         returnedPatients = patientAdaptor.search(null, "23");
-        new PatientTestUtil().verifyReturnedPatient(firstName1, middleName1, lastName1, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(0));
-        new PatientTestUtil().verifyReturnedPatient(firstName2, middleName2, lastName2, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(1));
-        assertThat(returnedPatients.size(), is(equalTo(2)));
+        assertThat(returnedPatients.size(), is(equalTo(0)));
 
         assertThat(patientAdaptor.search(null, "0000"), is(equalTo(Arrays.<MRSPatient>asList())));
 
         returnedPatients = patientAdaptor.search("All", "12356");
-        new PatientTestUtil().verifyReturnedPatient(firstName1, middleName1, lastName1, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(0));
         assertThat(returnedPatients.size(), is(equalTo(1)));
+        new PatientTestUtil().verifyReturnedPatient(firstName1, middleName1, lastName1, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(0));
 
         returnedPatients = patientAdaptor.search("Ra", "123");
-        new PatientTestUtil().verifyReturnedPatient(firstName1, middleName1, lastName1, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(0));
-        assertThat(returnedPatients.size(), is(equalTo(1)));
-
-        returnedPatients = patientAdaptor.search("Ra", "23");
-        new PatientTestUtil().verifyReturnedPatient(firstName1, middleName1, lastName1, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(0));
-        new PatientTestUtil().verifyReturnedPatient(firstName2, middleName2, lastName2, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(1));
-        assertThat(returnedPatients.size(), is(equalTo(2)));
+        assertThat(returnedPatients.size(), is(equalTo(0)));
 
         assertThat(patientAdaptor.search("x", "0000"), is(equalTo(Arrays.<MRSPatient>asList())));
     }
