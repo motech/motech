@@ -84,4 +84,17 @@ public class AllMessageCampaigns {
         }
         return null;
     }
+
+    public CampaignMessage getCampaignMessageByMessageName(String campaignName, String messageName) {
+        Campaign campaign = get(campaignName);
+        if (campaign != null) {
+            for (Object message : campaign.messages()) {
+                CampaignMessage campaignMessage = (CampaignMessage) message;
+                if (campaignMessage.name().equals(messageName)) {
+                    return campaignMessage;
+                }
+            }
+        }
+        return null;
+    }
 }
