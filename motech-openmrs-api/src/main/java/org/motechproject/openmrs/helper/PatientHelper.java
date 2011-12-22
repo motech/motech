@@ -65,7 +65,7 @@ public class PatientHelper {
     }
 
     private String getMotechId(MRSPatient patient, String motechId) {
-        return StringUtils.isNotEmpty(patient.getId()) ? patient.getId() : motechId;
+        return StringUtils.isNotEmpty(patient.getMotechId()) ? patient.getMotechId() : motechId;
     }
 
     private Person createPersonWithNames(MRSPatient patient) {
