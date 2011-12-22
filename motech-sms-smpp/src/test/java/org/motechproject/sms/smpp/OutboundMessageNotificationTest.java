@@ -6,7 +6,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.gateway.OutboundEventGateway;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.sms.smpp.constants.EventKeys;
 import org.motechproject.sms.smpp.constants.SmsProperties;
 import org.smslib.AGateway;
 import org.smslib.OutboundMessage;
@@ -18,6 +17,8 @@ import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.sms.api.constants.EventKeys.*;
+import static org.motechproject.sms.smpp.constants.EventKeys.*;
 
 public class OutboundMessageNotificationTest {
 	@Mock
@@ -51,8 +52,8 @@ public class OutboundMessageNotificationTest {
 		verify(outboundEventGateway).sendEventMessage(motechEventArgumentCaptor.capture());
 
 		Map<String, Object> parameters = motechEventArgumentCaptor.getValue().getParameters();
-		assertEquals("9876543210", parameters.get(EventKeys.RECIPIENT));
-		assertEquals("Test Message", parameters.get(EventKeys.MESSAGE));
+		assertEquals("9876543210", parameters.get(RECIPIENT));
+		assertEquals("Test Message", parameters.get(MESSAGE));
 	}
 
 	@Test

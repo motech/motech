@@ -5,6 +5,7 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.sms.api.SmsEventHandler;
+import org.motechproject.sms.api.constants.EventKeys;
 import org.motechproject.sms.api.constants.EventSubject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +14,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
-
-import static org.motechproject.sms.api.service.SmsServiceImpl.*;
 
 @Component
 public class SmsSendHandler implements SmsEventHandler {
@@ -33,8 +32,8 @@ public class SmsSendHandler implements SmsEventHandler {
     @Override
     @MotechListener(subjects = EventSubject.SEND_SMS)
     public void handle(MotechEvent event) throws IOException, SmsDeliveryFailureException {
-        List<String> recipients = (List<String>) event.getParameters().get(RECIPIENTS);
-        String message = (String) event.getParameters().get(MESSAGE);
+        List<String> recipients = (List<String>) event.getParameters().get(EventKeys.RECIPIENTS);
+        String message = (String) event.getParameters().get(EventKeys.MESSAGE);
         HttpMethod httpMethod = template.generateRequestFor(recipients, message);
         int status = commonsHttpClient.executeMethod(httpMethod);
         String response = httpMethod.getResponseBodyAsString();

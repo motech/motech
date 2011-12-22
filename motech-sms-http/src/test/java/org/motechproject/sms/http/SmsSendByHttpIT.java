@@ -9,8 +9,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.sms.api.constants.EventKeys;
 import org.motechproject.sms.api.constants.EventSubject;
-import org.motechproject.sms.api.service.SmsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -46,8 +46,8 @@ public class SmsSendByHttpIT {
         smsSendHandler = new SmsSendHandler(templateReader, mockHttpClient);
 
         MotechEvent motechEvent = new MotechEvent(EventSubject.SEND_SMS, new HashMap<String, Object>() {{
-            put(SmsServiceImpl.RECIPIENTS, Arrays.asList("123", "456"));
-            put(SmsServiceImpl.MESSAGE, "foobar");
+            put(EventKeys.RECIPIENTS, Arrays.asList("123", "456"));
+            put(EventKeys.MESSAGE, "foobar");
         }});
         smsSendHandler.handle(motechEvent);
 
@@ -62,8 +62,8 @@ public class SmsSendByHttpIT {
         smsSendHandler = new SmsSendHandler(templateReader, httpClient);
 
         MotechEvent motechEvent = new MotechEvent(EventSubject.SEND_SMS, new HashMap<String, Object>() {{
-            put(SmsServiceImpl.RECIPIENTS, Arrays.asList("9686202448"));
-            put(SmsServiceImpl.MESSAGE, "business analyst");
+            put(EventKeys.RECIPIENTS, Arrays.asList("9686202448"));
+            put(EventKeys.MESSAGE, "business analyst");
         }});
         smsSendHandler.handle(motechEvent);
     }
