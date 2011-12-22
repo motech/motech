@@ -37,6 +37,7 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <version>3.0.5.RELEASE</version>
+            <scope>provided</scope>
         </dependency>
 		<dependency>
 			<groupId>org.smslib</groupId>
