@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import org.motechproject.context.EventContext;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.sms.api.constants.EventKeys;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -21,7 +22,6 @@ import java.util.Arrays;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.sms.api.service.SmsServiceImpl.*;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
@@ -51,8 +51,8 @@ public class SmsServiceImplTest {
         verify(eventRelay).sendEventMessage(motechEventArgumentCaptor.capture());
 
         MotechEvent eventMessageSent = motechEventArgumentCaptor.getValue();
-        assertEquals("This is a test message", (String) eventMessageSent.getParameters().get(MESSAGE));
-        assertEquals(Arrays.asList("9876543210"), eventMessageSent.getParameters().get(RECIPIENTS));
+        assertEquals("This is a test message", (String) eventMessageSent.getParameters().get(EventKeys.MESSAGE));
+        assertEquals(Arrays.asList("9876543210"), eventMessageSent.getParameters().get(EventKeys.RECIPIENTS));
     }
 
     @Test
@@ -68,8 +68,8 @@ public class SmsServiceImplTest {
         verify(eventRelay).sendEventMessage(motechEventArgumentCaptor.capture());
 
         MotechEvent eventMessageSent = motechEventArgumentCaptor.getValue();
-        assertEquals("This is a test message", (String) eventMessageSent.getParameters().get(MESSAGE));
-        assertEquals(recipients, eventMessageSent.getParameters().get(RECIPIENTS));
+        assertEquals("This is a test message", (String) eventMessageSent.getParameters().get(EventKeys.MESSAGE));
+        assertEquals(recipients, eventMessageSent.getParameters().get(EventKeys.RECIPIENTS));
     }
 
     @Test
@@ -80,9 +80,9 @@ public class SmsServiceImplTest {
         verify(eventRelay).sendEventMessage(motechEventArgumentCaptor.capture());
 
         MotechEvent eventMessageSent = motechEventArgumentCaptor.getValue();
-        assertEquals("This is a test message", (String) eventMessageSent.getParameters().get(MESSAGE));
-        assertEquals(Arrays.asList("123"), eventMessageSent.getParameters().get(RECIPIENTS));
-        assertEquals(new DateTime(2011, 12, 23, 13, 50, 0, 0), eventMessageSent.getParameters().get(DELIVERY_TIME));
+        assertEquals("This is a test message", (String) eventMessageSent.getParameters().get(EventKeys.MESSAGE));
+        assertEquals(Arrays.asList("123"), eventMessageSent.getParameters().get(EventKeys.RECIPIENTS));
+        assertEquals(new DateTime(2011, 12, 23, 13, 50, 0, 0), eventMessageSent.getParameters().get(EventKeys.DELIVERY_TIME));
     }
 
     @Test
@@ -98,8 +98,8 @@ public class SmsServiceImplTest {
         verify(eventRelay).sendEventMessage(motechEventArgumentCaptor.capture());
 
         MotechEvent eventMessageSent = motechEventArgumentCaptor.getValue();
-        assertEquals("This is a test message", (String) eventMessageSent.getParameters().get(MESSAGE));
-        assertEquals(recipients, eventMessageSent.getParameters().get(RECIPIENTS));
-        assertEquals(new DateTime(2011, 12, 23, 13, 50, 0, 0), eventMessageSent.getParameters().get(DELIVERY_TIME));
+        assertEquals("This is a test message", (String) eventMessageSent.getParameters().get(EventKeys.MESSAGE));
+        assertEquals(recipients, eventMessageSent.getParameters().get(EventKeys.RECIPIENTS));
+        assertEquals(new DateTime(2011, 12, 23, 13, 50, 0, 0), eventMessageSent.getParameters().get(EventKeys.DELIVERY_TIME));
     }
 }

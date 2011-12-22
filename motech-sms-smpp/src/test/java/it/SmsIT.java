@@ -5,8 +5,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.sms.api.constants.EventKeys;
 import org.motechproject.sms.api.constants.EventSubject;
-import org.motechproject.sms.api.service.SmsServiceImpl;
 import org.motechproject.sms.smpp.ManagedSmslibService;
 import org.motechproject.sms.smpp.SmsSendHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +31,9 @@ public class SmsIT {
         smsSendHandler = new SmsSendHandler(service);
 
         MotechEvent event = new MotechEvent(EventSubject.SEND_SMS, new HashMap<String, Object>() {{
-            put(SmsServiceImpl.RECIPIENTS, Arrays.asList("*-/*-/-!@#@"));
-            put(SmsServiceImpl.MESSAGE, "goo bar");
-            put(SmsServiceImpl.DELIVERY_TIME, DateTime.now().plusMinutes(1));
+            put(EventKeys.RECIPIENTS, Arrays.asList("*-/*-/-!@#@"));
+            put(EventKeys.MESSAGE, "goo bar");
+            put(EventKeys.DELIVERY_TIME, DateTime.now().plusMinutes(1));
         }});
         smsSendHandler.handle(event);
 	    Thread.sleep(100000000);

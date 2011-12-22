@@ -3,7 +3,6 @@ package org.motechproject.sms.smpp;
 import org.joda.time.DateTime;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.sms.smpp.constants.EventKeys;
 import org.motechproject.sms.smpp.constants.EventSubject;
 import org.smslib.AGateway;
 import org.smslib.IInboundMessageNotification;
@@ -13,6 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+
+import static org.motechproject.sms.api.constants.EventKeys.MESSAGE;
+import static org.motechproject.sms.smpp.constants.EventKeys.SENDER;
+import static org.motechproject.sms.smpp.constants.EventKeys.TIMESTAMP;
 
 @Component
 public class InboundMessageNotification implements IInboundMessageNotification {
@@ -27,9 +30,9 @@ public class InboundMessageNotification implements IInboundMessageNotification {
     @Override
     public void process(AGateway gateway, Message.MessageTypes msgType, InboundMessage msg) {
         HashMap<String, Object> data = new HashMap<String, Object>();
-        data.put(EventKeys.SENDER, msg.getOriginator());
-        data.put(EventKeys.MESSAGE, msg.getText());
-        data.put(EventKeys.TIMESTAMP, new DateTime(msg.getDate()));
+        data.put(SENDER, msg.getOriginator());
+        data.put(MESSAGE, msg.getText());
+        data.put(TIMESTAMP, new DateTime(msg.getDate()));
         eventRelay.sendEventMessage(new MotechEvent(EventSubject.INBOUND_SMS, data));
     }
 }

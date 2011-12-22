@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
+import org.motechproject.sms.api.constants.EventKeys;
 import org.motechproject.sms.api.constants.EventSubject;
 
 import java.lang.reflect.Method;
@@ -16,9 +17,6 @@ import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.sms.api.service.SmsServiceImpl.DELIVERY_TIME;
-import static org.motechproject.sms.api.service.SmsServiceImpl.MESSAGE;
-import static org.motechproject.sms.api.service.SmsServiceImpl.RECIPIENTS;
 
 public class SmsSendHandlerTest {
 
@@ -44,8 +42,8 @@ public class SmsSendHandlerTest {
 	@Test
 	public void shouldSendMessageUsingSmpp() throws Exception {
 		handler.handle(new MotechEvent(EventSubject.SEND_SMS, new HashMap<String, Object>() {{
-			put(RECIPIENTS, Arrays.asList("0987654321"));
-			put(MESSAGE, "foo bar");
+			put(EventKeys.RECIPIENTS, Arrays.asList("0987654321"));
+			put(EventKeys.MESSAGE, "foo bar");
 		}}));
 		verify(managedSmslibService).queueMessage(Arrays.asList("0987654321"), "foo bar");
 	}
@@ -53,9 +51,9 @@ public class SmsSendHandlerTest {
     @Test
     public void shouldScheduleMessageIfDeliveryTimeIsSpecified() throws Exception {
         handler.handle(new MotechEvent(EventSubject.SEND_SMS, new HashMap<String, Object>() {{
-            put(RECIPIENTS, Arrays.asList("0987654321"));
-            put(MESSAGE, "foo bar");
-            put(DELIVERY_TIME, new DateTime(2011, 12, 22, 4, 40, 0, 0));
+            put(EventKeys.RECIPIENTS, Arrays.asList("0987654321"));
+            put(EventKeys.MESSAGE, "foo bar");
+            put(EventKeys.DELIVERY_TIME, new DateTime(2011, 12, 22, 4, 40, 0, 0));
         }}));
         verify(managedSmslibService).queueMessageAt(Arrays.asList("0987654321"), "foo bar", new DateTime(2011, 12, 22, 4, 40, 0, 0));
     }

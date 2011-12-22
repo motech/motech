@@ -7,18 +7,16 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.sms.smpp.constants.EventKeys;
 import org.motechproject.sms.smpp.constants.EventSubject;
 import org.smslib.InboundMessage;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.sms.api.constants.EventKeys.*;
+import static org.motechproject.sms.smpp.constants.EventKeys.*;
 
 public class InboundMessageNotificationTest {
-
-    int DONT_CARE = 0;
-
     InboundMessageNotification inboundMessageNotification;
 
     @Mock
@@ -32,7 +30,9 @@ public class InboundMessageNotificationTest {
 
     @Test
     public void shouldRaiseEventWhenAnSmsIsReceived() {
-        InboundMessage message = new InboundMessage(new DateTime(2011, 11, 23, 10, 20, 0, 0).toDate(), "sender", "yoohoo", DONT_CARE, null);
+	    int dontCare = 0;
+
+	    InboundMessage message = new InboundMessage(new DateTime(2011, 11, 23, 10, 20, 0, 0).toDate(), "sender", "yoohoo", dontCare, null);
         inboundMessageNotification.process(null, null, message);
 
         ArgumentCaptor<MotechEvent> eventCaptor = ArgumentCaptor.forClass(MotechEvent.class);
@@ -40,8 +40,8 @@ public class InboundMessageNotificationTest {
 
         MotechEvent event = eventCaptor.getValue();
         assertEquals(EventSubject.INBOUND_SMS, event.getSubject());
-        assertEquals("sender", event.getParameters().get(EventKeys.SENDER));
-        assertEquals("yoohoo", event.getParameters().get(EventKeys.MESSAGE));
-        assertEquals(new DateTime(2011, 11, 23, 10, 20, 0, 0), event.getParameters().get(EventKeys.TIMESTAMP));
+        assertEquals("sender", event.getParameters().get(SENDER));
+        assertEquals("yoohoo", event.getParameters().get(MESSAGE));
+        assertEquals(new DateTime(2011, 11, 23, 10, 20, 0, 0), event.getParameters().get(TIMESTAMP));
     }
 }

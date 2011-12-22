@@ -8,6 +8,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
+import org.motechproject.sms.api.constants.EventKeys;
 import org.motechproject.sms.api.constants.EventSubject;
 
 import java.io.IOException;
@@ -19,7 +20,6 @@ import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.sms.api.service.SmsServiceImpl.*;
 import static org.motechproject.sms.http.SmsSendTemplate.Response;
 
 public class SmsSendHandlerTest {
@@ -52,8 +52,8 @@ public class SmsSendHandlerTest {
 
         SmsSendHandler handler = new SmsSendHandler(templateReader, httpClient);
         handler.handle(new MotechEvent(EventSubject.SEND_SMS, new HashMap<String, Object>() {{
-            put(RECIPIENTS, Arrays.asList("0987654321"));
-            put(MESSAGE, "foo bar");
+            put(EventKeys.RECIPIENTS, Arrays.asList("0987654321"));
+            put(EventKeys.MESSAGE, "foo bar");
         }}));
 
         verify(httpClient).executeMethod(httpMethod);
