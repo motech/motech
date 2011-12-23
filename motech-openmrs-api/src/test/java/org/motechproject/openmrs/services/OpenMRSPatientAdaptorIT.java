@@ -54,10 +54,11 @@ public class OpenMRSPatientAdaptorIT extends OpenMRSIntegrationTestBase {
     @Test
     @Transactional(readOnly = true)
     public void shouldSearchPatientsByNameOrId() {
+//        Should also handle when name is null in the DB for production records
         final String firstName1 = "John";
         final String middleName1 = "Allen";
         final String lastName1 = "Raul";
-        final String firstName2 = "Joseph";
+        final String firstName2 = null;
         final String middleName2 = "Ra";
         final String lastName2 = "Rauak";
         final String motechId1 = "12356";
@@ -75,8 +76,8 @@ public class OpenMRSPatientAdaptorIT extends OpenMRSIntegrationTestBase {
         createPatientInOpenMrs(motechId2, firstName2, middleName2, lastName2, address, birthDate, gender, birthDateEstimated, savedFacility);
         List<MRSPatient> returnedPatients = patientAdaptor.search("Ra", null);
 
-        new PatientTestUtil().verifyReturnedPatient(firstName1, middleName1, lastName1, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(0), motechId1);
-        new PatientTestUtil().verifyReturnedPatient(firstName2, middleName2, lastName2, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(1), motechId2);
+        new PatientTestUtil().verifyReturnedPatient(firstName1, middleName1, lastName1, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(1), motechId1);
+        new PatientTestUtil().verifyReturnedPatient(firstName2, middleName2, lastName2, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(0), motechId2);
         assertThat(returnedPatients.size(), is(equalTo(2)));
 
         assertThat(patientAdaptor.search("x", null), is(equalTo(Arrays.<MRSPatient>asList())));

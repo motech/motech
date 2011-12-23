@@ -225,7 +225,7 @@ public class OpenMRSPatientAdaptorTest {
         doReturn(mrsPatient2).when(openMRSPatientAdaptorSpy).getMrsPatient(openMrsPatient2);
 
         List<MRSPatient> returnedPatients = openMRSPatientAdaptorSpy.search(name, id);
-        assertThat(returnedPatients, is(equalTo(Arrays.asList(mrsPatient2, mrsPatient1))));
+        assertThat(returnedPatients, is(equalTo(Arrays.asList(mrsPatient1, mrsPatient2))));
 
     }
 }

@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.*;
@@ -72,7 +73,7 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
         PersonName personName = patientHelper.getFirstName(savedPatient);
         final PatientIdentifier patientIdentifier = savedPatient.getPatientIdentifier();
         MRSFacility mrsFacility = (patientIdentifier != null) ? facilityAdaptor.convertLocationToFacility(patientIdentifier.getLocation()) : null;
-        String motechId = (patientIdentifier != null) ? patientIdentifier.getIdentifier():null;
+        String motechId = (patientIdentifier != null) ? patientIdentifier.getIdentifier() : null;
         MRSPerson mrsPerson = new MRSPerson().firstName(personName.getGivenName()).middleName(personName.getMiddleName()).lastName(personName.getFamilyName()).
                 preferredName(patientHelper.getPreferredName(savedPatient)).birthDateEstimated(savedPatient.getBirthdateEstimated()).
                 gender(savedPatient.getGender()).address(patientHelper.getAddress(savedPatient)).attributes(attributes).dateOfBirth(savedPatient.getBirthdate());
@@ -99,6 +100,20 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
                     public MRSPatient convert(Patient patient) {
                         return getMrsPatient(patient);
                     }
-                }), on(MRSPatient.class).getPerson().getFirstName());
+                }), on(MRSPatient.class).getPerson(), new Comparator<MRSPerson>() {
+            @Override
+            public int compare(MRSPerson personToBeCompared1, MRSPerson personToBeCompared2) {
+                //        Should handle when name is null in the DB for production records
+                if (personToBeCompared1.getFirstName() == null && personToBeCompared2.getFirstName() == null) {
+                    if (Integer.parseInt(personToBeCompared1.getId()) > Integer.parseInt(personToBeCompared2.getId())) {
+                        return 1;
+                    }
+                } else {
+                    if(personToBeCompared2.getFirstName() == null)
+                        return 1;
+                }
+                return -1;
+            }
+        });
     }
 }
