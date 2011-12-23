@@ -103,16 +103,17 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
                 }), on(MRSPatient.class).getPerson(), new Comparator<MRSPerson>() {
             @Override
             public int compare(MRSPerson personToBeCompared1, MRSPerson personToBeCompared2) {
-                //        Should handle when name is null in the DB for production records
                 if (personToBeCompared1.getFirstName() == null && personToBeCompared2.getFirstName() == null) {
-                    if (Integer.parseInt(personToBeCompared1.getId()) > Integer.parseInt(personToBeCompared2.getId())) {
-                        return 1;
-                    }
+                    return personToBeCompared1.getId().compareTo(personToBeCompared2.getId());
                 } else {
-                    if(personToBeCompared2.getFirstName() == null)
+                    if (personToBeCompared1.getFirstName() == null) {
+                        return -1;
+                    } else if (personToBeCompared2.getFirstName() == null) {
                         return 1;
+                    } else {
+                        return personToBeCompared1.getFirstName().compareTo(personToBeCompared2.getFirstName());
+                    }
                 }
-                return -1;
             }
         });
     }
