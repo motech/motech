@@ -3,7 +3,7 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.5-SNAPSHOT</version>
+        <version>0.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -11,12 +11,12 @@
     <artifactId>motech-cmslite-api</artifactId>
 
     <name>Motech CMS lite API</name>
-    <version>0.5-SNAPSHOT</version>
+    <version>0.6-SNAPSHOT</version>
     <dependencies>
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-common</artifactId>
-            <version>0.5-SNAPSHOT</version>
+            <version>0.6-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
