@@ -15,9 +15,7 @@ import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static ch.lambdaj.Lambda.*;
 
@@ -46,15 +44,16 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
 
     @Override
     public MRSPatient getPatientByMotechId(String motechId) {
+        final Patient patient = getOpenmrsPatientByMotechId(motechId);
+        return (patient != null) ? getMrsPatient(patient) : null;
+    }
+
+    Patient getOpenmrsPatientByMotechId(String motechId) {
         PatientIdentifierType motechIdType = patientService.getPatientIdentifierTypeByName(IdentifierType.IDENTIFIER_MOTECH_ID.getName());
         List<PatientIdentifierType> idTypes = new ArrayList<PatientIdentifierType>();
         idTypes.add(motechIdType);
-
         List<org.openmrs.Patient> patients = patientService.getPatients(null, motechId, idTypes, true);
-        if (CollectionUtils.isEmpty(patients)) {
-            return null;
-        }
-        return getMrsPatient(patients.get(0));
+        return (CollectionUtils.isNotEmpty(patients)) ? patients.get(0) : null;
     }
 
     @Override
@@ -66,13 +65,59 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
         return getMrsPatient(patientService.savePatient(openMRSPatient));
     }
 
+    @Override
+    public String updatePatient(MRSPatient patient) {
+        Patient openMrsPatient = getOpenmrsPatientByMotechId(patient.getMotechId());
+        openMrsPatient.setNames(patientHelper.createPersonWithNames(patient).getNames());
+        openMrsPatient.setBirthdate(patient.getPerson().getDateOfBirth());
+        openMrsPatient.setBirthdateEstimated(patient.getPerson().getBirthDateEstimated());
+        openMrsPatient.setGender(patient.getPerson().getGender());
+
+        final HashSet<PersonAttribute> personAttributes = new HashSet<PersonAttribute>();
+        for (Attribute attribute : patient.getPerson().getAttributes()) {
+            PersonAttribute personAttribute = openMrsPatient.getAttribute(attribute.name());
+            if (personAttribute == null) {
+                personAttribute = new PersonAttribute(personService.getPersonAttributeTypeByName(attribute.name()), attribute.value());
+            } else {
+                personAttribute.setValue(attribute.value());
+            }
+            personAttributes.add(personAttribute);
+        }
+
+        openMrsPatient.setAttributes(personAttributes);
+        Set<PersonAddress> addresses = openMrsPatient.getAddresses();
+        if (!addresses.isEmpty()) {
+            PersonAddress address = addresses.iterator().next();
+            address.setAddress1(patient.getPerson().getAddress());
+        } else {
+            addresses = new HashSet<PersonAddress>();
+            final String address = patient.getPerson().getAddress();
+            new PersonAddress().setAddress1(address);
+            openMrsPatient.setAddresses(addresses);
+        }
+        Location location = openMrsPatient.getPatientIdentifier().getLocation();
+        location.setId(Integer.parseInt(patient.getFacility().getId()));
+        location.setCountry(patient.getFacility().getCountry());
+        location.setAddress6(patient.getFacility().getRegion());
+        location.setCountyDistrict(patient.getFacility().getCountyDistrict());
+        location.setStateProvince(patient.getFacility().getStateProvince());
+        location.setName(patient.getFacility().getName());
+
+        final Patient savedPatient = patientService.savePatient(openMrsPatient);
+        if (savedPatient != null) {
+            return savedPatient.getPatientIdentifier().getIdentifier();
+        } else {
+            return null;
+        }
+    }
+
     public MRSPatient getMrsPatient(org.openmrs.Patient savedPatient) {
         final List<Attribute> attributes = project(savedPatient.getAttributes(), Attribute.class,
                 on(PersonAttribute.class).getAttributeType().toString(), on(PersonAttribute.class).getValue());
         PersonName personName = patientHelper.getFirstName(savedPatient);
         final PatientIdentifier patientIdentifier = savedPatient.getPatientIdentifier();
         MRSFacility mrsFacility = (patientIdentifier != null) ? facilityAdaptor.convertLocationToFacility(patientIdentifier.getLocation()) : null;
-        String motechId = (patientIdentifier != null) ? patientIdentifier.getIdentifier():null;
+        String motechId = (patientIdentifier != null) ? patientIdentifier.getIdentifier() : null;
         MRSPerson mrsPerson = new MRSPerson().firstName(personName.getGivenName()).middleName(personName.getMiddleName()).lastName(personName.getFamilyName()).
                 preferredName(patientHelper.getPreferredName(savedPatient)).birthDateEstimated(savedPatient.getBirthdateEstimated()).
                 gender(savedPatient.getGender()).address(patientHelper.getAddress(savedPatient)).attributes(attributes).dateOfBirth(savedPatient.getBirthdate());

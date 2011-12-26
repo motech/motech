@@ -53,6 +53,37 @@ public class OpenMRSPatientAdaptorIT extends OpenMRSIntegrationTestBase {
 
     @Test
     @Transactional(readOnly = true)
+    public void shouldUpdateAPatient() {
+
+        final String first = "First";
+        final String middle = "Middle";
+        final String last = "Last";
+        final String address1 = "a good street in ghana";
+        final Date birthDate = new LocalDate(1970, 3, 11).toDate();
+        final String gender = "M";
+        Boolean birthDateEstimated = true;
+        String motechId = "1234567";
+
+        final MRSFacility savedFacility = facilityAdaptor.saveFacility(new MRSFacility("name", "country", "region", "district", "province"));
+
+        MRSPerson mrsPerson = new MRSPerson().firstName(first).middleName(middle).lastName(last).dateOfBirth(birthDate).birthDateEstimated(birthDateEstimated)
+                .gender(gender).address(address1);
+        final MRSPatient patient = new MRSPatient(motechId, mrsPerson, savedFacility);
+        final MRSPatient savedPatient = patientAdaptor.savePatient(patient);
+
+        final String updatedMiddleName = "new middle name";
+        MRSPerson mrsPersonUpdated = new MRSPerson().firstName(first).middleName(updatedMiddleName).lastName(last).dateOfBirth(birthDate).birthDateEstimated(birthDateEstimated)
+                .gender(gender).address("address changed");
+
+        final MRSPatient updatedPatient = new MRSPatient(savedPatient.getId(), "1234567", mrsPersonUpdated, savedFacility);
+        final String updatedMotechId = patientAdaptor.updatePatient(updatedPatient);
+
+        assertThat(savedPatient.getMotechId(), is(equalTo(updatedMotechId)));
+        assertThat(patientAdaptor.getPatientByMotechId(savedPatient.getMotechId()).getPerson().getMiddleName(), is(equalTo(updatedMiddleName)));
+    }
+
+    @Test
+    @Transactional(readOnly = true)
     public void shouldSearchPatientsByNameOrId() {
         final String firstName1 = "John";
         final String middleName1 = "Allen";

@@ -5,25 +5,14 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.MRSPatient;
 import org.motechproject.mrs.model.MRSPerson;
-import org.openmrs.Location;
-import org.openmrs.Patient;
-import org.openmrs.PatientIdentifier;
-import org.openmrs.PatientIdentifierType;
-import org.openmrs.Person;
-import org.openmrs.PersonAddress;
-import org.openmrs.PersonAttribute;
-import org.openmrs.PersonAttributeType;
-import org.openmrs.PersonName;
+import org.openmrs.*;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static ch.lambdaj.Lambda.filter;
-import static ch.lambdaj.Lambda.having;
-import static ch.lambdaj.Lambda.on;
-import static ch.lambdaj.Lambda.selectUnique;
+import static ch.lambdaj.Lambda.*;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
@@ -50,12 +39,12 @@ public class PatientHelper {
         return address;
     }
 
-    public Patient buildOpenMrsPatient(MRSPatient patient, String motechId,
+    public Patient buildOpenMrsPatient(MRSPatient patient, String systemGeneratedId,
                                        PatientIdentifierType patientIdentifierType, Location location,
                                        List<PersonAttributeType> allPersonAttributeTypes) {
 
         final Patient openMRSPatient = new Patient(createPersonWithNames(patient));
-        openMRSPatient.addIdentifier(new PatientIdentifier(getMotechId(patient, motechId), patientIdentifierType, location));
+        openMRSPatient.addIdentifier(new PatientIdentifier(getMotechId(patient, systemGeneratedId), patientIdentifierType, location));
         openMRSPatient.setGender(patient.getPerson().getGender());
         openMRSPatient.setBirthdate(patient.getPerson().getDateOfBirth());
         openMRSPatient.setBirthdateEstimated(patient.getPerson().getBirthDateEstimated());
@@ -64,11 +53,11 @@ public class PatientHelper {
         return openMRSPatient;
     }
 
-    private String getMotechId(MRSPatient patient, String motechId) {
-        return StringUtils.isNotEmpty(patient.getMotechId()) ? patient.getMotechId() : motechId;
+    private String getMotechId(MRSPatient patient, String systemGeneratedId) {
+        return StringUtils.isNotEmpty(patient.getMotechId()) ? patient.getMotechId() : systemGeneratedId;
     }
 
-    private Person createPersonWithNames(MRSPatient patient) {
+    public Person createPersonWithNames(MRSPatient patient) {
         final Person person = new Person();
         for (PersonName name : getAllNames(patient)) {
             person.addName(name);

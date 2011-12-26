@@ -7,6 +7,8 @@ import java.util.List;
 public interface MRSPatientAdaptor {
     MRSPatient savePatient(MRSPatient patient);
 
+    String updatePatient(MRSPatient patient);
+
     MRSPatient getPatient(String patientId);
 
     MRSPatient getPatientByMotechId(String motechId);
