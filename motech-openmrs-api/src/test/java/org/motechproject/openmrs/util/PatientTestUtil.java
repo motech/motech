@@ -20,12 +20,12 @@ public class PatientTestUtil {
         PersonName personName = new PersonName(first, middle, last);
         person.addName(personName);
         setAddress(person, address1);
-        final org.openmrs.Patient mrsPatient = new org.openmrs.Patient(person);
-        mrsPatient.setBirthdate(birthdate);
-        mrsPatient.setBirthdateEstimated(birthdateEstimated);
-        mrsPatient.setGender(gender);
-        mrsPatient.addIdentifier(new PatientIdentifier(motechId, null, new Location(Integer.parseInt(facility.getId()))));
-        return mrsPatient;
+        final org.openmrs.Patient patient = new org.openmrs.Patient(person);
+        patient.setBirthdate(birthdate);
+        patient.setBirthdateEstimated(birthdateEstimated);
+        patient.setGender(gender);
+        patient.addIdentifier(new PatientIdentifier(motechId, null, new Location(Integer.parseInt(facility.getId()))));
+        return patient;
     }
 
     private void setAddress(Person person, String address1) {

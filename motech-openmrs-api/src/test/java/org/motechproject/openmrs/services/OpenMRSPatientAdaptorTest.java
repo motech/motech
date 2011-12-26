@@ -43,8 +43,9 @@ public class OpenMRSPatientAdaptorTest {
     private OpenMRSFacilityAdaptor mockFacilityAdapter;
 
     OpenMRSPatientAdaptor openMRSPatientAdaptor;
-    @Autowired
     PatientTestUtil patientTestUtil;
+    @Mock
+    private OpenMRSPersonAdaptor mockPersonAdaptor;
 
     @Before
     public void setUp() {
@@ -56,6 +57,7 @@ public class OpenMRSPatientAdaptorTest {
         ReflectionTestUtils.setField(openMRSPatientAdaptor, "userService", mockUserService);
         ReflectionTestUtils.setField(openMRSPatientAdaptor, "facilityAdaptor", mockFacilityAdapter);
         ReflectionTestUtils.setField(openMRSPatientAdaptor, "patientHelper", new PatientHelper());
+        ReflectionTestUtils.setField(openMRSPatientAdaptor, "personAdaptor", mockPersonAdaptor);
     }
 
     @Test
@@ -73,11 +75,13 @@ public class OpenMRSPatientAdaptorTest {
         String motechId = "1234567";
         final Location location = new Location(Integer.parseInt(facilityId));
 
-        final org.openmrs.Patient openMRSPatient = patientTestUtil.setUpOpenMRSPatient(person, first, middle, last, address1, birthDate, birthdateEstimated, gender, facility, motechId);
+        org.openmrs.Patient openMRSPatient = patientTestUtil.setUpOpenMRSPatient(person, first, middle, last, address1, birthDate, birthdateEstimated, gender, facility, motechId);
+
         when(mockPatientService.savePatient(Matchers.<org.openmrs.Patient>any())).thenReturn(openMRSPatient);
         when(mockFacilityAdapter.getLocation(facilityId)).thenReturn(location);
-
         when(mockFacilityAdapter.convertLocationToFacility(any(Location.class))).thenReturn(facility);
+        when(mockPersonAdaptor.getFirstName(openMRSPatient.getNames())).thenReturn(new PersonName(first,middle,last));
+        when(mockPersonAdaptor.getPreferredName(openMRSPatient.getNames())).thenReturn(first);
 
         MRSPerson mrsPerson = new MRSPerson().firstName(first).middleName(middle).lastName(last).birthDateEstimated(birthdateEstimated).dateOfBirth(birthDate).address(address1).gender(gender);
         MRSPatient mrsPatient = new MRSPatient(motechId, mrsPerson, facility);
@@ -104,10 +108,12 @@ public class OpenMRSPatientAdaptorTest {
         final MRSFacility facility = new MRSFacility("1000", "name", "country", "region", "district", "province");
         String motechId = "1234567";
 
-        final org.openmrs.Patient mrsPatient = patientTestUtil.setUpOpenMRSPatient(person, first, middle, last, address1, birthDate, birthDateEstimated, gender, facility, motechId);
+        final org.openmrs.Patient openMRSPatient = patientTestUtil.setUpOpenMRSPatient(person, first, middle, last, address1, birthDate, birthDateEstimated, gender, facility, motechId);
         int patientId = 12;
-        when(mockPatientService.getPatient(patientId)).thenReturn(mrsPatient);
+        when(mockPatientService.getPatient(patientId)).thenReturn(openMRSPatient);
         when(mockFacilityAdapter.convertLocationToFacility(any(Location.class))).thenReturn(facility);
+        when(mockPersonAdaptor.getFirstName(openMRSPatient.getNames())).thenReturn(new PersonName(first,middle,last));
+        when(mockPersonAdaptor.getPreferredName(openMRSPatient.getNames())).thenReturn(first);
         MRSPatient returnedPatient = openMRSPatientAdaptor.getPatient(String.valueOf(patientId));
 
         verify(mockPatientService).getPatient(patientId);
@@ -128,11 +134,13 @@ public class OpenMRSPatientAdaptorTest {
         String motechId = "11";
         PatientIdentifierType motechIdType = mock(PatientIdentifierType.class);
 
-        final org.openmrs.Patient mrsPatient = patientTestUtil.setUpOpenMRSPatient(person, first, middle, last, address1, birthDate, birthDateEstimated, gender, facility, motechId);
+        final org.openmrs.Patient openMRSPatient = patientTestUtil.setUpOpenMRSPatient(person, first, middle, last, address1, birthDate, birthDateEstimated, gender, facility, motechId);
         List<PatientIdentifierType> idTypes = Arrays.asList(motechIdType);
-        when(mockPatientService.getPatients(null, motechId, idTypes, true)).thenReturn(Arrays.asList(mrsPatient));
+        when(mockPatientService.getPatients(null, motechId, idTypes, true)).thenReturn(Arrays.asList(openMRSPatient));
         when(mockPatientService.getPatientIdentifierTypeByName(IdentifierType.IDENTIFIER_MOTECH_ID.getName())).thenReturn(motechIdType);
         when(mockFacilityAdapter.convertLocationToFacility(any(Location.class))).thenReturn(facility);
+        when(mockPersonAdaptor.getFirstName(openMRSPatient.getNames())).thenReturn(new PersonName(first,middle,last));
+        when(mockPersonAdaptor.getPreferredName(openMRSPatient.getNames())).thenReturn(first);
         MRSPatient returnedPatient = openMRSPatientAdaptor.getPatientByMotechId(motechId);
 
         patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthDate, birthDateEstimated, gender, facility, returnedPatient, motechId);
@@ -162,6 +170,7 @@ public class OpenMRSPatientAdaptorTest {
         final String first = "First";
         final String last = "Last";
         String preferredName = "Preferred";
+        String middle = "MIDDLE";
         final Date birthDate = new LocalDate(1970, 3, 11).toDate();
         Boolean birthDateEstimated = true;
         final MRSFacility facility = new MRSFacility("1000", "name", "country", "region", "district", "province");
@@ -172,6 +181,10 @@ public class OpenMRSPatientAdaptorTest {
         names.add(new PersonName(1212));
         when(mockPatient.getNames()).thenReturn(names);
         when(mockPatientService.savePatient(Matchers.<org.openmrs.Patient>any())).thenReturn(mockPatient);
+
+        when(mockPersonAdaptor.getFirstName(mockPatient.getNames())).thenReturn(new PersonName(first,middle,last));
+        when(mockPersonAdaptor.getPreferredName(mockPatient.getNames())).thenReturn(first);
+
 
         MRSPerson mrsPerson = new MRSPerson().firstName(first).lastName(last).preferredName(preferredName).birthDateEstimated(birthDateEstimated).dateOfBirth(birthDate);
         MRSPatient mrsPatient = new MRSPatient(motechId, mrsPerson, facility);

@@ -32,6 +32,8 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
 
     @Autowired
     OpenMRSFacilityAdaptor facilityAdaptor;
+    @Autowired
+    OpenMRSPersonAdaptor personAdaptor;
 
     @Autowired
     PatientHelper patientHelper;
@@ -67,12 +69,13 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
     public MRSPatient getMrsPatient(org.openmrs.Patient savedPatient) {
         final List<Attribute> attributes = project(savedPatient.getAttributes(), Attribute.class,
                 on(PersonAttribute.class).getAttributeType().toString(), on(PersonAttribute.class).getValue());
-        PersonName personName = patientHelper.getFirstName(savedPatient);
+        Set<PersonName> personNames = savedPatient.getNames();
+        PersonName personName = personAdaptor.getFirstName(personNames);
         final PatientIdentifier patientIdentifier = savedPatient.getPatientIdentifier();
         MRSFacility mrsFacility = (patientIdentifier != null) ? facilityAdaptor.convertLocationToFacility(patientIdentifier.getLocation()) : null;
         String motechId = (patientIdentifier != null) ? patientIdentifier.getIdentifier() : null;
         MRSPerson mrsPerson = new MRSPerson().firstName(personName.getGivenName()).middleName(personName.getMiddleName()).lastName(personName.getFamilyName()).
-                preferredName(patientHelper.getPreferredName(savedPatient)).birthDateEstimated(savedPatient.getBirthdateEstimated()).
+                preferredName(personAdaptor.getPreferredName(personNames)).birthDateEstimated(savedPatient.getBirthdateEstimated()).
                 gender(savedPatient.getGender()).address(patientHelper.getAddress(savedPatient)).attributes(attributes).dateOfBirth(savedPatient.getBirthdate());
         if (savedPatient.getPersonId() != null) {
             mrsPerson.id(Integer.toString(savedPatient.getPersonId()));

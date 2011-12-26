@@ -29,17 +29,6 @@ import static org.hamcrest.Matchers.is;
 
 @Component
 public class PatientHelper {
-    public PersonName getFirstName(Patient patient) {
-        return filter(having(on(PersonName.class).isPreferred(), is(false)), patient.getNames()).get(0);
-    }
-
-    public String getPreferredName(Patient patient) {
-        final List<PersonName> preferredNames = filter(having(on(PersonName.class).isPreferred(), is(true)), patient.getNames());
-        if (CollectionUtils.isNotEmpty(preferredNames)) {
-            return preferredNames.get(0).getGivenName();
-        }
-        return null;
-    }
 
     public String getAddress(Patient patient) {
         String address = null;
