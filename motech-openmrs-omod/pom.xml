@@ -2,7 +2,7 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.5-SNAPSHOT</version>
+        <version>0.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>motech-openmrs-omod</artifactId>
@@ -43,12 +43,6 @@
             <groupId>org.openmrs.module</groupId>
             <artifactId>idgen-core</artifactId>
             <version>1.5.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.16</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

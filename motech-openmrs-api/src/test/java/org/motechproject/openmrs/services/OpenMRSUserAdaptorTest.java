@@ -37,11 +37,13 @@ public class OpenMRSUserAdaptorTest {
     public static final String PERSON_ATTRIBUTE_TYPE_EMAIL = "Email";
     public static final String PERSON_ATTRIBUTE_TYPE_PHONE_NUMBER = "Phone Number";
     public static final String PERSON_ATTRIBUTE_TYPE_STAFF_TYPE = "Staff Type";
+    @Mock
+    private OpenMRSPersonAdaptor mockPersonAdaptor;
 
     @Before
     public void setUp() {
         initMocks(this);
-        openMrsUserAdaptor = new OpenMRSUserAdaptor(mockUserService, mockPersonService);
+        openMrsUserAdaptor = new OpenMRSUserAdaptor(mockUserService, mockPersonService, mockPersonAdaptor);
     }
 
     @Test
@@ -53,7 +55,7 @@ public class OpenMRSUserAdaptorTest {
     @Test(expected = MRSException.class)
     public void testChangeCurrentUserPasswordFailed() throws Exception {
         doThrow(mock(DAOException.class)).when(mockUserService).changePassword("p1", "p2");
-        new OpenMRSUserAdaptor(mockUserService, mockPersonService).changeCurrentUserPassword("p1", "p2");
+        new OpenMRSUserAdaptor(mockUserService, mockPersonService, null).changeCurrentUserPassword("p1", "p2");
     }
 
     @Test(expected = UserAlreadyExistsException.class)
@@ -63,13 +65,15 @@ public class OpenMRSUserAdaptorTest {
         String email = "test@gmail.com";
         attributes.add(new Attribute("Email", email));
         MRSUser mrsUser = new MRSUser().userName(userName);
-        mrsUser.person(new MRSPerson().attributes(attributes));
+        MRSPerson mrsPerson = new MRSPerson();
+        mrsUser.person(mrsPerson.attributes(attributes));
         User mockUser = mock(User.class);
         Person person = new Person();
         person.addName(new PersonName("given", "middle", "family"));
 
         when(mockUser.getSystemId()).thenReturn("1");
         when(mockUser.getPerson()).thenReturn(person);
+        when(mockPersonAdaptor.openMRSToMRSPerson(person)).thenReturn(mrsPerson);
         when(mockUserService.getUserByUsername(email)).thenReturn(mockUser);
         openMrsUserAdaptor.saveUser(mrsUser);
     }
@@ -176,15 +180,16 @@ public class OpenMRSUserAdaptorTest {
         openMRSUser.setPerson(person);
         openMRSUser.setSystemId(systemId);
         openMRSUser.setId(Integer.parseInt(id));
+        MRSUser expected = createAUser(id, systemId, firstName, middleName, lastName, email, staffType, phoneNumber);
+        MRSPerson expectedMRSPerson = expected.getPerson();
 
         List<org.openmrs.User> openMrsUsers = Arrays.asList(openMRSUser);
         when(mockUserService.getAllUsers()).thenReturn(openMrsUsers);
+        when(mockPersonAdaptor.openMRSToMRSPerson(person)).thenReturn(expectedMRSPerson);
         List<MRSUser> returnedMRSUsers = openMrsUserAdaptor.getAllUsers();
 
         MRSUser actual = returnedMRSUsers.get(0);
         MRSPerson actualMRSPerson = actual.getPerson();
-        MRSUser expected = createAUser(id, systemId, firstName, middleName, lastName, email, staffType, phoneNumber);
-        MRSPerson expectedMRSPerson = expected.getPerson();
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getSystemId(), actual.getSystemId());
         assertEquals(expectedMRSPerson.getAttributes().size(), actualMRSPerson.getAttributes().size());
@@ -286,6 +291,9 @@ public class OpenMRSUserAdaptorTest {
         person.setAttributes(personAttributes("staffType", "10101010", "aa@uu.com"));
         User openMRSUser = new UserBuilder().userId(12).person(person).roles(new HashSet<Role>(asList(new Role("provider")))).systemId("123").username("userName")
                 .build();
+        MRSPerson mrsPerson = new MRSPerson().firstName("givenName").middleName("middleName").lastName("familyName").
+                addAttribute(new Attribute(PERSON_ATTRIBUTE_TYPE_STAFF_TYPE,"staffType")).addAttribute(new Attribute(PERSON_ATTRIBUTE_TYPE_PHONE_NUMBER,"10101010")).addAttribute(new Attribute(PERSON_ATTRIBUTE_TYPE_EMAIL,"aa@uu.com"));
+        when(mockPersonAdaptor.openMRSToMRSPerson(person)).thenReturn(mrsPerson);
         MRSUser mrsUser = openMrsUserAdaptor.openMrsToMrsUser(openMRSUser);
         assertUserAndMRSUser(openMRSUser, mrsUser);
     }

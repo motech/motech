@@ -32,6 +32,8 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
 
     @Autowired
     OpenMRSFacilityAdaptor facilityAdaptor;
+    @Autowired
+    OpenMRSPersonAdaptor personAdaptor;
 
     @Autowired
     PatientHelper patientHelper;
@@ -114,13 +116,17 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
     public MRSPatient getMrsPatient(org.openmrs.Patient savedPatient) {
         final List<Attribute> attributes = project(savedPatient.getAttributes(), Attribute.class,
                 on(PersonAttribute.class).getAttributeType().toString(), on(PersonAttribute.class).getValue());
-        PersonName personName = patientHelper.getFirstName(savedPatient);
+        Set<PersonName> personNames = savedPatient.getNames();
+        PersonName personName = personAdaptor.getFirstName(personNames);
         final PatientIdentifier patientIdentifier = savedPatient.getPatientIdentifier();
         MRSFacility mrsFacility = (patientIdentifier != null) ? facilityAdaptor.convertLocationToFacility(patientIdentifier.getLocation()) : null;
         String motechId = (patientIdentifier != null) ? patientIdentifier.getIdentifier() : null;
         MRSPerson mrsPerson = new MRSPerson().firstName(personName.getGivenName()).middleName(personName.getMiddleName()).lastName(personName.getFamilyName()).
-                preferredName(patientHelper.getPreferredName(savedPatient)).birthDateEstimated(savedPatient.getBirthdateEstimated()).
+                preferredName(personAdaptor.getPreferredName(personNames)).birthDateEstimated(savedPatient.getBirthdateEstimated()).
                 gender(savedPatient.getGender()).address(patientHelper.getAddress(savedPatient)).attributes(attributes).dateOfBirth(savedPatient.getBirthdate());
+        if (savedPatient.getPersonId() != null) {
+            mrsPerson.id(Integer.toString(savedPatient.getPersonId()));
+        }
         return new MRSPatient(String.valueOf(savedPatient.getId()), motechId, mrsPerson, mrsFacility);
     }
 
@@ -138,12 +144,29 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
 
     @Override
     public List<MRSPatient> search(String name, String id) {
-        return sort(convert(patientService.getPatients(name, id, Arrays.asList(patientService.getPatientIdentifierTypeByName(IdentifierType.IDENTIFIER_MOTECH_ID.getName())), false),
+        List<MRSPatient> patients = convert(patientService.getPatients(name, id, Arrays.asList(patientService.getPatientIdentifierTypeByName(IdentifierType.IDENTIFIER_MOTECH_ID.getName())), false),
                 new Converter<Patient, MRSPatient>() {
                     @Override
                     public MRSPatient convert(Patient patient) {
                         return getMrsPatient(patient);
                     }
-                }), on(MRSPatient.class).getPerson().getFirstName());
+                });
+        Collections.sort(patients, new Comparator<MRSPatient>() {
+            @Override
+            public int compare(MRSPatient personToBeCompared1, MRSPatient personToBeCompared2) {
+                if (personToBeCompared1.getPerson().getFirstName() == null && personToBeCompared2.getPerson().getFirstName() == null) {
+                    return personToBeCompared1.getMotechId().compareTo(personToBeCompared2.getMotechId());
+                } else {
+                    if (personToBeCompared1.getPerson().getFirstName() == null) {
+                        return -1;
+                    } else if (personToBeCompared2.getPerson().getFirstName() == null) {
+                        return 1;
+                    } else {
+                        return personToBeCompared1.getPerson().getFirstName().compareTo(personToBeCompared2.getPerson().getFirstName());
+                    }
+                }
+            }
+        });
+        return patients;
     }
 }

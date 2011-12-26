@@ -26,27 +26,6 @@ public class PatientHelperTest {
         patientHelper = new PatientHelper();
     }
 
-    @Test
-    public void shouldGetFirstName() {
-        Person person = new Person();
-        PersonName firstName = new PersonName("firstname", "middlename", "familyname");
-        PersonName preferredName = new PersonName("preferredname", "middlename", "familyname");
-        preferredName.setPreferred(true);
-        person.addName(firstName);
-        person.addName(preferredName);
-        assertThat(patientHelper.getFirstName(new Patient(person)), is(equalTo(firstName)));
-    }
-
-    @Test
-    public void shouldGetPreferredName() {
-        Person person = new Person();
-        PersonName firstName = new PersonName("firstname", "middlename", "familyname");
-        PersonName preferredName = new PersonName("preferredname", "middlename", "familyname");
-        preferredName.setPreferred(true);
-        person.addName(firstName);
-        person.addName(preferredName);
-        assertThat(patientHelper.getPreferredName(new Patient(person)), is(equalTo(preferredName.getGivenName())));
-    }
 
     @Test
     public void shouldGetPatientAddress() {

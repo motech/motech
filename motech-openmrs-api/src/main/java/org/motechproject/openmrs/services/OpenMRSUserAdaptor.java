@@ -28,11 +28,13 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
     private PersonService personService;
     public static final String USER_KEY = "mrsUser";
     public static final String PASSWORD_USER_KEY = "password";
+    private OpenMRSPersonAdaptor openMRSPersonAdaptor;
 
     @Autowired
-    public OpenMRSUserAdaptor(UserService userService, PersonService personService) {
+    public OpenMRSUserAdaptor(UserService userService, PersonService personService, OpenMRSPersonAdaptor openMRSPersonAdaptor) {
         this.userService = userService;
         this.personService = personService;
+        this.openMRSPersonAdaptor = openMRSPersonAdaptor;
     }
 
     @Override
@@ -88,17 +90,12 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         MRSUser mrsUser = new MRSUser();
         if (openMRSUser.getSystemId().equals("admin") || openMRSUser.getSystemId().equals("daemon"))
             return null;
-        Person person = openMRSUser.getPerson();
-        PersonName personName = person.getPersonName();
 
-        MRSPerson mrsPerson = new MRSPerson().firstName(personName.getGivenName()).middleName(personName.getMiddleName())
-                .lastName(personName.getFamilyName()).id(person.getId() != null ? Integer.toString(person.getId()): null);
+        MRSPerson mrsPerson =   openMRSPersonAdaptor.openMRSToMRSPerson(openMRSUser.getPerson());
+
         mrsUser.id(Integer.toString(openMRSUser.getId())).systemId(openMRSUser.getSystemId()).userName(openMRSUser.getUsername()).person(mrsPerson).
                 securityRole(getRoleFromOpenMRSUser(openMRSUser.getRoles()));
 
-        for (PersonAttribute personAttribute : person.getAttributes()) {
-            mrsUser.getPerson().addAttribute(new Attribute(personAttribute.getAttributeType().getName(), personAttribute.getValue()));
-        }
         return mrsUser;
     }
 

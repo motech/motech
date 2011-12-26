@@ -1,16 +1,20 @@
 package org.motechproject.openmrs.services;
 
 
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.motechproject.mrs.model.Attribute;
+import org.motechproject.mrs.model.MRSFacility;
+import org.motechproject.mrs.model.MRSPatient;
 import org.motechproject.mrs.model.MRSPerson;
 import org.openmrs.*;
 import org.openmrs.api.PersonService;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -39,6 +43,27 @@ public class OpenMRSPersonAdaptorTest {
 
     }
 
+     @Test
+    public void shouldGetFirstName() {
+        final PersonName firstName = new PersonName("firstname", "middlename", "familyname");
+        final PersonName preferredName = new PersonName("preferredname", "middlename", "familyname");
+        preferredName.setPreferred(true);
+        assertThat(openMRSPersonAdaptor.getFirstName(new HashSet<PersonName>(){{
+            add(firstName);
+            add(preferredName);
+        }}), is(equalTo(firstName)));
+    }
+
+    @Test
+    public void shouldGetPreferredName() {
+        final PersonName firstName = new PersonName("firstname", "middlename", "familyname");
+        final PersonName preferredName = new PersonName("preferredname", "middlename", "familyname");
+        preferredName.setPreferred(true);
+        MatcherAssert.assertThat(openMRSPersonAdaptor.getPreferredName(new HashSet<PersonName>(){{
+            add(firstName);
+            add(preferredName);
+        }}), Matchers.is(Matchers.equalTo(preferredName.getGivenName())));
+    }
 
     @Test
     public void shouldConvertOpenMRSPersonToMRSPersonWithoutPreferredName() {
@@ -93,6 +118,7 @@ public class OpenMRSPersonAdaptorTest {
         attr.setName(name);
         return attr;
     }
+
 
 
 }

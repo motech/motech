@@ -85,15 +85,26 @@ public class OpenMRSPatientAdaptorIT extends OpenMRSIntegrationTestBase {
     @Test
     @Transactional(readOnly = true)
     public void shouldSearchPatientsByNameOrId() {
-        final String firstName1 = "John";
-        final String middleName1 = "Allen";
-        final String lastName1 = "Raul";
-        final String firstName2 = "Joseph";
-        final String middleName2 = "Ra";
-        final String lastName2 = "Rauak";
-        final String motechId1 = "12356";
-        final String motechId2 = "423546";
+//        Should also handle when name is null in the DB for production records
+        final String motechId1 = "423546";
+        final String firstName1 = "Allan";
+        final String middleName1 = "Ben";
+        final String lastName1 = "Doug";
 
+        final String motechId2 = "12356";
+        final String firstName2 = "Ashley";
+        final String middleName2 = "Brit";
+        final String lastName2 = "Cathey";
+
+        final String motechId3 = "7890";
+        final String firstName3 = null;
+        final String middleName3 = "nullFirstNameCheck1";
+        final String lastName3 = "Douglas";
+
+        final String motechId4 = "7891";
+        final String firstName4 = null;
+        final String middleName4 = "nullFirstNameCheck1";
+        final String lastName4 = "Catherina";
 
         final String address = "a good street in ghana";
         final Date birthDate = new LocalDate(1970, 3, 11).toDate();
@@ -104,7 +115,10 @@ public class OpenMRSPatientAdaptorIT extends OpenMRSIntegrationTestBase {
 
         createPatientInOpenMrs(motechId1, firstName1, middleName1, lastName1, address, birthDate, gender, birthDateEstimated, savedFacility);
         createPatientInOpenMrs(motechId2, firstName2, middleName2, lastName2, address, birthDate, gender, birthDateEstimated, savedFacility);
-        List<MRSPatient> returnedPatients = patientAdaptor.search("Ra", null);
+        createPatientInOpenMrs(motechId3, firstName3, middleName3, lastName3, address, birthDate, gender, birthDateEstimated, savedFacility);
+        createPatientInOpenMrs(motechId4, firstName4, middleName4, lastName4, address, birthDate, gender, birthDateEstimated, savedFacility);
+
+        List<MRSPatient> returnedPatients = patientAdaptor.search("A", null);
 
         new PatientTestUtil().verifyReturnedPatient(firstName1, middleName1, lastName1, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(0), motechId1);
         new PatientTestUtil().verifyReturnedPatient(firstName2, middleName2, lastName2, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(1), motechId2);
@@ -116,11 +130,10 @@ public class OpenMRSPatientAdaptorIT extends OpenMRSIntegrationTestBase {
         assertThat(returnedPatients.size(), is(equalTo(1)));
         new PatientTestUtil().verifyReturnedPatient(firstName1, middleName1, lastName1, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(0), motechId1);
 
-        returnedPatients = patientAdaptor.search("Jo All", null);
-        assertThat(returnedPatients.size(), is(equalTo(1)));
-        new PatientTestUtil().verifyReturnedPatient(firstName1, middleName1, lastName1, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(0), motechId1);
+        returnedPatients = patientAdaptor.search("A", null);
+        assertThat(returnedPatients.size(), is(equalTo(2)));
 
-        returnedPatients = patientAdaptor.search(null, "12356");
+        returnedPatients = patientAdaptor.search(null, "423546");
         assertThat(returnedPatients.size(), is(equalTo(1)));
         new PatientTestUtil().verifyReturnedPatient(firstName1, middleName1, lastName1, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(0), motechId1);
 
@@ -129,11 +142,21 @@ public class OpenMRSPatientAdaptorIT extends OpenMRSIntegrationTestBase {
 
         assertThat(patientAdaptor.search(null, "0000"), is(equalTo(Arrays.<MRSPatient>asList())));
 
-        returnedPatients = patientAdaptor.search("All", "12356");
+        returnedPatients = patientAdaptor.search("Ashley", "12356");
         assertThat(returnedPatients.size(), is(equalTo(1)));
-        new PatientTestUtil().verifyReturnedPatient(firstName1, middleName1, lastName1, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(0), motechId1);
+        new PatientTestUtil().verifyReturnedPatient(firstName2, middleName2, lastName2, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(0), motechId2);
 
-        returnedPatients = patientAdaptor.search("Ra", "123");
+        //Both First Name Are null
+        returnedPatients = patientAdaptor.search("nullFirstNameCheck", null);
+        assertThat(returnedPatients.size(), is(equalTo(2)));
+
+        //One of the first name is null
+        returnedPatients = patientAdaptor.search("Doug", null);
+        assertThat(returnedPatients.size(), is(equalTo(2)));
+        returnedPatients = patientAdaptor.search("Cath", null);
+        assertThat(returnedPatients.size(), is(equalTo(2)));
+
+        returnedPatients = patientAdaptor.search("A", "123");
         assertThat(returnedPatients.size(), is(equalTo(0)));
 
         assertThat(patientAdaptor.search("x", "0000"), is(equalTo(Arrays.<MRSPatient>asList())));
