@@ -15,10 +15,7 @@ import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static ch.lambdaj.Lambda.*;
 
@@ -77,7 +74,7 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
         MRSPerson mrsPerson = new MRSPerson().firstName(personName.getGivenName()).middleName(personName.getMiddleName()).lastName(personName.getFamilyName()).
                 preferredName(patientHelper.getPreferredName(savedPatient)).birthDateEstimated(savedPatient.getBirthdateEstimated()).
                 gender(savedPatient.getGender()).address(patientHelper.getAddress(savedPatient)).attributes(attributes).dateOfBirth(savedPatient.getBirthdate());
-        if(savedPatient.getPersonId() != null){
+        if (savedPatient.getPersonId() != null) {
             mrsPerson.id(Integer.toString(savedPatient.getPersonId()));
         }
         return new MRSPatient(String.valueOf(savedPatient.getId()), motechId, mrsPerson, mrsFacility);
@@ -97,27 +94,29 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
 
     @Override
     public List<MRSPatient> search(String name, String id) {
-        return sort(convert(patientService.getPatients(name, id, Arrays.asList(patientService.getPatientIdentifierTypeByName(IdentifierType.IDENTIFIER_MOTECH_ID.getName())), false),
+        List<MRSPatient> patients = convert(patientService.getPatients(name, id, Arrays.asList(patientService.getPatientIdentifierTypeByName(IdentifierType.IDENTIFIER_MOTECH_ID.getName())), false),
                 new Converter<Patient, MRSPatient>() {
                     @Override
                     public MRSPatient convert(Patient patient) {
                         return getMrsPatient(patient);
                     }
-                }), on(MRSPatient.class).getPerson(), new Comparator<MRSPerson>() {
+                });
+        Collections.sort(patients, new Comparator<MRSPatient>() {
             @Override
-            public int compare(MRSPerson personToBeCompared1, MRSPerson personToBeCompared2) {
-                if (personToBeCompared1.getFirstName() == null && personToBeCompared2.getFirstName() == null) {
-                    return personToBeCompared1.getId().compareTo(personToBeCompared2.getId());
+            public int compare(MRSPatient personToBeCompared1, MRSPatient personToBeCompared2) {
+                if (personToBeCompared1.getPerson().getFirstName() == null && personToBeCompared2.getPerson().getFirstName() == null) {
+                    return personToBeCompared1.getMotechId().compareTo(personToBeCompared2.getMotechId());
                 } else {
-                    if (personToBeCompared1.getFirstName() == null) {
+                    if (personToBeCompared1.getPerson().getFirstName() == null) {
                         return -1;
-                    } else if (personToBeCompared2.getFirstName() == null) {
+                    } else if (personToBeCompared2.getPerson().getFirstName() == null) {
                         return 1;
                     } else {
-                        return personToBeCompared1.getFirstName().compareTo(personToBeCompared2.getFirstName());
+                        return personToBeCompared1.getPerson().getFirstName().compareTo(personToBeCompared2.getPerson().getFirstName());
                     }
                 }
             }
         });
+        return patients;
     }
 }
