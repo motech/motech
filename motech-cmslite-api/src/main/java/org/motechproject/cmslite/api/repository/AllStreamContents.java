@@ -37,7 +37,7 @@ public class AllStreamContents extends BaseContentRepository<StreamContent> {
     @Override
     public boolean isContentAvailable(String language, String name) {
         ViewQuery query = createQuery("by_language_and_name").key(ComplexKey.of(language, name));
-        return db.queryView(query).getTotalRows() > 0;
+        return db.queryView(query).getSize() > 0;
     }
 
     @Override
