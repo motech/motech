@@ -200,7 +200,7 @@ public class VoiceOutboxServiceTest {
 
         voiceOutboxService.removeMessage(messageId);
 
-        verify(outboundVoiceMessageDao, times(1)).remove(message);
+        verify(outboundVoiceMessageDao, times(1)).safeRemove(message);
 
     }
 

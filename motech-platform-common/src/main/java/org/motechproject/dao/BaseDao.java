@@ -52,5 +52,5 @@ public interface BaseDao<T extends MotechAuditableDataObject> {
 
     public List<T> getAll();
 
-
+    public void safeRemove(T entity);
 }

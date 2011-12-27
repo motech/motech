@@ -48,12 +48,10 @@ public class AlertServiceImpl implements AlertService {
     }
 
     private Alert getAlert(String id) {
-        Alert alert = null;
         try {
-            alert = allAlerts.get(id);
-            return alert;
+            return allAlerts.get(id);
         } catch (DocumentNotFoundException e) {
-            logger.error(String.format("No Alert found for the given id: {0}.", id), e);
+            logger.error(String.format("No Alert found for the given id: %s.", id), e);
         }
         return null;
     }
