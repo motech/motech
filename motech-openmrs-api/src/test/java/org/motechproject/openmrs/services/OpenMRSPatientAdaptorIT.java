@@ -2,6 +2,7 @@ package org.motechproject.openmrs.services;
 
 import org.joda.time.LocalDate;
 import org.junit.Test;
+import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.MRSFacility;
 import org.motechproject.mrs.model.MRSPatient;
 import org.motechproject.mrs.model.MRSPerson;
@@ -67,15 +68,16 @@ public class OpenMRSPatientAdaptorIT extends OpenMRSIntegrationTestBase {
         final MRSFacility savedFacility = facilityAdaptor.saveFacility(new MRSFacility("name", "country", "region", "district", "province"));
 
         MRSPerson mrsPerson = new MRSPerson().firstName(first).middleName(middle).lastName(last).dateOfBirth(birthDate).birthDateEstimated(birthDateEstimated)
-                .gender(gender).address(address1);
+                .gender(gender).address(address1).addAttribute(new Attribute("Insured", "true"));
         final MRSPatient patient = new MRSPatient(motechId, mrsPerson, savedFacility);
         final MRSPatient savedPatient = patientAdaptor.savePatient(patient);
 
         final String updatedMiddleName = "new middle name";
         MRSPerson mrsPersonUpdated = new MRSPerson().firstName(first).middleName(updatedMiddleName).lastName(last).dateOfBirth(birthDate).birthDateEstimated(birthDateEstimated)
-                .gender(gender).address("address changed");
+                .gender(gender).address("address changed").addAttribute(new Attribute("Insured", "true")).addAttribute(new Attribute("NHIS Number", "123465"));
 
-        final MRSPatient updatedPatient = new MRSPatient(savedPatient.getId(), "1234567", mrsPersonUpdated, savedFacility);
+        final MRSFacility changedFacility = facilityAdaptor.saveFacility(new MRSFacility("name", "country", "region", null, null));
+        final MRSPatient updatedPatient = new MRSPatient(savedPatient.getId(), "1234567", mrsPersonUpdated, changedFacility);
         final String updatedMotechId = patientAdaptor.updatePatient(updatedPatient);
 
         assertThat(savedPatient.getMotechId(), is(equalTo(updatedMotechId)));

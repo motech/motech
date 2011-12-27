@@ -46,7 +46,7 @@ public class PatientHelper {
         return StringUtils.isNotEmpty(patient.getMotechId()) ? patient.getMotechId() : systemGeneratedId;
     }
 
-    public Person createPersonWithNames(MRSPatient patient) {
+    private Person createPersonWithNames(MRSPatient patient) {
         final Person person = new Person();
         for (PersonName name : getAllNames(patient)) {
             person.addName(name);

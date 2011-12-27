@@ -2,6 +2,7 @@ package org.motechproject.openmrs.services;
 
 import ch.lambdaj.function.convert.Converter;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.MRSFacility;
 import org.motechproject.mrs.model.MRSPatient;
@@ -70,32 +71,55 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
     @Override
     public String updatePatient(MRSPatient patient) {
         Patient openMrsPatient = getOpenmrsPatientByMotechId(patient.getMotechId());
-        openMrsPatient.setNames(patientHelper.createPersonWithNames(patient).getNames());
-        openMrsPatient.setBirthdate(patient.getPerson().getDateOfBirth());
-        openMrsPatient.setBirthdateEstimated(patient.getPerson().getBirthDateEstimated());
-        openMrsPatient.setGender(patient.getPerson().getGender());
 
-        final HashSet<PersonAttribute> personAttributes = new HashSet<PersonAttribute>();
-        for (Attribute attribute : patient.getPerson().getAttributes()) {
-            PersonAttribute personAttribute = openMrsPatient.getAttribute(attribute.name());
-            if (personAttribute == null) {
-                personAttribute = new PersonAttribute(personService.getPersonAttributeTypeByName(attribute.name()), attribute.value());
+        MRSPerson person = patient.getPerson();
+        if (StringUtils.isNotEmpty(person.getPreferredName())) {
+            if (openMrsPatient.getNames().size() == 2) {
+                for (PersonName name : openMrsPatient.getNames()) {
+                    if (name.isPreferred()) {
+                        name.setGivenName(person.getPreferredName());
+                    } else {
+                        name.setGivenName(person.getFirstName());
+                    }
+                    name.setMiddleName(person.getMiddleName());
+                    name.setFamilyName(person.getLastName());
+                }
             } else {
-                personAttribute.setValue(attribute.value());
+                PersonName personName = openMrsPatient.getPersonName();
+                personName.setGivenName(person.getFirstName());
+                personName.setMiddleName(person.getMiddleName());
+                personName.setFamilyName(person.getLastName());
+                PersonName preferredName = new PersonName(person.getPreferredName(), person.getMiddleName(), person.getLastName());
+                preferredName.setPreferred(true);
+                openMrsPatient.addName(preferredName);
             }
-            personAttributes.add(personAttribute);
+        } else {
+            PersonName personName = openMrsPatient.getPersonName();
+            personName.setGivenName(person.getFirstName());
+            personName.setMiddleName(person.getMiddleName());
+            personName.setFamilyName(person.getLastName());
         }
 
-        openMrsPatient.setAttributes(personAttributes);
+        openMrsPatient.setBirthdate(person.getDateOfBirth());
+        openMrsPatient.setBirthdateEstimated(person.getBirthDateEstimated());
+        openMrsPatient.setGender(person.getGender());
+
+        for (Attribute attribute : person.getAttributes()) {
+            PersonAttribute personAttribute = openMrsPatient.getAttribute(attribute.name());
+            if (personAttribute != null) {
+                openMrsPatient.removeAttribute(personAttribute);
+            }
+            openMrsPatient.addAttribute(new PersonAttribute(personService.getPersonAttributeTypeByName(attribute.name()), attribute.value()));
+        }
         Set<PersonAddress> addresses = openMrsPatient.getAddresses();
         if (!addresses.isEmpty()) {
             PersonAddress address = addresses.iterator().next();
-            address.setAddress1(patient.getPerson().getAddress());
+            address.setAddress1(person.getAddress());
         } else {
-            addresses = new HashSet<PersonAddress>();
-            final String address = patient.getPerson().getAddress();
-            new PersonAddress().setAddress1(address);
-            openMrsPatient.setAddresses(addresses);
+            final String address = person.getAddress();
+            PersonAddress personAddress = new PersonAddress();
+            personAddress.setAddress1(address);
+            openMrsPatient.addAddress(personAddress);
         }
         Location location = openMrsPatient.getPatientIdentifier().getLocation();
         location.setId(Integer.parseInt(patient.getFacility().getId()));

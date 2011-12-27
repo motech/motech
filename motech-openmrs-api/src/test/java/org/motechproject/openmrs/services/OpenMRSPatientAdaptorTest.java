@@ -253,7 +253,7 @@ public class OpenMRSPatientAdaptorTest {
         Date dateOfBirth = new Date();
         Boolean estimatedDate = false;
         Boolean insured = false;
-        String nhisNumber = "";
+        String nhisNumber = "1234";
         String gender = "male";
         String address = "address";
         String facilityName = "facility";
@@ -277,13 +277,13 @@ public class OpenMRSPatientAdaptorTest {
 
         final org.openmrs.Patient mockPatient = patientTestUtil.setUpOpenMRSPatient(new Person(), "diffFirst", "diffMiddle", "diffLast", "diffAddress", new Date(2001, 10, 10), !estimatedDate, "female", mrsFacilityOld, motechId);
 
-        final PersonAttributeType nhisAttributeType = new PersonAttributeType();
+        final PersonAttributeType nhisAttributeType = new PersonAttributeType(1);
         nhisAttributeType.setName(nhisNumberAttribute);
-        final PersonAttributeType insuredAttributeType = new PersonAttributeType();
+        final PersonAttributeType insuredAttributeType = new PersonAttributeType(2);
         insuredAttributeType.setName(insuredAttribute);
         when(mockPersonService.getPersonAttributeTypeByName(nhisNumberAttribute)).thenReturn(nhisAttributeType);
         when(mockPersonService.getPersonAttributeTypeByName(insuredAttribute)).thenReturn(insuredAttributeType);
-        final PersonAttributeType expirationDateAttributeType = new PersonAttributeType();
+        final PersonAttributeType expirationDateAttributeType = new PersonAttributeType(3);
         expirationDateAttributeType.setName(nhisExpirationDateAttribute);
         when(mockPersonService.getPersonAttributeTypeByName(nhisExpirationDateAttribute)).thenReturn(expirationDateAttributeType);
         when(mockPatientService.getPatient(Integer.valueOf(mrsPatient.getMotechId()))).thenReturn(mockPatient);
