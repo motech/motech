@@ -271,7 +271,16 @@ public class OpenMRSPatientAdaptorTest {
                 .gender(gender).address(address).dateOfBirth(dateOfBirth).birthDateEstimated(estimatedDate).preferredName(preferredName)
                 .addAttribute(new Attribute(nhisNumberAttribute, nhisNumber)).addAttribute(new Attribute(nhisExpirationDateAttribute,
                         nhisExpiryDateString)).addAttribute(new Attribute(insuredAttribute, String.valueOf(insured)));
-        final MRSFacility mrsFacility = new MRSFacility("60", facilityName, facilityCountry, facilityRegion, facilityDistrict, facilitySubDistrict);
+        String newFacilityId = "60";
+        final MRSFacility mrsFacility = new MRSFacility(newFacilityId);
+        Location location = new Location();
+        location.setName(facilityName);
+        location.setAddress6(facilityRegion);
+        location.setStateProvince(facilitySubDistrict);
+        location.setCountyDistrict(facilityDistrict);
+        location.setCountry(facilityCountry);
+        location.setName(facilityName);
+        when(mockFacilityAdapter.getLocation(newFacilityId)).thenReturn(location);
         final MRSFacility mrsFacilityOld = new MRSFacility("61", facilityName + "Old", facilityCountry + "Old", facilityRegion + "Old", facilityDistrict + "Old", facilitySubDistrict + "Old");
         MRSPatient mrsPatient = new MRSPatient(motechId, person, mrsFacility);
 

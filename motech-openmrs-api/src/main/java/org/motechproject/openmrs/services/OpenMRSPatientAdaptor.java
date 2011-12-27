@@ -121,13 +121,7 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
             personAddress.setAddress1(address);
             openMrsPatient.addAddress(personAddress);
         }
-        Location location = openMrsPatient.getPatientIdentifier().getLocation();
-        location.setId(Integer.parseInt(patient.getFacility().getId()));
-        location.setCountry(patient.getFacility().getCountry());
-        location.setAddress6(patient.getFacility().getRegion());
-        location.setCountyDistrict(patient.getFacility().getCountyDistrict());
-        location.setStateProvince(patient.getFacility().getStateProvince());
-        location.setName(patient.getFacility().getName());
+        openMrsPatient.getPatientIdentifier().setLocation(facilityAdaptor.getLocation(patient.getFacility().getId()));
 
         final Patient savedPatient = patientService.savePatient(openMrsPatient);
         if (savedPatient != null) {
