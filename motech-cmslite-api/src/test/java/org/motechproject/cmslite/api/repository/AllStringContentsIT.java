@@ -85,8 +85,8 @@ public class AllStringContentsIT {
     }
 
     @Test
-    public void shouldReturnFalseIfStringContentNotAvailable() {
+    public void shouldReturnFalseIfStringContentNotAvailable() throws CMSLiteException {
+        allStringContents.addContent(stringContent);
         assertFalse(allStringContents.isContentAvailable("en", "unknownContent"));
     }
-
 }

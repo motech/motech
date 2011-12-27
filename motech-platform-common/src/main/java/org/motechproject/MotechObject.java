@@ -1,5 +1,6 @@
 package org.motechproject;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +34,14 @@ public class MotechObject {
     protected void assertArgumentNotNull(String objectName, Object object) {
         if (object == null) {
             String message = String.format("%s cannot be null", objectName);
+            logError(message);
+            throw new IllegalArgumentException(message);
+        }
+    }
+
+    protected void assertArgumentNotEmpty(String objectName, String argument) {
+        if (StringUtils.isEmpty(argument)) {
+            String message = String.format("%s cannot be empty", objectName);
             logError(message);
             throw new IllegalArgumentException(message);
         }

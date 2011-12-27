@@ -59,91 +59,48 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
 
     @Override
     public OutboundVoiceMessage getNextPendingMessage(String partyId) {
-
-        log.info("Get next pending message for the party ID: " + partyId);
-
-        if (partyId == null || partyId.isEmpty()) {
-            throw new IllegalArgumentException("Party ID can not be null or empty.");
-        }
-
-        OutboundVoiceMessage nextPendingVoiceMessage = null;
+        assertArgumentNotEmpty("PartyId", partyId);
+        logInfo("Get next pending message for the party ID: %s", partyId);
         List<OutboundVoiceMessage> pendingVoiceMessages = outboundVoiceMessageDao.getPendingMessages(partyId);
-
-        if (pendingVoiceMessages.size() > 0) {
-
-            nextPendingVoiceMessage = pendingVoiceMessages.get(0);
-        }
-
-        return nextPendingVoiceMessage;
+        return pendingVoiceMessages.size() > 0 ? pendingVoiceMessages.get(0) : null;
     }
 
     @Override
     public OutboundVoiceMessage getNextSavedMessage(String partyId) {
-
-        log.info("Get next saved message for the party ID: " + partyId);
-
-        if (partyId == null || partyId.isEmpty()) {
-            throw new IllegalArgumentException("Party ID can not be null or empty.");
-        }
-
-        OutboundVoiceMessage nextSavedVoiceMessage = null;
+        assertArgumentNotEmpty("PartyID", partyId);
+        logInfo(String.format("Get next saved message for the party ID: %s", partyId));
         List<OutboundVoiceMessage> savedVoiceMessages = outboundVoiceMessageDao.getSavedMessages(partyId);
-
-        if (savedVoiceMessages.size() > 0) {
-
-            nextSavedVoiceMessage = savedVoiceMessages.get(0);
-        }
-
-        return nextSavedVoiceMessage;
+        return savedVoiceMessages.size() > 0 ? savedVoiceMessages.get(0) : null;
     }
 
     @Override
     public OutboundVoiceMessage getMessageById(String outboundVoiceMessageId) {
-
-        log.info("Get message by ID: " + outboundVoiceMessageId);
-
-        if (outboundVoiceMessageId == null || outboundVoiceMessageId.isEmpty()) {
-            throw new IllegalArgumentException("outboundVoiceMessageId can not be null or empty.");
-        }
+        assertArgumentNotEmpty("OutboundVoiceMessageId", outboundVoiceMessageId);
+        logInfo("Get message by ID: %s", outboundVoiceMessageId);
         return outboundVoiceMessageDao.get(outboundVoiceMessageId);
     }
 
     @Override
     public void removeMessage(String outboundVoiceMessageId) {
-
-        log.info("Remove message ID: " + outboundVoiceMessageId);
-
-        if (outboundVoiceMessageId == null || outboundVoiceMessageId.isEmpty()) {
-            throw new IllegalArgumentException("outboundVoiceMessageId can not be null or empty.");
-        }
+        assertArgumentNotEmpty("OutboundVoiceMessageId", outboundVoiceMessageId);
+        logInfo("Remove message ID: %s", outboundVoiceMessageId);
         OutboundVoiceMessage outboundVoiceMessage = getMessageById(outboundVoiceMessageId);
-
-        outboundVoiceMessageDao.remove(outboundVoiceMessage);
+        outboundVoiceMessageDao.safeRemove(outboundVoiceMessage);
     }
 
     @Override
     public void setMessageStatus(String outboundVoiceMessageId, OutboundVoiceMessageStatus status) {
-
-        log.info("Set status: " + status + " to the message ID: " + outboundVoiceMessageId);
-
-        if (outboundVoiceMessageId == null || outboundVoiceMessageId.isEmpty()) {
-            throw new IllegalArgumentException("outboundVoiceMessageId can not be null or empty.");
-        }
-
-        OutboundVoiceMessage outboundVoiceMessage = getMessageById(outboundVoiceMessageId);
+        assertArgumentNotEmpty("OutboundVoiceMessageId", outboundVoiceMessageId);
+        logInfo("Set status: %s to the message ID: %s", status, outboundVoiceMessageId);
+        OutboundVoiceMessage outboundVoiceMessage = outboundVoiceMessageDao.get(outboundVoiceMessageId);
         outboundVoiceMessage.setStatus(status);
-
         outboundVoiceMessageDao.update(outboundVoiceMessage);
     }
 
     @Override
     public void saveMessage(String outboundVoiceMessageId) {
-
-        log.info("Save in the outbox message ID: " + outboundVoiceMessageId);
-
-        if (outboundVoiceMessageId == null || outboundVoiceMessageId.isEmpty()) {
-            throw new IllegalArgumentException("outboundVoiceMessageId can not be null or empty.");
-        }
+        assertArgumentNotEmpty("OutboundVoiceMessageId", outboundVoiceMessageId);
+        logInfo("Save in the outbox message ID: %s", outboundVoiceMessageId);
 
         OutboundVoiceMessage outboundVoiceMessage = getMessageById(outboundVoiceMessageId);
         outboundVoiceMessage.setStatus(OutboundVoiceMessageStatus.SAVED);
@@ -151,19 +108,13 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, numDayskeepSavedMessages);
         outboundVoiceMessage.setExpirationDate(calendar.getTime());
-
         outboundVoiceMessageDao.update(outboundVoiceMessage);
     }
 
     @Override
     public int getNumberPendingMessages(String partyId) {
-
-        log.info("Get number of pending messages for the party ID: " + partyId);
-
-        if (partyId == null || partyId.isEmpty()) {
-            throw new IllegalArgumentException("Party ID can not be null or empty.");
-        }
-
+        logInfo("Get number of pending messages for the party ID: %s", partyId);
+        assertArgumentNotEmpty("PartyID", partyId);
         return outboundVoiceMessageDao.getPendingMessagesCount(partyId);
     }
 
