@@ -37,7 +37,7 @@ public class OpenMRSRelationshipAdaptor {
         return personService.saveRelationship(motherRelationship);
     }
 
-    private Relationship getMotherRelationship(String childId) {
+    public Relationship getMotherRelationship(String childId) {
         RelationshipType parentChildType = getRelationshipTypeByName(PARENT_CHILD_RELATIONSHIP);
         List<Relationship> parentRelations
                 = personService.getRelationships(null, personService.getPerson(Integer.valueOf(childId)), parentChildType);
