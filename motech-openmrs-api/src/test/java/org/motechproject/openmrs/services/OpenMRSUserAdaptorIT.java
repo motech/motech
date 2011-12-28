@@ -9,6 +9,7 @@ import org.motechproject.mrs.services.MRSUserAdaptor;
 import org.motechproject.openmrs.OpenMRSIntegrationTestBase;
 import org.openmrs.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
@@ -24,6 +25,7 @@ public class OpenMRSUserAdaptorIT extends OpenMRSIntegrationTestBase {
     UserService userService;
 
     @Test
+    @Transactional(readOnly = true)
     public void shouldSaveUser() throws UserAlreadyExistsException {
         MRSUser mrsUser = new MRSUser();
         MRSPerson person = new MRSPerson();
@@ -39,14 +41,6 @@ public class OpenMRSUserAdaptorIT extends OpenMRSIntegrationTestBase {
                 .addAttribute(new Attribute("Email", email)).addAttribute(new Attribute("Phone Number", phoneNumber));
         mrsUser.person(person).userName(email).securityRole(securityRole);
         final Map userData = mrsUserAdaptor.saveUser(mrsUser);
-
-        super.authorizeAndRollback(new DirtyData() {
-            @Override
-            public void rollback() {
-                MRSUser mrsUser = (MRSUser) userData.get(OpenMRSUserAdaptor.USER_KEY);
-                userService.purgeUser(userService.getUser(Integer.parseInt(mrsUser.getId())));
-            }
-        });
 
         assertEquals(2, userData.size());
         final MRSUser user = (MRSUser) userData.get(OpenMRSUserAdaptor.USER_KEY);
