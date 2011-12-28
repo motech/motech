@@ -52,17 +52,4 @@ public class OpenMRSIntegrationTestBase {
     public void tearDown() {
         openMRSSession.close();
     }
-
-
-    protected void authorizeAndRollback(DirtyData dirtyData) {
-        openMRSSession.open();
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("openmrs");
-        org.openmrs.api.context.Context.authenticate(resourceBundle.getString("openmrs.admin.username"), resourceBundle.getString("openmrs.admin.password"));
-        dirtyData.rollback();
-        openMRSSession.close();
-    }
-
-    protected interface DirtyData {
-        void rollback();
-    }
 }
