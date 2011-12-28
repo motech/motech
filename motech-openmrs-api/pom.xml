@@ -14,13 +14,6 @@
         <spring.version>3.0.5.RELEASE</spring.version>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>openmrs-repo</id>
-            <url>http://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
