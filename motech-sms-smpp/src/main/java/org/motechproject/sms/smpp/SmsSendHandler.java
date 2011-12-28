@@ -6,13 +6,17 @@ import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.sms.api.SmsEventHandler;
 import org.motechproject.sms.api.constants.EventKeys;
 import org.motechproject.sms.api.constants.EventSubject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class SmsSendHandler implements SmsEventHandler {
 
 	private ManagedSmslibService service;
 
+    @Autowired
 	public SmsSendHandler(ManagedSmslibService service) {
 		this.service = service;
 	}
