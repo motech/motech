@@ -45,10 +45,11 @@ public class SmsServiceImpl implements SmsService {
 
 	private void raiseSendSmsEvent(final List<String> recipients, final String message, final DateTime deliveryTime) {
 		log.info(String.format("Putting event on relay to send message %s to number %s", message, recipients));
-		eventRelay.sendEventMessage(new MotechEvent(EventSubject.SEND_SMS, new HashMap<String, Object>() {{
-			put(EventKeys.RECIPIENTS, recipients);
-			put(EventKeys.MESSAGE, message);
-			put(EventKeys.DELIVERY_TIME, deliveryTime);
-		}}));
+		HashMap<String, Object> parameters = new HashMap<String, Object>();
+		parameters.put(EventKeys.RECIPIENTS, recipients);
+		parameters.put(EventKeys.MESSAGE, message);
+		parameters.put(EventKeys.DELIVERY_TIME, deliveryTime);
+
+		eventRelay.sendEventMessage(new MotechEvent(EventSubject.SEND_SMS, parameters));
 	}
 }
