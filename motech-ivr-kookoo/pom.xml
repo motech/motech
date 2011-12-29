@@ -13,13 +13,6 @@
     <description>KooKoo IVR Provider</description>
     <version>0.6-SNAPSHOT</version>
 
-    <repositories>
-        <repository>
-            <id>spring-s3</id>
-            <url>http://maven.springframework.org/snapshot</url>
-        </repository>
-    </repositories>
-
     <properties>
         <spring.version>3.0.5.RELEASE</spring.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

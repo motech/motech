@@ -64,8 +64,8 @@ AUTHORISED_FILES=/css/style.css,/index.htm,/inject_mo.htm,/favicon.ico,/images/l
 INJECT_MO_PAGE=/inject_mo.htm
 
 # Account details. Comma seperate. SystemID and Password provided in Binds will be validated against these credentials.
-SYSTEM_IDS=smppclient1,smppclient2
-PASSWORDS=password,password
+SYSTEM_IDS=smppclient1,smppclient2,pavel
+PASSWORDS=password,password,wpsd
 OUTBIND_ENABLED=false
 OUTBIND_ESME_IP_ADDRESS=127.0.0.1
 OUTBIND_ESME_PORT=2776

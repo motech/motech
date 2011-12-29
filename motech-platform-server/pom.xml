@@ -10,13 +10,6 @@
     <packaging>war</packaging>
     <name>Motech Platform Server</name>
 
-    <repositories>
-        <repository>
-            <id>jboss-repo</id>
-            <url>https://repository.jboss.org/nexus/content/groups/public/</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>

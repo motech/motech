@@ -11,8 +11,10 @@ import org.openmrs.RelationshipType;
 import org.openmrs.api.PersonService;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
+import static junit.framework.Assert.assertNull;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -96,5 +98,28 @@ public class OpenMRSRelationshipAdaptorTest {
         openMRSRelationshipAdaptor.voidRelationship(childId);
 
         verify(mockPersonService).saveRelationship(voidedRelationship);
+    }
+    
+    @Test
+    public void shouldGetParentIdIfFound() {
+        String childId = "12";
+        Person child = mock(Person.class);
+        RelationshipType motherChildRelationshipType = mock(RelationshipType.class);
+        when(mockPersonService.getPerson(Integer.valueOf(childId))).thenReturn(child);
+        when(mockPersonService.getRelationshipTypeByName(OpenMRSRelationshipAdaptor.PARENT_CHILD_RELATIONSHIP)).thenReturn(motherChildRelationshipType);
+        openMRSRelationshipAdaptor.getMotherRelationship(childId);
+        
+        verify(mockPersonService).getRelationships(null, child, motherChildRelationshipType);
+    }
+
+    @Test
+    public void shouldReturnNullIfNoRelationshipIsFound() {
+        String childId = "12";
+        Person child = mock(Person.class);
+        RelationshipType motherChildRelationshipType = mock(RelationshipType.class);
+        when(mockPersonService.getPerson(Integer.valueOf(childId))).thenReturn(child);
+        when(mockPersonService.getRelationshipTypeByName(OpenMRSRelationshipAdaptor.PARENT_CHILD_RELATIONSHIP)).thenReturn(motherChildRelationshipType);
+        when(mockPersonService.getRelationships(null, child, motherChildRelationshipType)).thenReturn(new ArrayList<Relationship>());
+        assertNull(openMRSRelationshipAdaptor.getMotherRelationship(childId));
     }
 }
