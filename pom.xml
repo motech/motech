@@ -298,11 +298,6 @@
         </license>
     </licenses>
 
-    <issueManagement>
-        <system>Jira</system>
-        <url>http://pmo.applab.org/</url>
-    </issueManagement>
-
     <ciManagement>
         <system>hudson</system>
         <url>http://ci.motechproject.org/</url>
