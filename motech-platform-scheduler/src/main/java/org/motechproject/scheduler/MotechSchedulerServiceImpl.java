@@ -220,7 +220,7 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         assertArgumentNotNull(repeatingSchedulableJob);
         JobId jobId = new JobId(repeatingSchedulableJob.getMotechEvent());
         try {
-            unscheduleJob(jobId.value());
+            unscheduleJob(jobId.repeatingId());
         } catch (MotechSchedulerException ignored) {
         }
         scheduleRepeatingJob(repeatingSchedulableJob);
