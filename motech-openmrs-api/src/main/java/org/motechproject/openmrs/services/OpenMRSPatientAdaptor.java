@@ -61,7 +61,7 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
 
     @Override
     public MRSPatient savePatient(MRSPatient patient) {
-        final org.openmrs.Patient openMRSPatient = patientHelper.buildOpenMrsPatient(patient, userService.generateSystemId(),
+        final org.openmrs.Patient openMRSPatient = patientHelper.buildOpenMrsPatient(patient,
                 getPatientIdentifierType(IdentifierType.IDENTIFIER_MOTECH_ID),
                 facilityAdaptor.getLocation(patient.getFacility().getId()), getAllPersonAttributeTypes());
 

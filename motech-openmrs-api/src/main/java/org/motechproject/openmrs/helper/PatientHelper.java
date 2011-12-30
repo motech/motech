@@ -14,7 +14,6 @@ import java.util.Set;
 
 import static ch.lambdaj.Lambda.*;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
 
 @Component
 public class PatientHelper {
@@ -28,22 +27,18 @@ public class PatientHelper {
         return address;
     }
 
-    public Patient buildOpenMrsPatient(MRSPatient patient, String systemGeneratedId,
+    public Patient buildOpenMrsPatient(MRSPatient patient,
                                        PatientIdentifierType patientIdentifierType, Location location,
                                        List<PersonAttributeType> allPersonAttributeTypes) {
 
         final Patient openMRSPatient = new Patient(createPersonWithNames(patient));
-        openMRSPatient.addIdentifier(new PatientIdentifier(getMotechId(patient, systemGeneratedId), patientIdentifierType, location));
+        openMRSPatient.addIdentifier(new PatientIdentifier(patient.getMotechId(), patientIdentifierType, location));
         openMRSPatient.setGender(patient.getPerson().getGender());
         openMRSPatient.setBirthdate(patient.getPerson().getDateOfBirth());
         openMRSPatient.setBirthdateEstimated(patient.getPerson().getBirthDateEstimated());
         setPatientAddress(openMRSPatient, patient.getPerson().getAddress());
         setPersonAttributes(patient, openMRSPatient, allPersonAttributeTypes);
         return openMRSPatient;
-    }
-
-    private String getMotechId(MRSPatient patient, String systemGeneratedId) {
-        return StringUtils.isNotEmpty(patient.getMotechId()) ? patient.getMotechId() : systemGeneratedId;
     }
 
     private Person createPersonWithNames(MRSPatient patient) {

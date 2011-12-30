@@ -63,7 +63,7 @@ public class PatientHelperTest {
         PersonAttributeType attributeType2 = new PersonAttributeType() {{ setName("name2"); setPersonAttributeTypeId(1001);}};
         final List<PersonAttributeType> allPersonAttributeTypes = Arrays.asList(attributeType1, attributeType2);
 
-        Patient returnedPatient = patientHelper.buildOpenMrsPatient(patient1, motechId, patientIndentifierType, location, allPersonAttributeTypes);
+        Patient returnedPatient = patientHelper.buildOpenMrsPatient(patient1, patientIndentifierType, location, allPersonAttributeTypes);
 
         assertThat(returnedPatient.getPatientIdentifier().getIdentifier(), is(equalTo(patientIdFromGenerator)));
         assertThat(returnedPatient.getPatientIdentifier().getIdentifierType(), is(equalTo(patientIndentifierType)));
@@ -74,10 +74,12 @@ public class PatientHelperTest {
         assertThat(returnedPatient.getPersonAddress().getAddress1(), is(equalTo(address)));
         assertThat(returnedPatient.getAttributes().size(), is(1));
         assertThat(returnedPatient.getAttribute(attributeName1).getValue(), is(equalTo(attributeValue1)));
-        MRSPatient patient2 = new MRSPatient("", mrsPerson,facility);
-        returnedPatient = patientHelper.buildOpenMrsPatient(patient2, motechId, patientIndentifierType, location, allPersonAttributeTypes);
+        String motechId1 = "";
+        MRSPatient patient2 = new MRSPatient(motechId1, mrsPerson,facility);
 
-        assertThat(returnedPatient.getPatientIdentifier().getIdentifier(), is(equalTo(motechId)));
+        returnedPatient = patientHelper.buildOpenMrsPatient(patient2, patientIndentifierType, location, allPersonAttributeTypes);
+
+        assertThat(returnedPatient.getPatientIdentifier().getIdentifier(), is(equalTo(motechId1)));
 
     }
 }
