@@ -3,6 +3,7 @@ package org.motechproject.util;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.LocalDate;
+import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.Time;
 
 import java.util.Date;
@@ -41,6 +42,19 @@ public class DateUtil {
     public static LocalDate newDate(Date date) {
         if (date == null) return null;
         return new LocalDate(date.getTime(), DateTimeSourceUtil.SourceInstance.timeZone());
+    }
+
+    public static int daysPast(LocalDate date, DayOfWeek dayOfWeek) {
+        int count = 0;
+        while (date.getDayOfWeek() != dayOfWeek.getValue()) {
+            date = date.minusDays(1);
+            count++;
+        }
+        return count;
+    }
+
+    public static boolean isOnOrBefore(LocalDate firstDate, LocalDate secondDate) {
+        return firstDate.equals(secondDate) || firstDate.isBefore(secondDate);
     }
 
     public static int daysToCalendarWeekEnd(LocalDate date, int calendarWeekStartDay) {
