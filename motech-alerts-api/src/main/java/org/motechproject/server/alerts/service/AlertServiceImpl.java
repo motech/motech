@@ -34,20 +34,24 @@ public class AlertServiceImpl implements AlertService {
 
     @Override
     public void changeStatus(String id, AlertStatus status) {
-        Alert alert = getAlert(id);
+        Alert alert = get(id);
         alert.setStatus(status);
         allAlerts.update(alert);
     }
 
     @Override
     public void setData(String id, String key, String value) {
-        Alert alert = getAlert(id);
+        Alert alert = get(id);
         final Map<String, String> data = alert.getData();
         data.put(key, value);
         allAlerts.update(alert);
     }
 
-    private Alert getAlert(String id) {
+    /**
+     * @param id
+     * @return  Alert object if found, otherwise returns null.
+     */
+    public Alert get(String id) {
         try {
             return allAlerts.get(id);
         } catch (DocumentNotFoundException e) {
@@ -55,4 +59,5 @@ public class AlertServiceImpl implements AlertService {
         }
         return null;
     }
+
 }
