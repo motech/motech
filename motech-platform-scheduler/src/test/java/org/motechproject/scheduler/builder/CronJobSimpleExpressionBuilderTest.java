@@ -5,11 +5,14 @@ import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.motechproject.model.Time;
 import org.motechproject.util.DateUtil;
-import org.quartz.SimpleTrigger;
+import org.quartz.SimpleScheduleBuilder;
+import org.quartz.Trigger;
 
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
+import static org.quartz.TriggerBuilder.newTrigger;
+import static org.quartz.TriggerKey.triggerKey;
 
 public class CronJobSimpleExpressionBuilderTest {
     @Test
@@ -26,7 +29,12 @@ public class CronJobSimpleExpressionBuilderTest {
 
     @Test
     public void shouldScheduleJobEverySevenDays() {
-        SimpleTrigger trigger = new SimpleTrigger("triggerName", "groupName", DateUtil.today().toDate(), null, SimpleTrigger.REPEAT_INDEFINITELY, Duration.standardDays(7).getMillis());
+	    Trigger trigger = newTrigger()
+			    .withIdentity(triggerKey("triggerName", "groupName"))
+			    .startAt(DateUtil.today().toDate())
+			    .endAt(null)
+			    .withSchedule(SimpleScheduleBuilder.simpleSchedule().repeatForever().withIntervalInMilliseconds(Duration.standardDays(7).getMillis()))
+			    .build();
         LocalDate today = DateUtil.today();
         Date yesterday = today.plusDays(-1).toDate();
 
