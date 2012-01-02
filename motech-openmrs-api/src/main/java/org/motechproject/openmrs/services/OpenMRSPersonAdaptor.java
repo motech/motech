@@ -1,29 +1,26 @@
 package org.motechproject.openmrs.services;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.motechproject.mrs.model.Attribute;
-import org.motechproject.mrs.model.MRSPatient;
 import org.motechproject.mrs.model.MRSPerson;
-import org.openmrs.*;
+import org.openmrs.Person;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonName;
 import org.openmrs.api.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static ch.lambdaj.Lambda.filter;
-import static ch.lambdaj.Lambda.having;
-import static ch.lambdaj.Lambda.on;
+import static ch.lambdaj.Lambda.*;
 import static org.hamcrest.Matchers.is;
 
 @Component
 public class OpenMRSPersonAdaptor {
 
     private PersonService personService;
+
 
     @Autowired
     public OpenMRSPersonAdaptor(PersonService personService) {
@@ -38,7 +35,7 @@ public class OpenMRSPersonAdaptor {
         MRSPerson mrsPerson = new MRSPerson().firstName(givenName).middleName(personName.getMiddleName())
                 .lastName(personName.getFamilyName()).address(address).
                         dateOfBirth(person.getBirthdate()).birthDateEstimated(person.getBirthdateEstimated()).gender(person.getGender()).
-                        id(Integer.toString(person.getId()));
+                        id(Integer.toString(person.getId())).dead(person.isDead());
         if (personName.getPreferred()) {
             mrsPerson.preferredName(givenName);
         }

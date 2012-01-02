@@ -2,7 +2,6 @@ package org.motechproject.openmrs;
 
 
 import org.apache.log4j.Logger;
-import org.openmrs.Patient;
 import org.openmrs.api.*;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.util.DatabaseUpdateException;
@@ -10,12 +9,12 @@ import org.openmrs.util.InputRequiredException;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.Properties;
 
 import static java.lang.String.format;
-import static org.openmrs.api.context.Context.*;
-import static org.openmrs.util.OpenmrsConstants.*;
+import static org.openmrs.api.context.Context.startup;
+import static org.openmrs.util.OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY;
+import static org.openmrs.util.OpenmrsConstants.AUTO_UPDATE_DATABASE_RUNTIME_PROPERTY;
 
 public class Context {
     Logger logger = Logger.getLogger(Context.class);

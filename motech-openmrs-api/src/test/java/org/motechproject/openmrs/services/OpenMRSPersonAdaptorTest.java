@@ -3,18 +3,16 @@ package org.motechproject.openmrs.services;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.mrs.model.Attribute;
-import org.motechproject.mrs.model.MRSFacility;
-import org.motechproject.mrs.model.MRSPatient;
 import org.motechproject.mrs.model.MRSPerson;
 import org.openmrs.*;
 import org.openmrs.api.PersonService;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -76,6 +74,7 @@ public class OpenMRSPersonAdaptorTest {
         person.addName(new PersonName("FirstName", "MiddleName", "FamilyName"));
         person.setBirthdateEstimated(true);
         person.addAddress(personAddress);
+        person.setDead(true);
 
         String email = "email";
         String phoneNo = "123423423";
@@ -95,6 +94,7 @@ public class OpenMRSPersonAdaptorTest {
         assertThat(mrsPerson.attrValue(PERSON_ATTRIBUTE_TYPE_EMAIL),is(equalTo(email)));
         assertThat(mrsPerson.attrValue(PERSON_ATTRIBUTE_TYPE_PHONE_NUMBER),is(equalTo(phoneNo)));
         assertThat(mrsPerson.attrValue(PERSON_ATTRIBUTE_TYPE_STAFF_TYPE),is(equalTo(staffType)));
+        assertThat(mrsPerson.isDead(), is(equalTo(true)));
 
     }
 

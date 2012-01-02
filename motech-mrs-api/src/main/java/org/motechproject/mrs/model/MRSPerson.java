@@ -22,6 +22,7 @@ public class MRSPerson {
     private Date dateOfBirth;
     private Boolean birthDateEstimated;
     private String gender;
+    private Boolean dead;
     private List<Attribute> attributes = new ArrayList<Attribute>();
 
     public MRSPerson preferredName(String preferredName) {
@@ -77,6 +78,11 @@ public class MRSPerson {
         return this;
     }
 
+    public MRSPerson dead(Boolean dead){
+        this.dead = dead;
+        return this;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -126,5 +132,9 @@ public class MRSPerson {
 
     public Boolean getBirthDateEstimated() {
         return birthDateEstimated;
+    }
+
+    public Boolean isDead() {
+        return dead;
     }
 }
