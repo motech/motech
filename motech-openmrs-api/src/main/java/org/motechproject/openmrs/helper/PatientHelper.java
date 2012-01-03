@@ -10,23 +10,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static ch.lambdaj.Lambda.*;
 import static org.hamcrest.Matchers.equalTo;
 
 @Component
 public class PatientHelper {
-
-    public String getAddress(Patient patient) {
-        String address = null;
-        final Set<PersonAddress> addresses = patient.getAddresses();
-        if (!addresses.isEmpty()) {
-            address = addresses.iterator().next().getAddress1();
-        }
-        return address;
-    }
-
     public Patient buildOpenMrsPatient(MRSPatient patient,
                                        PatientIdentifierType patientIdentifierType, Location location,
                                        List<PersonAttributeType> allPersonAttributeTypes) {

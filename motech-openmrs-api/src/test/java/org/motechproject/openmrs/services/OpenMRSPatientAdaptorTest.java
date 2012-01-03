@@ -18,7 +18,6 @@ import org.openmrs.*;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.text.SimpleDateFormat;
@@ -82,15 +81,16 @@ public class OpenMRSPatientAdaptorTest {
         when(mockPatientService.savePatient(Matchers.<org.openmrs.Patient>any())).thenReturn(openMRSPatient);
         when(mockFacilityAdapter.getLocation(facilityId)).thenReturn(location);
         when(mockFacilityAdapter.convertLocationToFacility(any(Location.class))).thenReturn(facility);
-        when(mockPersonAdaptor.getFirstName(openMRSPatient.getNames())).thenReturn(new PersonName(first,middle,last));
-        when(mockPersonAdaptor.getPreferredName(openMRSPatient.getNames())).thenReturn(first);
 
         MRSPerson mrsPerson = new MRSPerson().firstName(first).middleName(middle).lastName(last).birthDateEstimated(birthdateEstimated).dateOfBirth(birthDate).address(address1).gender(gender);
+        when(mockPersonAdaptor.openMRSToMRSPerson(openMRSPatient)).thenReturn(mrsPerson);
+
         MRSPatient mrsPatient = new MRSPatient(motechId, mrsPerson, facility);
         final MRSPatient actualPatient = openMRSPatientAdaptor.savePatient(mrsPatient);
 
-        ArgumentCaptor<org.openmrs.Patient> openMrsPatientArgumentCaptor = ArgumentCaptor.forClass(org.openmrs.Patient.class);
+        verify(mockPersonAdaptor).openMRSToMRSPerson(openMRSPatient);
 
+        ArgumentCaptor<org.openmrs.Patient> openMrsPatientArgumentCaptor = ArgumentCaptor.forClass(org.openmrs.Patient.class);
         verify(mockPatientService).savePatient(openMrsPatientArgumentCaptor.capture());
         patientTestUtil.assertEqualsForOpenMrsPatient(openMrsPatientArgumentCaptor.getValue(), openMRSPatient);
 
@@ -114,11 +114,15 @@ public class OpenMRSPatientAdaptorTest {
         int patientId = 12;
         when(mockPatientService.getPatient(patientId)).thenReturn(openMRSPatient);
         when(mockFacilityAdapter.convertLocationToFacility(any(Location.class))).thenReturn(facility);
-        when(mockPersonAdaptor.getFirstName(openMRSPatient.getNames())).thenReturn(new PersonName(first,middle,last));
-        when(mockPersonAdaptor.getPreferredName(openMRSPatient.getNames())).thenReturn(first);
+
+        MRSPerson mrsPerson = new MRSPerson().firstName(first).middleName(middle).lastName(last).birthDateEstimated(birthDateEstimated).dateOfBirth(birthDate).address(address1).gender(gender);
+        when(mockPersonAdaptor.openMRSToMRSPerson(openMRSPatient)).thenReturn(mrsPerson);
+
         MRSPatient returnedPatient = openMRSPatientAdaptor.getPatient(String.valueOf(patientId));
 
         verify(mockPatientService).getPatient(patientId);
+        verify(mockPersonAdaptor).openMRSToMRSPerson(openMRSPatient);
+
         patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthDate, birthDateEstimated, gender, facility, returnedPatient, motechId);
     }
 
@@ -141,10 +145,13 @@ public class OpenMRSPatientAdaptorTest {
         when(mockPatientService.getPatients(null, motechId, idTypes, true)).thenReturn(Arrays.asList(openMRSPatient));
         when(mockPatientService.getPatientIdentifierTypeByName(IdentifierType.IDENTIFIER_MOTECH_ID.getName())).thenReturn(motechIdType);
         when(mockFacilityAdapter.convertLocationToFacility(any(Location.class))).thenReturn(facility);
-        when(mockPersonAdaptor.getFirstName(openMRSPatient.getNames())).thenReturn(new PersonName(first,middle,last));
-        when(mockPersonAdaptor.getPreferredName(openMRSPatient.getNames())).thenReturn(first);
+
+        MRSPerson mrsPerson = new MRSPerson().firstName(first).middleName(middle).lastName(last).birthDateEstimated(birthDateEstimated).dateOfBirth(birthDate).address(address1).gender(gender);
+        when(mockPersonAdaptor.openMRSToMRSPerson(openMRSPatient)).thenReturn(mrsPerson);
+
         MRSPatient returnedPatient = openMRSPatientAdaptor.getPatientByMotechId(motechId);
 
+        verify(mockPersonAdaptor).openMRSToMRSPerson(openMRSPatient);
         patientTestUtil.verifyReturnedPatient(first, middle, last, address1, birthDate, birthDateEstimated, gender, facility, returnedPatient, motechId);
     }
 

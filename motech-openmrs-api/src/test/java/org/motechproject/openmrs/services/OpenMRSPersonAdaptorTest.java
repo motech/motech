@@ -41,12 +41,12 @@ public class OpenMRSPersonAdaptorTest {
 
     }
 
-     @Test
+    @Test
     public void shouldGetFirstName() {
         final PersonName firstName = new PersonName("firstname", "middlename", "familyname");
         final PersonName preferredName = new PersonName("preferredname", "middlename", "familyname");
         preferredName.setPreferred(true);
-        assertThat(openMRSPersonAdaptor.getFirstName(new HashSet<PersonName>(){{
+        assertThat(openMRSPersonAdaptor.getFirstName(new HashSet<PersonName>() {{
             add(firstName);
             add(preferredName);
         }}), is(equalTo(firstName)));
@@ -57,7 +57,7 @@ public class OpenMRSPersonAdaptorTest {
         final PersonName firstName = new PersonName("firstname", "middlename", "familyname");
         final PersonName preferredName = new PersonName("preferredname", "middlename", "familyname");
         preferredName.setPreferred(true);
-        MatcherAssert.assertThat(openMRSPersonAdaptor.getPreferredName(new HashSet<PersonName>(){{
+        MatcherAssert.assertThat(openMRSPersonAdaptor.getPreferredName(new HashSet<PersonName>() {{
             add(firstName);
             add(preferredName);
         }}), Matchers.is(Matchers.equalTo(preferredName.getGivenName())));
@@ -66,45 +66,69 @@ public class OpenMRSPersonAdaptorTest {
     @Test
     public void shouldConvertOpenMRSPersonToMRSPersonWithoutPreferredName() {
         Person person = new Person();
-        PersonAddress personAddress = new PersonAddress();
-        person.setId(89);
-        personAddress.setAddress1("Address1");
-        person.setGender("F");
-        person.setBirthdate(new Date());
-        person.addName(new PersonName("FirstName", "MiddleName", "FamilyName"));
-        person.setBirthdateEstimated(true);
-        person.addAddress(personAddress);
-        person.setDead(true);
 
+        String expectedAddress = "Expected Patient Address";
+        Set<PersonAddress> personAddresses = new HashSet<PersonAddress>();
+        PersonAddress personAddress = new PersonAddress();
+        personAddress.setAddress1(expectedAddress);
+        personAddresses.add(personAddress);
+        person.setAddresses(personAddresses);
+
+        String gender = "F";
+        String firstName = "FirstName";
+        String middleName = "MiddleName";
+        String familyName = "FamilyName";
+        String preferredName = "PreferredName";
+        Date birthdate = new Date(2011, 12, 12);
+        int patientId = 89;
+        String address = "Address1";
         String email = "email";
         String phoneNo = "123423423";
         String staffType = "staffType";
+        boolean preferred = true;
+        boolean birthdateEstimated = true;
+        boolean dead = true;
+
+        person.setId(patientId);
+        personAddress.setAddress1(address);
+        person.setGender(gender);
+        person.setBirthdate(birthdate);
+
+        person.addName(new PersonName(firstName, middleName, familyName));
+        PersonName nameSetAsPreferred = new PersonName(preferredName, middleName, familyName);
+        nameSetAsPreferred.setPreferred(preferred);
+
+
+        person.addName(nameSetAsPreferred);
+        person.setBirthdateEstimated(birthdateEstimated);
+        person.addAddress(personAddress);
+        person.setDead(dead);
 
         person.setAttributes(personAttributes(staffType, phoneNo, email));
 
         MRSPerson mrsPerson = openMRSPersonAdaptor.openMRSToMRSPerson(person);
 
-        assertThat(mrsPerson.getFirstName(), is(equalTo(person.getGivenName())));
-        assertThat(mrsPerson.getMiddleName(), is(equalTo(person.getMiddleName())));
-        assertThat(mrsPerson.getLastName(), is(equalTo(person.getFamilyName())));
-        assertThat(mrsPerson.getGender(), is(equalTo(person.getGender())));
-        assertThat(mrsPerson.getAddress(), is(equalTo(person.getPersonAddress().getAddress1())));
-        assertThat(mrsPerson.getBirthDateEstimated(),is(equalTo(person.getBirthdateEstimated())));
-        assertThat(mrsPerson.getDateOfBirth(),is(equalTo(person.getBirthdate())));
-        assertThat(mrsPerson.attrValue(PERSON_ATTRIBUTE_TYPE_EMAIL),is(equalTo(email)));
-        assertThat(mrsPerson.attrValue(PERSON_ATTRIBUTE_TYPE_PHONE_NUMBER),is(equalTo(phoneNo)));
-        assertThat(mrsPerson.attrValue(PERSON_ATTRIBUTE_TYPE_STAFF_TYPE),is(equalTo(staffType)));
-        assertThat(mrsPerson.isDead(), is(equalTo(true)));
-
+        assertThat(mrsPerson.getFirstName(), is(equalTo(firstName)));
+        assertThat(mrsPerson.getMiddleName(), is(equalTo(middleName)));
+        assertThat(mrsPerson.getLastName(), is(equalTo(familyName)));
+        assertThat(mrsPerson.getPreferredName(), is(equalTo(preferredName)));
+        assertThat(mrsPerson.getGender(), is(equalTo(gender)));
+        assertThat(mrsPerson.getAddress(), is(equalTo(address)));
+        assertThat(mrsPerson.getBirthDateEstimated(), is(equalTo(birthdateEstimated)));
+        assertThat(mrsPerson.getDateOfBirth(), is(equalTo(birthdate)));
+        assertThat(mrsPerson.attrValue(PERSON_ATTRIBUTE_TYPE_EMAIL), is(equalTo(email)));
+        assertThat(mrsPerson.attrValue(PERSON_ATTRIBUTE_TYPE_PHONE_NUMBER), is(equalTo(phoneNo)));
+        assertThat(mrsPerson.attrValue(PERSON_ATTRIBUTE_TYPE_STAFF_TYPE), is(equalTo(staffType)));
+        assertThat(mrsPerson.isDead(), is(equalTo(dead)));
     }
 
     @Test
-    public void shouldGetPersonById(){
+    public void shouldGetPersonById() {
         String id = "10";
         Person person = mock(Person.class);
         when(mockPersonService.getPerson(Integer.valueOf(id))).thenReturn(person);
         Person openMRSPerson = openMRSPersonAdaptor.getPersonById(id);
-        assertThat(openMRSPerson,is(equalTo(person)));
+        assertThat(openMRSPerson, is(equalTo(person)));
     }
 
     private Set<PersonAttribute> personAttributes(String staffType, String phoneNo, String email) {
@@ -118,7 +142,6 @@ public class OpenMRSPersonAdaptorTest {
         attr.setName(name);
         return attr;
     }
-
 
 
 }

@@ -3,9 +3,7 @@ package org.motechproject.openmrs.services;
 import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.MRSPerson;
-import org.openmrs.Person;
-import org.openmrs.PersonAttribute;
-import org.openmrs.PersonName;
+import org.openmrs.*;
 import org.openmrs.api.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import static ch.lambdaj.Lambda.*;
+import static ch.lambdaj.Lambda.project;
 import static org.hamcrest.Matchers.is;
 
 @Component
@@ -28,21 +27,31 @@ public class OpenMRSPersonAdaptor {
     }
 
     public MRSPerson openMRSToMRSPerson(Person person) {
-        PersonName personName = person.getPersonName();
-        String givenName = personName.getGivenName();
 
-        String address = person.getPersonAddress() != null ? person.getPersonAddress().getAddress1() : null;
-        MRSPerson mrsPerson = new MRSPerson().firstName(givenName).middleName(personName.getMiddleName())
-                .lastName(personName.getFamilyName()).address(address).
-                        dateOfBirth(person.getBirthdate()).birthDateEstimated(person.getBirthdateEstimated()).gender(person.getGender()).
-                        id(Integer.toString(person.getId())).dead(person.isDead());
-        if (personName.getPreferred()) {
-            mrsPerson.preferredName(givenName);
-        }
-        for (PersonAttribute personAttribute : person.getAttributes()) {
-            mrsPerson.addAttribute(new Attribute(personAttribute.getAttributeType().getName(), personAttribute.getValue()));
+        Set<PersonName> personNames = person.getNames();
+        PersonName personName = getFirstName(personNames);
+
+        final List<Attribute> attributes = project(person.getAttributes(), Attribute.class,
+                on(PersonAttribute.class).getAttributeType().toString(), on(PersonAttribute.class).getValue());
+
+        MRSPerson mrsPerson = new MRSPerson().firstName(personName.getGivenName()).middleName(personName.getMiddleName())
+                .lastName(personName.getFamilyName()).preferredName(getPreferredName(personNames))
+                .birthDateEstimated(person.getBirthdateEstimated()).gender(person.getGender())
+                .address(getAddress(person)).attributes(attributes).dateOfBirth(person.getBirthdate()).dead(person.isDead());
+
+        if (person.getId() != null) {
+            mrsPerson.id(Integer.toString(person.getId()));
         }
         return mrsPerson;
+    }
+
+    private String getAddress(Person person) {
+        String address = null;
+        final Set<PersonAddress> addresses = person.getAddresses();
+        if (!addresses.isEmpty()) {
+            address = addresses.iterator().next().getAddress1();
+        }
+        return address;
     }
 
     public Person getPersonById(String id) {

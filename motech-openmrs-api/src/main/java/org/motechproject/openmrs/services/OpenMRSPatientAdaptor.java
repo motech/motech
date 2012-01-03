@@ -131,21 +131,12 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
         }
     }
 
-    public MRSPatient getMrsPatient(org.openmrs.Patient savedPatient) {
-        final List<Attribute> attributes = project(savedPatient.getAttributes(), Attribute.class,
-                on(PersonAttribute.class).getAttributeType().toString(), on(PersonAttribute.class).getValue());
-        Set<PersonName> personNames = savedPatient.getNames();
-        PersonName personName = personAdaptor.getFirstName(personNames);
-        final PatientIdentifier patientIdentifier = savedPatient.getPatientIdentifier();
+    public MRSPatient getMrsPatient(org.openmrs.Patient patient) {
+        final PatientIdentifier patientIdentifier = patient.getPatientIdentifier();
         MRSFacility mrsFacility = (patientIdentifier != null) ? facilityAdaptor.convertLocationToFacility(patientIdentifier.getLocation()) : null;
         String motechId = (patientIdentifier != null) ? patientIdentifier.getIdentifier() : null;
-        MRSPerson mrsPerson = new MRSPerson().firstName(personName.getGivenName()).middleName(personName.getMiddleName()).lastName(personName.getFamilyName()).
-                preferredName(personAdaptor.getPreferredName(personNames)).birthDateEstimated(savedPatient.getBirthdateEstimated()).
-                gender(savedPatient.getGender()).address(patientHelper.getAddress(savedPatient)).attributes(attributes).dateOfBirth(savedPatient.getBirthdate());
-        if (savedPatient.getPersonId() != null) {
-            mrsPerson.id(Integer.toString(savedPatient.getPersonId()));
-        }
-        return new MRSPatient(String.valueOf(savedPatient.getId()), motechId, mrsPerson, mrsFacility);
+        MRSPerson mrsPerson = personAdaptor.openMRSToMRSPerson(patient);
+        return new MRSPatient(String.valueOf(patient.getId()), motechId, mrsPerson, mrsFacility);
     }
 
     public PatientIdentifierType getPatientIdentifierType(IdentifierType identifierType) {

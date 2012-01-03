@@ -26,18 +26,6 @@ public class PatientHelperTest {
         patientHelper = new PatientHelper();
     }
 
-
-    @Test
-    public void shouldGetPatientAddress() {
-        String expectedAddress = "Expected Patient Address";
-
-        Patient patient = new Patient();
-        PersonAddress address = new PersonAddress();
-        address.setAddress1(expectedAddress);
-        patient.addAddress(address);
-        assertThat(patientHelper.getAddress(patient), is(equalTo(expectedAddress)));
-    }
-
     @Test
     public void shouldBuildOpenMrsPatientModel() {
         final String first = "First";
