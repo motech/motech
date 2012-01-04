@@ -23,8 +23,8 @@ public class SmsServiceImpl implements SmsService {
     private MessageSplitter messageSplitter;
     private static final Logger log = Logger.getLogger(SmsServiceImpl.class);
 
-    int UNIT_MESSAGE_SIZE = 160;
-    String PART_MESSAGE_HEADER_TEMPLATE = "(%d/%d):";
+    int PART_MESSAGE_SIZE = 160;
+    String PART_MESSAGE_HEADER_TEMPLATE = "Msg %d of %d: ";
     String PART_MESSAGE_FOOTER = "..";
 
     @Autowired
@@ -54,7 +54,7 @@ public class SmsServiceImpl implements SmsService {
 	}
 
 	private void raiseSendSmsEvent(final List<String> recipients, final String message, final DateTime deliveryTime) {
-        for (String partMessage : messageSplitter.split(message, UNIT_MESSAGE_SIZE, PART_MESSAGE_HEADER_TEMPLATE, PART_MESSAGE_FOOTER)) {
+        for (String partMessage : messageSplitter.split(message, PART_MESSAGE_SIZE, PART_MESSAGE_HEADER_TEMPLATE, PART_MESSAGE_FOOTER)) {
             log.info(String.format("Putting event on relay to send message %s to number %s", message, recipients));
             HashMap<String, Object> parameters = new HashMap<String, Object>();
             parameters.put(EventKeys.RECIPIENTS, recipients);
