@@ -13,19 +13,19 @@ public class MessageSplitterTest {
 
     @Before
     public void setup() {
-        messageSplitter = new MessageSplitter("(%d/%d):", "..");
+        messageSplitter = new MessageSplitter();
     }
 
     @Test
     public void shouldNotSplitMessageIfLessThanUnitLength() {
-        List<String> parts = messageSplitter.split("very short message", 20);
+        List<String> parts = messageSplitter.split("very short message", 20, "(%d/%d):", "..");
         assertEquals(1, parts.size());
         assertEquals("very short message", parts.get(0));
     }
 
     @Test
     public void shouldSplitMessageInto2Parts() {
-        List<String> parts = messageSplitter.split("this message is longer than 30 characters.", 30);
+        List<String> parts = messageSplitter.split("this message is longer than 30 characters.", 30, "(%d/%d):", "..");
         assertEquals(2, parts.size());
         assertEquals("(1/2):this message is longer..", parts.get(0));
         assertEquals("(2/2): than 30 characters.", parts.get(1));
@@ -33,7 +33,7 @@ public class MessageSplitterTest {
 
     @Test
     public void shouldSplitMessageInto3Parts() {
-        List<String> parts = messageSplitter.split("this message should be split into six parts.", 16);
+        List<String> parts = messageSplitter.split("this message should be split into six parts.", 16, "(%d/%d):", "..");
         assertEquals(6, parts.size());
         assertEquals("(1/6):this mes..", parts.get(0));
         assertEquals("(2/6):sage sho..", parts.get(1));

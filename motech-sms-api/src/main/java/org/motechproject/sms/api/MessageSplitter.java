@@ -1,25 +1,25 @@
 package org.motechproject.sms.api;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class MessageSplitter {
 
-    String headerTemplate;
-    String footer;
-
-    public MessageSplitter(String headerTemplate, String footer) {
-        this.headerTemplate = headerTemplate;
-        this.footer = footer;
+    @Autowired
+    public MessageSplitter() {
     }
 
-    public List<String> split(String message, int unitCapacity) {
+    public List<String> split(String message, int unitCapacity, String headerTemplate, String footer) {
         List<String> parts = new ArrayList<String>();
         if (message.length() <= unitCapacity) {
             parts.add(message);
             return parts;
         }
-        int unitTextLength = unitCapacity - (getHeaderLength() + footer.length());
+        int unitTextLength = unitCapacity - (getHeaderLength(headerTemplate) + footer.length());
         int numberOfParts = getNumberOfParts(message, unitTextLength);
         for (int i = 0; i < numberOfParts; i++) {
             StringBuffer sb = new StringBuffer();
@@ -42,7 +42,7 @@ public class MessageSplitter {
         return message.substring(start, end);
     }
 
-    private int getHeaderLength() {
+    private int getHeaderLength(String headerTemplate) {
         return String.format(headerTemplate, 0, 0).length();
     }
 }

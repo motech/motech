@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.motechproject.context.EventContext;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
@@ -36,7 +35,6 @@ public class SmsServiceImplTest {
     @Mock
     private EventRelay eventRelay;
 
-    private MessageSplitter messageSplitter;
     private SmsService smsService;
 
     @Before
@@ -47,9 +45,7 @@ public class SmsServiceImplTest {
         when(EventContext.getInstance()).thenReturn(eventContext);
         when(eventContext.getEventRelay()).thenReturn(eventRelay);
 
-        messageSplitter = new MessageSplitter("(%d/%d):", "..");
-
-        smsService = new SmsServiceImpl(messageSplitter);
+        smsService = new SmsServiceImpl(new MessageSplitter());
     }
 
     @Test
