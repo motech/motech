@@ -5,8 +5,10 @@ import org.joda.time.DateTime;
 import org.motechproject.context.EventContext;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.sms.api.MessageSplitter;
 import org.motechproject.sms.api.constants.EventKeys;
 import org.motechproject.sms.api.constants.EventSubject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,11 +18,17 @@ import java.util.List;
 
 @Service
 public class SmsServiceImpl implements SmsService {
-	private EventRelay eventRelay;
-	private static final Logger log = Logger.getLogger(SmsServiceImpl.class);
 
-	public SmsServiceImpl() {
-		this.eventRelay = EventContext.getInstance().getEventRelay();
+	private EventRelay eventRelay;
+    private MessageSplitter messageSplitter;
+    private static final Logger log = Logger.getLogger(SmsServiceImpl.class);
+
+    private int UNIT_MESSAGE_SIZE = 160;
+
+    @Autowired
+    public SmsServiceImpl(MessageSplitter messageSplitter) {
+        this.messageSplitter = messageSplitter;
+        this.eventRelay = EventContext.getInstance().getEventRelay();
 	}
 
 	@Override
@@ -44,12 +52,13 @@ public class SmsServiceImpl implements SmsService {
 	}
 
 	private void raiseSendSmsEvent(final List<String> recipients, final String message, final DateTime deliveryTime) {
-		log.info(String.format("Putting event on relay to send message %s to number %s", message, recipients));
-		HashMap<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put(EventKeys.RECIPIENTS, recipients);
-		parameters.put(EventKeys.MESSAGE, message);
-		parameters.put(EventKeys.DELIVERY_TIME, deliveryTime);
-
-		eventRelay.sendEventMessage(new MotechEvent(EventSubject.SEND_SMS, parameters));
+        for (String partMessage : messageSplitter.split(message, UNIT_MESSAGE_SIZE)) {
+            log.info(String.format("Putting event on relay to send message %s to number %s", message, recipients));
+            HashMap<String, Object> parameters = new HashMap<String, Object>();
+            parameters.put(EventKeys.RECIPIENTS, recipients);
+            parameters.put(EventKeys.MESSAGE, partMessage);
+            parameters.put(EventKeys.DELIVERY_TIME, deliveryTime);
+            eventRelay.sendEventMessage(new MotechEvent(EventSubject.SEND_SMS, parameters));
+        }
 	}
 }

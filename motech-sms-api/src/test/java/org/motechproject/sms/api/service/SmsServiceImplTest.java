@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import org.motechproject.context.EventContext;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.sms.api.MessageSplitter;
 import org.motechproject.sms.api.constants.EventKeys;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -18,8 +19,10 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -28,19 +31,25 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @PrepareForTest(EventContext.class)
 public class SmsServiceImplTest {
 
-    private SmsService smsService;
     @Mock
     private EventContext eventContext;
     @Mock
     private EventRelay eventRelay;
 
+    private MessageSplitter messageSplitter;
+    private SmsService smsService;
+
     @Before
     public void setup() {
         initMocks(this);
+
         PowerMockito.mockStatic(EventContext.class);
-        Mockito.when(EventContext.getInstance()).thenReturn(eventContext);
+        when(EventContext.getInstance()).thenReturn(eventContext);
         when(eventContext.getEventRelay()).thenReturn(eventRelay);
-        smsService = new SmsServiceImpl();
+
+        messageSplitter = new MessageSplitter("(%d/%d):", "..");
+
+        smsService = new SmsServiceImpl(messageSplitter);
     }
 
     @Test
@@ -101,5 +110,17 @@ public class SmsServiceImplTest {
         assertEquals("This is a test message", (String) eventMessageSent.getParameters().get(EventKeys.MESSAGE));
         assertEquals(recipients, eventMessageSent.getParameters().get(EventKeys.RECIPIENTS));
         assertEquals(new DateTime(2011, 12, 23, 13, 50, 0, 0), eventMessageSent.getParameters().get(EventKeys.DELIVERY_TIME));
+    }
+
+    @Test
+    public void shouldRaiseTwoEventsIfMessageLengthIs170() {
+        smsService.sendSMS("123", "This is a 160+ characters long message. All documentation is kept in javadocs because it guarantees consistency between what is on the web and what is in the source code.", new DateTime(2011, 12, 23, 13, 50, 0, 0));
+
+        ArgumentCaptor<MotechEvent> motechEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
+        verify(eventRelay, times(2)).sendEventMessage(motechEventArgumentCaptor.capture());
+
+        List<MotechEvent> events = motechEventArgumentCaptor.getAllValues();
+        assertEquals("(1/2):This is a 160+ characters long message. All documentation is kept in javadocs because it guarantees consistency between what is on the web and what is i..", events.get(0).getParameters().get(EventKeys.MESSAGE));
+        assertEquals("(2/2):n the source code.", events.get(1).getParameters().get(EventKeys.MESSAGE));
     }
 }
