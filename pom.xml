@@ -120,7 +120,6 @@
         <module>motech-message-campaign</module>
         <module>motech-mobileforms-api</module>
         <module>motech-alerts-api</module>
-        <module>motech-event-tracking-api</module>
 	    <module>motech-ivr-kookoo</module>
 	    <module>motech-ivr-voxeo</module>
 	    <module>motech-demo</module>
