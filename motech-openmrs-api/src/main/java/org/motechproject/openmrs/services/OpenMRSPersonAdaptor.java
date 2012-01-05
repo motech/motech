@@ -3,6 +3,7 @@ package org.motechproject.openmrs.services;
 import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.MRSPerson;
+import org.motechproject.mrs.services.MRSPersonAdaptor;
 import org.openmrs.*;
 import org.openmrs.api.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ import static ch.lambdaj.Lambda.project;
 import static org.hamcrest.Matchers.is;
 
 @Component
-public class OpenMRSPersonAdaptor {
+public class OpenMRSPersonAdaptor implements MRSPersonAdaptor {
 
     private PersonService personService;
 
@@ -24,6 +25,11 @@ public class OpenMRSPersonAdaptor {
     @Autowired
     public OpenMRSPersonAdaptor(PersonService personService) {
         this.personService = personService;
+    }
+
+    @Override
+    public Integer getAgeOfAPerson(String id) {
+        return getPersonById(id).getAge();
     }
 
     public MRSPerson openMRSToMRSPerson(Person person) {

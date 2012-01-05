@@ -17,6 +17,7 @@ import java.util.Set;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -129,6 +130,18 @@ public class OpenMRSPersonAdaptorTest {
         when(mockPersonService.getPerson(Integer.valueOf(id))).thenReturn(person);
         Person openMRSPerson = openMRSPersonAdaptor.getPersonById(id);
         assertThat(openMRSPerson, is(equalTo(person)));
+    }
+    
+    @Test
+    public void shouldGetAgeOfThePersonUsingId(){
+        String id = "1234";
+        int age = 32;
+        Person person = mock(Person.class);
+        when(mockPersonService.getPerson(Integer.valueOf(id))).thenReturn(person);
+        when(person.getAge()).thenReturn(age);
+        Integer ageOfAPerson = openMRSPersonAdaptor.getAgeOfAPerson(id);
+        assertEquals(ageOfAPerson,Integer.valueOf(age));
+
     }
 
     private Set<PersonAttribute> personAttributes(String staffType, String phoneNo, String email) {
