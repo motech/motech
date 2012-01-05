@@ -23,9 +23,9 @@ public class SmsServiceImpl implements SmsService {
     private MessageSplitter messageSplitter;
     private static final Logger log = Logger.getLogger(SmsServiceImpl.class);
 
-    int PART_MESSAGE_SIZE = 160;
-    String PART_MESSAGE_HEADER_TEMPLATE = "Msg %d of %d: ";
-    String PART_MESSAGE_FOOTER = "..";
+    private static final int PART_MESSAGE_SIZE = 160;
+	private static final String PART_MESSAGE_HEADER_TEMPLATE = "Msg %d of %d: ";
+	private static final String PART_MESSAGE_FOOTER = "...";
 
     @Autowired
     public SmsServiceImpl(MessageSplitter messageSplitter) {

@@ -20,7 +20,7 @@ public class MessageSplitter {
             sb.append(String.format(headerTemplate, i + 1, numberOfParts));
             sb.append(getPart(message, i, unitTextLength));
             if (i < numberOfParts - 1)
-                sb.append("..");
+                sb.append(footer);
             parts.add(sb.toString());
         }
         return parts;

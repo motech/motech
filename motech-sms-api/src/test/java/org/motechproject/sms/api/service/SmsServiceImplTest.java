@@ -116,7 +116,7 @@ public class SmsServiceImplTest {
         verify(eventRelay, times(2)).sendEventMessage(motechEventArgumentCaptor.capture());
 
         List<MotechEvent> events = motechEventArgumentCaptor.getAllValues();
-        assertEquals("Msg 1 of 2: This is a 160+ characters long message. All documentation is kept in javadocs because it guarantees consistency between what is on the web and wha..", events.get(0).getParameters().get(EventKeys.MESSAGE));
-        assertEquals("Msg 2 of 2: t is in the source code.", events.get(1).getParameters().get(EventKeys.MESSAGE));
+        assertEquals("Msg 1 of 2: This is a 160+ characters long message. All documentation is kept in javadocs because it guarantees consistency between what is on the web and wh...", events.get(0).getParameters().get(EventKeys.MESSAGE));
+        assertEquals("Msg 2 of 2: at is in the source code.", events.get(1).getParameters().get(EventKeys.MESSAGE));
     }
 }
