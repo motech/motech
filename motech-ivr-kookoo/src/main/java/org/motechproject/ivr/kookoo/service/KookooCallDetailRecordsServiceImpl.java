@@ -1,30 +1,39 @@
 package org.motechproject.ivr.kookoo.service;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.eventtracking.service.EventService;
+import org.motechproject.context.EventContext;
+import org.motechproject.event.EventRelay;
 import org.motechproject.ivr.event.CallEvent;
 import org.motechproject.ivr.event.IVREvent;
-import org.motechproject.ivr.kookoo.CallDetailRecordEvent;
 import org.motechproject.ivr.kookoo.KookooIVRResponseBuilder;
 import org.motechproject.ivr.kookoo.domain.KookooCallDetailRecord;
 import org.motechproject.ivr.kookoo.eventlogging.CallEventConstants;
 import org.motechproject.ivr.kookoo.repository.AllKooKooCallDetailRecords;
 import org.motechproject.ivr.model.CallDetailRecord;
 import org.motechproject.ivr.model.CallDirection;
+import org.motechproject.model.MotechEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 public class KookooCallDetailRecordsServiceImpl implements KookooCallDetailRecordsService {
+
     private AllKooKooCallDetailRecords allKooKooCallDetailRecords;
-    private EventService eventService;
     private AllKooKooCallDetailRecords allCallDetailRecords;
+    private EventRelay eventRelay;
+
+    public static final String CLOSE_CALL_SUBJECT = "close_call";
+    public static final String CALL_ID = "call_id";
+    public static final String EXTERNAL_ID = "external_id";
 
     @Autowired
-    public KookooCallDetailRecordsServiceImpl(AllKooKooCallDetailRecords allKooKooCallDetailRecords, EventService eventService, AllKooKooCallDetailRecords allCallDetailRecords) {
+    public KookooCallDetailRecordsServiceImpl(AllKooKooCallDetailRecords allKooKooCallDetailRecords, AllKooKooCallDetailRecords allCallDetailRecords) {
         this.allKooKooCallDetailRecords = allKooKooCallDetailRecords;
-        this.eventService = eventService;
         this.allCallDetailRecords = allCallDetailRecords;
+        this.eventRelay = EventContext.getInstance().getEventRelay();
     }
 
     public KookooCallDetailRecord get(String callDetailRecordId) {
@@ -71,6 +80,13 @@ public class KookooCallDetailRecordsServiceImpl implements KookooCallDetailRecor
         KookooCallDetailRecord kookooCallDetailRecord = appendToCallDetailRecord(callDetailRecordId, event);
         kookooCallDetailRecord.close();
         allKooKooCallDetailRecords.update(kookooCallDetailRecord);
-        eventService.publishEvent(new CallDetailRecordEvent(callDetailRecordId, externalId));
+        raiseCloseCallEvent(callDetailRecordId, externalId);
+    }
+
+    private void raiseCloseCallEvent(String callDetailRecordId, String externalId) {
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put(CALL_ID, callDetailRecordId);
+        data.put(EXTERNAL_ID, externalId);
+        eventRelay.sendEventMessage(new MotechEvent(CLOSE_CALL_SUBJECT, data));
     }
 }
