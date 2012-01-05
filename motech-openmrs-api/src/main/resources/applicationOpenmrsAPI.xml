@@ -40,6 +40,7 @@
 
     <bean class="org.motechproject.openmrs.services.OpenMRSFacilityAdaptor"/>
     <bean class="org.motechproject.openmrs.services.OpenMRSPatientAdaptor"/>
+    <bean class="org.motechproject.openmrs.services.OpenMRSPersonAdaptor"/>
     <bean class="org.motechproject.openmrs.services.OpenMRSUserAdaptor"/>
     <bean class="org.motechproject.openmrs.services.OpenMRSEncounterAdaptor"/>
     <bean class="org.motechproject.openmrs.services.OpenMRSObservationAdaptor"/>

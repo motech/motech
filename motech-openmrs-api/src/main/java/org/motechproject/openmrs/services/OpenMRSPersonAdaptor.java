@@ -16,7 +16,6 @@ import static ch.lambdaj.Lambda.*;
 import static ch.lambdaj.Lambda.project;
 import static org.hamcrest.Matchers.is;
 
-@Component
 public class OpenMRSPersonAdaptor implements MRSPersonAdaptor {
 
     private PersonService personService;
