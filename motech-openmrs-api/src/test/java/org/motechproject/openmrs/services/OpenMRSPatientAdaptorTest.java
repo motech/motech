@@ -23,6 +23,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -227,6 +228,20 @@ public class OpenMRSPatientAdaptorTest {
         when(mockPatientService.getPatient(patientId)).thenReturn(mrsPatient);
         org.openmrs.Patient returnedPatient = openMRSPatientAdaptor.getOpenMrsPatient(String.valueOf(patientId));
         assertThat(returnedPatient, is(equalTo(mrsPatient)));
+    }
+
+    @Test
+    public void shouldGetAgeOfThePersonUsingMotechId() {
+        String motechId = "1234567";
+        Integer expectedAge = 4;
+        Patient mockOpenMRSPatient = mock(Patient.class);
+        OpenMRSPatientAdaptor openMRSPatientAdaptorSpy = spy(openMRSPatientAdaptor);
+
+        doReturn(mockOpenMRSPatient).when(openMRSPatientAdaptorSpy).getOpenmrsPatientByMotechId(motechId);
+        when(mockOpenMRSPatient.getAge()).thenReturn(expectedAge);
+        Integer age = openMRSPatientAdaptorSpy.getAgeOfPatientByMotechId(motechId);
+        verify(mockOpenMRSPatient).getAge();
+        assertEquals(age, expectedAge);
     }
 
     @Test

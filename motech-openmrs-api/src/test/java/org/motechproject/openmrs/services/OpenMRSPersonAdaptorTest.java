@@ -132,17 +132,6 @@ public class OpenMRSPersonAdaptorTest {
         assertThat(openMRSPerson, is(equalTo(person)));
     }
     
-    @Test
-    public void shouldGetAgeOfThePersonUsingId(){
-        String id = "1234";
-        int age = 32;
-        Person person = mock(Person.class);
-        when(mockPersonService.getPerson(Integer.valueOf(id))).thenReturn(person);
-        when(person.getAge()).thenReturn(age);
-        Integer ageOfAPerson = openMRSPersonAdaptor.getAgeOfAPerson(id);
-        assertEquals(ageOfAPerson,Integer.valueOf(age));
-
-    }
 
     private Set<PersonAttribute> personAttributes(String staffType, String phoneNo, String email) {
         return new HashSet<PersonAttribute>(asList(new PersonAttribute(personAttributeType(PERSON_ATTRIBUTE_TYPE_STAFF_TYPE), staffType),
