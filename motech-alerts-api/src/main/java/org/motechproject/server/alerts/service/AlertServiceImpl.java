@@ -27,6 +27,7 @@ public class AlertServiceImpl implements AlertService {
     }
 
     @Override
+    @Deprecated
     public void createAlert(Alert alert) {
         allAlerts.add(alert);
     }
@@ -37,6 +38,7 @@ public class AlertServiceImpl implements AlertService {
     }
 
     @Override
+    @Deprecated
     public List<Alert> getBy(String externalId, AlertType type, AlertStatus status, Integer priority, int limit) {
         return allAlerts.listAlerts(externalId, type, status, priority, limit);
     }
