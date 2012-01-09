@@ -24,6 +24,9 @@ public class Alert extends MotechBaseDataObject implements Comparable<Alert> {
     private Map<String, String> data;
 
 
+    public Alert() {
+    }
+
     public Alert(String externalId, AlertType alertType, AlertStatus status, int priority, Map<String, String> data) {
         this.externalId = externalId;
         this.alertType = alertType;
@@ -33,7 +36,15 @@ public class Alert extends MotechBaseDataObject implements Comparable<Alert> {
         this.data = data;
     }
 
-    public Alert() {
+    public Alert(String externalId, String name, String description, AlertType alertType, AlertStatus status, int priority, Map<String, String> data) {
+        this.externalId = externalId;
+        this.name = name;
+        this.description = description;
+        this.alertType = alertType;
+        this.status = status;
+        this.priority = priority;
+        this.data = data;
+        this.dateTime = DateUtil.now();
     }
 
     public String getId() {
