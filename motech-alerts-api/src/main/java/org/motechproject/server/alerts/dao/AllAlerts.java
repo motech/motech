@@ -2,6 +2,7 @@ package org.motechproject.server.alerts.dao;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
+import org.ektorp.support.GenerateView;
 import org.ektorp.support.View;
 import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.server.alerts.domain.Alert;
@@ -15,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class AllAlerts extends MotechBaseRepository<Alert> {
+
     @Autowired
     public AllAlerts(@Qualifier("alertDbConnector") CouchDbConnector db) {
         super(Alert.class, db);
@@ -27,28 +29,24 @@ public class AllAlerts extends MotechBaseRepository<Alert> {
         return db.queryView(q, Alert.class);
     }
 
-    @View(name = "findByExternalId", map = "function(doc) {if (doc.type == 'Alert') {emit(doc.externalId, doc._id);}}")
-    private List<Alert> findByExternalId(String externalId) {
-        ViewQuery q = createQuery("findByExternalId").key(externalId).includeDocs(true);
-        return db.queryView(q, Alert.class);
+    @GenerateView
+    public List<Alert> findByExternalId(String externalId) {
+        return queryView("by_externalId", externalId);
     }
 
-    @View(name = "findByAlertType", map = "function(doc) {if (doc.type == 'Alert') {emit(doc.alertType, doc._id);}}")
-    private List<Alert> findByAlertType(AlertType alertType) {
-        ViewQuery q = createQuery("findByAlertType").key(alertType).includeDocs(true);
-        return db.queryView(q, Alert.class);
+    @GenerateView
+    public List<Alert> findByAlertType(AlertType alertType) {
+        return queryView("by_alertType", alertType.toString());
     }
 
-    @View(name = "findByAlertStatus", map = "function(doc) {if (doc.type == 'Alert') {emit(doc.status, doc._id);}}")
-    private List<Alert> findByAlertStatus(AlertStatus alertStatus) {
-        ViewQuery q = createQuery("findByAlertStatus").key(alertStatus).includeDocs(true);
-        return db.queryView(q, Alert.class);
+    @GenerateView
+    public List<Alert> findByStatus(AlertStatus alertStatus) {
+        return queryView("by_status", alertStatus.toString());
     }
 
-    @View(name = "findByAlertPriority", map = "function(doc) {if (doc.type == 'Alert') {emit(doc.priority, doc._id);}}")
-    private List<Alert> findByAlertPriority(int priority) {
-        ViewQuery q = createQuery("findByAlertPriority").key(priority).includeDocs(true);
-        return db.queryView(q, Alert.class);
+    @GenerateView
+    public List<Alert> findByPriority(int priority) {
+        return queryView("by_priority", priority);
     }
 
     public List<Alert> listAlerts(String externalId, AlertType alertType, AlertStatus alertStatus, Integer alertPriority, int limit) {
@@ -67,10 +65,10 @@ public class AllAlerts extends MotechBaseRepository<Alert> {
             alerts = addToAlertList(alerts, findByAlertType(alertType));
 
         if (alertStatus != null)
-            alerts = addToAlertList(alerts, findByAlertStatus(alertStatus));
+            alerts = addToAlertList(alerts, findByStatus(alertStatus));
 
         if (alertPriority != null)
-            alerts = addToAlertList(alerts, findByAlertPriority(alertPriority));
+            alerts = addToAlertList(alerts, findByPriority(alertPriority));
 
         Collections.sort(alerts);
         return alerts;

@@ -6,8 +6,8 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
     <context:annotation-config/>
-    <context:component-scan base-package="org.motechproject.server.alerts" />
-    
+    <context:component-scan base-package="org.motechproject.server.alerts"/>
+
     <import resource="classpath:applicationPlatformCommon.xml"/>
 
     <bean id="alertDbConnector" class="org.ektorp.impl.StdCouchDbConnector">
@@ -15,11 +15,11 @@
         <constructor-arg ref="couchDbInstance"/>
     </bean>
 
-    <bean id="allAlerts" class="org.motechproject.server.alerts.dao.AllAlerts" >
+    <bean id="allAlerts" class="org.motechproject.server.alerts.dao.AllAlerts">
         <constructor-arg ref="alertDbConnector"/>
     </bean>
 
     <bean id="alertService" class="org.motechproject.server.alerts.service.AlertServiceImpl">
-        <constructor-arg ref ="allAlerts"/>
+        <constructor-arg ref="allAlerts"/>
     </bean>
 </beans>

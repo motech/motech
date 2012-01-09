@@ -3,6 +3,7 @@ package org.motechproject.server.alerts.service;
 import org.ektorp.DocumentNotFoundException;
 import org.motechproject.server.alerts.dao.AllAlerts;
 import org.motechproject.server.alerts.domain.Alert;
+import org.motechproject.server.alerts.domain.AlertCriteria;
 import org.motechproject.server.alerts.domain.AlertStatus;
 import org.motechproject.server.alerts.domain.AlertType;
 import org.slf4j.Logger;
@@ -13,13 +14,16 @@ import java.util.List;
 import java.util.Map;
 
 public class AlertServiceImpl implements AlertService {
+
     private AllAlerts allAlerts;
+    private AlertFilter alertFilter;
 
     final Logger logger = LoggerFactory.getLogger(AlertServiceImpl.class);
 
     @Autowired
-    public AlertServiceImpl(AllAlerts allAlerts) {
+    public AlertServiceImpl(AllAlerts allAlerts, AlertFilter alertFilter) {
         this.allAlerts = allAlerts;
+        this.alertFilter = alertFilter;
     }
 
     @Override
@@ -30,6 +34,11 @@ public class AlertServiceImpl implements AlertService {
     @Override
     public List<Alert> getBy(String externalId, AlertType type, AlertStatus status, Integer priority, int limit) {
         return allAlerts.listAlerts(externalId, type, status, priority, limit);
+    }
+
+    @Override
+    public List<Alert> search(AlertCriteria alertCriteria) {
+        return alertFilter.search(alertCriteria);
     }
 
     @Override
@@ -47,17 +56,12 @@ public class AlertServiceImpl implements AlertService {
         allAlerts.update(alert);
     }
 
-    /**
-     * @param id
-     * @return  Alert object if found, otherwise returns null.
-     */
     public Alert get(String id) {
         try {
             return allAlerts.get(id);
         } catch (DocumentNotFoundException e) {
             logger.error(String.format("No Alert found for the given id: %s.", id), e);
+            return null;
         }
-        return null;
     }
-
 }

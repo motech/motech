@@ -8,7 +8,7 @@ import org.motechproject.util.DateUtil;
 
 import java.util.Map;
 
-@TypeDiscriminator("doc.documentType == 'Alert'")
+@TypeDiscriminator("doc.type == 'Alert'")
 public class Alert extends MotechBaseDataObject implements Comparable<Alert> {
     @JsonProperty("type")
     private String type = "Alert";
