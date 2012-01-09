@@ -3,11 +3,11 @@
 	<parent>
 		<artifactId>motech</artifactId>
 		<groupId>org.motechproject</groupId>
-		<version>0.6</version>
+		<version>0.7-SNAPSHOT</version>
 	</parent>
 	<groupId>org.motechproject</groupId>
 	<artifactId>voxeo</artifactId>
-	<version>0.6</version>
+	<version>0.7-SNAPSHOT</version>
 	<name>Voxeo</name>
 	<packaging>bundle</packaging>
 	<description>Voxeo IVR Provider</description>
