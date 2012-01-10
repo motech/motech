@@ -27,7 +27,7 @@ public abstract class MotechBaseRepository<T extends MotechBaseDataObject> exten
     }
 
     private List<T> entities(String businessFieldName, String businessId) {
-        String viewName = String.format("findBy%s", businessFieldName);
+        String viewName = String.format("by_%s", businessFieldName);
         ViewQuery q = createQuery(viewName).key(businessId).includeDocs(true);
         return db.queryView(q, type);
     }

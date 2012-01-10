@@ -2,6 +2,7 @@ package org.motechproject.server.pillreminder.dao;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
+import org.ektorp.support.GenerateView;
 import org.ektorp.support.View;
 import org.joda.time.LocalDate;
 import org.motechproject.dao.MotechAuditableRepository;
@@ -20,9 +21,9 @@ public class AllPillRegimens extends MotechAuditableRepository<PillRegimen> {
         super(PillRegimen.class, db);
     }
 
-    @View(name = "findByExternalId", map = "function(doc) {if (doc.type == 'PILLREGIMEN' && doc.externalId) {emit(doc.externalId, doc._id);}}")
+    @GenerateView
     public PillRegimen findByExternalId(String externalID) {
-        ViewQuery q = createQuery("findByExternalId").key(externalID).includeDocs(true);
+        ViewQuery q = createQuery("by_externalId").key(externalID).includeDocs(true);
         List<PillRegimen> regimens = db.queryView(q, PillRegimen.class);
         return regimens.isEmpty() ? null : regimens.get(0);
     }
@@ -35,6 +36,6 @@ public class AllPillRegimens extends MotechAuditableRepository<PillRegimen> {
     }
 
     public void addOrReplace(PillRegimen pillRegimen) {
-        addOrReplace(pillRegimen, "ExternalId", pillRegimen.getExternalId());
+        addOrReplace(pillRegimen, "externalId", pillRegimen.getExternalId());
     }
 }

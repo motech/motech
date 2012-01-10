@@ -10,10 +10,8 @@ import org.motechproject.scheduletracking.api.domain.Schedule;
 import java.util.LinkedList;
 import java.util.List;
 
-@TypeDiscriminator("doc.type === 'SCHEDULE_ENROLMENT'")
+@TypeDiscriminator("doc.type === 'Enrollment'")
 public class Enrollment extends MotechAuditableDataObject {
-    @JsonProperty("type")
-    private String type = "SCHEDULE_ENROLMENT";
     private String externalId;
     private LocalDate enrolledDate;
     private String scheduleName;

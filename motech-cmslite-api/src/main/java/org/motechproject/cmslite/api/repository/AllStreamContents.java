@@ -18,7 +18,7 @@ public class AllStreamContents extends BaseContentRepository<StreamContent> {
         super(StreamContent.class, db);
     }
 
-    @View(name = "by_language_and_name", map = "function(doc) { if (doc.type=='STREAM_CONTENT') { emit([doc.language, doc.name], doc); } }")
+    @View(name = "by_language_and_name", map = "function(doc) { if (doc.type==='StreamContent') { emit([doc.language, doc.name], doc); } }")
     @Override
     public StreamContent getContent(String language, String name) {
         ViewQuery query = createQuery("by_language_and_name").key(ComplexKey.of(language, name));

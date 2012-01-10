@@ -8,14 +8,12 @@ import org.motechproject.ivr.service.CallRequest;
 
 import java.util.*;
 
-@TypeDiscriminator("doc.type === 'CALL_DETAIL_RECORD'")
+@TypeDiscriminator("doc.type === 'PhoneCall'")
 public class PhoneCall extends MotechAuditableDataObject {
     public enum Direction {
 	    INCOMING, OUTGOING
     }
 
-    @JsonProperty("type")
-    private String type = "CALL_DETAIL_RECORD";
     private String sessionId;
     private Date startDate;
     private Date endDate;

@@ -37,7 +37,7 @@ import org.motechproject.model.MotechAuditableDataObject;
 
 import java.util.Date;
 
-@TypeDiscriminator("doc.type === 'APPOINTMENT'")
+@TypeDiscriminator("doc.type === 'Appointment'")
 public class Appointment extends MotechAuditableDataObject {
 
 	private static final long serialVersionUID = 3L;
@@ -47,8 +47,6 @@ public class Appointment extends MotechAuditableDataObject {
 	private Date dueDate;
 	private Date scheduledDate;
     private String visitId;
-
-    @JsonProperty("type") private final String type = "APPOINTMENT";
 
     public String getExternalId()
     {

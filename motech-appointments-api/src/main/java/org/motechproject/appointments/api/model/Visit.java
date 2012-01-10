@@ -37,7 +37,7 @@ import org.motechproject.model.MotechAuditableDataObject;
 
 import java.util.Date;
 
-@TypeDiscriminator("doc.type === 'VISIT'")
+@TypeDiscriminator("doc.type === 'Visit'")
 public class Visit extends MotechAuditableDataObject
 {
 
@@ -45,8 +45,6 @@ public class Visit extends MotechAuditableDataObject
     private Date visitDate;
     private String title;
     private String appointmentId;
-
-    @JsonProperty("type") private final String type = "VISIT";
 
     public String getExternalId()
     {

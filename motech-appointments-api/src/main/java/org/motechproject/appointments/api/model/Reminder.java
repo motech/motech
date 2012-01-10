@@ -38,7 +38,7 @@ import org.motechproject.model.MotechAuditableDataObject;
 
 import java.util.Date;
 
-@TypeDiscriminator("doc.type === 'REMINDER'")
+@TypeDiscriminator("doc.type === 'Reminder'")
 public class Reminder extends MotechAuditableDataObject
 {
     public enum intervalUnits {SECONDS, MINUTES, HOURS, DAYS, WEEKS};
@@ -52,8 +52,6 @@ public class Reminder extends MotechAuditableDataObject
     private intervalUnits units;
     private int repeatCount;
     private String jobId;
-
-    @JsonProperty("type") private final String type = "REMINDER";
 
     public String getAppointmentId()
     {

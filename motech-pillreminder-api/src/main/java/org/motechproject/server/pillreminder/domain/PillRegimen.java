@@ -9,11 +9,8 @@ import org.motechproject.util.DateUtil;
 
 import java.util.Set;
 
-@TypeDiscriminator("doc.type === 'PILLREGIMEN'")
+@TypeDiscriminator("doc.type === 'PillRegimen'")
 public class PillRegimen extends MotechAuditableDataObject {
-
-    @JsonProperty("type")
-    private String type = "PILLREGIMEN";
     private String externalId;
     private DailyScheduleDetails scheduleDetails;
     private Set<Dosage> dosages;
