@@ -35,14 +35,14 @@ import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
 import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.model.Appointment;
-import org.motechproject.dao.MotechAuditableRepository;
+import org.motechproject.dao.MotechBaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.Collections;
 import java.util.List;
 
-public class AppointmentsCouchDBDAOImpl extends MotechAuditableRepository<Appointment> implements AppointmentsDAO
+public class AppointmentsCouchDBDAOImpl extends MotechBaseRepository<Appointment> implements AppointmentsDAO
 {
 
     @Autowired

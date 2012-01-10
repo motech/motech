@@ -31,14 +31,13 @@
  */
 package org.motechproject.appointments.api.model;
 
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.model.MotechBaseDataObject;
 
 import java.util.Date;
 
 @TypeDiscriminator("doc.type === 'Appointment'")
-public class Appointment extends MotechAuditableDataObject {
+public class Appointment extends MotechBaseDataObject {
 
 	private static final long serialVersionUID = 3L;
 

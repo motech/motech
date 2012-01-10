@@ -3,9 +3,8 @@ package org.motechproject.server.pillreminder.dao;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.GenerateView;
-import org.ektorp.support.View;
 import org.joda.time.LocalDate;
-import org.motechproject.dao.MotechAuditableRepository;
+import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class AllPillRegimens extends MotechAuditableRepository<PillRegimen> {
+public class AllPillRegimens extends MotechBaseRepository<PillRegimen> {
     @Autowired
     public AllPillRegimens(@Qualifier("pillReminderDbConnector") CouchDbConnector db) {
         super(PillRegimen.class, db);

@@ -1,17 +1,17 @@
 package org.motechproject.outbox.api.model;
 
-import java.util.Date;
-import java.util.Map;
-
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.model.MotechBaseDataObject;
+
+import java.util.Date;
+import java.util.Map;
 
 /**
  *
  */
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class OutboundVoiceMessage extends MotechAuditableDataObject {
+public class OutboundVoiceMessage extends MotechBaseDataObject {
 	private static final long serialVersionUID = 3598927460690914607L;
 	@TypeDiscriminator
 	private String partyId;

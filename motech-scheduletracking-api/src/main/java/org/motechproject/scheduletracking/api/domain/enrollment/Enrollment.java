@@ -1,9 +1,8 @@
 package org.motechproject.scheduletracking.api.domain.enrollment;
 
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.LocalDate;
-import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.model.MotechBaseDataObject;
 import org.motechproject.scheduletracking.api.domain.Alert;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 
@@ -11,7 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @TypeDiscriminator("doc.type === 'Enrollment'")
-public class Enrollment extends MotechAuditableDataObject {
+public class Enrollment extends MotechBaseDataObject {
     private String externalId;
     private LocalDate enrolledDate;
     private String scheduleName;

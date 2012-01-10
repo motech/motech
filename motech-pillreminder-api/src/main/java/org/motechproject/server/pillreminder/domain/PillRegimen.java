@@ -1,16 +1,15 @@
 package org.motechproject.server.pillreminder.domain;
 
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
-import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.model.MotechBaseDataObject;
 import org.motechproject.model.Time;
 import org.motechproject.util.DateUtil;
 
 import java.util.Set;
 
 @TypeDiscriminator("doc.type === 'PillRegimen'")
-public class PillRegimen extends MotechAuditableDataObject {
+public class PillRegimen extends MotechBaseDataObject {
     private String externalId;
     private DailyScheduleDetails scheduleDetails;
     private Set<Dosage> dosages;

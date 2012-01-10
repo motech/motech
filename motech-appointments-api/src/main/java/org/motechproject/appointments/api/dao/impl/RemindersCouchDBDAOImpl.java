@@ -35,7 +35,7 @@ import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
 import org.motechproject.appointments.api.dao.RemindersDAO;
 import org.motechproject.appointments.api.model.Reminder;
-import org.motechproject.dao.MotechAuditableRepository;
+import org.motechproject.dao.MotechBaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -44,7 +44,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Component
-public class RemindersCouchDBDAOImpl extends MotechAuditableRepository<Reminder> implements RemindersDAO
+public class RemindersCouchDBDAOImpl extends MotechBaseRepository<Reminder> implements RemindersDAO
 {
     @Autowired
     public RemindersCouchDBDAOImpl(@Qualifier("appointmentsDatabase") CouchDbConnector db) {

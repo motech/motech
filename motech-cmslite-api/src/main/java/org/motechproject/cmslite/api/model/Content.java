@@ -1,10 +1,9 @@
 package org.motechproject.cmslite.api.model;
 
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.model.MotechAuditableDataObject;
+import org.motechproject.model.MotechBaseDataObject;
 
-public abstract class Content extends MotechAuditableDataObject {
+public abstract class Content extends MotechBaseDataObject {
     @JsonProperty
     private String language;
     @JsonProperty
