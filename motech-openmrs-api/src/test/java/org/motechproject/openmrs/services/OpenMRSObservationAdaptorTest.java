@@ -56,10 +56,13 @@ public class OpenMRSObservationAdaptorTest {
         Boolean hivValue = false;
         Date expectedDeliveryDateValue = new LocalDate(2012, 12, 21).toDate();
 
+        final Concept expectedConcept = new Concept(1);
+
         MRSObservation<String> fever = new MRSObservation<String>(observationDate, conceptName, feverValue);
         MRSObservation<Double> temperature = new MRSObservation<Double>(observationDate, conceptName, temperatureValue);
         MRSObservation<Boolean> hiv = new MRSObservation<Boolean>(observationDate, conceptName, hivValue);
         MRSObservation<Date> expectedDeliveryDate = new MRSObservation<Date>(observationDate, conceptName, expectedDeliveryDateValue);
+        MRSObservation<Concept> expectedDeliveryConcept = new MRSObservation<Concept>(observationDate, conceptName, expectedConcept);
 
         Concept concept = mock(Concept.class);
         when(mockConceptAdaptor.getConceptByName(conceptName)).thenReturn(concept);
@@ -79,6 +82,10 @@ public class OpenMRSObservationAdaptorTest {
         openMrsObservation = observationAdaptor.<Date>createOpenMRSObservationForEncounter(expectedDeliveryDate, encounter, patient, facility, creator);
         assertOpenMrsObservationProperties(openMrsObservation, expectedDeliveryDate, patient, facility, encounter, creator, concept);
         assertThat(openMrsObservation.getValueDatetime(), is(equalTo(expectedDeliveryDateValue)));
+
+        openMrsObservation = observationAdaptor.<Concept>createOpenMRSObservationForEncounter(expectedDeliveryConcept, encounter, patient, facility, creator);
+        assertOpenMrsObservationProperties(openMrsObservation, expectedDeliveryConcept, patient, facility, encounter, creator, concept);
+        assertThat(openMrsObservation.getValueCoded(), is(equalTo(expectedConcept)));
     }
 
     @Test
@@ -179,21 +186,25 @@ public class OpenMRSObservationAdaptorTest {
         Obs temperature = new Obs();
         Obs expectedDeliveryDate = new Obs();
         Obs HIV = new Obs();
+        Obs conceptObs = new Obs();
 
         String feverValue = "high";
         Double temperatureValue = 99.0;
         Boolean hivValue = false;
         Date expectedDeliveryDateValue = new LocalDate(2012, 12, 21).toDate();
+        final Concept concept = new Concept(1);
 
         observationAdaptor.writeValueToOpenMRSObservation(feverValue, fever);
         observationAdaptor.writeValueToOpenMRSObservation(temperatureValue, temperature);
         observationAdaptor.writeValueToOpenMRSObservation(expectedDeliveryDateValue, expectedDeliveryDate);
         observationAdaptor.writeValueToOpenMRSObservation(hivValue, HIV);
+        observationAdaptor.writeValueToOpenMRSObservation(concept, conceptObs);
 
         assertThat(fever.getValueText(), is(equalTo(feverValue)));
         assertThat(temperature.getValueNumeric(), is(equalTo(temperatureValue)));
         assertThat(expectedDeliveryDate.getValueDatetime(), is(equalTo(expectedDeliveryDateValue)));
         assertThat(HIV.getValueAsBoolean(), is(equalTo(hivValue)));
+        assertThat(conceptObs.getValueCoded(), is(equalTo(concept)));
 
     }
     

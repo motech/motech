@@ -13,14 +13,13 @@ import java.io.IOException;
 import java.util.List;
 
 @Repository
-@View(name = "all", map = "function(doc) { if (doc.type == 'STRING_CONTENT') { emit(null, doc) } }")
 public class AllStringContents extends BaseContentRepository<StringContent> {
     @Autowired
 	protected AllStringContents(CouchDbConnector db) {
         super(StringContent.class, db);
     }
 
-    @View(name = "by_language_and_name", map = "function(doc) { if (doc.type=='STRING_CONTENT') { emit([doc.language, doc.name], doc); } }")
+    @View(name = "by_language_and_name", map = "function(doc) { if (doc.type=='StringContent') { emit([doc.language, doc.name], doc); } }")
     @Override
     public StringContent getContent(String language, String name) {
         ViewQuery query = createQuery("by_language_and_name").key(ComplexKey.of(language, name));

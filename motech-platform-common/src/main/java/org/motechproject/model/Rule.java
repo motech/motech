@@ -33,9 +33,7 @@ package org.motechproject.model;
 
 import org.ektorp.support.TypeDiscriminator;
 
-
-
-public class Rule extends MotechAuditableDataObject{
+public class Rule extends MotechBaseDataObject{
 
     private static final long serialVersionUID = 1L;
     

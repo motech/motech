@@ -9,8 +9,6 @@ import org.motechproject.util.DateUtil;
 
 @TypeDiscriminator("doc.type === 'KookooCallDetailRecord'")
 public class KookooCallDetailRecord extends MotechBaseDataObject {
-    @JsonProperty("type")
-    private String type = "KookooCallDetailRecord";
 
     private String vendorCallId;
 

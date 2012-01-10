@@ -38,12 +38,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RuleRepository extends MotechAuditableRepository<Rule>{
-    
+public class RuleRepository extends MotechBaseRepository<Rule>{
     @Autowired
     public RuleRepository(@Qualifier("ruleDatabase") CouchDbConnector db) {
         super(Rule.class, db);
-        initStandardDesignDocument();
     }
-    
 }

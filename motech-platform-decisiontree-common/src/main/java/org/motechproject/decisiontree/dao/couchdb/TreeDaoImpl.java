@@ -31,16 +31,16 @@
  */
 package org.motechproject.decisiontree.dao.couchdb;
 
-import java.util.List;
-
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
-import org.motechproject.dao.MotechAuditableRepository;
+import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.decisiontree.dao.TreeDao;
 import org.motechproject.decisiontree.model.Tree;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * Tree DAO implementation
@@ -48,7 +48,7 @@ import org.springframework.stereotype.Component;
  * 
  */
 @Component
-public class TreeDaoImpl extends MotechAuditableRepository<Tree> implements
+public class TreeDaoImpl extends MotechBaseRepository<Tree> implements
 		TreeDao {
 	@Autowired
 	protected TreeDaoImpl(@Qualifier("treesDatabase") CouchDbConnector db) {

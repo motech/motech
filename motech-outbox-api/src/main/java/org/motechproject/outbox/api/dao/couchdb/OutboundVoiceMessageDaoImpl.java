@@ -11,6 +11,7 @@ import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
 import org.ektorp.support.Views;
 import org.motechproject.dao.MotechAuditableRepository;
+import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.outbox.api.dao.InvalidDataException;
 import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
@@ -29,7 +30,7 @@ import org.springframework.stereotype.Component;
 	@View( name = "getSavedMessages", map = "function(doc) { if (doc.partyId && doc.status=='SAVED') { emit([doc.partyId, doc.expirationDate], doc._id); } }")
 })
 public class OutboundVoiceMessageDaoImpl extends
-		MotechAuditableRepository<OutboundVoiceMessage> implements
+        MotechBaseRepository<OutboundVoiceMessage> implements
 		OutboundVoiceMessageDao {
 	@Autowired
 	protected OutboundVoiceMessageDaoImpl( @Qualifier("outboxDatabase") CouchDbConnector db) {
