@@ -1,10 +1,12 @@
 package org.motechproject.dao;
 
+import org.ektorp.BulkDeleteDocument;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.CouchDbRepositorySupport;
 import org.motechproject.model.MotechBaseDataObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class MotechBaseRepository<T extends MotechBaseDataObject> extends CouchDbRepositorySupport<T> {
@@ -35,9 +37,11 @@ public abstract class MotechBaseRepository<T extends MotechBaseDataObject> exten
     }
 
     private void removeAll(List<T> entities) {
+        List<BulkDeleteDocument> bulkDeleteQueue = new ArrayList(entities.size());
         for (T entity : entities) {
-            remove(entity);
+            bulkDeleteQueue.add(BulkDeleteDocument.of(entity));
         }
+        db.executeBulk(bulkDeleteQueue);
     }
 
     public void removeAll() {
