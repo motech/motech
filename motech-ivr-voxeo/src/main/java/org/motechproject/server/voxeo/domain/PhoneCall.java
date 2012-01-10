@@ -16,8 +16,6 @@ public class PhoneCall extends MotechBaseDataObject {
 	    INCOMING, OUTGOING
     }
 
-    @JsonProperty("type")
-    private String type = "CALL_DETAIL_RECORD";
     @JsonProperty
     private String sessionId;
     private Date startDate;
