@@ -13,7 +13,6 @@ public abstract class MotechBaseRepository<T extends MotechBaseDataObject> exten
     protected MotechBaseRepository(Class<T> type, CouchDbConnector db) {
         super(type, db);
         this.type = type;
-        initStandardDesignDocument();
     }
 
     protected void addOrReplace(T entity, String businessFieldName, String businessId) {
@@ -31,26 +30,13 @@ public abstract class MotechBaseRepository<T extends MotechBaseDataObject> exten
 
     public void removeAll(String fieldName, String value) {
         List<T> entities = entities(fieldName, value);
-        removeAll(entities);
-    }
-
-    private void removeAll(List<T> entities) {
         for (T entity : entities) {
             remove(entity);
         }
     }
 
-    public void removeAll() {
-        removeAll(getAll());
-    }
-
     public void safeRemove(T entity) {
         if (contains(entity.getId()))
             remove(entity);
-    }
-
-    protected List<T> getAll(int limit) {
-        ViewQuery q = createQuery("all").limit(limit).includeDocs(true);
-        return db.queryView(q, type);
     }
 }

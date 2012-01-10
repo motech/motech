@@ -37,7 +37,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.outbox.api.dao.couchdb.OutboundVoiceMessageDaoImpl;
 import org.motechproject.outbox.api.model.MessagePriority;
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
 import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
@@ -53,41 +52,43 @@ import static org.junit.Assert.*;
 
 /**
  * @author yyonkov
+ *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/applicationOutboxAPI.xml"})
+@ContextConfiguration(locations={"/applicationOutboxAPI.xml"})
 public class OutboundVoiceMessageDaoIT {
-    @Autowired
-    private OutboundVoiceMessageDaoImpl outboundVoiceMessageDao;
+	@Autowired
+	private OutboundVoiceMessageDao outboundVoiceMessageDao;
 
     private String partyId1 = "0001";
-    private String partyId2 = "0002";
+	private String partyId2 = "0002";
 
-    @Before
-    public void setUp() {
-        outboundVoiceMessageDao.removeAll();
-        VoiceMessageType messageType = new VoiceMessageType();
-        messageType.setVoiceMessageTypeName("Play something");
-        messageType.setPriority(MessagePriority.HIGH);
-        messageType.setTemplateName("appointmentReminder");
-
-        // create messages
+	@Before
+	public void setUp() {
+		VoiceMessageType messageType = new VoiceMessageType();
+		messageType.setVoiceMessageTypeName("Play something");
+		messageType.setPriority(MessagePriority.HIGH);
+		messageType.setTemplateName("appointmentReminder");
+		
+		// create messages
         DateTime now = DateUtil.now();
-        for (int i = 0; i < 20; i++) {
-            OutboundVoiceMessage msg = new OutboundVoiceMessage();
-            msg.setVoiceMessageType(messageType);
-            msg.setPartyId(i < 10 ? partyId1 : partyId2);
-            msg.setCreationTime(now.plusDays(2).toDate());
-            msg.setExpirationDate(now.plusDays(1 - 2 * (i & 2)).toDate());
-            msg.setStatus((i & 1) > 0 ? OutboundVoiceMessageStatus.PENDING : OutboundVoiceMessageStatus.SAVED);
-            outboundVoiceMessageDao.add(msg);
-        }
-    }
+		for(int i = 0; i<20; i++) {
+			OutboundVoiceMessage msg = new OutboundVoiceMessage();
+			msg.setVoiceMessageType(messageType);
+			msg.setPartyId(i<10?partyId1:partyId2);
+			msg.setCreationTime(now.plusDays(2).toDate());
+			msg.setExpirationDate(now.plusDays(1-2*(i&2)).toDate());
+			msg.setStatus((i&1)>0?OutboundVoiceMessageStatus.PENDING:OutboundVoiceMessageStatus.SAVED);
+			outboundVoiceMessageDao.add(msg);
+		}
+	}
 
-    @After
-    public void tearDown() {
-        outboundVoiceMessageDao.removeAll();
-    }
+	@After
+	public void tearDown() {
+		for(OutboundVoiceMessage msg : outboundVoiceMessageDao.getAll()) {
+			outboundVoiceMessageDao.remove(msg);
+		}
+	}
 
     @Test
     public void shouldSaveTheListSpecifiedAsAParameter() {
@@ -118,31 +119,32 @@ public class OutboundVoiceMessageDaoIT {
     }
 
     @Test
-    public void testGetNextPendingMessage() {
-        List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getPendingMessages(partyId1);
-        assertNotNull(messages);
-        assertEquals(3, messages.size());
-        for (OutboundVoiceMessage m : messages) {
-            assertEquals(OutboundVoiceMessageStatus.PENDING, m.getStatus());
-            assertTrue(m.getExpirationDate().after(new Date()));
-        }
-    }
-
-    @Test
-    public void testGetSavedMessage() {
-        List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getSavedMessages(partyId1);
-        assertNotNull(messages);
-        assertEquals(3, messages.size());
-        for (OutboundVoiceMessage m : messages) {
-            assertEquals(OutboundVoiceMessageStatus.SAVED, m.getStatus());
-            assertTrue(m.getExpirationDate().after(new Date()));
+	public void testGetNextPendingMessage() {
+		List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getPendingMessages(partyId1);
+		assertNotNull(messages);
+		assertEquals(3, messages.size());
+		for(OutboundVoiceMessage m : messages) {
+			assertEquals(OutboundVoiceMessageStatus.PENDING, m.getStatus());
+			assertTrue(m.getExpirationDate().after(new Date()));
 //			System.out.println(m);
-        }
-    }
+		}
+	}
 
-    @Test
-    public void testGet() {
-        int count = outboundVoiceMessageDao.getPendingMessagesCount(partyId1);
-        System.out.println(count);
-    }
+	@Test
+	public void testGetSavedMessage() {
+		List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getSavedMessages(partyId1);
+		assertNotNull(messages);
+		assertEquals(3, messages.size());
+		for(OutboundVoiceMessage m : messages) {
+			assertEquals(OutboundVoiceMessageStatus.SAVED, m.getStatus());
+			assertTrue(m.getExpirationDate().after(new Date()));
+//			System.out.println(m);
+		}
+	}
+
+	@Test
+	public void testGet() {
+		int count = outboundVoiceMessageDao.getPendingMessagesCount(partyId1);
+		System.out.println(count);
+	}
 }

@@ -22,6 +22,7 @@ public abstract class MotechAuditableRepository<T extends MotechAuditableDataObj
     protected MotechAuditableRepository(Class<T> type, CouchDbConnector db) {
         super(type, db);
         this.type = type;
+        initStandardDesignDocument();
     }
 
     @Override
@@ -57,5 +58,12 @@ public abstract class MotechAuditableRepository<T extends MotechAuditableDataObj
             }
         }
         super.remove(entity);
+    }
+
+    @GenerateView
+    @Override
+    public List<T> getAll() {
+        ViewQuery q = createQuery("all").includeDocs(true);
+        return db.queryView(q, this.type);
     }
 }

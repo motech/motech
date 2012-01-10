@@ -34,7 +34,7 @@ package org.motechproject.model;
 import org.ektorp.support.TypeDiscriminator;
 
 
-@TypeDiscriminator("doc.type === 'Rule'")
+
 public class Rule extends MotechAuditableDataObject{
 
     private static final long serialVersionUID = 1L;

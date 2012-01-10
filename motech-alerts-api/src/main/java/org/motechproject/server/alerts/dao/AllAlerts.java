@@ -15,15 +15,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@View(name = "all", map = "function(doc) { if (doc.type == 'Alert') { emit(null, doc) } }")
 public class AllAlerts extends MotechBaseRepository<Alert> {
+
     @Autowired
     public AllAlerts(@Qualifier("alertDbConnector") CouchDbConnector db) {
         super(Alert.class, db);
+        initStandardDesignDocument();
     }
 
-    private List<Alert> getAllAlerts(int limit) {
-        return getAll(limit);
+    @View(name = "all", map = "function(doc) {if (doc.type == 'Alert') {emit(null, doc._id);}}")
+    private List<Alert> getAll(int limit) {
+        ViewQuery q = createQuery("all").limit(limit).includeDocs(true);
+        return db.queryView(q, Alert.class);
     }
 
     @GenerateView
@@ -50,7 +53,7 @@ public class AllAlerts extends MotechBaseRepository<Alert> {
         List<Alert> alerts = null;
 
         if (noFilters(externalId, alertType, alertStatus, alertPriority)) {
-            List<Alert> allAlerts = getAllAlerts(limit);
+            List<Alert> allAlerts = getAll(limit);
             Collections.sort(allAlerts);
             return allAlerts;
         }
