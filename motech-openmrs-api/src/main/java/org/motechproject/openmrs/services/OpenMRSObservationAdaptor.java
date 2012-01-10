@@ -40,6 +40,8 @@ public class OpenMRSObservationAdaptor {
             openMRSObservation.setValueNumeric(Boolean.TRUE.equals(value) ? 1.0 : 0.0);
         } else if (value instanceof Date) {
             openMRSObservation.setValueDatetime((Date) value);
+        } else if (value instanceof Concept) {
+            openMRSObservation.setValueCoded((Concept) value);
         } else {
             throw new IllegalArgumentException("Invalid value of the createMRSObservation- " + value);
         }
@@ -75,6 +77,8 @@ public class OpenMRSObservationAdaptor {
             return createMRSObservation(obs, obs.getValueNumeric());
         else if (datatype.isText())
             return createMRSObservation(obs, obs.getValueText());
+        else if(datatype.isCoded())
+            return createMRSObservation(obs, obs.getValueCoded());
         else
             throw new IllegalArgumentException("Invalid value of the createMRSObservation from DB-" + obs);
     }
