@@ -16,15 +16,24 @@ public class PhoneCall extends MotechAuditableDataObject {
 
     @JsonProperty("type")
     private String type = "CALL_DETAIL_RECORD";
-    private String sessionId;
+    @JsonProperty
     private Date startDate;
+    @JsonProperty
     private Date endDate;
+    @JsonProperty
     private Date answerDate;
+    @JsonProperty
     private Integer duration;
+    @JsonProperty
     private CallDetailRecord.Disposition disposition;
+    @JsonProperty
     private Direction direction;
+    @JsonProperty
     private CallRequest callRequest;
+    @JsonProperty
     private Set<PhoneCallEvent> events;
+    @JsonProperty
+    private String sessionId;
 
     public PhoneCall() {
     }

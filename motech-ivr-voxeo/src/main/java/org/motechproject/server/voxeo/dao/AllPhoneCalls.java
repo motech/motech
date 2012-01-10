@@ -17,10 +17,12 @@ public class AllPhoneCalls extends MotechAuditableRepository<PhoneCall> {
         super(PhoneCall.class, db);
     }
 
-    @View(name = "findBySessionId", map = "function(doc) {if (doc.type == 'CALLDETAILRECORD' && doc.sessionId) {emit(doc.sessionId, doc._id);}}")
+    @View(name = "findBySessionId", map = "function(doc) {if (doc.type == 'CALL_DETAIL_RECORD' && doc.sessionId) {emit(doc.sessionId, doc._id);}}")
     public PhoneCall findBySessionId(String sessionId) {
-        ViewQuery q = createQuery("findBySessionId").key(sessionId).includeDocs(true);
-        List<PhoneCall> detailRecords = db.queryView(q, PhoneCall.class);
-        return detailRecords.isEmpty() ? null : detailRecords.get(0);
+    	PhoneCall detailRecord = db.get(PhoneCall.class, sessionId);
+    	return detailRecord;
+        //ViewQuery q = createQuery("findBySessionId").key(sessionId).includeDocs(true);
+        //List<PhoneCall> detailRecords = db.queryView(q, PhoneCall.class);
+        //return detailRecords.isEmpty() ? null : detailRecords.get(0);
     }
 }

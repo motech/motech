@@ -16,4 +16,7 @@
     <bean id="allCallDetailRecords" class="org.motechproject.server.voxeo.dao.AllPhoneCalls" >
         <constructor-arg ref="voxeoDbConnector"/>
     </bean>
+    
+    <bean id="ivrService" class="org.motechproject.server.voxeo.IVRServiceImpl" /> 
+    
 </beans>

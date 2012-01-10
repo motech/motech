@@ -31,16 +31,8 @@
  */
 package org.motechproject.server.voxeo;
 
-import org.motechproject.ivr.model.CallDetailRecord;
-import org.motechproject.ivr.model.CallInitiationException;
-import org.motechproject.ivr.service.CallRequest;
-import org.motechproject.ivr.service.IVRService;
-import org.motechproject.server.voxeo.dao.AllPhoneCalls;
-import org.motechproject.server.voxeo.domain.PhoneCall;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -48,6 +40,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Date;
+
+import org.motechproject.ivr.model.CallInitiationException;
+import org.motechproject.ivr.service.CallRequest;
+import org.motechproject.ivr.model.*;
+import org.motechproject.ivr.service.IVRService;
+import org.motechproject.server.voxeo.dao.AllPhoneCalls;
+import org.motechproject.server.voxeo.domain.PhoneCall;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Voxeo specific implementation of the IVR Service interface
@@ -60,7 +60,7 @@ public class IVRServiceImpl implements IVRService
     @Autowired
     private AllPhoneCalls allPhoneCalls;
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    //private final Logger log = LoggerFactory.getLogger(this.getClass());
     public String tokenId;
 
     @Override
@@ -70,7 +70,7 @@ public class IVRServiceImpl implements IVRService
             throw new IllegalArgumentException("CallRequest can not be null");
         }
 
-        // Create a call record to track this call
+        //Create a call record to track this call
         PhoneCall phoneCall = new PhoneCall(callRequest);
         phoneCall.setDirection(PhoneCall.Direction.OUTGOING);
         phoneCall.setDisposition(CallDetailRecord.Disposition.UNKNOWN);
@@ -78,19 +78,19 @@ public class IVRServiceImpl implements IVRService
         allPhoneCalls.add(phoneCall);
 
         String voxeoURL = "http://api.voxeo.net/SessionControl/CCXML10.start";
-        //String tokenid = "tokenid=b418dfa2e50c744a8e631ea7edcc2050113f414661e4f700c0b0772381b163f0111974aa74ef9438ce6544fb";
+        String tokenId = "0858bc70143a994a9dfc42b066452d9b4a8bc96e15e6558aaa71bb1990d44e407c935af7e3958e2585b7be76";
         String phonenum = "phonenum=" + callRequest.getPhone();
         String vxmlURL =  "vxml=" + URLEncoder.encode(callRequest.getCallBackUrl());
         String externalId = "externalId=" + phoneCall.getId();
 
         if (0 != callRequest.getTimeOut()) {
-            voxeoURL += "?tokenid=" + tokenId + "&" + phonenum + "&" + vxmlURL + "&" + externalId + "&timeout=" + callRequest.getTimeOut();
+            voxeoURL += "?tokenid=" + tokenId + "&" + phonenum + "&" + vxmlURL + "&" + externalId + "&timeout=" + callRequest.getTimeOut() + "s" + "&cid=1234567890";
         } else {
             voxeoURL += "?tokenid=" + tokenId + "&" + phonenum + "&" + vxmlURL + "&" + externalId;
         }
 
-        log.info("Initiating call to: " + callRequest.getPhone() + " VXML URL: " + callRequest.getCallBackUrl());
-        log.info("Voxeo URL: " + voxeoURL);
+        //log.info("Initiating call to: " + callRequest.getPhone() + " VXML URL: " + callRequest.getCallBackUrl());
+        //log.info("Voxeo URL: " + voxeoURL);
 
         try {
             String line;
@@ -99,18 +99,17 @@ public class IVRServiceImpl implements IVRService
             URL url = new URL(voxeoURL);
 
     		BufferedReader br = new BufferedReader(new InputStreamReader((InputStream) url.getContent()));
-
 			while ((line = br.readLine()) != null)
 				result += line;
 
             if ("success" != result) {
-                log.error("Voxeo result: " + result);
+                //log.error("Voxeo result: " + result);
                 throw new CallInitiationException("Could not initiate call: non-success return from Voxeo");
             }
 		} catch (MalformedURLException e) {
-			log.error("MalformedURLException: ", e);
+			//log.error("MalformedURLException: ", e);
 		} catch (Exception e) {
-            log.error("Exception: ", e);
+            //log.error("Exception: ", e);
         }
     }
 }

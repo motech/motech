@@ -44,6 +44,8 @@ import org.motechproject.server.voxeo.domain.PhoneCallEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
@@ -65,7 +67,7 @@ public class IvrController extends MultiActionController
     private AllPhoneCalls allPhoneCalls;
 
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
-	
+
 	public ModelAndView incoming(HttpServletRequest request, HttpServletResponse response) {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
@@ -93,6 +95,7 @@ public class IvrController extends MultiActionController
 
             try {
                 allPhoneCalls.add(phoneCall);
+                System.out.println("Added new one...session id SHOULD BE THERE");
             } catch (UpdateConflictException e) {
                 // I eat this exception since it means there was a race condition and the document has already been created.
                 // I can continue with the new version
@@ -129,11 +132,13 @@ public class IvrController extends MultiActionController
 
 		ModelAndView mav = new ModelAndView();
 
+
 		String sessionId = request.getParameter("session.id");
         String externalId = request.getParameter("externalId");
 		String status = request.getParameter("status");
         String reason = request.getParameter("reason");
-        String callerId = request.getParameter("application.callerId").substring(4);
+        String callerId = "1234567890";
+        //String callerId = request.getParameter("application.callerId").substring(4);
         String timestamp = request.getParameter("timestamp");
 
 		logger.info("Recording event for outgoing call to " + callerId + " [externalId: " + externalId + "sessionId: " + sessionId + ", status: " + status + ", timestamp: " + timestamp + "]");
@@ -168,18 +173,19 @@ public class IvrController extends MultiActionController
         } catch (UpdateConflictException e) {
             // I eat this exception since it means there was a race condition and the document has already been created.
             // I can continue with the new version
-            phoneCall = allPhoneCalls.findBySessionId(sessionId);
+            phoneCall = allPhoneCalls.findBySessionId(externalId);
             phoneCall.addEvent(event);
             allPhoneCalls.update(phoneCall);
         }
 
-        return mav;
+        return null;
     }
 
     private void updateState(PhoneCall phoneCall, PhoneCallEvent event)
     {
         MotechEvent motechEvent = null;
 
+        System.out.println("Updating event status: " + event.getStatus());
         switch (event.getStatus()) {
             case ALERTING:
                 phoneCall.setStartDate(new Date(event.getTimestamp()));
