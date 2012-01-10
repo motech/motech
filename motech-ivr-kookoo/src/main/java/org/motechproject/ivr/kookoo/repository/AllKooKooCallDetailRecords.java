@@ -16,6 +16,5 @@ public class AllKooKooCallDetailRecords extends MotechBaseRepository<KookooCallD
     @Autowired
     public AllKooKooCallDetailRecords(@Qualifier("kookooIvrDbConnector") CouchDbConnector db) {
         super(KookooCallDetailRecord.class, db);
-        this.initStandardDesignDocument();
     }
 }

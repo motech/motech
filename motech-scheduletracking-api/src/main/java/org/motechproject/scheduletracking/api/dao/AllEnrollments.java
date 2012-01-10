@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
+@View(name = "all", map = "function(doc) { if (doc.type == 'SCHEDULE_ENROLMENT') { emit(null, doc) } }")
 public class AllEnrollments extends MotechAuditableRepository<Enrollment> {
     @Autowired
     public AllEnrollments(@Qualifier("scheduleTrackingDbConnector") CouchDbConnector db) {
