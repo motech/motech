@@ -39,7 +39,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-@View(name = "all", map = "function(doc) { if (doc.type == 'Rule') { emit(null, doc) } }")
 public class RuleRepository extends MotechAuditableRepository<Rule>{
     @Autowired
     public RuleRepository(@Qualifier("ruleDatabase") CouchDbConnector db) {

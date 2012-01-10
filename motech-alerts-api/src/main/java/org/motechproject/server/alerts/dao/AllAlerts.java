@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@View(name = "all", map = "function(doc) { if (doc.type == 'Alert') { emit(null, doc) } }")
 public class AllAlerts extends MotechBaseRepository<Alert> {
     @Autowired
     public AllAlerts(@Qualifier("alertDbConnector") CouchDbConnector db) {
