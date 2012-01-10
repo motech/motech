@@ -4,13 +4,13 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.7-SNAPSHOT</version>
+        <version>0.6</version>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-message-campaign</artifactId>
     <name>Motech Message Campaign</name>
     <description>Motech Message Campaign</description>
-    <version>0.7-SNAPSHOT</version>
+    <version>0.6</version>
     <dependencies>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -36,7 +36,7 @@
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-scheduler</artifactId>
-            <version>0.7-SNAPSHOT</version>
+            <version>0.6</version>
         </dependency>
         <dependency>
             <groupId>org.motechproject</groupId>
