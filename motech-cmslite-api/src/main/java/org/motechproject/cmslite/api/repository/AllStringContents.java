@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.util.List;
 
 @Repository
-@View(name = "all", map = "function(doc) { if (doc.type == 'STRING_CONTENT') { emit(null, doc) } }")
 public class AllStringContents extends BaseContentRepository<StringContent> {
     @Autowired
 	protected AllStringContents(CouchDbConnector db) {

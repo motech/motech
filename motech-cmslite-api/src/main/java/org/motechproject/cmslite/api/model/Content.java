@@ -4,7 +4,6 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechAuditableDataObject;
 
-@TypeDiscriminator("doc.type === 'CONTENT'")
 public abstract class Content extends MotechAuditableDataObject {
     @JsonProperty
     private String language;

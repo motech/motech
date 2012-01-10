@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.List;
 
 @Repository
-@View(name = "all", map = "function(doc) { if (doc.type == 'STREAM_CONTENT') { emit(null, doc) } }")
 public class AllStreamContents extends BaseContentRepository<StreamContent> {
     @Autowired
     protected AllStreamContents(CouchDbConnector db) {
