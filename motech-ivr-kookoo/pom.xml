@@ -2,7 +2,7 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.6</version>
+        <version>0.7-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -11,7 +11,7 @@
 
     <name>KooKoo IVR Provider</name>
     <description>KooKoo IVR Provider</description>
-    <version>0.6</version>
+    <version>0.7-SNAPSHOT</version>
 
     <properties>
         <spring.version>3.0.5.RELEASE</spring.version>
@@ -121,12 +121,12 @@
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-ivr</artifactId>
-            <version>0.6</version>
+            <version>0.7-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-decisiontree</artifactId>
-            <version>0.6</version>
+            <version>0.7-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
