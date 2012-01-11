@@ -9,13 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface AlertService {
-    @Deprecated
-    void createAlert(Alert alert);
-
     void create(String entityId, String name, String description, AlertType type, AlertStatus status, int priority, Map<String, String> data);
-
-    @Deprecated
-    List<Alert> getBy(String externalId, AlertType type, AlertStatus status, Integer priority, int limit);
 
     List<Alert> search(AlertCriteria alertCriteria);
 

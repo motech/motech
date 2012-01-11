@@ -15,6 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -45,7 +46,7 @@ public class AlertServiceImplIT {
         HashMap<String, String> alertData = new HashMap<String, String>();
         alertData.put("Status", "Open");
         alertData.put("Note", "This is an Alert!");
-        createAlert("111", AlertType.CRITICAL, AlertStatus.NEW, 1, alertData);
+        createAlert(UUID.randomUUID().toString(), AlertType.CRITICAL, AlertStatus.NEW, 1, alertData);
 
         List<Alert> all = allAlerts.getAll();
         assertEquals(1, all.size());
@@ -57,7 +58,7 @@ public class AlertServiceImplIT {
 
     @Test
     public void shouldChangeStatus() {
-        createAlert("111", AlertType.CRITICAL, AlertStatus.NEW, 1, new HashMap<String, String>());
+        createAlert(UUID.randomUUID().toString(), AlertType.CRITICAL, AlertStatus.NEW, 1, new HashMap<String, String>());
         Alert alert = allAlerts.getAll().get(0);
         assertEquals(AlertStatus.NEW, alert.getStatus());
 
@@ -67,10 +68,8 @@ public class AlertServiceImplIT {
         assertEquals(AlertStatus.CLOSED, alert.getStatus());
     }
 
-    private Alert createAlert(String externalId, AlertType critical, AlertStatus aNew, int priority, HashMap<String, String> alertData) {
-        Alert alert = new Alert(externalId, critical, aNew, priority, alertData);
-        alertService.createAlert(alert);
-        createdAlerts.add(alert);
-        return alert;
+    private void createAlert(String externalId, AlertType critical, AlertStatus aNew, int priority, HashMap<String, String> alertData) {
+        alertService.create(externalId, null, null, critical, aNew, priority, alertData);
+        createdAlerts.add(alertService.get(externalId));
     }
 }

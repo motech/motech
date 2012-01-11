@@ -27,20 +27,8 @@ public class AlertServiceImpl implements AlertService {
     }
 
     @Override
-    @Deprecated
-    public void createAlert(Alert alert) {
-        allAlerts.add(alert);
-    }
-
-    @Override
     public void create(String entityId, String name, String description, AlertType type, AlertStatus status, int priority, Map<String, String> data) {
         allAlerts.add(new Alert(entityId, name, description, type, status, priority, data));
-    }
-
-    @Override
-    @Deprecated
-    public List<Alert> getBy(String externalId, AlertType type, AlertStatus status, Integer priority, int limit) {
-        return allAlerts.listAlerts(externalId, type, status, priority, limit);
     }
 
     @Override
