@@ -3,28 +3,38 @@ package org.motechproject.server.voxeo.domain;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.ivr.model.CallDetailRecord;
-import org.motechproject.model.MotechAuditableDataObject;
 import org.motechproject.ivr.service.CallRequest;
+import org.motechproject.model.MotechBaseDataObject;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
-@TypeDiscriminator("doc.type === 'CALL_DETAIL_RECORD'")
-public class PhoneCall extends MotechAuditableDataObject {
+@TypeDiscriminator("doc.type === 'PhoneCall'")
+public class PhoneCall extends MotechBaseDataObject {
     public enum Direction {
 	    INCOMING, OUTGOING
     }
 
-    @JsonProperty("type")
-    private String type = "CALL_DETAIL_RECORD";
-    private String sessionId;
+    @JsonProperty
     private Date startDate;
+    @JsonProperty
     private Date endDate;
+    @JsonProperty
     private Date answerDate;
+    @JsonProperty
     private Integer duration;
+    @JsonProperty
     private CallDetailRecord.Disposition disposition;
+    @JsonProperty
     private Direction direction;
+    @JsonProperty
     private CallRequest callRequest;
+    @JsonProperty
     private Set<PhoneCallEvent> events;
+    @JsonProperty
+    private String sessionId;
 
     public PhoneCall() {
     }

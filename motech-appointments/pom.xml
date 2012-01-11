@@ -8,7 +8,7 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-appointments</artifactId>
     <version>0.7-SNAPSHOT</version>
-    <name>Motech Appointments</name>
+    <name>MoTeCH Appointments</name>
     <packaging>bundle</packaging>
     <description>Motech Appointments</description>
     <dependencies>

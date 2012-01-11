@@ -6,7 +6,7 @@
 		<version>0.7-SNAPSHOT</version>
 	</parent>
 	<artifactId>motech-platform-server-api</artifactId>
-	<name>Motech Platform Server API</name>
+	<name>MoTeCH Platform Server API</name>
 
 	<dependencies>
 		<dependency>

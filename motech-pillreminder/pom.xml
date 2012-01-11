@@ -6,7 +6,7 @@
         <version>0.7-SNAPSHOT</version>
     </parent>
     <artifactId>motech-pillreminder</artifactId>
-    <name>Motech Pill Reminder</name>
+    <name>MoTeCH Pill Reminder</name>
     <packaging>bundle</packaging>
     <description>Motech Pill Reminder</description>
     <dependencies>

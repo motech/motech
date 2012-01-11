@@ -8,7 +8,7 @@
     </parent>
     <artifactId>motech-platform-server</artifactId>
     <packaging>war</packaging>
-    <name>Motech Platform Server</name>
+    <name>MoTeCH Platform Server</name>
 
     <dependencies>
         <dependency>

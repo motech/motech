@@ -10,8 +10,6 @@ import java.util.Map;
 
 @TypeDiscriminator("doc.type == 'Alert'")
 public class Alert extends MotechBaseDataObject implements Comparable<Alert> {
-    @JsonProperty("type")
-    private String type = "Alert";
 
     private String id;
     private String externalId;

@@ -35,7 +35,7 @@ import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
 import org.motechproject.appointments.api.dao.VisitsDAO;
 import org.motechproject.appointments.api.model.Visit;
-import org.motechproject.dao.MotechAuditableRepository;
+import org.motechproject.dao.MotechBaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -44,7 +44,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Component
-public class VisitsCouchDBDAOImpl extends MotechAuditableRepository<Visit> implements VisitsDAO
+public class VisitsCouchDBDAOImpl extends MotechBaseRepository<Visit> implements VisitsDAO
 {
     @Autowired
     public VisitsCouchDBDAOImpl(@Qualifier("appointmentsDatabase") CouchDbConnector db) {

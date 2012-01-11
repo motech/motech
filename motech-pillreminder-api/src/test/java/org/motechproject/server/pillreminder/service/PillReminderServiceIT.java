@@ -44,7 +44,7 @@ public class PillReminderServiceIT {
     @Test
     public void shouldSaveTheDailyPillRegimenAndScheduleJob() throws SchedulerException {
         String externalId = "1234";
-        allPillRegimens.removeAll("ExternalId", externalId);
+        allPillRegimens.removeAll("externalId", externalId);
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 
         ArrayList<MedicineRequest> medicineRequests = new ArrayList<MedicineRequest>();

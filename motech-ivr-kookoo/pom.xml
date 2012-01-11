@@ -9,7 +9,7 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-ivr-kookoo</artifactId>
 
-    <name>KooKoo IVR Provider</name>
+    <name>MoTeCH IVR KooKoo</name>
     <description>KooKoo IVR Provider</description>
     <version>0.7-SNAPSHOT</version>
 

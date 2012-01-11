@@ -9,7 +9,7 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-platform-decisiontree</artifactId>
     <version>0.7-SNAPSHOT</version>
-    <name>Motech Platform Decision Tree</name>
+    <name>MoTeCH Platform Decision Tree</name>
     <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>

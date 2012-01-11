@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.motechproject.server.alerts.dao.AllAlerts;
 import org.motechproject.server.alerts.domain.Alert;
 import org.motechproject.server.alerts.domain.AlertStatus;
+import org.motechproject.server.alerts.domain.AlertCriteria;
 import org.motechproject.server.alerts.domain.AlertType;
 import org.motechproject.server.alerts.service.AlertService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,25 +83,25 @@ public class AlertServiceLoadTest {
 
     private long case_NoFiltering(int limit) {
         long start = System.currentTimeMillis();
-        alertService.getBy(null, null, null, null, limit);
+        alertService.search(new AlertCriteria());
         return System.currentTimeMillis() - start;
     }
 
     private long case_FilterBasedOnOneParameter(int limit) {
         long start = System.currentTimeMillis();
-        alertService.getBy(null, AlertType.HIGH, null, null, limit);
+        alertService.search(new AlertCriteria().byType(AlertType.HIGH));
         return System.currentTimeMillis() - start;
     }
 
     private long case_FilterBasedOnTwoParameters(int limit) {
         long start = System.currentTimeMillis();
-        alertService.getBy(null, AlertType.LOW, AlertStatus.NEW, null, limit);
+        alertService.search(new AlertCriteria().byType(AlertType.LOW).byStatus(AlertStatus.NEW));
         return System.currentTimeMillis() - start;
     }
 
     private long case_FilterBasedOnThreeParameters(int limit) {
         long start = System.currentTimeMillis();
-        alertService.getBy(null, AlertType.LOW, AlertStatus.NEW, 3, limit);
+        alertService.search(new AlertCriteria().byType(AlertType.LOW).byStatus(AlertStatus.NEW));
         return System.currentTimeMillis() - start;
     }
 

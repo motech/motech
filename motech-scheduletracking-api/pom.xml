@@ -6,7 +6,7 @@
         <version>0.7-SNAPSHOT</version>
     </parent>
     <artifactId>motech-scheduletracking-api</artifactId>
-    <name>Motech Schedule Tracking API</name>
+    <name>MoTeCH Schedule Tracking API</name>
     <description>Motech Schedule Tracking API</description>
     <version>0.7-SNAPSHOT</version>
     <dependencies>

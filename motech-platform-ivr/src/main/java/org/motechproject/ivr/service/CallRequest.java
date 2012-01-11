@@ -31,6 +31,7 @@
  */
 package org.motechproject.ivr.service;
 
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.motechproject.model.MotechEvent;
 
 import java.io.Serializable;
@@ -53,15 +54,23 @@ public class CallRequest implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	@JsonProperty
     private String phone;
+	@JsonProperty
     private int timeOut;
+	@JsonProperty
     private String callBackUrl;
     
+	@JsonProperty
     private Map<String, String> payload = new HashMap<String, String>();
 
+	@JsonProperty
     private MotechEvent onSuccessEvent;
+	@JsonProperty
     private MotechEvent onBusyEvent;
+	@JsonProperty
     private MotechEvent onNoAnswerEvent;
+	@JsonProperty
     private MotechEvent onFailureEvent;
 
     /**

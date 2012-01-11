@@ -7,7 +7,7 @@
   </parent>
   <groupId>org.motechproject</groupId>
   <artifactId>motech-platform-decisiontree-common</artifactId>
-  <name>Motech Platform Decision Tree Common</name>
+  <name>MoTeCH Platform Decision Tree Common</name>
   <version>0.7-SNAPSHOT</version>
     <dependencies>
         <dependency>

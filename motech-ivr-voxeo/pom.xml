@@ -8,7 +8,7 @@
 	<groupId>org.motechproject</groupId>
 	<artifactId>voxeo</artifactId>
 	<version>0.7-SNAPSHOT</version>
-	<name>Voxeo</name>
+	<name>MoTeCH IVR Voxeo</name>
 	<packaging>bundle</packaging>
 	<description>Voxeo IVR Provider</description>
 	<dependencies>

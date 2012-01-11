@@ -5,7 +5,7 @@
     <artifactId>motech</artifactId>
     <version>0.7-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>MOTECH</name>
+    <name>MoTeCH</name>
 
     <properties>
         <db.server>localhost</db.server>
@@ -16,7 +16,7 @@
     <repositories>
         <repository>
             <id>motech-repo</id>
-            <name>Motech Maven Repository</name>
+            <name>MoTeCH Maven Repository</name>
             <url>http://nexus.motechproject.org/content/repositories/public</url>
         </repository>
     </repositories>
@@ -24,7 +24,7 @@
     <pluginRepositories>
         <pluginRepository>
             <id>motech-repo</id>
-            <name>Motech Maven Repository</name>
+            <name>MoTeCH Maven Repository</name>
             <url>http://nexus.motechproject.org/content/repositories/public</url>
             <snapshots>
                 <enabled>true</enabled>
@@ -35,13 +35,13 @@
     <distributionManagement>
         <repository>
             <id>motech.nexus</id>
-            <name>Motech Releases Repository</name>
+            <name>MoTeCH Releases Repository</name>
             <url>http://nexus.motechproject.org/content/repositories/releases</url>
 	        <uniqueVersion>false</uniqueVersion>
         </repository>
         <snapshotRepository>
             <id>motech.nexus</id>
-            <name>Motech Snapshots Repository</name>
+            <name>MoTeCH Snapshots Repository</name>
             <url>http://nexus.motechproject.org/content/repositories/snapshots</url>
             <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
@@ -304,7 +304,7 @@
 
     <mailingLists>
         <mailingList>
-            <name>MOTECH Dev</name>
+            <name>MoTeCH Dev</name>
             <subscribe>motech-dev+subscribe@googlegroups.com</subscribe>
             <unsubscribe>motech-dev+unsubscribe@googlegroups.com</unsubscribe>
             <post>motech-dev@googlegroups.com</post>

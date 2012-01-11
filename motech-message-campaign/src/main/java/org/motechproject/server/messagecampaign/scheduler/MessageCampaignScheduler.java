@@ -41,7 +41,7 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage, E exte
 
     public void stop() {
         for (T message : campaign.messages()) {
-            stop(message.name());
+            stop(message.messageKey());
         }
     }
 

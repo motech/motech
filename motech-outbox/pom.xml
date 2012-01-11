@@ -9,7 +9,7 @@
 	<groupId>org.motechproject</groupId>
 	<artifactId>motech-outbox</artifactId>
 	<version>0.7-SNAPSHOT</version>
-	<name>Motech Outbox</name>
+	<name>MoTeCH Outbox</name>
 	<packaging>bundle</packaging>
 	<dependencies>
 		<dependency>

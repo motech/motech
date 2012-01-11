@@ -9,7 +9,7 @@
     <artifactId>motech-platform-scheduler</artifactId>
     <packaging>jar</packaging>
     <version>0.7-SNAPSHOT</version>
-    <name>Motech Platform Scheduler</name>
+    <name>MoTeCH Platform Scheduler</name>
 
     <properties>
         <spring.integration.version>2.0.2.BUILD-SNAPSHOT</spring.integration.version>

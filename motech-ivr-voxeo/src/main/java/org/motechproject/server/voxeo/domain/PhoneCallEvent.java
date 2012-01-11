@@ -1,5 +1,7 @@
 package org.motechproject.server.voxeo.domain;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 /**
  * Created by IntelliJ IDEA.
  * User: rob
@@ -14,7 +16,7 @@ public class PhoneCallEvent
     }
 
     public enum Reason {
-        BAD_NUMBER("badnumber"), BUSY("busy"), REJECTED("rejected"), TIMEOUT("timeout"), UNKNOWN("unknown"), UNREACHABLE("unreachable");
+        BAD_NUMBER("badnumber"), BUSY("busy"), REJECTED("rejected"), TIMEOUT("timeout"), UNKNOWN("unknown"), UNREACHABLE("unreachable"), UNAUTHORIZED("unauthorized");
 
         private String text;
 
@@ -38,9 +40,13 @@ public class PhoneCallEvent
         }
     }
 
+    @JsonProperty
     private Status status;
+    @JsonProperty
     private Reason reason;
+    @JsonProperty
     private String callerId;
+    @JsonProperty
     private Long timestamp;
 
     public Status getStatus()

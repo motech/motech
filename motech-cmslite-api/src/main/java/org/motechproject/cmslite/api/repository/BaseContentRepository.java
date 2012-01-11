@@ -3,9 +3,9 @@ package org.motechproject.cmslite.api.repository;
 import org.ektorp.CouchDbConnector;
 import org.motechproject.cmslite.api.model.CMSLiteException;
 import org.motechproject.cmslite.api.model.Content;
-import org.motechproject.dao.MotechAuditableRepository;
+import org.motechproject.dao.MotechBaseRepository;
 
-public abstract class BaseContentRepository<T extends Content> extends MotechAuditableRepository<T> {
+public abstract class BaseContentRepository<T extends Content> extends MotechBaseRepository<T> {
     protected BaseContentRepository(Class<T> type, CouchDbConnector db) {
         super(type, db);
     }

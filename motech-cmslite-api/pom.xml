@@ -10,7 +10,7 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-cmslite-api</artifactId>
 
-    <name>Motech CMS lite API</name>
+    <name>MoTeCH CMS lite API</name>
     <version>0.7-SNAPSHOT</version>
     <dependencies>
         <dependency>
