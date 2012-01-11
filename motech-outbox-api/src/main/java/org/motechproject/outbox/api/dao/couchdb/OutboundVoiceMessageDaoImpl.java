@@ -1,16 +1,10 @@
 package org.motechproject.outbox.api.dao.couchdb;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-
 import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
 import org.ektorp.support.Views;
-import org.motechproject.dao.MotechAuditableRepository;
 import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.outbox.api.dao.InvalidDataException;
 import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;
@@ -19,6 +13,11 @@ import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author yyonkov
