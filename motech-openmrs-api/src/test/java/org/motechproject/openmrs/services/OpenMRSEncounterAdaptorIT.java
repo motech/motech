@@ -49,7 +49,7 @@ public class OpenMRSEncounterAdaptorIT extends OpenMRSIntegrationTestBase {
 
     @Test
     @Transactional(readOnly = true)
-    public void shouldSaveEncounterWithObservations() throws UserAlreadyExistsException {
+    public void shouldSaveEncounterWithObservationsAndReturn() throws UserAlreadyExistsException {
 
         MRSPerson personCreator = new MRSPerson().firstName("SampleTest");
         MRSPerson personJohn = new MRSPerson().firstName("John");
@@ -63,9 +63,16 @@ public class OpenMRSEncounterAdaptorIT extends OpenMRSIntegrationTestBase {
         observations.add(new MRSObservation(new Date(), "SERIAL NUMBER", "free text data serail number"));
         observations.add(new MRSObservation(new Date(), "NEXT ANC DATE", new DateTime(2012, 11, 10, 1, 10).toDate()));
         observations.add(new MRSObservation(new Date(), "PREGNANCY STATUS", false));
-        MRSEncounter expectedEncounter = new MRSEncounter(provider.getId(), userCreator.getId(), facility.getId(), new Date(), patientAlan.getId(), observations, "PEDSRETURN");
+        final String encounterType = "PEDSRETURN";
+        MRSEncounter expectedEncounter = new MRSEncounter(provider.getId(), userCreator.getId(), facility.getId(), new Date(), patientAlan.getId(), observations, encounterType);
         MRSEncounter actualMRSEncounter = mrsEncounterAdaptor.createEncounter(expectedEncounter);
-        
+        compareEncounters(expectedEncounter, actualMRSEncounter);
+
+        final MRSEncounter mrsEncounter = mrsEncounterAdaptor.getLatestEncounterByPatientMotechId(patientAlan.getMotechId(), encounterType);
+        compareEncounters(expectedEncounter, mrsEncounter);
+    }
+
+    private void compareEncounters(MRSEncounter expectedEncounter, MRSEncounter actualMRSEncounter) {
         assertEquals(expectedEncounter.getDate(), actualMRSEncounter.getDate());
         assertEquals(expectedEncounter.getCreator().getId(), actualMRSEncounter.getCreator().getId());
         assertEquals(expectedEncounter.getProvider().getId(), actualMRSEncounter.getProvider().getId());
@@ -93,7 +100,7 @@ public class OpenMRSEncounterAdaptorIT extends OpenMRSIntegrationTestBase {
 
     private void assertObservation(Set<MRSObservation> expectedSet, Set<MRSObservation> actualSet) {
         assertEquals(expectedSet.size(), actualSet.size());
-        for(MRSObservation actual : actualSet) {
+        for (MRSObservation actual : actualSet) {
             assertTrue("Observation not same" + actual + " - expected set is " + expectedSet, isObservationPresent(expectedSet, actual));
         }
     }
@@ -109,7 +116,7 @@ public class OpenMRSEncounterAdaptorIT extends OpenMRSIntegrationTestBase {
         });
         return isNotEmpty(mrsObservations) && mrsObservations.get(0) != null;
     }
-    
+
     private boolean assertObservation(MRSObservation expected, MRSObservation actual) {
         return new EqualsBuilder().append(expected.getConceptName(), actual.getConceptName())
                 .append(expected.getDate(), actual.getDate())

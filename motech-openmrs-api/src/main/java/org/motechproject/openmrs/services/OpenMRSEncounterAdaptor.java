@@ -6,8 +6,13 @@ import org.openmrs.*;
 import org.openmrs.api.EncounterService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
+
+import static ch.lambdaj.Lambda.on;
+import static ch.lambdaj.Lambda.sort;
 
 public class OpenMRSEncounterAdaptor implements MRSEncounterAdaptor {
     @Autowired
@@ -28,9 +33,29 @@ public class OpenMRSEncounterAdaptor implements MRSEncounterAdaptor {
     }
 
     @Override
-    public MRSEncounter createEncounter(MRSEncounter MRSEncounter) {
-        Encounter savedEncounter = encounterService.saveEncounter(mrsToOpenMRSEncounter(MRSEncounter));
+    public MRSEncounter createEncounter(MRSEncounter mrsEncounter) {
+        Encounter savedEncounter = encounterService.saveEncounter(mrsToOpenMRSEncounter(mrsEncounter));
         return openmrsToMrsEncounter(savedEncounter);
+    }
+
+    @Override
+    public MRSEncounter getLatestEncounterByPatientMotechId(String motechId, String encounterType) {
+        final List<Encounter> encounters = encounterService.getEncountersByPatientIdentifier(motechId);
+        final ArrayList<Encounter> encountersByType = new ArrayList<Encounter>();
+        for (Encounter encounter : encounters) {
+            if (encounterType.equals(encounter.getEncounterType().getName())) {
+                encountersByType.add(encounter);
+            }
+        }
+        if (encountersByType.isEmpty()) {
+            return null;
+        }
+        if (encountersByType.size() == 1) {
+            return openmrsToMrsEncounter(encountersByType.get(0));
+        }
+        final List<Object> sortedEncounters = sort(encountersByType,
+                on(Encounter.class).getEncounterDatetime());
+        return openmrsToMrsEncounter((Encounter) sortedEncounters.get(sortedEncounters.size() - 1));
     }
 
     MRSEncounter openmrsToMrsEncounter(Encounter openMrsEncounter) {

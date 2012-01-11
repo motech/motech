@@ -11,6 +11,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.*;
 
+import static junit.framework.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -167,5 +168,42 @@ public class OpenMRSEncounterAdaptorTest {
 
         MRSEncounter returnedMRSEncounterAfterSaving = encounterAdaptorSpy.createEncounter(mrsEncounter);
         assertThat(returnedMRSEncounterAfterSaving, is(equalTo(savedMrsEncounter)));
+    }
+    
+    @Test
+    public void shouldFetchLatestEncounterForMotechId() {
+        String encounterType = "Encounter Type";
+        String motechId = "1234567";
+        encounterAdaptor.getLatestEncounterByPatientMotechId(motechId, encounterType);
+        verify(mockEncounterService).getEncountersByPatientIdentifier(motechId);
+    }
+         
+    @Test
+    public void shouldFetchTheLatestEncounterIfThereAreMoreThanOneEncounters() {
+        String encounterName = "Encounter Type";
+        String motechId = "1234567";
+        Encounter encounter1 = new Encounter(1);
+        EncounterType encounterType1 = new EncounterType();
+        encounterType1.setName(encounterName);
+        encounter1.setEncounterType(encounterType1);
+        Date encounterDatetime1 = new Date(1999, 11, 2);
+        encounter1.setEncounterDatetime(encounterDatetime1);
+        Encounter encounter2 = new Encounter(2);
+        encounter2.setEncounterType(encounterType1);
+        encounter2.setEncounterDatetime(new Date(1998,11,6));
+        
+        when(mockEncounterService.getEncountersByPatientIdentifier(motechId)).thenReturn(Arrays.asList(encounter1,encounter2));
+        MRSEncounter actualEncounter = encounterAdaptor.getLatestEncounterByPatientMotechId(motechId, encounterName);
+        
+        assertThat(actualEncounter.getDate(), is(equalTo(encounterDatetime1)));
+    }
+    
+    @Test
+    public void shouldReturnNullIfEncounterIsNotFound() {
+        final String motechId = "1332";
+        final String encounterName = "patientRegistration";
+        when(mockEncounterService.getEncountersByPatientIdentifier(motechId)).thenReturn(Collections.<Encounter>emptyList());
+        MRSEncounter patientRegistration = encounterAdaptor.getLatestEncounterByPatientMotechId(motechId, encounterName);
+        assertNull(patientRegistration);
     }
 }
