@@ -7,7 +7,7 @@
         <version>0.7-SNAPSHOT</version>
     </parent>
     <artifactId>motech-mobileforms-api</artifactId>
-    <name>Motech Mobile Forms API</name>
+    <name>MoTeCH Mobile Forms API</name>
     <description>Motech Mobile Forms API</description>
     <version>0.7-SNAPSHOT</version>
     <dependencies>

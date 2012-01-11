@@ -6,7 +6,7 @@
         <version>0.7-SNAPSHOT</version>
     </parent>
     <artifactId>motech-appointments-api</artifactId>
-    <name>Motech Appointments API</name>
+    <name>MoTeCH Appointments API</name>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>

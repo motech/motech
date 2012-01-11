@@ -7,7 +7,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>motech-openmrs-api</artifactId>
-    <name>Motech OpenMRS API</name>
+    <name>MoTeCH OpenMRS API</name>
     <description>Motech interface to OpenMRS</description>
 
     <properties>

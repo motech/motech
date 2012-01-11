@@ -6,7 +6,7 @@
 		<version>0.7-SNAPSHOT</version>
 	</parent>
 	<artifactId>motech-platform-common</artifactId>
-	<name>Motech Platform Common</name>
+	<name>MoTeCH Platform Common</name>
 
 	<dependencies>
         <dependency>

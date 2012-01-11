@@ -6,7 +6,7 @@
         <version>0.7-SNAPSHOT</version>
     </parent>
     <artifactId>motech-pillreminder-api</artifactId>
-    <name>Motech Pill Reminder API</name>
+    <name>MoTeCH Pill Reminder API</name>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>

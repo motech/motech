@@ -8,7 +8,7 @@
 	<groupId>org.motechproject</groupId>
 	<artifactId>motech-demo</artifactId>
 	<version>0.7-SNAPSHOT</version>
-	<name>Motech Demo App</name>
+	<name>MoTeCH Demo App</name>
 	<packaging>bundle</packaging>
 	<description>Motech Demo Application</description>
 	<dependencies>
