@@ -80,7 +80,7 @@ DELIVER_MESSAGES_FILE=deliver_messages.csv
 LOOPBACK=FALSE
 
 # ESME to ESME routing
-ESME_TO_ESME=true
+ESME_TO_ESME=false
 
 # QUEUES
 # Maximum size parameters are expressed as max number of objects the queue can hold
