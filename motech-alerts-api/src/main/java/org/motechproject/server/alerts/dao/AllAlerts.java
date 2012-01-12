@@ -4,6 +4,8 @@ import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.GenerateView;
 import org.ektorp.support.View;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.server.alerts.domain.Alert;
 import org.motechproject.server.alerts.domain.AlertStatus;
@@ -43,6 +45,10 @@ public class AllAlerts extends MotechBaseRepository<Alert> {
     @GenerateView
     public List<Alert> findByPriority(int priority) {
         return queryView("by_priority", priority);
+    }
+
+    public List<Alert> findByDateRange(DateTime fromDate, DateTime toDate) {
+        return new ArrayList<Alert>();
     }
 
     public List<Alert> listAlerts(String externalId, AlertType alertType, AlertStatus alertStatus, Integer alertPriority, int limit) {

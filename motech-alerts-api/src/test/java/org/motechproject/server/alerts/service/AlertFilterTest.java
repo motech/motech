@@ -45,4 +45,9 @@ public class AlertFilterTest {
         when(allAlerts.findByAlertType(AlertType.HIGH)).thenReturn(alerts);
         assertEquals(alerts, alertFilter.search(new AlertCriteria().byType(AlertType.HIGH)));
     }
+
+    @Test
+    public void shouldSearchByPrimaryCriterion_AsDateRange() {
+        assertEquals(0, alertFilter.search(new AlertCriteria().byDateRange(null, null)).size());
+    }
 }

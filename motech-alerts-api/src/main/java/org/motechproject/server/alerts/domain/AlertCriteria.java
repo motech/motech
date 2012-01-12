@@ -1,5 +1,7 @@
 package org.motechproject.server.alerts.domain;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,11 +10,9 @@ public class AlertCriteria {
     private String externalId;
     private AlertStatus alertStatus;
     private AlertType alertType;
+    private DateTime fromDate;
+    private DateTime toDate;
     private int alertPriority;
-
-    public enum Criterion {
-        externalId, alertStatus, alertType, alertPriority
-    }
 
     private List<Criterion> orderedFilters;
 
@@ -62,5 +62,20 @@ public class AlertCriteria {
 
     public int alertPriority() {
         return this.alertPriority;
+    }
+
+    public AlertCriteria byDateRange(DateTime fromDate, DateTime toDate) {
+        this.fromDate = fromDate;
+        this.toDate = toDate;
+        this.orderedFilters.add(Criterion.dateRange);
+        return this;
+    }
+
+    public DateTime fromDate() {
+        return fromDate;
+    }
+
+    public DateTime toDate() {
+        return toDate;
     }
 }

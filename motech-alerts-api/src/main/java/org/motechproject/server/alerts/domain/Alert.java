@@ -1,5 +1,6 @@
 package org.motechproject.server.alerts.domain;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
@@ -63,6 +64,11 @@ public class Alert extends MotechBaseDataObject implements Comparable<Alert> {
 
     public DateTime getDateTime() {
         return DateUtil.setTimeZone(dateTime);
+    }
+
+    @JsonIgnore
+    public long getDateTimeInMillis() {
+        return getDateTime().getMillis();
     }
 
     public int getPriority() {
