@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:applicationSmsSmpp.xml"})
+@ContextConfiguration(locations = {"classpath:testApplicationSmsSmpp.xml"})
 public class SmsIT {
 
     @Autowired
