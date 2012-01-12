@@ -1,5 +1,6 @@
 package org.motechproject.server.alerts.domain;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
@@ -25,6 +26,12 @@ public class Alert extends MotechBaseDataObject implements Comparable<Alert> {
     public Alert() {
     }
 
+    public Alert(String externalId, String name, String description, AlertType alertType, AlertStatus status, int priority, Map<String, String> data) {
+        this(externalId, alertType, status, priority, data);
+        this.name = name;
+        this.description = description;
+    }
+
     public Alert(String externalId, AlertType alertType, AlertStatus status, int priority, Map<String, String> data) {
         this.externalId = externalId;
         this.alertType = alertType;
@@ -32,17 +39,6 @@ public class Alert extends MotechBaseDataObject implements Comparable<Alert> {
         this.priority = priority;
         this.dateTime = DateUtil.now();
         this.data = data;
-    }
-
-    public Alert(String externalId, String name, String description, AlertType alertType, AlertStatus status, int priority, Map<String, String> data) {
-        this.externalId = externalId;
-        this.name = name;
-        this.description = description;
-        this.alertType = alertType;
-        this.status = status;
-        this.priority = priority;
-        this.data = data;
-        this.dateTime = DateUtil.now();
     }
 
     public String getId() {
@@ -63,6 +59,11 @@ public class Alert extends MotechBaseDataObject implements Comparable<Alert> {
 
     public DateTime getDateTime() {
         return DateUtil.setTimeZone(dateTime);
+    }
+
+    @JsonIgnore
+    public long getDateTimeInMillis() {
+        return getDateTime().getMillis();
     }
 
     public int getPriority() {
