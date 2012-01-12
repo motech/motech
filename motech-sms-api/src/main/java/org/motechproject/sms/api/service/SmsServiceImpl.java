@@ -55,7 +55,7 @@ public class SmsServiceImpl implements SmsService {
 
 	private void raiseSendSmsEvent(final List<String> recipients, final String message, final DateTime deliveryTime) {
         for (String partMessage : messageSplitter.split(message, PART_MESSAGE_SIZE, PART_MESSAGE_HEADER_TEMPLATE, PART_MESSAGE_FOOTER)) {
-            log.info(String.format("Putting event on relay to send message %s to number %s", message, recipients));
+            log.info(String.format("Putting event on relay to send message %s to number %s", partMessage, recipients));
             HashMap<String, Object> parameters = new HashMap<String, Object>();
             parameters.put(EventKeys.RECIPIENTS, recipients);
             parameters.put(EventKeys.MESSAGE, partMessage);
