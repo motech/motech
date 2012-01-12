@@ -3,7 +3,6 @@ package org.motechproject.server.alerts.domain;
 import ch.lambdaj.Lambda;
 import org.motechproject.server.alerts.dao.AllAlerts;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.having;
@@ -63,7 +62,7 @@ public enum Criterion  {
     dateRange {
         @Override
         public List<Alert> fetch(AllAlerts allAlerts, AlertCriteria criteria) {
-            return allAlerts.findByDateRange(criteria.fromDate(), criteria.toDate());
+            return allAlerts.findByDateTime(criteria.fromDate(), criteria.toDate());
         }
 
         @Override

@@ -1,5 +1,6 @@
 package org.motechproject.server.alerts.dao;
 
+import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.GenerateView;
@@ -47,8 +48,10 @@ public class AllAlerts extends MotechBaseRepository<Alert> {
         return queryView("by_priority", priority);
     }
 
-    public List<Alert> findByDateRange(DateTime fromDate, DateTime toDate) {
-        return new ArrayList<Alert>();
+    @GenerateView
+    public List<Alert> findByDateTime(DateTime fromDate, DateTime toDate) {
+        ViewQuery q = createQuery("by_dateTime").startKey(fromDate).endKey(toDate).includeDocs(true);
+        return db.queryView(q, Alert.class);
     }
 
     public List<Alert> listAlerts(String externalId, AlertType alertType, AlertStatus alertStatus, Integer alertPriority, int limit) {

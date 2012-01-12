@@ -35,7 +35,7 @@ public class CriterionTest {
         ArrayList<Alert> expectedAlerts = new ArrayList<Alert>() {{
             add(new Alert());
         }};
-        when(allAlerts.findByDateRange(fromDate, toDate)).thenReturn(expectedAlerts);
+        when(allAlerts.findByDateTime(fromDate, toDate)).thenReturn(expectedAlerts);
 
         List<Alert> actualAlerts = Criterion.dateRange.fetch(allAlerts, alertCriteria);
         assertEquals(expectedAlerts.size(), actualAlerts.size());
