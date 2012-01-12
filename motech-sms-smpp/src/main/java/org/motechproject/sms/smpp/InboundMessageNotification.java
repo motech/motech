@@ -1,5 +1,6 @@
 package org.motechproject.sms.smpp;
 
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
@@ -19,7 +20,7 @@ import static org.motechproject.sms.smpp.constants.EventKeys.TIMESTAMP;
 
 @Component
 public class InboundMessageNotification implements IInboundMessageNotification {
-
+	private static final Logger log = Logger.getLogger(InboundMessageNotification.class);
     private EventRelay eventRelay;
 
     @Autowired
@@ -29,9 +30,13 @@ public class InboundMessageNotification implements IInboundMessageNotification {
 
     @Override
     public void process(AGateway gateway, Message.MessageTypes msgType, InboundMessage msg) {
-        if (!msgType.equals(Message.MessageTypes.INBOUND))
-            return;
-        HashMap<String, Object> data = new HashMap<String, Object>();
+	    log.info(String.format("Inbound notification from (%s) with message (%s) of type (%s) received from gateway (%s)", msg.getOriginator(), msg.getText(), msgType.toString(), gateway.getGatewayId()));
+
+	    if (!msgType.equals(Message.MessageTypes.INBOUND)) {
+	        return;
+        }
+
+	    HashMap<String, Object> data = new HashMap<String, Object>();
         data.put(SENDER, msg.getOriginator());
         data.put(INBOUND_MESSAGE, msg.getText());
         data.put(TIMESTAMP, new DateTime(msg.getDate()));
