@@ -14,9 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
-import static org.motechproject.sms.smpp.constants.EventKeys.INBOUND_MESSAGE;
-import static org.motechproject.sms.smpp.constants.EventKeys.SENDER;
-import static org.motechproject.sms.smpp.constants.EventKeys.TIMESTAMP;
+import static org.motechproject.sms.smpp.constants.EventKeys.*;
 
 @Component
 public class InboundMessageNotification implements IInboundMessageNotification {
@@ -40,6 +38,6 @@ public class InboundMessageNotification implements IInboundMessageNotification {
         data.put(SENDER, msg.getOriginator());
         data.put(INBOUND_MESSAGE, msg.getText());
         data.put(TIMESTAMP, new DateTime(msg.getDate()));
-        eventRelay.sendEventMessage(new MotechEvent(EventSubject.INBOUND_SMS, data));
+	    eventRelay.sendEventMessage(new MotechEvent(EventSubject.INBOUND_SMS, data));
     }
 }
