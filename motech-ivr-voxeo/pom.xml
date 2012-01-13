@@ -6,7 +6,7 @@
 		<version>0.7-SNAPSHOT</version>
 	</parent>
 	<groupId>org.motechproject</groupId>
-	<artifactId>voxeo</artifactId>
+	<artifactId>motech-ivr-voxeo</artifactId>
 	<version>0.7-SNAPSHOT</version>
 	<name>MoTeCH IVR Voxeo</name>
 	<packaging>bundle</packaging>
