@@ -10,6 +10,7 @@ import org.motechproject.mobileforms.api.validator.annotations.ValidationMarker;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.motechproject.mobileforms.api.utils.CollectionUtils.addIfNotNull;
@@ -20,7 +21,7 @@ public abstract class FormValidator <V extends FormBean>{
     public List<FormError> validate(final V formBean) {
 
         List<FormError> formErrors = new ArrayList<FormError>();
-        for (Field field : formBean.getClass().getDeclaredFields()) {
+        for (Field field : getInheritedFields(formBean.getClass())) {
             String fieldName = null;
             try {
                 fieldName = field.getName();
@@ -51,4 +52,12 @@ public abstract class FormValidator <V extends FormBean>{
             throw new MotechException("Exception while instantiating validation handler, this should never happen", e);
         }
     }
+
+    public static List<Field> getInheritedFields(Class<?> type) {
+       List<Field> fields = new ArrayList<Field>();
+       for (Class<?> c = type; c != null && !c.equals(FormBean.class); c = c.getSuperclass()) {
+           fields.addAll(Arrays.asList(c.getDeclaredFields()));
+       }
+       return fields;
+   }
 }
