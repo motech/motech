@@ -25,9 +25,9 @@ public class ScheduleFactory {
             ScheduleWindowsRecord windowsRecord = milestoneRecord.scheduleWindowsRecord();
             Milestone milestone = new Milestone(milestoneRecord.name(), lastMilestone, wallTime(windowsRecord.earliest()), wallTime(windowsRecord.due()), wallTime(windowsRecord.late()), wallTime(windowsRecord.max()));
 
-            milestone.data(milestoneRecord.data());
+            milestone.setData(milestoneRecord.data());
             for (AlertRecord alertRecord : milestoneRecord.alerts()) {
-                MilestoneWindow milestoneWindow = milestone.window(WindowName.valueOf(alertRecord.window()));
+                MilestoneWindow milestoneWindow = milestone.getMilestoneWindow(WindowName.valueOf(alertRecord.window()));
                 milestoneWindow.addAlert(new AlertConfiguration(WallTimeFactory.create(alertRecord.startOffset()), WallTimeFactory.create(alertRecord.interval()), Integer.parseInt(alertRecord.count())));
             }
 

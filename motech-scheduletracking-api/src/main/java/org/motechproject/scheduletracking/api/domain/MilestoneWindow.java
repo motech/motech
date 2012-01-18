@@ -32,7 +32,7 @@ public class MilestoneWindow {
         return daysElapsed >= startOnDay && daysElapsed <= endsOnDay;
     }
 
-    private int toDays(Period period) {
+    private static int toDays(Period period) {
         return period.toStandardDays().getDays();
     }
 }

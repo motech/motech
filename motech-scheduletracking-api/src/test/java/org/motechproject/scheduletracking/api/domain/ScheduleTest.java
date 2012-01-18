@@ -4,7 +4,6 @@ import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.scheduletracking.api.BaseScheduleTrackingTest;
-import org.motechproject.scheduletracking.api.domain.enrollment.Enrollment;
 
 import java.util.List;
 
@@ -23,22 +22,15 @@ public class ScheduleTest extends BaseScheduleTrackingTest {
     }
 
     @Test
-    public void shouldCreateEnrollment() {
-        Enrollment enrollment = schedule.newEnrollment("ID-007");
-        assertThat(enrollment.getScheduleName(), is(equalTo(schedule.getName())));
-        assertThat(enrollment.getNextMilestone(), is(equalTo(schedule.getFirstMilestone().getName())));
-    }
-
-    @Test
     public void shouldGetAMilestoneBasedOnName() {
         String milestoneName = "First Shot";
-        assertThat(schedule.milestone(milestoneName).getName(), is(equalTo(milestoneName)));
+        assertThat(schedule.getMilestone(milestoneName).getName(), is(equalTo(milestoneName)));
 
         milestoneName = "Second Shot";
-        assertThat(schedule.milestone(milestoneName).getName(), is(equalTo(milestoneName)));
+        assertThat(schedule.getMilestone(milestoneName).getName(), is(equalTo(milestoneName)));
 
         milestoneName = "Non Existent";
-        assertThat(schedule.milestone(milestoneName), is(nullValue()));
+        assertThat(schedule.getMilestone(milestoneName), is(nullValue()));
     }
 
     @Test

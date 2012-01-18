@@ -19,25 +19,25 @@ public class MilestoneTest extends BaseScheduleTrackingTest {
 
     @Test
     public void window() {
-        assertNotNull(milestone.window(WindowName.Upcoming));
+        assertNotNull(milestone.getMilestoneWindow(WindowName.Upcoming));
     }
 
     @Test
     public void verifyTheStateOfAMilestone() {
-        assertEquals(WindowName.Waiting, milestone.applicableWindow(daysAgo(2)));
-        assertEquals(WindowName.Waiting, milestone.applicableWindow(daysAgo(7)));
-        assertEquals(WindowName.Upcoming, milestone.applicableWindow(daysAgo(8)));
-        assertEquals(WindowName.Upcoming, milestone.applicableWindow(daysAgo(9)));
-        assertEquals(WindowName.Upcoming, milestone.applicableWindow(daysAgo(14)));
-	    assertEquals(WindowName.Due, milestone.applicableWindow(daysAgo(15)));
-	    assertEquals(WindowName.Due, milestone.applicableWindow(daysAgo(16)));
-        assertEquals(WindowName.Due, milestone.applicableWindow(daysAgo(21)));
-        assertEquals(WindowName.Late, milestone.applicableWindow(daysAgo(22)));
-        assertEquals(WindowName.Late, milestone.applicableWindow(daysAgo(28)));
-        assertEquals(WindowName.Past, milestone.applicableWindow(daysAgo(29)));
+        assertEquals(WindowName.Waiting, milestone.getApplicableWindow(daysAgo(2)));
+        assertEquals(WindowName.Waiting, milestone.getApplicableWindow(daysAgo(7)));
+        assertEquals(WindowName.Upcoming, milestone.getApplicableWindow(daysAgo(8)));
+        assertEquals(WindowName.Upcoming, milestone.getApplicableWindow(daysAgo(9)));
+        assertEquals(WindowName.Upcoming, milestone.getApplicableWindow(daysAgo(14)));
+	    assertEquals(WindowName.Due, milestone.getApplicableWindow(daysAgo(15)));
+	    assertEquals(WindowName.Due, milestone.getApplicableWindow(daysAgo(16)));
+        assertEquals(WindowName.Due, milestone.getApplicableWindow(daysAgo(21)));
+        assertEquals(WindowName.Late, milestone.getApplicableWindow(daysAgo(22)));
+        assertEquals(WindowName.Late, milestone.getApplicableWindow(daysAgo(28)));
+        assertEquals(WindowName.Past, milestone.getApplicableWindow(daysAgo(29)));
 
-        assertEquals(WindowName.Due, anotherMilestone.applicableWindow(daysAgo(21)));
-        assertEquals(WindowName.Past, anotherMilestone.applicableWindow(daysAgo(22)));
-        assertEquals(WindowName.Past, anotherMilestone.applicableWindow(daysAgo(30)));
+        assertEquals(WindowName.Due, anotherMilestone.getApplicableWindow(daysAgo(21)));
+        assertEquals(WindowName.Past, anotherMilestone.getApplicableWindow(daysAgo(22)));
+        assertEquals(WindowName.Past, anotherMilestone.getApplicableWindow(daysAgo(30)));
     }
 }

@@ -14,7 +14,7 @@ public class Enrollment extends MotechBaseDataObject {
 	private static final long serialVersionUID = 5097894298798275204L;
 
 	private String externalId;
-    private LocalDate enrolledDate;
+    private LocalDate enrollmentDate;
     private String scheduleName;
     private List<MilestoneFulfillment> fulfillments = new LinkedList<MilestoneFulfillment>();
     private String nextMilestone;
@@ -22,15 +22,15 @@ public class Enrollment extends MotechBaseDataObject {
     private Enrollment() {
     }
 
-    public Enrollment(String externalId, LocalDate enrolledDate, String scheduleName, String firstMilestone) {
+    public Enrollment(String externalId, LocalDate enrollmentDate, String scheduleName, String firstMilestone) {
         this.externalId = externalId;
-        this.enrolledDate = enrolledDate;
+        this.enrollmentDate = enrollmentDate;
         this.scheduleName = scheduleName;
         this.nextMilestone = firstMilestone;
     }
 
     public List<Alert> getAlerts(Schedule schedule) {
-        LocalDate dateLastFulfilled = getEnrolledDate();
+        LocalDate dateLastFulfilled = getEnrollmentDate();
 
         if (!fulfillments.isEmpty()) {
             MilestoneFulfillment fulfillment = fulfillments.get(fulfillments.size() - 1);
@@ -77,12 +77,12 @@ public class Enrollment extends MotechBaseDataObject {
         this.externalId = externalId;
     }
 
-    public LocalDate getEnrolledDate() {
-        return enrolledDate;
+    public LocalDate getEnrollmentDate() {
+        return enrollmentDate;
     }
 
-    public void setEnrolledDate(LocalDate enrolledDate) {
-        this.enrolledDate = enrolledDate;
+    public void setEnrollmentDate(LocalDate enrollmentDate) {
+        this.enrollmentDate = enrollmentDate;
     }
 
     public String getNextMilestone() {
