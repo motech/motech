@@ -23,6 +23,7 @@ public class Context {
     private String password;
     private String openmrsUser;
     private String openmrsPassword;
+    private static final String ENABLE_HIBERNATE_SECOND_LEVEL_CACHE = "hibernate.cache.use_second_level_cache";
 
     public Context(String url, String user, String password, String openmrsUser, String openmrsPassword) {
         this.url = url;
@@ -39,6 +40,7 @@ public class Context {
         String path = getClass().getClassLoader().getResource("openmrs-data").toURI().getPath();
         logger.warn(format("openmrs data folder is  set to %s", path));
         properties.setProperty(APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, path);
+        properties.setProperty(ENABLE_HIBERNATE_SECOND_LEVEL_CACHE, String.valueOf(false));
         startup(url, user, password, properties);
         logger.warn(format("loaded %d modules", ModuleFactory.getLoadedModules().size()));
     }
