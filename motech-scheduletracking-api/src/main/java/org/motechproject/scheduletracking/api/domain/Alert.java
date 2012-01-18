@@ -10,7 +10,7 @@ public class Alert {
 
     public Alert(WindowName windowName, Milestone milestone) {
         this.windowName = windowName;
-        this.milestoneName = milestone.name();
+        this.milestoneName = milestone.getName();
         data = milestone.data();
     }
 

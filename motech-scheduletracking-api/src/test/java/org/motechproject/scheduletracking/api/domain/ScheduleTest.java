@@ -26,16 +26,16 @@ public class ScheduleTest extends BaseScheduleTrackingTest {
     public void shouldCreateEnrollment() {
         Enrollment enrollment = schedule.newEnrollment("ID-007");
         assertThat(enrollment.getScheduleName(), is(equalTo(schedule.getName())));
-        assertThat(enrollment.getNextMilestone(), is(equalTo(schedule.getFirstMilestone().name())));
+        assertThat(enrollment.getNextMilestone(), is(equalTo(schedule.getFirstMilestone().getName())));
     }
 
     @Test
     public void shouldGetAMilestoneBasedOnName() {
         String milestoneName = "First Shot";
-        assertThat(schedule.milestone(milestoneName).name(), is(equalTo(milestoneName)));
+        assertThat(schedule.milestone(milestoneName).getName(), is(equalTo(milestoneName)));
 
         milestoneName = "Second Shot";
-        assertThat(schedule.milestone(milestoneName).name(), is(equalTo(milestoneName)));
+        assertThat(schedule.milestone(milestoneName).getName(), is(equalTo(milestoneName)));
 
         milestoneName = "Non Existent";
         assertThat(schedule.milestone(milestoneName), is(nullValue()));
@@ -52,7 +52,7 @@ public class ScheduleTest extends BaseScheduleTrackingTest {
         Milestone milestone = new Milestone("One", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         Schedule schedule = new Schedule("foo", wallTimeOf(10), milestone);
 
-        List<Alert> alerts = schedule.alertsFor(weeksAgo(2), milestone.name());
+        List<Alert> alerts = schedule.alertsFor(weeksAgo(2), milestone.getName());
         assertThat(alerts.size(), is(equalTo(0)));
     }
 
@@ -61,7 +61,7 @@ public class ScheduleTest extends BaseScheduleTrackingTest {
         Milestone milestone = new Milestone("One", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         Schedule schedule = new Schedule("Schedule", wallTimeOf(10), milestone);
 
-        List<Alert> alerts = schedule.alertsFor(weeksAgo(3), milestone.name());
+        List<Alert> alerts = schedule.alertsFor(weeksAgo(3), milestone.getName());
         assertThat(alerts.size(), is(equalTo(1)));
         assertThat(alerts.get(0).windowName(), is(equalTo(WindowName.Due)));
     }
@@ -72,11 +72,11 @@ public class ScheduleTest extends BaseScheduleTrackingTest {
         Milestone first = new Milestone("First", second, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         Schedule schedule = new Schedule("Schedule", wallTimeOf(52), first);
 
-        List<Alert> alerts = schedule.alertsFor(weeksAgo(3), first.name());
+        List<Alert> alerts = schedule.alertsFor(weeksAgo(3), first.getName());
         assertThat(alerts.size(), is(equalTo(1)));
         assertThat(alerts.get(0).windowName(), is(equalTo(WindowName.Due)));
 
-        alerts = schedule.alertsFor(weeksAgo(13), second.name());
+        alerts = schedule.alertsFor(weeksAgo(13), second.getName());
         assertThat(alerts.size(), is(equalTo(1)));
         assertThat(alerts.get(0).windowName(), is(equalTo(WindowName.Due)));
     }

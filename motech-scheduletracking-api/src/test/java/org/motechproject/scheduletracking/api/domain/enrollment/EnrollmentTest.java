@@ -20,7 +20,7 @@ public class EnrollmentTest extends BaseScheduleTrackingTest {
     @Before
     public void setUp() {
         schedule = createSchedule();
-        enrollment = new Enrollment("ID-074285", weeksAgo(3), schedule.getName(), schedule.getFirstMilestone().name());
+        enrollment = new Enrollment("ID-074285", weeksAgo(3), schedule.getName(), schedule.getFirstMilestone().getName());
     }
 
     @Test
@@ -36,7 +36,7 @@ public class EnrollmentTest extends BaseScheduleTrackingTest {
 
     @Test
     public void shouldTakeIntoAccountPreviousFulfilledMilestoneWhileCalculatingAlertsForSubsequentMilestones() {
-        enrollment = new Enrollment("ID-074285", weeksAgo(7), schedule.getName(), schedule.getFirstMilestone().name());
+        enrollment = new Enrollment("ID-074285", weeksAgo(7), schedule.getName(), schedule.getFirstMilestone().getName());
         enrollment.fulfillMilestone(schedule, weeksAgo(3));
 
         List<Alert> alerts = enrollment.getAlerts(schedule);

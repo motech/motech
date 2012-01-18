@@ -11,7 +11,9 @@ import java.util.List;
 
 @TypeDiscriminator("doc.type === 'Enrollment'")
 public class Enrollment extends MotechBaseDataObject {
-    private String externalId;
+	private static final long serialVersionUID = 5097894298798275204L;
+
+	private String externalId;
     private LocalDate enrolledDate;
     private String scheduleName;
     private List<MilestoneFulfillment> fulfillments = new LinkedList<MilestoneFulfillment>();

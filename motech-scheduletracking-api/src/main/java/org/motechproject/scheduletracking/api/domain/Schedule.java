@@ -40,7 +40,7 @@ public class Schedule extends Referenceable {
 
     public Milestone milestone(String name) {
         Milestone result = getFirstMilestone();
-        while (result != null && !result.name().equals(name)) result = result.getNext();
+        while (result != null && !result.getName().equals(name)) result = result.getNext();
         return result;
     }
 
@@ -49,7 +49,7 @@ public class Schedule extends Referenceable {
     }
 
     public Enrollment newEnrollment(String externalId, LocalDate enrollDate) {
-        return new Enrollment(externalId, enrollDate, getName(), getFirstMilestone().name());
+        return new Enrollment(externalId, enrollDate, getName(), getFirstMilestone().getName());
     }
 
     public Enrollment newEnrollment(String externalId) {
@@ -60,6 +60,6 @@ public class Schedule extends Referenceable {
         Milestone milestone = milestone(milestoneName);
         Milestone next = milestone.getNext();
 
-        return next == null ? null : next.name();
+        return next == null ? null : next.getName();
     }
 }

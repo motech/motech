@@ -39,7 +39,7 @@ public class Milestone extends Referenceable {
         return WindowName.Past;
     }
 
-    public String name() {
+    public String getName() {
         return name;
     }
 

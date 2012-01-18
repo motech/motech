@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+import static org.joda.time.LocalDate.now;
+
 @Component
 public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
     @Autowired
@@ -36,7 +38,7 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
             throw new ScheduleTrackingException("No schedule with name: %s", enrollmentRequest.getScheduleName());
         }
 
-        Enrollment enrollment = schedule.newEnrollment(enrollmentRequest.getExternalId(), LocalDate.now());
+	    Enrollment enrollment = new Enrollment(enrollmentRequest.getExternalId(), now(), schedule.getName(), schedule.getFirstMilestone().getName());
         allEnrollments.add(enrollment);
 
         MotechEvent motechEvent = new EnrolledEntityAlertEvent(schedule.getName(), enrollment.getId()).toMotechEvent();

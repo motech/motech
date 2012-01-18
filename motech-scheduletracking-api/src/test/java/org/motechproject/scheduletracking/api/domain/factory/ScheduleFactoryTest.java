@@ -23,14 +23,14 @@ public class ScheduleFactoryTest {
         assertThat(schedule.getName(), is(equalTo(scheduleRecord.name())));
 
         Milestone firstMilestone = schedule.getFirstMilestone();
-        assertThat(firstMilestone.name(), is(equalTo("IPTI 1")));
-        assertThat(firstMilestone.getNextMilestone().name(), is(equalTo("IPTI 2")));
+        assertThat(firstMilestone.getName(), is(equalTo("IPTI 1")));
+        assertThat(firstMilestone.getNextMilestone().getName(), is(equalTo("IPTI 2")));
         Map<String, String> data = firstMilestone.data();
         assertThat(data.size(), is(equalTo(1)));
         assertThat(data.get("Foo"), is(equalTo("Bar")));
 
         Milestone secondMilestone = firstMilestone.getNextMilestone();
-        assertThat(secondMilestone.name(), is(equalTo("IPTI 2")));
+        assertThat(secondMilestone.getName(), is(equalTo("IPTI 2")));
         assertThat(secondMilestone.getNextMilestone(), is(nullValue()));
     }
 }
