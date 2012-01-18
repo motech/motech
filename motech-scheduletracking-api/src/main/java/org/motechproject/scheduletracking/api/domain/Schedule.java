@@ -5,7 +5,6 @@ import org.motechproject.scheduletracking.api.domain.enrollment.Enrollment;
 import org.motechproject.valueobjects.WallTime;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class Schedule extends Referenceable {
@@ -45,9 +44,8 @@ public class Schedule extends Referenceable {
         return result;
     }
 
-    public Date endDate() {
-        LocalDate localDate = new LocalDate();
-        return localDate.plusDays(totalDuration.inDays()).toDateTimeAtCurrentTime().toDate();
+    public LocalDate getEndDate(LocalDate startDate) {
+        return startDate.plusDays(totalDuration.inDays());
     }
 
     public Enrollment newEnrollment(String externalId, LocalDate enrollDate) {
@@ -62,7 +60,6 @@ public class Schedule extends Referenceable {
         Milestone milestone = milestone(milestoneName);
         Milestone next = milestone.getNext();
 
-        if (next == null) return null;
-        return next.name();
+        return next == null ? null : next.name();
     }
 }

@@ -1,9 +1,8 @@
 package org.motechproject.scheduletracking.api.domain.factory;
 
 import org.junit.Test;
-import org.motechproject.dao.MotechJsonReader;
-import org.motechproject.scheduletracking.api.dao.TrackedSchedulesJsonReader;
-import org.motechproject.scheduletracking.api.dao.TrackedSchedulesJsonReaderImpl;
+import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReader;
+import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReaderImpl;
 import org.motechproject.scheduletracking.api.domain.Milestone;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.userspecified.ScheduleRecord;

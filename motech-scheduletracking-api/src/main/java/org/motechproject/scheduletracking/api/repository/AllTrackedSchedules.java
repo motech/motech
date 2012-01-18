@@ -1,4 +1,4 @@
-package org.motechproject.scheduletracking.api.dao;
+package org.motechproject.scheduletracking.api.repository;
 
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.domain.factory.ScheduleFactory;

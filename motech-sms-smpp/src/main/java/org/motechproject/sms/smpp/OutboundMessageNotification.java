@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Properties;
 
 import static org.motechproject.sms.api.constants.EventKeys.MESSAGE;
-import static org.motechproject.sms.smpp.constants.EventKeys.RECIPIENT;
+import static org.motechproject.sms.smpp.constants.EventDataKeys.RECIPIENT;
 
 @Component
 public class OutboundMessageNotification implements IOutboundMessageNotification {

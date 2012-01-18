@@ -1,6 +1,5 @@
-package org.motechproject.scheduletracking.api.dao;
+package org.motechproject.scheduletracking.api.repository;
 
-import org.joda.time.LocalDate;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

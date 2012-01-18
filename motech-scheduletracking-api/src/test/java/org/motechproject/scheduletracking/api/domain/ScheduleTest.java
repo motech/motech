@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.scheduletracking.api.BaseScheduleTrackingTest;
@@ -8,7 +9,9 @@ import org.motechproject.scheduletracking.api.domain.enrollment.Enrollment;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.motechproject.util.DateUtil.newDate;
 
 public class ScheduleTest extends BaseScheduleTrackingTest {
 
@@ -77,4 +80,10 @@ public class ScheduleTest extends BaseScheduleTrackingTest {
         assertThat(alerts.size(), is(equalTo(1)));
         assertThat(alerts.get(0).windowName(), is(equalTo(WindowName.Due)));
     }
+
+	@Test
+	public void shouldDeriveEndDateBasedOnStartDateAndDuration() {
+		LocalDate endDate = schedule.getEndDate(newDate(2012, 1, 2));
+		assertEquals(newDate(2012, 12, 31), endDate);
+	}
 }

@@ -1,4 +1,4 @@
-package org.motechproject.scheduletracking.api.dao;
+package org.motechproject.scheduletracking.api.repository;
 
 import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;

@@ -18,7 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.sms.api.constants.EventKeys.*;
-import static org.motechproject.sms.smpp.constants.EventKeys.*;
+import static org.motechproject.sms.smpp.constants.EventDataKeys.*;
 
 public class OutboundMessageNotificationTest {
 	@Mock

@@ -11,7 +11,10 @@ import org.motechproject.valueobjects.factory.WallTimeFactory;
 import java.util.List;
 
 public class ScheduleFactory {
-    public static Schedule create(ScheduleRecord scheduleRecord) {
+	private ScheduleFactory() {
+	}
+
+	public static Schedule create(ScheduleRecord scheduleRecord) {
         List<MilestoneRecord> milestones = scheduleRecord.milestoneRecords();
 
         Milestone lastMilestone = null;
