@@ -1,4 +1,4 @@
-package org.motechproject.scheduletracking.api.dao;
+package org.motechproject.scheduletracking.api.repository;
 
 import com.google.gson.reflect.TypeToken;
 import org.motechproject.dao.MotechJsonReader;

@@ -1,4 +1,4 @@
-package org.motechproject.scheduletracking.api.dao;
+package org.motechproject.scheduletracking.api.repository;
 
 import org.junit.Test;
 import org.motechproject.scheduletracking.api.domain.Schedule;
