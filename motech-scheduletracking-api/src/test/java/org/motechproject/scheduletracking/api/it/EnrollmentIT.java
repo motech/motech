@@ -1,12 +1,9 @@
-package org.motechproject.scheduletracking.api.domain.enrollment;
+package org.motechproject.scheduletracking.api.it;
 
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.scheduletracking.api.domain.Alert;
-import org.motechproject.scheduletracking.api.domain.Schedule;
-import org.motechproject.scheduletracking.api.domain.WindowName;
-import org.motechproject.scheduletracking.api.domain.factory.ScheduleFactory;
+import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReader;
 import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReaderImpl;
 import org.motechproject.scheduletracking.api.userspecified.ScheduleRecord;
@@ -14,9 +11,9 @@ import org.motechproject.scheduletracking.api.userspecified.ScheduleRecord;
 import java.util.List;
 import java.util.Map;
 
-import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class EnrollmentIT {

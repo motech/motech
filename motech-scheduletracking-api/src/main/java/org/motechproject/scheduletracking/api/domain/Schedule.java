@@ -12,9 +12,9 @@ public class Schedule {
 	private Milestone firstMilestone;
 
 	public Schedule(String name, WallTime totalDuration, Milestone firstMilestone) {
-		this.firstMilestone = firstMilestone;
 		this.name = name;
 		this.totalDuration = totalDuration;
+		this.firstMilestone = firstMilestone;
 	}
 
 	public List<Alert> alertsFor(LocalDate enrolledDate, String dueMilestoneName) {
@@ -39,16 +39,17 @@ public class Schedule {
 	}
 
 	public Milestone getMilestone(String milestoneName) {
-		Milestone result = getFirstMilestone();
-		while (result != null && !result.getName().equals(milestoneName)) result = result.getNextMilestone();
-		return result;
+		Milestone milestone = firstMilestone;
+		while (milestone != null && !milestone.hasName(milestoneName))
+			milestone = milestone.getNextMilestone();
+		return milestone;
 	}
 
 	public LocalDate getEndDate(LocalDate startDate) {
 		return startDate.plusDays(totalDuration.inDays());
 	}
 
-	public String nextMilestone(String milestoneName) {
+	public String getNextMilestone(String milestoneName) {
 		Milestone milestone = getMilestone(milestoneName);
 		Milestone next = milestone.getNextMilestone();
 

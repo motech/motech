@@ -56,4 +56,8 @@ public class Milestone {
 	public Milestone getNextMilestone() {
 		return nextMilestone;
 	}
+
+	public boolean hasName(String milestoneName) {
+		return name.equals(milestoneName);
+	}
 }

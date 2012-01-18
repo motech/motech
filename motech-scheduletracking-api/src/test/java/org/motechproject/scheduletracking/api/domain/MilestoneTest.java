@@ -4,8 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.scheduletracking.api.BaseScheduleTrackingTest;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class MilestoneTest extends BaseScheduleTrackingTest {
     private Milestone milestone;
@@ -40,4 +39,14 @@ public class MilestoneTest extends BaseScheduleTrackingTest {
         assertEquals(WindowName.Past, anotherMilestone.getApplicableWindow(daysAgo(22)));
         assertEquals(WindowName.Past, anotherMilestone.getApplicableWindow(daysAgo(30)));
     }
+
+	@Test
+	public void shouldReturnTrueIfNameMatches() {
+		assertTrue("Name mismatch", milestone.hasName("M1"));
+	}
+
+	@Test
+	public void shouldReturnFalseIfNameDoesNotMatch() {
+		assertFalse("Name mismatch", milestone.hasName("M2"));
+	}
 }
