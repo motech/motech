@@ -33,11 +33,6 @@ public class AllAlertsIT {
     @Before
     public void setUp() {
         createdAlerts = new ArrayList<Alert>();
-
-        List<Alert> list = allAlerts.listAlerts(null, null, null, null, MAX_RECORDS);
-        for (Alert alert : list) {
-            allAlerts.remove(alert);
-        }
     }
 
     @After
@@ -87,54 +82,6 @@ public class AllAlertsIT {
     }
 
     @Test
-    public void shouldReturnAllAlertsWithoutAnyFilter() {
-        createAlert("111", AlertType.HIGH, AlertStatus.NEW, 2, null, DateUtil.now());
-        createAlert("222", AlertType.CRITICAL, AlertStatus.CLOSED, 1, null, DateUtil.now());
-
-        List<Alert> listAlerts = allAlerts.listAlerts(null, null, null, null, MAX_RECORDS);
-        assertEquals(2, listAlerts.size());
-    }
-
-    @Test
-    public void shouldReturnMaxNumberOfAlertsWithoutAnyFilter() {
-        createAlert("111", AlertType.HIGH, AlertStatus.NEW, 2, null, DateUtil.now());
-        createAlert("222", AlertType.CRITICAL, AlertStatus.CLOSED, 1, null, DateUtil.now());
-
-        List<Alert> listAlerts = allAlerts.listAlerts(null, null, null, null, 1);
-        assertEquals(1, listAlerts.size());
-    }
-
-    @Test
-    public void shouldFilterAlertsBasedOnExternalId() {
-        Alert alert1 = createAlert("111", AlertType.HIGH, AlertStatus.NEW, 2, null, DateUtil.now());
-        Alert alert2 = createAlert("222", AlertType.CRITICAL, AlertStatus.CLOSED, 1, null, DateUtil.now());
-
-        List<Alert> listAlerts = allAlerts.listAlerts("222", null, null, null, MAX_RECORDS);
-        assertEquals(1, listAlerts.size());
-        assertEquals(alert2.getId(), listAlerts.get(0).getId());
-    }
-
-    @Test
-    public void shouldFilterAlertsBasedOnAlertType() {
-        Alert alert1 = createAlert("111", AlertType.HIGH, AlertStatus.NEW, 2, null, DateUtil.now());
-        Alert alert2 = createAlert("222", AlertType.CRITICAL, AlertStatus.CLOSED, 1, null, DateUtil.now());
-
-        List<Alert> listAlerts = allAlerts.listAlerts(null, AlertType.CRITICAL, null, null, MAX_RECORDS);
-        assertEquals(1, listAlerts.size());
-        assertEquals(alert2.getId(), listAlerts.get(0).getId());
-    }
-
-    @Test
-    public void shouldFilterAlertsBasedOnAlertStatus() {
-        Alert alert1 = createAlert("111", AlertType.HIGH, AlertStatus.NEW, 2, null, DateUtil.now());
-        Alert alert2 = createAlert("222", AlertType.CRITICAL, AlertStatus.CLOSED, 1, null, DateUtil.now());
-
-        List<Alert> listAlerts = allAlerts.listAlerts(null, null, AlertStatus.NEW, null, MAX_RECORDS);
-        assertEquals(1, listAlerts.size());
-        assertEquals(alert1.getId(), listAlerts.get(0).getId());
-    }
-
-    @Test
     public void shouldFilterAlertsBasedOnDateRange() {
         DateTime now = DateUtil.now();
         Alert alert1 = createAlert("111", AlertType.HIGH, AlertStatus.NEW, 2, null, now.minusDays(2));
@@ -147,60 +94,6 @@ public class AllAlertsIT {
         assertEquals(alert2.getId(), listAlerts.get(0).getId());
         assertEquals(alert3.getId(), listAlerts.get(1).getId());
         assertEquals(alert4.getId(), listAlerts.get(2).getId());
-    }
-
-    @Test
-    public void shouldFilterAlertsBasedOnAlertPriority() {
-        Alert alert1 = createAlert("111", AlertType.HIGH, AlertStatus.NEW, 2, null, DateUtil.now());
-        Alert alert2 = createAlert("222", AlertType.CRITICAL, AlertStatus.CLOSED, 1, null, DateUtil.now());
-
-        List<Alert> listAlerts = allAlerts.listAlerts(null, null, null, 1, MAX_RECORDS);
-        assertEquals(1, listAlerts.size());
-        assertEquals(alert2.getId(), listAlerts.get(0).getId());
-    }
-
-    @Test
-    public void shouldFindAlertsWithOneOrMoreMatchingFilterCriteria() {
-        Alert alert1 = createAlert("111", AlertType.HIGH, AlertStatus.NEW, 2, null, DateUtil.now());
-        Alert alert2 = createAlert("222", AlertType.CRITICAL, AlertStatus.CLOSED, 1, null, DateUtil.now());
-        Alert alert3 = createAlert("111", AlertType.CRITICAL, AlertStatus.NEW, 1, null, DateUtil.now());
-
-        List<Alert> listAlerts = allAlerts.listAlerts("111", AlertType.CRITICAL, null, null, MAX_RECORDS);
-        assertEquals(1, listAlerts.size());
-        assertEquals(alert3.getId(), listAlerts.get(0).getId());
-    }
-
-    @Test
-    public void shouldFindAlertsWithoutAnyMatchingFilterCriteria() {
-        Alert alert1 = createAlert("111", AlertType.HIGH, AlertStatus.NEW, 2, null, DateUtil.now());
-        Alert alert2 = createAlert("222", AlertType.CRITICAL, AlertStatus.CLOSED, 1, null, DateUtil.now());
-        Alert alert3 = createAlert("111", AlertType.CRITICAL, AlertStatus.NEW, 1, null, DateUtil.now());
-
-        List<Alert> listAlerts = allAlerts.listAlerts("333", AlertType.CRITICAL, null, null, MAX_RECORDS);
-        assertEquals(0, listAlerts.size());
-    }
-
-    @Test
-    public void shouldSortAlertsWhenNoFiltersAreSprecified() {
-        Alert alert1 = createAlert("111", AlertType.HIGH, AlertStatus.NEW, 2, null, DateUtil.now());
-        Alert alert2 = createAlert("222", AlertType.CRITICAL, AlertStatus.CLOSED, 1, null, DateUtil.now());
-
-        List<Alert> listAlerts = allAlerts.listAlerts(null, null, null, null, MAX_RECORDS);
-        assertEquals(2, listAlerts.size());
-        assertEquals(alert2.getId(), listAlerts.get(0).getId());
-        assertEquals(alert1.getId(), listAlerts.get(1).getId());
-    }
-
-    @Test
-    public void shouldSortAlertsWhenFiltersAreSprecified() {
-        Alert alert1 = createAlert("111", AlertType.HIGH, AlertStatus.NEW, 2, null, DateUtil.now());
-        Alert alert2 = createAlert("222", AlertType.CRITICAL, AlertStatus.CLOSED, 1, null, DateUtil.now());
-        Alert alert3 = createAlert("111", AlertType.CRITICAL, AlertStatus.NEW, 1, null, DateUtil.now());
-
-        List<Alert> listAlerts = allAlerts.listAlerts("111", null, AlertStatus.NEW, null, MAX_RECORDS);
-        assertEquals(2, listAlerts.size());
-        assertEquals(alert3.getId(), listAlerts.get(0).getId());
-        assertEquals(alert1.getId(), listAlerts.get(1).getId());
     }
 
     @Test

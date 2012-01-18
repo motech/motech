@@ -1,12 +1,9 @@
 package org.motechproject.server.alerts.dao;
 
-import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.GenerateView;
-import org.ektorp.support.View;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.server.alerts.domain.Alert;
 import org.motechproject.server.alerts.domain.AlertStatus;
@@ -14,18 +11,12 @@ import org.motechproject.server.alerts.domain.AlertType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class AllAlerts extends MotechBaseRepository<Alert> {
     @Autowired
     public AllAlerts(@Qualifier("alertDbConnector") CouchDbConnector db) {
         super(Alert.class, db);
-    }
-
-    private List<Alert> getAllAlerts(int limit) {
-        return getAll(limit);
     }
 
     @GenerateView
@@ -52,47 +43,5 @@ public class AllAlerts extends MotechBaseRepository<Alert> {
     public List<Alert> findByDateTime(DateTime fromDate, DateTime toDate) {
         ViewQuery q = createQuery("by_dateTime").startKey(fromDate).endKey(toDate).includeDocs(true);
         return db.queryView(q, Alert.class);
-    }
-
-    public List<Alert> listAlerts(String externalId, AlertType alertType, AlertStatus alertStatus, Integer alertPriority, int limit) {
-        List<Alert> alerts = null;
-
-        if (noFilters(externalId, alertType, alertStatus, alertPriority)) {
-            List<Alert> allAlerts = getAllAlerts(limit);
-            Collections.sort(allAlerts);
-            return allAlerts;
-        }
-
-        if (externalId != null)
-            alerts = addToAlertList(alerts, findByExternalId(externalId));
-
-        if (alertType != null)
-            alerts = addToAlertList(alerts, findByAlertType(alertType));
-
-        if (alertStatus != null)
-            alerts = addToAlertList(alerts, findByStatus(alertStatus));
-
-        if (alertPriority != null)
-            alerts = addToAlertList(alerts, findByPriority(alertPriority));
-
-        Collections.sort(alerts);
-        return alerts;
-    }
-
-    private List<Alert> addToAlertList(List<Alert> alerts, List<Alert> alertListToRetain) {
-        if (noFilterAppliedYet(alerts))
-            alerts = new ArrayList<Alert>(alertListToRetain);
-        else
-            alerts.retainAll(alertListToRetain);
-
-        return alerts;
-    }
-
-    private boolean noFilterAppliedYet(List<Alert> alerts) {
-        return alerts == null;
-    }
-
-    private boolean noFilters(String externalId, AlertType alertType, AlertStatus alertStatus, Integer alertPriority) {
-        return externalId == null && alertType == null && alertStatus == null && alertPriority == null;
     }
 }
