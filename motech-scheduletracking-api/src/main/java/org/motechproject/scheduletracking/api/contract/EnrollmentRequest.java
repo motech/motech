@@ -6,14 +6,12 @@ public class EnrollmentRequest {
     private String externalId;
     private String scheduleName;
     private String enrolledInMilestone;
-    private int enrolledAt;
-    private Time preferredAlertTime;
+	private Time preferredAlertTime;
 
-    public EnrollmentRequest(String externalId, String scheduleName, String enrolledInMilestone, int enrolledAt, Time preferredAlertTime) {
+    public EnrollmentRequest(String externalId, String scheduleName, String enrolledInMilestone, Time preferredAlertTime) {
         this.externalId = externalId;
         this.scheduleName = scheduleName;
         this.enrolledInMilestone = enrolledInMilestone;
-        this.enrolledAt = enrolledAt;
         this.preferredAlertTime = preferredAlertTime;
     }
 
@@ -27,10 +25,6 @@ public class EnrollmentRequest {
 
     public String enrolledInMilestone() {
         return enrolledInMilestone;
-    }
-
-    public int enrolledAt() {
-        return enrolledAt;
     }
 
     public Time preferredAlertTime() {

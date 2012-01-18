@@ -3,7 +3,6 @@ package org.motechproject.scheduletracking.api.domain.enrollment;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.dao.MotechJsonReader;
 import org.motechproject.scheduletracking.api.dao.TrackedSchedulesJsonReader;
 import org.motechproject.scheduletracking.api.dao.TrackedSchedulesJsonReaderImpl;
 import org.motechproject.scheduletracking.api.domain.Alert;
@@ -41,7 +40,7 @@ public class EnrollmentIT {
     }
 
     @Test
-    public void shouldGetAlertsFoAPastMilestone() {
+    public void shouldGetAlertsForAPastMilestone() {
         List<Alert> alerts = enrollAndGetAlerts(20);
 
         assertThat(alerts.size(), is(equalTo(1)));
