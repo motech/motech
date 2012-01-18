@@ -22,7 +22,7 @@ public class TrackedSchedulesJsonReaderTest {
 
         MilestoneRecord firstMilestone = milestones.get(0);
         assertEquals("IPTI 1", firstMilestone.name());
-	    
+
         MilestoneRecord secondMilestone = milestones.get(1);
         assertEquals("IPTI 2", secondMilestone.name());
     }

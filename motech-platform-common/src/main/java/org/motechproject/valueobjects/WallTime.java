@@ -3,11 +3,8 @@ package org.motechproject.valueobjects;
 import org.joda.time.Period;
 
 public class WallTime {
-    private int value;
-    private WallTimeUnit unit;
-
-    public WallTime() {
-    }
+    private final int value;
+    private final WallTimeUnit unit;
 
     public WallTime(int value, WallTimeUnit unit) {
         this.value = value;
@@ -35,20 +32,12 @@ public class WallTime {
         return value;
     }
 
-    public void setValue(int value) {
-        this.value = value;
-    }
-
     public WallTimeUnit getUnit() {
         return unit;
     }
 
-    public void setUnit(WallTimeUnit unit) {
-        this.unit = unit;
-    }
-
     public int inDays() {
-        return this.unit.days * value;
+        return unit.days * value;
     }
 
     public Period asPeriod() {

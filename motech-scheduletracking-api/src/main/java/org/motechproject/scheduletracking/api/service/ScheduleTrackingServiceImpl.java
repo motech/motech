@@ -15,7 +15,6 @@ import org.motechproject.scheduletracking.api.events.EnrolledEntityAlertEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.List;
 
 @Component
@@ -30,7 +29,7 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
     @Override
     public void enroll(EnrollmentRequest enrollmentRequest) {
         List<Enrollment> enrollments = allEnrollments.findByExternalIdAndScheduleName(enrollmentRequest.getExternalId(), enrollmentRequest.getScheduleName());
-        if (enrollments.size() > 0) return;
+        if (!enrollments.isEmpty()) return;
 
         Schedule schedule = allTrackedSchedules.get(enrollmentRequest.getScheduleName());
         if (schedule == null) {
@@ -42,7 +41,8 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
 
         MotechEvent motechEvent = new EnrolledEntityAlertEvent(schedule.getName(), enrollment.getId()).toMotechEvent();
         String cronJobExpression = new CronJobExpressionBuilder(enrollmentRequest.preferredAlertTime(), 24, 0).build();
-        CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, new Date(), schedule.endDate());
+	    LocalDate startDate = enrollmentRequest.getReferenceDate();
+	    CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, startDate.toDate(), schedule.getEndDate(startDate).toDate());
         schedulerService.scheduleJob(schedulableJob);
     }
 }
