@@ -1,4 +1,4 @@
-package org.motechproject.scheduletracking.api.userspecified;
+package org.motechproject.scheduletracking.api.domain.userspecified;
 
 public class AlertRecord {
     private String window;

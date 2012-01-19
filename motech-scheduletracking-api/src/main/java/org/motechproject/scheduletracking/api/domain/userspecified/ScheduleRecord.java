@@ -1,4 +1,4 @@
-package org.motechproject.scheduletracking.api.userspecified;
+package org.motechproject.scheduletracking.api.domain.userspecified;
 
 import java.util.ArrayList;
 import java.util.List;

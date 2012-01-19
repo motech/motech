@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.LocalDate;
 import org.motechproject.model.MotechBaseDataObject;
@@ -12,82 +13,91 @@ public class Enrollment extends MotechBaseDataObject {
 	private static final long serialVersionUID = 5097894298798275204L;
 
 	private String externalId;
-    private LocalDate enrollmentDate;
-    private String scheduleName;
-    private List<MilestoneFulfillment> fulfillments = new LinkedList<MilestoneFulfillment>();
-    private String nextMilestone;
+	private LocalDate enrollmentDate;
+	private List<MilestoneFulfillment> fulfillments = new LinkedList<MilestoneFulfillment>();
+	private Schedule schedule;
+	private Milestone currentMilestone;
 
-    private Enrollment() {
-    }
+	// For ektorp
+	private Enrollment() {
+	}
 
-    public Enrollment(String externalId, LocalDate enrollmentDate, String scheduleName, String firstMilestone) {
-        this.externalId = externalId;
-        this.enrollmentDate = enrollmentDate;
-        this.scheduleName = scheduleName;
-	    nextMilestone = firstMilestone;
-    }
+	public Enrollment(String externalId, LocalDate enrollmentDate, Schedule schedule) {
+		this.externalId = externalId;
+		this.enrollmentDate = enrollmentDate;
+		this.schedule = schedule;
+		currentMilestone = schedule.getFirstMilestone();
+	}
 
-    public List<Alert> getAlerts(Schedule schedule) {
-        LocalDate dateLastFulfilled = enrollmentDate;
+	@JsonIgnore
+	public List<Alert> getAlerts() {
+		LocalDate dateLastFulfilled = enrollmentDate;
 
-        if (!fulfillments.isEmpty()) {
-            MilestoneFulfillment fulfillment = fulfillments.get(fulfillments.size() - 1);
-            dateLastFulfilled = fulfillment.getDateFulfilled();
-        }
+		if (!fulfillments.isEmpty()) {
+			MilestoneFulfillment fulfillment = fulfillments.get(fulfillments.size() - 1);
+			dateLastFulfilled = fulfillment.getDateFulfilled();
+		}
 
-        return schedule.alertsFor(dateLastFulfilled, nextMilestone);
-    }
+		return schedule.getAlertsFor(dateLastFulfilled, currentMilestone);
+	}
 
-    public String fulfillMilestone(Schedule schedule) {
-        return fulfillMilestone(schedule, LocalDate.now());
-    }
+	public void fulfillMilestone() {
+		fulfillMilestone(LocalDate.now());
+	}
 
-    public String fulfillMilestone(Schedule schedule, LocalDate fulfilledOn) {
-        fulfillments.add(new MilestoneFulfillment(nextMilestone, fulfilledOn));
-        return nextMilestone = schedule.getNextMilestone(nextMilestone);
-    }
+	public void fulfillMilestone(LocalDate fulfilledOn) {
+		fulfillments.add(new MilestoneFulfillment(currentMilestone, fulfilledOn));
+		currentMilestone = schedule.getNextMilestone(currentMilestone);
+	}
 
-    public String getScheduleName() {
-        return scheduleName;
-    }
+	public Schedule getSchedule() {
+		return schedule;
+	}
 
-    public void setScheduleName(String scheduleName) {
-        this.scheduleName = scheduleName;
-    }
+	public String getExternalId() {
+		return externalId;
+	}
 
-    public String getType() {
-        return type;
-    }
+	public Milestone getCurrentMilestone() {
+		return currentMilestone;
+	}
 
-    public void setType(String type) {
-        this.type = type;
-    }
+	public List<MilestoneFulfillment> getFulfillments() {
+		return fulfillments;
+	}
 
-    public String getExternalId() {
-        return externalId;
-    }
+	// For ektorp
+	private void setSchedule(Schedule schedule) {
+		this.schedule = schedule;
+	}
 
-    public void setNextMilestone(String nextMilestone) {
-        this.nextMilestone = nextMilestone;
-    }
+	// For ektorp
+	private String getType() {
+		return type;
+	}
 
-    public void setExternalId(String externalId) {
-        this.externalId = externalId;
-    }
+	// For ektorop
+	private void setType(String type) {
+		this.type = type;
+	}
 
-    public LocalDate getEnrollmentDate() {
-        return enrollmentDate;
-    }
+	// For ektorp
+	private void setCurrentMilestone(Milestone milestone) {
+		currentMilestone = milestone;
+	}
 
-    public void setEnrollmentDate(LocalDate enrollmentDate) {
-        this.enrollmentDate = enrollmentDate;
-    }
+	// For ektorp
+	private void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
 
-    public String getNextMilestone() {
-        return nextMilestone;
-    }
+	// For ektorp
+	private LocalDate getEnrollmentDate() {
+		return enrollmentDate;
+	}
 
-    public List<MilestoneFulfillment> getFulfillments() {
-        return fulfillments;
-    }
+	// For ektorp
+	private void setEnrollmentDate(LocalDate enrollmentDate) {
+		this.enrollmentDate = enrollmentDate;
+	}
 }

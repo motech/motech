@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReader;
 import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReaderImpl;
-import org.motechproject.scheduletracking.api.userspecified.ScheduleRecord;
+import org.motechproject.scheduletracking.api.domain.userspecified.ScheduleRecord;
 
 import java.util.List;
 import java.util.Map;
@@ -52,11 +52,11 @@ public class EnrollmentIT {
 	public void shouldFulfillAMilestoneAndAlertsForTheOneDueNext() {
 		LocalDate enrollmentDate = LocalDate.now().minusWeeks(16);
 		LocalDate firstFulfillmentDate = LocalDate.now().minusWeeks(3);
-		Enrollment enrollment = new Enrollment("External ID", enrollmentDate, schedule.getName(), schedule.getFirstMilestone().getName());
-		String nextMilestone = enrollment.fulfillMilestone(schedule, firstFulfillmentDate);
-		assertThat(nextMilestone, is(equalTo("IPTI 2")));
+		Enrollment enrollment = new Enrollment("External ID", enrollmentDate, schedule);
+		enrollment.fulfillMilestone(firstFulfillmentDate);
+		assertThat(enrollment.getCurrentMilestone().getName(), is(equalTo("IPTI 2")));
 
-		List<Alert> alerts = enrollment.getAlerts(schedule);
+		List<Alert> alerts = enrollment.getAlerts();
 		assertEquals(1, alerts.size());
 		Alert alert = alerts.get(0);
 		assertThat(alert.windowName(), is(equalTo(WindowName.Due)));
@@ -66,7 +66,7 @@ public class EnrollmentIT {
 
 	private List<Alert> enrollAndGetAlerts(int numberOfWeeksSinceEnrollment) {
 		LocalDate fewWeeksAgo = LocalDate.now().minusWeeks(numberOfWeeksSinceEnrollment);
-		Enrollment enrollment = new Enrollment("External ID", fewWeeksAgo, schedule.getName(), schedule.getFirstMilestone().getName());
-		return enrollment.getAlerts(schedule);
+		Enrollment enrollment = new Enrollment("External ID", fewWeeksAgo, schedule);
+		return enrollment.getAlerts();
 	}
 }

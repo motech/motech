@@ -28,12 +28,12 @@ public class ScheduleTrackingEventService {
         this.outboundEventGateway = outboundEventGateway;
     }
 
-    @MotechListener(subjects = {EventKeys.ENROLLED_ENTITY_REGULAR_ALERT})
+    @MotechListener(subjects = {EventDataKeys.ENROLLED_ENTITY_REGULAR_ALERT})
     public void raiseAlertForEnrolledEntity(MotechEvent motechEvent) {
         EnrolledEntityAlertEvent enrolledEntityAlertEvent = new EnrolledEntityAlertEvent(motechEvent);
         Schedule schedule = allTrackedSchedules.get(enrolledEntityAlertEvent.scheduleName());
         Enrollment enrollment = allEnrollments.get(enrolledEntityAlertEvent.enrollmentId());
-        List<Alert> alerts = enrollment.getAlerts(schedule);
+        List<Alert> alerts = enrollment.getAlerts();
         for (Alert alert : alerts) {
             outboundEventGateway.sendEventMessage(new MilestoneEvent(alert).toMotechEvent());
         }

@@ -5,7 +5,6 @@ import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.builder.CronJobExpressionBuilder;
-import org.motechproject.scheduletracking.api.contract.EnrollmentRequest;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
@@ -38,7 +37,7 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
             throw new ScheduleTrackingException("No schedule with name: %s", enrollmentRequest.getScheduleName());
         }
 
-	    Enrollment enrollment = new Enrollment(enrollmentRequest.getExternalId(), now(), schedule.getName(), schedule.getFirstMilestone().getName());
+	    Enrollment enrollment = new Enrollment(enrollmentRequest.getExternalId(), now(), schedule);
         allEnrollments.add(enrollment);
 
         MotechEvent motechEvent = new EnrolledEntityAlertEvent(schedule.getName(), enrollment.getId()).toMotechEvent();

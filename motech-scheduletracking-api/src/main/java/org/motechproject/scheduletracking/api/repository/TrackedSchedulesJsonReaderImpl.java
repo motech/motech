@@ -2,7 +2,7 @@ package org.motechproject.scheduletracking.api.repository;
 
 import com.google.gson.reflect.TypeToken;
 import org.motechproject.dao.MotechJsonReader;
-import org.motechproject.scheduletracking.api.userspecified.ScheduleRecord;
+import org.motechproject.scheduletracking.api.domain.userspecified.ScheduleRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ public class TrackedSchedulesJsonReaderImpl implements TrackedSchedulesJsonReade
     private String definitionFile;
     private MotechJsonReader motechJsonReader;
 
-    TrackedSchedulesJsonReaderImpl(String definitionFileName, MotechJsonReader motechJsonReader) {
+    private TrackedSchedulesJsonReaderImpl(String definitionFileName, MotechJsonReader motechJsonReader) {
         if (definitionFileName == null) throw new NullPointerException();
         this.definitionFile = definitionFileName;
         this.motechJsonReader = motechJsonReader;

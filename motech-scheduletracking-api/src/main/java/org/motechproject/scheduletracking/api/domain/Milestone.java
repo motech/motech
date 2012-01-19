@@ -1,17 +1,29 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.LocalDate;
 import org.motechproject.valueobjects.WallTime;
 
+import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
 
-public class Milestone {
+public class Milestone implements Serializable {
+	private static final long serialVersionUID = 5006000470852287833L;
+
+	@JsonProperty
 	private String name;
+	@JsonProperty
 	private Map<WindowName, MilestoneWindow> windows = new EnumMap<WindowName, MilestoneWindow>(WindowName.class);
+	@JsonProperty
 	private Map<String, String> data;
+	@JsonProperty
 	private Milestone nextMilestone;
+
+	// For ektorp
+	private Milestone() {
+	}
 
 	public Milestone(String name, Milestone nextMilestone, WallTime earliest, WallTime due, WallTime late, WallTime max) {
 		this.nextMilestone = nextMilestone;

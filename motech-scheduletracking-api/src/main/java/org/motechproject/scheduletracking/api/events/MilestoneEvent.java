@@ -2,7 +2,7 @@ package org.motechproject.scheduletracking.api.events;
 
 import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduletracking.api.domain.Alert;
-import org.motechproject.scheduletracking.api.service.EventKeys;
+import org.motechproject.scheduletracking.api.service.EventDataKeys;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +25,6 @@ public class MilestoneEvent {
         for (Map.Entry<String,String> entry : entries) {
             parameters.put(entry.getKey(), entry.getValue());
         }
-        return new MotechEvent(EventKeys.ENROLLED_ENTITY_MILESTONE_ALERT, parameters);
+        return new MotechEvent(EventDataKeys.ENROLLED_ENTITY_MILESTONE_ALERT, parameters);
     }
 }

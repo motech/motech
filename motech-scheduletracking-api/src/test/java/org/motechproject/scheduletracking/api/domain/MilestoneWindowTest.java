@@ -1,7 +1,6 @@
 package org.motechproject.scheduletracking.api.domain;
 
 import org.junit.Test;
-import org.motechproject.scheduletracking.api.BaseScheduleTrackingTest;
 import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.WallTimeUnit;
 
