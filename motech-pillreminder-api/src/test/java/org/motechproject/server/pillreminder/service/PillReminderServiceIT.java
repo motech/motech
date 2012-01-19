@@ -37,8 +37,8 @@ public class PillReminderServiceIT {
 
     @Before
     public void setUp() {
-        startDate = DateUtil.newDate(2011, 1, 20);
-        endDate = DateUtil.newDate(2012, 1, 20);
+        startDate = DateUtil.newDate(2020, 1, 20);
+        endDate = DateUtil.newDate(2021, 1, 20);
     }
 
     @Test
