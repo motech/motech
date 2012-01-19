@@ -1,10 +1,8 @@
-package org.motechproject.scheduletracking.api.domain.enrollment;
+package org.motechproject.scheduletracking.api.domain;
 
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.LocalDate;
 import org.motechproject.model.MotechBaseDataObject;
-import org.motechproject.scheduletracking.api.domain.Alert;
-import org.motechproject.scheduletracking.api.domain.Schedule;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -26,11 +24,11 @@ public class Enrollment extends MotechBaseDataObject {
         this.externalId = externalId;
         this.enrollmentDate = enrollmentDate;
         this.scheduleName = scheduleName;
-        this.nextMilestone = firstMilestone;
+	    nextMilestone = firstMilestone;
     }
 
     public List<Alert> getAlerts(Schedule schedule) {
-        LocalDate dateLastFulfilled = getEnrollmentDate();
+        LocalDate dateLastFulfilled = enrollmentDate;
 
         if (!fulfillments.isEmpty()) {
             MilestoneFulfillment fulfillment = fulfillments.get(fulfillments.size() - 1);
@@ -46,7 +44,7 @@ public class Enrollment extends MotechBaseDataObject {
 
     public String fulfillMilestone(Schedule schedule, LocalDate fulfilledOn) {
         fulfillments.add(new MilestoneFulfillment(nextMilestone, fulfilledOn));
-        return nextMilestone = schedule.nextMilestone(nextMilestone);
+        return nextMilestone = schedule.getNextMilestone(nextMilestone);
     }
 
     public String getScheduleName() {

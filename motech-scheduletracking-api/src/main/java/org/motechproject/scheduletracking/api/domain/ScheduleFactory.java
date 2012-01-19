@@ -1,4 +1,4 @@
-package org.motechproject.scheduletracking.api.domain.factory;
+package org.motechproject.scheduletracking.api.domain;
 
 import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.userspecified.AlertRecord;

@@ -1,7 +1,7 @@
 package org.motechproject.scheduletracking.api.repository;
 
 import org.motechproject.scheduletracking.api.domain.Schedule;
-import org.motechproject.scheduletracking.api.domain.factory.ScheduleFactory;
+import org.motechproject.scheduletracking.api.domain.ScheduleFactory;
 import org.motechproject.scheduletracking.api.userspecified.ScheduleRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

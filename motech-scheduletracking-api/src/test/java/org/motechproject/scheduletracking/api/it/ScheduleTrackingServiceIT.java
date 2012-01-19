@@ -1,4 +1,4 @@
-package org.motechproject.scheduletracking.api.service;
+package org.motechproject.scheduletracking.api.it;
 
 import org.junit.After;
 import org.junit.Before;
@@ -6,9 +6,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.contract.EnrollmentRequest;
+import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
-import org.motechproject.scheduletracking.api.domain.enrollment.Enrollment;
+import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
