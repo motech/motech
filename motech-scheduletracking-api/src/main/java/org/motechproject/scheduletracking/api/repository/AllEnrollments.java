@@ -4,7 +4,7 @@ import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.View;
 import org.motechproject.dao.MotechBaseRepository;
-import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.scheduletracking.api.domain.enrollment.Enrollment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;

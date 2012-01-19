@@ -35,8 +35,8 @@ public class ScheduleTest extends BaseScheduleTrackingTest {
 
     @Test
     public void shouldFulfillAParticularMilestone() {
-        assertThat(schedule.getNextMilestone("First Shot"), is(equalTo("Second Shot")));
-        assertThat(schedule.getNextMilestone("Second Shot"), is(nullValue()));
+        assertThat(schedule.nextMilestone("First Shot"), is(equalTo("Second Shot")));
+        assertThat(schedule.nextMilestone("Second Shot"), is(nullValue()));
     }
 
     @Test

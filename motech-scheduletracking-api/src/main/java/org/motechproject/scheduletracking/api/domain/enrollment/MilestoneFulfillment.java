@@ -1,4 +1,4 @@
-package org.motechproject.scheduletracking.api.domain;
+package org.motechproject.scheduletracking.api.domain.enrollment;
 
 import org.joda.time.LocalDate;
 

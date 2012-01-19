@@ -1,8 +1,11 @@
-package org.motechproject.scheduletracking.api.domain;
+package org.motechproject.scheduletracking.api.domain.enrollment;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.scheduletracking.api.BaseScheduleTrackingTest;
+import org.motechproject.scheduletracking.api.domain.Alert;
+import org.motechproject.scheduletracking.api.domain.Schedule;
+import org.motechproject.scheduletracking.api.domain.WindowName;
 
 import java.util.List;
 
