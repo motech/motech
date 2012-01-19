@@ -25,6 +25,8 @@ public class PatientHelper {
         openMRSPatient.setGender(patient.getPerson().getGender());
         openMRSPatient.setBirthdate(patient.getPerson().getDateOfBirth());
         openMRSPatient.setBirthdateEstimated(patient.getPerson().getBirthDateEstimated());
+        openMRSPatient.setDead(patient.getPerson().isDead());
+        openMRSPatient.setDeathDate(patient.getPerson().deathDate());
         setPatientAddress(openMRSPatient, patient.getPerson().getAddress());
         setPersonAttributes(patient, openMRSPatient, allPersonAttributeTypes);
         return openMRSPatient;

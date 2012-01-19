@@ -40,9 +40,9 @@ public class ManagedSmslibService {
 		this.outboundMessageNotification = outboundMessageNotification;
         this.inboundMessageNotification = inboundMessageNotification;
         configureSmsLib();
-		registerListeners();
 		registerGateway();
-	}
+        registerListeners();
+    }
 
 	private void registerListeners() {
 		smslibService.setOutboundMessageNotification(outboundMessageNotification);

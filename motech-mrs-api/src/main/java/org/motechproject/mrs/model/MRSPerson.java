@@ -22,8 +22,9 @@ public class MRSPerson {
     private Date dateOfBirth;
     private Boolean birthDateEstimated;
     private String gender;
-    private Boolean dead;
+    private boolean dead;
     private List<Attribute> attributes = new ArrayList<Attribute>();
+    private Date deathDate;
 
     public MRSPerson preferredName(String preferredName) {
         this.preferredName = preferredName;
@@ -113,6 +114,11 @@ public class MRSPerson {
         return this;
     }
 
+    public MRSPerson deathDate(Date deathDate) {
+        this.deathDate = deathDate;
+        return this;
+    }
+
     public String attrValue(String key) {
         List<Attribute> filteredItems = select(attributes, having(on(Attribute.class).name(), equalTo(key)));
         return CollectionUtils.isNotEmpty(filteredItems) ? filteredItems.get(0).value() : null;
@@ -136,5 +142,9 @@ public class MRSPerson {
 
     public Boolean isDead() {
         return dead;
+    }
+
+    public Date deathDate() {
+        return deathDate;
     }
 }

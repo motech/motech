@@ -36,7 +36,7 @@ public class OpenMRSPersonAdaptor {
         MRSPerson mrsPerson = new MRSPerson().firstName(personName.getGivenName()).middleName(personName.getMiddleName())
                 .lastName(personName.getFamilyName()).preferredName(getPreferredName(personNames))
                 .birthDateEstimated(person.getBirthdateEstimated()).gender(person.getGender())
-                .address(getAddress(person)).attributes(attributes).dateOfBirth(person.getBirthdate()).dead(person.isDead());
+                .address(getAddress(person)).attributes(attributes).dateOfBirth(person.getBirthdate()).dead(person.isDead()).deathDate(person.getDeathDate());
 
         if (person.getId() != null) {
             mrsPerson.id(Integer.toString(person.getId()));

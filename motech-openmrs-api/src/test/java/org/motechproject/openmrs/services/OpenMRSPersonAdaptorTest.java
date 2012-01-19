@@ -89,11 +89,13 @@ public class OpenMRSPersonAdaptorTest {
         boolean preferred = true;
         boolean birthdateEstimated = true;
         boolean dead = true;
+        Date deathDate = new Date();
 
         person.setId(patientId);
         personAddress.setAddress1(address);
         person.setGender(gender);
         person.setBirthdate(birthdate);
+        person.setDeathDate(deathDate);
 
         person.addName(new PersonName(firstName, middleName, familyName));
         PersonName nameSetAsPreferred = new PersonName(preferredName, middleName, familyName);
@@ -121,6 +123,7 @@ public class OpenMRSPersonAdaptorTest {
         assertThat(mrsPerson.attrValue(PERSON_ATTRIBUTE_TYPE_PHONE_NUMBER), is(equalTo(phoneNo)));
         assertThat(mrsPerson.attrValue(PERSON_ATTRIBUTE_TYPE_STAFF_TYPE), is(equalTo(staffType)));
         assertThat(mrsPerson.isDead(), is(equalTo(dead)));
+        assertThat(mrsPerson.deathDate(), is(equalTo(deathDate)));
     }
 
     @Test
