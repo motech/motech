@@ -1,10 +1,19 @@
 package org.motechproject.valueobjects;
 
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.Period;
 
-public class WallTime {
-    private final int value;
-    private final WallTimeUnit unit;
+import java.io.Serializable;
+
+public class WallTime implements Serializable {
+	@JsonProperty
+    private int value;
+	@JsonProperty
+    private WallTimeUnit unit;
+
+	// For ektorp
+	private WallTime() {
+	}
 
     public WallTime(int value, WallTimeUnit unit) {
         this.value = value;

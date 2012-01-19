@@ -1,32 +1,39 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.LocalDate;
 
-public class MilestoneFulfillment {
-    private String milestoneName;
-    private LocalDate dateFulfilled;
+import java.io.Serializable;
 
-    private MilestoneFulfillment() {
-    }
+public class MilestoneFulfillment implements Serializable {
+	private static final long serialVersionUID = 486156182281115607L;
 
-    public MilestoneFulfillment(String milestoneName, LocalDate dateFulfilled) {
-        this.milestoneName = milestoneName;
-        this.dateFulfilled = dateFulfilled;
-    }
+	@JsonProperty
+	private Milestone milestone;
+	@JsonProperty
+	private LocalDate dateFulfilled;
 
-    public LocalDate getDateFulfilled() {
-        return dateFulfilled;
-    }
+	private MilestoneFulfillment() {
+	}
 
-    public void setDateFulfilled(LocalDate dateFulfilled) {
-        this.dateFulfilled = dateFulfilled;
-    }
+	public MilestoneFulfillment(Milestone milestone, LocalDate dateFulfilled) {
+		this.milestone = milestone;
+		this.dateFulfilled = dateFulfilled;
+	}
 
-    public String getMilestoneName() {
-        return milestoneName;
-    }
+	public LocalDate getDateFulfilled() {
+		return dateFulfilled;
+	}
 
-    public void setMilestoneName(String milestoneName) {
-        this.milestoneName = milestoneName;
-    }
+	public void setDateFulfilled(LocalDate dateFulfilled) {
+		this.dateFulfilled = dateFulfilled;
+	}
+
+	public Milestone getMilestone() {
+		return milestone;
+	}
+
+	public void setMilestoneName(Milestone milestone) {
+		this.milestone = milestone;
+	}
 }

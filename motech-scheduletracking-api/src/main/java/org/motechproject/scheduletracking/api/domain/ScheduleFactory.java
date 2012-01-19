@@ -1,10 +1,9 @@
 package org.motechproject.scheduletracking.api.domain;
 
-import org.motechproject.scheduletracking.api.domain.*;
-import org.motechproject.scheduletracking.api.userspecified.AlertRecord;
-import org.motechproject.scheduletracking.api.userspecified.MilestoneRecord;
-import org.motechproject.scheduletracking.api.userspecified.ScheduleRecord;
-import org.motechproject.scheduletracking.api.userspecified.ScheduleWindowsRecord;
+import org.motechproject.scheduletracking.api.domain.userspecified.AlertRecord;
+import org.motechproject.scheduletracking.api.domain.userspecified.MilestoneRecord;
+import org.motechproject.scheduletracking.api.domain.userspecified.ScheduleRecord;
+import org.motechproject.scheduletracking.api.domain.userspecified.ScheduleWindowsRecord;
 import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.factory.WallTimeFactory;
 

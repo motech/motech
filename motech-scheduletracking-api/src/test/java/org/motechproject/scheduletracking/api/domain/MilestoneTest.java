@@ -2,7 +2,6 @@ package org.motechproject.scheduletracking.api.domain;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.scheduletracking.api.BaseScheduleTrackingTest;
 
 import static org.junit.Assert.*;
 

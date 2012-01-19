@@ -1,13 +1,14 @@
-package org.motechproject.scheduletracking.api;
+package org.motechproject.scheduletracking.api.domain;
 
 import org.joda.time.LocalDate;
-import org.motechproject.scheduletracking.api.domain.Milestone;
-import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.WallTimeUnit;
 
 public abstract class BaseScheduleTrackingTest {
-    protected LocalDate daysAgo(int numberOfDays) {
+	protected Milestone firstShot;
+	protected Milestone secondShot;
+
+	protected LocalDate daysAgo(int numberOfDays) {
         return LocalDate.now().minusDays(numberOfDays);
     }
 
@@ -20,8 +21,8 @@ public abstract class BaseScheduleTrackingTest {
     }
 
     protected Schedule createSchedule() {
-        Milestone secondShot = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        Milestone firstShot = new Milestone("First Shot", secondShot, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+	    secondShot = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+	    firstShot = new Milestone("First Shot", secondShot, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         return new Schedule("Yellow Fever Vaccination", wallTimeOf(52), firstShot);
     }
 }

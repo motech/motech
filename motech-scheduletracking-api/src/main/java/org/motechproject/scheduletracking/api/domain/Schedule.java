@@ -1,15 +1,26 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.LocalDate;
 import org.motechproject.valueobjects.WallTime;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Schedule {
+public class Schedule implements Serializable {
+	private static final long serialVersionUID = 2783395208102730624L;
+
+	@JsonProperty
 	private String name;
+	@JsonProperty
 	private WallTime totalDuration;
+	@JsonProperty
 	private Milestone firstMilestone;
+
+	// For ektorp
+	private Schedule() {
+	}
 
 	public Schedule(String name, WallTime totalDuration, Milestone firstMilestone) {
 		this.name = name;
@@ -17,14 +28,12 @@ public class Schedule {
 		this.firstMilestone = firstMilestone;
 	}
 
-	public List<Alert> alertsFor(LocalDate enrolledDate, String dueMilestoneName) {
+	public List<Alert> getAlertsFor(LocalDate enrolledDate, Milestone milestone) {
 		List<Alert> alerts = new ArrayList<Alert>();
 
-		Milestone dueMilestone = getMilestone(dueMilestoneName);
-
-		WindowName windowName = dueMilestone.getApplicableWindow(enrolledDate);
+		WindowName windowName = milestone.getApplicableWindow(enrolledDate);
 		if (WindowName.Due.compareTo(windowName) <= 0) {
-			alerts.add(new Alert(windowName, dueMilestone));
+			alerts.add(new Alert(windowName, milestone));
 		}
 
 		return alerts;
@@ -49,10 +58,24 @@ public class Schedule {
 		return startDate.plusDays(totalDuration.inDays());
 	}
 
-	public String getNextMilestone(String milestoneName) {
-		Milestone milestone = getMilestone(milestoneName);
-		Milestone next = milestone.getNextMilestone();
+	public Milestone getNextMilestone(Milestone milestone) {
+		return milestone.getNextMilestone();
+	}
 
-		return next == null ? null : next.getName();
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Schedule schedule = (Schedule) o;
+
+		if (name != null ? !name.equals(schedule.name) : schedule.name != null) return false;
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		return name != null ? name.hashCode() : 0;
 	}
 }

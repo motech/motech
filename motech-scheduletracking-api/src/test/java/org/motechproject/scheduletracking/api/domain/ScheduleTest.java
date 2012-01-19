@@ -3,7 +3,6 @@ package org.motechproject.scheduletracking.api.domain;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.scheduletracking.api.BaseScheduleTrackingTest;
 
 import java.util.List;
 
@@ -35,8 +34,8 @@ public class ScheduleTest extends BaseScheduleTrackingTest {
 
     @Test
     public void shouldFulfillAParticularMilestone() {
-        assertThat(schedule.getNextMilestone("First Shot"), is(equalTo("Second Shot")));
-        assertThat(schedule.getNextMilestone("Second Shot"), is(nullValue()));
+        assertThat(schedule.getNextMilestone(firstShot).getName(), is(equalTo("Second Shot")));
+        assertThat(schedule.getNextMilestone(secondShot), is(nullValue()));
     }
 
     @Test
@@ -44,7 +43,7 @@ public class ScheduleTest extends BaseScheduleTrackingTest {
         Milestone milestone = new Milestone("One", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         Schedule schedule = new Schedule("foo", wallTimeOf(10), milestone);
 
-        List<Alert> alerts = schedule.alertsFor(weeksAgo(2), milestone.getName());
+        List<Alert> alerts = schedule.getAlertsFor(weeksAgo(2), milestone);
         assertThat(alerts.size(), is(equalTo(0)));
     }
 
@@ -53,7 +52,7 @@ public class ScheduleTest extends BaseScheduleTrackingTest {
         Milestone milestone = new Milestone("One", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         Schedule schedule = new Schedule("Schedule", wallTimeOf(10), milestone);
 
-        List<Alert> alerts = schedule.alertsFor(weeksAgo(3), milestone.getName());
+        List<Alert> alerts = schedule.getAlertsFor(weeksAgo(3), milestone);
         assertThat(alerts.size(), is(equalTo(1)));
         assertThat(alerts.get(0).windowName(), is(equalTo(WindowName.Due)));
     }
@@ -64,11 +63,11 @@ public class ScheduleTest extends BaseScheduleTrackingTest {
         Milestone first = new Milestone("First", second, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         Schedule schedule = new Schedule("Schedule", wallTimeOf(52), first);
 
-        List<Alert> alerts = schedule.alertsFor(weeksAgo(3), first.getName());
+        List<Alert> alerts = schedule.getAlertsFor(weeksAgo(3), first);
         assertThat(alerts.size(), is(equalTo(1)));
         assertThat(alerts.get(0).windowName(), is(equalTo(WindowName.Due)));
 
-        alerts = schedule.alertsFor(weeksAgo(13), second.getName());
+        alerts = schedule.getAlertsFor(weeksAgo(13), second);
         assertThat(alerts.size(), is(equalTo(1)));
         assertThat(alerts.get(0).windowName(), is(equalTo(WindowName.Due)));
     }
