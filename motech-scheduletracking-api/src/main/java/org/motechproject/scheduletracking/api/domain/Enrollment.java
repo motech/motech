@@ -17,23 +17,25 @@ public class Enrollment extends MotechBaseDataObject {
 	private LocalDate enrollmentDate;
 	private List<MilestoneFulfillment> fulfillments = new LinkedList<MilestoneFulfillment>();
 	private Schedule schedule;
+	private LocalDate referenceDate;
 	private Milestone currentMilestone;
 
 	// For ektorp
 	private Enrollment() {
 	}
 
-	public Enrollment(String externalId, LocalDate enrollmentDate, Schedule schedule) {
+	public Enrollment(String externalId, Schedule schedule, LocalDate enrollmentDate, LocalDate referenceDate) {
 		this.externalId = externalId;
-		this.enrollmentDate = enrollmentDate;
 		this.schedule = schedule;
+		this.enrollmentDate = enrollmentDate;
+		this.referenceDate = referenceDate;
 		currentMilestone = schedule.getFirstMilestone();
 	}
 
 	@JsonIgnore
 	public List<Alert> getAlerts() {
 		List<Alert> alerts = new ArrayList<Alert>();
-		LocalDate dateFulfilled = enrollmentDate;
+		LocalDate dateFulfilled = referenceDate;
 
 		if (!fulfillments.isEmpty())
 			dateFulfilled = fulfillments.get(fulfillments.size() -1).getDateFulfilled();
@@ -98,5 +100,15 @@ public class Enrollment extends MotechBaseDataObject {
 	// For ektorp
 	private void setEnrollmentDate(LocalDate enrollmentDate) {
 		this.enrollmentDate = enrollmentDate;
+	}
+
+	// For ektorp
+	private LocalDate getReferenceDate() {
+		return referenceDate;
+	}
+
+	// For ektorp
+	private void setReferenceDate(LocalDate referenceDate) {
+		this.referenceDate = referenceDate;
 	}
 }

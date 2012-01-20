@@ -20,12 +20,16 @@ import static org.joda.time.LocalDate.now;
 
 @Component
 public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
-	@Autowired
 	private AllTrackedSchedules allTrackedSchedules;
-	@Autowired
 	private MotechSchedulerService schedulerService;
-	@Autowired
 	private AllEnrollments allEnrollments;
+
+	@Autowired
+	public ScheduleTrackingServiceImpl(MotechSchedulerService schedulerService, AllTrackedSchedules allTrackedSchedules, AllEnrollments allEnrollments) {
+		this.schedulerService = schedulerService;
+		this.allTrackedSchedules = allTrackedSchedules;
+		this.allEnrollments = allEnrollments;
+	}
 
 	@Override
 	public void enroll(EnrollmentRequest enrollmentRequest) {
@@ -36,17 +40,16 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
 		if (!enrollments.isEmpty()) return;
 
 		Schedule schedule = allTrackedSchedules.get(scheduleName);
-		if (schedule == null) {
+		if (schedule == null)
 			throw new ScheduleTrackingException("No schedule with name: %s", scheduleName);
-		}
 
-		Enrollment enrollment = new Enrollment(externalId, now(), schedule);
+		LocalDate referenceDate = enrollmentRequest.getReferenceDate();
+		Enrollment enrollment = new Enrollment(externalId, schedule, now(), referenceDate);
 		allEnrollments.add(enrollment);
 
 		MotechEvent motechEvent = new EnrolledEntityAlertEvent(schedule.getName(), enrollment.getId()).toMotechEvent();
-		String cronJobExpression = new CronJobExpressionBuilder(enrollmentRequest.getPreferredAlertTime(), 24, 0).build();
-		LocalDate startDate = enrollmentRequest.getReferenceDate();
-		CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, startDate.toDate(), schedule.getEndDate(startDate).toDate());
+		String cronJobExpression = new CronJobExpressionBuilder(enrollmentRequest.getPreferredAlertTime(), 0, 0).build();
+		CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, now().toDate(), schedule.getEndDate(referenceDate).toDate());
 		schedulerService.scheduleJob(schedulableJob);
 	}
 }

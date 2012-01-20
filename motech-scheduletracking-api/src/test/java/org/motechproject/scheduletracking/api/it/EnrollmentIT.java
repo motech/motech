@@ -50,7 +50,7 @@ public class EnrollmentIT {
 
 	private List<Alert> enrollAndGetAlerts(int numberOfWeeksSinceEnrollment) {
 		LocalDate fewWeeksAgo = LocalDate.now().minusWeeks(numberOfWeeksSinceEnrollment);
-		Enrollment enrollment = new Enrollment("External ID", fewWeeksAgo, schedule);
+		Enrollment enrollment = new Enrollment("External ID", schedule, fewWeeksAgo, fewWeeksAgo);
 		return enrollment.getAlerts();
 	}
 }
