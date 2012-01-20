@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:testScheduleTrackingApplicationContext.xml")
+@ContextConfiguration(locations = "classpath:testApplicationSchedulerTrackingAPI.xml")
 public class AllEnrollmentsIT {
 	@Autowired
 	private AllEnrollments allEnrollments;

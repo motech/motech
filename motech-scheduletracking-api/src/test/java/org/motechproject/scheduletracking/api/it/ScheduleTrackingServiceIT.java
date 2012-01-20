@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.motechproject.util.DateUtil.newDate;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:testScheduleTrackingApplicationContext.xml")
+@ContextConfiguration(locations = "classpath:testApplicationSchedulerTrackingAPI.xml")
 public class ScheduleTrackingServiceIT {
 	@Autowired
 	private ScheduleTrackingService scheduleTrackingService;
@@ -39,7 +39,7 @@ public class ScheduleTrackingServiceIT {
 
 	@Before
 	public void setup() throws SchedulerException {
-		enrollmentRequest = new EnrollmentRequest("job_001", "IPTI Schedule", "sd", new Time(1, 1), newDate(2012, 1, 2));
+		enrollmentRequest = new EnrollmentRequest("job_001", "IPTI Schedule", new Time(1, 1), newDate(2012, 1, 2));
 		scheduler = schedulerFactoryBean.getScheduler();
 	}
 
