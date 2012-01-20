@@ -32,8 +32,8 @@ public class EnrollmentIT {
 
 		assertEquals(1, alerts.size());
 		Alert alert = alerts.get(0);
-		assertThat(alert.windowName(), is(equalTo(WindowName.Due)));
-		Map<String, String> data = alert.data();
+		assertThat(alert.getWindowName(), is(equalTo(WindowName.Due)));
+		Map<String, String> data = alert.getData();
 		assertThat(data.get("Foo"), is(equalTo("Bar")));
 	}
 
@@ -43,30 +43,14 @@ public class EnrollmentIT {
 
 		assertEquals(1, alerts.size());
 		Alert alert = alerts.get(0);
-		assertThat(alert.windowName(), is(equalTo(WindowName.Past)));
-		Map<String, String> data = alert.data();
+		assertThat(alert.getWindowName(), is(equalTo(WindowName.Past)));
+		Map<String, String> data = alert.getData();
 		assertThat(data.get("Foo"), is(equalTo("Bar")));
-	}
-
-	@Test
-	public void shouldFulfillAMilestoneAndAlertsForTheOneDueNext() {
-		LocalDate enrollmentDate = LocalDate.now().minusWeeks(16);
-		LocalDate firstFulfillmentDate = LocalDate.now().minusWeeks(3);
-		Enrollment enrollment = new Enrollment("External ID", enrollmentDate, schedule);
-		enrollment.fulfillMilestone(firstFulfillmentDate);
-		assertThat(enrollment.getCurrentMilestone().getName(), is(equalTo("IPTI 2")));
-
-		List<Alert> alerts = enrollment.getAlerts();
-		assertEquals(1, alerts.size());
-		Alert alert = alerts.get(0);
-		assertThat(alert.windowName(), is(equalTo(WindowName.Due)));
-		Map<String, String> data = alert.data();
-		assertThat(data.get("doo"), is(equalTo("Bar")));
 	}
 
 	private List<Alert> enrollAndGetAlerts(int numberOfWeeksSinceEnrollment) {
 		LocalDate fewWeeksAgo = LocalDate.now().minusWeeks(numberOfWeeksSinceEnrollment);
-		Enrollment enrollment = new Enrollment("External ID", fewWeeksAgo, schedule);
+		Enrollment enrollment = new Enrollment("External ID", schedule, fewWeeksAgo, fewWeeksAgo);
 		return enrollment.getAlerts();
 	}
 }

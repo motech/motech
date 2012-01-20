@@ -32,13 +32,13 @@
 package org.motechproject.metrics;
 
 import org.joda.time.DateTime;
-import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.motechproject.metrics.impl.MultipleMetricsAgentImpl;
 import org.motechproject.util.DateUtil;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.rule.PowerMockRule;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.anyLong;
@@ -46,22 +46,11 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
-/**
- * MultipleMetricsAgentImpl Tester.
- *
- * @author <Authors name>
- * @since <pre>03/25/2011</pre>
- * @version 1.0
- */
-
+@RunWith(PowerMockRunner.class)
 @PrepareForTest(DateUtil.class)
 public class MultipleMetricsAgentImplTest {
-
-    @Rule
-    public PowerMockRule rule = new PowerMockRule();
-
     @Test
-    public void testLogEventNullParameters() throws Exception {
+    public void testLogEventNullParameters() {
         MultipleMetricsAgentImpl metricsAgent = new MultipleMetricsAgentImpl();
         MetricsAgentBackend agent = mock(MetricsAgentBackend.class);
         metricsAgent.addMetricAgent(agent);
@@ -72,7 +61,7 @@ public class MultipleMetricsAgentImplTest {
     }
 
     @Test
-    public void testLogEvent() throws Exception {
+    public void testLogEvent() {
         MultipleMetricsAgentImpl metricsAgent = new MultipleMetricsAgentImpl();
         MetricsAgentBackend agent = mock(MetricsAgentBackend.class);
         metricsAgent.addMetricAgent(agent);
@@ -83,7 +72,7 @@ public class MultipleMetricsAgentImplTest {
     }
 
     @Test
-    public void testLogEventNoAgents() throws Exception {
+    public void testLogEventNoAgents() {
         MultipleMetricsAgentImpl metricsAgent = new MultipleMetricsAgentImpl();
 
         metricsAgent.logEvent("test.metric", null);

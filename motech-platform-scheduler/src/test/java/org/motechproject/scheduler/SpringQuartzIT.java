@@ -2,10 +2,7 @@ package org.motechproject.scheduler;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SimpleTrigger;
-import org.quartz.Trigger;
+import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
@@ -17,7 +14,7 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testPlatformSchedulerApplicationContext.xml"})
+@ContextConfiguration(locations = "/testPlatformSchedulerApplicationContext.xml")
 public class SpringQuartzIT {
 
     @Autowired
@@ -27,7 +24,7 @@ public class SpringQuartzIT {
 
 
     @Test
-    public void scheduleUnscheduleTest() throws Exception {
+    public void scheduleUnscheduleTest() throws SchedulerException {
 
         String uuidStr = UUID.randomUUID().toString();
 

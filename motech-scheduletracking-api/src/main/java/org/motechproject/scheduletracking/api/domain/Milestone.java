@@ -32,7 +32,7 @@ public class Milestone implements Serializable {
 		windows.put(WindowName.Waiting, new MilestoneWindow(new WallTime(0, earliest.getUnit()), earliest));
 		windows.put(WindowName.Upcoming, new MilestoneWindow(earliest, due));
 		windows.put(WindowName.Due, new MilestoneWindow(due, late));
-		windows.put(WindowName.Late, new MilestoneWindow(late, max == null ? late : max));
+		windows.put(WindowName.Late, new MilestoneWindow(late, max));
 	}
 
 	public Milestone(String name, WallTime earliest, WallTime due, WallTime late, WallTime max) {
@@ -43,11 +43,11 @@ public class Milestone implements Serializable {
 		return windows.get(windowName);
 	}
 
-	public WindowName getApplicableWindow(LocalDate enrolledDate) {
+	public WindowName getApplicableWindow(LocalDate enrollmentDate) {
 		Set<Map.Entry<WindowName, MilestoneWindow>> entries = windows.entrySet();
 		for (Map.Entry<WindowName, MilestoneWindow> entry : entries) {
 			MilestoneWindow milestoneWindow = entry.getValue();
-			if (milestoneWindow.isApplicableTo(enrolledDate))
+			if (milestoneWindow.isApplicableTo(enrollmentDate))
 				return entry.getKey();
 		}
 		return WindowName.Past;

@@ -5,8 +5,6 @@ import org.joda.time.LocalDate;
 import org.motechproject.valueobjects.WallTime;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Schedule implements Serializable {
 	private static final long serialVersionUID = 2783395208102730624L;
@@ -28,17 +26,6 @@ public class Schedule implements Serializable {
 		this.firstMilestone = firstMilestone;
 	}
 
-	public List<Alert> getAlertsFor(LocalDate enrolledDate, Milestone milestone) {
-		List<Alert> alerts = new ArrayList<Alert>();
-
-		WindowName windowName = milestone.getApplicableWindow(enrolledDate);
-		if (WindowName.Due.compareTo(windowName) <= 0) {
-			alerts.add(new Alert(windowName, milestone));
-		}
-
-		return alerts;
-	}
-
 	public Milestone getFirstMilestone() {
 		return firstMilestone;
 	}
@@ -56,10 +43,6 @@ public class Schedule implements Serializable {
 
 	public LocalDate getEndDate(LocalDate startDate) {
 		return startDate.plusDays(totalDuration.inDays());
-	}
-
-	public Milestone getNextMilestone(Milestone milestone) {
-		return milestone.getNextMilestone();
 	}
 
 	@Override

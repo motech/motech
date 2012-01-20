@@ -33,16 +33,20 @@ public class MilestoneWindow implements Serializable {
         alertConfigurations.add(alertConfiguration);
     }
 
-    public boolean isApplicableTo(LocalDate enrolledDate) {
+    public boolean isApplicableTo(LocalDate enrollmentDate) {
         LocalDate now = LocalDate.now();
 
-        int daysElapsed = Days.daysBetween(enrolledDate, now).getDays();
+        int daysElapsed = Days.daysBetween(enrollmentDate, now).getDays();
         int startOnDay = toDays(begin.asPeriod());
-        int endsOnDay = toDays(end.asPeriod());
-        return daysElapsed >= startOnDay && daysElapsed <= endsOnDay;
+        int endsOnDay = getWindowEndInDays();
+        return daysElapsed >= startOnDay && daysElapsed < endsOnDay;
     }
 
-    private static int toDays(Period period) {
+	private int getWindowEndInDays() {
+		return end == null ? toDays(begin.asPeriod()) + 1 : toDays(end.asPeriod());
+	}
+
+	private static int toDays(Period period) {
         return period.toStandardDays().getDays();
     }
 }

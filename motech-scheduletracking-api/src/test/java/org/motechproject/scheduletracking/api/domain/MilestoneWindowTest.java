@@ -4,15 +4,24 @@ import org.junit.Test;
 import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.WallTimeUnit;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 
-public class MilestoneWindowTest extends BaseScheduleTrackingTest {
-    @Test
-    public void isApplicableTo() {
-        MilestoneWindow milestoneWindow = new MilestoneWindow(new WallTime(6, WallTimeUnit.Day), new WallTime(10, WallTimeUnit.Day));
-        assertTrue(milestoneWindow.isApplicableTo(daysAgo(7)));
-        assertFalse(milestoneWindow.isApplicableTo(daysAgo(1)));
-        assertFalse(milestoneWindow.isApplicableTo(daysAgo(11)));
-    }
+public class MilestoneWindowTest {
+	@Test
+	public void shouldCheckIfGivenDateFallsWithinTheWindow() {
+		MilestoneWindow milestoneWindow = new MilestoneWindow(new WallTime(0, WallTimeUnit.Week), new WallTime(13, WallTimeUnit.Week));
+		assertTrue("Date falls outside the window.", milestoneWindow.isApplicableTo(weeksAgo(0)));
+		assertTrue("Date falls outside the window.", milestoneWindow.isApplicableTo(weeksAgo(10)));
+		assertFalse("Date falls within the window.", milestoneWindow.isApplicableTo(weeksAgo(13)));
+	}
+
+	@Test
+	public void shouldCheckIfGivenDateFallsWithinTheWindowWhenBeginningAndEndOfWindowAreTheSame() {
+		MilestoneWindow milestoneWindow = new MilestoneWindow(new WallTime(16, WallTimeUnit.Week), null);
+		assertFalse("Date falls within the window.", milestoneWindow.isApplicableTo(weeksAgo(15)));
+		assertTrue("Date falls outside the window.", milestoneWindow.isApplicableTo(weeksAgo(16)));
+		assertFalse("Date falls within the window.", milestoneWindow.isApplicableTo(weeksAgo(17)));
+	}
 }
