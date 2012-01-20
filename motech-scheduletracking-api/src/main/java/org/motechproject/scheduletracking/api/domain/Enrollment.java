@@ -5,6 +5,7 @@ import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.LocalDate;
 import org.motechproject.model.MotechBaseDataObject;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,23 +32,21 @@ public class Enrollment extends MotechBaseDataObject {
 
 	@JsonIgnore
 	public List<Alert> getAlerts() {
-		LocalDate dateLastFulfilled = enrollmentDate;
+		List<Alert> alerts = new ArrayList<Alert>();
+		LocalDate dateFulfilled = enrollmentDate;
 
-		if (!fulfillments.isEmpty()) {
-			MilestoneFulfillment fulfillment = fulfillments.get(fulfillments.size() - 1);
-			dateLastFulfilled = fulfillment.getDateFulfilled();
-		}
+		if (!fulfillments.isEmpty())
+			dateFulfilled = fulfillments.get(fulfillments.size() -1).getDateFulfilled();
 
-		return schedule.getAlertsFor(dateLastFulfilled, currentMilestone);
+		WindowName windowName = currentMilestone.getApplicableWindow(dateFulfilled);
+		alerts.add(new Alert(windowName, currentMilestone));
+
+		return alerts;
 	}
 
 	public void fulfillMilestone() {
-		fulfillMilestone(LocalDate.now());
-	}
-
-	public void fulfillMilestone(LocalDate fulfilledOn) {
-		fulfillments.add(new MilestoneFulfillment(currentMilestone, fulfilledOn));
-		currentMilestone = schedule.getNextMilestone(currentMilestone);
+		fulfillments.add(new MilestoneFulfillment(currentMilestone, LocalDate.now()));
+		currentMilestone = currentMilestone.getNextMilestone();
 	}
 
 	public Schedule getSchedule() {

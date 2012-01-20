@@ -5,8 +5,8 @@ import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.WallTimeUnit;
 
 public abstract class BaseScheduleTrackingTest {
-	protected Milestone firstShot;
-	protected Milestone secondShot;
+	protected Milestone firstMilestone;
+	protected Milestone secondMilestone;
 
 	protected LocalDate daysAgo(int numberOfDays) {
         return LocalDate.now().minusDays(numberOfDays);
@@ -21,8 +21,8 @@ public abstract class BaseScheduleTrackingTest {
     }
 
     protected Schedule createSchedule() {
-	    secondShot = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-	    firstShot = new Milestone("First Shot", secondShot, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        return new Schedule("Yellow Fever Vaccination", wallTimeOf(52), firstShot);
+	    secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+	    firstMilestone = new Milestone("First Shot", secondMilestone, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        return new Schedule("Yellow Fever Vaccination", wallTimeOf(52), firstMilestone);
     }
 }

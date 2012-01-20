@@ -19,9 +19,9 @@ public class MilestoneEvent {
 
     public MotechEvent toMotechEvent() {
         HashMap<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put(WINDOW_NAME, alert.windowName());
-        parameters.put(MILESTONE_NAME, alert.milestoneName());
-        Set<Map.Entry<String,String>> entries = alert.data().entrySet();
+        parameters.put(WINDOW_NAME, alert.getWindowName());
+        parameters.put(MILESTONE_NAME, alert.getMilestoneName());
+        Set<Map.Entry<String,String>> entries = alert.getData().entrySet();
         for (Map.Entry<String,String> entry : entries) {
             parameters.put(entry.getKey(), entry.getValue());
         }
