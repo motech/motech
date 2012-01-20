@@ -4,8 +4,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.daysAgo;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
 
-public class MilestoneTest extends BaseScheduleTrackingTest {
+public class MilestoneTest {
     private Milestone milestone;
     private Milestone anotherMilestone;
 

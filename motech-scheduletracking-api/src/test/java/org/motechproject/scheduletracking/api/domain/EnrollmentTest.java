@@ -9,13 +9,19 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 
-public class EnrollmentTest extends BaseScheduleTrackingTest {
+public class EnrollmentTest {
 	private Enrollment enrollment;
+	private Milestone firstMilestone;
+	private Milestone secondMilestone;
 
 	@Before
 	public void setUp() {
-		Schedule schedule = createSchedule();
+		secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+		firstMilestone = new Milestone("First Shot", secondMilestone, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+		Schedule schedule = new Schedule("Yellow Fever Vaccination", wallTimeOf(52), firstMilestone);
 		enrollment = new Enrollment("ID-074285", weeksAgo(3), schedule);
 	}
 

@@ -6,8 +6,9 @@ import org.motechproject.valueobjects.WallTimeUnit;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 
-public class MilestoneWindowTest extends BaseScheduleTrackingTest {
+public class MilestoneWindowTest {
 	@Test
 	public void shouldCheckIfGivenDateFallsWithinTheWindow() {
 		MilestoneWindow milestoneWindow = new MilestoneWindow(new WallTime(0, WallTimeUnit.Week), new WallTime(13, WallTimeUnit.Week));
