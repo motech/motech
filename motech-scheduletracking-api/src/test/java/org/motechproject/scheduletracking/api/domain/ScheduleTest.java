@@ -4,73 +4,30 @@ import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
-
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
 import static org.motechproject.util.DateUtil.newDate;
 
-public class ScheduleTest extends BaseScheduleTrackingTest {
+public class ScheduleTest {
+	private Schedule schedule;
+	private Milestone firstMilestone;
+	private Milestone secondMilestone;
 
-    private Schedule schedule;
+	@Before
+	public void setUp() {
+		secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+		firstMilestone = new Milestone("First Shot", secondMilestone, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+		schedule = new Schedule("Yellow Fever Vaccination", wallTimeOf(52), firstMilestone);
+	}
 
-    @Before
-    public void setUp() {
-        schedule = createSchedule();
-    }
-
-    @Test
-    public void shouldGetAMilestoneBasedOnName() {
-        String milestoneName = "First Shot";
-        assertThat(schedule.getMilestone(milestoneName).getName(), is(equalTo(milestoneName)));
-
-        milestoneName = "Second Shot";
-        assertThat(schedule.getMilestone(milestoneName).getName(), is(equalTo(milestoneName)));
-
-        milestoneName = "Non Existent";
-        assertThat(schedule.getMilestone(milestoneName), is(nullValue()));
-    }
-
-    @Test
-    public void shouldFulfillAParticularMilestone() {
-        assertThat(schedule.getNextMilestone(firstShot).getName(), is(equalTo("Second Shot")));
-        assertThat(schedule.getNextMilestone(secondShot), is(nullValue()));
-    }
-
-    @Test
-    public void shouldNotHaveAlertsIfNoMilestoneIsAtLeastDue() {
-        Milestone milestone = new Milestone("One", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        Schedule schedule = new Schedule("foo", wallTimeOf(10), milestone);
-
-        List<Alert> alerts = schedule.getAlertsFor(weeksAgo(2), milestone);
-        assertThat(alerts.size(), is(equalTo(0)));
-    }
-
-    @Test
-    public void alertsForAScheduleWithSingleMilestone() {
-        Milestone milestone = new Milestone("One", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        Schedule schedule = new Schedule("Schedule", wallTimeOf(10), milestone);
-
-        List<Alert> alerts = schedule.getAlertsFor(weeksAgo(3), milestone);
-        assertThat(alerts.size(), is(equalTo(1)));
-        assertThat(alerts.get(0).windowName(), is(equalTo(WindowName.Due)));
-    }
-
-    @Test
-    public void alertsForAScheduleWithMultipleMilestones() {
-        Milestone second = new Milestone("Second", wallTimeOf(11), wallTimeOf(12), wallTimeOf(13), wallTimeOf(14));
-        Milestone first = new Milestone("First", second, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        Schedule schedule = new Schedule("Schedule", wallTimeOf(52), first);
-
-        List<Alert> alerts = schedule.getAlertsFor(weeksAgo(3), first);
-        assertThat(alerts.size(), is(equalTo(1)));
-        assertThat(alerts.get(0).windowName(), is(equalTo(WindowName.Due)));
-
-        alerts = schedule.getAlertsFor(weeksAgo(13), second);
-        assertThat(alerts.size(), is(equalTo(1)));
-        assertThat(alerts.get(0).windowName(), is(equalTo(WindowName.Due)));
-    }
+	@Test
+	public void shouldGetAMilestoneBasedOnName() {
+		assertThat(schedule.getMilestone("First Shot"), is(equalTo(firstMilestone)));
+		assertThat(schedule.getMilestone("Second Shot"), is(equalTo(secondMilestone)));
+		assertThat(schedule.getMilestone("Non Existent"), is(nullValue()));
+	}
 
 	@Test
 	public void shouldDeriveEndDateBasedOnStartDateAndDuration() {

@@ -17,7 +17,7 @@ import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.sms.smpp.constants.EventDataKeys.*;
+import static org.motechproject.sms.smpp.constants.EventDataKey.*;
 
 public class InboundMessageNotificationTest {
     private InboundMessageNotification inboundMessageNotification;

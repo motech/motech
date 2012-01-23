@@ -6,14 +6,12 @@ import org.motechproject.model.Time;
 public class EnrollmentRequest {
     private String externalId;
     private String scheduleName;
-    private String enrolledInMilestone;
 	private Time preferredAlertTime;
 	private LocalDate referenceDate;
 
-	public EnrollmentRequest(String externalId, String scheduleName, String enrolledInMilestone, Time preferredAlertTime, LocalDate referenceDate) {
+	public EnrollmentRequest(String externalId, String scheduleName, Time preferredAlertTime, LocalDate referenceDate) {
         this.externalId = externalId;
         this.scheduleName = scheduleName;
-        this.enrolledInMilestone = enrolledInMilestone;
         this.preferredAlertTime = preferredAlertTime;
 		this.referenceDate = referenceDate;
 	}
@@ -26,11 +24,7 @@ public class EnrollmentRequest {
         return externalId;
     }
 
-    public String enrolledInMilestone() {
-        return enrolledInMilestone;
-    }
-
-    public Time preferredAlertTime() {
+    public Time getPreferredAlertTime() {
         return preferredAlertTime;
     }
 

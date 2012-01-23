@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
-import static org.motechproject.sms.smpp.constants.EventDataKeys.*;
+import static org.motechproject.sms.smpp.constants.EventDataKey.*;
 
 @Component
 public class InboundMessageNotification implements IInboundMessageNotification {

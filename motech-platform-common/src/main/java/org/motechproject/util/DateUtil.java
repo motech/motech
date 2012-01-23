@@ -1,8 +1,6 @@
 package org.motechproject.util;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeFieldType;
-import org.joda.time.LocalDate;
+import org.joda.time.*;
 import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.Time;
 
@@ -68,4 +66,10 @@ public class DateUtil {
     public static DateTime newDateTime(LocalDate localDate, Time time) {
         return newDateTime(localDate, time.getHour(), time.getMinute(), 0);
     }
+
+    public static int getDifferenceOfDatesInYears(Date startDate) {
+        Period period = new Period(newDate(startDate), today(), PeriodType.yearMonthDay());
+        return period.getYears();
+    }
+
 }

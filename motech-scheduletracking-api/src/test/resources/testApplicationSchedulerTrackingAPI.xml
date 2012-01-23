@@ -9,5 +9,5 @@
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
     </bean>
 
-    <import resource="classpath:applicationScheduleTrackingAPI.xml"/>
+    <import resource="classpath:applicationSchedulerTrackingAPI.xml"/>
 </beans>

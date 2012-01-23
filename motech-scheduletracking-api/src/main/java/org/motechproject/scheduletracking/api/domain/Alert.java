@@ -14,15 +14,15 @@ public class Alert {
         data = milestone.getData();
     }
 
-    public WindowName windowName() {
+    public WindowName getWindowName() {
         return windowName;
     }
 
-    public String milestoneName() {
+    public String getMilestoneName() {
         return milestoneName;
     }
 
-    public Map<String, String> data() {
+    public Map<String, String> getData() {
         return data;
     }
 }

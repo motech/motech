@@ -37,6 +37,14 @@ public class Time implements Comparable<Time> {
         this.minute = minute;
     }
 
+    public boolean le(Time toCompare) {
+        return (this.getHour() < toCompare.getHour() || (this.getHour().intValue() == toCompare.getHour() && this.getMinute() <= toCompare.getMinute()));
+    }
+    
+    public boolean ge(Time toCompare) {
+        return (this.getHour() > toCompare.getHour() || (this.getHour().intValue() == toCompare.getHour() && this.getMinute() >= toCompare.getMinute()));
+    }
+
     @JsonIgnore
     public DateTime getDateTime(DateTime dateTime) {
         return new DateTime(dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth(), hour, minute, 0, 0);

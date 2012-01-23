@@ -53,5 +53,4 @@
 
 	<jms:outbound-channel-adapter id="schedulerjmsout" channel="schedulerGatewayToEventJmsoutChannel" destination="eventQueue"/>
 
-	
 </beans:beans>

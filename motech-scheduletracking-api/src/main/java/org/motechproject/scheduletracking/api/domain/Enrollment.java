@@ -5,6 +5,7 @@ import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.LocalDate;
 import org.motechproject.model.MotechBaseDataObject;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,38 +17,38 @@ public class Enrollment extends MotechBaseDataObject {
 	private LocalDate enrollmentDate;
 	private List<MilestoneFulfillment> fulfillments = new LinkedList<MilestoneFulfillment>();
 	private Schedule schedule;
+	private LocalDate referenceDate;
 	private Milestone currentMilestone;
 
 	// For ektorp
 	private Enrollment() {
 	}
 
-	public Enrollment(String externalId, LocalDate enrollmentDate, Schedule schedule) {
+	public Enrollment(String externalId, Schedule schedule, LocalDate enrollmentDate, LocalDate referenceDate) {
 		this.externalId = externalId;
-		this.enrollmentDate = enrollmentDate;
 		this.schedule = schedule;
+		this.enrollmentDate = enrollmentDate;
+		this.referenceDate = referenceDate;
 		currentMilestone = schedule.getFirstMilestone();
 	}
 
 	@JsonIgnore
 	public List<Alert> getAlerts() {
-		LocalDate dateLastFulfilled = enrollmentDate;
+		List<Alert> alerts = new ArrayList<Alert>();
+		LocalDate dateFulfilled = referenceDate;
 
-		if (!fulfillments.isEmpty()) {
-			MilestoneFulfillment fulfillment = fulfillments.get(fulfillments.size() - 1);
-			dateLastFulfilled = fulfillment.getDateFulfilled();
-		}
+		if (!fulfillments.isEmpty())
+			dateFulfilled = fulfillments.get(fulfillments.size() -1).getDateFulfilled();
 
-		return schedule.getAlertsFor(dateLastFulfilled, currentMilestone);
+		WindowName windowName = currentMilestone.getApplicableWindow(dateFulfilled);
+		alerts.add(new Alert(windowName, currentMilestone));
+
+		return alerts;
 	}
 
 	public void fulfillMilestone() {
-		fulfillMilestone(LocalDate.now());
-	}
-
-	public void fulfillMilestone(LocalDate fulfilledOn) {
-		fulfillments.add(new MilestoneFulfillment(currentMilestone, fulfilledOn));
-		currentMilestone = schedule.getNextMilestone(currentMilestone);
+		fulfillments.add(new MilestoneFulfillment(currentMilestone, LocalDate.now()));
+		currentMilestone = currentMilestone.getNextMilestone();
 	}
 
 	public Schedule getSchedule() {
@@ -99,5 +100,15 @@ public class Enrollment extends MotechBaseDataObject {
 	// For ektorp
 	private void setEnrollmentDate(LocalDate enrollmentDate) {
 		this.enrollmentDate = enrollmentDate;
+	}
+
+	// For ektorp
+	private LocalDate getReferenceDate() {
+		return referenceDate;
+	}
+
+	// For ektorp
+	private void setReferenceDate(LocalDate referenceDate) {
+		this.referenceDate = referenceDate;
 	}
 }
