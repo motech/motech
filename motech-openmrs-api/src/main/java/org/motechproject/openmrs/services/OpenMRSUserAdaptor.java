@@ -62,38 +62,43 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
     @Override
     public MRSUser getUserByUserName(String userName) {
         org.openmrs.User openMrsUser = getOpenMrsUserByUserName(userName);
-        return (openMrsUser != null) ? openMrsToMrsUser(openMrsUser) : null;
+        if (openMrsUser == null) return null;
+        return (!isSystemAdmin(openMrsUser)) ? openMrsToMrsUser(openMrsUser)
+                : new MRSUser().systemId(openMrsUser.getSystemId()).id(Integer.toString(openMrsUser.getId()))
+                .person(new MRSPerson().id(Integer.toString(openMrsUser.getPerson().getId())));
     }
 
-    public org.openmrs.User getOpenMrsUserByUserName(String userName) {
+    org.openmrs.User getOpenMrsUserByUserName(String userName) {
         return userService.getUserByUsername(userName);
     }
 
-    public org.openmrs.User getOpenMrsUserById(String id) {
+    org.openmrs.User getOpenMrsUserById(String id) {
         return userService.getUser(Integer.valueOf(id));
     }
-
 
     @Override
     public List<MRSUser> getAllUsers() {
         List<MRSUser> mrsUsers = new ArrayList<MRSUser>();
         List<org.openmrs.User> openMRSUsers = userService.getAllUsers();
         for (org.openmrs.User openMRSUser : openMRSUsers) {
-            MRSUser mrsUser = openMrsToMrsUser(openMRSUser);
-            if (mrsUser == null) continue;
-            mrsUsers.add(mrsUser);
+            if (isSystemAdmin(openMRSUser)) continue;
+            mrsUsers.add(openMrsToMrsUser(openMRSUser));
         }
         return mrsUsers;
     }
 
     MRSUser openMrsToMrsUser(org.openmrs.User openMRSUser) {
         MRSUser mrsUser = new MRSUser();
-        MRSPerson mrsPerson =   openMRSPersonAdaptor.openMRSToMRSPerson(openMRSUser.getPerson());
+        MRSPerson mrsPerson = openMRSPersonAdaptor.openMRSToMRSPerson(openMRSUser.getPerson());
 
         mrsUser.id(Integer.toString(openMRSUser.getId())).systemId(openMRSUser.getSystemId()).userName(openMRSUser.getUsername()).person(mrsPerson).
                 securityRole(getRoleFromOpenMRSUser(openMRSUser.getRoles()));
 
         return mrsUser;
+    }
+
+    private boolean isSystemAdmin(User openMRSUser) {
+        return openMRSUser.getSystemId().equals("admin") || openMRSUser.getSystemId().equals("daemon");
     }
 
     public String getRoleFromOpenMRSUser(Set<Role> roles) {

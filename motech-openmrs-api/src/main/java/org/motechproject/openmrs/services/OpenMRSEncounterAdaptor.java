@@ -62,11 +62,11 @@ public class OpenMRSEncounterAdaptor implements MRSEncounterAdaptor {
         String id = Integer.toString(openMrsEncounter.getEncounterId());
         String encounterType = openMrsEncounter.getEncounterType().getName();
         Date date = openMrsEncounter.getEncounterDatetime();
-        MRSUser creator = openMrsUserAdaptor.openMrsToMrsUser(openMrsEncounter.getCreator());
-        MRSPerson provider = openMRSPersonAdaptor.openMRSToMRSPerson(openMrsEncounter.getProvider());
         MRSFacility facility = openMrsFacilityAdaptor.convertLocationToFacility(openMrsEncounter.getLocation());
         MRSPatient patient = openMrsPatientAdaptor.getMrsPatient(openMrsEncounter.getPatient());
         Set<MRSObservation> observations = openMrsObservationAdaptor.convertOpenMRSToMRSObservations(openMrsEncounter.getObs());
+        MRSUser creator = new MRSUser().systemId(openMrsEncounter.getCreator().getSystemId()).id(openMrsEncounter.getCreator().getId().toString());
+        MRSPerson provider = new MRSPerson().id(String.valueOf(openMrsEncounter.getProvider().getId()));
         return new MRSEncounter(id, provider, creator, facility, date, patient, observations, encounterType);
     }
 
