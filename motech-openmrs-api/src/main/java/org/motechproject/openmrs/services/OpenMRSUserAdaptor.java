@@ -88,9 +88,6 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
 
     MRSUser openMrsToMrsUser(org.openmrs.User openMRSUser) {
         MRSUser mrsUser = new MRSUser();
-        if (openMRSUser.getSystemId().equals("admin") || openMRSUser.getSystemId().equals("daemon"))
-            return null;
-
         MRSPerson mrsPerson =   openMRSPersonAdaptor.openMRSToMRSPerson(openMRSUser.getPerson());
 
         mrsUser.id(Integer.toString(openMRSUser.getId())).systemId(openMRSUser.getSystemId()).userName(openMRSUser.getUsername()).person(mrsPerson).
