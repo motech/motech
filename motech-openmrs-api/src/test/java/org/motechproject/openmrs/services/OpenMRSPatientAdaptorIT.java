@@ -172,7 +172,6 @@ public class OpenMRSPatientAdaptorIT extends OpenMRSIntegrationTestBase {
     @Test
     @Transactional(readOnly = true)
     public void shouldSaveCauseOfDeath() {
-
         final String first = "First";
         final String middle = "Middle";
         final String last = "Last";
@@ -189,7 +188,6 @@ public class OpenMRSPatientAdaptorIT extends OpenMRSIntegrationTestBase {
 
         Patient actualPatient = patientService.getPatient(Integer.valueOf(savedPatient.getId()));
         assertThat(actualPatient.isDead(), is(true));
-        assertThat(actualPatient.getDeathDate(), is(dateOfDeath));
     }
 
 

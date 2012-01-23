@@ -131,6 +131,8 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
             openMrsPatient.addAddress(personAddress);
         }
         openMrsPatient.getPatientIdentifier().setLocation(facilityAdaptor.getLocation(patient.getFacility().getId()));
+        openMrsPatient.setDead(person.isDead());
+        openMrsPatient.setDeathDate(person.deathDate());
 
         final Patient savedPatient = patientService.savePatient(openMrsPatient);
         if (savedPatient != null) {
@@ -191,6 +193,8 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
     @Override
     public void savePatientCauseOfDeathObservation(String patientId, String conceptName, Date dateOfDeath) {
         Concept cause = openMrsConceptAdaptor.getConceptByName(conceptName);
-        patientService.saveCauseOfDeathObs(getOpenMrsPatient(patientId), dateOfDeath, cause, null);
+        Patient patient = getOpenMrsPatient(patientId);
+        patient.setDead(true);
+        patientService.saveCauseOfDeathObs(patient, dateOfDeath, cause, null);
     }
 }
