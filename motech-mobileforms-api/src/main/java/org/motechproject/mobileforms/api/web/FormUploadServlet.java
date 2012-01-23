@@ -48,6 +48,7 @@ public class FormUploadServlet extends BaseFormServlet {
             formOutput.writeFormErrors(dataOutput);
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (Exception e) {
+            log.error("Error in uploading form:", e);
             dataOutput.writeByte(RESPONSE_ERROR);
             throw new ServletException(FAILED_TO_SERIALIZE_DATA, e);
         } finally {
