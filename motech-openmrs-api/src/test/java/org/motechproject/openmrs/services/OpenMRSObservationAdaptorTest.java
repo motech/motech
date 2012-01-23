@@ -171,7 +171,7 @@ public class OpenMRSObservationAdaptorTest {
     }
 
     private MRSObservation observationBy(ConceptName conceptName1, Set<MRSObservation> actualMrsObservations) {
-        return (MRSObservation)selectFirst(actualMrsObservations, having(on(MRSObservation.class).getConceptName(), equalTo(conceptName1.getName())));
+        return (MRSObservation) selectFirst(actualMrsObservations, having(on(MRSObservation.class).getConceptName(), equalTo(conceptName1.getName())));
     }
 
     private void assertMRSObservation(MRSObservation actualObservation, MRSObservation expectedObservation) {
@@ -207,13 +207,13 @@ public class OpenMRSObservationAdaptorTest {
         assertThat(conceptObs.getValueCoded(), is(equalTo(concept)));
 
     }
-    
-    @Test    
+
+    @Test
     public void shouldThrowExceptionIfInvalidArgumentIsSet() {
         try {
-            observationAdaptor.writeValueToOpenMRSObservation(new Object(),  new Obs());
+            observationAdaptor.writeValueToOpenMRSObservation(new Object(), new Obs());
             Assert.fail("should throw exception");
-        } catch(IllegalArgumentException e){               
+        } catch (IllegalArgumentException e) {
         }
     }
 
@@ -228,16 +228,15 @@ public class OpenMRSObservationAdaptorTest {
         Encounter encounter = new Encounter();
         Patient patient = new Patient();
         User creator = new User();
-        Location facility=new Location();
+        Location facility = new Location();
 
         doReturn(openMRSObservation).when(observationAdaptorSpy).createOpenMRSObservationForEncounter(mrsObservation, encounter, patient, facility, creator);
         when(mockObservationService.saveObs(openMRSObservation, null)).thenReturn(savedOpenMRSObservation);
         doReturn(savedMRSObservation).when(observationAdaptorSpy).convertOpenMRSToMRSObservation(savedOpenMRSObservation);
 
-        MRSObservation returnedMRSObservation = observationAdaptorSpy.saveObservation(mrsObservation, encounter,patient,facility,creator);
+        MRSObservation returnedMRSObservation = observationAdaptorSpy.saveObservation(mrsObservation, encounter, patient, facility, creator);
         Assert.assertThat(returnedMRSObservation, Matchers.is(equalTo(savedMRSObservation)));
     }
-
 
     private void assertOpenMrsObservationProperties(Obs openMrsObservation, MRSObservation mrsObservation, Patient patient,
                                                     Location facility, Encounter encounter, User creator, Concept concept) {

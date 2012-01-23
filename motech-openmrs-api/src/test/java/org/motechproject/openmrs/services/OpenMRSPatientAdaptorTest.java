@@ -23,9 +23,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -43,6 +41,8 @@ public class OpenMRSPatientAdaptorTest {
     private PersonService mockPersonService;
     @Mock
     private OpenMRSFacilityAdaptor mockFacilityAdapter;
+    @Mock
+    private OpenMRSConceptAdaptor mockOpenMRSConceptAdaptor;
 
     OpenMRSPatientAdaptor openMRSPatientAdaptor;
     PatientTestUtil patientTestUtil;
@@ -60,6 +60,7 @@ public class OpenMRSPatientAdaptorTest {
         ReflectionTestUtils.setField(openMRSPatientAdaptor, "facilityAdaptor", mockFacilityAdapter);
         ReflectionTestUtils.setField(openMRSPatientAdaptor, "patientHelper", new PatientHelper());
         ReflectionTestUtils.setField(openMRSPatientAdaptor, "personAdaptor", mockPersonAdaptor);
+        ReflectionTestUtils.setField(openMRSPatientAdaptor, "openMrsConceptAdaptor", mockOpenMRSConceptAdaptor);
     }
 
     @Test
@@ -192,7 +193,7 @@ public class OpenMRSPatientAdaptorTest {
         when(mockPatient.getNames()).thenReturn(names);
         when(mockPatientService.savePatient(Matchers.<org.openmrs.Patient>any())).thenReturn(mockPatient);
 
-        when(mockPersonAdaptor.getFirstName(mockPatient.getNames())).thenReturn(new PersonName(first,middle,last));
+        when(mockPersonAdaptor.getFirstName(mockPatient.getNames())).thenReturn(new PersonName(first, middle, last));
         when(mockPersonAdaptor.getPreferredName(mockPatient.getNames())).thenReturn(first);
 
 
@@ -264,6 +265,20 @@ public class OpenMRSPatientAdaptorTest {
         List<MRSPatient> returnedPatients = openMRSPatientAdaptorSpy.search(name, id);
         assertThat(returnedPatients, is(equalTo(Arrays.asList(mrsPatient2, mrsPatient1))));
 
+    }
+
+    @Test
+    public void shouldSaveCauseOfDeath() {
+        String patientId = "patientId";
+        Patient patient = mock(Patient.class);
+        Date dateOfDeath = mock(Date.class);
+        openMRSPatientAdaptor = spy(openMRSPatientAdaptor);
+        Concept concept = mock(Concept.class);
+        String conceptName = "NONE";
+        doReturn(concept).when(mockOpenMRSConceptAdaptor).getConceptByName(conceptName);
+        doReturn(patient).when(openMRSPatientAdaptor).getOpenMrsPatient(patientId);
+        openMRSPatientAdaptor.savePatientCauseOfDeathObservation(patientId, conceptName, dateOfDeath);
+        verify(mockPatientService).saveCauseOfDeathObs(patient, dateOfDeath, concept, null);
     }
 
     @Test

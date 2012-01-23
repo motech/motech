@@ -177,6 +177,7 @@
                                     </sqlCommand>
                                     <srcFiles>
                                         <srcFile>${project.basedir}/src/test/sql/openmrs-1.8.sql</srcFile>
+                                        <srcFile>${project.basedir}/src/test/sql/concept_cause_of_death.sql</srcFile>
                                         <srcFile>${project.basedir}/src/test/sql/insert_email_person_attribute_type_table.sql</srcFile>
                                     </srcFiles>
                                 </configuration>

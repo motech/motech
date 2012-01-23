@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
-import static ch.lambdaj.Lambda.*;
+import static ch.lambdaj.Lambda.convert;
 
 public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
 
@@ -38,6 +38,8 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
 
     @Autowired
     PatientHelper patientHelper;
+    @Autowired
+    private OpenMRSConceptAdaptor openMrsConceptAdaptor;
 
     @Override
     public MRSPatient getPatient(String patientId) {
@@ -184,5 +186,11 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
             }
         });
         return patients;
+    }
+
+    @Override
+    public void savePatientCauseOfDeathObservation(String patientId, String conceptName, Date dateOfDeath) {
+        Concept cause = openMrsConceptAdaptor.getConceptByName(conceptName);
+        patientService.saveCauseOfDeathObs(getOpenMrsPatient(patientId), dateOfDeath, cause, null);
     }
 }
