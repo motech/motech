@@ -5,6 +5,7 @@ import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.mrs.model.Attribute;
@@ -270,15 +271,21 @@ public class OpenMRSPatientAdaptorTest {
     @Test
     public void shouldSaveCauseOfDeath() {
         String patientId = "patientId";
-        Patient patient = mock(Patient.class);
+        Patient patient = new Patient();
         Date dateOfDeath = mock(Date.class);
-        openMRSPatientAdaptor = spy(openMRSPatientAdaptor);
         Concept concept = mock(Concept.class);
         String conceptName = "NONE";
-        doReturn(concept).when(mockOpenMRSConceptAdaptor).getConceptByName(conceptName);
+
+        openMRSPatientAdaptor = spy(openMRSPatientAdaptor);
         doReturn(patient).when(openMRSPatientAdaptor).getOpenMrsPatient(patientId);
-        openMRSPatientAdaptor.savePatientCauseOfDeathObservation(patientId, conceptName, dateOfDeath);
-        verify(mockPatientService).saveCauseOfDeathObs(patient, dateOfDeath, concept, null);
+        when(mockOpenMRSConceptAdaptor.getConceptByName(conceptName)).thenReturn(concept);
+
+        openMRSPatientAdaptor.savePatientCauseOfDeathObservation(patientId, conceptName, dateOfDeath, null);
+
+        InOrder order = inOrder(mockPatientService);
+        order.verify(mockPatientService).savePatient(patient);
+        order.verify(mockPatientService).saveCauseOfDeathObs(patient, dateOfDeath, concept, null);
+        assertThat(patient.getCauseOfDeath(), is(concept));
     }
 
     @Test

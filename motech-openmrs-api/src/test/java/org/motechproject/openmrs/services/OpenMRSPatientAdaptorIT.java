@@ -184,7 +184,7 @@ public class OpenMRSPatientAdaptorIT extends OpenMRSIntegrationTestBase {
         final MRSPatient savedPatient = createMRSPatient(first, middle, last, address1, birthDate, gender, birthDateEstimated, motechId);
 
         Date dateOfDeath = new Date();
-        patientAdaptor.savePatientCauseOfDeathObservation(savedPatient.getId(), "NONE", dateOfDeath);
+        patientAdaptor.savePatientCauseOfDeathObservation(savedPatient.getId(), "NONE", dateOfDeath, null);
 
         Patient actualPatient = patientService.getPatient(Integer.valueOf(savedPatient.getId()));
         assertThat(actualPatient.isDead(), is(true));
