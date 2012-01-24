@@ -65,17 +65,18 @@ public class OpenMRSUserAdaptorTest {
         String email = "test@gmail.com";
         attributes.add(new Attribute("Email", email));
         MRSUser mrsUser = new MRSUser().userName(userName);
+        mrsUser.systemId("1");
         MRSPerson mrsPerson = new MRSPerson();
         mrsUser.person(mrsPerson.attributes(attributes));
-        User mockUser = mock(User.class);
         Person person = new Person();
+        User mockUser = new User(person);
+        mockUser.setSystemId("userName");
         person.addName(new PersonName("given", "middle", "family"));
 
-        when(mockUser.getSystemId()).thenReturn("1");
-        when(mockUser.getPerson()).thenReturn(person);
-        when(mockPersonAdaptor.openMRSToMRSPerson(person)).thenReturn(mrsPerson);
         when(mockUserService.getUserByUsername(email)).thenReturn(mockUser);
-        openMrsUserAdaptor.saveUser(mrsUser);
+        OpenMRSUserAdaptor spy = spy(openMrsUserAdaptor);
+        doReturn(mrsUser).when(spy).openMrsToMrsUser(mockUser);
+        spy.saveUser(mrsUser);
     }
 
     @Test

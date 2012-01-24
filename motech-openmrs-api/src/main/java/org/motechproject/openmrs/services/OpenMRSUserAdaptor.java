@@ -48,7 +48,8 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
 
     @Override
     public Map saveUser(MRSUser mrsUser) throws UserAlreadyExistsException {
-        if (getUserByUserName(mrsUser.getPerson().attrValue("Email")) != null) {
+        MRSUser userByUserName = getUserByUserName(mrsUser.getPerson().attrValue("Email"));
+        if (userByUserName != null && !isSystemAdmin(userByUserName.getSystemId())) {
             throw new UserAlreadyExistsException();
         }
         return save(mrsUser);
@@ -63,7 +64,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
     public MRSUser getUserByUserName(String userName) {
         org.openmrs.User openMrsUser = getOpenMrsUserByUserName(userName);
         if (openMrsUser == null) return null;
-        return (!isSystemAdmin(openMrsUser)) ? openMrsToMrsUser(openMrsUser)
+        return (!isSystemAdmin(openMrsUser.getSystemId())) ? openMrsToMrsUser(openMrsUser)
                 : new MRSUser().systemId(openMrsUser.getSystemId()).id(Integer.toString(openMrsUser.getId()))
                 .person(new MRSPerson().id(Integer.toString(openMrsUser.getPerson().getId())));
     }
@@ -81,7 +82,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         List<MRSUser> mrsUsers = new ArrayList<MRSUser>();
         List<org.openmrs.User> openMRSUsers = userService.getAllUsers();
         for (org.openmrs.User openMRSUser : openMRSUsers) {
-            if (isSystemAdmin(openMRSUser)) continue;
+            if (isSystemAdmin(openMRSUser.getSystemId())) continue;
             mrsUsers.add(openMrsToMrsUser(openMRSUser));
         }
         return mrsUsers;
@@ -97,8 +98,8 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
         return mrsUser;
     }
 
-    private boolean isSystemAdmin(User openMRSUser) {
-        return openMRSUser.getSystemId().equals("admin") || openMRSUser.getSystemId().equals("daemon");
+    private boolean isSystemAdmin(String systemId) {
+        return systemId.equals("admin") || systemId.equals("daemon");
     }
 
     public String getRoleFromOpenMRSUser(Set<Role> roles) {
