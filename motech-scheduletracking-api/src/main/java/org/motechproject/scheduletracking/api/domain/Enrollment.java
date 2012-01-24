@@ -103,7 +103,7 @@ public class Enrollment extends MotechBaseDataObject {
 	}
 
 	// For ektorp
-	private LocalDate getReferenceDate() {
+	public LocalDate getReferenceDate() {
 		return referenceDate;
 	}
 

@@ -53,6 +53,8 @@ public class AllEnrollmentsIT {
 		Enrollment found = enrollments.get(0);
 		assertEquals(enrollment.getExternalId(), found.getExternalId());
 		assertEquals(enrollment.getSchedule(), found.getSchedule());
+        assertEquals(enrollment.getAlerts().size(), found.getAlerts().size());
+        assertEquals(enrollment.getReferenceDate(), found.getReferenceDate());
 	}
 
 	@Test
