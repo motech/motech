@@ -4,11 +4,11 @@
 	<parent>
 		<artifactId>motech</artifactId>
 		<groupId>org.motechproject</groupId>
-		<version>0.7-SNAPSHOT</version>
+		<version>0.7</version>
 	</parent>
 	<groupId>org.motechproject</groupId>
 	<artifactId>motech-outbox</artifactId>
-	<version>0.7-SNAPSHOT</version>
+	<version>0.7</version>
 	<name>MoTeCH Outbox</name>
 	<packaging>bundle</packaging>
 	<dependencies>

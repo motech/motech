@@ -1,15 +1,14 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.motechproject</groupId>
 		<artifactId>motech</artifactId>
-		<version>0.7-SNAPSHOT</version>
+		<version>0.7</version>
 	</parent>
 	<artifactId>motech-scheduletracking-api</artifactId>
 	<name>MoTeCH Schedule Tracking API</name>
 	<description>Motech Schedule Tracking API</description>
-	<version>0.7-SNAPSHOT</version>
+	<version>0.7</version>
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -60,11 +59,11 @@
 						<configuration>
 							<target>
 								<exec executable="curl">
-									<arg value="-s"/>
-									<arg value="-S"/>
-									<arg value="-X"/>
-									<arg value="DELETE"/>
-									<arg value="http://${db.server}:${db.port}/motech-scheduletracking"/>
+									<arg value="-s" />
+									<arg value="-S" />
+									<arg value="-X" />
+									<arg value="DELETE" />
+									<arg value="http://${db.server}:${db.port}/motech-scheduletracking" />
 								</exec>
 							</target>
 						</configuration>
