@@ -60,13 +60,29 @@ public class SmsSendHandlerTest {
     }
 
     @Test
-    public void shouldNotThrowExceptionIfResponseIsASuccess() throws IOException, SmsDeliveryFailureException {
+    public void shouldNotThrowExceptionIfResponseMessageIsExactlyTheSameAsTheExpectedSuccessMessage() throws IOException, SmsDeliveryFailureException {
         Response response = new Response();
         response.success = "sent";
         SmsSendTemplate template = mock(SmsSendTemplate.class);
         GetMethod httpMethod = mock(GetMethod.class);
 
         when(httpMethod.getResponseBodyAsString()).thenReturn("sent");
+        when(template.generateRequestFor(anyList(), anyString())).thenReturn(httpMethod);
+        when(template.getResponse()).thenReturn(response);
+        when(templateReader.getTemplate(Matchers.<String>any())).thenReturn(template);
+
+        SmsSendHandler handler = new SmsSendHandler(templateReader, httpClient);
+        handler.handle(new MotechEvent(EventSubject.SEND_SMS));
+    }
+
+    @Test
+    public void shouldNotThrowExceptionIfResponseMessageContainsTheExpectedSuccessMessage() throws IOException, SmsDeliveryFailureException {
+        Response response = new Response();
+        response.success = "part of success";
+        SmsSendTemplate template = mock(SmsSendTemplate.class);
+        GetMethod httpMethod = mock(GetMethod.class);
+
+        when(httpMethod.getResponseBodyAsString()).thenReturn("real response containing the phrase part of success and more stuff");
         when(template.generateRequestFor(anyList(), anyString())).thenReturn(httpMethod);
         when(template.getResponse()).thenReturn(response);
         when(templateReader.getTemplate(Matchers.<String>any())).thenReturn(template);
