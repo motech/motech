@@ -4,10 +4,9 @@ import org.motechproject.gateway.OutboundEventGateway;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduletracking.api.domain.Alert;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
-import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.events.EnrolledEntityAlertEvent;
-import org.motechproject.scheduletracking.api.events.constants.EventSubject;
 import org.motechproject.scheduletracking.api.events.MilestoneEvent;
+import org.motechproject.scheduletracking.api.events.constants.EventSubject;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.motechproject.server.event.annotations.MotechListener;
@@ -32,7 +31,6 @@ public class ScheduleTrackingEventService {
     @MotechListener(subjects = EventSubject.ENROLLED_ENTITY_REGULAR_ALERT)
     public void raiseAlertForEnrolledEntity(MotechEvent motechEvent) {
         EnrolledEntityAlertEvent enrolledEntityAlertEvent = new EnrolledEntityAlertEvent(motechEvent);
-        Schedule schedule = allTrackedSchedules.get(enrolledEntityAlertEvent.scheduleName());
         Enrollment enrollment = allEnrollments.get(enrolledEntityAlertEvent.enrollmentId());
         List<Alert> alerts = enrollment.getAlerts();
         for (Alert alert : alerts) {
