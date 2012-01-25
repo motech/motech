@@ -8,7 +8,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class TrackedSchedulesJsonReaderTest {
+public class TrackedSchedulesJsonReaderImplTest {
     @Test
     public void shouldReadTheScheduleJsonFileCorrectly() {
         TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/simple-schedule.json");
