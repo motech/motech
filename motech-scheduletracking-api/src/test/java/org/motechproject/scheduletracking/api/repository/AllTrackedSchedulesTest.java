@@ -11,11 +11,12 @@ import static org.mockito.Mockito.*;
 
 public class AllTrackedSchedulesTest {
     @Test
+    // what is this testing?
     public void getSchedule() {
         TrackedSchedulesJsonReader trackedSchedulesJsonReader = mock(TrackedSchedulesJsonReader.class);
         List<ScheduleRecord> records = trackedSchedulesJsonReader.records();
         AllTrackedSchedules allTrackedSchedules = new AllTrackedSchedules(trackedSchedulesJsonReader);
-        Schedule schedule = allTrackedSchedules.get("foo");
+        Schedule schedule = allTrackedSchedules.getByName("foo");
         assertNull(schedule);
     }
 }

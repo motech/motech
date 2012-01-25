@@ -27,8 +27,14 @@ public class EnrollmentTest {
 	}
 
 	@Test
-	public void shouldSetTheFirstMilestoneAsNextMilestoneOnCreation() {
+	public void shouldStartWithFirstMilestone() {
 		assertThat(enrollment.getCurrentMilestone(), is(equalTo(firstMilestone)));
+	}
+
+	@Test
+	public void shouldStartWithSecondMilestone() throws MilestoneNotPartOfScheduleException {
+        Enrollment lateEnrollment = new Enrollment("my_entity_1", schedule, weeksAgo(3), weeksAgo(3), "Second Shot");
+		assertEquals(secondMilestone, lateEnrollment.getCurrentMilestone());
 	}
 
 	@Test

@@ -6,6 +6,7 @@ import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.builder.CronJobExpressionBuilder;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.scheduletracking.api.domain.MilestoneNotPartOfScheduleException;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.domain.ScheduleTrackingException;
 import org.motechproject.scheduletracking.api.events.EnrolledEntityAlertEvent;
@@ -32,22 +33,25 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
 	}
 
 	@Override
-	public void enroll(EnrollmentRequest enrollmentRequest) {
+	public void enroll(EnrollmentRequest enrollmentRequest) throws MilestoneNotPartOfScheduleException {
 		String externalId = enrollmentRequest.getExternalId();
 		String scheduleName = enrollmentRequest.getScheduleName();
 
 		List<Enrollment> enrollments = allEnrollments.findByExternalIdAndScheduleName(externalId, scheduleName);
 		if (!enrollments.isEmpty()) return;
 
-		Schedule schedule = allTrackedSchedules.get(scheduleName);
+		Schedule schedule = allTrackedSchedules.getByName(scheduleName);
 		if (schedule == null)
 			throw new ScheduleTrackingException("No schedule with name: %s", scheduleName);
 
 		LocalDate referenceDate = enrollmentRequest.getReferenceDate();
-		Enrollment enrollment = new Enrollment(externalId, schedule, now(), referenceDate);
-		allEnrollments.add(enrollment);
 
-		MotechEvent motechEvent = new EnrolledEntityAlertEvent(schedule.getName(), enrollment.getId()).toMotechEvent();
+        if (enrollmentRequest.enrollIntoMilestone())
+            allEnrollments.add(new Enrollment(externalId, schedule, now(), referenceDate, enrollmentRequest.getStartingMilestoneName()));
+        else
+            allEnrollments.add(new Enrollment(externalId, schedule, now(), referenceDate));
+
+		MotechEvent motechEvent = new EnrolledEntityAlertEvent(schedule.getName(), new Enrollment(externalId, schedule, now(), referenceDate).getId()).toMotechEvent();
 		String cronJobExpression = new CronJobExpressionBuilder(enrollmentRequest.getPreferredAlertTime(), 0, 0).build();
 		CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, now().toDate(), schedule.getEndDate(referenceDate).toDate());
 		schedulerService.scheduleJob(schedulableJob);

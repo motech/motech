@@ -32,7 +32,26 @@ public class Enrollment extends MotechBaseDataObject {
 		currentMilestone = schedule.getFirstMilestone();
 	}
 
-	@JsonIgnore
+    public Enrollment(String externalId, Schedule schedule, LocalDate enrollmentDate, LocalDate referenceDate, String startingMilestoneName) throws MilestoneNotPartOfScheduleException {
+        this.externalId = externalId;
+        this.schedule = schedule;
+        this.enrollmentDate = enrollmentDate;
+        this.referenceDate = referenceDate;
+        Milestone startingMilestone = getMilestoneByName(startingMilestoneName);
+        if (startingMilestone != null)
+            currentMilestone = startingMilestone;
+        else
+            throw new MilestoneNotPartOfScheduleException();
+    }
+
+    private Milestone getMilestoneByName(String startingMilestoneName) {
+        for (Milestone milestone = schedule.getFirstMilestone(); milestone != null; milestone = milestone.getNextMilestone())
+            if (milestone.getName().equals(startingMilestoneName))
+                return milestone;
+        return null;
+    }
+
+    @JsonIgnore
 	public List<Alert> getAlerts() {
 		List<Alert> alerts = new ArrayList<Alert>();
 		LocalDate dateFulfilled = referenceDate;
@@ -59,6 +78,7 @@ public class Enrollment extends MotechBaseDataObject {
 		return externalId;
 	}
 
+    // why public?
 	public Milestone getCurrentMilestone() {
 		return currentMilestone;
 	}

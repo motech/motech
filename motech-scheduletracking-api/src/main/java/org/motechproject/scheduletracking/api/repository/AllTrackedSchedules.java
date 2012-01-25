@@ -20,7 +20,7 @@ public class AllTrackedSchedules {
         }
     }
 
-    public Schedule get(String name) {
+    public Schedule getByName(String name) {
         return schedules.get(name);
     }
 }

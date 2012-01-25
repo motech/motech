@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.model.Time;
+import org.motechproject.scheduletracking.api.domain.MilestoneNotPartOfScheduleException;
 import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
@@ -56,7 +57,7 @@ public class ScheduleTrackingServiceIT {
 	}
 
 	@Test
-	public void shouldEnrollSchedule() throws SchedulerException {
+	public void shouldEnrollSchedule() throws SchedulerException, MilestoneNotPartOfScheduleException {
 		scheduleTrackingService.enroll(enrollmentRequest);
 
 		assertEquals(1, allEnrollments.getAll().size());
@@ -64,7 +65,7 @@ public class ScheduleTrackingServiceIT {
 	}
 
 	@Test
-	public void shouldUseTheCorrectStartDateAndEndDateForTheSchedule() throws SchedulerException {
+	public void shouldUseTheCorrectStartDateAndEndDateForTheSchedule() throws SchedulerException, MilestoneNotPartOfScheduleException {
 		scheduleTrackingService.enroll(enrollmentRequest);
 
 		String[] triggerNames = scheduler.getTriggerNames(GROUP_NAME);
@@ -75,7 +76,7 @@ public class ScheduleTrackingServiceIT {
 	}
 
 	@Test
-	public void shouldNotEnrollSameExternalIdForTheSameScheduleMultipleTimes() throws SchedulerException {
+	public void shouldNotEnrollSameExternalIdForTheSameScheduleMultipleTimes() throws SchedulerException, MilestoneNotPartOfScheduleException {
 		scheduleTrackingService.enroll(enrollmentRequest);
 		scheduleTrackingService.enroll(enrollmentRequest);
 
