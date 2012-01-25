@@ -6,5 +6,8 @@
             "message": "$message" ,
             "api_key": "******"
         }
+    },
+    "response": {
+        "success": "<status>success</status>"
     }
 }
