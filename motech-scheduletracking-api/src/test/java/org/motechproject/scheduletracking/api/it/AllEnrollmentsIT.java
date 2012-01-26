@@ -36,13 +36,22 @@ public class AllEnrollmentsIT {
 
 		Milestone milestone = new Milestone(milestoneName, new WallTime(13, WallTimeUnit.Week), new WallTime(14, WallTimeUnit.Week), new WallTime(16, WallTimeUnit.Week), null);
 		schedule = new Schedule(scheduleName, new WallTime(52, WallTimeUnit.Week), milestone);
-		enrollment = new Enrollment("1324324", schedule, DateUtil.today(), DateUtil.today());
+		enrollment = new Enrollment("1324324", schedule.getName(), DateUtil.today(), DateUtil.today(), schedule.getFirstMilestone().getName());
 	}
 
 	@After
 	public void tearDown() {
 		allEnrollments.remove(enrollment);
 	}
+
+    @Test
+    public void shouldAddEnrollment() {
+        allEnrollments.add(enrollment);
+
+        String enrollmentId = enrollment.getId();
+        assertNotNull(enrollmentId);
+        assertNotNull(allEnrollments.get(enrollmentId));
+    }
 
 	@Test
 	public void shouldFindByExternalIdAndScheduleName() {
@@ -52,27 +61,6 @@ public class AllEnrollmentsIT {
 		assertEquals(1, enrollments.size());
 		Enrollment found = enrollments.get(0);
 		assertEquals(enrollment.getExternalId(), found.getExternalId());
-		assertEquals(enrollment.getSchedule(), found.getSchedule());
-        assertEquals(enrollment.getAlerts().size(), found.getAlerts().size());
         assertEquals(enrollment.getReferenceDate(), found.getReferenceDate());
-	}
-
-	@Test
-	public void shouldAddEnrollment() {
-		allEnrollments.add(enrollment);
-
-		String enrollmentId = enrollment.getId();
-		assertNotNull(enrollmentId);
-		assertNotNull(allEnrollments.get(enrollmentId));
-	}
-
-	@Test
-	public void shouldAddEnrollmentWithFulfilledMilestones() {
-		enrollment.fulfillMilestone();
-		allEnrollments.add(enrollment);
-
-		String enrollmentId = enrollment.getId();
-		assertNotNull(enrollmentId);
-		assertNotNull(allEnrollments.get(enrollmentId));
 	}
 }

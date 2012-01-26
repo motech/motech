@@ -4,10 +4,13 @@ import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 import static org.motechproject.util.DateUtil.newDate;
 
 public class ScheduleTest {
@@ -33,5 +36,29 @@ public class ScheduleTest {
 	public void shouldDeriveEndDateBasedOnStartDateAndDuration() {
 		LocalDate endDate = schedule.getEndDate(newDate(2012, 1, 2));
 		assertEquals(newDate(2012, 12, 31), endDate);
-	}
-}
+    }
+
+    @Test
+    public void alertsForAScheduleWithSingleMilestone() {
+        Milestone milestone = new Milestone("One", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Schedule schedule = new Schedule("Schedule", wallTimeOf(10), milestone);
+
+        List<Alert> alerts = schedule.getAlerts(weeksAgo(3), milestone.getName());
+        assertThat(alerts.size(), is(equalTo(1)));
+        assertThat(alerts.get(0).getWindowName(), is(equalTo(WindowName.Late)));
+    }
+
+    @Test
+    public void alertsForAScheduleWithMultipleMilestones() {
+        Milestone second = new Milestone("Second", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone first = new Milestone("First", second, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Schedule schedule = new Schedule("Schedule", wallTimeOf(52), first);
+
+        List<Alert> alerts = schedule.getAlerts(weeksAgo(3), first.getName());
+        assertThat(alerts.size(), is(equalTo(1)));
+        assertThat(alerts.get(0).getWindowName(), is(equalTo(WindowName.Late)));
+
+        alerts = schedule.getAlerts(weeksAgo(2), second.getName());
+        assertThat(alerts.size(), is(equalTo(1)));
+        assertThat(alerts.get(0).getWindowName(), is(equalTo(WindowName.Due)));
+    }}

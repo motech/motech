@@ -11,18 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MilestoneWindow implements Serializable {
-	private static final long serialVersionUID = -2028606574404110187L;
-
-	@JsonProperty
     private WallTime begin;
-	@JsonProperty
     private WallTime end;
-
     private List<AlertConfiguration> alertConfigurations = new ArrayList<AlertConfiguration>();
-
-	// For ektorp
-	private MilestoneWindow() {
-	}
 
 	public MilestoneWindow(WallTime begin, WallTime end) {
         this.begin = begin;

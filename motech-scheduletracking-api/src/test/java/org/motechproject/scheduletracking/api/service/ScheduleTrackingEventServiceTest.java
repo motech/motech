@@ -2,22 +2,27 @@ package org.motechproject.scheduletracking.api.service;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.gateway.OutboundEventGateway;
-import org.motechproject.scheduletracking.api.domain.Alert;
-import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.model.MotechEvent;
+import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.events.EnrolledEntityAlertEvent;
 import org.motechproject.scheduletracking.api.events.MilestoneEvent;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
+import org.motechproject.valueobjects.WallTime;
+import org.motechproject.valueobjects.WallTimeUnit;
 
-import java.util.Arrays;
-
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 
 public class ScheduleTrackingEventServiceTest {
-
     @Mock
     private AllTrackedSchedules allTrackedSchedules;
     @Mock
@@ -35,13 +40,20 @@ public class ScheduleTrackingEventServiceTest {
 
     @Test
     public void shouldRaiseMilestoneEvent() {
-        Enrollment enrollment = mock(Enrollment.class);
-        Alert alert = mock(Alert.class);
-        when(enrollment.getAlerts()).thenReturn(Arrays.asList(alert));
-        when(allEnrollments.get("enrollment_1")).thenReturn(enrollment);
+        String firstMilestoneName = "First Milestone";
+        String scheduleName = "scheduleName";
+        Milestone firstMilestone = new Milestone(firstMilestoneName, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        firstMilestone.getMilestoneWindow(WindowName.Due).addAlert(new AlertConfiguration(null, wallTimeOf(1), 3));
+        Enrollment enrollment = new Enrollment("externalId", scheduleName, weeksAgo(2), weeksAgo(3), firstMilestoneName);
+        Schedule schedule = new Schedule(scheduleName, new WallTime(10, WallTimeUnit.Week), firstMilestone);
 
-        scheduleTrackingEventService.raiseAlertForEnrolledEntity(new EnrolledEntityAlertEvent("schedule", "enrollment_1").toMotechEvent());
+        when(allEnrollments.get("enrollmentId")).thenReturn(enrollment);
+        when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
 
-        verify(outboundEventGateway).sendEventMessage(new MilestoneEvent(alert).toMotechEvent());
+        MotechEvent motechEvent = new EnrolledEntityAlertEvent(scheduleName, "enrollmentId").toMotechEvent();
+        scheduleTrackingEventService.raiseAlertForEnrolledEntity(motechEvent);
+
+        ArgumentCaptor<MotechEvent> milestoneEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
+        verify(outboundEventGateway).sendEventMessage(milestoneEventArgumentCaptor.capture());
     }
 }

@@ -1,88 +1,62 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 
 public class EnrollmentTest {
-	private Enrollment enrollment;
-	private Milestone firstMilestone;
-	private Milestone secondMilestone;
-	private Schedule schedule;
+    private Enrollment enrollment;
+    private Milestone firstMilestone;
+    private Milestone secondMilestone;
+    private Schedule schedule;
+    private LocalDate referenceDate;
 
-	@Before
-	public void setUp() {
-		secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-		firstMilestone = new Milestone("First Shot", secondMilestone, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-		schedule = new Schedule("Yellow Fever Vaccination", wallTimeOf(52), firstMilestone);
-		enrollment = new Enrollment("ID-074285", schedule, weeksAgo(3), weeksAgo(3));
-	}
+    @Before
+    public void setUp() {
+        secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        firstMilestone = new Milestone("First Shot", secondMilestone, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        schedule = new Schedule("Yellow Fever Vaccination", wallTimeOf(52), firstMilestone);
+        referenceDate = weeksAgo(5);
+        enrollment = new Enrollment("ID-074285", schedule.getName(), weeksAgo(3), referenceDate, schedule.getFirstMilestone().getName());
+    }
 
-	@Test
-	public void shouldStartWithFirstMilestone() {
-		assertThat(enrollment.getCurrentMilestone(), is(equalTo(firstMilestone)));
-	}
+    @Test
+    public void shouldStartWithFirstMilestoneByDefault() {
+        assertEquals(firstMilestone.getName(), enrollment.getCurrentMilestoneName());
+    }
 
-	@Test
-	public void shouldStartWithSecondMilestone() throws MilestoneNotPartOfScheduleException {
-        Enrollment lateEnrollment = new Enrollment("my_entity_1", schedule, weeksAgo(3), weeksAgo(3), "Second Shot");
-		assertEquals(secondMilestone, lateEnrollment.getCurrentMilestone());
-	}
+    @Test
+    public void shouldStartWithSecondMilestone() {
+        Enrollment lateEnrollment = new Enrollment("my_entity_1", schedule.getName(), weeksAgo(3), weeksAgo(3), secondMilestone.getName());
+        assertEquals(secondMilestone.getName(), lateEnrollment.getCurrentMilestoneName());
+    }
 
-	@Test
-	public void shouldGetPendingAlerts() {
-		List<Alert> alerts = enrollment.getAlerts();
-		assertEquals(1, alerts.size());
-	}
+    @Test
+    public void shouldMarkAMilestoneAsFulfilled() {
+        enrollment.fulfillMilestone(secondMilestone.getName(), LocalDate.now());
+        String currentMilestoneName = enrollment.getCurrentMilestoneName();
 
-	@Test
-	public void shouldMarkAMilestoneAsFulfilled() {
-		enrollment.fulfillMilestone();
-		Milestone currentMilestone = enrollment.getCurrentMilestone();
+        assertEquals(secondMilestone.getName(), currentMilestoneName);
+        List<MilestoneFulfillment> fulfillments = enrollment.getFulfillments();
+        assertEquals(1, fulfillments.size());
+    }
 
-		assertThat(currentMilestone, is(equalTo(secondMilestone)));
-		List<MilestoneFulfillment> fulfillments = enrollment.getFulfillments();
-		assertEquals(1, fulfillments.size());
-	}
+    @Test
+    public void shouldGetReferenceDateAsTheLastFulfilledDateWhenNoMilestoneFulfilled() {
+        assertEquals(referenceDate, enrollment.getLastFulfilledDate());
+    }
 
-	@Test
-	public void shouldGetAlertsForTheNextMilestoneOnceTheCurrentMilestoneIsFulfilled() {
-		enrollment.fulfillMilestone();
-		Milestone currentMilestone = enrollment.getCurrentMilestone();
+    @Test
+    public void shouldGetLastFulfilledDate() {
+        LocalDate dateFulfilled = weeksAgo(1);
+        enrollment.fulfillMilestone(secondMilestone.getName(), dateFulfilled);
 
-		assertThat(currentMilestone, is(equalTo(secondMilestone)));
-		List<Alert> alerts = enrollment.getAlerts();
-		assertEquals(1, alerts.size());
-		assertEquals(WindowName.Waiting, alerts.get(0).getWindowName());
-	}
-
-	@Test
-	public void shouldFetchAlertsBasedOnTheReferenceDate_WithEnrollmentDateSameAsReferenceDate() {
-		enrollment = new Enrollment("ID-074285", schedule, weeksAgo(1), weeksAgo(1));
-		Milestone currentMilestone = enrollment.getCurrentMilestone();
-
-		assertThat(currentMilestone, is(equalTo(firstMilestone)));
-		List<Alert> alerts = enrollment.getAlerts();
-		assertEquals(1, alerts.size());
-		assertEquals(WindowName.Upcoming, alerts.get(0).getWindowName());
-	}
-
-	@Test
-	public void shouldFetchAlertsBasedOnTheReferenceDate_WithEnrollmentDateDifferentFromReferenceDate() {
-		enrollment = new Enrollment("ID-074285", schedule, weeksAgo(1), weeksAgo(2));
-		Milestone currentMilestone = enrollment.getCurrentMilestone();
-
-		assertThat(currentMilestone, is(equalTo(firstMilestone)));
-		List<Alert> alerts = enrollment.getAlerts();
-		assertEquals(1, alerts.size());
-		assertEquals(WindowName.Due, alerts.get(0).getWindowName());
-	}
+        assertEquals(dateFulfilled, enrollment.getLastFulfilledDate());
+    }
 }

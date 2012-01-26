@@ -6,18 +6,14 @@ import org.joda.time.LocalDate;
 import java.io.Serializable;
 
 public class MilestoneFulfillment implements Serializable {
-	private static final long serialVersionUID = 486156182281115607L;
-
-	@JsonProperty
-	private Milestone milestone;
-	@JsonProperty
+	private String milestoneName;
 	private LocalDate dateFulfilled;
 
 	private MilestoneFulfillment() {
 	}
 
-	public MilestoneFulfillment(Milestone milestone, LocalDate dateFulfilled) {
-		this.milestone = milestone;
+	public MilestoneFulfillment(String milestoneName, LocalDate dateFulfilled) {
+		this.milestoneName = milestoneName;
 		this.dateFulfilled = dateFulfilled;
 	}
 
@@ -29,11 +25,11 @@ public class MilestoneFulfillment implements Serializable {
 		this.dateFulfilled = dateFulfilled;
 	}
 
-	public Milestone getMilestone() {
-		return milestone;
+	public String getMilestoneName() {
+		return milestoneName;
 	}
 
-	public void setMilestoneName(Milestone milestone) {
-		this.milestone = milestone;
+	public void setMilestoneName(String milestoneName) {
+		this.milestoneName = milestoneName;
 	}
 }

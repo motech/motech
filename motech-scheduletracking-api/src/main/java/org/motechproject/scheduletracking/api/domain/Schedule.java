@@ -1,64 +1,66 @@
 package org.motechproject.scheduletracking.api.domain;
 
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.LocalDate;
 import org.motechproject.valueobjects.WallTime;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Schedule implements Serializable {
-	private static final long serialVersionUID = 2783395208102730624L;
+    private String name;
+    private WallTime totalDuration;
+    private Milestone firstMilestone;
 
-	@JsonProperty
-	private String name;
-	@JsonProperty
-	private WallTime totalDuration;
-	@JsonProperty
-	private Milestone firstMilestone;
+    public Schedule(String name, WallTime totalDuration, Milestone firstMilestone) {
+        this.name = name;
+        this.totalDuration = totalDuration;
+        this.firstMilestone = firstMilestone;
+    }
 
-	// For ektorp
-	private Schedule() {
-	}
+    public Milestone getFirstMilestone() {
+        return firstMilestone;
+    }
 
-	public Schedule(String name, WallTime totalDuration, Milestone firstMilestone) {
-		this.name = name;
-		this.totalDuration = totalDuration;
-		this.firstMilestone = firstMilestone;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public Milestone getFirstMilestone() {
-		return firstMilestone;
-	}
+    public Milestone getMilestone(String milestoneName) {
+        Milestone milestone = firstMilestone;
+        while (milestone != null && !milestone.hasName(milestoneName))
+            milestone = milestone.getNextMilestone();
+        return milestone;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public LocalDate getEndDate(LocalDate startDate) {
+        return startDate.plusDays(totalDuration.inDays());
+    }
 
-	public Milestone getMilestone(String milestoneName) {
-		Milestone milestone = firstMilestone;
-		while (milestone != null && !milestone.hasName(milestoneName))
-			milestone = milestone.getNextMilestone();
-		return milestone;
-	}
+    public List<Alert> getAlerts(LocalDate lastFulfilledDate, String currentMilestoneName) {
+        List<Alert> alerts = new ArrayList<Alert>();
+        Milestone milestone = getMilestone(currentMilestoneName);
 
-	public LocalDate getEndDate(LocalDate startDate) {
-		return startDate.plusDays(totalDuration.inDays());
-	}
+        WindowName windowName = milestone.getApplicableWindow(lastFulfilledDate);
+        alerts.add(new Alert(windowName, milestone));
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+        return alerts;
+    }
 
-		Schedule schedule = (Schedule) o;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-		if (name != null ? !name.equals(schedule.name) : schedule.name != null) return false;
+        Schedule schedule = (Schedule) o;
 
-		return true;
-	}
+        if (name != null ? !name.equals(schedule.name) : schedule.name != null) return false;
 
-	@Override
-	public int hashCode() {
-		return name != null ? name.hashCode() : 0;
-	}
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return name != null ? name.hashCode() : 0;
+    }
 }

@@ -36,7 +36,7 @@ public class EnrollmentRequest {
     }
 
     public boolean enrollIntoMilestone() {
-        return startingMilestoneName != null;
+        return startingMilestoneName != null && !startingMilestoneName.isEmpty();
     }
 
     public Time getPreferredAlertTime() {

@@ -1,134 +1,99 @@
 package org.motechproject.scheduletracking.api.domain;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.LocalDate;
 import org.motechproject.model.MotechBaseDataObject;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 @TypeDiscriminator("doc.type === 'Enrollment'")
 public class Enrollment extends MotechBaseDataObject {
-	private static final long serialVersionUID = 5097894298798275204L;
+    @JsonProperty
+    private LocalDate enrollmentDate;
 
-	private String externalId;
-	private LocalDate enrollmentDate;
-	private List<MilestoneFulfillment> fulfillments = new LinkedList<MilestoneFulfillment>();
-	private Schedule schedule;
-	private LocalDate referenceDate;
-	private Milestone currentMilestone;
+    private String externalId;
+    private List<MilestoneFulfillment> fulfillments = new LinkedList<MilestoneFulfillment>();
+    private String scheduleName;
+    private LocalDate referenceDate;
+    private String currentMilestoneName;
 
-	// For ektorp
-	private Enrollment() {
-	}
-
-	public Enrollment(String externalId, Schedule schedule, LocalDate enrollmentDate, LocalDate referenceDate) {
-		this.externalId = externalId;
-		this.schedule = schedule;
-		this.enrollmentDate = enrollmentDate;
-		this.referenceDate = referenceDate;
-		currentMilestone = schedule.getFirstMilestone();
-	}
-
-    public Enrollment(String externalId, Schedule schedule, LocalDate enrollmentDate, LocalDate referenceDate, String startingMilestoneName) throws MilestoneNotPartOfScheduleException {
-        this.externalId = externalId;
-        this.schedule = schedule;
-        this.enrollmentDate = enrollmentDate;
-        this.referenceDate = referenceDate;
-        Milestone startingMilestone = getMilestoneByName(startingMilestoneName);
-        if (startingMilestone != null)
-            currentMilestone = startingMilestone;
-        else
-            throw new MilestoneNotPartOfScheduleException();
+    // For ektorp
+    private Enrollment() {
     }
 
-    private Milestone getMilestoneByName(String startingMilestoneName) {
-        for (Milestone milestone = schedule.getFirstMilestone(); milestone != null; milestone = milestone.getNextMilestone())
-            if (milestone.getName().equals(startingMilestoneName))
-                return milestone;
-        return null;
+    public Enrollment(String externalId, String scheduleName, LocalDate enrollmentDate, LocalDate referenceDate, String currentMilestoneName) {
+        this.externalId = externalId;
+        this.scheduleName = scheduleName;
+        this.enrollmentDate = enrollmentDate;
+        this.referenceDate = referenceDate;
+        this.currentMilestoneName = currentMilestoneName;
+    }
+
+    public String getScheduleName() {
+        return scheduleName;
+    }
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public String getCurrentMilestoneName() {
+        return currentMilestoneName;
+    }
+
+    public List<MilestoneFulfillment> getFulfillments() {
+        return fulfillments;
+    }
+
+    public void fulfillMilestone(String nextMilestoneName, LocalDate dateFulfilled) {
+        fulfillments.add(new MilestoneFulfillment(currentMilestoneName, dateFulfilled));
+        currentMilestoneName = nextMilestoneName;
+    }
+
+    public LocalDate getReferenceDate() {
+        return referenceDate;
     }
 
     @JsonIgnore
-	public List<Alert> getAlerts() {
-		List<Alert> alerts = new ArrayList<Alert>();
-		LocalDate dateFulfilled = referenceDate;
+    public LocalDate getLastFulfilledDate() {
+        LocalDate dateFulfilled = referenceDate;
 
-		if (!fulfillments.isEmpty())
-			dateFulfilled = fulfillments.get(fulfillments.size() -1).getDateFulfilled();
+        if (!fulfillments.isEmpty())
+            dateFulfilled = fulfillments.get(fulfillments.size() - 1).getDateFulfilled();
 
-		WindowName windowName = currentMilestone.getApplicableWindow(dateFulfilled);
-		alerts.add(new Alert(windowName, currentMilestone));
+        return dateFulfilled;
+    }
 
-		return alerts;
-	}
+    // For ektorp
+    private String getType() {
+        return type;
+    }
 
-	public void fulfillMilestone() {
-		fulfillments.add(new MilestoneFulfillment(currentMilestone, LocalDate.now()));
-		currentMilestone = currentMilestone.getNextMilestone();
-	}
+    // For ektorp
+    private void setCurrentMilestoneName(String currentMilestoneName) {
+        this.currentMilestoneName = currentMilestoneName;
+    }
 
-	public Schedule getSchedule() {
-		return schedule;
-	}
+    // For ektorp
+    private void setScheduleName(String scheduleName) {
+        this.scheduleName = scheduleName;
+    }
 
-	public String getExternalId() {
-		return externalId;
-	}
+    // For ektorop
+    private void setType(String type) {
+        this.type = type;
+    }
 
-    // why public?
-	public Milestone getCurrentMilestone() {
-		return currentMilestone;
-	}
+    // For ektorp
+    private void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
 
-	public List<MilestoneFulfillment> getFulfillments() {
-		return fulfillments;
-	}
-
-	// For ektorp
-	private void setSchedule(Schedule schedule) {
-		this.schedule = schedule;
-	}
-
-	// For ektorp
-	private String getType() {
-		return type;
-	}
-
-	// For ektorop
-	private void setType(String type) {
-		this.type = type;
-	}
-
-	// For ektorp
-	private void setCurrentMilestone(Milestone milestone) {
-		currentMilestone = milestone;
-	}
-
-	// For ektorp
-	private void setExternalId(String externalId) {
-		this.externalId = externalId;
-	}
-
-	// For ektorp
-	private LocalDate getEnrollmentDate() {
-		return enrollmentDate;
-	}
-
-	// For ektorp
-	private void setEnrollmentDate(LocalDate enrollmentDate) {
-		this.enrollmentDate = enrollmentDate;
-	}
-
-	// For ektorp
-	public LocalDate getReferenceDate() {
-		return referenceDate;
-	}
-
-	// For ektorp
-	private void setReferenceDate(LocalDate referenceDate) {
-		this.referenceDate = referenceDate;
-	}
+    // For ektorp
+    private void setReferenceDate(LocalDate referenceDate) {
+        this.referenceDate = referenceDate;
+    }
 }
