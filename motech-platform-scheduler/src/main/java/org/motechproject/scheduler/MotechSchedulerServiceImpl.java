@@ -24,6 +24,9 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
     final int MAX_REPEAT_COUNT = 999999;
     private SchedulerFactoryBean schedulerFactoryBean;
 
+    private MotechSchedulerServiceImpl() {
+    }
+
     @Autowired
     public MotechSchedulerServiceImpl(SchedulerFactoryBean schedulerFactoryBean) {
         this.schedulerFactoryBean = schedulerFactoryBean;
