@@ -1,7 +1,6 @@
 package org.motechproject.openmrs.helper;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.MRSPatient;
 import org.motechproject.mrs.model.MRSPerson;
@@ -44,11 +43,6 @@ public class PatientHelper {
         final List<PersonName> personNames = new ArrayList<PersonName>();
         MRSPerson mrsPerson = patient.getPerson();
         personNames.add(new PersonName(mrsPerson.getFirstName(), mrsPerson.getMiddleName(), mrsPerson.getLastName()));
-        if (StringUtils.isNotEmpty(mrsPerson.getPreferredName())) {
-            final PersonName personName = new PersonName(mrsPerson.getPreferredName(), mrsPerson.getMiddleName(), mrsPerson.getLastName());
-            personName.setPreferred(true);
-            personNames.add(personName);
-        }
         return personNames;
     }
 

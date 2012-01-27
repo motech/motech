@@ -178,44 +178,6 @@ public class OpenMRSPatientAdaptorTest {
     }
 
     @Test
-    public void shouldUsePreferredNameWhenGiven() {
-        final String first = "First";
-        final String last = "Last";
-        String preferredName = "Preferred";
-        String middle = "MIDDLE";
-        final Date birthDate = new LocalDate(1970, 3, 11).toDate();
-        Boolean birthDateEstimated = true;
-        final MRSFacility facility = new MRSFacility("1000", "name", "country", "region", "district", "province");
-        String motechId = "1234567";
-
-        final org.openmrs.Patient mockPatient = mock(org.openmrs.Patient.class);
-        final HashSet<PersonName> names = new HashSet<PersonName>();
-        names.add(new PersonName(1212));
-        when(mockPatient.getNames()).thenReturn(names);
-        when(mockPatientService.savePatient(Matchers.<org.openmrs.Patient>any())).thenReturn(mockPatient);
-
-        when(mockPersonAdaptor.getFirstName(mockPatient.getNames())).thenReturn(new PersonName(first, middle, last));
-        when(mockPersonAdaptor.getPreferredName(mockPatient.getNames())).thenReturn(first);
-
-
-        MRSPerson mrsPerson = new MRSPerson().firstName(first).lastName(last).preferredName(preferredName).birthDateEstimated(birthDateEstimated).dateOfBirth(birthDate);
-        MRSPatient mrsPatient = new MRSPatient(motechId, mrsPerson, facility);
-        openMRSPatientAdaptor.savePatient(mrsPatient);
-
-        ArgumentCaptor<org.openmrs.Patient> captor = ArgumentCaptor.forClass(org.openmrs.Patient.class);
-        verify(mockPatientService).savePatient(captor.capture());
-        final org.openmrs.Patient actualPatient = captor.getValue();
-
-        assertThat(actualPatient.getNames().size(), is(2));
-        final ArrayList<String> actualNames = new ArrayList<String>();
-        for (PersonName name : actualPatient.getNames()) {
-            actualNames.add(name.getGivenName());
-        }
-        assertTrue(actualNames.contains(preferredName));
-        assertTrue(actualNames.contains(first));
-    }
-
-    @Test
     public void shouldRetrieveOpenMrsIdentifierTypeGivenTheIdentifierName() {
         PatientIdentifierType patientIdentiferTypeMock = mock(PatientIdentifierType.class);
         when(mockPatientService.getPatientIdentifierTypeByName(IdentifierType.IDENTIFIER_MOTECH_ID.getName())).thenReturn(patientIdentiferTypeMock);
