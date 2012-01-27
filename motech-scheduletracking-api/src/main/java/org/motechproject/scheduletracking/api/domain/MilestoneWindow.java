@@ -1,6 +1,5 @@
 package org.motechproject.scheduletracking.api.domain;
 
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
@@ -11,12 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MilestoneWindow implements Serializable {
+
     private WindowName name;
 
     private WallTime begin;
     private WallTime end;
-    private List<AlertConfiguration> alertConfigurations = new ArrayList<AlertConfiguration>();
-	public MilestoneWindow(WindowName name, WallTime begin, WallTime end) {
+
+    private List<Alert> alerts = new ArrayList<Alert>();
+
+    public MilestoneWindow(WindowName name, WallTime begin, WallTime end) {
         this.name = name;
         this.begin = begin;
         this.end = end;
@@ -26,8 +28,8 @@ public class MilestoneWindow implements Serializable {
         return name;
     }
 
-    public void addAlertConfiguration(AlertConfiguration alertConfiguration) {
-        alertConfigurations.add(alertConfiguration);
+    public void addAlert(Alert alert) {
+        alerts.add(alert);
     }
 
     public boolean isApplicableTo(LocalDate enrollmentDate) {

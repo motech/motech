@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Schedule implements Serializable {
+
     private String name;
     private WallTime totalDuration;
     private Milestone firstMilestone;
@@ -37,14 +38,14 @@ public class Schedule implements Serializable {
         return startDate.plusDays(totalDuration.inDays());
     }
 
-    public List<Alert> getAlerts(LocalDate lastFulfilledDate, String currentMilestoneName) {
-        List<Alert> alerts = new ArrayList<Alert>();
+    public List<AlertEvent> getAlerts(LocalDate lastFulfilledDate, String currentMilestoneName) {
+        List<AlertEvent> alertEvents = new ArrayList<AlertEvent>();
         Milestone milestone = getMilestone(currentMilestoneName);
 
         WindowName windowName = milestone.getApplicableWindow(lastFulfilledDate);
-        alerts.add(new Alert(windowName, milestone));
+        alertEvents.add(new AlertEvent(windowName, milestone));
 
-        return alerts;
+        return alertEvents;
     }
 
     @Override

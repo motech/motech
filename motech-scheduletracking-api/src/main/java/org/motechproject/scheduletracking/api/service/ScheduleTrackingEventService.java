@@ -2,7 +2,7 @@ package org.motechproject.scheduletracking.api.service;
 
 import org.motechproject.gateway.OutboundEventGateway;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.scheduletracking.api.domain.Alert;
+import org.motechproject.scheduletracking.api.domain.AlertEvent;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.events.EnrolledEntityAlertEvent;
@@ -37,10 +37,10 @@ public class ScheduleTrackingEventService {
 
         Enrollment enrollment = allEnrollments.findByExternalIdAndScheduleName(externalId, scheduleName);
         Schedule schedule = allTrackedSchedules.getByName(scheduleName);
-        List<Alert> alerts = schedule.getAlerts(enrollment.getLastFulfilledDate(), enrollment.getCurrentMilestoneName());
+        List<AlertEvent> alertEvents = schedule.getAlerts(enrollment.getLastFulfilledDate(), enrollment.getCurrentMilestoneName());
 
-        for (Alert alert : alerts) {
-            outboundEventGateway.sendEventMessage(new MilestoneEvent(alert).toMotechEvent());
+        for (AlertEvent alertEvent : alertEvents) {
+            outboundEventGateway.sendEventMessage(new MilestoneEvent(alertEvent).toMotechEvent());
         }
     }
 }

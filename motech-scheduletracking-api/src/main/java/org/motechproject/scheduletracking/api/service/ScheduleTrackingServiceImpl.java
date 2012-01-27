@@ -50,10 +50,5 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
             allEnrollments.add(new Enrollment(externalId, scheduleName, enrollmentRequest.getStartingMilestoneName(), now(), referenceDate));
         else
             allEnrollments.add(new Enrollment(externalId, scheduleName, currentMilestoneName, now(), referenceDate));
-
-        MotechEvent motechEvent = new EnrolledEntityAlertEvent(schedule.getName(), externalId).toMotechEvent();
-        String cronJobExpression = new CronJobExpressionBuilder(enrollmentRequest.getPreferredAlertTime(), 0, 0).build();
-        CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, now().toDate(), schedule.getEndDate(referenceDate).toDate());
-        schedulerService.scheduleJob(schedulableJob);
     }
 }

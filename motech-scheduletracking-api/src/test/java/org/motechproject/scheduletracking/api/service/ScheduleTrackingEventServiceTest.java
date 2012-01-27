@@ -1,6 +1,7 @@
 package org.motechproject.scheduletracking.api.service;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -36,13 +37,13 @@ public class ScheduleTrackingEventServiceTest {
     }
 
     @Test
+    @Ignore("always passes")
     public void shouldRaiseMilestoneEvent() {
         String firstMilestoneName = "First Milestone";
         String scheduleName = "scheduleName";
         String externalId = "externalId";
 
         Milestone firstMilestone = new Milestone(firstMilestoneName, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        firstMilestone.getMilestoneWindow(WindowName.Due).addAlertConfiguration(new AlertConfiguration(null, wallTimeOf(1), 3));
         Enrollment enrollment = new Enrollment(externalId, scheduleName, firstMilestoneName, weeksAgo(2), weeksAgo(3));
         Schedule schedule = new Schedule(scheduleName, new WallTime(10, WallTimeUnit.Week), firstMilestone);
 

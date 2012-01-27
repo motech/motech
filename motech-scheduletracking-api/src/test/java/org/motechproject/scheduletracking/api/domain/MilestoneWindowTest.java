@@ -9,7 +9,8 @@ import static org.junit.Assert.assertTrue;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 
 public class MilestoneWindowTest {
-	@Test
+
+    @Test
 	public void shouldCheckIfGivenDateFallsWithinTheWindow() {
 		MilestoneWindow milestoneWindow = new MilestoneWindow(WindowName.Waiting, new WallTime(0, WallTimeUnit.Week), new WallTime(13, WallTimeUnit.Week));
 		assertTrue("Date falls outside the window.", milestoneWindow.isApplicableTo(weeksAgo(0)));

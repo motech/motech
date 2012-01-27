@@ -43,9 +43,9 @@ public class ScheduleTest {
         Milestone milestone = new Milestone("One", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         Schedule schedule = new Schedule("Schedule", wallTimeOf(10), milestone);
 
-        List<Alert> alerts = schedule.getAlerts(weeksAgo(3), milestone.getName());
-        assertThat(alerts.size(), is(equalTo(1)));
-        assertThat(alerts.get(0).getWindowName(), is(equalTo(WindowName.Late)));
+        List<AlertEvent> alertEvents = schedule.getAlerts(weeksAgo(3), milestone.getName());
+        assertThat(alertEvents.size(), is(equalTo(1)));
+        assertThat(alertEvents.get(0).getWindowName(), is(equalTo(WindowName.Late)));
     }
 
     @Test
@@ -54,11 +54,11 @@ public class ScheduleTest {
         Milestone first = new Milestone("First", second, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         Schedule schedule = new Schedule("Schedule", wallTimeOf(52), first);
 
-        List<Alert> alerts = schedule.getAlerts(weeksAgo(3), first.getName());
-        assertThat(alerts.size(), is(equalTo(1)));
-        assertThat(alerts.get(0).getWindowName(), is(equalTo(WindowName.Late)));
+        List<AlertEvent> alertEvents = schedule.getAlerts(weeksAgo(3), first.getName());
+        assertThat(alertEvents.size(), is(equalTo(1)));
+        assertThat(alertEvents.get(0).getWindowName(), is(equalTo(WindowName.Late)));
 
-        alerts = schedule.getAlerts(weeksAgo(2), second.getName());
-        assertThat(alerts.size(), is(equalTo(1)));
-        assertThat(alerts.get(0).getWindowName(), is(equalTo(WindowName.Due)));
+        alertEvents = schedule.getAlerts(weeksAgo(2), second.getName());
+        assertThat(alertEvents.size(), is(equalTo(1)));
+        assertThat(alertEvents.get(0).getWindowName(), is(equalTo(WindowName.Due)));
     }}
