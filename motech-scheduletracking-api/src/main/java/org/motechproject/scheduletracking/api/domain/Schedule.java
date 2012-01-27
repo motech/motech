@@ -28,7 +28,7 @@ public class Schedule implements Serializable {
 
     public Milestone getMilestone(String milestoneName) {
         Milestone milestone = firstMilestone;
-        while (milestone != null && !milestone.hasName(milestoneName))
+        while (milestone != null && !milestone.getName().equals(milestoneName))
             milestone = milestone.getNextMilestone();
         return milestone;
     }

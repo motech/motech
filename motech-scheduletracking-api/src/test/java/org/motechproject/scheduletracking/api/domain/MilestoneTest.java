@@ -42,14 +42,4 @@ public class MilestoneTest {
         assertEquals(WindowName.Past, anotherMilestone.getApplicableWindow(daysAgo(22)));
         assertEquals(WindowName.Past, anotherMilestone.getApplicableWindow(daysAgo(30)));
     }
-
-	@Test
-	public void shouldReturnTrueIfNameMatches() {
-		assertTrue("Name mismatch", milestone.hasName("M1"));
-	}
-
-	@Test
-	public void shouldReturnFalseIfNameDoesNotMatch() {
-		assertFalse("Name mismatch", milestone.hasName("M2"));
-	}
 }

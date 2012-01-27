@@ -42,7 +42,7 @@ public class ScheduleTrackingEventServiceTest {
         String externalId = "externalId";
 
         Milestone firstMilestone = new Milestone(firstMilestoneName, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        firstMilestone.getMilestoneWindow(WindowName.Due).addAlert(new AlertConfiguration(null, wallTimeOf(1), 3));
+        firstMilestone.getMilestoneWindow(WindowName.Due).addAlertConfiguration(new AlertConfiguration(null, wallTimeOf(1), 3));
         Enrollment enrollment = new Enrollment(externalId, scheduleName, firstMilestoneName, weeksAgo(2), weeksAgo(3));
         Schedule schedule = new Schedule(scheduleName, new WallTime(10, WallTimeUnit.Week), firstMilestone);
 

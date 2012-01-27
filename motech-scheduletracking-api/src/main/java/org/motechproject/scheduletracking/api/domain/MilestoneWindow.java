@@ -11,22 +11,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MilestoneWindow implements Serializable {
+    private WindowName name;
+
     private WallTime begin;
     private WallTime end;
     private List<AlertConfiguration> alertConfigurations = new ArrayList<AlertConfiguration>();
-
-	public MilestoneWindow(WallTime begin, WallTime end) {
+	public MilestoneWindow(WindowName name, WallTime begin, WallTime end) {
+        this.name = name;
         this.begin = begin;
         this.end = end;
     }
 
-    public void addAlert(AlertConfiguration alertConfiguration) {
+    public WindowName getName() {
+        return name;
+    }
+
+    public void addAlertConfiguration(AlertConfiguration alertConfiguration) {
         alertConfigurations.add(alertConfiguration);
     }
 
     public boolean isApplicableTo(LocalDate enrollmentDate) {
         LocalDate now = LocalDate.now();
-
         int daysElapsed = Days.daysBetween(enrollmentDate, now).getDays();
         int startOnDay = toDays(begin.asPeriod());
         int endsOnDay = getWindowEndInDays();

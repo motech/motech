@@ -4,25 +4,22 @@ import org.joda.time.LocalDate;
 import org.motechproject.valueobjects.WallTime;
 
 import java.io.Serializable;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Milestone implements Serializable {
     private String name;
-    private Map<WindowName, MilestoneWindow> windows = new EnumMap<WindowName, MilestoneWindow>(WindowName.class);
     private Map<String, String> data = new HashMap<String, String>();
+    private List<MilestoneWindow> windows = new ArrayList<MilestoneWindow>();
     private Milestone nextMilestone;
 
     public Milestone(String name, Milestone nextMilestone, WallTime earliest, WallTime due, WallTime late, WallTime max) {
         this.nextMilestone = nextMilestone;
         this.name = name;
 
-        windows.put(WindowName.Waiting, new MilestoneWindow(new WallTime(0, earliest.getUnit()), earliest));
-        windows.put(WindowName.Upcoming, new MilestoneWindow(earliest, due));
-        windows.put(WindowName.Due, new MilestoneWindow(due, late));
-        windows.put(WindowName.Late, new MilestoneWindow(late, max));
+        windows.add(new MilestoneWindow(WindowName.Waiting, new WallTime(0, earliest.getUnit()), earliest));
+        windows.add(new MilestoneWindow(WindowName.Upcoming, earliest, due));
+        windows.add(new MilestoneWindow(WindowName.Due, due, late));
+        windows.add(new MilestoneWindow(WindowName.Late, late, max));
     }
 
     public Milestone(String name, WallTime earliest, WallTime due, WallTime late, WallTime max) {
@@ -30,16 +27,16 @@ public class Milestone implements Serializable {
     }
 
     public MilestoneWindow getMilestoneWindow(WindowName windowName) {
-        return windows.get(windowName);
+        for (MilestoneWindow window : windows)
+            if (window.getName().equals(windowName))
+                return window;
+        return null;
     }
 
     public WindowName getApplicableWindow(LocalDate enrollmentDate) {
-        Set<Map.Entry<WindowName, MilestoneWindow>> entries = windows.entrySet();
-        for (Map.Entry<WindowName, MilestoneWindow> entry : entries) {
-            MilestoneWindow milestoneWindow = entry.getValue();
-            if (milestoneWindow.isApplicableTo(enrollmentDate))
-                return entry.getKey();
-        }
+        for (MilestoneWindow window : windows)
+            if (window.isApplicableTo(enrollmentDate))
+                return window.getName();
         return WindowName.Past;
     }
 
@@ -57,9 +54,5 @@ public class Milestone implements Serializable {
 
     public Milestone getNextMilestone() {
         return nextMilestone;
-    }
-
-    public boolean hasName(String milestoneName) {
-        return name.equals(milestoneName);
     }
 }

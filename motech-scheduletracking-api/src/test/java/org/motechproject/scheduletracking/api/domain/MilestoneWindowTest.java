@@ -11,7 +11,7 @@ import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksA
 public class MilestoneWindowTest {
 	@Test
 	public void shouldCheckIfGivenDateFallsWithinTheWindow() {
-		MilestoneWindow milestoneWindow = new MilestoneWindow(new WallTime(0, WallTimeUnit.Week), new WallTime(13, WallTimeUnit.Week));
+		MilestoneWindow milestoneWindow = new MilestoneWindow(WindowName.Waiting, new WallTime(0, WallTimeUnit.Week), new WallTime(13, WallTimeUnit.Week));
 		assertTrue("Date falls outside the window.", milestoneWindow.isApplicableTo(weeksAgo(0)));
 		assertTrue("Date falls outside the window.", milestoneWindow.isApplicableTo(weeksAgo(10)));
 		assertFalse("Date falls within the window.", milestoneWindow.isApplicableTo(weeksAgo(13)));
@@ -19,7 +19,7 @@ public class MilestoneWindowTest {
 
 	@Test
 	public void shouldCheckIfGivenDateFallsWithinTheWindowWhenBeginningAndEndOfWindowAreTheSame() {
-		MilestoneWindow milestoneWindow = new MilestoneWindow(new WallTime(16, WallTimeUnit.Week), null);
+		MilestoneWindow milestoneWindow = new MilestoneWindow(WindowName.Waiting, new WallTime(16, WallTimeUnit.Week), null);
 		assertFalse("Date falls within the window.", milestoneWindow.isApplicableTo(weeksAgo(15)));
 		assertTrue("Date falls outside the window.", milestoneWindow.isApplicableTo(weeksAgo(16)));
 		assertFalse("Date falls within the window.", milestoneWindow.isApplicableTo(weeksAgo(17)));

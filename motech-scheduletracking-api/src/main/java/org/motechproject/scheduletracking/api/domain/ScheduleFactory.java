@@ -27,7 +27,7 @@ public class ScheduleFactory {
             milestone.setData(milestoneRecord.data());
             for (AlertRecord alertRecord : milestoneRecord.alerts()) {
                 MilestoneWindow milestoneWindow = milestone.getMilestoneWindow(WindowName.valueOf(alertRecord.window()));
-                milestoneWindow.addAlert(new AlertConfiguration(WallTimeFactory.create(alertRecord.startOffset()), WallTimeFactory.create(alertRecord.interval()), Integer.parseInt(alertRecord.count())));
+                milestoneWindow.addAlertConfiguration(new AlertConfiguration(WallTimeFactory.create(alertRecord.startOffset()), WallTimeFactory.create(alertRecord.interval()), Integer.parseInt(alertRecord.count())));
             }
 
             lastMilestone = milestone;
