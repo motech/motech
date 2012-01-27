@@ -32,8 +32,11 @@ public class ScheduleTrackingEventService {
     @MotechListener(subjects = EventSubject.ENROLLED_ENTITY_REGULAR_ALERT)
     public void raiseAlertForEnrolledEntity(MotechEvent motechEvent) {
         EnrolledEntityAlertEvent enrolledEntityAlertEvent = new EnrolledEntityAlertEvent(motechEvent);
-        Enrollment enrollment = allEnrollments.get(enrolledEntityAlertEvent.enrollmentId());
-        Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
+        String externalId = enrolledEntityAlertEvent.getExternalId();
+        String scheduleName = enrolledEntityAlertEvent.getScheduleName();
+
+        Enrollment enrollment = allEnrollments.findByExternalIdAndScheduleName(externalId, scheduleName);
+        Schedule schedule = allTrackedSchedules.getByName(scheduleName);
         List<Alert> alerts = schedule.getAlerts(enrollment.getLastFulfilledDate(), enrollment.getCurrentMilestoneName());
 
         for (Alert alert : alerts) {

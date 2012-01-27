@@ -35,10 +35,6 @@ public class EnrollmentRequest {
         return startingMilestoneName;
     }
 
-    public boolean enrollIntoMilestone() {
-        return startingMilestoneName != null && !startingMilestoneName.isEmpty();
-    }
-
     public Time getPreferredAlertTime() {
         return preferredAlertTime;
     }
@@ -46,4 +42,8 @@ public class EnrollmentRequest {
 	public LocalDate getReferenceDate() {
 		return referenceDate;
 	}
+
+    boolean enrollIntoMilestone() {
+        return startingMilestoneName != null && !startingMilestoneName.isEmpty();
+    }
 }

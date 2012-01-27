@@ -17,19 +17,18 @@ public class EnrolledEntityAlertEvent {
 	public EnrolledEntityAlertEvent(String scheduleName, String externalId) {
 		map = new HashMap<String, Object>();
 		map.put(EventDataKey.SCHEDULE_NAME, scheduleName);
-		map.put(EventDataKey.ENROLLMENT_ID, externalId);
-		map.put(EventDataKey.JOB_ID, externalId);
+		map.put(EventDataKey.EXTERNAL_ID, externalId);
 	}
 
 	public MotechEvent toMotechEvent() {
 		return new MotechEvent(EventSubject.ENROLLED_ENTITY_REGULAR_ALERT, map);
 	}
 
-	public String scheduleName() {
+	public String getScheduleName() {
 		return (String) map.get(EventDataKey.SCHEDULE_NAME);
 	}
 
-	public String enrollmentId() {
-		return (String) map.get(EventDataKey.ENROLLMENT_ID);
+	public String getExternalId() {
+		return (String) map.get(EventDataKey.EXTERNAL_ID);
 	}
 }
