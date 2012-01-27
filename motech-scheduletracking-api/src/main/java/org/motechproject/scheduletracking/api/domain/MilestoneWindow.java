@@ -7,6 +7,7 @@ import org.motechproject.valueobjects.WallTime;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MilestoneWindow implements Serializable {
@@ -28,8 +29,12 @@ public class MilestoneWindow implements Serializable {
         return name;
     }
 
-    public void addAlert(Alert alert) {
-        alerts.add(alert);
+    public void addAlerts(Alert... alertsList) {
+        alerts.addAll(Arrays.asList(alertsList));
+    }
+
+    public List<Alert> getAlerts() {
+        return alerts;
     }
 
     public boolean isApplicableTo(LocalDate enrollmentDate) {

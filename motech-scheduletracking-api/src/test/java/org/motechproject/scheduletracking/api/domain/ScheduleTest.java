@@ -21,15 +21,15 @@ public class ScheduleTest {
 	@Before
 	public void setUp() {
 		secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-		firstMilestone = new Milestone("First Shot", secondMilestone, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-		schedule = new Schedule("Yellow Fever Vaccination", wallTimeOf(52), firstMilestone);
+		firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+		schedule = new Schedule("Yellow Fever Vaccination", wallTimeOf(52));
+        schedule.addMilestones(firstMilestone, secondMilestone);
 	}
 
 	@Test
 	public void shouldGetAMilestoneBasedOnName() {
-		assertThat(schedule.getMilestone("First Shot"), is(equalTo(firstMilestone)));
-		assertThat(schedule.getMilestone("Second Shot"), is(equalTo(secondMilestone)));
-		assertThat(schedule.getMilestone("Non Existent"), is(nullValue()));
+		assertEquals(firstMilestone, schedule.getMilestone("First Shot"));
+		assertEquals(secondMilestone, schedule.getMilestone("Second Shot"));
 	}
 
 	@Test
@@ -41,7 +41,8 @@ public class ScheduleTest {
     @Test
     public void alertsForAScheduleWithSingleMilestone() {
         Milestone milestone = new Milestone("One", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        Schedule schedule = new Schedule("Schedule", wallTimeOf(10), milestone);
+        Schedule schedule = new Schedule("Schedule", wallTimeOf(10));
+        schedule.addMilestones(milestone);
 
         List<AlertEvent> alertEvents = schedule.getAlerts(weeksAgo(3), milestone.getName());
         assertThat(alertEvents.size(), is(equalTo(1)));
@@ -51,8 +52,9 @@ public class ScheduleTest {
     @Test
     public void alertsForAScheduleWithMultipleMilestones() {
         Milestone second = new Milestone("Second", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        Milestone first = new Milestone("First", second, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        Schedule schedule = new Schedule("Schedule", wallTimeOf(52), first);
+        Milestone first = new Milestone("First", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Schedule schedule = new Schedule("Schedule", wallTimeOf(52));
+        schedule.addMilestones(first, second);
 
         List<AlertEvent> alertEvents = schedule.getAlerts(weeksAgo(3), first.getName());
         assertThat(alertEvents.size(), is(equalTo(1)));
@@ -61,4 +63,5 @@ public class ScheduleTest {
         alertEvents = schedule.getAlerts(weeksAgo(2), second.getName());
         assertThat(alertEvents.size(), is(equalTo(1)));
         assertThat(alertEvents.get(0).getWindowName(), is(equalTo(WindowName.Due)));
-    }}
+    }
+}

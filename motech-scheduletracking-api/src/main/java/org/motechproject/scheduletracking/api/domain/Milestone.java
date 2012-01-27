@@ -10,15 +10,10 @@ public class Milestone implements Serializable {
 
     private String name;
     private Map<String, String> data = new HashMap<String, String>();
+
     private List<MilestoneWindow> windows = new ArrayList<MilestoneWindow>();
-    private Milestone nextMilestone;
 
     public Milestone(String name, WallTime earliest, WallTime due, WallTime late, WallTime max) {
-        this(name, null, earliest, due, late, max);
-    }
-
-    public Milestone(String name, Milestone nextMilestone, WallTime earliest, WallTime due, WallTime late, WallTime max) {
-        this.nextMilestone = nextMilestone;
         this.name = name;
         createMilestoneWindows(earliest, due, late, max);
     }
@@ -28,6 +23,10 @@ public class Milestone implements Serializable {
         windows.add(new MilestoneWindow(WindowName.Upcoming, earliest, due));
         windows.add(new MilestoneWindow(WindowName.Due, due, late));
         windows.add(new MilestoneWindow(WindowName.Late, late, max));
+    }
+
+    public List<MilestoneWindow> getMilestoneWindows() {
+        return windows;
     }
 
     public MilestoneWindow getMilestoneWindow(WindowName windowName) {
@@ -54,9 +53,5 @@ public class Milestone implements Serializable {
 
     public Map<String, String> getData() {
         return data;
-    }
-
-    public Milestone getNextMilestone() {
-        return nextMilestone;
     }
 }

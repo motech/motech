@@ -44,8 +44,8 @@ public class ScheduleTrackingEventServiceTest {
         String externalId = "externalId";
 
         Milestone firstMilestone = new Milestone(firstMilestoneName, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        Enrollment enrollment = new Enrollment(externalId, scheduleName, firstMilestoneName, weeksAgo(2), weeksAgo(3));
-        Schedule schedule = new Schedule(scheduleName, new WallTime(10, WallTimeUnit.Week), firstMilestone);
+        Schedule schedule = new Schedule(scheduleName, new WallTime(10, WallTimeUnit.Week));
+        Enrollment enrollment = new Enrollment(externalId, schedule, weeksAgo(2), weeksAgo(3), firstMilestoneName);
 
         when(allEnrollments.findByExternalIdAndScheduleName(externalId, scheduleName)).thenReturn(enrollment);
         when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);

@@ -13,8 +13,8 @@ public class MilestoneTest {
 
     @Before
     public void setUp() {
-        milestone = new Milestone("M1", null, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        anotherMilestone = new Milestone("M1", null, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), null);
+        milestone = new Milestone("M1", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        anotherMilestone = new Milestone("M1", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), null);
     }
 
     @Test

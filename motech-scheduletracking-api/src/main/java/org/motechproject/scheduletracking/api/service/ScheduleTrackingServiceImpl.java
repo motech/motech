@@ -14,8 +14,6 @@ import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 import static org.joda.time.LocalDate.now;
 
 @Component
@@ -35,20 +33,25 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
     public void enroll(EnrollmentRequest enrollmentRequest) {
         String externalId = enrollmentRequest.getExternalId();
         String scheduleName = enrollmentRequest.getScheduleName();
+        LocalDate referenceDate = enrollmentRequest.getReferenceDate();
 
         Enrollment enrollment = allEnrollments.findByExternalIdAndScheduleName(externalId, scheduleName);
         if (enrollment != null) return;
 
         Schedule schedule = allTrackedSchedules.getByName(scheduleName);
-        if (schedule == null)
+        if (schedule == null) {
             throw new ScheduleTrackingException("No schedule with name: %s", scheduleName);
+        }
 
-        LocalDate referenceDate = enrollmentRequest.getReferenceDate();
-
-        String currentMilestoneName = schedule.getFirstMilestone().getName();
         if (enrollmentRequest.enrollIntoMilestone())
-            allEnrollments.add(new Enrollment(externalId, scheduleName, enrollmentRequest.getStartingMilestoneName(), now(), referenceDate));
+            enrollment = new Enrollment(externalId, schedule, now(), referenceDate, enrollmentRequest.getStartingMilestoneName());
         else
-            allEnrollments.add(new Enrollment(externalId, scheduleName, currentMilestoneName, now(), referenceDate));
+            enrollment = new Enrollment(externalId, schedule, now(), referenceDate);
+        allEnrollments.add(enrollment);
+
+        MotechEvent motechEvent = new EnrolledEntityAlertEvent(schedule.getName(), enrollment.getId()).toMotechEvent();
+		String cronJobExpression = new CronJobExpressionBuilder(enrollmentRequest.getPreferredAlertTime(), 0, 0).build();
+		CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, now().toDate(), schedule.getEndDate(referenceDate).toDate());
+		schedulerService.scheduleJob(schedulableJob);
     }
 }

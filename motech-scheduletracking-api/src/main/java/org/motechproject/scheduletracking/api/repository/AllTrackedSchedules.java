@@ -13,10 +13,10 @@ public class AllTrackedSchedules {
     private Map<String, Schedule> schedules = new HashMap<String, Schedule>();
 
     @Autowired
-    public AllTrackedSchedules(TrackedSchedulesJsonReader schedulesJsonReader) {
+    public AllTrackedSchedules(TrackedSchedulesJsonReader schedulesJsonReader, ScheduleFactory scheduleFactory) {
         List<ScheduleRecord> scheduleRecords = schedulesJsonReader.records();
         for (ScheduleRecord scheduleRecord : scheduleRecords) {
-            schedules.put(scheduleRecord.name(), ScheduleFactory.create(scheduleRecord));
+            schedules.put(scheduleRecord.name(), scheduleFactory.build(scheduleRecord));
         }
     }
 

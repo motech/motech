@@ -19,11 +19,13 @@ public class EnrollmentTest {
 
     @Before
     public void setUp() {
+        schedule = new Schedule("Yellow Fever Vaccination", wallTimeOf(52));
         secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        firstMilestone = new Milestone("First Shot", secondMilestone, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        schedule = new Schedule("Yellow Fever Vaccination", wallTimeOf(52), firstMilestone);
+        firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        schedule.addMilestones(firstMilestone, secondMilestone);
+
         referenceDate = weeksAgo(5);
-        enrollment = new Enrollment("ID-074285", schedule.getName(), schedule.getFirstMilestone().getName(), weeksAgo(3), referenceDate);
+        enrollment = new Enrollment("ID-074285", schedule, weeksAgo(3), referenceDate, schedule.getFirstMilestone().getName());
     }
 
     @Test
@@ -33,7 +35,7 @@ public class EnrollmentTest {
 
     @Test
     public void shouldStartWithSecondMilestone() {
-        Enrollment lateEnrollment = new Enrollment("my_entity_1", schedule.getName(), secondMilestone.getName(), weeksAgo(3), weeksAgo(3));
+        Enrollment lateEnrollment = new Enrollment("my_entity_1", schedule, weeksAgo(3), weeksAgo(3), secondMilestone.getName());
         assertEquals(secondMilestone.getName(), lateEnrollment.getCurrentMilestoneName());
     }
 
