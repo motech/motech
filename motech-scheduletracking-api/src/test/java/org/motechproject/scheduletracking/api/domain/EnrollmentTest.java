@@ -19,7 +19,7 @@ public class EnrollmentTest {
 
     @Before
     public void setUp() {
-        schedule = new Schedule("Yellow Fever Vaccination", wallTimeOf(52));
+        schedule = new Schedule("Yellow Fever Vaccination");
         secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         schedule.addMilestones(firstMilestone, secondMilestone);

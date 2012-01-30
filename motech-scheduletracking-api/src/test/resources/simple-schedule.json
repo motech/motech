@@ -1,7 +1,6 @@
 [
     {
         "name" : "IPTI Schedule",
-        "totalDuration": "52 Weeks",
         "milestones" : [
             {
                 "name" : "IPTI 1",

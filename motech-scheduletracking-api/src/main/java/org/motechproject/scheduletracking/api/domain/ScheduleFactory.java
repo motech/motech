@@ -30,11 +30,11 @@ public class ScheduleFactory {
             lastMilestone = milestone;
         } while (index >= 0);
 
-        return new Schedule(scheduleRecord.name(), WallTimeFactory.create(scheduleRecord.totalDuration()));
+        return new Schedule(scheduleRecord.name());
     }
 
     public Schedule build(ScheduleRecord scheduleRecord) {
-        Schedule schedule = new Schedule(scheduleRecord.name(), WallTimeFactory.create(scheduleRecord.totalDuration()));
+        Schedule schedule = new Schedule(scheduleRecord.name());
         for (MilestoneRecord milestoneRecord : scheduleRecord.milestoneRecords()) {
             ScheduleWindowsRecord windowsRecord = milestoneRecord.scheduleWindowsRecord();
             Milestone milestone = new Milestone(milestoneRecord.name(), wallTime(windowsRecord.earliest()), wallTime(windowsRecord.due()), wallTime(windowsRecord.late()), wallTime(windowsRecord.max()));

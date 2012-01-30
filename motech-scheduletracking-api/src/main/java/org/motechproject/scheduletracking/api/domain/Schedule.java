@@ -1,8 +1,5 @@
 package org.motechproject.scheduletracking.api.domain;
 
-import org.joda.time.LocalDate;
-import org.motechproject.valueobjects.WallTime;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,12 +8,10 @@ import java.util.List;
 public class Schedule implements Serializable {
 
     private String name;
-    private WallTime totalDuration;
     private List<Milestone> milestones = new ArrayList<Milestone>();
 
-    public Schedule(String name, WallTime totalDuration) {
+    public Schedule(String name) {
         this.name = name;
-        this.totalDuration = totalDuration;
     }
 
     public String getName() {
@@ -40,20 +35,6 @@ public class Schedule implements Serializable {
             if (milestone.getName().equals(milestoneName))
                 return milestone;
         return null;
-    }
-
-    public LocalDate getEndDate(LocalDate startDate) {
-        return startDate.plusDays(totalDuration.inDays());
-    }
-
-    public List<AlertEvent> getAlerts(LocalDate lastFulfilledDate, String currentMilestoneName) {
-        List<AlertEvent> alertEvents = new ArrayList<AlertEvent>();
-        Milestone milestone = getMilestone(currentMilestoneName);
-
-        WindowName windowName = milestone.getApplicableWindow(lastFulfilledDate);
-        alertEvents.add(new AlertEvent(windowName, milestone));
-
-        return alertEvents;
     }
 
     @Override

@@ -44,15 +44,6 @@ public class ScheduleFactoryTest {
 	}
 
 	@Test
-	public void shouldCreateMilestoneWindows() {
-		Milestone milestone = schedule.getMilestones().get(0);
-		assertEquals(WindowName.Waiting, milestone.getApplicableWindow(DateUtil.today().minusWeeks(10)));
-		assertEquals(WindowName.Upcoming , milestone.getApplicableWindow(DateUtil.today().minusWeeks(13)));
-		assertEquals(WindowName.Due, milestone.getApplicableWindow(DateUtil.today().minusWeeks(15)));
-		assertEquals(WindowName.Late, milestone.getApplicableWindow(DateUtil.today().minusWeeks(16)));
-	}
-
-	@Test
 	public void shouldAddAlertsToTheWindows() {
 
 	}

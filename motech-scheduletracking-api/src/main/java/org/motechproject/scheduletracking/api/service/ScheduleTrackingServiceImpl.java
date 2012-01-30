@@ -1,14 +1,10 @@
 package org.motechproject.scheduletracking.api.service;
 
 import org.joda.time.LocalDate;
-import org.motechproject.model.CronSchedulableJob;
-import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.scheduler.builder.CronJobExpressionBuilder;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.domain.ScheduleTrackingException;
-import org.motechproject.scheduletracking.api.events.EnrolledEntityAlertEvent;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,10 +44,5 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
         else
             enrollment = new Enrollment(externalId, schedule, now(), referenceDate);
         allEnrollments.add(enrollment);
-
-        MotechEvent motechEvent = new EnrolledEntityAlertEvent(schedule.getName(), enrollment.getId()).toMotechEvent();
-		String cronJobExpression = new CronJobExpressionBuilder(enrollmentRequest.getPreferredAlertTime(), 0, 0).build();
-		CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronJobExpression, now().toDate(), schedule.getEndDate(referenceDate).toDate());
-		schedulerService.scheduleJob(schedulableJob);
     }
 }

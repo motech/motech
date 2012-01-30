@@ -1,10 +1,12 @@
 package org.motechproject.scheduletracking.api.domain;
 
-import org.joda.time.LocalDate;
 import org.motechproject.valueobjects.WallTime;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Milestone implements Serializable {
 
@@ -34,13 +36,6 @@ public class Milestone implements Serializable {
             if (window.getName().equals(windowName))
                 return window;
         return null;
-    }
-
-    public WindowName getApplicableWindow(LocalDate enrollmentDate) {
-        for (MilestoneWindow window : windows)
-            if (window.isApplicableTo(enrollmentDate))
-                return window.getName();
-        return WindowName.Past;
     }
 
     public String getName() {
