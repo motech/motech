@@ -1,5 +1,8 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
+import org.joda.time.Period;
 import org.motechproject.valueobjects.WallTime;
 
 import java.io.Serializable;
@@ -11,14 +14,14 @@ public class MilestoneWindow implements Serializable {
 
     private WindowName name;
 
-    private WallTime begin;
+    private WallTime start;
     private WallTime end;
 
     private List<Alert> alerts = new ArrayList<Alert>();
 
-    public MilestoneWindow(WindowName name, WallTime begin, WallTime end) {
+    public MilestoneWindow(WindowName name, WallTime start, WallTime end) {
         this.name = name;
-        this.begin = begin;
+        this.start = start;
         this.end = end;
     }
 
@@ -32,5 +35,27 @@ public class MilestoneWindow implements Serializable {
 
     public List<Alert> getAlerts() {
         return alerts;
+    }
+
+    public WallTime getStart() {
+        return start;
+    }
+
+    public WallTime getEnd() {
+        return end;
+    }
+
+    public boolean hasElapsed(LocalDate milestoneStartDate) {
+        int daysSinceStartOfMilestone = Days.daysBetween(milestoneStartDate, LocalDate.now()).getDays();
+        int endOffsetInDays = getWindowEndInDays();
+        return daysSinceStartOfMilestone >= endOffsetInDays;
+    }
+
+    public int getWindowEndInDays() {
+        return end == null? toDays(start.asPeriod()) + 1 : toDays(end.asPeriod());
+    }
+
+    private static int toDays(Period period) {
+        return period.toStandardDays().getDays();
     }
 }

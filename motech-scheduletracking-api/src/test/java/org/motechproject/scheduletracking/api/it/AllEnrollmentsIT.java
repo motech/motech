@@ -35,7 +35,7 @@ public class AllEnrollmentsIT {
 		Milestone milestone = new Milestone(milestoneName, new WallTime(13, WallTimeUnit.Week), new WallTime(14, WallTimeUnit.Week), new WallTime(16, WallTimeUnit.Week), null);
 		schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
-		enrollment = new Enrollment("1324324", schedule, DateUtil.today(), DateUtil.today(), schedule.getFirstMilestone().getName());
+		enrollment = new Enrollment("1324324", schedule, DateUtil.today(), DateUtil.today(), null, schedule.getMilestones().get(0).getName());
 	}
 
 	@After

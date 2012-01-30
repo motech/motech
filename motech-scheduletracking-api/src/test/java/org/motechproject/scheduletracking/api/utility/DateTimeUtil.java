@@ -16,6 +16,14 @@ public class DateTimeUtil {
 		return LocalDate.now().minusWeeks(numberOfWeeks);
 	}
 
+	public static LocalDate daysAfter(int numberOfDays) {
+		return LocalDate.now().plusDays(numberOfDays);
+	}
+
+	public static LocalDate weeksAfter(int numberOfWeeks) {
+		return LocalDate.now().plusWeeks(numberOfWeeks);
+	}
+
 	public static WallTime wallTimeOf(int numberOfWeeks) {
 		return new WallTime(numberOfWeeks, WallTimeUnit.Week);
 	}

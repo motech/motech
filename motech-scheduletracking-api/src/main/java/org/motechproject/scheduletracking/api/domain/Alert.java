@@ -4,13 +4,19 @@ import org.motechproject.valueobjects.WallTime;
 
 public class Alert {
 
-    private WallTime startOffset;
     private WallTime interval;
     private int repeatCount;
 
-    public Alert(WallTime startOffset, WallTime interval, int repeatCount) {
-        this.startOffset = startOffset;
+    public Alert(WallTime interval, int repeatCount) {
         this.interval = interval;
         this.repeatCount = repeatCount;
+    }
+
+    public WallTime getInterval() {
+        return interval;
+    }
+
+    public int getRepeatCount() {
+        return repeatCount;
     }
 }

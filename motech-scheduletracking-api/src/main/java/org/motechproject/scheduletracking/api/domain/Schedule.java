@@ -1,5 +1,7 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import org.joda.time.LocalDate;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,12 +24,12 @@ public class Schedule implements Serializable {
         milestones.addAll(Arrays.asList(milestonesList));
     }
 
-    public List<Milestone> getMilestones() {
-        return milestones;
-    }
-
     public Milestone getFirstMilestone() {
         return milestones.get(0);
+    }
+
+    public List<Milestone> getMilestones() {
+        return milestones;
     }
 
     public Milestone getMilestone(String milestoneName) {
@@ -35,6 +37,26 @@ public class Schedule implements Serializable {
             if (milestone.getName().equals(milestoneName))
                 return milestone;
         return null;
+    }
+
+    public Milestone getIdealMilestoneAsOf(int daysIntoSchedule) {
+        int idealDaysIntoSchedule = 0;
+        for (Milestone milestone : milestones) {
+            idealDaysIntoSchedule += milestone.getMaximumDurationInDays();
+            if (daysIntoSchedule <= idealDaysIntoSchedule)
+                return milestone;
+        }
+        return null;
+    }
+
+    public int getIdealStartOffsetOfMilestoneInDays(String milestoneName) {
+        int offset = 0;
+        for (Milestone milestone : milestones) {
+            if (milestone.getName().equals(milestoneName))
+                break;
+            offset += milestone.getMaximumDurationInDays();
+        }
+        return offset;
     }
 
     @Override

@@ -2,9 +2,7 @@ package org.motechproject.scheduletracking.api.service;
 
 import org.joda.time.LocalDate;
 import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.scheduletracking.api.domain.Enrollment;
-import org.motechproject.scheduletracking.api.domain.Schedule;
-import org.motechproject.scheduletracking.api.domain.ScheduleTrackingException;
+import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,15 +12,18 @@ import static org.joda.time.LocalDate.now;
 
 @Component
 public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
+
     private AllTrackedSchedules allTrackedSchedules;
     private MotechSchedulerService schedulerService;
     private AllEnrollments allEnrollments;
+    private EnrollmentService enrollmentService;
 
     @Autowired
-    public ScheduleTrackingServiceImpl(MotechSchedulerService schedulerService, AllTrackedSchedules allTrackedSchedules, AllEnrollments allEnrollments) {
+    public ScheduleTrackingServiceImpl(MotechSchedulerService schedulerService, AllTrackedSchedules allTrackedSchedules, AllEnrollments allEnrollments, EnrollmentService enrollmentService) {
         this.schedulerService = schedulerService;
         this.allTrackedSchedules = allTrackedSchedules;
         this.allEnrollments = allEnrollments;
+        this.enrollmentService = enrollmentService;
     }
 
     @Override
@@ -40,9 +41,10 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
         }
 
         if (enrollmentRequest.enrollIntoMilestone())
-            enrollment = new Enrollment(externalId, schedule, now(), referenceDate, enrollmentRequest.getStartingMilestoneName());
+            enrollment = new Enrollment(externalId, schedule, referenceDate, now(), enrollmentRequest.getPreferredAlertTime(), enrollmentRequest.getStartingMilestoneName());
         else
-            enrollment = new Enrollment(externalId, schedule, now(), referenceDate);
+            enrollment = new Enrollment(externalId, schedule, referenceDate, now(), enrollmentRequest.getPreferredAlertTime());
         allEnrollments.add(enrollment);
+        enrollmentService.scheduleAlertsForCurrentMilestone(enrollment);
     }
 }

@@ -8,8 +8,6 @@ import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.factory.WallTimeFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
 public class ScheduleFactory {
 
@@ -20,7 +18,7 @@ public class ScheduleFactory {
             Milestone milestone = new Milestone(milestoneRecord.name(), wallTime(windowsRecord.earliest()), wallTime(windowsRecord.due()), wallTime(windowsRecord.late()), wallTime(windowsRecord.max()));
             milestone.setData(milestoneRecord.data());
             for (AlertRecord alertRecord : milestoneRecord.alerts())
-                milestone.addAlert(WindowName.valueOf(alertRecord.window()), new Alert(WallTimeFactory.create(alertRecord.startOffset()), WallTimeFactory.create(alertRecord.interval()), Integer.parseInt(alertRecord.count())));
+                milestone.addAlert(WindowName.valueOf(alertRecord.window()), new Alert(WallTimeFactory.create(alertRecord.interval()), Integer.parseInt(alertRecord.count())));
             schedule.addMilestones(milestone);
         }
         return schedule;

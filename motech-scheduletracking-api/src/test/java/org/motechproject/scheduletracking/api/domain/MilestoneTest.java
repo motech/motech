@@ -3,7 +3,6 @@ package org.motechproject.scheduletracking.api.domain;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.awt.*;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.extract;
@@ -24,24 +23,29 @@ public class MilestoneTest {
 
     @Test
     public void shouldCreateMilestoneWindows() {
-        assertNotNull(milestone.getMilestoneWindow(WindowName.Waiting));
-        assertNotNull(milestone.getMilestoneWindow(WindowName.Upcoming));
-        assertNotNull(milestone.getMilestoneWindow(WindowName.Due));
-        assertNotNull(milestone.getMilestoneWindow(WindowName.Late));
+        assertNotNull(milestone.getMilestoneWindow(WindowName.earliest));
+        assertNotNull(milestone.getMilestoneWindow(WindowName.due));
+        assertNotNull(milestone.getMilestoneWindow(WindowName.late));
+        assertNotNull(milestone.getMilestoneWindow(WindowName.max));
     }
 
     @Test
     public void shouldReturnMilestoneWindows() {
         List<MilestoneWindow> windows = milestone.getMilestoneWindows();
-        assertArrayEquals(new WindowName[]{WindowName.Waiting, WindowName.Upcoming, WindowName.Due, WindowName.Late}, extract(windows, on(MilestoneWindow.class).getName()).toArray());
+        assertArrayEquals(new WindowName[]{WindowName.earliest, WindowName.due, WindowName.late, WindowName.max}, extract(windows, on(MilestoneWindow.class).getName()).toArray());
     }
 
     @Test
     public void shouldAddAlertUnderTheMilestone() {
-        Alert alert1 = new Alert(null, null, 0);
-        Alert alert2 = new Alert(null, null, 0);
-        milestone.addAlert(WindowName.Due, alert1);
-        milestone.addAlert(WindowName.Late, alert2);
-        assertArrayEquals(new Alert[] { alert1, alert2 }, milestone.getAlerts().toArray());
+        Alert alert1 = new Alert(null, 0);
+        Alert alert2 = new Alert(null, 0);
+        milestone.addAlert(WindowName.late, alert1);
+        milestone.addAlert(WindowName.max, alert2);
+        assertArrayEquals(new Alert[]{alert1, alert2}, milestone.getAlerts().toArray());
+    }
+
+    @Test
+    public void shouldReturnMaximumDurationOfMilestone() {
+        assertEquals(28, milestone.getMaximumDurationInDays());
     }
 }

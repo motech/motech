@@ -1,7 +1,6 @@
 package org.motechproject.scheduletracking.api.domain;
 
 import org.motechproject.valueobjects.WallTime;
-import sun.jvm.hotspot.types.Field;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,10 +21,10 @@ public class Milestone implements Serializable {
     }
 
     private void createMilestoneWindows(WallTime earliest, WallTime due, WallTime late, WallTime max) {
-        windows.add(new MilestoneWindow(WindowName.Waiting, new WallTime(0, earliest.getUnit()), earliest));
-        windows.add(new MilestoneWindow(WindowName.Upcoming, earliest, due));
-        windows.add(new MilestoneWindow(WindowName.Due, due, late));
-        windows.add(new MilestoneWindow(WindowName.Late, late, max));
+        windows.add(new MilestoneWindow(WindowName.earliest, new WallTime(0, earliest.getUnit()), earliest));
+        windows.add(new MilestoneWindow(WindowName.due, earliest, due));
+        windows.add(new MilestoneWindow(WindowName.late, due, late));
+        windows.add(new MilestoneWindow(WindowName.max, late, max));
     }
 
     public List<MilestoneWindow> getMilestoneWindows() {
@@ -60,5 +59,16 @@ public class Milestone implements Serializable {
         for (MilestoneWindow window : windows)
             alerts.addAll(window.getAlerts());
         return alerts;
+    }
+
+    public int getMaximumDurationInDays() {
+        int days = 0;
+        for (MilestoneWindow window : windows)
+            days += window.getEnd().inDays() - window.getStart().inDays();
+        return days;
+    }
+
+    private MilestoneWindow firstWindow() {
+        return getMilestoneWindows().get(0);
     }
 }
