@@ -50,6 +50,7 @@ public class OpenMRSObservationAdaptorTest {
 
         Date observationDate = new LocalDate(2011, 12, 31).toDate();
         String conceptName = "concept";
+        String dependentConceptName = "dconcept";
 
         String feverValue = "high";
         Double temperatureValue = 99.0;
@@ -57,12 +58,15 @@ public class OpenMRSObservationAdaptorTest {
         Date expectedDeliveryDateValue = new LocalDate(2012, 12, 21).toDate();
 
         final Concept expectedConcept = new Concept(1);
+        final Concept dependentConceptValue = new Concept(2);
 
         MRSObservation<String> fever = new MRSObservation<String>(observationDate, conceptName, feverValue);
         MRSObservation<Double> temperature = new MRSObservation<Double>(observationDate, conceptName, temperatureValue);
         MRSObservation<Boolean> hiv = new MRSObservation<Boolean>(observationDate, conceptName, hivValue);
         MRSObservation<Date> expectedDeliveryDate = new MRSObservation<Date>(observationDate, conceptName, expectedDeliveryDateValue);
         MRSObservation<Concept> expectedDeliveryConcept = new MRSObservation<Concept>(observationDate, conceptName, expectedConcept);
+        Date dependentObservationDate = new Date(1999,1,1);
+        expectedDeliveryConcept.addDependantObservation(new MRSObservation<Concept>(dependentObservationDate, dependentConceptName, dependentConceptValue));
 
         Concept concept = mock(Concept.class);
         when(mockConceptAdaptor.getConceptByName(conceptName)).thenReturn(concept);
@@ -86,6 +90,10 @@ public class OpenMRSObservationAdaptorTest {
         openMrsObservation = observationAdaptor.<Concept>createOpenMRSObservationForEncounter(expectedDeliveryConcept, encounter, patient, facility, creator);
         assertOpenMrsObservationProperties(openMrsObservation, expectedDeliveryConcept, patient, facility, encounter, creator, concept);
         assertThat(openMrsObservation.getValueCoded(), is(equalTo(expectedConcept)));
+        assertThat(openMrsObservation.getGroupMembers().size(), is(1));
+        final Obs acutalDependentObs = openMrsObservation.getGroupMembers().iterator().next();
+        assertThat(acutalDependentObs.getObsDatetime(), is(dependentObservationDate));
+        assertThat(acutalDependentObs.getValueCoded(), is(dependentConceptValue));
     }
 
     @Test
@@ -114,9 +122,7 @@ public class OpenMRSObservationAdaptorTest {
             add(openMrsObservation1);
             add(openMrsObservation2);
         }})));
-
     }
-
 
     @Test
     public void shouldConvertOpenMRSObservationsToMRSObservations() {
@@ -125,19 +131,27 @@ public class OpenMRSObservationAdaptorTest {
 
         Concept concept1 = mock(Concept.class);
         ConceptDatatype conceptDatatype = mock(ConceptDatatype.class);
+        ConceptDatatype dependentConceptDataType = mock(ConceptDatatype.class);
         when(concept1.getDatatype()).thenReturn(conceptDatatype);
         when(conceptDatatype.isText()).thenReturn(true);
+        when(dependentConceptDataType.isText()).thenReturn(true);
         ConceptName conceptName1 = mock(ConceptName.class);
+        ConceptName dependentconceptName = mock(ConceptName.class);
         when(concept1.getName()).thenReturn(conceptName1);
         when(conceptName1.getName()).thenReturn("name1");
 
-        Concept concept2 = mock(Concept.class);
+        final Concept concept2 = mock(Concept.class);
+        final Concept dependentConcept = mock(Concept.class);
         ConceptDatatype conceptDatatype1 = mock(ConceptDatatype.class);
         when(concept2.getDatatype()).thenReturn(conceptDatatype1);
+        when(dependentConcept.getDatatype()).thenReturn(dependentConceptDataType);
         when(conceptDatatype1.isNumeric()).thenReturn(true);
         ConceptName conceptName2 = mock(ConceptName.class);
         when(concept2.getName()).thenReturn(conceptName2);
+        when(dependentConcept.getName()).thenReturn(dependentconceptName);
         when(conceptName2.getName()).thenReturn("name2");
+        final String dependentConceptName = "name3";
+        when(dependentconceptName.getName()).thenReturn(dependentConceptName);
 
         obs1.setId(1);
         obs1.setConcept(concept1);
@@ -148,6 +162,15 @@ public class OpenMRSObservationAdaptorTest {
         obs1.setObsDatetime(new Date());
         obs1.setCreator(new User());
         obs1.setValueText("tr");
+        final String dependentConceptValue = "2";
+        final Date dependentObservationDate = new Date();
+
+        obs1.addGroupMember(new Obs() {{
+            setId(10);
+            setObsDatetime(dependentObservationDate);
+            setConcept(dependentConcept);
+            setValueText(dependentConceptValue);
+        }});
 
         obs2.setId(2);
         obs2.setConcept(concept2);
@@ -164,20 +187,26 @@ public class OpenMRSObservationAdaptorTest {
         Set<MRSObservation> actualMrsObservations = observationAdaptor.convertOpenMRSToMRSObservations(openMRSObservations);
 
         assertThat(actualMrsObservations.size(), Matchers.is(equalTo(2)));
-        assertMRSObservation(observationBy(conceptName1, actualMrsObservations)
-                , new MRSObservation(obs1.getObsDatetime(), conceptName1.getName(), obs1.getValueText()));
+        final MRSObservation expectedObservation1 = new MRSObservation(obs1.getObsDatetime(), conceptName1.getName(), obs1.getValueText());
+        expectedObservation1.addDependantObservation(new MRSObservation("10", dependentObservationDate, dependentConceptName, dependentConceptValue));
+        assertMRSObservation(observationBy(conceptName1, actualMrsObservations), expectedObservation1, true);
         assertMRSObservation(observationBy(conceptName2, actualMrsObservations),
-                new MRSObservation(obs2.getObsDatetime(), conceptName2.getName(), obs2.getValueNumeric()));
+                new MRSObservation(obs2.getObsDatetime(), conceptName2.getName(), obs2.getValueNumeric()), false);
     }
 
     private MRSObservation observationBy(ConceptName conceptName1, Set<MRSObservation> actualMrsObservations) {
         return (MRSObservation) selectFirst(actualMrsObservations, having(on(MRSObservation.class).getConceptName(), equalTo(conceptName1.getName())));
     }
 
-    private void assertMRSObservation(MRSObservation actualObservation, MRSObservation expectedObservation) {
+    private void assertMRSObservation(MRSObservation actualObservation, MRSObservation expectedObservation, boolean hasDependents) {
         assertThat(actualObservation.getConceptName(), is(expectedObservation.getConceptName()));
         assertThat(actualObservation.getValue(), is(expectedObservation.getValue()));
         assertThat(actualObservation.getDate(), is(expectedObservation.getDate()));
+        if (hasDependents) {
+            assertThat(actualObservation.getDependantObservations().size(), is(expectedObservation.getDependantObservations().size()));
+            assertMRSObservation((MRSObservation) actualObservation.getDependantObservations().iterator().next(),
+                    (MRSObservation) expectedObservation.getDependantObservations().iterator().next(), false);
+        }
     }
 
     @Test

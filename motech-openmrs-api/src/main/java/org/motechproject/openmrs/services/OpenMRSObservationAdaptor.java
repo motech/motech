@@ -19,14 +19,21 @@ public class OpenMRSObservationAdaptor {
     @Autowired
     ObsService obsService;
 
-    <T> Obs createOpenMRSObservationForEncounter(MRSObservation<T> mrsObservation, Encounter encounter, Patient patient, Location facility, User staff) {
+    <T> Obs createOpenMRSObservationForEncounter(MRSObservation<T> mrsObservation, Encounter encounter, Patient patient, Location location, User staff) {
         Obs openMrsObservation = new Obs();
         openMrsObservation.setConcept(conceptAdaptor.getConceptByName(mrsObservation.getConceptName()));
         openMrsObservation.setPerson(patient);
-        openMrsObservation.setLocation(facility);
+        openMrsObservation.setLocation(location);
         openMrsObservation.setCreator(staff);
         openMrsObservation.setEncounter(encounter);
         openMrsObservation.setObsDatetime(mrsObservation.getDate());
+
+        if (mrsObservation.getDependantObservations() != null && !mrsObservation.getDependantObservations().isEmpty()) {
+            for (MRSObservation observation : mrsObservation.getDependantObservations()) {
+                openMrsObservation.addGroupMember(createOpenMRSObservationForEncounter(observation, encounter, patient, location, staff));
+            }
+        }
+
         writeValueToOpenMRSObservation(mrsObservation.getValue(), openMrsObservation);
         return openMrsObservation;
     }
@@ -77,13 +84,20 @@ public class OpenMRSObservationAdaptor {
             return createMRSObservation(obs, obs.getValueNumeric());
         else if (datatype.isText())
             return createMRSObservation(obs, obs.getValueText());
-        else if(datatype.isCoded())
+        else if (datatype.isCoded())
             return createMRSObservation(obs, obs.getValueCoded());
         else
             throw new IllegalArgumentException("Invalid value of the createMRSObservation from DB-" + obs);
     }
 
     private MRSObservation createMRSObservation(Obs obs, Object value) {
-        return new MRSObservation(Integer.toString(obs.getId()), obs.getObsDatetime(), obs.getConcept().getName().getName(), value);
+        final MRSObservation mrsObservation = new MRSObservation(Integer.toString(obs.getId()), obs.getObsDatetime(),
+                obs.getConcept().getName().getName(), value);
+        if (obs.hasGroupMembers()) {
+            for (Obs observation : obs.getGroupMembers()) {
+                mrsObservation.addDependantObservation(convertOpenMRSToMRSObservation(observation));
+            }
+        }
+        return mrsObservation;
     }
 }
