@@ -36,7 +36,7 @@ public class AllEnrollmentsIT {
 
 		Milestone milestone = new Milestone(milestoneName, new WallTime(13, WallTimeUnit.Week), new WallTime(14, WallTimeUnit.Week), new WallTime(16, WallTimeUnit.Week), null);
 		schedule = new Schedule(scheduleName, new WallTime(52, WallTimeUnit.Week), milestone);
-		enrollment = new Enrollment("1324324", schedule.getName(), DateUtil.today(), DateUtil.today(), schedule.getFirstMilestone().getName());
+		enrollment = new Enrollment("1324324", schedule.getName(), schedule.getFirstMilestone().getName(), DateUtil.today(), DateUtil.today());
 	}
 
 	@After
@@ -57,9 +57,7 @@ public class AllEnrollmentsIT {
 	public void shouldFindByExternalIdAndScheduleName() {
 		allEnrollments.add(enrollment);
 
-		List<Enrollment> enrollments = allEnrollments.findByExternalIdAndScheduleName(enrollment.getExternalId(), schedule.getName());
-		assertEquals(1, enrollments.size());
-		Enrollment found = enrollments.get(0);
+		Enrollment found = allEnrollments.findByExternalIdAndScheduleName(enrollment.getExternalId(), schedule.getName());
 		assertEquals(enrollment.getExternalId(), found.getExternalId());
         assertEquals(enrollment.getReferenceDate(), found.getReferenceDate());
 	}

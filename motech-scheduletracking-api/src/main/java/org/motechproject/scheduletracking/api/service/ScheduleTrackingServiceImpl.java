@@ -36,8 +36,8 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
         String externalId = enrollmentRequest.getExternalId();
         String scheduleName = enrollmentRequest.getScheduleName();
 
-        List<Enrollment> enrollments = allEnrollments.findByExternalIdAndScheduleName(externalId, scheduleName);
-        if (!enrollments.isEmpty()) return;
+        Enrollment enrollment = allEnrollments.findByExternalIdAndScheduleName(externalId, scheduleName);
+        if (enrollment != null) return;
 
         Schedule schedule = allTrackedSchedules.getByName(scheduleName);
         if (schedule == null)
@@ -47,9 +47,9 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
 
         String currentMilestoneName = schedule.getFirstMilestone().getName();
         if (enrollmentRequest.enrollIntoMilestone())
-            allEnrollments.add(new Enrollment(externalId, scheduleName, now(), referenceDate, enrollmentRequest.getStartingMilestoneName()));
+            allEnrollments.add(new Enrollment(externalId, scheduleName, enrollmentRequest.getStartingMilestoneName(), now(), referenceDate));
         else
-            allEnrollments.add(new Enrollment(externalId, scheduleName, now(), referenceDate, currentMilestoneName));
+            allEnrollments.add(new Enrollment(externalId, scheduleName, currentMilestoneName, now(), referenceDate));
 
         MotechEvent motechEvent = new EnrolledEntityAlertEvent(schedule.getName(), externalId).toMotechEvent();
         String cronJobExpression = new CronJobExpressionBuilder(enrollmentRequest.getPreferredAlertTime(), 0, 0).build();

@@ -3,16 +3,17 @@ package org.motechproject.openmrs.services;
 import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.MRSPerson;
-import org.openmrs.*;
+import org.openmrs.Person;
+import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonName;
 import org.openmrs.api.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Set;
 
 import static ch.lambdaj.Lambda.*;
-import static ch.lambdaj.Lambda.project;
 import static org.hamcrest.Matchers.is;
 
 public class OpenMRSPersonAdaptor {
@@ -34,8 +35,7 @@ public class OpenMRSPersonAdaptor {
                 on(PersonAttribute.class).getAttributeType().toString(), on(PersonAttribute.class).getValue());
 
         MRSPerson mrsPerson = new MRSPerson().firstName(personName.getGivenName()).middleName(personName.getMiddleName())
-                .lastName(personName.getFamilyName()).preferredName(getPreferredName(personNames))
-                .birthDateEstimated(person.getBirthdateEstimated()).gender(person.getGender())
+                .lastName(personName.getFamilyName()).birthDateEstimated(person.getBirthdateEstimated()).gender(person.getGender())
                 .address(getAddress(person)).attributes(attributes).dateOfBirth(person.getBirthdate()).dead(person.isDead()).deathDate(person.getDeathDate());
 
         if (person.getId() != null) {
@@ -58,16 +58,9 @@ public class OpenMRSPersonAdaptor {
     }
 
     public PersonName getFirstName(Set<PersonName> names) {
-        return filter(having(on(PersonName.class).isPreferred(), is(false)), names).get(0);
+        List<PersonName> personNames = filter(having(on(PersonName.class).isPreferred(), is(false)), names);
+        if(CollectionUtils.isEmpty(personNames))
+            personNames = filter(having(on(PersonName.class).isPreferred(), is(true)), names);
+        return personNames.get(0);
     }
-
-
-    public String getPreferredName(Set<PersonName> names) {
-        final List<PersonName> preferredNames = filter(having(on(PersonName.class).isPreferred(), is(true)), names);
-        if (CollectionUtils.isNotEmpty(preferredNames)) {
-            return preferredNames.get(0).getGivenName();
-        }
-        return null;
-    }
-
 }

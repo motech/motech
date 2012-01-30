@@ -1,8 +1,6 @@
 package org.motechproject.openmrs.services;
 
 
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -17,7 +15,6 @@ import java.util.Set;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -54,14 +51,10 @@ public class OpenMRSPersonAdaptorTest {
     }
 
     @Test
-    public void shouldGetPreferredName() {
-        final PersonName firstName = new PersonName("firstname", "middlename", "familyname");
+    public void shouldGetPreferredNameIfFirstNameIsNotSet() {
         final PersonName preferredName = new PersonName("preferredname", "middlename", "familyname");
         preferredName.setPreferred(true);
-        MatcherAssert.assertThat(openMRSPersonAdaptor.getPreferredName(new HashSet<PersonName>() {{
-            add(firstName);
-            add(preferredName);
-        }}), Matchers.is(Matchers.equalTo(preferredName.getGivenName())));
+        assertThat(openMRSPersonAdaptor.getFirstName(new HashSet<PersonName>() {{ add(preferredName); }}), is(equalTo(preferredName)));
     }
 
     @Test
@@ -79,7 +72,6 @@ public class OpenMRSPersonAdaptorTest {
         String firstName = "FirstName";
         String middleName = "MiddleName";
         String familyName = "FamilyName";
-        String preferredName = "PreferredName";
         Date birthdate = new Date(2011, 12, 12);
         int patientId = 89;
         String address = "Address1";
@@ -98,11 +90,8 @@ public class OpenMRSPersonAdaptorTest {
         person.setDeathDate(deathDate);
 
         person.addName(new PersonName(firstName, middleName, familyName));
-        PersonName nameSetAsPreferred = new PersonName(preferredName, middleName, familyName);
-        nameSetAsPreferred.setPreferred(preferred);
 
 
-        person.addName(nameSetAsPreferred);
         person.setBirthdateEstimated(birthdateEstimated);
         person.addAddress(personAddress);
         person.setDead(dead);
@@ -114,7 +103,6 @@ public class OpenMRSPersonAdaptorTest {
         assertThat(mrsPerson.getFirstName(), is(equalTo(firstName)));
         assertThat(mrsPerson.getMiddleName(), is(equalTo(middleName)));
         assertThat(mrsPerson.getLastName(), is(equalTo(familyName)));
-        assertThat(mrsPerson.getPreferredName(), is(equalTo(preferredName)));
         assertThat(mrsPerson.getGender(), is(equalTo(gender)));
         assertThat(mrsPerson.getAddress(), is(equalTo(address)));
         assertThat(mrsPerson.getBirthDateEstimated(), is(equalTo(birthdateEstimated)));
