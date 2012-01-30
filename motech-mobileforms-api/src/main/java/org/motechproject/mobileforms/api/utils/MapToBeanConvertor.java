@@ -4,6 +4,8 @@ import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.commons.beanutils.Converter;
 import org.apache.commons.beanutils.converters.DateConverter;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.motechproject.MotechException;
 import org.motechproject.mobileforms.api.domain.FormBean;
 import org.motechproject.model.Time;
@@ -35,6 +37,7 @@ public class MapToBeanConvertor {
 
         private final EnumConverter enumConverter = new EnumConverter();
         private final DateConverter dateConverter = new DateConverter();
+        private final DateTimeConverter dateTimeConverter = new DateTimeConverter();
         private final TimeConverter timeConverter = new TimeConverter();
 
         public EnumAndDateConverter() {
@@ -49,8 +52,9 @@ public class MapToBeanConvertor {
                 return dateConverter;
             } else if (clazz == Time.class) {
                 return timeConverter;
-            }
-            else {
+            } else if (clazz == DateTime.class) {
+                return dateTimeConverter;
+            } else {
                 return converter;
             }
         }
@@ -59,11 +63,18 @@ public class MapToBeanConvertor {
             @Override
             public Object convert(Class type, Object value) {
                 try {
-                    Date parsedDate = new SimpleDateFormat(TIME_PATTERN_12_HOURS).parse((String)value);
+                    Date parsedDate = new SimpleDateFormat(TIME_PATTERN_12_HOURS).parse((String) value);
                     return Time.parseTime(new SimpleDateFormat(TIME_PATTERN_24_HOURS).format(parsedDate), ":");
                 } catch (ParseException e) {
                     throw new MotechException("Encountered exception while parsing mobile form", e);
                 }
+            }
+        }
+
+        private class DateTimeConverter implements Converter {
+            @Override
+            public Object convert(Class type, Object value) {
+                return DateTime.parse((String) value, DateTimeFormat.forPattern(DATE_PATTERN + " " + TIME_PATTERN_12_HOURS));
             }
         }
 
