@@ -1,6 +1,7 @@
 package org.motechproject.scheduletracking.api.domain;
 
 import org.motechproject.valueobjects.WallTime;
+import sun.jvm.hotspot.types.Field;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -48,5 +49,16 @@ public class Milestone implements Serializable {
 
     public Map<String, String> getData() {
         return data;
+    }
+
+    public void addAlert(WindowName windowName, Alert... alertList) {
+        getMilestoneWindow(windowName).addAlerts(alertList);
+    }
+
+    public List<Alert> getAlerts() {
+        List<Alert> alerts = new ArrayList<Alert>();
+        for (MilestoneWindow window : windows)
+            alerts.addAll(window.getAlerts());
+        return alerts;
     }
 }

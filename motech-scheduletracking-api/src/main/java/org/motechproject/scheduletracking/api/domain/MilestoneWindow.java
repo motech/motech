@@ -1,6 +1,5 @@
 package org.motechproject.scheduletracking.api.domain;
 
-import org.joda.time.Period;
 import org.motechproject.valueobjects.WallTime;
 
 import java.io.Serializable;
@@ -33,13 +32,5 @@ public class MilestoneWindow implements Serializable {
 
     public List<Alert> getAlerts() {
         return alerts;
-    }
-
-    private int getWindowEndInDays() {
-		return end == null ? toDays(begin.asPeriod()) + 1 : toDays(end.asPeriod());
-	}
-
-	private static int toDays(Period period) {
-        return period.toStandardDays().getDays();
     }
 }

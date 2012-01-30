@@ -24,5 +24,4 @@ public class ScheduleTest {
 		assertEquals(firstMilestone, schedule.getMilestone("First Shot"));
 		assertEquals(secondMilestone, schedule.getMilestone("Second Shot"));
 	}
-
 }

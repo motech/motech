@@ -35,16 +35,22 @@ public class ScheduleFactoryTest {
 
 	@Test
 	public void shouldAddMilestonesToTheSchedule() {
-        assertEquals(2, schedule.getMilestones().size());
-
         List<Milestone> milestones = schedule.getMilestones();
-        assertEquals("IPTI 1", milestones.get(0).getName());
-        assertEquals("Bar", milestones.get(0).getData().get("Foo"));
-        assertEquals("IPTI 2", milestones.get(1).getName());
+        Milestone firstMilestone = milestones.get(0);
+        Milestone secondMilestone = milestones.get(1);
+
+        assertEquals(2, milestones.size());
+        assertEquals("IPTI 1", firstMilestone.getName());
+        assertEquals("Bar", firstMilestone.getData().get("Foo"));
+        assertEquals("IPTI 2", secondMilestone.getName());
 	}
 
 	@Test
 	public void shouldAddAlertsToTheWindows() {
-
-	}
+        List<Milestone> milestones = schedule.getMilestones();
+        Milestone firstMilestone = milestones.get(0);
+        Milestone secondMilestone = milestones.get(1);
+        assertEquals(2, firstMilestone.getAlerts().size());
+        assertEquals(0, secondMilestone.getAlerts().size());
+    }
 }
