@@ -50,7 +50,7 @@ public class ServerEventRelayTransactionIT {
     }
 
     @Test
-    public void sucessfulHandlingOfEventShouldDestroyTheEvent() throws Exception {
+    public void successfulHandlingOfEventShouldDestroyTheEvent() throws Exception {
         int numberOfMessagesInQueue = queueExplorer.queueSize(eventQueue);
         MotechEvent motechEvent = new MotechEvent(EventHandlerForServerEventRelayTransactionIT.SUCCESSFUL_EVENT_SUBJECT);
         outboundEventGateway.sendEventMessage(motechEvent);
