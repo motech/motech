@@ -112,12 +112,12 @@ public class RepeatingCampaignMessage extends CampaignMessage {
         this.weekDaysApplicable = applicableDays;
     }
 
-    public Integer offset(Date startTime, Integer startIntervalOffset) {
-        return repeatingMessageMode.offset(this, startTime, startIntervalOffset);
+    public Integer currentOffset(Date startTime, Integer startIntervalOffset) {
+        return repeatingMessageMode.currentOffset(this, startTime, startIntervalOffset);
     }
 
-    public int duration(WallTime duration, CampaignRequest campaignRequest) {
-        return repeatingMessageMode.duration(duration, campaignRequest, this);
+    public int durationInDaysToAdd(WallTime duration, CampaignRequest campaignRequest) {
+        return repeatingMessageMode.durationInDaysToAdd(duration, campaignRequest, this);
     }
 
     public String applicableWeekDayInNext24Hours() {

@@ -1,28 +1,28 @@
 package org.motechproject.scheduletracking.api.domain;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.motechproject.valueobjects.WallTime;
 
 public class Alert {
-    private WindowName windowName;
-    private String milestoneName;
-    private Map<String, String> data = new HashMap<String, String>();
 
-    public Alert(WindowName windowName, Milestone milestone) {
-        this.windowName = windowName;
-        this.milestoneName = milestone.getName();
-        data = milestone.getData();
+    private WallTime interval;
+    private int repeatCount;
+    private int index;
+
+    public int getIndex() {
+        return index;
     }
 
-    public WindowName getWindowName() {
-        return windowName;
+    public Alert(WallTime interval, int repeatCount, int index) {
+        this.interval = interval;
+        this.repeatCount = repeatCount;
+        this.index = index;
     }
 
-    public String getMilestoneName() {
-        return milestoneName;
+    public WallTime getInterval() {
+        return interval;
     }
 
-    public Map<String, String> getData() {
-        return data;
+    public int getRepeatCount() {
+        return repeatCount;
     }
 }

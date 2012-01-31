@@ -30,7 +30,7 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
     protected void scheduleJobFor(RepeatingCampaignMessage message) {
         WallTime maxDuration = create(campaign.maxDuration());
         LocalDate startDate = referenceDate();
-        LocalDate endDate = startDate.plusDays(message.duration(maxDuration, campaignRequest));
+        LocalDate endDate = startDate.plusDays(message.durationInDaysToAdd(maxDuration, campaignRequest));
 
         if (startDate.compareTo(endDate) > 0)
             throw new IllegalArgumentException(format("startDate (%s) is after endDate (%s) for - (%s)", startDate, endDate, campaignRequest));

@@ -16,7 +16,6 @@ import java.util.Date;
 import static org.joda.time.DateTimeConstants.SUNDAY;
 import static org.joda.time.Days.daysBetween;
 import static org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage.WEEKLY_REPEAT_INTERVAL;
-import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduler.DEFAULT_INTERVAL_OFFSET;
 import static org.motechproject.util.DateUtil.*;
 import static org.motechproject.valueobjects.factory.WallTimeFactory.create;
 
@@ -31,11 +30,12 @@ public enum RepeatingMessageMode {
             return create(message.repeatInterval()).inDays();
         }
 
-        public Integer offset(RepeatingCampaignMessage message, Date startTime, Integer startIntervalOffset) {
-            return (daysBetween(newDate(startTime), today()).getDays() / repeatIntervalForOffSet(message)) + DEFAULT_INTERVAL_OFFSET;
+        public Integer currentOffset(RepeatingCampaignMessage message, Date startTime, Integer startIntervalOffset) {
+            int passedOffsetCycles = daysBetween(newDate(startTime), today()).getDays() / repeatIntervalForOffSet(message);
+            return passedOffsetCycles + 1;
         }
 
-        public int duration(WallTime maxDuration, CampaignRequest campaignRequest, RepeatingCampaignMessage message) {
+        public int durationInDaysToAdd(WallTime maxDuration, CampaignRequest campaignRequest, RepeatingCampaignMessage message) {
             return maxDuration.inDays() - 1;
         }
 
@@ -53,11 +53,12 @@ public enum RepeatingMessageMode {
             return WEEKLY_REPEAT_INTERVAL;
         }
 
-        public Integer offset(RepeatingCampaignMessage message, Date startTime, Integer startIntervalOffset) {
-            return (daysBetween(newDate(startTime), today()).getDays() / repeatIntervalForOffSet(message)) + startIntervalOffset;
+        public Integer currentOffset(RepeatingCampaignMessage message, Date startTime, Integer startIntervalOffset) {
+            int passedOffsetCycles = daysBetween(newDate(startTime), today()).getDays() / repeatIntervalForOffSet(message);
+            return passedOffsetCycles + startIntervalOffset;
         }
 
-        public int duration(WallTime maxDuration, CampaignRequest campaignRequest, RepeatingCampaignMessage message) {
+        public int durationInDaysToAdd(WallTime maxDuration, CampaignRequest campaignRequest, RepeatingCampaignMessage message) {
             int elapsedOffsetInDays = (defaultOffsetIfNotSet(campaignRequest.startOffset()) - 1) * repeatIntervalForOffSet(message);
             return (maxDuration.inDays() - 1) - elapsedOffsetInDays;
         }
@@ -76,7 +77,7 @@ public enum RepeatingMessageMode {
             return WEEKLY_REPEAT_INTERVAL;
         }
 
-        public Integer offset(RepeatingCampaignMessage message, Date cycleStartDate, Integer startIntervalOffset) {
+        public Integer currentOffset(RepeatingCampaignMessage message, Date cycleStartDate, Integer startIntervalOffset) {
 
             LocalDate cycleStartLocalDate = DateUtil.newDate(cycleStartDate);
             LocalDate currentDate = DateUtil.today();
@@ -94,7 +95,7 @@ public enum RepeatingMessageMode {
             return startIntervalOffset;
         }
 
-        public int duration(WallTime maxDuration, CampaignRequest campaignRequest, RepeatingCampaignMessage message) {
+        public int durationInDaysToAdd(WallTime maxDuration, CampaignRequest campaignRequest, RepeatingCampaignMessage message) {
             int actualMaxDurationDaysToAdd = maxDuration.inDays() - 1;
             int elapsedOffset = (defaultOffsetIfNotSet(campaignRequest.startOffset()) - 1) * repeatIntervalForOffSet(message);
             int daysToNormalizeForFirstWeek = daysToSubtractForRegisteredWeek(campaignRequest.referenceDate(), message.calendarStartDayOfWeek().getValue());
@@ -145,11 +146,11 @@ public enum RepeatingMessageMode {
 
     public abstract boolean isApplicable(RepeatingCampaignMessage repeatingCampaignMessage);
 
-    public abstract Integer offset(RepeatingCampaignMessage repeatingCampaignMessage, Date startTime, Integer startIntervalOffset);
+    public abstract Integer currentOffset(RepeatingCampaignMessage repeatingCampaignMessage, Date startTime, Integer startIntervalOffset);
 
     public abstract Integer repeatIntervalForOffSet(RepeatingCampaignMessage repeatingCampaignMessage);
 
-    public abstract int duration(WallTime maxDuration, CampaignRequest campaignRequest, RepeatingCampaignMessage message);
+    public abstract int durationInDaysToAdd(WallTime maxDuration, CampaignRequest campaignRequest, RepeatingCampaignMessage message);
 
     public abstract String applicableWeekDayInNext24Hours(RepeatingCampaignMessage message);
 }

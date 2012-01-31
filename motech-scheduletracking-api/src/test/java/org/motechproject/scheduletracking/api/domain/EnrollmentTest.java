@@ -1,62 +1,77 @@
 package org.motechproject.scheduletracking.api.domain;
 
 import org.joda.time.LocalDate;
-import org.junit.Before;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 
 public class EnrollmentTest {
-    private Enrollment enrollment;
-    private Milestone firstMilestone;
-    private Milestone secondMilestone;
-    private Schedule schedule;
-    private LocalDate referenceDate;
 
-    @Before
-    public void setUp() {
-        secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        firstMilestone = new Milestone("First Shot", secondMilestone, wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        schedule = new Schedule("Yellow Fever Vaccination", wallTimeOf(52), firstMilestone);
-        referenceDate = weeksAgo(5);
-        enrollment = new Enrollment("ID-074285", schedule.getName(), schedule.getFirstMilestone().getName(), weeksAgo(3), referenceDate);
+    @Test(expected = InvalidScheduleDefinition.class)
+    public void shouldNotEnrollEntityIntoScheduleHavingNoMilestones() {
+        Schedule schedule = new Schedule("Yellow Fever Vaccination");
+        new Enrollment("ID-074285", schedule, weeksAgo(5), weeksAgo(3), null);
     }
 
     @Test
     public void shouldStartWithFirstMilestoneByDefault() {
+        Schedule schedule = new Schedule("Yellow Fever Vaccination");
+        Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        schedule.addMilestones(firstMilestone, secondMilestone);
+        Enrollment enrollment = new Enrollment("ID-074285", schedule, weeksAgo(5), weeksAgo(3), null, "First Shot");
+
         assertEquals(firstMilestone.getName(), enrollment.getCurrentMilestoneName());
     }
 
     @Test
     public void shouldStartWithSecondMilestone() {
-        Enrollment lateEnrollment = new Enrollment("my_entity_1", schedule.getName(), secondMilestone.getName(), weeksAgo(3), weeksAgo(3));
+        Schedule schedule = new Schedule("Yellow Fever Vaccination");
+        Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        schedule.addMilestones(firstMilestone, secondMilestone);
+        Enrollment lateEnrollment = new Enrollment("my_entity_1", schedule, weeksAgo(3), weeksAgo(3), null, "Second Shot");
+
         assertEquals(secondMilestone.getName(), lateEnrollment.getCurrentMilestoneName());
     }
 
     @Test
     public void shouldMarkAMilestoneAsFulfilled() {
-        enrollment.fulfillMilestone(secondMilestone.getName(), LocalDate.now());
-        String currentMilestoneName = enrollment.getCurrentMilestoneName();
+        Schedule schedule = new Schedule("Yellow Fever Vaccination");
+        Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        schedule.addMilestones(firstMilestone, secondMilestone);
+        Enrollment enrollment = new Enrollment("ID-074285", schedule, weeksAgo(5), weeksAgo(3), null, "First Shot");
 
-        assertEquals(secondMilestone.getName(), currentMilestoneName);
-        List<MilestoneFulfillment> fulfillments = enrollment.getFulfillments();
-        assertEquals(1, fulfillments.size());
+        enrollment.fulfillCurrentMilestone(secondMilestone.getName(), LocalDate.now());
+
+        assertEquals(secondMilestone.getName(), enrollment.getCurrentMilestoneName());
+        assertEquals(1, enrollment.getFulfillments().size());
     }
 
     @Test
-    public void shouldGetReferenceDateAsTheLastFulfilledDateWhenNoMilestoneFulfilled() {
-        assertEquals(referenceDate, enrollment.getLastFulfilledDate());
+    public void shouldReNullWhenNoMilestoneIsFulfilledlled() {
+        Schedule schedule = new Schedule("Yellow Fever Vaccination");
+        Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        schedule.addMilestones(firstMilestone, secondMilestone);
+        Enrollment enrollment = new Enrollment("ID-074285", schedule, weeksAgo(5), weeksAgo(3), null);
+
+        assertEquals(null, enrollment.getLastFulfilledDate());
     }
 
     @Test
-    public void shouldGetLastFulfilledDate() {
-        LocalDate dateFulfilled = weeksAgo(1);
-        enrollment.fulfillMilestone(secondMilestone.getName(), dateFulfilled);
+    public void shouldReturnTheDateWhenAMilestoneWasLastFulfilled() {
+        Schedule schedule = new Schedule("Yellow Fever Vaccination");
+        Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        schedule.addMilestones(firstMilestone, secondMilestone);
+        Enrollment enrollment = new Enrollment("ID-074285", schedule, weeksAgo(5), weeksAgo(3), null);
 
-        assertEquals(dateFulfilled, enrollment.getLastFulfilledDate());
+        enrollment.fulfillCurrentMilestone("Second Shot", weeksAgo(2));
+
+        assertEquals(weeksAgo(2), enrollment.getLastFulfilledDate());
     }
 }

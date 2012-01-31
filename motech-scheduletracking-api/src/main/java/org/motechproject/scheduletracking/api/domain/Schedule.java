@@ -1,50 +1,60 @@
 package org.motechproject.scheduletracking.api.domain;
 
-import org.joda.time.LocalDate;
-import org.motechproject.valueobjects.WallTime;
-
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Schedule implements Serializable {
+
     private String name;
-    private WallTime totalDuration;
-    private Milestone firstMilestone;
+    private List<Milestone> milestones = new ArrayList<Milestone>();
 
-    public Schedule(String name, WallTime totalDuration, Milestone firstMilestone) {
+    public Schedule(String name) {
         this.name = name;
-        this.totalDuration = totalDuration;
-        this.firstMilestone = firstMilestone;
-    }
-
-    public Milestone getFirstMilestone() {
-        return firstMilestone;
     }
 
     public String getName() {
         return name;
     }
 
+    public void addMilestones(Milestone... milestonesList) {
+        milestones.addAll(Arrays.asList(milestonesList));
+    }
+
+    public Milestone getFirstMilestone() {
+        return milestones.get(0);
+    }
+
+    public List<Milestone> getMilestones() {
+        return milestones;
+    }
+
     public Milestone getMilestone(String milestoneName) {
-        Milestone milestone = firstMilestone;
-        while (milestone != null && !milestone.hasName(milestoneName))
-            milestone = milestone.getNextMilestone();
-        return milestone;
+        for (Milestone milestone : milestones)
+            if (milestone.getName().equals(milestoneName))
+                return milestone;
+        return null;
     }
 
-    public LocalDate getEndDate(LocalDate startDate) {
-        return startDate.plusDays(totalDuration.inDays());
+    public Milestone getIdealMilestoneAsOf(int daysIntoSchedule) {
+        int idealDaysIntoSchedule = 0;
+        for (Milestone milestone : milestones) {
+            idealDaysIntoSchedule += milestone.getMaximumDurationInDays();
+            if (daysIntoSchedule <= idealDaysIntoSchedule)
+                return milestone;
+        }
+        return null;
     }
 
-    public List<Alert> getAlerts(LocalDate lastFulfilledDate, String currentMilestoneName) {
-        List<Alert> alerts = new ArrayList<Alert>();
-        Milestone milestone = getMilestone(currentMilestoneName);
-
-        WindowName windowName = milestone.getApplicableWindow(lastFulfilledDate);
-        alerts.add(new Alert(windowName, milestone));
-
-        return alerts;
+    public int getIdealStartOffsetOfMilestoneInDays(String milestoneName) {
+        int offset = 0;
+        for (Milestone milestone : milestones) {
+            if (milestone.getName().equals(milestoneName))
+                break;
+            offset += milestone.getMaximumDurationInDays();
+        }
+        return offset;
     }
 
     @Override

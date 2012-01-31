@@ -7,10 +7,12 @@ import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonRea
 import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReaderImpl;
 import org.motechproject.util.DateUtil;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public class ScheduleFactoryTest {
@@ -22,32 +24,35 @@ public class ScheduleFactoryTest {
 	public void setUp() {
 		TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/simple-schedule.json");
 		scheduleRecord = jsonReader.records().get(0);
-		schedule = ScheduleFactory.create(scheduleRecord);
+        schedule = new ScheduleFactory().build(scheduleRecord);
+	}
+
+    @Test
+    public void shouldCreateTheSchedule() {
+        assertNotNull(schedule);
+        assertEquals(scheduleRecord.name(), schedule.getName());
+    }
+
+	@Test
+	public void shouldAddMilestonesToTheSchedule() {
+        List<Milestone> milestones = schedule.getMilestones();
+        Milestone firstMilestone = milestones.get(0);
+        Milestone secondMilestone = milestones.get(1);
+
+        assertEquals(2, milestones.size());
+        assertEquals("IPTI 1", firstMilestone.getName());
+        assertEquals("Bar", firstMilestone.getData().get("Foo"));
+        assertEquals("IPTI 2", secondMilestone.getName());
 	}
 
 	@Test
-	public void records() {
-		assertThat(schedule, is(notNullValue()));
-		assertThat(schedule.getName(), is(equalTo(scheduleRecord.name())));
-
-		Milestone firstMilestone = schedule.getFirstMilestone();
-		assertThat(firstMilestone.getName(), is(equalTo("IPTI 1")));
-		assertThat(firstMilestone.getNextMilestone().getName(), is(equalTo("IPTI 2")));
-		Map<String, String> data = firstMilestone.getData();
-		assertThat(data.size(), is(equalTo(1)));
-		assertThat(data.get("Foo"), is(equalTo("Bar")));
-
-		Milestone secondMilestone = firstMilestone.getNextMilestone();
-		assertThat(secondMilestone.getName(), is(equalTo("IPTI 2")));
-		assertThat(secondMilestone.getNextMilestone(), is(nullValue()));
-	}
-
-	@Test
-	public void shouldCreateTheMilestoneWindowsCorrectly() {
-		Milestone firstMilestone = schedule.getFirstMilestone();
-		assertEquals(WindowName.Waiting , firstMilestone.getApplicableWindow(DateUtil.today().minusWeeks(10)));
-		assertEquals(WindowName.Upcoming , firstMilestone.getApplicableWindow(DateUtil.today().minusWeeks(13)));
-		assertEquals(WindowName.Due , firstMilestone.getApplicableWindow(DateUtil.today().minusWeeks(15)));
-		assertEquals(WindowName.Late , firstMilestone.getApplicableWindow(DateUtil.today().minusWeeks(16)));
-	}
+	public void shouldAddAlertsToTheWindows() {
+        List<Milestone> milestones = schedule.getMilestones();
+        Milestone firstMilestone = milestones.get(0);
+        Milestone secondMilestone = milestones.get(1);
+        assertEquals(2, firstMilestone.getAlerts().size());
+        assertEquals(0, secondMilestone.getAlerts().size());
+        assertEquals(0, firstMilestone.getAlerts().get(0).getIndex());
+        assertEquals(1, firstMilestone.getAlerts().get(1).getIndex());
+    }
 }
