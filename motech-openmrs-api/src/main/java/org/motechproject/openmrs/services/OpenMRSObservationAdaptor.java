@@ -27,13 +27,11 @@ public class OpenMRSObservationAdaptor {
         openMrsObservation.setCreator(staff);
         openMrsObservation.setEncounter(encounter);
         openMrsObservation.setObsDatetime(mrsObservation.getDate());
-
         if (mrsObservation.getDependantObservations() != null && !mrsObservation.getDependantObservations().isEmpty()) {
             for (MRSObservation observation : mrsObservation.getDependantObservations()) {
                 openMrsObservation.addGroupMember(createOpenMRSObservationForEncounter(observation, encounter, patient, location, staff));
             }
         }
-
         writeValueToOpenMRSObservation(mrsObservation.getValue(), openMrsObservation);
         return openMrsObservation;
     }
@@ -49,7 +47,7 @@ public class OpenMRSObservationAdaptor {
             openMRSObservation.setValueDatetime((Date) value);
         } else if (value instanceof Concept) {
             openMRSObservation.setValueCoded((Concept) value);
-        } else {
+        } else if (value != null) {
             throw new IllegalArgumentException("Invalid value of the createMRSObservation- " + value);
         }
     }
@@ -76,7 +74,9 @@ public class OpenMRSObservationAdaptor {
 
     MRSObservation convertOpenMRSToMRSObservation(Obs obs) {
         ConceptDatatype datatype = obs.getConcept().getDatatype();
-        if (datatype.isBoolean())
+        if (datatype.isAnswerOnly())
+            return createMRSObservation(obs, null);
+        else if (datatype.isBoolean())
             return createMRSObservation(obs, obs.getValueAsBoolean());
         else if (datatype.isDateTime())
             return createMRSObservation(obs, obs.getValueDatetime());

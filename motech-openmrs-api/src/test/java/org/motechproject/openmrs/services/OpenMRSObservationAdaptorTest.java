@@ -216,6 +216,7 @@ public class OpenMRSObservationAdaptorTest {
         Obs expectedDeliveryDate = new Obs();
         Obs HIV = new Obs();
         Obs conceptObs = new Obs();
+        Obs nullObs = new Obs();
 
         String feverValue = "high";
         Double temperatureValue = 99.0;
@@ -228,13 +229,13 @@ public class OpenMRSObservationAdaptorTest {
         observationAdaptor.writeValueToOpenMRSObservation(expectedDeliveryDateValue, expectedDeliveryDate);
         observationAdaptor.writeValueToOpenMRSObservation(hivValue, HIV);
         observationAdaptor.writeValueToOpenMRSObservation(concept, conceptObs);
+        observationAdaptor.writeValueToOpenMRSObservation(null, nullObs);
 
         assertThat(fever.getValueText(), is(equalTo(feverValue)));
         assertThat(temperature.getValueNumeric(), is(equalTo(temperatureValue)));
         assertThat(expectedDeliveryDate.getValueDatetime(), is(equalTo(expectedDeliveryDateValue)));
         assertThat(HIV.getValueAsBoolean(), is(equalTo(hivValue)));
         assertThat(conceptObs.getValueCoded(), is(equalTo(concept)));
-
     }
 
     @Test
