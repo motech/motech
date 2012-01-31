@@ -23,25 +23,25 @@ public class RepeatingMessageModeTest extends BaseUnitTest {
 
         int startIntervalOffset = 1;
         mockCurrentDate(date(2011, 11, 3));
-        assertEquals(valueOf(startIntervalOffset), CALENDAR_WEEK_SCHEDULE.offset(calendarStartAsTuesday, cycleStartDate, startIntervalOffset));
+        assertEquals(valueOf(startIntervalOffset), CALENDAR_WEEK_SCHEDULE.currentOffset(calendarStartAsTuesday, cycleStartDate, startIntervalOffset));
 
         mockCurrentDate(date(2011, 11, 7));
         startIntervalOffset = 5;
-        assertEquals(valueOf(startIntervalOffset), CALENDAR_WEEK_SCHEDULE.offset(calendarStartAsTuesday, cycleStartDate, startIntervalOffset));
+        assertEquals(valueOf(startIntervalOffset), CALENDAR_WEEK_SCHEDULE.currentOffset(calendarStartAsTuesday, cycleStartDate, startIntervalOffset));
 
         mockCurrentDate(date(2011, 11, 8));
         startIntervalOffset = 8;
-        assertEquals(valueOf(1 + startIntervalOffset), CALENDAR_WEEK_SCHEDULE.offset(calendarStartAsTuesday, cycleStartDate, startIntervalOffset));
+        assertEquals(valueOf(1 + startIntervalOffset), CALENDAR_WEEK_SCHEDULE.currentOffset(calendarStartAsTuesday, cycleStartDate, startIntervalOffset));
 
         mockCurrentDate(date(2011, 11, 14));
         startIntervalOffset = 8;
-        assertEquals(valueOf(1 + startIntervalOffset), CALENDAR_WEEK_SCHEDULE.offset(calendarStartAsTuesday, cycleStartDate, startIntervalOffset));
+        assertEquals(valueOf(1 + startIntervalOffset), CALENDAR_WEEK_SCHEDULE.currentOffset(calendarStartAsTuesday, cycleStartDate, startIntervalOffset));
 
         mockCurrentDate(date(2011, 11, 15));
-        assertEquals(valueOf(2 + startIntervalOffset), CALENDAR_WEEK_SCHEDULE.offset(calendarStartAsTuesday, cycleStartDate, startIntervalOffset));
+        assertEquals(valueOf(2 + startIntervalOffset), CALENDAR_WEEK_SCHEDULE.currentOffset(calendarStartAsTuesday, cycleStartDate, startIntervalOffset));
 
         mockCurrentDate(date(2011, 11, 18));
-        assertEquals(valueOf(2 + startIntervalOffset), CALENDAR_WEEK_SCHEDULE.offset(calendarStartAsTuesday, cycleStartDate, startIntervalOffset));
+        assertEquals(valueOf(2 + startIntervalOffset), CALENDAR_WEEK_SCHEDULE.currentOffset(calendarStartAsTuesday, cycleStartDate, startIntervalOffset));
     }
 
     @Test
@@ -52,24 +52,24 @@ public class RepeatingMessageModeTest extends BaseUnitTest {
 
         int startIntervalOffset = 1;
         mockCurrentDate(date(2011, 11, 3));
-        assertEquals(valueOf(startIntervalOffset), CALENDAR_WEEK_SCHEDULE.offset(calendarStartAsSunday, cycleStartDate, startIntervalOffset));
+        assertEquals(valueOf(startIntervalOffset), CALENDAR_WEEK_SCHEDULE.currentOffset(calendarStartAsSunday, cycleStartDate, startIntervalOffset));
 
         startIntervalOffset = 8;
 
         mockCurrentDate(date(2011, 11, 7));
-        assertEquals(valueOf(1 + startIntervalOffset), CALENDAR_WEEK_SCHEDULE.offset(calendarStartAsSunday, cycleStartDate, startIntervalOffset));
+        assertEquals(valueOf(1 + startIntervalOffset), CALENDAR_WEEK_SCHEDULE.currentOffset(calendarStartAsSunday, cycleStartDate, startIntervalOffset));
 
         mockCurrentDate(date(2011, 11, 8));
-        assertEquals(valueOf(1 + startIntervalOffset), CALENDAR_WEEK_SCHEDULE.offset(calendarStartAsSunday, cycleStartDate, startIntervalOffset));
+        assertEquals(valueOf(1 + startIntervalOffset), CALENDAR_WEEK_SCHEDULE.currentOffset(calendarStartAsSunday, cycleStartDate, startIntervalOffset));
 
         mockCurrentDate(date(2011, 11, 13));
-        assertEquals(valueOf(2 + startIntervalOffset), CALENDAR_WEEK_SCHEDULE.offset(calendarStartAsSunday, cycleStartDate, startIntervalOffset));
+        assertEquals(valueOf(2 + startIntervalOffset), CALENDAR_WEEK_SCHEDULE.currentOffset(calendarStartAsSunday, cycleStartDate, startIntervalOffset));
 
         mockCurrentDate(date(2011, 11, 19));
-        assertEquals(valueOf(2 + startIntervalOffset), CALENDAR_WEEK_SCHEDULE.offset(calendarStartAsSunday, cycleStartDate, startIntervalOffset));
+        assertEquals(valueOf(2 + startIntervalOffset), CALENDAR_WEEK_SCHEDULE.currentOffset(calendarStartAsSunday, cycleStartDate, startIntervalOffset));
 
         mockCurrentDate(date(2011, 11, 21));
-        assertEquals(valueOf(3 + startIntervalOffset), CALENDAR_WEEK_SCHEDULE.offset(calendarStartAsSunday, cycleStartDate, startIntervalOffset));
+        assertEquals(valueOf(3 + startIntervalOffset), CALENDAR_WEEK_SCHEDULE.currentOffset(calendarStartAsSunday, cycleStartDate, startIntervalOffset));
     }
 
     @Test
@@ -79,7 +79,7 @@ public class RepeatingMessageModeTest extends BaseUnitTest {
 
         mockCurrentDate(date(2011, 11, 1));
         try {
-            CALENDAR_WEEK_SCHEDULE.offset(calendarStartAsTuesday, cycleStartDate, 4);
+            CALENDAR_WEEK_SCHEDULE.currentOffset(calendarStartAsTuesday, cycleStartDate, 4);
             Assert.fail("should fail for the current date");
         } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "cycleStartDate cannot be in future");

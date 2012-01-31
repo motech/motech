@@ -42,7 +42,7 @@ public class RepeatingProgramScheduleHandler {
         Integer startIntervalOffset = (Integer) params.get(EventKeys.REPEATING_START_OFFSET);
         Date startDate = (Date) params.get(EventKeys.START_DATE);
 
-        Integer offset = repeatingCampaignMessage.offset(startDate, startIntervalOffset);
+        Integer offset = repeatingCampaignMessage.currentOffset(startDate, startIntervalOffset);
 
         replaceMessageKeyParams(params, OFFSET, offset.toString());
         String nextApplicableDay = repeatingCampaignMessage.applicableWeekDayInNext24Hours();
