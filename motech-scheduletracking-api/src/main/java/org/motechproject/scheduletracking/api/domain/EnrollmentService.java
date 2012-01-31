@@ -7,14 +7,13 @@ import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduletracking.api.events.MilestoneEvent;
+import org.motechproject.scheduletracking.api.events.constants.EventSubject;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static org.motechproject.util.DateUtil.now;
 import static org.motechproject.util.DateUtil.today;
-import static sun.swing.MenuItemLayoutHelper.max;
 
 @Component
 public class EnrollmentService {
@@ -32,20 +31,19 @@ public class EnrollmentService {
     }
 
     public void scheduleAlertsForCurrentMilestone(Enrollment enrollment) {
-        int alertCount = 0;
         Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
         Milestone currentMilestone = schedule.getMilestone(enrollment.getCurrentMilestoneName());
         for (MilestoneWindow window : currentMilestone.getMilestoneWindows()) {
             if (!window.hasElapsed(getCurrentMilestoneStartDate(enrollment))) {
                 for (Alert alert : window.getAlerts())
-                    scheduleAlertJob(alert, enrollment, schedule, currentMilestone, window, alertCount++);
+                    scheduleAlertJob(alert, enrollment, schedule, currentMilestone, window);
             }
         }
     }
 
-    private void scheduleAlertJob(Alert alert, Enrollment enrollment, Schedule schedule, Milestone milestone, MilestoneWindow milestoneWindow, int alertCount) {
+    private void scheduleAlertJob(Alert alert, Enrollment enrollment, Schedule schedule, Milestone milestone, MilestoneWindow milestoneWindow) {
         MotechEvent event = new MilestoneEvent(enrollment.getId(), schedule.getName(), milestone.getName(), milestoneWindow.getName().toString()).toMotechEvent();
-        event.getParameters().put(MotechSchedulerService.JOB_ID_KEY, String.format("%s_%s_%d", MILESTONE_ALERT, enrollment.getId(), alertCount));
+        event.getParameters().put(MotechSchedulerService.JOB_ID_KEY, String.format("%s.%s.%d", EventSubject.BASE_SUBJECT, enrollment.getId(), alert.getIndex()));
         DateTime startTime = DateUtil.newDateTime(getJobStartDate(enrollment, milestoneWindow), enrollment.getPreferredAlertTime());
         RepeatingSchedulableJob job = new RepeatingSchedulableJob(event, startTime.toDate(), null, new Integer(numberOfAlertsToRaise(alert, enrollment, milestoneWindow)), alert.getInterval().inDays() * MILLIS_IN_A_DAY);
         schedulerService.scheduleRepeatingJob(job);

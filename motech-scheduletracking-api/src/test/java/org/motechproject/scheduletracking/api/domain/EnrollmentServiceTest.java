@@ -1,8 +1,5 @@
 package org.motechproject.scheduletracking.api.domain;
 
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -11,15 +8,13 @@ import org.mockito.Mock;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.scheduletracking.api.events.constants.EventSubject;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
-import org.motechproject.util.DateUtil;
 import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.WallTimeUnit;
 
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.*;
 import static org.motechproject.util.DateUtil.newDateTime;
@@ -44,8 +39,8 @@ public class EnrollmentServiceTest {
     @Test
     public void shouldScheduleOneRepeatJobForEachAlertInTheFirstMilestone() {
         Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        milestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 3));
-        milestone.addAlert(WindowName.due, new Alert(new WallTime(1, WallTimeUnit.Week), 2));
+        milestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 3, 0));
+        milestone.addAlert(WindowName.due, new Alert(new WallTime(1, WallTimeUnit.Week), 2, 1));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
@@ -57,13 +52,13 @@ public class EnrollmentServiceTest {
         verify(schedulerService, times(2)).scheduleRepeatingJob(repeatJobCaptor.capture());
 
         RepeatingSchedulableJob job = repeatJobCaptor.getAllValues().get(0);
-        assertEquals(String.format("milestone_alert_%s_0", enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
+        assertEquals(String.format("%s.%s.0", EventSubject.BASE_SUBJECT, enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
         assertEquals(newDateTime(weeksAgo(0), new Time(8, 10)).toDate(), job.getStartTime());
         assertEquals(MILLIS_IN_A_DAY, job.getRepeatInterval());
         assertEquals(3, job.getRepeatCount().intValue());
 
         job = repeatJobCaptor.getAllValues().get(1);
-        assertEquals(String.format("milestone_alert_%s_1", enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
+        assertEquals(String.format("%s.%s.1", EventSubject.BASE_SUBJECT, enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
         assertEquals(newDateTime(weeksAfter(1), new Time(8, 10)).toDate(), job.getStartTime());
         assertEquals(MILLIS_IN_A_WEEK, job.getRepeatInterval());
         assertEquals(2, job.getRepeatCount().intValue());
@@ -73,7 +68,7 @@ public class EnrollmentServiceTest {
     public void shouldNotScheduleJobsForFutureMilestones() {
         Milestone firstMilestone = new Milestone("milestone_1", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         Milestone secondMilestone = new Milestone("milestone_2", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        secondMilestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 3));
+        secondMilestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 3, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
@@ -87,7 +82,7 @@ public class EnrollmentServiceTest {
     @Test
     public void shouldNotScheduleJobsInThePast() {
         Milestone milestone = new Milestone("milestone_1", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        milestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 4));
+        milestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 4, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
@@ -99,7 +94,7 @@ public class EnrollmentServiceTest {
         verify(schedulerService).scheduleRepeatingJob(repeatJobCaptor.capture());
 
         RepeatingSchedulableJob job = repeatJobCaptor.getValue();
-        assertEquals(String.format("milestone_alert_%s_0", enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
+        assertEquals(String.format("%s.%s.0", EventSubject.BASE_SUBJECT, enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
         assertEquals(newDateTime(daysAgo(0), new Time(8, 10)).toDate(), job.getStartTime());
         assertEquals(MILLIS_IN_A_DAY, job.getRepeatInterval());
         assertEquals(1, job.getRepeatCount().intValue());
@@ -108,7 +103,7 @@ public class EnrollmentServiceTest {
     @Test
     public void shouldNotScheduleJobsForPassedWindowInTheFirstMilestone() {
         Milestone milestone = new Milestone("milestone_1", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        milestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 4));
+        milestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 4, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
@@ -121,9 +116,9 @@ public class EnrollmentServiceTest {
     @Test
     public void shouldNotScheduleJobsForPassedMilestones() {
         Milestone firstMilestone = new Milestone("milestone_1", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        firstMilestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 4));
+        firstMilestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 4, 0));
         Milestone secondMilestone = new Milestone("milestone_2", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        secondMilestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 2));
+        secondMilestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 2, 1));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
@@ -135,7 +130,7 @@ public class EnrollmentServiceTest {
         verify(schedulerService).scheduleRepeatingJob(repeatJobCaptor.capture());
 
         RepeatingSchedulableJob job = repeatJobCaptor.getValue();
-        assertEquals(String.format("milestone_alert_%s_0", enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
+        assertEquals(String.format("%s.%s.1", EventSubject.BASE_SUBJECT, enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
         assertEquals(newDateTime(weeksAgo(0), new Time(8, 10)).toDate(), job.getStartTime());
         assertEquals(MILLIS_IN_A_DAY, job.getRepeatInterval());
         assertEquals(2, job.getRepeatCount().intValue());

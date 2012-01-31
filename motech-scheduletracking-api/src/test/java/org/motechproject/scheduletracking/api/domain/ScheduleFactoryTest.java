@@ -52,5 +52,7 @@ public class ScheduleFactoryTest {
         Milestone secondMilestone = milestones.get(1);
         assertEquals(2, firstMilestone.getAlerts().size());
         assertEquals(0, secondMilestone.getAlerts().size());
+        assertEquals(0, firstMilestone.getAlerts().get(0).getIndex());
+        assertEquals(1, firstMilestone.getAlerts().get(1).getIndex());
     }
 }

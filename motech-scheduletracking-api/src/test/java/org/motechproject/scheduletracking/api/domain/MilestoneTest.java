@@ -37,8 +37,8 @@ public class MilestoneTest {
 
     @Test
     public void shouldAddAlertUnderTheMilestone() {
-        Alert alert1 = new Alert(null, 0);
-        Alert alert2 = new Alert(null, 0);
+        Alert alert1 = new Alert(null, 0, 0);
+        Alert alert2 = new Alert(null, 0, 1);
         milestone.addAlert(WindowName.late, alert1);
         milestone.addAlert(WindowName.max, alert2);
         assertArrayEquals(new Alert[]{alert1, alert2}, milestone.getAlerts().toArray());

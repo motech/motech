@@ -9,15 +9,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.daysAfter;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.daysAgo;
-import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 
 public class MilestoneWindowTest {
 
     @Test
     public void shouldHaveMultipleAlerts() {
         MilestoneWindow window = new MilestoneWindow(WindowName.earliest, new WallTime(0, WallTimeUnit.Day), new WallTime(3, WallTimeUnit.Day));
-        Alert alert1 = new Alert(null, 0);
-        Alert alert2 = new Alert(null, 0);
+        Alert alert1 = new Alert(null, 0, 0);
+        Alert alert2 = new Alert(null, 0, 1);
         window.addAlerts(alert1, alert2);
         assertArrayEquals(new Alert[]{ alert1, alert2}, window.getAlerts().toArray());
     }

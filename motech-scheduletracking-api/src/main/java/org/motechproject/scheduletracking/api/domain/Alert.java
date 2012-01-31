@@ -6,10 +6,16 @@ public class Alert {
 
     private WallTime interval;
     private int repeatCount;
+    private int index;
 
-    public Alert(WallTime interval, int repeatCount) {
+    public int getIndex() {
+        return index;
+    }
+
+    public Alert(WallTime interval, int repeatCount, int index) {
         this.interval = interval;
         this.repeatCount = repeatCount;
+        this.index = index;
     }
 
     public WallTime getInterval() {
