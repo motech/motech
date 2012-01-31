@@ -1,15 +1,19 @@
-package org.motechproject.scheduletracking.api.domain;
+package org.motechproject.scheduletracking.api.service;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.scheduletracking.api.domain.*;
+import org.motechproject.scheduletracking.api.events.MilestoneEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventSubject;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
+import org.motechproject.scheduletracking.api.service.EnrollmentService;
 import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.WallTimeUnit;
 
@@ -52,16 +56,28 @@ public class EnrollmentServiceTest {
         verify(schedulerService, times(2)).scheduleRepeatingJob(repeatJobCaptor.capture());
 
         RepeatingSchedulableJob job = repeatJobCaptor.getAllValues().get(0);
+        MilestoneEvent event = new MilestoneEvent(job.getMotechEvent());
         assertEquals(String.format("%s.%s.0", EventSubject.BASE_SUBJECT, enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
         assertEquals(newDateTime(weeksAgo(0), new Time(8, 10)).toDate(), job.getStartTime());
         assertEquals(MILLIS_IN_A_DAY, job.getRepeatInterval());
         assertEquals(3, job.getRepeatCount().intValue());
 
+        assertEquals("entity_1", event.getExternalId());
+        assertEquals("my_schedule", event.getScheduleName());
+        assertEquals("milestone", event.getMilestoneName());
+        assertEquals("earliest", event.getWindowName());
+
         job = repeatJobCaptor.getAllValues().get(1);
+        event = new MilestoneEvent(job.getMotechEvent());
         assertEquals(String.format("%s.%s.1", EventSubject.BASE_SUBJECT, enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
         assertEquals(newDateTime(weeksAfter(1), new Time(8, 10)).toDate(), job.getStartTime());
         assertEquals(MILLIS_IN_A_WEEK, job.getRepeatInterval());
         assertEquals(2, job.getRepeatCount().intValue());
+
+        assertEquals("entity_1", event.getExternalId());
+        assertEquals("my_schedule", event.getScheduleName());
+        assertEquals("milestone", event.getMilestoneName());
+        assertEquals("due", event.getWindowName());
     }
 
     @Test

@@ -67,8 +67,4 @@ public class Milestone implements Serializable {
             days += window.getEnd().inDays() - window.getStart().inDays();
         return days;
     }
-
-    private MilestoneWindow firstWindow() {
-        return getMilestoneWindows().get(0);
-    }
 }

@@ -1,7 +1,5 @@
 package org.motechproject.scheduletracking.api.domain;
 
-import org.joda.time.LocalDate;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
