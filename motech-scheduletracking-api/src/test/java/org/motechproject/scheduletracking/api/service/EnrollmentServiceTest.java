@@ -191,15 +191,41 @@ public class EnrollmentServiceTest {
     public void shouldFulfillCurrentMilestoneInEnrollment() {
         Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        secondMilestone.addAlert(WindowName.earliest, new Alert(wallTimeOf(1), 3, 0));
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
 
-        Enrollment enrollment = new Enrollment("ID-074285", schedule, weeksAgo(4), weeksAgo(4), null);
+        Enrollment enrollment = new Enrollment("ID-074285", schedule, weeksAgo(4), weeksAgo(4), new Time(8, 20));
         enrollmentService.fulfillCurrentMilestone(enrollment);
 
         assertEquals("Second Shot", enrollment.getCurrentMilestoneName());
         assertEquals(daysAgo(0), enrollment.getLastFulfilledDate());
+    }
+
+    @Test
+    public void shouldScheduleAlertsForNextMilestoneWhenCurrentMilestoneIsFulfilled() {
+        Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        secondMilestone.addAlert(WindowName.earliest, new Alert(wallTimeOf(1), 3, 0));
+        Schedule schedule = new Schedule("Yellow Fever Vaccination");
+        schedule.addMilestones(firstMilestone, secondMilestone);
+        when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
+
+        Enrollment enrollment = new Enrollment("ID-074285", schedule, weeksAgo(4), weeksAgo(4), new Time(8, 20));
+        enrollment.setId("enrollment_1");
+        enrollmentService.fulfillCurrentMilestone(enrollment);
+
+        verify(schedulerService).unscheduleAllJobs(EventSubject.BASE_SUBJECT + ".enrollment_1");
+
+        ArgumentCaptor<RepeatingSchedulableJob> repeatJobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
+        verify(schedulerService).scheduleRepeatingJob(repeatJobCaptor.capture());
+
+        RepeatingSchedulableJob job = repeatJobCaptor.getValue();
+        assertEquals(String.format("%s.%s.0", EventSubject.BASE_SUBJECT, enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
+        assertEquals(newDateTime(daysAgo(0), new Time(8, 20)).toDate(), job.getStartTime());
+        assertEquals(MILLIS_IN_A_WEEK, job.getRepeatInterval());
+        assertEquals(3, job.getRepeatCount().intValue());
     }
 
     @Test(expected = NoMoreMilestonesToFulfillException.class)
@@ -210,7 +236,7 @@ public class EnrollmentServiceTest {
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
 
-        Enrollment enrollment = new Enrollment("ID-074285", schedule, weeksAgo(4), weeksAgo(4), null);
+        Enrollment enrollment = new Enrollment("ID-074285", schedule, weeksAgo(4), weeksAgo(4), new Time(8, 20));
         enrollmentService.fulfillCurrentMilestone(enrollment);
         enrollmentService.fulfillCurrentMilestone(enrollment);
         enrollmentService.fulfillCurrentMilestone(enrollment);

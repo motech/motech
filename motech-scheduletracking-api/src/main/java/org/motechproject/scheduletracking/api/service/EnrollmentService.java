@@ -30,18 +30,11 @@ public class EnrollmentService {
         this.schedulerService = schedulerService;
     }
 
-    public void fulfillCurrentMilestone(Enrollment enrollment) {
-        Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
-        String currentMilestoneName = enrollment.getCurrentMilestoneName();
-        if (enrollment.getFulfillments().size() < schedule.getMilestones().size())
-            enrollment.fulfillCurrentMilestone(schedule.getNextMilestoneName(currentMilestoneName));
-        else
-            throw new NoMoreMilestonesToFulfillException("all milestones in the schedule have been fulfilled.");
-    }
-
     public void scheduleAlertsForCurrentMilestone(Enrollment enrollment) {
         Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
         Milestone currentMilestone = schedule.getMilestone(enrollment.getCurrentMilestoneName());
+        if (currentMilestone == null)
+            return;
         for (MilestoneWindow window : currentMilestone.getMilestoneWindows()) {
             if (!window.hasElapsed(getCurrentMilestoneStartDate(enrollment))) {
                 for (Alert alert : window.getAlerts())
@@ -82,5 +75,21 @@ public class EnrollmentService {
         if (enrollment.getCurrentMilestoneName().equals(schedule.getFirstMilestone().getName()))
             return enrollment.getReferenceDate();
         return (enrollment.getFulfillments().isEmpty())? enrollment.getEnrollmentDate() : enrollment.getLastFulfilledDate();
+    }
+
+    public void fulfillCurrentMilestone(Enrollment enrollment) {
+        Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
+        String currentMilestoneName = enrollment.getCurrentMilestoneName();
+        if (enrollment.getFulfillments().size() >= schedule.getMilestones().size())
+            throw new NoMoreMilestonesToFulfillException("all milestones in the schedule have been fulfilled.");
+        else {
+            unscheduleAllAlerts(enrollment);
+            enrollment.fulfillCurrentMilestone(schedule.getNextMilestoneName(currentMilestoneName));
+            scheduleAlertsForCurrentMilestone(enrollment);
+        }
+    }
+
+    void unscheduleAllAlerts(Enrollment enrollment) {
+        schedulerService.unscheduleAllJobs(EventSubject.BASE_SUBJECT + "." + enrollment.getId());
     }
 }
