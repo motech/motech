@@ -11,7 +11,20 @@ public class CampaignEnrollmentService {
     @Autowired
     AllCampaignEnrollments allCampaignEnrollments;
 
-    public void saveOrUpdate(CampaignEnrollment enrollment) {
+    public void register(CampaignEnrollment enrollment) {
         allCampaignEnrollments.saveOrUpdate(enrollment);   
+    }
+
+    public void unregister(String externalId, String campaignName) {
+        CampaignEnrollment enrollment = allCampaignEnrollments.findByExternalIdAndCampaignName(externalId, campaignName);
+        allCampaignEnrollments.remove(enrollment);
+    }
+
+    public void unregister(CampaignEnrollment enrollment) {
+        allCampaignEnrollments.remove(enrollment);
+    }
+
+    public CampaignEnrollment findByExternalIdAndCampaignName(String externalId, String campaignName) {
+        return allCampaignEnrollments.findByExternalIdAndCampaignName(externalId, campaignName);
     }
 }

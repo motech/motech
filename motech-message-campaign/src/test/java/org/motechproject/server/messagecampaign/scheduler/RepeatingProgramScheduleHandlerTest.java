@@ -11,11 +11,11 @@ import org.motechproject.model.MotechEvent;
 import org.motechproject.model.Time;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.builder.CampaignMessageBuilder;
-import org.motechproject.server.messagecampaign.dao.AllCampaignEnrollments;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
+import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 import org.motechproject.testing.utils.BaseUnitTest;
 
 import java.util.Date;
@@ -35,7 +35,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
     @Mock
     AllMessageCampaigns allMessageCampaigns;
     @Mock
-    AllCampaignEnrollments allCampaignEnrollments;
+    CampaignEnrollmentService mockCampaignEnrollmentService;
     @Mock
     OutboundEventGateway outboundEventGateway;
     RepeatingProgramScheduleHandler handler;
@@ -46,7 +46,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
     @Before
     public void setUp() {
         initMocks(this);
-        handler = new RepeatingProgramScheduleHandler(outboundEventGateway, allMessageCampaigns, allCampaignEnrollments);
+        handler = new RepeatingProgramScheduleHandler(outboundEventGateway, allMessageCampaigns, mockCampaignEnrollmentService);
     }
 
     @Test
@@ -75,9 +75,9 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
     }
 
     private CampaignEnrollment mockCampaignEnrollment(Date startDate, int startOffset) {
-        reset(allCampaignEnrollments);
+        reset(mockCampaignEnrollmentService);
         CampaignEnrollment enrollment = new CampaignEnrollment(externalId, campaignName).setStartDate(new LocalDate(startDate));
-        when(allCampaignEnrollments.findByExternalIdAndCampaignName(externalId, campaignName)).thenReturn(enrollment
+        when(mockCampaignEnrollmentService.findByExternalIdAndCampaignName(externalId, campaignName)).thenReturn(enrollment
             .setStartOffset(startOffset));
         return enrollment;
     }
@@ -170,7 +170,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
         callHandleEvent(today, lastMotechEvent);
 
         assertHandleEvent("message-key-1-Friday");
-        verify(allCampaignEnrollments).remove(enrollment);
+        verify(mockCampaignEnrollmentService).unregister(enrollment);
     }
 
     private void callHandleEvent(DateTime todayMockTime, MotechEvent inputEvent) {

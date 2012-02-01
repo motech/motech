@@ -5,11 +5,11 @@ import org.motechproject.gateway.OutboundEventGateway;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.server.messagecampaign.EventKeys;
-import org.motechproject.server.messagecampaign.dao.AllCampaignEnrollments;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
+import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,16 +25,16 @@ public class RepeatingProgramScheduleHandler {
     private OutboundEventGateway outboundEventGateway;
     private static final Logger log = Logger.getLogger(RepeatingProgramScheduleHandler.class);
     private AllMessageCampaigns allMessageCampaigns;
-    private AllCampaignEnrollments allCampaignEnrollments;
+    private CampaignEnrollmentService campaignEnrollmentService;
 
     public static final String OFFSET = "{Offset}";
     public static final String WEEK_DAY = "{WeekDay}";
 
     @Autowired
-    public RepeatingProgramScheduleHandler(OutboundEventGateway outboundEventGateway, AllMessageCampaigns allMessageCampaigns, AllCampaignEnrollments allCampaignEnrollments) {
+    public RepeatingProgramScheduleHandler(OutboundEventGateway outboundEventGateway, AllMessageCampaigns allMessageCampaigns, CampaignEnrollmentService campaignEnrollmentService) {
         this.outboundEventGateway = outboundEventGateway;
         this.allMessageCampaigns = allMessageCampaigns;
-        this.allCampaignEnrollments = allCampaignEnrollments;
+        this.campaignEnrollmentService = campaignEnrollmentService;
     }
 
     @MotechListener(subjects = {RepeatingProgramScheduler.INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT})
@@ -54,13 +54,13 @@ public class RepeatingProgramScheduleHandler {
             replaceMessageKeyParams(params, OFFSET, offset.toString());
             replaceMessageKeyParams(params, WEEK_DAY, nextApplicableDay);
 
-            if (event.isLastEvent()) allCampaignEnrollments.remove(enrollment);
+            if (event.isLastEvent()) campaignEnrollmentService.unregister(enrollment);
             outboundEventGateway.sendEventMessage(event.copy(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, event.getParameters()));
         }
     }
 
     private CampaignEnrollment enrollment(Map<String, Object> map) {
-        return allCampaignEnrollments.findByExternalIdAndCampaignName(
+        return campaignEnrollmentService.findByExternalIdAndCampaignName(
                 (String) map.get(EventKeys.EXTERNAL_ID_KEY), (String) map.get(EventKeys.CAMPAIGN_NAME_KEY));
     }
 
