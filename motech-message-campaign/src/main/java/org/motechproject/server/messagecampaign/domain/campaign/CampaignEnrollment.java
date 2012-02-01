@@ -7,7 +7,7 @@ import org.motechproject.model.MotechBaseDataObject;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingMessageMode;
 
-import static org.motechproject.server.messagecampaign.Constants.DEFAULT_INTERVAL_OFFSET;
+import static org.motechproject.server.messagecampaign.Constants.REPEATING_DEFAULT_START_OFFSET;
 
 @TypeDiscriminator("doc.type === 'CampaignEnrollment'")
 public class CampaignEnrollment extends MotechBaseDataObject {
@@ -56,7 +56,7 @@ public class CampaignEnrollment extends MotechBaseDataObject {
     public int startOffset(RepeatingCampaignMessage message) {
         Integer offset = getStartOffset();
         // no startOffset handling for repeatInterval
-        return isRepeatingIntervalMode(message) || offset == null ? DEFAULT_INTERVAL_OFFSET : offset;
+        return isRepeatingIntervalMode(message) || offset == null ? REPEATING_DEFAULT_START_OFFSET : offset;
     }
 
     private boolean isRepeatingIntervalMode(RepeatingCampaignMessage message) {

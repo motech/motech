@@ -119,7 +119,7 @@ public enum RepeatingMessageMode {
     };
 
     private static int defaultOffsetIfNotSet(Integer offset) {
-        return offset == null ? Constants.DEFAULT_INTERVAL_OFFSET : offset;
+        return offset == null ? Constants.REPEATING_DEFAULT_START_OFFSET : offset;
     }
 
     private static boolean isWeekDayApplicable(RepeatingCampaignMessage message) {

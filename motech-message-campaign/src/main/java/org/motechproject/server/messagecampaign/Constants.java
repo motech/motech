@@ -3,5 +3,5 @@ package org.motechproject.server.messagecampaign;
 
 public class Constants {
 
-    public static final int DEFAULT_INTERVAL_OFFSET = 1;
+    public static final int REPEATING_DEFAULT_START_OFFSET = 1;
 }
