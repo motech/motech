@@ -5,7 +5,6 @@ import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.commons.beanutils.Converter;
 import org.apache.commons.beanutils.converters.DateConverter;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
 import org.motechproject.MotechException;
 import org.motechproject.mobileforms.api.domain.FormBean;
 import org.motechproject.model.Time;
@@ -74,7 +73,11 @@ public class MapToBeanConvertor {
         private class DateTimeConverter implements Converter {
             @Override
             public Object convert(Class type, Object value) {
-                return DateTime.parse((String) value, DateTimeFormat.forPattern(DATE_PATTERN + " " + TIME_PATTERN_12_HOURS));
+                try {
+                    return new DateTime(new SimpleDateFormat(DATE_PATTERN + " " + TIME_PATTERN_12_HOURS).parse((String) value));
+                } catch (ParseException e) {
+                    throw new MotechException("Encountered exception while parsing mobile form", e);
+                }
             }
         }
 
