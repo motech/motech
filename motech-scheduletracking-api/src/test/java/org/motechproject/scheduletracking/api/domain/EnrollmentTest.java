@@ -1,6 +1,5 @@
 package org.motechproject.scheduletracking.api.domain;
 
-import org.joda.time.LocalDate;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -45,7 +44,7 @@ public class EnrollmentTest {
         schedule.addMilestones(firstMilestone, secondMilestone);
         Enrollment enrollment = new Enrollment("ID-074285", schedule, weeksAgo(5), weeksAgo(3), null, "First Shot");
 
-        enrollment.fulfillCurrentMilestone(secondMilestone.getName(), LocalDate.now());
+        enrollment.fulfillCurrentMilestone(secondMilestone.getName());
 
         assertEquals(secondMilestone.getName(), enrollment.getCurrentMilestoneName());
         assertEquals(1, enrollment.getFulfillments().size());
@@ -70,8 +69,8 @@ public class EnrollmentTest {
         schedule.addMilestones(firstMilestone, secondMilestone);
         Enrollment enrollment = new Enrollment("ID-074285", schedule, weeksAgo(5), weeksAgo(3), null);
 
-        enrollment.fulfillCurrentMilestone("Second Shot", weeksAgo(2));
+        enrollment.fulfillCurrentMilestone("Second Shot");
 
-        assertEquals(weeksAgo(2), enrollment.getLastFulfilledDate());
+        assertEquals(weeksAgo(0), enrollment.getLastFulfilledDate());
     }
 }

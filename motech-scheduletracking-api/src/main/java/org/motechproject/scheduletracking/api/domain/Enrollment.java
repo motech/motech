@@ -5,6 +5,7 @@ import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.LocalDate;
 import org.motechproject.model.MotechBaseDataObject;
 import org.motechproject.model.Time;
+import org.motechproject.util.DateUtil;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -78,8 +79,8 @@ public class Enrollment extends MotechBaseDataObject {
         return fulfillments;
     }
 
-    public void fulfillCurrentMilestone(String nextMilestoneName, LocalDate dateFulfilled) {
-        fulfillments.add(new MilestoneFulfillment(currentMilestoneName, dateFulfilled));
+    public void fulfillCurrentMilestone(String nextMilestoneName) {
+        fulfillments.add(new MilestoneFulfillment(currentMilestoneName, DateUtil.today()));
         currentMilestoneName = nextMilestoneName;
     }
 

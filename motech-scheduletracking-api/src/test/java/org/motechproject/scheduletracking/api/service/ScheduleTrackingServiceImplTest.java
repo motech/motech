@@ -105,4 +105,22 @@ public class ScheduleTrackingServiceImplTest {
         assertEquals("entity_1", enrollment.getExternalId());
         assertEquals("my_schedule", enrollment.getScheduleName());
     }
+
+    @Test
+    public void shouldFulfillTheCurrentMilestone() {
+        Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        milestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 3, 0));
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(milestone);
+        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
+
+        Enrollment enrollment = mock(Enrollment.class);
+        when(allEnrollments.findByExternalIdAndScheduleName("entity_1", "my_schedule")).thenReturn(enrollment);
+
+        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(schedulerService, allTrackedSchedules, allEnrollments, enrollmentService);
+        scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2)));
+        scheduleTrackingService.fulfillCurrentMilestone("entity_1", "my_schedule");
+
+        verify(enrollmentService).fulfillCurrentMilestone(enrollment);
+    }
 }

@@ -57,6 +57,13 @@ public class Schedule implements Serializable {
         return offset;
     }
 
+    public String getNextMilestoneName(String currentMilestoneName) {
+        int currentIndex = milestones.indexOf(getMilestone(currentMilestoneName));
+        if (currentIndex < milestones.size() - 1)
+            return milestones.get(currentIndex + 1).getName();
+        return null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

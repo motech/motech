@@ -47,4 +47,9 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
         allEnrollments.add(enrollment);
         enrollmentService.scheduleAlertsForCurrentMilestone(enrollment);
     }
+
+    @Override
+    public void fulfillCurrentMilestone(String externalId, String scheduleName) {
+        enrollmentService.fulfillCurrentMilestone(allEnrollments.findByExternalIdAndScheduleName(externalId, scheduleName));
+    }
 }

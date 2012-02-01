@@ -30,6 +30,15 @@ public class EnrollmentService {
         this.schedulerService = schedulerService;
     }
 
+    public void fulfillCurrentMilestone(Enrollment enrollment) {
+        Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
+        String currentMilestoneName = enrollment.getCurrentMilestoneName();
+        if (enrollment.getFulfillments().size() < schedule.getMilestones().size())
+            enrollment.fulfillCurrentMilestone(schedule.getNextMilestoneName(currentMilestoneName));
+        else
+            throw new NoMoreMilestonesToFulfillException("all milestones in the schedule have been fulfilled.");
+    }
+
     public void scheduleAlertsForCurrentMilestone(Enrollment enrollment) {
         Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
         Milestone currentMilestone = schedule.getMilestone(enrollment.getCurrentMilestoneName());
