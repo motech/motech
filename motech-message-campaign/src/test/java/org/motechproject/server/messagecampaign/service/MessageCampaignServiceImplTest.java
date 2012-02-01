@@ -18,6 +18,8 @@ public class MessageCampaignServiceImplTest {
     @Mock
     private AllMessageCampaigns allMessageCampaigns;
     @Mock
+    private CampaignEnrollmentService mockCampaignEnrollmentService;
+    @Mock
     private MotechSchedulerService schedulerService;
     @Mock
     private MessageCampaignScheduler scheduler;
@@ -25,7 +27,7 @@ public class MessageCampaignServiceImplTest {
     @Before
     public void setUp() {
         initMocks(this);
-        messageCampaignService = new MessageCampaignServiceImpl(allMessageCampaigns, schedulerService);
+        messageCampaignService = new MessageCampaignServiceImpl(allMessageCampaigns, schedulerService, mockCampaignEnrollmentService);
     }
 
     @Test
@@ -36,11 +38,11 @@ public class MessageCampaignServiceImplTest {
         AbsoluteCampaign absoluteCampaign = mock(AbsoluteCampaign.class);
 
         when(allMessageCampaigns.get(campaignName)).thenReturn(absoluteCampaign);
-        when(absoluteCampaign.getScheduler(schedulerService,campaignRequest)).thenReturn(scheduler);
+        when(absoluteCampaign.getScheduler(schedulerService, mockCampaignEnrollmentService, campaignRequest)).thenReturn(scheduler);
 
         messageCampaignService.startFor(campaignRequest);
 
-        verify(absoluteCampaign).getScheduler(schedulerService,campaignRequest);
+        verify(absoluteCampaign).getScheduler(schedulerService, mockCampaignEnrollmentService, campaignRequest);
         verify(scheduler).start();
     }
 
@@ -52,11 +54,11 @@ public class MessageCampaignServiceImplTest {
         AbsoluteCampaign absoluteCampaign = mock(AbsoluteCampaign.class);
 
         when(allMessageCampaigns.get(campaignName)).thenReturn(absoluteCampaign);
-        when(absoluteCampaign.getScheduler(schedulerService,campaignRequest)).thenReturn(scheduler);
+        when(absoluteCampaign.getScheduler(schedulerService, mockCampaignEnrollmentService, campaignRequest)).thenReturn(scheduler);
 
         messageCampaignService.stopFor(campaignRequest, "foo");
 
-        verify(absoluteCampaign).getScheduler(schedulerService,campaignRequest);
+        verify(absoluteCampaign).getScheduler(schedulerService, mockCampaignEnrollmentService, campaignRequest);
         verify(scheduler).stop("foo");
     }
 

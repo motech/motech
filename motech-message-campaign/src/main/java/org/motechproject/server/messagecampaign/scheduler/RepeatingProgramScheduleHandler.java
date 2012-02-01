@@ -6,8 +6,10 @@ import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
+import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
+import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,33 +25,43 @@ public class RepeatingProgramScheduleHandler {
     private OutboundEventGateway outboundEventGateway;
     private static final Logger log = Logger.getLogger(RepeatingProgramScheduleHandler.class);
     private AllMessageCampaigns allMessageCampaigns;
+    private CampaignEnrollmentService campaignEnrollmentService;
 
     public static final String OFFSET = "{Offset}";
     public static final String WEEK_DAY = "{WeekDay}";
 
     @Autowired
-    public RepeatingProgramScheduleHandler(OutboundEventGateway outboundEventGateway, AllMessageCampaigns allMessageCampaigns) {
+    public RepeatingProgramScheduleHandler(OutboundEventGateway outboundEventGateway, AllMessageCampaigns allMessageCampaigns, CampaignEnrollmentService campaignEnrollmentService) {
         this.outboundEventGateway = outboundEventGateway;
         this.allMessageCampaigns = allMessageCampaigns;
+        this.campaignEnrollmentService = campaignEnrollmentService;
     }
 
     @MotechListener(subjects = {RepeatingProgramScheduler.INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT})
     public void handleEvent(MotechEvent event) {
         log.info("handled internal repeating campaign event and forwarding: " + event.getParameters().hashCode());
 
-        Map<String, Object> params = event.getParameters();
         RepeatingCampaignMessage repeatingCampaignMessage = (RepeatingCampaignMessage) getCampaignMessage(event);
-        Integer startIntervalOffset = (Integer) params.get(EventKeys.REPEATING_START_OFFSET);
-        Date startDate = (Date) params.get(EventKeys.START_DATE);
-
-        Integer offset = repeatingCampaignMessage.currentOffset(startDate, startIntervalOffset);
-
-        replaceMessageKeyParams(params, OFFSET, offset.toString());
         String nextApplicableDay = repeatingCampaignMessage.applicableWeekDayInNext24Hours();
+
         if (nextApplicableDay != null) {
+            Map<String, Object> params = event.getParameters();
+            CampaignEnrollment enrollment = enrollment(params);
+            Integer startIntervalOffset = enrollment.startOffset(repeatingCampaignMessage);
+            Date startDate = enrollment.getStartDate().toDate();
+
+            Integer offset = repeatingCampaignMessage.currentOffset(startDate, startIntervalOffset);
+            replaceMessageKeyParams(params, OFFSET, offset.toString());
             replaceMessageKeyParams(params, WEEK_DAY, nextApplicableDay);
+
+            if (event.isLastEvent()) campaignEnrollmentService.unregister(enrollment);
             outboundEventGateway.sendEventMessage(event.copy(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, event.getParameters()));
         }
+    }
+
+    private CampaignEnrollment enrollment(Map<String, Object> map) {
+        return campaignEnrollmentService.findByExternalIdAndCampaignName(
+                (String) map.get(EventKeys.EXTERNAL_ID_KEY), (String) map.get(EventKeys.CAMPAIGN_NAME_KEY));
     }
 
     private void replaceMessageKeyParams(Map<String, Object> parameters, String parameterName, String value) {

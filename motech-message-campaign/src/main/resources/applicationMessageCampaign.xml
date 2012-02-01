@@ -17,4 +17,9 @@
 
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.server.messagecampaign"/>
+
+    <bean id="messageCampaignDBConnector" class="org.ektorp.impl.StdCouchDbConnector">
+        <constructor-arg value="motech-message-campaign"/>
+        <constructor-arg ref="couchDbInstance"/>
+    </bean>
 </beans>

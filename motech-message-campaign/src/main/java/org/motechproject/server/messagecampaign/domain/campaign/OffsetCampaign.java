@@ -5,6 +5,7 @@ import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
 import org.motechproject.server.messagecampaign.scheduler.MessageCampaignScheduler;
 import org.motechproject.server.messagecampaign.scheduler.OffsetProgramScheduler;
+import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class OffsetCampaign extends Campaign<OffsetCampaignMessage> {
     }
 
     @Override
-    public MessageCampaignScheduler getScheduler(MotechSchedulerService schedulerService, CampaignRequest enrollRequest) {
+    public MessageCampaignScheduler getScheduler(MotechSchedulerService schedulerService, CampaignEnrollmentService campaignEnrollmentService, CampaignRequest enrollRequest) {
         return new OffsetProgramScheduler(schedulerService, enrollRequest, this);
     }
 

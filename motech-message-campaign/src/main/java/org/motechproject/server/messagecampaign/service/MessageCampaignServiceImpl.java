@@ -14,11 +14,14 @@ import org.springframework.stereotype.Service;
 public class MessageCampaignServiceImpl implements MessageCampaignService {
     private MotechSchedulerService schedulerService;
     private AllMessageCampaigns allMessageCampaigns;
+    private CampaignEnrollmentService campaignEnrollmentService;
 
     @Autowired
-    public MessageCampaignServiceImpl(AllMessageCampaigns allMessageCampaigns, MotechSchedulerService schedulerService) {
+    public MessageCampaignServiceImpl(AllMessageCampaigns allMessageCampaigns, MotechSchedulerService schedulerService,
+                                      CampaignEnrollmentService campaignEnrollmentService) {
         this.allMessageCampaigns = allMessageCampaigns;
         this.schedulerService = schedulerService;
+        this.campaignEnrollmentService = campaignEnrollmentService;
     }
 
     public void startFor(CampaignRequest request) {
@@ -39,6 +42,6 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
         Campaign<CampaignMessage> campaign = allMessageCampaigns.get(enrollRequest.campaignName());
         if (campaign == null)
             throw new MessageCampaignException("No campaign by name : " + enrollRequest.campaignName());
-        return campaign.getScheduler(schedulerService, enrollRequest);
+        return campaign.getScheduler(schedulerService, campaignEnrollmentService, enrollRequest);
     }
 }

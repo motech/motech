@@ -4,6 +4,7 @@ import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.scheduler.MessageCampaignScheduler;
+import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 
 import java.util.List;
 
@@ -32,6 +33,6 @@ public abstract class Campaign<T extends CampaignMessage> {
 
     public abstract List<T> messages();
 
-    public abstract MessageCampaignScheduler getScheduler(MotechSchedulerService motechSchedulerService, CampaignRequest enrollRequest);
+    public abstract MessageCampaignScheduler getScheduler(MotechSchedulerService motechSchedulerService, CampaignEnrollmentService campaignEnrollmentService, CampaignRequest enrollRequest);
 
 }
