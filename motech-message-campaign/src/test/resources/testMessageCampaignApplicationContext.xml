@@ -10,4 +10,9 @@
     </bean>
 
     <import resource="classpath:applicationMessageCampaign.xml"/>
+
+    <bean id="messageCampaignDBConnector" class="org.ektorp.impl.StdCouchDbConnector">
+        <constructor-arg value="test-motech-message-campaign"/>
+        <constructor-arg ref="couchDbInstance"/>
+    </bean>
 </beans>

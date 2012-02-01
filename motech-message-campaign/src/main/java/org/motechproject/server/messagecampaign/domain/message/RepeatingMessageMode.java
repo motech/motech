@@ -6,8 +6,8 @@ import org.joda.time.Period;
 import org.joda.time.PeriodType;
 import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.Time;
+import org.motechproject.server.messagecampaign.Constants;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
-import org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduler;
 import org.motechproject.util.DateUtil;
 import org.motechproject.valueobjects.WallTime;
 
@@ -119,7 +119,7 @@ public enum RepeatingMessageMode {
     };
 
     private static int defaultOffsetIfNotSet(Integer offset) {
-        return offset == null ? RepeatingProgramScheduler.DEFAULT_INTERVAL_OFFSET : offset;
+        return offset == null ? Constants.DEFAULT_INTERVAL_OFFSET : offset;
     }
 
     private static boolean isWeekDayApplicable(RepeatingCampaignMessage message) {
