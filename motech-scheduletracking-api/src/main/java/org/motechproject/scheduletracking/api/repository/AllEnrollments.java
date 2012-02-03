@@ -29,7 +29,7 @@ public class AllEnrollments extends MotechBaseRepository<Enrollment> {
         if (existingEnrollment == null) {
             add(enrollment);
         } else {
-            update(enrollment);
+            update(existingEnrollment.copyFrom(enrollment));
         }
         return enrollment;
     }

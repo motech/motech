@@ -7,7 +7,6 @@ import org.motechproject.model.MotechBaseDataObject;
 import org.motechproject.model.Time;
 import org.motechproject.util.DateUtil;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -113,5 +112,19 @@ public class Enrollment extends MotechBaseDataObject {
 
     private void setReferenceDate(LocalDate referenceDate) {
         this.referenceDate = referenceDate;
+    }
+
+    public void setPreferredAlertTime(Time preferredAlertTime) {
+        this.preferredAlertTime = preferredAlertTime;
+    }
+
+    public Enrollment copyFrom(Enrollment enrollment) {
+        enrollmentDate = enrollment.getEnrollmentDate();
+        externalId = enrollment.getExternalId();
+        scheduleName = enrollment.getScheduleName();
+        currentMilestoneName = enrollment.getCurrentMilestoneName();
+        referenceDate = enrollment.getReferenceDate();
+        preferredAlertTime = enrollment.getPreferredAlertTime();
+        return this;
     }
 }
