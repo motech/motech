@@ -22,7 +22,12 @@ public abstract class MotechBaseRepository<T extends MotechBaseDataObject> exten
     protected void addOrReplace(T entity, String businessFieldName, String businessId) {
         List<T> entities = entities(businessFieldName, businessId);
         if (entities.size() == 0) add(entity);
-        else if (entities.size() == 1) update(entity);
+        else if (entities.size() == 1) {
+            T entityInDb = entities.get(0);
+            entity.setId(entityInDb.getId());
+            entity.setRevision(entityInDb.getRevision());
+            update(entity);
+        }
         else throw new BusinessIdNotUniqueException(businessFieldName, businessId);
     }
 
