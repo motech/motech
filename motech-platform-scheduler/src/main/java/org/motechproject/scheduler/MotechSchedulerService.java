@@ -89,6 +89,8 @@ public interface MotechSchedulerService {
 
     public void unscheduleAllJobs(String jobIdPrefix);
 
+    public void safeUnscheduleAllJobs(String jobIdPrefix);
+
     void unscheduleRepeatingJob(String subject, String externalId);
 
     /**

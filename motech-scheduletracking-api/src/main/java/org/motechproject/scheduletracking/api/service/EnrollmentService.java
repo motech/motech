@@ -44,11 +44,11 @@ public class EnrollmentService {
     }
 
     private void scheduleAlertJob(Alert alert, Enrollment enrollment, Schedule schedule, Milestone milestone, MilestoneWindow milestoneWindow) {
-        MotechEvent event = new MilestoneEvent(enrollment.getExternalId(), schedule.getName(), milestone.getName(), milestoneWindow.getName().toString()).toMotechEvent();
+        MotechEvent event = new MilestoneEvent(enrollment.getExternalId(), schedule.getName(), milestone.getName(), milestoneWindow.getName().toString(), enrollment.getReferenceDate()).toMotechEvent();
         event.getParameters().put(MotechSchedulerService.JOB_ID_KEY, String.format("%s.%s.%d", EventSubject.BASE_SUBJECT, enrollment.getId(), alert.getIndex()));
         DateTime startTime = DateUtil.newDateTime(getJobStartDate(enrollment, milestoneWindow), enrollment.getPreferredAlertTime());
-        RepeatingSchedulableJob job = new RepeatingSchedulableJob(event, startTime.toDate(), null, new Integer(numberOfAlertsToRaise(alert, enrollment, milestoneWindow)), alert.getInterval().inDays() * MILLIS_IN_A_DAY);
-        schedulerService.scheduleRepeatingJob(job);
+        RepeatingSchedulableJob job = new RepeatingSchedulableJob(event, startTime.toDate(), null, numberOfAlertsToRaise(alert, enrollment, milestoneWindow), alert.getInterval().inDays() * MILLIS_IN_A_DAY);
+        schedulerService.safeScheduleRepeatingJob(job);
     }
 
     private int numberOfAlertsToRaise(Alert alert, Enrollment enrollment, MilestoneWindow milestoneWindow) {

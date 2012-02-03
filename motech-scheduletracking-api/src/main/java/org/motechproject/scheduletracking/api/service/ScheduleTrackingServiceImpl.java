@@ -1,26 +1,23 @@
 package org.motechproject.scheduletracking.api.service;
 
 import org.joda.time.LocalDate;
-import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.scheduletracking.api.domain.*;
+import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.scheduletracking.api.domain.Schedule;
+import org.motechproject.scheduletracking.api.domain.ScheduleTrackingException;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
+import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static org.joda.time.LocalDate.now;
-
 @Component
 public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
-
     private AllTrackedSchedules allTrackedSchedules;
-    private MotechSchedulerService schedulerService;
     private AllEnrollments allEnrollments;
     private EnrollmentService enrollmentService;
 
     @Autowired
-    public ScheduleTrackingServiceImpl(MotechSchedulerService schedulerService, AllTrackedSchedules allTrackedSchedules, AllEnrollments allEnrollments, EnrollmentService enrollmentService) {
-        this.schedulerService = schedulerService;
+    public ScheduleTrackingServiceImpl(AllTrackedSchedules allTrackedSchedules, AllEnrollments allEnrollments, EnrollmentService enrollmentService) {
         this.allTrackedSchedules = allTrackedSchedules;
         this.allEnrollments = allEnrollments;
         this.enrollmentService = enrollmentService;
@@ -32,19 +29,17 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
         String scheduleName = enrollmentRequest.getScheduleName();
         LocalDate referenceDate = enrollmentRequest.getReferenceDate();
 
-        Enrollment enrollment = allEnrollments.findByExternalIdAndScheduleName(externalId, scheduleName);
-        if (enrollment != null) return;
-
         Schedule schedule = allTrackedSchedules.getByName(scheduleName);
         if (schedule == null) {
             throw new ScheduleTrackingException("No schedule with name: %s", scheduleName);
         }
 
+        Enrollment enrollment;
         if (enrollmentRequest.enrollIntoMilestone())
-            enrollment = new Enrollment(externalId, schedule, referenceDate, now(), enrollmentRequest.getPreferredAlertTime(), enrollmentRequest.getStartingMilestoneName());
+            enrollment = new Enrollment(externalId, schedule, referenceDate, DateUtil.today(), enrollmentRequest.getPreferredAlertTime(), enrollmentRequest.getStartingMilestoneName());
         else
-            enrollment = new Enrollment(externalId, schedule, referenceDate, now(), enrollmentRequest.getPreferredAlertTime());
-        allEnrollments.add(enrollment);
+            enrollment = new Enrollment(externalId, schedule, referenceDate, DateUtil.today(), enrollmentRequest.getPreferredAlertTime());
+        allEnrollments.addOrReplace(enrollment);
         enrollmentService.scheduleAlertsForCurrentMilestone(enrollment);
     }
 

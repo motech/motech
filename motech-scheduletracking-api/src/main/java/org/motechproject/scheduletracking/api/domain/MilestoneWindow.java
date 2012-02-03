@@ -3,6 +3,7 @@ package org.motechproject.scheduletracking.api.domain;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
+import org.motechproject.util.DateUtil;
 import org.motechproject.valueobjects.WallTime;
 
 import java.io.Serializable;
@@ -46,7 +47,7 @@ public class MilestoneWindow implements Serializable {
     }
 
     public boolean hasElapsed(LocalDate milestoneStartDate) {
-        int daysSinceStartOfMilestone = Days.daysBetween(milestoneStartDate, LocalDate.now()).getDays();
+        int daysSinceStartOfMilestone = Days.daysBetween(milestoneStartDate, DateUtil.today()).getDays();
         int endOffsetInDays = getWindowEndInDays();
         return daysSinceStartOfMilestone >= endOffsetInDays;
     }

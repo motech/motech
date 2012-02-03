@@ -302,19 +302,40 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
     }
 
     private void unscheduleJob(String jobId) {
-        assertArgumentNotNull("ScheduledJobID", jobId);
         try {
+            assertArgumentNotNull("ScheduledJobID", jobId);
             schedulerFactoryBean.getScheduler().unscheduleJob(jobId, JOB_GROUP_NAME);
         } catch (SchedulerException e) {
             handleException(String.format("Can not unschedule the job: %s %s", jobId, e.getMessage()), e);
         }
     }
 
+    private void safeUnscheduleJob(String jobId) {
+        try {
+            assertArgumentNotNull("ScheduledJobID", jobId);
+            schedulerFactoryBean.getScheduler().unscheduleJob(jobId, JOB_GROUP_NAME);
+        } catch (SchedulerException ignored) {
+        }
+    }
+
+    @Override
+    public void safeUnscheduleAllJobs(String jobIdPrefix) {
+        try {
+            logInfo("Safe unscheduling the Jobs given jobIdPrefix: %s", jobIdPrefix);
+            String[] triggerNames = schedulerFactoryBean.getScheduler().getTriggerNames(JOB_GROUP_NAME);
+            for (String triggerName : triggerNames) {
+                if (StringUtils.isNotEmpty(jobIdPrefix) && triggerName.contains(jobIdPrefix)) {
+                    safeUnscheduleJob(triggerName);
+                }
+            }
+        } catch (SchedulerException ignored) {
+        }
+    }
+
     @Override
     public void unscheduleAllJobs(String jobIdPrefix) {
-        logInfo("Unscheduling the Jobs given jobIdPrefix: %s", jobIdPrefix);
-
         try {
+            logInfo("Unscheduling the Jobs given jobIdPrefix: %s", jobIdPrefix);
             String[] triggerNames = schedulerFactoryBean.getScheduler().getTriggerNames(JOB_GROUP_NAME);
             for (String triggerName : triggerNames) {
                 if (StringUtils.isNotEmpty(jobIdPrefix) && triggerName.contains(jobIdPrefix)) {

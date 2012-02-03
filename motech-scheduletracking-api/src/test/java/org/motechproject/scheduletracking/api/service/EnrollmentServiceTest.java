@@ -51,7 +51,7 @@ public class EnrollmentServiceTest {
         enrollmentService.scheduleAlertsForCurrentMilestone(enrollment);
 
         ArgumentCaptor<RepeatingSchedulableJob> repeatJobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
-        verify(schedulerService, times(2)).scheduleRepeatingJob(repeatJobCaptor.capture());
+        verify(schedulerService, times(2)).safeScheduleRepeatingJob(repeatJobCaptor.capture());
 
         RepeatingSchedulableJob job = repeatJobCaptor.getAllValues().get(0);
         MilestoneEvent event = new MilestoneEvent(job.getMotechEvent());
@@ -105,7 +105,7 @@ public class EnrollmentServiceTest {
         enrollmentService.scheduleAlertsForCurrentMilestone(enrollment);
 
         ArgumentCaptor<RepeatingSchedulableJob> repeatJobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
-        verify(schedulerService).scheduleRepeatingJob(repeatJobCaptor.capture());
+        verify(schedulerService).safeScheduleRepeatingJob(repeatJobCaptor.capture());
 
         RepeatingSchedulableJob job = repeatJobCaptor.getValue();
         assertEquals(String.format("%s.%s.0", EventSubject.BASE_SUBJECT, enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
@@ -141,7 +141,7 @@ public class EnrollmentServiceTest {
         enrollmentService.scheduleAlertsForCurrentMilestone(enrollment);
 
         ArgumentCaptor<RepeatingSchedulableJob> repeatJobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
-        verify(schedulerService).scheduleRepeatingJob(repeatJobCaptor.capture());
+        verify(schedulerService).safeScheduleRepeatingJob(repeatJobCaptor.capture());
 
         RepeatingSchedulableJob job = repeatJobCaptor.getValue();
         assertEquals(String.format("%s.%s.1", EventSubject.BASE_SUBJECT, enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
@@ -219,7 +219,7 @@ public class EnrollmentServiceTest {
         verify(schedulerService).unscheduleAllJobs(EventSubject.BASE_SUBJECT + ".enrollment_1");
 
         ArgumentCaptor<RepeatingSchedulableJob> repeatJobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
-        verify(schedulerService).scheduleRepeatingJob(repeatJobCaptor.capture());
+        verify(schedulerService).safeScheduleRepeatingJob(repeatJobCaptor.capture());
 
         RepeatingSchedulableJob job = repeatJobCaptor.getValue();
         assertEquals(String.format("%s.%s.0", EventSubject.BASE_SUBJECT, enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));

@@ -23,4 +23,14 @@ public class AllEnrollments extends MotechBaseRepository<Enrollment> {
         List<Enrollment> enrollments = queryView("find_by_external_id_and_schedule_name", ComplexKey.of(externalId, scheduleName));
         return enrollments.isEmpty() ? null : enrollments.get(0);
     }
+
+    public Enrollment addOrReplace(Enrollment enrollment) {
+        Enrollment existingEnrollment = findByExternalIdAndScheduleName(enrollment.getExternalId(), enrollment.getScheduleName());
+        if (existingEnrollment == null) {
+            add(enrollment);
+        } else {
+            update(enrollment);
+        }
+        return enrollment;
+    }
 }

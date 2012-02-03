@@ -12,24 +12,12 @@ import org.motechproject.util.datetime.DefaultDateTimeSource;
 public class BaseUnitTest {
     static final DateTimeSource dateTimeSource = new DefaultDateTimeSource();
 
-    protected void mockCurrentDate(final DateTime currentDate) {
-        DateTimeSourceUtil.SourceInstance = new DateTimeSource() {
+    protected void mockCurrentDate(DateTime currentDateTime) {
+        DateTimeSourceUtil.SourceInstance = new MockDateTimeSource(currentDateTime);
+    }
 
-            @Override
-            public DateTimeZone timeZone() {
-                return currentDate.getZone();
-            }
-
-            @Override
-            public DateTime now() {
-                return currentDate;
-            }
-
-            @Override
-            public LocalDate today() {
-                return currentDate.toLocalDate();
-            }
-        };
+    protected void mockCurrentDate(LocalDate currentDate) {
+        DateTimeSourceUtil.SourceInstance = new MockDateTimeSource(currentDate);
     }
 
     protected DateTime date(int year, int monthOfYear, int dayOfMonth) {
@@ -51,5 +39,32 @@ public class BaseUnitTest {
     @After
     public final void tearDown() {
         resetDateTimeSource();
+    }
+
+    class MockDateTimeSource implements DateTimeSource {
+        private DateTime dateTime;
+
+        MockDateTimeSource(LocalDate localDate) {
+            this(localDate.toDateTime(LocalTime.MIDNIGHT));
+        }
+
+        MockDateTimeSource(DateTime dateTime) {
+            this.dateTime = dateTime;
+        }
+
+        @Override
+        public DateTimeZone timeZone() {
+            return dateTime.getZone();
+        }
+
+        @Override
+        public DateTime now() {
+            return dateTime;
+        }
+
+        @Override
+        public LocalDate today() {
+            return dateTime.toLocalDate();
+        }
     }
 }

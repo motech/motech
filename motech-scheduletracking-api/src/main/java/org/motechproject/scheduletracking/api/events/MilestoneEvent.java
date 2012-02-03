@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.events;
 
+import org.joda.time.LocalDate;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventDataKey;
 import org.motechproject.scheduletracking.api.events.constants.EventSubject;
@@ -14,14 +15,16 @@ public class MilestoneEvent {
     private String milestoneName;
     private String scheduleName;
     private String externalId;
+    private LocalDate referenceDate;
 
     private Map<String, String> data = new HashMap<String, String>();
 
-    public MilestoneEvent(String externalId, String scheduleName, String milestoneName, String windowName) {
+    public MilestoneEvent(String externalId, String scheduleName, String milestoneName, String windowName, LocalDate referenceDate) {
         this.scheduleName = scheduleName;
         this.milestoneName = milestoneName;
         this.windowName = windowName;
         this.externalId = externalId;
+        this.referenceDate = referenceDate;
     }
 
     public MilestoneEvent(MotechEvent motechEvent) {
@@ -29,6 +32,7 @@ public class MilestoneEvent {
         this.milestoneName = (String) motechEvent.getParameters().get(EventDataKey.MILESTONE_NAME);
         this.windowName = (String) motechEvent.getParameters().get(EventDataKey.WINDOW_NAME);
         this.externalId = (String) motechEvent.getParameters().get(EventDataKey.EXTERNAL_ID);
+        this.referenceDate = (LocalDate) motechEvent.getParameters().get(EventDataKey.REFERENCE_DATE);
     }
 
     public MotechEvent toMotechEvent() {
@@ -37,6 +41,7 @@ public class MilestoneEvent {
         parameters.put(EventDataKey.MILESTONE_NAME, milestoneName);
         parameters.put(EventDataKey.SCHEDULE_NAME, scheduleName);
         parameters.put(EventDataKey.EXTERNAL_ID, externalId);
+        parameters.put(EventDataKey.REFERENCE_DATE, referenceDate);
         Set<Map.Entry<String,String>> entries = data.entrySet();
         for (Map.Entry<String,String> entry : entries)
             parameters.put(entry.getKey(), entry.getValue());
@@ -57,6 +62,10 @@ public class MilestoneEvent {
 
     public String getExternalId() {
         return externalId;
+    }
+
+    public LocalDate getReferenceDate() {
+        return referenceDate;
     }
 
     public Map<String, String> getData() {

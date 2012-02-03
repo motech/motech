@@ -43,12 +43,12 @@ public class ScheduleTrackingServiceImplTest {
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
 
-        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(schedulerService, allTrackedSchedules, allEnrollments, enrollmentService);
+        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
 
         scheduleTrackingService.enroll(new EnrollmentRequest("my_entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 1, 2)));
 
         ArgumentCaptor<Enrollment> enrollmentArgumentCaptor = ArgumentCaptor.forClass(Enrollment.class);
-        verify(allEnrollments).add(enrollmentArgumentCaptor.capture());
+        verify(allEnrollments).addOrReplace(enrollmentArgumentCaptor.capture());
 
         Enrollment enrollment = enrollmentArgumentCaptor.getValue();
         assertEquals("my_entity_1", enrollment.getExternalId());
@@ -64,28 +64,29 @@ public class ScheduleTrackingServiceImplTest {
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
 
-        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(schedulerService, allTrackedSchedules, allEnrollments, enrollmentService);
+        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
 
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2), "second_milestone"));
 
         ArgumentCaptor<Enrollment> enrollmentArgumentCaptor = ArgumentCaptor.forClass(Enrollment.class);
-        verify(allEnrollments).add(enrollmentArgumentCaptor.capture());
+        verify(allEnrollments).addOrReplace(enrollmentArgumentCaptor.capture());
 
         Enrollment enrollment = enrollmentArgumentCaptor.getValue();
         assertEquals(secondMilestone.getName(), enrollment.getCurrentMilestoneName());
     }
 
     @Test
-    public void shouldNotEnrollEntityIntoTheSameScheduleTwice() {
+    public void shouldUpdateTheEnrollmentIntoTheSameSchedule() {
         Milestone milestone = new Milestone("first_milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        Schedule schedule = new Schedule("my_schedule");
+        String scheduleName = "my_schedule";
+        Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
-        when(allEnrollments.findByExternalIdAndScheduleName("entity_1", "my_schedule")).thenReturn(new Enrollment("entity_1", schedule, null, null, null));
+        when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
 
-        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(schedulerService, allTrackedSchedules, allEnrollments, enrollmentService);
-        scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2)));
-
-        verify(allEnrollments, times(0)).add(Matchers.<Enrollment>any());
+        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
+        scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", scheduleName, new Time(8, 10), new LocalDate(2012, 11, 2)));
+        scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", scheduleName, new Time(8, 10), new LocalDate(2012, 11, 2)));
+        verify(allEnrollments, times(2)).addOrReplace(Matchers.<Enrollment>any());
     }
 
     @Test
@@ -96,7 +97,7 @@ public class ScheduleTrackingServiceImplTest {
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
 
-        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(schedulerService, allTrackedSchedules, allEnrollments, enrollmentService);
+        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2)));
 
         ArgumentCaptor<Enrollment> enrollmentCaptor = ArgumentCaptor.forClass(Enrollment.class);
@@ -117,7 +118,7 @@ public class ScheduleTrackingServiceImplTest {
         Enrollment enrollment = mock(Enrollment.class);
         when(allEnrollments.findByExternalIdAndScheduleName("entity_1", "my_schedule")).thenReturn(enrollment);
 
-        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(schedulerService, allTrackedSchedules, allEnrollments, enrollmentService);
+        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2)));
         scheduleTrackingService.fulfillCurrentMilestone("entity_1", "my_schedule");
 
