@@ -3,9 +3,13 @@ package org.motechproject.model;
 import org.junit.Test;
 import org.motechproject.util.DateUtil;
 
+import java.util.List;
+
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 public class DayOfWeekTest {
+
     @Test
     public void shouldGetValueOfDays() {
         assertEquals(1, DayOfWeek.Monday.getValue());
@@ -37,5 +41,21 @@ public class DayOfWeekTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhenSpecifiedNonExistingDay() {
         DayOfWeek.getDayOfWeek(8);
+    }
+
+    @Test
+    public void shouldReturnDaysOfWeekStartingToday() {
+        List<DayOfWeek> days = DayOfWeek.daysStarting(DayOfWeek.Saturday, 2);
+        assertEquals(3, days.size());
+        assertTrue(days.contains(DayOfWeek.Saturday));
+        assertTrue(days.contains(DayOfWeek.Sunday));
+        assertTrue(days.contains(DayOfWeek.Monday));
+    }
+
+    @Test
+    public void shouldReturnDaysOfWeek_IfOnlyToday() {
+        List<DayOfWeek> days = DayOfWeek.daysStarting(DayOfWeek.Saturday, 0);
+        assertEquals(1, days.size());
+        assertTrue(days.contains(DayOfWeek.Saturday));
     }
 }
