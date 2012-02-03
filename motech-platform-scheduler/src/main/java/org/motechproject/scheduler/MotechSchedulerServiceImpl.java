@@ -184,7 +184,6 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         Date jobStartDate = repeatingSchedulableJob.getStartTime();
         Date jobEndDate = repeatingSchedulableJob.getEndTime();
         assertArgumentNotNull("Job start date", jobStartDate);
-        assertArgumentNotNull("Job end date", jobEndDate);
 
         long jobRepeatInterval = repeatingSchedulableJob.getRepeatInterval();
         if (jobRepeatInterval == 0) {

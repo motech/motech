@@ -47,8 +47,11 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
         return (openMrsPatient == null) ? null : getMrsPatient(openMrsPatient);
     }
 
-
     @Override
+    @Deprecated
+    /**
+     * The caller should instead get Patient and get the age from that
+     */
     public Integer getAgeOfPatientByMotechId(String motechId) {
         Patient patient = getOpenmrsPatientByMotechId(motechId);
         return (patient != null) ? patient.getAge() :null;

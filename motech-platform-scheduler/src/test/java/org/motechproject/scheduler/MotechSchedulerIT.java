@@ -319,7 +319,7 @@ public class MotechSchedulerIT {
         motechScheduler.scheduleRepeatingJob(schedulableJob);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testScheduleRepeatingJobTest_NoEndDate() throws Exception {
         String uuidStr = UUID.randomUUID().toString();
 
