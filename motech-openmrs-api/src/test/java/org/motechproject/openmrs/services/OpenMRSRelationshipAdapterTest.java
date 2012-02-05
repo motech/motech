@@ -22,9 +22,9 @@ import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class OpenMRSRelationshipAdaptorTest {
+public class OpenMRSRelationshipAdapterTest {
 
-    OpenMRSRelationshipAdaptor openMRSRelationshipAdaptor;
+    OpenMRSRelationshipAdapter openMRSRelationshipAdapter;
 
     @Mock
     PersonService mockPersonService;
@@ -32,8 +32,8 @@ public class OpenMRSRelationshipAdaptorTest {
     @Before
     public void setUp() {
         initMocks(this);
-        openMRSRelationshipAdaptor = new OpenMRSRelationshipAdaptor();
-        ReflectionTestUtils.setField(openMRSRelationshipAdaptor, "personService", mockPersonService);
+        openMRSRelationshipAdapter = new OpenMRSRelationshipAdapter();
+        ReflectionTestUtils.setField(openMRSRelationshipAdapter, "personService", mockPersonService);
     }
 
     @Test
@@ -45,8 +45,8 @@ public class OpenMRSRelationshipAdaptorTest {
         RelationshipType motherChildRelationshipType = mock(RelationshipType.class);
         when(mockPersonService.getPerson(Integer.valueOf(motherId))).thenReturn(mother);
         when(mockPersonService.getPerson(Integer.valueOf(childId))).thenReturn(child);
-        when(mockPersonService.getRelationshipTypeByName(OpenMRSRelationshipAdaptor.PARENT_CHILD_RELATIONSHIP)).thenReturn(motherChildRelationshipType);
-        openMRSRelationshipAdaptor.createMotherChildRelationship(motherId, childId);
+        when(mockPersonService.getRelationshipTypeByName(OpenMRSRelationshipAdapter.PARENT_CHILD_RELATIONSHIP)).thenReturn(motherChildRelationshipType);
+        openMRSRelationshipAdapter.createMotherChildRelationship(motherId, childId);
 
         final ArgumentCaptor<Relationship> captor = ArgumentCaptor.forClass(Relationship.class);
         verify(mockPersonService).saveRelationship(captor.capture());
@@ -67,10 +67,10 @@ public class OpenMRSRelationshipAdaptorTest {
         RelationshipType motherChildRelationshipType = mock(RelationshipType.class);
         when(mockPersonService.getPerson(Integer.valueOf(motherId))).thenReturn(newMother);
         when(mockPersonService.getPerson(Integer.valueOf(childId))).thenReturn(child);
-        when(mockPersonService.getRelationshipTypeByName(OpenMRSRelationshipAdaptor.PARENT_CHILD_RELATIONSHIP)).thenReturn(motherChildRelationshipType);
+        when(mockPersonService.getRelationshipTypeByName(OpenMRSRelationshipAdapter.PARENT_CHILD_RELATIONSHIP)).thenReturn(motherChildRelationshipType);
         when(mockPersonService.getRelationships(null, child, motherChildRelationshipType)).
                 thenReturn(Arrays.asList(new Relationship(oldMother, child, motherChildRelationshipType)));
-        openMRSRelationshipAdaptor.updateMotherRelationship(motherId, childId);
+        openMRSRelationshipAdapter.updateMotherRelationship(motherId, childId);
 
         final ArgumentCaptor<Relationship> captor = ArgumentCaptor.forClass(Relationship.class);
         verify(mockPersonService).saveRelationship(captor.capture());
@@ -89,13 +89,13 @@ public class OpenMRSRelationshipAdaptorTest {
         Person mother = mock(Person.class);
         RelationshipType motherChildRelationshipType = mock(RelationshipType.class);
         when(mockPersonService.getPerson(Integer.valueOf(childId))).thenReturn(child);
-        when(mockPersonService.getRelationshipTypeByName(OpenMRSRelationshipAdaptor.PARENT_CHILD_RELATIONSHIP)).thenReturn(motherChildRelationshipType);
+        when(mockPersonService.getRelationshipTypeByName(OpenMRSRelationshipAdapter.PARENT_CHILD_RELATIONSHIP)).thenReturn(motherChildRelationshipType);
         Relationship relationship = new Relationship(mother, child, motherChildRelationshipType);
         when(mockPersonService.getRelationships(null, child, motherChildRelationshipType)).thenReturn(Arrays.asList(relationship));
         Relationship voidedRelationship = mock(Relationship.class);
         when(mockPersonService.voidRelationship(Matchers.<Relationship>any(), anyString())).thenReturn(voidedRelationship);
 
-        openMRSRelationshipAdaptor.voidRelationship(childId);
+        openMRSRelationshipAdapter.voidRelationship(childId);
 
         verify(mockPersonService).saveRelationship(voidedRelationship);
     }
@@ -106,8 +106,8 @@ public class OpenMRSRelationshipAdaptorTest {
         Person child = mock(Person.class);
         RelationshipType motherChildRelationshipType = mock(RelationshipType.class);
         when(mockPersonService.getPerson(Integer.valueOf(childId))).thenReturn(child);
-        when(mockPersonService.getRelationshipTypeByName(OpenMRSRelationshipAdaptor.PARENT_CHILD_RELATIONSHIP)).thenReturn(motherChildRelationshipType);
-        openMRSRelationshipAdaptor.getMotherRelationship(childId);
+        when(mockPersonService.getRelationshipTypeByName(OpenMRSRelationshipAdapter.PARENT_CHILD_RELATIONSHIP)).thenReturn(motherChildRelationshipType);
+        openMRSRelationshipAdapter.getMotherRelationship(childId);
         
         verify(mockPersonService).getRelationships(null, child, motherChildRelationshipType);
     }
@@ -118,8 +118,8 @@ public class OpenMRSRelationshipAdaptorTest {
         Person child = mock(Person.class);
         RelationshipType motherChildRelationshipType = mock(RelationshipType.class);
         when(mockPersonService.getPerson(Integer.valueOf(childId))).thenReturn(child);
-        when(mockPersonService.getRelationshipTypeByName(OpenMRSRelationshipAdaptor.PARENT_CHILD_RELATIONSHIP)).thenReturn(motherChildRelationshipType);
+        when(mockPersonService.getRelationshipTypeByName(OpenMRSRelationshipAdapter.PARENT_CHILD_RELATIONSHIP)).thenReturn(motherChildRelationshipType);
         when(mockPersonService.getRelationships(null, child, motherChildRelationshipType)).thenReturn(new ArrayList<Relationship>());
-        assertNull(openMRSRelationshipAdaptor.getMotherRelationship(childId));
+        assertNull(openMRSRelationshipAdapter.getMotherRelationship(childId));
     }
 }

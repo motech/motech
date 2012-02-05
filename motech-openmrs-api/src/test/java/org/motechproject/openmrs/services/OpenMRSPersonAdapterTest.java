@@ -20,9 +20,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class OpenMRSPersonAdaptorTest {
+public class OpenMRSPersonAdapterTest {
 
-    OpenMRSPersonAdaptor openMRSPersonAdaptor;
+    OpenMRSPersonAdapter openMRSPersonAdapter;
 
     public static final String PERSON_ATTRIBUTE_TYPE_EMAIL = "Email";
     public static final String PERSON_ATTRIBUTE_TYPE_PHONE_NUMBER = "Phone Number";
@@ -35,7 +35,7 @@ public class OpenMRSPersonAdaptorTest {
     @Before
     public void setUp() {
         initMocks(this);
-        openMRSPersonAdaptor = new OpenMRSPersonAdaptor(mockPersonService);
+        openMRSPersonAdapter = new OpenMRSPersonAdapter(mockPersonService);
 
     }
 
@@ -44,7 +44,7 @@ public class OpenMRSPersonAdaptorTest {
         final PersonName firstName = new PersonName("firstname", "middlename", "familyname");
         final PersonName preferredName = new PersonName("preferredname", "middlename", "familyname");
         preferredName.setPreferred(true);
-        assertThat(openMRSPersonAdaptor.getFirstName(new HashSet<PersonName>() {{
+        assertThat(openMRSPersonAdapter.getFirstName(new HashSet<PersonName>() {{
             add(firstName);
             add(preferredName);
         }}), is(equalTo(firstName)));
@@ -54,7 +54,7 @@ public class OpenMRSPersonAdaptorTest {
     public void shouldGetPreferredNameIfFirstNameIsNotSet() {
         final PersonName preferredName = new PersonName("preferredname", "middlename", "familyname");
         preferredName.setPreferred(true);
-        assertThat(openMRSPersonAdaptor.getFirstName(new HashSet<PersonName>() {{ add(preferredName); }}), is(equalTo(preferredName)));
+        assertThat(openMRSPersonAdapter.getFirstName(new HashSet<PersonName>() {{ add(preferredName); }}), is(equalTo(preferredName)));
     }
 
     @Test
@@ -98,7 +98,7 @@ public class OpenMRSPersonAdaptorTest {
 
         person.setAttributes(personAttributes(staffType, phoneNo, email));
 
-        MRSPerson mrsPerson = openMRSPersonAdaptor.openMRSToMRSPerson(person);
+        MRSPerson mrsPerson = openMRSPersonAdapter.openMRSToMRSPerson(person);
 
         assertThat(mrsPerson.getFirstName(), is(equalTo(firstName)));
         assertThat(mrsPerson.getMiddleName(), is(equalTo(middleName)));
@@ -119,7 +119,7 @@ public class OpenMRSPersonAdaptorTest {
         String id = "10";
         Person person = mock(Person.class);
         when(mockPersonService.getPerson(Integer.valueOf(id))).thenReturn(person);
-        Person openMRSPerson = openMRSPersonAdaptor.getPersonById(id);
+        Person openMRSPerson = openMRSPersonAdapter.getPersonById(id);
         assertThat(openMRSPerson, is(equalTo(person)));
     }
     

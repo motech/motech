@@ -4,7 +4,7 @@ import org.openmrs.Concept;
 import org.openmrs.api.ConceptService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class OpenMRSConceptAdaptor {
+public class OpenMRSConceptAdapter {
 
     @Autowired
     ConceptService conceptService;

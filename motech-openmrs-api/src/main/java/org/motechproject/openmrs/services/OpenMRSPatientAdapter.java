@@ -7,7 +7,7 @@ import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.MRSFacility;
 import org.motechproject.mrs.model.MRSPatient;
 import org.motechproject.mrs.model.MRSPerson;
-import org.motechproject.mrs.services.MRSPatientAdaptor;
+import org.motechproject.mrs.services.MRSPatientAdapter;
 import org.motechproject.openmrs.IdentifierType;
 import org.motechproject.openmrs.helper.PatientHelper;
 import org.openmrs.*;
@@ -20,7 +20,7 @@ import java.util.*;
 
 import static ch.lambdaj.Lambda.convert;
 
-public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
+public class OpenMRSPatientAdapter implements MRSPatientAdapter {
 
     @Autowired
     PatientService patientService;
@@ -32,14 +32,14 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
     UserService userService;
 
     @Autowired
-    OpenMRSFacilityAdaptor facilityAdaptor;
+    OpenMRSFacilityAdapter facilityAdapter;
     @Autowired
-    OpenMRSPersonAdaptor personAdaptor;
+    OpenMRSPersonAdapter personAdapter;
 
     @Autowired
     PatientHelper patientHelper;
     @Autowired
-    private OpenMRSConceptAdaptor openMrsConceptAdaptor;
+    private OpenMRSConceptAdapter openMrsConceptAdapter;
 
     @Override
     public MRSPatient getPatient(String patientId) {
@@ -75,7 +75,7 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
     public MRSPatient savePatient(MRSPatient patient) {
         final org.openmrs.Patient openMRSPatient = patientHelper.buildOpenMrsPatient(patient,
                 getPatientIdentifierType(IdentifierType.IDENTIFIER_MOTECH_ID),
-                facilityAdaptor.getLocation(patient.getFacility().getId()), getAllPersonAttributeTypes());
+                facilityAdapter.getLocation(patient.getFacility().getId()), getAllPersonAttributeTypes());
 
         return getMrsPatient(patientService.savePatient(openMRSPatient));
     }
@@ -133,7 +133,7 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
             personAddress.setAddress1(address);
             openMrsPatient.addAddress(personAddress);
         }
-        openMrsPatient.getPatientIdentifier().setLocation(facilityAdaptor.getLocation(patient.getFacility().getId()));
+        openMrsPatient.getPatientIdentifier().setLocation(facilityAdapter.getLocation(patient.getFacility().getId()));
         openMrsPatient.setDead(person.isDead());
         openMrsPatient.setDeathDate(person.deathDate());
 
@@ -147,9 +147,9 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
 
     public MRSPatient getMrsPatient(org.openmrs.Patient patient) {
         final PatientIdentifier patientIdentifier = patient.getPatientIdentifier();
-        MRSFacility mrsFacility = (patientIdentifier != null) ? facilityAdaptor.convertLocationToFacility(patientIdentifier.getLocation()) : null;
+        MRSFacility mrsFacility = (patientIdentifier != null) ? facilityAdapter.convertLocationToFacility(patientIdentifier.getLocation()) : null;
         String motechId = (patientIdentifier != null) ? patientIdentifier.getIdentifier() : null;
-        MRSPerson mrsPerson = personAdaptor.openMRSToMRSPerson(patient);
+        MRSPerson mrsPerson = personAdapter.openMRSToMRSPerson(patient);
         return new MRSPatient(String.valueOf(patient.getId()), motechId, mrsPerson, mrsFacility);
     }
 
@@ -197,7 +197,7 @@ public class OpenMRSPatientAdaptor implements MRSPatientAdaptor {
     public void savePatientCauseOfDeathObservation(String patientId, String conceptName, Date dateOfDeath, String comment) {
         Patient patient = getOpenMrsPatient(patientId);
         patient.setDead(true);
-        Concept concept = openMrsConceptAdaptor.getConceptByName(conceptName);
+        Concept concept = openMrsConceptAdapter.getConceptByName(conceptName);
         patient.setCauseOfDeath(concept);
         patientService.savePatient(patient);
         patientService.saveCauseOfDeathObs(patient, dateOfDeath, concept, comment);

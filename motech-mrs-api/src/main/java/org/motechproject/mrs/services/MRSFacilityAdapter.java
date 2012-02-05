@@ -4,7 +4,7 @@ import org.motechproject.mrs.model.MRSFacility;
 
 import java.util.List;
 
-public interface MRSFacilityAdaptor {
+public interface MRSFacilityAdapter {
     MRSFacility saveFacility(MRSFacility facility);
 
     List<MRSFacility> getFacilities();

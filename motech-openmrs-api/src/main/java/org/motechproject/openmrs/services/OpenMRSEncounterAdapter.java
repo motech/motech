@@ -1,7 +1,7 @@
 package org.motechproject.openmrs.services;
 
 import org.motechproject.mrs.model.*;
-import org.motechproject.mrs.services.MRSEncounterAdaptor;
+import org.motechproject.mrs.services.MRSEncounterAdapter;
 import org.openmrs.*;
 import org.openmrs.api.EncounterService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,22 +14,22 @@ import java.util.Set;
 import static ch.lambdaj.Lambda.on;
 import static ch.lambdaj.Lambda.sort;
 
-public class OpenMRSEncounterAdaptor implements MRSEncounterAdaptor {
+public class OpenMRSEncounterAdapter implements MRSEncounterAdapter {
     @Autowired
     private EncounterService encounterService;
     @Autowired
-    private OpenMRSUserAdaptor openMrsUserAdaptor;
+    private OpenMRSUserAdapter openMRSUserAdapter;
     @Autowired
-    private OpenMRSFacilityAdaptor openMrsFacilityAdaptor;
+    private OpenMRSFacilityAdapter openMRSFacilityAdapter;
     @Autowired
-    private OpenMRSPatientAdaptor openMrsPatientAdaptor;
+    private OpenMRSPatientAdapter openMRSPatientAdapter;
     @Autowired
-    private OpenMRSObservationAdaptor openMrsObservationAdaptor;
+    private OpenMRSObservationAdapter openMRSObservationAdapter;
     @Autowired
-    private OpenMRSPersonAdaptor openMRSPersonAdaptor;
+    private OpenMRSPersonAdapter openMRSPersonAdapter;
 
 
-    public OpenMRSEncounterAdaptor() {
+    public OpenMRSEncounterAdapter() {
     }
 
     @Override
@@ -62,9 +62,9 @@ public class OpenMRSEncounterAdaptor implements MRSEncounterAdaptor {
         String id = Integer.toString(openMrsEncounter.getEncounterId());
         String encounterType = openMrsEncounter.getEncounterType().getName();
         Date date = openMrsEncounter.getEncounterDatetime();
-        MRSFacility facility = openMrsFacilityAdaptor.convertLocationToFacility(openMrsEncounter.getLocation());
-        MRSPatient patient = openMrsPatientAdaptor.getMrsPatient(openMrsEncounter.getPatient());
-        Set<MRSObservation> observations = openMrsObservationAdaptor.convertOpenMRSToMRSObservations(openMrsEncounter.getObs());
+        MRSFacility facility = openMRSFacilityAdapter.convertLocationToFacility(openMrsEncounter.getLocation());
+        MRSPatient patient = openMRSPatientAdapter.getMrsPatient(openMrsEncounter.getPatient());
+        Set<MRSObservation> observations = openMRSObservationAdapter.convertOpenMRSToMRSObservations(openMrsEncounter.getObs());
         MRSUser creator = new MRSUser().systemId(openMrsEncounter.getCreator().getSystemId()).id(openMrsEncounter.getCreator().getId().toString());
         MRSPerson provider = new MRSPerson().id(String.valueOf(openMrsEncounter.getProvider().getId()));
         return new MRSEncounter(id, provider, creator, facility, date, patient, observations, encounterType);
@@ -73,10 +73,10 @@ public class OpenMRSEncounterAdaptor implements MRSEncounterAdaptor {
     Encounter mrsToOpenMRSEncounter(MRSEncounter mrsEncounter) {
         org.openmrs.Encounter openMrsEncounter = new org.openmrs.Encounter();
         EncounterType openMrsEncounterType = encounterService.getEncounterType(mrsEncounter.getEncounterType());
-        Patient patient = openMrsPatientAdaptor.getOpenMrsPatient(mrsEncounter.getPatient().getId());
-        User creator = openMrsUserAdaptor.getOpenMrsUserById(mrsEncounter.getCreator().getId());
-        Location location = openMrsFacilityAdaptor.getLocation(mrsEncounter.getFacility().getId());
-        Person provider = openMRSPersonAdaptor.getPersonById(mrsEncounter.getProvider().getId());
+        Patient patient = openMRSPatientAdapter.getOpenMrsPatient(mrsEncounter.getPatient().getId());
+        User creator = openMRSUserAdapter.getOpenMrsUserById(mrsEncounter.getCreator().getId());
+        Location location = openMRSFacilityAdapter.getLocation(mrsEncounter.getFacility().getId());
+        Person provider = openMRSPersonAdapter.getPersonById(mrsEncounter.getProvider().getId());
         openMrsEncounter.setEncounterType(openMrsEncounterType);
         openMrsEncounter.setEncounterDatetime(mrsEncounter.getDate());
         openMrsEncounter.setPatient(patient);
@@ -84,7 +84,7 @@ public class OpenMRSEncounterAdaptor implements MRSEncounterAdaptor {
         openMrsEncounter.setCreator(creator);
         openMrsEncounter.setProvider(provider);
         if (mrsEncounter.getObservations() != null) {
-            openMrsEncounter.setObs(openMrsObservationAdaptor.createOpenMRSObservationsForEncounter(mrsEncounter.getObservations(), openMrsEncounter, patient, location, creator));
+            openMrsEncounter.setObs(openMRSObservationAdapter.createOpenMRSObservationsForEncounter(mrsEncounter.getObservations(), openMrsEncounter, patient, location, creator));
         }
         return openMrsEncounter;
     }

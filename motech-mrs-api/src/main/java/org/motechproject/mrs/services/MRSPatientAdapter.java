@@ -5,7 +5,7 @@ import org.motechproject.mrs.model.MRSPatient;
 import java.util.Date;
 import java.util.List;
 
-public interface MRSPatientAdaptor {
+public interface MRSPatientAdapter {
     MRSPatient savePatient(MRSPatient patient);
 
     String updatePatient(MRSPatient patient);

@@ -13,18 +13,18 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
-public class OpenMRSConceptAdaptorTest {
+public class OpenMRSConceptAdapterTest {
 
     @Mock
     ConceptService conceptService;
 
-    OpenMRSConceptAdaptor adaptor;
+    OpenMRSConceptAdapter adapter;
 
     @Before
     public void setUp() {
         initMocks(this);
-        adaptor = new OpenMRSConceptAdaptor();
-        setField(adaptor, "conceptService", conceptService);
+        adapter = new OpenMRSConceptAdapter();
+        setField(adapter, "conceptService", conceptService);
     }
     
     @Test
@@ -33,6 +33,6 @@ public class OpenMRSConceptAdaptorTest {
         String concept = "concept1";
         Concept openMRSConcept = mock(Concept.class);
         when(conceptService.getConcept(concept)).thenReturn(openMRSConcept);
-        assertThat(adaptor.getConceptByName(concept), is(openMRSConcept));
+        assertThat(adapter.getConceptByName(concept), is(openMRSConcept));
     }
 }

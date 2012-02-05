@@ -8,7 +8,7 @@ import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
 import org.motechproject.mrs.model.*;
-import org.motechproject.mrs.services.MRSEncounterAdaptor;
+import org.motechproject.mrs.services.MRSEncounterAdapter;
 import org.motechproject.openmrs.OpenMRSIntegrationTestBase;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
@@ -25,12 +25,12 @@ import java.util.Set;
 import static junit.framework.Assert.assertEquals;
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 import static org.junit.Assert.assertTrue;
-import static org.motechproject.openmrs.services.OpenMRSUserAdaptor.USER_KEY;
+import static org.motechproject.openmrs.services.OpenMRSUserAdapter.USER_KEY;
 
-public class OpenMRSEncounterAdaptorIT extends OpenMRSIntegrationTestBase {
+public class OpenMRSEncounterAdapterIT extends OpenMRSIntegrationTestBase {
 
     @Autowired
-    MRSEncounterAdaptor mrsEncounterAdaptor;
+    MRSEncounterAdapter mrsEncounterAdapter;
     @Autowired
     EncounterService encounterService;
     @Autowired
@@ -44,7 +44,7 @@ public class OpenMRSEncounterAdaptorIT extends OpenMRSIntegrationTestBase {
     MRSPatient patientAlan;
 
     public void doOnceBefore() {
-        facility = facilityAdaptor.saveFacility(new MRSFacility("name", "country", "region", "district", "province"));
+        facility = facilityAdapter.saveFacility(new MRSFacility("name", "country", "region", "district", "province"));
     }
 
     @Test
@@ -65,10 +65,10 @@ public class OpenMRSEncounterAdaptorIT extends OpenMRSIntegrationTestBase {
         observations.add(new MRSObservation(new Date(), "PREGNANCY STATUS", false));
         final String encounterType = "PEDSRETURN";
         MRSEncounter expectedEncounter = new MRSEncounter(provider.getId(), userCreator.getId(), facility.getId(), new Date(), patientAlan.getId(), observations, encounterType);
-        MRSEncounter actualMRSEncounter = mrsEncounterAdaptor.createEncounter(expectedEncounter);
+        MRSEncounter actualMRSEncounter = mrsEncounterAdapter.createEncounter(expectedEncounter);
         compareEncounters(expectedEncounter, actualMRSEncounter);
 
-        final MRSEncounter mrsEncounter = mrsEncounterAdaptor.getLatestEncounterByPatientMotechId(patientAlan.getMotechId(), encounterType);
+        final MRSEncounter mrsEncounter = mrsEncounterAdapter.getLatestEncounterByPatientMotechId(patientAlan.getMotechId(), encounterType);
         compareEncounters(expectedEncounter, mrsEncounter);
     }
 
@@ -95,7 +95,7 @@ public class OpenMRSEncounterAdaptorIT extends OpenMRSIntegrationTestBase {
         MRSPerson mrsPerson = new MRSPerson().firstName(first).lastName(last).middleName(middle).preferredName("prefName").
                 birthDateEstimated(birthDateEstimated).dateOfBirth(birthDate).address(address1).gender(gender);
         final MRSPatient patient = new MRSPatient(patientSystemId, mrsPerson, facility);
-        return patientAdaptor.savePatient(patient);
+        return patientAdapter.savePatient(patient);
     }
 
     private void assertObservation(Set<MRSObservation> expectedSet, Set<MRSObservation> actualSet) {
@@ -124,7 +124,7 @@ public class OpenMRSEncounterAdaptorIT extends OpenMRSIntegrationTestBase {
     }
 
     private MRSUser createUser(MRSUser userCreator) throws UserAlreadyExistsException {
-        userCreator = (MRSUser) userAdaptor.saveUser(userCreator).get(USER_KEY);
+        userCreator = (MRSUser) userAdapter.saveUser(userCreator).get(USER_KEY);
         return userCreator;
     }
 }

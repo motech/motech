@@ -2,9 +2,9 @@ package org.motechproject.openmrs;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.motechproject.mrs.services.MRSFacilityAdaptor;
-import org.motechproject.mrs.services.MRSPatientAdaptor;
-import org.motechproject.mrs.services.MRSUserAdaptor;
+import org.motechproject.mrs.services.MRSFacilityAdapter;
+import org.motechproject.mrs.services.MRSPatientAdapter;
+import org.motechproject.mrs.services.MRSUserAdapter;
 import org.motechproject.openmrs.security.OpenMRSSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -21,13 +21,13 @@ public class OpenMRSIntegrationTestBase {
     OpenMRSSession openMRSSession;
 
     @Autowired
-    protected MRSUserAdaptor userAdaptor;
+    protected MRSUserAdapter userAdapter;
 
     @Autowired
-    protected MRSPatientAdaptor patientAdaptor;
+    protected MRSPatientAdapter patientAdapter;
 
     @Autowired
-    protected MRSFacilityAdaptor facilityAdaptor;
+    protected MRSFacilityAdapter facilityAdapter;
 
     boolean doOnce = false;
 

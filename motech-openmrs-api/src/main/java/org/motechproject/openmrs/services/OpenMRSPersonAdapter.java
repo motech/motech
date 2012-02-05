@@ -16,13 +16,13 @@ import java.util.Set;
 import static ch.lambdaj.Lambda.*;
 import static org.hamcrest.Matchers.is;
 
-public class OpenMRSPersonAdaptor {
+public class OpenMRSPersonAdapter {
 
     private PersonService personService;
 
 
     @Autowired
-    public OpenMRSPersonAdaptor(PersonService personService) {
+    public OpenMRSPersonAdapter(PersonService personService) {
         this.personService = personService;
     }
 

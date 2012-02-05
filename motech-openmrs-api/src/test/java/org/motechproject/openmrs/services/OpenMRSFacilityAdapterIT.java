@@ -2,7 +2,7 @@ package org.motechproject.openmrs.services;
 
 import org.junit.Test;
 import org.motechproject.mrs.model.MRSFacility;
-import org.motechproject.mrs.services.MRSFacilityAdaptor;
+import org.motechproject.mrs.services.MRSFacilityAdapter;
 import org.motechproject.openmrs.OpenMRSIntegrationTestBase;
 import org.openmrs.api.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +16,9 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.Matchers.equalTo;
 
-public class OpenMRSFacilityAdaptorIT extends OpenMRSIntegrationTestBase {
+public class OpenMRSFacilityAdapterIT extends OpenMRSIntegrationTestBase {
     @Autowired
-    MRSFacilityAdaptor mrsFacilityAdaptor;
+    MRSFacilityAdapter mrsFacilityAdapter;
 
     @Autowired
     LocationService mrsLocationService;
@@ -27,7 +27,7 @@ public class OpenMRSFacilityAdaptorIT extends OpenMRSIntegrationTestBase {
     @Transactional(readOnly = true)
     public void testSaveLocation() {
         MRSFacility facility = new MRSFacility("my facility", "ghana", "region", "district", "kaseena");
-        final MRSFacility savedFacility = mrsFacilityAdaptor.saveFacility(facility);
+        final MRSFacility savedFacility = mrsFacilityAdapter.saveFacility(facility);
         assertNotNull(savedFacility);
         assertEquals(facility.getCountry(), savedFacility.getCountry());
         assertEquals(facility.getCountyDistrict(), savedFacility.getCountyDistrict());
@@ -39,11 +39,11 @@ public class OpenMRSFacilityAdaptorIT extends OpenMRSIntegrationTestBase {
     @Test
     @Transactional(readOnly = true)
     public void testGetLocations() {
-        int size = mrsFacilityAdaptor.getFacilities().size();
+        int size = mrsFacilityAdapter.getFacilities().size();
         String facilityName = "my facility";
         MRSFacility facility = new MRSFacility(facilityName, "ghana", "region", "district", "kaseena");
-        final MRSFacility savedFacility = mrsFacilityAdaptor.saveFacility(facility);
-        List<MRSFacility> facilities = mrsFacilityAdaptor.getFacilities();
+        final MRSFacility savedFacility = mrsFacilityAdapter.saveFacility(facility);
+        List<MRSFacility> facilities = mrsFacilityAdapter.getFacilities();
         int alteredSize = facilities.size();
         List<MRSFacility> addedFacilities = select(facilities, having(on(MRSFacility.class).getName(), equalTo(facilityName)));
         assertEquals(size + 1, alteredSize);
@@ -56,8 +56,8 @@ public class OpenMRSFacilityAdaptorIT extends OpenMRSIntegrationTestBase {
     public void testGetLocationsByName() {
         String facilityName = "my facility";
         MRSFacility facility = new MRSFacility(facilityName, "ghana", "region", "district", "kaseena");
-        final MRSFacility savedFacility = mrsFacilityAdaptor.saveFacility(facility);
-        final List<MRSFacility> facilities = mrsFacilityAdaptor.getFacilities(facilityName);
+        final MRSFacility savedFacility = mrsFacilityAdapter.saveFacility(facility);
+        final List<MRSFacility> facilities = mrsFacilityAdapter.getFacilities(facilityName);
         assertEquals(Arrays.asList(savedFacility), facilities);
     }
 }

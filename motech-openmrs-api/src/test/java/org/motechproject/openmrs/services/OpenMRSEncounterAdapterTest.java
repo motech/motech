@@ -19,32 +19,31 @@ import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 
-public class OpenMRSEncounterAdaptorTest {
-    OpenMRSEncounterAdaptor encounterAdaptor;
-
+public class OpenMRSEncounterAdapterTest {
+    OpenMRSEncounterAdapter encounterAdapter;
     @Mock
-    private OpenMRSUserAdaptor mockOpenMrsUserAdaptor;
+    private OpenMRSUserAdapter mockOpenMrsUserAdapter;
     @Mock
-    private OpenMRSFacilityAdaptor mockOpenMrsFacilityAdaptor;
+    private OpenMRSFacilityAdapter mockOpenMrsFacilityAdapter;
     @Mock
-    private OpenMRSPatientAdaptor mockOpenMrsPatientAdaptor;
+    private OpenMRSPatientAdapter mockOpenMrsPatientAdapter;
     @Mock
-    private OpenMRSObservationAdaptor mockOpenMrsObservationAdaptor;
+    private OpenMRSObservationAdapter mockOpenMrsObservationAdapter;
     @Mock
     private EncounterService mockEncounterService;
     @Mock
-    private OpenMRSPersonAdaptor mockOpenMRSPersonAdaptor;
+    private OpenMRSPersonAdapter mockOpenMRSPersonAdapter;
 
     @Before
     public void setUp() {
         initMocks(this);
-        encounterAdaptor = new OpenMRSEncounterAdaptor();
-        ReflectionTestUtils.setField(encounterAdaptor, "openMrsUserAdaptor", mockOpenMrsUserAdaptor);
-        ReflectionTestUtils.setField(encounterAdaptor, "openMrsFacilityAdaptor", mockOpenMrsFacilityAdaptor);
-        ReflectionTestUtils.setField(encounterAdaptor, "openMrsPatientAdaptor", mockOpenMrsPatientAdaptor);
-        ReflectionTestUtils.setField(encounterAdaptor, "openMrsObservationAdaptor", mockOpenMrsObservationAdaptor);
-        ReflectionTestUtils.setField(encounterAdaptor, "encounterService", mockEncounterService);
-        ReflectionTestUtils.setField(encounterAdaptor, "openMRSPersonAdaptor", mockOpenMRSPersonAdaptor);
+        encounterAdapter = new OpenMRSEncounterAdapter();
+        ReflectionTestUtils.setField(encounterAdapter, "openMRSUserAdapter", mockOpenMrsUserAdapter);
+        ReflectionTestUtils.setField(encounterAdapter, "openMRSFacilityAdapter", mockOpenMrsFacilityAdapter);
+        ReflectionTestUtils.setField(encounterAdapter, "openMRSPatientAdapter", mockOpenMrsPatientAdapter);
+        ReflectionTestUtils.setField(encounterAdapter, "openMRSObservationAdapter", mockOpenMrsObservationAdapter);
+        ReflectionTestUtils.setField(encounterAdapter, "encounterService", mockEncounterService);
+        ReflectionTestUtils.setField(encounterAdapter, "openMRSPersonAdapter", mockOpenMRSPersonAdapter);
     }
 
     @Test
@@ -66,18 +65,18 @@ public class OpenMRSEncounterAdaptorTest {
         MRSEncounter mrsEncounter = new MRSEncounter(encounterId, provider, staff, facility, encounterDate, patient, observations, encounterType);
 
         Location expectedLocation = mock(Location.class);
-        when(mockOpenMrsFacilityAdaptor.getLocation(facilityId)).thenReturn(expectedLocation);
+        when(mockOpenMrsFacilityAdapter.getLocation(facilityId)).thenReturn(expectedLocation);
 
         org.openmrs.Patient expectedPatient = mock(org.openmrs.Patient.class);
-        when(mockOpenMrsPatientAdaptor.getOpenMrsPatient(patientId)).thenReturn(expectedPatient);
+        when(mockOpenMrsPatientAdapter.getOpenMrsPatient(patientId)).thenReturn(expectedPatient);
 
         org.openmrs.User expectedCreator = mock(org.openmrs.User.class);
         Person expectedPerson = mock(Person.class);
-        when(mockOpenMrsUserAdaptor.getOpenMrsUserById(staffId)).thenReturn(expectedCreator);
+        when(mockOpenMrsUserAdapter.getOpenMrsUserById(staffId)).thenReturn(expectedCreator);
         when(expectedCreator.getPerson()).thenReturn(expectedPerson);
 
         Person expectedProvider = mock(Person.class);
-        when(mockOpenMRSPersonAdaptor.getPersonById(providerId)).thenReturn(expectedProvider);
+        when(mockOpenMRSPersonAdapter.getPersonById(providerId)).thenReturn(expectedProvider);
 
         EncounterType expectedEncounterType = mock(EncounterType.class);
         when(mockEncounterService.getEncounterType(encounterType)).thenReturn(expectedEncounterType);
@@ -85,9 +84,9 @@ public class OpenMRSEncounterAdaptorTest {
         Set<Obs> expectedObservations = new HashSet<Obs>();
         Encounter expectedEncounter = mock(Encounter.class);
 
-        when(mockOpenMrsObservationAdaptor.createOpenMRSObservationsForEncounter(observations, expectedEncounter, expectedPatient, expectedLocation, expectedCreator)).thenReturn(expectedObservations);
+        when(mockOpenMrsObservationAdapter.createOpenMRSObservationsForEncounter(observations, expectedEncounter, expectedPatient, expectedLocation, expectedCreator)).thenReturn(expectedObservations);
 
-        Encounter returnedEncounter = encounterAdaptor.mrsToOpenMRSEncounter(mrsEncounter);
+        Encounter returnedEncounter = encounterAdapter.mrsToOpenMRSEncounter(mrsEncounter);
 
         assertThat(returnedEncounter.getLocation(), is(equalTo(expectedLocation)));
         assertThat(returnedEncounter.getPatient(), is(equalTo(expectedPatient)));
@@ -125,11 +124,11 @@ public class OpenMRSEncounterAdaptorTest {
         Encounter openMrsEncounter = createOpenMRSEncounter(encounterDate, openMrsEncounterType, openMrsObservations, mockOpenMRSPatient, mockOpenMRSUser, mockLocation, encounterId);
          openMrsEncounter.setProvider(mockOpenMRSPerson);
         openMrsEncounter.setCreator(mockOpenMRSUser);
-        when(mockOpenMrsFacilityAdaptor.convertLocationToFacility(mockLocation)).thenReturn(mrsfacility);
-        when(mockOpenMrsPatientAdaptor.getMrsPatient(mockOpenMRSPatient)).thenReturn(mrspatient);
-        when(mockOpenMrsObservationAdaptor.convertOpenMRSToMRSObservations(openMrsObservations)).thenReturn(mrsObservations);
+        when(mockOpenMrsFacilityAdapter.convertLocationToFacility(mockLocation)).thenReturn(mrsfacility);
+        when(mockOpenMrsPatientAdapter.getMrsPatient(mockOpenMRSPatient)).thenReturn(mrspatient);
+        when(mockOpenMrsObservationAdapter.convertOpenMRSToMRSObservations(openMrsObservations)).thenReturn(mrsObservations);
 
-        MRSEncounter mrsEncounter = encounterAdaptor.openmrsToMrsEncounter(openMrsEncounter);
+        MRSEncounter mrsEncounter = encounterAdapter.openmrsToMrsEncounter(openMrsEncounter);
 
         assertThat(mrsEncounter.getId(), is(equalTo(Integer.toString(encounterId))));
         assertThat(mrsEncounter.getEncounterType(), is(equalTo(encounterTypeName)));
@@ -155,17 +154,17 @@ public class OpenMRSEncounterAdaptorTest {
 
     @Test
     public void shouldSaveAnEncounter() {
-        OpenMRSEncounterAdaptor encounterAdaptorSpy = spy(encounterAdaptor);
+        OpenMRSEncounterAdapter encounterAdapterSpy = spy(encounterAdapter);
         Encounter openMrsEncounter = mock(Encounter.class);
         MRSEncounter mrsEncounter = mock(MRSEncounter.class);
         Encounter savedOpenMrsEncounter = mock(Encounter.class);
         MRSEncounter savedMrsEncounter = mock(MRSEncounter.class);
 
-        doReturn(openMrsEncounter).when(encounterAdaptorSpy).mrsToOpenMRSEncounter(mrsEncounter);
+        doReturn(openMrsEncounter).when(encounterAdapterSpy).mrsToOpenMRSEncounter(mrsEncounter);
         when(mockEncounterService.saveEncounter(openMrsEncounter)).thenReturn(savedOpenMrsEncounter);
-        doReturn(savedMrsEncounter).when(encounterAdaptorSpy).openmrsToMrsEncounter(savedOpenMrsEncounter);
+        doReturn(savedMrsEncounter).when(encounterAdapterSpy).openmrsToMrsEncounter(savedOpenMrsEncounter);
 
-        MRSEncounter returnedMRSEncounterAfterSaving = encounterAdaptorSpy.createEncounter(mrsEncounter);
+        MRSEncounter returnedMRSEncounterAfterSaving = encounterAdapterSpy.createEncounter(mrsEncounter);
         assertThat(returnedMRSEncounterAfterSaving, is(equalTo(savedMrsEncounter)));
     }
 
@@ -173,7 +172,7 @@ public class OpenMRSEncounterAdaptorTest {
     public void shouldFetchLatestEncounterForMotechId() {
         String encounterType = "Encounter Type";
         String motechId = "1234567";
-        encounterAdaptor.getLatestEncounterByPatientMotechId(motechId, encounterType);
+        encounterAdapter.getLatestEncounterByPatientMotechId(motechId, encounterType);
         verify(mockEncounterService).getEncountersByPatientIdentifier(motechId);
     }
 
@@ -194,7 +193,7 @@ public class OpenMRSEncounterAdaptorTest {
         encounter2.setEncounterDatetime(new Date(1998, 11, 6));
 
         when(mockEncounterService.getEncountersByPatientIdentifier(motechId)).thenReturn(Arrays.asList(encounter1, encounter2));
-        MRSEncounter actualEncounter = encounterAdaptor.getLatestEncounterByPatientMotechId(motechId, encounterName);
+        MRSEncounter actualEncounter = encounterAdapter.getLatestEncounterByPatientMotechId(motechId, encounterName);
 
         assertThat(actualEncounter.getDate(), is(equalTo(encounterDatetime1)));
     }
@@ -204,7 +203,7 @@ public class OpenMRSEncounterAdaptorTest {
         final String motechId = "1332";
         final String encounterName = "patientRegistration";
         when(mockEncounterService.getEncountersByPatientIdentifier(motechId)).thenReturn(Collections.<Encounter>emptyList());
-        MRSEncounter patientRegistration = encounterAdaptor.getLatestEncounterByPatientMotechId(motechId, encounterName);
+        MRSEncounter patientRegistration = encounterAdapter.getLatestEncounterByPatientMotechId(motechId, encounterName);
         assertNull(patientRegistration);
     }
 }

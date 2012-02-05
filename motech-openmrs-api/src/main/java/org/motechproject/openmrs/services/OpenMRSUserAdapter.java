@@ -5,7 +5,7 @@ import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.MRSPerson;
 import org.motechproject.mrs.model.MRSUser;
 import org.motechproject.mrs.services.MRSException;
-import org.motechproject.mrs.services.MRSUserAdaptor;
+import org.motechproject.mrs.services.MRSUserAdapter;
 import org.motechproject.openmrs.model.Password;
 import org.openmrs.*;
 import org.openmrs.api.APIException;
@@ -20,7 +20,7 @@ import java.util.*;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
-public class OpenMRSUserAdaptor implements MRSUserAdaptor {
+public class OpenMRSUserAdapter implements MRSUserAdapter {
     private static Integer PASSWORD_LENGTH = 8;
     private static String PERSON_UNKNOWN_GENDER = "?";
 
@@ -28,13 +28,13 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
     private PersonService personService;
     public static final String USER_KEY = "mrsUser";
     public static final String PASSWORD_USER_KEY = "password";
-    private OpenMRSPersonAdaptor openMRSPersonAdaptor;
+    private OpenMRSPersonAdapter openMRSPersonAdapter;
 
     @Autowired
-    public OpenMRSUserAdaptor(UserService userService, PersonService personService, OpenMRSPersonAdaptor openMRSPersonAdaptor) {
+    public OpenMRSUserAdapter(UserService userService, PersonService personService, OpenMRSPersonAdapter openMRSPersonAdapter) {
         this.userService = userService;
         this.personService = personService;
-        this.openMRSPersonAdaptor = openMRSPersonAdaptor;
+        this.openMRSPersonAdapter = openMRSPersonAdapter;
     }
 
     @Override
@@ -90,7 +90,7 @@ public class OpenMRSUserAdaptor implements MRSUserAdaptor {
 
     MRSUser openMrsToMrsUser(org.openmrs.User openMRSUser) {
         MRSUser mrsUser = new MRSUser();
-        MRSPerson mrsPerson = openMRSPersonAdaptor.openMRSToMRSPerson(openMRSUser.getPerson());
+        MRSPerson mrsPerson = openMRSPersonAdapter.openMRSToMRSPerson(openMRSUser.getPerson());
 
         mrsUser.id(Integer.toString(openMRSUser.getId())).systemId(openMRSUser.getSystemId()).userName(openMRSUser.getUsername()).person(mrsPerson).
                 securityRole(getRoleFromOpenMRSUser(openMRSUser.getRoles()));

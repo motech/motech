@@ -11,17 +11,17 @@ import java.util.Set;
 
 import static org.apache.commons.lang.math.NumberUtils.isNumber;
 
-public class OpenMRSObservationAdaptor {
+public class OpenMRSObservationAdapter {
 
     @Autowired
-    OpenMRSConceptAdaptor conceptAdaptor;
+    OpenMRSConceptAdapter conceptAdapter;
 
     @Autowired
     ObsService obsService;
 
     <T> Obs createOpenMRSObservationForEncounter(MRSObservation<T> mrsObservation, Encounter encounter, Patient patient, Location location, User staff) {
         Obs openMrsObservation = new Obs();
-        openMrsObservation.setConcept(conceptAdaptor.getConceptByName(mrsObservation.getConceptName()));
+        openMrsObservation.setConcept(conceptAdapter.getConceptByName(mrsObservation.getConceptName()));
         openMrsObservation.setPerson(patient);
         openMrsObservation.setLocation(location);
         openMrsObservation.setCreator(staff);
