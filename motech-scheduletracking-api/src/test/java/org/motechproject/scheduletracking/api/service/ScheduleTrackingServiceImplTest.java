@@ -15,9 +15,11 @@ import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.WallTimeUnit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 
 public class ScheduleTrackingServiceImplTest {
 
@@ -35,8 +37,22 @@ public class ScheduleTrackingServiceImplTest {
         initMocks(this);
     }
 
+    @Test(expected = ActiveEnrollmentExistsException.class)
+    public void shouldNotEnrollEntityIfActiveEnrollmentAlreadyExists() {
+        Schedule schedule = new Schedule("my_schedule");
+        Milestone secondMilestone = new Milestone("second_milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone firstMilestone = new Milestone("first_milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        schedule.addMilestones(firstMilestone, secondMilestone);
+        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
+
+        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
+
+        when(allEnrollments.findActiveByExternalIdAndScheduleName("my_entity_1", "my_schedule")).thenReturn(new Enrollment("my_entity_1", "my_schedule", "firstMilestone", weeksAgo(0), weeksAgo(0), new Time(8, 10)));
+        scheduleTrackingService.enroll(new EnrollmentRequest("my_entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 1, 2)));
+    }
+
     @Test
-    public void shouldEnrollPatientIntoFirstMilestoneOfSchedule() {
+    public void shouldEnrollEntityIntoFirstMilestoneOfSchedule() {
         Schedule schedule = new Schedule("my_schedule");
         Milestone secondMilestone = new Milestone("second_milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         Milestone firstMilestone = new Milestone("first_milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
@@ -48,7 +64,7 @@ public class ScheduleTrackingServiceImplTest {
         scheduleTrackingService.enroll(new EnrollmentRequest("my_entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 1, 2)));
 
         ArgumentCaptor<Enrollment> enrollmentArgumentCaptor = ArgumentCaptor.forClass(Enrollment.class);
-        verify(allEnrollments).addOrReplace(enrollmentArgumentCaptor.capture());
+        verify(allEnrollments).add(enrollmentArgumentCaptor.capture());
 
         Enrollment enrollment = enrollmentArgumentCaptor.getValue();
         assertEquals("my_entity_1", enrollment.getExternalId());
@@ -57,7 +73,7 @@ public class ScheduleTrackingServiceImplTest {
     }
 
     @Test
-    public void shouldEnrollPatientIntoGivenMilestoneOfTheSchedule() {
+    public void shouldEnrollEntityIntoGivenMilestoneOfTheSchedule() {
         Milestone secondMilestone = new Milestone("second_milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         Milestone firstMilestone = new Milestone("first_milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         Schedule schedule = new Schedule("my_schedule");
@@ -69,7 +85,7 @@ public class ScheduleTrackingServiceImplTest {
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2), "second_milestone"));
 
         ArgumentCaptor<Enrollment> enrollmentArgumentCaptor = ArgumentCaptor.forClass(Enrollment.class);
-        verify(allEnrollments).addOrReplace(enrollmentArgumentCaptor.capture());
+        verify(allEnrollments).add(enrollmentArgumentCaptor.capture());
 
         Enrollment enrollment = enrollmentArgumentCaptor.getValue();
         assertEquals(secondMilestone.getName(), enrollment.getCurrentMilestoneName());
@@ -86,7 +102,7 @@ public class ScheduleTrackingServiceImplTest {
         ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", scheduleName, new Time(8, 10), new LocalDate(2012, 11, 2)));
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", scheduleName, new Time(8, 10), new LocalDate(2012, 11, 2)));
-        verify(allEnrollments, times(2)).addOrReplace(Matchers.<Enrollment>any());
+        verify(allEnrollments, times(2)).add(Matchers.<Enrollment>any());
     }
 
     @Test
@@ -115,13 +131,54 @@ public class ScheduleTrackingServiceImplTest {
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
 
-        Enrollment enrollment = mock(Enrollment.class);
-        when(allEnrollments.findByExternalIdAndScheduleName("entity_1", "my_schedule")).thenReturn(enrollment);
-
         ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
+
+        when(allEnrollments.findActiveByExternalIdAndScheduleName("entity_1", "my_schedule")).thenReturn(null);
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2)));
+
+        Enrollment enrollment = mock(Enrollment.class);
+        when(allEnrollments.findActiveByExternalIdAndScheduleName("entity_1", "my_schedule")).thenReturn(enrollment);
+
         scheduleTrackingService.fulfillCurrentMilestone("entity_1", "my_schedule");
 
         verify(enrollmentService).fulfillCurrentMilestone(enrollment);
+    }
+
+    @Test
+    public void unenrollEntityFromTheSchedule() {
+        Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        milestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 3, 0));
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(milestone);
+        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
+
+        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
+
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(4), weeksAgo(4), new Time(8, 10));
+        when(allEnrollments.findActiveByExternalIdAndScheduleName("entity_1", "my_schedule")).thenReturn(enrollment);
+        scheduleTrackingService.unenroll("entity_1", "my_schedule");
+
+        ArgumentCaptor<Enrollment> enrollmentCaptor = ArgumentCaptor.forClass(Enrollment.class);
+        verify(allEnrollments).update(enrollmentCaptor.capture());
+
+        enrollment = enrollmentCaptor.getValue();
+        assertEquals("entity_1", enrollment.getExternalId());
+        assertEquals("my_schedule", enrollment.getScheduleName());
+        assertFalse(enrollment.isActive());
+        verify(enrollmentService).unscheduleAllAlerts(enrollment);
+    }
+
+    @Test(expected = InvalidEnrollmentException.class)
+    public void shouldThrowExceptionIfEntityIsNotEnrolledIntoSchedule() {
+        Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        milestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 3, 0));
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(milestone);
+        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
+
+        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
+
+        when(allEnrollments.findActiveByExternalIdAndScheduleName("entity_1", "my_schedule")).thenReturn(null);
+        scheduleTrackingService.unenroll("entity_1", "my_schedule");
     }
 }

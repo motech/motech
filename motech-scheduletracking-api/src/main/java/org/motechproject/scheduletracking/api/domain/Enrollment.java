@@ -22,32 +22,21 @@ public class Enrollment extends MotechBaseDataObject {
     private String currentMilestoneName;
     private LocalDate referenceDate;
     private Time preferredAlertTime;
+    private boolean active;
     private List<MilestoneFulfillment> fulfillments = new LinkedList<MilestoneFulfillment>();
 
     // For ektorp
     private Enrollment() {
     }
 
-    // TODO: enrollment can take scheduleName instead of schedule
-    public Enrollment(String externalId, Schedule schedule, LocalDate referenceDate, LocalDate enrollmentDate, Time preferredAlertTime) {
+    public Enrollment(String externalId, String scheduleName, String currentMilestoneName, LocalDate referenceDate, LocalDate enrollmentDate, Time preferredAlertTime) {
         this.externalId = externalId;
-        this.scheduleName = schedule.getName();
-        this.enrollmentDate = enrollmentDate;
-        this.referenceDate = referenceDate;
-        this.preferredAlertTime = preferredAlertTime;
-        if (schedule.getMilestones().size() > 0)
-            this.currentMilestoneName = schedule.getMilestones().get(0).getName();
-        else
-            throw new InvalidScheduleDefinition("schedule must have at least one milestone.");
-    }
-
-    public Enrollment(String externalId, Schedule schedule, LocalDate referenceDate, LocalDate enrollmentDate, Time preferredAlertTime, String currentMilestoneName) {
-        this.externalId = externalId;
-        this.scheduleName = schedule.getName();
-        this.enrollmentDate = enrollmentDate;
-        this.referenceDate = referenceDate;
-        this.preferredAlertTime = preferredAlertTime;
+        this.scheduleName = scheduleName;
         this.currentMilestoneName = currentMilestoneName;
+        this.enrollmentDate = enrollmentDate;
+        this.referenceDate = referenceDate;
+        this.preferredAlertTime = preferredAlertTime;
+        this.active = true;
     }
 
     public String getScheduleName() {
@@ -89,6 +78,21 @@ public class Enrollment extends MotechBaseDataObject {
         return fulfillments.get(fulfillments.size() - 1).getDateFulfilled();
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public Enrollment copyFrom(Enrollment enrollment) {
+        enrollmentDate = enrollment.getEnrollmentDate();
+        externalId = enrollment.getExternalId();
+        scheduleName = enrollment.getScheduleName();
+        currentMilestoneName = enrollment.getCurrentMilestoneName();
+        referenceDate = enrollment.getReferenceDate();
+        preferredAlertTime = enrollment.getPreferredAlertTime();
+        active = enrollment.isActive();
+        return this;
+    }
+
     // ektorp methods follow
     private String getType() {
         return type;
@@ -118,13 +122,7 @@ public class Enrollment extends MotechBaseDataObject {
         this.preferredAlertTime = preferredAlertTime;
     }
 
-    public Enrollment copyFrom(Enrollment enrollment) {
-        enrollmentDate = enrollment.getEnrollmentDate();
-        externalId = enrollment.getExternalId();
-        scheduleName = enrollment.getScheduleName();
-        currentMilestoneName = enrollment.getCurrentMilestoneName();
-        referenceDate = enrollment.getReferenceDate();
-        preferredAlertTime = enrollment.getPreferredAlertTime();
-        return this;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

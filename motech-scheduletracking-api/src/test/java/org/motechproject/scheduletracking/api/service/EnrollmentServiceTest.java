@@ -46,7 +46,7 @@ public class EnrollmentServiceTest {
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
-        Enrollment enrollment = new Enrollment("entity_1", schedule, weeksAgo(0), weeksAgo(0), new Time(8, 10));
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(0), weeksAgo(0), new Time(8, 10));
 
         enrollmentService.scheduleAlertsForCurrentMilestone(enrollment);
 
@@ -86,7 +86,7 @@ public class EnrollmentServiceTest {
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
-        Enrollment enrollment = new Enrollment("entity_1", schedule, weeksAgo(0), weeksAgo(0), new Time(8, 10));
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(0), weeksAgo(0), new Time(8, 10));
 
         enrollmentService.scheduleAlertsForCurrentMilestone(enrollment);
 
@@ -100,7 +100,7 @@ public class EnrollmentServiceTest {
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
-        Enrollment enrollment = new Enrollment("entity_1", schedule, daysAgo(6), daysAgo(0), new Time(8, 10));
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone_1", daysAgo(6), daysAgo(0), new Time(8, 10));
 
         enrollmentService.scheduleAlertsForCurrentMilestone(enrollment);
 
@@ -121,7 +121,7 @@ public class EnrollmentServiceTest {
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
-        Enrollment enrollment = new Enrollment("entity_1", schedule, weeksAgo(1), weeksAgo(0), new Time(8, 10));
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone_1", weeksAgo(1), weeksAgo(0), new Time(8, 10));
 
         enrollmentService.scheduleAlertsForCurrentMilestone(enrollment);
         verify(schedulerService, times(0)).scheduleRepeatingJob(Matchers.<RepeatingSchedulableJob>any());
@@ -136,7 +136,7 @@ public class EnrollmentServiceTest {
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
-        Enrollment enrollment = new Enrollment("entity_1", schedule, weeksAgo(4), weeksAgo(0), new Time(8, 10), "milestone_2");
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone_2", weeksAgo(4), weeksAgo(0), new Time(8, 10));
 
         enrollmentService.scheduleAlertsForCurrentMilestone(enrollment);
 
@@ -157,7 +157,7 @@ public class EnrollmentServiceTest {
         Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
-        Enrollment enrollment = new Enrollment("ID-074285", schedule, weeksAgo(5), weeksAgo(3), null);
+        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(5), weeksAgo(3), new Time(8, 10));
 
         assertEquals(weeksAgo(5), enrollmentService.getCurrentMilestoneStartDate(enrollment));
     }
@@ -169,7 +169,7 @@ public class EnrollmentServiceTest {
         Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
-        Enrollment enrollment = new Enrollment("ID-074285", schedule, weeksAgo(5), weeksAgo(3), null, secondMilestone.getName());
+        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", secondMilestone.getName(), weeksAgo(5), weeksAgo(3), null);
 
         assertEquals(weeksAgo(3), enrollmentService.getCurrentMilestoneStartDate(enrollment));
     }
@@ -181,7 +181,7 @@ public class EnrollmentServiceTest {
         Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
-        Enrollment enrollment = new Enrollment("ID-074285", schedule, weeksAgo(5), weeksAgo(3), null);
+        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(5), weeksAgo(3), null);
         enrollmentService.fulfillCurrentMilestone(enrollment);
 
         assertEquals(weeksAgo(0), enrollmentService.getCurrentMilestoneStartDate(enrollment));
@@ -196,7 +196,7 @@ public class EnrollmentServiceTest {
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
 
-        Enrollment enrollment = new Enrollment("ID-074285", schedule, weeksAgo(4), weeksAgo(4), new Time(8, 20));
+        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(4), weeksAgo(4), new Time(8, 20));
         enrollmentService.fulfillCurrentMilestone(enrollment);
 
         assertEquals("Second Shot", enrollment.getCurrentMilestoneName());
@@ -212,7 +212,7 @@ public class EnrollmentServiceTest {
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
 
-        Enrollment enrollment = new Enrollment("ID-074285", schedule, weeksAgo(4), weeksAgo(4), new Time(8, 20));
+        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(4), weeksAgo(4), new Time(8, 20));
         enrollment.setId("enrollment_1");
         enrollmentService.fulfillCurrentMilestone(enrollment);
 
@@ -236,7 +236,7 @@ public class EnrollmentServiceTest {
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
 
-        Enrollment enrollment = new Enrollment("ID-074285", schedule, weeksAgo(4), weeksAgo(4), new Time(8, 20));
+        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(4), weeksAgo(4), new Time(8, 20));
         enrollmentService.fulfillCurrentMilestone(enrollment);
         enrollmentService.fulfillCurrentMilestone(enrollment);
         enrollmentService.fulfillCurrentMilestone(enrollment);

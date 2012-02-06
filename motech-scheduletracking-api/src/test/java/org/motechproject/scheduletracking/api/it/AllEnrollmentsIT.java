@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.it;
 
+import org.joda.time.LocalDate;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,61 +17,92 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:testApplicationSchedulerTrackingAPI.xml")
 public class AllEnrollmentsIT {
-	@Autowired
-	private AllEnrollments allEnrollments;
 
-	private Schedule schedule;
-	private Enrollment enrollment;
+    @Autowired
+    private AllEnrollments allEnrollments;
 
-	@Before
-	public void setUp() {
-		String milestoneName = "First Milestone";
-		String scheduleName = "Schedule Name";
+    private List<Enrollment> createdEnrollments;
 
-		Milestone milestone = new Milestone(milestoneName, new WallTime(13, WallTimeUnit.Week), new WallTime(14, WallTimeUnit.Week), new WallTime(16, WallTimeUnit.Week), null);
-		schedule = new Schedule(scheduleName);
-        schedule.addMilestones(milestone);
-		enrollment = new Enrollment("1324324", schedule, DateUtil.today(), DateUtil.today(), new Time(DateUtil.now().toLocalTime()), schedule.getMilestones().get(0).getName());
-	}
+    @Before
+    public void setUp() {
+        createdEnrollments = new ArrayList<Enrollment>();
+    }
 
-	@After
-	public void tearDown() {
-		allEnrollments.remove(enrollment);
-	}
+    @After
+    public void tearDown() {
+        for (Enrollment enrollment : createdEnrollments)
+            allEnrollments.remove(enrollment);
+    }
 
     @Test
     public void shouldAddEnrollment() {
-        allEnrollments.add(enrollment);
+        Milestone milestone = new Milestone("first_milestone", new WallTime(13, WallTimeUnit.Week), new WallTime(14, WallTimeUnit.Week), new WallTime(16, WallTimeUnit.Week), null);
+        Schedule schedule = new Schedule("schedule_name");
+        schedule.addMilestones(milestone);
+        Enrollment enrollment = createEnrollment("1324324", "schedule_name", "first_milestone", DateUtil.today(), DateUtil.today(), new Time(DateUtil.now().toLocalTime()), true);
 
         String enrollmentId = enrollment.getId();
         assertNotNull(enrollmentId);
         assertNotNull(allEnrollments.get(enrollmentId));
     }
 
-	@Test
-	public void shouldFindByExternalIdAndScheduleName() {
-		allEnrollments.add(enrollment);
+    @Test
+    public void shouldFindByExternalIdAndScheduleName() {
+        Milestone milestone = new Milestone("first_milestone", new WallTime(13, WallTimeUnit.Week), new WallTime(14, WallTimeUnit.Week), new WallTime(16, WallTimeUnit.Week), null);
+        Schedule schedule = new Schedule("schedule_name");
+        schedule.addMilestones(milestone);
+        Enrollment enrollment = createEnrollment("1324324", "schedule_name", "first_milestone", DateUtil.today(), DateUtil.today(), new Time(DateUtil.now().toLocalTime()), true);
 
-		Enrollment found = allEnrollments.findByExternalIdAndScheduleName(enrollment.getExternalId(), schedule.getName());
-		assertEquals(enrollment.getExternalId(), found.getExternalId());
+        Enrollment found = allEnrollments.findByExternalIdAndScheduleName(enrollment.getExternalId(), schedule.getName());
+        assertEquals(enrollment.getExternalId(), found.getExternalId());
         assertEquals(enrollment.getReferenceDate(), found.getReferenceDate());
-	}
+    }
 
     @Test
-    public void shouldUpdateEnrollmentIfAlreadyAvailable(){
+    public void shouldFindActiveEnrollmentByExternalIdAndScheduleName() {
+        Milestone milestone = new Milestone("first_milestone", new WallTime(13, WallTimeUnit.Week), new WallTime(14, WallTimeUnit.Week), new WallTime(16, WallTimeUnit.Week), null);
+        Schedule schedule = new Schedule("schedule_name");
+        schedule.addMilestones(milestone);
+        createEnrollment("entity_1", "schedule_name", "first_milestone", DateUtil.today(), DateUtil.today(), new Time(DateUtil.now().toLocalTime()), false);
+
+        assertNull(allEnrollments.findActiveByExternalIdAndScheduleName("entity_1", "schedule_name"));
+    }
+
+    @Test
+    public void shouldUpdateEnrollmentIfAlreadyAvailable() {
+        Milestone milestone = new Milestone("first_milestone", new WallTime(13, WallTimeUnit.Week), new WallTime(14, WallTimeUnit.Week), new WallTime(16, WallTimeUnit.Week), null);
+        Schedule schedule = new Schedule("schedule_name");
+        schedule.addMilestones(milestone);
+
+        Enrollment enrollment = new Enrollment("1324324", "schedule_name", "first_milestone", DateUtil.today(), DateUtil.today(), new Time(DateUtil.now().toLocalTime()));
         allEnrollments.add(enrollment);
-        Enrollment enrollmentWithUpdates = new Enrollment(enrollment.getExternalId(), schedule, enrollment.getReferenceDate().plusDays(1), enrollment.getEnrollmentDate().plusDays(1), new Time(DateUtil.now().toLocalTime()), schedule.getMilestones().get(0).getName());
+        Enrollment enrollmentWithUpdates = new Enrollment(enrollment.getExternalId(), "schedule_name", "first_milestone", enrollment.getReferenceDate().plusDays(1), enrollment.getEnrollmentDate().plusDays(1), new Time(DateUtil.now().toLocalTime()));
         allEnrollments.addOrReplace(enrollmentWithUpdates);
 
         enrollment = allEnrollments.findByExternalIdAndScheduleName(enrollment.getExternalId(), schedule.getName());
-		assertEquals(enrollmentWithUpdates.getExternalId(), enrollment.getExternalId());
+        assertEquals(enrollmentWithUpdates.getExternalId(), enrollment.getExternalId());
         assertEquals(enrollmentWithUpdates.getReferenceDate(), enrollment.getReferenceDate());
         assertEquals(enrollmentWithUpdates.getEnrollmentDate(), enrollment.getEnrollmentDate());
+
+        allEnrollments.remove(enrollment);
+    }
+
+    private Enrollment createEnrollment(String externalId, String scheduleName, String milestoneName, LocalDate referenceDate, LocalDate enrollmentDate, Time preferredTime, boolean active) {
+        Enrollment enrollment = new Enrollment(externalId, scheduleName, milestoneName, referenceDate, enrollmentDate, preferredTime);
+        if (!active)
+            enrollment.setActive(active);
+        allEnrollments.add(enrollment);
+        createdEnrollments.add(enrollment);
+        return enrollment;
     }
 }
