@@ -20,6 +20,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 
+import java.util.HashMap;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
@@ -106,30 +107,23 @@ public class KookooCallDetailRecordsServiceImplTest {
         KookooIVRResponseBuilder ivrResponseBuilder = new KookooIVRResponseBuilder();
         ivrResponseBuilder.withPlayAudios("abcd");
         String response = "gdfgfdgfdg";
-        kookooCallDetailRecordsService.appendToLastCallEvent(callDetailRecordId, ivrResponseBuilder, response);
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put(CallEventConstants.CUSTOM_DATA_LIST, response);
+
+        kookooCallDetailRecordsService.appendToLastCallEvent(callDetailRecordId, map);
         List<CallEvent> callEvents = kookooCallDetailRecord.getCallDetailRecord().getCallEvents();
         assertEquals(1, callEvents.size());
         assertEquals(response, callEvents.get(0).getData().getFirst(CallEventConstants.CUSTOM_DATA_LIST));
     }
-    
-    @Test
-    public void appendLastCallEventShouldNotAppendIfResponseIsEmpty() {
-        kookooCallDetailRecordsService.appendEvent(callDetailRecordId, IVREvent.GotDTMF, "1");
-        KookooIVRResponseBuilder ivrResponseBuilder = new KookooIVRResponseBuilder();
-        String response = "asada";
-        kookooCallDetailRecordsService.appendToLastCallEvent(callDetailRecordId, ivrResponseBuilder, response);
-        List<CallEvent> callEvents = kookooCallDetailRecord.getCallDetailRecord().getCallEvents();
-        assertEquals(1, callEvents.size());
-        assertEquals(null, callEvents.get(0).getData().getAll(CallEventConstants.CUSTOM_DATA_LIST));
-    }
-
+   
     @Test
     public void scenario1() {
         kookooCallDetailRecordsService.appendEvent(callDetailRecordId, IVREvent.GotDTMF, "1");
         kookooCallDetailRecordsService.appendEvent(callDetailRecordId, IVREvent.GotDTMF, "");
-        KookooIVRResponseBuilder ivrResponseBuilder = new KookooIVRResponseBuilder().withPlayAudios("foo");
         String response = "asada";
-        kookooCallDetailRecordsService.appendToLastCallEvent(callDetailRecordId, ivrResponseBuilder, response);
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put(CallEventConstants.CUSTOM_DATA_LIST, response);
+        kookooCallDetailRecordsService.appendToLastCallEvent(callDetailRecordId, map);
         List<CallEvent> callEvents = kookooCallDetailRecord.getCallDetailRecord().getCallEvents();
         assertEquals(1, callEvents.size());
         assertEquals(response, callEvents.get(0).getData().getFirst(CallEventConstants.CUSTOM_DATA_LIST));

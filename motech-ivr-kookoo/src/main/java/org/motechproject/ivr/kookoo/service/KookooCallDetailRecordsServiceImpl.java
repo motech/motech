@@ -5,7 +5,6 @@ import org.motechproject.context.EventContext;
 import org.motechproject.event.EventRelay;
 import org.motechproject.ivr.event.CallEvent;
 import org.motechproject.ivr.event.IVREvent;
-import org.motechproject.ivr.kookoo.KookooIVRResponseBuilder;
 import org.motechproject.ivr.kookoo.domain.KookooCallDetailRecord;
 import org.motechproject.ivr.kookoo.eventlogging.CallEventConstants;
 import org.motechproject.ivr.kookoo.repository.AllKooKooCallDetailRecords;
@@ -68,10 +67,11 @@ public class KookooCallDetailRecordsServiceImpl implements KookooCallDetailRecor
     }
 
     @Override
-    public void appendToLastCallEvent(String callDetailRecordID, KookooIVRResponseBuilder ivrResponseBuilder, String response) {
+    public void appendToLastCallEvent(String callDetailRecordID, HashMap<String, String> map) {
         KookooCallDetailRecord callDetailRecord = get(callDetailRecordID);
-        if (ivrResponseBuilder.isEmpty()) return;
-        callDetailRecord.appendToLastEvent(CallEventConstants.CUSTOM_DATA_LIST, response);
+        for(String key : map.keySet()){
+            callDetailRecord.appendToLastEvent(key, map.get(key));
+        }
         allKooKooCallDetailRecords.update(callDetailRecord);
     }
 

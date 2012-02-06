@@ -5,6 +5,7 @@ import org.motechproject.ivr.event.IVREvent;
 import org.motechproject.ivr.kookoo.KooKooIVRContext;
 import org.motechproject.ivr.kookoo.KookooIVRResponseBuilder;
 import org.motechproject.ivr.kookoo.KookooRequest;
+import org.motechproject.ivr.kookoo.eventlogging.CallEventConstants;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
 import org.motechproject.ivr.message.IVRMessage;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 
 public abstract class SafeIVRController {
     static final String NEW_CALL_URL_ACTION = "newcall";
@@ -68,7 +70,9 @@ public abstract class SafeIVRController {
                     kookooIVRResponseBuilder = gotDTMF(ivrContext);
             }
             String responseXML = kookooIVRResponseBuilder.create(ivrMessage);
-            callDetailRecordsService.appendToLastCallEvent(ivrContext.callDetailRecordId(), kookooIVRResponseBuilder, responseXML);
+            HashMap<String, String> map = new HashMap<String, String>();
+            map.put(CallEventConstants.CUSTOM_DATA_LIST, responseXML);
+            callDetailRecordsService.appendToLastCallEvent(ivrContext.callDetailRecordId(), map);
             if (kookooIVRResponseBuilder.isHangUp()) standardResponseController.prepareForHangup(ivrContext);
             logger.info(String.format(" XML returned: %s", responseXML));
             return responseXML;
