@@ -5,6 +5,9 @@ import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.Time;
 
 import java.util.Date;
+import java.util.List;
+
+import static org.motechproject.model.DayOfWeek.getDayOfWeek;
 
 public class DateUtil {
     public static DateTime now() {
@@ -76,4 +79,19 @@ public class DateUtil {
         return period.getYears();
     }
 
+    public static DateTime nextApplicableWeekDay(DateTime fromDate, List<DayOfWeek> applicableDays) {
+        fromDate = fromDate.dayOfMonth().addToCopy(1);
+        int dayOfWeek = fromDate.getDayOfWeek();
+        int noOfDaysToNearestCycleDate = 0;
+        int WEEK_MAX_DAY = DayOfWeek.Sunday.getValue();
+        for (int currentDayOfWeek = dayOfWeek, dayCount = 0; dayCount <= WEEK_MAX_DAY; dayCount++) {
+            if (applicableDays.contains(getDayOfWeek(currentDayOfWeek))) {
+                noOfDaysToNearestCycleDate = dayCount;
+                break;
+            }
+            if (currentDayOfWeek == WEEK_MAX_DAY) currentDayOfWeek = 1;
+            else currentDayOfWeek++;
+        }
+        return fromDate.dayOfMonth().addToCopy(noOfDaysToNearestCycleDate);
+    }
 }
