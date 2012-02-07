@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.LocalDate;
@@ -22,7 +23,7 @@ public class Enrollment extends MotechBaseDataObject {
     private String currentMilestoneName;
     private LocalDate referenceDate;
     private Time preferredAlertTime;
-    private boolean active;
+    private EnrollmentStatus status;
     private List<MilestoneFulfillment> fulfillments = new LinkedList<MilestoneFulfillment>();
 
     // For ektorp
@@ -36,7 +37,7 @@ public class Enrollment extends MotechBaseDataObject {
         this.enrollmentDate = enrollmentDate;
         this.referenceDate = referenceDate;
         this.preferredAlertTime = preferredAlertTime;
-        this.active = true;
+        this.status = EnrollmentStatus.Active;
     }
 
     public String getScheduleName() {
@@ -78,8 +79,9 @@ public class Enrollment extends MotechBaseDataObject {
         return fulfillments.get(fulfillments.size() - 1).getDateFulfilled();
     }
 
+    @JsonIgnore
     public boolean isActive() {
-        return active;
+        return enrollmentDate.equals(EnrollmentStatus.Active);
     }
 
     // ektorp methods follow
@@ -111,7 +113,7 @@ public class Enrollment extends MotechBaseDataObject {
         this.preferredAlertTime = preferredAlertTime;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setStatus(EnrollmentStatus status) {
+        this.status = status;
     }
 }

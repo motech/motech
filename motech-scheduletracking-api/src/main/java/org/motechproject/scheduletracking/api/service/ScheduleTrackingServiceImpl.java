@@ -56,7 +56,7 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
         if (activeEnrollment == null)
             throw new InvalidEnrollmentException("entity is not currently enrolled into the schedule.");
         enrollmentService.unscheduleAllAlerts(activeEnrollment);
-        activeEnrollment.setActive(false);
+        activeEnrollment.setStatus(EnrollmentStatus.Unenrolled);
         allEnrollments.update(activeEnrollment);
     }
 }
