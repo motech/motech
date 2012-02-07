@@ -2,6 +2,7 @@ package org.motechproject.scheduletracking.api.domain;
 
 import org.junit.Test;
 
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
@@ -31,20 +32,6 @@ public class EnrollmentTest {
     }
 
     @Test
-    public void shouldMarkAMilestoneAsFulfilled() {
-        Schedule schedule = new Schedule("Yellow Fever Vaccination");
-        Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        schedule.addMilestones(firstMilestone, secondMilestone);
-        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(5), weeksAgo(3), null);
-
-        enrollment.fulfillCurrentMilestone(secondMilestone.getName());
-
-        assertEquals(secondMilestone.getName(), enrollment.getCurrentMilestoneName());
-        assertEquals(1, enrollment.getFulfillments().size());
-    }
-
-    @Test
     public void shouldReNullWhenNoMilestoneIsFulfilledlled() {
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
         Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
@@ -62,9 +49,14 @@ public class EnrollmentTest {
         Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         schedule.addMilestones(firstMilestone, secondMilestone);
         Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(5), weeksAgo(3), null);
-
-        enrollment.fulfillCurrentMilestone("Second Shot");
+        enrollment.getFulfillments().add(new MilestoneFulfillment("First Shot", weeksAgo(0)));
 
         assertEquals(weeksAgo(0), enrollment.getLastFulfilledDate());
+    }
+    
+    @Test
+    public void newEnrollmentShouldBeActive() {
+        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(5), weeksAgo(3), null);
+        assertTrue(enrollment.isActive());
     }
 }

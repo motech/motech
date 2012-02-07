@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.service;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -11,11 +12,14 @@ import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.events.MilestoneEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventSubject;
+import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.WallTimeUnit;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.*;
@@ -31,11 +35,34 @@ public class EnrollmentServiceTest {
     private AllTrackedSchedules allTrackedSchedules;
     @Mock
     private MotechSchedulerService schedulerService;
+    @Mock
+    private AllEnrollments allEnrollments;
 
     @Before
     public void setup() {
         initMocks(this);
-        enrollmentService = new EnrollmentService(allTrackedSchedules, schedulerService);
+        enrollmentService = new EnrollmentService(allTrackedSchedules, schedulerService, allEnrollments);
+    }
+
+    @Test
+    public void shouldSaveEnrollment() {
+        Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        milestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 3, 0));
+        milestone.addAlert(WindowName.due, new Alert(new WallTime(1, WallTimeUnit.Week), 2, 1));
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(milestone);
+        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(0), weeksAgo(0), new Time(8, 10));
+
+        enrollmentService.enroll(enrollment);
+
+        ArgumentCaptor<Enrollment> enrollmentArgumentCaptor = ArgumentCaptor.forClass(Enrollment.class);
+        verify(allEnrollments).add(enrollmentArgumentCaptor.capture());
+
+        enrollment = enrollmentArgumentCaptor.getValue();
+        assertEquals("entity_1", enrollment.getExternalId());
+        assertEquals("my_schedule", enrollment.getScheduleName());
+        assertEquals("milestone", enrollment.getCurrentMilestoneName());
     }
 
     @Test
@@ -48,7 +75,7 @@ public class EnrollmentServiceTest {
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
         Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(0), weeksAgo(0), new Time(8, 10));
 
-        enrollmentService.scheduleAlertsForCurrentMilestone(enrollment);
+        enrollmentService.enroll(enrollment);
 
         ArgumentCaptor<RepeatingSchedulableJob> repeatJobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
         verify(schedulerService, times(2)).safeScheduleRepeatingJob(repeatJobCaptor.capture());
@@ -88,7 +115,7 @@ public class EnrollmentServiceTest {
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
         Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(0), weeksAgo(0), new Time(8, 10));
 
-        enrollmentService.scheduleAlertsForCurrentMilestone(enrollment);
+        enrollmentService.enroll(enrollment);
 
         verify(schedulerService, times(0)).scheduleRepeatingJob(Matchers.<RepeatingSchedulableJob>any());
     }
@@ -102,7 +129,7 @@ public class EnrollmentServiceTest {
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
         Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone_1", daysAgo(6), daysAgo(0), new Time(8, 10));
 
-        enrollmentService.scheduleAlertsForCurrentMilestone(enrollment);
+        enrollmentService.enroll(enrollment);
 
         ArgumentCaptor<RepeatingSchedulableJob> repeatJobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
         verify(schedulerService).safeScheduleRepeatingJob(repeatJobCaptor.capture());
@@ -123,7 +150,7 @@ public class EnrollmentServiceTest {
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
         Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone_1", weeksAgo(1), weeksAgo(0), new Time(8, 10));
 
-        enrollmentService.scheduleAlertsForCurrentMilestone(enrollment);
+        enrollmentService.enroll(enrollment);
         verify(schedulerService, times(0)).scheduleRepeatingJob(Matchers.<RepeatingSchedulableJob>any());
     }
 
@@ -138,7 +165,7 @@ public class EnrollmentServiceTest {
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
         Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone_2", weeksAgo(4), weeksAgo(0), new Time(8, 10));
 
-        enrollmentService.scheduleAlertsForCurrentMilestone(enrollment);
+        enrollmentService.enroll(enrollment);
 
         ArgumentCaptor<RepeatingSchedulableJob> repeatJobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
         verify(schedulerService).safeScheduleRepeatingJob(repeatJobCaptor.capture());
@@ -242,5 +269,43 @@ public class EnrollmentServiceTest {
         enrollmentService.fulfillCurrentMilestone(enrollment);
 
         assertEquals(null, enrollment.getCurrentMilestoneName());
+    }
+
+    @Test
+    public void shouldCompleteEnrollmentWhenAllMilestonesAreFulfilled() {
+        Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Schedule schedule = new Schedule("Yellow Fever Vaccination");
+        schedule.addMilestones(firstMilestone, secondMilestone);
+        when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
+
+        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(4), weeksAgo(4), new Time(8, 20));
+        enrollmentService.fulfillCurrentMilestone(enrollment);
+        enrollmentService.fulfillCurrentMilestone(enrollment);
+
+        assertTrue(enrollment.isCompleted());
+    }
+
+    @Test
+    public void shouldUnenrollEntityFromTheSchedule() {
+        Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        milestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 3, 0));
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(milestone);
+        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
+
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(4), weeksAgo(4), new Time(8, 10));
+        enrollment.setId("enrollment_1");
+        enrollmentService.unenroll(enrollment);
+
+        ArgumentCaptor<Enrollment> enrollmentCaptor = ArgumentCaptor.forClass(Enrollment.class);
+        verify(allEnrollments).update(enrollmentCaptor.capture());
+
+        enrollment = enrollmentCaptor.getValue();
+        Assert.assertEquals("entity_1", enrollment.getExternalId());
+        Assert.assertEquals("my_schedule", enrollment.getScheduleName());
+        assertFalse(enrollment.isActive());
+
+        verify(schedulerService).unscheduleAllJobs(EventSubject.BASE_SUBJECT + ".enrollment_1");
     }
 }

@@ -9,6 +9,7 @@ import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.events.MilestoneEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventSubject;
+import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +23,22 @@ public class EnrollmentService {
     private int MILLIS_IN_A_DAY = 24 * 60 * 60 * 1000;
 
     private AllTrackedSchedules allTrackedSchedules;
+    private AllEnrollments allEnrollments;
     private MotechSchedulerService schedulerService;
 
     @Autowired
-    public EnrollmentService(AllTrackedSchedules allTrackedSchedules, MotechSchedulerService schedulerService) {
+    public EnrollmentService(AllTrackedSchedules allTrackedSchedules, MotechSchedulerService schedulerService, AllEnrollments allEnrollments) {
         this.allTrackedSchedules = allTrackedSchedules;
         this.schedulerService = schedulerService;
+        this.allEnrollments = allEnrollments;
     }
 
-    public void scheduleAlertsForCurrentMilestone(Enrollment enrollment) {
+    public void enroll(Enrollment enrollment) {
+        allEnrollments.add(enrollment);
+        scheduleAlertsForCurrentMilestone(enrollment);
+    }
+
+    private void scheduleAlertsForCurrentMilestone(Enrollment enrollment) {
         Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
         Milestone currentMilestone = schedule.getMilestone(enrollment.getCurrentMilestoneName());
         if (currentMilestone == null)
@@ -84,12 +92,22 @@ public class EnrollmentService {
             throw new NoMoreMilestonesToFulfillException("all milestones in the schedule have been fulfilled.");
         else {
             unscheduleAllAlerts(enrollment);
-            enrollment.fulfillCurrentMilestone(schedule.getNextMilestoneName(currentMilestoneName));
+            enrollment.getFulfillments().add(new MilestoneFulfillment(currentMilestoneName, today()));
+            String nextMilestoneName = schedule.getNextMilestoneName(currentMilestoneName);
+            enrollment.setCurrentMilestoneName(nextMilestoneName);
+            if (nextMilestoneName == null)
+                enrollment.setStatus(Enrollment.EnrollmentStatus.Completed);
             scheduleAlertsForCurrentMilestone(enrollment);
         }
     }
 
-    void unscheduleAllAlerts(Enrollment enrollment) {
+    public void unenroll(Enrollment enrollment) {
+        unscheduleAllAlerts(enrollment);
+        enrollment.setStatus(Enrollment.EnrollmentStatus.Unenrolled);
+        allEnrollments.update(enrollment);
+    }
+
+    private void unscheduleAllAlerts(Enrollment enrollment) {
         schedulerService.unscheduleAllJobs(EventSubject.BASE_SUBJECT + "." + enrollment.getId());
     }
 }

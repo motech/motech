@@ -14,6 +14,10 @@ import java.util.List;
 @TypeDiscriminator("doc.type === 'Enrollment'")
 public class Enrollment extends MotechBaseDataObject {
 
+    public enum EnrollmentStatus {
+        Active, Defaulted, Completed, Unenrolled
+    }
+
     @JsonProperty
     private LocalDate enrollmentDate;
 
@@ -68,11 +72,6 @@ public class Enrollment extends MotechBaseDataObject {
         return fulfillments;
     }
 
-    public void fulfillCurrentMilestone(String nextMilestoneName) {
-        fulfillments.add(new MilestoneFulfillment(currentMilestoneName, DateUtil.today()));
-        currentMilestoneName = nextMilestoneName;
-    }
-
     public LocalDate getLastFulfilledDate() {
         if (fulfillments.isEmpty())
             return null;
@@ -81,16 +80,25 @@ public class Enrollment extends MotechBaseDataObject {
 
     @JsonIgnore
     public boolean isActive() {
-        return enrollmentDate.equals(EnrollmentStatus.Active);
+        return status.equals(EnrollmentStatus.Active);
+    }
+
+    @JsonIgnore
+    public boolean isCompleted() {
+        return status.equals(EnrollmentStatus.Completed);
+    }
+
+    public void setCurrentMilestoneName(String currentMilestoneName) {
+        this.currentMilestoneName = currentMilestoneName;
+    }
+
+    public void setStatus(EnrollmentStatus status) {
+        this.status = status;
     }
 
     // ektorp methods follow
     private String getType() {
         return type;
-    }
-
-    private void setCurrentMilestoneName(String currentMilestoneName) {
-        this.currentMilestoneName = currentMilestoneName;
     }
 
     private void setScheduleName(String scheduleName) {
@@ -111,9 +119,5 @@ public class Enrollment extends MotechBaseDataObject {
 
     public void setPreferredAlertTime(Time preferredAlertTime) {
         this.preferredAlertTime = preferredAlertTime;
-    }
-
-    public void setStatus(EnrollmentStatus status) {
-        this.status = status;
     }
 }

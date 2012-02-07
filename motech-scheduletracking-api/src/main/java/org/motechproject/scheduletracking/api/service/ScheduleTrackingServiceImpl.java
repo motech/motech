@@ -8,6 +8,8 @@ import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static org.motechproject.util.DateUtil.today;
+
 @Component
 public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
 
@@ -24,25 +26,20 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
 
     @Override
     public void enroll(EnrollmentRequest enrollmentRequest) {
-        String externalId = enrollmentRequest.getExternalId();
-        String scheduleName = enrollmentRequest.getScheduleName();
-        LocalDate referenceDate = enrollmentRequest.getReferenceDate();
-
-        Schedule schedule = allTrackedSchedules.getByName(scheduleName);
-        if (schedule == null) {
-            throw new ScheduleTrackingException("No schedule with name: %s", scheduleName);
-        }
-
         if (allEnrollments.findActiveByExternalIdAndScheduleName(enrollmentRequest.getExternalId(), enrollmentRequest.getScheduleName()) != null)
             throw new ActiveEnrollmentExistsException("entity already has an active enrollment. unenroll the entity before enrolling in the same schedule.");
 
-        Enrollment enrollment;
+        Schedule schedule = allTrackedSchedules.getByName(enrollmentRequest.getScheduleName());
+        if (schedule == null)
+            throw new ScheduleTrackingException("No schedule with name: %s", enrollmentRequest.getScheduleName());
+
+        String startingMilestoneName;
         if (enrollmentRequest.enrollIntoMilestone())
-            enrollment = new Enrollment(externalId, scheduleName, enrollmentRequest.getStartingMilestoneName(), referenceDate, DateUtil.today(), enrollmentRequest.getPreferredAlertTime());
+            startingMilestoneName = enrollmentRequest.getStartingMilestoneName();
         else
-            enrollment = new Enrollment(externalId, scheduleName, schedule.getFirstMilestone().getName(), referenceDate, DateUtil.today(), enrollmentRequest.getPreferredAlertTime());
-        allEnrollments.add(enrollment);
-        enrollmentService.scheduleAlertsForCurrentMilestone(enrollment);
+            startingMilestoneName = schedule.getFirstMilestone().getName();
+
+        enrollmentService.enroll(new Enrollment(enrollmentRequest.getExternalId(), enrollmentRequest.getScheduleName(), startingMilestoneName, enrollmentRequest.getReferenceDate(), today(), enrollmentRequest.getPreferredAlertTime()));
     }
 
     @Override
@@ -55,8 +52,6 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
         Enrollment activeEnrollment = allEnrollments.findActiveByExternalIdAndScheduleName(externalId, scheduleName);
         if (activeEnrollment == null)
             throw new InvalidEnrollmentException("entity is not currently enrolled into the schedule.");
-        enrollmentService.unscheduleAllAlerts(activeEnrollment);
-        activeEnrollment.setStatus(EnrollmentStatus.Unenrolled);
-        allEnrollments.update(activeEnrollment);
+        enrollmentService.unenroll(activeEnrollment);
     }
 }
