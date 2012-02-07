@@ -82,17 +82,6 @@ public class Enrollment extends MotechBaseDataObject {
         return active;
     }
 
-    public Enrollment copyFrom(Enrollment enrollment) {
-        enrollmentDate = enrollment.getEnrollmentDate();
-        externalId = enrollment.getExternalId();
-        scheduleName = enrollment.getScheduleName();
-        currentMilestoneName = enrollment.getCurrentMilestoneName();
-        referenceDate = enrollment.getReferenceDate();
-        preferredAlertTime = enrollment.getPreferredAlertTime();
-        active = enrollment.isActive();
-        return this;
-    }
-
     // ektorp methods follow
     private String getType() {
         return type;
