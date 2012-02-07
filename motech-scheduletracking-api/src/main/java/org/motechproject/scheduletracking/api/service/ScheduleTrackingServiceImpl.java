@@ -1,10 +1,8 @@
 package org.motechproject.scheduletracking.api.service;
 
-import org.joda.time.LocalDate;
 import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
-import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
