@@ -166,9 +166,4 @@ public class KooKooIVRContextForTest extends KooKooIVRContext {
     public boolean isValidSession() {
         return isValidSession;
     }
-    
-    @Override
-    public HashMap<String, String> dataToLog() {
-        return new HashMap<String, String>();
-    }
 }
