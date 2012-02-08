@@ -1,7 +1,9 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import junit.framework.Assert;
 import org.junit.Test;
 
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;

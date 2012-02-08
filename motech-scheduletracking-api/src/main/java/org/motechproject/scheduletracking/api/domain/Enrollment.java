@@ -14,22 +14,23 @@ import java.util.List;
 @TypeDiscriminator("doc.type === 'Enrollment'")
 public class Enrollment extends MotechBaseDataObject {
 
-    public enum EnrollmentStatus {
-        Active, Defaulted, Completed, Unenrolled
-    }
 
+
+    public enum EnrollmentStatus {
+        Active, Defaulted, Completed, Unenrolled;
+    }
     @JsonProperty
     private LocalDate enrollmentDate;
 
     private String externalId;
 
     private String scheduleName;
+
     private String currentMilestoneName;
     private LocalDate referenceDate;
     private Time preferredAlertTime;
     private EnrollmentStatus status;
     private List<MilestoneFulfillment> fulfillments = new LinkedList<MilestoneFulfillment>();
-
     // For ektorp
     private Enrollment() {
     }
