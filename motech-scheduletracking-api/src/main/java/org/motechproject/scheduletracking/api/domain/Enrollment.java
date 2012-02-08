@@ -15,18 +15,18 @@ import java.util.List;
 public class Enrollment extends MotechBaseDataObject {
 
 
-
     public enum EnrollmentStatus {
         Active, Defaulted, Completed, Unenrolled;
+
     }
     @JsonProperty
     private LocalDate enrollmentDate;
-
     private String externalId;
 
     private String scheduleName;
 
     private String currentMilestoneName;
+
     private LocalDate referenceDate;
     private Time preferredAlertTime;
     private EnrollmentStatus status;
@@ -34,7 +34,6 @@ public class Enrollment extends MotechBaseDataObject {
     // For ektorp
     private Enrollment() {
     }
-
     public Enrollment(String externalId, String scheduleName, String currentMilestoneName, LocalDate referenceDate, LocalDate enrollmentDate, Time preferredAlertTime) {
         this.externalId = externalId;
         this.scheduleName = scheduleName;
@@ -87,6 +86,11 @@ public class Enrollment extends MotechBaseDataObject {
     @JsonIgnore
     public boolean isCompleted() {
         return status.equals(EnrollmentStatus.Completed);
+    }
+
+    @JsonIgnore
+    public boolean isDefaulted() {
+        return status.equals(EnrollmentStatus.Defaulted);
     }
 
     public void setCurrentMilestoneName(String currentMilestoneName) {

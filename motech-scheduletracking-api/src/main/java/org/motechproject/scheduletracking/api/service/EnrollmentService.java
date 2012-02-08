@@ -1,9 +1,6 @@
 package org.motechproject.scheduletracking.api.service;
 
-import org.motechproject.scheduletracking.api.domain.Enrollment;
-import org.motechproject.scheduletracking.api.domain.MilestoneFulfillment;
-import org.motechproject.scheduletracking.api.domain.NoMoreMilestonesToFulfillException;
-import org.motechproject.scheduletracking.api.domain.Schedule;
+import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,19 +34,19 @@ public class EnrollmentService {
         Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
         if (enrollment.getFulfillments().size() >= schedule.getMilestones().size())
             throw new NoMoreMilestonesToFulfillException("all milestones in the schedule have been fulfilled.");
-        else {
-            enrollmentAlertService.unscheduleAllAlerts(enrollment);
-            enrollmentDefaultmentService.unscheduleDefaultmentCaptureJob(enrollment);
+        if (enrollment.isDefaulted())
+            throw new MilestoneFulfillmentException("cannot fulfill milestone for a defaulted enrollment.");
+        enrollmentAlertService.unscheduleAllAlerts(enrollment);
+        enrollmentDefaultmentService.unscheduleDefaultmentCaptureJob(enrollment);
 
-            enrollment.getFulfillments().add(new MilestoneFulfillment(enrollment.getCurrentMilestoneName(), today()));
-            String nextMilestoneName = schedule.getNextMilestoneName(enrollment.getCurrentMilestoneName());
-            enrollment.setCurrentMilestoneName(nextMilestoneName);
-            if (nextMilestoneName == null)
-                enrollment.setStatus(Enrollment.EnrollmentStatus.Completed);
+        enrollment.getFulfillments().add(new MilestoneFulfillment(enrollment.getCurrentMilestoneName(), today()));
+        String nextMilestoneName = schedule.getNextMilestoneName(enrollment.getCurrentMilestoneName());
+        enrollment.setCurrentMilestoneName(nextMilestoneName);
+        if (nextMilestoneName == null)
+            enrollment.setStatus(Enrollment.EnrollmentStatus.Completed);
 
-            enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
-            enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
-        }
+        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
+        enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
     }
 
     public void unenroll(Enrollment enrollment) {

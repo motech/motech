@@ -102,6 +102,20 @@ public class EnrollmentServiceTest {
         verify(enrollmentDefaultmentService).scheduleJobToCaptureDefaultment(updatedEnrollmentCaptor.capture());
         assertEquals("Second Shot", updatedEnrollmentCaptor.getValue().getCurrentMilestoneName());
     }
+    
+    @Test(expected = MilestoneFulfillmentException.class)
+    public void shouldNotFulfillADefaultedMilestone() {
+        Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        secondMilestone.addAlert(WindowName.earliest, new Alert(wallTimeOf(1), 3, 0));
+        Schedule schedule = new Schedule("Yellow Fever Vaccination");
+        schedule.addMilestones(firstMilestone, secondMilestone);
+        when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
+
+        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(4), weeksAgo(4), new Time(8, 20));
+        enrollment.setStatus(Enrollment.EnrollmentStatus.Defaulted);
+        enrollmentService.fulfillCurrentMilestone(enrollment);
+    }
 
     @Test(expected = NoMoreMilestonesToFulfillException.class)
     public void shouldThrowExceptionIfAllMilestonesAreFulfilled() {
