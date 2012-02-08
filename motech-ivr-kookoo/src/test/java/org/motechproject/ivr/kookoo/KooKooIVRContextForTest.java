@@ -115,6 +115,11 @@ public class KooKooIVRContextForTest extends KooKooIVRContext {
     }
 
     @Override
+    public HashMap<String, String> dataToLog() {
+        return new HashMap<String, String>();
+    }
+
+    @Override
     public String callerId() {
         return callerId;
     }
