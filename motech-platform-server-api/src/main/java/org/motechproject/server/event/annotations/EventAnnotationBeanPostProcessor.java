@@ -1,6 +1,7 @@
 package org.motechproject.server.event.annotations;
 
 import org.motechproject.context.Context;
+import org.motechproject.server.event.EventListenerRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
@@ -62,7 +63,8 @@ public class EventAnnotationBeanPostProcessor implements BeanPostProcessor {
                             break;
                     }
                     logger.info(String.format("Registering listener type(%20s) bean: %s , method: %s, for subjects: %s", annotation.type().toString(), beanName, method.toGenericString(), subjects));
-                    Context.getInstance().getEventListenerRegistry().registerListener(proxy, subjects);
+                    EventListenerRegistry eventListenerRegistry = Context.getInstance().getEventListenerRegistry();
+                    if (eventListenerRegistry != null) eventListenerRegistry.registerListener(proxy, subjects);
                 }
             }
         });
