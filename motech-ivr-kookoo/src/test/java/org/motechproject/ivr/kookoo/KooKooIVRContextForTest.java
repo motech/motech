@@ -5,6 +5,7 @@ import org.motechproject.ivr.event.IVREvent;
 import org.motechproject.util.Cookies;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 
 public class KooKooIVRContextForTest extends KooKooIVRContext {
     private String userInput;
@@ -159,5 +160,10 @@ public class KooKooIVRContextForTest extends KooKooIVRContext {
     @Override
     public boolean isValidSession() {
         return isValidSession;
+    }
+    
+    @Override
+    public HashMap<String, String> dataToLog() {
+        return new HashMap<String, String>();
     }
 }
