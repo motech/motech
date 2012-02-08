@@ -87,12 +87,6 @@ public class KookooCallDetailRecordsServiceImplTest {
     }
     
     @Test
-    public void appendEventShouldNotAddTheEventIfUserInput_IsEmpty() {
-        kookooCallDetailRecordsService.appendEvent(callDetailRecordId, IVREvent.GotDTMF, "");
-        assertEquals(0, kookooCallDetailRecord.getCallDetailRecord().getCallEvents().size());
-    }
-
-    @Test
     public void appendEventShouldAddTheEventIfUserInput_IsNotEmpty() {
         String dtmfInput = "2";
         kookooCallDetailRecordsService.appendEvent(callDetailRecordId, IVREvent.GotDTMF, dtmfInput);
@@ -119,7 +113,6 @@ public class KookooCallDetailRecordsServiceImplTest {
     @Test
     public void scenario1() {
         kookooCallDetailRecordsService.appendEvent(callDetailRecordId, IVREvent.GotDTMF, "1");
-        kookooCallDetailRecordsService.appendEvent(callDetailRecordId, IVREvent.GotDTMF, "");
         String response = "asada";
         HashMap<String, String> map = new HashMap<String, String>();
         map.put(CallEventConstants.CUSTOM_DATA_LIST, response);

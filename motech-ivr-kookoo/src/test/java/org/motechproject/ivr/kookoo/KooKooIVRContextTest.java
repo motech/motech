@@ -4,11 +4,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.motechproject.ivr.kookoo.eventlogging.CallEventConstants;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -25,11 +27,11 @@ public class KooKooIVRContextTest {
     @Before
     public void setUp() {
         initMocks(this);
+        when(request.getSession()).thenReturn(session);
     }
 
     @Test
     public void shouldAddTreeToListOfCompletedTrees(){
-        when(request.getSession()).thenReturn(session);
         List<String> completedTrees = new ArrayList<String>() {{
             this.add("tree1");
         }};
@@ -43,7 +45,6 @@ public class KooKooIVRContextTest {
 
     @Test
     public void shouldAddFirstTreeToListOfCompletedTrees(){
-        when(request.getSession()).thenReturn(session);
         when(session.getAttribute(KooKooIVRContext.LIST_OF_COMPLETED_TREES)).thenReturn(null);
         ArgumentCaptor<ArrayList> valueCaptor = ArgumentCaptor.forClass(ArrayList.class);
         ArgumentCaptor<String> keyCaptor = ArgumentCaptor.forClass(String.class);
@@ -55,5 +56,21 @@ public class KooKooIVRContextTest {
         assertEquals(KooKooIVRContext.LIST_OF_COMPLETED_TREES, keyCaptor.getAllValues().get(0));
         assertEquals(1, valueCaptor.getValue().size());
         assertTrue(valueCaptor.getValue().contains("lastTreeName"));
+    }
+
+    @Test
+    public void shouldStoreTreeName_InTheDataBucket(){
+        when(session.getAttribute(KooKooIVRContext.DATA_TO_LOG)).thenReturn(null);
+        KooKooIVRContext kooKooIVRContext = new KooKooIVRContext(null, request, null);
+
+        kooKooIVRContext.treeName("symptomTree");
+
+        ArgumentCaptor<Map> dataBucketMapCaptor = ArgumentCaptor.forClass(Map.class);
+        ArgumentCaptor<String> keyCaptor = ArgumentCaptor.forClass(String.class);
+
+        verify(session).setAttribute(keyCaptor.capture(), dataBucketMapCaptor.capture());
+        assertEquals(KooKooIVRContext.DATA_TO_LOG, keyCaptor.getValue());
+        assertEquals(1, dataBucketMapCaptor.getValue().size());
+        assertEquals("symptomTree", dataBucketMapCaptor.getValue().get(CallEventConstants.TREE_NAME));
     }
 }

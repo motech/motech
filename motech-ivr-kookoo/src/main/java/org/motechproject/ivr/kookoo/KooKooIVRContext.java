@@ -1,13 +1,16 @@
 package org.motechproject.ivr.kookoo;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.ivr.kookoo.eventlogging.CallEventConstants;
 import org.motechproject.ivr.model.CallDirection;
 import org.motechproject.ivr.model.IVRStatus;
 import org.motechproject.util.Cookies;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class KooKooIVRContext {
     private KookooRequest kooKooRequest;
@@ -22,6 +25,7 @@ public class KooKooIVRContext {
     public static final String POUND_SYMBOL = "%23";
     public static final String CALL_ID = "call_id";
     public static final String LIST_OF_COMPLETED_TREES = "list_of_completed_trees";
+    public static final String DATA_TO_LOG = "data_to_log";
 
     protected KooKooIVRContext() {
     }
@@ -76,10 +80,27 @@ public class KooKooIVRContext {
 
     public void treeName(String treeName) {
         request.setAttribute(TREE_NAME_KEY, treeName);
+        HashMap<String, String> hashMap = new HashMap<String, String>();
+        hashMap.put(CallEventConstants.TREE_NAME, treeName);
+        dataToLog(hashMap);
     }
 
     public String treeName() {
         return (String) request.getAttribute(TREE_NAME_KEY);
+    }
+
+    public HashMap<String, String> dataToLog() {
+        HashMap<String, String> map = (HashMap<String, String>) request.getSession().getAttribute(DATA_TO_LOG);
+        return (map == null) ? new HashMap<String, String>() : map;
+    }
+
+    public void dataToLog(HashMap<String, String> map) {
+        HashMap<String, String> dataMap = (HashMap<String, String>) request.getSession().getAttribute(DATA_TO_LOG);
+        if (dataMap == null) {
+            request.getSession().setAttribute(DATA_TO_LOG, map);
+        } else {
+            dataMap.putAll(map);
+        }
     }
 
     public List<String> getListOfCompletedTrees() {

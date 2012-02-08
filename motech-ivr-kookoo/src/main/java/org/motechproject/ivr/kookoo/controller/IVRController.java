@@ -4,7 +4,6 @@ import org.apache.log4j.Logger;
 import org.motechproject.ivr.event.IVREvent;
 import org.motechproject.ivr.kookoo.KooKooIVRContext;
 import org.motechproject.ivr.kookoo.KookooRequest;
-import org.motechproject.ivr.kookoo.eventlogging.CallEventConstants;
 import org.motechproject.ivr.kookoo.extensions.CallFlowController;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
 
 @Controller
 @RequestMapping("/ivr")
@@ -63,9 +61,7 @@ public class IVRController {
                 String treeName = callFlowController.decisionTreeName(ivrContext);
                 ivrContext.treeName(treeName);
             }
-            HashMap<String, String> map = new HashMap<String, String>();
-            map.put(CallEventConstants.TREE_NAME, ivrContext.treeName());
-            kookooCallDetailRecordsService.appendToLastCallEvent(ivrContext.callDetailRecordId(), map);
+            kookooCallDetailRecordsService.appendToLastCallEvent(ivrContext.callDetailRecordId(), ivrContext.dataToLog());
             String transferURL = AllIVRURLs.springTransferUrl(url, ivrContext.ivrEvent().toLowerCase());
             logger.info(String.format("Transferring to %s", transferURL));
             return transferURL;

@@ -50,8 +50,6 @@ public class KookooCallDetailRecordsServiceImpl implements KookooCallDetailRecor
 
     @Override
     public void appendEvent(String callDetailRecordId, IVREvent callEvent, String userInput) {
-        if (IVREvent.GotDTMF.equals(callEvent) && StringUtils.isEmpty(userInput)) return;
-
         KookooCallDetailRecord kookooCallDetailRecord = appendToCallDetailRecord(callDetailRecordId, callEvent);
         if (!StringUtils.isEmpty(userInput)) {
             kookooCallDetailRecord.appendToLastEvent(CallEventConstants.DTMF_DATA, userInput);
