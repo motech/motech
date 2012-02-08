@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 public class EnrollmentDefaultmentService {
 
     public static final String DEFAULTMENT_CAPTURE = "defaultment_capture";
-    @Autowired
+
     private AllTrackedSchedules allTrackedSchedules;
     private MotechSchedulerService schedulerService;
 
@@ -25,7 +25,7 @@ public class EnrollmentDefaultmentService {
         this.schedulerService = schedulerService;
     }
 
-    public void scheduleJobsToCaptureDefaultment(Enrollment enrollment) {
+    public void scheduleJobToCaptureDefaultment(Enrollment enrollment) {
         Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
         Milestone currentMilestone = schedule.getMilestone(enrollment.getCurrentMilestoneName());
         if (currentMilestone == null)

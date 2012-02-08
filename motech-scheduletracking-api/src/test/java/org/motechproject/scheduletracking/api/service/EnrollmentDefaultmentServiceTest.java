@@ -39,7 +39,7 @@ public class EnrollmentDefaultmentServiceTest {
     }
 
     @Test
-    public void shouldScheduleJobsToCaptureDefaultmentState() {
+    public void shouldScheduleJobToCaptureDefaultmentState() {
         Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         milestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 3, 0));
         milestone.addAlert(WindowName.due, new Alert(new WallTime(1, WallTimeUnit.Week), 2, 1));
@@ -49,14 +49,14 @@ public class EnrollmentDefaultmentServiceTest {
         Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(0), weeksAgo(0), new Time(8, 10));
         enrollment.setId("enrollment_1");
 
-        enrollmentDefaultmentService.scheduleJobsToCaptureDefaultment(enrollment);
+        enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
 
         ArgumentCaptor<RepeatingSchedulableJob> repeatJobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
         verify(schedulerService).scheduleRepeatingJob(repeatJobCaptor.capture());
 
         RepeatingSchedulableJob job = repeatJobCaptor.getValue();
         DefaultmentCaptureEvent event = new DefaultmentCaptureEvent(job.getMotechEvent());
-        assertEquals(String.format("%s.%s.%s", EventSubject.BASE_SUBJECT, EnrollmentDefaultmentService.DEFAULTMENT_CAPTURE, enrollment.getId()), event.getJobId());
+        assertEquals(String.format("%s.%s.enrollment_1", EventSubject.BASE_SUBJECT, EnrollmentDefaultmentService.DEFAULTMENT_CAPTURE), event.getJobId());
         assertEquals(weeksAfter(2).toDate(), job.getStartTime());
         assertEquals(1, job.getRepeatCount().intValue());
     }

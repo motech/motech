@@ -26,7 +26,7 @@ public class DefaultmentCaptureEvent {
         HashMap<String, Object> data = new HashMap<String, Object>();
         data.put(EventDataKey.ENROLLMENT_ID, enrollmentId);
         data.put(MotechSchedulerService.JOB_ID_KEY, jobId);
-        return new MotechEvent(EventSubject.MILESTONE_ALERT, data);
+        return new MotechEvent(EventSubject.DEFAULTMENT_CAPTURE, data);
     }
 
     public String getEnrollmentId() {
