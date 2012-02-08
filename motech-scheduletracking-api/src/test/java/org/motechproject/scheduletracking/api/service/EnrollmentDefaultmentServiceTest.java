@@ -60,4 +60,14 @@ public class EnrollmentDefaultmentServiceTest {
         assertEquals(weeksAfter(2).toDate(), job.getStartTime());
         assertEquals(1, job.getRepeatCount().intValue());
     }
+
+    @Test
+    public void shouldUnscheduleDefaultmentCaptureJob() {
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(0), weeksAgo(0), new Time(8, 10));
+        enrollment.setId("enrollment_1");
+
+        enrollmentDefaultmentService.unscheduleDefaultmentCaptureJob(enrollment);
+
+        verify(schedulerService).unscheduleAllJobs(String.format("%s.%s.enrollment_1", EventSubject.BASE_SUBJECT, EnrollmentDefaultmentService.DEFAULTMENT_CAPTURE));
+    }
 }

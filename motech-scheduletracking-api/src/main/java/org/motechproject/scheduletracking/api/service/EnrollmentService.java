@@ -17,17 +17,20 @@ public class EnrollmentService {
     private AllTrackedSchedules allTrackedSchedules;
     private AllEnrollments allEnrollments;
     private EnrollmentAlertService enrollmentAlertService;
+    private EnrollmentDefaultmentService enrollmentDefaultmentService;
 
     @Autowired
-    public EnrollmentService(AllTrackedSchedules allTrackedSchedules, AllEnrollments allEnrollments, EnrollmentAlertService enrollmentAlertService) {
+    public EnrollmentService(AllTrackedSchedules allTrackedSchedules, AllEnrollments allEnrollments, EnrollmentAlertService enrollmentAlertService, EnrollmentDefaultmentService enrollmentDefaultmentService) {
         this.allTrackedSchedules = allTrackedSchedules;
         this.allEnrollments = allEnrollments;
         this.enrollmentAlertService = enrollmentAlertService;
+        this.enrollmentDefaultmentService = enrollmentDefaultmentService;
     }
 
     public void enroll(Enrollment enrollment) {
         allEnrollments.add(enrollment);
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
+        enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
     }
 
     public void fulfillCurrentMilestone(Enrollment enrollment) {
@@ -36,17 +39,22 @@ public class EnrollmentService {
             throw new NoMoreMilestonesToFulfillException("all milestones in the schedule have been fulfilled.");
         else {
             enrollmentAlertService.unscheduleAllAlerts(enrollment);
+            enrollmentDefaultmentService.unscheduleDefaultmentCaptureJob(enrollment);
+
             enrollment.getFulfillments().add(new MilestoneFulfillment(enrollment.getCurrentMilestoneName(), today()));
             String nextMilestoneName = schedule.getNextMilestoneName(enrollment.getCurrentMilestoneName());
             enrollment.setCurrentMilestoneName(nextMilestoneName);
             if (nextMilestoneName == null)
                 enrollment.setStatus(Enrollment.EnrollmentStatus.Completed);
+
             enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
+            enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
         }
     }
 
     public void unenroll(Enrollment enrollment) {
         enrollmentAlertService.unscheduleAllAlerts(enrollment);
+        enrollmentDefaultmentService.unscheduleDefaultmentCaptureJob(enrollment);
         enrollment.setStatus(Enrollment.EnrollmentStatus.Unenrolled);
         allEnrollments.update(enrollment);
     }

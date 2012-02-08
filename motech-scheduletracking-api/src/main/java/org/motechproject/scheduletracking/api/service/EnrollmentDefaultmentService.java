@@ -36,10 +36,15 @@ public class EnrollmentDefaultmentService {
         schedulerService.scheduleRepeatingJob(new RepeatingSchedulableJob(event, startOfLateWindow.toDate(), null, 1, 0));
     }
 
+    // TODO: duplicated from EnrollmentAlertService
     LocalDate getCurrentMilestoneStartDate(Enrollment enrollment) {
         Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
         if (enrollment.getCurrentMilestoneName().equals(schedule.getFirstMilestone().getName()))
             return enrollment.getReferenceDate();
         return (enrollment.getFulfillments().isEmpty())? enrollment.getEnrollmentDate() : enrollment.getLastFulfilledDate();
+    }
+
+    public void unscheduleDefaultmentCaptureJob(Enrollment enrollment) {
+        schedulerService.unscheduleAllJobs(String.format("%s.%s.%s", EventSubject.BASE_SUBJECT, DEFAULTMENT_CAPTURE, enrollment.getId()));
     }
 }

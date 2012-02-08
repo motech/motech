@@ -5,11 +5,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.Time;
-import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduletracking.api.domain.*;
-import org.motechproject.scheduletracking.api.events.constants.EventSubject;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.motechproject.valueobjects.WallTime;
@@ -33,11 +30,13 @@ public class EnrollmentServiceTest {
     private AllEnrollments allEnrollments;
     @Mock
     private EnrollmentAlertService enrollmentAlertService;
+    @Mock
+    private EnrollmentDefaultmentService enrollmentDefaultmentService;
 
     @Before
     public void setup() {
         initMocks(this);
-        enrollmentService = new EnrollmentService(allTrackedSchedules, allEnrollments, enrollmentAlertService);
+        enrollmentService = new EnrollmentService(allTrackedSchedules, allEnrollments, enrollmentAlertService, enrollmentDefaultmentService);
     }
 
     @Test
@@ -61,6 +60,7 @@ public class EnrollmentServiceTest {
         assertEquals("milestone", enrollment.getCurrentMilestoneName());
 
         verify(enrollmentAlertService).scheduleAlertsForCurrentMilestone(enrollment);
+        verify(enrollmentDefaultmentService).scheduleJobToCaptureDefaultment(enrollment);
     }
 
     @Test
@@ -80,7 +80,7 @@ public class EnrollmentServiceTest {
     }
 
     @Test
-    public void shouldScheduleAlertsForNextMilestoneWhenCurrentMilestoneIsFulfilled() {
+    public void shouldScheduleJobsForNextMilestoneWhenCurrentMilestoneIsFulfilled() {
         Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         secondMilestone.addAlert(WindowName.earliest, new Alert(wallTimeOf(1), 3, 0));
@@ -93,9 +93,13 @@ public class EnrollmentServiceTest {
         enrollmentService.fulfillCurrentMilestone(enrollment);
 
         verify(enrollmentAlertService).unscheduleAllAlerts(enrollment);
+        verify(enrollmentDefaultmentService).unscheduleDefaultmentCaptureJob(enrollment);
 
         ArgumentCaptor<Enrollment> updatedEnrollmentCaptor = ArgumentCaptor.forClass(Enrollment.class);
         verify(enrollmentAlertService).scheduleAlertsForCurrentMilestone(updatedEnrollmentCaptor.capture());
+        assertEquals("Second Shot", updatedEnrollmentCaptor.getValue().getCurrentMilestoneName());
+
+        verify(enrollmentDefaultmentService).scheduleJobToCaptureDefaultment(updatedEnrollmentCaptor.capture());
         assertEquals("Second Shot", updatedEnrollmentCaptor.getValue().getCurrentMilestoneName());
     }
 
@@ -151,5 +155,6 @@ public class EnrollmentServiceTest {
         assertFalse(enrollment.isActive());
 
         verify(enrollmentAlertService).unscheduleAllAlerts(enrollment);
+        verify(enrollmentDefaultmentService).unscheduleDefaultmentCaptureJob(enrollment);
     }
 }
