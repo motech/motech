@@ -2,12 +2,14 @@ package org.motechproject.scheduletracking.api.domain;
 
 import junit.framework.Assert;
 import org.junit.Test;
+import org.motechproject.model.Time;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
+import static org.motechproject.util.DateUtil.today;
 
 public class EnrollmentTest {
 
@@ -60,5 +62,20 @@ public class EnrollmentTest {
     public void newEnrollmentShouldBeActive() {
         Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(5), weeksAgo(3), null);
         assertTrue(enrollment.isActive());
+    }
+    
+    @Test
+    public void shouldCopyFromTheGivenEnrollment() {
+        Enrollment newEnrollment = new Enrollment("externalId", "scheduleName", "newCurrentMilestoneName", weeksAgo(2), today(), new Time(8, 10));
+        Enrollment originalEnrollment = new Enrollment("externalId", "scheduleName", "currentMilestoneName", weeksAgo(3), weeksAgo(2), new Time(2, 5));
+
+        Enrollment enrollment = originalEnrollment.copyFrom(newEnrollment);
+        
+        Assert.assertEquals(newEnrollment.getExternalId(), enrollment.getExternalId());
+        Assert.assertEquals(newEnrollment.getScheduleName(), enrollment.getScheduleName());
+        Assert.assertEquals(newEnrollment.getCurrentMilestoneName(), enrollment.getCurrentMilestoneName());
+        Assert.assertEquals(newEnrollment.getReferenceDate(), enrollment.getReferenceDate());
+        Assert.assertEquals(newEnrollment.getEnrollmentDate(), enrollment.getEnrollmentDate());
+        Assert.assertEquals(newEnrollment.getPreferredAlertTime(), enrollment.getPreferredAlertTime());
     }
 }

@@ -6,31 +6,24 @@ import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.LocalDate;
 import org.motechproject.model.MotechBaseDataObject;
 import org.motechproject.model.Time;
-import org.motechproject.util.DateUtil;
 
 import java.util.LinkedList;
 import java.util.List;
 
 @TypeDiscriminator("doc.type === 'Enrollment'")
 public class Enrollment extends MotechBaseDataObject {
-
-
-    public enum EnrollmentStatus {
-        Active, Defaulted, Completed, Unenrolled;
-
-    }
     @JsonProperty
     private LocalDate enrollmentDate;
-    private String externalId;
 
     private String scheduleName;
-
+    private String externalId;
     private String currentMilestoneName;
 
     private LocalDate referenceDate;
     private Time preferredAlertTime;
     private EnrollmentStatus status;
     private List<MilestoneFulfillment> fulfillments = new LinkedList<MilestoneFulfillment>();
+
     // For ektorp
     private Enrollment() {
     }
@@ -97,8 +90,20 @@ public class Enrollment extends MotechBaseDataObject {
         this.currentMilestoneName = currentMilestoneName;
     }
 
+    public EnrollmentStatus getStatus() {
+        return status;
+    }
+
     public void setStatus(EnrollmentStatus status) {
         this.status = status;
+    }
+
+    public Enrollment copyFrom(Enrollment enrollment) {
+        enrollmentDate = enrollment.getEnrollmentDate();
+        currentMilestoneName = enrollment.getCurrentMilestoneName();
+        referenceDate = enrollment.getReferenceDate();
+        preferredAlertTime = enrollment.getPreferredAlertTime();
+        return this;
     }
 
     // ektorp methods follow
@@ -122,7 +127,7 @@ public class Enrollment extends MotechBaseDataObject {
         this.referenceDate = referenceDate;
     }
 
-    public void setPreferredAlertTime(Time preferredAlertTime) {
+    private void setPreferredAlertTime(Time preferredAlertTime) {
         this.preferredAlertTime = preferredAlertTime;
     }
 }

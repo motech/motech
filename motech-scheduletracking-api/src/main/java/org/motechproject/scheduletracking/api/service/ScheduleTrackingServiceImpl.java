@@ -1,6 +1,9 @@
 package org.motechproject.scheduletracking.api.service;
 
 import org.motechproject.scheduletracking.api.domain.*;
+import org.motechproject.scheduletracking.api.domain.exception.ActiveEnrollmentExistsException;
+import org.motechproject.scheduletracking.api.domain.exception.InvalidEnrollmentException;
+import org.motechproject.scheduletracking.api.domain.exception.ScheduleTrackingException;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.springframework.beans.factory.annotation.Autowired;

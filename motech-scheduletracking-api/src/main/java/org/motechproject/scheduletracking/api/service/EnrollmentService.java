@@ -1,6 +1,10 @@
 package org.motechproject.scheduletracking.api.service;
 
 import org.motechproject.scheduletracking.api.domain.*;
+<<<<<<< HEAD
+=======
+import org.motechproject.scheduletracking.api.domain.exception.NoMoreMilestonesToFulfillException;
+>>>>>>> Sanchit | #1193 | Added addOrReplace to AllEnrollments for supporting idempotent operations.
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +38,7 @@ public class EnrollmentService {
         Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
         if (enrollment.getFulfillments().size() >= schedule.getMilestones().size())
             throw new NoMoreMilestonesToFulfillException("all milestones in the schedule have been fulfilled.");
+
         if (enrollment.isDefaulted())
             throw new MilestoneFulfillmentException("cannot fulfill milestone for a defaulted enrollment.");
         enrollmentAlertService.unscheduleAllAlerts(enrollment);
@@ -52,7 +57,7 @@ public class EnrollmentService {
     public void unenroll(Enrollment enrollment) {
         enrollmentAlertService.unscheduleAllAlerts(enrollment);
         enrollmentDefaultmentService.unscheduleDefaultmentCaptureJob(enrollment);
-        enrollment.setStatus(Enrollment.EnrollmentStatus.Unenrolled);
+        enrollment.setStatus(EnrollmentStatus.Unenrolled);
         allEnrollments.update(enrollment);
     }
 }

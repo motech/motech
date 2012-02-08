@@ -2,6 +2,7 @@ package org.motechproject.scheduletracking.api.service;
 
 import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.events.DefaultmentCaptureEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventSubject;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
@@ -23,7 +24,7 @@ public class EndOfMilestoneListener {
     public void handle(MotechEvent motechEvent) {
         DefaultmentCaptureEvent event = new DefaultmentCaptureEvent(motechEvent);
         Enrollment enrollment = allEnrollments.get(event.getEnrollmentId());
-        enrollment.setStatus(Enrollment.EnrollmentStatus.Defaulted);
+        enrollment.setStatus(EnrollmentStatus.Defaulted);
         allEnrollments.update(enrollment);
     }
 }
