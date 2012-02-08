@@ -30,8 +30,7 @@ public class EnrollmentDefaultmentService {
         Milestone currentMilestone = schedule.getMilestone(enrollment.getCurrentMilestoneName());
         if (currentMilestone == null)
             return;
-        MilestoneWindow lateWindow = currentMilestone.getMilestoneWindow(WindowName.late);
-        LocalDate startOfLateWindow = getCurrentMilestoneStartDate(enrollment).plusDays(lateWindow.getStart().inDays());
+        LocalDate startOfLateWindow = getCurrentMilestoneStartDate(enrollment).plusDays(currentMilestone.getMaximumDurationInDays());
         MotechEvent event = new DefaultmentCaptureEvent(enrollment.getId(), String.format("%s.%s.%s", EventSubject.BASE_SUBJECT, DEFAULTMENT_CAPTURE, enrollment.getId())).toMotechEvent();
         schedulerService.scheduleRepeatingJob(new RepeatingSchedulableJob(event, startOfLateWindow.toDate(), null, 1, 0));
     }

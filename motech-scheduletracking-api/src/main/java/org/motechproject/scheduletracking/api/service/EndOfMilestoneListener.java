@@ -10,12 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LateWindowListener {
+public class EndOfMilestoneListener {
 
     private AllEnrollments allEnrollments;
 
     @Autowired
-    public LateWindowListener(AllEnrollments allEnrollments) {
+    public EndOfMilestoneListener(AllEnrollments allEnrollments) {
         this.allEnrollments = allEnrollments;
     }
 

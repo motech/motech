@@ -14,9 +14,9 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 
-public class LateWindowListenerTest {
+public class EndOfMilestoneListenerTest {
 
-    private LateWindowListener lateWindowListener;
+    private EndOfMilestoneListener endOfMilestoneListener;
 
     @Mock
     private AllEnrollments allEnrollments;
@@ -24,7 +24,7 @@ public class LateWindowListenerTest {
     @Before
     public void setup() {
         initMocks(this);
-        lateWindowListener = new LateWindowListener(allEnrollments);
+        endOfMilestoneListener = new EndOfMilestoneListener(allEnrollments);
     }
 
     @Test
@@ -34,7 +34,7 @@ public class LateWindowListenerTest {
         when(allEnrollments.get("enrollment_1")).thenReturn(enrollment);
 
         MotechEvent event = new DefaultmentCaptureEvent("enrollment_1", "job_id").toMotechEvent();
-        lateWindowListener.handle(event);
+        endOfMilestoneListener.handle(event);
         verify(allEnrollments).update(enrollment);
     }
 }
