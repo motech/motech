@@ -1,4 +1,4 @@
-package org.motechproject.scheduletracking.api.service;
+package org.motechproject.scheduletracking.api.service.impl;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.*;
+import org.motechproject.scheduletracking.api.domain.exception.MilestoneFulfillmentException;
 import org.motechproject.scheduletracking.api.domain.exception.NoMoreMilestonesToFulfillException;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
@@ -19,7 +20,6 @@ import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.*;
-import static org.motechproject.util.DateUtil.newDateTime;
 
 public class EnrollmentServiceTest {
 
@@ -53,7 +53,7 @@ public class EnrollmentServiceTest {
         enrollmentService.enroll(enrollment);
 
         ArgumentCaptor<Enrollment> enrollmentArgumentCaptor = ArgumentCaptor.forClass(Enrollment.class);
-        verify(allEnrollments).add(enrollmentArgumentCaptor.capture());
+        verify(allEnrollments).addOrReplace(enrollmentArgumentCaptor.capture());
 
         enrollment = enrollmentArgumentCaptor.getValue();
         assertEquals("entity_1", enrollment.getExternalId());
@@ -114,7 +114,7 @@ public class EnrollmentServiceTest {
         when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
 
         Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(4), weeksAgo(4), new Time(8, 20));
-        enrollment.setStatus(Enrollment.EnrollmentStatus.Defaulted);
+        enrollment.setStatus(EnrollmentStatus.Defaulted);
         enrollmentService.fulfillCurrentMilestone(enrollment);
     }
 
@@ -172,4 +172,17 @@ public class EnrollmentServiceTest {
         verify(enrollmentAlertService).unscheduleAllAlerts(enrollment);
         verify(enrollmentDefaultmentService).unscheduleDefaultmentCaptureJob(enrollment);
     }
+
+//    @Test
+//    public void shouldUpdateEnrollmentIfAnActiveScheduleAlreadyExists() {
+//        String externalId = "externalId";
+//        String scheduleName = "scheduleName";
+//        Enrollment enrollment = new Enrollment(externalId, scheduleName, "first_milestone", weeksAgo(1), weeksAgo(2), new Time(8, 10));
+//        enrollmentService.enroll(enrollment);
+//
+//        Enrollment newEnrollment = new Enrollment(externalId, scheduleName, "second_milestone", weeksAgo(0), weeksAgo(1), new Time(2, 5));
+//        enrollmentService.enroll(newEnrollment);
+//
+//        verify(allEnrollments, times(2)).addOrReplace(newEnrollment);
+//    }
 }

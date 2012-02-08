@@ -1,8 +1,9 @@
-package org.motechproject.scheduletracking.api.service;
+package org.motechproject.scheduletracking.api.service.impl;
 
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.motechproject.model.Time;
+import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

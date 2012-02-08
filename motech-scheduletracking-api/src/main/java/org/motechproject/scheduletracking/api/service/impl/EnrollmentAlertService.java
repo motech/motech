@@ -1,4 +1,4 @@
-package org.motechproject.scheduletracking.api.service;
+package org.motechproject.scheduletracking.api.service.impl;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
@@ -72,7 +72,7 @@ public class EnrollmentAlertService {
         return getCurrentMilestoneStartDate(enrollment).plusDays(milestoneWindow.getStart().inDays());
     }
 
-    LocalDate getCurrentMilestoneStartDate(Enrollment enrollment) {
+    public LocalDate getCurrentMilestoneStartDate(Enrollment enrollment) {
         Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
         if (enrollment.getCurrentMilestoneName().equals(schedule.getFirstMilestone().getName()))
             return enrollment.getReferenceDate();

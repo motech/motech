@@ -57,7 +57,7 @@ public class AllEnrollmentsIT {
         enrollment.setStatus(EnrollmentStatus.Unenrolled);
         allEnrollments.add(enrollment);
 
-        assertNull(allEnrollments.findActiveByExternalIdAndScheduleName("entity_1", "schedule_name"));
+        assertNull(allEnrollments.getActiveEnrollment("entity_1", "schedule_name"));
     }
 
     @Test
@@ -69,7 +69,7 @@ public class AllEnrollmentsIT {
         Enrollment enrollmentWithUpdates = new Enrollment(enrollment.getExternalId(), enrollment.getScheduleName(), milestone.getName(), enrollment.getReferenceDate().plusDays(1), enrollment.getEnrollmentDate().plusDays(1), new Time(2, 5));
         allEnrollments.addOrReplace(enrollmentWithUpdates);
 
-        enrollment = allEnrollments.findActiveByExternalIdAndScheduleName(enrollment.getExternalId(), schedule.getName());
+        enrollment = allEnrollments.getActiveEnrollment(enrollment.getExternalId(), schedule.getName());
         assertEquals(enrollmentWithUpdates.getCurrentMilestoneName(), enrollment.getCurrentMilestoneName());
         assertEquals(enrollmentWithUpdates.getReferenceDate(), enrollment.getReferenceDate());
         assertEquals(enrollmentWithUpdates.getEnrollmentDate(), enrollment.getEnrollmentDate());

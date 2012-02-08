@@ -1,4 +1,4 @@
-package org.motechproject.scheduletracking.api.service;
+package org.motechproject.scheduletracking.api.service.impl;
 
 import org.joda.time.LocalDate;
 import org.motechproject.model.MotechEvent;

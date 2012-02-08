@@ -1,4 +1,4 @@
-package org.motechproject.scheduletracking.api.service;
+package org.motechproject.scheduletracking.api.service.impl;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +12,7 @@ import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.events.MilestoneEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventSubject;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
+import org.motechproject.scheduletracking.api.service.impl.EnrollmentAlertService;
 import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.WallTimeUnit;
 

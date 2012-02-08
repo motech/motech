@@ -1,4 +1,4 @@
-package org.motechproject.scheduletracking.api.domain;
+package org.motechproject.scheduletracking.api.domain.exception;
 
 public class MilestoneFulfillmentException extends RuntimeException {
 

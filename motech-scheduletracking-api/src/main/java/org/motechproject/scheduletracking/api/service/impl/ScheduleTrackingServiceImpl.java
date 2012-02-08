@@ -1,11 +1,13 @@
-package org.motechproject.scheduletracking.api.service;
+package org.motechproject.scheduletracking.api.service.impl;
 
-import org.motechproject.scheduletracking.api.domain.*;
-import org.motechproject.scheduletracking.api.domain.exception.ActiveEnrollmentExistsException;
+import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.domain.exception.InvalidEnrollmentException;
 import org.motechproject.scheduletracking.api.domain.exception.ScheduleTrackingException;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
+import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
+import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,9 +29,6 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
 
     @Override
     public void enroll(EnrollmentRequest enrollmentRequest) {
-        if (allEnrollments.findActiveByExternalIdAndScheduleName(enrollmentRequest.getExternalId(), enrollmentRequest.getScheduleName()) != null)
-            throw new ActiveEnrollmentExistsException("entity already has an active enrollment. unenroll the entity before enrolling in the same schedule.");
-
         Schedule schedule = allTrackedSchedules.getByName(enrollmentRequest.getScheduleName());
         if (schedule == null)
             throw new ScheduleTrackingException("No schedule with name: %s", enrollmentRequest.getScheduleName());
@@ -45,12 +44,13 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
 
     @Override
     public void fulfillCurrentMilestone(String externalId, String scheduleName) {
-        enrollmentService.fulfillCurrentMilestone(allEnrollments.findActiveByExternalIdAndScheduleName(externalId, scheduleName));
+        Enrollment activeEnrollment = allEnrollments.getActiveEnrollment(externalId, scheduleName);
+        enrollmentService.fulfillCurrentMilestone(activeEnrollment);
     }
 
     @Override
     public void unenroll(String externalId, String scheduleName) {
-        Enrollment activeEnrollment = allEnrollments.findActiveByExternalIdAndScheduleName(externalId, scheduleName);
+        Enrollment activeEnrollment = allEnrollments.getActiveEnrollment(externalId, scheduleName);
         if (activeEnrollment == null)
             throw new InvalidEnrollmentException("entity is not currently enrolled into the schedule.");
         enrollmentService.unenroll(activeEnrollment);

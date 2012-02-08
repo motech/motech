@@ -1,10 +1,8 @@
-package org.motechproject.scheduletracking.api.service;
+package org.motechproject.scheduletracking.api.service.impl;
 
 import org.motechproject.scheduletracking.api.domain.*;
-<<<<<<< HEAD
-=======
+import org.motechproject.scheduletracking.api.domain.exception.MilestoneFulfillmentException;
 import org.motechproject.scheduletracking.api.domain.exception.NoMoreMilestonesToFulfillException;
->>>>>>> Sanchit | #1193 | Added addOrReplace to AllEnrollments for supporting idempotent operations.
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,6 @@ import static org.motechproject.util.DateUtil.today;
 
 @Component
 public class EnrollmentService {
-
     private AllTrackedSchedules allTrackedSchedules;
     private AllEnrollments allEnrollments;
     private EnrollmentAlertService enrollmentAlertService;
@@ -29,7 +26,7 @@ public class EnrollmentService {
     }
 
     public void enroll(Enrollment enrollment) {
-        allEnrollments.add(enrollment);
+        allEnrollments.addOrReplace(enrollment);
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
         enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
     }
@@ -48,7 +45,7 @@ public class EnrollmentService {
         String nextMilestoneName = schedule.getNextMilestoneName(enrollment.getCurrentMilestoneName());
         enrollment.setCurrentMilestoneName(nextMilestoneName);
         if (nextMilestoneName == null)
-            enrollment.setStatus(Enrollment.EnrollmentStatus.Completed);
+            enrollment.setStatus(EnrollmentStatus.Completed);
 
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
         enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);

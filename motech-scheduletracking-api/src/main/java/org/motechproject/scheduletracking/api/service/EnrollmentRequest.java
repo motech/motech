@@ -43,7 +43,7 @@ public class EnrollmentRequest {
 		return referenceDate;
 	}
 
-    boolean enrollIntoMilestone() {
+    public boolean enrollIntoMilestone() {
         return startingMilestoneName != null && !startingMilestoneName.isEmpty();
     }
 }
