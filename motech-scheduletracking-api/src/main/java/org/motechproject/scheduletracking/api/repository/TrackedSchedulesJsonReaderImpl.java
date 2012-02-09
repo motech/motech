@@ -12,6 +12,7 @@ import java.util.List;
 
 @Component
 public class TrackedSchedulesJsonReaderImpl implements TrackedSchedulesJsonReader {
+
     private String definitionFile;
     private MotechJsonReader motechJsonReader;
 
