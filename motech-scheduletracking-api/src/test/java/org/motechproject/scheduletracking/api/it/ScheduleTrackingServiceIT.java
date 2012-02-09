@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:applicationSchedulerTrackingAPI.xml")
 public class ScheduleTrackingServiceIT {
+
     @Autowired
     private ScheduleTrackingService scheduleTrackingService;
     @Autowired
@@ -31,7 +32,6 @@ public class ScheduleTrackingServiceIT {
         if (activeEnrollment != null)
             allEnrollments.remove(activeEnrollment);
     }
-
 
     @Test
     public void shouldUpdateEnrollmentIfAnActiveEnrollmentAlreadyExists() {
@@ -56,7 +56,5 @@ public class ScheduleTrackingServiceIT {
         assertNotNull("No active enrollment present", activeEnrollment);
         assertEquals(updatedPreferredAlertTime, activeEnrollment.getPreferredAlertTime());
         assertEquals(updatedReferenceDate, activeEnrollment.getReferenceDate());
-
-
     }
 }

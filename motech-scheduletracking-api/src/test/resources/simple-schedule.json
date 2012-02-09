@@ -8,7 +8,7 @@
                     "earliest" : "13 Weeks",
                     "due" : "14 Weeks",
                     "late" : "16 Weeks",
-                    "max" : "16 Weeks"
+                    "max" : ""
                 },
                 "data" : {
                     "Foo" : "Bar"
