@@ -33,7 +33,7 @@ public class EnrollmentDefaultmentService {
             return;
         LocalDate startOfLateWindow = getCurrentMilestoneStartDate(enrollment).plusDays(currentMilestone.getMaximumDurationInDays());
         MotechEvent event = new DefaultmentCaptureEvent(enrollment.getId(), String.format("%s.%s.%s", EventSubject.BASE_SUBJECT, DEFAULTMENT_CAPTURE, enrollment.getId())).toMotechEvent();
-        schedulerService.scheduleRunOnceJob(new RunOnceSchedulableJob(event, startOfLateWindow.toDate()));
+        schedulerService.safeScheduleRunOnceJob(new RunOnceSchedulableJob(event, startOfLateWindow.toDate()));
     }
 
     // TODO: duplicated from EnrollmentAlertService

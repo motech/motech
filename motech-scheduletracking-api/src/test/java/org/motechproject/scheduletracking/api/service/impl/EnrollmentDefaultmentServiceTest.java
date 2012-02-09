@@ -54,7 +54,7 @@ public class EnrollmentDefaultmentServiceTest {
         enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
 
         ArgumentCaptor<RunOnceSchedulableJob> runOnceJobArgumentCaptor = ArgumentCaptor.forClass(RunOnceSchedulableJob.class);
-        verify(schedulerService).scheduleRunOnceJob(runOnceJobArgumentCaptor.capture());
+        verify(schedulerService).safeScheduleRunOnceJob(runOnceJobArgumentCaptor.capture());
 
         RunOnceSchedulableJob job = runOnceJobArgumentCaptor.getValue();
         DefaultmentCaptureEvent event = new DefaultmentCaptureEvent(job.getMotechEvent());
