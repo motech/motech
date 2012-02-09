@@ -3,10 +3,7 @@ package org.motechproject.scheduletracking.api.domain;
 import org.motechproject.valueobjects.WallTime;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Milestone implements Serializable {
 
@@ -21,6 +18,14 @@ public class Milestone implements Serializable {
     }
 
     private void createMilestoneWindows(WallTime earliest, WallTime due, WallTime late, WallTime max) {
+        if (earliest == null)
+            earliest = new WallTime(0, null);
+        if (due == null)
+            due = earliest;
+        if (late == null)
+            late = due;
+        if (max == null)
+            max = late;
         windows.add(new MilestoneWindow(WindowName.earliest, new WallTime(0, earliest.getUnit()), earliest));
         windows.add(new MilestoneWindow(WindowName.due, earliest, due));
         windows.add(new MilestoneWindow(WindowName.late, due, late));
