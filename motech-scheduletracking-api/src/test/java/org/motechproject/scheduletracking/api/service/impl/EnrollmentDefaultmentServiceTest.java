@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.model.RepeatingSchedulableJob;
+import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduletracking.api.domain.*;
@@ -52,14 +53,13 @@ public class EnrollmentDefaultmentServiceTest {
 
         enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
 
-        ArgumentCaptor<RepeatingSchedulableJob> repeatJobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
-        verify(schedulerService).scheduleRepeatingJob(repeatJobCaptor.capture());
+        ArgumentCaptor<RunOnceSchedulableJob> runOnceJobArgumentCaptor = ArgumentCaptor.forClass(RunOnceSchedulableJob.class);
+        verify(schedulerService).scheduleRunOnceJob(runOnceJobArgumentCaptor.capture());
 
-        RepeatingSchedulableJob job = repeatJobCaptor.getValue();
+        RunOnceSchedulableJob job = runOnceJobArgumentCaptor.getValue();
         DefaultmentCaptureEvent event = new DefaultmentCaptureEvent(job.getMotechEvent());
         assertEquals(String.format("%s.%s.enrollment_1", EventSubject.BASE_SUBJECT, EnrollmentDefaultmentService.DEFAULTMENT_CAPTURE), event.getJobId());
-        assertEquals(weeksAfter(4).toDate(), job.getStartTime());
-        assertEquals(1, job.getRepeatCount().intValue());
+        assertEquals(weeksAfter(4).toDate(), job.getStartDate());
     }
 
     @Test

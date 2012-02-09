@@ -3,6 +3,7 @@ package org.motechproject.scheduletracking.api.service.impl;
 import org.joda.time.LocalDate;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
+import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.events.DefaultmentCaptureEvent;
@@ -32,7 +33,7 @@ public class EnrollmentDefaultmentService {
             return;
         LocalDate startOfLateWindow = getCurrentMilestoneStartDate(enrollment).plusDays(currentMilestone.getMaximumDurationInDays());
         MotechEvent event = new DefaultmentCaptureEvent(enrollment.getId(), String.format("%s.%s.%s", EventSubject.BASE_SUBJECT, DEFAULTMENT_CAPTURE, enrollment.getId())).toMotechEvent();
-        schedulerService.scheduleRepeatingJob(new RepeatingSchedulableJob(event, startOfLateWindow.toDate(), null, 1, 0));
+        schedulerService.scheduleRunOnceJob(new RunOnceSchedulableJob(event, startOfLateWindow.toDate()));
     }
 
     // TODO: duplicated from EnrollmentAlertService
