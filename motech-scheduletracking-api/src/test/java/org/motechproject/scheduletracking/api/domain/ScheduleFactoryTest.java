@@ -6,6 +6,7 @@ import org.motechproject.scheduletracking.api.domain.userspecified.ScheduleRecor
 import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReader;
 import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReaderImpl;
 import org.motechproject.util.DateUtil;
+import org.motechproject.valueobjects.WallTime;
 
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
 
 public class ScheduleFactoryTest {
 
@@ -54,5 +56,16 @@ public class ScheduleFactoryTest {
         assertEquals(0, secondMilestone.getAlerts().size());
         assertEquals(0, firstMilestone.getAlerts().get(0).getIndex());
         assertEquals(1, firstMilestone.getAlerts().get(1).getIndex());
+    }
+
+    @Test
+    public void shouldCreateEmptyWindowIfOffsetIsNotSpecified() {
+        List<Milestone> milestones = schedule.getMilestones();
+        Milestone firstMilestone = milestones.get(0);
+
+        assertEquals(13 * 7, firstMilestone.getMilestoneWindow(WindowName.earliest).getWindowEndInDays());
+        assertEquals(14 * 7, firstMilestone.getMilestoneWindow(WindowName.due).getWindowEndInDays());
+        assertEquals(16 * 7, firstMilestone.getMilestoneWindow(WindowName.late).getWindowEndInDays());
+        assertEquals(16 * 7, firstMilestone.getMilestoneWindow(WindowName.max).getWindowEndInDays());
     }
 }
