@@ -123,4 +123,8 @@ public class RepeatingCampaignMessage extends CampaignMessage {
     public String applicableWeekDayInNext24Hours() {
         return repeatingMessageMode.applicableWeekDayInNext24Hours(this);
     }
+
+    public boolean hasEnded(Date endTime) {
+        return repeatingMessageMode.hasEnded(this, endTime);
+    }
 }

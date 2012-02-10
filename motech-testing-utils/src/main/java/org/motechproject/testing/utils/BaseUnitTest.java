@@ -9,6 +9,10 @@ import org.motechproject.util.DateTimeSourceUtil;
 import org.motechproject.util.datetime.DateTimeSource;
 import org.motechproject.util.datetime.DefaultDateTimeSource;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class BaseUnitTest {
     static final DateTimeSource dateTimeSource = new DefaultDateTimeSource();
 
@@ -22,6 +26,14 @@ public class BaseUnitTest {
 
     protected DateTime date(int year, int monthOfYear, int dayOfMonth) {
         return new DateTime(year, monthOfYear, dayOfMonth, 0, 0);
+    }
+
+    protected Date date(String date) {
+        try {
+            return new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss").parse(date);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     protected DateTime dateTime(int year, int monthOfYear, int dayOfMonth, LocalTime localTime) {

@@ -5,6 +5,7 @@ import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.gateway.OutboundEventGateway;
 import org.motechproject.model.MotechEvent;
@@ -25,6 +26,7 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduleHandler.OFFSET;
@@ -154,6 +156,51 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
         mockCampaignEnrollment(startDateNov182011, 2);
         callHandleEvent(today.plusDays(14), motechEvent(may102012, jobMessageKey));
         assertHandleEvent("message-key-4-Friday");
+    }
+
+    @Test
+    public void shouldNotSetLastEventIfAlreadySet() {
+
+        DateTime today = date(2011, 11, 18);
+        Date may102012 = date(2012, 5, 10).toDate();
+
+        String jobMessageKey = "msgKey";
+        RepeatingCampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForCalendarWeek(campaignName,
+                "Monday", asList("Monday", "Friday"), jobMessageKey);
+        campaignMessage = spy(campaignMessage);
+        doReturn(false).when(campaignMessage).hasEnded(Matchers.<Date>any());
+        doReturn("Monday").when(campaignMessage).applicableWeekDayInNext24Hours();
+
+        CampaignEnrollment enrollment = new CampaignEnrollment("", campaignName).setStartDate(today.toLocalDate());
+        when(mockCampaignEnrollmentService.findByExternalIdAndCampaignName(Matchers.<String>any(), Matchers.<String>any())).thenReturn(enrollment);
+        when(allMessageCampaigns.get(campaignName, jobMessageKey)).thenReturn(campaignMessage);
+
+        callHandleEvent(today, motechEvent(may102012, jobMessageKey).setLastEvent(true));
+        ArgumentCaptor<MotechEvent> event = ArgumentCaptor.forClass(MotechEvent.class);
+        verify(outboundEventGateway, times(1)).sendEventMessage(event.capture());
+        assertTrue(event.getValue().isLastEvent());
+    }
+
+    @Test
+    public void shouldSetLastEventIfNotAlreadySet() {
+
+        DateTime today = date(2011, 11, 18);
+        Date may102012 = date(2012, 5, 10).toDate();
+
+        String jobMessageKey = "msgKey";
+        RepeatingCampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForInterval(campaignName, "2 Weeks", jobMessageKey);
+        campaignMessage = spy(campaignMessage);
+        doReturn(true).when(campaignMessage).hasEnded(Matchers.<Date>any());
+        doReturn("Monday").when(campaignMessage).applicableWeekDayInNext24Hours();
+
+        CampaignEnrollment enrollment = new CampaignEnrollment("", campaignName).setStartDate(today.toLocalDate());
+        when(mockCampaignEnrollmentService.findByExternalIdAndCampaignName(Matchers.<String>any(), Matchers.<String>any())).thenReturn(enrollment);
+        when(allMessageCampaigns.get(campaignName, jobMessageKey)).thenReturn(campaignMessage);
+
+        callHandleEvent(today, motechEvent(may102012, jobMessageKey).setLastEvent(false));
+        ArgumentCaptor<MotechEvent> event = ArgumentCaptor.forClass(MotechEvent.class);
+        verify(outboundEventGateway, times(1)).sendEventMessage(event.capture());
+        assertTrue(event.getValue().isLastEvent());
     }
     
     private void callHandleEvent(DateTime todayMockTime, MotechEvent inputEvent) {

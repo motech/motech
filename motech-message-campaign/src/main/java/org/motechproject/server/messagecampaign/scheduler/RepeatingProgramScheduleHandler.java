@@ -55,7 +55,15 @@ public class RepeatingProgramScheduleHandler {
             replaceMessageKeyParams(params, OFFSET, offset.toString());
             replaceMessageKeyParams(params, WEEK_DAY, nextApplicableDay);
 
-            outboundEventGateway.sendEventMessage(event.copy(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, event.getParameters()));
+            MotechEvent campaignEvent = event.copy(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, event.getParameters());
+            setCampaignLastEvent(repeatingCampaignMessage, campaignEvent);
+            outboundEventGateway.sendEventMessage(campaignEvent);
+        }
+    }
+
+    private void setCampaignLastEvent(RepeatingCampaignMessage message, MotechEvent eventToSend) {
+        if (!eventToSend.isLastEvent()) {
+            eventToSend.setLastEvent(message.hasEnded(eventToSend.getEndTime()));
         }
     }
 

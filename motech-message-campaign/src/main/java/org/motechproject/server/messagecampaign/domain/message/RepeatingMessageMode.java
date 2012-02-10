@@ -41,12 +41,23 @@ public enum RepeatingMessageMode {
 
         @Override
         public String applicableWeekDayInNext24Hours(RepeatingCampaignMessage message) {
-            return (message.isApplicable()) ? DateUtil.now().dayOfWeek().getAsText() : null;
+            DateTime applicableDateTime = applicableWeekDateInNext24Hours(message);
+            return applicableDateTime != null ? applicableDateTime.dayOfWeek().getAsText() : null;
+        }
+
+        // TODO: applicableWeekDayInNext24hours is wrong, so isEnded should be changed.
+        @Override
+        public boolean hasEnded(RepeatingCampaignMessage message, Date endTime) {
+            return false;
+        }
+
+        private DateTime applicableWeekDateInNext24Hours(RepeatingCampaignMessage message) {
+            return (message.isApplicable()) ? DateUtil.now() : null;
         }
 
     }, WEEK_DAYS_SCHEDULE {
         public boolean isApplicable(RepeatingCampaignMessage message) {
-            return isWeekDayApplicable(message);
+            return isTodayInApplicableWeekDays(message);
         }
 
         public Integer repeatIntervalForOffSet(RepeatingCampaignMessage message) {
@@ -65,12 +76,24 @@ public enum RepeatingMessageMode {
 
         @Override
         public String applicableWeekDayInNext24Hours(RepeatingCampaignMessage message) {
-            return (message.isApplicable()) ? DateUtil.now().dayOfWeek().getAsText() : null;
+            DateTime applicableDateTime = applicableWeekDateInNext24Hours(message);
+            return applicableDateTime != null ? applicableDateTime.dayOfWeek().getAsText() : null;
+        }
+
+        @Override
+        public boolean hasEnded(RepeatingCampaignMessage message, Date endTime) {
+            DateTime nextApplicable = applicableWeekDateInNext24Hours(message);
+            return nextApplicable!=null ? nextApplicableWeekDay(nextApplicable, message.weekDaysApplicable()).toDate().compareTo(endTime) >=0 :
+                    now().compareTo(newDateTime(endTime)) >= 0;
+        }
+
+        private DateTime applicableWeekDateInNext24Hours(RepeatingCampaignMessage message) {
+            return (message.isApplicable()) ? DateUtil.now() : null;
         }
 
     }, CALENDAR_WEEK_SCHEDULE {
         public boolean isApplicable(RepeatingCampaignMessage message) {
-            return isWeekDayApplicable(message);
+            return isTodayInApplicableWeekDays(message);
         }
 
         public Integer repeatIntervalForOffSet(RepeatingCampaignMessage message) {
@@ -104,12 +127,29 @@ public enum RepeatingMessageMode {
 
         @Override
         public String applicableWeekDayInNext24Hours(RepeatingCampaignMessage message) {
-            DateTime dateTime = calculateNextPossible(DateUtil.now(), message);
-            DateTime nextPossibleDateLimit = DateUtil.now().plusDays(1).minusMinutes(1);
-            if (dateTime.toDate().compareTo(DateUtil.now().toDate()) >= 0 && dateTime.isBefore(nextPossibleDateLimit))
-                return dateTime.dayOfWeek().getAsText();
-            return null;
+            DateTime applicableDateTime = applicableWeekDayTime(message);
+            return applicableDateTime != null ? applicableDateTime.dayOfWeek().getAsText() : null;
         }
+
+        @Override
+        public boolean hasEnded(RepeatingCampaignMessage message, Date endTime) {
+            DateTime nextPossibleReminderDateTime = applicableWeekDayTime(message);
+            if (nextPossibleReminderDateTime != null) {
+                nextPossibleReminderDateTime = calculateNextPossibleIncludingFromDate(nextPossibleReminderDateTime.plusDays(1), message);
+                return nextPossibleReminderDateTime.toDate().compareTo(endTime) >= 0;
+            }
+            return now().compareTo(newDateTime(endTime)) >= 0;
+        }
+
+        private DateTime applicableWeekDayTime(RepeatingCampaignMessage message) {
+             DateTime now = DateUtil.now();
+             DateTime nextPossibleReminderDateTime = calculateNextPossibleIncludingFromDate(now, message);
+             DateTime oneDayLimit = now.plusDays(1);
+             boolean isNextPossibleReminderTimeGreaterThanNow = nextPossibleReminderDateTime.toDate().compareTo(now.toDate()) >= 0;
+             if (isNextPossibleReminderTimeGreaterThanNow && nextPossibleReminderDateTime.isBefore(oneDayLimit))
+                 return nextPossibleReminderDateTime;
+             return null;
+         }
 
         private int daysToSubtractForRegisteredWeek(LocalDate startDate, int calendarStartDayOfWeek) {
             int daysToFirstWeekend = daysToCalendarWeekEnd(startDate, calendarStartDayOfWeek);
@@ -122,14 +162,14 @@ public enum RepeatingMessageMode {
         return offset == null ? Constants.REPEATING_DEFAULT_START_OFFSET : offset;
     }
 
-    private static boolean isWeekDayApplicable(RepeatingCampaignMessage message) {
+    private static boolean isTodayInApplicableWeekDays(RepeatingCampaignMessage message) {
         int currentDayOfWeek = DateUtil.now().dayOfWeek().get();
         for (DayOfWeek dayOfWeek : message.weekDaysApplicable())
             if (dayOfWeek.getValue() == currentDayOfWeek) return true;
         return false;
     }
 
-    DateTime calculateNextPossible(DateTime fromDate, RepeatingCampaignMessage message) {
+    DateTime calculateNextPossibleIncludingFromDate(DateTime fromDate, RepeatingCampaignMessage message) {
         int dayOfWeek = fromDate.getDayOfWeek();
         int noOfDaysToNearestCycleDate = 0;
         for (int currentDayOfWeek = dayOfWeek, dayCount = 0; dayCount <= SUNDAY; dayCount++) {
@@ -141,7 +181,8 @@ public enum RepeatingMessageMode {
             else currentDayOfWeek++;
         }
         Time time = message.deliverTime();
-        return fromDate.plusDays(noOfDaysToNearestCycleDate).withHourOfDay(time.getHour()).withMinuteOfHour(time.getMinute());
+        return fromDate.plusDays(noOfDaysToNearestCycleDate).withHourOfDay(time.getHour()).withMinuteOfHour(time.getMinute())
+                .withSecondOfMinute(0).withMillisOfSecond(0);
     }
 
     public abstract boolean isApplicable(RepeatingCampaignMessage repeatingCampaignMessage);
@@ -153,4 +194,6 @@ public enum RepeatingMessageMode {
     public abstract int durationInDaysToAdd(WallTime maxDuration, CampaignRequest campaignRequest, RepeatingCampaignMessage message);
 
     public abstract String applicableWeekDayInNext24Hours(RepeatingCampaignMessage message);
+
+    public abstract boolean hasEnded(RepeatingCampaignMessage message, Date endTime);
 }
