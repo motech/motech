@@ -46,26 +46,20 @@ public class RepeatingSchedulableJob implements Serializable {
 	private Date startTime;
     private Date endTime;
     private Integer repeatCount;
-    private long repeatInterval;
+    private long repeatIntervalInMilliSeconds;
 
-    public RepeatingSchedulableJob(MotechEvent motechEvent,
-                                   Date startTime, Date endTime,
+    public RepeatingSchedulableJob(MotechEvent motechEvent, Date startTime, Date endTime,
                                    Integer repeatCount, long repeatIntervalInMilliSeconds) {      // TODO: have consistentcy for using primitives/objects
         this.motechEvent = motechEvent;
 		this.startTime = startTime;
 		this.endTime = endTime;
         this.repeatCount = repeatCount;
-        this.repeatInterval = repeatIntervalInMilliSeconds;
+        this.repeatIntervalInMilliSeconds = repeatIntervalInMilliSeconds;
     }
 
-    public RepeatingSchedulableJob(MotechEvent motechEvent,
-                                   Date startTime, Date endTime,
-                                   long repeatInterval) {
-        this.motechEvent = motechEvent;
-		this.startTime = startTime;
-		this.endTime = endTime;
-        this.repeatCount = null;
-        this.repeatInterval = repeatInterval;
+    public RepeatingSchedulableJob(MotechEvent motechEvent, Date startTime, Date endTime,
+                                   long repeatIntervalInMilliSeconds) {
+        this(motechEvent, startTime, endTime, null, repeatIntervalInMilliSeconds);
     }
 
     public MotechEvent getMotechEvent()
@@ -110,20 +104,20 @@ public class RepeatingSchedulableJob implements Serializable {
 
     public long getRepeatInterval()
     {
-        return repeatInterval;
+        return repeatIntervalInMilliSeconds;
     }
 
-    public void setRepeatInterval(long repeatInterval)
+    public void setRepeatInterval(long repeatIntervalInMilliSeconds)
     {
-        this.repeatInterval = repeatInterval;
+        this.repeatIntervalInMilliSeconds = repeatIntervalInMilliSeconds;
     }
 
 	@Override
 	public String toString() {
 		return "RepeatingSchedulableJob [motechEvent=" + motechEvent
 				+ ", startTime=" + startTime + ", endTime=" + endTime
-				+ ", repeatCount=" + repeatCount + ", repeatInterval="
-				+ repeatInterval + "]";
+				+ ", repeatCount=" + repeatCount + ", repeatIntervalInMilliSeconds="
+				+ repeatIntervalInMilliSeconds + "]";
 	}
     
 }
