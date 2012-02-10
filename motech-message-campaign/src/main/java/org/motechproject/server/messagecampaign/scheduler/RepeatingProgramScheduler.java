@@ -10,13 +10,14 @@ import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollme
 import org.motechproject.server.messagecampaign.domain.campaign.RepeatingCampaign;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
-import org.motechproject.util.DateUtil;
 import org.motechproject.valueobjects.WallTime;
 
 import java.util.Date;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static org.motechproject.util.DateUtil.endOfDay;
+import static org.motechproject.util.DateUtil.newDateTime;
 import static org.motechproject.valueobjects.factory.WallTimeFactory.create;
 
 public class RepeatingProgramScheduler extends MessageCampaignScheduler<RepeatingCampaignMessage, RepeatingCampaign> {
@@ -46,8 +47,8 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
     protected void scheduleJobFor(RepeatingCampaignMessage message) {
         WallTime maxDuration = create(campaign.maxDuration());
         LocalDate startDate = referenceDate();
-        Date endDateToEndOfDay = DateUtil.newDateTime(startDate.plusDays(message.durationInDaysToAdd(maxDuration, campaignRequest))
-                ,23, 59, 59).withMillisOfSecond(0).toDate();
+        LocalDate endDate = startDate.plusDays(message.durationInDaysToAdd(maxDuration, campaignRequest));
+        Date endDateToEndOfDay = endOfDay(endDate.toDate()).toDate();
 
         if (startDate.toDate().compareTo(endDateToEndOfDay) > 0) throw new IllegalArgumentException(format("startDate (%s) is after endDate (%s) for - (%s)", startDate, endDateToEndOfDay, campaignRequest));
 
@@ -56,7 +57,7 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
 
     private void scheduleRepeatingJob(LocalDate startDate, Time reminderTime, Date endDate, Map<String, Object> params) {
         MotechEvent motechEvent = new MotechEvent(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, params);
-        Date startDateAsDate = startDate == null ? null : DateUtil.newDateTime(startDate, reminderTime).withMillisOfSecond(0).toDate();
+        Date startDateAsDate = startDate == null ? null : newDateTime(startDate, reminderTime).withMillisOfSecond(0).toDate();
         Date endDateAsDate = endDate == null ? null : endDate;
         CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronExpressionFor(reminderTime), startDateAsDate, endDateAsDate);
         schedulerService.safeScheduleJob(schedulableJob);

@@ -78,9 +78,16 @@ public class DateUtil {
         Period period = new Period(newDate(startDate), today(), PeriodType.yearMonthDay());
         return period.getYears();
     }
+    
+    public static DateTime endOfDay(Date dateTime) {
+        return new DateTime(dateTime).withTime(23, 59, 59, 999);
+    }
 
     public static DateTime nextApplicableWeekDay(DateTime fromDate, List<DayOfWeek> applicableDays) {
-        fromDate = fromDate.dayOfMonth().addToCopy(1);
+        return nextApplicableWeekDayIncludingFromDate(fromDate.dayOfMonth().addToCopy(1), applicableDays);
+    }
+    
+    public static DateTime nextApplicableWeekDayIncludingFromDate(DateTime fromDate, List<DayOfWeek> applicableDays) {
         int dayOfWeek = fromDate.getDayOfWeek();
         int noOfDaysToNearestCycleDate = 0;
         int WEEK_MAX_DAY = DayOfWeek.Sunday.getValue();

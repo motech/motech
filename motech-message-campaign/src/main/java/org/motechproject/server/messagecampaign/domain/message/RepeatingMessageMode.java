@@ -13,7 +13,6 @@ import org.motechproject.valueobjects.WallTime;
 
 import java.util.Date;
 
-import static org.joda.time.DateTimeConstants.SUNDAY;
 import static org.joda.time.Days.daysBetween;
 import static org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage.WEEKLY_REPEAT_INTERVAL;
 import static org.motechproject.util.DateUtil.*;
@@ -170,18 +169,9 @@ public enum RepeatingMessageMode {
     }
 
     DateTime calculateNextPossibleIncludingFromDate(DateTime fromDate, RepeatingCampaignMessage message) {
-        int dayOfWeek = fromDate.getDayOfWeek();
-        int noOfDaysToNearestCycleDate = 0;
-        for (int currentDayOfWeek = dayOfWeek, dayCount = 0; dayCount <= SUNDAY; dayCount++) {
-            if (message.weekDaysApplicable().contains(DayOfWeek.getDayOfWeek(currentDayOfWeek))) {
-                noOfDaysToNearestCycleDate = dayCount;
-                break;
-            }
-            if (currentDayOfWeek == SUNDAY) currentDayOfWeek = 1;
-            else currentDayOfWeek++;
-        }
+
         Time time = message.deliverTime();
-        return fromDate.plusDays(noOfDaysToNearestCycleDate).withHourOfDay(time.getHour()).withMinuteOfHour(time.getMinute())
+        return DateUtil.nextApplicableWeekDayIncludingFromDate(fromDate, message.weekDaysApplicable()).withHourOfDay(time.getHour()).withMinuteOfHour(time.getMinute())
                 .withSecondOfMinute(0).withMillisOfSecond(0);
     }
 

@@ -48,7 +48,7 @@ public class DateUtilTest {
     }
 
     @Test
-    public void shouldGetNearestCycleDateBasedOnCurrentDayOfWeek() {
+    public void shouldGetNextApplicableDateAfterGivenDateBasedOnApplicableWeekDays() {
 
         DateTime oct1Sat2011 = new DateTime(2011, 10, 1, 0, 0);
         DateTime oct2Sun2011 = new DateTime(2011, 10, 2, 2, 0);
@@ -80,6 +80,29 @@ public class DateUtilTest {
         DateTime actualMar3Sat2012 = feb25Sat2012.dayOfYear().addToCopy(7);
         assertNotSame(feb25Sat2012, actualMar3Sat2012);
         assertThat(nextApplicableWeekDay(feb25Sat2012, applicableDays), is(actualMar3Sat2012));
+    }
+
+    @Test
+    public void shouldGetNextApplicableDateIncludingFromDateBasedOnApplicableWeekDays() {
+
+           DateTime oct1Sat2011 = new DateTime(2011, 10, 1, 0, 0);
+           DateTime oct2Sun2011 = new DateTime(2011, 10, 2, 2, 0);
+           DateTime oct3Mon2011 = new DateTime(2011, 10, 3, 0, 0);
+           DateTime oct4Tue2011 = new DateTime(2011, 10, 4, 5, 0);
+           DateTime oct6Thu2011 = new DateTime(2011, 10, 6, 3, 0);
+
+           List<DayOfWeek> applicableDays = asList(DayOfWeek.Monday, DayOfWeek.Wednesday, DayOfWeek.Friday);
+           assertThat(nextApplicableWeekDayIncludingFromDate(oct1Sat2011, applicableDays), is(oct1Sat2011.dayOfYear().addToCopy(2)));
+           assertThat(nextApplicableWeekDayIncludingFromDate(oct2Sun2011, applicableDays), is(oct2Sun2011.dayOfYear().addToCopy(1)));
+           assertThat(nextApplicableWeekDayIncludingFromDate(oct3Mon2011, applicableDays), is(oct3Mon2011));
+           assertThat(nextApplicableWeekDayIncludingFromDate(oct4Tue2011, applicableDays), is(oct4Tue2011.dayOfYear().addToCopy(1)));
+           assertThat(nextApplicableWeekDayIncludingFromDate(oct6Thu2011, applicableDays), is(oct6Thu2011.dayOfYear().addToCopy(1)));
+    }
+
+    @Test
+    public void shouldReturnEndOfDayForGivenTime() {
+        DateTime time = new DateTime(2010, 10, 10, 12, 22, 22, 223);
+        assertEquals(new DateTime(2010, 10, 10, 23, 59, 59, 999), DateUtil.endOfDay(time.toDate()));
     }
     
     @After
