@@ -9,18 +9,16 @@ import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.events.MilestoneEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventSubject;
-import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static org.joda.time.DateTimeConstants.MILLIS_PER_DAY;
 import static org.motechproject.util.DateUtil.today;
 
 @Component
 public class EnrollmentAlertService {
-
-    private int MILLIS_IN_A_DAY = 24 * 60 * 60 * 1000;
     public static final String MILESTONE_ALERTS = "milestone_alerts";
 
     private AllTrackedSchedules allTrackedSchedules;
@@ -49,7 +47,7 @@ public class EnrollmentAlertService {
         MotechEvent event = new MilestoneEvent(enrollment.getExternalId(), schedule.getName(), milestone.getName(), milestoneWindow.getName().toString(), enrollment.getReferenceDate()).toMotechEvent();
         event.getParameters().put(MotechSchedulerService.JOB_ID_KEY, String.format("%s.%s.%s.%d", EventSubject.BASE_SUBJECT, MILESTONE_ALERTS, enrollment.getId(), alert.getIndex()));
         DateTime startTime = DateUtil.newDateTime(getJobStartDate(enrollment, milestoneWindow), enrollment.getPreferredAlertTime());
-        RepeatingSchedulableJob job = new RepeatingSchedulableJob(event, startTime.toDate(), null, numberOfAlertsToRaise(alert, enrollment, milestoneWindow), alert.getInterval().inDays() * MILLIS_IN_A_DAY);
+        RepeatingSchedulableJob job = new RepeatingSchedulableJob(event, startTime.toDate(), null, numberOfAlertsToRaise(alert, enrollment, milestoneWindow), alert.getInterval().inDays() * MILLIS_PER_DAY);
         schedulerService.safeScheduleRepeatingJob(job);
     }
 

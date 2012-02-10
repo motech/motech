@@ -50,12 +50,12 @@ public class RepeatingSchedulableJob implements Serializable {
 
     public RepeatingSchedulableJob(MotechEvent motechEvent,
                                    Date startTime, Date endTime,
-                                   Integer repeatCount, long repeatInterval) {      // TODO: have consistentcy for using primitives/objects
+                                   Integer repeatCount, long repeatIntervalInMilliSeconds) {      // TODO: have consistentcy for using primitives/objects
         this.motechEvent = motechEvent;
 		this.startTime = startTime;
 		this.endTime = endTime;
         this.repeatCount = repeatCount;
-        this.repeatInterval = repeatInterval;
+        this.repeatInterval = repeatIntervalInMilliSeconds;
     }
 
     public RepeatingSchedulableJob(MotechEvent motechEvent,
