@@ -7,6 +7,7 @@ import org.motechproject.valueobjects.WallTimeUnit;
 import java.util.StringTokenizer;
 
 public class WallTimeFactory {
+
     public static WallTime create(String userReadableForm) {
         String inLowerCase = userReadableForm.trim().toLowerCase();
         StringTokenizer tokenizer = new StringTokenizer(inLowerCase);

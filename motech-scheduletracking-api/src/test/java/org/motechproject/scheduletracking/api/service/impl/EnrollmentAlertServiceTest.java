@@ -12,7 +12,6 @@ import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.events.MilestoneEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventSubject;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
-import org.motechproject.scheduletracking.api.service.impl.EnrollmentAlertService;
 import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.WallTimeUnit;
 
@@ -42,8 +41,8 @@ public class EnrollmentAlertServiceTest {
     @Test
     public void shouldScheduleOneRepeatJobForEachAlertInTheFirstMilestone() {
         Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        milestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 3, 0));
-        milestone.addAlert(WindowName.due, new Alert(new WallTime(1, WallTimeUnit.Week), 2, 1));
+        milestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Day), 3, 0));
+        milestone.addAlert(WindowName.due, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Week), 2, 1));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
@@ -83,7 +82,7 @@ public class EnrollmentAlertServiceTest {
     public void shouldNotScheduleJobsForFutureMilestones() {
         Milestone firstMilestone = new Milestone("milestone_1", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         Milestone secondMilestone = new Milestone("milestone_2", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        secondMilestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 3, 0));
+        secondMilestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Day), 3, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
@@ -97,7 +96,7 @@ public class EnrollmentAlertServiceTest {
     @Test
     public void shouldNotScheduleJobsInThePast() {
         Milestone milestone = new Milestone("milestone_1", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        milestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 4, 0));
+        milestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Day), 4, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
@@ -118,7 +117,7 @@ public class EnrollmentAlertServiceTest {
     @Test
     public void shouldNotScheduleJobsForPassedWindowInTheFirstMilestone() {
         Milestone milestone = new Milestone("milestone_1", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        milestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 4, 0));
+        milestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Day), 4, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
@@ -131,9 +130,9 @@ public class EnrollmentAlertServiceTest {
     @Test
     public void shouldNotScheduleJobsForPassedMilestones() {
         Milestone firstMilestone = new Milestone("milestone_1", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        firstMilestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 4, 0));
+        firstMilestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Day), 4, 0));
         Milestone secondMilestone = new Milestone("milestone_2", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        secondMilestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 2, 1));
+        secondMilestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Day), 2, 1));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);

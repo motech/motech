@@ -52,8 +52,8 @@ public class EnrollmentServiceTest {
         Time preferredAlertTime = new Time(8, 10);
 
         Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        milestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 3, 0));
-        milestone.addAlert(WindowName.due, new Alert(new WallTime(1, WallTimeUnit.Week), 2, 1));
+        milestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Day), 3, 0));
+        milestone.addAlert(WindowName.due, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Week), 2, 1));
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
@@ -84,7 +84,7 @@ public class EnrollmentServiceTest {
     public void shouldFulfillCurrentMilestoneInEnrollment() {
         Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        secondMilestone.addAlert(WindowName.earliest, new Alert(wallTimeOf(1), 3, 0));
+        secondMilestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), wallTimeOf(1), 3, 0));
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
@@ -100,7 +100,7 @@ public class EnrollmentServiceTest {
     public void shouldScheduleJobsForNextMilestoneWhenCurrentMilestoneIsFulfilled() {
         Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        secondMilestone.addAlert(WindowName.earliest, new Alert(wallTimeOf(1), 3, 0));
+        secondMilestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), wallTimeOf(1), 3, 0));
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
@@ -124,7 +124,7 @@ public class EnrollmentServiceTest {
     public void shouldNotFulfillADefaultedMilestone() {
         Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        secondMilestone.addAlert(WindowName.earliest, new Alert(wallTimeOf(1), 3, 0));
+        secondMilestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), wallTimeOf(1), 3, 0));
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
@@ -168,7 +168,7 @@ public class EnrollmentServiceTest {
     @Test
     public void shouldUnenrollEntityFromTheSchedule() {
         Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        milestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 3, 0));
+        milestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Day), 3, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
