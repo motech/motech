@@ -3,16 +3,12 @@ package org.motechproject.scheduletracking.api.domain;
 import org.motechproject.valueobjects.WallTime;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Milestone implements Serializable {
 
     private String name;
     private Map<String, String> data = new HashMap<String, String>();
-
     private List<MilestoneWindow> windows = new ArrayList<MilestoneWindow>();
 
     public Milestone(String name, WallTime earliest, WallTime due, WallTime late, WallTime max) {

@@ -46,6 +46,8 @@ public class WallTime implements Serializable {
     }
 
     public int inDays() {
+        if (value == 0 || unit == null)
+            return 0;
         return unit.days * value;
     }
 

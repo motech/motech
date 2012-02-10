@@ -9,6 +9,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class TrackedSchedulesJsonReaderImplTest {
+
     @Test
     public void shouldReadTheScheduleJsonFileCorrectly() {
         TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/simple-schedule.json");
@@ -25,5 +26,14 @@ public class TrackedSchedulesJsonReaderImplTest {
 
         MilestoneRecord secondMilestone = milestones.get(1);
         assertEquals("IPTI 2", secondMilestone.name());
+    }
+
+    @Test
+    public void shouldReadEmptyValues() {
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/simple-schedule.json");
+        List<ScheduleRecord> records = jsonReader.records();
+        ScheduleRecord scheduleRecord = records.get(0);
+        MilestoneRecord secondMilestone = scheduleRecord.milestoneRecords().get(1);
+        assertEquals("", secondMilestone.scheduleWindowsRecord().max());
     }
 }
