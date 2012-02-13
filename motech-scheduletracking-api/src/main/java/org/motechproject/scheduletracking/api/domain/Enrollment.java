@@ -27,6 +27,7 @@ public class Enrollment extends MotechBaseDataObject {
     // For ektorp
     private Enrollment() {
     }
+
     public Enrollment(String externalId, String scheduleName, String currentMilestoneName, LocalDate referenceDate, LocalDate enrollmentDate, Time preferredAlertTime) {
         this.externalId = externalId;
         this.scheduleName = scheduleName;

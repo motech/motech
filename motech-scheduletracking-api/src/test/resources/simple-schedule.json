@@ -15,11 +15,13 @@
                 },
                 "alerts" : [
                     {
+                        "offset": "0 Weeks",
                         "window" : "due",
                         "interval" : "1 Day",
                         "count" : "7"
                     },
                     {
+                        "offset": "1 Week",
                         "window" : "late",
                         "interval" : "1 Week",
                         "count" : "51"

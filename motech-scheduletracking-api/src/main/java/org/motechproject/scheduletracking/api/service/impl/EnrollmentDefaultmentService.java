@@ -14,9 +14,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class EnrollmentDefaultmentService {
-
-    public static final String DEFAULTMENT_CAPTURE = "defaultment_capture";
-
     private AllTrackedSchedules allTrackedSchedules;
     private MotechSchedulerService schedulerService;
 
@@ -32,7 +29,7 @@ public class EnrollmentDefaultmentService {
         if (currentMilestone == null)
             return;
         LocalDate startOfLateWindow = getCurrentMilestoneStartDate(enrollment).plusDays(currentMilestone.getMaximumDurationInDays());
-        MotechEvent event = new DefaultmentCaptureEvent(enrollment.getId(), String.format("%s.%s.%s", EventSubject.BASE_SUBJECT, DEFAULTMENT_CAPTURE, enrollment.getId())).toMotechEvent();
+        MotechEvent event = new DefaultmentCaptureEvent(enrollment.getId(), String.format("%s.%s", EventSubject.DEFAULTMENT_CAPTURE, enrollment.getId())).toMotechEvent();
         schedulerService.safeScheduleRunOnceJob(new RunOnceSchedulableJob(event, startOfLateWindow.toDate()));
     }
 
@@ -45,6 +42,6 @@ public class EnrollmentDefaultmentService {
     }
 
     public void unscheduleDefaultmentCaptureJob(Enrollment enrollment) {
-        schedulerService.unscheduleAllJobs(String.format("%s.%s.%s", EventSubject.BASE_SUBJECT, DEFAULTMENT_CAPTURE, enrollment.getId()));
+        schedulerService.unscheduleAllJobs(String.format("%s.%s", EventSubject.DEFAULTMENT_CAPTURE, enrollment.getId()));
     }
 }

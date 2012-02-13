@@ -27,11 +27,13 @@ public class AllEnrollments extends MotechBaseRepository<Enrollment> {
 
     public Enrollment addOrReplace(Enrollment enrollment) {
         Enrollment existingEnrollment = getActiveEnrollment(enrollment.getExternalId(), enrollment.getScheduleName());
+
         if (existingEnrollment == null) {
             add(enrollment);
-        } else {
+            existingEnrollment = enrollment;
+        } else
             update(existingEnrollment.copyFrom(enrollment));
-        }
-        return enrollment;
+
+        return existingEnrollment;
     }
 }

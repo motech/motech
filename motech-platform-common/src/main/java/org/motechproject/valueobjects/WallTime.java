@@ -52,6 +52,8 @@ public class WallTime implements Serializable {
     }
 
     public Period asPeriod() {
+        if (unit == null)
+            return WallTimeUnit.Day.toPeriod(0);
         return unit.toPeriod(value);
     }
 }

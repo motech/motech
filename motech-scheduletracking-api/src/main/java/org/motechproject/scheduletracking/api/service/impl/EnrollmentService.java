@@ -1,7 +1,12 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
-import org.motechproject.scheduletracking.api.domain.*;
-import org.motechproject.scheduletracking.api.domain.exception.MilestoneFulfillmentException;
+import org.joda.time.LocalDate;
+import org.motechproject.model.Time;
+import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
+import org.motechproject.scheduletracking.api.domain.MilestoneFulfillment;
+import org.motechproject.scheduletracking.api.domain.Schedule;
+import org.motechproject.scheduletracking.api.domain.exception.DefaultedMilestoneFulfillmentException;
 import org.motechproject.scheduletracking.api.domain.exception.NoMoreMilestonesToFulfillException;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
@@ -25,19 +30,21 @@ public class EnrollmentService {
         this.enrollmentDefaultmentService = enrollmentDefaultmentService;
     }
 
-    public void enroll(Enrollment enrollment) {
-        allEnrollments.addOrReplace(enrollment);
+    public String enroll(String externalId, String scheduleName, String startingMilestoneName, LocalDate referenceDate, LocalDate enrollmentDate, Time preferredAlertTime) {
+        Enrollment enrollment = allEnrollments.addOrReplace(new Enrollment(externalId, scheduleName, startingMilestoneName, referenceDate, enrollmentDate, preferredAlertTime));
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
         enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
+
+        return enrollment.getId();
     }
 
     public void fulfillCurrentMilestone(Enrollment enrollment) {
         Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
         if (enrollment.getFulfillments().size() >= schedule.getMilestones().size())
-            throw new NoMoreMilestonesToFulfillException("all milestones in the schedule have been fulfilled.");
+            throw new NoMoreMilestonesToFulfillException();
 
         if (enrollment.isDefaulted())
-            throw new MilestoneFulfillmentException("cannot fulfill milestone for a defaulted enrollment.");
+            throw new DefaultedMilestoneFulfillmentException();
         enrollmentAlertService.unscheduleAllAlerts(enrollment);
         enrollmentDefaultmentService.unscheduleDefaultmentCaptureJob(enrollment);
 
@@ -46,9 +53,10 @@ public class EnrollmentService {
         enrollment.setCurrentMilestoneName(nextMilestoneName);
         if (nextMilestoneName == null)
             enrollment.setStatus(EnrollmentStatus.Completed);
-
-        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
-        enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
+        else {
+            enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
+            enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
+        }
     }
 
     public void unenroll(Enrollment enrollment) {
