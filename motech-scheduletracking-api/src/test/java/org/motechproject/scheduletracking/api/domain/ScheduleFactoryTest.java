@@ -1,42 +1,34 @@
 package org.motechproject.scheduletracking.api.domain;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.motechproject.scheduletracking.api.domain.exception.InvalidScheduleDefinitionException;
 import org.motechproject.scheduletracking.api.domain.userspecified.ScheduleRecord;
 import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReader;
 import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReaderImpl;
-import org.motechproject.util.DateUtil;
-import org.motechproject.valueobjects.WallTime;
 
 import java.util.List;
-import java.util.Map;
 
-import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
 
 public class ScheduleFactoryTest {
 
-	private Schedule schedule;
-	private ScheduleRecord scheduleRecord;
-
-	@Before
-	public void setUp() {
-		TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/simple-schedule.json");
-		scheduleRecord = jsonReader.records().get(0);
-        schedule = new ScheduleFactory().build(scheduleRecord);
-	}
-
     @Test
     public void shouldCreateTheSchedule() {
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/simple-schedule.json");
+        ScheduleRecord scheduleRecord = jsonReader.records().get(0);
+        Schedule schedule = new ScheduleFactory().build(scheduleRecord);
+
         assertNotNull(schedule);
         assertEquals(scheduleRecord.name(), schedule.getName());
     }
 
 	@Test
 	public void shouldAddMilestonesToTheSchedule() {
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/simple-schedule.json");
+        ScheduleRecord scheduleRecord = jsonReader.records().get(0);
+        Schedule schedule = new ScheduleFactory().build(scheduleRecord);
+
         List<Milestone> milestones = schedule.getMilestones();
         Milestone firstMilestone = milestones.get(0);
         Milestone secondMilestone = milestones.get(1);
@@ -49,6 +41,10 @@ public class ScheduleFactoryTest {
 
 	@Test
 	public void shouldAddAlertsToTheWindows() {
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/simple-schedule.json");
+        ScheduleRecord scheduleRecord = jsonReader.records().get(0);
+        Schedule schedule = new ScheduleFactory().build(scheduleRecord);
+
         List<Milestone> milestones = schedule.getMilestones();
         Milestone firstMilestone = milestones.get(0);
         Milestone secondMilestone = milestones.get(1);
@@ -64,6 +60,10 @@ public class ScheduleFactoryTest {
 
     @Test
     public void shouldCreateEmptyWindowIfOffsetIsNotSpecified() {
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/simple-schedule.json");
+        ScheduleRecord scheduleRecord = jsonReader.records().get(0);
+        Schedule schedule = new ScheduleFactory().build(scheduleRecord);
+
         List<Milestone> milestones = schedule.getMilestones();
         Milestone firstMilestone = milestones.get(0);
 
@@ -71,5 +71,19 @@ public class ScheduleFactoryTest {
         assertEquals(14 * 7, firstMilestone.getMilestoneWindow(WindowName.due).getWindowEndInDays());
         assertEquals(16 * 7, firstMilestone.getMilestoneWindow(WindowName.late).getWindowEndInDays());
         assertEquals(16 * 7, firstMilestone.getMilestoneWindow(WindowName.max).getWindowEndInDays());
+    }
+
+    @Test(expected = InvalidScheduleDefinitionException.class)
+    public void shouldThrowExceptionIfAlertDoesNotHaveOffset() {
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/alert-without-offset.json");
+        ScheduleRecord scheduleRecord = jsonReader.records().get(0);
+        new ScheduleFactory().build(scheduleRecord);
+    }
+
+    @Test(expected = InvalidScheduleDefinitionException.class)
+    public void shouldThrowExceptionIfAlertOffsetIsEmpty() {
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/alert-with-empty-offset.json");
+        ScheduleRecord scheduleRecord = jsonReader.records().get(0);
+        new ScheduleFactory().build(scheduleRecord);
     }
 }

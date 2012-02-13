@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import org.motechproject.scheduletracking.api.domain.exception.InvalidScheduleDefinitionException;
 import org.motechproject.scheduletracking.api.domain.userspecified.AlertRecord;
 import org.motechproject.scheduletracking.api.domain.userspecified.MilestoneRecord;
 import org.motechproject.scheduletracking.api.domain.userspecified.ScheduleRecord;
@@ -30,8 +31,12 @@ public class ScheduleFactory {
                 max = late;
             Milestone milestone = new Milestone(milestoneRecord.name(), earliest, due, late, max);
             milestone.setData(milestoneRecord.data());
-            for (AlertRecord alertRecord : milestoneRecord.alerts())
-                milestone.addAlert(WindowName.valueOf(alertRecord.window()), new Alert(WallTimeFactory.create(alertRecord.offset()), WallTimeFactory.create(alertRecord.interval()), Integer.parseInt(alertRecord.count()), alertIndex++));
+            for (AlertRecord alertRecord : milestoneRecord.alerts()) {
+                String offset = alertRecord.offset();
+                if (offset == null || offset.isEmpty())
+                    throw new InvalidScheduleDefinitionException("alert needs an offset parameter.");
+                milestone.addAlert(WindowName.valueOf(alertRecord.window()), new Alert(WallTimeFactory.create(offset), WallTimeFactory.create(alertRecord.interval()), Integer.parseInt(alertRecord.count()), alertIndex++));
+            }
             schedule.addMilestones(milestone);
         }
         return schedule;

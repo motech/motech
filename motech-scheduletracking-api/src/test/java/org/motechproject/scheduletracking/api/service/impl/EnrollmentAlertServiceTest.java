@@ -54,12 +54,12 @@ public class EnrollmentAlertServiceTest {
         verify(schedulerService, times(2)).safeScheduleRepeatingJob(repeatJobCaptor.capture());
 
         RepeatingSchedulableJob job = repeatJobCaptor.getAllValues().get(0);
-        MilestoneEvent event = new MilestoneEvent(job.getMotechEvent());
         assertEquals(String.format("%s.%s.0", EventSubject.MILESTONE_ALERT, enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
         assertEquals(newDateTime(weeksAgo(0), new Time(8, 10)).toDate(), job.getStartTime());
         assertEquals(MILLIS_PER_DAY, job.getRepeatInterval());
         assertEquals(3, job.getRepeatCount().intValue());
 
+        MilestoneEvent event = new MilestoneEvent(job.getMotechEvent());
         assertEquals("entity_1", event.getExternalId());
         assertEquals("my_schedule", event.getScheduleName());
         assertEquals("milestone", event.getMilestoneName());
@@ -76,6 +76,24 @@ public class EnrollmentAlertServiceTest {
         assertEquals("my_schedule", event.getScheduleName());
         assertEquals("milestone", event.getMilestoneName());
         assertEquals("due", event.getWindowName());
+    }
+
+    @Test
+    public void shouldScheduleAlertJobWithOffset() {
+        Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        milestone.addAlert(WindowName.due, new Alert(new WallTime(3, WallTimeUnit.Day), new WallTime(1, WallTimeUnit.Day), 3, 0));
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(milestone);
+        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(0), weeksAgo(0), new Time(8, 10));
+
+        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
+
+        ArgumentCaptor<RepeatingSchedulableJob> repeatJobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
+        verify(schedulerService).safeScheduleRepeatingJob(repeatJobCaptor.capture());
+
+        RepeatingSchedulableJob job = repeatJobCaptor.getValue();
+        assertEquals(newDateTime(daysAfter(10), new Time(8, 10)).toDate(), job.getStartTime());
     }
 
     @Test
