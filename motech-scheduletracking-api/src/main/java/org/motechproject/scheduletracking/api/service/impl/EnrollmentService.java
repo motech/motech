@@ -1,5 +1,7 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
+import org.joda.time.LocalDate;
+import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.MilestoneFulfillment;
@@ -28,10 +30,12 @@ public class EnrollmentService {
         this.enrollmentDefaultmentService = enrollmentDefaultmentService;
     }
 
-    public void enroll(Enrollment enrollment) {
-        allEnrollments.addOrReplace(enrollment);
+    public String enroll(String externalId, String scheduleName, String startingMilestoneName, LocalDate referenceDate, LocalDate enrollmentDate, Time preferredAlertTime) {
+        Enrollment enrollment = allEnrollments.addOrReplace(new Enrollment(externalId, scheduleName, startingMilestoneName, referenceDate, enrollmentDate, preferredAlertTime));
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
         enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
+
+        return enrollment.getId();
     }
 
     public void fulfillCurrentMilestone(Enrollment enrollment) {

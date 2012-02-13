@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
+import org.joda.time.LocalDate;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +18,9 @@ import org.motechproject.valueobjects.WallTimeUnit;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.*;
 
@@ -42,26 +45,39 @@ public class EnrollmentServiceTest {
 
     @Test
     public void shouldEnrollEntityIntoSchedule() {
+        String externalId = "entity_1";
+        String scheduleName = "my_schedule";
+        LocalDate referenceDate = weeksAgo(0);
+        LocalDate enrollmentDate = weeksAgo(0);
+        Time preferredAlertTime = new Time(8, 10);
+
         Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         milestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 3, 0));
         milestone.addAlert(WindowName.due, new Alert(new WallTime(1, WallTimeUnit.Week), 2, 1));
-        Schedule schedule = new Schedule("my_schedule");
+        Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
-        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
+        when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
+        Enrollment dummyEnrollment = new Enrollment(externalId, scheduleName, milestone.getName(), referenceDate, enrollmentDate, preferredAlertTime);
+        dummyEnrollment.setId("enrollmentId");
+        when(allEnrollments.addOrReplace(any(Enrollment.class))).thenReturn(dummyEnrollment);
 
-        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(0), weeksAgo(0), new Time(8, 10));
-        enrollmentService.enroll(enrollment);
+        enrollmentService.enroll(externalId, scheduleName, milestone.getName(), referenceDate, enrollmentDate, preferredAlertTime);
 
         ArgumentCaptor<Enrollment> enrollmentArgumentCaptor = ArgumentCaptor.forClass(Enrollment.class);
         verify(allEnrollments).addOrReplace(enrollmentArgumentCaptor.capture());
+        assertEnrollment(enrollmentArgumentCaptor.getValue(), externalId, scheduleName, milestone);
 
-        enrollment = enrollmentArgumentCaptor.getValue();
-        assertEquals("entity_1", enrollment.getExternalId());
-        assertEquals("my_schedule", enrollment.getScheduleName());
-        assertEquals("milestone", enrollment.getCurrentMilestoneName());
+        verify(enrollmentAlertService).scheduleAlertsForCurrentMilestone(enrollmentArgumentCaptor.capture());
+        assertEnrollment(enrollmentArgumentCaptor.getValue(), externalId, scheduleName, milestone);
 
-        verify(enrollmentAlertService).scheduleAlertsForCurrentMilestone(enrollment);
-        verify(enrollmentDefaultmentService).scheduleJobToCaptureDefaultment(enrollment);
+        verify(enrollmentDefaultmentService).scheduleJobToCaptureDefaultment(enrollmentArgumentCaptor.getValue());
+        assertEnrollment(enrollmentArgumentCaptor.getValue(), externalId, scheduleName, milestone);
+    }
+
+    private void assertEnrollment(Enrollment enrollment, String externalId, String scheduleName, Milestone milestone) {
+        assertEquals(externalId, enrollment.getExternalId());
+        assertEquals(scheduleName, enrollment.getScheduleName());
+        assertEquals(milestone.getName(), enrollment.getCurrentMilestoneName());
     }
 
     @Test
@@ -103,7 +119,7 @@ public class EnrollmentServiceTest {
         verify(enrollmentDefaultmentService).scheduleJobToCaptureDefaultment(updatedEnrollmentCaptor.capture());
         assertEquals("Second Shot", updatedEnrollmentCaptor.getValue().getCurrentMilestoneName());
     }
-    
+
     @Test(expected = DefaultedMilestoneFulfillmentException.class)
     public void shouldNotFulfillADefaultedMilestone() {
         Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
@@ -172,17 +188,4 @@ public class EnrollmentServiceTest {
         verify(enrollmentAlertService).unscheduleAllAlerts(enrollment);
         verify(enrollmentDefaultmentService).unscheduleDefaultmentCaptureJob(enrollment);
     }
-
-//    @Test
-//    public void shouldUpdateEnrollmentIfAnActiveScheduleAlreadyExists() {
-//        String externalId = "externalId";
-//        String scheduleName = "scheduleName";
-//        Enrollment enrollment = new Enrollment(externalId, scheduleName, "first_milestone", weeksAgo(1), weeksAgo(2), new Time(8, 10));
-//        enrollmentService.enroll(enrollment);
-//
-//        Enrollment newEnrollment = new Enrollment(externalId, scheduleName, "second_milestone", weeksAgo(0), weeksAgo(1), new Time(2, 5));
-//        enrollmentService.enroll(newEnrollment);
-//
-//        verify(allEnrollments, times(2)).addOrReplace(newEnrollment);
-//    }
 }

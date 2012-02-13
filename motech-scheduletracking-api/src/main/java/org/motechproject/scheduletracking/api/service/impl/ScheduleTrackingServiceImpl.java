@@ -9,13 +9,12 @@ import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import static org.motechproject.util.DateUtil.today;
 
-@Component
+@Service
 public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
-
     private AllTrackedSchedules allTrackedSchedules;
     private AllEnrollments allEnrollments;
     private EnrollmentService enrollmentService;
@@ -28,7 +27,7 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
     }
 
     @Override
-    public void enroll(EnrollmentRequest enrollmentRequest) {
+    public String enroll(EnrollmentRequest enrollmentRequest) {
         Schedule schedule = allTrackedSchedules.getByName(enrollmentRequest.getScheduleName());
         if (schedule == null)
             throw new ScheduleTrackingException("No schedule with name: %s", enrollmentRequest.getScheduleName());
@@ -39,7 +38,7 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
         else
             startingMilestoneName = schedule.getFirstMilestone().getName();
 
-        enrollmentService.enroll(new Enrollment(enrollmentRequest.getExternalId(), enrollmentRequest.getScheduleName(), startingMilestoneName, enrollmentRequest.getReferenceDate(), today(), enrollmentRequest.getPreferredAlertTime()));
+        return enrollmentService.enroll(enrollmentRequest.getExternalId(), enrollmentRequest.getScheduleName(), startingMilestoneName, enrollmentRequest.getReferenceDate(), today(), enrollmentRequest.getPreferredAlertTime());
     }
 
     @Override
