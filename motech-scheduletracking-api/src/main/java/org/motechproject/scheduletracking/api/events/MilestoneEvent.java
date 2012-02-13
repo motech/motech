@@ -17,8 +17,6 @@ public class MilestoneEvent {
     private String externalId;
     private LocalDate referenceDate;
 
-    private Map<String, String> data = new HashMap<String, String>();
-
     public MilestoneEvent(String externalId, String scheduleName, String milestoneName, String windowName, LocalDate referenceDate) {
         this.scheduleName = scheduleName;
         this.milestoneName = milestoneName;
@@ -42,9 +40,6 @@ public class MilestoneEvent {
         parameters.put(EventDataKey.SCHEDULE_NAME, scheduleName);
         parameters.put(EventDataKey.EXTERNAL_ID, externalId);
         parameters.put(EventDataKey.REFERENCE_DATE, referenceDate);
-        Set<Map.Entry<String,String>> entries = data.entrySet();
-        for (Map.Entry<String,String> entry : entries)
-            parameters.put(entry.getKey(), entry.getValue());
         return new MotechEvent(EventSubject.MILESTONE_ALERT, parameters);
     }
 
@@ -66,9 +61,5 @@ public class MilestoneEvent {
 
     public LocalDate getReferenceDate() {
         return referenceDate;
-    }
-
-    public Map<String, String> getData() {
-        return data;
     }
 }
