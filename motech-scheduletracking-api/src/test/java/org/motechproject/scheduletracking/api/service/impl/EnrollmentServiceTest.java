@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.*;
@@ -19,6 +20,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -163,6 +165,22 @@ public class EnrollmentServiceTest {
         enrollmentService.fulfillCurrentMilestone(enrollment);
 
         assertTrue(enrollment.isCompleted());
+    }
+
+    @Test
+    public void shouldNotHaveAnyJobsScheduledAfterEnrollmentIsComplete() {
+        Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Schedule schedule = new Schedule("Yellow Fever Vaccination");
+        schedule.addMilestones(firstMilestone);
+        when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
+
+        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(4), weeksAgo(4), new Time(8, 20));
+        enrollmentService.fulfillCurrentMilestone(enrollment);
+
+        verify(enrollmentAlertService).unscheduleAllAlerts(enrollment);
+        verify(enrollmentDefaultmentService).unscheduleDefaultmentCaptureJob(enrollment);
+        verify(enrollmentAlertService, times(0)).scheduleAlertsForCurrentMilestone(enrollment);
+        verify(enrollmentDefaultmentService, times(0)).scheduleJobToCaptureDefaultment(enrollment);
     }
 
     @Test

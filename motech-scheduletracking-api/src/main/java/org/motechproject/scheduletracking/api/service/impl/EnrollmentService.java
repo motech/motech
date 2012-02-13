@@ -53,9 +53,10 @@ public class EnrollmentService {
         enrollment.setCurrentMilestoneName(nextMilestoneName);
         if (nextMilestoneName == null)
             enrollment.setStatus(EnrollmentStatus.Completed);
-
-        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
-        enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
+        else {
+            enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
+            enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
+        }
     }
 
     public void unenroll(Enrollment enrollment) {
