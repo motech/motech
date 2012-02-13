@@ -55,13 +55,13 @@ public class EnrollmentAlertService {
         LocalDate today = today();
         int daysToEndOfWindow = Days.daysBetween(today, endDateOfWindow).getDays();
         int maximumAlerts = alert.getRepeatCount();
-        return maximumAlerts <= daysToEndOfWindow? maximumAlerts : daysToEndOfWindow;
+        return maximumAlerts <= daysToEndOfWindow ? maximumAlerts : daysToEndOfWindow;
     }
 
     private LocalDate getJobStartDate(Enrollment enrollment, MilestoneWindow milestoneWindow) {
         LocalDate startDateOfWindow = getStartDateOfWindow(enrollment, milestoneWindow);
         LocalDate today = today();
-        return (startDateOfWindow.isAfter(today))? startDateOfWindow : today;
+        return (startDateOfWindow.isAfter(today)) ? startDateOfWindow : today;
     }
 
     private LocalDate getStartDateOfWindow(Enrollment enrollment, MilestoneWindow milestoneWindow) {
@@ -72,10 +72,10 @@ public class EnrollmentAlertService {
         Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
         if (enrollment.getCurrentMilestoneName().equals(schedule.getFirstMilestone().getName()))
             return enrollment.getReferenceDate();
-        return (enrollment.getFulfillments().isEmpty())? enrollment.getEnrollmentDate() : enrollment.getLastFulfilledDate();
+        return (enrollment.getFulfillments().isEmpty()) ? enrollment.getEnrollmentDate() : enrollment.getLastFulfilledDate();
     }
 
     public void unscheduleAllAlerts(Enrollment enrollment) {
-        schedulerService.unscheduleAllJobs(EventSubject.BASE_SUBJECT + "." + enrollment.getId());
+        schedulerService.unscheduleAllJobs(String.format("%s.%s", EventSubject.MILESTONE_ALERT, enrollment.getId()));
     }
 }

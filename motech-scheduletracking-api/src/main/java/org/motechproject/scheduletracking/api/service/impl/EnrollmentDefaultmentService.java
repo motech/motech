@@ -14,9 +14,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class EnrollmentDefaultmentService {
-
-    public static final String DEFAULTMENT_CAPTURE = "defaultment_capture";
-
     private AllTrackedSchedules allTrackedSchedules;
     private MotechSchedulerService schedulerService;
 

@@ -17,15 +17,14 @@ import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.WallTimeUnit;
 
 import static junit.framework.Assert.assertEquals;
+import static org.joda.time.DateTimeConstants.MILLIS_PER_DAY;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.*;
 import static org.motechproject.util.DateUtil.newDateTime;
 
 public class EnrollmentAlertServiceTest {
-
-    private static final long MILLIS_IN_A_DAY = 24 * 60 * 60 * 1000L;
-    private static final long MILLIS_IN_A_WEEK = MILLIS_IN_A_DAY * 7;
+    private static final long MILLIS_IN_A_WEEK = MILLIS_PER_DAY * 7;
 
     private EnrollmentAlertService enrollmentAlertService;
 
@@ -59,7 +58,7 @@ public class EnrollmentAlertServiceTest {
         MilestoneEvent event = new MilestoneEvent(job.getMotechEvent());
         assertEquals(String.format("%s.%s.0", EventSubject.MILESTONE_ALERT, enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
         assertEquals(newDateTime(weeksAgo(0), new Time(8, 10)).toDate(), job.getStartTime());
-        assertEquals(MILLIS_IN_A_DAY, job.getRepeatInterval());
+        assertEquals(MILLIS_PER_DAY, job.getRepeatInterval());
         assertEquals(3, job.getRepeatCount().intValue());
 
         assertEquals("entity_1", event.getExternalId());
@@ -112,7 +111,7 @@ public class EnrollmentAlertServiceTest {
         RepeatingSchedulableJob job = repeatJobCaptor.getValue();
         assertEquals(String.format("%s.%s.0", EventSubject.MILESTONE_ALERT, enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
         assertEquals(newDateTime(daysAgo(0), new Time(8, 10)).toDate(), job.getStartTime());
-        assertEquals(MILLIS_IN_A_DAY, job.getRepeatInterval());
+        assertEquals(MILLIS_PER_DAY, job.getRepeatInterval());
         assertEquals(1, job.getRepeatCount().intValue());
     }
 
@@ -148,7 +147,7 @@ public class EnrollmentAlertServiceTest {
         RepeatingSchedulableJob job = repeatJobCaptor.getValue();
         assertEquals(String.format("%s.%s.1", EventSubject.MILESTONE_ALERT, enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
         assertEquals(newDateTime(weeksAgo(0), new Time(8, 10)).toDate(), job.getStartTime());
-        assertEquals(MILLIS_IN_A_DAY, job.getRepeatInterval());
+        assertEquals(MILLIS_PER_DAY, job.getRepeatInterval());
         assertEquals(2, job.getRepeatCount().intValue());
     }
 
@@ -182,6 +181,6 @@ public class EnrollmentAlertServiceTest {
         enrollment.setId("enrollment_1");
         enrollmentAlertService.unscheduleAllAlerts(enrollment);
 
-        verify(schedulerService).unscheduleAllJobs(EventSubject.BASE_SUBJECT + ".enrollment_1");
+        verify(schedulerService).unscheduleAllJobs(String.format("%s.%s", EventSubject.MILESTONE_ALERT, "enrollment_1"));
     }
 }
