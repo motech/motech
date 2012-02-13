@@ -7,7 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.*;
-import org.motechproject.scheduletracking.api.domain.exception.MilestoneFulfillmentException;
+import org.motechproject.scheduletracking.api.domain.exception.DefaultedMilestoneFulfillmentException;
 import org.motechproject.scheduletracking.api.domain.exception.NoMoreMilestonesToFulfillException;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
@@ -104,7 +104,7 @@ public class EnrollmentServiceTest {
         assertEquals("Second Shot", updatedEnrollmentCaptor.getValue().getCurrentMilestoneName());
     }
     
-    @Test(expected = MilestoneFulfillmentException.class)
+    @Test(expected = DefaultedMilestoneFulfillmentException.class)
     public void shouldNotFulfillADefaultedMilestone() {
         Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
