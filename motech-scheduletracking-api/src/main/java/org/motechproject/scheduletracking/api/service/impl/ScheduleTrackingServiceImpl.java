@@ -51,7 +51,7 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
     public void unenroll(String externalId, String scheduleName) {
         Enrollment activeEnrollment = allEnrollments.getActiveEnrollment(externalId, scheduleName);
         if (activeEnrollment == null)
-            throw new InvalidEnrollmentException("entity is not currently enrolled into the schedule.");
+            throw new InvalidEnrollmentException();
         enrollmentService.unenroll(activeEnrollment);
     }
 }
