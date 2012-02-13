@@ -19,8 +19,6 @@ import static org.motechproject.util.DateUtil.today;
 
 @Component
 public class EnrollmentAlertService {
-    public static final String MILESTONE_ALERTS = "milestone_alerts";
-
     private AllTrackedSchedules allTrackedSchedules;
     private MotechSchedulerService schedulerService;
 
@@ -45,7 +43,7 @@ public class EnrollmentAlertService {
 
     private void scheduleAlertJob(Alert alert, Enrollment enrollment, Schedule schedule, Milestone milestone, MilestoneWindow milestoneWindow) {
         MotechEvent event = new MilestoneEvent(enrollment.getExternalId(), schedule.getName(), milestone.getName(), milestoneWindow.getName().toString(), enrollment.getReferenceDate()).toMotechEvent();
-        event.getParameters().put(MotechSchedulerService.JOB_ID_KEY, String.format("%s.%s.%s.%d", EventSubject.BASE_SUBJECT, MILESTONE_ALERTS, enrollment.getId(), alert.getIndex()));
+        event.getParameters().put(MotechSchedulerService.JOB_ID_KEY, String.format("%s.%s.%d", EventSubject.MILESTONE_ALERT, enrollment.getId(), alert.getIndex()));
         DateTime startTime = DateUtil.newDateTime(getJobStartDate(enrollment, milestoneWindow), enrollment.getPreferredAlertTime());
         RepeatingSchedulableJob job = new RepeatingSchedulableJob(event, startTime.toDate(), null, numberOfAlertsToRaise(alert, enrollment, milestoneWindow), alert.getInterval().inDays() * MILLIS_PER_DAY);
         schedulerService.safeScheduleRepeatingJob(job);

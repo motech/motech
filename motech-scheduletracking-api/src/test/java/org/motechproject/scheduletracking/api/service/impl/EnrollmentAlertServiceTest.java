@@ -57,7 +57,7 @@ public class EnrollmentAlertServiceTest {
 
         RepeatingSchedulableJob job = repeatJobCaptor.getAllValues().get(0);
         MilestoneEvent event = new MilestoneEvent(job.getMotechEvent());
-        assertEquals(String.format("%s.%s.%s.0", EventSubject.BASE_SUBJECT, EnrollmentAlertService.MILESTONE_ALERTS, enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
+        assertEquals(String.format("%s.%s.0", EventSubject.MILESTONE_ALERT, enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
         assertEquals(newDateTime(weeksAgo(0), new Time(8, 10)).toDate(), job.getStartTime());
         assertEquals(MILLIS_IN_A_DAY, job.getRepeatInterval());
         assertEquals(3, job.getRepeatCount().intValue());
@@ -69,7 +69,7 @@ public class EnrollmentAlertServiceTest {
 
         job = repeatJobCaptor.getAllValues().get(1);
         event = new MilestoneEvent(job.getMotechEvent());
-        assertEquals(String.format("%s.%s.%s.1", EventSubject.BASE_SUBJECT, EnrollmentAlertService.MILESTONE_ALERTS, enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
+        assertEquals(String.format("%s.%s.1", EventSubject.MILESTONE_ALERT, enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
         assertEquals(newDateTime(weeksAfter(1), new Time(8, 10)).toDate(), job.getStartTime());
         assertEquals(MILLIS_IN_A_WEEK, job.getRepeatInterval());
         assertEquals(2, job.getRepeatCount().intValue());
@@ -110,7 +110,7 @@ public class EnrollmentAlertServiceTest {
         verify(schedulerService).safeScheduleRepeatingJob(repeatJobCaptor.capture());
 
         RepeatingSchedulableJob job = repeatJobCaptor.getValue();
-        assertEquals(String.format("%s.%s.%s.0", EventSubject.BASE_SUBJECT, EnrollmentAlertService.MILESTONE_ALERTS, enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
+        assertEquals(String.format("%s.%s.0", EventSubject.MILESTONE_ALERT, enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
         assertEquals(newDateTime(daysAgo(0), new Time(8, 10)).toDate(), job.getStartTime());
         assertEquals(MILLIS_IN_A_DAY, job.getRepeatInterval());
         assertEquals(1, job.getRepeatCount().intValue());
@@ -146,7 +146,7 @@ public class EnrollmentAlertServiceTest {
         verify(schedulerService).safeScheduleRepeatingJob(repeatJobCaptor.capture());
 
         RepeatingSchedulableJob job = repeatJobCaptor.getValue();
-        assertEquals(String.format("%s.%s.%s.1", EventSubject.BASE_SUBJECT, EnrollmentAlertService.MILESTONE_ALERTS, enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
+        assertEquals(String.format("%s.%s.1", EventSubject.MILESTONE_ALERT, enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
         assertEquals(newDateTime(weeksAgo(0), new Time(8, 10)).toDate(), job.getStartTime());
         assertEquals(MILLIS_IN_A_DAY, job.getRepeatInterval());
         assertEquals(2, job.getRepeatCount().intValue());
