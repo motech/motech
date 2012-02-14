@@ -6,7 +6,6 @@ import java.io.Serializable;
 import java.util.*;
 
 public class Milestone implements Serializable {
-
     private String name;
     private Map<String, String> data = new HashMap<String, String>();
     private List<MilestoneWindow> windows = new ArrayList<MilestoneWindow>();

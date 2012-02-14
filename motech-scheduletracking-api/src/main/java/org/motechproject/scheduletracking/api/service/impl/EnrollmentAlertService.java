@@ -62,7 +62,7 @@ public class EnrollmentAlertService {
     private LocalDate getJobStartDate(Enrollment enrollment, MilestoneWindow milestoneWindow, Alert alert) {
         LocalDate idealJobStartDate = getStartDateOfWindow(enrollment, milestoneWindow).plusDays(alert.getOffset().inDays());
         LocalDate today = today();
-        return (idealJobStartDate.isAfter(today))? idealJobStartDate : today;
+        return (idealJobStartDate.isAfter(today)) ? idealJobStartDate : today;
     }
 
     private LocalDate getStartDateOfWindow(Enrollment enrollment, MilestoneWindow milestoneWindow) {

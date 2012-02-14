@@ -1,45 +1,74 @@
 [
     {
-        "name" : "IPTI Schedule",
-        "milestones" : [
+        "name":"IPTI Schedule",
+        "milestones":[
             {
-                "name" : "IPTI 1",
-                "scheduleWindows" : {
-                    "earliest" : "13 Weeks",
-                    "due" : "14 Weeks",
-                    "late" : "16 Weeks",
-                    "max" : ""
+                "name":"IPTI 1",
+                "scheduleWindows":{
+                    "earliest":"13 Weeks",
+                    "due":"14 Weeks",
+                    "late":"16 Weeks",
+                    "max":""
                 },
-                "data" : {
-                    "Foo" : "Bar"
+                "data":{
+                    "Foo":"Bar"
                 },
-                "alerts" : [
+                "alerts":[
                     {
-                        "offset": "0 Weeks",
-                        "window" : "due",
-                        "interval" : "1 Day",
-                        "count" : "7"
+                        "window":"due",
+                        "offset":"0 Weeks",
+                        "interval":"1 Day",
+                        "count":"7"
                     },
                     {
-                        "offset": "1 Week",
-                        "window" : "late",
-                        "interval" : "1 Week",
-                        "count" : "51"
+                        "window":"late",
+                        "offset":"1 Week",
+                        "interval":"1 Week",
+                        "count":"51"
                     }
                 ]
             },
             {
-                "name" : "IPTI 2",
-                "scheduleWindows" : {
-                    "earliest" : "1 Weeks",
-                    "due" : "2 Weeks",
-                    "late" : "3 Weeks",
-                    "max" : ""
+                "name":"IPTI 2",
+                "scheduleWindows":{
+                    "earliest":"1 Weeks",
+                    "due":"2 Weeks",
+                    "late":"3 Weeks",
+                    "max":""
                 },
-                "data" : {
-                    "doo" : "Bar"
+                "data":{
+                    "doo":"Bar"
                 }
             }
+        ]
+    },
+    {
+        "name":"Delivery",
+        "milestones":[
+            {
+                "name":"Default",
+                "scheduleWindows":{
+                    "earliest":"39 Weeks",
+                    "due":"40 Weeks",
+                    "late":"44 Weeks",
+                    "max":"44 Weeks"
+                },
+                "alerts":[
+                    {
+                        "window":"due",
+                        "offset" : "0 Days",
+                        "interval":"1 Week",
+                        "count":"1"
+                    },
+                    {
+                        "window":"late",
+                        "offset" : "0 Days",
+                        "interval":"1 Week",
+                        "count":"4"
+                    }
+                ]
+            }
+
         ]
     }
 ]
