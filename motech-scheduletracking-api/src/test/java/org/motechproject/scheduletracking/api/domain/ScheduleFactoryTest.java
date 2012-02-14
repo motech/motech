@@ -15,8 +15,8 @@ public class ScheduleFactoryTest {
 
     @Test
     public void shouldCreateTheSchedule() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules/simple-schedule.json");
-        ScheduleRecord scheduleRecord = jsonReader.records().get(0);
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules");
+        ScheduleRecord scheduleRecord = findRecord("IPTI Schedule", jsonReader.records());
         Schedule schedule = new ScheduleFactory().build(scheduleRecord);
 
         assertNotNull(schedule);
@@ -25,8 +25,8 @@ public class ScheduleFactoryTest {
 
 	@Test
 	public void shouldAddMilestonesToTheSchedule() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules/simple-schedule.json");
-        ScheduleRecord scheduleRecord = jsonReader.records().get(0);
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules");
+        ScheduleRecord scheduleRecord = findRecord("IPTI Schedule", jsonReader.records());
         Schedule schedule = new ScheduleFactory().build(scheduleRecord);
 
         List<Milestone> milestones = schedule.getMilestones();
@@ -41,8 +41,8 @@ public class ScheduleFactoryTest {
 
 	@Test
 	public void shouldAddAlertsToTheWindows() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules/simple-schedule.json");
-        ScheduleRecord scheduleRecord = jsonReader.records().get(0);
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules");
+        ScheduleRecord scheduleRecord = findRecord("IPTI Schedule", jsonReader.records());
         Schedule schedule = new ScheduleFactory().build(scheduleRecord);
 
         List<Milestone> milestones = schedule.getMilestones();
@@ -60,8 +60,8 @@ public class ScheduleFactoryTest {
 
     @Test
     public void shouldCreateEmptyWindowIfOffsetIsNotSpecified() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules/simple-schedule.json");
-        ScheduleRecord scheduleRecord = jsonReader.records().get(0);
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules");
+        ScheduleRecord scheduleRecord = findRecord("IPTI Schedule", jsonReader.records());
         Schedule schedule = new ScheduleFactory().build(scheduleRecord);
 
         List<Milestone> milestones = schedule.getMilestones();
@@ -75,15 +75,22 @@ public class ScheduleFactoryTest {
 
     @Test(expected = InvalidScheduleDefinitionException.class)
     public void shouldThrowExceptionIfAlertDoesNotHaveOffset() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules/alert-without-offset.json");
-        ScheduleRecord scheduleRecord = jsonReader.records().get(0);
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/alert-without-offset");
+        ScheduleRecord scheduleRecord = findRecord("schedule-without-offset-for-alert", jsonReader.records());
         new ScheduleFactory().build(scheduleRecord);
     }
 
     @Test(expected = InvalidScheduleDefinitionException.class)
     public void shouldThrowExceptionIfAlertOffsetIsEmpty() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules/alert-with-empty-offset.json");
-        ScheduleRecord scheduleRecord = jsonReader.records().get(0);
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/alert-with-empty-offset");
+        ScheduleRecord scheduleRecord = findRecord("schedule-with-empty-offset-for-alert", jsonReader.records());
         new ScheduleFactory().build(scheduleRecord);
+    }
+
+    private ScheduleRecord findRecord(String name, List<ScheduleRecord> records) {
+        for (ScheduleRecord record : records)
+            if (record.name().equals(name))
+                return record;
+        return null;
     }
 }

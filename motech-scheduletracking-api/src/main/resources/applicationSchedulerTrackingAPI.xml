@@ -9,7 +9,7 @@
 
     <import resource="classpath:applicationPlatformScheduler.xml"/>
     <import resource="classpath:applicationPlatformCommon.xml"/>
-    <util:properties id="scheduletracking" location="classpath:/scheduletracking.properties"/>
+    <util:properties id="schedule_tracking" location="classpath:/schedule_tracking.properties"/>
 
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.scheduletracking.api"/>

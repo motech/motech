@@ -7,19 +7,18 @@ import org.motechproject.scheduletracking.api.domain.userspecified.ScheduleRecor
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class TrackedSchedulesJsonReaderImplTest {
 
     @Test
     public void shouldReadTheScheduleJsonFileCorrectly() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules/simple-schedule.json");
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules");
         List<ScheduleRecord> records = jsonReader.records();
         assertEquals(2, records.size());
-        ScheduleRecord iptScheduleRecord = records.get(0);
-        ScheduleRecord eddScheduleRecord = records.get(1);
 
-        assertEquals("IPTI Schedule", iptScheduleRecord.name());
-        assertEquals("Delivery", eddScheduleRecord.name());
+        ScheduleRecord iptScheduleRecord = findRecord("IPTI Schedule", records);
+        ScheduleRecord eddScheduleRecord = findRecord("Delivery", records);
 
         List<MilestoneRecord> milestoneRecords = iptScheduleRecord.milestoneRecords();
         assertEquals(2, milestoneRecords.size());
@@ -33,10 +32,23 @@ public class TrackedSchedulesJsonReaderImplTest {
 
     @Test
     public void shouldReadEmptyValues() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules/simple-schedule.json");
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules");
         List<ScheduleRecord> records = jsonReader.records();
-        ScheduleRecord scheduleRecord = records.get(0);
+        ScheduleRecord scheduleRecord = findRecord("IPTI Schedule", records);
         MilestoneRecord secondMilestone = scheduleRecord.milestoneRecords().get(1);
         assertEquals("", secondMilestone.scheduleWindowsRecord().max());
+    }
+
+    @Test
+    public void shouldBeAbleReadJsonFilesFromADirectory() {
+        assertNotNull(new TrackedSchedulesJsonReaderImpl("/schedules").records());
+        assertNotNull(new TrackedSchedulesJsonReaderImpl("/alert-without-offset").records());
+    }
+
+    private ScheduleRecord findRecord(String name, List<ScheduleRecord> records) {
+        for (ScheduleRecord record : records)
+            if (record.name().equals(name))
+                return record;
+        return null;
     }
 }

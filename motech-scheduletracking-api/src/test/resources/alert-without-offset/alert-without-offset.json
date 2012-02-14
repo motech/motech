@@ -1,0 +1,21 @@
+{
+    "name" : "schedule-without-offset-for-alert",
+    "milestones" : [
+        {
+            "name" : "first-milestone",
+            "scheduleWindows" : {
+                "earliest" : "1 Week",
+                "due" : "1 Week",
+                "late" : "1 Week",
+                "max" : "1 Week"
+            },
+            "alerts" : [
+                {
+                    "window" : "due",
+                    "interval" : "1 Day",
+                    "count" : "7"
+                }
+            ]
+        }
+    ]
+}

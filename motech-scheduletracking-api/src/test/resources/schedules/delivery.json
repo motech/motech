@@ -1,0 +1,29 @@
+{
+    "name":"Delivery",
+    "milestones":[
+        {
+            "name":"Default",
+            "scheduleWindows":{
+                "earliest":"39 Weeks",
+                "due":"40 Weeks",
+                "late":"44 Weeks",
+                "max":"44 Weeks"
+            },
+            "alerts":[
+                {
+                    "window":"due",
+                    "offset" : "0 Days",
+                    "interval":"1 Week",
+                    "count":"1"
+                },
+                {
+                    "window":"late",
+                    "offset" : "0 Days",
+                    "interval":"1 Week",
+                    "count":"4"
+                }
+            ]
+        }
+
+    ]
+}
