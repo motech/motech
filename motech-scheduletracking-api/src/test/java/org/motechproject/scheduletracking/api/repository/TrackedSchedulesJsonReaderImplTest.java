@@ -14,18 +14,21 @@ public class TrackedSchedulesJsonReaderImplTest {
     public void shouldReadTheScheduleJsonFileCorrectly() {
         TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/simple-schedule.json");
         List<ScheduleRecord> records = jsonReader.records();
-        assertEquals(1, records.size());
-        ScheduleRecord scheduleRecord = records.get(0);
-        assertEquals("IPTI Schedule", scheduleRecord.name());
+        assertEquals(2, records.size());
+        ScheduleRecord iptScheduleRecord = records.get(0);
+        ScheduleRecord eddScheduleRecord = records.get(1);
 
-        List<MilestoneRecord> milestones = scheduleRecord.milestoneRecords();
-        assertEquals(2, milestones.size());
+        assertEquals("IPTI Schedule", iptScheduleRecord.name());
+        assertEquals("Delivery", eddScheduleRecord.name());
 
-        MilestoneRecord firstMilestone = milestones.get(0);
-        assertEquals("IPTI 1", firstMilestone.name());
+        List<MilestoneRecord> milestoneRecords = iptScheduleRecord.milestoneRecords();
+        assertEquals(2, milestoneRecords.size());
+        assertEquals("IPTI 1", milestoneRecords.get(0).name());
+        assertEquals("IPTI 2", milestoneRecords.get(1).name());
 
-        MilestoneRecord secondMilestone = milestones.get(1);
-        assertEquals("IPTI 2", secondMilestone.name());
+        milestoneRecords = eddScheduleRecord.milestoneRecords();
+        assertEquals(1, milestoneRecords.size());
+        assertEquals("Default", milestoneRecords.get(0).name());
     }
 
     @Test
