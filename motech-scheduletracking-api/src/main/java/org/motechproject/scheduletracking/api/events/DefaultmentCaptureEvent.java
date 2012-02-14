@@ -8,7 +8,6 @@ import org.motechproject.scheduletracking.api.events.constants.EventSubject;
 import java.util.HashMap;
 
 public class DefaultmentCaptureEvent {
-
     private String jobId;
     private String enrollmentId;
 

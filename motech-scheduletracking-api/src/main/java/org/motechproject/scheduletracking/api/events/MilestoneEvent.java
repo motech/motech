@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class MilestoneEvent {
-
     private String windowName;
     private String milestoneName;
     private String scheduleName;

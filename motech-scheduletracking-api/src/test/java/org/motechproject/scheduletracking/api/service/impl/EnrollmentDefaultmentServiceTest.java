@@ -23,7 +23,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.*;
 
 public class EnrollmentDefaultmentServiceTest {
-
     private EnrollmentDefaultmentService enrollmentDefaultmentService;
 
     @Mock
@@ -88,6 +87,6 @@ public class EnrollmentDefaultmentServiceTest {
 
         enrollmentDefaultmentService.unscheduleDefaultmentCaptureJob(enrollment);
 
-        verify(schedulerService).unscheduleAllJobs(String.format("%s.enrollment_1", EventSubject.DEFAULTMENT_CAPTURE));
+        verify(schedulerService).unscheduleAllJobs(String.format("%s.enrollment_1", EnrollmentDefaultmentService.JOB_ID_PREFIX));
     }
 }

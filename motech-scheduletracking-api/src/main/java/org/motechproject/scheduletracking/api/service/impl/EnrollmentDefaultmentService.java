@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class EnrollmentDefaultmentService {
+    public static final String JOB_ID_PREFIX = "defaultment.capture";
+
     private AllTrackedSchedules allTrackedSchedules;
     private MotechSchedulerService schedulerService;
 
@@ -48,6 +50,6 @@ public class EnrollmentDefaultmentService {
     }
 
     public void unscheduleDefaultmentCaptureJob(Enrollment enrollment) {
-        schedulerService.unscheduleAllJobs(String.format("%s.%s", EventSubject.DEFAULTMENT_CAPTURE, enrollment.getId()));
+        schedulerService.unscheduleAllJobs(String.format("%s.%s", JOB_ID_PREFIX, enrollment.getId()));
     }
 }
