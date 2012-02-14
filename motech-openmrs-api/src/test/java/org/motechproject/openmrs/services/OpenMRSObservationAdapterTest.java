@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.motechproject.mrs.model.MRSConcept;
 import org.motechproject.mrs.model.MRSObservation;
 import org.openmrs.*;
 import org.openmrs.api.ObsService;
@@ -29,9 +30,16 @@ public class OpenMRSObservationAdapterTest {
 
     @Mock
     OpenMRSConceptAdapter mockConceptAdapter;
-
     @Mock
     private ObsService mockObservationService;
+    @Mock
+    private Patient patient;
+    @Mock
+    private Location facility;
+    @Mock
+    private Encounter encounter;
+    @Mock
+    private User creator;
 
     @Before
     public void setUp() {
@@ -42,58 +50,75 @@ public class OpenMRSObservationAdapterTest {
     }
 
     @Test
-    public void shouldCreateAObservationForAnEncounter() {
-        Patient patient = mock(Patient.class);
-        Location facility = mock(Location.class);
-        Encounter encounter = mock(Encounter.class);
-        User creator = mock(User.class);
+    public void shouldCreateAnObservationToHoldConceptValue() {
+
+        String observationConceptName = "concept1";
+        String observationValueConceptName = "concept2";
+        String dependentObservationValueConceptName = "concept3";
 
         Date observationDate = new LocalDate(2011, 12, 31).toDate();
-        String conceptName = "concept";
-        String dependentConceptName = "dconcept";
+        Date dependentObservationDate = new Date(1999, 1, 1);
+
+        MRSConcept observationValueConcept = new MRSConcept(observationValueConceptName);
+        MRSConcept dependentConceptValue = new MRSConcept(dependentObservationValueConceptName);
+
+        Concept openMrsConceptUsedForObsName = mock(Concept.class);
+        Concept openMrsConceptUsedForObsValue = mock(Concept.class);
+        Concept openMrsConceptUsedForDepObsValue = mock(Concept.class);
+
+        when(mockConceptAdapter.getConceptByName(observationConceptName)).thenReturn(openMrsConceptUsedForObsName);
+        when(mockConceptAdapter.getConceptByName(observationValueConceptName)).thenReturn(openMrsConceptUsedForObsValue);
+        when(mockConceptAdapter.getConceptByName(dependentObservationValueConceptName)).thenReturn(openMrsConceptUsedForDepObsValue);
+
+        MRSObservation<MRSConcept> expectedDeliveryConcept = new MRSObservation<MRSConcept>(observationDate, observationConceptName, observationValueConcept);
+        expectedDeliveryConcept.addDependantObservation(new MRSObservation<MRSConcept>(dependentObservationDate, dependentObservationValueConceptName, dependentConceptValue));
+
+        Obs openMRSObservation = observationAdapter.<MRSConcept>createOpenMRSObservationForEncounter(expectedDeliveryConcept, encounter, patient, facility, creator);
+
+        assertOpenMrsObservationProperties(openMRSObservation, expectedDeliveryConcept, patient, facility, encounter, creator, openMrsConceptUsedForObsName);
+
+        assertThat(openMRSObservation.getValueCoded(), is(equalTo(openMrsConceptUsedForObsValue)));
+        assertThat(openMRSObservation.getGroupMembers().size(), is(1));
+        final Obs returnedDependentObservation = openMRSObservation.getGroupMembers().iterator().next();
+        assertThat(returnedDependentObservation.getObsDatetime(), is(dependentObservationDate));
+        assertThat(returnedDependentObservation.getValueCoded(), is(openMrsConceptUsedForDepObsValue));
+    }
+
+
+    @Test
+    public void shouldCreateAObservationToHoldDateStringDoubleBooleanValues() {
+        Date observationDate = new LocalDate(2011, 12, 31).toDate();
+        String observationConceptName = "concept1";
 
         String feverValue = "high";
         Double temperatureValue = 99.0;
         Boolean hivValue = false;
         Date expectedDeliveryDateValue = new LocalDate(2012, 12, 21).toDate();
 
-        final Concept expectedConcept = new Concept(1);
-        final Concept dependentConceptValue = new Concept(2);
 
-        MRSObservation<String> fever = new MRSObservation<String>(observationDate, conceptName, feverValue);
-        MRSObservation<Double> temperature = new MRSObservation<Double>(observationDate, conceptName, temperatureValue);
-        MRSObservation<Boolean> hiv = new MRSObservation<Boolean>(observationDate, conceptName, hivValue);
-        MRSObservation<Date> expectedDeliveryDate = new MRSObservation<Date>(observationDate, conceptName, expectedDeliveryDateValue);
-        MRSObservation<Concept> expectedDeliveryConcept = new MRSObservation<Concept>(observationDate, conceptName, expectedConcept);
-        Date dependentObservationDate = new Date(1999,1,1);
-        expectedDeliveryConcept.addDependantObservation(new MRSObservation<Concept>(dependentObservationDate, dependentConceptName, dependentConceptValue));
+        MRSObservation<String> fever = new MRSObservation<String>(observationDate, observationConceptName, feverValue);
+        MRSObservation<Double> temperature = new MRSObservation<Double>(observationDate, observationConceptName, temperatureValue);
+        MRSObservation<Boolean> hiv = new MRSObservation<Boolean>(observationDate, observationConceptName, hivValue);
+        MRSObservation<Date> expectedDeliveryDate = new MRSObservation<Date>(observationDate, observationConceptName, expectedDeliveryDateValue);
 
-        Concept concept = mock(Concept.class);
-        when(mockConceptAdapter.getConceptByName(conceptName)).thenReturn(concept);
+        Concept openMrsConceptUsedForObsName = mock(Concept.class);
+        when(mockConceptAdapter.getConceptByName(observationConceptName)).thenReturn(openMrsConceptUsedForObsName);
 
         Obs openMrsObservation = observationAdapter.<String>createOpenMRSObservationForEncounter(fever, encounter, patient, facility, creator);
-        assertOpenMrsObservationProperties(openMrsObservation, fever, patient, facility, encounter, creator, concept);
+        assertOpenMrsObservationProperties(openMrsObservation, fever, patient, facility, encounter, creator, openMrsConceptUsedForObsName);
         assertThat(openMrsObservation.getValueText(), is(equalTo(feverValue)));
 
         openMrsObservation = observationAdapter.<Double>createOpenMRSObservationForEncounter(temperature, encounter, patient, facility, creator);
-        assertOpenMrsObservationProperties(openMrsObservation, temperature, patient, facility, encounter, creator, concept);
+        assertOpenMrsObservationProperties(openMrsObservation, temperature, patient, facility, encounter, creator, openMrsConceptUsedForObsName);
         assertThat(openMrsObservation.getValueNumeric(), is(equalTo(temperatureValue)));
 
         openMrsObservation = observationAdapter.<Boolean>createOpenMRSObservationForEncounter(hiv, encounter, patient, facility, creator);
-        assertOpenMrsObservationProperties(openMrsObservation, hiv, patient, facility, encounter, creator, concept);
+        assertOpenMrsObservationProperties(openMrsObservation, hiv, patient, facility, encounter, creator, openMrsConceptUsedForObsName);
         assertThat(openMrsObservation.getValueAsBoolean(), is(equalTo(hivValue)));
 
         openMrsObservation = observationAdapter.<Date>createOpenMRSObservationForEncounter(expectedDeliveryDate, encounter, patient, facility, creator);
-        assertOpenMrsObservationProperties(openMrsObservation, expectedDeliveryDate, patient, facility, encounter, creator, concept);
+        assertOpenMrsObservationProperties(openMrsObservation, expectedDeliveryDate, patient, facility, encounter, creator, openMrsConceptUsedForObsName);
         assertThat(openMrsObservation.getValueDatetime(), is(equalTo(expectedDeliveryDateValue)));
-
-        openMrsObservation = observationAdapter.<Concept>createOpenMRSObservationForEncounter(expectedDeliveryConcept, encounter, patient, facility, creator);
-        assertOpenMrsObservationProperties(openMrsObservation, expectedDeliveryConcept, patient, facility, encounter, creator, concept);
-        assertThat(openMrsObservation.getValueCoded(), is(equalTo(expectedConcept)));
-        assertThat(openMrsObservation.getGroupMembers().size(), is(1));
-        final Obs acutalDependentObs = openMrsObservation.getGroupMembers().iterator().next();
-        assertThat(acutalDependentObs.getObsDatetime(), is(dependentObservationDate));
-        assertThat(acutalDependentObs.getValueCoded(), is(dependentConceptValue));
     }
 
     @Test
@@ -222,7 +247,10 @@ public class OpenMRSObservationAdapterTest {
         Double temperatureValue = 99.0;
         Boolean hivValue = false;
         Date expectedDeliveryDateValue = new LocalDate(2012, 12, 21).toDate();
-        final Concept concept = new Concept(1);
+        final MRSConcept concept = new MRSConcept("conceptName");
+
+        Concept openMrsConcept = mock(Concept.class);
+        when(mockConceptAdapter.getConceptByName(concept.getName())).thenReturn(openMrsConcept);
 
         observationAdapter.writeValueToOpenMRSObservation(feverValue, fever);
         observationAdapter.writeValueToOpenMRSObservation(temperatureValue, temperature);
@@ -235,7 +263,7 @@ public class OpenMRSObservationAdapterTest {
         assertThat(temperature.getValueNumeric(), is(equalTo(temperatureValue)));
         assertThat(expectedDeliveryDate.getValueDatetime(), is(equalTo(expectedDeliveryDateValue)));
         assertThat(HIV.getValueAsBoolean(), is(equalTo(hivValue)));
-        assertThat(conceptObs.getValueCoded(), is(equalTo(concept)));
+        assertThat(conceptObs.getValueCoded(), is(equalTo(openMrsConcept)));
     }
 
     @Test
