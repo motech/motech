@@ -12,7 +12,7 @@ public class TrackedSchedulesJsonReaderImplTest {
 
     @Test
     public void shouldReadTheScheduleJsonFileCorrectly() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/simple-schedule.json");
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules/simple-schedule.json");
         List<ScheduleRecord> records = jsonReader.records();
         assertEquals(2, records.size());
         ScheduleRecord iptScheduleRecord = records.get(0);
@@ -33,7 +33,7 @@ public class TrackedSchedulesJsonReaderImplTest {
 
     @Test
     public void shouldReadEmptyValues() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/simple-schedule.json");
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules/simple-schedule.json");
         List<ScheduleRecord> records = jsonReader.records();
         ScheduleRecord scheduleRecord = records.get(0);
         MilestoneRecord secondMilestone = scheduleRecord.milestoneRecords().get(1);

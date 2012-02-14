@@ -15,7 +15,7 @@ public class ScheduleFactoryTest {
 
     @Test
     public void shouldCreateTheSchedule() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/simple-schedule.json");
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules/simple-schedule.json");
         ScheduleRecord scheduleRecord = jsonReader.records().get(0);
         Schedule schedule = new ScheduleFactory().build(scheduleRecord);
 
@@ -25,7 +25,7 @@ public class ScheduleFactoryTest {
 
 	@Test
 	public void shouldAddMilestonesToTheSchedule() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/simple-schedule.json");
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules/simple-schedule.json");
         ScheduleRecord scheduleRecord = jsonReader.records().get(0);
         Schedule schedule = new ScheduleFactory().build(scheduleRecord);
 
@@ -41,7 +41,7 @@ public class ScheduleFactoryTest {
 
 	@Test
 	public void shouldAddAlertsToTheWindows() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/simple-schedule.json");
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules/simple-schedule.json");
         ScheduleRecord scheduleRecord = jsonReader.records().get(0);
         Schedule schedule = new ScheduleFactory().build(scheduleRecord);
 
@@ -60,7 +60,7 @@ public class ScheduleFactoryTest {
 
     @Test
     public void shouldCreateEmptyWindowIfOffsetIsNotSpecified() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/simple-schedule.json");
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules/simple-schedule.json");
         ScheduleRecord scheduleRecord = jsonReader.records().get(0);
         Schedule schedule = new ScheduleFactory().build(scheduleRecord);
 
@@ -75,14 +75,14 @@ public class ScheduleFactoryTest {
 
     @Test(expected = InvalidScheduleDefinitionException.class)
     public void shouldThrowExceptionIfAlertDoesNotHaveOffset() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/alert-without-offset.json");
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules/alert-without-offset.json");
         ScheduleRecord scheduleRecord = jsonReader.records().get(0);
         new ScheduleFactory().build(scheduleRecord);
     }
 
     @Test(expected = InvalidScheduleDefinitionException.class)
     public void shouldThrowExceptionIfAlertOffsetIsEmpty() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/alert-with-empty-offset.json");
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules/alert-with-empty-offset.json");
         ScheduleRecord scheduleRecord = jsonReader.records().get(0);
         new ScheduleFactory().build(scheduleRecord);
     }
