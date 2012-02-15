@@ -7,6 +7,7 @@ import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.scheduler.domain.JobId;
+import org.motechproject.util.DateUtil;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
@@ -234,7 +235,7 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
 
         Date jobStartDate = schedulableJob.getStartDate();
         assertArgumentNotNull("Job start date", jobStartDate);
-        Date currentDate = new Date();
+        Date currentDate = DateUtil.today().toDate();
         if (jobStartDate.before(currentDate)) {
             String errorMessage = "Invalid RunOnceSchedulableJob. The job start date can not be in the past. \n" +
                     " Job start date: " + jobStartDate.toString() +
