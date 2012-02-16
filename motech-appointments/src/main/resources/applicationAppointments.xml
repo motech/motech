@@ -8,6 +8,7 @@
     <context:annotation-config/>
 
     <import resource="classpath:applicationPlatformCommon.xml"/>
+    <import resource="classpath:applicationPlatformScheduler.xml"/>
 
     <bean id="reminderCRUDEventHandler" class="org.motechproject.server.appointments.ReminderCRUDEventHandler"/>
 

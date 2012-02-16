@@ -35,11 +35,10 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.ReminderService;
 import org.motechproject.appointments.api.model.Reminder;
-import org.motechproject.context.Context;
-import org.motechproject.gateway.MotechSchedulerGateway;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.RunOnceSchedulableJob;
+import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.JobId;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.server.event.annotations.MotechListenerType;
@@ -57,15 +56,20 @@ import java.util.Map;
 public class ReminderCRUDEventHandler {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private MotechSchedulerGateway schedulerGateway = Context.getInstance().getMotechSchedulerGateway();
+    private MotechSchedulerService schedulerService;
+
+    private ReminderService reminderService;
 
     @Autowired
-    private ReminderService reminderService;
+    public ReminderCRUDEventHandler(MotechSchedulerService schedulerService, ReminderService reminderService) {
+        this.schedulerService = schedulerService;
+        this.reminderService = reminderService;
+    }
 
     @MotechListener(subjects = {EventKeys.REMINDER_DELETED_SUBJECT}, type = MotechListenerType.NAMED_PARAMETERS)
     public void delete(@MotechParam(EventKeys.EXTERNAL_ID_KEY) String externalIdKey) {
         Assert.notNull(externalIdKey);
-        schedulerGateway.unscheduleJob(new JobId(EventKeys.APPOINTMENT_REMINDER_EVENT_PREFIX, externalIdKey).value());
+        schedulerService.safeUnscheduleJob(EventKeys.APPOINTMENT_REMINDER_EVENT_PREFIX, externalIdKey);
     }
 
     @MotechListener(subjects = {EventKeys.REMINDER_CREATED_SUBJECT})
@@ -105,10 +109,10 @@ public class ReminderCRUDEventHandler {
                         reminder.getEndDate(),
                         reminder.getRepeatCount(),
                         reminder.getIntervalSeconds() * 1000);
-                schedulerGateway.scheduleRepeatingJob(schedulableJob);
+                schedulerService.safeScheduleRepeatingJob(schedulableJob);
             } else {
                 RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(reminderEvent, reminder.getStartDate());
-                schedulerGateway.scheduleRunOnceJob(schedulableJob);
+                schedulerService.safeScheduleRunOnceJob(schedulableJob);
             }
         }
     }
@@ -125,9 +129,7 @@ public class ReminderCRUDEventHandler {
         }
 
         if (!reminder.getEnabled()) {
-            String jobId = new JobId(EventKeys.APPOINTMENT_REMINDER_EVENT_PREFIX, reminder.getExternalId()).value();
-
-            schedulerGateway.unscheduleJob(jobId);
+            schedulerService.safeUnscheduleJob(EventKeys.APPOINTMENT_REMINDER_EVENT_PREFIX, reminder.getExternalId());
         }
     }
 }

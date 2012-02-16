@@ -33,18 +33,18 @@ package org.motechproject.server.appointments;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.ReminderService;
 import org.motechproject.appointments.api.model.Reminder;
-import org.motechproject.gateway.MotechSchedulerGateway;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.RunOnceSchedulableJob;
-import org.motechproject.scheduler.domain.JobId;
+import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.util.DateUtil;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -55,33 +55,34 @@ import static org.mockito.Mockito.*;
 
 public class ReminderCRUDEventHandlerTest {
 
-    @InjectMocks
-    ReminderCRUDEventHandler reminderCRUDEventHandler = new ReminderCRUDEventHandler();
 
     @Mock
     private ReminderService reminderService;
 
     @Mock
-    private MotechSchedulerGateway schedulerGateway;
+    private MotechSchedulerService schedulerService;
 
     @Mock
     private MetricsAgent metricsAgent;
 
+    ReminderCRUDEventHandler reminderCRUDEventHandler;
+
     @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
+        reminderCRUDEventHandler = new ReminderCRUDEventHandler(schedulerService, reminderService);
     }
 
     @Test
     public void testHandle_Delete() throws Exception {
         reminderCRUDEventHandler.delete("foo");
-        verify(schedulerGateway, times(1)).unscheduleJob(new JobId(EventKeys.APPOINTMENT_REMINDER_EVENT_PREFIX, "foo").value());
+        verify(schedulerService, times(1)).safeUnscheduleJob(EventKeys.APPOINTMENT_REMINDER_EVENT_PREFIX, "foo");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testHandle_DeleteNoJobId() throws Exception {
         reminderCRUDEventHandler.delete(null);
-        verify(schedulerGateway, times(0)).unscheduleJob("foo");
+        verify(schedulerService, times(0)).safeUnscheduleJob(EventKeys.APPOINTMENT_REMINDER_EVENT_PREFIX, "foo");
     }
 
     @Test
@@ -89,12 +90,17 @@ public class ReminderCRUDEventHandlerTest {
         Map<String, Object> params = new HashMap<String, Object>();
 
         params.put(EventKeys.REMINDER_ID_KEY, "foo");
+        params.put(EventKeys.APPOINTMENT_ID_KEY, "bar");
         MotechEvent motechEvent = new MotechEvent("created", params);
 
         Reminder r = new Reminder();
+        r.setEnabled(true);
+        r.setStartDate(DateUtil.today().plusDays(2).toDate());
+        r.setEndDate(DateUtil.today().plusDays(3).toDate());
         when(reminderService.getReminder("foo")).thenReturn(r);
 
         reminderCRUDEventHandler.create(motechEvent);
+        verify(schedulerService).safeScheduleRunOnceJob(Matchers.<RunOnceSchedulableJob>any());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -114,9 +120,9 @@ public class ReminderCRUDEventHandlerTest {
 
         reminderCRUDEventHandler.update(motechEvent);
 
-        verify(schedulerGateway, times(0)).scheduleRunOnceJob(any(RunOnceSchedulableJob.class));
-        verify(schedulerGateway, times(0)).scheduleRepeatingJob(any(RepeatingSchedulableJob.class));
-        verify(schedulerGateway, times(0)).unscheduleJob(anyString());
+        verify(schedulerService, times(0)).safeScheduleRunOnceJob(any(RunOnceSchedulableJob.class));
+        verify(schedulerService, times(0)).safeScheduleRepeatingJob(any(RepeatingSchedulableJob.class));
+        verify(schedulerService, times(0)).safeUnscheduleJob(anyString(), anyString());
     }
 
     @Test
@@ -133,7 +139,7 @@ public class ReminderCRUDEventHandlerTest {
 
         reminderCRUDEventHandler.update(motechEvent);
 
-        verify(schedulerGateway, times(1)).unscheduleJob(new JobId(EventKeys.APPOINTMENT_REMINDER_EVENT_PREFIX, r.getExternalId()).value());
+        verify(schedulerService, times(1)).safeUnscheduleJob(EventKeys.APPOINTMENT_REMINDER_EVENT_PREFIX, r.getExternalId());
     }
 
 
@@ -150,8 +156,8 @@ public class ReminderCRUDEventHandlerTest {
 
         reminderCRUDEventHandler.update(motechEvent);
 
-        verify(schedulerGateway, times(0)).scheduleRunOnceJob(any(RunOnceSchedulableJob.class));
-        verify(schedulerGateway, times(0)).scheduleRepeatingJob(any(RepeatingSchedulableJob.class));
+        verify(schedulerService, times(0)).safeScheduleRunOnceJob(any(RunOnceSchedulableJob.class));
+        verify(schedulerService, times(0)).safeScheduleRepeatingJob(any(RepeatingSchedulableJob.class));
     }
 
     @Test
@@ -169,8 +175,8 @@ public class ReminderCRUDEventHandlerTest {
 
         reminderCRUDEventHandler.update(motechEvent);
 
-        verify(schedulerGateway, times(0)).scheduleRunOnceJob(any(RunOnceSchedulableJob.class));
-        verify(schedulerGateway, times(0)).scheduleRepeatingJob(any(RepeatingSchedulableJob.class));
+        verify(schedulerService, times(0)).safeScheduleRunOnceJob(any(RunOnceSchedulableJob.class));
+        verify(schedulerService, times(0)).safeScheduleRepeatingJob(any(RepeatingSchedulableJob.class));
     }
 
     @Test
@@ -191,8 +197,8 @@ public class ReminderCRUDEventHandlerTest {
 
         reminderCRUDEventHandler.create(motechEvent);
 
-        verify(schedulerGateway, times(1)).scheduleRunOnceJob(any(RunOnceSchedulableJob.class));
-        verify(schedulerGateway, times(0)).scheduleRepeatingJob(any(RepeatingSchedulableJob.class));
+        verify(schedulerService, times(1)).safeScheduleRunOnceJob(any(RunOnceSchedulableJob.class));
+        verify(schedulerService, times(0)).safeScheduleRepeatingJob(any(RepeatingSchedulableJob.class));
     }
 
     @Test
@@ -218,7 +224,7 @@ public class ReminderCRUDEventHandlerTest {
 
         reminderCRUDEventHandler.create(motechEvent);
 
-        verify(schedulerGateway, times(0)).scheduleRunOnceJob(any(RunOnceSchedulableJob.class));
-        verify(schedulerGateway, times(1)).scheduleRepeatingJob(any(RepeatingSchedulableJob.class));
+        verify(schedulerService, times(0)).safeScheduleRunOnceJob(any(RunOnceSchedulableJob.class));
+        verify(schedulerService, times(1)).safeScheduleRepeatingJob(any(RepeatingSchedulableJob.class));
     }
 }
