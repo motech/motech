@@ -57,6 +57,7 @@ public class EnrollmentService {
             enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
             enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
         }
+        allEnrollments.update(enrollment);
     }
 
     public void unenroll(Enrollment enrollment) {
