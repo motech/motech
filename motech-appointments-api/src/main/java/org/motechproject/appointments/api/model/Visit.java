@@ -32,14 +32,14 @@
 package org.motechproject.appointments.api.model;
 
 import org.ektorp.support.TypeDiscriminator;
+import org.motechproject.model.ExtensibleDataObject;
 import org.motechproject.model.MotechBaseDataObject;
 
 import java.util.Date;
 
 @TypeDiscriminator("doc.type === 'Visit'")
-public class Visit extends MotechBaseDataObject
+public class Visit extends ExtensibleDataObject
 {
-
     private String externalId;
     private Date visitDate;
     private String title;

@@ -32,12 +32,15 @@
 package org.motechproject.appointments.api.model;
 
 import org.ektorp.support.TypeDiscriminator;
+import org.motechproject.model.ExtensibleDataObject;
 import org.motechproject.model.MotechBaseDataObject;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @TypeDiscriminator("doc.type === 'Appointment'")
-public class Appointment extends MotechBaseDataObject {
+public class Appointment extends ExtensibleDataObject {
 
 	private static final long serialVersionUID = 3L;
 
@@ -46,7 +49,7 @@ public class Appointment extends MotechBaseDataObject {
 	private Date dueDate;
 	private Date scheduledDate;
     private String visitId;
-
+    
     public String getExternalId()
     {
         return externalId;
