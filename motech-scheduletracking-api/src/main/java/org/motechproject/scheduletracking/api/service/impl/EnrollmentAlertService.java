@@ -78,6 +78,6 @@ public class EnrollmentAlertService {
     }
 
     public void unscheduleAllAlerts(Enrollment enrollment) {
-        schedulerService.unscheduleAllJobs(String.format("%s.%s", EventSubject.MILESTONE_ALERT, enrollment.getId()));
+        schedulerService.unscheduleAllJobs(String.format("%s-%s", EventSubject.MILESTONE_ALERT, enrollment.getId()));
     }
 }

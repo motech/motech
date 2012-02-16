@@ -202,7 +202,7 @@ public class EnrollmentAlertServiceTest {
         enrollment.setId("enrollment_1");
         enrollmentAlertService.unscheduleAllAlerts(enrollment);
 
-        verify(schedulerService).unscheduleAllJobs(String.format("%s.%s", EventSubject.MILESTONE_ALERT, "enrollment_1"));
+        verify(schedulerService).unscheduleAllJobs(String.format("%s-%s", EventSubject.MILESTONE_ALERT, "enrollment_1"));
     }
 
     private void assertRepeatIntervalValue(long expected, long actual) {
