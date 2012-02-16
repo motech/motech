@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
-import org.mockito.internal.verification.VerificationModeFactory;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
@@ -13,15 +12,12 @@ import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;
 import org.motechproject.outbox.api.model.OutboundVoiceMessage;
 import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
 
-import javax.management.RuntimeErrorException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 import static org.mockito.Mockito.*;
 
 
@@ -32,7 +28,7 @@ import static org.mockito.Mockito.*;
 public class VoiceOutboxServiceTest {
     private static final int MAX_MESSAGES_PENDING = 15;
 
-	@InjectMocks
+    @InjectMocks
     VoiceOutboxServiceImpl voiceOutboxService = new VoiceOutboxServiceImpl();
     @Mock
     OutboundVoiceMessageDao outboundVoiceMessageDao;
@@ -47,9 +43,9 @@ public class VoiceOutboxServiceTest {
     }
 
     @Test
-     public void testAddMessage() {
+    public void testAddMessage() {
         String partyId = "pid";
-        
+
         OutboundVoiceMessage outboundVoiceMessage = new OutboundVoiceMessage();
         outboundVoiceMessage.setPartyId(partyId);
 
@@ -57,23 +53,23 @@ public class VoiceOutboxServiceTest {
 
         when(outboundVoiceMessageDao.get(null)).thenThrow(new NullPointerException("Argument cannot be null"));
         verify(outboundVoiceMessageDao).add(outboundVoiceMessage);
-     }
+    }
 
     @Test(expected = IllegalArgumentException.class)
-     public void testAddMessageNullMessage() {
+    public void testAddMessageNullMessage() {
 
         voiceOutboxService.addMessage(null);
 
         verify(outboundVoiceMessageDao, times(0)).add(null);
-     }
+    }
 
     @Test
     public void testGetNextPendingMessage() {
 
         String partyId = "pid";
 
-        OutboundVoiceMessage  outboundVoiceMessage1 = new OutboundVoiceMessage();
-        OutboundVoiceMessage  outboundVoiceMessage2 = new OutboundVoiceMessage();
+        OutboundVoiceMessage outboundVoiceMessage1 = new OutboundVoiceMessage();
+        OutboundVoiceMessage outboundVoiceMessage2 = new OutboundVoiceMessage();
 
 
         List<OutboundVoiceMessage> pendingVoiceMessages = new ArrayList<OutboundVoiceMessage>();
@@ -131,8 +127,8 @@ public class VoiceOutboxServiceTest {
 
         String partyId = "pid";
 
-        OutboundVoiceMessage  outboundVoiceMessage1 = new OutboundVoiceMessage();
-        OutboundVoiceMessage  outboundVoiceMessage2 = new OutboundVoiceMessage();
+        OutboundVoiceMessage outboundVoiceMessage1 = new OutboundVoiceMessage();
+        OutboundVoiceMessage outboundVoiceMessage2 = new OutboundVoiceMessage();
 
 
         List<OutboundVoiceMessage> pendingVoiceMessages = new ArrayList<OutboundVoiceMessage>();
@@ -213,15 +209,15 @@ public class VoiceOutboxServiceTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-     public void testRemoveMessageEmptyMessageId() {
+    public void testRemoveMessageEmptyMessageId() {
 
-         voiceOutboxService.removeMessage("");
+        voiceOutboxService.removeMessage("");
 
         verify(outboundVoiceMessageDao, times(0)).getPendingMessages(anyString());
     }
 
     @Test
-     public void testRemoveMessageMessageNotExist() {
+    public void testRemoveMessageMessageNotExist() {
         //TODO - implement
     }
 
@@ -254,17 +250,17 @@ public class VoiceOutboxServiceTest {
     @Test
     public void testGetNumberPendingMessages() {
 
-         String partyId = "pid";
+        String partyId = "pid";
 
         when(outboundVoiceMessageDao.getPendingMessagesCount(partyId)).thenReturn(2);
 
         assertEquals(2, voiceOutboxService.getNumberPendingMessages(partyId));
     }
 
-     @Test
+    @Test
     public void testGetNumberPendingMessagesNoMessages() {
 
-         String partyId = "pid";
+        String partyId = "pid";
 
         when(outboundVoiceMessageDao.getPendingMessages(partyId)).thenReturn(new ArrayList<OutboundVoiceMessage>());
 
@@ -292,7 +288,7 @@ public class VoiceOutboxServiceTest {
     @Test
     public void testSaveMessage() {
 
-         String messageId = "msgId";
+        String messageId = "msgId";
 
         OutboundVoiceMessage message = new OutboundVoiceMessage();
 
@@ -317,13 +313,13 @@ public class VoiceOutboxServiceTest {
 
     @Test
     public void testMaxPendingMessagesReached() {
-    	String partyId = "001";
+        String partyId = "001";
         OutboundVoiceMessage outboundVoiceMessage = new OutboundVoiceMessage();
         outboundVoiceMessage.setPartyId(partyId);
-        
+
         when(outboundVoiceMessageDao.getPendingMessagesCount(partyId)).thenReturn(MAX_MESSAGES_PENDING);
         voiceOutboxService.addMessage(outboundVoiceMessage);
-        
+
         verify(outboundVoiceMessageDao).add(outboundVoiceMessage);
 
         ArgumentCaptor<MotechEvent> argument = ArgumentCaptor.<MotechEvent>forClass(MotechEvent.class);
@@ -331,19 +327,19 @@ public class VoiceOutboxServiceTest {
         assertEquals(argument.getValue().getSubject(), EventKeys.OUTBOX_MAX_PENDING_MESSAGES_EVENT_SUBJECT);
         assertEquals(EventKeys.getPartyID(argument.getValue()), partyId);
     }
-    
+
     @Test
     public void testMaxPendingMessagesMoreAndLess() {
-    	String partyId = "001";
+        String partyId = "001";
         OutboundVoiceMessage outboundVoiceMessage = new OutboundVoiceMessage();
         outboundVoiceMessage.setPartyId(partyId);
-        
+
         // LESS
-        when(outboundVoiceMessageDao.getPendingMessagesCount(partyId)).thenReturn(MAX_MESSAGES_PENDING-1);
+        when(outboundVoiceMessageDao.getPendingMessagesCount(partyId)).thenReturn(MAX_MESSAGES_PENDING - 1);
         voiceOutboxService.addMessage(outboundVoiceMessage);
 
         // MORE
-        when(outboundVoiceMessageDao.getPendingMessagesCount(partyId)).thenReturn(MAX_MESSAGES_PENDING+1);
+        when(outboundVoiceMessageDao.getPendingMessagesCount(partyId)).thenReturn(MAX_MESSAGES_PENDING + 1);
         voiceOutboxService.addMessage(outboundVoiceMessage);
 
         verify(outboundVoiceMessageDao, times(2)).add(outboundVoiceMessage);

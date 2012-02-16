@@ -9,7 +9,6 @@ import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
  * Provides methods to get information and manage messages in the party voice outbox.
  * Each party (Patient, Nurse, Doctor, etc.) can have a voice outbox.
  *
- *
  * @author Igor (iopushnyev@2paths.com)
  */
 public interface VoiceOutboxService {
@@ -50,7 +49,7 @@ public interface VoiceOutboxService {
      */
     public OutboundVoiceMessage getMessageById(String outboundVoiceMessageId);
 
-     /**
+    /**
      * Removes the messages with the given message ID from the outbox
      *
      * @param outboundVoiceMessageId
@@ -65,8 +64,8 @@ public interface VoiceOutboxService {
      */
     public void setMessageStatus(String outboundVoiceMessageId, OutboundVoiceMessageStatus status);
 
-     /**
-      * Saves the message with given id in the outbox for period (number of days) specified in the outbox configuration
+    /**
+     * Saves the message with given id in the outbox for period (number of days) specified in the outbox configuration
      * Sets to the message status: SAVED and expiration date: current date + number of days in the outbox configuration
      *
      * @param outboundVoiceMessageId
@@ -79,10 +78,20 @@ public interface VoiceOutboxService {
      * @param partyId
      * @return
      */
-    public int getNumberPendingMessages (String partyId);
-    
+    public int getNumberPendingMessages(String partyId);
+
+    /**
+     * Returns number of pending messages in the voice outbox of the party with the given party ID and the voice message type name
+     *
+     * @param partyId
+     * @param voiceMessageTypeName
+     * @return
+     */
+    public int getNumberPendingMessages(String partyId, String voiceMessageTypeName);
+
     /**
      * Sets the number of days for which a messages saved by the patient will be kept in outbox as SAVED messages
+     *
      * @param numDayskeepSavedMessages
      */
     public void setNumDayskeepSavedMessages(int numDayskeepSavedMessages);
@@ -93,13 +102,14 @@ public interface VoiceOutboxService {
      * @return
      */
     public int getNumDayskeepSavedMessages();
-    
+
     /**
      * Sets max number of pending messages after which the outbox will send an event
+     *
      * @param maxNumberOfPendingMessages
      */
     public void setMaxNumberOfPendingMessages(int maxNumberOfPendingMessages);
-    
+
     /**
      * @return max number of pending messages
      */

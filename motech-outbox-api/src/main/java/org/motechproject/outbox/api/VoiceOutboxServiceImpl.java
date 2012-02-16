@@ -119,6 +119,13 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
     }
 
     @Override
+    public int getNumberPendingMessages(String partyId, String voiceMessageTypeName) {
+        logInfo("Get number of pending messages for the party ID: %s", partyId);
+        assertArgumentNotEmpty("PartyID", partyId);
+        return outboundVoiceMessageDao.getPendingMessagesCount(partyId, voiceMessageTypeName);
+    }
+
+    @Override
     public int getNumDayskeepSavedMessages() {
         return numDayskeepSavedMessages;
     }
