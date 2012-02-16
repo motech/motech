@@ -7,7 +7,8 @@ import java.util.List;
 
 import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
 
 public class MilestoneTest {
