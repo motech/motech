@@ -44,6 +44,7 @@ import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.RunOnceSchedulableJob;
+import org.motechproject.scheduler.domain.JobId;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -52,8 +53,7 @@ import java.util.Map;
 
 import static org.mockito.Mockito.*;
 
-public class ReminderCRUDEventHandlerTest
-{
+public class ReminderCRUDEventHandlerTest {
 
     @InjectMocks
     ReminderCRUDEventHandler reminderCRUDEventHandler = new ReminderCRUDEventHandler();
@@ -70,15 +70,15 @@ public class ReminderCRUDEventHandlerTest
     @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
-     }
+    }
 
     @Test
     public void testHandle_Delete() throws Exception {
         reminderCRUDEventHandler.delete("foo");
-        verify(schedulerGateway, times(1)).unscheduleJob("foo");
+        verify(schedulerGateway, times(1)).unscheduleJob(new JobId(EventKeys.APPOINTMENT_REMINDER_EVENT_PREFIX, "foo").value());
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testHandle_DeleteNoJobId() throws Exception {
         reminderCRUDEventHandler.delete(null);
         verify(schedulerGateway, times(0)).unscheduleJob("foo");
@@ -86,18 +86,24 @@ public class ReminderCRUDEventHandlerTest
 
     @Test
     public void testHandle_Created() throws Exception {
+        Map<String, Object> params = new HashMap<String, Object>();
+
+        params.put(EventKeys.REMINDER_ID_KEY, "foo");
+        MotechEvent motechEvent = new MotechEvent("created", params);
 
         Reminder r = new Reminder();
         when(reminderService.getReminder("foo")).thenReturn(r);
 
-        reminderCRUDEventHandler.create("foo");
-
-        verify(reminderService, times(1)).updateReminder(r);
+        reminderCRUDEventHandler.create(motechEvent);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testHandle_CreatedNoReminderId() throws Exception {
-        reminderCRUDEventHandler.create("");
+        Map<String, Object> params = new HashMap<String, Object>();
+
+        params.put(EventKeys.REMINDER_ID_KEY, "");
+        MotechEvent motechEvent = new MotechEvent("created", params);
+        reminderCRUDEventHandler.create(motechEvent);
     }
 
     @Test
@@ -117,34 +123,19 @@ public class ReminderCRUDEventHandlerTest
     public void testHandle_UpdateDisabled() throws Exception {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(EventKeys.REMINDER_ID_KEY, "foo");
-        params.put(EventKeys.JOB_ID_KEY, "bar");
 
         MotechEvent motechEvent = new MotechEvent("updated", params);
 
         Reminder r = new Reminder();
         r.setEnabled(false);
+        r.setExternalId("externalId");
         when(reminderService.getReminder("foo")).thenReturn(r);
 
         reminderCRUDEventHandler.update(motechEvent);
 
-        verify(schedulerGateway, times(1)).unscheduleJob("bar");
+        verify(schedulerGateway, times(1)).unscheduleJob(new JobId(EventKeys.APPOINTMENT_REMINDER_EVENT_PREFIX, r.getExternalId()).value());
     }
 
-    @Test
-    public void testHandle_UpdateDisabledNoJobId() throws Exception {
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put(EventKeys.REMINDER_ID_KEY, "foo");
-
-        MotechEvent motechEvent = new MotechEvent("updated", params);
-
-        Reminder r = new Reminder();
-        r.setEnabled(false);
-        when(reminderService.getReminder("foo")).thenReturn(r);
-
-        reminderCRUDEventHandler.update(motechEvent);
-
-        verify(schedulerGateway, times(0)).unscheduleJob(anyString());
-    }
 
     @Test
     public void testHandle_UpdateEnabledNoReminderId() throws Exception {
@@ -183,7 +174,7 @@ public class ReminderCRUDEventHandlerTest
     }
 
     @Test
-    public void testHandle_UpdateEnabledNoUnits() throws Exception {
+    public void testHandle_CreateEnabledNoUnits() throws Exception {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(EventKeys.REMINDER_ID_KEY, "foo");
         params.put(EventKeys.APPOINTMENT_ID_KEY, "bar");
@@ -198,14 +189,14 @@ public class ReminderCRUDEventHandlerTest
 
         when(reminderService.getReminder("foo")).thenReturn(r);
 
-        reminderCRUDEventHandler.update(motechEvent);
+        reminderCRUDEventHandler.create(motechEvent);
 
         verify(schedulerGateway, times(1)).scheduleRunOnceJob(any(RunOnceSchedulableJob.class));
         verify(schedulerGateway, times(0)).scheduleRepeatingJob(any(RepeatingSchedulableJob.class));
     }
 
     @Test
-    public void testHandle_UpdateEnabledRepeating() throws Exception {
+    public void testHandle_CreateEnabledRepeating() throws Exception {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(EventKeys.REMINDER_ID_KEY, "foo");
         params.put(EventKeys.APPOINTMENT_ID_KEY, "bar");
@@ -225,7 +216,7 @@ public class ReminderCRUDEventHandlerTest
 
         when(reminderService.getReminder("foo")).thenReturn(r);
 
-        reminderCRUDEventHandler.update(motechEvent);
+        reminderCRUDEventHandler.create(motechEvent);
 
         verify(schedulerGateway, times(0)).scheduleRunOnceJob(any(RunOnceSchedulableJob.class));
         verify(schedulerGateway, times(1)).scheduleRepeatingJob(any(RepeatingSchedulableJob.class));

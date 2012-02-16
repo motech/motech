@@ -35,15 +35,11 @@ public class EventKeys
 
     public final static String APPOINTMENT_REMINDER_EVENT_SUBJECT = BASE_SUBJECT + "reminder";
     public static final String EXTERNAL_ID_KEY = "external.id";
+    public static final String APPOINTMENT_REMINDER_EVENT_PREFIX = "org.motechproject.appointment.api.Reminder";
 
     public static String getAppointmentId(MotechEvent event)
     {
         return getStringValue(event, EventKeys.APPOINTMENT_ID_KEY);
-    }
-
-    public static String getJobId(MotechEvent event)
-    {
-        return getStringValue(event, EventKeys.JOB_ID_KEY);
     }
 
     public static String getReminderId(MotechEvent event)
