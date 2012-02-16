@@ -21,12 +21,12 @@ public class AppointmentsCouchDBDAOImplTest
     CouchDbConnector couchDbConnector;
 
     @InjectMocks
-    AppointmentsCouchDBDAOImpl appointmentsDAO;
+    AllAppointmentsCouchDBDAOImpl appointmentsDAO;
 
     @Before
     public void setUp() {
         couchDbConnector = mock(CouchDbConnector.class);
-        appointmentsDAO = new AppointmentsCouchDBDAOImpl(couchDbConnector);
+        appointmentsDAO = new AllAppointmentsCouchDBDAOImpl(couchDbConnector);
         MockitoAnnotations.initMocks(this);
     }
 

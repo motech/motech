@@ -7,7 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.motechproject.appointments.api.dao.impl.RemindersCouchDBDAOImpl;
+import org.motechproject.appointments.api.dao.impl.AllRemindersCouchDBDAOImpl;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
@@ -26,7 +26,7 @@ public class ReminderServiceTest
     CouchDbConnector couchDbConnector;
 
     @Mock
-    RemindersCouchDBDAOImpl remindersDAO;
+    AllRemindersCouchDBDAOImpl remindersDAO;
 
     @InjectMocks
     ReminderService reminderService;
@@ -34,7 +34,7 @@ public class ReminderServiceTest
     @Before
     public void setUp() {
         couchDbConnector = mock(CouchDbConnector.class);
-        remindersDAO = new RemindersCouchDBDAOImpl(couchDbConnector);
+        remindersDAO = new AllRemindersCouchDBDAOImpl(couchDbConnector);
 
         reminderService = new ReminderService();
         MockitoAnnotations.initMocks(this);

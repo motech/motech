@@ -29,51 +29,49 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.appointments.api;
+package org.motechproject.appointments.api.dao.impl;
 
+import org.ektorp.CouchDbConnector;
+import org.ektorp.support.GenerateView;
 import org.motechproject.appointments.api.dao.AllReminders;
 import org.motechproject.appointments.api.model.Reminder;
-import org.motechproject.context.EventContext;
-import org.motechproject.event.EventRelay;
-import org.motechproject.model.MotechEvent;
+import org.motechproject.dao.MotechBaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 @Component
-public class ReminderService
+public class AllRemindersCouchDBDAOImpl extends MotechBaseRepository<Reminder> implements AllReminders
 {
-    @Autowired(required = false)
-    private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
-
     @Autowired
-    private AllReminders allReminders;
+    public AllRemindersCouchDBDAOImpl(@Qualifier("appointmentsDatabase") CouchDbConnector db) {
+        super(Reminder.class, db);
+    }
 
+    @Override
     public void addReminder(Reminder reminder)
     {
         if (null == reminder.getAppointmentId()) {
             throw new IllegalArgumentException("Reminder must be associated with an appointment");
         }
 
-        allReminders.addReminder(reminder);
-
-        eventRelay.sendEventMessage(getSkinnyEvent(reminder, EventKeys.REMINDER_CREATED_SUBJECT));
+        db.create(reminder);
     }
 
+    @Override
     public void updateReminder(Reminder reminder)
     {
         if (null == reminder.getAppointmentId()) {
             throw new IllegalArgumentException("Reminder must be associated with an appointment");
         }
 
-        allReminders.updateReminder(reminder);
-
-        eventRelay.sendEventMessage(getSkinnyEvent(reminder, EventKeys.REMINDER_UPDATED_SUBJECT));
+        db.update(reminder);
     }
 
+    @Override
     public void removeReminder(String reminderId)
     {
         Reminder reminder = getReminder(reminderId);
@@ -81,41 +79,38 @@ public class ReminderService
         removeReminder(reminder);
     }
 
+    @Override
     public void removeReminder(Reminder reminder)
     {
-        MotechEvent event = getSkinnyEvent(reminder, EventKeys.REMINDER_DELETED_SUBJECT);
-
-        allReminders.removeReminder(reminder);
-
-        eventRelay.sendEventMessage(event);
+        db.delete(reminder);
     }
 
+    @Override
     public Reminder getReminder(String reminderId)
     {
-        Reminder reminder = allReminders.getReminder(reminderId);
+        Reminder reminder = db.get(Reminder.class, reminderId);
         return reminder;
     }
 
+    @Override
+    @GenerateView
     public List<Reminder> findByAppointmentId(String appointmentId)
     {
-        return allReminders.findByAppointmentId(appointmentId);
+        List<Reminder> ret = queryView("by_appointmentId", appointmentId);
+        if (null == ret) {
+            ret = Collections.<Reminder>emptyList();
+        }
+        return ret;
     }
 
+    @Override
+    @GenerateView
     public List<Reminder> findByExternalId(String externalId)
     {
-        return allReminders.findByExternalId(externalId);
-    }
-
-    private MotechEvent getSkinnyEvent(Reminder reminder, String subject) {
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put(EventKeys.APPOINTMENT_ID_KEY, reminder.getAppointmentId());
-        parameters.put(EventKeys.REMINDER_ID_KEY, reminder.getId());
-        parameters.put(EventKeys.EXTERNAL_ID_KEY, reminder.getExternalId());
-        // Not sure I want this here, but it does save the handler from having to load the reminder
-        parameters.put(EventKeys.JOB_ID_KEY, reminder.getJobId());
-
-        MotechEvent event = new MotechEvent(subject, parameters);
-
-        return event;
+        List<Reminder> ret = queryView("by_externalId", externalId);
+        if (null == ret) {
+            ret = Collections.<Reminder>emptyList();
+        }
+        return ret;
     }
 }

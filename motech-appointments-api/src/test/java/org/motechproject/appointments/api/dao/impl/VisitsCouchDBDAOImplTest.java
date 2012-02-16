@@ -19,12 +19,12 @@ public class VisitsCouchDBDAOImplTest
     CouchDbConnector couchDbConnector;
 
     @InjectMocks
-    VisitsCouchDBDAOImpl visitsDAO;
+    AllVisitsCouchDBDAOImpl visitsDAO;
 
     @Before
     public void setUp() {
         couchDbConnector = mock(CouchDbConnector.class);
-        visitsDAO = new VisitsCouchDBDAOImpl(couchDbConnector);
+        visitsDAO = new AllVisitsCouchDBDAOImpl(couchDbConnector);
         MockitoAnnotations.initMocks(this);
     }
 

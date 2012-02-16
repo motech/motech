@@ -38,9 +38,8 @@ import org.motechproject.model.MotechBaseDataObject;
 import java.util.Date;
 
 @TypeDiscriminator("doc.type === 'Reminder'")
-public class Reminder extends MotechBaseDataObject
-{
-    public enum intervalUnits {SECONDS, MINUTES, HOURS, DAYS, WEEKS};
+public class Reminder extends MotechBaseDataObject {
+    public enum intervalUnits {SECONDS, MINUTES, HOURS, DAYS, WEEKS}
 
     private String appointmentId;
     private String externalId;
@@ -52,93 +51,75 @@ public class Reminder extends MotechBaseDataObject
     private int repeatCount;
     private String jobId;
 
-    public String getAppointmentId()
-    {
+    public String getAppointmentId() {
         return appointmentId;
     }
 
-    public void setAppointmentId(String appointmentId)
-    {
+    public void setAppointmentId(String appointmentId) {
         this.appointmentId = appointmentId;
     }
 
-    public String getExternalId()
-    {
+    public String getExternalId() {
         return externalId;
     }
 
-    public void setExternalId(String externalId)
-    {
+    public void setExternalId(String externalId) {
         this.externalId = externalId;
     }
 
-    public boolean getEnabled()
-    {
+    public boolean getEnabled() {
         return enabled;
     }
 
-    public void setEnabled(boolean enabled)
-    {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
-    public Date getStartDate()
-    {
+    public Date getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate)
-    {
+    public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate()
-    {
+    public Date getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate)
-    {
+    public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
 
-    public int getIntervalCount()
-    {
+    public int getIntervalCount() {
         return intervalCount;
     }
 
-    public void setIntervalCount(int intervalCount)
-    {
+    public void setIntervalCount(int intervalCount) {
         this.intervalCount = intervalCount;
     }
 
-    public intervalUnits getUnits()
-    {
+    public intervalUnits getUnits() {
         return units;
     }
 
-    public void setUnits(intervalUnits units)
-    {
+    public void setUnits(intervalUnits units) {
         this.units = units;
     }
 
-    public int getRepeatCount()
-    {
+    public int getRepeatCount() {
         return repeatCount;
     }
 
-    public void setRepeatCount(int repeatCount)
-    {
+    public void setRepeatCount(int repeatCount) {
         this.repeatCount = repeatCount;
     }
 
-    public String getJobId()
-    {
+    public String getJobId() {
         return jobId;
     }
 
-    public void setJobId(String jobId)
-    {
+    public void setJobId(String jobId) {
         this.jobId = jobId;
     }
 

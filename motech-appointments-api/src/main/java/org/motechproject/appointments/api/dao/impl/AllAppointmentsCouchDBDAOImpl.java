@@ -33,84 +33,64 @@ package org.motechproject.appointments.api.dao.impl;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
-import org.motechproject.appointments.api.dao.RemindersDAO;
-import org.motechproject.appointments.api.model.Reminder;
+import org.motechproject.appointments.api.dao.AllAppointments;
+import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.dao.MotechBaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
 
-@Component
-public class RemindersCouchDBDAOImpl extends MotechBaseRepository<Reminder> implements RemindersDAO
+public class AllAppointmentsCouchDBDAOImpl extends MotechBaseRepository<Appointment> implements AllAppointments
 {
+
     @Autowired
-    public RemindersCouchDBDAOImpl(@Qualifier("appointmentsDatabase") CouchDbConnector db) {
-        super(Reminder.class, db);
+    public AllAppointmentsCouchDBDAOImpl(@Qualifier("appointmentsDatabase") CouchDbConnector db) {
+        super(Appointment.class, db);
     }
 
     @Override
-    public void addReminder(Reminder reminder)
+    public void addAppointment(Appointment appointment)
     {
-        if (null == reminder.getAppointmentId()) {
-            throw new IllegalArgumentException("Reminder must be associated with an appointment");
-        }
-
-        db.create(reminder);
+        db.create(appointment);
     }
 
     @Override
-    public void updateReminder(Reminder reminder)
+    public void updateAppointment(Appointment appointment)
     {
-        if (null == reminder.getAppointmentId()) {
-            throw new IllegalArgumentException("Reminder must be associated with an appointment");
-        }
-
-        db.update(reminder);
+        db.update(appointment);
     }
 
     @Override
-    public void removeReminder(String reminderId)
+    public Appointment getAppointment(String appointmentId)
     {
-        Reminder reminder = getReminder(reminderId);
-
-        removeReminder(reminder);
+        Appointment appointment = db.get(Appointment.class, appointmentId);
+        return appointment;
     }
 
     @Override
-    public void removeReminder(Reminder reminder)
-    {
-        db.delete(reminder);
-    }
-
-    @Override
-    public Reminder getReminder(String reminderId)
-    {
-        Reminder reminder = db.get(Reminder.class, reminderId);
-        return reminder;
-    }
-
-    @Override
-    @GenerateView
-    public List<Reminder> findByAppointmentId(String appointmentId)
-    {
-        List<Reminder> ret = queryView("by_appointmentId", appointmentId);
+	@GenerateView
+	public List<Appointment> findByExternalId(String externalId) {
+        List<Appointment> ret = queryView("by_externalId", externalId);
         if (null == ret) {
-            ret = Collections.<Reminder>emptyList();
+            ret  = Collections.<Appointment>emptyList();
         }
+
         return ret;
+	}
+
+    @Override
+    public void removeAppointment(String appointmentId)
+    {
+        Appointment appointment = getAppointment(appointmentId);
+
+        removeAppointment(appointment);
     }
 
     @Override
-    @GenerateView
-    public List<Reminder> findByExternalId(String externalId)
+    public void removeAppointment(Appointment appointment)
     {
-        List<Reminder> ret = queryView("by_externalId", externalId);
-        if (null == ret) {
-            ret = Collections.<Reminder>emptyList();
-        }
-        return ret;
+        db.delete(appointment);
     }
 }

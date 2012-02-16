@@ -31,17 +31,19 @@
  */
 package org.motechproject.appointments.api.dao;
 
-import org.motechproject.appointments.api.model.Appointment;
-import org.motechproject.dao.BaseDao;
+import org.motechproject.appointments.api.model.Visit;
 
 import java.util.List;
 
-public interface AppointmentsDAO extends BaseDao<Appointment> {
+public interface AllVisits
+{
+    public void addVisit(Visit visit);
+    public void updateVisit(Visit visit);
 
-    public void addAppointment(Appointment appointment);
-    public void updateAppointment(Appointment appointment);
-    public Appointment getAppointment(String appointmentId);
-    public List<Appointment> findByExternalId(String externalId);
-    public void removeAppointment(String appointmentId);
-    public void removeAppointment(Appointment appointment);
+    public void removeVisit(String visitId);
+    public void removeVisit(Visit visit);
+
+    public Visit getVisit(String visitId);
+    public List<Visit> findByAppointmentId(String appointmentId);
+    public List<Visit> findByExternalId(String externalId);
 }

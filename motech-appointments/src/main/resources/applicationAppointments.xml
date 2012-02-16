@@ -19,15 +19,15 @@
         <constructor-arg ref="couchDbInstance"/>
     </bean>
 
-    <bean id="appointmentsDAO" class="org.motechproject.appointments.api.dao.impl.AppointmentsCouchDBDAOImpl">
+    <bean id="allAppointments" class="org.motechproject.appointments.api.dao.impl.AllAppointmentsCouchDBDAOImpl">
         <constructor-arg ref="appointmentsDatabase"/>
     </bean>
 
-    <bean id="remindersDAO" class="org.motechproject.appointments.api.dao.impl.RemindersCouchDBDAOImpl">
+    <bean id="allReminders" class="org.motechproject.appointments.api.dao.impl.AllRemindersCouchDBDAOImpl">
         <constructor-arg ref="appointmentsDatabase"/>
     </bean>
 
-    <bean id="visitsDAO" class="org.motechproject.appointments.api.dao.impl.VisitsCouchDBDAOImpl">
+    <bean id="allVisits" class="org.motechproject.appointments.api.dao.impl.AllVisitsCouchDBDAOImpl">
         <constructor-arg ref="appointmentsDatabase"/>
     </bean>
 

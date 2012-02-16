@@ -35,7 +35,7 @@ import org.motechproject.appointments.api.model.Reminder;
 
 import java.util.List;
 
-public interface RemindersDAO {
+public interface AllReminders {
 
     public void addReminder(Reminder reminder);
     public void updateReminder(Reminder reminder);

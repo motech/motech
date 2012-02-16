@@ -31,7 +31,7 @@
  */
 package org.motechproject.appointments.api;
 
-import org.motechproject.appointments.api.dao.VisitsDAO;
+import org.motechproject.appointments.api.dao.AllVisits;
 import org.motechproject.appointments.api.model.Visit;
 import org.motechproject.context.EventContext;
 import org.motechproject.event.EventRelay;
@@ -50,18 +50,18 @@ public class VisitService
     private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
 
     @Autowired
-    VisitsDAO visitsDAO;
+    AllVisits allVisits;
 
     public void addVisit(Visit visit)
     {
-        visitsDAO.addVisit(visit);
+        allVisits.addVisit(visit);
 
         eventRelay.sendEventMessage(getSkinnyEvent(visit, EventKeys.VISIT_CREATED_SUBJECT));
     }
 
     public void updateVisit(Visit visit)
     {
-        visitsDAO.updateVisit(visit);
+        allVisits.updateVisit(visit);
 
         eventRelay.sendEventMessage(getSkinnyEvent(visit, EventKeys.VISIT_UPDATED_SUBJECT));
     }
@@ -77,25 +77,25 @@ public class VisitService
     {
         MotechEvent event = getSkinnyEvent(visit, EventKeys.VISIT_DELETED_SUBJECT);
 
-        visitsDAO.removeVisit(visit);
+        allVisits.removeVisit(visit);
 
         eventRelay.sendEventMessage(event);
     }
 
     public Visit getVisit(String visitId)
     {
-        Visit visit = visitsDAO.getVisit(visitId);
+        Visit visit = allVisits.getVisit(visitId);
         return visit;
     }
 
     public List<Visit> findByAppointmentId(String appointmentId)
     {
-        return visitsDAO.findByAppointmentId(appointmentId);
+        return allVisits.findByAppointmentId(appointmentId);
     }
 
     public List<Visit> findByExternalId(String externalId)
     {
-        return  visitsDAO.findByExternalId(externalId);
+        return  allVisits.findByExternalId(externalId);
     }
 
     private MotechEvent getSkinnyEvent(Visit visit, String subject) {

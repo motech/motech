@@ -41,7 +41,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Date;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
@@ -56,10 +55,10 @@ import static junit.framework.Assert.assertNotNull;
 public class AppointmentDaoIT {
 
 	@Autowired
-	private AppointmentsDAO appointmentsDAO;
+	private AllAppointments allAppointments;
 
     @Autowired
-    private RemindersDAO remindersDAO;
+    private AllReminders allReminders;
 
 	@Test
 	public void testAddAppointment() {
@@ -73,11 +72,11 @@ public class AppointmentDaoIT {
         app.setExternalId("foo");
         app.setScheduledDate(now);
 
-        appointmentsDAO.addAppointment(app);
+        allAppointments.addAppointment(app);
 
         assertNotNull(app.getId());
 
-        appointmentsDAO.removeAppointment(app);
+        allAppointments.removeAppointment(app);
 	}
 
     @Test
@@ -85,18 +84,18 @@ public class AppointmentDaoIT {
         Appointment app1 = new Appointment();
         app1.setExternalId("foo");
         app1.setTitle("Appointment 1");
-        appointmentsDAO.addAppointment(app1);
+        allAppointments.addAppointment(app1);
 
         Appointment app2 = new Appointment();
         app2.setTitle("Appointment 2");
         app2.setExternalId("foo");
-        appointmentsDAO.addAppointment(app2);
+        allAppointments.addAppointment(app2);
 
-        List<Appointment> list = appointmentsDAO.findByExternalId("foo");
+        List<Appointment> list = allAppointments.findByExternalId("foo");
 
         assertEquals(2, list.size());
 
-        appointmentsDAO.removeAppointment(app1);
-        appointmentsDAO.removeAppointment(app2);
+        allAppointments.removeAppointment(app1);
+        allAppointments.removeAppointment(app2);
     }
 }

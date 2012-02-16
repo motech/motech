@@ -7,7 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.motechproject.appointments.api.dao.impl.AppointmentsCouchDBDAOImpl;
+import org.motechproject.appointments.api.dao.impl.AllAppointmentsCouchDBDAOImpl;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
@@ -26,7 +26,7 @@ public class AppointmentServiceTest
     CouchDbConnector couchDbConnector;
 
     @Mock
-    AppointmentsCouchDBDAOImpl appointmentsDAO;
+    AllAppointmentsCouchDBDAOImpl appointmentsDAO;
 
     @InjectMocks
     AppointmentService appointmentService;
@@ -34,7 +34,7 @@ public class AppointmentServiceTest
     @Before
     public void setUp() {
         couchDbConnector = mock(CouchDbConnector.class);
-        appointmentsDAO = new AppointmentsCouchDBDAOImpl(couchDbConnector);
+        appointmentsDAO = new AllAppointmentsCouchDBDAOImpl(couchDbConnector);
 
         appointmentService = new AppointmentService();
         MockitoAnnotations.initMocks(this);

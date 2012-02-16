@@ -29,68 +29,19 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.appointments.api.dao.impl;
+package org.motechproject.appointments.api.dao;
 
-import org.ektorp.CouchDbConnector;
-import org.ektorp.support.GenerateView;
-import org.motechproject.appointments.api.dao.AppointmentsDAO;
 import org.motechproject.appointments.api.model.Appointment;
-import org.motechproject.dao.MotechBaseRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.motechproject.dao.BaseDao;
 
-import java.util.Collections;
 import java.util.List;
 
-public class AppointmentsCouchDBDAOImpl extends MotechBaseRepository<Appointment> implements AppointmentsDAO
-{
+public interface AllAppointments extends BaseDao<Appointment> {
 
-    @Autowired
-    public AppointmentsCouchDBDAOImpl(@Qualifier("appointmentsDatabase") CouchDbConnector db) {
-        super(Appointment.class, db);
-    }
-
-    @Override
-    public void addAppointment(Appointment appointment)
-    {
-        db.create(appointment);
-    }
-
-    @Override
-    public void updateAppointment(Appointment appointment)
-    {
-        db.update(appointment);
-    }
-
-    @Override
-    public Appointment getAppointment(String appointmentId)
-    {
-        Appointment appointment = db.get(Appointment.class, appointmentId);
-        return appointment;
-    }
-
-    @Override
-	@GenerateView
-	public List<Appointment> findByExternalId(String externalId) {
-        List<Appointment> ret = queryView("by_externalId", externalId);
-        if (null == ret) {
-            ret  = Collections.<Appointment>emptyList();
-        }
-
-        return ret;
-	}
-
-    @Override
-    public void removeAppointment(String appointmentId)
-    {
-        Appointment appointment = getAppointment(appointmentId);
-
-        removeAppointment(appointment);
-    }
-
-    @Override
-    public void removeAppointment(Appointment appointment)
-    {
-        db.delete(appointment);
-    }
+    public void addAppointment(Appointment appointment);
+    public void updateAppointment(Appointment appointment);
+    public Appointment getAppointment(String appointmentId);
+    public List<Appointment> findByExternalId(String externalId);
+    public void removeAppointment(String appointmentId);
+    public void removeAppointment(Appointment appointment);
 }

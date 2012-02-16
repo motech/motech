@@ -19,12 +19,12 @@ public class RemindersCouchDBDAOImplTest
     CouchDbConnector couchDbConnector;
 
     @InjectMocks
-    RemindersCouchDBDAOImpl remindersDAO;
+    AllRemindersCouchDBDAOImpl remindersDAO;
 
     @Before
     public void setUp() {
         couchDbConnector = mock(CouchDbConnector.class);
-        remindersDAO = new RemindersCouchDBDAOImpl(couchDbConnector);
+        remindersDAO = new AllRemindersCouchDBDAOImpl(couchDbConnector);
         MockitoAnnotations.initMocks(this);
     }
 
