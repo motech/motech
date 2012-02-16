@@ -32,6 +32,7 @@
 package org.motechproject.appointments.api.model;
 
 import org.ektorp.support.TypeDiscriminator;
+import org.joda.time.DateTime;
 import org.motechproject.model.ExtensibleDataObject;
 import org.motechproject.model.MotechBaseDataObject;
 
@@ -42,59 +43,51 @@ import java.util.Map;
 @TypeDiscriminator("doc.type === 'Appointment'")
 public class Appointment extends ExtensibleDataObject {
 
-	private static final long serialVersionUID = 3L;
+    private static final long serialVersionUID = 3L;
 
     private String externalId;
     private String title;
-	private Date dueDate;
-	private Date scheduledDate;
+    private DateTime dueDate;
+    private DateTime scheduledDate;
     private String visitId;
-    
-    public String getExternalId()
-    {
+
+    public String getExternalId() {
         return externalId;
     }
 
-    public void setExternalId(String externalId)
-    {
+    public void setExternalId(String externalId) {
         this.externalId = externalId;
     }
 
-    public String getTitle()
-    {
+    public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title)
-    {
+    public void setTitle(String title) {
         this.title = title;
     }
 
-    public Date getDueDate()
-    {
+    public DateTime getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(Date dueDate)
-    {
+    public void setDueDate(DateTime dueDate) {
         this.dueDate = dueDate;
     }
 
-    public Date getScheduledDate() {
-		return scheduledDate;
-	}
+    public DateTime getScheduledDate() {
+        return scheduledDate;
+    }
 
-	public void setScheduledDate(Date scheduledDate) {
-		this.scheduledDate = scheduledDate;
-	}
+    public void setScheduledDate(DateTime scheduledDate) {
+        this.scheduledDate = scheduledDate;
+    }
 
-    public String getVisitId()
-    {
+    public String getVisitId() {
         return visitId;
     }
 
-    public void setVisitId(String visitId)
-    {
+    public void setVisitId(String visitId) {
         this.visitId = visitId;
     }
 }

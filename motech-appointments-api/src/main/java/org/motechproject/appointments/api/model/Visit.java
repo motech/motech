@@ -32,56 +32,57 @@
 package org.motechproject.appointments.api.model;
 
 import org.ektorp.support.TypeDiscriminator;
+import org.joda.time.DateTime;
 import org.motechproject.model.ExtensibleDataObject;
 import org.motechproject.model.MotechBaseDataObject;
 
 import java.util.Date;
 
 @TypeDiscriminator("doc.type === 'Visit'")
-public class Visit extends ExtensibleDataObject
-{
+public class Visit extends ExtensibleDataObject {
     private String externalId;
-    private Date visitDate;
+    private DateTime visitDate;
     private String title;
     private String appointmentId;
+    private boolean missed;
 
-    public String getExternalId()
-    {
+    public String getExternalId() {
         return externalId;
     }
 
-    public void setExternalId(String externalId)
-    {
+    public void setExternalId(String externalId) {
         this.externalId = externalId;
     }
 
-    public Date getVisitDate()
-    {
+    public DateTime getVisitDate() {
         return visitDate;
     }
 
-    public void setVisitDate(Date visitDate)
-    {
+    public void setVisitDate(DateTime visitDate) {
         this.visitDate = visitDate;
     }
 
-    public String getTitle()
-    {
+    public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title)
-    {
+    public void setTitle(String title) {
         this.title = title;
     }
 
-    public String getAppointmentId()
-    {
+    public String getAppointmentId() {
         return appointmentId;
     }
 
-    public void setAppointmentId(String appointmentId)
-    {
+    public void setAppointmentId(String appointmentId) {
         this.appointmentId = appointmentId;
+    }
+
+    public boolean isMissed() {
+        return missed;
+    }
+
+    public void setMissed(boolean missed) {
+        this.missed = missed;
     }
 }
