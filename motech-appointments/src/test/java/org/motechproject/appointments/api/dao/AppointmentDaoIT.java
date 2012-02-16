@@ -31,10 +31,12 @@
  */
 package org.motechproject.appointments.api.dao;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.Visit;
+import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -61,7 +63,7 @@ public class AppointmentDaoIT {
 
 	@Test
 	public void testAddAppointment() {
-        Date now = new Date();
+        DateTime now = DateUtil.now();
 
         Visit visit = new Visit();
         visit.setVisitDate(now);
