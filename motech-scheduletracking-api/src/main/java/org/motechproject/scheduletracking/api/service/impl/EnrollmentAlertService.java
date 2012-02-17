@@ -48,17 +48,8 @@ public class EnrollmentAlertService {
         event.getParameters().put(MotechSchedulerService.JOB_ID_KEY, String.format("%s.%d", enrollment.getId(), alert.getIndex()));
         DateTime startTime = newDateTime(getAlertStartDate(alert, enrollment, milestoneWindow), enrollment.getPreferredAlertTime());
         long repeatIntervalInMillis = (long) alert.getInterval().inDays() * (long) MILLIS_PER_DAY;
-        RepeatingSchedulableJob job = new RepeatingSchedulableJob(event, startTime.toDate(), null, numberOfAlertsToRaise(alert, enrollment, milestoneWindow), repeatIntervalInMillis, SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT);
+        RepeatingSchedulableJob job = new RepeatingSchedulableJob(event, startTime.toDate(), null, alert.getRepeatCount(), repeatIntervalInMillis, SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT);
         schedulerService.safeScheduleRepeatingJob(job);
-    }
-
-    private int numberOfAlertsToRaise(Alert alert, Enrollment enrollment, MilestoneWindow milestoneWindow) {
-        LocalDate startDateOfWindow = getStartDateOfWindow(enrollment, milestoneWindow);
-        LocalDate endDateOfWindow = startDateOfWindow.plusDays(milestoneWindow.getWindowEndInDays());
-        LocalDate today = today();
-        int daysToEndOfWindow = Days.daysBetween(today, endDateOfWindow).getDays();
-        int maximumAlerts = alert.getRepeatCount();
-        return maximumAlerts <= daysToEndOfWindow ? maximumAlerts : daysToEndOfWindow;
     }
 
     private LocalDate getAlertStartDate(Alert alert, Enrollment enrollment, MilestoneWindow milestoneWindow) {
