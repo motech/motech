@@ -22,9 +22,12 @@ import org.openmrs.api.UserService;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -239,10 +242,10 @@ public class OpenMRSPatientAdapterTest {
         String conceptName = "NONE";
 
         openMRSPatientAdapter = spy(openMRSPatientAdapter);
-        doReturn(patient).when(openMRSPatientAdapter).getOpenMrsPatient(patientId);
+        doReturn(patient).when(openMRSPatientAdapter).getOpenmrsPatientByMotechId(patientId);
         when(mockOpenMRSConceptAdapter.getConceptByName(conceptName)).thenReturn(concept);
 
-        openMRSPatientAdapter.savePatientCauseOfDeathObservation(patientId, conceptName, dateOfDeath, null);
+        openMRSPatientAdapter.deceasePatient(patientId, conceptName, dateOfDeath, null);
 
         InOrder order = inOrder(mockPatientService);
         order.verify(mockPatientService).savePatient(patient);
