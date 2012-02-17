@@ -32,11 +32,7 @@
         <constructor-arg ref="appointmentsDatabase"/>
     </bean>
 
-    <bean id="appointmentService" class="org.motechproject.appointments.api.AppointmentService"/>
-
     <bean id="reminderService" class="org.motechproject.appointments.api.ReminderService"/>
-
-    <bean id="visitService" class="org.motechproject.appointments.api.VisitService"/>
 
     <bean id="appointmentContext" class="org.motechproject.appointments.api.context.AppointmentsContext"
           factory-method="getInstance"/>
