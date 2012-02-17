@@ -10,7 +10,7 @@ import java.util.Date;
 public class Reminder extends MotechBaseDataObject {
     public enum intervalUnits {SECONDS, MINUTES, HOURS, DAYS, WEEKS}
 
-    private String appointmentId;
+    private String reminderSubjectId;
     private String externalId;
     private Date startDate;
     private Date endDate;
@@ -19,12 +19,12 @@ public class Reminder extends MotechBaseDataObject {
     private int repeatCount;
     private String jobId;
 
-    public String getAppointmentId() {
-        return appointmentId;
+    public String getReminderSubjectId() {
+        return reminderSubjectId;
     }
 
-    public void setAppointmentId(String appointmentId) {
-        this.appointmentId = appointmentId;
+    public void setReminderSubjectId(String reminderSubjectId) {
+        this.reminderSubjectId = reminderSubjectId;
     }
 
     public String getExternalId() {

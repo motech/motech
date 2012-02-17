@@ -36,7 +36,7 @@ public class AllRemindersTest {
 
     @Test
     public void testFindByAppointmentId() {
-        List<Reminder> list = allReminders.findByAppointmentId("aID");
+        List<Reminder> list = allReminders.findByReminderSubjectId("aID");
 
         assertTrue(list.isEmpty());
     }

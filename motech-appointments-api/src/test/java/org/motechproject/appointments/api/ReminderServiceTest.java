@@ -31,7 +31,7 @@ public class ReminderServiceTest {
     @Test
     public void testAddReminder() {
         Reminder reminder = new Reminder();
-        reminder.setAppointmentId("aID");
+        reminder.setReminderSubjectId("aID");
         reminder.setStartDate(DateUtil.now().toDate());
 
         reminderService.addReminder(reminder);

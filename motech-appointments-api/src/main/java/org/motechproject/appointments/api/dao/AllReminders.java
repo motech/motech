@@ -19,8 +19,8 @@ public class AllReminders extends MotechBaseRepository<Reminder> {
     }
 
     @GenerateView
-    public List<Reminder> findByAppointmentId(String appointmentId) {
-        List<Reminder> reminders = queryView("by_appointmentId", appointmentId);
+    public List<Reminder> findByReminderSubjectId(String appointmentId) {
+        List<Reminder> reminders = queryView("by_reminderSubjectId", appointmentId);
         if (null == reminders) {
             reminders = Collections.<Reminder>emptyList();
         }

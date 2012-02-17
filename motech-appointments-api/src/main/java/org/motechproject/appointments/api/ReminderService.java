@@ -6,7 +6,6 @@ import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.scheduler.domain.JobId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,7 +31,7 @@ public class ReminderService {
     }
 
     private void createReminderJobs(Reminder reminder) {
-        MotechEvent reminderEvent = new MotechEvent(EventKeys.APPOINTMENT_REMINDER_EVENT_SUBJECT, getParameters(reminder));
+        MotechEvent reminderEvent = new MotechEvent(EventKeys.REMINDER_EVENT_SUBJECT, getParameters(reminder));
         if (null != reminder.getUnits()) {
             RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(reminderEvent, reminder.getStartDate(), reminder.getEndDate(), reminder.getRepeatCount(), reminder.getIntervalSeconds() * 1000);
             schedulerService.safeScheduleRepeatingJob(schedulableJob);
@@ -44,10 +43,10 @@ public class ReminderService {
 
     private Map<String, Object> getParameters(Reminder reminder) {
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put(EventKeys.APPOINTMENT_ID_KEY, reminder.getAppointmentId());
+        parameters.put(EventKeys.REMINDER_SUBJECT_ID, reminder.getReminderSubjectId());
         parameters.put(EventKeys.REMINDER_ID_KEY, reminder.getId());
         parameters.put(EventKeys.EXTERNAL_ID_KEY, reminder.getExternalId());
-        parameters.put(EventKeys.JOB_ID_KEY, new JobId(EventKeys.APPOINTMENT_REMINDER_EVENT_PREFIX, reminder.getExternalId()).value());
+        parameters.put(EventKeys.JOB_ID_KEY, reminder.getReminderSubjectId());
         return parameters;
     }
 }
