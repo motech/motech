@@ -18,25 +18,25 @@ public class AllRemindersTest {
     CouchDbConnector couchDbConnector;
 
     @InjectMocks
-    AllReminders remindersDAO;
+    AllReminders allReminders;
 
     @Before
     public void setUp() {
         couchDbConnector = mock(CouchDbConnector.class);
-        remindersDAO = new AllReminders(couchDbConnector);
+        allReminders = new AllReminders(couchDbConnector);
         MockitoAnnotations.initMocks(this);
     }
 
     @Test
     public void testFindByExternalId() {
-        List<Reminder> list = remindersDAO.findByExternalId("eID");
+        List<Reminder> list = allReminders.findByExternalId("eID");
 
         assertTrue(list.isEmpty());
     }
 
     @Test
     public void testFindByAppointmentId() {
-        List<Reminder> list = remindersDAO.findByAppointmentId("aID");
+        List<Reminder> list = allReminders.findByAppointmentId("aID");
 
         assertTrue(list.isEmpty());
     }

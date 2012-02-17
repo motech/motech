@@ -12,7 +12,6 @@ public class Reminder extends MotechBaseDataObject {
 
     private String appointmentId;
     private String externalId;
-    private boolean enabled = true;
     private Date startDate;
     private Date endDate;
     private int intervalCount;
@@ -34,14 +33,6 @@ public class Reminder extends MotechBaseDataObject {
 
     public void setExternalId(String externalId) {
         this.externalId = externalId;
-    }
-
-    public boolean getEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     public Date getStartDate() {

@@ -18,25 +18,25 @@ public class AllVisitsTest {
     CouchDbConnector couchDbConnector;
 
     @InjectMocks
-    AllVisits visitsDAO;
+    AllVisits allVisits;
 
     @Before
     public void setUp() {
         couchDbConnector = mock(CouchDbConnector.class);
-        visitsDAO = new AllVisits(couchDbConnector);
+        allVisits = new AllVisits(couchDbConnector);
         MockitoAnnotations.initMocks(this);
     }
 
     @Test
     public void testFindByExternalId() {
-        List<Visit> list = visitsDAO.findByExternalId("eID");
+        List<Visit> list = allVisits.findByExternalId("eID");
 
         assertTrue(list.isEmpty());
     }
 
     @Test
     public void testFindByAppointmentId() {
-        List<Visit> list = visitsDAO.findByAppointmentId("aID");
+        List<Visit> list = allVisits.findByAppointmentId("aID");
 
         assertTrue(list.isEmpty());
     }

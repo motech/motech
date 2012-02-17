@@ -16,8 +16,8 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/applicationAppointments.xml"})
-public class AppointmentDaoIT {
+@ContextConfiguration(locations={"/applicationAppointmentsAPI.xml"})
+public class AllAppointmentsIT {
 
 	@Autowired
 	private AllAppointments allAppointments;

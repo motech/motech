@@ -18,18 +18,18 @@ public class AllAppointmentsTest {
     CouchDbConnector couchDbConnector;
 
     @InjectMocks
-    AllAppointments appointmentsDAO;
+    AllAppointments allAppointments;
 
     @Before
     public void setUp() {
         couchDbConnector = mock(CouchDbConnector.class);
-        appointmentsDAO = new AllAppointments(couchDbConnector);
+        allAppointments = new AllAppointments(couchDbConnector);
         MockitoAnnotations.initMocks(this);
     }
 
     @Test
     public void testFindByExternalId() {
-        List<Appointment> list = appointmentsDAO.findByExternalId("eID");
+        List<Appointment> list = allAppointments.findByExternalId("eID");
 
         assertTrue(list.isEmpty());
     }

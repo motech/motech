@@ -2,75 +2,52 @@ package org.motechproject.appointments.api;
 
 import org.motechproject.appointments.api.dao.AllReminders;
 import org.motechproject.appointments.api.model.Reminder;
-import org.motechproject.context.EventContext;
-import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.model.RepeatingSchedulableJob;
+import org.motechproject.model.RunOnceSchedulableJob;
+import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.scheduler.domain.JobId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
 
 @Component
 public class ReminderService {
-    @Autowired(required = false)
-    private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
 
-    @Autowired
+    private MotechSchedulerService schedulerService;
     private AllReminders allReminders;
 
+    @Autowired
+    public ReminderService(MotechSchedulerService schedulerService, AllReminders allReminders) {
+        this.schedulerService = schedulerService;
+        this.allReminders = allReminders;
+    }
+
     public void addReminder(Reminder reminder) {
-        if (null == reminder.getAppointmentId()) {
-            throw new IllegalArgumentException("Reminder must be associated with an appointment");
-        }
-
         allReminders.add(reminder);
-
-        eventRelay.sendEventMessage(getSkinnyEvent(reminder, EventKeys.REMINDER_CREATED_SUBJECT));
+        createReminderJobs(reminder);
     }
 
-    public void updateReminder(Reminder reminder) {
-        if (null == reminder.getAppointmentId()) {
-            throw new IllegalArgumentException("Reminder must be associated with an appointment");
+    private void createReminderJobs(Reminder reminder) {
+        MotechEvent reminderEvent = new MotechEvent(EventKeys.APPOINTMENT_REMINDER_EVENT_SUBJECT, getParameters(reminder));
+        if (null != reminder.getUnits()) {
+            RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(reminderEvent, reminder.getStartDate(), reminder.getEndDate(), reminder.getRepeatCount(), reminder.getIntervalSeconds() * 1000);
+            schedulerService.safeScheduleRepeatingJob(schedulableJob);
+        } else {
+            RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(reminderEvent, reminder.getStartDate());
+            schedulerService.safeScheduleRunOnceJob(schedulableJob);
         }
-
-        allReminders.update(reminder);
-
-        eventRelay.sendEventMessage(getSkinnyEvent(reminder, EventKeys.REMINDER_UPDATED_SUBJECT));
     }
 
-    public void removeReminder(String reminderId) {
-        Reminder reminder = getReminder(reminderId);
-
-        removeReminder(reminder);
-    }
-
-    public void removeReminder(Reminder reminder) {
-        MotechEvent event = getSkinnyEvent(reminder, EventKeys.REMINDER_DELETED_SUBJECT);
-
-        allReminders.remove(reminder);
-
-        eventRelay.sendEventMessage(event);
-    }
-
-    public Reminder getReminder(String reminderId) {
-        return allReminders.get(reminderId);
-    }
-
-    public List<Reminder> findByAppointmentId(String appointmentId) {
-        return allReminders.findByAppointmentId(appointmentId);
-    }
-
-    public List<Reminder> findByExternalId(String externalId) {
-        return allReminders.findByExternalId(externalId);
-    }
-
-    private MotechEvent getSkinnyEvent(Reminder reminder, String subject) {
+    private Map<String, Object> getParameters(Reminder reminder) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(EventKeys.APPOINTMENT_ID_KEY, reminder.getAppointmentId());
         parameters.put(EventKeys.REMINDER_ID_KEY, reminder.getId());
         parameters.put(EventKeys.EXTERNAL_ID_KEY, reminder.getExternalId());
-        return new MotechEvent(subject, parameters);
+        parameters.put(EventKeys.JOB_ID_KEY, new JobId(EventKeys.APPOINTMENT_REMINDER_EVENT_PREFIX, reminder.getExternalId()).value());
+        return parameters;
     }
 }
