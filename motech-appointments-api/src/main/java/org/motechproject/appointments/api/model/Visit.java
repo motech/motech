@@ -22,7 +22,7 @@ public class Visit extends ExtensibleDataObject {
     }
 
     public DateTime getVisitDate() {
-        return DateUtil.setTimeZone(visitDate);
+        return visitDate == null ? visitDate : DateUtil.setTimeZone(visitDate);
     }
 
     public void setVisitDate(DateTime visitDate) {
