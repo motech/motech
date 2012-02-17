@@ -111,8 +111,6 @@ public class ReminderService
         parameters.put(EventKeys.APPOINTMENT_ID_KEY, reminder.getAppointmentId());
         parameters.put(EventKeys.REMINDER_ID_KEY, reminder.getId());
         parameters.put(EventKeys.EXTERNAL_ID_KEY, reminder.getExternalId());
-        // Not sure I want this here, but it does save the handler from having to load the reminder
-        parameters.put(EventKeys.JOB_ID_KEY, reminder.getJobId());
 
         MotechEvent event = new MotechEvent(subject, parameters);
 
