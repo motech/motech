@@ -33,6 +33,7 @@ package org.motechproject.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import org.quartz.Trigger;
 
 /**
  * Schedulable Job - a data carrier class for a scheduled job that can be fired set number of times
@@ -47,19 +48,26 @@ public class RepeatingSchedulableJob implements Serializable {
     private Date endTime;
     private Integer repeatCount;
     private long repeatIntervalInMilliSeconds;
+    private int misfireInstruction;
 
     public RepeatingSchedulableJob(MotechEvent motechEvent, Date startTime, Date endTime,
-                                   Integer repeatCount, long repeatIntervalInMilliSeconds) {      // TODO: have consistentcy for using primitives/objects
+                                   Integer repeatCount, long repeatIntervalInMilliSeconds, int misfireInstruction) {      // TODO: have consistentcy for using primitives/objects
         this.motechEvent = motechEvent;
 		this.startTime = startTime;
 		this.endTime = endTime;
         this.repeatCount = repeatCount;
         this.repeatIntervalInMilliSeconds = repeatIntervalInMilliSeconds;
+        this.misfireInstruction = misfireInstruction;
+    }
+
+    public RepeatingSchedulableJob(MotechEvent motechEvent, Date startTime, Date endTime,
+                                   Integer repeatCount, long repeatIntervalInMilliSeconds) {
+        this(motechEvent, startTime, endTime, repeatCount, repeatIntervalInMilliSeconds, Trigger.MISFIRE_INSTRUCTION_SMART_POLICY);
     }
 
     public RepeatingSchedulableJob(MotechEvent motechEvent, Date startTime, Date endTime,
                                    long repeatIntervalInMilliSeconds) {
-        this(motechEvent, startTime, endTime, null, repeatIntervalInMilliSeconds);
+        this(motechEvent, startTime, endTime, null, repeatIntervalInMilliSeconds, Trigger.MISFIRE_INSTRUCTION_SMART_POLICY);
     }
 
     public MotechEvent getMotechEvent()
@@ -112,7 +120,11 @@ public class RepeatingSchedulableJob implements Serializable {
         this.repeatIntervalInMilliSeconds = repeatIntervalInMilliSeconds;
     }
 
-	@Override
+    public int getMisfireInstruction() {
+        return misfireInstruction;
+    }
+
+    @Override
 	public String toString() {
 		return "RepeatingSchedulableJob [motechEvent=" + motechEvent
 				+ ", startTime=" + startTime + ", endTime=" + endTime
