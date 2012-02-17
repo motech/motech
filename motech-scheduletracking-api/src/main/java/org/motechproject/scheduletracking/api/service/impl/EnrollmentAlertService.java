@@ -10,6 +10,7 @@ import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.events.MilestoneEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventSubject;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
+import org.quartz.SimpleTrigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -45,25 +46,14 @@ public class EnrollmentAlertService {
     private void scheduleAlertJob(Alert alert, Enrollment enrollment, Schedule schedule, Milestone milestone, MilestoneWindow milestoneWindow) {
         MotechEvent event = new MilestoneEvent(enrollment.getExternalId(), schedule.getName(), milestone.getName(), milestoneWindow.getName().toString(), enrollment.getReferenceDate()).toMotechEvent();
         event.getParameters().put(MotechSchedulerService.JOB_ID_KEY, String.format("%s.%d", enrollment.getId(), alert.getIndex()));
-        DateTime startTime = newDateTime(getJobStartDate(enrollment, milestoneWindow, alert), enrollment.getPreferredAlertTime());
+        DateTime startTime = newDateTime(getAlertStartDate(alert, enrollment, milestoneWindow), enrollment.getPreferredAlertTime());
         long repeatIntervalInMillis = (long) alert.getInterval().inDays() * (long) MILLIS_PER_DAY;
-        RepeatingSchedulableJob job = new RepeatingSchedulableJob(event, startTime.toDate(), null, numberOfAlertsToRaise(alert, enrollment, milestoneWindow), repeatIntervalInMillis);
+        RepeatingSchedulableJob job = new RepeatingSchedulableJob(event, startTime.toDate(), null, alert.getRepeatCount(), repeatIntervalInMillis, SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT);
         schedulerService.safeScheduleRepeatingJob(job);
     }
 
-    private int numberOfAlertsToRaise(Alert alert, Enrollment enrollment, MilestoneWindow milestoneWindow) {
-        LocalDate startDateOfWindow = getStartDateOfWindow(enrollment, milestoneWindow);
-        LocalDate endDateOfWindow = startDateOfWindow.plusDays(milestoneWindow.getWindowEndInDays());
-        LocalDate today = today();
-        int daysToEndOfWindow = Days.daysBetween(today, endDateOfWindow).getDays();
-        int maximumAlerts = alert.getRepeatCount();
-        return maximumAlerts <= daysToEndOfWindow ? maximumAlerts : daysToEndOfWindow;
-    }
-
-    private LocalDate getJobStartDate(Enrollment enrollment, MilestoneWindow milestoneWindow, Alert alert) {
-        LocalDate idealJobStartDate = getStartDateOfWindow(enrollment, milestoneWindow).plusDays(alert.getOffset().inDays());
-        LocalDate today = today();
-        return (idealJobStartDate.isAfter(today)) ? idealJobStartDate : today;
+    private LocalDate getAlertStartDate(Alert alert, Enrollment enrollment, MilestoneWindow milestoneWindow) {
+        return getStartDateOfWindow(enrollment, milestoneWindow).plusDays(alert.getOffset().inDays());
     }
 
     private LocalDate getStartDateOfWindow(Enrollment enrollment, MilestoneWindow milestoneWindow) {
