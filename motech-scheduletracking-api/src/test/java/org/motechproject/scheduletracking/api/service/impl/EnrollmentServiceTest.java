@@ -92,7 +92,7 @@ public class EnrollmentServiceTest {
         enrollmentService.fulfillCurrentMilestone(enrollment);
 
         assertEquals("Second Shot", enrollment.getCurrentMilestoneName());
-        assertEquals(daysAgo(0), enrollment.getLastFulfilledDate());
+        assertEquals(daysAgo(0), enrollment.lastFulfilledDate());
 
         verify(allEnrollments).update(enrollment);
     }

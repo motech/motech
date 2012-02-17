@@ -74,7 +74,7 @@ public class EnrollmentAlertService {
         Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
         if (enrollment.getCurrentMilestoneName().equals(schedule.getFirstMilestone().getName()))
             return enrollment.getReferenceDate();
-        return (enrollment.getFulfillments().isEmpty()) ? enrollment.getEnrollmentDate() : enrollment.getLastFulfilledDate();
+        return (enrollment.getFulfillments().isEmpty()) ? enrollment.getEnrollmentDate() : enrollment.lastFulfilledDate();
     }
 
     public void unscheduleAllAlerts(Enrollment enrollment) {
