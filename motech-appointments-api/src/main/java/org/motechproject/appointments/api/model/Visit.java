@@ -3,6 +3,7 @@ package org.motechproject.appointments.api.model;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.model.ExtensibleDataObject;
+import org.motechproject.util.DateUtil;
 
 @TypeDiscriminator("doc.type === 'Visit'")
 public class Visit extends ExtensibleDataObject {
@@ -21,7 +22,7 @@ public class Visit extends ExtensibleDataObject {
     }
 
     public DateTime getVisitDate() {
-        return visitDate;
+        return DateUtil.setTimeZone(visitDate);
     }
 
     public void setVisitDate(DateTime visitDate) {
