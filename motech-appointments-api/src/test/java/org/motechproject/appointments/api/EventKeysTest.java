@@ -1,7 +1,6 @@
 package org.motechproject.appointments.api;
 
 import org.junit.Test;
-import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.model.MotechEvent;
 
 import java.util.HashMap;
@@ -10,10 +9,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-/**
- */
-public class EventKeysTest
-{
+public class EventKeysTest {
 
     @Test
     public void testGetAppointmentId_ValidId() throws Exception {

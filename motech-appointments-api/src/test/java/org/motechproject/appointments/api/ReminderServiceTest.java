@@ -7,7 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.motechproject.appointments.api.dao.impl.AllRemindersCouchDBDAOImpl;
+import org.motechproject.appointments.api.dao.AllReminders;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
@@ -17,8 +17,7 @@ import java.util.List;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
-public class ReminderServiceTest
-{
+public class ReminderServiceTest {
     @Mock
     EventRelay eventRelay;
 
@@ -26,7 +25,7 @@ public class ReminderServiceTest
     CouchDbConnector couchDbConnector;
 
     @Mock
-    AllRemindersCouchDBDAOImpl remindersDAO;
+    AllReminders remindersDAO;
 
     @InjectMocks
     ReminderService reminderService;
@@ -34,7 +33,7 @@ public class ReminderServiceTest
     @Before
     public void setUp() {
         couchDbConnector = mock(CouchDbConnector.class);
-        remindersDAO = new AllRemindersCouchDBDAOImpl(couchDbConnector);
+        remindersDAO = new AllReminders(couchDbConnector);
 
         reminderService = new ReminderService();
         MockitoAnnotations.initMocks(this);
@@ -49,7 +48,7 @@ public class ReminderServiceTest
 
         reminderService.addReminder(r);
 
-        verify(remindersDAO).addReminder(r);
+        verify(remindersDAO).add(r);
         verify(eventRelay).sendEventMessage(argument.capture());
 
         MotechEvent event = argument.getValue();
@@ -73,7 +72,7 @@ public class ReminderServiceTest
 
         reminderService.updateReminder(r);
 
-        verify(remindersDAO).updateReminder(r);
+        verify(remindersDAO).update(r);
         verify(eventRelay).sendEventMessage(argument.capture());
 
         MotechEvent event = argument.getValue();
@@ -96,7 +95,7 @@ public class ReminderServiceTest
 
         reminderService.removeReminder(r);
 
-        verify(remindersDAO).removeReminder(r);
+        verify(remindersDAO).remove(r);
         verify(eventRelay).sendEventMessage(argument.capture());
 
         MotechEvent event = argument.getValue();
@@ -110,11 +109,11 @@ public class ReminderServiceTest
         r.setId("rID");
 
         ArgumentCaptor<MotechEvent> argument = ArgumentCaptor.forClass(MotechEvent.class);
-        when(remindersDAO.getReminder("rID")).thenReturn(r);
+        when(remindersDAO.get("rID")).thenReturn(r);
 
         reminderService.removeReminder(r.getId());
 
-        verify(remindersDAO).removeReminder(r);
+        verify(remindersDAO).remove(r);
         verify(eventRelay).sendEventMessage(argument.capture());
 
         MotechEvent event = argument.getValue();

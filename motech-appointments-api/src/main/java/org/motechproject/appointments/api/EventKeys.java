@@ -4,9 +4,6 @@ import org.motechproject.model.MotechEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- */
 public class EventKeys
 {
 	private final static Logger log = LoggerFactory.getLogger("org.motechproject.server.appointments");

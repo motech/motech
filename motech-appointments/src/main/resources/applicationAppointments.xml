@@ -10,30 +10,10 @@
     <import resource="classpath:applicationPlatformCommon.xml"/>
     <import resource="classpath:applicationPlatformScheduler.xml"/>
 
-    <bean id="reminderCRUDEventHandler" class="org.motechproject.server.appointments.ReminderCRUDEventHandler"/>
-
-    <bean id="appointmentDeletedEventHandler"
-          class="org.motechproject.server.appointments.AppointmentDeletedEventHandler"/>
-
     <bean id="appointmentsDatabase" class="org.ektorp.impl.StdCouchDbConnector">
         <constructor-arg value="motech-appointments"/>
         <constructor-arg ref="couchDbInstance"/>
     </bean>
 
-    <bean id="allAppointments" class="org.motechproject.appointments.api.dao.impl.AllAppointmentsCouchDBDAOImpl">
-        <constructor-arg ref="appointmentsDatabase"/>
-    </bean>
-
-    <bean id="allReminders" class="org.motechproject.appointments.api.dao.impl.AllRemindersCouchDBDAOImpl">
-        <constructor-arg ref="appointmentsDatabase"/>
-    </bean>
-
-    <bean id="allVisits" class="org.motechproject.appointments.api.dao.impl.AllVisitsCouchDBDAOImpl">
-        <constructor-arg ref="appointmentsDatabase"/>
-    </bean>
-
-    <bean id="reminderService" class="org.motechproject.appointments.api.ReminderService"/>
-
-    <bean id="appointmentContext" class="org.motechproject.appointments.api.context.AppointmentsContext"
-          factory-method="getInstance"/>
+    <context:component-scan base-package="org.motechproject.appointments.api"/>
 </beans>
