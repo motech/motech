@@ -43,7 +43,7 @@ public class EnrollmentTest {
         schedule.addMilestones(firstMilestone, secondMilestone);
         Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(5), weeksAgo(3), null);
 
-        assertEquals(null, enrollment.getLastFulfilledDate());
+        assertEquals(null, enrollment.lastFulfilledDate());
     }
 
     @Test
@@ -55,7 +55,7 @@ public class EnrollmentTest {
         Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(5), weeksAgo(3), null);
         enrollment.getFulfillments().add(new MilestoneFulfillment("First Shot", weeksAgo(0)));
 
-        assertEquals(weeksAgo(0), enrollment.getLastFulfilledDate());
+        assertEquals(weeksAgo(0), enrollment.lastFulfilledDate());
     }
     
     @Test

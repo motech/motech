@@ -66,7 +66,7 @@ public class Enrollment extends MotechBaseDataObject {
         return fulfillments;
     }
 
-    public LocalDate getLastFulfilledDate() {
+    public LocalDate lastFulfilledDate() {
         if (fulfillments.isEmpty())
             return null;
         return fulfillments.get(fulfillments.size() - 1).getDateFulfilled();
