@@ -6,10 +6,12 @@ import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.dao.MotechBaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
 
+@Component
 public class AllAppointments extends MotechBaseRepository<Appointment> {
 
     @Autowired

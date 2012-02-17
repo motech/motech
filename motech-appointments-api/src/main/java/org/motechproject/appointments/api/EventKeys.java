@@ -14,8 +14,6 @@ public class EventKeys
 
     public final static String BASE_SUBJECT = "org.motechproject.server.appointments.";
 
-    public final static String APPOINTMENT_DELETED_SUBJECT = BASE_SUBJECT + "appointment.deleted";
-
     public final static String REMINDER_CREATED_SUBJECT = BASE_SUBJECT + "reminder.created";
     public final static String REMINDER_UPDATED_SUBJECT = BASE_SUBJECT + "reminder.updated";
     public final static String REMINDER_DELETED_SUBJECT = BASE_SUBJECT + "reminder.deleted";
