@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.LocalDate;
@@ -13,18 +14,23 @@ import java.util.List;
 @TypeDiscriminator("doc.type === 'Enrollment'")
 public class Enrollment extends MotechBaseDataObject {
 
+
+
+    public enum EnrollmentStatus {
+        Active, Defaulted, Completed, Unenrolled;
+    }
     @JsonProperty
     private LocalDate enrollmentDate;
 
     private String externalId;
 
     private String scheduleName;
+
     private String currentMilestoneName;
     private LocalDate referenceDate;
     private Time preferredAlertTime;
-    private boolean active;
+    private EnrollmentStatus status;
     private List<MilestoneFulfillment> fulfillments = new LinkedList<MilestoneFulfillment>();
-
     // For ektorp
     private Enrollment() {
     }
@@ -36,7 +42,7 @@ public class Enrollment extends MotechBaseDataObject {
         this.enrollmentDate = enrollmentDate;
         this.referenceDate = referenceDate;
         this.preferredAlertTime = preferredAlertTime;
-        this.active = true;
+        this.status = EnrollmentStatus.Active;
     }
 
     public String getScheduleName() {
@@ -67,39 +73,33 @@ public class Enrollment extends MotechBaseDataObject {
         return fulfillments;
     }
 
-    public void fulfillCurrentMilestone(String nextMilestoneName) {
-        fulfillments.add(new MilestoneFulfillment(currentMilestoneName, DateUtil.today()));
-        currentMilestoneName = nextMilestoneName;
-    }
-
     public LocalDate getLastFulfilledDate() {
         if (fulfillments.isEmpty())
             return null;
         return fulfillments.get(fulfillments.size() - 1).getDateFulfilled();
     }
 
+    @JsonIgnore
     public boolean isActive() {
-        return active;
+        return status.equals(EnrollmentStatus.Active);
     }
 
-    public Enrollment copyFrom(Enrollment enrollment) {
-        enrollmentDate = enrollment.getEnrollmentDate();
-        externalId = enrollment.getExternalId();
-        scheduleName = enrollment.getScheduleName();
-        currentMilestoneName = enrollment.getCurrentMilestoneName();
-        referenceDate = enrollment.getReferenceDate();
-        preferredAlertTime = enrollment.getPreferredAlertTime();
-        active = enrollment.isActive();
-        return this;
+    @JsonIgnore
+    public boolean isCompleted() {
+        return status.equals(EnrollmentStatus.Completed);
+    }
+
+    public void setCurrentMilestoneName(String currentMilestoneName) {
+        this.currentMilestoneName = currentMilestoneName;
+    }
+
+    public void setStatus(EnrollmentStatus status) {
+        this.status = status;
     }
 
     // ektorp methods follow
     private String getType() {
         return type;
-    }
-
-    private void setCurrentMilestoneName(String currentMilestoneName) {
-        this.currentMilestoneName = currentMilestoneName;
     }
 
     private void setScheduleName(String scheduleName) {
@@ -120,9 +120,5 @@ public class Enrollment extends MotechBaseDataObject {
 
     public void setPreferredAlertTime(Time preferredAlertTime) {
         this.preferredAlertTime = preferredAlertTime;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 }

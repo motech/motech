@@ -8,6 +8,7 @@ public class EventDataKey {
     public static final String SCHEDULE_NAME = "schedule_name";
     public static final String EXTERNAL_ID = "external_id";
     public static final String REFERENCE_DATE = "reference_date";
+    public static final String ENROLLMENT_ID = "enrollment_id";
 
     private EventDataKey() {
 	}

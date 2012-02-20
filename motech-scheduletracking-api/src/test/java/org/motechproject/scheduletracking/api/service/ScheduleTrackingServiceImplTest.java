@@ -63,10 +63,9 @@ public class ScheduleTrackingServiceImplTest {
 
         scheduleTrackingService.enroll(new EnrollmentRequest("my_entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 1, 2)));
 
-        ArgumentCaptor<Enrollment> enrollmentArgumentCaptor = ArgumentCaptor.forClass(Enrollment.class);
-        verify(allEnrollments).add(enrollmentArgumentCaptor.capture());
-
-        Enrollment enrollment = enrollmentArgumentCaptor.getValue();
+        ArgumentCaptor<Enrollment> enrollmentCaptor = ArgumentCaptor.forClass(Enrollment.class);
+        verify(enrollmentService).enroll(enrollmentCaptor.capture());
+        Enrollment enrollment = enrollmentCaptor.getValue();
         assertEquals("my_entity_1", enrollment.getExternalId());
         assertEquals("my_schedule", enrollment.getScheduleName());
         assertEquals(firstMilestone.getName(), enrollment.getCurrentMilestoneName());
@@ -84,10 +83,10 @@ public class ScheduleTrackingServiceImplTest {
 
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2), "second_milestone"));
 
-        ArgumentCaptor<Enrollment> enrollmentArgumentCaptor = ArgumentCaptor.forClass(Enrollment.class);
-        verify(allEnrollments).add(enrollmentArgumentCaptor.capture());
+        ArgumentCaptor<Enrollment> enrollmentCaptor = ArgumentCaptor.forClass(Enrollment.class);
+        verify(enrollmentService).enroll(enrollmentCaptor.capture());
 
-        Enrollment enrollment = enrollmentArgumentCaptor.getValue();
+        Enrollment enrollment = enrollmentCaptor.getValue();
         assertEquals(secondMilestone.getName(), enrollment.getCurrentMilestoneName());
     }
 
@@ -102,7 +101,7 @@ public class ScheduleTrackingServiceImplTest {
         ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", scheduleName, new Time(8, 10), new LocalDate(2012, 11, 2)));
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", scheduleName, new Time(8, 10), new LocalDate(2012, 11, 2)));
-        verify(allEnrollments, times(2)).add(Matchers.<Enrollment>any());
+        verify(enrollmentService, times(2)).enroll(Matchers.<Enrollment>any());
     }
 
     @Test
@@ -117,7 +116,7 @@ public class ScheduleTrackingServiceImplTest {
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2)));
 
         ArgumentCaptor<Enrollment> enrollmentCaptor = ArgumentCaptor.forClass(Enrollment.class);
-        verify(enrollmentService).scheduleAlertsForCurrentMilestone(enrollmentCaptor.capture());
+        verify(enrollmentService).enroll(enrollmentCaptor.capture());
         Enrollment enrollment = enrollmentCaptor.getValue();
         assertEquals("entity_1", enrollment.getExternalId());
         assertEquals("my_schedule", enrollment.getScheduleName());
@@ -145,7 +144,7 @@ public class ScheduleTrackingServiceImplTest {
     }
 
     @Test
-    public void unenrollEntityFromTheSchedule() {
+    public void shouldUnenrollEntityFromTheSchedule() {
         Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         milestone.addAlert(WindowName.earliest, new Alert(new WallTime(1, WallTimeUnit.Day), 3, 0));
         Schedule schedule = new Schedule("my_schedule");
@@ -158,14 +157,7 @@ public class ScheduleTrackingServiceImplTest {
         when(allEnrollments.findActiveByExternalIdAndScheduleName("entity_1", "my_schedule")).thenReturn(enrollment);
         scheduleTrackingService.unenroll("entity_1", "my_schedule");
 
-        ArgumentCaptor<Enrollment> enrollmentCaptor = ArgumentCaptor.forClass(Enrollment.class);
-        verify(allEnrollments).update(enrollmentCaptor.capture());
-
-        enrollment = enrollmentCaptor.getValue();
-        assertEquals("entity_1", enrollment.getExternalId());
-        assertEquals("my_schedule", enrollment.getScheduleName());
-        assertFalse(enrollment.isActive());
-        verify(enrollmentService).unscheduleAllAlerts(enrollment);
+        verify(enrollmentService).unenroll(enrollment);
     }
 
     @Test(expected = InvalidEnrollmentException.class)
