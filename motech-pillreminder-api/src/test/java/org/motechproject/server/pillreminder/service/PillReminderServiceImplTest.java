@@ -51,7 +51,7 @@ public class PillReminderServiceImplTest {
         List<MedicineRequest> medicineRequests = asList(medicineRequest1, medicineRequest2);
 
         DosageRequest dosageRequest = new DosageRequest(9, 5, medicineRequests);
-        DailyPillRegimenRequest dailyPillRegimenRequest = new DailyPillRegimenRequest(externalId, 5, 20, asList(dosageRequest));
+        DailyPillRegimenRequest dailyPillRegimenRequest = new DailyPillRegimenRequest(externalId, 5, 20, 5, asList(dosageRequest));
 
         service.createNew(dailyPillRegimenRequest);
 
@@ -70,14 +70,14 @@ public class PillReminderServiceImplTest {
         List<MedicineRequest> medicineRequests = asList(medicineRequest1, medicineRequest2);
 
         DosageRequest dosageRequest = new DosageRequest(9, 5, medicineRequests);
-        DailyPillRegimenRequest dailyPillRegimenRequest = new DailyPillRegimenRequest(externalId, 5, 20, asList(dosageRequest));
+        DailyPillRegimenRequest dailyPillRegimenRequest = new DailyPillRegimenRequest(externalId, 5, 20, 5, asList(dosageRequest));
         Set<Dosage> dosages = new HashSet<Dosage>() {{
             final Dosage dosage = new Dosage(new Time(10, 30), null);
             dosage.setId("dosage");
             add(dosage);
         }};
 
-        PillRegimen pillRegimen = new PillRegimen(externalId, dosages, new DailyScheduleDetails(20, 2));
+        PillRegimen pillRegimen = new PillRegimen(externalId, dosages, new DailyScheduleDetails(20, 2, 5));
 
         when(allPillRegimens.findByExternalId(externalId)).thenReturn(pillRegimen);
 
@@ -100,14 +100,14 @@ public class PillReminderServiceImplTest {
         List<MedicineRequest> medicineRequests = asList(medicineRequest1, medicineRequest2);
 
         DosageRequest dosageRequest = new DosageRequest(9, 5, medicineRequests);
-        DailyPillRegimenRequest dailyPillRegimenRequest = new DailyPillRegimenRequest(externalId, 5, 20, asList(dosageRequest));
+        DailyPillRegimenRequest dailyPillRegimenRequest = new DailyPillRegimenRequest(externalId, 5, 20, 5, asList(dosageRequest));
         Set<Dosage> dosages = new HashSet<Dosage>() {{
             final Dosage dosage = new Dosage(new Time(10, 30), null);
             dosage.setId("dosage");
             add(dosage);
         }};
 
-        PillRegimen pillRegimen = new PillRegimen(externalId, dosages, new DailyScheduleDetails(20, 2));
+        PillRegimen pillRegimen = new PillRegimen(externalId, dosages, new DailyScheduleDetails(20, 2, 5));
 
         when(allPillRegimens.findByExternalId(externalId)).thenReturn(pillRegimen);
 
@@ -135,7 +135,7 @@ public class PillReminderServiceImplTest {
         HashSet<Dosage> dosages = new HashSet<Dosage>();
         dosages.add(dosage);
 
-        PillRegimen pillRegimen = new PillRegimen("patientId", dosages, new DailyScheduleDetails(15, 2));
+        PillRegimen pillRegimen = new PillRegimen("patientId", dosages, new DailyScheduleDetails(15, 2, 5));
         pillRegimen.setId(pillRegimenId);
         when(allPillRegimens.findByExternalId(patientId)).thenReturn(pillRegimen);
 

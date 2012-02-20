@@ -1,22 +1,22 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
 import org.joda.time.DateTime;
-import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
+import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.events.MilestoneEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventSubject;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
-import org.quartz.SimpleTrigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static org.joda.time.DateTimeConstants.MILLIS_PER_DAY;
+import static org.joda.time.Days.daysBetween;
 import static org.motechproject.util.DateUtil.newDateTime;
-import static org.motechproject.util.DateUtil.today;
+import static org.motechproject.util.DateUtil.now;
 
 @Component
 public class EnrollmentAlertService {
@@ -46,14 +46,33 @@ public class EnrollmentAlertService {
     private void scheduleAlertJob(Alert alert, Enrollment enrollment, Schedule schedule, Milestone milestone, MilestoneWindow milestoneWindow) {
         MotechEvent event = new MilestoneEvent(enrollment.getExternalId(), schedule.getName(), milestone.getName(), milestoneWindow.getName().toString(), enrollment.getReferenceDate()).toMotechEvent();
         event.getParameters().put(MotechSchedulerService.JOB_ID_KEY, String.format("%s.%d", enrollment.getId(), alert.getIndex()));
-        DateTime startTime = newDateTime(getAlertStartDate(alert, enrollment, milestoneWindow), enrollment.getPreferredAlertTime());
+        DateTime startTime = newDateTime(getNextAlertStartDate(alert, enrollment, milestoneWindow), enrollment.getPreferredAlertTime());
         long repeatIntervalInMillis = (long) alert.getInterval().inDays() * (long) MILLIS_PER_DAY;
-        RepeatingSchedulableJob job = new RepeatingSchedulableJob(event, startTime.toDate(), null, alert.getRepeatCount(), repeatIntervalInMillis, SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT);
+        RepeatingSchedulableJob job = new RepeatingSchedulableJob(event, startTime.toDate(), null, numberOfAlertsToSchedule(alert, enrollment, milestoneWindow), repeatIntervalInMillis);
         schedulerService.safeScheduleRepeatingJob(job);
     }
 
-    private LocalDate getAlertStartDate(Alert alert, Enrollment enrollment, MilestoneWindow milestoneWindow) {
-        return getStartDateOfWindow(enrollment, milestoneWindow).plusDays(alert.getOffset().inDays());
+    private LocalDate getNextAlertStartDate(Alert alert, Enrollment enrollment, MilestoneWindow milestoneWindow) {
+        LocalDate idealStartOfAlerts = getStartDateOfWindow(enrollment, milestoneWindow).plusDays(alert.getOffset().inDays());
+        int elapsedAlerts = numberOfElapsedAlerts(alert, enrollment, milestoneWindow);
+        return idealStartOfAlerts.plusDays(elapsedAlerts * alert.getInterval().inDays());
+    }
+
+    private int numberOfAlertsToSchedule(Alert alert, Enrollment enrollment, MilestoneWindow milestoneWindow) {
+        return alert.getRepeatCount() - numberOfElapsedAlerts(alert, enrollment, milestoneWindow);
+    }
+
+    private int numberOfElapsedAlerts(Alert alert, Enrollment enrollment, MilestoneWindow milestoneWindow) {
+        DateTime now = now();
+        LocalDate today = now.toLocalDate();
+        LocalDate idealStartOfAlerts = getStartDateOfWindow(enrollment, milestoneWindow).plusDays(alert.getOffset().inDays());
+        if (idealStartOfAlerts.isBefore(today)) {
+            int daysSinceIdealStartOfAlert = daysBetween(idealStartOfAlerts, today).getDays();
+            return daysSinceIdealStartOfAlert / alert.getRepeatCount() + 1;
+        } else if (idealStartOfAlerts.equals(today)) {
+            return (enrollment.getPreferredAlertTime().isBefore(new Time(now.getHourOfDay(), now.getMinuteOfHour())))? 1 : 0;
+        }
+        return 0;
     }
 
     private LocalDate getStartDateOfWindow(Enrollment enrollment, MilestoneWindow milestoneWindow) {

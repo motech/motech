@@ -53,6 +53,33 @@ public class MRSObservation<T> {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MRSObservation)) return false;
+
+        MRSObservation that = (MRSObservation) o;
+
+        if (conceptName != null ? !conceptName.equals(that.conceptName) : that.conceptName != null) return false;
+        if (date != null ? !date.equals(that.date) : that.date != null) return false;
+        if (dependantObservations != null ? !dependantObservations.equals(that.dependantObservations) : that.dependantObservations != null)
+            return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (value != null ? !value.equals(that.value) : that.value != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (date != null ? date.hashCode() : 0);
+        result = 31 * result + (conceptName != null ? conceptName.hashCode() : 0);
+        result = 31 * result + (value != null ? value.hashCode() : 0);
+        result = 31 * result + (dependantObservations != null ? dependantObservations.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "MRSObservation{" +
                 "id='" + id + '\'' +

@@ -3,7 +3,8 @@ package org.motechproject.model;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class ExtensibleDataObject extends MotechBaseDataObject {
+public abstract class ExtensibleDataObject {
+
     private Map<String, Object> data = new HashMap<String, Object>();
 
     public Map<String, Object> getData() {

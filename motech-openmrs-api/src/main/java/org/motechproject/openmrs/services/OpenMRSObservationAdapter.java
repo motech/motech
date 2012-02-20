@@ -86,7 +86,7 @@ public class OpenMRSObservationAdapter {
         else if (datatype.isText())
             return createMRSObservation(obs, obs.getValueText());
         else if (datatype.isCoded())
-            return createMRSObservation(obs, obs.getValueCoded());
+            return createMRSObservation(obs, new MRSConcept(obs.getValueCoded().getName().getName()));
         else
             throw new IllegalArgumentException("Invalid value of the createMRSObservation from DB-" + obs);
     }

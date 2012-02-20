@@ -7,12 +7,14 @@ public class DailyPillRegimenRequest {
     private String externalId;
     private List<DosageRequest> dosageRequests;
     protected int reminderRepeatIntervalInMinutes;
+    protected int bufferOverDosageTimeInMinutes;
 
-    public DailyPillRegimenRequest(String externalId, int pillWindowInHours, int reminderRepeatIntervalInMinutes, List<DosageRequest> dosageRequests) {
+    public DailyPillRegimenRequest(String externalId, int pillWindowInHours, int reminderRepeatIntervalInMinutes, int bufferTimeForPatientToTakePill, List<DosageRequest> dosageRequests) {
         this.externalId = externalId;
         this.dosageRequests = dosageRequests;
         this.reminderRepeatIntervalInMinutes = reminderRepeatIntervalInMinutes;
         this.pillWindowInHours = pillWindowInHours;
+        this.bufferOverDosageTimeInMinutes = bufferTimeForPatientToTakePill;
     }
 
     public int getPillWindowInHours() {
@@ -29,5 +31,13 @@ public class DailyPillRegimenRequest {
 
     public int getReminderRepeatIntervalInMinutes() {
         return reminderRepeatIntervalInMinutes;
+    }
+
+    public int getBufferOverDosageTimeInMinutes() {
+        return bufferOverDosageTimeInMinutes;
+    }
+
+    public void setBufferOverDosageTimeInMinutes(int bufferOverDosageTimeInMinutes) {
+        this.bufferOverDosageTimeInMinutes = bufferOverDosageTimeInMinutes;
     }
 }

@@ -23,7 +23,7 @@ public class AllPillRegimensTest {
 
     @Test
     public void shouldAddPillRegimen() {
-        PillRegimen pillRegimen = new PillRegimen("123", null, new DailyScheduleDetails(10, 5));
+        PillRegimen pillRegimen = new PillRegimen("123", null, new DailyScheduleDetails(10, 5, 5));
         allPillRegimens.add(pillRegimen);
         verify(couchDbConnector).create(pillRegimen);
     }

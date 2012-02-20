@@ -24,7 +24,7 @@ public class OffsetProgramScheduler extends MessageCampaignScheduler<OffsetCampa
     }
 
     private LocalDate jobDate(LocalDate referenceDate, String timeOffset) {
-        WallTime wallTime = WallTimeFactory.create(timeOffset);
+        WallTime wallTime = WallTimeFactory.wallTime(timeOffset);
         int offSetDays = wallTime.inDays();
         return referenceDate.plusDays(offSetDays);
     }

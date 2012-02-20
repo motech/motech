@@ -3,7 +3,6 @@ package org.motechproject.scheduletracking.api.service.impl;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
@@ -12,11 +11,14 @@ import org.motechproject.scheduletracking.api.domain.exception.InvalidEnrollment
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
+import org.motechproject.scheduletracking.api.service.EnrollmentResponse;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
 import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.WallTimeUnit;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
@@ -144,5 +146,15 @@ public class ScheduleTrackingServiceImplTest {
 
         when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(null);
         scheduleTrackingService.unenroll("entity_1", "my_schedule");
+    }
+
+    @Test
+    public void shouldReturnEnrollmentDetails(){
+        String externalId = "external id";
+        String scheduleName = "schedule name";
+        final Enrollment enrollment = new Enrollment(externalId, scheduleName, null, null, null, null);
+        when(allEnrollments.getActiveEnrollment(externalId, scheduleName)).thenReturn(enrollment);
+        final EnrollmentResponse response = new ScheduleTrackingServiceImpl(null, allEnrollments, null).getEnrollment(externalId, scheduleName);
+        assertThat(response.getExternalId(), is(equalTo(externalId)));
     }
 }

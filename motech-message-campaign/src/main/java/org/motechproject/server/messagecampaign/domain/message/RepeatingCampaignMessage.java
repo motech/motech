@@ -49,7 +49,7 @@ public class RepeatingCampaignMessage extends CampaignMessage {
         if (!isEmpty(weekDaysApplicable))
             return DAILY_REPEAT_INTERVAL;
         else
-            return WallTimeFactory.create(repeatInterval).inDays();
+            return WallTimeFactory.wallTime(repeatInterval).inDays();
     }
 
     public int repeatIntervalInDaysForOffset() {

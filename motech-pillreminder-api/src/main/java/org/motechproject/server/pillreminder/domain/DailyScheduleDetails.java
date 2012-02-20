@@ -3,13 +3,16 @@ package org.motechproject.server.pillreminder.domain;
 public class DailyScheduleDetails {
     private int pillWindowInHours;
     private int repeatIntervalInMinutes;
+    private int bufferOverDosageTimeInMinutes;
 
-    protected DailyScheduleDetails() {
+    //Needed for Jackson.
+    public DailyScheduleDetails() {
     }
 
-    public DailyScheduleDetails(int repeatIntervalInMinutes, int pillWindowInHours) {
+    public DailyScheduleDetails(int repeatIntervalInMinutes, int pillWindowInHours, int bufferOverDosageTimeInMinutes) {
         this.repeatIntervalInMinutes = repeatIntervalInMinutes;
         this.pillWindowInHours = pillWindowInHours;
+        this.bufferOverDosageTimeInMinutes = bufferOverDosageTimeInMinutes;
     }
 
     public int getPillWindowInHours() {
@@ -27,4 +30,13 @@ public class DailyScheduleDetails {
     public void setRepeatIntervalInMinutes(int repeatIntervalInMinutes) {
         this.repeatIntervalInMinutes = repeatIntervalInMinutes;
     }
+
+    public int getBufferOverDosageTimeInMinutes() {
+        return bufferOverDosageTimeInMinutes;
+    }
+
+    public void setBufferOverDosageTimeInMinutes(int bufferOverDosageTimeInMinutes) {
+        this.bufferOverDosageTimeInMinutes = bufferOverDosageTimeInMinutes;
+    }
+
 }

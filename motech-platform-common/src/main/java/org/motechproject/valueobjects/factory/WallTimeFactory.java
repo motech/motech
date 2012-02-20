@@ -8,7 +8,7 @@ import java.util.StringTokenizer;
 
 public class WallTimeFactory {
 
-    public static WallTime create(String userReadableForm) {
+    public static WallTime wallTime(String userReadableForm) {
         String inLowerCase = userReadableForm.trim().toLowerCase();
         StringTokenizer tokenizer = new StringTokenizer(inLowerCase);
         if (tokenizer.countTokens() == 0) return null;

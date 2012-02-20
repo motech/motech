@@ -1,112 +1,64 @@
 package org.motechproject.appointments.api.model;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.model.MotechBaseDataObject;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 import java.util.Date;
+import java.util.UUID;
 
-@TypeDiscriminator("doc.type === 'Reminder'")
-public class Reminder extends MotechBaseDataObject {
-    public enum intervalUnits {SECONDS, MINUTES, HOURS, DAYS, WEEKS}
+public class Reminder {
 
-    private String reminderSubjectId;
-    private String externalId;
+    @JsonProperty
+    private String id;
+    @JsonProperty
     private Date startDate;
+    @JsonProperty
     private Date endDate;
-    private int intervalCount;
-    private intervalUnits units;
+    @JsonProperty
+    private long intervalSeconds;
+    @JsonProperty
     private int repeatCount;
-    private String jobId;
 
-    public String getReminderSubjectId() {
-        return reminderSubjectId;
+    public Reminder() {
+        this.id = UUID.randomUUID().toString();
     }
 
-    public void setReminderSubjectId(String reminderSubjectId) {
-        this.reminderSubjectId = reminderSubjectId;
+    public String id() {
+        return id;
     }
 
-    public String getExternalId() {
-        return externalId;
-    }
-
-    public void setExternalId(String externalId) {
-        this.externalId = externalId;
-    }
-
-    public Date getStartDate() {
+    public Date startDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public Reminder startDate(Date startDate) {
         this.startDate = startDate;
+        return this;
     }
 
-    public Date getEndDate() {
+    public Date endDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public Reminder endDate(Date endDate) {
         this.endDate = endDate;
+        return this;
     }
 
-    public int getIntervalCount() {
-        return intervalCount;
+    public long intervalSeconds() {
+        return intervalSeconds;
     }
 
-    public void setIntervalCount(int intervalCount) {
-        this.intervalCount = intervalCount;
+    public Reminder intervalSeconds(long intervalSeconds) {
+        this.intervalSeconds = intervalSeconds;
+        return this;
     }
 
-    public intervalUnits getUnits() {
-        return units;
-    }
-
-    public void setUnits(intervalUnits units) {
-        this.units = units;
-    }
-
-    public int getRepeatCount() {
+    public int repeatCount() {
         return repeatCount;
     }
 
-    public void setRepeatCount(int repeatCount) {
+    public Reminder repeatCount(int repeatCount) {
         this.repeatCount = repeatCount;
-    }
-
-    public String getJobId() {
-        return jobId;
-    }
-
-    public void setJobId(String jobId) {
-        this.jobId = jobId;
-    }
-
-    @JsonIgnore
-    public long getIntervalSeconds() {
-        long ret = -1;
-
-        if (intervalUnits.SECONDS == units) {
-            ret = intervalCount;
-        }
-
-        if (intervalUnits.MINUTES == units) {
-            ret = (intervalCount * 60);
-        }
-
-        if (intervalUnits.HOURS == units) {
-            ret = (intervalCount * 60 * 60);
-        }
-
-        if (intervalUnits.DAYS == units) {
-            ret = (intervalCount * 60 * 60 * 24);
-        }
-
-        if (intervalUnits.WEEKS == units) {
-            ret = (intervalCount * 60 * 60 * 24 * 7);
-        }
-
-        return ret;
+        return this;
     }
 }

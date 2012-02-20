@@ -16,7 +16,8 @@ public class PillRegimenBuilder {
     public PillRegimen createDailyPillRegimenFrom(DailyPillRegimenRequest dailyPillRegimenRequest) {
         final int pillWindowInHours = dailyPillRegimenRequest.getPillWindowInHours();
         final int reminderRepeatIntervalInMinutes = dailyPillRegimenRequest.getReminderRepeatIntervalInMinutes();
-        final DailyScheduleDetails scheduleDetails = new DailyScheduleDetails(reminderRepeatIntervalInMinutes, pillWindowInHours);
+        final int bufferOverDosageTime = dailyPillRegimenRequest.getBufferOverDosageTimeInMinutes();
+        final DailyScheduleDetails scheduleDetails = new DailyScheduleDetails(reminderRepeatIntervalInMinutes, pillWindowInHours, bufferOverDosageTime);
         return new PillRegimen(dailyPillRegimenRequest.getExternalId(), getDosages(dailyPillRegimenRequest), scheduleDetails);
     }
 
