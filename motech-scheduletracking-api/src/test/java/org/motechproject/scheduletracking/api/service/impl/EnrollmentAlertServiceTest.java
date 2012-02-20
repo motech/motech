@@ -168,7 +168,7 @@ public class EnrollmentAlertServiceTest {
     }
 
     @Test
-    public void shouldScheduleLateAlertFrom6thFeb_DefectCase() {
+    public void defectCase1_shouldScheduleLateAlertFrom6thFeb() {
         now = new DateTime(2012, 2, 1, 8, 15, 0, 0);
         LocalDate ref = new LocalDate(2011, 4, 18);
         given(DateUtil.now()).willReturn(now);
@@ -192,6 +192,27 @@ public class EnrollmentAlertServiceTest {
         assertEquals(newDateTime(new LocalDate(2012, 2, 6), new Time(8, 20)).toDate(), job.getStartTime());
         assertEquals(2, job.getRepeatCount().intValue());
         assertEquals(7 * MILLIS_PER_DAY, job.getRepeatInterval());
+    }
+
+    @Test
+    public void defectCase2() {
+        Milestone milestone = new Milestone("milestone", wallTimeOf(12), wallTimeOf(13), wallTimeOf(15), wallTimeOf(18));
+        milestone.addAlert(WindowName.earliest, new Alert(wallTime("0 weeks"), wallTime("2 days"), 5, 0));
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(milestone);
+        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
+
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", new LocalDate(2012, 2, 16), now.toLocalDate(), new Time(8, 20));
+        System.out.println(String.format("%s %s", enrollment.getReferenceDate(), enrollment.getEnrollmentDate()));
+        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
+
+        ArgumentCaptor<RepeatingSchedulableJob> repeatJobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
+        verify(schedulerService).safeScheduleRepeatingJob(repeatJobCaptor.capture());
+
+        RepeatingSchedulableJob job = repeatJobCaptor.getValue();
+        assertEquals(newDateTime(new LocalDate(2012, 2, 20), new Time(8, 20)).toDate(), job.getStartTime());
+        assertEquals(3, job.getRepeatCount().intValue());
+        assertEquals(2 * MILLIS_PER_DAY, job.getRepeatInterval());
     }
 
     @Test
