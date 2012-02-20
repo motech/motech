@@ -5,16 +5,14 @@ import org.joda.time.DateTime;
 import org.motechproject.model.ExtensibleDataObject;
 import org.motechproject.util.DateUtil;
 
-import java.util.UUID;
-
 public class Visit extends ExtensibleDataObject {
 
     @JsonProperty
-    private String id;
+    private String name;
     @JsonProperty
     private DateTime visitDate;
     @JsonProperty
-    private String title;
+    private TypeOfVisit typeOfVisit;
     @JsonProperty
     private boolean missed;
     @JsonProperty
@@ -22,12 +20,13 @@ public class Visit extends ExtensibleDataObject {
     @JsonProperty
     private Reminder reminder;
 
-    public Visit() {
-        this.id = UUID.randomUUID().toString();
+    public String name() {
+        return name;
     }
 
-    public String id() {
-        return id;
+    public Visit name(String name) {
+        this.name = name.toLowerCase();
+        return this;
     }
 
     public DateTime visitDate() {
@@ -39,12 +38,12 @@ public class Visit extends ExtensibleDataObject {
         return this;
     }
 
-    public String title() {
-        return title;
+    public TypeOfVisit typeOfVisit() {
+        return typeOfVisit;
     }
 
-    public Visit title(String title) {
-        this.title = title;
+    public Visit typeOfVisit(TypeOfVisit typeOfVisit) {
+        this.typeOfVisit = typeOfVisit;
         return this;
     }
 
@@ -61,21 +60,21 @@ public class Visit extends ExtensibleDataObject {
         return appointment;
     }
 
-    public Visit appointment(Appointment appointment) {
-        this.appointment = appointment;
-        return this;
-    }
-
     public Reminder reminder() {
         return reminder;
+    }
+
+    public Visit reminder(Reminder reminder) {
+        this.reminder = reminder;
+        return this;
     }
 
     public Reminder appointmentReminder() {
         return appointment == null ? null : appointment.reminder();
     }
 
-    public Visit reminder(Reminder reminder) {
-        this.reminder = reminder;
+    public Visit addAppointment(DateTime scheduledDate, Reminder reminder) {
+        this.appointment = new Appointment().dueDate(scheduledDate).reminder(reminder);
         return this;
     }
 }

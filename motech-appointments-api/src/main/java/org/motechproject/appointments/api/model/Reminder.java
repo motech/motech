@@ -1,13 +1,11 @@
 package org.motechproject.appointments.api.model;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import java.util.Date;
 import java.util.UUID;
 
 public class Reminder {
-    public enum IntervalUnits {SECONDS, MINUTES, HOURS, DAYS, WEEKS}
 
     @JsonProperty
     private String id;
@@ -16,9 +14,7 @@ public class Reminder {
     @JsonProperty
     private Date endDate;
     @JsonProperty
-    private int intervalCount;
-    @JsonProperty
-    private IntervalUnits units;
+    private long intervalSeconds;
     @JsonProperty
     private int repeatCount;
 
@@ -48,21 +44,12 @@ public class Reminder {
         return this;
     }
 
-    public int intervalCount() {
-        return intervalCount;
+    public long intervalSeconds() {
+        return intervalSeconds;
     }
 
-    public Reminder intervalCount(int intervalCount) {
-        this.intervalCount = intervalCount;
-        return this;
-    }
-
-    public IntervalUnits units() {
-        return units;
-    }
-
-    public Reminder units(IntervalUnits units) {
-        this.units = units;
+    public Reminder intervalSeconds(long intervalSeconds) {
+        this.intervalSeconds = intervalSeconds;
         return this;
     }
 
@@ -73,32 +60,5 @@ public class Reminder {
     public Reminder repeatCount(int repeatCount) {
         this.repeatCount = repeatCount;
         return this;
-    }
-
-    @JsonIgnore
-    public long intervalSeconds() {
-        long seconds = -1;
-
-        if (IntervalUnits.SECONDS == units) {
-            seconds = intervalCount;
-        }
-
-        if (IntervalUnits.MINUTES == units) {
-            seconds = (intervalCount * 60);
-        }
-
-        if (IntervalUnits.HOURS == units) {
-            seconds = (intervalCount * 60 * 60);
-        }
-
-        if (IntervalUnits.DAYS == units) {
-            seconds = (intervalCount * 60 * 60 * 24);
-        }
-
-        if (IntervalUnits.WEEKS == units) {
-            seconds = (intervalCount * 60 * 60 * 24 * 7);
-        }
-
-        return seconds;
     }
 }

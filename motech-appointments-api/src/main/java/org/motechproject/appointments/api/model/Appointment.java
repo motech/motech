@@ -7,22 +7,11 @@ import org.motechproject.model.ExtensibleDataObject;
 public class Appointment extends ExtensibleDataObject {
 
     @JsonProperty
-    private String title;
-    @JsonProperty
     private DateTime dueDate;
     @JsonProperty
     private DateTime scheduledDate;
     @JsonProperty
     private Reminder reminder;
-
-    public String title() {
-        return title;
-    }
-
-    public Appointment title(String title) {
-        this.title = title;
-        return this;
-    }
 
     public DateTime dueDate() {
         return dueDate;

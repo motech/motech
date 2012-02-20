@@ -33,7 +33,7 @@ public class AllReminderJobsTest {
     public void shouldScheduleJobsForAppointmentReminders() {
         Date startDate = DateUtil.newDate(2010, 10, 10).toDate();
         Date endDate = DateUtil.newDate(2010, 10, 20).toDate();
-        Reminder reminder = new Reminder().startDate(startDate).endDate(endDate).units(Reminder.IntervalUnits.DAYS).intervalCount(1).repeatCount(2);
+        Reminder reminder = new Reminder().startDate(startDate).endDate(endDate).intervalSeconds(3600).repeatCount(2);
         String externalId = "externalId";
 
         allReminderJobs.add(reminder, externalId);

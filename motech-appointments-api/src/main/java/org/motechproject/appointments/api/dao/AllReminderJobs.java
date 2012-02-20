@@ -23,7 +23,6 @@ public class AllReminderJobs {
     }
 
     public void add(Reminder reminder, String externalId) {
-        if (reminder == null) return;
         MotechEvent reminderEvent = new MotechEvent(EventKeys.REMINDER_EVENT_SUBJECT, getParameters(reminder, externalId));
         RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(reminderEvent, reminder.startDate(), reminder.endDate(), reminder.repeatCount(), reminder.intervalSeconds() * 1000);
         schedulerService.safeScheduleRepeatingJob(schedulableJob);

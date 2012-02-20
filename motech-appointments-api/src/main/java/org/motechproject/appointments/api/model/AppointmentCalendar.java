@@ -16,6 +16,10 @@ public class AppointmentCalendar extends MotechBaseDataObject {
     @JsonProperty
     private List<Visit> visits = new ArrayList<Visit>();
 
+    public AppointmentCalendar() {
+        createBaselineVisit();
+    }
+
     public String externalId() {
         return externalId;
     }
@@ -29,23 +33,32 @@ public class AppointmentCalendar extends MotechBaseDataObject {
         return visits;
     }
 
+    public Visit getVisit(String visitName) {
+        for (Visit visit : visits) {
+            if (visit.name().equalsIgnoreCase(visitName)) {
+                return visit;
+            }
+        }
+        return null;
+    }
+
     public AppointmentCalendar addVisit(Visit visit) {
         visits.add(visit);
         return this;
     }
 
     public void updateVisit(Visit updatedVisit) {
-        Visit existingVisit = getVisit(updatedVisit.id());
+        Visit existingVisit = getVisit(updatedVisit.name());
         visits.remove(existingVisit);
         visits.add(updatedVisit);
     }
 
-    public Visit getVisit(String visitId) {
-        for (Visit visit : visits) {
-            if (visit.id().equals(visitId)) {
-                return visit;
-            }
-        }
-        return null;
+    public Visit baselineVisit() {
+        return getVisit(TypeOfVisit.Baseline.toString());
+    }
+
+    private void createBaselineVisit() {
+        Visit baseLineVisit = new Visit().name(TypeOfVisit.Baseline.toString()).typeOfVisit(TypeOfVisit.Baseline);
+        visits.add(baseLineVisit);
     }
 }
