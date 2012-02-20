@@ -8,12 +8,15 @@ import org.motechproject.server.messagecampaign.scheduler.RepeatingProgramSchedu
 import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 
 import java.util.List;
+import java.util.ResourceBundle;
 
 public class RepeatingCampaign extends Campaign<RepeatingCampaignMessage> {
 
     private List<RepeatingCampaignMessage> messages;
 
     private String maxDuration;
+    private ResourceBundle resourceBundle = ResourceBundle.getBundle("messageCampaign");
+    private final static String REPEATING_CAMPAIGN_24HR_STRATEGY = "24.hour.repeating.campaign.strategy";
 
     @Override
     public List<RepeatingCampaignMessage> messages() {
@@ -22,7 +25,8 @@ public class RepeatingCampaign extends Campaign<RepeatingCampaignMessage> {
 
     @Override
     public MessageCampaignScheduler getScheduler(MotechSchedulerService schedulerService, CampaignEnrollmentService campaignEnrollmentService, CampaignRequest enrollRequest) {
-        return new RepeatingProgramScheduler(schedulerService, enrollRequest, this, campaignEnrollmentService);
+        Boolean dispatchMessagesEvery24Hours = Boolean.valueOf(resourceBundle.getString(REPEATING_CAMPAIGN_24HR_STRATEGY));
+        return new RepeatingProgramScheduler(schedulerService, enrollRequest, this, campaignEnrollmentService, dispatchMessagesEvery24Hours);
     }
 
     @Override

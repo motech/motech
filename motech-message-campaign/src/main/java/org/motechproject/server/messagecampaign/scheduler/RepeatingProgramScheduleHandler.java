@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.motechproject.gateway.OutboundEventGateway;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
+import org.motechproject.server.messagecampaign.Constants;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
@@ -26,7 +27,7 @@ public class RepeatingProgramScheduleHandler {
 
     public static final String OFFSET = "{Offset}";
     public static final String WEEK_DAY = "{WeekDay}";
-    
+
     private OutboundEventGateway outboundEventGateway;
     private AllMessageCampaigns allMessageCampaigns;
     private CampaignEnrollmentService campaignEnrollmentService;
@@ -45,7 +46,8 @@ public class RepeatingProgramScheduleHandler {
         RepeatingCampaignMessage repeatingCampaignMessage = (RepeatingCampaignMessage) getCampaignMessage(event);
         String nextApplicableDay = repeatingCampaignMessage.applicableWeekDayInNext24Hours();
 
-        if (nextApplicableDay != null) {
+        Boolean deliverNext24HourMessages = dispatchMessagesApplicableInNext24Hours(event.getParameters());
+        if ((deliverNext24HourMessages && nextApplicableDay != null) || !deliverNext24HourMessages) {
             Map<String, Object> params = event.getParameters();
             CampaignEnrollment enrollment = enrollment(params);
             Integer startIntervalOffset = enrollment.startOffset(repeatingCampaignMessage);
@@ -80,5 +82,9 @@ public class RepeatingProgramScheduleHandler {
         String campaignName = (String) motechEvent.getParameters().get(EventKeys.CAMPAIGN_NAME_KEY);
         String messageKey = (String) motechEvent.getParameters().get(EventKeys.MESSAGE_KEY);
         return allMessageCampaigns.get(campaignName, messageKey);
+    }
+
+    private Boolean dispatchMessagesApplicableInNext24Hours(Map<String, Object> params) {
+        return (Boolean) params.get(Constants.REPEATING_PROGRAM_24HRS_MESSAGE_DISPATCH_STRATEGY);
     }
 }

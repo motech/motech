@@ -7,18 +7,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum DayOfWeek {
-    Monday(1),
-    Tuesday(2),
-    Wednesday(3),
-    Thursday(4),
-    Friday(5),
-    Saturday(6),
-    Sunday(7);
+    Monday(1, "MON"),
+    Tuesday(2, "TUE"),
+    Wednesday(3, "WED"),
+    Thursday(4, "THU"),
+    Friday(5, "FRI"),
+    Saturday(6, "SAT"),
+    Sunday(7, "SUN");
 
     private int value;
+    private String shortName;
 
-    private DayOfWeek(int value) {
+    private DayOfWeek(int value, String shortName) {
         this.value = value;
+        this.shortName = shortName;
     }
 
     public int getValue() {
@@ -44,5 +46,9 @@ public enum DayOfWeek {
 
     public static DayOfWeek getDayOfWeek(LocalDate date) {
         return DayOfWeek.getDayOfWeek(date.dayOfWeek().get());
+    }
+
+    public String getShortName() {
+        return shortName;
     }
 }
