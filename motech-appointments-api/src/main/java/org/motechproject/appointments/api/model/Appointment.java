@@ -1,62 +1,53 @@
 package org.motechproject.appointments.api.model;
 
-import org.ektorp.support.TypeDiscriminator;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.DateTime;
 import org.motechproject.model.ExtensibleDataObject;
-import org.motechproject.model.MotechBaseDataObject;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-@TypeDiscriminator("doc.type === 'Appointment'")
 public class Appointment extends ExtensibleDataObject {
 
-    private static final long serialVersionUID = 3L;
-
-    private String externalId;
+    @JsonProperty
     private String title;
+    @JsonProperty
     private DateTime dueDate;
+    @JsonProperty
     private DateTime scheduledDate;
-    private String visitId;
+    @JsonProperty
+    private Reminder reminder;
 
-    public String getExternalId() {
-        return externalId;
-    }
-
-    public void setExternalId(String externalId) {
-        this.externalId = externalId;
-    }
-
-    public String getTitle() {
+    public String title() {
         return title;
     }
 
-    public void setTitle(String title) {
+    public Appointment title(String title) {
         this.title = title;
+        return this;
     }
 
-    public DateTime getDueDate() {
+    public DateTime dueDate() {
         return dueDate;
     }
 
-    public void setDueDate(DateTime dueDate) {
+    public Appointment dueDate(DateTime dueDate) {
         this.dueDate = dueDate;
+        return this;
     }
 
-    public DateTime getScheduledDate() {
+    public DateTime scheduledDate() {
         return scheduledDate;
     }
 
-    public void setScheduledDate(DateTime scheduledDate) {
+    public Appointment scheduledDate(DateTime scheduledDate) {
         this.scheduledDate = scheduledDate;
+        return this;
     }
 
-    public String getVisitId() {
-        return visitId;
+    public Reminder reminder() {
+        return reminder;
     }
 
-    public void setVisitId(String visitId) {
-        this.visitId = visitId;
+    public Appointment reminder(Reminder reminder) {
+        this.reminder = reminder;
+        return this;
     }
 }

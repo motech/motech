@@ -1,55 +1,81 @@
 package org.motechproject.appointments.api.model;
 
-import org.ektorp.support.TypeDiscriminator;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.DateTime;
 import org.motechproject.model.ExtensibleDataObject;
 import org.motechproject.util.DateUtil;
 
-@TypeDiscriminator("doc.type === 'Visit'")
+import java.util.UUID;
+
 public class Visit extends ExtensibleDataObject {
-    private String externalId;
+
+    @JsonProperty
+    private String id;
+    @JsonProperty
     private DateTime visitDate;
+    @JsonProperty
     private String title;
-    private String appointmentId;
+    @JsonProperty
     private boolean missed;
+    @JsonProperty
+    private Appointment appointment;
+    @JsonProperty
+    private Reminder reminder;
 
-    public String getExternalId() {
-        return externalId;
+    public Visit() {
+        this.id = UUID.randomUUID().toString();
     }
 
-    public void setExternalId(String externalId) {
-        this.externalId = externalId;
+    public String id() {
+        return id;
     }
 
-    public DateTime getVisitDate() {
-        return visitDate == null ? visitDate : DateUtil.setTimeZone(visitDate);
+    public DateTime visitDate() {
+        return visitDate == null ? null : DateUtil.setTimeZone(visitDate);
     }
 
-    public void setVisitDate(DateTime visitDate) {
+    public Visit visitDate(DateTime visitDate) {
         this.visitDate = visitDate;
+        return this;
     }
 
-    public String getTitle() {
+    public String title() {
         return title;
     }
 
-    public void setTitle(String title) {
+    public Visit title(String title) {
         this.title = title;
+        return this;
     }
 
-    public String getAppointmentId() {
-        return appointmentId;
-    }
-
-    public void setAppointmentId(String appointmentId) {
-        this.appointmentId = appointmentId;
-    }
-
-    public boolean isMissed() {
+    public boolean missed() {
         return missed;
     }
 
-    public void setMissed(boolean missed) {
+    public Visit missed(boolean missed) {
         this.missed = missed;
+        return this;
+    }
+
+    public Appointment appointment() {
+        return appointment;
+    }
+
+    public Visit appointment(Appointment appointment) {
+        this.appointment = appointment;
+        return this;
+    }
+
+    public Reminder reminder() {
+        return reminder;
+    }
+
+    public Reminder appointmentReminder() {
+        return appointment == null ? null : appointment.reminder();
+    }
+
+    public Visit reminder(Reminder reminder) {
+        this.reminder = reminder;
+        return this;
     }
 }

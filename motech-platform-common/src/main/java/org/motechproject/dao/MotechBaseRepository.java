@@ -69,4 +69,8 @@ public abstract class MotechBaseRepository<T extends MotechBaseDataObject> exten
         ViewQuery q = createQuery("all").limit(limit).includeDocs(true);
         return db.queryView(q, type);
     }
+
+    protected T singleResult(List<T> resultSet) {
+        return (resultSet == null || resultSet.isEmpty()) ? null : resultSet.get(0);
+    }
 }
