@@ -156,23 +156,6 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
         assertHandleEvent("message-key-4-Friday");
     }
     
-    @Test
-    public void shouldDeleteEnrollmentIfIsTheLastMotechEvent() {
-        String jobMessageKey = "message-key-" + OFFSET + "-" + WEEK_DAY;
-        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForCalendarWeek(campaignName,
-                "Monday", asList("Monday", "Friday", "Sunday"), jobMessageKey);
-        when(allMessageCampaigns.get(campaignName, jobMessageKey)).thenReturn(campaignMessage);
-
-        DateTime today = date(2011, 11, 18);
-        CampaignEnrollment enrollment = mockCampaignEnrollment(today.toDate(), 1);
-        MotechEvent lastMotechEvent = motechEvent(date(2012, 5, 10).toDate(), jobMessageKey).setLastEvent(true);
-
-        callHandleEvent(today, lastMotechEvent);
-
-        assertHandleEvent("message-key-1-Friday");
-        verify(mockCampaignEnrollmentService).unregister(enrollment);
-    }
-
     private void callHandleEvent(DateTime todayMockTime, MotechEvent inputEvent) {
         reset(outboundEventGateway);
         mockCurrentDate(todayMockTime);

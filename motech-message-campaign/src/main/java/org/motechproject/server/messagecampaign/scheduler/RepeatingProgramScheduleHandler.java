@@ -22,13 +22,14 @@ import static org.motechproject.server.messagecampaign.EventKeys.MESSAGE_KEY;
 @Component
 public class RepeatingProgramScheduleHandler {
 
-    private OutboundEventGateway outboundEventGateway;
     private static final Logger log = Logger.getLogger(RepeatingProgramScheduleHandler.class);
-    private AllMessageCampaigns allMessageCampaigns;
-    private CampaignEnrollmentService campaignEnrollmentService;
 
     public static final String OFFSET = "{Offset}";
     public static final String WEEK_DAY = "{WeekDay}";
+    
+    private OutboundEventGateway outboundEventGateway;
+    private AllMessageCampaigns allMessageCampaigns;
+    private CampaignEnrollmentService campaignEnrollmentService;
 
     @Autowired
     public RepeatingProgramScheduleHandler(OutboundEventGateway outboundEventGateway, AllMessageCampaigns allMessageCampaigns, CampaignEnrollmentService campaignEnrollmentService) {
@@ -54,7 +55,6 @@ public class RepeatingProgramScheduleHandler {
             replaceMessageKeyParams(params, OFFSET, offset.toString());
             replaceMessageKeyParams(params, WEEK_DAY, nextApplicableDay);
 
-            if (event.isLastEvent()) campaignEnrollmentService.unregister(enrollment);
             outboundEventGateway.sendEventMessage(event.copy(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, event.getParameters()));
         }
     }

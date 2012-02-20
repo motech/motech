@@ -30,7 +30,8 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
 
     @Override
     public void start() {
-        CampaignEnrollment enrollment = new CampaignEnrollment(campaignRequest.externalId(), campaignRequest.campaignName()).setStartDate(referenceDate()).setStartOffset(campaignRequest.startOffset());
+        CampaignEnrollment enrollment = new CampaignEnrollment(campaignRequest.externalId(), campaignRequest.campaignName())
+                .setStartDate(referenceDate()).setStartOffset(campaignRequest.startOffset());
         campaignEnrollmentService.register(enrollment);
         super.start();
     }

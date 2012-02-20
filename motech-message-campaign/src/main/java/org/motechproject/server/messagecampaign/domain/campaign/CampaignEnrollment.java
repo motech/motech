@@ -16,6 +16,7 @@ public class CampaignEnrollment extends MotechBaseDataObject {
     private String externalId;
     @JsonProperty
     private String campaignName;
+    @JsonProperty
     private Integer startOffset;
     private LocalDate startDate;
 
@@ -35,10 +36,6 @@ public class CampaignEnrollment extends MotechBaseDataObject {
         return campaignName;
     }
 
-    private Integer getStartOffset() {
-        return startOffset;
-    }
-
     public CampaignEnrollment setStartOffset(Integer startOffset) {
         this.startOffset = startOffset;
         return this;
@@ -54,7 +51,7 @@ public class CampaignEnrollment extends MotechBaseDataObject {
     }
 
     public int startOffset(RepeatingCampaignMessage message) {
-        Integer offset = getStartOffset();
+        Integer offset = startOffset;
         // no startOffset handling for repeatInterval
         return isRepeatingIntervalMode(message) || offset == null ? REPEATING_DEFAULT_START_OFFSET : offset;
     }
@@ -65,7 +62,7 @@ public class CampaignEnrollment extends MotechBaseDataObject {
 
     public CampaignEnrollment copyFrom(CampaignEnrollment enrollment) {
         this.startDate = enrollment.getStartDate();
-        this.startOffset = enrollment.getStartOffset();
+        this.startOffset = enrollment.startOffset;
         return this;
     }
 }
