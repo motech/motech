@@ -40,13 +40,14 @@ public class PillRegimenBuilderTest {
 
     @Test
     public void shouldCreateDailyPillRegimen() {
-        DailyPillRegimenRequest dailyPillRegimenRequest = new DailyPillRegimenRequest(externalId, 5, 20, asList(dosageRequest));
+        DailyPillRegimenRequest dailyPillRegimenRequest = new DailyPillRegimenRequest(externalId, 5, 20, 5, asList(dosageRequest));
         PillRegimen pillRegimen = builder.createDailyPillRegimenFrom(dailyPillRegimenRequest);
 
         assertEquals(externalId, pillRegimen.getExternalId());
-        DailyScheduleDetails scheduleDetails = (DailyScheduleDetails) pillRegimen.getScheduleDetails();
+        DailyScheduleDetails scheduleDetails = pillRegimen.getScheduleDetails();
         assertEquals(5, scheduleDetails.getPillWindowInHours());
         assertEquals(20, scheduleDetails.getRepeatIntervalInMinutes());
+        assertEquals(5, scheduleDetails.getBufferOverDosageTimeInMinutes());
         assertEquals(1, pillRegimen.getDosages().size());
         for (Dosage dosage : pillRegimen.getDosages()) {
             assertEquals(new Time(10, 5), dosage.getDosageTime());

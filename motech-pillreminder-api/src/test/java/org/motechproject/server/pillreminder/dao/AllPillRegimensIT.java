@@ -37,7 +37,7 @@ public class AllPillRegimensIT {
 
     @Test
     public void shouldSaveThePillRegimenWithoutDosage() {
-        PillRegimen pillRegimen = new PillRegimen("1234", null, new DailyScheduleDetails(20, 5));
+        PillRegimen pillRegimen = new PillRegimen("1234", null, new DailyScheduleDetails(20, 5, 5));
 
         allPillRegimens.add(pillRegimen);
 
@@ -67,7 +67,7 @@ public class AllPillRegimensIT {
 
     @Test
     public void shouldGetPillRegimenByExternalId() {
-        PillRegimen pillRegimen = new PillRegimen("1234", null, new DailyScheduleDetails(20, 5));
+        PillRegimen pillRegimen = new PillRegimen("1234", null, new DailyScheduleDetails(20, 5, 5));
         allPillRegimens.add(pillRegimen);
         PillRegimen returnedRegimen = allPillRegimens.findByExternalId("1234");
         assertNotNull(returnedRegimen);
@@ -78,7 +78,7 @@ public class AllPillRegimensIT {
     public void addOrReplace() {
         String externalId = "1234";
         allPillRegimens.removeAll("externalId", externalId);
-        PillRegimen pillRegimen = new PillRegimen(externalId, null, new DailyScheduleDetails(20, 5));
+        PillRegimen pillRegimen = new PillRegimen(externalId, null, new DailyScheduleDetails(20, 5, 5));
         allPillRegimens.add(pillRegimen);
         allPillRegimens.addOrReplace(pillRegimen);
     }
@@ -109,6 +109,6 @@ public class AllPillRegimensIT {
         Dosage dosage = new Dosage(new Time(9, 5), medicines);
         Set<Dosage> dosages = new HashSet<Dosage>();
         dosages.add(dosage);
-        return new PillRegimen("1234", dosages, new DailyScheduleDetails(20, 5));
+        return new PillRegimen("1234", dosages, new DailyScheduleDetails(20, 5, 5));
     }
 }
