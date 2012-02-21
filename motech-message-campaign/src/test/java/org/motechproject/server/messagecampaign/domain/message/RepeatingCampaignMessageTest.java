@@ -64,6 +64,10 @@ public class RepeatingCampaignMessageTest extends BaseUnitTest {
         mockCurrentDate(date(2011, 12, 16).withHourOfDay(11));                 // Friday
         repeatingCampaignMessage = new RepeatingCampaignMessage("Sunday", weekDaysApplicable, "10:30");
         assertThat(repeatingCampaignMessage.applicableWeekDayInNext24Hours(), is(equalTo(null)));
+
+        mockCurrentDate(date(2011, 12, 16).withHourOfDay(10).withMinuteOfHour(30)); // Friday
+        repeatingCampaignMessage = new RepeatingCampaignMessage("Sunday", weekDaysApplicable, "10:30");
+        assertThat(repeatingCampaignMessage.applicableWeekDayInNext24Hours(), is(equalTo("Friday")));
     }
 
     private CampaignMessageBuilder builder() {

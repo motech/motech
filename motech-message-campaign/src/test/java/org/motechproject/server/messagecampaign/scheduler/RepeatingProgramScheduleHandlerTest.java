@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.motechproject.gateway.OutboundEventGateway;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.Time;
+import org.motechproject.server.messagecampaign.Constants;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.builder.CampaignMessageBuilder;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
@@ -27,7 +28,13 @@ import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduleHandler.OFFSET;
 import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduleHandler.WEEK_DAY;
@@ -43,7 +50,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
     RepeatingProgramScheduleHandler handler;
 
     String campaignName = "campaign-name";
-    private String externalId =  "external-id";
+    private String externalId = "external-id";
 
     @Before
     public void setUp() {
@@ -64,15 +71,15 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
         Date may102012 = date(2012, 5, 10).toDate();
 
         mockCampaignEnrollment(startDateNov112011, 1);
-        callHandleEvent(today, motechEvent(may102012, jobMessageKey));
+        callHandleEvent(today, motechEvent(may102012, jobMessageKey, true));
         assertHandleEvent("message-key-1");
 
         mockCampaignEnrollment(startDateNov112011, 3);
-        callHandleEvent(today.plusDays(repeatIntervalInDays - 1), motechEvent(may102012, jobMessageKey));
+        callHandleEvent(today.plusDays(repeatIntervalInDays - 1), motechEvent(may102012, jobMessageKey, true));
         assertHandleEvent("message-key-1");
 
         mockCampaignEnrollment(startDateNov112011, 1);
-        callHandleEvent(today.plusDays(repeatIntervalInDays * 2), motechEvent(may102012, jobMessageKey));
+        callHandleEvent(today.plusDays(repeatIntervalInDays * 2), motechEvent(may102012, jobMessageKey, true));
         assertHandleEvent("message-key-3");
     }
 
@@ -80,7 +87,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
         reset(mockCampaignEnrollmentService);
         CampaignEnrollment enrollment = new CampaignEnrollment(externalId, campaignName).setStartDate(new LocalDate(startDate));
         when(mockCampaignEnrollmentService.findByExternalIdAndCampaignName(externalId, campaignName)).thenReturn(enrollment
-            .setStartOffset(startOffset));
+                .setStartOffset(startOffset));
         return enrollment;
     }
 
@@ -99,24 +106,41 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
         assertEquals(7, repeatIntervalAs7);
 
         mockCampaignEnrollment(startDateNov162011, 1);
-        callHandleEvent(today, motechEvent(may102012, jobMessageKey));
+        callHandleEvent(today, motechEvent(may102012, jobMessageKey, true));
         assertHandleEvent("message-key-1-Wednesday");
 
         mockCampaignEnrollment(startDateNov162011, 2);
-        callHandleEvent(today.plusDays(1), motechEvent(may102012, jobMessageKey));
+        callHandleEvent(today.plusDays(1), motechEvent(may102012, jobMessageKey, true));
         assertHandleEvent_ThatItDoesntProceed();
 
         mockCampaignEnrollment(startDateNov162011, 2);
-        callHandleEvent(today.plusDays(2), motechEvent(may102012, jobMessageKey));
+        callHandleEvent(today.plusDays(2), motechEvent(may102012, jobMessageKey, true));
         assertHandleEvent("message-key-2-Friday");
 
         mockCampaignEnrollment(startDateNov162011, 5);
-        callHandleEvent(today.plusDays(11), motechEvent(may102012, jobMessageKey));
+        callHandleEvent(today.plusDays(11), motechEvent(may102012, jobMessageKey, true));
         assertHandleEvent_ThatItDoesntProceed();
 
         mockCampaignEnrollment(startDateNov162011, 5);
-        callHandleEvent(today.plusDays(repeatIntervalAs7 * 3), motechEvent(may102012, jobMessageKey));
+        callHandleEvent(today.plusDays(repeatIntervalAs7 * 3), motechEvent(may102012, jobMessageKey, true));
         assertHandleEvent("message-key-8-Wednesday");
+    }
+
+    @Test
+    public void shouldHandleEventForRepeatCampaignScheduleIfTheMessageDispatchStrategyIsNot24Hours() {
+        DateTime today = date(2011, 11, 16);
+        Date currentDate = date(2012, 5, 10).toDate();
+        String jobMessageKey = "message-key-" + OFFSET + "-" + WEEK_DAY;
+        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForDaysApplicable(campaignName,
+                asList("Monday", "Wednesday", "Friday", "Saturday"), jobMessageKey);
+
+        RepeatingCampaignMessage spyCampaignMessage = (RepeatingCampaignMessage) spy(campaignMessage);
+        when(allMessageCampaigns.get(campaignName, jobMessageKey)).thenReturn(spyCampaignMessage);
+        mockCampaignEnrollment(today.toDate(), 1);
+
+        callHandleEvent(today, motechEvent(currentDate, jobMessageKey, false));
+        assertHandleEvent("message-key-1-Wednesday");
+        verify(spyCampaignMessage, never()).applicableWeekDayInNext24Hours();
     }
 
     @Test
@@ -134,27 +158,27 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
         assertEquals(7, repeatIntervalAs7);
 
         mockCampaignEnrollment(startDateNov182011, 1);
-        callHandleEvent(today, motechEvent(may102012, jobMessageKey));
+        callHandleEvent(today, motechEvent(may102012, jobMessageKey, true));
         assertHandleEvent("message-key-1-Friday");
 
         mockCampaignEnrollment(startDateNov182011, 1);
-        callHandleEvent(today.plusDays(1), motechEvent(may102012, jobMessageKey));
+        callHandleEvent(today.plusDays(1), motechEvent(may102012, jobMessageKey, true));
         assertHandleEvent_ThatItDoesntProceed();
 
         mockCampaignEnrollment(startDateNov182011, 3);
-        callHandleEvent(today.plusDays(2), motechEvent(may102012, jobMessageKey));
+        callHandleEvent(today.plusDays(2), motechEvent(may102012, jobMessageKey, true));
         assertHandleEvent("message-key-3-Sunday");
 
         mockCampaignEnrollment(startDateNov182011, 4);
-        callHandleEvent(today.plusDays(3), motechEvent(may102012, jobMessageKey));
+        callHandleEvent(today.plusDays(3), motechEvent(may102012, jobMessageKey, true));
         assertHandleEvent("message-key-5-Monday");
 
         mockCampaignEnrollment(startDateNov182011, 1);
-        callHandleEvent(today.plusDays(11), motechEvent(may102012, jobMessageKey));
+        callHandleEvent(today.plusDays(11), motechEvent(may102012, jobMessageKey, true));
         assertHandleEvent_ThatItDoesntProceed();
 
         mockCampaignEnrollment(startDateNov182011, 2);
-        callHandleEvent(today.plusDays(14), motechEvent(may102012, jobMessageKey));
+        callHandleEvent(today.plusDays(14), motechEvent(may102012, jobMessageKey, true));
         assertHandleEvent("message-key-4-Friday");
     }
 
@@ -175,7 +199,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
         when(mockCampaignEnrollmentService.findByExternalIdAndCampaignName(Matchers.<String>any(), Matchers.<String>any())).thenReturn(enrollment);
         when(allMessageCampaigns.get(campaignName, jobMessageKey)).thenReturn(campaignMessage);
 
-        callHandleEvent(today, motechEvent(may102012, jobMessageKey).setLastEvent(true));
+        callHandleEvent(today, motechEvent(may102012, jobMessageKey, true).setLastEvent(true));
         ArgumentCaptor<MotechEvent> event = ArgumentCaptor.forClass(MotechEvent.class);
         verify(outboundEventGateway, times(1)).sendEventMessage(event.capture());
         assertTrue(event.getValue().isLastEvent());
@@ -197,12 +221,12 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
         when(mockCampaignEnrollmentService.findByExternalIdAndCampaignName(Matchers.<String>any(), Matchers.<String>any())).thenReturn(enrollment);
         when(allMessageCampaigns.get(campaignName, jobMessageKey)).thenReturn(campaignMessage);
 
-        callHandleEvent(today, motechEvent(may102012, jobMessageKey).setLastEvent(false));
+        callHandleEvent(today, motechEvent(may102012, jobMessageKey, true).setLastEvent(false));
         ArgumentCaptor<MotechEvent> event = ArgumentCaptor.forClass(MotechEvent.class);
         verify(outboundEventGateway, times(1)).sendEventMessage(event.capture());
         assertTrue(event.getValue().isLastEvent());
     }
-    
+
     private void callHandleEvent(DateTime todayMockTime, MotechEvent inputEvent) {
         reset(outboundEventGateway);
         mockCurrentDate(todayMockTime);
@@ -236,12 +260,13 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
         assertEquals(messageKey, params.get(EventKeys.MESSAGE_KEY));
     }
 
-    private MotechEvent motechEvent(Date endTime, String messageKey) {
+    private MotechEvent motechEvent(Date endTime, String messageKey, Boolean strategy) {
         HashMap<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(EventKeys.CAMPAIGN_NAME_KEY, campaignName);
         parameters.put(EventKeys.MESSAGE_KEY, messageKey);
         parameters.put(EventKeys.SCHEDULE_JOB_ID_KEY, "job-id");
         parameters.put(EventKeys.EXTERNAL_ID_KEY, externalId);
+        parameters.put(Constants.REPEATING_PROGRAM_24HRS_MESSAGE_DISPATCH_STRATEGY, strategy);
         return new MotechEvent(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, parameters).setEndTime(endTime);
     }
 }

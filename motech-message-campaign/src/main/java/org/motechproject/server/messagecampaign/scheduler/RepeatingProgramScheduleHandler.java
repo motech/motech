@@ -2,14 +2,17 @@ package org.motechproject.server.messagecampaign.scheduler;
 
 import org.apache.log4j.Logger;
 import org.motechproject.gateway.OutboundEventGateway;
+import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
+import org.motechproject.server.messagecampaign.Constants;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
+import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +29,7 @@ public class RepeatingProgramScheduleHandler {
 
     public static final String OFFSET = "{Offset}";
     public static final String WEEK_DAY = "{WeekDay}";
-    
+
     private OutboundEventGateway outboundEventGateway;
     private AllMessageCampaigns allMessageCampaigns;
     private CampaignEnrollmentService campaignEnrollmentService;
@@ -43,7 +46,7 @@ public class RepeatingProgramScheduleHandler {
         log.info("handled internal repeating campaign event and forwarding: " + event.getParameters().hashCode());
 
         RepeatingCampaignMessage repeatingCampaignMessage = (RepeatingCampaignMessage) getCampaignMessage(event);
-        String nextApplicableDay = repeatingCampaignMessage.applicableWeekDayInNext24Hours();
+        String nextApplicableDay = getApplicableDay(event, repeatingCampaignMessage);
 
         if (nextApplicableDay != null) {
             Map<String, Object> params = event.getParameters();
@@ -59,6 +62,12 @@ public class RepeatingProgramScheduleHandler {
             setCampaignLastEvent(repeatingCampaignMessage, campaignEvent);
             outboundEventGateway.sendEventMessage(campaignEvent);
         }
+    }
+
+    private String getApplicableDay(MotechEvent event, RepeatingCampaignMessage repeatingCampaignMessage) {
+        return (!(Boolean) event.getParameters().get(Constants.REPEATING_PROGRAM_24HRS_MESSAGE_DISPATCH_STRATEGY)) ?
+                DayOfWeek.getDayOfWeek(DateUtil.now().toLocalDate().getDayOfWeek()).name() :
+                repeatingCampaignMessage.applicableWeekDayInNext24Hours();
     }
 
     private void setCampaignLastEvent(RepeatingCampaignMessage message, MotechEvent eventToSend) {
@@ -81,4 +90,5 @@ public class RepeatingProgramScheduleHandler {
         String messageKey = (String) motechEvent.getParameters().get(EventKeys.MESSAGE_KEY);
         return allMessageCampaigns.get(campaignName, messageKey);
     }
+
 }
