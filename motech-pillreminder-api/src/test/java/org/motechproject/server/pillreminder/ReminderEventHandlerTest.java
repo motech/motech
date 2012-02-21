@@ -41,6 +41,7 @@ public class ReminderEventHandlerTest extends BaseUnitTest {
     LocalTime reminderStartTime = new LocalTime(10, 25);
     int pillWindow = 1;
     int retryInterval = 10;
+    int bufferOverDosageTimeInMinutes = 5;
 
 
     @Before
@@ -57,7 +58,7 @@ public class ReminderEventHandlerTest extends BaseUnitTest {
         int retryInterval = 10;
 
         Dosage dosage = buildDosageNotYetTaken(dosageId);
-        PillRegimen pillRegimen = buildPillRegimen(externalId, pillWindow, dosage, retryInterval);
+        PillRegimen pillRegimen = buildPillRegimen(externalId, pillWindow, bufferOverDosageTimeInMinutes, dosage, retryInterval);
 
         when(allPillRegimens.findByExternalId(externalId)).thenReturn(pillRegimen);
 
@@ -76,7 +77,7 @@ public class ReminderEventHandlerTest extends BaseUnitTest {
         ArgumentCaptor<MotechEvent> event = ArgumentCaptor.forClass(MotechEvent.class);
 
         Dosage dosage = buildDosageNotYetTaken(dosageId);
-        PillRegimen pillRegimen = buildPillRegimen(externalId, pillWindow, dosage, retryInterval);
+        PillRegimen pillRegimen = buildPillRegimen(externalId, pillWindow, bufferOverDosageTimeInMinutes, dosage, retryInterval);
         when(allPillRegimens.findByExternalId(externalId)).thenReturn(pillRegimen);
 
         MotechEvent motechEvent = buildMotechEvent(externalId, dosageId);
@@ -97,7 +98,7 @@ public class ReminderEventHandlerTest extends BaseUnitTest {
         ArgumentCaptor<MotechEvent> event = ArgumentCaptor.forClass(MotechEvent.class);
 
         Dosage dosage = buildDosageNotYetTaken(dosageId);
-        PillRegimen pillRegimen = buildPillRegimen(externalId, pillWindow, dosage, retryInterval);
+        PillRegimen pillRegimen = buildPillRegimen(externalId, pillWindow, bufferOverDosageTimeInMinutes, dosage, retryInterval);
 
         when(allPillRegimens.findByExternalId(externalId)).thenReturn(pillRegimen);
 
@@ -119,7 +120,7 @@ public class ReminderEventHandlerTest extends BaseUnitTest {
         ArgumentCaptor<MotechEvent> event = ArgumentCaptor.forClass(MotechEvent.class);
 
         Dosage dosage = buildDosageNotYetTaken(dosageId);
-        PillRegimen pillRegimen = buildPillRegimen(externalId, pillWindow, dosage, retryInterval);
+        PillRegimen pillRegimen = buildPillRegimen(externalId, pillWindow, bufferOverDosageTimeInMinutes, dosage, retryInterval);
 
         when(allPillRegimens.findByExternalId(externalId)).thenReturn(pillRegimen);
 
@@ -142,7 +143,7 @@ public class ReminderEventHandlerTest extends BaseUnitTest {
 
         Dosage dosage = buildDosageTaken(dosageId);
 
-        PillRegimen pillRegimen = buildPillRegimen(externalId, pillWindow, dosage, retryInterval);
+        PillRegimen pillRegimen = buildPillRegimen(externalId, pillWindow, bufferOverDosageTimeInMinutes, dosage, retryInterval);
 
         when(allPillRegimens.findByExternalId(externalId)).thenReturn(pillRegimen);
 
@@ -161,7 +162,7 @@ public class ReminderEventHandlerTest extends BaseUnitTest {
 
         Dosage dosage = buildDosageNotYetTaken(dosageId);
 
-        PillRegimen pillRegimen = buildPillRegimen(externalId, pillWindow, dosage, retryInterval);
+        PillRegimen pillRegimen = buildPillRegimen(externalId, pillWindow, bufferOverDosageTimeInMinutes, dosage, retryInterval);
 
         when(allPillRegimens.findByExternalId(externalId)).thenReturn(pillRegimen);
 
@@ -185,7 +186,7 @@ public class ReminderEventHandlerTest extends BaseUnitTest {
 
         Dosage dosage = buildDosageNotYetTaken(dosageId);
 
-        PillRegimen pillRegimen = buildPillRegimen(externalId, pillWindow, dosage, retryInterval);
+        PillRegimen pillRegimen = buildPillRegimen(externalId, pillWindow, bufferOverDosageTimeInMinutes, dosage, retryInterval);
 
         when(allPillRegimens.findByExternalId(externalId)).thenReturn(pillRegimen);
 
@@ -217,10 +218,10 @@ public class ReminderEventHandlerTest extends BaseUnitTest {
                 .build();
     }
 
-    private PillRegimen buildPillRegimen(String externalId, int pillWindow, Dosage dosage, int retryInterval) {
+    private PillRegimen buildPillRegimen(String externalId, int pillWindow, int bufferOverDosageTimeInMinutes, Dosage dosage, int retryInterval) {
         return PillRegimenBuilder.newPillRegimen()
                 .withExternalId(externalId)
-                .withScheduleDetails(new DailyScheduleDetails(retryInterval, pillWindow))
+                .withScheduleDetails(new DailyScheduleDetails(retryInterval, pillWindow, bufferOverDosageTimeInMinutes))
                 .withSingleDosage(dosage)
                 .build();
     }

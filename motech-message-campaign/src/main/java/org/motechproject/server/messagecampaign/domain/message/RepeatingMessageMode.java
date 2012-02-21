@@ -16,7 +16,7 @@ import java.util.Date;
 import static org.joda.time.Days.daysBetween;
 import static org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage.WEEKLY_REPEAT_INTERVAL;
 import static org.motechproject.util.DateUtil.*;
-import static org.motechproject.valueobjects.factory.WallTimeFactory.create;
+import static org.motechproject.valueobjects.factory.WallTimeFactory.wallTime;
 
 public enum RepeatingMessageMode {
 
@@ -26,7 +26,7 @@ public enum RepeatingMessageMode {
         }
 
         public Integer repeatIntervalForOffSet(RepeatingCampaignMessage message) {
-            return create(message.repeatInterval()).inDays();
+            return wallTime(message.repeatInterval()).inDays();
         }
 
         public Integer currentOffset(RepeatingCampaignMessage message, Date startTime, Integer startIntervalOffset) {

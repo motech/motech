@@ -14,6 +14,11 @@ public class Time implements Comparable<Time>, Serializable {
     public Time() {
     }
 
+    public Time(int hour, int minute) {
+        this.hour = Integer.valueOf(hour);
+        this.minute = Integer.valueOf(minute);
+    }
+
     public Time(Integer hour, Integer minute) {
         this.hour = hour;
         this.minute = minute;
@@ -98,5 +103,9 @@ public class Time implements Comparable<Time>, Serializable {
     public int compareTo(Time otherTime) {
         if (otherTime.getHour().equals(this.getHour())) return this.getMinute().compareTo(otherTime.getMinute());
         return this.getHour().compareTo(otherTime.getHour());
+    }
+
+    public boolean isBefore(Time other) {
+        return compareTo(other) < 0;
     }
 }

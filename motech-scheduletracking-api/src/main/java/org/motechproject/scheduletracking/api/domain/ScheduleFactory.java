@@ -17,10 +17,10 @@ public class ScheduleFactory {
         int alertIndex = 0;
         for (MilestoneRecord milestoneRecord : scheduleRecord.milestoneRecords()) {
             ScheduleWindowsRecord windowsRecord = milestoneRecord.scheduleWindowsRecord();
-            WallTime earliest = WallTimeFactory.create(windowsRecord.earliest());
-            WallTime due = WallTimeFactory.create(windowsRecord.due());
-            WallTime late = WallTimeFactory.create(windowsRecord.late());
-            WallTime max = WallTimeFactory.create(windowsRecord.max());
+            WallTime earliest = WallTimeFactory.wallTime(windowsRecord.earliest());
+            WallTime due = WallTimeFactory.wallTime(windowsRecord.due());
+            WallTime late = WallTimeFactory.wallTime(windowsRecord.late());
+            WallTime max = WallTimeFactory.wallTime(windowsRecord.max());
             if (earliest == null)
                 earliest = new WallTime(0, null);
             if (due == null)
@@ -35,7 +35,7 @@ public class ScheduleFactory {
                 String offset = alertRecord.offset();
                 if (offset == null || offset.isEmpty())
                     throw new InvalidScheduleDefinitionException("alert needs an offset parameter.");
-                milestone.addAlert(WindowName.valueOf(alertRecord.window()), new Alert(WallTimeFactory.create(offset), WallTimeFactory.create(alertRecord.interval()), Integer.parseInt(alertRecord.count()), alertIndex++));
+                milestone.addAlert(WindowName.valueOf(alertRecord.window()), new Alert(WallTimeFactory.wallTime(offset), WallTimeFactory.wallTime(alertRecord.interval()), Integer.parseInt(alertRecord.count()), alertIndex++));
             }
             schedule.addMilestones(milestone);
         }

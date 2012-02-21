@@ -1,6 +1,7 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
 import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.scheduletracking.api.service.EnrollmentResponse;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.domain.exception.InvalidEnrollmentException;
 import org.motechproject.scheduletracking.api.domain.exception.ScheduleTrackingException;
@@ -24,6 +25,12 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
         this.allTrackedSchedules = allTrackedSchedules;
         this.allEnrollments = allEnrollments;
         this.enrollmentService = enrollmentService;
+    }
+
+    @Override
+    public EnrollmentResponse getEnrollment(String externalId, String scheduleName){
+        Enrollment activeEnrollment = allEnrollments.getActiveEnrollment(externalId, scheduleName);
+        return new EnrollmentResponseMapper().map(activeEnrollment);
     }
 
     @Override

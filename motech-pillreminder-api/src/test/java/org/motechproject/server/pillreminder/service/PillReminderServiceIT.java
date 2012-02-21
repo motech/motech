@@ -56,7 +56,7 @@ public class PillReminderServiceIT {
         ArrayList<DosageRequest> dosageContracts = new ArrayList<DosageRequest>();
         dosageContracts.add(new DosageRequest(9, 5, medicineRequests));
 
-        pillReminderService.createNew(new DailyPillRegimenRequest(externalId, 2, 15, dosageContracts));
+        pillReminderService.createNew(new DailyPillRegimenRequest(externalId, 2, 15, 5, dosageContracts));
         Assert.assertEquals(scheduledJobsNum + 1, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
     }
 
@@ -75,12 +75,12 @@ public class PillReminderServiceIT {
         dosageContracts.add(new DosageRequest(9, 5, medicineRequests));
 
         String externalId = "123456789";
-		pillReminderService.createNew(new DailyPillRegimenRequest(externalId, 2, 15, dosageContracts));
+		pillReminderService.createNew(new DailyPillRegimenRequest(externalId, 2, 15, 5, dosageContracts));
 
         ArrayList<DosageRequest> newDosageContracts = new ArrayList<DosageRequest>();
         newDosageContracts.add(new DosageRequest(9, 5, Arrays.asList(new MedicineRequest("m1", DateUtil.today(), DateUtil.today().plusDays(100)))));
         newDosageContracts.add(new DosageRequest(4, 5, Arrays.asList(new MedicineRequest("m2", DateUtil.today(), DateUtil.today().plusDays(100)))));
-        pillReminderService.renew(new DailyPillRegimenRequest(externalId, 2, 15, newDosageContracts));
+        pillReminderService.renew(new DailyPillRegimenRequest(externalId, 2, 15, 5, newDosageContracts));
         Assert.assertEquals(scheduledJobsNum + 2, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
         PillRegimen regimen = allPillRegimens.findByExternalId(externalId);
         allPillRegimens.remove(regimen);

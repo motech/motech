@@ -18,7 +18,7 @@ import java.util.Map;
 import static java.lang.String.format;
 import static org.motechproject.util.DateUtil.endOfDay;
 import static org.motechproject.util.DateUtil.newDateTime;
-import static org.motechproject.valueobjects.factory.WallTimeFactory.create;
+import static org.motechproject.valueobjects.factory.WallTimeFactory.wallTime;
 
 public class RepeatingProgramScheduler extends MessageCampaignScheduler<RepeatingCampaignMessage, RepeatingCampaign> {
 
@@ -45,7 +45,7 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
 
     @Override
     protected void scheduleJobFor(RepeatingCampaignMessage message) {
-        WallTime maxDuration = create(campaign.maxDuration());
+        WallTime maxDuration = wallTime(campaign.maxDuration());
         LocalDate startDate = referenceDate();
         LocalDate endDate = startDate.plusDays(message.durationInDaysToAdd(maxDuration, campaignRequest));
         Date endDateToEndOfDay = endOfDay(endDate.toDate()).toDate();
