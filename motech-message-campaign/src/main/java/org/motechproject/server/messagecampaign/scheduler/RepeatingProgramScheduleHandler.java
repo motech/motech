@@ -2,6 +2,7 @@ package org.motechproject.server.messagecampaign.scheduler;
 
 import org.apache.log4j.Logger;
 import org.motechproject.gateway.OutboundEventGateway;
+import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.server.messagecampaign.Constants;
@@ -11,6 +12,7 @@ import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollme
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
+import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -44,10 +46,9 @@ public class RepeatingProgramScheduleHandler {
         log.info("handled internal repeating campaign event and forwarding: " + event.getParameters().hashCode());
 
         RepeatingCampaignMessage repeatingCampaignMessage = (RepeatingCampaignMessage) getCampaignMessage(event);
-        String nextApplicableDay = repeatingCampaignMessage.applicableWeekDayInNext24Hours();
+        String nextApplicableDay = getApplicableDay(event, repeatingCampaignMessage);
 
-        Boolean deliverNext24HourMessages = dispatchMessagesApplicableInNext24Hours(event.getParameters());
-        if ((deliverNext24HourMessages && nextApplicableDay != null) || !deliverNext24HourMessages) {
+        if (nextApplicableDay != null) {
             Map<String, Object> params = event.getParameters();
             CampaignEnrollment enrollment = enrollment(params);
             Integer startIntervalOffset = enrollment.startOffset(repeatingCampaignMessage);
@@ -61,6 +62,12 @@ public class RepeatingProgramScheduleHandler {
             setCampaignLastEvent(repeatingCampaignMessage, campaignEvent);
             outboundEventGateway.sendEventMessage(campaignEvent);
         }
+    }
+
+    private String getApplicableDay(MotechEvent event, RepeatingCampaignMessage repeatingCampaignMessage) {
+        return (!(Boolean) event.getParameters().get(Constants.REPEATING_PROGRAM_24HRS_MESSAGE_DISPATCH_STRATEGY)) ?
+                DayOfWeek.getDayOfWeek(DateUtil.now().toLocalDate().getDayOfWeek()).name() :
+                repeatingCampaignMessage.applicableWeekDayInNext24Hours();
     }
 
     private void setCampaignLastEvent(RepeatingCampaignMessage message, MotechEvent eventToSend) {
@@ -84,7 +91,4 @@ public class RepeatingProgramScheduleHandler {
         return allMessageCampaigns.get(campaignName, messageKey);
     }
 
-    private Boolean dispatchMessagesApplicableInNext24Hours(Map<String, Object> params) {
-        return (Boolean) params.get(Constants.REPEATING_PROGRAM_24HRS_MESSAGE_DISPATCH_STRATEGY);
-    }
 }

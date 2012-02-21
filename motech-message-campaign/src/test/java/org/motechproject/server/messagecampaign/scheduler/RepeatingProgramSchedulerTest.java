@@ -138,7 +138,7 @@ public class RepeatingProgramSchedulerTest {
 
         List<CronSchedulableJob> jobs = capture.getAllValues();
         assertDate(jobs.get(0).getEndTime(), interval);
-        assertThat(jobs.get(0).getCronExpression(), is("0 30 10 MON,WED * ? *"));
+        assertThat(jobs.get(0).getCronExpression(), is("0 30 10 ? * MON,WED *"));
     }
 
     @Test
@@ -293,7 +293,7 @@ public class RepeatingProgramSchedulerTest {
         CampaignRequest request = defaultBuilder().withReferenceDate(localDate).withStartOffset(1).build();
 
         Properties properties = new Properties();
-        properties.setProperty("messagecampaign.definition.file", "/repeating-message-campaign.json");
+        properties.setProperty("messagecampaign.definition.file", "/simple-message-campaign.json");
         AllMessageCampaigns allMessageCampaigns = new AllMessageCampaigns(properties);
         RepeatingCampaign campaign = (RepeatingCampaign) allMessageCampaigns.get("PREGNANCY");
 

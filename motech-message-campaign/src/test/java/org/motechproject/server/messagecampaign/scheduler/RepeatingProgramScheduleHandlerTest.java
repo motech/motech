@@ -134,11 +134,13 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
         CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForDaysApplicable(campaignName,
                 asList("Monday", "Wednesday", "Friday", "Saturday"), jobMessageKey);
 
-        when(allMessageCampaigns.get(campaignName, jobMessageKey)).thenReturn(campaignMessage);
+        RepeatingCampaignMessage spyCampaignMessage = (RepeatingCampaignMessage) spy(campaignMessage);
+        when(allMessageCampaigns.get(campaignName, jobMessageKey)).thenReturn(spyCampaignMessage);
         mockCampaignEnrollment(today.toDate(), 1);
 
         callHandleEvent(today, motechEvent(currentDate, jobMessageKey, false));
         assertHandleEvent("message-key-1-Wednesday");
+        verify(spyCampaignMessage, never()).applicableWeekDayInNext24Hours();
     }
 
     @Test
