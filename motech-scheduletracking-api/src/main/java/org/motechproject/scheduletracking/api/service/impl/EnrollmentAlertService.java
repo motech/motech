@@ -13,6 +13,8 @@ import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static java.lang.Math.ceil;
+import static java.lang.Math.min;
 import static org.joda.time.DateTimeConstants.MILLIS_PER_DAY;
 import static org.joda.time.Days.daysBetween;
 import static org.motechproject.util.DateUtil.newDateTime;
@@ -49,31 +51,33 @@ public class EnrollmentAlertService {
         event.getParameters().put(MotechSchedulerService.JOB_ID_KEY, String.format("%s.%d", enrollment.getId(), alert.getIndex()));
         DateTime startTime = newDateTime(getNextAlertStartDate(alert, enrollment, milestoneWindow), enrollment.getPreferredAlertTime());
         long repeatIntervalInMillis = (long) alert.getInterval().inDays() * (long) MILLIS_PER_DAY;
-        RepeatingSchedulableJob job = new RepeatingSchedulableJob(event, startTime.toDate(), null, numberOfAlertsToSchedule(alert, enrollment, milestoneWindow), repeatIntervalInMillis);
-        schedulerService.safeScheduleRepeatingJob(job);
+        int numberOfAlertsToSchedule = numberOfAlertsToSchedule(alert, enrollment, milestoneWindow);
+        if (numberOfAlertsToSchedule > 0)
+            schedulerService.safeScheduleRepeatingJob(new RepeatingSchedulableJob(event, startTime.toDate(), null, numberOfAlertsToSchedule - 1, repeatIntervalInMillis));
     }
 
     private LocalDate getNextAlertStartDate(Alert alert, Enrollment enrollment, MilestoneWindow milestoneWindow) {
         LocalDate idealStartOfAlerts = getStartDateOfWindow(enrollment, milestoneWindow).plusDays(alert.getOffset().inDays());
-        int elapsedAlerts = numberOfElapsedAlerts(alert, enrollment, milestoneWindow);
+        int elapsedAlerts = elapsedAlertsAsOfNow(alert, enrollment, milestoneWindow);
         return idealStartOfAlerts.plusDays(elapsedAlerts * alert.getInterval().inDays());
     }
 
     private int numberOfAlertsToSchedule(Alert alert, Enrollment enrollment, MilestoneWindow milestoneWindow) {
-        return alert.getRepeatCount() - 1 - numberOfElapsedAlerts(alert, enrollment, milestoneWindow);
+        return alert.getCount() - elapsedAlertsAsOfNow(alert, enrollment, milestoneWindow);
     }
 
-    private int numberOfElapsedAlerts(Alert alert, Enrollment enrollment, MilestoneWindow milestoneWindow) {
+    private int elapsedAlertsAsOfNow(Alert alert, Enrollment enrollment, MilestoneWindow milestoneWindow) {
         DateTime now = now();
         LocalDate today = now.toLocalDate();
         LocalDate idealStartOfAlerts = getStartDateOfWindow(enrollment, milestoneWindow).plusDays(alert.getOffset().inDays());
+        int elapsedAlerts = 0;
         if (idealStartOfAlerts.isBefore(today)) {
             int daysSinceIdealStartOfAlert = daysBetween(idealStartOfAlerts, today).getDays();
-            return (int) Math.ceil(daysSinceIdealStartOfAlert / (double) alert.getInterval().inDays());
+            elapsedAlerts = (int) ceil(daysSinceIdealStartOfAlert / (double) alert.getInterval().inDays());
         } else if (idealStartOfAlerts.equals(today)) {
-            return (enrollment.getPreferredAlertTime().isBefore(new Time(now.getHourOfDay(), now.getMinuteOfHour())))? 1 : 0;
+            elapsedAlerts = (enrollment.getPreferredAlertTime().isBefore(new Time(now.getHourOfDay(), now.getMinuteOfHour())))? 1 : 0;
         }
-        return 0;
+        return min(elapsedAlerts, alert.getCount() + 1);
     }
 
     private LocalDate getStartDateOfWindow(Enrollment enrollment, MilestoneWindow milestoneWindow) {

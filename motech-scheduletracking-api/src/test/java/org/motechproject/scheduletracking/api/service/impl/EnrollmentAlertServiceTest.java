@@ -210,6 +210,21 @@ public class EnrollmentAlertServiceTest {
     }
 
     @Test
+    public void defectCase3_shouldNotScheduleTheOnlyElapsedAlert() {
+        Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        milestone.addAlert(WindowName.earliest, new Alert(wallTime("0 days"), wallTime("3 days"), 1, 0));
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(milestone);
+        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
+
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", daysAgo(4), daysAgo(0), new Time(8, 20));
+        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
+
+        ArgumentCaptor<RepeatingSchedulableJob> repeatJobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
+        verify(schedulerService, times(0)).safeScheduleRepeatingJob(repeatJobCaptor.capture());
+    }
+
+    @Test
     public void shouldScheduleAlertJobWithOffset() {
         Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         milestone.addAlert(WindowName.due, new Alert(wallTime("3 days"), wallTime("1 day"), 3, 0));

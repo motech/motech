@@ -6,13 +6,13 @@ public class Alert {
 
     private WallTime offset;
     private WallTime interval;
-    private int repeatCount;
+    private int count;
     private int index;
 
-    public Alert(WallTime offset, WallTime interval, int repeatCount, int index) {
+    public Alert(WallTime offset, WallTime interval, int count, int index) {
         this.offset = offset;
         this.interval = interval;
-        this.repeatCount = repeatCount;
+        this.count = count;
         this.index = index;
     }
 
@@ -24,8 +24,8 @@ public class Alert {
         return interval;
     }
 
-    public int getRepeatCount() {
-        return repeatCount;
+    public int getCount() {
+        return count;
     }
 
     public int getIndex() {
