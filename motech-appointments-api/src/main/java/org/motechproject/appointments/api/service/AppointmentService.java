@@ -4,7 +4,7 @@ import org.joda.time.DateTime;
 import org.motechproject.appointments.api.contract.AppointmentCalendarRequest;
 import org.motechproject.appointments.api.contract.ReminderConfiguration;
 import org.motechproject.appointments.api.dao.AllAppointmentCalendars;
-import org.motechproject.appointments.api.dao.AllReminderJobs;
+import org.motechproject.appointments.api.dao.AllAppointmentReminderJobs;
 import org.motechproject.appointments.api.mapper.VisitMapper;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.AppointmentCalendar;
@@ -17,12 +17,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class AppointmentService {
     private AllAppointmentCalendars allAppointmentCalendars;
-    private AllReminderJobs allReminderJobs;
+    private AllAppointmentReminderJobs allAppointmentReminderJobs;
 
     @Autowired
-    public AppointmentService(AllAppointmentCalendars allAppointmentCalendars, AllReminderJobs allReminderJobs) {
+    public AppointmentService(AllAppointmentCalendars allAppointmentCalendars, AllAppointmentReminderJobs allAppointmentReminderJobs) {
         this.allAppointmentCalendars = allAppointmentCalendars;
-        this.allReminderJobs = allReminderJobs;
+        this.allAppointmentReminderJobs = allAppointmentReminderJobs;
     }
 
     public void addCalendar(AppointmentCalendarRequest appointmentCalendarRequest) {
@@ -30,7 +30,7 @@ public class AppointmentService {
         for (Integer weekOffset : appointmentCalendarRequest.getWeekOffsets()) {
             Visit visit = new VisitMapper().mapScheduledVisit(weekOffset, appointmentCalendarRequest.getReminderConfiguration());
             appointmentCalendar.addVisit(visit);
-            allReminderJobs.add(visit.appointmentReminder(), appointmentCalendarRequest.getExternalId());
+            allAppointmentReminderJobs.add(visit.appointment(), appointmentCalendarRequest.getExternalId());
         }
         allAppointmentCalendars.saveAppointmentCalendar(appointmentCalendar);
     }

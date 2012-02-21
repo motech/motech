@@ -5,6 +5,8 @@ import org.joda.time.DateTime;
 import org.motechproject.model.ExtensibleDataObject;
 import org.motechproject.util.DateUtil;
 
+import java.util.UUID;
+
 public class Appointment extends ExtensibleDataObject {
 
     @JsonProperty
@@ -13,6 +15,16 @@ public class Appointment extends ExtensibleDataObject {
     private DateTime firmDate;
     @JsonProperty
     private Reminder reminder;
+    @JsonProperty
+    private String id;
+
+    public Appointment() {
+        id = UUID.randomUUID().toString();
+    }
+
+    public String id() {
+        return id;
+    }
 
     public DateTime dueDate() {
         return DateUtil.setTimeZone(dueDate);

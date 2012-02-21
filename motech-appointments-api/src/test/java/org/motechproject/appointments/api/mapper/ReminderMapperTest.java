@@ -27,7 +27,6 @@ public class ReminderMapperTest {
     public void shouldGetAReminder_Given_ReminderConfiguration() {
         Reminder reminder = reminderMapper.map(today, reminderConfiguration);
 
-        assertNotNull(reminder.id());
         assertEquals(today.minusDays(10).toLocalDate(), DateUtil.newDate(reminder.startDate()));
         assertEquals(today.toLocalDate(), DateUtil.newDate(reminder.endDate()));
         assertEquals(3600, reminder.intervalSeconds());

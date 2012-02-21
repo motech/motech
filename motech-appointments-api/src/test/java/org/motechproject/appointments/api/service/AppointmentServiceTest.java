@@ -9,13 +9,15 @@ import org.mockito.Mock;
 import org.motechproject.appointments.api.contract.AppointmentCalendarRequest;
 import org.motechproject.appointments.api.contract.ReminderConfiguration;
 import org.motechproject.appointments.api.dao.AllAppointmentCalendars;
-import org.motechproject.appointments.api.dao.AllReminderJobs;
+import org.motechproject.appointments.api.dao.AllAppointmentReminderJobs;
+import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.AppointmentCalendar;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.appointments.api.model.TypeOfVisit;
 import org.motechproject.appointments.api.model.Visit;
 import org.motechproject.util.DateUtil;
 
+import javax.lang.model.util.Types;
 import java.util.Arrays;
 
 import static junit.framework.Assert.assertEquals;
@@ -28,7 +30,7 @@ public class AppointmentServiceTest {
 
     public static final int REMIND_FROM = 10;
     @Mock
-    private AllReminderJobs allReminderJobs;
+    private AllAppointmentReminderJobs allAppointmentReminderJobs;
     @Mock
     private AllAppointmentCalendars allAppointmentCalendars;
 
@@ -37,7 +39,7 @@ public class AppointmentServiceTest {
     @Before
     public void setUp() {
         initMocks(this);
-        appointmentService = new AppointmentService(allAppointmentCalendars, allReminderJobs);
+        appointmentService = new AppointmentService(allAppointmentCalendars, allAppointmentReminderJobs);
     }
 
     @Test
@@ -57,7 +59,7 @@ public class AppointmentServiceTest {
         assertEquals("week2", calendar.visits().get(1).name());
         assertEquals("week4", calendar.visits().get(2).name());
 
-        verify(allReminderJobs, times(2)).add(Matchers.<Reminder>any(), eq(externalId));
+        verify(allAppointmentReminderJobs, times(2)).add(Matchers.<Appointment>any(), eq(externalId));
     }
 
     @Test
@@ -91,7 +93,7 @@ public class AppointmentServiceTest {
         when(allAppointmentCalendars.findByExternalId("externalId")).thenReturn(appointmentCalendar);
         appointmentService.removeCalendar("externalId");
 
-        verify(allReminderJobs).remove("someExternalId");
+        verify(allAppointmentReminderJobs).remove("someExternalId");
     }
 
     @Test
@@ -107,9 +109,12 @@ public class AppointmentServiceTest {
         final String visitId = appointmentService.addVisit(externalId, now, reminderConfiguration, TypeOfVisit.Scheduled);
         
         assertNotNull(visitId);
-        verify(allReminderJobs).add(reminderCaptor.capture(), eq(externalId));
+        ArgumentCaptor<Appointment> appointmentCaptor = ArgumentCaptor.forClass(Appointment.class);
+
+        verify(allAppointmentReminderJobs).add(appointmentCaptor.capture(), eq(externalId));
         verify(allAppointmentCalendars).saveAppointmentCalendar(appointmentCalendar);
-        assertEquals(now.toDate(), reminderCaptor.getValue().endDate());
+
+        assertEquals(now, appointmentCaptor.getValue().dueDate());
         assertEquals(now.toLocalDate().minusDays(REMIND_FROM).toDate(), reminderCaptor.getValue().startDate());
     }
 }

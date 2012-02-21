@@ -8,8 +8,6 @@ import java.util.UUID;
 public class Reminder {
 
     @JsonProperty
-    private String id;
-    @JsonProperty
     private Date startDate;
     @JsonProperty
     private Date endDate;
@@ -19,11 +17,6 @@ public class Reminder {
     private int repeatCount;
 
     public Reminder() {
-        this.id = UUID.randomUUID().toString();
-    }
-
-    public String id() {
-        return id;
     }
 
     public Date startDate() {
