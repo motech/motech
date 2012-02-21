@@ -73,8 +73,8 @@ public class Visit extends ExtensibleDataObject {
         return appointment == null ? null : appointment.reminder();
     }
 
-    public Visit addAppointment(DateTime scheduledDate, Reminder reminder) {
-        this.appointment = new Appointment().dueDate(scheduledDate).reminder(reminder);
+    public Visit addAppointment(DateTime dueDate, Reminder reminder) {
+        this.appointment = new Appointment().dueDate(dueDate).reminder(reminder);
         return this;
     }
 }

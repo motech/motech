@@ -18,5 +18,5 @@ public interface MRSPatientAdapter {
 
     Integer getAgeOfPatientByMotechId(String motechId);
 
-    void savePatientCauseOfDeathObservation(String patientId, String conceptName, Date dateOfDeath, String comment);
+    void deceasePatient(String patientId, String conceptName, Date dateOfDeath, String comment);
 }

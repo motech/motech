@@ -9,9 +9,9 @@ import java.util.Date;
 
 public class ReminderMapper {
 
-    public Reminder map(DateTime scheduledDate, ReminderConfiguration reminderConfiguration) {
-        Date startDate = scheduledDate.toLocalDate().minusDays(reminderConfiguration.getRemindFrom()).toDate();
-        Date endDate = scheduledDate.toLocalDate().minusDays(reminderConfiguration.getRemindTill()).toDate();
+    public Reminder map(DateTime dueDate, ReminderConfiguration reminderConfiguration) {
+        Date startDate = dueDate.toLocalDate().minusDays(reminderConfiguration.getRemindFrom()).toDate();
+        Date endDate = dueDate.toDate();
         long intervalSeconds = intervalSeconds(reminderConfiguration.getIntervalUnit(), reminderConfiguration.getIntervalCount());
         return new Reminder().startDate(startDate).endDate(endDate).intervalSeconds(intervalSeconds).repeatCount(reminderConfiguration.getRepeatCount());
     }

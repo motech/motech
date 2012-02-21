@@ -194,8 +194,9 @@ public class OpenMRSPatientAdapter implements MRSPatientAdapter {
     }
 
     @Override
-    public void savePatientCauseOfDeathObservation(String patientId, String conceptName, Date dateOfDeath, String comment) {
-        Patient patient = getOpenMrsPatient(patientId);
+    public void deceasePatient(String patientMotechId, String conceptName, Date dateOfDeath, String comment) {
+        Patient patient = getOpenmrsPatientByMotechId(patientMotechId);
+        patient.setDeathDate(dateOfDeath);
         patient.setDead(true);
         Concept concept = openMrsConceptAdapter.getConceptByName(conceptName);
         patient.setCauseOfDeath(concept);

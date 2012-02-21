@@ -15,6 +15,7 @@ import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -37,8 +38,8 @@ public class AllReminderJobsTest {
         String externalId = "externalId";
 
         allReminderJobs.add(reminder, externalId);
-        ArgumentCaptor<RepeatingSchedulableJob> repeatingSchedulableJobArgumentCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
 
+        ArgumentCaptor<RepeatingSchedulableJob> repeatingSchedulableJobArgumentCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
         verify(schedulerService).safeScheduleRepeatingJob(repeatingSchedulableJobArgumentCaptor.capture());
         RepeatingSchedulableJob repeatingSchedulableJob = repeatingSchedulableJobArgumentCaptor.getValue();
         Map<String, Object> eventParameters = repeatingSchedulableJob.getMotechEvent().getParameters();
@@ -48,6 +49,16 @@ public class AllReminderJobsTest {
         assertEquals(endDate, repeatingSchedulableJob.getEndTime());
         assertNotNull(eventParameters.get(EventKeys.REMINDER_ID_KEY));
         assertEquals(externalId, eventParameters.get(EventKeys.EXTERNAL_ID_KEY));
-        assertEquals("org.motechproject.appointments.api.reminder-externalId", eventParameters.get(EventKeys.JOB_ID_KEY));
+        assertEquals("org.motechproject.appointments.api.reminder-externalId", eventParameters.get(MotechSchedulerService.JOB_ID_KEY));
+    }
+
+    @Test
+    public void remove_shouldUnscheduleRepeatingJobs(){
+        allReminderJobs.remove("externalId");
+
+        ArgumentCaptor<String> subjectCaptor = ArgumentCaptor.forClass(String.class);
+        verify(schedulerService).safeUnscheduleRepeatingJob(subjectCaptor.capture(), eq("externalId"));
+
+        assertEquals("org.motechproject.appointments.api.reminder", subjectCaptor.getValue());
     }
 }

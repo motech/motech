@@ -18,7 +18,7 @@ public class VisitMapperTest {
 
     @Before
     public void setUp() {
-        reminderConfiguration = new ReminderConfiguration().setRemindFrom(10).setRemindTill(5).setIntervalCount(1).setIntervalUnit(ReminderConfiguration.IntervalUnit.HOURS).setRepeatCount(20);
+        reminderConfiguration = new ReminderConfiguration().setRemindFrom(10).setIntervalCount(1).setIntervalUnit(ReminderConfiguration.IntervalUnit.HOURS).setRepeatCount(20);
         today = DateTime.now();
         visitMapper = new VisitMapper();
     }
