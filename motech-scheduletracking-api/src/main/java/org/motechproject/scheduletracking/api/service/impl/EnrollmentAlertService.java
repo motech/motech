@@ -60,7 +60,7 @@ public class EnrollmentAlertService {
     }
 
     private int numberOfAlertsToSchedule(Alert alert, Enrollment enrollment, MilestoneWindow milestoneWindow) {
-        return alert.getRepeatCount() - numberOfElapsedAlerts(alert, enrollment, milestoneWindow);
+        return alert.getRepeatCount() - 1 - numberOfElapsedAlerts(alert, enrollment, milestoneWindow);
     }
 
     private int numberOfElapsedAlerts(Alert alert, Enrollment enrollment, MilestoneWindow milestoneWindow) {
