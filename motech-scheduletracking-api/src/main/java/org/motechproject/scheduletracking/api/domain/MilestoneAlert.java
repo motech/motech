@@ -20,7 +20,7 @@ public class MilestoneAlert {
     }
 
     private static LocalDate getWindowEndDate(Milestone milestone, LocalDate referenceDate, WindowName windowName) {
-        return referenceDate.plusDays(milestone.getMilestoneWindow(windowName).getEnd().inDays()).minusDays(1);
+        return referenceDate.plusDays(milestone.getMilestoneWindow(windowName).getEnd().inDays());
     }
 
     private MilestoneAlert() {

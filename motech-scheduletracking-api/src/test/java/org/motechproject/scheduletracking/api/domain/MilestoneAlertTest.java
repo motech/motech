@@ -18,9 +18,9 @@ public class MilestoneAlertTest {
         final MilestoneAlert milestoneAlert = MilestoneAlert.fromMilestone(milestone, referenceDate);
 
         assertThat(milestoneAlert.getMilestoneName(), is(equalTo("M1")));
-        assertThat(milestoneAlert.getEarliestDate(), is(equalTo(DateUtil.newDate(2000, 1, 7))));
-        assertThat(milestoneAlert.getDueDate(), is(equalTo(DateUtil.newDate(2000, 1, 14))));
-        assertThat(milestoneAlert.getLateDate(), is(equalTo(DateUtil.newDate(2000, 1, 21))));
-        assertThat(milestoneAlert.getDefaultmentDate(), is(equalTo(DateUtil.newDate(2000, 1, 28))));
+        assertThat(milestoneAlert.getEarliestDate(), is(equalTo(DateUtil.newDate(2000, 1, 8))));
+        assertThat(milestoneAlert.getDueDate(), is(equalTo(DateUtil.newDate(2000, 1, 15))));
+        assertThat(milestoneAlert.getLateDate(), is(equalTo(DateUtil.newDate(2000, 1, 22))));
+        assertThat(milestoneAlert.getDefaultmentDate(), is(equalTo(DateUtil.newDate(2000, 1, 29))));
     }
 }
