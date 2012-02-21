@@ -18,7 +18,7 @@ public class ReminderMapperTest {
 
     @Before
     public void setUp() {
-        reminderConfiguration = new ReminderConfiguration().setRemindFrom(10).setRemindTill(5).setIntervalCount(1).setIntervalUnit(ReminderConfiguration.IntervalUnit.HOURS).setRepeatCount(20);
+        reminderConfiguration = new ReminderConfiguration().setRemindFrom(10).setIntervalCount(1).setIntervalUnit(ReminderConfiguration.IntervalUnit.HOURS).setRepeatCount(20);
         today = DateTime.now();
         reminderMapper = new ReminderMapper();
     }
@@ -29,7 +29,7 @@ public class ReminderMapperTest {
 
         assertNotNull(reminder.id());
         assertEquals(today.minusDays(10).toLocalDate(), DateUtil.newDate(reminder.startDate()));
-        assertEquals(today.minusDays(5).toLocalDate(), DateUtil.newDate(reminder.endDate()));
+        assertEquals(today.toLocalDate(), DateUtil.newDate(reminder.endDate()));
         assertEquals(3600, reminder.intervalSeconds());
         assertEquals(20, reminder.repeatCount());
     }

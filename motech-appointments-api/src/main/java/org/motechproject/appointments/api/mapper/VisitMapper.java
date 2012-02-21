@@ -10,8 +10,8 @@ import org.motechproject.util.DateUtil;
 public class VisitMapper {
 
     public Visit mapScheduledVisit(int weekOffset, ReminderConfiguration reminderConfiguration) {
-        DateTime scheduledDate = DateUtil.now().plusWeeks(weekOffset);
-        Reminder appointmentReminder = new ReminderMapper().map(scheduledDate, reminderConfiguration);
-        return new Visit().name("week" + weekOffset).typeOfVisit(TypeOfVisit.Scheduled).addAppointment(scheduledDate, appointmentReminder);
+        DateTime dueDate = DateUtil.now().plusWeeks(weekOffset);
+        Reminder appointmentReminder = new ReminderMapper().map(dueDate, reminderConfiguration);
+        return new Visit().name("week" + weekOffset).typeOfVisit(TypeOfVisit.Scheduled).addAppointment(dueDate, appointmentReminder);
     }
 }

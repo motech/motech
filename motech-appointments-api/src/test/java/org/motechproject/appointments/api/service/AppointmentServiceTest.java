@@ -74,4 +74,22 @@ public class AppointmentServiceTest {
         assertEquals(updatedVisit, appointmentCalendarArgumentCaptor.getValue().getVisit("baseline"));
         assertEquals(updatedVisitDate, appointmentCalendarArgumentCaptor.getValue().getVisit("baseline").visitDate());
     }
+
+    @Test
+    public void shouldRemoveAnAppointmentCalender(){
+        AppointmentCalendar appointmentCalendar = new AppointmentCalendar();
+        when(allAppointmentCalendars.findByExternalId("externalId")).thenReturn(appointmentCalendar);
+        appointmentService.removeCalendar("externalId");
+
+        verify(allAppointmentCalendars).remove(appointmentCalendar);
+    }
+
+    @Test
+    public void shouldUnscheduleAllReminders(){
+        AppointmentCalendar appointmentCalendar = new AppointmentCalendar().externalId("someExternalId");
+        when(allAppointmentCalendars.findByExternalId("externalId")).thenReturn(appointmentCalendar);
+        appointmentService.removeCalendar("externalId");
+
+        verify(allReminderJobs).remove("someExternalId");
+    }
 }

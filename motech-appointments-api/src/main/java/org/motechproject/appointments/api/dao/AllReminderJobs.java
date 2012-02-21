@@ -28,11 +28,15 @@ public class AllReminderJobs {
         schedulerService.safeScheduleRepeatingJob(schedulableJob);
     }
 
+    public void remove(String externalId){
+        schedulerService.safeUnscheduleRepeatingJob(EventKeys.REMINDER_EVENT_SUBJECT, externalId);
+    }
+
     private Map<String, Object> getParameters(Reminder reminder, String externalId) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(EventKeys.REMINDER_ID_KEY, reminder.id());
         parameters.put(EventKeys.EXTERNAL_ID_KEY, externalId);
-        parameters.put(EventKeys.JOB_ID_KEY, new JobId(EventKeys.REMINDER_EVENT_SUBJECT, externalId).value());
+        parameters.put(MotechSchedulerService.JOB_ID_KEY, new JobId(EventKeys.REMINDER_EVENT_SUBJECT, externalId).value());
         return parameters;
     }
 }

@@ -18,7 +18,7 @@ public class AppointmentCalendarTest {
 
     @Before
     public void setUp() {
-        reminderConfiguration = new ReminderConfiguration().setRemindFrom(10).setRemindTill(5).setIntervalCount(1).setIntervalUnit(ReminderConfiguration.IntervalUnit.HOURS).setRepeatCount(20);
+        reminderConfiguration = new ReminderConfiguration().setRemindFrom(10).setIntervalCount(1).setIntervalUnit(ReminderConfiguration.IntervalUnit.HOURS).setRepeatCount(20);
     }
 
     @Test
