@@ -33,8 +33,10 @@ public class AppointmentService {
 
     public void removeCalendar(String externalId) {
         AppointmentCalendar appointmentCalendar = allAppointmentCalendars.findByExternalId(externalId);
-        allReminderJobs.remove(appointmentCalendar.externalId());
-        allAppointmentCalendars.remove(appointmentCalendar);
+        if(appointmentCalendar != null){
+            allReminderJobs.remove(appointmentCalendar.externalId());
+            allAppointmentCalendars.remove(appointmentCalendar);
+        }
     }
 
     public void updateVisit(Visit visit, String externalId) {
