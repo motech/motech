@@ -9,7 +9,7 @@ public class Appointment extends ExtensibleDataObject {
     @JsonProperty
     private DateTime dueDate;
     @JsonProperty
-    private DateTime scheduledDate;
+    private DateTime firmDate;
     @JsonProperty
     private Reminder reminder;
 
@@ -22,12 +22,12 @@ public class Appointment extends ExtensibleDataObject {
         return this;
     }
 
-    public DateTime scheduledDate() {
-        return scheduledDate;
+    public DateTime firmDate() {
+        return firmDate;
     }
 
-    public Appointment scheduledDate(DateTime scheduledDate) {
-        this.scheduledDate = scheduledDate;
+    public Appointment firmDate(DateTime firmDate) {
+        this.firmDate = firmDate;
         return this;
     }
 
