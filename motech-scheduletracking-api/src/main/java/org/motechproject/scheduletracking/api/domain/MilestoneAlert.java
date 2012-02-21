@@ -3,7 +3,9 @@ package org.motechproject.scheduletracking.api.domain;
 
 import org.joda.time.LocalDate;
 
-public class MilestoneAlert {
+import java.io.Serializable;
+
+public class MilestoneAlert implements Serializable {
     private String milestoneName;
 
     private LocalDate earliestDate;
