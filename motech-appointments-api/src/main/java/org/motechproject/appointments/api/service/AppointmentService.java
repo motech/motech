@@ -31,6 +31,12 @@ public class AppointmentService {
         allAppointmentCalendars.saveAppointmentCalendar(appointmentCalendar);
     }
 
+    public void removeCalendar(String externalId) {
+        AppointmentCalendar appointmentCalendar = allAppointmentCalendars.findByExternalId(externalId);
+        allReminderJobs.remove(appointmentCalendar.externalId());
+        allAppointmentCalendars.remove(appointmentCalendar);
+    }
+
     public void updateVisit(Visit visit, String externalId) {
         AppointmentCalendar appointmentCalendar = getAppointmentCalendar(externalId);
         appointmentCalendar.updateVisit(visit);
