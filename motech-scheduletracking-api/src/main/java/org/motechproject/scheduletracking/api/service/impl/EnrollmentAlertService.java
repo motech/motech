@@ -68,7 +68,7 @@ public class EnrollmentAlertService {
         LocalDate idealStartOfAlerts = getStartDateOfWindow(enrollment, milestoneWindow).plusDays(alert.getOffset().inDays());
         if (idealStartOfAlerts.isBefore(today)) {
             int daysSinceIdealStartOfAlert = daysBetween(idealStartOfAlerts, today).getDays();
-            return daysSinceIdealStartOfAlert / alert.getRepeatCount() + 1;
+            return (int) Math.ceil(daysSinceIdealStartOfAlert / (double) alert.getInterval().inDays());
         } else if (idealStartOfAlerts.equals(today)) {
             return (enrollment.getPreferredAlertTime().isBefore(new Time(now.getHourOfDay(), now.getMinuteOfHour())))? 1 : 0;
         }
