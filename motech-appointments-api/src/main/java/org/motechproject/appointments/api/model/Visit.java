@@ -19,6 +19,7 @@ public class Visit extends ExtensibleDataObject {
     private Appointment appointment;
     @JsonProperty
     private Reminder reminder;
+    private static final String WEEK_NUMBER = "weekNumber";
 
     public String name() {
         return name;
@@ -76,5 +77,14 @@ public class Visit extends ExtensibleDataObject {
     public Visit addAppointment(DateTime dueDate, Reminder reminder) {
         this.appointment = new Appointment().dueDate(dueDate).reminder(reminder);
         return this;
+    }
+
+    public Visit weekNumber(Integer weekNumber) {
+        addData(WEEK_NUMBER, weekNumber);
+        name("week" + weekNumber);
+        return this;
+    }
+    public Integer weekNumber(){
+        return (Integer)getData().get(WEEK_NUMBER);
     }
 }

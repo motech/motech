@@ -1,10 +1,14 @@
 package org.motechproject.appointments.api.service;
 
+import org.joda.time.DateTime;
 import org.motechproject.appointments.api.contract.AppointmentCalendarRequest;
+import org.motechproject.appointments.api.contract.ReminderConfiguration;
 import org.motechproject.appointments.api.dao.AllAppointmentCalendars;
 import org.motechproject.appointments.api.dao.AllReminderJobs;
 import org.motechproject.appointments.api.mapper.VisitMapper;
+import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.AppointmentCalendar;
+import org.motechproject.appointments.api.model.TypeOfVisit;
 import org.motechproject.appointments.api.model.Visit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -47,5 +51,14 @@ public class AppointmentService {
 
     public AppointmentCalendar getAppointmentCalendar(String externalId) {
         return allAppointmentCalendars.findByExternalId(externalId);
+    }
+
+    public String addVisit(String externalId, DateTime scheduledDate, ReminderConfiguration reminderConfiguration, TypeOfVisit typeOfVisit){
+        AppointmentCalendar appointmentCalendar = allAppointmentCalendars.findByExternalId(externalId);
+        Visit visit = new VisitMapper().mapUnscheduledVisit(scheduledDate, reminderConfiguration, typeOfVisit);
+        appointmentCalendar.addVisit(visit);
+        allReminderJobs.add(visit.appointmentReminder(), externalId);
+        allAppointmentCalendars.saveAppointmentCalendar(appointmentCalendar);
+        return visit.name();
     }
 }

@@ -12,6 +12,11 @@ public class VisitMapper {
     public Visit mapScheduledVisit(int weekOffset, ReminderConfiguration reminderConfiguration) {
         DateTime dueDate = DateUtil.now().plusWeeks(weekOffset);
         Reminder appointmentReminder = new ReminderMapper().map(dueDate, reminderConfiguration);
-        return new Visit().name("week" + weekOffset).typeOfVisit(TypeOfVisit.Scheduled).addAppointment(dueDate, appointmentReminder);
+        return new Visit().weekNumber(weekOffset).typeOfVisit(TypeOfVisit.Scheduled).addAppointment(dueDate, appointmentReminder);
+    }
+
+    public Visit mapUnscheduledVisit(DateTime scheduledDate, ReminderConfiguration reminderConfiguration, TypeOfVisit typeOfVisit) {
+        Reminder appointmentReminder = new ReminderMapper().map(scheduledDate, reminderConfiguration);
+        return new Visit().name("visitFor-" + scheduledDate.getMillis()).typeOfVisit(typeOfVisit).addAppointment(scheduledDate, appointmentReminder);
     }
 }
