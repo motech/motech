@@ -5,8 +5,6 @@ public class ReminderConfiguration {
 
     private int remindFrom;
 
-    private int remindTill;
-
     private int intervalCount;
 
     private IntervalUnit intervalUnit;
@@ -19,15 +17,6 @@ public class ReminderConfiguration {
 
     public ReminderConfiguration setRemindFrom(int remindFrom) {
         this.remindFrom = remindFrom;
-        return this;
-    }
-
-    public int getRemindTill() {
-        return remindTill;
-    }
-
-    public ReminderConfiguration setRemindTill(int remindTill) {
-        this.remindTill = remindTill;
         return this;
     }
 
