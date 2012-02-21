@@ -3,7 +3,6 @@ package org.motechproject.scheduletracking.api.service.impl;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -21,19 +20,16 @@ import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.WallTimeUnit;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.modules.junit4.rule.PowerMockRule;
 
 import static junit.framework.Assert.assertEquals;
 import static org.joda.time.DateTimeConstants.MILLIS_PER_DAY;
 import static org.joda.time.DateTimeConstants.MILLIS_PER_WEEK;
-import static org.joda.time.Days.daysBetween;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.*;
 import static org.motechproject.util.DateUtil.newDateTime;
-import static org.motechproject.util.DateUtil.now;
 import static org.motechproject.valueobjects.factory.WallTimeFactory.wallTime;
 import static org.powermock.api.mockito.PowerMockito.spy;
 
@@ -93,7 +89,7 @@ public class EnrollmentAlertServiceTest {
         MilestoneEvent event = new MilestoneEvent(job.getMotechEvent());
         assertEquals(externalId, event.getExternalId());
         assertEquals(scheduleName, event.getScheduleName());
-        assertEquals(milestone.getName(), event.getMilestoneName());
+        assertEquals(MilestoneAlert.fromMilestone(milestone, enrollment.getReferenceDate()), event.getMilestoneAlert());
         assertEquals("earliest", event.getWindowName());
 
         job = repeatJobCaptor.getAllValues().get(1);
@@ -105,7 +101,7 @@ public class EnrollmentAlertServiceTest {
 
         assertEquals(externalId, event.getExternalId());
         assertEquals(scheduleName, event.getScheduleName());
-        assertEquals(milestone.getName(), event.getMilestoneName());
+        assertEquals(MilestoneAlert.fromMilestone(milestone, enrollment.getReferenceDate()), event.getMilestoneAlert());
         assertEquals("due", event.getWindowName());
     }
 
