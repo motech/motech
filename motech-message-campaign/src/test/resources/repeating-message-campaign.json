@@ -1,0 +1,36 @@
+[
+    {
+        "name" : "PREGNANCY",
+        "type" : "REPEATING",
+        "maxDuration" : "40 Weeks",
+        "messages" : [
+            {
+                "name" : "Pregnancy Message",
+                "formats" : ["SMS"],
+                "languages" : ["en"],
+                "messageKey": "PREGNANCY-cw{Offset}-{WeekDay}",
+                "calendarStartOfWeek" : "Sunday",
+                "weekDaysApplicable" : ["Monday", "Wednesday", "Friday"],
+                "deliverTime" : "10:30"
+            }
+        ]
+    },
+
+    {
+        "name" : "CHILD_CARE",
+        "type" : "REPEATING",
+        "maxDuration" : "52 Weeks",
+        "messages" : [
+            {
+                "name" : "ChildCare Message",
+                "formats" : ["SMS"],
+                "languages" : ["en"],
+                "messageKey": "CHILD_CARE-cw{Offset}-{WeekDay}",
+                "calendarStartOfWeek" : "Sunday",
+                "weekDaysApplicable" : ["Monday", "Wednesday", "Friday"],
+                "deliverTime" : "10:30"
+            }
+
+        ]
+    }
+]
