@@ -10,7 +10,7 @@ import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.events.DefaultmentCaptureEvent;
-import org.motechproject.scheduletracking.api.events.constants.EventSubject;
+import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.motechproject.util.DateUtil;
 import org.motechproject.valueobjects.WallTime;
@@ -56,7 +56,7 @@ public class EnrollmentDefaultmentServiceTest {
 
         RunOnceSchedulableJob job = runOnceJobArgumentCaptor.getValue();
         DefaultmentCaptureEvent event = new DefaultmentCaptureEvent(job.getMotechEvent());
-        assertEquals(String.format("%s.enrollment_1", EventSubject.DEFAULTMENT_CAPTURE), event.getJobId());
+        assertEquals(String.format("%s.enrollment_1", EventSubjects.DEFAULTMENT_CAPTURE), event.getJobId());
         assertEquals(weeksAfter(4).toDate(), job.getStartDate());
     }
 

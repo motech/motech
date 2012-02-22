@@ -8,7 +8,7 @@ import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.Milestone;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.events.DefaultmentCaptureEvent;
-import org.motechproject.scheduletracking.api.events.constants.EventSubject;
+import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class EnrollmentDefaultmentService {
         if (milestoneEndDate.isBefore(DateUtil.today()))
             return;
 
-        MotechEvent event = new DefaultmentCaptureEvent(enrollment.getId(), String.format("%s.%s", EventSubject.DEFAULTMENT_CAPTURE, enrollment.getId())).toMotechEvent();
+        MotechEvent event = new DefaultmentCaptureEvent(enrollment.getId(), String.format("%s.%s", EventSubjects.DEFAULTMENT_CAPTURE, enrollment.getId())).toMotechEvent();
         schedulerService.safeScheduleRunOnceJob(new RunOnceSchedulableJob(event, milestoneEndDate.toDate()));
     }
 

@@ -4,15 +4,14 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.motechproject.model.Time;
 
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 import static org.motechproject.util.DateUtil.today;
 
 public class EnrollmentTest {
-
     @Test
     public void shouldStartWithFirstMilestoneByDefault() {
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
@@ -57,25 +56,42 @@ public class EnrollmentTest {
 
         assertEquals(weeksAgo(0), enrollment.lastFulfilledDate());
     }
-    
+
     @Test
     public void newEnrollmentShouldBeActive() {
         Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(5), weeksAgo(3), null);
         assertTrue(enrollment.isActive());
     }
-    
+
     @Test
     public void shouldCopyFromTheGivenEnrollment() {
         Enrollment newEnrollment = new Enrollment("externalId", "scheduleName", "newCurrentMilestoneName", weeksAgo(2), today(), new Time(8, 10));
         Enrollment originalEnrollment = new Enrollment("externalId", "scheduleName", "currentMilestoneName", weeksAgo(3), weeksAgo(2), new Time(2, 5));
 
         Enrollment enrollment = originalEnrollment.copyFrom(newEnrollment);
-        
-        Assert.assertEquals(newEnrollment.getExternalId(), enrollment.getExternalId());
-        Assert.assertEquals(newEnrollment.getScheduleName(), enrollment.getScheduleName());
-        Assert.assertEquals(newEnrollment.getCurrentMilestoneName(), enrollment.getCurrentMilestoneName());
-        Assert.assertEquals(newEnrollment.getReferenceDate(), enrollment.getReferenceDate());
-        Assert.assertEquals(newEnrollment.getEnrollmentDate(), enrollment.getEnrollmentDate());
-        Assert.assertEquals(newEnrollment.getPreferredAlertTime(), enrollment.getPreferredAlertTime());
+
+        assertEquals(newEnrollment.getExternalId(), enrollment.getExternalId());
+        assertEquals(newEnrollment.getScheduleName(), enrollment.getScheduleName());
+        assertEquals(newEnrollment.getCurrentMilestoneName(), enrollment.getCurrentMilestoneName());
+        assertEquals(newEnrollment.getReferenceDate(), enrollment.getReferenceDate());
+        assertEquals(newEnrollment.getEnrollmentDate(), enrollment.getEnrollmentDate());
+        assertEquals(newEnrollment.getPreferredAlertTime(), enrollment.getPreferredAlertTime());
+    }
+
+    @Test
+    public void shouldReturnReferenceDateWhenCurrentMilestoneIsTheFirstMilestone() {
+        String firstMilestoneName = "First Shot";
+        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", firstMilestoneName, weeksAgo(5), weeksAgo(3), new Time(8, 20));
+
+        assertEquals(weeksAgo(5), enrollment.getCurrentMilestoneStartDate(firstMilestoneName));
+    }
+
+    @Test
+    public void shouldReturnEnrollmentDateWhenEnrolledIntoSecondMilestoneAndNoMilestonesFulfilled() {
+        String firstMilestoneName = "First Shot";
+        String secondMilestoneName = "Second Shot";
+        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", secondMilestoneName, weeksAgo(5), weeksAgo(3), null);
+
+        assertEquals(weeksAgo(3), enrollment.getCurrentMilestoneStartDate(firstMilestoneName));
     }
 }

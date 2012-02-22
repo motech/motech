@@ -5,8 +5,8 @@ import org.junit.Test;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduletracking.api.domain.Milestone;
 import org.motechproject.scheduletracking.api.domain.MilestoneAlert;
-import org.motechproject.scheduletracking.api.events.constants.EventDataKey;
-import org.motechproject.scheduletracking.api.events.constants.EventSubject;
+import org.motechproject.scheduletracking.api.events.constants.EventDataKeys;
+import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
 import org.motechproject.util.DateUtil;
 
 import java.util.Map;
@@ -25,11 +25,11 @@ public class MilestoneEventTest {
         MilestoneEvent milestoneEvent = new MilestoneEvent(externalId, scheduleName, milestoneAlert, windowName, DateUtil.today());
         MotechEvent motechEvent = milestoneEvent.toMotechEvent();
 
-        assertEquals(EventSubject.MILESTONE_ALERT, motechEvent.getSubject());
+        assertEquals(EventSubjects.MILESTONE_ALERT, motechEvent.getSubject());
         Map<String, Object> parameters = motechEvent.getParameters();
-        assertEquals(externalId, parameters.get(EventDataKey.EXTERNAL_ID));
-        assertEquals(scheduleName, parameters.get(EventDataKey.SCHEDULE_NAME));
-        assertEquals(milestoneAlert, parameters.get(EventDataKey.MILESTONE_NAME));
-        assertEquals(windowName, parameters.get(EventDataKey.WINDOW_NAME));
+        assertEquals(externalId, parameters.get(EventDataKeys.EXTERNAL_ID));
+        assertEquals(scheduleName, parameters.get(EventDataKeys.SCHEDULE_NAME));
+        assertEquals(milestoneAlert, parameters.get(EventDataKeys.MILESTONE_NAME));
+        assertEquals(windowName, parameters.get(EventDataKeys.WINDOW_NAME));
     }
 }

@@ -3,8 +3,8 @@ package org.motechproject.scheduletracking.api.events;
 import org.joda.time.LocalDate;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduletracking.api.domain.MilestoneAlert;
-import org.motechproject.scheduletracking.api.events.constants.EventDataKey;
-import org.motechproject.scheduletracking.api.events.constants.EventSubject;
+import org.motechproject.scheduletracking.api.events.constants.EventDataKeys;
+import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
 
 import java.util.HashMap;
 
@@ -24,21 +24,21 @@ public class MilestoneEvent {
     }
 
     public MilestoneEvent(MotechEvent motechEvent) {
-        this.scheduleName = (String) motechEvent.getParameters().get(EventDataKey.SCHEDULE_NAME);
-        this.milestoneAlert = (MilestoneAlert) motechEvent.getParameters().get(EventDataKey.MILESTONE_NAME);
-        this.windowName = (String) motechEvent.getParameters().get(EventDataKey.WINDOW_NAME);
-        this.externalId = (String) motechEvent.getParameters().get(EventDataKey.EXTERNAL_ID);
-        this.referenceDate = (LocalDate) motechEvent.getParameters().get(EventDataKey.REFERENCE_DATE);
+        this.scheduleName = (String) motechEvent.getParameters().get(EventDataKeys.SCHEDULE_NAME);
+        this.milestoneAlert = (MilestoneAlert) motechEvent.getParameters().get(EventDataKeys.MILESTONE_NAME);
+        this.windowName = (String) motechEvent.getParameters().get(EventDataKeys.WINDOW_NAME);
+        this.externalId = (String) motechEvent.getParameters().get(EventDataKeys.EXTERNAL_ID);
+        this.referenceDate = (LocalDate) motechEvent.getParameters().get(EventDataKeys.REFERENCE_DATE);
     }
 
     public MotechEvent toMotechEvent() {
         HashMap<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put(EventDataKey.WINDOW_NAME, windowName);
-        parameters.put(EventDataKey.MILESTONE_NAME, milestoneAlert);
-        parameters.put(EventDataKey.SCHEDULE_NAME, scheduleName);
-        parameters.put(EventDataKey.EXTERNAL_ID, externalId);
-        parameters.put(EventDataKey.REFERENCE_DATE, referenceDate);
-        return new MotechEvent(EventSubject.MILESTONE_ALERT, parameters);
+        parameters.put(EventDataKeys.WINDOW_NAME, windowName);
+        parameters.put(EventDataKeys.MILESTONE_NAME, milestoneAlert);
+        parameters.put(EventDataKeys.SCHEDULE_NAME, scheduleName);
+        parameters.put(EventDataKeys.EXTERNAL_ID, externalId);
+        parameters.put(EventDataKeys.REFERENCE_DATE, referenceDate);
+        return new MotechEvent(EventSubjects.MILESTONE_ALERT, parameters);
     }
 
     public String getWindowName() {
