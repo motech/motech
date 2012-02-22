@@ -206,7 +206,7 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         trigger = new SimpleTrigger(jobId.repeatingId(), JOB_GROUP_NAME, jobStartDate, jobEndDate,
                 jobRepeatCount,
                 jobRepeatInterval);
-        trigger.setMisfireInstruction(repeatingSchedulableJob.getMisfireInstruction());
+        trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT);
 
         scheduleJob(jobDetail, trigger);
     }
