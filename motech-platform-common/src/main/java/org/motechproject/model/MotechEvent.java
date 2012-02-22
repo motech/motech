@@ -46,9 +46,6 @@ import java.util.Map;
  *         Date: 16/02/11
  */
 public final class MotechEvent implements Serializable {
-
-    private static final long serialVersionUID = 2L;
-
     public static final String EVENT_TYPE_KEY_NAME = "eventType";
 
     private String subject;
@@ -66,11 +63,11 @@ public final class MotechEvent implements Serializable {
             throw new IllegalArgumentException("subject can not be null");
         }
 
-        if (subject.indexOf("*") != -1) {
+        if (subject.contains("*")) {
             throw new IllegalArgumentException("subject can not contain wildcard: " + subject);
         }
 
-        if (subject.indexOf("..") != -1) {
+        if (subject.contains("..")) {
             throw new IllegalArgumentException("subject can not contain empty path segment: " + subject);
         }
 

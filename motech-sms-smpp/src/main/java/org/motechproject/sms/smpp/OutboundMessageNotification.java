@@ -3,7 +3,7 @@ package org.motechproject.sms.smpp;
 import org.apache.log4j.Logger;
 import org.motechproject.gateway.OutboundEventGateway;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.sms.smpp.constants.EventSubject;
+import org.motechproject.sms.smpp.constants.EventSubjects;
 import org.motechproject.sms.smpp.constants.SmsProperties;
 import org.smslib.AGateway;
 import org.smslib.IOutboundMessageNotification;
@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Properties;
 
-import static org.motechproject.sms.api.constants.EventKeys.MESSAGE;
-import static org.motechproject.sms.smpp.constants.EventDataKey.RECIPIENT;
+import static org.motechproject.sms.api.constants.EventDataKeys.MESSAGE;
+import static org.motechproject.sms.smpp.constants.EventDataKeys.RECIPIENT;
 
 @Component
 public class OutboundMessageNotification implements IOutboundMessageNotification {
@@ -38,7 +38,7 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
 			HashMap<String, Object> parameters = new HashMap<String, Object>();
 			parameters.put(RECIPIENT, msg.getRecipient());
 			parameters.put(MESSAGE, msg.getText());
-			outboundEventGateway.sendEventMessage(new MotechEvent(EventSubject.SMS_FAILURE_NOTIFICATION, parameters));
+			outboundEventGateway.sendEventMessage(new MotechEvent(EventSubjects.SMS_FAILURE_NOTIFICATION, parameters));
 		}
 	}
 }

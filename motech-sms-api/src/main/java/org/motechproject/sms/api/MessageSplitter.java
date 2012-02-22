@@ -32,7 +32,7 @@ public class MessageSplitter {
 
     private String getPart(String message, int index, int unitLength) {
         int start = index * unitLength;
-        int end = start + unitLength < message.length()? start + unitLength : message.length();
+        int end = start + unitLength < message.length() ? start + unitLength : message.length();
         return message.substring(start, end);
     }
 

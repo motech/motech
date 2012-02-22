@@ -8,8 +8,8 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
-import org.motechproject.sms.api.constants.EventKeys;
-import org.motechproject.sms.api.constants.EventSubject;
+import org.motechproject.sms.api.constants.EventDataKeys;
+import org.motechproject.sms.api.constants.EventSubjects;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -39,7 +39,7 @@ public class SmsSendHandlerTest {
         Method handleMethod = SmsSendHandler.class.getDeclaredMethod("handle", new Class[]{MotechEvent.class});
         assertTrue("MotechListener annotation missing", handleMethod.isAnnotationPresent(MotechListener.class));
         MotechListener annotation = handleMethod.getAnnotation(MotechListener.class);
-        assertArrayEquals(new String[]{EventSubject.SEND_SMS}, annotation.subjects());
+        assertArrayEquals(new String[]{EventSubjects.SEND_SMS}, annotation.subjects());
     }
 
     @Test
@@ -51,9 +51,9 @@ public class SmsSendHandlerTest {
         when(templateReader.getTemplate(anyString())).thenReturn(template);
 
         SmsSendHandler handler = new SmsSendHandler(templateReader, httpClient);
-        handler.handle(new MotechEvent(EventSubject.SEND_SMS, new HashMap<String, Object>() {{
-            put(EventKeys.RECIPIENTS, Arrays.asList("0987654321"));
-            put(EventKeys.MESSAGE, "foo bar");
+        handler.handle(new MotechEvent(EventSubjects.SEND_SMS, new HashMap<String, Object>() {{
+            put(EventDataKeys.RECIPIENTS, Arrays.asList("0987654321"));
+            put(EventDataKeys.MESSAGE, "foo bar");
         }}));
 
         verify(httpClient).executeMethod(httpMethod);
@@ -72,7 +72,7 @@ public class SmsSendHandlerTest {
         when(templateReader.getTemplate(Matchers.<String>any())).thenReturn(template);
 
         SmsSendHandler handler = new SmsSendHandler(templateReader, httpClient);
-        handler.handle(new MotechEvent(EventSubject.SEND_SMS));
+        handler.handle(new MotechEvent(EventSubjects.SEND_SMS));
     }
 
     @Test
@@ -88,7 +88,7 @@ public class SmsSendHandlerTest {
         when(templateReader.getTemplate(Matchers.<String>any())).thenReturn(template);
 
         SmsSendHandler handler = new SmsSendHandler(templateReader, httpClient);
-        handler.handle(new MotechEvent(EventSubject.SEND_SMS));
+        handler.handle(new MotechEvent(EventSubjects.SEND_SMS));
     }
 
     @Test(expected = SmsDeliveryFailureException.class)
@@ -104,6 +104,6 @@ public class SmsSendHandlerTest {
         when(templateReader.getTemplate(Matchers.<String>any())).thenReturn(template);
 
         SmsSendHandler handler = new SmsSendHandler(templateReader, httpClient);
-        handler.handle(new MotechEvent(EventSubject.SEND_SMS));
+        handler.handle(new MotechEvent(EventSubjects.SEND_SMS));
     }
 }

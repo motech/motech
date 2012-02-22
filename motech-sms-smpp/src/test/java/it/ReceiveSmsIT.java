@@ -2,14 +2,14 @@ package it;
 
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
-import org.motechproject.sms.smpp.constants.EventDataKey;
-import org.motechproject.sms.smpp.constants.EventSubject;
+import org.motechproject.sms.smpp.constants.EventDataKeys;
+import org.motechproject.sms.smpp.constants.EventSubjects;
 
 public class ReceiveSmsIT {
 
-    @MotechListener(subjects = EventSubject.INBOUND_SMS)
+    @MotechListener(subjects = EventSubjects.INBOUND_SMS)
     public void handle(MotechEvent event) {
-        System.out.println(event.getParameters().get(EventDataKey.INBOUND_MESSAGE));
-        System.out.println(event.getParameters().get(EventDataKey.SENDER));
+        System.out.println(event.getParameters().get(EventDataKeys.INBOUND_MESSAGE));
+        System.out.println(event.getParameters().get(EventDataKeys.SENDER));
     }
 }

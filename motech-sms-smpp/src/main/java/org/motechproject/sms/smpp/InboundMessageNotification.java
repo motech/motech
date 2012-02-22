@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.sms.smpp.constants.EventSubject;
+import org.motechproject.sms.smpp.constants.EventSubjects;
 import org.smslib.AGateway;
 import org.smslib.IInboundMessageNotification;
 import org.smslib.InboundMessage;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
-import static org.motechproject.sms.smpp.constants.EventDataKey.*;
+import static org.motechproject.sms.smpp.constants.EventDataKeys.*;
 
 @Component
 public class InboundMessageNotification implements IInboundMessageNotification {
@@ -37,6 +37,6 @@ public class InboundMessageNotification implements IInboundMessageNotification {
 		data.put(SENDER, msg.getOriginator());
 		data.put(INBOUND_MESSAGE, msg.getText());
 		data.put(TIMESTAMP, new DateTime(msg.getDate()));
-		eventRelay.sendEventMessage(new MotechEvent(EventSubject.INBOUND_SMS, data));
+		eventRelay.sendEventMessage(new MotechEvent(EventSubjects.INBOUND_SMS, data));
 	}
 }

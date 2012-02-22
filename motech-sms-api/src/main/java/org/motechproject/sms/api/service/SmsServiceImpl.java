@@ -6,8 +6,8 @@ import org.motechproject.context.EventContext;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.sms.api.MessageSplitter;
-import org.motechproject.sms.api.constants.EventKeys;
-import org.motechproject.sms.api.constants.EventSubject;
+import org.motechproject.sms.api.constants.EventDataKeys;
+import org.motechproject.sms.api.constants.EventSubjects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,6 @@ import java.util.List;
 
 @Service
 public class SmsServiceImpl implements SmsService {
-
     private EventRelay eventRelay;
     private MessageSplitter messageSplitter;
     private static final Logger log = Logger.getLogger(SmsServiceImpl.class);
@@ -54,13 +53,14 @@ public class SmsServiceImpl implements SmsService {
 	}
 
 	private void raiseSendSmsEvent(final List<String> recipients, final String message, final DateTime deliveryTime) {
-        for (String partMessage : messageSplitter.split(message, PART_MESSAGE_SIZE, PART_MESSAGE_HEADER_TEMPLATE, PART_MESSAGE_FOOTER)) {
-            log.info(String.format("Putting event on relay to send message %s to number %s", partMessage, recipients));
+        List<String> partMessages = messageSplitter.split(message, PART_MESSAGE_SIZE, PART_MESSAGE_HEADER_TEMPLATE, PART_MESSAGE_FOOTER);
+        for (String partMessage : partMessages) {
+            log.info(String.format("Sending message [%s] to number %s.", partMessage, recipients));
             HashMap<String, Object> parameters = new HashMap<String, Object>();
-            parameters.put(EventKeys.RECIPIENTS, recipients);
-            parameters.put(EventKeys.MESSAGE, partMessage);
-            parameters.put(EventKeys.DELIVERY_TIME, deliveryTime);
-            eventRelay.sendEventMessage(new MotechEvent(EventSubject.SEND_SMS, parameters));
+            parameters.put(EventDataKeys.RECIPIENTS, recipients);
+            parameters.put(EventDataKeys.MESSAGE, partMessage);
+            parameters.put(EventDataKeys.DELIVERY_TIME, deliveryTime);
+            eventRelay.sendEventMessage(new MotechEvent(EventSubjects.SEND_SMS, parameters));
         }
 	}
 }

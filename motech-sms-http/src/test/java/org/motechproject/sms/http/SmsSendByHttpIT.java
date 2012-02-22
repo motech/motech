@@ -9,8 +9,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.sms.api.constants.EventKeys;
-import org.motechproject.sms.api.constants.EventSubject;
+import org.motechproject.sms.api.constants.EventDataKeys;
+import org.motechproject.sms.api.constants.EventSubjects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -45,9 +45,9 @@ public class SmsSendByHttpIT {
     public void shouldUseSmsHttpTemplateFileForGeneratingRequest() throws IOException, SmsDeliveryFailureException {
         smsSendHandler = new SmsSendHandler(templateReader, mockHttpClient);
 
-        MotechEvent motechEvent = new MotechEvent(EventSubject.SEND_SMS, new HashMap<String, Object>() {{
-            put(EventKeys.RECIPIENTS, Arrays.asList("123", "456"));
-            put(EventKeys.MESSAGE, "foobar");
+        MotechEvent motechEvent = new MotechEvent(EventSubjects.SEND_SMS, new HashMap<String, Object>() {{
+            put(EventDataKeys.RECIPIENTS, Arrays.asList("123", "456"));
+            put(EventDataKeys.MESSAGE, "foobar");
         }});
         smsSendHandler.handle(motechEvent);
 
@@ -61,9 +61,9 @@ public class SmsSendByHttpIT {
     public void shouldSendSmsThroughKookoo() throws IOException, SmsDeliveryFailureException {
         smsSendHandler = new SmsSendHandler(templateReader, httpClient);
 
-        MotechEvent motechEvent = new MotechEvent(EventSubject.SEND_SMS, new HashMap<String, Object>() {{
-            put(EventKeys.RECIPIENTS, Arrays.asList("9686202448"));
-            put(EventKeys.MESSAGE, "business analyst");
+        MotechEvent motechEvent = new MotechEvent(EventSubjects.SEND_SMS, new HashMap<String, Object>() {{
+            put(EventDataKeys.RECIPIENTS, Arrays.asList("9686202448"));
+            put(EventDataKeys.MESSAGE, "business analyst");
         }});
         smsSendHandler.handle(motechEvent);
     }
