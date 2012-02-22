@@ -1,9 +1,15 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
+import org.motechproject.util.DateUtil;
 import org.motechproject.valueobjects.WallTime;
 
+import java.awt.*;
+import java.awt.event.WindowEvent;
 import java.io.Serializable;
 import java.util.*;
+import java.util.List;
 
 public class Milestone implements Serializable {
     private String name;
@@ -57,9 +63,32 @@ public class Milestone implements Serializable {
     }
 
     public int getMaximumDurationInDays() {
+        return getWindowEndInDays(WindowName.max);
+    }
+
+    public int getWindowStartInDays(WindowName name) {
         int days = 0;
-        for (MilestoneWindow window : windows)
-            days += window.getEnd().inDays() - window.getStart().inDays();
+        for (MilestoneWindow window : windows) {
+            if (window.getName().equals(name))
+                return days;
+            days += window.getWindowEndInDays();
+        }
         return days;
+    }
+
+    public int getWindowEndInDays(WindowName name) {
+        int days = 0;
+        for (MilestoneWindow window : windows) {
+            days += window.getWindowEndInDays();
+            if (window.getName().equals(name))
+                return days;
+        }
+        return days;
+    }
+
+    public boolean windowElapsed(WindowName windowName, LocalDate milestoneStartDate) {
+        int daysSinceStartOfMilestone = Days.daysBetween(milestoneStartDate, DateUtil.today()).getDays();
+        int endOffsetInDays = getWindowEndInDays(windowName);
+        return daysSinceStartOfMilestone >= endOffsetInDays;
     }
 }

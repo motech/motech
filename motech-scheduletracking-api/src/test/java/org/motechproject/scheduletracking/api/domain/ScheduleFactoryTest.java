@@ -67,10 +67,10 @@ public class ScheduleFactoryTest {
         List<Milestone> milestones = schedule.getMilestones();
         Milestone firstMilestone = milestones.get(0);
 
-        assertEquals(13 * 7, firstMilestone.getMilestoneWindow(WindowName.earliest).getWindowEndInDays());
-        assertEquals(14 * 7, firstMilestone.getMilestoneWindow(WindowName.due).getWindowEndInDays());
-        assertEquals(16 * 7, firstMilestone.getMilestoneWindow(WindowName.late).getWindowEndInDays());
-        assertEquals(16 * 7, firstMilestone.getMilestoneWindow(WindowName.max).getWindowEndInDays());
+        assertEquals(13 * 7, firstMilestone.getWindowEndInDays(WindowName.earliest));
+        assertEquals(14 * 7, firstMilestone.getWindowEndInDays(WindowName.due));
+        assertEquals(16 * 7, firstMilestone.getWindowEndInDays(WindowName.late));
+        assertEquals(16 * 7, firstMilestone.getWindowEndInDays(WindowName.max));
     }
 
     @Test(expected = InvalidScheduleDefinitionException.class)

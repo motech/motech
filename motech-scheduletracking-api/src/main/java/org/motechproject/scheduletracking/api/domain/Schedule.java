@@ -36,26 +36,6 @@ public class Schedule implements Serializable {
         return null;
     }
 
-    public Milestone getIdealMilestoneAsOf(int daysIntoSchedule) {
-        int idealDaysIntoSchedule = 0;
-        for (Milestone milestone : milestones) {
-            idealDaysIntoSchedule += milestone.getMaximumDurationInDays();
-            if (daysIntoSchedule <= idealDaysIntoSchedule)
-                return milestone;
-        }
-        return null;
-    }
-
-    public int getIdealStartOffsetOfMilestoneInDays(String milestoneName) {
-        int offset = 0;
-        for (Milestone milestone : milestones) {
-            if (milestone.getName().equals(milestoneName))
-                break;
-            offset += milestone.getMaximumDurationInDays();
-        }
-        return offset;
-    }
-
     public String getNextMilestoneName(String currentMilestoneName) {
         int currentIndex = milestones.indexOf(getMilestone(currentMilestoneName));
         if (currentIndex < milestones.size() - 1)

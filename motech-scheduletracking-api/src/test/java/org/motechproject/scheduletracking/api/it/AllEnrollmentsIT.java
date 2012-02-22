@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.*;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAfter;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:testApplicationSchedulerTrackingAPI.xml")
@@ -30,7 +31,7 @@ public class AllEnrollmentsIT {
 
     @Before
     public void setUp() {
-        milestone = new Milestone("first_milestone", wallTimeOf(13), wallTimeOf(14), wallTimeOf(16), null);
+        milestone = new Milestone("first_milestone", weeks(13), weeks(1), weeks(2), weeks(0));
         schedule = new Schedule("schedule_name");
         schedule.addMilestones(milestone);
     }

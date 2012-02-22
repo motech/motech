@@ -42,6 +42,14 @@ public class EnrollmentDefaultmentService {
         schedulerService.safeScheduleRunOnceJob(new RunOnceSchedulableJob(event, milestoneEndDate.toDate()));
     }
 
+    // TODO: duplicated from EnrollmentAlertService
+    public LocalDate getCurrentMilestoneStartDate(Enrollment enrollment) {
+        Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
+        if (enrollment.getCurrentMilestoneName().equals(schedule.getFirstMilestone().getName()))
+            return enrollment.getReferenceDate();
+        return (enrollment.getFulfillments().isEmpty()) ? enrollment.getEnrollmentDate() : enrollment.lastFulfilledDate();
+    }
+
     public void unscheduleDefaultmentCaptureJob(Enrollment enrollment) {
         schedulerService.safeUnscheduleAllJobs(String.format("%s-%s", EventSubjects.DEFAULTMENT_CAPTURE, enrollment.getId()));
     }

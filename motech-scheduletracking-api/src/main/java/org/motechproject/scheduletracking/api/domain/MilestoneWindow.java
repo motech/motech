@@ -3,8 +3,10 @@ package org.motechproject.scheduletracking.api.domain;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
+import org.joda.time.PeriodType;
 import org.motechproject.util.DateUtil;
 import org.motechproject.valueobjects.WallTime;
+import org.motechproject.valueobjects.WallTimeUnit;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -13,16 +15,16 @@ import java.util.List;
 
 public class MilestoneWindow implements Serializable {
     private WindowName name;
-
-    private WallTime start;
-    private WallTime end;
+    private Period period;
 
     private List<Alert> alerts = new ArrayList<Alert>();
 
     public MilestoneWindow(WindowName name, WallTime start, WallTime end) {
         this.name = name;
-        this.start = start;
-        this.end = end;
+        if (start.getUnit().equals(WallTimeUnit.Day))
+            period = new Period(0, 0, 0, end.getValue() - start.getValue(), 0, 0, 0, 0);
+        else if (start.getUnit().equals(WallTimeUnit.Week))
+            period = new Period(0, 0, end.getValue() - start.getValue(), 0, 0, 0, 0, 0);
     }
 
     public WindowName getName() {
@@ -37,29 +39,8 @@ public class MilestoneWindow implements Serializable {
         return alerts;
     }
 
-    public WallTime getStart() {
-        return start;
-    }
-
-    public WallTime getEnd() {
-        return end;
-    }
-
-    public boolean hasElapsed(LocalDate milestoneStartDate) {
-        int daysSinceStartOfMilestone = Days.daysBetween(milestoneStartDate, DateUtil.today()).getDays();
-        int endOffsetInDays = getWindowEndInDays();
-        return daysSinceStartOfMilestone >= endOffsetInDays;
-    }
-
     public int getWindowEndInDays() {
-        return end == null? toDays(start.asPeriod()) + 1 : toDays(end.asPeriod());
-    }
-
-    private static int toDays(Period period) {
         return period.toStandardDays().getDays();
     }
 
-    public LocalDate getStartDate(LocalDate milestoneStartDate) {
-        return milestoneStartDate.plusDays(start.inDays());
-    }
 }
