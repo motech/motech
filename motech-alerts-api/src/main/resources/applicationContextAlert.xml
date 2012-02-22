@@ -15,7 +15,7 @@
         <constructor-arg ref="couchDbInstance"/>
     </bean>
 
-    <bean id="allAlerts" class="org.motechproject.server.alerts.dao.AllAlerts">
+    <bean id="allAlerts" class="org.motechproject.server.alerts.repository.AllAlerts">
         <constructor-arg ref="alertDbConnector"/>
     </bean>
 

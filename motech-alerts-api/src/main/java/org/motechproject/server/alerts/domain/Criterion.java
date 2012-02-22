@@ -1,7 +1,7 @@
 package org.motechproject.server.alerts.domain;
 
 import ch.lambdaj.Lambda;
-import org.motechproject.server.alerts.dao.AllAlerts;
+import org.motechproject.server.alerts.repository.AllAlerts;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package org.motechproject.scheduletracking.api.events.constants;
 
-public class EventDataKey {
+public class EventDataKeys {
 
 	// MilestoneEvent
 	public static final String WINDOW_NAME = "window_name";
@@ -12,6 +12,6 @@ public class EventDataKey {
     // DefaultmentCaptureEvent
     public static final String ENROLLMENT_ID = "enrollment_id";
 
-    private EventDataKey() {
+    private EventDataKeys() {
 	}
 }

@@ -3,8 +3,8 @@ package org.motechproject.scheduletracking.api.events;
 import org.junit.Test;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.scheduletracking.api.events.constants.EventDataKey;
-import org.motechproject.scheduletracking.api.events.constants.EventSubject;
+import org.motechproject.scheduletracking.api.events.constants.EventDataKeys;
+import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
 
 import java.util.Map;
 
@@ -19,9 +19,9 @@ public class DefaultmentCaptureEventTest {
         DefaultmentCaptureEvent defaultmentCaptureEvent = new DefaultmentCaptureEvent(enrollmentId, jobId);
         MotechEvent motechEvent = defaultmentCaptureEvent.toMotechEvent();
 
-        assertEquals(EventSubject.DEFAULTMENT_CAPTURE, motechEvent.getSubject());
+        assertEquals(EventSubjects.DEFAULTMENT_CAPTURE, motechEvent.getSubject());
         Map<String, Object> parameters = motechEvent.getParameters();
-        assertEquals(enrollmentId, parameters.get(EventDataKey.ENROLLMENT_ID));
+        assertEquals(enrollmentId, parameters.get(EventDataKeys.ENROLLMENT_ID));
         assertEquals(jobId, parameters.get(MotechSchedulerService.JOB_ID_KEY));
     }
 }

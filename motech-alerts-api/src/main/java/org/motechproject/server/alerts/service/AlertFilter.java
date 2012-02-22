@@ -1,6 +1,6 @@
 package org.motechproject.server.alerts.service;
 
-import org.motechproject.server.alerts.dao.AllAlerts;
+import org.motechproject.server.alerts.repository.AllAlerts;
 import org.motechproject.server.alerts.domain.Alert;
 import org.motechproject.server.alerts.domain.AlertCriteria;
 import org.motechproject.server.alerts.domain.Criterion;
@@ -12,7 +12,6 @@ import java.util.List;
 
 @Component
 public class AlertFilter {
-
     private AllAlerts allAlerts;
 
     @Autowired

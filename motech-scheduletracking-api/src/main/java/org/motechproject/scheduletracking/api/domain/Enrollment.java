@@ -131,4 +131,10 @@ public class Enrollment extends MotechBaseDataObject {
     private void setPreferredAlertTime(Time preferredAlertTime) {
         this.preferredAlertTime = preferredAlertTime;
     }
+
+    public LocalDate getCurrentMilestoneStartDate(String firstMilestoneNameFromSchedule) {
+        if (currentMilestoneName.equals(firstMilestoneNameFromSchedule))
+            return referenceDate;
+        return (fulfillments.isEmpty()) ? enrollmentDate : lastFulfilledDate();
+    }
 }

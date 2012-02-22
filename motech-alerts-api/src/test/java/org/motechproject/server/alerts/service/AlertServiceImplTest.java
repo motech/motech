@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.server.alerts.dao.AllAlerts;
+import org.motechproject.server.alerts.repository.AllAlerts;
 import org.motechproject.server.alerts.domain.Alert;
 import org.motechproject.server.alerts.domain.AlertCriteria;
 import org.motechproject.server.alerts.domain.AlertStatus;

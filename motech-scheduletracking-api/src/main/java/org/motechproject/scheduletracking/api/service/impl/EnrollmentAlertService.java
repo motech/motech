@@ -8,7 +8,7 @@ import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.events.MilestoneEvent;
-import org.motechproject.scheduletracking.api.events.constants.EventSubject;
+import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,7 +22,6 @@ import static org.motechproject.util.DateUtil.now;
 
 @Component
 public class EnrollmentAlertService {
-
     private AllTrackedSchedules allTrackedSchedules;
     private MotechSchedulerService schedulerService;
 
@@ -38,7 +37,8 @@ public class EnrollmentAlertService {
         if (currentMilestone == null)
             return;
         for (MilestoneWindow window : currentMilestone.getMilestoneWindows()) {
-            if (!window.hasElapsed(getCurrentMilestoneStartDate(enrollment))) {
+            LocalDate currentMilestoneStartDate = enrollment.getCurrentMilestoneStartDate(schedule.getFirstMilestone().getName());
+            if (!window.hasElapsed(currentMilestoneStartDate)) {
                 for (Alert alert : window.getAlerts())
                     scheduleAlertJob(alert, enrollment, schedule, currentMilestone, window);
             }
@@ -75,23 +75,19 @@ public class EnrollmentAlertService {
             int daysSinceIdealStartOfAlert = daysBetween(idealStartOfAlerts, today).getDays();
             elapsedAlerts = (int) ceil(daysSinceIdealStartOfAlert / (double) alert.getInterval().inDays());
         } else if (idealStartOfAlerts.equals(today)) {
-            elapsedAlerts = (enrollment.getPreferredAlertTime().isBefore(new Time(now.getHourOfDay(), now.getMinuteOfHour())))? 1 : 0;
+            elapsedAlerts = (enrollment.getPreferredAlertTime().isBefore(new Time(now.getHourOfDay(), now.getMinuteOfHour()))) ? 1 : 0;
         }
         return min(elapsedAlerts, alert.getCount() + 1);
     }
 
     private LocalDate getStartDateOfWindow(Enrollment enrollment, MilestoneWindow milestoneWindow) {
-        return getCurrentMilestoneStartDate(enrollment).plusDays(milestoneWindow.getStart().inDays());
-    }
-
-    public LocalDate getCurrentMilestoneStartDate(Enrollment enrollment) {
         Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
-        if (enrollment.getCurrentMilestoneName().equals(schedule.getFirstMilestone().getName()))
-            return enrollment.getReferenceDate();
-        return (enrollment.getFulfillments().isEmpty()) ? enrollment.getEnrollmentDate() : enrollment.lastFulfilledDate();
+
+        LocalDate currentMilestoneStartDate = enrollment.getCurrentMilestoneStartDate(schedule.getFirstMilestone().getName());
+        return currentMilestoneStartDate.plusDays(milestoneWindow.getStart().inDays());
     }
 
     public void unscheduleAllAlerts(Enrollment enrollment) {
-        schedulerService.unscheduleAllJobs(String.format("%s-%s", EventSubject.MILESTONE_ALERT, enrollment.getId()));
+        schedulerService.unscheduleAllJobs(String.format("%s-%s", EventSubjects.MILESTONE_ALERT, enrollment.getId()));
     }
 }

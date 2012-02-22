@@ -1,4 +1,4 @@
-package org.motechproject.server.alerts.dao;
+package org.motechproject.server.alerts.repository;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
