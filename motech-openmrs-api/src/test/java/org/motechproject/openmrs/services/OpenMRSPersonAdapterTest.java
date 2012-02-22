@@ -15,6 +15,7 @@ import java.util.Set;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -111,6 +112,7 @@ public class OpenMRSPersonAdapterTest {
         assertThat(mrsPerson.attrValue(PERSON_ATTRIBUTE_TYPE_PHONE_NUMBER), is(equalTo(phoneNo)));
         assertThat(mrsPerson.attrValue(PERSON_ATTRIBUTE_TYPE_STAFF_TYPE), is(equalTo(staffType)));
         assertThat(mrsPerson.isDead(), is(equalTo(dead)));
+        assertNotNull(mrsPerson.getAge());
         assertThat(mrsPerson.deathDate(), is(equalTo(deathDate)));
     }
 

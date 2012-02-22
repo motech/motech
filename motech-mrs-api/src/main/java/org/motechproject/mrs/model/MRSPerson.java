@@ -21,6 +21,7 @@ public class MRSPerson {
     private String address;
     private Date dateOfBirth;
     private Boolean birthDateEstimated;
+    private Integer age;
     private String gender;
     private boolean dead;
     private List<Attribute> attributes = new ArrayList<Attribute>();
@@ -28,6 +29,11 @@ public class MRSPerson {
 
     public MRSPerson preferredName(String preferredName) {
         this.preferredName = preferredName;
+        return this;
+    }
+    
+    public MRSPerson age(Integer age) {
+        this.age = age;
         return this;
     }
 
@@ -146,5 +152,9 @@ public class MRSPerson {
 
     public Date deathDate() {
         return deathDate;
+    }
+
+    public Integer getAge() {
+        return age;
     }
 }
