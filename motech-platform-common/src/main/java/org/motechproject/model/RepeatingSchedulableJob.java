@@ -33,103 +33,80 @@ package org.motechproject.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import org.quartz.Trigger;
 
 /**
  * Schedulable Job - a data carrier class for a scheduled job that can be fired set number of times
- *
  */
 public class RepeatingSchedulableJob implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private MotechEvent motechEvent;
-	private Date startTime;
+    private Date startTime;
     private Date endTime;
     private Integer repeatCount;
     private long repeatIntervalInMilliSeconds;
-    private int misfireInstruction;
 
     public RepeatingSchedulableJob(MotechEvent motechEvent, Date startTime, Date endTime,
-                                   Integer repeatCount, long repeatIntervalInMilliSeconds, int misfireInstruction) {      // TODO: have consistentcy for using primitives/objects
+                                   Integer repeatCount, long repeatIntervalInMilliSeconds) {      // TODO: have consistentcy for using primitives/objects
         this.motechEvent = motechEvent;
-		this.startTime = startTime;
-		this.endTime = endTime;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.repeatCount = repeatCount;
         this.repeatIntervalInMilliSeconds = repeatIntervalInMilliSeconds;
-        this.misfireInstruction = misfireInstruction;
-    }
-
-    public RepeatingSchedulableJob(MotechEvent motechEvent, Date startTime, Date endTime,
-                                   Integer repeatCount, long repeatIntervalInMilliSeconds) {
-        this(motechEvent, startTime, endTime, repeatCount, repeatIntervalInMilliSeconds, Trigger.MISFIRE_INSTRUCTION_SMART_POLICY);
     }
 
     public RepeatingSchedulableJob(MotechEvent motechEvent, Date startTime, Date endTime,
                                    long repeatIntervalInMilliSeconds) {
-        this(motechEvent, startTime, endTime, null, repeatIntervalInMilliSeconds, Trigger.MISFIRE_INSTRUCTION_SMART_POLICY);
+        this(motechEvent, startTime, endTime, null, repeatIntervalInMilliSeconds);
     }
 
-    public MotechEvent getMotechEvent()
-    {
+    public MotechEvent getMotechEvent() {
         return motechEvent;
     }
 
-    public void setMotechEvent(MotechEvent motechEvent)
-    {
+    public void setMotechEvent(MotechEvent motechEvent) {
         this.motechEvent = motechEvent;
     }
 
-    public Date getStartTime()
-    {
+    public Date getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime)
-    {
+    public void setStartTime(Date startTime) {
         this.startTime = startTime;
     }
 
-    public Date getEndTime()
-    {
+    public Date getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Date endTime)
-    {
+    public void setEndTime(Date endTime) {
         this.endTime = endTime;
     }
 
-    public Integer getRepeatCount()
-    {
+    public Integer getRepeatCount() {
         return repeatCount;
     }
 
-    public void setRepeatCount(int repeatCount)
-    {
+    public void setRepeatCount(int repeatCount) {
         this.repeatCount = repeatCount;
     }
 
-    public long getRepeatInterval()
-    {
+    public long getRepeatInterval() {
         return repeatIntervalInMilliSeconds;
     }
 
-    public void setRepeatInterval(long repeatIntervalInMilliSeconds)
-    {
+    public void setRepeatInterval(long repeatIntervalInMilliSeconds) {
         this.repeatIntervalInMilliSeconds = repeatIntervalInMilliSeconds;
     }
 
-    public int getMisfireInstruction() {
-        return misfireInstruction;
+    @Override
+    public String toString() {
+        return "RepeatingSchedulableJob [motechEvent=" + motechEvent
+                + ", startTime=" + startTime + ", endTime=" + endTime
+                + ", repeatCount=" + repeatCount + ", repeatIntervalInMilliSeconds="
+                + repeatIntervalInMilliSeconds + "]";
     }
 
-    @Override
-	public String toString() {
-		return "RepeatingSchedulableJob [motechEvent=" + motechEvent
-				+ ", startTime=" + startTime + ", endTime=" + endTime
-				+ ", repeatCount=" + repeatCount + ", repeatIntervalInMilliSeconds="
-				+ repeatIntervalInMilliSeconds + "]";
-	}
-    
 }
