@@ -3,6 +3,7 @@ package org.motechproject.appointments.api.model;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.DateTime;
 import org.motechproject.model.ExtensibleDataObject;
+import org.motechproject.util.DateUtil;
 
 public class Appointment extends ExtensibleDataObject {
 
@@ -14,7 +15,7 @@ public class Appointment extends ExtensibleDataObject {
     private Reminder reminder;
 
     public DateTime dueDate() {
-        return dueDate;
+        return DateUtil.setTimeZone(dueDate);
     }
 
     public Appointment dueDate(DateTime dueDate) {

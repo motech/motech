@@ -12,20 +12,21 @@ import org.motechproject.appointments.api.dao.AllAppointmentCalendars;
 import org.motechproject.appointments.api.dao.AllReminderJobs;
 import org.motechproject.appointments.api.model.AppointmentCalendar;
 import org.motechproject.appointments.api.model.Reminder;
+import org.motechproject.appointments.api.model.TypeOfVisit;
 import org.motechproject.appointments.api.model.Visit;
 import org.motechproject.util.DateUtil;
 
 import java.util.Arrays;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class AppointmentServiceTest {
 
+    public static final int REMIND_FROM = 10;
     @Mock
     private AllReminderJobs allReminderJobs;
     @Mock
@@ -91,5 +92,24 @@ public class AppointmentServiceTest {
         appointmentService.removeCalendar("externalId");
 
         verify(allReminderJobs).remove("someExternalId");
+    }
+
+    @Test
+    public void shouldAddAVisit(){
+        AppointmentCalendar appointmentCalendar = new AppointmentCalendar();
+        final String externalId = "externalId";
+        final DateTime now = DateUtil.now();
+        ArgumentCaptor<Reminder> reminderCaptor = ArgumentCaptor.forClass(Reminder.class);
+        ReminderConfiguration reminderConfiguration = new ReminderConfiguration().setRemindFrom(REMIND_FROM).setIntervalCount(1).setIntervalUnit(ReminderConfiguration.IntervalUnit.HOURS).setRepeatCount(20);
+
+        when(allAppointmentCalendars.findByExternalId(externalId)).thenReturn(appointmentCalendar);
+
+        final String visitId = appointmentService.addVisit(externalId, now, reminderConfiguration, TypeOfVisit.Scheduled);
+        
+        assertNotNull(visitId);
+        verify(allReminderJobs).add(reminderCaptor.capture(), eq(externalId));
+        verify(allAppointmentCalendars).saveAppointmentCalendar(appointmentCalendar);
+        assertEquals(now.toDate(), reminderCaptor.getValue().endDate());
+        assertEquals(now.toLocalDate().minusDays(REMIND_FROM).toDate(), reminderCaptor.getValue().startDate());
     }
 }
