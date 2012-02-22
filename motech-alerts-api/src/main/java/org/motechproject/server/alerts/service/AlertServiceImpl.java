@@ -1,7 +1,7 @@
 package org.motechproject.server.alerts.service;
 
 import org.ektorp.DocumentNotFoundException;
-import org.motechproject.server.alerts.dao.AllAlerts;
+import org.motechproject.server.alerts.repository.AllAlerts;
 import org.motechproject.server.alerts.domain.Alert;
 import org.motechproject.server.alerts.domain.AlertCriteria;
 import org.motechproject.server.alerts.domain.AlertStatus;
@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 public class AlertServiceImpl implements AlertService {
-
     private AllAlerts allAlerts;
     private AlertFilter alertFilter;
 

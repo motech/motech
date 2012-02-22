@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AlertCriteria {
-
     private String externalId;
     private AlertStatus alertStatus;
     private AlertType alertType;
