@@ -61,6 +61,11 @@ public class Visit extends ExtensibleDataObject {
         return appointment;
     }
 
+    public Visit appointment(Appointment appointment) {
+        this.appointment = appointment;
+        return this;
+    }
+
     public Reminder reminder() {
         return reminder;
     }

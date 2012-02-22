@@ -78,8 +78,7 @@ public class AppointmentServiceTest {
         assertEquals(updatedVisitDate, appointmentCalendarArgumentCaptor.getValue().getVisit("baseline").visitDate());
     }
 
-    @Test
-    public void shouldRemoveAnAppointmentCalender(){
+    public void shouldRemoveAnAppointmentCalender() {
         AppointmentCalendar appointmentCalendar = new AppointmentCalendar();
         when(allAppointmentCalendars.findByExternalId("externalId")).thenReturn(appointmentCalendar);
         appointmentService.removeCalendar("externalId");
@@ -88,7 +87,7 @@ public class AppointmentServiceTest {
     }
 
     @Test
-    public void shouldUnscheduleAllReminders(){
+    public void shouldUnscheduleAllReminders() {
         AppointmentCalendar appointmentCalendar = new AppointmentCalendar().externalId("someExternalId");
         when(allAppointmentCalendars.findByExternalId("externalId")).thenReturn(appointmentCalendar);
         appointmentService.removeCalendar("externalId");
@@ -115,6 +114,13 @@ public class AppointmentServiceTest {
         verify(allAppointmentCalendars).saveAppointmentCalendar(appointmentCalendar);
 
         assertEquals(now, appointmentCaptor.getValue().dueDate());
-        assertEquals(now.toLocalDate().minusDays(REMIND_FROM).toDate(), reminderCaptor.getValue().startDate());
+        assertEquals(now.toLocalDate().minusDays(REMIND_FROM).toDate(), appointmentCaptor.getValue().reminder().startDate());
+    }
+
+    @Test
+    public void shouldReturnAppointmentGivenId() {
+        Appointment appointment = new Appointment();
+        when(allAppointmentCalendars.findAppointmentById(appointment.id())).thenReturn(appointment);
+        assertEquals(appointment, appointmentService.getAppointment(appointment.id()));
     }
 }

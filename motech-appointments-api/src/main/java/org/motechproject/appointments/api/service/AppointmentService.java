@@ -37,8 +37,8 @@ public class AppointmentService {
 
     public void removeCalendar(String externalId) {
         AppointmentCalendar appointmentCalendar = allAppointmentCalendars.findByExternalId(externalId);
-        if(appointmentCalendar != null){
-            allReminderJobs.remove(appointmentCalendar.externalId());
+        if (appointmentCalendar != null) {
+            allAppointmentReminderJobs.remove(appointmentCalendar.externalId());
             allAppointmentCalendars.remove(appointmentCalendar);
         }
     }
@@ -53,12 +53,16 @@ public class AppointmentService {
         return allAppointmentCalendars.findByExternalId(externalId);
     }
 
-    public String addVisit(String externalId, DateTime scheduledDate, ReminderConfiguration reminderConfiguration, TypeOfVisit typeOfVisit){
+    public String addVisit(String externalId, DateTime scheduledDate, ReminderConfiguration reminderConfiguration, TypeOfVisit typeOfVisit) {
         AppointmentCalendar appointmentCalendar = allAppointmentCalendars.findByExternalId(externalId);
         Visit visit = new VisitMapper().mapUnscheduledVisit(scheduledDate, reminderConfiguration, typeOfVisit);
         appointmentCalendar.addVisit(visit);
-        allReminderJobs.add(visit.appointmentReminder(), externalId);
+        allAppointmentReminderJobs.add(visit.appointment(), externalId);
         allAppointmentCalendars.saveAppointmentCalendar(appointmentCalendar);
         return visit.name();
+    }
+
+    public Appointment getAppointment(String appointmentId) {
+        return allAppointmentCalendars.findAppointmentById(appointmentId);
     }
 }
