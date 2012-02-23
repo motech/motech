@@ -15,13 +15,14 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
+import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
 
 public class MilestoneEventTest {
     @Test
     public void shouldCreateMotechEvent() {
         String externalId = "externalId";
         String scheduleName = "scheduleName";
-        MilestoneAlert milestoneAlert =  MilestoneAlert.fromMilestone(new Milestone("M1", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4)), LocalDate.now());
+        MilestoneAlert milestoneAlert =  MilestoneAlert.fromMilestone(new Milestone("M1", weeks(1), weeks(1), weeks(1), weeks(1)), LocalDate.now());
         String windowName = "windowName";
 
         MilestoneEvent milestoneEvent = new MilestoneEvent(externalId, scheduleName, milestoneAlert, windowName, DateUtil.today());

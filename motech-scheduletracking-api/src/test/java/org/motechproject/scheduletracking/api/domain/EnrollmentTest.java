@@ -6,16 +6,16 @@ import org.motechproject.util.DateUtil;
 
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
-import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
+import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
 import static org.motechproject.util.DateUtil.today;
 
 public class EnrollmentTest {
     @Test
     public void shouldStartWithFirstMilestoneByDefault() {
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
-        Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone secondMilestone = new Milestone("Second Shot", weeks(1), weeks(1), weeks(1), weeks(1));
+        Milestone firstMilestone = new Milestone("First Shot", weeks(1), weeks(1), weeks(1), weeks(1));
         schedule.addMilestones(firstMilestone, secondMilestone);
         Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(5), weeksAgo(3), null);
 
@@ -25,8 +25,8 @@ public class EnrollmentTest {
     @Test
     public void shouldStartWithSecondMilestone() {
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
-        Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone secondMilestone = new Milestone("Second Shot", weeks(1), weeks(1), weeks(1), weeks(1));
+        Milestone firstMilestone = new Milestone("First Shot", weeks(1), weeks(1), weeks(1), weeks(1));
         schedule.addMilestones(firstMilestone, secondMilestone);
         Enrollment lateEnrollment = new Enrollment("my_entity_1", "Yellow Fever Vaccination", "Second Shot", weeksAgo(3), weeksAgo(3), null);
 
@@ -36,8 +36,8 @@ public class EnrollmentTest {
     @Test
     public void shouldReNullWhenNoMilestoneIsFulfilledlled() {
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
-        Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone secondMilestone = new Milestone("Second Shot", weeks(1), weeks(1), weeks(1), weeks(1));
+        Milestone firstMilestone = new Milestone("First Shot", weeks(1), weeks(1), weeks(1), weeks(1));
         schedule.addMilestones(firstMilestone, secondMilestone);
         Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(5), weeksAgo(3), null);
 
@@ -47,8 +47,8 @@ public class EnrollmentTest {
     @Test
     public void shouldReturnTheDateWhenAMilestoneWasLastFulfilled() {
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
-        Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone secondMilestone = new Milestone("Second Shot", weeks(1), weeks(1), weeks(1), weeks(1));
+        Milestone firstMilestone = new Milestone("First Shot", weeks(1), weeks(1), weeks(1), weeks(1));
         schedule.addMilestones(firstMilestone, secondMilestone);
         Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(5), weeksAgo(3), null);
         enrollment.getFulfillments().add(new MilestoneFulfillment("First Shot", weeksAgo(0)));

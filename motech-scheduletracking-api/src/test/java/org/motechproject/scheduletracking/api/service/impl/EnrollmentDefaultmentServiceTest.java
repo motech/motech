@@ -21,6 +21,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.*;
+import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
 
 public class EnrollmentDefaultmentServiceTest {
     private EnrollmentDefaultmentService enrollmentDefaultmentService;
@@ -38,7 +39,7 @@ public class EnrollmentDefaultmentServiceTest {
 
     @Test
     public void shouldScheduleJobAtEndOfMilestoneToCaptureDefaultmentState() {
-        Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
         milestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Day), 3, 0));
         milestone.addAlert(WindowName.due, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Week), 2, 1));
         String scheduleName = "my_schedule";
@@ -62,7 +63,7 @@ public class EnrollmentDefaultmentServiceTest {
 
     @Test
     public void shouldScheduleJobOnlyIfMaxWindowEndDateIsNotInThePast() {
-        Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
         milestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Day), 3, 0));
         milestone.addAlert(WindowName.due, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Week), 2, 1));
         String scheduleName = "my_schedule";

@@ -2,8 +2,10 @@ package org.motechproject.scheduletracking.api.domain;
 
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
+import org.joda.time.Period;
 import org.motechproject.util.DateUtil;
 import org.motechproject.valueobjects.WallTime;
+import org.motechproject.valueobjects.WallTimeUnit;
 
 import java.awt.*;
 import java.awt.event.WindowEvent;
@@ -12,20 +14,21 @@ import java.util.*;
 import java.util.List;
 
 public class Milestone implements Serializable {
+
     private String name;
     private Map<String, String> data = new HashMap<String, String>();
     private List<MilestoneWindow> windows = new ArrayList<MilestoneWindow>();
 
-    public Milestone(String name, WallTime earliest, WallTime due, WallTime late, WallTime max) {
+    public Milestone(String name, Period earliest, Period due, Period late, Period max) {
         this.name = name;
         createMilestoneWindows(earliest, due, late, max);
     }
 
-    private void createMilestoneWindows(WallTime earliest, WallTime due, WallTime late, WallTime max) {
-        windows.add(new MilestoneWindow(WindowName.earliest, new WallTime(0, earliest.getUnit()), earliest));
-        windows.add(new MilestoneWindow(WindowName.due, earliest, due));
-        windows.add(new MilestoneWindow(WindowName.late, due, late));
-        windows.add(new MilestoneWindow(WindowName.max, late, max));
+    private void createMilestoneWindows(Period earliest, Period due, Period late, Period max) {
+        windows.add(new MilestoneWindow(WindowName.earliest, earliest));
+        windows.add(new MilestoneWindow(WindowName.due, due));
+        windows.add(new MilestoneWindow(WindowName.late, late));
+        windows.add(new MilestoneWindow(WindowName.max, max));
     }
 
     public List<MilestoneWindow> getMilestoneWindows() {

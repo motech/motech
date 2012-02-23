@@ -22,6 +22,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.*;
+import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
 
 public class EnrollmentServiceTest {
     private EnrollmentService enrollmentService;
@@ -49,7 +50,7 @@ public class EnrollmentServiceTest {
         LocalDate enrollmentDate = weeksAgo(0);
         Time preferredAlertTime = new Time(8, 10);
 
-        Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
         milestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Day), 3, 0));
         milestone.addAlert(WindowName.due, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Week), 2, 1));
         Schedule schedule = new Schedule(scheduleName);
@@ -80,8 +81,8 @@ public class EnrollmentServiceTest {
 
     @Test
     public void shouldFulfillCurrentMilestoneInEnrollment() {
-        Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone firstMilestone = new Milestone("First Shot", weeks(1), weeks(1), weeks(1), weeks(1));
+        Milestone secondMilestone = new Milestone("Second Shot", weeks(1), weeks(1), weeks(1), weeks(1));
         secondMilestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), wallTimeOf(1), 3, 0));
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
         schedule.addMilestones(firstMilestone, secondMilestone);
@@ -98,8 +99,8 @@ public class EnrollmentServiceTest {
 
     @Test
     public void shouldScheduleJobsForNextMilestoneWhenCurrentMilestoneIsFulfilled() {
-        Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone firstMilestone = new Milestone("First Shot", weeks(1), weeks(1), weeks(1), weeks(1));
+        Milestone secondMilestone = new Milestone("Second Shot", weeks(1), weeks(1), weeks(1), weeks(1));
         secondMilestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), wallTimeOf(1), 3, 0));
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
         schedule.addMilestones(firstMilestone, secondMilestone);
@@ -124,8 +125,8 @@ public class EnrollmentServiceTest {
 
     @Test(expected = DefaultedMilestoneFulfillmentException.class)
     public void shouldNotFulfillADefaultedMilestone() {
-        Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone firstMilestone = new Milestone("First Shot", weeks(1), weeks(1), weeks(1), weeks(1));
+        Milestone secondMilestone = new Milestone("Second Shot", weeks(1), weeks(1), weeks(1), weeks(1));
         secondMilestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), wallTimeOf(1), 3, 0));
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
         schedule.addMilestones(firstMilestone, secondMilestone);
@@ -138,8 +139,8 @@ public class EnrollmentServiceTest {
 
     @Test(expected = NoMoreMilestonesToFulfillException.class)
     public void shouldThrowExceptionIfAllMilestonesAreFulfilled() {
-        Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone firstMilestone = new Milestone("First Shot", weeks(1), weeks(1), weeks(1), weeks(1));
+        Milestone secondMilestone = new Milestone("Second Shot", weeks(1), weeks(1), weeks(1), weeks(1));
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
@@ -154,8 +155,8 @@ public class EnrollmentServiceTest {
 
     @Test
     public void shouldCompleteEnrollmentWhenAllMilestonesAreFulfilled() {
-        Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        Milestone secondMilestone = new Milestone("Second Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone firstMilestone = new Milestone("First Shot", weeks(1), weeks(1), weeks(1), weeks(1));
+        Milestone secondMilestone = new Milestone("Second Shot", weeks(1), weeks(1), weeks(1), weeks(1));
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
@@ -171,7 +172,7 @@ public class EnrollmentServiceTest {
 
     @Test
     public void shouldNotHaveAnyJobsScheduledAfterEnrollmentIsComplete() {
-        Milestone firstMilestone = new Milestone("First Shot", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone firstMilestone = new Milestone("First Shot", weeks(1), weeks(1), weeks(1), weeks(1));
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
         schedule.addMilestones(firstMilestone);
         when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
@@ -187,7 +188,7 @@ public class EnrollmentServiceTest {
 
     @Test
     public void shouldUnenrollEntityFromTheSchedule() {
-        Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
         milestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Day), 3, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);

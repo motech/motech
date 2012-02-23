@@ -16,8 +16,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.*;
-import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
-import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAfter;
+import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:testApplicationSchedulerTrackingAPI.xml")

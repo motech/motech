@@ -1,11 +1,13 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import org.joda.time.Period;
 import org.motechproject.scheduletracking.api.domain.exception.InvalidScheduleDefinitionException;
 import org.motechproject.scheduletracking.api.domain.json.AlertRecord;
 import org.motechproject.scheduletracking.api.domain.json.MilestoneRecord;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleWindowsRecord;
 import org.motechproject.valueobjects.WallTime;
+import org.motechproject.valueobjects.WallTimeUnit;
 import org.motechproject.valueobjects.factory.WallTimeFactory;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +31,8 @@ public class ScheduleFactory {
                 late = due;
             if (max == null)
                 max = late;
-            Milestone milestone = new Milestone(milestoneRecord.name(), earliest, due, late, max);
+
+            Milestone milestone = new Milestone(milestoneRecord.name(), getPeriod(new WallTime(0, earliest.getUnit()), earliest), getPeriod(earliest, due), getPeriod(due, late), getPeriod(late, max));
             milestone.setData(milestoneRecord.data());
             for (AlertRecord alertRecord : milestoneRecord.alerts()) {
                 String offset = alertRecord.offset();
@@ -40,5 +43,13 @@ public class ScheduleFactory {
             schedule.addMilestones(milestone);
         }
         return schedule;
+    }
+
+    private Period getPeriod(WallTime start, WallTime end) {
+        if (start.getUnit().equals(WallTimeUnit.Day))
+            return new Period(0, 0, 0, end.getValue() - start.getValue(), 0, 0, 0, 0);
+        else if (start.getUnit().equals(WallTimeUnit.Week))
+            return new Period(0, 0, end.getValue() - start.getValue(), 0, 0, 0, 0, 0);
+        return null;
     }
 }
