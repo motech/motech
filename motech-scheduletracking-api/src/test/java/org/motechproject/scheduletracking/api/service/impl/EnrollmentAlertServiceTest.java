@@ -43,7 +43,6 @@ public class EnrollmentAlertServiceTest {
     @Mock
     private MotechSchedulerService schedulerService;
 
-
     @Before
     public void setup() {
         initMocks(this);

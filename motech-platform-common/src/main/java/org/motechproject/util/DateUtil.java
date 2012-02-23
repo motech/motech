@@ -74,11 +74,19 @@ public class DateUtil {
         return newDateTime(localDate, time.getHour(), time.getMinute(), 0);
     }
 
+    public static DateTime newDateTime(int year, int month, int day, Time time) {
+        return newDateTime(newDate(year, month, day), time.getHour(), time.getMinute(), 0);
+    }
+
+    public static DateTime newDateTime(int year, int month, int day, int hour, int minute, int second) {
+        return newDateTime(newDate(year, month, day), hour, minute, second);
+    }
+
     public static int getDifferenceOfDatesInYears(Date startDate) {
         Period period = new Period(newDate(startDate), today(), PeriodType.yearMonthDay());
         return period.getYears();
     }
-    
+
     public static DateTime endOfDay(Date dateTime) {
         return new DateTime(dateTime).withTime(23, 59, 59, 999);
     }
@@ -86,7 +94,7 @@ public class DateUtil {
     public static DateTime nextApplicableWeekDay(DateTime fromDate, List<DayOfWeek> applicableDays) {
         return nextApplicableWeekDayIncludingFromDate(fromDate.dayOfMonth().addToCopy(1), applicableDays);
     }
-    
+
     public static DateTime nextApplicableWeekDayIncludingFromDate(DateTime fromDate, List<DayOfWeek> applicableDays) {
         int dayOfWeek = fromDate.getDayOfWeek();
         int noOfDaysToNearestCycleDate = 0;

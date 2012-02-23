@@ -5,10 +5,8 @@ import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.WallTimeUnit;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.daysAfter;
-import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.daysAgo;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.*;
+import static org.motechproject.util.DateUtil.today;
 
 public class MilestoneWindowTest {
 
@@ -18,7 +16,7 @@ public class MilestoneWindowTest {
         Alert alert1 = new Alert(new WallTime(0, null), null, 0, 0);
         Alert alert2 = new Alert(new WallTime(0, null), null, 0, 1);
         window.addAlerts(alert1, alert2);
-        assertArrayEquals(new Alert[]{ alert1, alert2}, window.getAlerts().toArray());
+        assertArrayEquals(new Alert[]{alert1, alert2}, window.getAlerts().toArray());
     }
 
     @Test
@@ -77,5 +75,11 @@ public class MilestoneWindowTest {
     public void shouldReturnEndOfWindowInDays() {
         MilestoneWindow window = new MilestoneWindow(WindowName.earliest, new WallTime(1, WallTimeUnit.Day), new WallTime(3, WallTimeUnit.Week));
         assertEquals(21, window.getWindowEndInDays());
+    }
+
+    @Test
+    public void shouldGetStartDateOfTheMilestoneWindow() {
+        MilestoneWindow milestoneWindow = new MilestoneWindow(WindowName.earliest, wallTimeOf(1), wallTimeOf(3));
+        assertEquals(today().plusWeeks(1), milestoneWindow.getStartDate(today()));
     }
 }

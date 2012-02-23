@@ -14,14 +14,16 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.motechproject.model.DayOfWeek.Monday;
 import static org.motechproject.model.DayOfWeek.Wednesday;
 import static org.motechproject.util.DateUtil.*;
 
 public class DateUtilTest {
+    @After
+    public void tearDown() {
+        DateTimeSourceUtil.SourceInstance = new DefaultDateTimeSource();
+    }
 
     @Test
     public void shouldFindDaysToCalendarWeekEnd() {
@@ -103,11 +105,6 @@ public class DateUtilTest {
     public void shouldReturnEndOfDayForGivenTime() {
         DateTime time = new DateTime(2010, 10, 10, 12, 22, 22, 223);
         assertEquals(new DateTime(2010, 10, 10, 23, 59, 59, 999), DateUtil.endOfDay(time.toDate()));
-    }
-    
-    @After
-    public void tearDown() {
-        DateTimeSourceUtil.SourceInstance = new DefaultDateTimeSource();
     }
 
     private void mockCurrentDate(final DateTime currentDate) {

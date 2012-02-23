@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MilestoneWindow implements Serializable {
-
     private WindowName name;
 
     private WallTime start;
@@ -58,5 +57,9 @@ public class MilestoneWindow implements Serializable {
 
     private static int toDays(Period period) {
         return period.toStandardDays().getDays();
+    }
+
+    public LocalDate getStartDate(LocalDate milestoneStartDate) {
+        return milestoneStartDate.plusDays(start.inDays());
     }
 }
