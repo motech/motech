@@ -24,7 +24,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.*;
 
 public class EnrollmentServiceTest {
-
     private EnrollmentService enrollmentService;
 
     @Mock

@@ -56,7 +56,7 @@ public class EnrollmentDefaultmentServiceTest {
 
         RunOnceSchedulableJob job = runOnceJobArgumentCaptor.getValue();
         DefaultmentCaptureEvent event = new DefaultmentCaptureEvent(job.getMotechEvent());
-        assertEquals(String.format("%s.enrollment_1", EventSubjects.DEFAULTMENT_CAPTURE), event.getJobId());
+        assertEquals("enrollment_1", event.getJobId());
         assertEquals(weeksAfter(4).toDate(), job.getStartDate());
     }
 
@@ -87,6 +87,6 @@ public class EnrollmentDefaultmentServiceTest {
 
         enrollmentDefaultmentService.unscheduleDefaultmentCaptureJob(enrollment);
 
-        verify(schedulerService).unscheduleAllJobs(String.format("%s.enrollment_1", EnrollmentDefaultmentService.JOB_ID_PREFIX));
+        verify(schedulerService).safeUnscheduleAllJobs(String.format("%s-enrollment_1", EventSubjects.DEFAULTMENT_CAPTURE));
     }
 }
