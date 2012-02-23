@@ -13,6 +13,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
+import static org.motechproject.scheduletracking.api.utility.PeriodFactory.days;
 import static org.powermock.api.mockito.PowerMockito.spy;
 
 @PrepareForTest(DateUtil.class)
@@ -30,42 +31,42 @@ public class AlertTest {
 
     @Test
     public void shouldReturnElapsedAlertCountWithZeroOffset() {
-        Alert alert = new Alert(new WallTime(0, WallTimeUnit.Day), new WallTime(1, WallTimeUnit.Day), 10, 0);
+        Alert alert = new Alert(days(0), days(1), 10, 0);
         int alertCount = alert.getElapsedAlertCount(DateUtil.newDate(2012, 2, 18), new Time(8, 10));
         assertEquals(3, alertCount);
     }
 
     @Test
     public void shouldReturnElapsedAlertCountWithNonZeroOffset() {
-        Alert alert = new Alert(new WallTime(1, WallTimeUnit.Day), new WallTime(1, WallTimeUnit.Day), 10, 0);
+        Alert alert = new Alert(days(1), days(1), 10, 0);
         int alertCount = alert.getElapsedAlertCount(DateUtil.newDate(2012, 2, 18), new Time(8, 10));
         assertEquals(2, alertCount);
     }
 
     @Test
     public void shouldReturnElapsedAlertCountWhenStartDateIsTodayAndPreferredTimeIsBeforeNow() {
-        Alert alert = new Alert(new WallTime(0, WallTimeUnit.Day), new WallTime(1, WallTimeUnit.Day), 10, 0);
+        Alert alert = new Alert(days(0), days(1), 10, 0);
         int alertCount = alert.getElapsedAlertCount(DateUtil.newDate(2012, 2, 20), new Time(8, 20));
         assertEquals(0, alertCount);
     }
 
     @Test
     public void shouldNotElapseMoreAlertsThanItsCount() {
-        Alert alert = new Alert(new WallTime(0, WallTimeUnit.Day), new WallTime(1, WallTimeUnit.Day), 3, 0);
+        Alert alert = new Alert(days(0), days(1), 3, 0);
         int alertCount = alert.getElapsedAlertCount(DateUtil.newDate(2012, 2, 15), new Time(8, 20));
         assertEquals(3, alertCount);
     }
 
     @Test
     public void shouldGetNextAlertDate() {
-        Alert alert = new Alert(new WallTime(0, WallTimeUnit.Day), new WallTime(1, WallTimeUnit.Day), 10, 0);
+        Alert alert = new Alert(days(0), days(1), 10, 0);
         DateTime nextAlertDateTime = alert.getNextAlertDateTime(DateUtil.newDate(2012, 2, 18), new Time(8, 10));
         assertEquals(DateUtil.newDateTime(2012, 2, 21, 8, 10, 0), nextAlertDateTime);
     }
 
     @Test
     public void shouldReturnRemainingAlertCount() {
-        Alert alert = new Alert(new WallTime(0, WallTimeUnit.Day), new WallTime(1, WallTimeUnit.Day), 10, 0);
+        Alert alert = new Alert(days(0), days(1), 10, 0);
         int alertCount = alert.getRemainingAlertCount(DateUtil.newDate(2012, 2, 18), new Time(8, 10));
         assertEquals(7, alertCount);
     }

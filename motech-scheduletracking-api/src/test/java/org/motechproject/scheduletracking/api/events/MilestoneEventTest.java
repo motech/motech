@@ -39,12 +39,12 @@ public class MilestoneEventTest {
     public void shouldCreateMotechEventFromEnrollment() {
         String externalId = "externalId";
         String scheduleName = "scheduleName";
-        Milestone milestone = new Milestone("M1", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone milestone = new Milestone("M1", weeks(1), weeks(1), weeks(1), weeks(1));
         LocalDate referenceDate = LocalDate.now();
         LocalDate enrollmentDate = LocalDate.now();
         MilestoneAlert milestoneAlert =  MilestoneAlert.fromMilestone(milestone, referenceDate);
 
-        MilestoneWindow milestoneWindow = new MilestoneWindow(WindowName.due, new WallTime(1, WallTimeUnit.Week), new WallTime(2, WallTimeUnit.Week));
+        MilestoneWindow milestoneWindow = new MilestoneWindow(WindowName.due, weeks(1));
         MilestoneEvent milestoneEvent = new MilestoneEvent(new Enrollment(externalId, scheduleName, milestone.getName(), referenceDate, enrollmentDate, new Time(8, 10)), milestoneAlert, milestoneWindow);
         MotechEvent motechEvent = milestoneEvent.toMotechEvent();
 

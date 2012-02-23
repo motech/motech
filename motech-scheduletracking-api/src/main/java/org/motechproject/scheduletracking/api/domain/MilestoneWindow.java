@@ -10,7 +10,6 @@ import java.util.List;
 public class MilestoneWindow implements Serializable {
     private WindowName name;
     private Period period;
-
     private List<Alert> alerts = new ArrayList<Alert>();
 
     public MilestoneWindow(WindowName name, Period period) {
@@ -22,15 +21,15 @@ public class MilestoneWindow implements Serializable {
         return name;
     }
 
+    public Period getPeriod() {
+        return period;
+    }
+
     public void addAlerts(Alert... alertsList) {
         alerts.addAll(Arrays.asList(alertsList));
     }
 
     public List<Alert> getAlerts() {
         return alerts;
-    }
-
-    public int getWindowEndInDays() {
-        return period.toStandardDays().getDays();
     }
 }

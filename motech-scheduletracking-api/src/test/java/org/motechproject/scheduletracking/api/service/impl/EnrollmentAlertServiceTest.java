@@ -60,8 +60,8 @@ public class EnrollmentAlertServiceTest {
         String externalId = "entity_1";
         String scheduleName = "my_schedule";
 
-        Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(25));
-        milestone.addAlert(WindowName.earliest, new Alert(wallTime("0 days"), wallTime("1 day"), 3, 0));
+        Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(22));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
@@ -178,8 +178,8 @@ public class EnrollmentAlertServiceTest {
 
     @Test
     public void shouldNotScheduleJobsIfAllAlertsHaveElapsed() {
-        Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        milestone.addAlert(WindowName.earliest, new Alert(wallTime("0 days"), wallTime("3 days"), 1, 0));
+        Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(3), 1, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);

@@ -24,6 +24,7 @@ import static org.motechproject.scheduletracking.api.utility.PeriodFactory.days;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
 
 public class EnrollmentDefaultmentServiceTest {
+
     private EnrollmentDefaultmentService enrollmentDefaultmentService;
 
     @Mock

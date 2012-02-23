@@ -32,8 +32,8 @@ public class EnrollmentDefaultmentService {
         Milestone currentMilestone = schedule.getMilestone(enrollment.getCurrentMilestoneName());
         if (currentMilestone == null)
             return;
-        LocalDate currentMilestoneStartDate = enrollment.getCurrentMilestoneStartDate(schedule.getFirstMilestone().getName());
-        LocalDate milestoneEndDate = currentMilestoneStartDate.plusDays(currentMilestone.getMaximumDurationInDays());
+
+        LocalDate milestoneEndDate = getCurrentMilestoneStartDate(enrollment).plus(currentMilestone.getMaximumDuration());
 
         if (milestoneEndDate.isBefore(DateUtil.today()))
             return;

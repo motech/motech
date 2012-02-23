@@ -22,7 +22,7 @@ public class MilestoneAlert implements Serializable {
     }
 
     private static LocalDate getWindowEndDate(Milestone milestone, LocalDate referenceDate, WindowName windowName) {
-        return referenceDate.plusDays(milestone.getWindowEndInDays(windowName));
+        return referenceDate.plus(milestone.getWindowEnd(windowName));
     }
 
     private MilestoneAlert() {

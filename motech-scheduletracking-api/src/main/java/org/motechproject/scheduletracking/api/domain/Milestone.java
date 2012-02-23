@@ -1,7 +1,7 @@
 package org.motechproject.scheduletracking.api.domain;
 
-import org.joda.time.Days;
 import org.joda.time.LocalDate;
+import org.joda.time.MutablePeriod;
 import org.joda.time.Period;
 import org.motechproject.util.DateUtil;
 
@@ -63,33 +63,34 @@ public class Milestone implements Serializable {
         return alerts;
     }
 
-    public int getMaximumDurationInDays() {
-        return getWindowEndInDays(WindowName.max);
+    public Period getMaximumDuration() {
+        return getWindowEnd(WindowName.max);
     }
 
-    public int getWindowStartInDays(WindowName name) {
-        int days = 0;
+    public Period getWindowStart(WindowName name) {
+        MutablePeriod period = new MutablePeriod();
         for (MilestoneWindow window : windows) {
-            if (window.getName().equals(name))
-                return days;
-            days += window.getWindowEndInDays();
+            if (window.getName().equals(name)) {
+                break;
+            }
+            period.add(window.getPeriod());
         }
-        return days;
+        return period.toPeriod();
     }
 
-    public int getWindowEndInDays(WindowName name) {
-        int days = 0;
+    public Period getWindowEnd(WindowName name) {
+        MutablePeriod period = new MutablePeriod();
         for (MilestoneWindow window : windows) {
-            days += window.getWindowEndInDays();
+            period.add(window.getPeriod());
             if (window.getName().equals(name))
-                return days;
+                break;
         }
-        return days;
+        return period.toPeriod();
     }
 
     public boolean windowElapsed(WindowName windowName, LocalDate milestoneStartDate) {
-        int daysSinceStartOfMilestone = Days.daysBetween(milestoneStartDate, DateUtil.today()).getDays();
-        int endOffsetInDays = getWindowEndInDays(windowName);
-        return daysSinceStartOfMilestone >= endOffsetInDays;
+        LocalDate today = DateUtil.today();
+        Period endOffset = getWindowEnd(windowName);
+        return !today.isBefore(milestoneStartDate.plus(endOffset));
     }
 }

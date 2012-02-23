@@ -2,6 +2,7 @@ package org.motechproject.scheduletracking.api.service.impl;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.joda.time.Period;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
@@ -16,6 +17,7 @@ import static org.joda.time.DateTimeConstants.MILLIS_PER_DAY;
 
 @Component
 public class EnrollmentAlertService {
+
     private AllTrackedSchedules allTrackedSchedules;
     private MotechSchedulerService schedulerService;
 
@@ -43,8 +45,9 @@ public class EnrollmentAlertService {
         }
     }
 
+
     private void scheduleAlertJob(Alert alert, Enrollment enrollment, Milestone currentMilestone, MilestoneWindow milestoneWindow, MilestoneAlert milestoneAlert, LocalDate currentMilestoneStartDate) {
-        LocalDate milestoneWindowStartDate = currentMilestoneStartDate.plus(currentMilestone.getWindowStartInDays());
+        LocalDate milestoneWindowStartDate = currentMilestoneStartDate.plus(currentMilestone.getWindowStart(milestoneWindow.getName()));
         int numberOfAlertsToSchedule = alert.getRemainingAlertCount(milestoneWindowStartDate, enrollment.getPreferredAlertTime());
         if (numberOfAlertsToSchedule <= 0)
             return;
@@ -53,7 +56,7 @@ public class EnrollmentAlertService {
         event.getParameters().put(MotechSchedulerService.JOB_ID_KEY, String.format("%s.%d", enrollment.getId(), alert.getIndex()));
 
         DateTime startTime = alert.getNextAlertDateTime(milestoneWindowStartDate, enrollment.getPreferredAlertTime());
-        long repeatIntervalInMillis = (long) alert.getInterval().inDays() * (long) MILLIS_PER_DAY;
+        long repeatIntervalInMillis = (long) alert.getInterval().toStandardDays().getDays() * (long) MILLIS_PER_DAY;
         schedulerService.safeScheduleRepeatingJob(new RepeatingSchedulableJob(event, startTime.toDate(), null, numberOfAlertsToSchedule - 1, repeatIntervalInMillis));
     }
 
