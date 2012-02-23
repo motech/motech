@@ -11,13 +11,12 @@ import org.motechproject.scheduletracking.api.domain.Milestone;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.util.DateUtil;
-import org.motechproject.valueobjects.WallTime;
-import org.motechproject.valueobjects.WallTimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.*;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:testApplicationSchedulerTrackingAPI.xml")
@@ -31,7 +30,7 @@ public class AllEnrollmentsIT {
 
     @Before
     public void setUp() {
-        milestone = new Milestone("first_milestone", new WallTime(13, WallTimeUnit.Week), new WallTime(14, WallTimeUnit.Week), new WallTime(16, WallTimeUnit.Week), null);
+        milestone = new Milestone("first_milestone", wallTimeOf(13), wallTimeOf(14), wallTimeOf(16), null);
         schedule = new Schedule("schedule_name");
         schedule.addMilestones(milestone);
     }

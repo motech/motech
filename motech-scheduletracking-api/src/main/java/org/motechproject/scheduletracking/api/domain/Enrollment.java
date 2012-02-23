@@ -10,17 +10,20 @@ import org.motechproject.model.Time;
 import java.util.LinkedList;
 import java.util.List;
 
-@TypeDiscriminator("doc.type === 'Enrollment'")
+@TypeDiscriminator("doc.type == 'Enrollment'")
 public class Enrollment extends MotechBaseDataObject {
     @JsonProperty
     private LocalDate enrollmentDate;
-
+    @JsonProperty
     private String scheduleName;
+    @JsonProperty
     private String externalId;
     private String currentMilestoneName;
-
+    @JsonProperty
     private LocalDate referenceDate;
+    @JsonProperty
     private Time preferredAlertTime;
+
     private EnrollmentStatus status;
     private List<MilestoneFulfillment> fulfillments = new LinkedList<MilestoneFulfillment>();
 
@@ -112,24 +115,8 @@ public class Enrollment extends MotechBaseDataObject {
         return type;
     }
 
-    private void setScheduleName(String scheduleName) {
-        this.scheduleName = scheduleName;
-    }
-
     private void setType(String type) {
         this.type = type;
-    }
-
-    private void setExternalId(String externalId) {
-        this.externalId = externalId;
-    }
-
-    private void setReferenceDate(LocalDate referenceDate) {
-        this.referenceDate = referenceDate;
-    }
-
-    private void setPreferredAlertTime(Time preferredAlertTime) {
-        this.preferredAlertTime = preferredAlertTime;
     }
 
     public LocalDate getCurrentMilestoneStartDate(String firstMilestoneNameFromSchedule) {
