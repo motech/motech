@@ -117,6 +117,17 @@ public class ScheduleTrackingServiceImplTest {
         verify(enrollmentService).fulfillCurrentMilestone(enrollment);
     }
 
+    @Test(expected = InvalidEnrollmentException.class)
+    public void shouldFailToFulfillCurrentMilestoneIfItIsNotFoundOrNotActive() {
+        when(allEnrollments.getActiveEnrollment("WRONG-ID", "WRONG-NAME")).thenReturn(null);
+
+        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
+
+        scheduleTrackingService.fulfillCurrentMilestone("WRONG-ID", "WRONG-NAME");
+
+        verifyZeroInteractions(enrollmentService);
+    }
+
     @Test
     public void shouldUnenrollEntityFromTheSchedule() {
         Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
