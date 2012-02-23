@@ -10,7 +10,6 @@ import org.motechproject.scheduletracking.api.domain.json.AlertRecord;
 import org.motechproject.scheduletracking.api.domain.json.MilestoneRecord;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleWindowsRecord;
-import org.motechproject.valueobjects.factory.WallTimeFactory;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -41,10 +40,10 @@ public class ScheduleFactory {
             if (maxValue.isEmpty())
                 maxValue = lateValue;
 
-            Period earliest = parse(earliestValue).toPeriod();
-            Period due = parse(dueValue).toPeriod().minus(earliest);
-            Period late = parse(lateValue).toPeriod().minus(earliest.plus(due));
-            Period max = parse(maxValue).toPeriod().minus(earliest.plus(due).plus(late));
+            Period earliest = parse(earliestValue);
+            Period due = parse(dueValue).minus(earliest);
+            Period late = parse(lateValue).minus(earliest.plus(due));
+            Period max = parse(maxValue).minus(earliest.plus(due).plus(late));
 
             Milestone milestone = new Milestone(milestoneRecord.name(), earliest, due, late, max);
             milestone.setData(milestoneRecord.data());
@@ -52,19 +51,19 @@ public class ScheduleFactory {
                 String offset = alertRecord.offset();
                 if (offset == null || offset.isEmpty())
                     throw new InvalidScheduleDefinitionException("alert needs an offset parameter.");
-                milestone.addAlert(WindowName.valueOf(alertRecord.window()), new Alert(WallTimeFactory.wallTime(offset), WallTimeFactory.wallTime(alertRecord.interval()), Integer.parseInt(alertRecord.count()), alertIndex++));
+                milestone.addAlert(WindowName.valueOf(alertRecord.window()), new Alert(parse(offset), parse(alertRecord.interval()), Integer.parseInt(alertRecord.count()), alertIndex++));
             }
             schedule.addMilestones(milestone);
         }
         return schedule;
     }
 
-    private ReadWritablePeriod parse(String s) {
+    private Period parse(String s) {
         ReadWritablePeriod period = new MutablePeriod();
         if (dayParser.parseInto(period, s, 0, null) > 0)
-            return period;
+            return period.toPeriod();
         if (weekParser.parseInto(period, s, 0, null) > 0)
-            return period;
-        return period;
+            return period.toPeriod();
+        return period.toPeriod();
     }
 }

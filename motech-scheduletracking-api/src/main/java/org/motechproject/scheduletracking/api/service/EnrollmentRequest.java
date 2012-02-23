@@ -2,7 +2,6 @@ package org.motechproject.scheduletracking.api.service;
 
 import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
-import org.motechproject.scheduletracking.api.domain.Milestone;
 
 public class EnrollmentRequest {
     private String externalId;

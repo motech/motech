@@ -14,7 +14,6 @@ import org.motechproject.valueobjects.WallTimeUnit;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
 
 public class MilestoneEventTest {

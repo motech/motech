@@ -8,7 +8,6 @@ import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.events.DefaultmentCaptureEvent;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
-import org.motechproject.scheduletracking.api.service.impl.EndOfMilestoneListener;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;

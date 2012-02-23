@@ -27,9 +27,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.*;
+import static org.motechproject.scheduletracking.api.utility.PeriodFactory.days;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
 import static org.motechproject.util.DateUtil.newDateTime;
-import static org.motechproject.valueobjects.factory.WallTimeFactory.wallTime;
 import static org.powermock.api.mockito.PowerMockito.spy;
 
 @PrepareForTest(DateUtil.class)
@@ -83,8 +83,8 @@ public class EnrollmentAlertServiceTest {
         String scheduleName = "my_schedule";
 
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(22));
-        milestone.addAlert(WindowName.earliest, new Alert(wallTime("0 days"), wallTime("1 day"), 3, 0));
-        milestone.addAlert(WindowName.due, new Alert(wallTime("0 days"), wallTime("3 days"), 2, 1));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
+        milestone.addAlert(WindowName.due, new Alert(days(0), days(3), 2, 1));
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
@@ -121,7 +121,7 @@ public class EnrollmentAlertServiceTest {
     @Test
     public void shouldNotScheduleJobsForElapsedAlerts() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(wallTime("0 days"), wallTime("3 days"), 3, 0));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(3), 3, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
@@ -141,7 +141,7 @@ public class EnrollmentAlertServiceTest {
     @Test
     public void alertIsElapsedTodayIfItIsBeforePreferredAlertTime() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(wallTime("0 days"), wallTime("3 days"), 3, 0));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(3), 3, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
@@ -160,7 +160,7 @@ public class EnrollmentAlertServiceTest {
     @Test
     public void alertIsNotElapsedTodayIfItIsNotBeforePreferredAlertTime() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(wallTime("0 days"), wallTime("3 days"), 3, 0));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(3), 3, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
@@ -194,7 +194,7 @@ public class EnrollmentAlertServiceTest {
     @Test
     public void shouldScheduleAlertJobWithOffset() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.due, new Alert(wallTime("3 days"), wallTime("1 day"), 3, 0));
+        milestone.addAlert(WindowName.due, new Alert(days(3), days(1), 3, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
@@ -213,7 +213,7 @@ public class EnrollmentAlertServiceTest {
     public void shouldNotScheduleJobsForFutureMilestones() {
         Milestone firstMilestone = new Milestone("milestone_1", weeks(1), weeks(1), weeks(1), weeks(1));
         Milestone secondMilestone = new Milestone("milestone_2", weeks(1), weeks(1), weeks(1), weeks(1));
-        secondMilestone.addAlert(WindowName.earliest, new Alert(wallTime("0 days"), wallTime("1 day"), 3, 0));
+        secondMilestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
@@ -227,7 +227,7 @@ public class EnrollmentAlertServiceTest {
     @Test
     public void shouldNotScheduleJobsForPassedWindowInTheFirstMilestone() {
         Milestone milestone = new Milestone("milestone_1", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(wallTime("0 days"), wallTime("1 day"), 4, 0));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 4, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
@@ -240,9 +240,9 @@ public class EnrollmentAlertServiceTest {
     @Test
     public void shouldNotScheduleJobsForPassedMilestones() {
         Milestone firstMilestone = new Milestone("milestone_1", weeks(1), weeks(1), weeks(1), weeks(1));
-        firstMilestone.addAlert(WindowName.earliest, new Alert(wallTime("0 days"), wallTime("1 day"), 4, 0));
+        firstMilestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 4, 0));
         Milestone secondMilestone = new Milestone("milestone_2", weeks(1), weeks(1), weeks(1), weeks(1));
-        secondMilestone.addAlert(WindowName.earliest, new Alert(wallTime("0 days"), wallTime("1 day"), 2, 1));
+        secondMilestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 2, 1));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);

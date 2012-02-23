@@ -4,7 +4,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
 import org.motechproject.util.DateUtil;
-import org.motechproject.valueobjects.WallTime;
+import org.joda.time.Period;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.min;
@@ -12,23 +12,23 @@ import static org.joda.time.Days.daysBetween;
 
 public class Alert {
 
-    private WallTime offset;
-    private WallTime interval;
+    private Period offset;
+    private Period interval;
     private int count;
     private int index;
 
-    public Alert(WallTime offset, WallTime interval, int count, int index) {
+    public Alert(Period offset, Period interval, int count, int index) {
         this.offset = offset;
         this.interval = interval;
         this.count = count;
         this.index = index;
     }
 
-    public WallTime getOffset() {
+    public Period getOffset() {
         return offset;
     }
 
-    public WallTime getInterval() {
+    public Period getInterval() {
         return interval;
     }
 

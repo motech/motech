@@ -2,8 +2,6 @@ package org.motechproject.scheduletracking.api.utility;
 
 import org.joda.time.LocalDate;
 import org.motechproject.util.DateUtil;
-import org.motechproject.valueobjects.WallTime;
-import org.motechproject.valueobjects.WallTimeUnit;
 
 public class DateTimeUtil {
 	private DateTimeUtil() {
@@ -23,9 +21,5 @@ public class DateTimeUtil {
 
 	public static LocalDate weeksAfter(int numberOfWeeks) {
 		return DateUtil.today().plusWeeks(numberOfWeeks);
-	}
-
-	public static WallTime wallTimeOf(int numberOfWeeks) {
-		return new WallTime(numberOfWeeks, WallTimeUnit.Week);
 	}
 }

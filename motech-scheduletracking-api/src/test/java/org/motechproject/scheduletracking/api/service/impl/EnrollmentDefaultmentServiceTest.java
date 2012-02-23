@@ -13,14 +13,14 @@ import org.motechproject.scheduletracking.api.events.DefaultmentCaptureEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.motechproject.util.DateUtil;
-import org.motechproject.valueobjects.WallTime;
-import org.motechproject.valueobjects.WallTimeUnit;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.*;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAfter;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
+import static org.motechproject.scheduletracking.api.utility.PeriodFactory.days;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
 
 public class EnrollmentDefaultmentServiceTest {
@@ -40,8 +40,8 @@ public class EnrollmentDefaultmentServiceTest {
     @Test
     public void shouldScheduleJobAtEndOfMilestoneToCaptureDefaultmentState() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Day), 3, 0));
-        milestone.addAlert(WindowName.due, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Week), 2, 1));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
+        milestone.addAlert(WindowName.due, new Alert(days(0), weeks(1), 2, 1));
         String scheduleName = "my_schedule";
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
@@ -64,8 +64,8 @@ public class EnrollmentDefaultmentServiceTest {
     @Test
     public void shouldScheduleJobOnlyIfMaxWindowEndDateIsNotInThePast() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Day), 3, 0));
-        milestone.addAlert(WindowName.due, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Week), 2, 1));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
+        milestone.addAlert(WindowName.due, new Alert(days(0), weeks(1), 2, 1));
         String scheduleName = "my_schedule";
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
