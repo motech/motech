@@ -1,8 +1,6 @@
 package org.motechproject.scheduletracking.api.domain;
 
 import org.joda.time.Period;
-import org.motechproject.valueobjects.WallTime;
-import org.motechproject.valueobjects.WallTimeUnit;
 
 import java.io.Serializable;
 import java.util.ArrayList;
