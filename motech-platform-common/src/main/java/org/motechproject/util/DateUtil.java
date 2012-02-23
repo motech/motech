@@ -33,7 +33,7 @@ public class DateUtil {
     }
 
     public static DateTime setTimeZone(DateTime dateTime) {
-        return dateTime.toDateTime(DateTimeSourceUtil.SourceInstance.timeZone());
+        return dateTime == null ? dateTime : dateTime.toDateTime(DateTimeSourceUtil.SourceInstance.timeZone());
     }
 
     public static DateTime newDateTime(Date date) {
