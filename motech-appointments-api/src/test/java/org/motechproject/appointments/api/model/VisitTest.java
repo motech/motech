@@ -18,7 +18,7 @@ public class VisitTest {
 
         assertNotNull(visit.appointment());
         assertEquals(DateUtil.today(), visit.appointment().dueDate().toLocalDate());
-        assertNull(visit.appointment().firmDate());
+        assertNull(visit.appointment().confirmedDate());
         assertEquals(reminder, visit.appointmentReminder());
     }
 }
