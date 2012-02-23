@@ -13,7 +13,6 @@ import org.motechproject.openmrs.helper.PatientHelper;
 import org.openmrs.*;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
-import org.openmrs.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
@@ -29,17 +28,16 @@ public class OpenMRSPatientAdapter implements MRSPatientAdapter {
     PersonService personService;
 
     @Autowired
-    UserService userService;
-
-    @Autowired
     OpenMRSFacilityAdapter facilityAdapter;
+
     @Autowired
     OpenMRSPersonAdapter personAdapter;
 
     @Autowired
     PatientHelper patientHelper;
+
     @Autowired
-    private OpenMRSConceptAdapter openMrsConceptAdapter;
+    OpenMRSConceptAdapter openMrsConceptAdapter;
 
     @Override
     public MRSPatient getPatient(String patientId) {

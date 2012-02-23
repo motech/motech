@@ -18,7 +18,6 @@ import org.motechproject.openmrs.util.PatientTestUtil;
 import org.openmrs.*;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
-import org.openmrs.api.UserService;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.text.SimpleDateFormat;
@@ -40,8 +39,6 @@ public class OpenMRSPatientAdapterTest {
     @Mock
     private PatientService mockPatientService;
     @Mock
-    private UserService mockUserService;
-    @Mock
     private PersonService mockPersonService;
     @Mock
     private OpenMRSFacilityAdapter mockFacilityAdapter;
@@ -60,7 +57,6 @@ public class OpenMRSPatientAdapterTest {
         patientTestUtil = new PatientTestUtil();
         ReflectionTestUtils.setField(openMRSPatientAdapter, "patientService", mockPatientService);
         ReflectionTestUtils.setField(openMRSPatientAdapter, "personService", mockPersonService);
-        ReflectionTestUtils.setField(openMRSPatientAdapter, "userService", mockUserService);
         ReflectionTestUtils.setField(openMRSPatientAdapter, "facilityAdapter", mockFacilityAdapter);
         ReflectionTestUtils.setField(openMRSPatientAdapter, "patientHelper", new PatientHelper());
         ReflectionTestUtils.setField(openMRSPatientAdapter, "personAdapter", mockPersonAdapter);

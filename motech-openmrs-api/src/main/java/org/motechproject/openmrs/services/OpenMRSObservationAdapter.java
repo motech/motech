@@ -2,27 +2,36 @@ package org.motechproject.openmrs.services;
 
 import org.motechproject.mrs.model.MRSConcept;
 import org.motechproject.mrs.model.MRSObservation;
+import org.motechproject.mrs.services.MRSObservationAdapter;
 import org.openmrs.*;
 import org.openmrs.api.ObsService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.apache.commons.lang.math.NumberUtils.isNumber;
 
-public class OpenMRSObservationAdapter {
+public class OpenMRSObservationAdapter implements MRSObservationAdapter {
 
     @Autowired
-    OpenMRSConceptAdapter conceptAdapter;
+    OpenMRSConceptAdapter openMRSConceptAdapter;
 
     @Autowired
     ObsService obsService;
 
+    @Autowired
+    OpenMRSUserAdapter openMRSUserAdapter;
+
+    @Autowired
+    OpenMRSPatientAdapter openMRSPatientAdapter;
+
+
     <T> Obs createOpenMRSObservationForEncounter(MRSObservation<T> mrsObservation, Encounter encounter, Patient patient, Location location, User staff) {
         Obs openMrsObservation = new Obs();
-        openMrsObservation.setConcept(conceptAdapter.getConceptByName(mrsObservation.getConceptName()));
+        openMrsObservation.setConcept(openMRSConceptAdapter.getConceptByName(mrsObservation.getConceptName()));
         openMrsObservation.setPerson(patient);
         openMrsObservation.setLocation(location);
         openMrsObservation.setCreator(staff);
@@ -47,7 +56,7 @@ public class OpenMRSObservationAdapter {
         } else if (value instanceof Date) {
             openMRSObservation.setValueDatetime((Date) value);
         } else if (value instanceof MRSConcept) {
-            openMRSObservation.setValueCoded(conceptAdapter.getConceptByName(((MRSConcept) value).getName()));
+            openMRSObservation.setValueCoded(openMRSConceptAdapter.getConceptByName(((MRSConcept) value).getName()));
         } else if (value != null) {
             throw new IllegalArgumentException("Invalid value of the createMRSObservation- " + value);
         }
@@ -100,5 +109,27 @@ public class OpenMRSObservationAdapter {
             }
         }
         return mrsObservation;
+    }
+
+    @Override
+    public void voidObservation(MRSObservation mrsObservation, String reason, String userMotechId) {
+        Obs obs = obsService.getObs(Integer.valueOf(mrsObservation.getId()));
+        obs.setVoided(true);
+        obs.setVoidReason(reason);
+        obs.setDateVoided(new Date());
+        obs.setVoidedBy(openMRSUserAdapter.getOpenMrsUserByUserName(userMotechId));
+        obsService.voidObs(obs, reason);
+    }
+
+    @Override
+    public MRSObservation findObservation(String patientMotechId, String conceptName) {
+        Patient patient = openMRSPatientAdapter.getOpenmrsPatientByMotechId(patientMotechId);
+        Concept concept = openMRSConceptAdapter.getConceptByName(conceptName);
+        List<Obs> observations = obsService.getObservationsByPersonAndConcept(patient, concept);
+
+        if (!observations.isEmpty()) {
+            return convertOpenMRSToMRSObservation(observations.get(0));
+        }
+        return null;
     }
 }

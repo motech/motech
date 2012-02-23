@@ -5,6 +5,7 @@ import org.joda.time.LocalDate;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.motechproject.mrs.model.MRSConcept;
@@ -13,9 +14,8 @@ import org.openmrs.*;
 import org.openmrs.api.ObsService;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static ch.lambdaj.Lambda.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -39,14 +39,20 @@ public class OpenMRSObservationAdapterTest {
     @Mock
     private Encounter encounter;
     @Mock
+    private OpenMRSUserAdapter mockOpenMRSUserAdapter;
+    @Mock
+    private OpenMRSPatientAdapter mockOpenMRSPatientAdapter;
+    @Mock
     private User creator;
 
     @Before
     public void setUp() {
         initMocks(this);
         observationAdapter = new OpenMRSObservationAdapter();
-        ReflectionTestUtils.setField(observationAdapter, "conceptAdapter", mockConceptAdapter);
+        ReflectionTestUtils.setField(observationAdapter, "openMRSConceptAdapter", mockConceptAdapter);
         ReflectionTestUtils.setField(observationAdapter, "obsService", mockObservationService);
+        ReflectionTestUtils.setField(observationAdapter, "openMRSUserAdapter", mockOpenMRSUserAdapter);
+        ReflectionTestUtils.setField(observationAdapter, "openMRSPatientAdapter", mockOpenMRSPatientAdapter);
     }
 
     @Test
@@ -306,5 +312,53 @@ public class OpenMRSObservationAdapterTest {
         assertThat(openMrsObservation.getCreator(), is(equalTo(creator)));
     }
 
+    @Test
+    public void shouldFindObservation() {
+        OpenMRSObservationAdapter spyOpenMrsObservationAdapter = spy(observationAdapter);
 
+        String patientMotechId = "234";
+        String concept = "conceptName";
+        Patient openMRSpatient = new Patient();
+        Concept openMRSConcept = new Concept();
+        final Obs mockObs = mock(Obs.class);
+        MRSObservation mockMrsObs = mock(MRSObservation.class);
+        ArrayList<Obs> obsList = new ArrayList<Obs>(){{
+            add(mockObs);
+        }};
+
+        when(mockOpenMRSPatientAdapter.getOpenmrsPatientByMotechId(patientMotechId)).thenReturn(openMRSpatient);
+        when(mockConceptAdapter.getConceptByName(concept)).thenReturn(openMRSConcept);
+        when(mockObservationService.getObservationsByPersonAndConcept(openMRSpatient, openMRSConcept)).thenReturn(obsList);
+        doReturn(mockMrsObs).when(spyOpenMrsObservationAdapter).convertOpenMRSToMRSObservation(mockObs);
+
+        spyOpenMrsObservationAdapter.findObservation(patientMotechId, concept);
+        verify(spyOpenMrsObservationAdapter).convertOpenMRSToMRSObservation(mockObs);
+    }
+
+    @Test
+    public void shouldVoidObservation() {
+        String observationId = "34";
+        String mrsUserId="userId";
+        MRSObservation mrsObservation = new MRSObservation(observationId, new Date(), "name", Integer.valueOf("34"));
+        Obs expectedOpenmRSObs = new Obs();
+        expectedOpenmRSObs.setVoided(false);
+        String reason = "reason";
+        User user = new User(12);
+
+        when(mockObservationService.getObs(Integer.valueOf(observationId))).thenReturn(expectedOpenmRSObs);
+        when(mockOpenMRSUserAdapter.getOpenMrsUserByUserName(mrsUserId)).thenReturn(user);
+
+        observationAdapter.voidObservation(mrsObservation, reason, mrsUserId);
+
+        ArgumentCaptor<Obs> captor = ArgumentCaptor.forClass(Obs.class);
+        verify(mockObservationService).voidObs(captor.capture(), eq(reason));
+        Obs actualOpenMRSObservation = captor.getValue();
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
+        assertThat(actualOpenMRSObservation.getVoided(), is(true));
+        assertThat(actualOpenMRSObservation.getVoidReason(), is(reason));
+        assertThat(actualOpenMRSObservation.getVoidedBy(), is(user));
+        assertThat(format.format(actualOpenMRSObservation.getDateVoided()), is(format.format(Calendar.getInstance().getTime())));
+    }
 }
