@@ -57,4 +57,8 @@ public class Alert {
         LocalDate nextAlertDate = idealStartDate.plusDays(getElapsedAlertCount(startDate, preferredAlertTime) * interval.inDays());
         return DateUtil.newDateTime(nextAlertDate, preferredAlertTime.getHour(), preferredAlertTime.getMinute(), 0);
     }
+
+    public int getRemainingAlertCount(LocalDate milestoneWindowStartDate, Time preferredAlertTime) {
+        return count - getElapsedAlertCount(milestoneWindowStartDate,  preferredAlertTime);
+    }
 }

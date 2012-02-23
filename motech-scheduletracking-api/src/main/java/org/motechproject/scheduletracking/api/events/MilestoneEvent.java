@@ -2,7 +2,9 @@ package org.motechproject.scheduletracking.api.events;
 
 import org.joda.time.LocalDate;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.MilestoneAlert;
+import org.motechproject.scheduletracking.api.domain.MilestoneWindow;
 import org.motechproject.scheduletracking.api.events.constants.EventDataKeys;
 import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
 
@@ -29,6 +31,14 @@ public class MilestoneEvent {
         this.windowName = (String) motechEvent.getParameters().get(EventDataKeys.WINDOW_NAME);
         this.externalId = (String) motechEvent.getParameters().get(EventDataKeys.EXTERNAL_ID);
         this.referenceDate = (LocalDate) motechEvent.getParameters().get(EventDataKeys.REFERENCE_DATE);
+    }
+
+    public MilestoneEvent(Enrollment enrollment, MilestoneAlert milestoneAlert, MilestoneWindow milestoneWindow) {
+        this.externalId = enrollment.getExternalId();
+        this.scheduleName = enrollment.getScheduleName();
+        this.milestoneAlert = milestoneAlert;
+        this.windowName = milestoneWindow.getName().toString();
+        this.referenceDate = enrollment.getReferenceDate();
     }
 
     public MotechEvent toMotechEvent() {

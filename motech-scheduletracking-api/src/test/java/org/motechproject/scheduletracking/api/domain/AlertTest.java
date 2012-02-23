@@ -62,4 +62,11 @@ public class AlertTest {
         DateTime nextAlertDateTime = alert.getNextAlertDateTime(DateUtil.newDate(2012, 2, 18), new Time(8, 10));
         assertEquals(DateUtil.newDateTime(2012, 2, 21, 8, 10, 0), nextAlertDateTime);
     }
+
+    @Test
+    public void shouldReturnRemainingAlertCount() {
+        Alert alert = new Alert(new WallTime(0, WallTimeUnit.Day), new WallTime(1, WallTimeUnit.Day), 10, 0);
+        int alertCount = alert.getRemainingAlertCount(DateUtil.newDate(2012, 2, 18), new Time(8, 10));
+        assertEquals(7, alertCount);
+    }
 }

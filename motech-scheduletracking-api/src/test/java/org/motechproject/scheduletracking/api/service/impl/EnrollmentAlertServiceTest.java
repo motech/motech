@@ -1,7 +1,6 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +35,6 @@ import static org.powermock.api.mockito.PowerMockito.spy;
 @RunWith(PowerMockRunner.class)
 public class EnrollmentAlertServiceTest {
     private EnrollmentAlertService enrollmentAlertService;
-    private DateTime now;
 
     @Mock
     private AllTrackedSchedules allTrackedSchedules;
@@ -47,7 +45,7 @@ public class EnrollmentAlertServiceTest {
     public void setup() {
         initMocks(this);
 
-        now = new DateTime(2012, 2, 20, 8, 15, 0, 0);
+        DateTime now = new DateTime(2012, 2, 20, 8, 15, 0, 0);
         spy(DateUtil.class);
         given(DateUtil.now()).willReturn(now);
         given(DateUtil.today()).willReturn(now.toLocalDate());
@@ -177,54 +175,7 @@ public class EnrollmentAlertServiceTest {
     }
 
     @Test
-    public void defectCase1_shouldScheduleLateAlertFrom6thFeb() {
-        now = new DateTime(2012, 2, 1, 8, 15, 0, 0);
-        LocalDate ref = new LocalDate(2011, 4, 18);
-        given(DateUtil.now()).willReturn(now);
-        given(DateUtil.today()).willReturn(now.toLocalDate());
-
-        Milestone milestone = new Milestone("milestone", wallTimeOf(0), wallTimeOf(40), wallTimeOf(43), wallTimeOf(44));
-        milestone.addAlert(WindowName.due, new Alert(wallTime("1 week"), wallTime("40 weeks"), 1, 0));
-        milestone.addAlert(WindowName.late, new Alert(wallTime("1 week"), wallTime("1 week"), 3, 0));
-        Schedule schedule = new Schedule("my_schedule");
-        schedule.addMilestones(milestone);
-        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
-
-        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", ref, now.toLocalDate(), new Time(8, 20));
-        System.out.println(String.format("%s %s", enrollment.getReferenceDate(), enrollment.getEnrollmentDate()));
-        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
-
-        ArgumentCaptor<RepeatingSchedulableJob> repeatJobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
-        verify(schedulerService).safeScheduleRepeatingJob(repeatJobCaptor.capture());
-
-        RepeatingSchedulableJob job = repeatJobCaptor.getValue();
-        assertEquals(newDateTime(new LocalDate(2012, 2, 6), new Time(8, 20)).toDate(), job.getStartTime());
-        assertEquals(1, job.getRepeatCount().intValue());
-        assertEquals(7 * MILLIS_PER_DAY, job.getRepeatInterval());
-    }
-
-    @Test
-    public void defectCase2() {
-        Milestone milestone = new Milestone("milestone", wallTimeOf(12), wallTimeOf(13), wallTimeOf(15), wallTimeOf(18));
-        milestone.addAlert(WindowName.earliest, new Alert(wallTime("0 weeks"), wallTime("2 days"), 5, 0));
-        Schedule schedule = new Schedule("my_schedule");
-        schedule.addMilestones(milestone);
-        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
-
-        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", new LocalDate(2012, 2, 16), now.toLocalDate(), new Time(8, 20));
-        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
-
-        ArgumentCaptor<RepeatingSchedulableJob> repeatJobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
-        verify(schedulerService).safeScheduleRepeatingJob(repeatJobCaptor.capture());
-
-        RepeatingSchedulableJob job = repeatJobCaptor.getValue();
-        assertEquals(newDateTime(new LocalDate(2012, 2, 20), new Time(8, 20)).toDate(), job.getStartTime());
-        assertEquals(2, job.getRepeatCount().intValue());
-        assertEquals(2 * (long) MILLIS_PER_DAY, job.getRepeatInterval());
-    }
-
-    @Test
-    public void defectCase3_shouldNotScheduleTheOnlyElapsedAlert() {
+    public void shouldNotScheduleJobsIfAllAlertsHaveElapsed() {
         Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
         milestone.addAlert(WindowName.earliest, new Alert(wallTime("0 days"), wallTime("3 days"), 1, 0));
         Schedule schedule = new Schedule("my_schedule");
@@ -313,7 +264,7 @@ public class EnrollmentAlertServiceTest {
         enrollment.setId("enrollment_1");
         enrollmentAlertService.unscheduleAllAlerts(enrollment);
 
-        verify(schedulerService).unscheduleAllJobs(String.format("%s-%s", EventSubjects.MILESTONE_ALERT, "enrollment_1"));
+        verify(schedulerService).safeUnscheduleAllJobs(String.format("%s-%s", EventSubjects.MILESTONE_ALERT, "enrollment_1"));
     }
 
     private void assertRepeatIntervalValue(long expected, long actual) {
