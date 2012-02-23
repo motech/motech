@@ -6,7 +6,6 @@ import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.scheduler.domain.JobId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +36,7 @@ public class AllAppointmentReminderJobs {
     private Map<String, Object> getParameters(Appointment appointment, String externalId) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(EventKeys.EXTERNAL_ID_KEY, externalId);
-        parameters.put(MotechSchedulerService.JOB_ID_KEY, new JobId(EventKeys.REMINDER_EVENT_SUBJECT, externalId).value());
+        parameters.put(MotechSchedulerService.JOB_ID_KEY, appointment.id());
         parameters.put(EventKeys.APPOINTMENT_ID, appointment.id());
         return parameters;
     }

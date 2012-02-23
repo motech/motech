@@ -49,7 +49,7 @@ public class AllAppointmentReminderJobsTest {
         assertEquals(startDate.toDate(), repeatingSchedulableJob.getStartTime());
         assertEquals(endDate.toDate(), repeatingSchedulableJob.getEndTime());
         assertEquals(externalId, eventParameters.get(EventKeys.EXTERNAL_ID_KEY));
-        assertEquals("org.motechproject.appointments.api.reminder-externalId", eventParameters.get(MotechSchedulerService.JOB_ID_KEY));
+        assertEquals(appointment.id(), eventParameters.get(MotechSchedulerService.JOB_ID_KEY));
     }
 
     @Test
