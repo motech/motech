@@ -36,7 +36,7 @@ public class Appointment extends ExtensibleDataObject {
     }
 
     public DateTime firmDate() {
-        return firmDate;
+        return DateUtil.setTimeZone(firmDate);
     }
 
     public Appointment firmDate(DateTime firmDate) {
