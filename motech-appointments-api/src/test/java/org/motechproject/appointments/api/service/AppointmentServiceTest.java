@@ -10,6 +10,7 @@ import org.motechproject.appointments.api.contract.AppointmentCalendarRequest;
 import org.motechproject.appointments.api.contract.ReminderConfiguration;
 import org.motechproject.appointments.api.dao.AllAppointmentCalendars;
 import org.motechproject.appointments.api.dao.AllAppointmentReminderJobs;
+import org.motechproject.appointments.api.dao.AllVisitReminderJobs;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.AppointmentCalendar;
 import org.motechproject.appointments.api.model.Reminder;
@@ -17,7 +18,6 @@ import org.motechproject.appointments.api.model.TypeOfVisit;
 import org.motechproject.appointments.api.model.Visit;
 import org.motechproject.util.DateUtil;
 
-import javax.lang.model.util.Types;
 import java.util.Arrays;
 
 import static junit.framework.Assert.assertEquals;
@@ -33,19 +33,21 @@ public class AppointmentServiceTest {
     private AllAppointmentReminderJobs allAppointmentReminderJobs;
     @Mock
     private AllAppointmentCalendars allAppointmentCalendars;
+    @Mock
+    private AllVisitReminderJobs allVisitReminderJobs;
 
     AppointmentService appointmentService;
 
     @Before
     public void setUp() {
         initMocks(this);
-        appointmentService = new AppointmentService(allAppointmentCalendars, allAppointmentReminderJobs);
+        appointmentService = new AppointmentService(allAppointmentCalendars, allAppointmentReminderJobs, allVisitReminderJobs);
     }
 
     @Test
     public void shouldAddAnAppointmentCalender() {
         String externalId = "externalId";
-        AppointmentCalendarRequest appointmentCalendarRequest = new AppointmentCalendarRequest().setExternalId(externalId).setWeekOffsets(Arrays.asList(2, 4)).setReminderConfiguration(new ReminderConfiguration());
+        AppointmentCalendarRequest appointmentCalendarRequest = new AppointmentCalendarRequest().setExternalId(externalId).setWeekOffsets(Arrays.asList(2, 4)).setAppointmentReminderConfiguration(new ReminderConfiguration());
 
         appointmentService.addCalendar(appointmentCalendarRequest);
 
@@ -101,11 +103,11 @@ public class AppointmentServiceTest {
         final String externalId = "externalId";
         final DateTime now = DateUtil.now();
         ArgumentCaptor<Reminder> reminderCaptor = ArgumentCaptor.forClass(Reminder.class);
-        ReminderConfiguration reminderConfiguration = new ReminderConfiguration().setRemindFrom(REMIND_FROM).setIntervalCount(1).setIntervalUnit(ReminderConfiguration.IntervalUnit.HOURS).setRepeatCount(20);
+        ReminderConfiguration appointmentReminderConfiguration = new ReminderConfiguration().setRemindFrom(REMIND_FROM).setIntervalCount(1).setIntervalUnit(ReminderConfiguration.IntervalUnit.HOURS).setRepeatCount(20);
 
         when(allAppointmentCalendars.findByExternalId(externalId)).thenReturn(appointmentCalendar);
 
-        final String visitId = appointmentService.addVisit(externalId, now, reminderConfiguration, TypeOfVisit.Scheduled);
+        final String visitId = appointmentService.addVisit(externalId, now, appointmentReminderConfiguration, new ReminderConfiguration(), TypeOfVisit.Scheduled);
         
         assertNotNull(visitId);
         ArgumentCaptor<Appointment> appointmentCaptor = ArgumentCaptor.forClass(Appointment.class);

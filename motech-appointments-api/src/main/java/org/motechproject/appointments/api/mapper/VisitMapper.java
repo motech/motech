@@ -9,14 +9,16 @@ import org.motechproject.util.DateUtil;
 
 public class VisitMapper {
 
-    public Visit mapScheduledVisit(int weekOffset, ReminderConfiguration reminderConfiguration) {
+    public Visit mapScheduledVisit(int weekOffset, ReminderConfiguration appointmentReminderConfiguration, ReminderConfiguration visitReminderConfiguration) {
         DateTime dueDate = DateUtil.now().plusWeeks(weekOffset);
-        Reminder appointmentReminder = new ReminderMapper().map(dueDate, reminderConfiguration);
-        return new Visit().weekNumber(weekOffset).typeOfVisit(TypeOfVisit.Scheduled).addAppointment(dueDate, appointmentReminder);
+        Reminder appointmentReminder = new ReminderMapper().map(dueDate, appointmentReminderConfiguration);
+        Reminder visitReminder = new ReminderMapper().map(dueDate, visitReminderConfiguration);
+        return new Visit().reminder(visitReminder).weekNumber(weekOffset).typeOfVisit(TypeOfVisit.Scheduled).addAppointment(dueDate, appointmentReminder);
     }
 
-    public Visit mapUnscheduledVisit(DateTime scheduledDate, ReminderConfiguration reminderConfiguration, TypeOfVisit typeOfVisit) {
-        Reminder appointmentReminder = new ReminderMapper().map(scheduledDate, reminderConfiguration);
-        return new Visit().name("visitFor-" + scheduledDate.getMillis()).typeOfVisit(typeOfVisit).addAppointment(scheduledDate, appointmentReminder);
+    public Visit mapUnscheduledVisit(DateTime scheduledDate, ReminderConfiguration appointmentReminderConfiguration, ReminderConfiguration visitReminderConfiguration, TypeOfVisit typeOfVisit) {
+        Reminder appointmentReminder = new ReminderMapper().map(scheduledDate, appointmentReminderConfiguration);
+        Reminder visitReminder = new ReminderMapper().map(scheduledDate, visitReminderConfiguration);
+        return new Visit().reminder(visitReminder).name("visitFor-" + scheduledDate.getMillis()).typeOfVisit(typeOfVisit).addAppointment(scheduledDate, appointmentReminder);
     }
 }

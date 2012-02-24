@@ -6,7 +6,9 @@ public class AppointmentCalendarRequest {
 
     private String externalId;
 
-    private ReminderConfiguration reminderConfiguration;
+    private ReminderConfiguration appointmentReminderConfiguration;
+
+    private ReminderConfiguration visitReminderConfiguration;
 
     private List<Integer> weekOffsets;
 
@@ -19,12 +21,12 @@ public class AppointmentCalendarRequest {
         return this;
     }
 
-    public ReminderConfiguration getReminderConfiguration() {
-        return reminderConfiguration;
+    public ReminderConfiguration getAppointmentReminderConfiguration() {
+        return appointmentReminderConfiguration;
     }
 
-    public AppointmentCalendarRequest setReminderConfiguration(ReminderConfiguration reminderConfiguration) {
-        this.reminderConfiguration = reminderConfiguration;
+    public AppointmentCalendarRequest setAppointmentReminderConfiguration(ReminderConfiguration appointmentReminderConfiguration) {
+        this.appointmentReminderConfiguration = appointmentReminderConfiguration;
         return this;
     }
 
@@ -34,6 +36,15 @@ public class AppointmentCalendarRequest {
 
     public AppointmentCalendarRequest setWeekOffsets(List<Integer> weekOffsets) {
         this.weekOffsets = weekOffsets;
+        return this;
+    }
+
+    public ReminderConfiguration getVisitReminderConfiguration() {
+        return visitReminderConfiguration;
+    }
+
+    public AppointmentCalendarRequest setVisitReminderConfiguration(ReminderConfiguration visitReminderConfiguration) {
+        this.visitReminderConfiguration = visitReminderConfiguration;
         return this;
     }
 }
