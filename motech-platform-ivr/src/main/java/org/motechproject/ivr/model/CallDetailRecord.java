@@ -40,18 +40,10 @@ public class CallDetailRecord {
         this.disposition = disposition;
     }
 
-    public static CallDetailRecord newIncomingCallRecord(String phoneNumber) {
-        return create(phoneNumber, CallDirection.Inbound);
-    }
-
-    public static CallDetailRecord newOutgoingCallRecord(String phoneNumber) {
-        return create(phoneNumber, CallDirection.Outbound);
-    }
-
-    private static CallDetailRecord create(String phoneNumber, CallDirection callDirection){
+    public static CallDetailRecord create(String phoneNumber, CallDirection callDirection, Disposition disposition){
         CallDetailRecord callDetailRecord = new CallDetailRecord();
         callDetailRecord.startDate = DateUtil.now().toDate();
-        callDetailRecord.disposition = Disposition.ANSWERED;
+        callDetailRecord.disposition = disposition;
         callDetailRecord.answerDate = callDetailRecord.startDate;
         callDetailRecord.phoneNumber = phoneNumber;
         callDetailRecord.callDirection = callDirection;

@@ -55,7 +55,7 @@ public class KookooCallDetailRecordsServiceImplTest {
         when(eventContext.getEventRelay()).thenReturn(eventRelay);
 
         kookooCallDetailRecordsService = new KookooCallDetailRecordsServiceImpl(allKooKooCallDetailRecords, allKooKooCallDetailRecords);
-        CallDetailRecord callDetailRecord = CallDetailRecord.newIncomingCallRecord("85437");
+        CallDetailRecord callDetailRecord = CallDetailRecord.create("85437", CallDirection.Inbound, CallDetailRecord.Disposition.ANSWERED);
         kookooCallDetailRecord = new KookooCallDetailRecord(callDetailRecord, "fdsfdsf");
         when(allKooKooCallDetailRecords.get(callDetailRecordId)).thenReturn(kookooCallDetailRecord);
     }
@@ -124,7 +124,7 @@ public class KookooCallDetailRecordsServiceImplTest {
 
     @Test
     public void create() {
-        kookooCallDetailRecordsService.create("1111", "2222", CallDirection.Inbound);
+        kookooCallDetailRecordsService.createAnsweredRecord("1111", "2222", CallDirection.Inbound);
         ArgumentCaptor<KookooCallDetailRecord> capture = ArgumentCaptor.forClass(KookooCallDetailRecord.class);
         verify(allKooKooCallDetailRecords).add(capture.capture());
         KookooCallDetailRecord newKookooCallDetailRecord = capture.getValue();

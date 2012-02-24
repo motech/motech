@@ -19,9 +19,9 @@ import java.util.logging.Logger;
 public class KookooCallServiceImpl implements IVRService {
     public static final String OUTBOUND_URL = "kookoo.outbound.url";
     public static final String API_KEY = "kookoo.api.key";
-
     public static final String API_KEY_KEY = "api_key";
     public static final String URL_KEY = "url";
+    public static final String CALLBACK_URL_KEY = "callback_url";
     public static final String PHONE_NUMBER_KEY = "phone_no";
     public static final String CUSTOM_DATA_KEY = "dataMap";
     public static final String IS_OUTBOUND_CALL = "is_outbound_call";
@@ -46,15 +46,18 @@ public class KookooCallServiceImpl implements IVRService {
         if (callRequest == null) throw new IllegalArgumentException("Missing call request");
 
         try {
+            final String externalId = callRequest.getPayload().get(EXTERNAL_ID);
             callRequest.getPayload().put(IS_OUTBOUND_CALL, "true");
             JSONObject json = new JSONObject(callRequest.getPayload());
-            String applicationUrl = String.format("%s?%s=%s", callRequest.getCallBackUrl(), CUSTOM_DATA_KEY, json.toString());
-            applicationUrl = URLEncoder.encode(applicationUrl, "UTF-8");
+
+            String applicationCallbackUrl = String.format("%s/callback?%s=%s", callRequest.getCallBackUrl(), EXTERNAL_ID, externalId);
+            String applicationReplyUrl = String.format("%s?%s=%s", callRequest.getCallBackUrl(), CUSTOM_DATA_KEY, json.toString());
 
             GetMethod getMethod = new GetMethod(properties.get(OUTBOUND_URL).toString());
             getMethod.setQueryString(new NameValuePair[]{
                     new NameValuePair(API_KEY_KEY, properties.get(API_KEY).toString()),
-                    new NameValuePair(URL_KEY, applicationUrl),
+                    new NameValuePair(URL_KEY, URLEncoder.encode(applicationReplyUrl, "UTF-8")),
+                    new NameValuePair(CALLBACK_URL_KEY, URLEncoder.encode(applicationCallbackUrl, "UTF-8")),
                     new NameValuePair(PHONE_NUMBER_KEY, callRequest.getPhone())
             });
             log.info(String.format("Dialing %s", getMethod.getURI()));

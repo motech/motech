@@ -5,8 +5,10 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.ivr.event.IVREvent;
 import org.motechproject.ivr.kookoo.KooKooIVRContextForTest;
+import org.motechproject.ivr.kookoo.KookooCallbackRequest;
 import org.motechproject.ivr.kookoo.extensions.CallFlowController;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
+import org.motechproject.ivr.model.CallDetailRecord;
 import org.motechproject.ivr.model.CallDirection;
 
 import static junit.framework.Assert.assertEquals;
@@ -39,7 +41,7 @@ public class IVRControllerTest {
         ivrContextForTest.callId(callId);
         when(callFlowController.urlFor(ivrContextForTest)).thenReturn(AllIVRURLs.DECISION_TREE_URL);
         when(callFlowController.decisionTreeName(ivrContextForTest)).thenReturn(treeName);
-        when(callDetailRecordsService.create(callId, callerId, callDirection)).thenReturn(kooKooCallDetailRecordId);
+        when(callDetailRecordsService.createAnsweredRecord(callId, callerId, callDirection)).thenReturn(kooKooCallDetailRecordId);
 
         ivrController.reply(ivrContextForTest);
         assertEquals(kooKooCallDetailRecordId, ivrContextForTest.callDetailRecordId());
@@ -77,5 +79,26 @@ public class IVRControllerTest {
 
         String replyURL = ivrController.reply(ivrContextForTest);
         assertEquals("forward:/ivr/dial/dial", replyURL);
+    }
+
+    @Test
+    public void shouldNotRecordCallDetail_OnKookooCallback_IfCallWasAnswered() {
+        KookooCallbackRequest kookooCallbackRequest = new KookooCallbackRequest();
+        kookooCallbackRequest.setStatus("answered");
+
+        ivrController.callback(kookooCallbackRequest);
+        verifyZeroInteractions(callDetailRecordsService);
+    }
+
+    @Test
+    public void shouldRecordCallDetail_OnKookooCallback_IfCallWasNotAnswered() {
+        KookooCallbackRequest kookooCallbackRequest = new KookooCallbackRequest();
+        kookooCallbackRequest.setStatus("ring");
+        kookooCallbackRequest.setPhone_no("phone_no");
+        kookooCallbackRequest.setExternal_id("external_id");
+
+        ivrController.callback(kookooCallbackRequest);
+        verify(callDetailRecordsService).createOutgoing(anyString(), eq("phone_no"), eq(CallDetailRecord.Disposition.NO_ANSWER));
+        verify(callDetailRecordsService).close(anyString(), eq("external_id"), eq(IVREvent.Missed));
     }
 }

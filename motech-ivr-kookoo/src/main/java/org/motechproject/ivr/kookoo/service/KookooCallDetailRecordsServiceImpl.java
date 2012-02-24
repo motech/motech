@@ -39,13 +39,14 @@ public class KookooCallDetailRecordsServiceImpl implements KookooCallDetailRecor
         return allKooKooCallDetailRecords.get(callDetailRecordId);
     }
 
-    public String create(String vendorCallId, String callerId, CallDirection callDirection) {
-        CallDetailRecord callDetailRecord = CallDirection.Inbound.equals(callDirection) ? CallDetailRecord.newIncomingCallRecord(callerId) :
-                CallDetailRecord.newOutgoingCallRecord(callerId);
-        KookooCallDetailRecord kookooCallDetailRecord = new KookooCallDetailRecord(callDetailRecord, vendorCallId);
-        kookooCallDetailRecord.addCallEvent(new CallEvent(IVREvent.NewCall.toString()));
-        allCallDetailRecords.add(kookooCallDetailRecord);
-        return kookooCallDetailRecord.getId();
+    public String createAnsweredRecord(String vendorCallId, String callerId, CallDirection callDirection) {
+        CallDetailRecord callDetailRecord = CallDetailRecord.create(callerId, callDirection, CallDetailRecord.Disposition.ANSWERED);
+        return addCallDetailRecord(vendorCallId, callDetailRecord);
+    }
+
+    public String createOutgoing(String vendorCallId, String callerId, CallDetailRecord.Disposition disposition) {
+        CallDetailRecord callDetailRecord = CallDetailRecord.create(callerId, CallDirection.Outbound, disposition);
+        return addCallDetailRecord(vendorCallId, callDetailRecord);
     }
 
     @Override
@@ -55,6 +56,13 @@ public class KookooCallDetailRecordsServiceImpl implements KookooCallDetailRecor
             kookooCallDetailRecord.appendToLastEvent(CallEventConstants.DTMF_DATA, userInput);
         }
         allKooKooCallDetailRecords.update(kookooCallDetailRecord);
+    }
+
+    private String addCallDetailRecord(String vendorCallId, CallDetailRecord callDetailRecord) {
+        KookooCallDetailRecord kookooCallDetailRecord = new KookooCallDetailRecord(callDetailRecord, vendorCallId);
+        kookooCallDetailRecord.addCallEvent(new CallEvent(IVREvent.NewCall.toString()));
+        allCallDetailRecords.add(kookooCallDetailRecord);
+        return kookooCallDetailRecord.getId();
     }
 
     private KookooCallDetailRecord appendToCallDetailRecord(String callDetailRecordId, IVREvent ivrEvent) {
@@ -67,7 +75,7 @@ public class KookooCallDetailRecordsServiceImpl implements KookooCallDetailRecor
     @Override
     public void appendToLastCallEvent(String callDetailRecordID, HashMap<String, String> map) {
         KookooCallDetailRecord callDetailRecord = get(callDetailRecordID);
-        for(String key : map.keySet()){
+        for (String key : map.keySet()) {
             callDetailRecord.appendToLastEvent(key, map.get(key));
         }
         allKooKooCallDetailRecords.update(callDetailRecord);

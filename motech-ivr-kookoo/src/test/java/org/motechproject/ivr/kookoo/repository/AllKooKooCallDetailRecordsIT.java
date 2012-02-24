@@ -7,6 +7,7 @@ import org.motechproject.ivr.event.CallEvent;
 import org.motechproject.ivr.event.IVREvent;
 import org.motechproject.ivr.kookoo.domain.KookooCallDetailRecord;
 import org.motechproject.ivr.model.CallDetailRecord;
+import org.motechproject.ivr.model.CallDirection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
@@ -27,7 +28,7 @@ public class AllKooKooCallDetailRecordsIT {
 
     @Test
     public void shouldFindCallDetailRecordByCallId() {
-        CallDetailRecord callDetailRecord = CallDetailRecord.newIncomingCallRecord("phoneNumber");
+        CallDetailRecord callDetailRecord = CallDetailRecord.create("phoneNumber", CallDirection.Inbound, CallDetailRecord.Disposition.ANSWERED);
         CallEvent callEvent = new CallEvent(IVREvent.GotDTMF.toString());
         callEvent.appendData(IVREvent.GotDTMF.toString(), "1234");
         callDetailRecord.addCallEvent(callEvent);

@@ -39,6 +39,8 @@ package org.motechproject.ivr.service;
  */
 public interface IVRService {
 
+    public static final String EXTERNAL_ID = "external_id";
+
     /**
      * Sends an initiate call command to IVR. The call should be made to the phone specified in the given CallRequest
      *

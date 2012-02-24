@@ -3,9 +3,11 @@ package org.motechproject.ivr.kookoo.controller;
 import org.apache.log4j.Logger;
 import org.motechproject.ivr.event.IVREvent;
 import org.motechproject.ivr.kookoo.KooKooIVRContext;
+import org.motechproject.ivr.kookoo.KookooCallbackRequest;
 import org.motechproject.ivr.kookoo.KookooRequest;
 import org.motechproject.ivr.kookoo.extensions.CallFlowController;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
+import org.motechproject.ivr.model.CallDetailRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +35,15 @@ public class IVRController {
         return reply(kooKooIVRContext);
     }
 
+    @RequestMapping(value = "reply/callback", method = RequestMethod.POST)
+    public String callback(KookooCallbackRequest kookooCallbackRequest) {
+        if (kookooCallbackRequest.notAnswered()) {
+            String kooKooCallDetailRecordId = kookooCallDetailRecordsService.createOutgoing(kookooCallbackRequest.getSid(), kookooCallbackRequest.getPhone_no(), CallDetailRecord.Disposition.NO_ANSWER);
+            kookooCallDetailRecordsService.close(kooKooCallDetailRecordId, kookooCallbackRequest.getExternal_id(), IVREvent.Missed);
+        }
+        return "";
+    }
+
     String reply(KooKooIVRContext ivrContext) {
         try {
             logger.info(ivrContext.allCookies());
@@ -41,7 +52,7 @@ public class IVRController {
             switch (ivrEvent) {
                 case NewCall:
                     ivrContext.initialize();
-                    String kooKooCallDetailRecordId = kookooCallDetailRecordsService.create(ivrContext.callId(), ivrContext.callerId(), ivrContext.callDirection());
+                    String kooKooCallDetailRecordId = kookooCallDetailRecordsService.createAnsweredRecord(ivrContext.callId(), ivrContext.callerId(), ivrContext.callDirection());
                     ivrContext.callDetailRecordId(kooKooCallDetailRecordId);
                     break;
                 case Disconnect:

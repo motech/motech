@@ -44,17 +44,29 @@ public class KookooCallServiceImplTest {
     @Test
     public void shouldMakeACallWithMandatoryParameters() throws IOException {
         Map<String, String> params = new HashMap<String, String>();
+        params.put("external_id", "external_id");
         ivrService.initiateCall(new CallRequest(phoneNumber, params, CALLBACK_URL));
-        verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://kookoo/outbound.php?api_key=KKbedce53758c2e0b0e9eed7191ec2a466&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FdataMap%3D%7B%22is_outbound_call%22%3A%22true%22%7D&phone_no=9876543211")));
+
+        String apiKey = "api_key=KKbedce53758c2e0b0e9eed7191ec2a466";
+        String replyUrl = "&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FdataMap%3D%7B%22external_id%22%3A%22external_id%22%2C%22is_outbound_call%22%3A%22true%22%7D";
+        String callbackUrl = "&callback_url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%2Fcallback%3Fexternal_id%3Dexternal_id";
+        String phoneNo = "&phone_no=9876543211";
+        verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://kookoo/outbound.php?" + apiKey + replyUrl + callbackUrl + phoneNo)));
     }
 
     @Test
     public void shouldMakeACallWithMandatoryAndCustomParameters() throws IOException {
         Map<String, String> params = new HashMap<String, String>();
+        params.put("external_id", "external_id");
         params.put("hero", "batman");
+
         ivrService.initiateCall(new CallRequest(phoneNumber, params, CALLBACK_URL));
-        String expectedURL = "http://kookoo/outbound.php?api_key=KKbedce53758c2e0b0e9eed7191ec2a466&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FdataMap%3D%7B%22hero%22%3A%22batman%22%2C%22is_outbound_call%22%3A%22true%22%7D&phone_no=9876543211";
-        verify(httpClient).executeMethod(argThat(new GetMethodMatcher(expectedURL)));
+
+        String apiKey = "api_key=KKbedce53758c2e0b0e9eed7191ec2a466";
+        String replyUrl = "&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FdataMap%3D%7B%22external_id%22%3A%22external_id%22%2C%22hero%22%3A%22batman%22%2C%22is_outbound_call%22%3A%22true%22%7D";
+        String callbackUrl = "&callback_url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%2Fcallback%3Fexternal_id%3Dexternal_id";
+        String phoneNo = "&phone_no=9876543211";
+        verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://kookoo/outbound.php?" + apiKey + replyUrl + callbackUrl + phoneNo)));
     }
 
     public class GetMethodMatcher extends ArgumentMatcher<GetMethod> {
