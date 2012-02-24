@@ -59,6 +59,6 @@ public class AllAppointmentReminderJobsTest {
         ArgumentCaptor<String> subjectCaptor = ArgumentCaptor.forClass(String.class);
         verify(schedulerService).safeUnscheduleRepeatingJob(subjectCaptor.capture(), eq("externalId"));
 
-        assertEquals("org.motechproject.appointments.api.reminder", subjectCaptor.getValue());
+        assertEquals("org.motechproject.appointments.api.Appointment.Reminder", subjectCaptor.getValue());
     }
 }

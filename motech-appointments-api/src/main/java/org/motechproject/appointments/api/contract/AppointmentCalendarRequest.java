@@ -8,8 +8,6 @@ public class AppointmentCalendarRequest {
 
     private ReminderConfiguration appointmentReminderConfiguration;
 
-    private ReminderConfiguration visitReminderConfiguration;
-
     private List<Integer> weekOffsets;
 
     public String getExternalId() {
@@ -39,12 +37,4 @@ public class AppointmentCalendarRequest {
         return this;
     }
 
-    public ReminderConfiguration getVisitReminderConfiguration() {
-        return visitReminderConfiguration;
-    }
-
-    public AppointmentCalendarRequest setVisitReminderConfiguration(ReminderConfiguration visitReminderConfiguration) {
-        this.visitReminderConfiguration = visitReminderConfiguration;
-        return this;
-    }
 }

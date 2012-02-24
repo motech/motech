@@ -1,6 +1,7 @@
 package org.motechproject.appointments.api.mapper;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.motechproject.appointments.api.contract.ReminderConfiguration;
 import org.motechproject.appointments.api.contract.ReminderConfiguration.IntervalUnit;
 import org.motechproject.appointments.api.model.Reminder;
@@ -9,8 +10,9 @@ import java.util.Date;
 
 public class ReminderMapper {
 
-    public Reminder map(DateTime dueDate, ReminderConfiguration reminderConfiguration) {
-        Date startDate = dueDate.toLocalDate().minusDays(reminderConfiguration.getRemindFrom()).toDate();
+    public Reminder map(DateTime dueDateTime, ReminderConfiguration reminderConfiguration) {
+        LocalDate dueDate = dueDateTime.toLocalDate();
+        Date startDate = dueDate.minusDays(reminderConfiguration.getRemindFrom()).toDate();
         Date endDate = dueDate.toDate();
         long intervalSeconds = intervalSeconds(reminderConfiguration.getIntervalUnit(), reminderConfiguration.getIntervalCount());
         return new Reminder().startDate(startDate).endDate(endDate).intervalSeconds(intervalSeconds).repeatCount(reminderConfiguration.getRepeatCount());
