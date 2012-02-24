@@ -1,4 +1,4 @@
-package org.motechproject.scheduletracking.api.domain.userspecified;
+package org.motechproject.scheduletracking.api.domain.json;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +19,5 @@ public class ScheduleRecord {
 
     public List<MilestoneRecord> milestoneRecords() {
         return milestones;
-    }
-
-    public String totalDuration() {
-        return totalDuration;
     }
 }

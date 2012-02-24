@@ -1,7 +1,6 @@
-package org.motechproject.scheduletracking.api.domain.userspecified;
+package org.motechproject.scheduletracking.api.domain.json;
 
 public class AlertRecord {
-
     private String window;
     private String offset;
     private String interval;

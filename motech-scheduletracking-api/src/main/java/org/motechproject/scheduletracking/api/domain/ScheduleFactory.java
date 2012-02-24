@@ -1,10 +1,10 @@
 package org.motechproject.scheduletracking.api.domain;
 
 import org.motechproject.scheduletracking.api.domain.exception.InvalidScheduleDefinitionException;
-import org.motechproject.scheduletracking.api.domain.userspecified.AlertRecord;
-import org.motechproject.scheduletracking.api.domain.userspecified.MilestoneRecord;
-import org.motechproject.scheduletracking.api.domain.userspecified.ScheduleRecord;
-import org.motechproject.scheduletracking.api.domain.userspecified.ScheduleWindowsRecord;
+import org.motechproject.scheduletracking.api.domain.json.AlertRecord;
+import org.motechproject.scheduletracking.api.domain.json.MilestoneRecord;
+import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
+import org.motechproject.scheduletracking.api.domain.json.ScheduleWindowsRecord;
 import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.factory.WallTimeFactory;
 import org.springframework.stereotype.Component;

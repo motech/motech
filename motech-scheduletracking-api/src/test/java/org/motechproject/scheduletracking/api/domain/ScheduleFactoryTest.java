@@ -2,7 +2,7 @@ package org.motechproject.scheduletracking.api.domain;
 
 import org.junit.Test;
 import org.motechproject.scheduletracking.api.domain.exception.InvalidScheduleDefinitionException;
-import org.motechproject.scheduletracking.api.domain.userspecified.ScheduleRecord;
+import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReader;
 import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReaderImpl;
 

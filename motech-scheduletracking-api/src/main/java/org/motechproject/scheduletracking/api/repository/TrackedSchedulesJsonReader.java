@@ -1,6 +1,6 @@
 package org.motechproject.scheduletracking.api.repository;
 
-import org.motechproject.scheduletracking.api.domain.userspecified.ScheduleRecord;
+import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 
 import java.util.List;
 

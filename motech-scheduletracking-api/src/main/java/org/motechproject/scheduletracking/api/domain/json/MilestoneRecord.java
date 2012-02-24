@@ -1,4 +1,4 @@
-package org.motechproject.scheduletracking.api.domain.userspecified;
+package org.motechproject.scheduletracking.api.domain.json;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,15 +11,6 @@ public class MilestoneRecord {
     private ScheduleWindowsRecord scheduleWindows;
     private List<AlertRecord> alerts = new ArrayList<AlertRecord>();
     private Map<String, String> data = new HashMap<String, String>();
-
-    private MilestoneRecord() {
-    }
-
-    public MilestoneRecord(String name, String referenceDate, ScheduleWindowsRecord scheduleWindows) {
-        this.name = name;
-        this.referenceDate = referenceDate;
-        this.scheduleWindows = scheduleWindows;
-    }
 
     public String name() {
         return name;
