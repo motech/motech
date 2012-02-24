@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Schedule implements Serializable {
-
     private String name;
     private List<Milestone> milestones = new ArrayList<Milestone>();
 
@@ -79,5 +78,9 @@ public class Schedule implements Serializable {
     @Override
     public int hashCode() {
         return name != null ? name.hashCode() : 0;
+    }
+
+    public boolean maxMilestoneCountReached(int milestoneCount) {
+        return milestoneCount >= milestones.size();
     }
 }

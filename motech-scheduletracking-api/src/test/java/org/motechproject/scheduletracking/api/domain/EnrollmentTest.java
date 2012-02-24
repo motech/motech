@@ -1,12 +1,11 @@
 package org.motechproject.scheduletracking.api.domain;
 
-import junit.framework.Assert;
 import org.junit.Test;
 import org.motechproject.model.Time;
+import org.motechproject.util.DateUtil;
 
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 import static org.motechproject.util.DateUtil.today;
@@ -93,5 +92,18 @@ public class EnrollmentTest {
         Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", secondMilestoneName, weeksAgo(5), weeksAgo(3), null);
 
         assertEquals(weeksAgo(3), enrollment.getCurrentMilestoneStartDate(firstMilestoneName));
+    }
+
+    @Test
+    public void shouldFulfillCurrentMilestone() {
+        Enrollment enrollment = new Enrollment("externalId", "scheduleName", "currentMilestoneName", weeksAgo(1), weeksAgo(1), new Time(8, 10));
+
+        assertEquals(0, enrollment.getFulfillments().size());
+        enrollment.fulfillCurrentMilestone();
+        assertEquals(1, enrollment.getFulfillments().size());
+
+        MilestoneFulfillment milestoneFulfillment = enrollment.getFulfillments().get(0);
+        assertEquals(DateUtil.today(), milestoneFulfillment.getDateFulfilled());
+        assertEquals("currentMilestoneName", milestoneFulfillment.getMilestoneName());
     }
 }

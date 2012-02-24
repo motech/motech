@@ -10,6 +10,8 @@ import org.motechproject.model.Time;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.motechproject.util.DateUtil.today;
+
 @TypeDiscriminator("doc.type == 'Enrollment'")
 public class Enrollment extends MotechBaseDataObject {
     @JsonProperty
@@ -123,5 +125,9 @@ public class Enrollment extends MotechBaseDataObject {
         if (currentMilestoneName.equals(firstMilestoneNameFromSchedule))
             return referenceDate;
         return (fulfillments.isEmpty()) ? enrollmentDate : lastFulfilledDate();
+    }
+
+    public void fulfillCurrentMilestone() {
+        fulfillments.add(new MilestoneFulfillment(currentMilestoneName, today()));
     }
 }

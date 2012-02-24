@@ -29,7 +29,7 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
     }
 
     @Override
-    public EnrollmentResponse getEnrollment(String externalId, String scheduleName){
+    public EnrollmentResponse getEnrollment(String externalId, String scheduleName) {
         Enrollment activeEnrollment = allEnrollments.getActiveEnrollment(externalId, scheduleName);
         return new EnrollmentResponseMapper().map(activeEnrollment);
     }

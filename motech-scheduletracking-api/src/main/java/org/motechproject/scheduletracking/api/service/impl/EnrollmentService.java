@@ -4,7 +4,6 @@ import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
-import org.motechproject.scheduletracking.api.domain.MilestoneFulfillment;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.domain.exception.DefaultedMilestoneFulfillmentException;
 import org.motechproject.scheduletracking.api.domain.exception.NoMoreMilestonesToFulfillException;
@@ -12,8 +11,6 @@ import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import static org.motechproject.util.DateUtil.today;
 
 @Component
 public class EnrollmentService {
@@ -40,15 +37,16 @@ public class EnrollmentService {
 
     public void fulfillCurrentMilestone(Enrollment enrollment) {
         Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
-        if (enrollment.getFulfillments().size() >= schedule.getMilestones().size())
+        if (schedule.maxMilestoneCountReached(enrollment.getFulfillments().size()))
             throw new NoMoreMilestonesToFulfillException();
 
         if (enrollment.isDefaulted())
             throw new DefaultedMilestoneFulfillmentException();
+
         enrollmentAlertService.unscheduleAllAlerts(enrollment);
         enrollmentDefaultmentService.unscheduleDefaultmentCaptureJob(enrollment);
 
-        enrollment.getFulfillments().add(new MilestoneFulfillment(enrollment.getCurrentMilestoneName(), today()));
+        enrollment.fulfillCurrentMilestone();
         String nextMilestoneName = schedule.getNextMilestoneName(enrollment.getCurrentMilestoneName());
         enrollment.setCurrentMilestoneName(nextMilestoneName);
         if (nextMilestoneName == null)
