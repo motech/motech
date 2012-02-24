@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.Reminder;
-import org.motechproject.model.RepeatingSchedulableJob;
+import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.util.DateUtil;
 
@@ -39,15 +39,14 @@ public class AllAppointmentReminderJobsTest {
         String externalId = "externalId";
 
         allAppointmentReminderJobs.add(appointment, externalId);
-        ArgumentCaptor<RepeatingSchedulableJob> repeatingSchedulableJobArgumentCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
+        ArgumentCaptor<CronSchedulableJob> cronSchedulableJobArgumentCaptor = ArgumentCaptor.forClass(CronSchedulableJob.class);
 
-        verify(schedulerService).safeScheduleRepeatingJob(repeatingSchedulableJobArgumentCaptor.capture());
-        RepeatingSchedulableJob repeatingSchedulableJob = repeatingSchedulableJobArgumentCaptor.getValue();
-        Map<String, Object> eventParameters = repeatingSchedulableJob.getMotechEvent().getParameters();
+        verify(schedulerService).safeScheduleJob(cronSchedulableJobArgumentCaptor.capture());
+        CronSchedulableJob cronSchedulableJob = cronSchedulableJobArgumentCaptor.getValue();
+        Map<String, Object> eventParameters = cronSchedulableJob.getMotechEvent().getParameters();
 
-        assertEquals(2, repeatingSchedulableJob.getRepeatCount().intValue());
-        assertEquals(startDate.toDate(), repeatingSchedulableJob.getStartTime());
-        assertEquals(endDate.toDate(), repeatingSchedulableJob.getEndTime());
+        assertEquals(startDate.toDate(), cronSchedulableJob.getStartTime());
+        assertEquals(endDate.toDate(), cronSchedulableJob.getEndTime());
         assertEquals(externalId, eventParameters.get(EventKeys.EXTERNAL_ID_KEY));
         assertEquals(appointment.id(), eventParameters.get(MotechSchedulerService.JOB_ID_KEY));
     }
@@ -57,7 +56,7 @@ public class AllAppointmentReminderJobsTest {
         allAppointmentReminderJobs.remove("externalId");
 
         ArgumentCaptor<String> subjectCaptor = ArgumentCaptor.forClass(String.class);
-        verify(schedulerService).safeUnscheduleRepeatingJob(subjectCaptor.capture(), eq("externalId"));
+        verify(schedulerService).safeUnscheduleJob(subjectCaptor.capture(), eq("externalId"));
 
         assertEquals("org.motechproject.appointments.api.Appointment.Reminder", subjectCaptor.getValue());
     }

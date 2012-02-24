@@ -50,6 +50,6 @@ public class AllVisitReminderJobsTest {
 
         VisitReminderJob expectedJobForVisit = new VisitReminderJob(externalId, today.toDate(), visit);
         allVisitReminderJobs.add(visit, externalId);
-        verify(schedulerService).safeScheduleRepeatingJob(expectedJobForVisit);
+        verify(schedulerService).safeScheduleJob(expectedJobForVisit);
     }
 }

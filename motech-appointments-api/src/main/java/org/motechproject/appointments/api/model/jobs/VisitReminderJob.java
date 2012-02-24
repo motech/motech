@@ -2,15 +2,15 @@ package org.motechproject.appointments.api.model.jobs;
 
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.model.Visit;
+import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class VisitReminderJob extends RepeatingSchedulableJob {
+public class VisitReminderJob extends CronSchedulableJob {
 
     public static final String SUBJECT = EventKeys.VISIT_REMINDER_EVENT_SUBJECT;
 
@@ -19,11 +19,7 @@ public class VisitReminderJob extends RepeatingSchedulableJob {
     private Visit visit;
 
     public VisitReminderJob(String externalId, Date startDate, Visit visit) {
-        super(createMotechEvent(externalId, visit),
-                startDate,
-                visit.reminder().endDate(),
-                visit.reminder().repeatCount(),
-                visit.reminder().intervalSeconds() * 1000);
+        super(createMotechEvent(externalId, visit), "0 0 0 ? * *", startDate, visit.reminder().endDate());
         this.externalId = externalId;
         this.startDate = startDate;
         this.visit = visit;
@@ -45,6 +41,7 @@ public class VisitReminderJob extends RepeatingSchedulableJob {
     public boolean equals(Object obj) {
         if (!(obj instanceof VisitReminderJob))
             return false;
+
         VisitReminderJob that = (VisitReminderJob) obj;
         return that.externalId.equals(this.externalId)
                 && this.startDate.equals(that.startDate)

@@ -20,10 +20,10 @@ public class AllVisitReminderJobs {
     public void add(Visit visit, String externalId) {
         Reminder reminder = visit.reminder();
         VisitReminderJob visitReminderJob = new VisitReminderJob(externalId, reminder.startDate(), visit);
-        schedulerService.safeScheduleRepeatingJob(visitReminderJob);
+        schedulerService.safeScheduleJob(visitReminderJob);
     }
 
     public void remove(String externalId) {
-        schedulerService.safeUnscheduleRepeatingJob(VisitReminderJob.SUBJECT, externalId);
+        schedulerService.safeUnscheduleJob(VisitReminderJob.SUBJECT, externalId);
     }
 }
