@@ -51,7 +51,7 @@ public class KookooCallServiceImplTest {
         String replyUrl = "&url=http://localhost/tama/ivr/reply?dataMap={\"external_id\":\"external_id\",\"is_outbound_call\":\"true\"}";
         String phoneNo = "&phone_no=9876543211";
         String callbackUrl = "&callback_url=http://localhost/tama/ivr/reply/callback?external_id=external_id";
-        verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://kookoo/outbound.php?" + apiKey + replyUrl + phoneNo + callbackUrl + phoneNo)));
+        verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://kookoo/outbound.php?" + apiKey + replyUrl + phoneNo + callbackUrl)));
     }
 
     @Test
