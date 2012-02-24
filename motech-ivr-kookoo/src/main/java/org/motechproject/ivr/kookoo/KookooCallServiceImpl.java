@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -56,9 +55,9 @@ public class KookooCallServiceImpl implements IVRService {
             GetMethod getMethod = new GetMethod(properties.get(OUTBOUND_URL).toString());
             getMethod.setQueryString(new NameValuePair[]{
                     new NameValuePair(API_KEY_KEY, properties.get(API_KEY).toString()),
-                    new NameValuePair(URL_KEY, URLEncoder.encode(applicationReplyUrl, "UTF-8")),
-                    new NameValuePair(CALLBACK_URL_KEY, URLEncoder.encode(applicationCallbackUrl, "UTF-8")),
-                    new NameValuePair(PHONE_NUMBER_KEY, callRequest.getPhone())
+                    new NameValuePair(URL_KEY, applicationReplyUrl),
+                    new NameValuePair(PHONE_NUMBER_KEY, callRequest.getPhone()),
+                    new NameValuePair(CALLBACK_URL_KEY, applicationCallbackUrl)
             });
             log.info(String.format("Dialing %s", getMethod.getURI()));
             httpClient.executeMethod(getMethod);
