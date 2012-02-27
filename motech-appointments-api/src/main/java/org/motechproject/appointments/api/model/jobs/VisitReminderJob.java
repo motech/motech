@@ -34,6 +34,7 @@ public class VisitReminderJob extends CronSchedulableJob {
         parameters.put(EventKeys.EXTERNAL_ID_KEY, externalId);
         parameters.put(MotechSchedulerService.JOB_ID_KEY, visit.id());
         parameters.put(EventKeys.APPOINTMENT_ID, visit.appointment().id());
+        parameters.put(EventKeys.VISIT_NAME, visit.name());
         return parameters;
     }
 
