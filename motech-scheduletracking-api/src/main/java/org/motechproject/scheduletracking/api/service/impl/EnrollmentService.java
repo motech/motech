@@ -35,7 +35,7 @@ public class EnrollmentService {
         return enrollment.getId();
     }
 
-    public void fulfillCurrentMilestone(Enrollment enrollment) {
+    public void fulfillCurrentMilestone(Enrollment enrollment, LocalDate fulfillmentDate) {
         Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
         if (schedule.maxMilestoneCountReached(enrollment.getFulfillments().size()))
             throw new NoMoreMilestonesToFulfillException();
@@ -46,7 +46,7 @@ public class EnrollmentService {
         enrollmentAlertService.unscheduleAllAlerts(enrollment);
         enrollmentDefaultmentService.unscheduleDefaultmentCaptureJob(enrollment);
 
-        enrollment.fulfillCurrentMilestone();
+        enrollment.fulfillCurrentMilestone(fulfillmentDate);
         String nextMilestoneName = schedule.getNextMilestoneName(enrollment.getCurrentMilestoneName());
         enrollment.setCurrentMilestoneName(nextMilestoneName);
         if (nextMilestoneName == null)

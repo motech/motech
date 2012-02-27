@@ -43,7 +43,7 @@ public class ScheduleTrackingServiceIT {
 
         Time originalPreferredAlertTime = new Time(8, 10);
         LocalDate originalReferenceDate = DateUtil.today();
-        String enrollmentId = scheduleTrackingService.enroll(new EnrollmentRequest(externalId, scheduleName, originalPreferredAlertTime, originalReferenceDate));
+        String enrollmentId = scheduleTrackingService.enroll(new EnrollmentRequest(externalId, scheduleName, originalPreferredAlertTime, originalReferenceDate, null));
         assertNotNull("EnrollmentId is null", enrollmentId);
 
         activeEnrollment = allEnrollments.get(enrollmentId);
@@ -53,7 +53,7 @@ public class ScheduleTrackingServiceIT {
 
         Time updatedPreferredAlertTime = new Time(2, 5);
         LocalDate updatedReferenceDate = DateUtil.today().minusDays(1);
-        String updatedEnrollmentId = scheduleTrackingService.enroll(new EnrollmentRequest(externalId, scheduleName, updatedPreferredAlertTime, updatedReferenceDate));
+        String updatedEnrollmentId = scheduleTrackingService.enroll(new EnrollmentRequest(externalId, scheduleName, updatedPreferredAlertTime, updatedReferenceDate, null));
         assertEquals(enrollmentId, updatedEnrollmentId);
 
         activeEnrollment = allEnrollments.get(updatedEnrollmentId);

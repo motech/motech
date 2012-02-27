@@ -2,23 +2,26 @@ package org.motechproject.scheduletracking.api.service;
 
 import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
+import org.motechproject.util.DateUtil;
 
 public class EnrollmentRequest {
     private String externalId;
     private String scheduleName;
 	private Time preferredAlertTime;
 	private LocalDate referenceDate;
+    private LocalDate enrollmentDate;
     private String startingMilestoneName;
 
-    public EnrollmentRequest(String externalId, String scheduleName, Time preferredAlertTime, LocalDate referenceDate) {
+    public EnrollmentRequest(String externalId, String scheduleName, Time preferredAlertTime, LocalDate referenceDate, LocalDate enrollmentDate) {
         this.externalId = externalId;
         this.scheduleName = scheduleName;
         this.preferredAlertTime = preferredAlertTime;
         this.referenceDate = referenceDate;
+        this.enrollmentDate = enrollmentDate;
     }
 
-	public EnrollmentRequest(String externalId, String scheduleName, Time preferredAlertTime, LocalDate referenceDate, String startingMilestoneName) {
-        this(externalId, scheduleName, preferredAlertTime, referenceDate);
+	public EnrollmentRequest(String externalId, String scheduleName, Time preferredAlertTime, LocalDate referenceDate, LocalDate enrollmentDate, String startingMilestoneName) {
+        this(externalId, scheduleName, preferredAlertTime, referenceDate, enrollmentDate);
         this.startingMilestoneName = startingMilestoneName;
 	}
 
@@ -44,5 +47,9 @@ public class EnrollmentRequest {
 
     public boolean enrollIntoMilestone() {
         return startingMilestoneName != null && !startingMilestoneName.isEmpty();
+    }
+
+    public LocalDate enrollmentDate() {
+        return enrollmentDate != null ? enrollmentDate : DateUtil.today();
     }
 }
