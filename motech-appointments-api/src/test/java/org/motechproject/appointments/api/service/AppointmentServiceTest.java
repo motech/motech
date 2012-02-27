@@ -140,6 +140,37 @@ public class AppointmentServiceTest {
     }
 
     @Test
+    public void shouldUnScheduleVisitReminderJobsWhenVisitDateIsSet() {
+        String externalId = "externalId";
+        String visitId = "visitId";
+        DateTime visitDate = DateUtil.now();
+
+        Visit visit = new Visit().name(visitId);
+        AppointmentCalendar appointmentCalendar = new AppointmentCalendar().externalId(externalId).addVisit(visit);
+        when(allAppointmentCalendars.findByExternalId(externalId)).thenReturn(appointmentCalendar);
+
+        appointmentService.setVisitDate(externalId, visitId, visitDate);
+        verify(allVisitReminderJobs).remove(externalId);
+    }
+
+    @Test
+    public void shouldUpdateVisitWhenVisitDateIsSet() {
+        DateTime visitDate = DateUtil.now();
+        String visitName = "visitName";
+        final String externalId = "externalId";
+
+        Visit visit = new Visit().name(visitName);
+        AppointmentCalendar appointmentCalendar = new AppointmentCalendar().externalId(externalId).addVisit(visit);
+        when(allAppointmentCalendars.findByExternalId(externalId)).thenReturn(appointmentCalendar);
+
+        appointmentService.setVisitDate(externalId, visitName, visitDate);
+
+        ArgumentCaptor<AppointmentCalendar> appointmentCalendarCaptor = ArgumentCaptor.forClass(AppointmentCalendar.class);
+        verify(allAppointmentCalendars).saveAppointmentCalendar(appointmentCalendarCaptor.capture());
+        assertEquals(visitDate, appointmentCalendarCaptor.getValue().getVisit(visitName).visitDate());
+    }
+
+    @Test
     public void shouldUnScheduleOldVisitReminderJob() {
         String externalId = "externalId";
         String visitName = "visit";

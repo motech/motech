@@ -32,7 +32,7 @@ public class AppointmentService {
         AppointmentCalendar appointmentCalendar = new AppointmentCalendar().externalId(appointmentCalendarRequest.getExternalId());
         for (Integer weekOffset : appointmentCalendarRequest.getWeekOffsets()) {
             Visit visit = new VisitMapper().mapScheduledVisit(weekOffset,
-                                                              appointmentCalendarRequest.getAppointmentReminderConfiguration());
+                    appointmentCalendarRequest.getAppointmentReminderConfiguration());
             appointmentCalendar.addVisit(visit);
             allAppointmentReminderJobs.add(visit.appointment(), appointmentCalendarRequest.getExternalId());
         }
@@ -70,16 +70,24 @@ public class AppointmentService {
         return allAppointmentCalendars.findAppointmentById(appointmentId);
     }
 
-    public void confirmVisit(String externalId, String clinicVisitId, DateTime confirmedVisitDate, ReminderConfiguration visitReminderConfiguration){
+    public void confirmVisit(String externalId, String clinicVisitId, DateTime confirmedVisitDate, ReminderConfiguration visitReminderConfiguration) {
         AppointmentCalendar appointmentCalendar = getAppointmentCalendar(externalId);
         Visit visit = appointmentCalendar.getVisit(clinicVisitId);
-        if(visit.appointment().confirmedDate() != null){
+        if (visit.appointment().confirmedDate() != null) {
             allVisitReminderJobs.remove(externalId);
         }
         visit.appointment().confirmedDate(confirmedVisitDate);
         Reminder visitReminder = new ReminderMapper().map(confirmedVisitDate, visitReminderConfiguration);
         visit.reminder(visitReminder);
         allVisitReminderJobs.add(visit, externalId);
+        updateVisit(visit, externalId);
+    }
+
+    public void setVisitDate(String externalId, String visitId, DateTime visitDate) {
+        AppointmentCalendar appointmentCalendar = getAppointmentCalendar(externalId);
+        Visit visit = appointmentCalendar.getVisit(visitId);
+        allVisitReminderJobs.remove(externalId);
+        visit.visitDate(visitDate);
         updateVisit(visit, externalId);
     }
 }
