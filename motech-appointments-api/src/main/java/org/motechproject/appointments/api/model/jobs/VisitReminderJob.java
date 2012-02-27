@@ -32,10 +32,14 @@ public class VisitReminderJob extends CronSchedulableJob {
     private static Map<String, Object> getParameters(Visit visit, String externalId) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(EventKeys.EXTERNAL_ID_KEY, externalId);
-        parameters.put(MotechSchedulerService.JOB_ID_KEY, visit.id());
+        parameters.put(MotechSchedulerService.JOB_ID_KEY, getJobIdUsing(visit, externalId));
         parameters.put(EventKeys.APPOINTMENT_ID, visit.appointment().id());
         parameters.put(EventKeys.VISIT_NAME, visit.name());
         return parameters;
+    }
+
+    private static String getJobIdUsing(Visit visit, String externalId) {
+        return externalId + visit.name();
     }
 
     @Override

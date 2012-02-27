@@ -5,6 +5,7 @@ import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.appointments.api.model.Visit;
+import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.util.DateUtil;
 
 import static junit.framework.Assert.assertEquals;
@@ -27,5 +28,10 @@ public class VisitReminderJobTest {
     @Test
     public void shouldAddVisitNameToParameters() {
         assertEquals(visit.name(), visitReminderJob.getMotechEvent().getParameters().get(EventKeys.VISIT_NAME));
+    }
+
+    @Test
+    public void shouldAddCombinationOfVisitNameAndExternalId_AsJobId() {
+        assertEquals("externalId" + visit.name(), visitReminderJob.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
     }
 }

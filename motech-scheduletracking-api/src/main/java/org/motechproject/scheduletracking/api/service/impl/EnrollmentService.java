@@ -5,7 +5,6 @@ import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.Schedule;
-import org.motechproject.scheduletracking.api.domain.exception.DefaultedMilestoneFulfillmentException;
 import org.motechproject.scheduletracking.api.domain.exception.NoMoreMilestonesToFulfillException;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
@@ -39,9 +38,6 @@ public class EnrollmentService {
         Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
         if (schedule.maxMilestoneCountReached(enrollment.getFulfillments().size()))
             throw new NoMoreMilestonesToFulfillException();
-
-        if (enrollment.isDefaulted())
-            throw new DefaultedMilestoneFulfillmentException();
 
         enrollmentAlertService.unscheduleAllAlerts(enrollment);
         enrollmentDefaultmentService.unscheduleDefaultmentCaptureJob(enrollment);

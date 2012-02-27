@@ -5,8 +5,6 @@ import org.joda.time.DateTime;
 import org.motechproject.model.ExtensibleDataObject;
 import org.motechproject.util.DateUtil;
 
-import java.util.UUID;
-
 public class Visit extends ExtensibleDataObject {
 
     @JsonProperty
@@ -19,14 +17,8 @@ public class Visit extends ExtensibleDataObject {
     private Appointment appointment;
     @JsonProperty
     private Reminder reminder;
-    @JsonProperty
-    private String id;
 
     private static final String WEEK_NUMBER = "weekNumber";
-
-    public Visit() {
-        id = UUID.randomUUID().toString();
-    }
 
     public String name() {
         return name;
@@ -87,11 +79,8 @@ public class Visit extends ExtensibleDataObject {
         name("week" + weekNumber);
         return this;
     }
-    public Integer weekNumber(){
-        return (Integer)getData().get(WEEK_NUMBER);
-    }
 
-    public String id() {
-        return id;
+    public Integer weekNumber() {
+        return (Integer) getData().get(WEEK_NUMBER);
     }
 }

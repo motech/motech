@@ -33,21 +33,14 @@ public class EnrollmentDefaultmentService {
         if (currentMilestone == null)
             return;
 
-        LocalDate milestoneEndDate = getCurrentMilestoneStartDate(enrollment).plus(currentMilestone.getMaximumDuration());
+        LocalDate currentMilestoneStartDate = enrollment.getCurrentMilestoneStartDate(schedule.getFirstMilestone().getName());
+        LocalDate milestoneEndDate = currentMilestoneStartDate.plus(currentMilestone.getMaximumDuration());
 
         if (milestoneEndDate.isBefore(DateUtil.today()))
             return;
 
         MotechEvent event = new DefaultmentCaptureEvent(enrollment.getId(), enrollment.getId()).toMotechEvent();
         schedulerService.safeScheduleRunOnceJob(new RunOnceSchedulableJob(event, milestoneEndDate.toDate()));
-    }
-
-    // TODO: duplicated from EnrollmentAlertService
-    public LocalDate getCurrentMilestoneStartDate(Enrollment enrollment) {
-        Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
-        if (enrollment.getCurrentMilestoneName().equals(schedule.getFirstMilestone().getName()))
-            return enrollment.getReferenceDate();
-        return (enrollment.getFulfillments().isEmpty()) ? enrollment.getEnrollmentDate() : enrollment.lastFulfilledDate();
     }
 
     public void unscheduleDefaultmentCaptureJob(Enrollment enrollment) {

@@ -13,6 +13,7 @@ import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
 import org.motechproject.scheduletracking.api.service.EnrollmentResponse;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
+import org.motechproject.util.DateUtil;
 
 import java.util.Arrays;
 
@@ -188,12 +189,22 @@ public class ScheduleTrackingServiceImplTest {
     }
 
     @Test
-    public void shouldReturnEnrollmentDetails(){
+    public void shouldReturnEnrollmentDetails() {
         String externalId = "external id";
         String scheduleName = "schedule name";
         final Enrollment enrollment = new Enrollment(externalId, scheduleName, null, null, null, null);
         when(allEnrollments.getActiveEnrollment(externalId, scheduleName)).thenReturn(enrollment);
         final EnrollmentResponse response = new ScheduleTrackingServiceImpl(null, allEnrollments, null).getEnrollment(externalId, scheduleName);
         assertThat(response.getExternalId(), is(equalTo(externalId)));
+    }
+
+    @Test(expected = InvalidEnrollmentException.class)
+    public void shouldNotFulfillAnyInactiveEnrollment() {
+        String externalId = "externalId";
+        String scheduleName = "scheduleName";
+        when(allEnrollments.getActiveEnrollment(externalId, scheduleName)).thenReturn(null);
+
+        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
+        scheduleTrackingService.fulfillCurrentMilestone(externalId, scheduleName, DateUtil.today());
     }
 }
