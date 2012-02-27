@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
+import org.joda.time.LocalDate;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.domain.exception.InvalidEnrollmentException;
@@ -50,14 +51,14 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
     }
 
     @Override
-    public void fulfillCurrentMilestone(String externalId, String scheduleName) {
+    public void fulfillCurrentMilestone(String externalId, String scheduleName, LocalDate fulfillmentDate) {
         Enrollment activeEnrollment = allEnrollments.getActiveEnrollment(externalId, scheduleName);
         if (activeEnrollment == null) {
             throw new InvalidEnrollmentException(format("Can fulfill only active enrollments. " +
                     "This enrollment has: External ID: {0}, Schedule name: {1}", externalId, scheduleName));
         }
 
-        enrollmentService.fulfillCurrentMilestone(activeEnrollment);
+        enrollmentService.fulfillCurrentMilestone(activeEnrollment, fulfillmentDate);
     }
 
     @Override

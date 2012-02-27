@@ -34,7 +34,7 @@ public class EnrollmentTest {
     }
 
     @Test
-    public void shouldReNullWhenNoMilestoneIsFulfilledlled() {
+    public void shouldReNullWhenNoMilestoneIsFulfilled() {
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
         Milestone secondMilestone = new Milestone("Second Shot", weeks(1), weeks(1), weeks(1), weeks(1));
         Milestone firstMilestone = new Milestone("First Shot", weeks(1), weeks(1), weeks(1), weeks(1));
@@ -99,11 +99,24 @@ public class EnrollmentTest {
         Enrollment enrollment = new Enrollment("externalId", "scheduleName", "currentMilestoneName", weeksAgo(1), weeksAgo(1), new Time(8, 10));
 
         assertEquals(0, enrollment.getFulfillments().size());
-        enrollment.fulfillCurrentMilestone();
+        enrollment.fulfillCurrentMilestone(null);
         assertEquals(1, enrollment.getFulfillments().size());
 
         MilestoneFulfillment milestoneFulfillment = enrollment.getFulfillments().get(0);
         assertEquals(DateUtil.today(), milestoneFulfillment.getDateFulfilled());
+        assertEquals("currentMilestoneName", milestoneFulfillment.getMilestoneName());
+    }
+
+    @Test
+    public void shouldFulfillCurrentMilestoneWithTheSpecifiedDate() {
+        Enrollment enrollment = new Enrollment("externalId", "scheduleName", "currentMilestoneName", weeksAgo(1), weeksAgo(1), new Time(8, 10));
+
+        assertEquals(0, enrollment.getFulfillments().size());
+        enrollment.fulfillCurrentMilestone(DateUtil.newDate(2011, 6, 5));
+        assertEquals(1, enrollment.getFulfillments().size());
+
+        MilestoneFulfillment milestoneFulfillment = enrollment.getFulfillments().get(0);
+        assertEquals(DateUtil.newDate(2011, 6, 5), milestoneFulfillment.getDateFulfilled());
         assertEquals("currentMilestoneName", milestoneFulfillment.getMilestoneName());
     }
 }

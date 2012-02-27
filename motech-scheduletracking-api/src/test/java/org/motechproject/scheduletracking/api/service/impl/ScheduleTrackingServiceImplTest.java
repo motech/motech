@@ -53,7 +53,7 @@ public class ScheduleTrackingServiceImplTest {
         String externalId = "my_entity_1";
         LocalDate referenceDate = new LocalDate(2012, 1, 2);
         Time preferredAlertTime = new Time(8, 10);
-        scheduleTrackingService.enroll(new EnrollmentRequest(externalId, scheduleName, preferredAlertTime, referenceDate));
+        scheduleTrackingService.enroll(new EnrollmentRequest(externalId, scheduleName, preferredAlertTime, referenceDate, null, null));
 
         verify(enrollmentService).enroll(externalId, scheduleName, firstMilestone.getName(), referenceDate, today(), preferredAlertTime);
     }
@@ -72,7 +72,7 @@ public class ScheduleTrackingServiceImplTest {
         String externalId = "entity_1";
         Time preferredAlertTime = new Time(8, 10);
         LocalDate referenceDate = new LocalDate(2012, 11, 2);
-        scheduleTrackingService.enroll(new EnrollmentRequest(externalId, scheduleName, preferredAlertTime, referenceDate, secondMilestone.getName()));
+        scheduleTrackingService.enroll(new EnrollmentRequest(externalId, scheduleName, preferredAlertTime, referenceDate, null, secondMilestone.getName()));
 
         verify(enrollmentService).enroll(externalId, scheduleName, secondMilestone.getName(), referenceDate, today(), preferredAlertTime);
     }
@@ -90,7 +90,7 @@ public class ScheduleTrackingServiceImplTest {
         String externalId = "entity_1";
         LocalDate referenceDate = new LocalDate(2012, 11, 2);
         Time preferredAlertTime = new Time(8, 10);
-        scheduleTrackingService.enroll(new EnrollmentRequest(externalId, scheduleName, preferredAlertTime, referenceDate));
+        scheduleTrackingService.enroll(new EnrollmentRequest(externalId, scheduleName, preferredAlertTime, referenceDate, null, null));
 
         verify(enrollmentService).enroll(externalId, scheduleName, milestone.getName(), referenceDate, today(), preferredAlertTime);
     }
@@ -106,14 +106,14 @@ public class ScheduleTrackingServiceImplTest {
         ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
 
         when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(null);
-        scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2)));
+        scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2), null, null));
 
         Enrollment enrollment = mock(Enrollment.class);
         when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(enrollment);
 
-        scheduleTrackingService.fulfillCurrentMilestone("entity_1", "my_schedule");
+        scheduleTrackingService.fulfillCurrentMilestone("entity_1", "my_schedule", null);
 
-        verify(enrollmentService).fulfillCurrentMilestone(enrollment);
+        verify(enrollmentService).fulfillCurrentMilestone(enrollment, null);
     }
 
     @Test(expected = InvalidEnrollmentException.class)
@@ -122,7 +122,7 @@ public class ScheduleTrackingServiceImplTest {
 
         ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
 
-        scheduleTrackingService.fulfillCurrentMilestone("WRONG-ID", "WRONG-NAME");
+        scheduleTrackingService.fulfillCurrentMilestone("WRONG-ID", "WRONG-NAME", null);
 
         verifyZeroInteractions(enrollmentService);
     }
