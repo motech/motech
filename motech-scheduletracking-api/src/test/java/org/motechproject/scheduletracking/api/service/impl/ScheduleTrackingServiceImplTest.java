@@ -14,6 +14,8 @@ import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
 import org.motechproject.scheduletracking.api.service.EnrollmentResponse;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
 
+import java.util.Arrays;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -142,6 +144,33 @@ public class ScheduleTrackingServiceImplTest {
         scheduleTrackingService.unenroll("entity_1", "my_schedule");
 
         verify(enrollmentService).unenroll(enrollment);
+    }
+
+    @Test
+    public void shouldSafelyUnenrollEntityFromListOfSchedule() {
+        Milestone milestone1 = new Milestone("milestone1", weeks(1), weeks(1), weeks(1), weeks(1));
+        milestone1.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
+        Schedule schedule1 = new Schedule("my_schedule1");
+        schedule1.addMilestones(milestone1);
+        when(allTrackedSchedules.getByName("my_schedule1")).thenReturn(schedule1);
+
+        Milestone milestone2 = new Milestone("milestone2", weeks(1), weeks(1), weeks(1), weeks(1));
+        milestone2.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
+        Schedule schedule2 = new Schedule("my_schedule2");
+        schedule2.addMilestones(milestone2);
+        when(allTrackedSchedules.getByName("my_schedule2")).thenReturn(schedule2);
+
+        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
+
+        Enrollment enrollment1 = new Enrollment("entity_1", "my_schedule1", "milestone1", weeksAgo(4), weeksAgo(4), new Time(8, 10));
+        when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule1")).thenReturn(enrollment1);
+        Enrollment enrollment2 = new Enrollment("entity_1", "my_schedule2", "milestone2", weeksAgo(4), weeksAgo(4), new Time(8, 10));
+        when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule2")).thenReturn(enrollment2);
+
+        scheduleTrackingService.safeUnEnroll("entity_1", Arrays.asList("my_schedule1","my_schedule2"));
+
+        verify(enrollmentService).unenroll(enrollment1);
+        verify(enrollmentService).unenroll(enrollment2);
     }
 
     @Test(expected = InvalidEnrollmentException.class)

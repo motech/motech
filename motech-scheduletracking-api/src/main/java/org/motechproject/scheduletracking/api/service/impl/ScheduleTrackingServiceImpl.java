@@ -13,6 +13,8 @@ import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import static java.text.MessageFormat.format;
 import static org.motechproject.util.DateUtil.today;
 
@@ -67,5 +69,14 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
         if (activeEnrollment == null)
             throw new InvalidEnrollmentException();
         enrollmentService.unenroll(activeEnrollment);
+    }
+
+    @Override
+    public void safeUnEnroll(String externalId, List<String> scheduleNames) {
+        for (String scheduleName : scheduleNames) {
+            Enrollment activeEnrollment = allEnrollments.getActiveEnrollment(externalId, scheduleName);
+            if (activeEnrollment != null)
+                enrollmentService.unenroll(activeEnrollment);
+        }
     }
 }
