@@ -12,6 +12,12 @@ public abstract class ExtensibleDataObject {
     }
 
     public void addData(String key, Object value) {
-        data.put(key, value);
+        this.data.put(key, value);
+    }
+
+    public void addData(Map<String, Object> data) {
+        for (String key : data.keySet()) {
+            this.addData(key, data.get(key));
+        }
     }
 }

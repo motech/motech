@@ -1,14 +1,12 @@
 package org.motechproject.appointments.api.contract;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AppointmentCalendarRequest {
 
     private String externalId;
-
-    private ReminderConfiguration appointmentReminderConfiguration;
-
-    private List<Integer> weekOffsets;
+    private Map<String, VisitRequest> visitRequests = new HashMap<String, VisitRequest>();
 
     public String getExternalId() {
         return externalId;
@@ -19,22 +17,17 @@ public class AppointmentCalendarRequest {
         return this;
     }
 
-    public ReminderConfiguration getAppointmentReminderConfiguration() {
-        return appointmentReminderConfiguration;
+    public Map<String, VisitRequest> getVisitRequests() {
+        return visitRequests;
     }
 
-    public AppointmentCalendarRequest setAppointmentReminderConfiguration(ReminderConfiguration appointmentReminderConfiguration) {
-        this.appointmentReminderConfiguration = appointmentReminderConfiguration;
+    public AppointmentCalendarRequest setVisitRequests(Map<String, VisitRequest> visitRequests) {
+        this.visitRequests = visitRequests;
         return this;
     }
 
-    public List<Integer> getWeekOffsets() {
-        return weekOffsets;
-    }
-
-    public AppointmentCalendarRequest setWeekOffsets(List<Integer> weekOffsets) {
-        this.weekOffsets = weekOffsets;
+    public AppointmentCalendarRequest addVisitRequest(String name, VisitRequest visitRequest) {
+        this.visitRequests.put(name, visitRequest);
         return this;
     }
-
 }

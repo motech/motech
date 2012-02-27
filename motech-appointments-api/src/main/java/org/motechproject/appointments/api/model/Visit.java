@@ -14,8 +14,6 @@ public class Visit extends ExtensibleDataObject {
     @JsonProperty
     private DateTime visitDate;
     @JsonProperty
-    private TypeOfVisit typeOfVisit;
-    @JsonProperty
     private boolean missed;
     @JsonProperty
     private Appointment appointment;
@@ -45,15 +43,6 @@ public class Visit extends ExtensibleDataObject {
 
     public Visit visitDate(DateTime visitDate) {
         this.visitDate = visitDate;
-        return this;
-    }
-
-    public TypeOfVisit typeOfVisit() {
-        return typeOfVisit;
-    }
-
-    public Visit typeOfVisit(TypeOfVisit typeOfVisit) {
-        this.typeOfVisit = typeOfVisit;
         return this;
     }
 

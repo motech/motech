@@ -3,15 +3,20 @@ package org.motechproject.appointments.api.service;
 import org.joda.time.DateTime;
 import org.motechproject.appointments.api.contract.AppointmentCalendarRequest;
 import org.motechproject.appointments.api.contract.ReminderConfiguration;
+import org.motechproject.appointments.api.contract.VisitRequest;
 import org.motechproject.appointments.api.dao.AllAppointmentCalendars;
 import org.motechproject.appointments.api.dao.AllAppointmentReminderJobs;
 import org.motechproject.appointments.api.dao.AllVisitReminderJobs;
 import org.motechproject.appointments.api.mapper.ReminderMapper;
 import org.motechproject.appointments.api.mapper.VisitMapper;
-import org.motechproject.appointments.api.model.*;
+import org.motechproject.appointments.api.model.Appointment;
+import org.motechproject.appointments.api.model.AppointmentCalendar;
+import org.motechproject.appointments.api.model.Reminder;
+import org.motechproject.appointments.api.model.Visit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
 
 @Component
 public class AppointmentService {
@@ -30,11 +35,13 @@ public class AppointmentService {
 
     public void addCalendar(AppointmentCalendarRequest appointmentCalendarRequest) {
         AppointmentCalendar appointmentCalendar = new AppointmentCalendar().externalId(appointmentCalendarRequest.getExternalId());
-        for (Integer weekOffset : appointmentCalendarRequest.getWeekOffsets()) {
-            Visit visit = new VisitMapper().mapScheduledVisit(weekOffset,
-                    appointmentCalendarRequest.getAppointmentReminderConfiguration());
+        Map<String, VisitRequest> visits = appointmentCalendarRequest.getVisitRequests();
+        for (String visitName : visits.keySet()) {
+            VisitRequest visitRequest = visits.get(visitName);
+            Visit visit = new VisitMapper().map(visitName, visitRequest);
             appointmentCalendar.addVisit(visit);
-            allAppointmentReminderJobs.add(visit.appointment(), appointmentCalendarRequest.getExternalId());
+            if (visit.appointment() != null)
+                allAppointmentReminderJobs.add(visit.appointment(), appointmentCalendarRequest.getExternalId());
         }
         allAppointmentCalendars.saveAppointmentCalendar(appointmentCalendar);
     }
@@ -57,9 +64,9 @@ public class AppointmentService {
         return allAppointmentCalendars.findByExternalId(externalId);
     }
 
-    public String addVisit(String externalId, DateTime scheduledDate, ReminderConfiguration appointmentReminderConfiguration, TypeOfVisit typeOfVisit) {
+    public String addVisit(String externalId, String visitName, VisitRequest visitRequest) {
         AppointmentCalendar appointmentCalendar = allAppointmentCalendars.findByExternalId(externalId);
-        Visit visit = new VisitMapper().mapUnscheduledVisit(scheduledDate, appointmentReminderConfiguration, typeOfVisit);
+        Visit visit = new VisitMapper().map(visitName, visitRequest);
         appointmentCalendar.addVisit(visit);
         allAppointmentReminderJobs.add(visit.appointment(), externalId);
         allAppointmentCalendars.saveAppointmentCalendar(appointmentCalendar);

@@ -4,7 +4,7 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.appointments.api.contract.ReminderConfiguration;
-import org.motechproject.appointments.api.model.TypeOfVisit;
+import org.motechproject.appointments.api.contract.VisitRequest;
 import org.motechproject.appointments.api.model.Visit;
 
 import static junit.framework.Assert.assertEquals;
@@ -24,22 +24,14 @@ public class VisitMapperTest {
     }
 
     @Test
-    public void shouldMapToAScheduledVisit(){
-        Visit visit = visitMapper.mapScheduledVisit(2, reminderConfiguration);
+    public void shouldMapAVisit() {
+        DateTime dueDate = now.plusWeeks(2);
+        VisitRequest visitRequest = new VisitRequest().setDueDate(dueDate).setReminderConfiguration(reminderConfiguration);
+        Visit visit = visitMapper.map("week2", visitRequest);
 
         assertEquals("week2", visit.name());
-        assertEquals(TypeOfVisit.Scheduled, visit.typeOfVisit());
         assertNotNull(visit.appointment());
-        assertEquals(now.plusWeeks(2).toLocalDate(), visit.appointment().dueDate().toLocalDate());
+        assertEquals(dueDate.toLocalDate(), visit.appointment().dueDate().toLocalDate());
     }
 
-    @Test
-    public void shouldMapToAnUnscheduledVisit(){
-        Visit visit = visitMapper.mapUnscheduledVisit(now, reminderConfiguration, TypeOfVisit.Unscheduled);
-
-        assertNotNull(visit.name());
-        assertEquals(TypeOfVisit.Unscheduled, visit.typeOfVisit());
-        assertNotNull(visit.appointment());
-        assertEquals(now, visit.appointment().dueDate());
-    }
 }

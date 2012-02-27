@@ -17,7 +17,6 @@ public class AppointmentCalendar extends MotechBaseDataObject {
     private List<Visit> visits = new ArrayList<Visit>();
 
     public AppointmentCalendar() {
-        createBaselineVisit();
     }
 
     public String externalId() {
@@ -51,14 +50,5 @@ public class AppointmentCalendar extends MotechBaseDataObject {
         Visit existingVisit = getVisit(updatedVisit.name());
         visits.remove(existingVisit);
         visits.add(updatedVisit);
-    }
-
-    public Visit baselineVisit() {
-        return getVisit(TypeOfVisit.Baseline.toString());
-    }
-
-    private void createBaselineVisit() {
-        Visit baseLineVisit = new Visit().name(TypeOfVisit.Baseline.toString()).typeOfVisit(TypeOfVisit.Baseline);
-        visits.add(baseLineVisit);
     }
 }
