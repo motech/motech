@@ -5,13 +5,7 @@ import java.util.List;
 
 public class ScheduleRecord {
     private String name;
-    private String totalDuration;
     private List<MilestoneRecord> milestones = new ArrayList<MilestoneRecord>();
-
-    public ScheduleRecord(String name, String totalDuration) {
-        this.name = name;
-        this.totalDuration = totalDuration;
-    }
 
     public String name() {
         return name;

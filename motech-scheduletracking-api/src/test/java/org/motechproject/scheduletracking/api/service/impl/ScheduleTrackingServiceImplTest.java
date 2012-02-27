@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeInWeeks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 import static org.motechproject.util.DateUtil.today;
 
@@ -44,8 +44,8 @@ public class ScheduleTrackingServiceImplTest {
     public void shouldEnrollEntityIntoFirstMilestoneOfSchedule() {
         String scheduleName = "my_schedule";
         Schedule schedule = new Schedule(scheduleName);
-        Milestone secondMilestone = new Milestone("second_milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        Milestone firstMilestone = new Milestone("first_milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone secondMilestone = new Milestone("second_milestone", wallTimeInWeeks(1), wallTimeInWeeks(2), wallTimeInWeeks(3), wallTimeInWeeks(4));
+        Milestone firstMilestone = new Milestone("first_milestone", wallTimeInWeeks(1), wallTimeInWeeks(2), wallTimeInWeeks(3), wallTimeInWeeks(4));
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
 
@@ -61,8 +61,8 @@ public class ScheduleTrackingServiceImplTest {
 
     @Test
     public void shouldEnrollEntityIntoGivenMilestoneOfTheSchedule() {
-        Milestone secondMilestone = new Milestone("second_milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
-        Milestone firstMilestone = new Milestone("first_milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone secondMilestone = new Milestone("second_milestone", wallTimeInWeeks(1), wallTimeInWeeks(2), wallTimeInWeeks(3), wallTimeInWeeks(4));
+        Milestone firstMilestone = new Milestone("first_milestone", wallTimeInWeeks(1), wallTimeInWeeks(2), wallTimeInWeeks(3), wallTimeInWeeks(4));
         String scheduleName = "my_schedule";
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(firstMilestone, secondMilestone);
@@ -80,7 +80,7 @@ public class ScheduleTrackingServiceImplTest {
 
     @Test
     public void shouldScheduleOneRepeatJobForTheSingleAlertInTheFirstMilestone() {
-        Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone milestone = new Milestone("milestone", wallTimeInWeeks(1), wallTimeInWeeks(2), wallTimeInWeeks(3), wallTimeInWeeks(4));
         milestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Day), 3, 0));
         String scheduleName = "my_schedule";
         Schedule schedule = new Schedule(scheduleName);
@@ -98,7 +98,7 @@ public class ScheduleTrackingServiceImplTest {
 
     @Test
     public void shouldFulfillTheCurrentMilestone() {
-        Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone milestone = new Milestone("milestone", wallTimeInWeeks(1), wallTimeInWeeks(2), wallTimeInWeeks(3), wallTimeInWeeks(4));
         milestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Day), 3, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
@@ -130,7 +130,7 @@ public class ScheduleTrackingServiceImplTest {
 
     @Test
     public void shouldUnenrollEntityFromTheSchedule() {
-        Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone milestone = new Milestone("milestone", wallTimeInWeeks(1), wallTimeInWeeks(2), wallTimeInWeeks(3), wallTimeInWeeks(4));
         milestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Day), 3, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
@@ -147,7 +147,7 @@ public class ScheduleTrackingServiceImplTest {
 
     @Test(expected = InvalidEnrollmentException.class)
     public void shouldThrowExceptionIfEntityIsNotEnrolledIntoSchedule() {
-        Milestone milestone = new Milestone("milestone", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone milestone = new Milestone("milestone", wallTimeInWeeks(1), wallTimeInWeeks(2), wallTimeInWeeks(3), wallTimeInWeeks(4));
         milestone.addAlert(WindowName.earliest, new Alert(new WallTime(0, null), new WallTime(1, WallTimeUnit.Day), 3, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);

@@ -14,14 +14,14 @@ import org.motechproject.valueobjects.WallTimeUnit;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeInWeeks;
 
 public class MilestoneEventTest {
     @Test
     public void shouldCreateMotechEvent() {
         String externalId = "externalId";
         String scheduleName = "scheduleName";
-        MilestoneAlert milestoneAlert =  MilestoneAlert.fromMilestone(new Milestone("M1", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4)), LocalDate.now());
+        MilestoneAlert milestoneAlert =  MilestoneAlert.fromMilestone(new Milestone("M1", wallTimeInWeeks(1), wallTimeInWeeks(2), wallTimeInWeeks(3), wallTimeInWeeks(4)), LocalDate.now());
         String windowName = "windowName";
 
         MilestoneEvent milestoneEvent = new MilestoneEvent(externalId, scheduleName, milestoneAlert, windowName, DateUtil.today());
@@ -39,7 +39,7 @@ public class MilestoneEventTest {
     public void shouldCreateMotechEventFromEnrollment() {
         String externalId = "externalId";
         String scheduleName = "scheduleName";
-        Milestone milestone = new Milestone("M1", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        Milestone milestone = new Milestone("M1", wallTimeInWeeks(1), wallTimeInWeeks(2), wallTimeInWeeks(3), wallTimeInWeeks(4));
         LocalDate referenceDate = LocalDate.now();
         LocalDate enrollmentDate = LocalDate.now();
         MilestoneAlert milestoneAlert =  MilestoneAlert.fromMilestone(milestone, referenceDate);

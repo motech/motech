@@ -7,13 +7,13 @@ import org.motechproject.util.DateUtil;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeOf;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.wallTimeInWeeks;
 
 public class MilestoneAlertTest {
 
     @Test
     public void shouldCalcuateAndStoreAlertDates(){
-        final Milestone milestone = new Milestone("M1", wallTimeOf(1), wallTimeOf(2), wallTimeOf(3), wallTimeOf(4));
+        final Milestone milestone = new Milestone("M1", wallTimeInWeeks(1), wallTimeInWeeks(2), wallTimeInWeeks(3), wallTimeInWeeks(4));
         final LocalDate referenceDate = DateUtil.newDate(2000, 1, 1);
         final MilestoneAlert milestoneAlert = MilestoneAlert.fromMilestone(milestone, referenceDate);
 

@@ -79,7 +79,7 @@ public class MilestoneWindowTest {
 
     @Test
     public void shouldGetStartDateOfTheMilestoneWindow() {
-        MilestoneWindow milestoneWindow = new MilestoneWindow(WindowName.earliest, wallTimeOf(1), wallTimeOf(3));
+        MilestoneWindow milestoneWindow = new MilestoneWindow(WindowName.earliest, wallTimeInWeeks(1), wallTimeInWeeks(3));
         assertEquals(today().plusWeeks(1), milestoneWindow.getStartDate(today()));
     }
 }
