@@ -31,7 +31,8 @@ public class EnrollmentAlertService {
         if (currentMilestone == null)
             return;
 
-        DateTime currentMilestoneStartDate = getCurrentMilestoneStartDate(enrollment);
+        String firstMilestoneName = schedule.getFirstMilestone().getName();
+        DateTime currentMilestoneStartDate = enrollment.getCurrentMilestoneStartDate(firstMilestoneName, schedule.isBasedOnAbsoluteWindows());
         for (MilestoneWindow milestoneWindow : currentMilestone.getMilestoneWindows()) {
             if (currentMilestone.windowElapsed(milestoneWindow.getName(), currentMilestoneStartDate))
                 continue;

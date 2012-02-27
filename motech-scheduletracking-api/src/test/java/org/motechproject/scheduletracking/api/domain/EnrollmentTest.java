@@ -1,5 +1,7 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.motechproject.model.Time;
 import org.motechproject.util.DateUtil;
@@ -79,7 +81,37 @@ public class EnrollmentTest {
     }
 
     @Test
-    public void shouldFulfillCurrentMilestoneWithTheSpecifiedDate() {
+    public void shouldReturnReferenceDateWhenCurrentMilestoneIsTheFirstMilestone() {
+        String firstMilestoneName = "First Shot";
+        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", firstMilestoneName, weeksAgo(5), weeksAgo(3), new Time(8, 20), EnrollmentStatus.ACTIVE);
+
+        assertEquals(weeksAgo(5), enrollment.getCurrentMilestoneStartDate(firstMilestoneName, false));
+    }
+
+    @Test
+    public void shouldReturnEnrollmentDateWhenEnrolledIntoSecondMilestoneAndNoMilestonesFulfilled() {
+        String firstMilestoneName = "First Shot";
+        String secondMilestoneName = "Second Shot";
+        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", secondMilestoneName, weeksAgo(5), weeksAgo(3), null, EnrollmentStatus.ACTIVE);
+
+        assertEquals(weeksAgo(3), enrollment.getCurrentMilestoneStartDate(firstMilestoneName, false));
+    }
+
+    @Test
+    public void shouldReturnReferenceDateAsTheMilestoneStartDateOfTheAnyMilestoneWhenTheScheduleIsBasedOnAbsoluteWindows() {
+        String firstMilestoneName = "First Milestone";
+        String secondMilestoneName = "Second Milestone";
+        DateTime referenceDate = weeksAgo(5);
+
+        Enrollment enrollmentIntoFirstMilestone = new Enrollment("ID-074285", "Yellow Fever Vaccination", firstMilestoneName, referenceDate, weeksAgo(3), null, EnrollmentStatus.ACTIVE);
+        Enrollment enrollmentIntoSecondMilestone = new Enrollment("ID-074285", "Yellow Fever Vaccination", secondMilestoneName, referenceDate, weeksAgo(3), null, EnrollmentStatus.ACTIVE);
+
+        assertEquals(referenceDate, enrollmentIntoFirstMilestone.getCurrentMilestoneStartDate(firstMilestoneName, true));
+        assertEquals(referenceDate, enrollmentIntoSecondMilestone.getCurrentMilestoneStartDate(firstMilestoneName, true));
+    }
+
+    @Test
+    public void shouldFulfillCurrentMilestone() {
         Enrollment enrollment = new Enrollment("externalId", "scheduleName", "currentMilestoneName", weeksAgo(1), weeksAgo(1), new Time(8, 10), EnrollmentStatus.ACTIVE);
 
         assertEquals(0, enrollment.getFulfillments().size());

@@ -86,7 +86,24 @@ public class ScheduleFactoryTest {
 
     @Test
     public void shouldCreateEmptyWindowWithCombinationOfUnits() {
-        Schedule schedule = loadSchedule("IPTI Schedule", "/schedules");
+       Schedule schedule = loadSchedule("IPTI Schedule", "/schedules");
+
+        List<Milestone> milestones = schedule.getMilestones();
+        Milestone firstMilestone = milestones.get(0);
+
+        assertEquals(weeks(14).plus(hours(2)), firstMilestone.getWindowEnd(WindowName.due));
+        assertEquals(years(1).plus(months(2)).plus(weeks(16)), firstMilestone.getWindowEnd(WindowName.late));
+    }
+
+    public void shouldAddAbsoluteWindowFlagToSchedule() {
+        Schedule schedule = getSchedule("IPTI Schedule");
+
+        assertEquals(true, schedule.isBasedOnAbsoluteWindows());
+    }
+
+    @Test
+    public void shouldCreateEmptyWindowIfOffsetIsNotSpecified() {
+        Schedule schedule = getSchedule("IPTI Schedule");
 
         List<Milestone> milestones = schedule.getMilestones();
         Milestone firstMilestone = milestones.get(0);
@@ -121,6 +138,12 @@ public class ScheduleFactoryTest {
 
         assertEquals(weeks(1).plus(hours(4)).plus(minutes(3)), firstMilestone.getMilestoneWindow(WindowName.late).getAlerts().get(0).getOffset());
         assertEquals(hours(1).plus(minutes(2)), firstMilestone.getMilestoneWindow(WindowName.late).getAlerts().get(0).getInterval());
+    }
+
+    private Schedule getSchedule(String scheduleName) {
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules");
+        ScheduleRecord scheduleRecord = findRecord(scheduleName, jsonReader.records());
+        return new ScheduleFactory().build(scheduleRecord);
     }
 
     private ScheduleRecord findRecord(String name, List<ScheduleRecord> records) {

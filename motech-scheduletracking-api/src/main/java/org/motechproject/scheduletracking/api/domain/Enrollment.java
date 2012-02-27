@@ -122,4 +122,10 @@ public class Enrollment extends MotechBaseDataObject {
     public void fulfillCurrentMilestone(DateTime fulfillmentDateTime) {
         fulfillments.add(new MilestoneFulfillment(currentMilestoneName, fulfillmentDateTime));
     }
+
+    public DateTime getCurrentMilestoneStartDate(String firstMilestoneNameFromSchedule, boolean scheduleIsBasedOnAbsoluteWindows) {
+        if (currentMilestoneName.equals(firstMilestoneNameFromSchedule) || scheduleIsBasedOnAbsoluteWindows)
+            return referenceDateTime;
+        return (fulfillments.isEmpty()) ? enrollmentDateTime : getLastFulfilledDate();
+    }
 }
