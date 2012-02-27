@@ -51,7 +51,7 @@ public class KookooCallDetailRecordsServiceImpl implements KookooCallDetailRecor
 
     @Override
     public void appendEvent(String callDetailRecordId, IVREvent callEvent, String userInput) {
-        KookooCallDetailRecord kookooCallDetailRecord = appendToCallDetailRecord(callDetailRecordId, callEvent);
+        KookooCallDetailRecord kookooCallDetailRecord = appendToCallDetailRecord(callDetailRecordId, new CallEvent(callEvent.toString()));
         if (!StringUtils.isEmpty(userInput)) {
             kookooCallDetailRecord.appendToLastEvent(CallEventConstants.DTMF_DATA, userInput);
         }
@@ -65,9 +65,8 @@ public class KookooCallDetailRecordsServiceImpl implements KookooCallDetailRecor
         return kookooCallDetailRecord.getId();
     }
 
-    private KookooCallDetailRecord appendToCallDetailRecord(String callDetailRecordId, IVREvent ivrEvent) {
+    private KookooCallDetailRecord appendToCallDetailRecord(String callDetailRecordId, CallEvent callEvent) {
         KookooCallDetailRecord callDetailRecord = get(callDetailRecordId);
-        CallEvent callEvent = new CallEvent(ivrEvent.toString());
         callDetailRecord.addCallEvent(callEvent);
         return callDetailRecord;
     }
@@ -82,8 +81,8 @@ public class KookooCallDetailRecordsServiceImpl implements KookooCallDetailRecor
     }
 
     @Override
-    public void close(String callDetailRecordId, String externalId, IVREvent event) {
-        KookooCallDetailRecord kookooCallDetailRecord = appendToCallDetailRecord(callDetailRecordId, event);
+    public void close(String callDetailRecordId, String externalId, CallEvent callEvent) {
+        KookooCallDetailRecord kookooCallDetailRecord = appendToCallDetailRecord(callDetailRecordId, callEvent);
         kookooCallDetailRecord.close();
         allKooKooCallDetailRecords.update(kookooCallDetailRecord);
         raiseCloseCallEvent(callDetailRecordId, externalId);

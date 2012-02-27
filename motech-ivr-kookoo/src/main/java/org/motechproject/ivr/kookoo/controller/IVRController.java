@@ -1,6 +1,7 @@
 package org.motechproject.ivr.kookoo.controller;
 
 import org.apache.log4j.Logger;
+import org.motechproject.ivr.event.CallEvent;
 import org.motechproject.ivr.event.IVREvent;
 import org.motechproject.ivr.kookoo.KooKooIVRContext;
 import org.motechproject.ivr.kookoo.KookooCallbackRequest;
@@ -8,6 +9,7 @@ import org.motechproject.ivr.kookoo.KookooRequest;
 import org.motechproject.ivr.kookoo.extensions.CallFlowController;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
 import org.motechproject.ivr.model.CallDetailRecord;
+import org.motechproject.ivr.service.IVRService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,7 +43,9 @@ public class IVRController {
     public String callback(KookooCallbackRequest kookooCallbackRequest) {
         if (kookooCallbackRequest.notAnswered()) {
             String kooKooCallDetailRecordId = kookooCallDetailRecordsService.createOutgoing(kookooCallbackRequest.getSid(), kookooCallbackRequest.getPhone_no(), CallDetailRecord.Disposition.NO_ANSWER);
-            kookooCallDetailRecordsService.close(kooKooCallDetailRecordId, kookooCallbackRequest.getExternal_id(), IVREvent.Missed);
+            final CallEvent callEvent = new CallEvent(IVREvent.Missed.toString());
+            callEvent.appendData(IVRService.CALL_TYPE, kookooCallbackRequest.getCall_type());
+            kookooCallDetailRecordsService.close(kooKooCallDetailRecordId, kookooCallbackRequest.getExternal_id(), callEvent);
         }
         return "";
     }
@@ -60,7 +64,7 @@ public class IVRController {
                 case Disconnect:
                 case Hangup:
                     if (ivrContext.isValidSession()) {
-                        kookooCallDetailRecordsService.close(ivrContext.callDetailRecordId(), ivrContext.externalId(), ivrEvent);
+                        kookooCallDetailRecordsService.close(ivrContext.callDetailRecordId(), ivrContext.externalId(), new CallEvent(ivrEvent.toString()));
                         ivrContext.invalidateSession();
                     }
                     String url = AllIVRURLs.springTransferUrlToEmptyResponse();

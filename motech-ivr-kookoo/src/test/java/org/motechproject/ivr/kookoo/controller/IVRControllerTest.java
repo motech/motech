@@ -2,7 +2,9 @@ package org.motechproject.ivr.kookoo.controller;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.motechproject.ivr.event.CallEvent;
 import org.motechproject.ivr.event.IVREvent;
 import org.motechproject.ivr.kookoo.KooKooIVRContextForTest;
 import org.motechproject.ivr.kookoo.KookooCallbackRequest;
@@ -10,6 +12,7 @@ import org.motechproject.ivr.kookoo.extensions.CallFlowController;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
 import org.motechproject.ivr.model.CallDetailRecord;
 import org.motechproject.ivr.model.CallDirection;
+import org.motechproject.ivr.service.IVRService;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -57,7 +60,10 @@ public class IVRControllerTest {
         ivrContextForTest.isValidSession(true);
         ivrController.reply(ivrContextForTest);
         assertEquals(true, ivrContextForTest.sessionInvalidated());
-        verify(callDetailRecordsService).close(callDetailRecordId, externalId, IVREvent.Disconnect);
+
+        ArgumentCaptor<CallEvent> callEventArgumentCaptor = ArgumentCaptor.forClass(CallEvent.class);
+        verify(callDetailRecordsService).close(eq(callDetailRecordId), eq(externalId), callEventArgumentCaptor.capture());
+        assertEquals(IVREvent.Disconnect.toString(), callEventArgumentCaptor.getValue().getName());
     }
 
     @Test
@@ -69,7 +75,7 @@ public class IVRControllerTest {
         ivrContextForTest.isValidSession(false);
         ivrController.reply(ivrContextForTest);
         assertEquals(false, ivrContextForTest.sessionInvalidated());
-        verify(callDetailRecordsService, times(0)).close(callDetailRecordId, externalId, IVREvent.Disconnect);
+        verify(callDetailRecordsService, times(0)).close(callDetailRecordId, externalId, new CallEvent(IVREvent.Disconnect.toString()));
     }
 
     @Test
@@ -95,10 +101,15 @@ public class IVRControllerTest {
         KookooCallbackRequest kookooCallbackRequest = new KookooCallbackRequest();
         kookooCallbackRequest.setStatus("ring");
         kookooCallbackRequest.setPhone_no("phone_no");
+        kookooCallbackRequest.setCall_type("outbox");
         kookooCallbackRequest.setExternal_id("external_id");
 
         ivrController.callback(kookooCallbackRequest);
         verify(callDetailRecordsService).createOutgoing(anyString(), eq("phone_no"), eq(CallDetailRecord.Disposition.NO_ANSWER));
-        verify(callDetailRecordsService).close(anyString(), eq("external_id"), eq(IVREvent.Missed));
+
+        ArgumentCaptor<CallEvent> callEventArgumentCaptor = ArgumentCaptor.forClass(CallEvent.class);
+        verify(callDetailRecordsService).close(anyString(), eq("external_id"), callEventArgumentCaptor.capture());
+        assertEquals(IVREvent.Missed.toString(), callEventArgumentCaptor.getValue().getName());
+        assertEquals("outbox", callEventArgumentCaptor.getValue().getData().getFirst(IVRService.CALL_TYPE));
     }
 }

@@ -1,6 +1,7 @@
 package org.motechproject.ivr.kookoo.controller;
 
 import org.apache.log4j.Logger;
+import org.motechproject.ivr.event.CallEvent;
 import org.motechproject.ivr.event.IVREvent;
 import org.motechproject.ivr.kookoo.IVRException;
 import org.motechproject.ivr.kookoo.KooKooIVRContext;
@@ -46,7 +47,7 @@ public class StandardResponseController {
     }
 
     public void prepareForHangup(KooKooIVRContext ivrContext) {
-        kookooCallDetailRecordsService.close(ivrContext.callDetailRecordId(), ivrContext.externalId(), IVREvent.Hangup);
+        kookooCallDetailRecordsService.close(ivrContext.callDetailRecordId(), ivrContext.externalId(), new CallEvent(IVREvent.Hangup.toString()));
         ivrContext.invalidateSession();
     }
 
