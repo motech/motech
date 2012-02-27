@@ -47,7 +47,7 @@ public class EnrollmentAlertServiceTest {
     public void setup() {
         initMocks(this);
 
-        DateTime now = new DateTime(2012, 2, 20, 8, 15, 0, 0);
+        DateTime now = new DateTime(2012, 3, 16, 8, 15, 0, 0);
         spy(DateUtil.class);
         given(DateUtil.now()).willReturn(now);
         given(DateUtil.today()).willReturn(now.toLocalDate());
@@ -221,7 +221,7 @@ public class EnrollmentAlertServiceTest {
 
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
-        verify(schedulerService, times(0)).scheduleRepeatingJob(Matchers.<RepeatingSchedulableJob>any());
+        verify(schedulerService, times(0)).safeScheduleRepeatingJob(Matchers.<RepeatingSchedulableJob>any());
     }
 
     @Test

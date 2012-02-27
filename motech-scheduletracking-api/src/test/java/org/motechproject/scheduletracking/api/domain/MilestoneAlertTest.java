@@ -12,7 +12,7 @@ import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks
 public class MilestoneAlertTest {
 
     @Test
-    public void shouldCalcuateAndStoreAlertDates(){
+    public void shouldCalcuateAndStoreAlertDates() {
         final Milestone milestone = new Milestone("M1", weeks(1), weeks(1), weeks(1), weeks(1));
         final LocalDate referenceDate = DateUtil.newDate(2000, 1, 1);
         final MilestoneAlert milestoneAlert = MilestoneAlert.fromMilestone(milestone, referenceDate);

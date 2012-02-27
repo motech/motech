@@ -13,6 +13,8 @@ import org.motechproject.scheduletracking.api.events.DefaultmentCaptureEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.motechproject.util.DateUtil;
+import org.motechproject.valueobjects.WallTime;
+import org.motechproject.valueobjects.WallTimeUnit;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -40,6 +42,7 @@ public class EnrollmentDefaultmentServiceTest {
 
     @Test
     public void shouldScheduleJobAtEndOfMilestoneToCaptureDefaultmentState() {
+
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
         milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
         milestone.addAlert(WindowName.due, new Alert(days(0), weeks(1), 2, 1));
