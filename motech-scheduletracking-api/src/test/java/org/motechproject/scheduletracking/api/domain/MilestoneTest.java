@@ -9,11 +9,11 @@ import static ch.lambdaj.Lambda.on;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.daysAfter;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.daysAgo;
-import static org.motechproject.scheduletracking.api.utility.PeriodFactory.days;
-import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
+import static org.motechproject.scheduletracking.api.utility.PeriodFactory.*;
 
 public class MilestoneTest {
 
@@ -41,6 +41,24 @@ public class MilestoneTest {
         milestone.addAlert(WindowName.late, alert1);
         milestone.addAlert(WindowName.max, alert2);
         assertArrayEquals(new Alert[]{alert1, alert2}, milestone.getAlerts().toArray());
+    }
+
+    @Test
+    public void windowsStartAfterDurationOfAllPreviousWindows() {
+        Milestone milestone = new Milestone("M1", weeks(1), weeks(2), years(1), weeks(1));
+        assertEquals(weeks(0), milestone.getWindowStart(WindowName.earliest));
+        assertEquals(weeks(1), milestone.getWindowStart(WindowName.due));
+        assertEquals(weeks(3), milestone.getWindowStart(WindowName.late));
+        assertEquals(weeks(3).plus(years(1)), milestone.getWindowStart(WindowName.max));
+    }
+
+    @Test
+    public void windowsEndAfterTheDurationOfAllPreviousWindows() {
+        Milestone milestone = new Milestone("M1", weeks(1), weeks(2), weeks(1), months(1));
+        assertEquals(weeks(1), milestone.getWindowEnd(WindowName.earliest));
+        assertEquals(weeks(3), milestone.getWindowEnd(WindowName.due));
+        assertEquals(weeks(4), milestone.getWindowEnd(WindowName.late));
+        assertEquals(months(1).plus(weeks(4)), milestone.getWindowEnd(WindowName.max));
     }
 
     @Test

@@ -70,9 +70,8 @@ public class Milestone implements Serializable {
     public Period getWindowStart(WindowName name) {
         MutablePeriod period = new MutablePeriod();
         for (MilestoneWindow window : windows) {
-            if (window.getName().equals(name)) {
+            if (window.getName().equals(name))
                 break;
-            }
             period.add(window.getPeriod());
         }
         return period.toPeriod();
