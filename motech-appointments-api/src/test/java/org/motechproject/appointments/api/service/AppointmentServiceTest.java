@@ -159,6 +159,19 @@ public class AppointmentServiceTest {
     }
 
     @Test
+    public void shouldFindVisitByExternalId_AndName(){
+        String externalId = "externalId";
+        String visitName = "visit";
+
+        Visit visit = new Visit().name(visitName).appointment(new Appointment());
+        AppointmentCalendar appointmentCalendar = new AppointmentCalendar().addVisit(visit).externalId(externalId);
+
+        when(allAppointmentCalendars.findByExternalId(externalId)).thenReturn(appointmentCalendar);
+
+        assertEquals(visit, appointmentService.findVisit(externalId, visitName));
+    }
+
+    @Test
     public void shouldScheduleVisitReminderJob() {
         String externalId = "externalId";
         String visitName = "visit";

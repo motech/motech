@@ -77,6 +77,11 @@ public class AppointmentService {
         return allAppointmentCalendars.findAppointmentById(appointmentId);
     }
 
+    public Visit findVisit(String externalId, String visitName) {
+        AppointmentCalendar appointmentCalendar = getAppointmentCalendar(externalId);
+        return appointmentCalendar.getVisit(visitName);
+    }
+
     public void confirmVisit(String externalId, String clinicVisitId, DateTime confirmedVisitDate, ReminderConfiguration visitReminderConfiguration) {
         AppointmentCalendar appointmentCalendar = getAppointmentCalendar(externalId);
         Visit visit = appointmentCalendar.getVisit(clinicVisitId);
