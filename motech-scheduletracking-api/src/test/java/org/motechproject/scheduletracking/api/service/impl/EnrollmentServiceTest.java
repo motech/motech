@@ -8,7 +8,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.*;
-import org.motechproject.scheduletracking.api.domain.exception.DefaultedMilestoneFulfillmentException;
 import org.motechproject.scheduletracking.api.domain.exception.NoMoreMilestonesToFulfillException;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
@@ -121,20 +120,6 @@ public class EnrollmentServiceTest {
         assertEquals("Second Shot", updatedEnrollmentCaptor.getValue().getCurrentMilestoneName());
 
         verify(allEnrollments).update(enrollment);
-    }
-
-    @Test(expected = DefaultedMilestoneFulfillmentException.class)
-    public void shouldNotFulfillADefaultedMilestone() {
-        Milestone firstMilestone = new Milestone("First Shot", weeks(1), weeks(1), weeks(1), weeks(1));
-        Milestone secondMilestone = new Milestone("Second Shot", weeks(1), weeks(1), weeks(1), weeks(1));
-        secondMilestone.addAlert(WindowName.earliest, new Alert(days(0), weeks(1), 3, 0));
-        Schedule schedule = new Schedule("Yellow Fever Vaccination");
-        schedule.addMilestones(firstMilestone, secondMilestone);
-        when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
-
-        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(4), weeksAgo(4), new Time(8, 20));
-        enrollment.setStatus(EnrollmentStatus.Defaulted);
-        enrollmentService.fulfillCurrentMilestone(enrollment, null);
     }
 
     @Test(expected = NoMoreMilestonesToFulfillException.class)
