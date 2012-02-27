@@ -4,10 +4,10 @@
         {
             "name":"IPTI 1",
             "scheduleWindows":{
-                "earliest":"13 Weeks",
-                "due":"14 Weeks",
-                "late":"16 Weeks",
-                "max":""
+                "earliest":["13 Weeks"],
+                "due":["14 Weeks", "2 days"],
+                "late":["1 year", "2 month", "16 Weeks"],
+                "max":[""]
             },
             "data":{
                 "Foo":"Bar"
@@ -21,7 +21,7 @@
                 },
                 {
                     "window":"late",
-                    "offset":"1 Week",
+                    "offset":"1 Month",
                     "interval":"1 Week",
                     "count":"51"
                 }
@@ -30,10 +30,10 @@
         {
             "name":"IPTI 2",
             "scheduleWindows":{
-                "earliest":"1 Weeks",
-                "due":"2 Weeks",
-                "late":"3 Weeks",
-                "max":""
+                "earliest":["1 Weeks"],
+                "due":["2 Weeks"],
+                "late":["3 Weeks"],
+                "max":[""]
             },
             "data":{
                 "doo":"Bar"

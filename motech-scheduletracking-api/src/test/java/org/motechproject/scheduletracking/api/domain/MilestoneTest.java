@@ -62,6 +62,13 @@ public class MilestoneTest {
     }
 
     @Test
+    public void windowPeriodCanBeComposedOfMultipleUnits() {
+        Milestone milestone = new Milestone("M1", weeks(1).plus(days(3)), months(2).plus(weeks(2)), weeks(1), months(1));
+        assertEquals(weeks(1).plus(days(3)), milestone.getWindowEnd(WindowName.earliest));
+        assertEquals(weeks(1).plus(days(3)).plus(months(2).plus(weeks(2))), milestone.getWindowEnd(WindowName.due));
+    }
+
+    @Test
     public void shouldReturnFalseIfNowFallsInTheWindow() {
         Milestone milestone = new Milestone("M1", days(3), days(0), days(0), days(0));
         assertFalse(milestone.windowElapsed(WindowName.earliest, daysAgo(2)));

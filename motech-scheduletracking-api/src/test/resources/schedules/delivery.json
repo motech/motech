@@ -4,10 +4,10 @@
         {
             "name":"Default",
             "scheduleWindows":{
-                "earliest":"39 Weeks",
-                "due":"40 Weeks",
-                "late":"44 Weeks",
-                "max":"44 Weeks"
+                "earliest":["39 Weeks"],
+                "due":["40 Weeks"],
+                "late":["44 Weeks"],
+                "max":["44 Weeks"]
             },
             "alerts":[
                 {

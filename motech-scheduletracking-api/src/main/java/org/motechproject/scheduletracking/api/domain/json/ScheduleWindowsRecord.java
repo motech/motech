@@ -1,25 +1,28 @@
 package org.motechproject.scheduletracking.api.domain.json;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ScheduleWindowsRecord {
 
-    private String earliest;
-    private String due;
-    private String late;
-    private String max;
+    private List<String> earliest = new ArrayList<String>();
+    private List<String> due = new ArrayList<String>();
+    private List<String> late = new ArrayList<String>();
+    private List<String> max = new ArrayList<String>();
 
-    public String earliest() {
-        return earliest.toLowerCase();
+    public List<String> earliest() {
+        return earliest;
     }
 
-    public String due() {
-        return due.toLowerCase();
+    public List<String> due() {
+        return due;
     }
 
-    public String late() {
-        return late.toLowerCase();
+    public List<String> late() {
+        return late;
     }
 
-    public String max() {
-        return max.toLowerCase();
+    public List<String> max() {
+        return max;
     }
 }

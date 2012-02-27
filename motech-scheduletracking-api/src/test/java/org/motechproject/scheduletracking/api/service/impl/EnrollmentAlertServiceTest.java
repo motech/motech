@@ -28,6 +28,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.*;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.days;
+import static org.motechproject.scheduletracking.api.utility.PeriodFactory.months;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
 import static org.motechproject.util.DateUtil.newDateTime;
 import static org.powermock.api.mockito.PowerMockito.spy;

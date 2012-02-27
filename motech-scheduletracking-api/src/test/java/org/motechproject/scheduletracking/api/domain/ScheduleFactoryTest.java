@@ -10,6 +10,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.motechproject.scheduletracking.api.utility.PeriodFactory.*;
 
 public class ScheduleFactoryTest {
 
@@ -52,8 +53,8 @@ public class ScheduleFactoryTest {
         assertEquals(2, firstMilestone.getAlerts().size());
         assertEquals(0, firstMilestone.getAlerts().get(0).getIndex());
         assertEquals(1, firstMilestone.getAlerts().get(1).getIndex());
-        assertEquals(0, firstMilestone.getAlerts().get(0).getOffset().toStandardDays().getDays());
-        assertEquals(7, firstMilestone.getAlerts().get(1).getOffset().toStandardDays().getDays());
+        assertEquals(weeks(0), firstMilestone.getAlerts().get(0).getOffset());
+        assertEquals(months(1), firstMilestone.getAlerts().get(1).getOffset());
 
         assertEquals(0, secondMilestone.getAlerts().size());
     }
@@ -67,10 +68,20 @@ public class ScheduleFactoryTest {
         List<Milestone> milestones = schedule.getMilestones();
         Milestone firstMilestone = milestones.get(0);
 
-        assertEquals(13 * 7, firstMilestone.getWindowEnd(WindowName.earliest).toStandardDays().getDays());
-        assertEquals(14 * 7, firstMilestone.getWindowEnd(WindowName.due).toStandardDays().getDays());
-        assertEquals(16 * 7, firstMilestone.getWindowEnd(WindowName.late).toStandardDays().getDays());
-        assertEquals(16 * 7, firstMilestone.getWindowEnd(WindowName.max).toStandardDays().getDays());
+        assertEquals(weeks(0), firstMilestone.getWindowEnd(WindowName.max));
+    }
+
+    @Test
+    public void shouldCreateEmptyWindowWithCombinationOfUnits() {
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules");
+        ScheduleRecord scheduleRecord = findRecord("IPTI Schedule", jsonReader.records());
+        Schedule schedule = new ScheduleFactory().build(scheduleRecord);
+
+        List<Milestone> milestones = schedule.getMilestones();
+        Milestone firstMilestone = milestones.get(0);
+
+        assertEquals(weeks(14).plus(days(2)), firstMilestone.getWindowEnd(WindowName.due));
+        assertEquals(years(1).plus(months(2)).plus(weeks(16)), firstMilestone.getWindowEnd(WindowName.late));
     }
 
     @Test(expected = InvalidScheduleDefinitionException.class)

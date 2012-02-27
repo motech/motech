@@ -35,7 +35,7 @@ public class TrackedSchedulesJsonReaderImplTest {
         List<ScheduleRecord> records = jsonReader.records();
         ScheduleRecord scheduleRecord = findRecord("IPTI Schedule", records);
         MilestoneRecord secondMilestone = scheduleRecord.milestoneRecords().get(1);
-        assertEquals("", secondMilestone.scheduleWindowsRecord().max());
+        assertEquals("", secondMilestone.scheduleWindowsRecord().max().get(0));
     }
 
     @Test
