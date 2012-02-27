@@ -13,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 public class EnrollmentRequestTest {
     @Test
     public void shouldReturnFalseIfStartingMilestoneNotProvided() {
-        EnrollmentRequest enrollmentRequest = new EnrollmentRequest("externalId", "scheduleName", new Time(10, 10), LocalDate.now(), null);
+        EnrollmentRequest enrollmentRequest = new EnrollmentRequest("externalId", "scheduleName", new Time(10, 10), LocalDate.now(), null, null);
         assertFalse("Starting milestone not expected, but was provided!", enrollmentRequest.enrollIntoMilestone());
     }
 

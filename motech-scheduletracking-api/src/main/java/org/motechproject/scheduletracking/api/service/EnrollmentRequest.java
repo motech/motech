@@ -12,18 +12,14 @@ public class EnrollmentRequest {
     private LocalDate enrollmentDate;
     private String startingMilestoneName;
 
-    public EnrollmentRequest(String externalId, String scheduleName, Time preferredAlertTime, LocalDate referenceDate, LocalDate enrollmentDate) {
+    public EnrollmentRequest(String externalId, String scheduleName, Time preferredAlertTime, LocalDate referenceDate, LocalDate enrollmentDate, String startingMilestoneName) {
         this.externalId = externalId;
         this.scheduleName = scheduleName;
         this.preferredAlertTime = preferredAlertTime;
         this.referenceDate = referenceDate;
         this.enrollmentDate = enrollmentDate;
-    }
-
-	public EnrollmentRequest(String externalId, String scheduleName, Time preferredAlertTime, LocalDate referenceDate, LocalDate enrollmentDate, String startingMilestoneName) {
-        this(externalId, scheduleName, preferredAlertTime, referenceDate, enrollmentDate);
         this.startingMilestoneName = startingMilestoneName;
-	}
+    }
 
     public String getExternalId() {
         return externalId;
