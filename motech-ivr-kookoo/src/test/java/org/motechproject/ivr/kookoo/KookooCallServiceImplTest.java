@@ -53,7 +53,7 @@ public class KookooCallServiceImplTest {
         String apiKey = "api_key=api_key_value";
         String replyUrl = "&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FdataMap%3D%7B%22external_id%22%3A%22external_id%22%2C%22is_outbound_call%22%3A%22true%22%2C%22call_type%22%3A%22outbox%22%7D";
         String phoneNo = "&phone_no=9876543211";
-        String callbackUrl = "&callback_url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%2Fcallback%3Fexternal_id%3Dexternal_id%26call_type%3Doutbox";
+        String callbackUrl = "&callback_url=http://localhost/tama/ivr/reply/callback?external_id=external_id&call_type=outbox";
         verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://kookoo/outbound.php?" + apiKey + replyUrl + phoneNo + callbackUrl)));
     }
 
@@ -69,7 +69,7 @@ public class KookooCallServiceImplTest {
         String apiKey = "api_key=api_key_value";
         String replyUrl = "&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FdataMap%3D%7B%22external_id%22%3A%22external_id%22%2C%22hero%22%3A%22batman%22%2C%22is_outbound_call%22%3A%22true%22%2C%22call_type%22%3A%22outbox%22%7D";
         String phoneNo = "&phone_no=9876543211";
-        String callbackUrl = "&callback_url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%2Fcallback%3Fexternal_id%3Dexternal_id%26call_type%3Doutbox";
+        String callbackUrl = "&callback_url=http://localhost/tama/ivr/reply/callback?external_id=external_id&call_type=outbox";
         verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://kookoo/outbound.php?" + apiKey + replyUrl + phoneNo + callbackUrl)));
     }
 

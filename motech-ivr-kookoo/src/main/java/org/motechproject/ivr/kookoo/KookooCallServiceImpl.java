@@ -58,7 +58,7 @@ public class KookooCallServiceImpl implements IVRService {
                     new NameValuePair(API_KEY_KEY, properties.get(API_KEY).toString()),
                     new NameValuePair(URL_KEY, URLEncoder.encode(applicationReplyUrl, "UTF-8")),
                     new NameValuePair(PHONE_NUMBER_KEY, callRequest.getPhone()),
-                    new NameValuePair(CALLBACK_URL_KEY, URLEncoder.encode(applicationCallbackUrl, "UTF-8"))
+                    new NameValuePair(CALLBACK_URL_KEY, applicationCallbackUrl)
             });
             log.info(String.format("Dialing %s", getMethod.getURI()));
             httpClient.executeMethod(getMethod);
