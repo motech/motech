@@ -12,6 +12,7 @@ public class KookooCallbackRequest {
     private String phone_no;
     private String start_time;
     private String external_id;
+    private String call_type;
 
     public String getSid() {
         return sid;
@@ -67,6 +68,14 @@ public class KookooCallbackRequest {
 
     public void setExternal_id(String external_id) {
         this.external_id = external_id;
+    }
+
+    public String getCall_type() {
+        return call_type;
+    }
+
+    public void setCall_type(String call_type) {
+        this.call_type = call_type;
     }
 
     public boolean notAnswered() {

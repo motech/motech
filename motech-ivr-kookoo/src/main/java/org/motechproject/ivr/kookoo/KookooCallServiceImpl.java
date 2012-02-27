@@ -50,7 +50,7 @@ public class KookooCallServiceImpl implements IVRService {
             callRequest.getPayload().put(IS_OUTBOUND_CALL, "true");
             JSONObject json = new JSONObject(callRequest.getPayload());
 
-            String applicationCallbackUrl = String.format("%s/callback?%s=%s", callRequest.getCallBackUrl(), EXTERNAL_ID, externalId);
+            String applicationCallbackUrl = String.format("%s/callback?%s=%s&%s=%s", callRequest.getCallBackUrl(), EXTERNAL_ID, externalId, CALL_TYPE, callRequest.getPayload().get(CALL_TYPE));
             String applicationReplyUrl = String.format("%s?%s=%s", callRequest.getCallBackUrl(), CUSTOM_DATA_KEY, json.toString());
 
             GetMethod getMethod = new GetMethod(properties.get(OUTBOUND_URL).toString());
@@ -58,7 +58,7 @@ public class KookooCallServiceImpl implements IVRService {
                     new NameValuePair(API_KEY_KEY, properties.get(API_KEY).toString()),
                     new NameValuePair(URL_KEY, URLEncoder.encode(applicationReplyUrl, "UTF-8")),
                     new NameValuePair(PHONE_NUMBER_KEY, callRequest.getPhone()),
-                    new NameValuePair(CALLBACK_URL_KEY, applicationCallbackUrl)
+                    new NameValuePair(CALLBACK_URL_KEY, URLEncoder.encode(applicationCallbackUrl, "UTF-8"))
             });
             log.info(String.format("Dialing %s", getMethod.getURI()));
             httpClient.executeMethod(getMethod);

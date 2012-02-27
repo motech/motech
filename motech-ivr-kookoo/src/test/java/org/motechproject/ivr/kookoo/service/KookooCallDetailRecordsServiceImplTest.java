@@ -62,13 +62,13 @@ public class KookooCallDetailRecordsServiceImplTest {
 
     @Test
     public void shouldUpdateTheEndDateWhenClosingCallDetailRecord() {
-        kookooCallDetailRecordsService.close("callId", "externalId", IVREvent.GotDTMF);
+        kookooCallDetailRecordsService.close("callId", "externalId", new CallEvent(IVREvent.GotDTMF.toString()));
         verify(allKooKooCallDetailRecords).update(kookooCallDetailRecord);
     }
 
     @Test
     public void shouldRaiseEventWhenClosingCallDetailRecord() {
-        kookooCallDetailRecordsService.close("callId", "externalId", IVREvent.GotDTMF);
+        kookooCallDetailRecordsService.close("callId", "externalId", new CallEvent(IVREvent.GotDTMF.toString()));
 
         ArgumentCaptor<MotechEvent> eventCaptor = ArgumentCaptor.forClass(MotechEvent.class);
         verify(eventRelay).sendEventMessage(eventCaptor.capture());
