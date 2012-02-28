@@ -35,6 +35,7 @@ import static org.motechproject.scheduletracking.api.utility.PeriodFactory.hours
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
 import static org.motechproject.util.DateUtil.newDateTime;
 import static org.motechproject.util.DateUtil.now;
+import static org.motechproject.util.DateUtil.today;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.when;
 
