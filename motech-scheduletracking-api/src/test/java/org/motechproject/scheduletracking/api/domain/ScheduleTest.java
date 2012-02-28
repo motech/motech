@@ -29,4 +29,14 @@ public class ScheduleTest {
         assertEquals(true, schedule.maxMilestoneCountReached(2));
         assertEquals(true, schedule.maxMilestoneCountReached(3));
     }
+
+    @Test
+    public void shouldReturnTheMaximumNumberOfDaysInTheMilestone() {
+        Milestone secondMilestone = new Milestone("Second Shot", weeks(1), weeks(1), weeks(1), weeks(1));
+        Milestone firstMilestone = new Milestone("First Shot", weeks(1), weeks(1), weeks(1), weeks(2));
+        Schedule schedule = new Schedule("Yellow Fever Vaccination");
+        schedule.addMilestones(firstMilestone, secondMilestone);
+
+        assertEquals(weeks(9), schedule.getDuration());
+    }
 }

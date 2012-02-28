@@ -14,7 +14,6 @@ import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
 import org.motechproject.scheduletracking.api.service.EnrollmentResponse;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
 import org.motechproject.util.DateUtil;
-
 import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -54,7 +53,7 @@ public class ScheduleTrackingServiceImplTest {
         ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
 
         String externalId = "my_entity_1";
-        LocalDate referenceDate = new LocalDate(2012, 1, 2);
+        LocalDate referenceDate = DateUtil.today().minusDays(10);
         Time preferredAlertTime = new Time(8, 10);
         scheduleTrackingService.enroll(new EnrollmentRequest(externalId, scheduleName, preferredAlertTime, referenceDate, null, null));
 
@@ -142,8 +141,8 @@ public class ScheduleTrackingServiceImplTest {
         ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
 
         String externalId = "entity_1";
-        Enrollment enrollment = new Enrollment(externalId, scheduleName, "milestone", weeksAgo(4), weeksAgo(4), new Time(8, 10));
-        when(allEnrollments.getActiveEnrollment(externalId, scheduleName)).thenReturn(enrollment);
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(4), weeksAgo(4), new Time(8, 10), EnrollmentStatus.Active);
+        when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(enrollment);
         scheduleTrackingService.unenroll(externalId, Arrays.asList(scheduleName));
 
         verify(enrollmentService).unenroll(enrollment);
@@ -168,9 +167,9 @@ public class ScheduleTrackingServiceImplTest {
         ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
 
         String externalId = "entity_1";
-        Enrollment enrollment1 = new Enrollment(externalId, schedule1Name, "milestone1", weeksAgo(4), weeksAgo(4), new Time(8, 10));
+        Enrollment enrollment1 = new Enrollment(externalId, schedule1Name, "milestone1", weeksAgo(4), weeksAgo(4), new Time(8, 10), EnrollmentStatus.Active);
         when(allEnrollments.getActiveEnrollment(externalId, schedule1Name)).thenReturn(enrollment1);
-        Enrollment enrollment2 = new Enrollment(externalId, schedule2Name, "milestone2", weeksAgo(4), weeksAgo(4), new Time(8, 10));
+        Enrollment enrollment2 = new Enrollment(externalId, schedule2Name, "milestone2", weeksAgo(4), weeksAgo(4), new Time(8, 10), EnrollmentStatus.Active);
         when(allEnrollments.getActiveEnrollment(externalId, schedule2Name)).thenReturn(enrollment2);
 
         scheduleTrackingService.unenroll(externalId, Arrays.asList(schedule1Name, schedule2Name));
@@ -198,7 +197,7 @@ public class ScheduleTrackingServiceImplTest {
     public void shouldReturnEnrollmentDetails() {
         String externalId = "external id";
         String scheduleName = "schedule name";
-        final Enrollment enrollment = new Enrollment(externalId, scheduleName, null, null, null, null);
+        final Enrollment enrollment = new Enrollment(externalId, scheduleName, null, null, null, null, EnrollmentStatus.Active);
         when(allEnrollments.getActiveEnrollment(externalId, scheduleName)).thenReturn(enrollment);
         final EnrollmentResponse response = new ScheduleTrackingServiceImpl(null, allEnrollments, null).getEnrollment(externalId, scheduleName);
         assertThat(response.getExternalId(), is(equalTo(externalId)));

@@ -1,5 +1,8 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import org.joda.time.MutablePeriod;
+import org.joda.time.Period;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +44,14 @@ public class Schedule implements Serializable {
         if (currentIndex < milestones.size() - 1)
             return milestones.get(currentIndex + 1).getName();
         return null;
+    }
+
+    public Period getDuration() {
+        MutablePeriod duration = new MutablePeriod();
+        for (Milestone milestone : milestones) {
+            duration.add(milestone.getMaximumDuration());
+        }
+        return duration.toPeriod();
     }
 
     @Override

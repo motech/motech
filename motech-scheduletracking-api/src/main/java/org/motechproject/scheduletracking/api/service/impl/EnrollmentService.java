@@ -11,6 +11,8 @@ import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static org.motechproject.util.DateUtil.today;
+
 @Component
 public class EnrollmentService {
     private AllTrackedSchedules allTrackedSchedules;
@@ -27,7 +29,12 @@ public class EnrollmentService {
     }
 
     public String enroll(String externalId, String scheduleName, String startingMilestoneName, LocalDate referenceDate, LocalDate enrollmentDate, Time preferredAlertTime) {
-        Enrollment enrollment = allEnrollments.addOrReplace(new Enrollment(externalId, scheduleName, startingMilestoneName, referenceDate, enrollmentDate, preferredAlertTime));
+        Schedule schedule = allTrackedSchedules.getByName(scheduleName);
+        EnrollmentStatus enrollmentStatus = EnrollmentStatus.Active;
+        if(hasEnrollmentAlreadyExpired(referenceDate, schedule))
+            enrollmentStatus = EnrollmentStatus.Defaulted;
+
+        Enrollment enrollment = allEnrollments.addOrReplace(new Enrollment(externalId, scheduleName, startingMilestoneName, referenceDate, enrollmentDate, preferredAlertTime, enrollmentStatus));
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
         enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
 
@@ -59,5 +66,9 @@ public class EnrollmentService {
         enrollmentDefaultmentService.unscheduleDefaultmentCaptureJob(enrollment);
         enrollment.setStatus(EnrollmentStatus.Unenrolled);
         allEnrollments.update(enrollment);
+    }
+
+    private boolean hasEnrollmentAlreadyExpired(LocalDate referenceDate, Schedule schedule) {
+        return referenceDate.plus(schedule.getDuration()).isBefore(today());
     }
 }

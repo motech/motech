@@ -33,14 +33,14 @@ public class Enrollment extends MotechBaseDataObject {
     private Enrollment() {
     }
 
-    public Enrollment(String externalId, String scheduleName, String currentMilestoneName, LocalDate referenceDate, LocalDate enrollmentDate, Time preferredAlertTime) {
+    public Enrollment(String externalId, String scheduleName, String currentMilestoneName, LocalDate referenceDate, LocalDate enrollmentDate, Time preferredAlertTime, EnrollmentStatus enrollmentStatus) {
         this.externalId = externalId;
         this.scheduleName = scheduleName;
         this.currentMilestoneName = currentMilestoneName;
         this.enrollmentDate = enrollmentDate;
         this.referenceDate = referenceDate;
         this.preferredAlertTime = preferredAlertTime;
-        this.status = EnrollmentStatus.Active;
+        this.status = enrollmentStatus;
     }
 
     public String getScheduleName() {

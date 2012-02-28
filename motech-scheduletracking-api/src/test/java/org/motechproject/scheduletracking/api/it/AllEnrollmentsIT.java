@@ -42,7 +42,7 @@ public class AllEnrollmentsIT {
 
     @Test
     public void shouldAddEnrollment() {
-        enrollment = new Enrollment("externalId", "schedule_name", "first_milestone", DateUtil.today(), DateUtil.today(), new Time(DateUtil.now().toLocalTime()));
+        enrollment = new Enrollment("externalId", "schedule_name", "first_milestone", DateUtil.today(), DateUtil.today(), new Time(DateUtil.now().toLocalTime()), EnrollmentStatus.Active);
         allEnrollments.add(enrollment);
 
         enrollment = allEnrollments.get(enrollment.getId());
@@ -52,7 +52,7 @@ public class AllEnrollmentsIT {
 
     @Test
     public void shouldFindActiveEnrollmentByExternalIdAndScheduleName() {
-        enrollment = new Enrollment("entity_1", "schedule_name", "first_milestone", DateUtil.today(), DateUtil.today(), new Time(DateUtil.now().toLocalTime()));
+        enrollment = new Enrollment("entity_1", "schedule_name", "first_milestone", DateUtil.today(), DateUtil.today(), new Time(DateUtil.now().toLocalTime()), EnrollmentStatus.Active);
         enrollment.setStatus(EnrollmentStatus.Unenrolled);
         allEnrollments.add(enrollment);
 
@@ -62,10 +62,10 @@ public class AllEnrollmentsIT {
     @Test
     public void shouldUpdateEnrollmentIfAnActiveEnrollmentForTheScheduleAlreadyAvailable() {
         String externalId = "externalId";
-        enrollment = new Enrollment(externalId, schedule.getName(), milestone.getName(), DateUtil.today(), DateUtil.today(), new Time(8, 10));
+        enrollment = new Enrollment(externalId, schedule.getName(), milestone.getName(), DateUtil.today(), DateUtil.today(), new Time(8, 10), EnrollmentStatus.Active);
         allEnrollments.add(enrollment);
 
-        Enrollment enrollmentWithUpdates = new Enrollment(enrollment.getExternalId(), enrollment.getScheduleName(), milestone.getName(), enrollment.getReferenceDate().plusDays(1), enrollment.getEnrollmentDate().plusDays(1), new Time(2, 5));
+        Enrollment enrollmentWithUpdates = new Enrollment(enrollment.getExternalId(), enrollment.getScheduleName(), milestone.getName(), enrollment.getReferenceDate().plusDays(1), enrollment.getEnrollmentDate().plusDays(1), new Time(2, 5), EnrollmentStatus.Active);
         allEnrollments.addOrReplace(enrollmentWithUpdates);
 
         enrollment = allEnrollments.getActiveEnrollment(enrollment.getExternalId(), schedule.getName());
@@ -78,11 +78,11 @@ public class AllEnrollmentsIT {
     @Test
     public void shouldCreateEnrollmentIfADefaultedEnrollmentForTheScheduleAlreadyExists() {
         String externalId = "externalId";
-        enrollment = new Enrollment(externalId, schedule.getName(), milestone.getName(), DateUtil.today(), DateUtil.today(), new Time(8, 10));
+        enrollment = new Enrollment(externalId, schedule.getName(), milestone.getName(), DateUtil.today(), DateUtil.today(), new Time(8, 10), EnrollmentStatus.Active);
         enrollment.setStatus(EnrollmentStatus.Defaulted);
         allEnrollments.add(enrollment);
 
-        Enrollment enrollmentWithUpdates = new Enrollment(enrollment.getExternalId(), enrollment.getScheduleName(), milestone.getName(), enrollment.getReferenceDate().plusDays(1), enrollment.getEnrollmentDate().plusDays(1), new Time(2, 5));
+        Enrollment enrollmentWithUpdates = new Enrollment(enrollment.getExternalId(), enrollment.getScheduleName(), milestone.getName(), enrollment.getReferenceDate().plusDays(1), enrollment.getEnrollmentDate().plusDays(1), new Time(2, 5), EnrollmentStatus.Active);
         allEnrollments.addOrReplace(enrollmentWithUpdates);
 
         enrollment = allEnrollments.getActiveEnrollment(enrollment.getExternalId(), schedule.getName());
