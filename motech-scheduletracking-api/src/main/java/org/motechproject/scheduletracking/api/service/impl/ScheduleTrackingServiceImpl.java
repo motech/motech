@@ -53,6 +53,12 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
     }
 
     @Override
+    public void fulfillCurrentMilestone(String externalId, String scheduleName) {
+        LocalDate fulfillmentDate = today();
+        fulfillCurrentMilestone(externalId, scheduleName, fulfillmentDate);
+    }
+
+    @Override
     public void fulfillCurrentMilestone(String externalId, String scheduleName, LocalDate fulfillmentDate) {
         Enrollment activeEnrollment = allEnrollments.getActiveEnrollment(externalId, scheduleName);
         if (activeEnrollment == null) {

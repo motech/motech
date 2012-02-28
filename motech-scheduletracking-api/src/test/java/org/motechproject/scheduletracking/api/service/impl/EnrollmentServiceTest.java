@@ -115,7 +115,7 @@ public class EnrollmentServiceTest {
         when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
 
         Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(4), weeksAgo(4), new Time(8, 20), EnrollmentStatus.Active);
-        enrollmentService.fulfillCurrentMilestone(enrollment, null);
+        enrollmentService.fulfillCurrentMilestone(enrollment, daysAgo(0));
 
         assertEquals("Second Shot", enrollment.getCurrentMilestoneName());
         assertEquals(daysAgo(0), enrollment.lastFulfilledDate());

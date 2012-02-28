@@ -113,9 +113,31 @@ public class ScheduleTrackingServiceImplTest {
         Enrollment enrollment = mock(Enrollment.class);
         when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(enrollment);
 
-        scheduleTrackingService.fulfillCurrentMilestone("entity_1", "my_schedule", null);
+        scheduleTrackingService.fulfillCurrentMilestone("entity_1", "my_schedule");
 
-        verify(enrollmentService).fulfillCurrentMilestone(enrollment, null);
+        verify(enrollmentService).fulfillCurrentMilestone(enrollment, today());
+    }
+
+    @Test
+    public void shouldFulfillTheCurrentMilestoneWithTheSpecifiedDate() {
+        Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(milestone);
+        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
+
+        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
+
+        when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(null);
+        scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2), null, null));
+
+        Enrollment enrollment = mock(Enrollment.class);
+        when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(enrollment);
+
+        LocalDate fulfillmentDate = DateUtil.newDate(2012, 12, 10);
+        scheduleTrackingService.fulfillCurrentMilestone("entity_1", "my_schedule", fulfillmentDate);
+
+        verify(enrollmentService).fulfillCurrentMilestone(enrollment, fulfillmentDate);
     }
 
     @Test(expected = InvalidEnrollmentException.class)
@@ -124,7 +146,7 @@ public class ScheduleTrackingServiceImplTest {
 
         ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
 
-        scheduleTrackingService.fulfillCurrentMilestone("WRONG-ID", "WRONG-NAME", null);
+        scheduleTrackingService.fulfillCurrentMilestone("WRONG-ID", "WRONG-NAME");
 
         verifyZeroInteractions(enrollmentService);
     }
@@ -210,6 +232,6 @@ public class ScheduleTrackingServiceImplTest {
         when(allEnrollments.getActiveEnrollment(externalId, scheduleName)).thenReturn(null);
 
         ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
-        scheduleTrackingService.fulfillCurrentMilestone(externalId, scheduleName, DateUtil.today());
+        scheduleTrackingService.fulfillCurrentMilestone(externalId, scheduleName);
     }
 }

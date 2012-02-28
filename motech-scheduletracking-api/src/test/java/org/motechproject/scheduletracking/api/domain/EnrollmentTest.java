@@ -95,19 +95,6 @@ public class EnrollmentTest {
     }
 
     @Test
-    public void shouldFulfillCurrentMilestone() {
-        Enrollment enrollment = new Enrollment("externalId", "scheduleName", "currentMilestoneName", weeksAgo(1), weeksAgo(1), new Time(8, 10), EnrollmentStatus.Active);
-
-        assertEquals(0, enrollment.getFulfillments().size());
-        enrollment.fulfillCurrentMilestone(null);
-        assertEquals(1, enrollment.getFulfillments().size());
-
-        MilestoneFulfillment milestoneFulfillment = enrollment.getFulfillments().get(0);
-        assertEquals(DateUtil.today(), milestoneFulfillment.getDateFulfilled());
-        assertEquals("currentMilestoneName", milestoneFulfillment.getMilestoneName());
-    }
-
-    @Test
     public void shouldFulfillCurrentMilestoneWithTheSpecifiedDate() {
         Enrollment enrollment = new Enrollment("externalId", "scheduleName", "currentMilestoneName", weeksAgo(1), weeksAgo(1), new Time(8, 10), EnrollmentStatus.Active);
 

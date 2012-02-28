@@ -128,7 +128,6 @@ public class Enrollment extends MotechBaseDataObject {
     }
 
     public void fulfillCurrentMilestone(LocalDate fulfillmentDate) {
-        LocalDate dateFulfilled = fulfillmentDate != null ? fulfillmentDate : today();
-        fulfillments.add(new MilestoneFulfillment(currentMilestoneName, dateFulfilled));
+        fulfillments.add(new MilestoneFulfillment(currentMilestoneName, fulfillmentDate));
     }
 }
