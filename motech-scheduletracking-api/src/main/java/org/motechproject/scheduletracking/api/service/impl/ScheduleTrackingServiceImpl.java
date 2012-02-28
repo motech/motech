@@ -64,15 +64,7 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
     }
 
     @Override
-    public void unenroll(String externalId, String scheduleName) {
-        Enrollment activeEnrollment = allEnrollments.getActiveEnrollment(externalId, scheduleName);
-        if (activeEnrollment == null)
-            throw new InvalidEnrollmentException();
-        enrollmentService.unenroll(activeEnrollment);
-    }
-
-    @Override
-    public void safeUnEnroll(String externalId, List<String> scheduleNames) {
+    public void unenroll(String externalId, List<String> scheduleNames) {
         for (String scheduleName : scheduleNames) {
             Enrollment activeEnrollment = allEnrollments.getActiveEnrollment(externalId, scheduleName);
             if (activeEnrollment != null)
