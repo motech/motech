@@ -1,6 +1,5 @@
 package org.motechproject.appointments.api.dao;
 
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,12 +12,10 @@ import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.util.DateUtil;
 
-import java.util.List;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -38,31 +35,20 @@ public class AllAppointmentReminderJobsTest {
         LocalDate startDate = DateUtil.newDate(2010, 10, 10);
         LocalDate endDate = DateUtil.newDate(2010, 10, 20);
         Reminder reminder = new Reminder().startDate(startDate.toDate()).endDate(endDate.toDate()).intervalSeconds(3600).repeatCount(2);
-        DateTime dueDate = DateUtil.newDateTime(endDate.toDate());
-        Appointment appointment = new Appointment().dueDate(dueDate).reminder(reminder);
+        Appointment appointment = new Appointment().dueDate(DateUtil.newDateTime(endDate.toDate())).reminder(reminder);
         String externalId = "externalId";
 
         allAppointmentReminderJobs.add(appointment, externalId);
         ArgumentCaptor<CronSchedulableJob> cronSchedulableJobArgumentCaptor = ArgumentCaptor.forClass(CronSchedulableJob.class);
 
-        verify(schedulerService, times(2)).safeScheduleJob(cronSchedulableJobArgumentCaptor.capture());
-        List<CronSchedulableJob> cronSchedulableJobs = cronSchedulableJobArgumentCaptor.getAllValues();
+        verify(schedulerService).safeScheduleJob(cronSchedulableJobArgumentCaptor.capture());
+        CronSchedulableJob cronSchedulableJob = cronSchedulableJobArgumentCaptor.getValue();
+        Map<String, Object> eventParameters = cronSchedulableJob.getMotechEvent().getParameters();
 
-        CronSchedulableJob approachingDueDateJob = cronSchedulableJobs.get(0);
-
-        Map<String, Object> eventParameters1 = approachingDueDateJob.getMotechEvent().getParameters();
-        assertEquals(startDate.toDate(), approachingDueDateJob.getStartTime());
-        assertEquals(endDate.toDate(), approachingDueDateJob.getEndTime());
-        assertEquals(externalId, eventParameters1.get(EventKeys.EXTERNAL_ID_KEY));
-        assertEquals("org.motechproject.appointments.api.Appointment.Reminder-" + appointment.id(), eventParameters1.get(MotechSchedulerService.JOB_ID_KEY));
-
-        CronSchedulableJob dayOfDueDateJob = cronSchedulableJobs.get(1);
-
-        Map<String, Object> eventParameters2 = dayOfDueDateJob.getMotechEvent().getParameters();
-        assertEquals(dueDate.plusDays(1).toDate(), dayOfDueDateJob.getStartTime());
-        assertEquals(dueDate.plusDays(1).toDate(), dayOfDueDateJob.getEndTime());
-        assertEquals(externalId, eventParameters2.get(EventKeys.EXTERNAL_ID_KEY));
-        assertEquals("org.motechproject.appointments.api.Appointment.DayAfterDueDate-" + appointment.id(), eventParameters2.get(MotechSchedulerService.JOB_ID_KEY));
+        assertEquals(startDate.toDate(), cronSchedulableJob.getStartTime());
+        assertEquals(endDate.toDate(), cronSchedulableJob.getEndTime());
+        assertEquals(externalId, eventParameters.get(EventKeys.EXTERNAL_ID_KEY));
+        assertEquals(appointment.id(), eventParameters.get(MotechSchedulerService.JOB_ID_KEY));
     }
 
     @Test
