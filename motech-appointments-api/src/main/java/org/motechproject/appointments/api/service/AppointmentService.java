@@ -68,7 +68,9 @@ public class AppointmentService {
         AppointmentCalendar appointmentCalendar = allAppointmentCalendars.findByExternalId(externalId);
         Visit visit = new VisitMapper().map(visitName, visitRequest);
         appointmentCalendar.addVisit(visit);
-        allAppointmentReminderJobs.add(visit.appointment(), externalId);
+        if (visit.appointment() != null) {
+            allAppointmentReminderJobs.add(visit.appointment(), externalId);
+        }
         allAppointmentCalendars.saveAppointmentCalendar(appointmentCalendar);
         return visit.name();
     }

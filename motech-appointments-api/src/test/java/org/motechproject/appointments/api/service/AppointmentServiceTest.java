@@ -159,7 +159,17 @@ public class AppointmentServiceTest {
     }
 
     @Test
-    public void shouldFindVisitByExternalId_AndName(){
+    public void shouldNotScheduleAppointmentRemindersForRequestWithoutReminders() {
+        VisitRequest requestWithoutReminders = new VisitRequest().setReminderConfiguration(null);
+        AppointmentCalendar appointmentCalendar = mock(AppointmentCalendar.class);
+
+        when(allAppointmentCalendars.findByExternalId("externalId")).thenReturn(appointmentCalendar);
+        appointmentService.addVisit("externalId", "visitName", requestWithoutReminders);
+        verifyZeroInteractions(allAppointmentReminderJobs);
+    }
+
+    @Test
+    public void shouldFindVisitByExternalId_AndName() {
         String externalId = "externalId";
         String visitName = "visit";
 
