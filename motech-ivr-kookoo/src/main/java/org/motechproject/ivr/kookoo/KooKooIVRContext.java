@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.ivr.kookoo.eventlogging.CallEventConstants;
 import org.motechproject.ivr.model.CallDirection;
 import org.motechproject.ivr.model.IVRStatus;
+import org.motechproject.ivr.service.IVRService;
 import org.motechproject.util.Cookies;
 
 import javax.servlet.http.HttpServletRequest;
@@ -123,7 +124,8 @@ public class KooKooIVRContext {
     }
 
     public String externalId() {
-        return (String) request.getSession().getAttribute(EXTERNAL_ID);
+        String externalIdFromDataMap = request.getParameter(IVRService.EXTERNAL_ID);
+        return externalIdFromDataMap == null ? (String) request.getSession().getAttribute(EXTERNAL_ID) : externalIdFromDataMap;
     }
 
     public boolean isValidSession() {
