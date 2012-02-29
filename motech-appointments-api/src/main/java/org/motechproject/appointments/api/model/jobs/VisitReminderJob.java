@@ -38,7 +38,7 @@ public class VisitReminderJob extends CronSchedulableJob {
         return parameters;
     }
 
-    private static String getJobIdUsing(Visit visit, String externalId) {
+    public static String getJobIdUsing(Visit visit, String externalId) {
         return externalId + visit.name();
     }
 

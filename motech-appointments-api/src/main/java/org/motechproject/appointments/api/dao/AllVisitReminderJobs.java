@@ -23,7 +23,7 @@ public class AllVisitReminderJobs {
         schedulerService.safeScheduleJob(visitReminderJob);
     }
 
-    public void remove(String externalId) {
-        schedulerService.safeUnscheduleJob(VisitReminderJob.SUBJECT, externalId);
+    public void remove(String jobId) {
+        schedulerService.safeUnscheduleJob(VisitReminderJob.SUBJECT, jobId);
     }
 }

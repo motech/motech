@@ -14,6 +14,7 @@ import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.AppointmentCalendar;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.appointments.api.model.Visit;
+import org.motechproject.appointments.api.model.jobs.VisitReminderJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -89,7 +90,7 @@ public class AppointmentServiceImpl implements AppointmentService{
         AppointmentCalendar appointmentCalendar = getAppointmentCalendar(externalId);
         Visit visit = appointmentCalendar.getVisit(clinicVisitId);
         if (visit.appointment().confirmedDate() != null) {
-            allVisitReminderJobs.remove(externalId);
+            allVisitReminderJobs.remove(VisitReminderJob.getJobIdUsing(visit, externalId));
         }
         visit.appointment().confirmedDate(confirmedVisitDate);
         Reminder visitReminder = new ReminderMapper().map(confirmedVisitDate, visitReminderConfiguration);
@@ -101,7 +102,7 @@ public class AppointmentServiceImpl implements AppointmentService{
     public void setVisitDate(String externalId, String visitId, DateTime visitDate) {
         AppointmentCalendar appointmentCalendar = getAppointmentCalendar(externalId);
         Visit visit = appointmentCalendar.getVisit(visitId);
-        allVisitReminderJobs.remove(externalId);
+        allVisitReminderJobs.remove(VisitReminderJob.getJobIdUsing(visit, externalId));
         visit.visitDate(visitDate);
         updateVisit(visit, externalId);
     }

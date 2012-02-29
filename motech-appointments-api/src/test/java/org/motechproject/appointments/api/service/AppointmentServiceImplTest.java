@@ -156,7 +156,7 @@ public class AppointmentServiceImplTest {
 
         appointmentServiceImpl.confirmVisit(externalId, visitName, now, new ReminderConfiguration());
 
-        verify(allVisitReminderJobs).remove(externalId);
+        verify(allVisitReminderJobs).remove(externalId+visitName);
     }
 
     @Test
