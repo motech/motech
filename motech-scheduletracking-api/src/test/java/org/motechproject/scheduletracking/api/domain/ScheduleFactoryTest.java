@@ -13,7 +13,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.*;
 
 public class ScheduleFactoryTest {
-
     @Test
     public void shouldCreateTheSchedule() {
         TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules");
