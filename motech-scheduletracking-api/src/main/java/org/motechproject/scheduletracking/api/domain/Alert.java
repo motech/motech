@@ -11,7 +11,6 @@ import static java.lang.Math.min;
 import static org.joda.time.Days.daysBetween;
 
 public class Alert {
-
     private Period offset;
     private Period interval;
     private int count;
@@ -30,10 +29,6 @@ public class Alert {
 
     public Period getInterval() {
         return interval;
-    }
-
-    public int getCount() {
-        return count;
     }
 
     public int getIndex() {

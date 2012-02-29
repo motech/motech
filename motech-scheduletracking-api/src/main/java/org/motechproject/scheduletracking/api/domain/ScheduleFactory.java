@@ -14,25 +14,19 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+import static org.motechproject.util.StringUtil.isNullOrEmpty;
+
 @Component
 public class ScheduleFactory {
 
-    PeriodParser yearParser = new PeriodFormatterBuilder()
-        .appendYears()
-        .appendSuffix(" year", " years")
-        .toParser();
-    PeriodParser monthParser = new PeriodFormatterBuilder()
-        .appendMonths()
-        .appendSuffix(" month", " months")
-        .toParser();
-    PeriodParser weekParser = new PeriodFormatterBuilder()
-        .appendWeeks()
-        .appendSuffix(" week", " weeks")
-        .toParser();
-    PeriodParser dayParser = new PeriodFormatterBuilder()
-        .appendDays()
-        .appendSuffix(" day", " days")
-        .toParser();
+    private PeriodParser yearParser;
+    private PeriodParser monthParser;
+    private PeriodParser weekParser;
+    private PeriodParser dayParser;
+
+    public ScheduleFactory() {
+        initializePeriodParsers();
+    }
 
     public Schedule build(ScheduleRecord scheduleRecord) {
         Schedule schedule = new Schedule(scheduleRecord.name());
@@ -59,13 +53,32 @@ public class ScheduleFactory {
             milestone.setData(milestoneRecord.data());
             for (AlertRecord alertRecord : milestoneRecord.alerts()) {
                 String offset = alertRecord.offset();
-                if (offset == null || offset.isEmpty())
-                    throw new InvalidScheduleDefinitionException("alert needs an offset parameter.");
+                if (isNullOrEmpty(offset))
+                    throw new InvalidScheduleDefinitionException("Alert needs an offset parameter.");
                 milestone.addAlert(WindowName.valueOf(alertRecord.window()), new Alert(parse(offset), parse(alertRecord.interval()), Integer.parseInt(alertRecord.count()), alertIndex++));
             }
             schedule.addMilestones(milestone);
         }
         return schedule;
+    }
+
+    private void initializePeriodParsers() {
+        yearParser = new PeriodFormatterBuilder()
+                .appendYears()
+                .appendSuffix(" year", " years")
+                .toParser();
+        monthParser = new PeriodFormatterBuilder()
+                .appendMonths()
+                .appendSuffix(" month", " months")
+                .toParser();
+        weekParser = new PeriodFormatterBuilder()
+                .appendWeeks()
+                .appendSuffix(" week", " weeks")
+                .toParser();
+        dayParser = new PeriodFormatterBuilder()
+                .appendDays()
+                .appendSuffix(" day", " days")
+                .toParser();
     }
 
     private Period getWindowPeriod(List<String> readableValues) {
