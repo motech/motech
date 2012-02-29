@@ -15,7 +15,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 
 public class EndOfMilestoneListenerTest {
-
     private EndOfMilestoneListener endOfMilestoneListener;
 
     @Mock

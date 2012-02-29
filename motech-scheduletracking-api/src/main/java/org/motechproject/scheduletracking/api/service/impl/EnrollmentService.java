@@ -11,7 +11,8 @@ import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static org.motechproject.util.DateUtil.today;
+import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.*;
+import static org.motechproject.util.StringUtil.isNullOrEmpty;
 
 @Component
 public class EnrollmentService {
@@ -30,45 +31,47 @@ public class EnrollmentService {
 
     public String enroll(String externalId, String scheduleName, String startingMilestoneName, LocalDate referenceDate, LocalDate enrollmentDate, Time preferredAlertTime) {
         Schedule schedule = allTrackedSchedules.getByName(scheduleName);
-        EnrollmentStatus enrollmentStatus = EnrollmentStatus.Active;
-        if (hasEnrollmentAlreadyExpired(referenceDate, schedule))
-            enrollmentStatus = EnrollmentStatus.Defaulted;
+        EnrollmentStatus enrollmentStatus = Active;
+        if (schedule.hasScheduleDurationAlreadyExpired(referenceDate))
+            enrollmentStatus = Defaulted;
 
         Enrollment enrollment = allEnrollments.addOrReplace(new Enrollment(externalId, scheduleName, startingMilestoneName, referenceDate, enrollmentDate, preferredAlertTime, enrollmentStatus));
-        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
-        enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
+        scheduleJobs(enrollment);
 
         return enrollment.getId();
     }
 
     public void fulfillCurrentMilestone(Enrollment enrollment, LocalDate fulfillmentDate) {
         Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
-        if (schedule.maxMilestoneCountReached(enrollment.getFulfillments().size()))
+        if (isNullOrEmpty(enrollment.getCurrentMilestoneName()))
             throw new NoMoreMilestonesToFulfillException();
 
-        enrollmentAlertService.unscheduleAllAlerts(enrollment);
-        enrollmentDefaultmentService.unscheduleDefaultmentCaptureJob(enrollment);
+        unscheduleJobs(enrollment);
 
         enrollment.fulfillCurrentMilestone(fulfillmentDate);
         String nextMilestoneName = schedule.getNextMilestoneName(enrollment.getCurrentMilestoneName());
         enrollment.setCurrentMilestoneName(nextMilestoneName);
         if (nextMilestoneName == null)
-            enrollment.setStatus(EnrollmentStatus.Completed);
-        else {
-            enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
-            enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
-        }
+            enrollment.setStatus(Completed);
+        else
+            scheduleJobs(enrollment);
+
         allEnrollments.update(enrollment);
     }
 
     public void unenroll(Enrollment enrollment) {
-        enrollmentAlertService.unscheduleAllAlerts(enrollment);
-        enrollmentDefaultmentService.unscheduleDefaultmentCaptureJob(enrollment);
-        enrollment.setStatus(EnrollmentStatus.Unenrolled);
+        unscheduleJobs(enrollment);
+        enrollment.setStatus(Unenrolled);
         allEnrollments.update(enrollment);
     }
 
-    private boolean hasEnrollmentAlreadyExpired(LocalDate referenceDate, Schedule schedule) {
-        return referenceDate.plus(schedule.getDuration()).isBefore(today());
+    private void scheduleJobs(Enrollment enrollment) {
+        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
+        enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
+    }
+
+    private void unscheduleJobs(Enrollment enrollment) {
+        enrollmentAlertService.unscheduleAllAlerts(enrollment);
+        enrollmentDefaultmentService.unscheduleDefaultmentCaptureJob(enrollment);
     }
 }

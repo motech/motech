@@ -10,7 +10,8 @@ import org.motechproject.model.Time;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.motechproject.util.DateUtil.today;
+import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.Active;
+import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.Completed;
 
 @TypeDiscriminator("doc.type == 'Enrollment'")
 public class Enrollment extends MotechBaseDataObject {
@@ -79,17 +80,12 @@ public class Enrollment extends MotechBaseDataObject {
 
     @JsonIgnore
     public boolean isActive() {
-        return status.equals(EnrollmentStatus.Active);
+        return status.equals(Active);
     }
 
     @JsonIgnore
     public boolean isCompleted() {
-        return status.equals(EnrollmentStatus.Completed);
-    }
-
-    @JsonIgnore
-    public boolean isDefaulted() {
-        return status.equals(EnrollmentStatus.Defaulted);
+        return status.equals(Completed);
     }
 
     public void setCurrentMilestoneName(String currentMilestoneName) {
