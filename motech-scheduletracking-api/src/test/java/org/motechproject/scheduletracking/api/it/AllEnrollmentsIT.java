@@ -91,4 +91,21 @@ public class AllEnrollmentsIT {
         assertEquals(enrollmentWithUpdates.getEnrollmentDate(), enrollment.getEnrollmentDate());
         assertEquals(enrollmentWithUpdates.getPreferredAlertTime(), enrollment.getPreferredAlertTime());
     }
+
+    @Test
+    public void shouldCreateEnrollmentIfAnUnenrolledEnrollmentForTheScheduleAlreadyExists() {
+        String externalId = "externalId";
+        enrollment = new Enrollment(externalId, schedule.getName(), milestone.getName(), DateUtil.today(), DateUtil.today(), new Time(8, 10), EnrollmentStatus.Active);
+        enrollment.setStatus(EnrollmentStatus.Unenrolled);
+        allEnrollments.add(enrollment);
+
+        Enrollment enrollmentWithUpdates = new Enrollment(enrollment.getExternalId(), enrollment.getScheduleName(), milestone.getName(), enrollment.getReferenceDate().plusDays(1), enrollment.getEnrollmentDate().plusDays(1), new Time(2, 5), EnrollmentStatus.Active);
+        allEnrollments.addOrReplace(enrollmentWithUpdates);
+
+        enrollment = allEnrollments.getActiveEnrollment(enrollment.getExternalId(), schedule.getName());
+        assertEquals(enrollmentWithUpdates.getCurrentMilestoneName(), enrollment.getCurrentMilestoneName());
+        assertEquals(enrollmentWithUpdates.getReferenceDate(), enrollment.getReferenceDate());
+        assertEquals(enrollmentWithUpdates.getEnrollmentDate(), enrollment.getEnrollmentDate());
+        assertEquals(enrollmentWithUpdates.getPreferredAlertTime(), enrollment.getPreferredAlertTime());
+    }
 }
