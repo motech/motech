@@ -12,14 +12,14 @@
             "alerts":[
                 {
                     "window":"due",
-                    "offset" : "0 Days",
-                    "interval":"1 Week",
+                    "offset" : ["0 Days"],
+                    "interval":["1 Week"],
                     "count":"1"
                 },
                 {
                     "window":"late",
-                    "offset" : "0 Days",
-                    "interval":"1 Week",
+                    "offset" : ["0 Days"],
+                    "interval":["1 Week"],
                     "count":"4"
                 }
             ]

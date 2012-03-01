@@ -12,7 +12,7 @@
             "alerts" : [
                 {
                     "window" : "due",
-                    "interval" : "1 Day",
+                    "interval" : ["1 Day"],
                     "count" : "7"
                 }
             ]

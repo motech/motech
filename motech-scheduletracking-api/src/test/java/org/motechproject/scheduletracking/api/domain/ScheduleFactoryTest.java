@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import org.joda.time.Period;
 import org.junit.Test;
 import org.motechproject.scheduletracking.api.domain.exception.InvalidScheduleDefinitionException;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
@@ -54,7 +55,7 @@ public class ScheduleFactoryTest {
         assertEquals(0, firstMilestone.getAlerts().get(0).getIndex());
         assertEquals(1, firstMilestone.getAlerts().get(1).getIndex());
         assertEquals(weeks(0), firstMilestone.getAlerts().get(0).getOffset());
-        assertEquals(months(1), firstMilestone.getAlerts().get(1).getOffset());
+        assertEquals(weeks(1).plus(hours(4)), firstMilestone.getAlerts().get(1).getOffset());
 
         assertEquals(0, secondMilestone.getAlerts().size());
     }
@@ -84,18 +85,20 @@ public class ScheduleFactoryTest {
         assertEquals(years(1).plus(months(2)).plus(weeks(16)), firstMilestone.getWindowEnd(WindowName.late));
     }
 
-    @Test(expected = InvalidScheduleDefinitionException.class)
-    public void shouldThrowExceptionIfAlertDoesNotHaveOffset() {
+    @Test
+    public void offsetIsZeroIfNotDefined() {
         TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/alert-without-offset");
         ScheduleRecord scheduleRecord = findRecord("schedule-without-offset-for-alert", jsonReader.records());
-        new ScheduleFactory().build(scheduleRecord);
+        Schedule schedule = new ScheduleFactory().build(scheduleRecord);
+        assertEquals(new Period(), schedule.getFirstMilestone().getMilestoneWindow(WindowName.due).getAlerts().get(0).getOffset());
     }
 
-    @Test(expected = InvalidScheduleDefinitionException.class)
-    public void shouldThrowExceptionIfAlertOffsetIsEmpty() {
+    @Test
+    public void offsetIsZeroIfEmpty() {
         TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/alert-with-empty-offset");
         ScheduleRecord scheduleRecord = findRecord("schedule-with-empty-offset-for-alert", jsonReader.records());
-        new ScheduleFactory().build(scheduleRecord);
+        Schedule schedule = new ScheduleFactory().build(scheduleRecord);
+        assertEquals(new Period(), schedule.getFirstMilestone().getMilestoneWindow(WindowName.due).getAlerts().get(0).getOffset());
     }
 
     private ScheduleRecord findRecord(String name, List<ScheduleRecord> records) {

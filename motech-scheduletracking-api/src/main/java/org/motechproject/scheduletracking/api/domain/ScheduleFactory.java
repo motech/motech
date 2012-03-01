@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 import static org.motechproject.util.StringUtil.isNullOrEmpty;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Component
 public class ScheduleFactory {
@@ -59,10 +60,8 @@ public class ScheduleFactory {
             Milestone milestone = new Milestone(milestoneRecord.name(), earliest, due, late, max);
             milestone.setData(milestoneRecord.data());
             for (AlertRecord alertRecord : milestoneRecord.alerts()) {
-                String offset = alertRecord.offset();
-                if (isNullOrEmpty(offset))
-                    throw new InvalidScheduleDefinitionException("Alert needs an offset parameter.");
-                milestone.addAlert(WindowName.valueOf(alertRecord.window()), new Alert(parse(offset), parse(alertRecord.interval()), Integer.parseInt(alertRecord.count()), alertIndex++));
+                List<String> offset = alertRecord.offset();
+                milestone.addAlert(WindowName.valueOf(alertRecord.window()), new Alert(getWindowPeriod(offset), getWindowPeriod(alertRecord.interval()), Integer.parseInt(alertRecord.count()), alertIndex++));
             }
             schedule.addMilestones(milestone);
         }
