@@ -120,7 +120,7 @@ public class ScheduleTrackingServiceImplTest {
     }
 
     @Test
-    public void shouldFulfillTheCurrentMilestoneWithTheSpecifiedDate() {
+    public void shouldFulfillTheCurrentMilestoneWithTheSpecifiedDateOnlyUsingDefaultTime() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
         milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
         Schedule schedule = new Schedule("my_schedule");
@@ -136,9 +136,30 @@ public class ScheduleTrackingServiceImplTest {
         when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(enrollment);
 
         DateTime fulfillmentDateTime = newDateTime(2012, 12, 10, 0, 0, 0);
-        scheduleTrackingService.fulfillCurrentMilestone("entity_1", "my_schedule", fulfillmentDateTime.toLocalDate(), new Time(0, 0));
+        scheduleTrackingService.fulfillCurrentMilestone("entity_1", "my_schedule", fulfillmentDateTime.toLocalDate());
 
         verify(enrollmentService).fulfillCurrentMilestone(enrollment, fulfillmentDateTime);
+    }
+
+    @Test
+    public void shouldFulfillTheCurrentMilestoneWithTheSpecifiedDateAndTime() {
+        Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(milestone);
+        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
+
+        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
+
+        when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(null);
+        scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2), null, null, null, null));
+
+        Enrollment enrollment = mock(Enrollment.class);
+        when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(enrollment);
+
+        scheduleTrackingService.fulfillCurrentMilestone("entity_1", "my_schedule", newDate(2012, 12, 10), new Time(3, 30));
+
+        verify(enrollmentService).fulfillCurrentMilestone(enrollment, newDateTime(2012, 12, 10, 3, 30, 0));
     }
 
     @Test(expected = InvalidEnrollmentException.class)

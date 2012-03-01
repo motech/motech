@@ -56,7 +56,11 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
 
     @Override
     public void fulfillCurrentMilestone(String externalId, String scheduleName) {
-        LocalDate fulfillmentDate = today();
+        fulfillCurrentMilestone(externalId, scheduleName, today(), new Time(0, 0));
+    }
+
+    @Override
+    public void fulfillCurrentMilestone(String externalId, String scheduleName, LocalDate fulfillmentDate) {
         fulfillCurrentMilestone(externalId, scheduleName, fulfillmentDate, new Time(0, 0));
     }
 
