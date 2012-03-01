@@ -1,14 +1,12 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
@@ -31,12 +29,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.*;
-import static org.motechproject.scheduletracking.api.utility.PeriodFactory.days;
-import static org.motechproject.scheduletracking.api.utility.PeriodFactory.hours;
-import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
+import static org.motechproject.scheduletracking.api.utility.PeriodFactory.*;
 import static org.motechproject.util.DateUtil.newDateTime;
-import static org.motechproject.util.DateUtil.now;
-import static org.motechproject.util.DateUtil.today;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.when;
 
@@ -96,7 +90,7 @@ public class EnrollmentAlertServiceTest {
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
-        DateTime now = now();
+        DateTime now = DateUtil.now();
         Enrollment enrollment = new Enrollment(externalId, scheduleName, milestone.getName(), now, now, null, EnrollmentStatus.ACTIVE);
 
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
@@ -257,7 +251,7 @@ public class EnrollmentAlertServiceTest {
         when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
 
         Enrollment enrollmentIntoSecondMilestone = new Enrollment("some_id", scheduleName, secondMilestoneName, weeksAgo(1), weeksAgo(0), new Time(14, 0), EnrollmentStatus.ACTIVE);
-        enrollmentIntoSecondMilestone.fulfillCurrentMilestone(now());
+        enrollmentIntoSecondMilestone.fulfillCurrentMilestone(DateUtil.now());
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollmentIntoSecondMilestone);
 
         RepeatingSchedulableJob job = expectAndCaptureRepeatingJob();
