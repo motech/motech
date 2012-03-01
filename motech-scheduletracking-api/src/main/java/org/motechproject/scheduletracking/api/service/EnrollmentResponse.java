@@ -1,21 +1,21 @@
 package org.motechproject.scheduletracking.api.service;
 
-import org.joda.time.LocalDate;
+import org.joda.time.DateTime;
 import org.motechproject.model.Time;
 
 public class EnrollmentResponse {
     private String externalId;
     private String scheduleName;
 	private Time preferredAlertTime;
-	private LocalDate referenceDate;
-    private LocalDate enrollmentDate;
+	private DateTime referenceDateTime;
+    private DateTime enrollmentDateTime;
 
-    public EnrollmentResponse(String externalId, String scheduleName, Time preferredAlertTime, LocalDate referenceDate, LocalDate enrollmentDate) {
+    public EnrollmentResponse(String externalId, String scheduleName, Time preferredAlertTime, DateTime referenceDateTime, DateTime enrollmentDateTime) {
         this.externalId = externalId;
         this.scheduleName = scheduleName;
         this.preferredAlertTime = preferredAlertTime;
-        this.referenceDate = referenceDate;
-        this.enrollmentDate = enrollmentDate;
+        this.referenceDateTime = referenceDateTime;
+        this.enrollmentDateTime = enrollmentDateTime;
     }
 
     public String getExternalId() {
@@ -30,11 +30,11 @@ public class EnrollmentResponse {
         return preferredAlertTime;
     }
 
-    public LocalDate getReferenceDate() {
-        return referenceDate;
+    public DateTime getReferenceDateTime() {
+        return referenceDateTime;
     }
 
-    public LocalDate getEnrollmentDate() {
-        return enrollmentDate;
+    public DateTime getEnrollmentDateTime() {
+        return enrollmentDateTime;
     }
 }

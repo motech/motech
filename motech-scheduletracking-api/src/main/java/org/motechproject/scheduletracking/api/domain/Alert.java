@@ -9,6 +9,8 @@ import org.joda.time.Period;
 import static java.lang.Math.ceil;
 import static java.lang.Math.min;
 import static org.joda.time.Days.daysBetween;
+import static org.motechproject.util.DateUtil.newDateTime;
+import static org.motechproject.util.DateUtil.now;
 
 public class Alert {
     private Period offset;
@@ -35,25 +37,30 @@ public class Alert {
         return index;
     }
 
-    public int getElapsedAlertCount(LocalDate startDate, Time preferredAlertTime) {
-        LocalDate idealStartDate = startDate.plus(offset);
-        DateTime idealStartDateWithTime = DateUtil.newDateTime(idealStartDate, preferredAlertTime.getHour(), preferredAlertTime.getMinute(), 0);
+    int getElapsedAlertCount(DateTime startDateTime, Time preferredAlertTime) {
+        DateTime idealStartDateTime = startDateTime.plus(offset);
+        DateTime idealStartDateWithPreferredTime = idealStartDateTime;
+        if (preferredAlertTime != null)
+            idealStartDateWithPreferredTime = DateUtil.newDateTime(idealStartDateTime.toLocalDate(), preferredAlertTime.getHour(), preferredAlertTime.getMinute(), 0);
 
-        int elapsedAlerts = 0;
-        if (idealStartDateWithTime.isBefore(DateUtil.now())) {
-            int daysSinceIdealStartOfAlert = daysBetween(idealStartDateWithTime, DateUtil.now()).getDays() + 1;
-            elapsedAlerts = (int) ceil(daysSinceIdealStartOfAlert / (double) interval.toStandardDays().getDays());
+        DateTime now = now();
+        if (idealStartDateWithPreferredTime.isBefore(now)) {
+            long secsSinceIdealStartOfAlert = (now.getMillis() - idealStartDateWithPreferredTime.getMillis()) / 1000;
+            int elapsedAlerts = (int) ceil(secsSinceIdealStartOfAlert / (double) interval.toStandardSeconds().getSeconds());
+            return min(elapsedAlerts, count);
         }
-        return min(elapsedAlerts, count);
+        return 0;
     }
 
-    public DateTime getNextAlertDateTime(LocalDate startDate, Time preferredAlertTime) {
-        LocalDate idealStartDate = startDate.plus(offset);
-        LocalDate nextAlertDate = idealStartDate.plusDays(getElapsedAlertCount(startDate, preferredAlertTime) * interval.toStandardDays().getDays());
-        return DateUtil.newDateTime(nextAlertDate, preferredAlertTime.getHour(), preferredAlertTime.getMinute(), 0);
+    public DateTime getNextAlertDateTime(DateTime startDateTime, Time preferredAlertTime) {
+        DateTime idealStartDateTime = startDateTime.plus(offset);
+        DateTime nextAlertDateTime = idealStartDateTime.plusDays(getElapsedAlertCount(startDateTime, preferredAlertTime) * interval.toStandardDays().getDays());
+        if (preferredAlertTime != null)
+            return newDateTime(nextAlertDateTime.toLocalDate(), preferredAlertTime.getHour(), preferredAlertTime.getMinute(), 0);
+        return nextAlertDateTime;
     }
 
-    public int getRemainingAlertCount(LocalDate milestoneWindowStartDate, Time preferredAlertTime) {
-        return count - getElapsedAlertCount(milestoneWindowStartDate,  preferredAlertTime);
+    public int getRemainingAlertCount(DateTime milestoneWindowStartDateTime, Time preferredAlertTime) {
+        return count - getElapsedAlertCount(milestoneWindowStartDateTime,  preferredAlertTime);
     }
 }

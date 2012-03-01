@@ -3,7 +3,7 @@ package org.motechproject.scheduletracking.api.domain;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
-import org.joda.time.LocalDate;
+import org.joda.time.DateTime;
 import org.motechproject.model.MotechBaseDataObject;
 import org.motechproject.model.Time;
 
@@ -12,18 +12,19 @@ import java.util.List;
 
 import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.Active;
 import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.Completed;
+import static org.motechproject.util.DateUtil.setTimeZone;
 
 @TypeDiscriminator("doc.type == 'Enrollment'")
 public class Enrollment extends MotechBaseDataObject {
     @JsonProperty
-    private LocalDate enrollmentDate;
+    private DateTime enrollmentDateTime;
     @JsonProperty
     private String scheduleName;
     @JsonProperty
     private String externalId;
     private String currentMilestoneName;
     @JsonProperty
-    private LocalDate referenceDate;
+    private DateTime referenceDateTime;
     @JsonProperty
     private Time preferredAlertTime;
 
@@ -34,12 +35,12 @@ public class Enrollment extends MotechBaseDataObject {
     private Enrollment() {
     }
 
-    public Enrollment(String externalId, String scheduleName, String currentMilestoneName, LocalDate referenceDate, LocalDate enrollmentDate, Time preferredAlertTime, EnrollmentStatus enrollmentStatus) {
+    public Enrollment(String externalId, String scheduleName, String currentMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime, EnrollmentStatus enrollmentStatus) {
         this.externalId = externalId;
         this.scheduleName = scheduleName;
         this.currentMilestoneName = currentMilestoneName;
-        this.enrollmentDate = enrollmentDate;
-        this.referenceDate = referenceDate;
+        this.enrollmentDateTime = enrollmentDateTime;
+        this.referenceDateTime = referenceDateTime;
         this.preferredAlertTime = preferredAlertTime;
         this.status = enrollmentStatus;
     }
@@ -52,12 +53,12 @@ public class Enrollment extends MotechBaseDataObject {
         return externalId;
     }
 
-    public LocalDate getReferenceDate() {
-        return referenceDate;
+    public DateTime getReferenceDateTime() {
+        return setTimeZone(referenceDateTime);
     }
 
-    public LocalDate getEnrollmentDate() {
-        return enrollmentDate;
+    public DateTime getEnrollmentDateTime() {
+        return setTimeZone(enrollmentDateTime);
     }
 
     public Time getPreferredAlertTime() {
@@ -72,10 +73,10 @@ public class Enrollment extends MotechBaseDataObject {
         return fulfillments;
     }
 
-    public LocalDate lastFulfilledDate() {
+    public DateTime lastFulfilledDate() {
         if (fulfillments.isEmpty())
             return null;
-        return fulfillments.get(fulfillments.size() - 1).getDateFulfilled();
+        return fulfillments.get(fulfillments.size() - 1).getFulfillmentDateTime();
     }
 
     @JsonIgnore
@@ -101,9 +102,9 @@ public class Enrollment extends MotechBaseDataObject {
     }
 
     public Enrollment copyFrom(Enrollment enrollment) {
-        enrollmentDate = enrollment.getEnrollmentDate();
+        enrollmentDateTime = enrollment.getEnrollmentDateTime();
         currentMilestoneName = enrollment.getCurrentMilestoneName();
-        referenceDate = enrollment.getReferenceDate();
+        referenceDateTime = enrollment.getReferenceDateTime();
         preferredAlertTime = enrollment.getPreferredAlertTime();
         return this;
     }
@@ -117,13 +118,13 @@ public class Enrollment extends MotechBaseDataObject {
         this.type = type;
     }
 
-    public LocalDate getCurrentMilestoneStartDate(String firstMilestoneNameFromSchedule) {
+    public DateTime getCurrentMilestoneStartDate(String firstMilestoneNameFromSchedule) {
         if (currentMilestoneName.equals(firstMilestoneNameFromSchedule))
-            return referenceDate;
-        return (fulfillments.isEmpty()) ? enrollmentDate : lastFulfilledDate();
+            return referenceDateTime;
+        return (fulfillments.isEmpty()) ? enrollmentDateTime : lastFulfilledDate();
     }
 
-    public void fulfillCurrentMilestone(LocalDate fulfillmentDate) {
-        fulfillments.add(new MilestoneFulfillment(currentMilestoneName, fulfillmentDate));
+    public void fulfillCurrentMilestone(DateTime fulfillmentDateTime) {
+        fulfillments.add(new MilestoneFulfillment(currentMilestoneName, fulfillmentDateTime));
     }
 }

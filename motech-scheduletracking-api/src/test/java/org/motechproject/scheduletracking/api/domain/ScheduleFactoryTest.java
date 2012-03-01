@@ -59,7 +59,7 @@ public class ScheduleFactoryTest {
     }
 
     @Test
-    public void shouldCreateEmptyWindowIfOffsetIsNotSpecified() {
+    public void shouldCreateEmptyWindowIfDurationIsNotSpecified() {
         TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules");
         ScheduleRecord scheduleRecord = findRecord("IPTI Schedule", jsonReader.records());
         Schedule schedule = new ScheduleFactory().build(scheduleRecord);
@@ -67,7 +67,7 @@ public class ScheduleFactoryTest {
         List<Milestone> milestones = schedule.getMilestones();
         Milestone firstMilestone = milestones.get(0);
 
-        assertEquals(weeks(0), firstMilestone.getWindowEnd(WindowName.max));
+        assertEquals(weeks(0), firstMilestone.getWindowEnd(WindowName.max).minus(firstMilestone.getWindowStart(WindowName.max)));
     }
 
     @Test

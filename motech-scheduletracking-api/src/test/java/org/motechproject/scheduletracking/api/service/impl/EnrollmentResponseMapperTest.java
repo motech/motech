@@ -13,13 +13,13 @@ import static org.hamcrest.Matchers.is;
 public class EnrollmentResponseMapperTest {
     @Test
     public void shouldMapEnrollmentToEnrollmentResponse(){
-        final Enrollment enrollment = new Enrollment("externalId", "scheduleName", null, DateUtil.newDate(2000, 2, 1), DateUtil.newDate(2000, 2, 10), new Time(10, 10), null);
+        final Enrollment enrollment = new Enrollment("externalId", "scheduleName", null, DateUtil.newDateTime(2000, 2, 1, 0, 0, 0), DateUtil.newDateTime(2000, 2, 10, 0, 0, 0), new Time(10, 10), null);
         final EnrollmentResponse response = new EnrollmentResponseMapper().map(enrollment);
         assertThat(response.getExternalId(), is(equalTo(enrollment.getExternalId())));
         assertThat(response.getScheduleName(), is(equalTo(enrollment.getScheduleName())));
-        assertThat(response.getReferenceDate(), is(equalTo(enrollment.getReferenceDate())));
+        assertThat(response.getReferenceDateTime(), is(equalTo(enrollment.getReferenceDateTime())));
         assertThat(response.getPreferredAlertTime(), is(equalTo(enrollment.getPreferredAlertTime())));
-        assertThat(response.getEnrollmentDate(), is(equalTo(enrollment.getEnrollmentDate())));
+        assertThat(response.getEnrollmentDateTime(), is(equalTo(enrollment.getEnrollmentDateTime())));
 
         assertThat(new EnrollmentResponseMapper().map(null), is(equalTo(null)));
     }

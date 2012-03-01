@@ -1,23 +1,30 @@
 package org.motechproject.scheduletracking.api.service;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
 import org.motechproject.util.DateUtil;
+
+import static org.motechproject.util.DateUtil.newDateTime;
 
 public class EnrollmentRequest {
     private String externalId;
     private String scheduleName;
 	private Time preferredAlertTime;
 	private LocalDate referenceDate;
+	private Time referenceTime;
     private LocalDate enrollmentDate;
+    private Time enrollmentTime;
     private String startingMilestoneName;
 
-    public EnrollmentRequest(String externalId, String scheduleName, Time preferredAlertTime, LocalDate referenceDate, LocalDate enrollmentDate, String startingMilestoneName) {
+    public EnrollmentRequest(String externalId, String scheduleName, Time preferredAlertTime, LocalDate referenceDate, Time referenceTime, LocalDate enrollmentDate, Time enrollmentTime, String startingMilestoneName) {
         this.externalId = externalId;
         this.scheduleName = scheduleName;
         this.preferredAlertTime = preferredAlertTime;
         this.referenceDate = referenceDate;
+        this.referenceTime = referenceTime;
         this.enrollmentDate = enrollmentDate;
+        this.enrollmentTime = enrollmentTime;
         this.startingMilestoneName = startingMilestoneName;
     }
 
@@ -41,11 +48,23 @@ public class EnrollmentRequest {
 		return referenceDate;
 	}
 
+	public Time getReferenceTime() {
+		return referenceTime != null ? referenceTime : new Time(0,0);
+	}
+
     public boolean enrollIntoMilestone() {
         return startingMilestoneName != null && !startingMilestoneName.isEmpty();
     }
 
-    public LocalDate enrollmentDate() {
-        return enrollmentDate != null ? enrollmentDate : DateUtil.today();
+    public DateTime getEnrollmentDateTime() {
+        LocalDate enrollmentDate = this.enrollmentDate != null ? this.enrollmentDate : DateUtil.today();
+        Time enrollmentTime = this.enrollmentTime != null ? this.enrollmentTime : new Time(0, 0);
+        return newDateTime(enrollmentDate, enrollmentTime);
+    }
+
+    public DateTime getReferenceDateTime() {
+        LocalDate referenceDate = this.referenceDate != null ? this.referenceDate : DateUtil.today();
+        Time referenceTime = this.referenceTime != null ? this.referenceTime : new Time(0, 0);
+        return newDateTime(referenceDate, referenceTime);
     }
 }

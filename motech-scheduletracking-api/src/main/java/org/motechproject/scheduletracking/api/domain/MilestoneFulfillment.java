@@ -1,27 +1,27 @@
 package org.motechproject.scheduletracking.api.domain;
 
-import org.joda.time.LocalDate;
+import org.joda.time.DateTime;
 
 import java.io.Serializable;
 
 public class MilestoneFulfillment implements Serializable {
     private String milestoneName;
-    private LocalDate dateFulfilled;
+    private DateTime fulfillmentDateTime;
 
     private MilestoneFulfillment() {
     }
 
-    public MilestoneFulfillment(String milestoneName, LocalDate dateFulfilled) {
+    public MilestoneFulfillment(String milestoneName, DateTime fulfillmentDateTime) {
         this.milestoneName = milestoneName;
-        this.dateFulfilled = dateFulfilled;
+        this.fulfillmentDateTime = fulfillmentDateTime;
     }
 
-    public LocalDate getDateFulfilled() {
-        return dateFulfilled;
+    public DateTime getFulfillmentDateTime() {
+        return fulfillmentDateTime;
     }
 
-    public void setDateFulfilled(LocalDate dateFulfilled) {
-        this.dateFulfilled = dateFulfilled;
+    public void setFulfillmentDateTime(DateTime fulfillmentDateTime) {
+        this.fulfillmentDateTime = fulfillmentDateTime;
     }
 
     public String getMilestoneName() {

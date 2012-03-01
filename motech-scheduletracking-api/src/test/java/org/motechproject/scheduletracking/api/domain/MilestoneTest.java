@@ -45,20 +45,20 @@ public class MilestoneTest {
 
     @Test
     public void windowsStartAfterDurationOfAllPreviousWindows() {
-        Milestone milestone = new Milestone("M1", weeks(1), weeks(2), years(1), weeks(1));
+        Milestone milestone = new Milestone("M1", weeks(1), hours(2), years(1), weeks(1));
         assertEquals(weeks(0), milestone.getWindowStart(WindowName.earliest));
         assertEquals(weeks(1), milestone.getWindowStart(WindowName.due));
-        assertEquals(weeks(3), milestone.getWindowStart(WindowName.late));
-        assertEquals(weeks(3).plus(years(1)), milestone.getWindowStart(WindowName.max));
+        assertEquals(weeks(1).plus(hours(2)), milestone.getWindowStart(WindowName.late));
+        assertEquals(weeks(1).plus(hours(2)).plus(years(1)), milestone.getWindowStart(WindowName.max));
     }
 
     @Test
     public void windowsEndAfterTheDurationOfAllPreviousWindows() {
-        Milestone milestone = new Milestone("M1", weeks(1), weeks(2), weeks(1), months(1));
+        Milestone milestone = new Milestone("M1", weeks(1), weeks(2), hours(3), months(1));
         assertEquals(weeks(1), milestone.getWindowEnd(WindowName.earliest));
         assertEquals(weeks(3), milestone.getWindowEnd(WindowName.due));
-        assertEquals(weeks(4), milestone.getWindowEnd(WindowName.late));
-        assertEquals(months(1).plus(weeks(4)), milestone.getWindowEnd(WindowName.max));
+        assertEquals(weeks(3).plus(hours(3)), milestone.getWindowEnd(WindowName.late));
+        assertEquals(months(1).plus(weeks(3)).plus(hours(3)), milestone.getWindowEnd(WindowName.max));
     }
 
     @Test

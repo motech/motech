@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.MutablePeriod;
 import org.joda.time.Period;
@@ -10,6 +11,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.motechproject.util.DateUtil.now;
 
 public class Milestone implements Serializable {
 
@@ -87,9 +90,8 @@ public class Milestone implements Serializable {
         return period.toPeriod();
     }
 
-    public boolean windowElapsed(WindowName windowName, LocalDate milestoneStartDate) {
-        LocalDate today = DateUtil.today();
+    public boolean windowElapsed(WindowName windowName, DateTime milestoneStartDateTime) {
         Period endOffset = getWindowEnd(windowName);
-        return !today.isBefore(milestoneStartDate.plus(endOffset));
+        return !now().isBefore(milestoneStartDateTime.plus(endOffset));
     }
 }

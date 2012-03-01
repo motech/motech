@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.events;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
@@ -15,14 +16,14 @@ public class MilestoneEvent {
     private MilestoneAlert milestoneAlert;
     private String scheduleName;
     private String externalId;
-    private LocalDate referenceDate;
+    private DateTime referenceDateTime;
 
-    public MilestoneEvent(String externalId, String scheduleName, MilestoneAlert milestoneAlert, String windowName, LocalDate referenceDate) {
+    public MilestoneEvent(String externalId, String scheduleName, MilestoneAlert milestoneAlert, String windowName, DateTime referenceDateTime) {
         this.scheduleName = scheduleName;
         this.milestoneAlert = milestoneAlert;
         this.windowName = windowName;
         this.externalId = externalId;
-        this.referenceDate = referenceDate;
+        this.referenceDateTime = referenceDateTime;
     }
 
     public MilestoneEvent(MotechEvent motechEvent) {
@@ -30,7 +31,7 @@ public class MilestoneEvent {
         this.milestoneAlert = (MilestoneAlert) motechEvent.getParameters().get(EventDataKeys.MILESTONE_NAME);
         this.windowName = (String) motechEvent.getParameters().get(EventDataKeys.WINDOW_NAME);
         this.externalId = (String) motechEvent.getParameters().get(EventDataKeys.EXTERNAL_ID);
-        this.referenceDate = (LocalDate) motechEvent.getParameters().get(EventDataKeys.REFERENCE_DATE);
+        this.referenceDateTime = (DateTime) motechEvent.getParameters().get(EventDataKeys.REFERENCE_DATE);
     }
 
     public MilestoneEvent(Enrollment enrollment, MilestoneAlert milestoneAlert, MilestoneWindow milestoneWindow) {
@@ -38,7 +39,7 @@ public class MilestoneEvent {
         this.scheduleName = enrollment.getScheduleName();
         this.milestoneAlert = milestoneAlert;
         this.windowName = milestoneWindow.getName().toString();
-        this.referenceDate = enrollment.getReferenceDate();
+        this.referenceDateTime = enrollment.getReferenceDateTime();
     }
 
     public MotechEvent toMotechEvent() {
@@ -47,7 +48,7 @@ public class MilestoneEvent {
         parameters.put(EventDataKeys.MILESTONE_NAME, milestoneAlert);
         parameters.put(EventDataKeys.SCHEDULE_NAME, scheduleName);
         parameters.put(EventDataKeys.EXTERNAL_ID, externalId);
-        parameters.put(EventDataKeys.REFERENCE_DATE, referenceDate);
+        parameters.put(EventDataKeys.REFERENCE_DATE, referenceDateTime);
         return new MotechEvent(EventSubjects.MILESTONE_ALERT, parameters);
     }
 
@@ -67,7 +68,7 @@ public class MilestoneEvent {
         return externalId;
     }
 
-    public LocalDate getReferenceDate() {
-        return referenceDate;
+    public DateTime getReferenceDateTime() {
+        return referenceDateTime;
     }
 }

@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.events;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.motechproject.model.MotechEvent;
@@ -13,16 +14,17 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
+import static org.motechproject.util.DateUtil.now;
 
 public class MilestoneEventTest {
     @Test
     public void shouldCreateMotechEvent() {
         String externalId = "externalId";
         String scheduleName = "scheduleName";
-        MilestoneAlert milestoneAlert =  MilestoneAlert.fromMilestone(new Milestone("M1", weeks(1), weeks(1), weeks(1), weeks(1)), LocalDate.now());
+        MilestoneAlert milestoneAlert =  MilestoneAlert.fromMilestone(new Milestone("M1", weeks(1), weeks(1), weeks(1), weeks(1)), now());
         String windowName = "windowName";
 
-        MilestoneEvent milestoneEvent = new MilestoneEvent(externalId, scheduleName, milestoneAlert, windowName, DateUtil.today());
+        MilestoneEvent milestoneEvent = new MilestoneEvent(externalId, scheduleName, milestoneAlert, windowName, now());
         MotechEvent motechEvent = milestoneEvent.toMotechEvent();
 
         assertEquals(EventSubjects.MILESTONE_ALERT, motechEvent.getSubject());
@@ -38,12 +40,12 @@ public class MilestoneEventTest {
         String externalId = "externalId";
         String scheduleName = "scheduleName";
         Milestone milestone = new Milestone("M1", weeks(1), weeks(1), weeks(1), weeks(1));
-        LocalDate referenceDate = LocalDate.now();
-        LocalDate enrollmentDate = LocalDate.now();
-        MilestoneAlert milestoneAlert =  MilestoneAlert.fromMilestone(milestone, referenceDate);
+        DateTime referenceDateTime = now();
+        DateTime enrollmentDateTime = now();
+        MilestoneAlert milestoneAlert =  MilestoneAlert.fromMilestone(milestone, referenceDateTime);
 
         MilestoneWindow milestoneWindow = new MilestoneWindow(WindowName.due, weeks(1));
-        MilestoneEvent milestoneEvent = new MilestoneEvent(new Enrollment(externalId, scheduleName, milestone.getName(), referenceDate, enrollmentDate, new Time(8, 10), EnrollmentStatus.Active), milestoneAlert, milestoneWindow);
+        MilestoneEvent milestoneEvent = new  MilestoneEvent(new Enrollment(externalId, scheduleName, milestone.getName(), referenceDateTime, enrollmentDateTime, new Time(8, 10), EnrollmentStatus.Active), milestoneAlert, milestoneWindow);
         MotechEvent motechEvent = milestoneEvent.toMotechEvent();
 
         assertEquals(EventSubjects.MILESTONE_ALERT, motechEvent.getSubject());

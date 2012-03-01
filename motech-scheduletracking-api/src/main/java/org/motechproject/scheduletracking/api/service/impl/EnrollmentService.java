@@ -1,6 +1,6 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
-import org.joda.time.LocalDate;
+import org.joda.time.DateTime;
 import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
@@ -11,7 +11,8 @@ import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.*;
+import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.Completed;
+import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.Unenrolled;
 import static org.motechproject.util.StringUtil.isNullOrEmpty;
 
 @Component
@@ -29,26 +30,27 @@ public class EnrollmentService {
         this.enrollmentDefaultmentService = enrollmentDefaultmentService;
     }
 
-    public String enroll(String externalId, String scheduleName, String startingMilestoneName, LocalDate referenceDate, LocalDate enrollmentDate, Time preferredAlertTime) {
+    public String enroll(String externalId, String scheduleName, String startingMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime) {
         Schedule schedule = allTrackedSchedules.getByName(scheduleName);
-        EnrollmentStatus enrollmentStatus = Active;
-        if (schedule.hasScheduleDurationAlreadyExpired(referenceDate))
-            enrollmentStatus = Defaulted;
+        EnrollmentStatus enrollmentStatus = EnrollmentStatus.Active;
+        if (schedule.hasExpiredBy(referenceDateTime))
+            enrollmentStatus = EnrollmentStatus.Defaulted;
 
-        Enrollment enrollment = allEnrollments.addOrReplace(new Enrollment(externalId, scheduleName, startingMilestoneName, referenceDate, enrollmentDate, preferredAlertTime, enrollmentStatus));
-        scheduleJobs(enrollment);
+        Enrollment enrollment = allEnrollments.addOrReplace(new Enrollment(externalId, scheduleName, startingMilestoneName, referenceDateTime, enrollmentDateTime, preferredAlertTime, enrollmentStatus));
+        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
+        enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
 
         return enrollment.getId();
     }
 
-    public void fulfillCurrentMilestone(Enrollment enrollment, LocalDate fulfillmentDate) {
+    public void fulfillCurrentMilestone(Enrollment enrollment, DateTime fulfillmentDateTime) {
         Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
         if (isNullOrEmpty(enrollment.getCurrentMilestoneName()))
             throw new NoMoreMilestonesToFulfillException();
 
         unscheduleJobs(enrollment);
 
-        enrollment.fulfillCurrentMilestone(fulfillmentDate);
+        enrollment.fulfillCurrentMilestone(fulfillmentDateTime);
         String nextMilestoneName = schedule.getNextMilestoneName(enrollment.getCurrentMilestoneName());
         enrollment.setCurrentMilestoneName(nextMilestoneName);
         if (nextMilestoneName == null)

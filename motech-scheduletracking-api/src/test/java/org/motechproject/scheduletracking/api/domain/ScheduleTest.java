@@ -3,8 +3,9 @@ package org.motechproject.scheduletracking.api.domain;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.motechproject.scheduletracking.api.utility.PeriodFactory.hours;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
-import static org.motechproject.util.DateUtil.today;
+import static org.motechproject.util.DateUtil.now;
 
 public class ScheduleTest {
     @Test
@@ -48,7 +49,18 @@ public class ScheduleTest {
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
         schedule.addMilestones(firstMilestone, secondMilestone);
 
-        assertEquals(true, schedule.hasScheduleDurationAlreadyExpired(today().minusWeeks(10)));
-        assertEquals(false, schedule.hasScheduleDurationAlreadyExpired(today().minusWeeks(8)));
+        assertEquals(true, schedule.hasExpiredBy(now().minusWeeks(10)));
+        assertEquals(false, schedule.hasExpiredBy(now().minusWeeks(8)));
+    }
+
+    @Test
+    public void shouldReturnTrueIfScheduleDurationHasAlreadyExpired_TestingHourUnits() {
+        Milestone firstMilestone = new Milestone("First Shot", hours(1), hours(1), hours(2), hours(1));
+        Schedule schedule = new Schedule("Yellow Fever Vaccination");
+        schedule.addMilestones(firstMilestone);
+
+        assertEquals(true, schedule.hasExpiredBy(now().minusHours(6)));
+        assertEquals(false, schedule.hasExpiredBy(now().minusHours(5)));
+        assertEquals(false, schedule.hasExpiredBy(now().minusHours(4)));
     }
 }

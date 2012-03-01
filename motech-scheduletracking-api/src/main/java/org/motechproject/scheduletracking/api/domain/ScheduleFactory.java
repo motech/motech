@@ -33,6 +33,7 @@ public class ScheduleFactory {
         int alertIndex = 0;
         for (MilestoneRecord milestoneRecord : scheduleRecord.milestoneRecords()) {
             ScheduleWindowsRecord windowsRecord = milestoneRecord.scheduleWindowsRecord();
+
             List<String> earliestValue = windowsRecord.earliest();
             List<String> dueValue = windowsRecord.due();
             if (dueValue.isEmpty())
@@ -44,10 +45,15 @@ public class ScheduleFactory {
             if (maxValue.isEmpty())
                 maxValue = lateValue;
 
-            Period earliest = getWindowPeriod(earliestValue);
-            Period due = getWindowPeriod(dueValue).minus(earliest);
-            Period late = getWindowPeriod(lateValue).minus(earliest.plus(due));
-            Period max = getWindowPeriod(maxValue).minus(earliest.plus(due).plus(late));
+            Period earliest = new Period(), due = new Period(), late = new Period(), max = new Period();
+            if (!getWindowPeriod(earliestValue).equals(new Period()))
+                earliest = getWindowPeriod(earliestValue);
+            if (!getWindowPeriod(dueValue).equals(new Period()))
+                due = getWindowPeriod(dueValue).minus(earliest);
+            if (!getWindowPeriod(lateValue).equals(new Period()))
+                late = getWindowPeriod(lateValue).minus(earliest.plus(due));
+            if (!getWindowPeriod(maxValue).equals(new Period()))
+                max = getWindowPeriod(maxValue).minus(earliest.plus(due).plus(late));
 
             Milestone milestone = new Milestone(milestoneRecord.name(), earliest, due, late, max);
             milestone.setData(milestoneRecord.data());

@@ -1,25 +1,26 @@
 package org.motechproject.scheduletracking.api.utility;
 
-import org.joda.time.LocalDate;
-import org.motechproject.util.DateUtil;
+import org.joda.time.DateTime;
+
+import static org.motechproject.util.DateUtil.now;
 
 public final class DateTimeUtil {
     private DateTimeUtil() {
     }
 
-    public static LocalDate daysAgo(int numberOfDays) {
-        return DateUtil.today().minusDays(numberOfDays);
+    public static DateTime daysAgo(int numberOfDays) {
+        return now().minusDays(numberOfDays);
     }
 
-    public static LocalDate weeksAgo(int numberOfWeeks) {
-        return DateUtil.today().minusWeeks(numberOfWeeks);
+    public static DateTime weeksAgo(int numberOfWeeks) {
+        return now().minusWeeks(numberOfWeeks);
     }
 
-    public static LocalDate daysAfter(int numberOfDays) {
-        return DateUtil.today().plusDays(numberOfDays);
+    public static DateTime daysAfter(int numberOfDays) {
+        return now().plusDays(numberOfDays);
     }
 
-    public static LocalDate weeksAfter(int numberOfWeeks) {
-        return DateUtil.today().plusWeeks(numberOfWeeks);
+    public static DateTime weeksAfter(int numberOfWeeks) {
+        return now().plusWeeks(numberOfWeeks);
     }
 }

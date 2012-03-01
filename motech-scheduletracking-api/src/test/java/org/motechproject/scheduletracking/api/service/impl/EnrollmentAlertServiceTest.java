@@ -28,7 +28,6 @@ import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.*;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.days;
-import static org.motechproject.scheduletracking.api.utility.PeriodFactory.months;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
 import static org.motechproject.util.DateUtil.newDateTime;
 import static org.powermock.api.mockito.PowerMockito.spy;
@@ -74,8 +73,8 @@ public class EnrollmentAlertServiceTest {
         verify(schedulerService, times(1)).safeScheduleRepeatingJob(repeatJobCaptor.capture());
 
         RepeatingSchedulableJob job = repeatJobCaptor.getAllValues().get(0);
-        assertJobDetails(job, String.format("%s.0", enrollment.getId()), newDateTime(weeksAfter(0), new Time(8, 20)).toDate(), 2, MILLIS_PER_DAY);
-        assertEventDetails(new MilestoneEvent(job.getMotechEvent()), externalId, scheduleName, MilestoneAlert.fromMilestone(milestone, enrollment.getReferenceDate()), WindowName.earliest.name());
+        assertJobDetails(job, String.format("%s.0", enrollment.getId()), newDateTime(weeksAfter(0).toLocalDate(), new Time(8, 20)).toDate(), 2, MILLIS_PER_DAY);
+        assertEventDetails(new MilestoneEvent(job.getMotechEvent()), externalId, scheduleName, MilestoneAlert.fromMilestone(milestone, enrollment.getReferenceDateTime()), WindowName.earliest.name());
     }
 
     @Test
@@ -97,12 +96,12 @@ public class EnrollmentAlertServiceTest {
         verify(schedulerService, times(2)).safeScheduleRepeatingJob(repeatJobCaptor.capture());
 
         RepeatingSchedulableJob job = repeatJobCaptor.getAllValues().get(0);
-        assertJobDetails(job, String.format("%s.0", enrollment.getId()), newDateTime(weeksAfter(0), new Time(8, 20)).toDate(), 2, MILLIS_PER_DAY);
-        assertEventDetails(new MilestoneEvent(job.getMotechEvent()), externalId, scheduleName, MilestoneAlert.fromMilestone(milestone, enrollment.getReferenceDate()), WindowName.earliest.name());
+        assertJobDetails(job, String.format("%s.0", enrollment.getId()), newDateTime(weeksAfter(0).toLocalDate(), new Time(8, 20)).toDate(), 2, MILLIS_PER_DAY);
+        assertEventDetails(new MilestoneEvent(job.getMotechEvent()), externalId, scheduleName, MilestoneAlert.fromMilestone(milestone, enrollment.getReferenceDateTime()), WindowName.earliest.name());
 
         job = repeatJobCaptor.getAllValues().get(1);
-        assertJobDetails(job, String.format("%s.1", enrollment.getId()), newDateTime(weeksAfter(1), new Time(8, 20)).toDate(), 1, 3 * MILLIS_PER_DAY);
-        assertEventDetails(new MilestoneEvent(job.getMotechEvent()), externalId, scheduleName, MilestoneAlert.fromMilestone(milestone, enrollment.getReferenceDate()), WindowName.due.name());
+        assertJobDetails(job, String.format("%s.1", enrollment.getId()), newDateTime(weeksAfter(1).toLocalDate(), new Time(8, 20)).toDate(), 1, 3 * MILLIS_PER_DAY);
+        assertEventDetails(new MilestoneEvent(job.getMotechEvent()), externalId, scheduleName, MilestoneAlert.fromMilestone(milestone, enrollment.getReferenceDateTime()), WindowName.due.name());
     }
 
     private void assertJobDetails(RepeatingSchedulableJob job, String jobIdKey, Date startTime, int repeatCount, int repeatInterval) {
@@ -134,7 +133,7 @@ public class EnrollmentAlertServiceTest {
         verify(schedulerService).safeScheduleRepeatingJob(repeatJobCaptor.capture());
 
         RepeatingSchedulableJob job = repeatJobCaptor.getValue();
-        assertEquals(newDateTime(daysAfter(2), new Time(8, 20)).toDate(), job.getStartTime());
+        assertEquals(newDateTime(daysAfter(2).toLocalDate(), new Time(8, 20)).toDate(), job.getStartTime());
         assertRepeatIntervalValue(MILLIS_PER_DAY * 3, job.getRepeatInterval());
         assertEquals(0, job.getRepeatCount().intValue());
     }
@@ -154,7 +153,7 @@ public class EnrollmentAlertServiceTest {
         verify(schedulerService).safeScheduleRepeatingJob(repeatJobCaptor.capture());
 
         RepeatingSchedulableJob job = repeatJobCaptor.getValue();
-        assertEquals(newDateTime(daysAfter(3), new Time(8, 10)).toDate(), job.getStartTime());
+        assertEquals(newDateTime(daysAfter(3).toLocalDate(), new Time(8, 10)).toDate(), job.getStartTime());
         assertEquals(1, job.getRepeatCount().intValue());
     }
 
@@ -173,7 +172,7 @@ public class EnrollmentAlertServiceTest {
         verify(schedulerService).safeScheduleRepeatingJob(repeatJobCaptor.capture());
 
         RepeatingSchedulableJob job = repeatJobCaptor.getValue();
-        assertEquals(newDateTime(daysAfter(0), new Time(8, 20)).toDate(), job.getStartTime());
+        assertEquals(newDateTime(daysAfter(0).toLocalDate(), new Time(8, 20)).toDate(), job.getStartTime());
         assertEquals(2, job.getRepeatCount().intValue());
     }
 
@@ -207,7 +206,7 @@ public class EnrollmentAlertServiceTest {
         verify(schedulerService).safeScheduleRepeatingJob(repeatJobCaptor.capture());
 
         RepeatingSchedulableJob job = repeatJobCaptor.getValue();
-        assertEquals(newDateTime(daysAfter(10), new Time(8, 20)).toDate(), job.getStartTime());
+        assertEquals(newDateTime(daysAfter(10).toLocalDate(), new Time(8, 20)).toDate(), job.getStartTime());
     }
 
     @Test
@@ -256,7 +255,7 @@ public class EnrollmentAlertServiceTest {
 
         RepeatingSchedulableJob job = repeatJobCaptor.getValue();
         assertEquals(String.format("%s.1", enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
-        assertEquals(newDateTime(weeksAgo(0), new Time(8, 20)).toDate(), job.getStartTime());
+        assertEquals(newDateTime(weeksAgo(0).toLocalDate(), new Time(8, 20)).toDate(), job.getStartTime());
         assertRepeatIntervalValue(MILLIS_PER_DAY, job.getRepeatInterval());
         assertEquals(1, job.getRepeatCount().intValue());
     }

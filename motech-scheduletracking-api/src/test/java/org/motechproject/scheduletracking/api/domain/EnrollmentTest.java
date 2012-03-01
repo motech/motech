@@ -8,6 +8,8 @@ import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
+import static org.motechproject.util.DateUtil.newDateTime;
+import static org.motechproject.util.DateUtil.now;
 import static org.motechproject.util.DateUtil.today;
 
 public class EnrollmentTest {
@@ -64,7 +66,7 @@ public class EnrollmentTest {
 
     @Test
     public void shouldCopyFromTheGivenEnrollment() {
-        Enrollment newEnrollment = new Enrollment("externalId", "scheduleName", "newCurrentMilestoneName", weeksAgo(2), today(), new Time(8, 10), EnrollmentStatus.Active);
+        Enrollment newEnrollment = new Enrollment("externalId", "scheduleName", "newCurrentMilestoneName", weeksAgo(2), now(), new Time(8, 10), EnrollmentStatus.Active);
         Enrollment originalEnrollment = new Enrollment("externalId", "scheduleName", "currentMilestoneName", weeksAgo(3), weeksAgo(2), new Time(2, 5), EnrollmentStatus.Active);
 
         Enrollment enrollment = originalEnrollment.copyFrom(newEnrollment);
@@ -72,8 +74,8 @@ public class EnrollmentTest {
         assertEquals(newEnrollment.getExternalId(), enrollment.getExternalId());
         assertEquals(newEnrollment.getScheduleName(), enrollment.getScheduleName());
         assertEquals(newEnrollment.getCurrentMilestoneName(), enrollment.getCurrentMilestoneName());
-        assertEquals(newEnrollment.getReferenceDate(), enrollment.getReferenceDate());
-        assertEquals(newEnrollment.getEnrollmentDate(), enrollment.getEnrollmentDate());
+        assertEquals(newEnrollment.getReferenceDateTime(), enrollment.getReferenceDateTime());
+        assertEquals(newEnrollment.getEnrollmentDateTime(), enrollment.getEnrollmentDateTime());
         assertEquals(newEnrollment.getPreferredAlertTime(), enrollment.getPreferredAlertTime());
     }
 
@@ -99,11 +101,11 @@ public class EnrollmentTest {
         Enrollment enrollment = new Enrollment("externalId", "scheduleName", "currentMilestoneName", weeksAgo(1), weeksAgo(1), new Time(8, 10), EnrollmentStatus.Active);
 
         assertEquals(0, enrollment.getFulfillments().size());
-        enrollment.fulfillCurrentMilestone(DateUtil.newDate(2011, 6, 5));
+        enrollment.fulfillCurrentMilestone(DateUtil.newDateTime(2011, 6, 5, 0, 0, 0));
         assertEquals(1, enrollment.getFulfillments().size());
 
         MilestoneFulfillment milestoneFulfillment = enrollment.getFulfillments().get(0);
-        assertEquals(DateUtil.newDate(2011, 6, 5), milestoneFulfillment.getDateFulfilled());
+        assertEquals(newDateTime(2011, 6, 5, 0, 0, 0), milestoneFulfillment.getFulfillmentDateTime());
         assertEquals("currentMilestoneName", milestoneFulfillment.getMilestoneName());
     }
 }

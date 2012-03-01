@@ -19,4 +19,8 @@ public class PeriodFactory {
 	public static Period days(int numberOfDays) {
 		return new Period(0, 0, 0, numberOfDays, 0, 0, 0, 0);
 	}
+
+	public static Period hours(int numberOfHours) {
+		return new Period(0, 0, 0, 0, numberOfHours, 0, 0, 0);
+	}
 }

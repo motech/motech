@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,6 +23,7 @@ import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.daysAg
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.days;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
+import static org.motechproject.util.DateUtil.now;
 
 public class EnrollmentServiceTest {
     private EnrollmentService enrollmentService;
@@ -45,8 +47,8 @@ public class EnrollmentServiceTest {
     public void shouldEnrollEntityIntoSchedule() {
         String externalId = "entity_1";
         String scheduleName = "my_schedule";
-        LocalDate referenceDate = weeksAgo(0);
-        LocalDate enrollmentDate = weeksAgo(0);
+        DateTime referenceDate = weeksAgo(0);
+        DateTime enrollmentDate = weeksAgo(0);
         Time preferredAlertTime = new Time(8, 10);
 
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
@@ -76,8 +78,8 @@ public class EnrollmentServiceTest {
     public void shouldEnrollEntityAsDefaultedOneIfScheduleDurationHasExpired() {
         String externalId = "entity_1";
         String scheduleName = "my_schedule";
-        LocalDate referenceDate = DateUtil.today().minusDays(29);
-        LocalDate enrollmentDate = DateUtil.today();
+        DateTime referenceDateTime = DateUtil.now().minusDays(29);
+        DateTime enrollmentDateTime = DateUtil.now();
         Time preferredAlertTime = new Time(8, 10);
         EnrollmentStatus enrollmentStatus = EnrollmentStatus.Defaulted;
 
@@ -85,11 +87,11 @@ public class EnrollmentServiceTest {
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
-        Enrollment dummyEnrollment = new Enrollment(externalId, scheduleName, milestone.getName(), referenceDate, enrollmentDate, preferredAlertTime, Active);
+        Enrollment dummyEnrollment = new Enrollment(externalId, scheduleName, milestone.getName(), referenceDateTime, enrollmentDateTime, preferredAlertTime, EnrollmentStatus.Active);
         dummyEnrollment.setId("enrollmentId");
         when(allEnrollments.addOrReplace(any(Enrollment.class))).thenReturn(dummyEnrollment);
 
-        enrollmentService.enroll(externalId, scheduleName, milestone.getName(), referenceDate, enrollmentDate, preferredAlertTime);
+        enrollmentService.enroll(externalId, scheduleName, milestone.getName(), referenceDateTime, enrollmentDateTime, preferredAlertTime);
 
         ArgumentCaptor<Enrollment> enrollmentArgumentCaptor = ArgumentCaptor.forClass(Enrollment.class);
         verify(allEnrollments).addOrReplace(enrollmentArgumentCaptor.capture());
@@ -113,10 +115,11 @@ public class EnrollmentServiceTest {
         when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
 
         Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(4), weeksAgo(4), new Time(8, 20), Active);
-        enrollmentService.fulfillCurrentMilestone(enrollment, daysAgo(0));
+        DateTime now = now();
+        enrollmentService.fulfillCurrentMilestone(enrollment, now);
 
         assertEquals("Second Shot", enrollment.getCurrentMilestoneName());
-        assertEquals(daysAgo(0), enrollment.lastFulfilledDate());
+        assertEquals(now, enrollment.lastFulfilledDate());
 
         verify(allEnrollments).update(enrollment);
     }

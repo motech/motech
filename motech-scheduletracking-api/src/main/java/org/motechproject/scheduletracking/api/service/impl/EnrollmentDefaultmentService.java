@@ -1,6 +1,6 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
-import org.joda.time.LocalDate;
+import org.joda.time.DateTime;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static org.motechproject.scheduletracking.api.events.constants.EventSubjects.DEFAULTMENT_CAPTURE;
-import static org.motechproject.util.DateUtil.today;
+import static org.motechproject.util.DateUtil.now;
 
 @Component
 public class EnrollmentDefaultmentService {
@@ -32,14 +32,14 @@ public class EnrollmentDefaultmentService {
         if (currentMilestone == null)
             return;
 
-        LocalDate currentMilestoneStartDate = enrollment.getCurrentMilestoneStartDate(schedule.getFirstMilestone().getName());
-        LocalDate milestoneEndDate = currentMilestoneStartDate.plus(currentMilestone.getMaximumDuration());
+        DateTime currentMilestoneStartDateTime = enrollment.getCurrentMilestoneStartDate(schedule.getFirstMilestone().getName());
+        DateTime milestoneEndDateTime = currentMilestoneStartDateTime.plus(currentMilestone.getMaximumDuration());
 
-        if (milestoneEndDate.isBefore(today()))
+        if (milestoneEndDateTime.isBefore(now()))
             return;
 
         MotechEvent event = new DefaultmentCaptureEvent(enrollment.getId(), enrollment.getId()).toMotechEvent();
-        schedulerService.safeScheduleRunOnceJob(new RunOnceSchedulableJob(event, milestoneEndDate.toDate()));
+        schedulerService.safeScheduleRunOnceJob(new RunOnceSchedulableJob(event, milestoneEndDateTime.toDate()));
     }
 
     public void unscheduleDefaultmentCaptureJob(Enrollment enrollment) {

@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.it;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.After;
 import org.junit.Test;
@@ -15,6 +16,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.*;
+import static org.motechproject.util.DateUtil.newDateTime;
+import static org.motechproject.util.DateUtil.now;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:applicationSchedulerTrackingAPI.xml")
@@ -42,23 +45,24 @@ public class ScheduleTrackingServiceIT {
         assertNull("Active enrollment present", activeEnrollment);
 
         Time originalPreferredAlertTime = new Time(8, 10);
-        LocalDate originalReferenceDate = DateUtil.today();
-        String enrollmentId = scheduleTrackingService.enroll(new EnrollmentRequest(externalId, scheduleName, originalPreferredAlertTime, originalReferenceDate, null, null));
+        DateTime now = now();
+        DateTime originalReferenceDateTime = now;
+        String enrollmentId = scheduleTrackingService.enroll(new EnrollmentRequest(externalId, scheduleName, originalPreferredAlertTime, originalReferenceDateTime.toLocalDate(), null, null, null, null));
         assertNotNull("EnrollmentId is null", enrollmentId);
 
         activeEnrollment = allEnrollments.get(enrollmentId);
         assertNotNull("No active enrollment present", activeEnrollment);
         assertEquals(originalPreferredAlertTime, activeEnrollment.getPreferredAlertTime());
-        assertEquals(originalReferenceDate, activeEnrollment.getReferenceDate());
+        assertEquals(newDateTime(originalReferenceDateTime.toLocalDate(), new Time(0, 0)), activeEnrollment.getReferenceDateTime());
 
         Time updatedPreferredAlertTime = new Time(2, 5);
-        LocalDate updatedReferenceDate = DateUtil.today().minusDays(1);
-        String updatedEnrollmentId = scheduleTrackingService.enroll(new EnrollmentRequest(externalId, scheduleName, updatedPreferredAlertTime, updatedReferenceDate, null, null));
+        DateTime updatedReferenceDate = now.minusDays(1);
+        String updatedEnrollmentId = scheduleTrackingService.enroll(new EnrollmentRequest(externalId, scheduleName, updatedPreferredAlertTime, updatedReferenceDate.toLocalDate(), null, null, null, null));
         assertEquals(enrollmentId, updatedEnrollmentId);
 
         activeEnrollment = allEnrollments.get(updatedEnrollmentId);
         assertNotNull("No active enrollment present", activeEnrollment);
         assertEquals(updatedPreferredAlertTime, activeEnrollment.getPreferredAlertTime());
-        assertEquals(updatedReferenceDate, activeEnrollment.getReferenceDate());
+        assertEquals(newDateTime(updatedReferenceDate.toLocalDate(), new Time(0, 0)), activeEnrollment.getReferenceDateTime());
     }
 }

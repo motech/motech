@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +23,8 @@ import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksA
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.days;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
+import static org.motechproject.util.DateUtil.newDateTime;
+import static org.motechproject.util.DateUtil.now;
 
 public class EnrollmentDefaultmentServiceTest {
     private EnrollmentDefaultmentService enrollmentDefaultmentService;
@@ -48,7 +51,8 @@ public class EnrollmentDefaultmentServiceTest {
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
         String externalId = "entity_1";
-        Enrollment enrollment = new Enrollment(externalId, scheduleName, milestone.getName(), weeksAgo(0), weeksAgo(0), new Time(8, 10), EnrollmentStatus.Active);
+        DateTime now = now();
+        Enrollment enrollment = new Enrollment(externalId, scheduleName, milestone.getName(), now, now, new Time(8, 10), EnrollmentStatus.Active);
         enrollment.setId("enrollment_1");
 
         enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
@@ -59,7 +63,7 @@ public class EnrollmentDefaultmentServiceTest {
         RunOnceSchedulableJob job = runOnceJobArgumentCaptor.getValue();
         DefaultmentCaptureEvent event = new DefaultmentCaptureEvent(job.getMotechEvent());
         assertEquals("enrollment_1", event.getJobId());
-        assertEquals(weeksAfter(4).toDate(), job.getStartDate());
+        assertEquals(now.plusWeeks(4).toDate(), job.getStartDate());
     }
 
     @Test
@@ -72,9 +76,9 @@ public class EnrollmentDefaultmentServiceTest {
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
         String externalId = "entity_1";
-        LocalDate referenceDate = DateUtil.newDate(2012, 1, 1).minusMonths(10);
-        LocalDate enrollmentDate = DateUtil.today();
-        Enrollment enrollment = new Enrollment(externalId, scheduleName, milestone.getName(), referenceDate, enrollmentDate, new Time(8, 10), EnrollmentStatus.Active);
+        DateTime referenceDateTime = newDateTime(2012, 1, 1, 0, 0, 0).minusMonths(10);
+        DateTime enrollmentDateTime = now();
+        Enrollment enrollment = new Enrollment(externalId, scheduleName, milestone.getName(), referenceDateTime, enrollmentDateTime, new Time(8, 10), EnrollmentStatus.Active);
         enrollment.setId("enrollment_1");
 
         enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);

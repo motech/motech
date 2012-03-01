@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.it;
 
+import org.joda.time.DateTimeZone;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +18,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.*;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
+import static org.motechproject.util.DateUtil.now;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:testApplicationSchedulerTrackingAPI.xml")
@@ -42,7 +44,7 @@ public class AllEnrollmentsIT {
 
     @Test
     public void shouldAddEnrollment() {
-        enrollment = new Enrollment("externalId", "schedule_name", "first_milestone", DateUtil.today(), DateUtil.today(), new Time(DateUtil.now().toLocalTime()), EnrollmentStatus.Active);
+        enrollment = new Enrollment("externalId", "schedule_name", "first_milestone", now(), now(), new Time(now().toLocalTime()), EnrollmentStatus.Active);
         allEnrollments.add(enrollment);
 
         enrollment = allEnrollments.get(enrollment.getId());
@@ -52,7 +54,7 @@ public class AllEnrollmentsIT {
 
     @Test
     public void shouldFindActiveEnrollmentByExternalIdAndScheduleName() {
-        enrollment = new Enrollment("entity_1", "schedule_name", "first_milestone", DateUtil.today(), DateUtil.today(), new Time(DateUtil.now().toLocalTime()), EnrollmentStatus.Active);
+        enrollment = new Enrollment("entity_1", "schedule_name", "first_milestone", now(), now(), new Time(DateUtil.now().toLocalTime()), EnrollmentStatus.Active);
         enrollment.setStatus(EnrollmentStatus.Unenrolled);
         allEnrollments.add(enrollment);
 
@@ -62,50 +64,50 @@ public class AllEnrollmentsIT {
     @Test
     public void shouldUpdateEnrollmentIfAnActiveEnrollmentForTheScheduleAlreadyAvailable() {
         String externalId = "externalId";
-        enrollment = new Enrollment(externalId, schedule.getName(), milestone.getName(), DateUtil.today(), DateUtil.today(), new Time(8, 10), EnrollmentStatus.Active);
+        enrollment = new Enrollment(externalId, schedule.getName(), milestone.getName(), now(), now(), new Time(8, 10), EnrollmentStatus.Active);
         allEnrollments.add(enrollment);
 
-        Enrollment enrollmentWithUpdates = new Enrollment(enrollment.getExternalId(), enrollment.getScheduleName(), milestone.getName(), enrollment.getReferenceDate().plusDays(1), enrollment.getEnrollmentDate().plusDays(1), new Time(2, 5), EnrollmentStatus.Active);
+        Enrollment enrollmentWithUpdates = new Enrollment(enrollment.getExternalId(), enrollment.getScheduleName(), milestone.getName(), enrollment.getReferenceDateTime().plusDays(1), enrollment.getEnrollmentDateTime().plusDays(1), new Time(2, 5), EnrollmentStatus.Active);
         allEnrollments.addOrReplace(enrollmentWithUpdates);
 
         enrollment = allEnrollments.getActiveEnrollment(enrollment.getExternalId(), schedule.getName());
         assertEquals(enrollmentWithUpdates.getCurrentMilestoneName(), enrollment.getCurrentMilestoneName());
-        assertEquals(enrollmentWithUpdates.getReferenceDate(), enrollment.getReferenceDate());
-        assertEquals(enrollmentWithUpdates.getEnrollmentDate(), enrollment.getEnrollmentDate());
+        assertEquals(enrollmentWithUpdates.getReferenceDateTime().toDateTime(DateTimeZone.UTC), enrollment.getReferenceDateTime().toDateTime(DateTimeZone.UTC));
+        assertEquals(enrollmentWithUpdates.getEnrollmentDateTime().toDateTime(DateTimeZone.UTC), enrollment.getEnrollmentDateTime().toDateTime(DateTimeZone.UTC));
         assertEquals(enrollmentWithUpdates.getPreferredAlertTime(), enrollment.getPreferredAlertTime());
     }
 
     @Test
     public void shouldCreateEnrollmentIfADefaultedEnrollmentForTheScheduleAlreadyExists() {
         String externalId = "externalId";
-        enrollment = new Enrollment(externalId, schedule.getName(), milestone.getName(), DateUtil.today(), DateUtil.today(), new Time(8, 10), EnrollmentStatus.Active);
+        enrollment = new Enrollment(externalId, schedule.getName(), milestone.getName(), now(), now(), new Time(8, 10), EnrollmentStatus.Active);
         enrollment.setStatus(EnrollmentStatus.Defaulted);
         allEnrollments.add(enrollment);
 
-        Enrollment enrollmentWithUpdates = new Enrollment(enrollment.getExternalId(), enrollment.getScheduleName(), milestone.getName(), enrollment.getReferenceDate().plusDays(1), enrollment.getEnrollmentDate().plusDays(1), new Time(2, 5), EnrollmentStatus.Active);
+        Enrollment enrollmentWithUpdates = new Enrollment(enrollment.getExternalId(), enrollment.getScheduleName(), milestone.getName(), enrollment.getReferenceDateTime().plusDays(1), enrollment.getEnrollmentDateTime().plusDays(1), new Time(2, 5), EnrollmentStatus.Active);
         allEnrollments.addOrReplace(enrollmentWithUpdates);
 
         enrollment = allEnrollments.getActiveEnrollment(enrollment.getExternalId(), schedule.getName());
         assertEquals(enrollmentWithUpdates.getCurrentMilestoneName(), enrollment.getCurrentMilestoneName());
-        assertEquals(enrollmentWithUpdates.getReferenceDate(), enrollment.getReferenceDate());
-        assertEquals(enrollmentWithUpdates.getEnrollmentDate(), enrollment.getEnrollmentDate());
+        assertEquals(enrollmentWithUpdates.getReferenceDateTime(), enrollment.getReferenceDateTime());
+        assertEquals(enrollmentWithUpdates.getEnrollmentDateTime(), enrollment.getEnrollmentDateTime());
         assertEquals(enrollmentWithUpdates.getPreferredAlertTime(), enrollment.getPreferredAlertTime());
     }
 
     @Test
     public void shouldCreateEnrollmentIfAnUnenrolledEnrollmentForTheScheduleAlreadyExists() {
         String externalId = "externalId";
-        enrollment = new Enrollment(externalId, schedule.getName(), milestone.getName(), DateUtil.today(), DateUtil.today(), new Time(8, 10), EnrollmentStatus.Active);
+        enrollment = new Enrollment(externalId, schedule.getName(), milestone.getName(), now(), now(), new Time(8, 10), EnrollmentStatus.Active);
         enrollment.setStatus(EnrollmentStatus.Unenrolled);
         allEnrollments.add(enrollment);
 
-        Enrollment enrollmentWithUpdates = new Enrollment(enrollment.getExternalId(), enrollment.getScheduleName(), milestone.getName(), enrollment.getReferenceDate().plusDays(1), enrollment.getEnrollmentDate().plusDays(1), new Time(2, 5), EnrollmentStatus.Active);
+        Enrollment enrollmentWithUpdates = new Enrollment(enrollment.getExternalId(), enrollment.getScheduleName(), milestone.getName(), enrollment.getReferenceDateTime().plusDays(1), enrollment.getEnrollmentDateTime().plusDays(1), new Time(2, 5), EnrollmentStatus.Active);
         allEnrollments.addOrReplace(enrollmentWithUpdates);
 
         enrollment = allEnrollments.getActiveEnrollment(enrollment.getExternalId(), schedule.getName());
         assertEquals(enrollmentWithUpdates.getCurrentMilestoneName(), enrollment.getCurrentMilestoneName());
-        assertEquals(enrollmentWithUpdates.getReferenceDate(), enrollment.getReferenceDate());
-        assertEquals(enrollmentWithUpdates.getEnrollmentDate(), enrollment.getEnrollmentDate());
+        assertEquals(enrollmentWithUpdates.getReferenceDateTime(), enrollment.getReferenceDateTime());
+        assertEquals(enrollmentWithUpdates.getEnrollmentDateTime(), enrollment.getEnrollmentDateTime());
         assertEquals(enrollmentWithUpdates.getPreferredAlertTime(), enrollment.getPreferredAlertTime());
     }
 }

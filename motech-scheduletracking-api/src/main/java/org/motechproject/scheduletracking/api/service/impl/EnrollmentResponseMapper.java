@@ -10,6 +10,6 @@ public class EnrollmentResponseMapper {
             return null;
         else
             return new EnrollmentResponse(enrollment.getExternalId(), enrollment.getScheduleName(),
-                    enrollment.getPreferredAlertTime(), enrollment.getReferenceDate(), enrollment.getEnrollmentDate());
+                    enrollment.getPreferredAlertTime(), enrollment.getReferenceDateTime(), enrollment.getEnrollmentDateTime());
     }
 }
