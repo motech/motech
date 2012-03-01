@@ -13,6 +13,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.*;
 
 public class ScheduleFactoryTest {
+
     @Test
     public void shouldCreateTheSchedule() {
         TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules");
@@ -79,7 +80,7 @@ public class ScheduleFactoryTest {
         List<Milestone> milestones = schedule.getMilestones();
         Milestone firstMilestone = milestones.get(0);
 
-        assertEquals(weeks(14).plus(days(2)), firstMilestone.getWindowEnd(WindowName.due));
+        assertEquals(weeks(14).plus(hours(2)), firstMilestone.getWindowEnd(WindowName.due));
         assertEquals(years(1).plus(months(2)).plus(weeks(16)), firstMilestone.getWindowEnd(WindowName.late));
     }
 

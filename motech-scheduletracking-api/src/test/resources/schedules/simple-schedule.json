@@ -5,7 +5,7 @@
             "name":"IPTI 1",
             "scheduleWindows":{
                 "earliest":["13 Weeks"],
-                "due":["14 Weeks", "2 days"],
+                "due":["14 Weeks", "2 hours"],
                 "late":["1 year", "2 month", "16 Weeks"],
                 "max":["", "", "", ""]
             },

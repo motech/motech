@@ -23,6 +23,7 @@ public class ScheduleFactory {
     private PeriodParser monthParser;
     private PeriodParser weekParser;
     private PeriodParser dayParser;
+    private PeriodParser hourParser;
 
     public ScheduleFactory() {
         initializePeriodParsers();
@@ -85,6 +86,10 @@ public class ScheduleFactory {
                 .appendDays()
                 .appendSuffix(" day", " days")
                 .toParser();
+        hourParser = new PeriodFormatterBuilder()
+                .appendHours()
+                .appendSuffix(" hour", " hours")
+                .toParser();
     }
 
     private Period getWindowPeriod(List<String> readableValues) {
@@ -103,6 +108,8 @@ public class ScheduleFactory {
         if (weekParser.parseInto(period, s, 0, null) > 0)
             return period.toPeriod();
         if (dayParser.parseInto(period, s, 0, null) > 0)
+            return period.toPeriod();
+        if (hourParser.parseInto(period, s, 0, null) > 0)
             return period.toPeriod();
         return period.toPeriod();
     }
