@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.it;
 
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.After;
 import org.junit.Before;
@@ -19,6 +20,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.*;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
 import static org.motechproject.util.DateUtil.now;
+import static org.motechproject.util.DateUtil.today;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:testApplicationSchedulerTrackingAPI.xml")
@@ -59,6 +61,18 @@ public class AllEnrollmentsIT {
         allEnrollments.add(enrollment);
 
         assertNull(allEnrollments.getActiveEnrollment("entity_1", "schedule_name"));
+    }
+
+    @Test
+    public void shouldConvertTheFulfillmentDateTimeIntoCorrectTimeZoneWhenRetrievingAnEnrollmentWithFulfilledMilestoneFromDatabase() {
+        enrollment = new Enrollment("entity_1", "schedule_name", "first_milestone", now(), now(), new Time(DateUtil.now().toLocalTime()), EnrollmentStatus.Active);
+        allEnrollments.add(enrollment);
+        DateTime fulfillmentDateTime = DateTime.now();
+        enrollment.fulfillCurrentMilestone(fulfillmentDateTime);
+        allEnrollments.update(enrollment);
+
+        Enrollment enrollmentFromDatabase = allEnrollments.getActiveEnrollment("entity_1", "schedule_name");
+        assertEquals(fulfillmentDateTime, enrollmentFromDatabase.lastFulfilledDate());
     }
 
     @Test

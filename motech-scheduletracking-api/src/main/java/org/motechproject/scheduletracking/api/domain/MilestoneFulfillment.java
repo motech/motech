@@ -4,6 +4,8 @@ import org.joda.time.DateTime;
 
 import java.io.Serializable;
 
+import static org.motechproject.util.DateUtil.setTimeZone;
+
 public class MilestoneFulfillment implements Serializable {
     private String milestoneName;
     private DateTime fulfillmentDateTime;
@@ -17,7 +19,7 @@ public class MilestoneFulfillment implements Serializable {
     }
 
     public DateTime getFulfillmentDateTime() {
-        return fulfillmentDateTime;
+        return setTimeZone(fulfillmentDateTime);
     }
 
     public void setFulfillmentDateTime(DateTime fulfillmentDateTime) {
