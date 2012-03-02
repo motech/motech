@@ -2,7 +2,6 @@ package org.motechproject.scheduletracking.api.domain;
 
 import org.joda.time.Period;
 import org.junit.Test;
-import org.motechproject.scheduletracking.api.domain.exception.InvalidScheduleDefinitionException;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReader;
 import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReaderImpl;
@@ -14,7 +13,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.*;
 
 public class ScheduleFactoryTest {
-
     @Test
     public void shouldCreateTheSchedule() {
         TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules");

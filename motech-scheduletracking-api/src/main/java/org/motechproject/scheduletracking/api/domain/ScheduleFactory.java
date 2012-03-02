@@ -5,7 +5,6 @@ import org.joda.time.Period;
 import org.joda.time.ReadWritablePeriod;
 import org.joda.time.format.PeriodFormatterBuilder;
 import org.joda.time.format.PeriodParser;
-import org.motechproject.scheduletracking.api.domain.exception.InvalidScheduleDefinitionException;
 import org.motechproject.scheduletracking.api.domain.json.AlertRecord;
 import org.motechproject.scheduletracking.api.domain.json.MilestoneRecord;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
@@ -13,9 +12,6 @@ import org.motechproject.scheduletracking.api.domain.json.ScheduleWindowsRecord;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-
-import static org.motechproject.util.StringUtil.isNullOrEmpty;
-import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Component
 public class ScheduleFactory {
@@ -48,13 +44,13 @@ public class ScheduleFactory {
                 maxValue = lateValue;
 
             Period earliest = new Period(), due = new Period(), late = new Period(), max = new Period();
-            if (!getWindowPeriod(earliestValue).equals(new Period()))
+            if (isWindowEmpty(earliestValue))
                 earliest = getWindowPeriod(earliestValue);
-            if (!getWindowPeriod(dueValue).equals(new Period()))
+            if (isWindowEmpty(dueValue))
                 due = getWindowPeriod(dueValue).minus(earliest);
-            if (!getWindowPeriod(lateValue).equals(new Period()))
+            if (isWindowEmpty(lateValue))
                 late = getWindowPeriod(lateValue).minus(earliest.plus(due));
-            if (!getWindowPeriod(maxValue).equals(new Period()))
+            if (isWindowEmpty(maxValue))
                 max = getWindowPeriod(maxValue).minus(earliest.plus(due).plus(late));
 
             Milestone milestone = new Milestone(milestoneRecord.name(), earliest, due, late, max);
@@ -66,6 +62,10 @@ public class ScheduleFactory {
             schedule.addMilestones(milestone);
         }
         return schedule;
+    }
+
+    private boolean isWindowEmpty(List<String> windowValue) {
+        return !getWindowPeriod(windowValue).equals(new Period());
     }
 
     private void initializePeriodParsers() {
