@@ -70,7 +70,6 @@ public class AppointmentServiceImplTest {
         verify(allReminderJobs, times(3)).addAppointmentJob(eq(externalId), Matchers.<Visit>any());
     }
 
-
     @Test
     public void shouldRemoveAnAppointmentCalender() {
         AppointmentCalendar appointmentCalendar = new AppointmentCalendar();
@@ -201,7 +200,7 @@ public class AppointmentServiceImplTest {
         appointmentService.visited(externalId, visitName, visitedDate);
 
         assertEquals(visitedDate, visit.visitDate());
-        verify(allReminderJobs).removeVisitJob(externalId, visit);
+        verify(allReminderJobs).removeAll(externalId);
         verify(allAppointmentCalendars).saveAppointmentCalendar(appointmentCalendar);
     }
 

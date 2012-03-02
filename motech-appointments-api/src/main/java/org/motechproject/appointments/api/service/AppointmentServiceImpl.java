@@ -90,7 +90,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         AppointmentCalendar appointmentCalendar = getAppointmentCalendar(externalId);
         Visit visit = appointmentCalendar.getVisit(visitName);
         visit.visitDate(visitedDate);
-        allReminderJobs.removeVisitJob(externalId, visit);
+        allReminderJobs.removeAll(externalId);
         allAppointmentCalendars.saveAppointmentCalendar(appointmentCalendar);
     }
 
