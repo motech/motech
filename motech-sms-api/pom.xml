@@ -3,13 +3,13 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.8</version>
+        <version>0.9-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <name>MoTeCH SMS API</name>
     <artifactId>motech-sms-api</artifactId>
     <description>Motech SMS API</description>
-    <version>0.8</version>
+    <version>0.9-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
