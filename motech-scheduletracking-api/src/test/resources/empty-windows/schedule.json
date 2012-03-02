@@ -1,0 +1,41 @@
+{
+    "name":"empty",
+    "milestones":[
+        {
+            "name":"early-empty",
+            "scheduleWindows":{
+                "earliest":[""],
+                "due":["14 Weeks"],
+                "late":["4 months"],
+                "max":["1 year"]
+            }
+        },
+        {
+            "name":"due-empty",
+            "scheduleWindows":{
+                "earliest":["10 days"],
+                "due":[""],
+                "late":["2 months"],
+                "max":["1 year"]
+            }
+        },
+        {
+            "name":"late-empty",
+            "scheduleWindows":{
+                "earliest":["10 days"],
+                "due":["14 Weeks"],
+                "late":["", ""],
+                "max":["1 year"]
+            }
+        },
+        {
+            "name":"max-empty",
+            "scheduleWindows":{
+                "earliest":["10 days"],
+                "due":["14 Weeks"],
+                "late":["1 year"],
+                "max":[""]
+            }
+        }
+    ]
+}

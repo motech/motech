@@ -59,15 +59,36 @@ public class ScheduleFactoryTest {
     }
 
     @Test
-    public void shouldCreateEmptyWindowIfDurationIsNotSpecified() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules");
-        ScheduleRecord scheduleRecord = findRecord("IPTI Schedule", jsonReader.records());
+    public void shouldSetWindowPeriodsFromOffsetsSpecifiedInJson() {
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/empty-windows");
+        ScheduleRecord scheduleRecord = findRecord("empty", jsonReader.records());
         Schedule schedule = new ScheduleFactory().build(scheduleRecord);
 
         List<Milestone> milestones = schedule.getMilestones();
-        Milestone firstMilestone = milestones.get(0);
+        Milestone milestone = milestones.get(0);
 
-        assertEquals(weeks(0), firstMilestone.getWindowEnd(WindowName.max).minus(firstMilestone.getWindowStart(WindowName.max)));
+        assertEquals(days(0), milestone.getWindowEnd(WindowName.earliest).minus(milestone.getWindowStart(WindowName.earliest)));
+        assertEquals(weeks(14), milestone.getWindowEnd(WindowName.due).minus(milestone.getWindowStart(WindowName.due)));
+        assertEquals(months(4).minus(weeks(14)), milestone.getWindowEnd(WindowName.late).minus(milestone.getWindowStart(WindowName.late)));
+        assertEquals(years(1).minus(months(4)), milestone.getWindowEnd(WindowName.max).minus(milestone.getWindowStart(WindowName.max)));
+    }
+
+    @Test
+    public void shouldCreateEmptyWindowIfDurationIsNotSpecified() {
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/empty-windows");
+        ScheduleRecord scheduleRecord = findRecord("empty", jsonReader.records());
+        Schedule schedule = new ScheduleFactory().build(scheduleRecord);
+
+        List<Milestone> milestones = schedule.getMilestones();
+        Milestone earliestEmpty = milestones.get(0);
+        Milestone dueEmpty = milestones.get(1);
+        Milestone lateEmpty = milestones.get(2);
+        Milestone maxEmpty = milestones.get(3);
+
+        assertEquals(days(0), earliestEmpty.getWindowEnd(WindowName.earliest).minus(earliestEmpty.getWindowStart(WindowName.earliest)));
+        assertEquals(days(0), dueEmpty.getWindowEnd(WindowName.due).minus(dueEmpty.getWindowStart(WindowName.due)));
+        assertEquals(days(0), lateEmpty.getWindowEnd(WindowName.late).minus(lateEmpty.getWindowStart(WindowName.late)));
+        assertEquals(days(0), maxEmpty.getWindowEnd(WindowName.max).minus(maxEmpty.getWindowStart(WindowName.max)));
     }
 
     @Test

@@ -34,23 +34,17 @@ public class ScheduleFactory {
 
             List<String> earliestValue = windowsRecord.earliest();
             List<String> dueValue = windowsRecord.due();
-            if (dueValue.isEmpty())
-                dueValue = earliestValue;
             List<String> lateValue = windowsRecord.late();
-            if (lateValue.isEmpty())
-                lateValue = dueValue;
             List<String> maxValue = windowsRecord.max();
-            if (maxValue.isEmpty())
-                maxValue = lateValue;
 
             Period earliest = new Period(), due = new Period(), late = new Period(), max = new Period();
-            if (isWindowEmpty(earliestValue))
+            if (isWindowNotEmpty(earliestValue))
                 earliest = getWindowPeriod(earliestValue);
-            if (isWindowEmpty(dueValue))
+            if (isWindowNotEmpty(dueValue))
                 due = getWindowPeriod(dueValue).minus(earliest);
-            if (isWindowEmpty(lateValue))
+            if (isWindowNotEmpty(lateValue))
                 late = getWindowPeriod(lateValue).minus(earliest.plus(due));
-            if (isWindowEmpty(maxValue))
+            if (isWindowNotEmpty(maxValue))
                 max = getWindowPeriod(maxValue).minus(earliest.plus(due).plus(late));
 
             Milestone milestone = new Milestone(milestoneRecord.name(), earliest, due, late, max);
@@ -64,7 +58,7 @@ public class ScheduleFactory {
         return schedule;
     }
 
-    private boolean isWindowEmpty(List<String> windowValue) {
+    private boolean isWindowNotEmpty(List<String> windowValue) {
         return !getWindowPeriod(windowValue).equals(new Period());
     }
 
