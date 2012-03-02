@@ -10,13 +10,15 @@ import java.util.UUID;
 public class Appointment extends ExtensibleDataObject {
 
     @JsonProperty
+    private String id;
+    @JsonProperty
+    private DateTime originalDueDate;
+    @JsonProperty
     private DateTime dueDate;
     @JsonProperty
     private DateTime confirmedDate;
     @JsonProperty
     private Reminder reminder;
-    @JsonProperty
-    private String id;
 
     public Appointment() {
         id = UUID.randomUUID().toString();
@@ -32,6 +34,16 @@ public class Appointment extends ExtensibleDataObject {
 
     public Appointment dueDate(DateTime dueDate) {
         this.dueDate = dueDate;
+        this.originalDueDate = dueDate;
+        return this;
+    }
+
+    public DateTime originalDueDate() {
+        return DateUtil.setTimeZone(originalDueDate);
+    }
+
+    public Appointment adjustDueDate(DateTime adjustedDueDate) {
+        this.dueDate = adjustedDueDate;
         return this;
     }
 

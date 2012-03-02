@@ -10,6 +10,8 @@ public class Visit extends ExtensibleDataObject {
     @JsonProperty
     private String name;
     @JsonProperty
+    private String typeOfVisit;
+    @JsonProperty
     private DateTime visitDate;
     @JsonProperty
     private boolean missed;
@@ -18,14 +20,21 @@ public class Visit extends ExtensibleDataObject {
     @JsonProperty
     private Reminder reminder;
 
-    private static final String WEEK_NUMBER = "weekNumber";
-
     public String name() {
         return name;
     }
 
     public Visit name(String name) {
-        this.name = name.toLowerCase();
+        this.name = name;
+        return this;
+    }
+
+    public String typeOfVisit() {
+        return typeOfVisit;
+    }
+
+    public Visit typeOfVisit(String typeOfVisit) {
+        this.typeOfVisit = typeOfVisit;
         return this;
     }
 
@@ -42,8 +51,8 @@ public class Visit extends ExtensibleDataObject {
         return missed;
     }
 
-    public Visit missed(boolean missed) {
-        this.missed = missed;
+    public Visit markAsMissed() {
+        missed = true;
         return this;
     }
 
@@ -74,13 +83,8 @@ public class Visit extends ExtensibleDataObject {
         return this;
     }
 
-    public Visit weekNumber(Integer weekNumber) {
-        addData(WEEK_NUMBER, weekNumber);
-        name("week" + weekNumber);
-        return this;
-    }
-
-    public Integer weekNumber() {
-        return (Integer) getData().get(WEEK_NUMBER);
+    public void confirmAppointment(DateTime appointmentConfirmationDate, Reminder visitReminder) {
+        appointment().confirmedDate(appointmentConfirmationDate);
+        reminder(visitReminder);
     }
 }

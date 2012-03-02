@@ -3,7 +3,6 @@ package org.motechproject.appointments.api.model;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import java.util.Date;
-import java.util.UUID;
 
 public class Reminder {
 
@@ -15,9 +14,6 @@ public class Reminder {
     private long intervalSeconds;
     @JsonProperty
     private int repeatCount;
-
-    public Reminder() {
-    }
 
     public Date startDate() {
         return startDate;

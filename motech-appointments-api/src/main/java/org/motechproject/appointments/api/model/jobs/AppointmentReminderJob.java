@@ -9,12 +9,12 @@ import org.motechproject.scheduler.MotechSchedulerService;
 import java.util.HashMap;
 import java.util.Map;
 
-public class VisitReminderJob extends CronSchedulableJob {
+public class AppointmentReminderJob extends CronSchedulableJob {
 
-    public static final String SUBJECT = EventKeys.VISIT_REMINDER_EVENT_SUBJECT;
+    public static final String SUBJECT = EventKeys.APPOINTMENT_REMINDER_EVENT_SUBJECT;
 
-    public VisitReminderJob(String externalId, Visit visit) {
-        super(createMotechEvent(externalId, visit), "0 0 0 ? * *", visit.reminder().startDate(), visit.reminder().endDate());
+    public AppointmentReminderJob(String externalId, Visit visit) {
+        super(createMotechEvent(externalId, visit), "0 0 0 ? * *", visit.appointmentReminder().startDate(), visit.appointmentReminder().endDate());
     }
 
     private static MotechEvent createMotechEvent(String externalId, Visit visit) {

@@ -6,7 +6,6 @@ import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.appointments.api.model.Visit;
 import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.util.DateUtil;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -17,7 +16,12 @@ public class VisitReminderJobTest {
 
     public VisitReminderJobTest() {
         visit = new Visit().appointment(new Appointment()).reminder(new Reminder()).name("visitName");
-        visitReminderJob = new VisitReminderJob("externalId", DateUtil.today().toDate(), visit);
+        visitReminderJob = new VisitReminderJob("externalId", visit);
+    }
+
+    @Test
+    public void shouldCreateMotechEventWithTheCorrectSubject() {
+        assertEquals("org.motechproject.appointments.api.Visit.Reminder", visitReminderJob.getMotechEvent().getSubject());
     }
 
     @Test

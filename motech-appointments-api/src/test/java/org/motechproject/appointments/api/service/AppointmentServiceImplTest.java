@@ -6,19 +6,20 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.motechproject.appointments.api.contract.AppointmentCalendarRequest;
-import org.motechproject.appointments.api.contract.ReminderConfiguration;
-import org.motechproject.appointments.api.contract.VisitRequest;
-import org.motechproject.appointments.api.contract.VisitResponse;
+import org.motechproject.appointments.api.contract.*;
 import org.motechproject.appointments.api.dao.AllAppointmentCalendars;
-import org.motechproject.appointments.api.dao.AllAppointmentReminderJobs;
-import org.motechproject.appointments.api.dao.AllVisitReminderJobs;
+import org.motechproject.appointments.api.dao.AllReminderJobs;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.AppointmentCalendar;
 import org.motechproject.appointments.api.model.Visit;
 import org.motechproject.util.DateUtil;
 
+import java.util.HashMap;
+import java.util.List;
+
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -27,146 +28,87 @@ public class AppointmentServiceImplTest {
 
     public static final int REMIND_FROM = 10;
     @Mock
-    private AllAppointmentReminderJobs allAppointmentReminderJobs;
-    @Mock
     private AllAppointmentCalendars allAppointmentCalendars;
     @Mock
-    private AllVisitReminderJobs allVisitReminderJobs;
+    private AllReminderJobs allReminderJobs;
 
-    AppointmentServiceImpl appointmentServiceImpl;
+    AppointmentService appointmentService;
 
     @Before
     public void setUp() {
         initMocks(this);
-        appointmentServiceImpl = new AppointmentServiceImpl(allAppointmentCalendars, allAppointmentReminderJobs, allVisitReminderJobs);
+        appointmentService = new AppointmentServiceImpl(allAppointmentCalendars, allReminderJobs);
     }
 
     @Test
-    public void shouldAddAnAppointmentCalender() {
+    public void shouldAddAnAppointmentCalender_AndCreateAppointmentReminderJobsForTheAppointments() {
         String externalId = "externalId";
         DateTime now = DateUtil.now();
-        VisitRequest baseline = new VisitRequest().setDueDate(now.plusWeeks(1));
-        VisitRequest week2Visit = new VisitRequest().setDueDate(now.plusWeeks(2)).setReminderConfiguration(new ReminderConfiguration());
-        VisitRequest week4Visit = new VisitRequest().setDueDate(now.plusWeeks(4)).setReminderConfiguration(new ReminderConfiguration());
+        CreateVisitRequest baseline = new CreateVisitRequest().setVisitName("baseline").setAppointmentDueDate(now.plusWeeks(1));
+        CreateVisitRequest week2CreateVisit = new CreateVisitRequest().setVisitName("week2").setAppointmentDueDate(now.plusWeeks(2))
+                .setAppointmentReminderConfiguration(new ReminderConfiguration());
+        CreateVisitRequest week4CreateVisit = new CreateVisitRequest().setVisitName("week4").setAppointmentDueDate(now.plusWeeks(4))
+                .setAppointmentReminderConfiguration(new ReminderConfiguration());
         AppointmentCalendarRequest appointmentCalendarRequest = new AppointmentCalendarRequest().setExternalId(externalId)
-                .addVisitRequest("baseline", baseline).addVisitRequest("week2", week2Visit).addVisitRequest("week4", week4Visit);
-
-        appointmentServiceImpl.addCalendar(appointmentCalendarRequest);
+                .addVisitRequest(baseline)
+                .addVisitRequest(week2CreateVisit)
+                .addVisitRequest(week4CreateVisit);
 
         ArgumentCaptor<AppointmentCalendar> appointmentCalendarArgumentCaptor = ArgumentCaptor.forClass(AppointmentCalendar.class);
+
+        appointmentService.addCalendar(appointmentCalendarRequest);
+
         verify(allAppointmentCalendars).saveAppointmentCalendar(appointmentCalendarArgumentCaptor.capture());
 
         AppointmentCalendar calendar = appointmentCalendarArgumentCaptor.getValue();
         assertEquals(externalId, calendar.externalId());
         assertEquals(3, calendar.visits().size());
-        assertEquals("week4", calendar.visits().get(0).name());
+        assertEquals("baseline", calendar.visits().get(0).name());
         assertEquals("week2", calendar.visits().get(1).name());
-        assertEquals("baseline", calendar.visits().get(2).name());
+        assertEquals("week4", calendar.visits().get(2).name());
 
-        verify(allAppointmentReminderJobs, times(2)).add(Matchers.<Appointment>any(), eq(externalId));
+        verify(allReminderJobs, times(3)).addAppointmentJob(eq(externalId), Matchers.<Visit>any());
     }
 
-    @Test
-    public void shouldUpdateVisit_OnAnAppointmentCalendar() {
-        String externalId = "externalId";
-        AppointmentCalendar appointmentCalendar = new AppointmentCalendar();
-        when(allAppointmentCalendars.findByExternalId(externalId)).thenReturn(appointmentCalendar);
-
-        DateTime updatedVisitDate = DateUtil.now().minusDays(2);
-        Visit updatedVisit = new Visit().name("baseline").visitDate(updatedVisitDate);
-        appointmentServiceImpl.updateVisit(updatedVisit, externalId);
-
-        ArgumentCaptor<AppointmentCalendar> appointmentCalendarArgumentCaptor = ArgumentCaptor.forClass(AppointmentCalendar.class);
-        verify(allAppointmentCalendars).saveAppointmentCalendar(appointmentCalendarArgumentCaptor.capture());
-        assertEquals(updatedVisit, appointmentCalendarArgumentCaptor.getValue().getVisit("baseline"));
-        assertEquals(updatedVisitDate, appointmentCalendarArgumentCaptor.getValue().getVisit("baseline").visitDate());
-    }
 
     @Test
     public void shouldRemoveAnAppointmentCalender() {
         AppointmentCalendar appointmentCalendar = new AppointmentCalendar();
         when(allAppointmentCalendars.findByExternalId("externalId")).thenReturn(appointmentCalendar);
-        appointmentServiceImpl.removeCalendar("externalId");
+
+        appointmentService.removeCalendar("externalId");
 
         verify(allAppointmentCalendars).remove(appointmentCalendar);
     }
 
     @Test
-    public void shouldUnscheduleAllReminders() {
-        AppointmentCalendar appointmentCalendar = new AppointmentCalendar().externalId("someExternalId");
+    public void removeCalendarShouldUnscheduleAllReminders() {
+        AppointmentCalendar appointmentCalendar = new AppointmentCalendar().externalId("externalId");
         when(allAppointmentCalendars.findByExternalId("externalId")).thenReturn(appointmentCalendar);
-        appointmentServiceImpl.removeCalendar("externalId");
 
-        verify(allAppointmentReminderJobs).remove("someExternalId");
+        appointmentService.removeCalendar("externalId");
+
+        verify(allReminderJobs).removeAll("externalId");
     }
 
     @Test
     public void shouldAddAVisit() {
-        AppointmentCalendar appointmentCalendar = new AppointmentCalendar();
         final String externalId = "externalId";
+        AppointmentCalendar appointmentCalendar = new AppointmentCalendar().externalId(externalId);
         final DateTime now = DateUtil.now();
         ReminderConfiguration reminderConfiguration = new ReminderConfiguration().setRemindFrom(REMIND_FROM).setIntervalCount(1).setIntervalUnit(ReminderConfiguration.IntervalUnit.HOURS).setRepeatCount(20);
+        CreateVisitRequest createVisitRequest = new CreateVisitRequest().setAppointmentDueDate(now).setAppointmentReminderConfiguration(reminderConfiguration);
         when(allAppointmentCalendars.findByExternalId(externalId)).thenReturn(appointmentCalendar);
 
-        VisitRequest visitRequest = new VisitRequest().setDueDate(now).setReminderConfiguration(reminderConfiguration);
-        String visitName = appointmentServiceImpl.addVisit(externalId, "visitName", visitRequest).name();
+        String visitName = appointmentService.addVisit(externalId, createVisitRequest).getName();
 
-        ArgumentCaptor<Appointment> appointmentCaptor = ArgumentCaptor.forClass(Appointment.class);
-        verify(allAppointmentReminderJobs).add(appointmentCaptor.capture(), eq(externalId));
+        ArgumentCaptor<Visit> visitCaptor = ArgumentCaptor.forClass(Visit.class);
+        verify(allReminderJobs).addAppointmentJob(eq(externalId), visitCaptor.capture());
         verify(allAppointmentCalendars).saveAppointmentCalendar(appointmentCalendar);
 
         assertEquals(visitName, visitName);
-        assertEquals(now, appointmentCaptor.getValue().dueDate());
-        assertEquals(now.toLocalDate().minusDays(REMIND_FROM).toDate(), appointmentCaptor.getValue().reminder().startDate());
-    }
-
-    @Test
-    public void shouldUpdateVisit() {
-        String externalId = "externalId";
-        String visitName = "visit";
-        DateTime now = DateUtil.now();
-
-        Visit visit = new Visit().name(visitName).appointment(new Appointment());
-        AppointmentCalendar appointmentCalendar = new AppointmentCalendar().addVisit(visit).externalId(externalId);
-        visit.appointment().confirmedDate(now.minusDays(10));
-
-        ReminderConfiguration visitReminderConfiguration = new ReminderConfiguration().setRemindFrom(REMIND_FROM).setIntervalCount(1).setIntervalUnit(ReminderConfiguration.IntervalUnit.HOURS).setRepeatCount(20);
-        ArgumentCaptor<AppointmentCalendar> appointmentCalendarArgumentCaptor = ArgumentCaptor.forClass(AppointmentCalendar.class);
-
-        when(allAppointmentCalendars.findByExternalId(externalId)).thenReturn(appointmentCalendar);
-
-        appointmentServiceImpl.confirmVisit(externalId, visitName, now, visitReminderConfiguration);
-
-        verify(allAppointmentCalendars).saveAppointmentCalendar(appointmentCalendarArgumentCaptor.capture());
-        assertEquals(externalId, appointmentCalendarArgumentCaptor.getValue().externalId());
-        assertEquals(visit, appointmentCalendarArgumentCaptor.getValue().getVisit(visitName));
-    }
-
-    @Test
-    public void shouldUnScheduleOldVisitReminderJob() {
-        String externalId = "externalId";
-        String visitName = "visit";
-        DateTime now = DateUtil.now();
-
-        Visit visit = new Visit().name(visitName).appointment(new Appointment());
-        AppointmentCalendar appointmentCalendar = new AppointmentCalendar().addVisit(visit).externalId(externalId);
-        visit.appointment().confirmedDate(now.minusDays(10));
-
-        when(allAppointmentCalendars.findByExternalId(externalId)).thenReturn(appointmentCalendar);
-
-        appointmentServiceImpl.confirmVisit(externalId, visitName, now, new ReminderConfiguration());
-
-        verify(allVisitReminderJobs).remove(externalId+visitName);
-    }
-
-    @Test
-    public void shouldNotScheduleAppointmentRemindersForRequestWithoutReminders() {
-        VisitRequest requestWithoutReminders = new VisitRequest().setReminderConfiguration(null);
-        AppointmentCalendar appointmentCalendar = mock(AppointmentCalendar.class);
-
-        when(allAppointmentCalendars.findByExternalId("externalId")).thenReturn(appointmentCalendar);
-        appointmentServiceImpl.addVisit("externalId", "visitName", requestWithoutReminders);
-        verifyZeroInteractions(allAppointmentReminderJobs);
+        assertEquals(now, visitCaptor.getValue().appointment().dueDate());
+        assertEquals(now.toLocalDate().minusDays(REMIND_FROM).toDate(), visitCaptor.getValue().appointment().reminder().startDate());
     }
 
     @Test
@@ -179,29 +121,121 @@ public class AppointmentServiceImplTest {
 
         when(allAppointmentCalendars.findByExternalId(externalId)).thenReturn(appointmentCalendar);
 
-        assertEquals(new VisitResponse(visit).name(), appointmentServiceImpl.findVisit(externalId, visitName).name());
+        assertEquals(visitName, appointmentService.findVisit(externalId, visitName).getName());
     }
 
     @Test
-    public void shouldScheduleVisitReminderJob() {
+    public void confirmAppointmentShould_SetAppointmentConfirmDate_CreateVisitReminder_RemoveAppointmentJobs_RescheduleVisitJobs() {
         String externalId = "externalId";
         String visitName = "visit";
         DateTime now = DateUtil.now();
 
         Visit visit = new Visit().name(visitName).appointment(new Appointment());
         AppointmentCalendar appointmentCalendar = new AppointmentCalendar().addVisit(visit).externalId(externalId);
+        ReminderConfiguration visitReminderConfiguration = new ReminderConfiguration().setRemindFrom(3);
+        ConfirmAppointmentRequest confirmAppointmentRequest = new ConfirmAppointmentRequest().setAppointmentConfirmDate(now)
+                .setExternalId(externalId)
+                .setVisitName(visitName)
+                .setVisitReminderConfiguration(visitReminderConfiguration);
 
         when(allAppointmentCalendars.findByExternalId(externalId)).thenReturn(appointmentCalendar);
 
-        appointmentServiceImpl.confirmVisit(externalId, visitName, now, new ReminderConfiguration());
+        appointmentService.confirmAppointment(confirmAppointmentRequest);
 
-        verify(allVisitReminderJobs).add(visit, externalId);
+        assertEquals(now, visit.appointment().confirmedDate());
+        assertNotNull(visit.reminder());
+        verify(allReminderJobs).removeAppointmentJob(externalId, visit);
+        verify(allReminderJobs).rescheduleVisitJob(externalId, visit);
     }
 
     @Test
-    public void shouldReturnAppointmentGivenId() {
-        Appointment appointment = new Appointment();
-        when(allAppointmentCalendars.findAppointmentById(appointment.id())).thenReturn(appointment);
-        assertEquals(appointment, appointmentServiceImpl.getAppointment(appointment.id()));
+    public void shouldGetAllVisitsForGivenExternalId() {
+        String externalId = "externalId";
+        String visit1Name = "visit1";
+        String visit2Name = "visit2";
+
+
+        Visit visit1 = new Visit().name(visit1Name).appointment(new Appointment());
+        Visit visit2 = new Visit().name(visit2Name).appointment(new Appointment());
+
+        AppointmentCalendar appointmentCalendar = new AppointmentCalendar().addVisit(visit1).addVisit(visit2).externalId(externalId);
+
+        when(allAppointmentCalendars.findByExternalId(externalId)).thenReturn(appointmentCalendar);
+
+        List<VisitResponse> allVisits = appointmentService.getAllVisits(externalId);
+
+        assertEquals(2, allVisits.size());
+        assertEquals(visit1Name, allVisits.get(0).getName());
+        assertEquals(visit2Name, allVisits.get(1).getName());
+    }
+
+    @Test
+    public void rescheduleAppointment_AdjustsAppointmentDueDate_ReschedulesAppointmentReminderJobs() {
+        String externalId = "externalId";
+        String visitName = "visit";
+        final DateTime now = DateUtil.now();
+        final DateTime adjustedDueDate = DateUtil.now().plusDays(2);
+        Visit visit = new Visit().name(visitName).appointment(new Appointment().dueDate(now));
+        AppointmentCalendar appointmentCalendar = new AppointmentCalendar().addVisit(visit).externalId(externalId);
+
+        when(allAppointmentCalendars.findByExternalId(externalId)).thenReturn(appointmentCalendar);
+
+        appointmentService.rescheduleAppointment(externalId, visitName, adjustedDueDate);
+
+        assertEquals(adjustedDueDate, visit.appointment().dueDate());
+
+        verify(allReminderJobs).rescheduleAppointmentJob(externalId, visit);
+        verify(allAppointmentCalendars).saveAppointmentCalendar(appointmentCalendar);
+    }
+
+    @Test
+    public void visiting_setsVisitDate_RemovesVisitReminderJob() {
+        String externalId = "externalId";
+        String visitName = "visit";
+        final DateTime visitedDate = DateUtil.now();
+        Visit visit = new Visit().name(visitName).appointment(new Appointment());
+        AppointmentCalendar appointmentCalendar = new AppointmentCalendar().addVisit(visit).externalId(externalId);
+
+        when(allAppointmentCalendars.findByExternalId(externalId)).thenReturn(appointmentCalendar);
+
+        appointmentService.visited(externalId, visitName, visitedDate);
+
+        assertEquals(visitedDate, visit.visitDate());
+        verify(allReminderJobs).removeVisitJob(externalId, visit);
+        verify(allAppointmentCalendars).saveAppointmentCalendar(appointmentCalendar);
+    }
+
+    @Test
+    public void markingVisitAsMissed_MarksVisitAsMissed_RemovesAllAppointmentAndReminderJobs() {
+        String externalId = "externalId";
+        String visitName = "visit";
+        Visit visit = new Visit().name(visitName).appointment(new Appointment());
+        AppointmentCalendar appointmentCalendar = new AppointmentCalendar().addVisit(visit).externalId(externalId);
+
+        when(allAppointmentCalendars.findByExternalId(externalId)).thenReturn(appointmentCalendar);
+
+        appointmentService.markVisitAsMissed(externalId, visitName);
+
+        assertTrue(visit.missed());
+        verify(allReminderJobs).removeAll(externalId);
+        verify(allAppointmentCalendars).saveAppointmentCalendar(appointmentCalendar);
+    }
+
+    @Test
+    public void addingCustomDataToVisit_SetsDataOnDataMap(){
+        String externalId = "externalId";
+        String visitName = "visit";
+        Visit visit = new Visit().name(visitName).appointment(new Appointment());
+        AppointmentCalendar appointmentCalendar = new AppointmentCalendar().addVisit(visit).externalId(externalId);
+        HashMap<String, Object> dataMap = new HashMap<String, Object>() {{
+            put("key", "value");
+        }};
+
+        when(allAppointmentCalendars.findByExternalId(externalId)).thenReturn(appointmentCalendar);
+
+        appointmentService.addCustomDataToVisit(externalId, visitName, dataMap);
+
+        assertEquals(dataMap, visit.getData());
+        verify(allAppointmentCalendars).saveAppointmentCalendar(appointmentCalendar);
     }
 }

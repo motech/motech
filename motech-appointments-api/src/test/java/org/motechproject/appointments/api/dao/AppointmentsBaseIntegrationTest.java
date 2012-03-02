@@ -49,5 +49,4 @@ public class AppointmentsBaseIntegrationTest {
     protected String unique(String name) {
         return name + DateUtil.now().toInstant().getMillis();
     }
-
 }

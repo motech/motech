@@ -1,12 +1,12 @@
 package org.motechproject.appointments.api.contract;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AppointmentCalendarRequest {
 
     private String externalId;
-    private Map<String, VisitRequest> visitRequests = new HashMap<String, VisitRequest>();
+    private List<CreateVisitRequest> createVisitRequests = new ArrayList<CreateVisitRequest>();
 
     public String getExternalId() {
         return externalId;
@@ -17,17 +17,17 @@ public class AppointmentCalendarRequest {
         return this;
     }
 
-    public Map<String, VisitRequest> getVisitRequests() {
-        return visitRequests;
+    public List<CreateVisitRequest> getCreateVisitRequests() {
+        return createVisitRequests;
     }
 
-    public AppointmentCalendarRequest setVisitRequests(Map<String, VisitRequest> visitRequests) {
-        this.visitRequests = visitRequests;
+    public AppointmentCalendarRequest setCreateVisitRequests(List<CreateVisitRequest> createVisitRequests) {
+        this.createVisitRequests = createVisitRequests;
         return this;
     }
 
-    public AppointmentCalendarRequest addVisitRequest(String name, VisitRequest visitRequest) {
-        this.visitRequests.put(name, visitRequest);
+    public AppointmentCalendarRequest addVisitRequest(CreateVisitRequest createVisitRequest) {
+        this.createVisitRequests.add(createVisitRequest);
         return this;
     }
 }

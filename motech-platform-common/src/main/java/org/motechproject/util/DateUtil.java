@@ -45,6 +45,11 @@ public class DateUtil {
         return new LocalDate(date.getTime(), DateTimeSourceUtil.SourceInstance.timeZone());
     }
 
+    public static LocalDate newDate(DateTime dateTime) {
+        if (dateTime == null) return null;
+        return newDate(dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth());
+    }
+
     public static int daysPast(LocalDate date, DayOfWeek dayOfWeek) {
         int count = 0;
         while (date.getDayOfWeek() != dayOfWeek.getValue()) {

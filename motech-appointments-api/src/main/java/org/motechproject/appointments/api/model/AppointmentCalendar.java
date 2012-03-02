@@ -16,9 +16,6 @@ public class AppointmentCalendar extends MotechBaseDataObject {
     @JsonProperty
     private List<Visit> visits = new ArrayList<Visit>();
 
-    public AppointmentCalendar() {
-    }
-
     public String externalId() {
         return externalId;
     }
@@ -44,11 +41,5 @@ public class AppointmentCalendar extends MotechBaseDataObject {
     public AppointmentCalendar addVisit(Visit visit) {
         visits.add(visit);
         return this;
-    }
-
-    public void updateVisit(Visit updatedVisit) {
-        Visit existingVisit = getVisit(updatedVisit.name());
-        visits.remove(existingVisit);
-        visits.add(updatedVisit);
     }
 }

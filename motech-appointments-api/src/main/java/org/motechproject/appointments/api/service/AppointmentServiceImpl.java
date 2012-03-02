@@ -1,109 +1,120 @@
 package org.motechproject.appointments.api.service;
 
 import org.joda.time.DateTime;
-import org.motechproject.appointments.api.contract.AppointmentCalendarRequest;
-import org.motechproject.appointments.api.contract.ReminderConfiguration;
-import org.motechproject.appointments.api.contract.VisitRequest;
-import org.motechproject.appointments.api.contract.VisitResponse;
+import org.motechproject.appointments.api.contract.*;
 import org.motechproject.appointments.api.dao.AllAppointmentCalendars;
-import org.motechproject.appointments.api.dao.AllAppointmentReminderJobs;
-import org.motechproject.appointments.api.dao.AllVisitReminderJobs;
+import org.motechproject.appointments.api.dao.AllReminderJobs;
 import org.motechproject.appointments.api.mapper.ReminderMapper;
 import org.motechproject.appointments.api.mapper.VisitMapper;
-import org.motechproject.appointments.api.model.Appointment;
+import org.motechproject.appointments.api.mapper.VisitResponseMapper;
 import org.motechproject.appointments.api.model.AppointmentCalendar;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.appointments.api.model.Visit;
-import org.motechproject.appointments.api.model.jobs.VisitReminderJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
+import java.util.*;
 
 @Component
-public class AppointmentServiceImpl implements AppointmentService{
+public class AppointmentServiceImpl implements AppointmentService {
     private AllAppointmentCalendars allAppointmentCalendars;
-    private AllAppointmentReminderJobs allAppointmentReminderJobs;
-    private AllVisitReminderJobs allVisitReminderJobs;
+    private AllReminderJobs allReminderJobs;
 
     @Autowired
-    public AppointmentServiceImpl(AllAppointmentCalendars allAppointmentCalendars,
-                                  AllAppointmentReminderJobs allAppointmentReminderJobs,
-                                  AllVisitReminderJobs allVisitReminderJobs) {
+    public AppointmentServiceImpl(AllAppointmentCalendars allAppointmentCalendars, AllReminderJobs allReminderJobs) {
         this.allAppointmentCalendars = allAppointmentCalendars;
-        this.allAppointmentReminderJobs = allAppointmentReminderJobs;
-        this.allVisitReminderJobs = allVisitReminderJobs;
+        this.allReminderJobs = allReminderJobs;
     }
 
     public void addCalendar(AppointmentCalendarRequest appointmentCalendarRequest) {
         AppointmentCalendar appointmentCalendar = new AppointmentCalendar().externalId(appointmentCalendarRequest.getExternalId());
-        Map<String, VisitRequest> visits = appointmentCalendarRequest.getVisitRequests();
-        for (String visitName : visits.keySet()) {
-            VisitRequest visitRequest = visits.get(visitName);
-            Visit visit = new VisitMapper().map(visitName, visitRequest);
-            appointmentCalendar.addVisit(visit);
-            if (visit.appointment() != null)
-                allAppointmentReminderJobs.add(visit.appointment(), appointmentCalendarRequest.getExternalId());
-        }
-        allAppointmentCalendars.saveAppointmentCalendar(appointmentCalendar);
+        addVisits(appointmentCalendar, appointmentCalendarRequest.getCreateVisitRequests());
     }
 
     public void removeCalendar(String externalId) {
         AppointmentCalendar appointmentCalendar = allAppointmentCalendars.findByExternalId(externalId);
         if (appointmentCalendar != null) {
-            allAppointmentReminderJobs.remove(appointmentCalendar.externalId());
             allAppointmentCalendars.remove(appointmentCalendar);
         }
+        allReminderJobs.removeAll(externalId);
     }
 
-    public void updateVisit(Visit visit, String externalId) {
+    public VisitResponse addVisit(String externalId, CreateVisitRequest createVisitRequest) {
         AppointmentCalendar appointmentCalendar = getAppointmentCalendar(externalId);
-        appointmentCalendar.updateVisit(visit);
-        allAppointmentCalendars.saveAppointmentCalendar(appointmentCalendar);
-    }
-
-    public AppointmentCalendar getAppointmentCalendar(String externalId) {
-        return allAppointmentCalendars.findByExternalId(externalId);
-    }
-
-    public VisitResponse addVisit(String externalId, String visitName, VisitRequest visitRequest) {
-        AppointmentCalendar appointmentCalendar = allAppointmentCalendars.findByExternalId(externalId);
-        Visit visit = new VisitMapper().map(visitName, visitRequest);
-        appointmentCalendar.addVisit(visit);
-        if (visit.appointment() != null) {
-            allAppointmentReminderJobs.add(visit.appointment(), externalId);
-        }
-        allAppointmentCalendars.saveAppointmentCalendar(appointmentCalendar);
-        return new VisitResponse(visit);
-    }
-
-    public Appointment getAppointment(String appointmentId) {
-        return allAppointmentCalendars.findAppointmentById(appointmentId);
+        List<VisitResponse> visitResponses = addVisits(appointmentCalendar, Arrays.asList(createVisitRequest));
+        return visitResponses.get(0);
     }
 
     public VisitResponse findVisit(String externalId, String visitName) {
         AppointmentCalendar appointmentCalendar = getAppointmentCalendar(externalId);
-        return new VisitResponse(appointmentCalendar.getVisit(visitName));
+        Visit visit = appointmentCalendar.getVisit(visitName);
+        return new VisitResponseMapper().map(visit);
     }
 
-    public void confirmVisit(String externalId, String clinicVisitId, DateTime confirmedVisitDate, ReminderConfiguration visitReminderConfiguration) {
+    public List<VisitResponse> getAllVisits(String externalId) {
         AppointmentCalendar appointmentCalendar = getAppointmentCalendar(externalId);
-        Visit visit = appointmentCalendar.getVisit(clinicVisitId);
-        if (visit.appointment().confirmedDate() != null) {
-            allVisitReminderJobs.remove(VisitReminderJob.getJobIdUsing(visit, externalId));
+        if (appointmentCalendar == null) return new ArrayList<VisitResponse>();
+        List<VisitResponse> visitResponses = new ArrayList<VisitResponse>();
+        for (Visit visit : appointmentCalendar.visits()) {
+            visitResponses.add(new VisitResponseMapper().map(visit));
         }
-        visit.appointment().confirmedDate(confirmedVisitDate);
-        Reminder visitReminder = new ReminderMapper().map(confirmedVisitDate, visitReminderConfiguration);
-        visit.reminder(visitReminder);
-        allVisitReminderJobs.add(visit, externalId);
-        updateVisit(visit, externalId);
+        return visitResponses;
     }
 
-    public void setVisitDate(String externalId, String visitId, DateTime visitDate) {
+    public void addCustomDataToVisit(String externalId, String visitName, Map<String, Object> data) {
         AppointmentCalendar appointmentCalendar = getAppointmentCalendar(externalId);
-        Visit visit = appointmentCalendar.getVisit(visitId);
-        allVisitReminderJobs.remove(VisitReminderJob.getJobIdUsing(visit, externalId));
-        visit.visitDate(visitDate);
-        updateVisit(visit, externalId);
+        Visit visit = appointmentCalendar.getVisit(visitName);
+        visit.addData(data);
+        allAppointmentCalendars.saveAppointmentCalendar(appointmentCalendar);
+    }
+
+    public void rescheduleAppointment(String externalId, String visitName, DateTime adjustedDueDate) {
+        AppointmentCalendar appointmentCalendar = getAppointmentCalendar(externalId);
+        Visit visit = appointmentCalendar.getVisit(visitName);
+        visit.appointment().adjustDueDate(adjustedDueDate);
+        allReminderJobs.rescheduleAppointmentJob(externalId, visit);
+        allAppointmentCalendars.saveAppointmentCalendar(appointmentCalendar);
+    }
+
+    public void confirmAppointment(ConfirmAppointmentRequest request) {
+        AppointmentCalendar appointmentCalendar = getAppointmentCalendar(request.getExternalId());
+        Visit visit = appointmentCalendar.getVisit(request.getVisitName());
+        Reminder visitReminder = new ReminderMapper().map(request.getAppointmentConfirmDate(), request.getVisitReminderConfiguration());
+        visit.confirmAppointment(request.getAppointmentConfirmDate(), visitReminder);
+        allReminderJobs.removeAppointmentJob(request.getExternalId(), visit);
+        allReminderJobs.rescheduleVisitJob(request.getExternalId(), visit);
+        allAppointmentCalendars.saveAppointmentCalendar(appointmentCalendar);
+    }
+
+    public void visited(String externalId, String visitName, DateTime visitedDate) {
+        AppointmentCalendar appointmentCalendar = getAppointmentCalendar(externalId);
+        Visit visit = appointmentCalendar.getVisit(visitName);
+        visit.visitDate(visitedDate);
+        allReminderJobs.removeVisitJob(externalId, visit);
+        allAppointmentCalendars.saveAppointmentCalendar(appointmentCalendar);
+    }
+
+    public void markVisitAsMissed(String externalId, String visitName) {
+        AppointmentCalendar appointmentCalendar = getAppointmentCalendar(externalId);
+        Visit visit = appointmentCalendar.getVisit(visitName);
+        visit.markAsMissed();
+        allReminderJobs.removeAll(externalId);
+        allAppointmentCalendars.saveAppointmentCalendar(appointmentCalendar);
+    }
+
+    private AppointmentCalendar getAppointmentCalendar(String externalId) {
+        return allAppointmentCalendars.findByExternalId(externalId);
+    }
+
+    private List<VisitResponse> addVisits(AppointmentCalendar appointmentCalendar, List<CreateVisitRequest> createVisitRequests) {
+        List<VisitResponse> visitResponses = new ArrayList<VisitResponse>();
+        for (CreateVisitRequest createVisitRequest : createVisitRequests) {
+            Visit visit = new VisitMapper().map(createVisitRequest);
+            visitResponses.add(new VisitResponseMapper().map(visit));
+            appointmentCalendar.addVisit(visit);
+            allReminderJobs.addAppointmentJob(appointmentCalendar.externalId(), visit);
+        }
+        allAppointmentCalendars.saveAppointmentCalendar(appointmentCalendar);
+        return visitResponses;
     }
 }
