@@ -80,23 +80,6 @@ public class EnrollmentTest {
     }
 
     @Test
-    public void shouldReturnReferenceDateWhenCurrentMilestoneIsTheFirstMilestone() {
-        String firstMilestoneName = "First Shot";
-        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", firstMilestoneName, weeksAgo(5), weeksAgo(3), new Time(8, 20), EnrollmentStatus.Active);
-
-        assertEquals(weeksAgo(5), enrollment.getCurrentMilestoneStartDate(firstMilestoneName));
-    }
-
-    @Test
-    public void shouldReturnEnrollmentDateWhenEnrolledIntoSecondMilestoneAndNoMilestonesFulfilled() {
-        String firstMilestoneName = "First Shot";
-        String secondMilestoneName = "Second Shot";
-        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", secondMilestoneName, weeksAgo(5), weeksAgo(3), null, EnrollmentStatus.Active);
-
-        assertEquals(weeksAgo(3), enrollment.getCurrentMilestoneStartDate(firstMilestoneName));
-    }
-
-    @Test
     public void shouldFulfillCurrentMilestoneWithTheSpecifiedDate() {
         Enrollment enrollment = new Enrollment("externalId", "scheduleName", "currentMilestoneName", weeksAgo(1), weeksAgo(1), new Time(8, 10), EnrollmentStatus.Active);
 

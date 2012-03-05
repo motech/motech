@@ -33,7 +33,7 @@ public class EnrollmentAlertService {
             return;
 
         String firstMilestoneName = schedule.getFirstMilestone().getName();
-        DateTime currentMilestoneStartDate = enrollment.getCurrentMilestoneStartDate(firstMilestoneName);
+        DateTime currentMilestoneStartDate = getCurrentMilestoneStartDate(enrollment);
         for (MilestoneWindow milestoneWindow : currentMilestone.getMilestoneWindows()) {
             if (currentMilestone.windowElapsed(milestoneWindow.getName(), currentMilestoneStartDate))
                 continue;
@@ -42,6 +42,14 @@ public class EnrollmentAlertService {
             for (Alert alert : milestoneWindow.getAlerts())
                 scheduleAlertJob(alert, enrollment, currentMilestone, milestoneWindow, milestoneAlert, currentMilestoneStartDate);
         }
+    }
+
+    // duplicated and tested in enrollment service!
+    private DateTime getCurrentMilestoneStartDate(Enrollment enrollment) {
+        Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
+        if (enrollment.getCurrentMilestoneName().equals(schedule.getFirstMilestone().getName()))
+            return enrollment.getReferenceDateTime();
+        return (enrollment.getFulfillments().isEmpty()) ? enrollment.getEnrollmentDateTime() : enrollment.lastFulfilledDate();
     }
 
     private void scheduleAlertJob(Alert alert, Enrollment enrollment, Milestone currentMilestone, MilestoneWindow milestoneWindow, MilestoneAlert milestoneAlert, DateTime currentMilestoneStartDate) {

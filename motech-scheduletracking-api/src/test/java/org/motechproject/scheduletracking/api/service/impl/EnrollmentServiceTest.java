@@ -223,4 +223,27 @@ public class EnrollmentServiceTest {
         verify(enrollmentAlertService).unscheduleAllAlerts(enrollment);
         verify(enrollmentDefaultmentService).unscheduleDefaultmentCaptureJob(enrollment);
     }
+
+    @Test
+    public void shouldReturnReferenceDateWhenCurrentMilestoneIsTheFirstMilestone() {
+        Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(milestone);
+        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
+
+        Enrollment enrollment = new Enrollment("ID-074285", "my_schedule", "milestone", weeksAgo(5), weeksAgo(3), new Time(8, 20), EnrollmentStatus.Active);
+        assertEquals(weeksAgo(5), enrollmentService.getCurrentMilestoneStartDate(enrollment));
+    }
+
+    @Test
+    public void shouldReturnEnrollmentDateWhenEnrolledIntoSecondMilestoneAndNoMilestonesFulfilled() {
+        Milestone firstMilestone = new Milestone("first_milestone", weeks(1), weeks(1), weeks(1), weeks(1));
+        Milestone secondMilestone = new Milestone("second_milestone", weeks(1), weeks(1), weeks(1), weeks(1));
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(firstMilestone, secondMilestone);
+        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
+
+        Enrollment enrollment = new Enrollment("ID-074285", "my_schedule", "second_milestone", weeksAgo(5), weeksAgo(3), null, EnrollmentStatus.Active);
+        assertEquals(weeksAgo(3), enrollmentService.getCurrentMilestoneStartDate(enrollment));
+    }
 }

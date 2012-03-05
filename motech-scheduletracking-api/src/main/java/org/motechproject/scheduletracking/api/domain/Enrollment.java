@@ -118,12 +118,6 @@ public class Enrollment extends MotechBaseDataObject {
         this.type = type;
     }
 
-    public DateTime getCurrentMilestoneStartDate(String firstMilestoneNameFromSchedule) {
-        if (currentMilestoneName.equals(firstMilestoneNameFromSchedule))
-            return referenceDateTime;
-        return (fulfillments.isEmpty()) ? enrollmentDateTime : lastFulfilledDate();
-    }
-
     public void fulfillCurrentMilestone(DateTime fulfillmentDateTime) {
         fulfillments.add(new MilestoneFulfillment(currentMilestoneName, fulfillmentDateTime));
     }

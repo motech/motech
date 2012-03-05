@@ -12,6 +12,7 @@ import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.Milestone;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
+import org.motechproject.scheduletracking.api.service.impl.EnrollmentService;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -25,8 +26,11 @@ import static org.motechproject.util.DateUtil.today;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:testApplicationSchedulerTrackingAPI.xml")
 public class AllEnrollmentsIT {
+
     @Autowired
     private AllEnrollments allEnrollments;
+    @Autowired
+    private EnrollmentService enrollmentService;
 
     private Enrollment enrollment;
     private Milestone milestone;
@@ -73,6 +77,38 @@ public class AllEnrollmentsIT {
 
         Enrollment enrollmentFromDatabase = allEnrollments.getActiveEnrollment("entity_1", "schedule_name");
         assertEquals(fulfillmentDateTime, enrollmentFromDatabase.lastFulfilledDate());
+    }
+
+    @Test
+    public void shouldReturnTheMilestoneStartDateTimeInCorrectTimeZoneForFirstMilestone() {
+        DateTime now = DateTime.now();
+        enrollment = new Enrollment("entity_1", "IPTI Schedule", "IPTI 1", now.minusDays(2), now, new Time(now.toLocalTime()), EnrollmentStatus.Active);
+        allEnrollments.add(enrollment);
+
+        Enrollment enrollmentFromDatabase = allEnrollments.getActiveEnrollment("entity_1", "IPTI Schedule");
+        assertEquals(now.minusDays(2), enrollmentService.getCurrentMilestoneStartDate(enrollmentFromDatabase));
+    }
+
+    @Test
+    public void shouldReturnTheMilestoneStartDateTimeInCorrectTimeZoneForSecondMilestone() {
+        DateTime now = DateTime.now();
+        enrollment = new Enrollment("entity_1", "IPTI Schedule", "IPTI 1", now.minusDays(2), now, new Time(now.toLocalTime()), EnrollmentStatus.Active);
+        allEnrollments.add(enrollment);
+        enrollmentService.fulfillCurrentMilestone(enrollment, now);
+        allEnrollments.update(enrollment);
+
+        Enrollment enrollmentFromDatabase = allEnrollments.getActiveEnrollment("entity_1", "IPTI Schedule");
+        assertEquals(now, enrollmentService.getCurrentMilestoneStartDate(enrollmentFromDatabase));
+    }
+
+    @Test
+    public void shouldReturnTheMilestoneStartDateTimeInCorrectTimeZoneWhenEnrollingIntoSecondMilestone() {
+        DateTime now = DateTime.now();
+        enrollment = new Enrollment("entity_1", "IPTI Schedule", "IPTI 2", now.minusDays(2), now, new Time(now.toLocalTime()), EnrollmentStatus.Active);
+        allEnrollments.add(enrollment);
+
+        Enrollment enrollmentFromDatabase = allEnrollments.getActiveEnrollment("entity_1", "IPTI Schedule");
+        assertEquals(now, enrollmentService.getCurrentMilestoneStartDate(enrollmentFromDatabase));
     }
 
     @Test

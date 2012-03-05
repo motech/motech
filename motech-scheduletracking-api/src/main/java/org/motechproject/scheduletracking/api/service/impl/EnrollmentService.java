@@ -17,6 +17,7 @@ import static org.motechproject.util.StringUtil.isNullOrEmpty;
 
 @Component
 public class EnrollmentService {
+
     private AllTrackedSchedules allTrackedSchedules;
     private AllEnrollments allEnrollments;
     private EnrollmentAlertService enrollmentAlertService;
@@ -65,6 +66,14 @@ public class EnrollmentService {
         unscheduleJobs(enrollment);
         enrollment.setStatus(Unenrolled);
         allEnrollments.update(enrollment);
+    }
+
+    // TODO: duplicated in alert and defaultment serviecs as well; tested here though
+    public DateTime getCurrentMilestoneStartDate(Enrollment enrollment) {
+        Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
+        if (enrollment.getCurrentMilestoneName().equals(schedule.getFirstMilestone().getName()))
+            return enrollment.getReferenceDateTime();
+        return (enrollment.getFulfillments().isEmpty()) ? enrollment.getEnrollmentDateTime() : enrollment.lastFulfilledDate();
     }
 
     private void scheduleJobs(Enrollment enrollment) {
