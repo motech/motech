@@ -46,7 +46,7 @@ public class DateUtilTest {
     @Test
     public void shouldReturnTheNumberOfYearsFromAGivenDate(){
         mockCurrentDate(new DateTime(2011, 9, 9, 9, 30, 0, 0));
-        assertEquals(getDifferenceOfDatesInYears(new Date(108, 12, 12)),2);
+        assertEquals(getDifferenceOfDatesInYears(new Date(108, 12, 12)), 2);
     }
 
     @Test
@@ -105,6 +105,18 @@ public class DateUtilTest {
     public void shouldReturnEndOfDayForGivenTime() {
         DateTime time = new DateTime(2010, 10, 10, 12, 22, 22, 223);
         assertEquals(new DateTime(2010, 10, 10, 23, 59, 59, 999), DateUtil.endOfDay(time.toDate()));
+    }
+
+    @Test
+    public void shouldReturnWhetherGivenDateTimeFallsUnderSpecifiedInclusiveRange() {
+        DateTime reference = new DateTime(2010, 10, 10, 12, 22, 22, 223);
+        assertTrue(DateUtil.inRange(reference, new DateTime(2010, 10, 9, 12, 22, 22, 223), new DateTime(2010, 10, 11, 12, 22, 22, 223)));
+        assertTrue(DateUtil.inRange(reference, new DateTime(2010, 10, 10, 12, 22, 22, 223), new DateTime(2010, 10, 11, 12, 22, 22, 223)));
+        assertTrue(DateUtil.inRange(reference, new DateTime(2010, 10, 9, 12, 22, 22, 223), new DateTime(2010, 10, 10, 12, 22, 22, 223)));
+        assertFalse(DateUtil.inRange(reference, new DateTime(2010, 10, 9, 12, 22, 22, 223), new DateTime(2010, 10, 10, 12, 22, 22, 222)));
+        assertFalse(DateUtil.inRange(reference, new DateTime(2010, 10, 10, 12, 22, 22, 224), new DateTime(2010, 10, 10, 12, 22, 22, 223)));
+        assertTrue(DateUtil.inRange(reference, new DateTime(2010, 10, 9, 12, 22, 22, 224), new DateTime(2010, 10, 10, 12, 22, 22, 223)));
+
     }
 
     private void mockCurrentDate(final DateTime currentDate) {

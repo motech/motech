@@ -42,6 +42,7 @@ public class ScheduleTest {
         assertEquals(weeks(9), schedule.getDuration());
     }
 
+    // TODO: might be failing randomly
     @Test
     public void shouldReturnTrueIfScheduleDurationHasAlreadyExpired() {
         Milestone secondMilestone = new Milestone("Second Shot", weeks(1), weeks(1), weeks(1), weeks(1));

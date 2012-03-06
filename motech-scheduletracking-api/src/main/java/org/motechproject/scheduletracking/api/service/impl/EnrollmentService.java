@@ -1,10 +1,9 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
 import org.joda.time.DateTime;
+import org.joda.time.Period;
 import org.motechproject.model.Time;
-import org.motechproject.scheduletracking.api.domain.Enrollment;
-import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
-import org.motechproject.scheduletracking.api.domain.Schedule;
+import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.domain.exception.NoMoreMilestonesToFulfillException;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.Completed;
 import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.Unenrolled;
+import static org.motechproject.util.DateUtil.now;
 import static org.motechproject.util.StringUtil.isNullOrEmpty;
 
 @Component
@@ -73,7 +73,40 @@ public class EnrollmentService {
         Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
         if (enrollment.getCurrentMilestoneName().equals(schedule.getFirstMilestone().getName()))
             return enrollment.getReferenceDateTime();
-        return (enrollment.getFulfillments().isEmpty()) ? enrollment.getEnrollmentDateTime() : enrollment.lastFulfilledDate();
+        return (enrollment.getFulfillments().isEmpty()) ? enrollment.getEnrollmentDateTime() : enrollment.getLastFulfilledDate();
+    }
+
+    public WindowName getCurrentWindowAsOf(Enrollment enrollment, DateTime asOf) {
+        Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
+        DateTime milestoneStart = getCurrentMilestoneStartDate(enrollment);
+        Milestone milestone = schedule.getMilestone(enrollment.getCurrentMilestoneName());
+        for (MilestoneWindow window : milestone.getMilestoneWindows()) {
+            Period windowStart = milestone.getWindowStart(window.getName());
+            Period windowEnd = milestone.getWindowEnd(window.getName());
+            DateTime windowStartDateTime = milestoneStart.plus(windowStart);
+            DateTime windowEndDateTime = milestoneStart.plus(windowEnd);
+            if (inRange(asOf, windowStartDateTime, windowEndDateTime))
+                return window.getName();
+        }
+        return null;
+    }
+
+    public DateTime getStartOfWindowForCurrentMilestone(Enrollment enrollment, WindowName windowName) {
+        Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
+        DateTime currentMilestoneStartDate = getCurrentMilestoneStartDate(enrollment);
+        Milestone currentMilestone = schedule.getMilestone(enrollment.getCurrentMilestoneName());
+        return currentMilestoneStartDate.plus(currentMilestone.getWindowStart(windowName));
+    }
+
+    public DateTime getEndOfWindowForCurrentMilestone(Enrollment enrollment, WindowName windowName) {
+        Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
+        DateTime currentMilestoneStartDate = getCurrentMilestoneStartDate(enrollment);
+        Milestone currentMilestone = schedule.getMilestone(enrollment.getCurrentMilestoneName());
+        return currentMilestoneStartDate.plus(currentMilestone.getWindowEnd(windowName));
+    }
+
+    private boolean inRange(DateTime asOf, DateTime windowStartDateTime, DateTime windowEndDateTime) {
+        return (asOf.equals(windowStartDateTime) || asOf.isAfter(windowStartDateTime)) && asOf.isBefore(windowEndDateTime);
     }
 
     private void scheduleJobs(Enrollment enrollment) {

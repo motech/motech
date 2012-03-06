@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.service;
 
+import org.drools.base.StandardQueryViewChangedEventListener;
 import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
 
@@ -12,4 +13,6 @@ public interface ScheduleTrackingService {
     void fulfillCurrentMilestone(String externalId, String scheduleName, LocalDate fulfillmentDate, Time fulfillmentTime);
     void unenroll(String externalId, List<String> scheduleNames);
     EnrollmentResponse getEnrollment(String externalId, String scheduleName);
+
+//    List<String> findAllEntities(EnrollmentsQuery query);
 }

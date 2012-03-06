@@ -71,6 +71,10 @@ public class DateUtil {
         return firstDate.equals(secondDate) || firstDate.isAfter(secondDate);
     }
 
+    public static boolean inRange(DateTime reference, DateTime start, DateTime end) {
+        return (reference.equals(start) || reference.isAfter(start)) && (reference.equals(end) || reference.isBefore(end));
+    }
+
     public static int daysToCalendarWeekEnd(LocalDate date, int calendarWeekStartDay) {
         int currentDayOfWeek = date.get(DateTimeFieldType.dayOfWeek());
         int calendarWeekEndDay = (calendarWeekStartDay + 6) % 7;

@@ -21,7 +21,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.*;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
 import static org.motechproject.util.DateUtil.now;
-import static org.motechproject.util.DateUtil.today;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:testApplicationSchedulerTrackingAPI.xml")
@@ -76,7 +75,7 @@ public class AllEnrollmentsIT {
         allEnrollments.update(enrollment);
 
         Enrollment enrollmentFromDatabase = allEnrollments.getActiveEnrollment("entity_1", "schedule_name");
-        assertEquals(fulfillmentDateTime, enrollmentFromDatabase.lastFulfilledDate());
+        assertEquals(fulfillmentDateTime, enrollmentFromDatabase.getLastFulfilledDate());
     }
 
     @Test

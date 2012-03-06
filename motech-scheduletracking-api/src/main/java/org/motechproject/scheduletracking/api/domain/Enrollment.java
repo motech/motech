@@ -73,7 +73,8 @@ public class Enrollment extends MotechBaseDataObject {
         return fulfillments;
     }
 
-    public DateTime lastFulfilledDate() {
+    @JsonIgnore
+    public DateTime getLastFulfilledDate() {
         if (fulfillments.isEmpty())
             return null;
         return fulfillments.get(fulfillments.size() - 1).getFulfillmentDateTime();

@@ -10,7 +10,6 @@ import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksA
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
 import static org.motechproject.util.DateUtil.newDateTime;
 import static org.motechproject.util.DateUtil.now;
-import static org.motechproject.util.DateUtil.today;
 
 public class EnrollmentTest {
     @Test
@@ -43,7 +42,7 @@ public class EnrollmentTest {
         schedule.addMilestones(firstMilestone, secondMilestone);
         Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(5), weeksAgo(3), null, EnrollmentStatus.Active);
 
-        assertEquals(null, enrollment.lastFulfilledDate());
+        assertEquals(null, enrollment.getLastFulfilledDate());
     }
 
     @Test
@@ -55,7 +54,7 @@ public class EnrollmentTest {
         Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(5), weeksAgo(3), null, EnrollmentStatus.Active);
         enrollment.getFulfillments().add(new MilestoneFulfillment("First Shot", weeksAgo(0)));
 
-        assertEquals(weeksAgo(0), enrollment.lastFulfilledDate());
+        assertEquals(weeksAgo(0), enrollment.getLastFulfilledDate());
     }
 
     @Test
