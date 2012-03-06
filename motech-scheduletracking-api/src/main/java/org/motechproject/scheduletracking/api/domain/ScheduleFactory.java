@@ -82,6 +82,10 @@ public class ScheduleFactory {
                 .appendHours()
                 .appendSuffix(" hour", " hours")
                 .toParser());
+        parsers.add(new PeriodFormatterBuilder()
+                .appendMinutes()
+                .appendSuffix(" minute", " minutes")
+                .toParser());
     }
 
     private Period getWindowPeriod(List<String> readableValues) {
