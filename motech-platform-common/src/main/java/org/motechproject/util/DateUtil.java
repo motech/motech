@@ -40,6 +40,10 @@ public class DateUtil {
         return new DateTime(date.getTime(), DateTimeSourceUtil.SourceInstance.timeZone()).withMillisOfSecond(0);
     }
 
+    public static DateTime newDateTime(LocalDate date) {
+        return newDateTime(date, 0, 0, 0);
+    }
+
     public static LocalDate newDate(Date date) {
         if (date == null) return null;
         return new LocalDate(date.getTime(), DateTimeSourceUtil.SourceInstance.timeZone());
