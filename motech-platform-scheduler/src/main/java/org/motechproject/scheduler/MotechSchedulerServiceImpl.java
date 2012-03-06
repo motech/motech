@@ -8,8 +8,10 @@ import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.scheduler.domain.JobId;
 import org.motechproject.util.DateUtil;
+import org.motechproject.util.StringUtil;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
 import java.text.ParseException;
@@ -24,6 +26,12 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
     public static final String JOB_GROUP_NAME = "default";
     final int MAX_REPEAT_COUNT = 999999;
     private SchedulerFactoryBean schedulerFactoryBean;
+
+    @Value("#{quartzProperties['org.quartz.scheduler.cron.trigger.misfire.policy']}")
+    private String cronTriggerMisfirePolicy;
+
+    @Value("#{quartzProperties['org.quartz.scheduler.repeating.trigger.misfire.policy']}")
+    private String repeatingTriggerMisfirePolicy;
 
     private MotechSchedulerServiceImpl() {
     }
@@ -45,6 +53,9 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
 
         try {
             trigger = new CronTrigger(jobId.value(), JOB_GROUP_NAME, cronSchedulableJob.getCronExpression());
+
+            setMisfirePolicy(trigger, cronTriggerMisfirePolicy, Trigger.MISFIRE_INSTRUCTION_SMART_POLICY);
+
             Date startTime = cronSchedulableJob.getStartTime();
             Date endTime = cronSchedulableJob.getEndTime();
             if (startTime != null) {
@@ -76,6 +87,14 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         }
 
         scheduleJob(jobDetail, trigger);
+    }
+
+    private void setMisfirePolicy(Trigger trigger, String misfireInstruction, int defaultMisfireInstruction) {
+        if (StringUtil.isNullOrEmpty(cronTriggerMisfirePolicy)) {
+            trigger.setMisfireInstruction(Integer.valueOf(misfireInstruction));
+        } else {
+            trigger.setMisfireInstruction(defaultMisfireInstruction);
+        }
     }
 
     private MotechEvent assertCronJob(CronSchedulableJob cronSchedulableJob) {
@@ -206,8 +225,7 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         trigger = new SimpleTrigger(jobId.repeatingId(), JOB_GROUP_NAME, jobStartDate, jobEndDate,
                 jobRepeatCount,
                 jobRepeatInterval);
-        trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT);
-
+        setMisfirePolicy(trigger, repeatingTriggerMisfirePolicy, SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT);
         scheduleJob(jobDetail, trigger);
     }
 
