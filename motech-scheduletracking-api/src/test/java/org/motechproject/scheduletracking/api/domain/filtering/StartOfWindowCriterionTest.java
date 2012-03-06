@@ -3,7 +3,6 @@ package org.motechproject.scheduletracking.api.domain.filtering;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.WindowName;
@@ -15,7 +14,6 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.startsWith;
 import static org.mockito.Mockito.mock;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.util.DateUtil.newDateTime;
@@ -47,7 +45,7 @@ public class StartOfWindowCriterionTest {
 
         DateTime start = newDateTime(2012, 2, 3, 0, 0, 0);
         DateTime end = newDateTime(2012, 2, 5, 23, 59, 59);
-        List<Enrollment> filteredEnrollments = new StartOfWindowCriterion(WindowName.due, start, end, enrollmentService).filter(allEnrollments);
+        List<Enrollment> filteredEnrollments = new StartOfWindowCriterion(WindowName.due, start, end).filter(allEnrollments, enrollmentService);
         assertEquals(asList(enrollment1, enrollment2, enrollment3), filteredEnrollments);
     }
 }

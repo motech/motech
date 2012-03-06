@@ -14,5 +14,5 @@ public interface ScheduleTrackingService {
     void unenroll(String externalId, List<String> scheduleNames);
     EnrollmentResponse getEnrollment(String externalId, String scheduleName);
 
-//    List<String> findAllEntities(EnrollmentsQuery query);
+//    List<String> search(EnrollmentsQuery query);
 }

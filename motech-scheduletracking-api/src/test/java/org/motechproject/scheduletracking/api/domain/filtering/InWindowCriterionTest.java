@@ -12,8 +12,6 @@ import org.motechproject.scheduletracking.api.service.impl.EnrollmentService;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ch.lambdaj.Lambda.extract;
-import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.eq;
@@ -43,8 +41,8 @@ public class InWindowCriterionTest {
         when(enrollmentService.getCurrentWindowAsOf(eq(enrollment2), Matchers.<DateTime>any())).thenReturn(WindowName.due);
         when(enrollmentService.getCurrentWindowAsOf(eq(enrollment3), Matchers.<DateTime>any())).thenReturn(WindowName.earliest);
 
-        assertEquals(asList(enrollment1, enrollment3), new InWindowCriterion((asList(new WindowName[]{WindowName.earliest})), enrollmentService).filter(allEnrollments));
-        assertEquals(asList(enrollment2), new InWindowCriterion((asList(new WindowName[]{WindowName.due})), enrollmentService).filter(allEnrollments));
+        assertEquals(asList(enrollment1, enrollment3), new InWindowCriterion((asList(new WindowName[]{WindowName.earliest})), enrollmentService).filter(allEnrollments, enrollmentService));
+        assertEquals(asList(enrollment2), new InWindowCriterion((asList(new WindowName[]{WindowName.due})), enrollmentService).filter(allEnrollments, enrollmentService));
     }
 
     @Test
@@ -59,6 +57,6 @@ public class InWindowCriterionTest {
         when(enrollmentService.getCurrentWindowAsOf(eq(enrollment2), Matchers.<DateTime>any())).thenReturn(WindowName.due);
         when(enrollmentService.getCurrentWindowAsOf(eq(enrollment3), Matchers.<DateTime>any())).thenReturn(WindowName.late);
 
-        assertEquals(asList(enrollment1, enrollment3), new InWindowCriterion((asList(new WindowName[]{WindowName.earliest, WindowName.late})), enrollmentService).filter(allEnrollments));
+        assertEquals(asList(enrollment1, enrollment3), new InWindowCriterion((asList(new WindowName[]{WindowName.earliest, WindowName.late})), enrollmentService).filter(allEnrollments, enrollmentService));
     }
 }

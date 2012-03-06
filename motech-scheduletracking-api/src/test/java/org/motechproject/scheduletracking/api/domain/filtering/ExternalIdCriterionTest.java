@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.extract;
@@ -22,7 +21,7 @@ public class ExternalIdCriterionTest {
         allEnrollments.add(new Enrollment("oneMoreExternalId", null, null, null, null, null, null));
         allEnrollments.add(new Enrollment("someExternalId", null, null, null, null, null, null));
 
-        List<Enrollment> filteredEnrollments = new ExternalIdCriterion("someExternalId").filter(allEnrollments);
+        List<Enrollment> filteredEnrollments = new ExternalIdCriterion("someExternalId").filter(allEnrollments, null);
         assertEquals(asList(new String[]{"someExternalId", "someExternalId"}), extract(filteredEnrollments, on(Enrollment.class).getExternalId()));
     }
 }

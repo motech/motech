@@ -2,6 +2,7 @@ package org.motechproject.scheduletracking.api.domain.filtering;
 
 import ch.lambdaj.Lambda;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.scheduletracking.api.service.impl.EnrollmentService;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class ExternalIdCriterion implements Criterion {
     }
 
     @Override
-    public List<Enrollment> filter(List<Enrollment> enrollments) {
+    public List<Enrollment> filter(List<Enrollment> enrollments, EnrollmentService enrollmentService) {
         return Lambda.filter(having(on(Enrollment.class).getExternalId(), equalTo(externalId)), enrollments);
     }
 }

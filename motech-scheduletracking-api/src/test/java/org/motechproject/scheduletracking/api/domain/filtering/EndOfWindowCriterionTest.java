@@ -44,7 +44,7 @@ public class EndOfWindowCriterionTest {
 
         DateTime start = newDateTime(2012, 2, 3, 0, 0, 0);
         DateTime end = newDateTime(2012, 2, 5, 23, 59, 59);
-        List<Enrollment> filteredEnrollments = new EndOfWindowCriterion(WindowName.due, start, end, enrollmentService).filter(allEnrollments);
+        List<Enrollment> filteredEnrollments = new EndOfWindowCriterion(WindowName.due, start, end).filter(allEnrollments, enrollmentService);
         assertEquals(asList(enrollment1, enrollment2, enrollment3), filteredEnrollments);
     }
 }
