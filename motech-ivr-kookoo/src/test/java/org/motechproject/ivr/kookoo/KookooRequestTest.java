@@ -68,6 +68,13 @@ public class KookooRequestTest {
     }
 
     @Test
+    public void shouldRead_ExternalId_FromJsonString() {
+        String json = "{\"external_id\":\"1234\"}";
+        ivrRequest.setDataMap(json);
+        assertEquals("1234", ivrRequest.externalId());
+    }
+
+    @Test
     public void setDefaults_ThisIsToHandleScenariosWhenKooKooCallsWithoutAnyParameters() {
         ivrRequest = new KookooRequest();
         ivrRequest.setDefaults();

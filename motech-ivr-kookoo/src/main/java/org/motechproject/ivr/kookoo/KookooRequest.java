@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.motechproject.ivr.model.CallDirection;
 import org.motechproject.ivr.event.IVREvent;
+import org.motechproject.ivr.service.IVRService;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -91,6 +92,10 @@ public class KookooRequest {
 
     public CallDirection getCallDirection() {
         return dataMap != null && "true".equals(dataMap.get(KookooCallServiceImpl.IS_OUTBOUND_CALL)) ? CallDirection.Outbound : CallDirection.Inbound;
+    }
+
+    public String externalId() {
+        return dataMap == null ? null : dataMap.get(IVRService.EXTERNAL_ID) ;
     }
 
     public void setDataMap(String jsonDataMap) {
