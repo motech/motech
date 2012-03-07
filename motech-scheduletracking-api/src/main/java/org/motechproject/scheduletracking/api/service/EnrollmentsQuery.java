@@ -1,9 +1,9 @@
 package org.motechproject.scheduletracking.api.service;
 
 import org.joda.time.DateTime;
-import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.WindowName;
+import org.motechproject.scheduletracking.api.domain.exception.InvalidQueryException;
 import org.motechproject.scheduletracking.api.domain.filtering.*;
 
 import java.util.ArrayList;
@@ -50,8 +50,13 @@ public class EnrollmentsQuery {
 
     private List<EnrollmentStatus> toEnum(List<String> values) {
         List<EnrollmentStatus> statuses = new ArrayList<EnrollmentStatus>();
-        for (String value : values)
-            statuses.add(EnrollmentStatus.valueOf(value.toUpperCase()));
+        for (String value : values) {
+            try {
+                statuses.add(EnrollmentStatus.valueOf(value.toUpperCase()));
+            } catch (Exception e) {
+                throw new InvalidQueryException("Invalid enrollment status: " + value);
+            }
+        }
         return statuses;
     }
 
