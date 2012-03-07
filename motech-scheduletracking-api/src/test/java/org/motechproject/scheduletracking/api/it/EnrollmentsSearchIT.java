@@ -9,16 +9,17 @@ import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.WindowName;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
+import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
 import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
-import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.daysAgo;
@@ -54,8 +55,8 @@ public class EnrollmentsSearchIT {
         createEnrollment("entity_6", "Delivery", "Default", yearsAgo(1), now, new Time(6, 30), EnrollmentStatus.ACTIVE);
 
         EnrollmentsQuery query = new EnrollmentsQuery().havingSchedule("IPTI Schedule").currentlyInWindow(WindowName.late, WindowName.max).havingState("active");
-        List<String> result = scheduleTrackingService.findExternalIds(query);
-        assertEquals(asList(new String[]{ "entity_3", "entity_4" }), result);
+        List<EnrollmentRecord> result = scheduleTrackingService.search(query);
+        assertEquals(asList(new String[]{ "entity_3", "entity_4" }), extract(result, on(EnrollmentRecord.class).getExternalId()));
     }
 
     @Test
@@ -69,13 +70,13 @@ public class EnrollmentsSearchIT {
         createEnrollment("entity_6", "Delivery", "Default", weeksAgo(14), now, new Time(6, 30), EnrollmentStatus.ACTIVE);
 
         EnrollmentsQuery query = new EnrollmentsQuery().havingSchedule("IPTI Schedule").havingState("active").havingWindowStartingDuring(WindowName.due, weeksAgo(1), now);
-        List<String> result = scheduleTrackingService.findExternalIds(query);
-        assertEquals(asList(new String[]{ "entity_2", "entity_3" }), result);
+        List<EnrollmentRecord> result = scheduleTrackingService.search(query);
+        assertEquals(asList(new String[]{ "entity_2", "entity_3" }), extract(result, on(EnrollmentRecord.class).getExternalId()));
     }
 
     @Test
     public void shouldReturnExternalIdsOfActiveEnrollmentsThatAreCompletedDuringTheLastWeek() {
-        DateTime referenceDate = newDateTime(2012, 10, 1, 0, 0 ,0);
+        DateTime referenceDate = newDateTime(2012, 10, 1, 0, 0, 0);
         createEnrollment("entity_1", "IPTI Schedule", "IPTI 2", referenceDate, referenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE);
         scheduleTrackingService.fulfillCurrentMilestone("entity_1", "IPTI Schedule", newDate(2012, 10, 10));
         createEnrollment("entity_2", "IPTI Schedule", "IPTI 2", referenceDate, referenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE);
@@ -88,8 +89,27 @@ public class EnrollmentsSearchIT {
         createEnrollment("entity_6", "Delivery", "Default", referenceDate, referenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE);
 
         EnrollmentsQuery query = new EnrollmentsQuery().havingSchedule("IPTI Schedule").completedDuring(newDateTime(2012, 10, 9, 0, 0, 0), newDateTime(2012, 10, 15, 23, 59, 59));
-        List<String> result = scheduleTrackingService.findExternalIds(query);
-        assertEquals(asList(new String[]{ "entity_1", "entity_3" }), result);
+        List<EnrollmentRecord> result = scheduleTrackingService.search(query);
+        assertEquals(asList(new String[]{ "entity_1", "entity_3" }), extract(result, on(EnrollmentRecord.class).getExternalId()));
+    }
+
+    @Test
+    public void forAGivenEntityshouldReturnAllSchedulesWithDatesWhoseDueDateFallsInTheLastWeek() {
+        DateTime IptiReferenceDate = newDateTime(2012, 1, 1, 0, 0 ,0);
+        DateTime deliveryReferenceDateTime = newDateTime(2011, 7, 9, 0, 0 ,0);
+        createEnrollment("entity_1", "IPTI Schedule", "IPTI 1", IptiReferenceDate, IptiReferenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE);
+        createEnrollment("entity_1", "Delivery", "Default", deliveryReferenceDateTime, deliveryReferenceDateTime, new Time(6, 30), EnrollmentStatus.ACTIVE);
+        createEnrollment("entity_1", "IPTI Schedule", "IPTI 1", IptiReferenceDate, IptiReferenceDate, new Time(6, 30), EnrollmentStatus.DEFAULTED);
+        createEnrollment("entity_2", "IPTI Schedule", "IPTI 1", IptiReferenceDate, IptiReferenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE);
+
+        EnrollmentsQuery query = new EnrollmentsQuery()
+                                    .havingExternalId("entity_1")
+                                    .havingState("active")
+                                    .havingWindowStartingDuring(WindowName.due, newDateTime(2012, 4, 1, 0, 0, 0), newDateTime(2012, 4, 7, 23, 59, 59));
+
+        List<EnrollmentRecord> result = scheduleTrackingService.searchWithWindowDates(query);
+        assertEquals(asList(new String[]{ "IPTI Schedule", "Delivery" }), extract(result, on(EnrollmentRecord.class).getScheduleName()));
+        assertEquals(asList(new DateTime[]{ newDateTime(2012, 4, 1, 0, 0, 0), newDateTime(2012, 4, 7, 0, 0, 0)}), extract(result, on(EnrollmentRecord.class).getStartOfDueWindow()));
     }
 
     private Enrollment createEnrollment(String externalId, String scheduleName, String currentMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime, EnrollmentStatus enrollmentStatus) {
