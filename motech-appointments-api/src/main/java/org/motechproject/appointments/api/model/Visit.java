@@ -5,6 +5,8 @@ import org.joda.time.DateTime;
 import org.motechproject.model.ExtensibleDataObject;
 import org.motechproject.util.DateUtil;
 
+import java.util.List;
+
 public class Visit extends ExtensibleDataObject {
 
     @JsonProperty
@@ -78,8 +80,17 @@ public class Visit extends ExtensibleDataObject {
         return appointment == null ? null : appointment.reminder();
     }
 
+    public List<Reminder> appointmentReminders() {
+        return appointment == null ? null : appointment.reminders();
+    }
+
     public Visit addAppointment(DateTime dueDate, Reminder reminder) {
         this.appointment = new Appointment().dueDate(dueDate).reminder(reminder);
+        return this;
+    }
+
+    public Visit addAppointment(DateTime dueDate, List<Reminder> reminders) {
+        this.appointment = new Appointment().dueDate(dueDate).reminders(reminders);
         return this;
     }
 

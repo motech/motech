@@ -5,6 +5,8 @@ import org.joda.time.DateTime;
 import org.motechproject.model.ExtensibleDataObject;
 import org.motechproject.util.DateUtil;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class Appointment extends ExtensibleDataObject {
@@ -18,7 +20,7 @@ public class Appointment extends ExtensibleDataObject {
     @JsonProperty
     private DateTime confirmedDate;
     @JsonProperty
-    private Reminder reminder;
+    private List<Reminder> reminders;
 
     public Appointment() {
         id = UUID.randomUUID().toString();
@@ -57,11 +59,25 @@ public class Appointment extends ExtensibleDataObject {
     }
 
     public Reminder reminder() {
-        return reminder;
+        if (reminders != null && !reminders.isEmpty())
+            return reminders.get(0);
+        return null;
     }
 
     public Appointment reminder(Reminder reminder) {
-        this.reminder = reminder;
+        if(reminders == null) {
+            reminders = new ArrayList<Reminder>();
+        }
+        this.reminders.add(reminder);
         return this;
+    }
+    
+    public Appointment reminders(List<Reminder> reminders) {
+        this.reminders = reminders;
+        return this;
+    }
+
+    public List<Reminder> reminders() {
+        return reminders;
     }
 }

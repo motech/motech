@@ -5,6 +5,9 @@ import org.motechproject.appointments.api.contract.ReminderConfiguration;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.appointments.api.model.Visit;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class VisitMapper {
 
     public Visit map(CreateVisitRequest createVisitRequest) {
@@ -15,8 +18,14 @@ public class VisitMapper {
     }
 
     private void createAppointment(CreateVisitRequest createVisitRequest, Visit visit) {
-        ReminderConfiguration appointmentReminderConfiguration = createVisitRequest.getAppointmentReminderConfiguration();
-        Reminder appointmentReminder = appointmentReminderConfiguration == null ? null : new ReminderMapper().map(createVisitRequest.getAppointmentDueDate(), appointmentReminderConfiguration);
-        visit.addAppointment(createVisitRequest.getAppointmentDueDate(), appointmentReminder);
+        List<ReminderConfiguration> appointmentReminderConfigurations = createVisitRequest.getAppointmentReminderConfigurations();
+        List<Reminder> appointmentReminders = null;
+        if (appointmentReminderConfigurations != null) {
+            appointmentReminders = new ArrayList<Reminder>();
+            for (ReminderConfiguration appointmentReminderConfiguration : appointmentReminderConfigurations) {
+                appointmentReminders.add(new ReminderMapper().map(createVisitRequest.getAppointmentDueDate(), appointmentReminderConfiguration));
+            }
+        }
+        visit.addAppointment(createVisitRequest.getAppointmentDueDate(), appointmentReminders);
     }
 }

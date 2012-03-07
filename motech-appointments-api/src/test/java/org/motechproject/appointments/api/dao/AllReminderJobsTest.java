@@ -29,8 +29,8 @@ public class AllReminderJobsTest {
 
     public AllReminderJobsTest() {
         visit = new Visit().name("visit");
-        visit.appointment(new Appointment().reminder(reminderStartingToday()));
-        visit.reminder(reminderStartingToday());
+        visit.appointment(new Appointment().reminder(reminderStartingToday(2)).reminder(reminderStartingToday(4)));
+        visit.reminder(reminderStartingToday(2));
     }
 
     @Before
@@ -43,9 +43,13 @@ public class AllReminderJobsTest {
     public void shouldScheduleReminderJobForAnAppointment() {
         String externalId = "externalId";
 
-        AppointmentReminderJob expectedJobForAppointment = new AppointmentReminderJob(externalId, visit);
+        AppointmentReminderJob expectedJobForAppointment1 = new AppointmentReminderJob(externalId, AppointmentReminderJob.getJobIdUsing(externalId, visit.name(), 0),
+                visit.appointmentReminders().get(0), visit.name());
+        AppointmentReminderJob expectedJobForAppointment2 = new AppointmentReminderJob(externalId, AppointmentReminderJob.getJobIdUsing(externalId, visit.name(), 1),
+                visit.appointmentReminders().get(1), visit.name());
         allReminderJobs.addAppointmentJob(externalId, visit);
-        verify(schedulerService).safeScheduleJob(expectedJobForAppointment);
+        verify(schedulerService).safeScheduleJob(expectedJobForAppointment1);
+        verify(schedulerService).safeScheduleJob(expectedJobForAppointment2);
     }
 
     @Test
@@ -71,7 +75,8 @@ public class AllReminderJobsTest {
         String externalId = "externalId";
 
         allReminderJobs.removeAppointmentJob(externalId, visit);
-        verify(schedulerService).safeUnscheduleJob(AppointmentReminderJob.SUBJECT, externalId + "visit");
+        verify(schedulerService).safeUnscheduleJob(AppointmentReminderJob.SUBJECT, externalId + "visit0");
+        verify(schedulerService).safeUnscheduleJob(AppointmentReminderJob.SUBJECT, externalId + "visit1");
     }
 
     @Test
@@ -86,9 +91,10 @@ public class AllReminderJobsTest {
     public void shouldRescheduleReminderJobsForAnAppointment() {
         String externalId = "externalId";
 
-        AppointmentReminderJob expectedJobForAppointment = new AppointmentReminderJob(externalId, visit);
+        AppointmentReminderJob expectedJobForAppointment = new AppointmentReminderJob(externalId,
+                AppointmentReminderJob.getJobIdUsing(externalId, visit.name(), 0), visit.appointmentReminder(), visit.name());
         allReminderJobs.rescheduleAppointmentJob(externalId, visit);
-        verify(schedulerService).safeUnscheduleJob(AppointmentReminderJob.SUBJECT, externalId + "visit");
+        verify(schedulerService).safeUnscheduleJob(AppointmentReminderJob.SUBJECT, externalId + "visit0");
         verify(schedulerService).safeScheduleJob(expectedJobForAppointment);
     }
 
@@ -111,10 +117,10 @@ public class AllReminderJobsTest {
         verify(schedulerService).unscheduleAllJobs(VisitReminderJob.SUBJECT + externalId);
     }
 
-    private Reminder reminderStartingToday() {
+    private Reminder reminderStartingToday(int days) {
         final Reminder reminder = new Reminder();
         reminder.startDate(today.toDate());
-        reminder.endDate(today.plusDays(2).toDate());
+        reminder.endDate(today.plusDays(days).toDate());
         return reminder;
     }
 }

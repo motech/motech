@@ -1,11 +1,14 @@
 package org.motechproject.appointments.api.dao;
 
+import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.appointments.api.model.Visit;
 import org.motechproject.appointments.api.model.jobs.AppointmentReminderJob;
 import org.motechproject.appointments.api.model.jobs.VisitReminderJob;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class AllReminderJobs {
@@ -18,9 +21,12 @@ public class AllReminderJobs {
     }
 
     public void addAppointmentJob(String externalId, Visit visit) {
-        if (visit.appointmentReminder() == null) return;
-        AppointmentReminderJob appointmentReminderJob = new AppointmentReminderJob(externalId, visit);
-        schedulerService.safeScheduleJob(appointmentReminderJob);
+        List<Reminder> reminders = visit.appointmentReminders();
+        if (reminders == null) return;
+        for (int i = 0; i < reminders.size(); i++) {
+            schedulerService.safeScheduleJob(new AppointmentReminderJob(externalId,
+                    AppointmentReminderJob.getJobIdUsing(externalId, visit.name(), i), reminders.get(i), visit.name()));
+        }
     }
 
     public void addVisitJob(String externalId, Visit visit) {
@@ -30,7 +36,10 @@ public class AllReminderJobs {
     }
 
     public void removeAppointmentJob(String externalId, Visit visit) {
-        schedulerService.safeUnscheduleJob(AppointmentReminderJob.SUBJECT, AppointmentReminderJob.getJobIdUsing(externalId, visit));
+        List<Reminder> reminders = visit.appointmentReminders();
+        for (int i = 0; i < reminders.size(); i++) {
+            schedulerService.safeUnscheduleJob(AppointmentReminderJob.SUBJECT, AppointmentReminderJob.getJobIdUsing(externalId, visit.name(), i));
+        }
     }
 
     public void removeVisitJob(String externalId, Visit visit) {

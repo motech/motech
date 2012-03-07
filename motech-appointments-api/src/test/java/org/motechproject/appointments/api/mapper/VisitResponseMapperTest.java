@@ -3,12 +3,13 @@ package org.motechproject.appointments.api.mapper;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.motechproject.appointments.api.contract.VisitResponse;
+import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.appointments.api.model.Visit;
 import org.motechproject.util.DateUtil;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import java.util.Collections;
+
+import static junit.framework.Assert.*;
 
 public class VisitResponseMapperTest {
 
@@ -19,7 +20,8 @@ public class VisitResponseMapperTest {
         String typeOfVisit = "scheduled";
 
         Visit visit = new Visit();
-        visit.name(visitName).typeOfVisit(typeOfVisit).visitDate(now).markAsMissed().addAppointment(now, null).addData("key", "value");
+        visit.name(visitName).typeOfVisit(typeOfVisit).visitDate(now).markAsMissed()
+                .addAppointment(now, Collections.<Reminder>emptyList()).addData("key", "value");
 
         VisitResponse visitResponse = new VisitResponseMapper().map(visit);
 
