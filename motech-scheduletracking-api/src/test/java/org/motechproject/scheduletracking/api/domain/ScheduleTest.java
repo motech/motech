@@ -1,7 +1,6 @@
 package org.motechproject.scheduletracking.api.domain;
 
 import org.joda.time.DateTime;
-import org.junit.Assert;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertFalse;
@@ -54,8 +53,8 @@ public class ScheduleTest {
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
         schedule.addMilestones(firstMilestone, secondMilestone);
 
-        assertEquals(true, schedule.hasExpiredBy(now().minusWeeks(10)));
-        assertEquals(false, schedule.hasExpiredBy(now().minusWeeks(8)));
+        assertEquals(true, schedule.hasExpiredSince(now().minusWeeks(10)));
+        assertEquals(false, schedule.hasExpiredSince(now().minusWeeks(8)));
     }
 
     @Test
@@ -65,8 +64,8 @@ public class ScheduleTest {
         schedule.addMilestones(firstMilestone);
 
         DateTime now = now();
-        assertTrue(schedule.hasExpiredBy(now.minusHours(6)));
-        assertTrue(schedule.hasExpiredBy(now.minusHours(5)));
-        assertFalse(schedule.hasExpiredBy(now.minusHours(4)));
+        assertTrue(schedule.hasExpiredSince(now.minusHours(6)));
+        assertTrue(schedule.hasExpiredSince(now.minusHours(5).minusMinutes(1)));
+        assertFalse(schedule.hasExpiredSince(now.minusHours(4)));
     }
 }
