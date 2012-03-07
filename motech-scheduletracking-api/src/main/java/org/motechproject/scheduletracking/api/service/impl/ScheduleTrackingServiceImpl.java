@@ -10,12 +10,15 @@ import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
 import org.motechproject.scheduletracking.api.service.EnrollmentResponse;
+import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
 import static java.text.MessageFormat.format;
 import static org.motechproject.util.DateUtil.newDateTime;
 import static org.motechproject.util.DateUtil.today;
@@ -25,18 +28,25 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
     private AllTrackedSchedules allTrackedSchedules;
     private AllEnrollments allEnrollments;
     private EnrollmentService enrollmentService;
+    private EnrollmentsQueryService enrollmentsQueryService;
 
     @Autowired
-    public ScheduleTrackingServiceImpl(AllTrackedSchedules allTrackedSchedules, AllEnrollments allEnrollments, EnrollmentService enrollmentService) {
+    public ScheduleTrackingServiceImpl(AllTrackedSchedules allTrackedSchedules, AllEnrollments allEnrollments, EnrollmentService enrollmentService, EnrollmentsQueryService enrollmentsQueryService) {
         this.allTrackedSchedules = allTrackedSchedules;
         this.allEnrollments = allEnrollments;
         this.enrollmentService = enrollmentService;
+        this.enrollmentsQueryService = enrollmentsQueryService;
     }
 
     @Override
     public EnrollmentResponse getEnrollment(String externalId, String scheduleName) {
         Enrollment activeEnrollment = allEnrollments.getActiveEnrollment(externalId, scheduleName);
         return new EnrollmentResponseMapper().map(activeEnrollment);
+    }
+
+    @Override
+    public List<String> findExternalIds(EnrollmentsQuery query) {
+        return extract(enrollmentsQueryService.search(query), on(Enrollment.class).getExternalId());
     }
 
     @Override

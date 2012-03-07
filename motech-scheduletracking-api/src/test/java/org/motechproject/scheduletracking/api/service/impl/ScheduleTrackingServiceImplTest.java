@@ -13,10 +13,14 @@ import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
 import org.motechproject.scheduletracking.api.service.EnrollmentResponse;
+import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
-import org.motechproject.util.DateUtil;
-import java.util.Arrays;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -28,6 +32,7 @@ import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks
 import static org.motechproject.util.DateUtil.*;
 
 public class ScheduleTrackingServiceImplTest {
+
     @Mock
     private AllTrackedSchedules allTrackedSchedules;
     @Mock
@@ -36,10 +41,15 @@ public class ScheduleTrackingServiceImplTest {
     private AllEnrollments allEnrollments;
     @Mock
     private EnrollmentService enrollmentService;
+    @Mock
+    private EnrollmentsQueryService enrollmentsQueryService;
+    
+    private ScheduleTrackingService scheduleTrackingService;
 
     @Before
     public void setUp() {
         initMocks(this);
+        scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService, enrollmentsQueryService);
     }
 
     @Test
@@ -50,8 +60,6 @@ public class ScheduleTrackingServiceImplTest {
         Milestone firstMilestone = new Milestone("first_milestone", weeks(1), weeks(1), weeks(1), weeks(1));
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
-
-        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
 
         String externalId = "my_entity_1";
         DateTime referenceDateTime = now().minusDays(10);
@@ -70,8 +78,6 @@ public class ScheduleTrackingServiceImplTest {
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
 
-        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
-
         String externalId = "entity_1";
         Time preferredAlertTime = new Time(8, 10);
         DateTime referenceDateTime = newDateTime(2012, 11, 2, 0, 0, 0);
@@ -89,7 +95,6 @@ public class ScheduleTrackingServiceImplTest {
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
 
-        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
         String externalId = "entity_1";
         DateTime referenceDateTime = newDateTime(2012, 11, 2, 0, 0, 0);
         Time preferredAlertTime = new Time(8, 10);
@@ -105,8 +110,6 @@ public class ScheduleTrackingServiceImplTest {
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
-
-        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
 
         when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(null);
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2), null, null, null, null));
@@ -126,8 +129,6 @@ public class ScheduleTrackingServiceImplTest {
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
-
-        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
 
         when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(null);
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2), null, null, null, null));
@@ -149,8 +150,6 @@ public class ScheduleTrackingServiceImplTest {
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
 
-        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
-
         when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(null);
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2), null, null, null, null));
 
@@ -166,8 +165,6 @@ public class ScheduleTrackingServiceImplTest {
     public void shouldFailToFulfillCurrentMilestoneIfItIsNotFoundOrNotActive() {
         when(allEnrollments.getActiveEnrollment("WRONG-ID", "WRONG-NAME")).thenReturn(null);
 
-        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
-
         scheduleTrackingService.fulfillCurrentMilestone("WRONG-ID", "WRONG-NAME");
 
         verifyZeroInteractions(enrollmentService);
@@ -181,8 +178,6 @@ public class ScheduleTrackingServiceImplTest {
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
-
-        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
 
         String externalId = "entity_1";
         Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(4), weeksAgo(4), new Time(8, 10), EnrollmentStatus.Active);
@@ -208,8 +203,6 @@ public class ScheduleTrackingServiceImplTest {
         schedule2.addMilestones(milestone2);
         when(allTrackedSchedules.getByName(schedule2Name)).thenReturn(schedule2);
 
-        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
-
         String externalId = "entity_1";
         Enrollment enrollment1 = new Enrollment(externalId, schedule1Name, "milestone1", weeksAgo(4), weeksAgo(4), new Time(8, 10), EnrollmentStatus.Active);
         when(allEnrollments.getActiveEnrollment(externalId, schedule1Name)).thenReturn(enrollment1);
@@ -231,8 +224,6 @@ public class ScheduleTrackingServiceImplTest {
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
 
-        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
-
         when(allEnrollments.getActiveEnrollment("entity_1", scheduleName)).thenReturn(null);
         scheduleTrackingService.unenroll("entity_1", Arrays.asList(scheduleName));
     }
@@ -243,7 +234,7 @@ public class ScheduleTrackingServiceImplTest {
         String scheduleName = "schedule name";
         final Enrollment enrollment = new Enrollment(externalId, scheduleName, null, null, null, null, EnrollmentStatus.Active);
         when(allEnrollments.getActiveEnrollment(externalId, scheduleName)).thenReturn(enrollment);
-        final EnrollmentResponse response = new ScheduleTrackingServiceImpl(null, allEnrollments, null).getEnrollment(externalId, scheduleName);
+        final EnrollmentResponse response = scheduleTrackingService.getEnrollment(externalId, scheduleName);
         assertThat(response.getExternalId(), is(equalTo(externalId)));
     }
 
@@ -253,7 +244,15 @@ public class ScheduleTrackingServiceImplTest {
         String scheduleName = "scheduleName";
         when(allEnrollments.getActiveEnrollment(externalId, scheduleName)).thenReturn(null);
 
-        ScheduleTrackingService scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService);
         scheduleTrackingService.fulfillCurrentMilestone(externalId, scheduleName);
+    }
+
+    @Test
+    public void shouldReturnListOfExternalIdsForTheGivenQuery() {
+        EnrollmentsQuery enrollmentQuery = mock(EnrollmentsQuery.class);
+        List<Enrollment> enrollments = asList(new Enrollment[]{ new Enrollment("external_id_1", null, null, null, null, null, null),  new Enrollment("external_id_2", null, null, null, null, null, null)});
+        when(enrollmentsQueryService.search(enrollmentQuery)).thenReturn(enrollments);
+
+        assertEquals(asList(new String[]{"external_id_1", "external_id_2"}), scheduleTrackingService.findExternalIds(enrollmentQuery));
     }
 }
