@@ -1,14 +1,12 @@
 package org.motechproject.scheduletracking.api.events;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.events.constants.EventDataKeys;
 import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
-import org.motechproject.util.DateUtil;
 
 import java.util.Map;
 
@@ -45,7 +43,7 @@ public class MilestoneEventTest {
         MilestoneAlert milestoneAlert =  MilestoneAlert.fromMilestone(milestone, referenceDateTime);
 
         MilestoneWindow milestoneWindow = new MilestoneWindow(WindowName.due, weeks(1));
-        MilestoneEvent milestoneEvent = new  MilestoneEvent(new Enrollment(externalId, scheduleName, milestone.getName(), referenceDateTime, enrollmentDateTime, new Time(8, 10), EnrollmentStatus.Active), milestoneAlert, milestoneWindow);
+        MilestoneEvent milestoneEvent = new  MilestoneEvent(new Enrollment(externalId, scheduleName, milestone.getName(), referenceDateTime, enrollmentDateTime, new Time(8, 10), EnrollmentStatus.ACTIVE), milestoneAlert, milestoneWindow);
         MotechEvent motechEvent = milestoneEvent.toMotechEvent();
 
         assertEquals(EventSubjects.MILESTONE_ALERT, motechEvent.getSubject());

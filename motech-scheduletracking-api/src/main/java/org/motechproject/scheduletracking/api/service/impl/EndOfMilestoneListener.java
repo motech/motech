@@ -8,7 +8,7 @@ import org.motechproject.server.event.annotations.MotechListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.Defaulted;
+import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.DEFAULTED;
 import static org.motechproject.scheduletracking.api.events.constants.EventSubjects.DEFAULTMENT_CAPTURE;
 
 @Component
@@ -24,7 +24,7 @@ public class EndOfMilestoneListener {
     public void handle(MotechEvent motechEvent) {
         DefaultmentCaptureEvent event = new DefaultmentCaptureEvent(motechEvent);
         Enrollment enrollment = allEnrollments.get(event.getEnrollmentId());
-        enrollment.setStatus(Defaulted);
+        enrollment.setStatus(DEFAULTED);
         allEnrollments.update(enrollment);
     }
 }

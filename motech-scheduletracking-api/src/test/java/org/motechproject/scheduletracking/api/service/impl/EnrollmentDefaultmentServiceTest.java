@@ -1,7 +1,6 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -13,13 +12,11 @@ import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.events.DefaultmentCaptureEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
-import org.motechproject.util.DateUtil;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAfter;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.days;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
@@ -52,7 +49,7 @@ public class EnrollmentDefaultmentServiceTest {
         when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
         String externalId = "entity_1";
         DateTime now = now();
-        Enrollment enrollment = new Enrollment(externalId, scheduleName, milestone.getName(), now, now, new Time(8, 10), EnrollmentStatus.Active);
+        Enrollment enrollment = new Enrollment(externalId, scheduleName, milestone.getName(), now, now, new Time(8, 10), EnrollmentStatus.ACTIVE);
         enrollment.setId("enrollment_1");
 
         enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
@@ -78,7 +75,7 @@ public class EnrollmentDefaultmentServiceTest {
         String externalId = "entity_1";
         DateTime referenceDateTime = newDateTime(2012, 1, 1, 0, 0, 0).minusMonths(10);
         DateTime enrollmentDateTime = now();
-        Enrollment enrollment = new Enrollment(externalId, scheduleName, milestone.getName(), referenceDateTime, enrollmentDateTime, new Time(8, 10), EnrollmentStatus.Active);
+        Enrollment enrollment = new Enrollment(externalId, scheduleName, milestone.getName(), referenceDateTime, enrollmentDateTime, new Time(8, 10), EnrollmentStatus.ACTIVE);
         enrollment.setId("enrollment_1");
 
         enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
@@ -88,7 +85,7 @@ public class EnrollmentDefaultmentServiceTest {
 
     @Test
     public void shouldUnscheduleDefaultmentCaptureJob() {
-        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(0), weeksAgo(0), new Time(8, 10), EnrollmentStatus.Active);
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(0), weeksAgo(0), new Time(8, 10), EnrollmentStatus.ACTIVE);
         enrollment.setId("enrollment_1");
 
         enrollmentDefaultmentService.unscheduleDefaultmentCaptureJob(enrollment);

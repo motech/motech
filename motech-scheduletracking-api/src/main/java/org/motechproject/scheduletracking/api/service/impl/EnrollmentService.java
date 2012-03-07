@@ -10,9 +10,8 @@ import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.Completed;
-import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.Unenrolled;
-import static org.motechproject.util.DateUtil.now;
+import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.COMPLETED;
+import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.UNENROLLED;
 import static org.motechproject.util.StringUtil.isNullOrEmpty;
 
 @Component
@@ -33,9 +32,9 @@ public class EnrollmentService {
 
     public String enroll(String externalId, String scheduleName, String startingMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime) {
         Schedule schedule = allTrackedSchedules.getByName(scheduleName);
-        EnrollmentStatus enrollmentStatus = EnrollmentStatus.Active;
+        EnrollmentStatus enrollmentStatus = EnrollmentStatus.ACTIVE;
         if (schedule.hasExpiredBy(referenceDateTime))
-            enrollmentStatus = EnrollmentStatus.Defaulted;
+            enrollmentStatus = EnrollmentStatus.DEFAULTED;
 
         Enrollment enrollment = allEnrollments.addOrReplace(new Enrollment(externalId, scheduleName, startingMilestoneName, referenceDateTime, enrollmentDateTime, preferredAlertTime, enrollmentStatus));
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
@@ -55,7 +54,7 @@ public class EnrollmentService {
         String nextMilestoneName = schedule.getNextMilestoneName(enrollment.getCurrentMilestoneName());
         enrollment.setCurrentMilestoneName(nextMilestoneName);
         if (nextMilestoneName == null)
-            enrollment.setStatus(Completed);
+            enrollment.setStatus(COMPLETED);
         else
             scheduleJobs(enrollment);
 
@@ -64,7 +63,7 @@ public class EnrollmentService {
 
     public void unenroll(Enrollment enrollment) {
         unscheduleJobs(enrollment);
-        enrollment.setStatus(Unenrolled);
+        enrollment.setStatus(UNENROLLED);
         allEnrollments.update(enrollment);
     }
 

@@ -16,6 +16,10 @@ public final class DateTimeUtil {
         return now().minusWeeks(numberOfWeeks);
     }
 
+    public static DateTime yearsAgo(int numberOfYears) {
+        return now().minusYears(numberOfYears);
+    }
+
     public static DateTime daysAfter(int numberOfDays) {
         return now().plusDays(numberOfDays);
     }

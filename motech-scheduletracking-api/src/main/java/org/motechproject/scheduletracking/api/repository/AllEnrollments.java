@@ -21,7 +21,7 @@ public class AllEnrollments extends MotechBaseRepository<Enrollment> {
 
     @View(name = "find_active_by_external_id_and_schedule_name", map = "function(doc) {{emit([doc.externalId, doc.scheduleName, doc.status]);}}")
     public Enrollment getActiveEnrollment(String externalId, String scheduleName) {
-        List<Enrollment> enrollments = queryView("find_active_by_external_id_and_schedule_name", ComplexKey.of(externalId, scheduleName, EnrollmentStatus.Active.name()));
+        List<Enrollment> enrollments = queryView("find_active_by_external_id_and_schedule_name", ComplexKey.of(externalId, scheduleName, EnrollmentStatus.ACTIVE.name()));
         return enrollments.isEmpty() ? null : enrollments.get(0);
     }
 

@@ -1,11 +1,15 @@
 package org.motechproject.scheduletracking.api.service;
 
 import org.joda.time.DateTime;
+import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.WindowName;
 import org.motechproject.scheduletracking.api.domain.filtering.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.Arrays.asList;
 
 public class EnrollmentsQuery {
 
@@ -32,6 +36,23 @@ public class EnrollmentsQuery {
     public EnrollmentsQuery havingWindowEndingDuring(WindowName windowName, DateTime start, DateTime end) {
         criteria.add(new EndOfWindowCriterion(windowName, start, end));
         return this;
+    }
+
+    public EnrollmentsQuery currentlyInWindow(WindowName... windowNames) {
+        criteria.add(new InWindowCriterion(asList(windowNames)));
+        return this;
+    }
+
+    public EnrollmentsQuery havingState(String... states) {
+        criteria.add(new StatusCriterion(toEnum(asList(states))));
+        return this;
+    }
+
+    private List<EnrollmentStatus> toEnum(List<String> values) {
+        List<EnrollmentStatus> statuses = new ArrayList<EnrollmentStatus>();
+        for (String value : values)
+            statuses.add(EnrollmentStatus.valueOf(value.toUpperCase()));
+        return statuses;
     }
 
     public List<Criterion> getCriteria() {
