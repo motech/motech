@@ -76,5 +76,11 @@ public class EnrollmentsQueryTest {
         enrollmentsQuery.havingState("ACTIVE", "EaRliestzjxh");
     }
 
-
+    @Test
+    public void shouldBuildQueryForCompletedDuringCriterion() {
+        EnrollmentsQuery query = enrollmentsQuery.completedDuring(null, null);
+        List<Criterion> criteria = query.getCriteria();
+        assertEquals(criteria.size(), 1);
+        assertTrue(criteria.get(0) instanceof CompletedDuringCriterion);
+    }
 }

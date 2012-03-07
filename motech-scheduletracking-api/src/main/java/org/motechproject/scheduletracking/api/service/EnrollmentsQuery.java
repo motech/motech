@@ -48,6 +48,11 @@ public class EnrollmentsQuery {
         return this;
     }
 
+    public EnrollmentsQuery completedDuring(DateTime start, DateTime end) {
+        criteria.add(new CompletedDuringCriterion(start, end));
+        return this;
+    }
+
     private List<EnrollmentStatus> toEnum(List<String> values) {
         List<EnrollmentStatus> statuses = new ArrayList<EnrollmentStatus>();
         for (String value : values) {
