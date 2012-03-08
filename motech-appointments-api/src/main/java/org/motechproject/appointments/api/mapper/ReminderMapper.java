@@ -12,10 +12,10 @@ public class ReminderMapper {
 
     public Reminder map(DateTime dueDateTime, ReminderConfiguration reminderConfiguration) {
         LocalDate dueDate = dueDateTime.toLocalDate();
-        Date startDate = dueDate.minusDays(reminderConfiguration.getRemindFrom()).toDate();
-        Date endDate = dueDate.toDate();
+        LocalDate startDate = dueDate.minusDays(reminderConfiguration.getRemindFrom());
+        LocalDate endDate = startDate.plusDays(reminderConfiguration.getRepeatCount());
         long intervalSeconds = intervalSeconds(reminderConfiguration.getIntervalUnit(), reminderConfiguration.getIntervalCount());
-        return new Reminder().startDate(startDate).endDate(endDate).intervalSeconds(intervalSeconds).repeatCount(reminderConfiguration.getRepeatCount());
+        return new Reminder().startDate(startDate.toDate()).endDate(endDate.toDate()).intervalSeconds(intervalSeconds).repeatCount(reminderConfiguration.getRepeatCount());
     }
 
     long intervalSeconds(IntervalUnit intervalUnit, int intervalCount) {

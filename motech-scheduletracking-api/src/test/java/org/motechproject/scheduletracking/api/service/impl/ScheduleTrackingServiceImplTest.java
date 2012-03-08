@@ -11,8 +11,8 @@ import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.domain.exception.InvalidEnrollmentException;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
+import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
 import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
-import org.motechproject.scheduletracking.api.service.EnrollmentResponse;
 import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
 
@@ -21,9 +21,6 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
@@ -32,6 +29,8 @@ import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks
 import static org.motechproject.util.DateUtil.*;
 
 public class ScheduleTrackingServiceImplTest {
+
+    private ScheduleTrackingService scheduleTrackingService;
 
     @Mock
     private AllTrackedSchedules allTrackedSchedules;
@@ -43,13 +42,13 @@ public class ScheduleTrackingServiceImplTest {
     private EnrollmentService enrollmentService;
     @Mock
     private EnrollmentsQueryService enrollmentsQueryService;
-    
-    private ScheduleTrackingService scheduleTrackingService;
+    @Mock
+    private EnrollmentRecordMapper enrollmentRecordMapper;
 
     @Before
     public void setUp() {
         initMocks(this);
-        scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService, enrollmentsQueryService);
+        scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService, enrollmentsQueryService, enrollmentRecordMapper);
     }
 
     @Test
@@ -234,8 +233,11 @@ public class ScheduleTrackingServiceImplTest {
         String scheduleName = "schedule name";
         final Enrollment enrollment = new Enrollment(externalId, scheduleName, null, null, null, null, EnrollmentStatus.ACTIVE);
         when(allEnrollments.getActiveEnrollment(externalId, scheduleName)).thenReturn(enrollment);
-        final EnrollmentResponse response = scheduleTrackingService.getEnrollment(externalId, scheduleName);
-        assertThat(response.getExternalId(), is(equalTo(externalId)));
+
+        EnrollmentRecord record = mock(EnrollmentRecord.class);
+        when(enrollmentRecordMapper.map(enrollment)).thenReturn(record);
+
+        assertEquals(record, scheduleTrackingService.getEnrollment(externalId, scheduleName));
     }
 
     @Test(expected = InvalidEnrollmentException.class)
@@ -250,9 +252,34 @@ public class ScheduleTrackingServiceImplTest {
     @Test
     public void shouldReturnListOfExternalIdsForTheGivenQuery() {
         EnrollmentsQuery enrollmentQuery = mock(EnrollmentsQuery.class);
-        List<Enrollment> enrollments = asList(new Enrollment[]{ new Enrollment("external_id_1", null, null, null, null, null, null),  new Enrollment("external_id_2", null, null, null, null, null, null)});
+        Enrollment enrollment1 = mock(Enrollment.class);
+        Enrollment enrollment2 = mock(Enrollment.class);
+        List<Enrollment> enrollments = asList(new Enrollment[]{enrollment1, enrollment2});
         when(enrollmentsQueryService.search(enrollmentQuery)).thenReturn(enrollments);
 
-        assertEquals(asList(new String[]{"external_id_1", "external_id_2"}), scheduleTrackingService.findExternalIds(enrollmentQuery));
+        EnrollmentRecord record1 = mock(EnrollmentRecord.class);
+        when(enrollmentRecordMapper.map(enrollment1)).thenReturn(record1);
+
+        EnrollmentRecord record2 = mock(EnrollmentRecord.class);
+        when(enrollmentRecordMapper.map(enrollment2)).thenReturn(record2);
+
+        assertEquals(asList(new EnrollmentRecord[]{record1, record2}), scheduleTrackingService.search(enrollmentQuery));
+    }
+
+    @Test
+    public void shouldReturnListOfEnrollmentRecordsForTheGivenQuery() {
+        EnrollmentsQuery enrollmentQuery = mock(EnrollmentsQuery.class);
+        Enrollment enrollment1 = new Enrollment("external_id_1", "schedule_1", null, null, null, null, null);
+        Enrollment enrollment2 = new Enrollment("external_id_2", "schedule_1", null, null, null, null, null);
+        List<Enrollment> enrollments = asList(new Enrollment[]{enrollment1, enrollment2});
+
+        when(enrollmentsQueryService.search(enrollmentQuery)).thenReturn(enrollments);
+
+        EnrollmentRecord record1 = mock(EnrollmentRecord.class);
+        when(enrollmentRecordMapper.mapWithDates(enrollment1)).thenReturn(record1);
+        EnrollmentRecord record2 = mock(EnrollmentRecord.class);
+        when(enrollmentRecordMapper.mapWithDates(enrollment2)).thenReturn(record2);
+
+        assertEquals(asList(new EnrollmentRecord[]{record1, record2}), scheduleTrackingService.searchWithWindowDates(enrollmentQuery));
     }
 }

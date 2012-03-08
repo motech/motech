@@ -2,20 +2,32 @@ package org.motechproject.scheduletracking.api.service;
 
 import org.joda.time.DateTime;
 import org.motechproject.model.Time;
+import org.motechproject.scheduletracking.api.domain.WindowName;
 
-public class EnrollmentResponse {
+import java.util.Map;
+
+public class EnrollmentRecord {
     private String externalId;
     private String scheduleName;
 	private Time preferredAlertTime;
 	private DateTime referenceDateTime;
     private DateTime enrollmentDateTime;
+    private DateTime earliestStart;
+    private DateTime dueStart;
+    private DateTime lateStart;
+    private DateTime maxStart;
 
-    public EnrollmentResponse(String externalId, String scheduleName, Time preferredAlertTime, DateTime referenceDateTime, DateTime enrollmentDateTime) {
+
+    public EnrollmentRecord(String externalId, String scheduleName, Time preferredAlertTime, DateTime referenceDateTime, DateTime enrollmentDateTime, DateTime earliestStart, DateTime dueStart, DateTime lateStart, DateTime maxStart) {
         this.externalId = externalId;
         this.scheduleName = scheduleName;
         this.preferredAlertTime = preferredAlertTime;
         this.referenceDateTime = referenceDateTime;
         this.enrollmentDateTime = enrollmentDateTime;
+        this.earliestStart = earliestStart;
+        this.dueStart = dueStart;
+        this.lateStart = lateStart;
+        this.maxStart = maxStart;
     }
 
     public String getExternalId() {
@@ -36,5 +48,21 @@ public class EnrollmentResponse {
 
     public DateTime getEnrollmentDateTime() {
         return enrollmentDateTime;
+    }
+
+    public DateTime getStartOfEarliestWindow() {
+        return earliestStart;
+    }
+
+    public DateTime getStartOfDueWindow() {
+        return dueStart;
+    }
+
+    public DateTime getStartOfLateWindow() {
+        return lateStart;
+    }
+
+    public DateTime getStartOfMaxWindow() {
+        return maxStart;
     }
 }

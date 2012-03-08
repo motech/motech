@@ -11,7 +11,8 @@ public interface ScheduleTrackingService {
     void fulfillCurrentMilestone(String externalId, String scheduleName, LocalDate fulfillmentDate);
     void fulfillCurrentMilestone(String externalId, String scheduleName, LocalDate fulfillmentDate, Time fulfillmentTime);
     void unenroll(String externalId, List<String> scheduleNames);
-    EnrollmentResponse getEnrollment(String externalId, String scheduleName);
+    EnrollmentRecord getEnrollment(String externalId, String scheduleName);
 
-    List<String> findExternalIds(EnrollmentsQuery query);
+    List<EnrollmentRecord> search(EnrollmentsQuery query);
+    List<EnrollmentRecord> searchWithWindowDates(EnrollmentsQuery query);
 }

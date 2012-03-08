@@ -28,7 +28,6 @@ public class ReminderMapperTest {
         Reminder reminder = reminderMapper.map(today, reminderConfiguration);
 
         assertEquals(today.minusDays(10).toLocalDate(), DateUtil.newDate(reminder.startDate()));
-        assertEquals(today.toLocalDate(), DateUtil.newDate(reminder.endDate()));
         assertEquals(3600, reminder.intervalSeconds());
         assertEquals(20, reminder.repeatCount());
     }
