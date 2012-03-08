@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
@@ -77,7 +78,7 @@ public class EnrollmentAlertServiceTest {
 
         RepeatingSchedulableJob job = repeatJobCaptor.getAllValues().get(0);
         assertJobDetails(job, String.format("%s.0", enrollment.getId()), newDateTime(weeksAfter(0).toLocalDate(), new Time(8, 20)).toDate(), 2, MILLIS_PER_DAY);
-        assertEventDetails(new MilestoneEvent(job.getMotechEvent()), externalId, scheduleName, MilestoneAlert.fromMilestone(milestone, enrollment.getReferenceDateTime()), WindowName.earliest.name());
+        assertEventDetails(new MilestoneEvent(job.getMotechEvent()), externalId, scheduleName, WindowName.earliest.name());
     }
 
     @Test
@@ -101,11 +102,11 @@ public class EnrollmentAlertServiceTest {
 
         RepeatingSchedulableJob job = repeatJobCaptor.getAllValues().get(0);
         assertJobDetails(job, String.format("%s.0", enrollment.getId()), now.plusHours(1).toDate(), 1, MILLIS_PER_HOUR);
-        assertEventDetails(new MilestoneEvent(job.getMotechEvent()), externalId, scheduleName, MilestoneAlert.fromMilestone(milestone, enrollment.getReferenceDateTime()), WindowName.earliest.name());
+        assertEventDetails(new MilestoneEvent(job.getMotechEvent()), externalId, scheduleName, WindowName.earliest.name());
 
         job = repeatJobCaptor.getAllValues().get(1);
         assertJobDetails(job, String.format("%s.1", enrollment.getId()), now.plusHours(3).plusWeeks(1).toDate(), 1, 2 * MILLIS_PER_HOUR);
-        assertEventDetails(new MilestoneEvent(job.getMotechEvent()), externalId, scheduleName, MilestoneAlert.fromMilestone(milestone, enrollment.getReferenceDateTime()), WindowName.due.name());
+        assertEventDetails(new MilestoneEvent(job.getMotechEvent()), externalId, scheduleName, WindowName.due.name());
     }
 
     @Test
@@ -128,11 +129,11 @@ public class EnrollmentAlertServiceTest {
 
         RepeatingSchedulableJob job = repeatJobCaptor.getAllValues().get(0);
         assertJobDetails(job, String.format("%s.0", enrollment.getId()), newDateTime(weeksAfter(0).toLocalDate(), new Time(8, 20)).toDate(), 2, MILLIS_PER_DAY);
-        assertEventDetails(new MilestoneEvent(job.getMotechEvent()), externalId, scheduleName, MilestoneAlert.fromMilestone(milestone, enrollment.getReferenceDateTime()), WindowName.earliest.name());
+        assertEventDetails(new MilestoneEvent(job.getMotechEvent()), externalId, scheduleName, WindowName.earliest.name());
 
         job = repeatJobCaptor.getAllValues().get(1);
         assertJobDetails(job, String.format("%s.1", enrollment.getId()), newDateTime(weeksAfter(1).toLocalDate(), new Time(8, 20)).toDate(), 1, 3 * MILLIS_PER_DAY);
-        assertEventDetails(new MilestoneEvent(job.getMotechEvent()), externalId, scheduleName, MilestoneAlert.fromMilestone(milestone, enrollment.getReferenceDateTime()), WindowName.due.name());
+        assertEventDetails(new MilestoneEvent(job.getMotechEvent()), externalId, scheduleName, WindowName.due.name());
     }
 
     private void assertJobDetails(RepeatingSchedulableJob job, String jobIdKey, Date startTime, int repeatCount, int repeatInterval) {
@@ -142,11 +143,31 @@ public class EnrollmentAlertServiceTest {
         assertRepeatIntervalValue(repeatInterval, job.getRepeatInterval());
     }
 
-    private void assertEventDetails(MilestoneEvent event, String externalId, String scheduleName, MilestoneAlert milestoneAlert, String windowName) {
+    private void assertEventDetails(MilestoneEvent event, String externalId, String scheduleName, String windowName) {
         assertEquals(externalId, event.getExternalId());
         assertEquals(scheduleName, event.getScheduleName());
-        assertEquals(milestoneAlert, event.getMilestoneAlert());
         assertEquals(windowName, event.getWindowName());
+    }
+
+    @Test
+    public void shouldPassMilestoneAlertAsPayloadWhileSchedulingTheJob() {
+        Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(22));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(milestone);
+        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(0), weeksAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE);
+
+        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
+
+        ArgumentCaptor<RepeatingSchedulableJob> repeatJobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
+        verify(schedulerService).safeScheduleRepeatingJob(repeatJobCaptor.capture());
+
+        MilestoneAlert milestoneAlert = new MilestoneEvent(repeatJobCaptor.getValue().getMotechEvent()).getMilestoneAlert();
+        assertEquals(weeksAfter(1), milestoneAlert.getEarliestDateTime());
+        assertEquals(weeksAfter(2), milestoneAlert.getDueDateTime());
+        assertEquals(weeksAfter(3), milestoneAlert.getLateDateTime());
+        assertEquals(weeksAfter(25), milestoneAlert.getDefaultmentDateTime());
     }
 
     @Test

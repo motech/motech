@@ -11,6 +11,8 @@ import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static org.motechproject.util.DateUtil.newDateTime;
+
 @Component
 public class EnrollmentAlertService {
 
@@ -29,13 +31,12 @@ public class EnrollmentAlertService {
         if (currentMilestone == null)
             return;
 
-        String firstMilestoneName = schedule.getFirstMilestone().getName();
         DateTime currentMilestoneStartDate = getCurrentMilestoneStartDate(enrollment);
         for (MilestoneWindow milestoneWindow : currentMilestone.getMilestoneWindows()) {
             if (currentMilestone.windowElapsed(milestoneWindow.getName(), currentMilestoneStartDate))
                 continue;
 
-            MilestoneAlert milestoneAlert = MilestoneAlert.fromMilestone(currentMilestone, enrollment.getReferenceDateTime());
+            MilestoneAlert milestoneAlert = MilestoneAlert.fromMilestone(currentMilestone, getCurrentMilestoneStartDate(enrollment));
             for (Alert alert : milestoneWindow.getAlerts())
                 scheduleAlertJob(alert, enrollment, currentMilestone, milestoneWindow, milestoneAlert, currentMilestoneStartDate);
         }
