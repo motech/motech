@@ -164,10 +164,10 @@ public class EnrollmentAlertServiceTest {
         verify(schedulerService).safeScheduleRepeatingJob(repeatJobCaptor.capture());
 
         MilestoneAlert milestoneAlert = new MilestoneEvent(repeatJobCaptor.getValue().getMotechEvent()).getMilestoneAlert();
-        assertEquals(weeksAfter(1), milestoneAlert.getEarliestDateTime());
-        assertEquals(weeksAfter(2), milestoneAlert.getDueDateTime());
-        assertEquals(weeksAfter(3), milestoneAlert.getLateDateTime());
-        assertEquals(weeksAfter(25), milestoneAlert.getDefaultmentDateTime());
+        assertEquals(weeksAfter(0), milestoneAlert.getEarliestDateTime());
+        assertEquals(weeksAfter(1), milestoneAlert.getDueDateTime());
+        assertEquals(weeksAfter(2), milestoneAlert.getLateDateTime());
+        assertEquals(weeksAfter(3), milestoneAlert.getDefaultmentDateTime());
     }
 
     @Test

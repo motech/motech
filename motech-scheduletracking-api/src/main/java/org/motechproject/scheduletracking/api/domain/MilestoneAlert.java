@@ -15,14 +15,14 @@ public class MilestoneAlert implements Serializable {
 
     public static MilestoneAlert fromMilestone(Milestone milestone, DateTime startOfMilestone){
         return new MilestoneAlert(milestone.getName(),
-                getWindowEndDate(milestone, startOfMilestone, WindowName.earliest),
-                getWindowEndDate(milestone, startOfMilestone, WindowName.due),
-                getWindowEndDate(milestone, startOfMilestone, WindowName.late),
-                getWindowEndDate(milestone, startOfMilestone, WindowName.max));
+                getWindowStartDate(milestone, startOfMilestone, WindowName.earliest),
+                getWindowStartDate(milestone, startOfMilestone, WindowName.due),
+                getWindowStartDate(milestone, startOfMilestone, WindowName.late),
+                getWindowStartDate(milestone, startOfMilestone, WindowName.max));
     }
 
-    private static DateTime getWindowEndDate(Milestone milestone, DateTime startOfMilestone, WindowName windowName) {
-        return startOfMilestone.plus(milestone.getWindowEnd(windowName));
+    private static DateTime getWindowStartDate(Milestone milestone, DateTime startOfMilestone, WindowName windowName) {
+        return startOfMilestone.plus(milestone.getWindowStart(windowName));
     }
 
     private MilestoneAlert() {
