@@ -59,7 +59,7 @@ public class Schedule implements Serializable {
         return duration.toPeriod();
     }
 
-    public boolean hasExpiredBy(DateTime referenceDateTime) {
+    public boolean hasExpiredSince(DateTime referenceDateTime) {
         return referenceDateTime.plus(getDuration()).isBefore(now());
     }
 

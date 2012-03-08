@@ -33,7 +33,7 @@ public class EnrollmentService {
     public String enroll(String externalId, String scheduleName, String startingMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime) {
         Schedule schedule = allTrackedSchedules.getByName(scheduleName);
         EnrollmentStatus enrollmentStatus = EnrollmentStatus.ACTIVE;
-        if (schedule.hasExpiredBy(referenceDateTime))
+        if (schedule.hasExpiredSince(referenceDateTime))
             enrollmentStatus = EnrollmentStatus.DEFAULTED;
 
         Enrollment enrollment = allEnrollments.addOrReplace(new Enrollment(externalId, scheduleName, startingMilestoneName, referenceDateTime, enrollmentDateTime, preferredAlertTime, enrollmentStatus));
