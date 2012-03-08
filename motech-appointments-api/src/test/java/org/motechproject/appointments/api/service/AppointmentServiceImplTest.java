@@ -46,9 +46,9 @@ public class AppointmentServiceImplTest {
         DateTime now = DateUtil.now();
         CreateVisitRequest baseline = new CreateVisitRequest().setVisitName("baseline").setAppointmentDueDate(now.plusWeeks(1));
         CreateVisitRequest week2CreateVisit = new CreateVisitRequest().setVisitName("week2").setAppointmentDueDate(now.plusWeeks(2))
-                .setAppointmentReminderConfiguration(new ReminderConfiguration());
+                .addAppointmentReminderConfiguration(new ReminderConfiguration());
         CreateVisitRequest week4CreateVisit = new CreateVisitRequest().setVisitName("week4").setAppointmentDueDate(now.plusWeeks(4))
-                .setAppointmentReminderConfiguration(new ReminderConfiguration());
+                .addAppointmentReminderConfiguration(new ReminderConfiguration());
         AppointmentCalendarRequest appointmentCalendarRequest = new AppointmentCalendarRequest().setExternalId(externalId)
                 .addVisitRequest(baseline)
                 .addVisitRequest(week2CreateVisit)
@@ -96,7 +96,7 @@ public class AppointmentServiceImplTest {
         AppointmentCalendar appointmentCalendar = new AppointmentCalendar().externalId(externalId);
         final DateTime now = DateUtil.now();
         ReminderConfiguration reminderConfiguration = new ReminderConfiguration().setRemindFrom(REMIND_FROM).setIntervalCount(1).setIntervalUnit(ReminderConfiguration.IntervalUnit.HOURS).setRepeatCount(20);
-        CreateVisitRequest createVisitRequest = new CreateVisitRequest().setAppointmentDueDate(now).setAppointmentReminderConfiguration(reminderConfiguration);
+        CreateVisitRequest createVisitRequest = new CreateVisitRequest().setAppointmentDueDate(now).addAppointmentReminderConfiguration(reminderConfiguration);
         when(allAppointmentCalendars.findByExternalId(externalId)).thenReturn(appointmentCalendar);
 
         String visitName = appointmentService.addVisit(externalId, createVisitRequest).getName();
@@ -107,7 +107,7 @@ public class AppointmentServiceImplTest {
 
         assertEquals(visitName, visitName);
         assertEquals(now, visitCaptor.getValue().appointment().dueDate());
-        assertEquals(now.toLocalDate().minusDays(REMIND_FROM).toDate(), visitCaptor.getValue().appointment().reminder().startDate());
+        assertEquals(now.toLocalDate().minusDays(REMIND_FROM).toDate(), visitCaptor.getValue().appointment().reminders().get(0).startDate());
     }
 
     @Test

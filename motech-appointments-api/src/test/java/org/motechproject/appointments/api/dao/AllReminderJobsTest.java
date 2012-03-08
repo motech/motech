@@ -12,6 +12,8 @@ import org.motechproject.appointments.api.model.jobs.VisitReminderJob;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.util.DateUtil;
 
+import java.util.Arrays;
+
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -29,7 +31,7 @@ public class AllReminderJobsTest {
 
     public AllReminderJobsTest() {
         visit = new Visit().name("visit");
-        visit.appointment(new Appointment().reminder(reminderStartingToday(2)).reminder(reminderStartingToday(4)));
+        visit.appointment(new Appointment().reminders(Arrays.asList(reminderStartingToday(2), reminderStartingToday(4))));
         visit.reminder(reminderStartingToday(2));
     }
 
@@ -91,8 +93,8 @@ public class AllReminderJobsTest {
     public void shouldRescheduleReminderJobsForAnAppointment() {
         String externalId = "externalId";
 
-        AppointmentReminderJob expectedJobForAppointment = new AppointmentReminderJob(externalId,
-                AppointmentReminderJob.getJobIdUsing(externalId, visit.name(), 0), visit.appointmentReminder(), visit.name());
+        String jobId = AppointmentReminderJob.getJobIdUsing(externalId, visit.name(), 0);
+        AppointmentReminderJob expectedJobForAppointment = new AppointmentReminderJob(externalId, jobId, visit.appointmentReminders().get(0), visit.name());
         allReminderJobs.rescheduleAppointmentJob(externalId, visit);
         verify(schedulerService).safeUnscheduleJob(AppointmentReminderJob.SUBJECT, externalId + "visit0");
         verify(schedulerService).safeScheduleJob(expectedJobForAppointment);

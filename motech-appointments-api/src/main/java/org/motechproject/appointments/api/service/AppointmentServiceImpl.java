@@ -91,9 +91,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     public void visited(String externalId, String visitName, DateTime visitedDate) {
         AppointmentCalendar appointmentCalendar = getAppointmentCalendar(externalId);
-        if (appointmentCalendar == null) {
-            return;
-        }
+        if (appointmentCalendar == null) return;
         Visit visit = appointmentCalendar.getVisit(visitName);
         visit.visitDate(visitedDate);
         allReminderJobs.removeAll(externalId);
