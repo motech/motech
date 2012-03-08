@@ -5,6 +5,7 @@ import org.joda.time.DateTime;
 import org.motechproject.model.ExtensibleDataObject;
 import org.motechproject.util.DateUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Visit extends ExtensibleDataObject {
@@ -76,17 +77,8 @@ public class Visit extends ExtensibleDataObject {
         return this;
     }
 
-    public Reminder appointmentReminder() {
-        return appointment == null ? null : appointment.reminder();
-    }
-
     public List<Reminder> appointmentReminders() {
-        return appointment == null ? null : appointment.reminders();
-    }
-
-    public Visit addAppointment(DateTime dueDate, Reminder reminder) {
-        this.appointment = new Appointment().dueDate(dueDate).reminder(reminder);
-        return this;
+        return appointment == null ? new ArrayList<Reminder>() : appointment.reminders();
     }
 
     public Visit addAppointment(DateTime dueDate, List<Reminder> reminders) {

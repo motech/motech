@@ -5,6 +5,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.util.DateUtil;
 
+import java.util.Arrays;
+
 import static junit.framework.Assert.*;
 
 public class VisitTest {
@@ -24,7 +26,7 @@ public class VisitTest {
         assertNotNull(visit.appointment());
         assertEquals(DateUtil.today(), visit.appointment().dueDate().toLocalDate());
         assertNull(visit.appointment().confirmedDate());
-        assertEquals(reminder, visit.appointmentReminder());
+        assertEquals(reminder, visit.appointmentReminders().get(0));
     }
 
     @Test
@@ -48,6 +50,6 @@ public class VisitTest {
 
     private void createVisitWithAppointmentAndReminder() {
         reminder = new Reminder().startDate(scheduledDate.toDate()).endDate(scheduledDate.plusDays(1).toDate());
-        visit = new Visit().addAppointment(scheduledDate, reminder);
+        visit = new Visit().addAppointment(scheduledDate, Arrays.asList(reminder));
     }
 }

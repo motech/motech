@@ -9,7 +9,6 @@ import org.motechproject.appointments.api.model.Visit;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
 
 public class VisitMapperTest {
 
@@ -37,7 +36,7 @@ public class VisitMapperTest {
         assertEquals("baseline", visit.name());
         assertEquals("Baseline", visit.typeOfVisit());
         assertNotNull(visit.appointment());
-        assertNull(visit.appointmentReminder());
+        assertEquals(0, visit.appointmentReminders().size());
         assertEquals("value", visit.getData().get("key"));
     }
 
@@ -45,7 +44,7 @@ public class VisitMapperTest {
     public void shouldMapAVisit_GivenAnAppointment() {
         DateTime dueDate = now.plusWeeks(2);
         CreateVisitRequest createVisitRequest = new CreateVisitRequest().setVisitName("week2").setTypeOfVisit("Scheduled")
-                .setAppointmentDueDate(dueDate).setAppointmentReminderConfiguration(reminderConfiguration1).addAppointmentReminderConfiguration(reminderConfiguration2);
+                .setAppointmentDueDate(dueDate).addAppointmentReminderConfiguration(reminderConfiguration1).addAppointmentReminderConfiguration(reminderConfiguration2);
         createVisitRequest.addData("key", "value");
         Visit visit = visitMapper.map(createVisitRequest);
 
@@ -53,7 +52,6 @@ public class VisitMapperTest {
         assertEquals("week2", visit.name());
         assertEquals("Scheduled", visit.typeOfVisit());
         assertNotNull(visit.appointment());
-        assertNotNull(visit.appointmentReminder());
         assertEquals("value", visit.getData().get("key"));
         assertEquals(dueDate.toLocalDate(), visit.appointment().dueDate().toLocalDate());
     }

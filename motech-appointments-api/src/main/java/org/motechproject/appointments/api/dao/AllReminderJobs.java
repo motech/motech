@@ -22,10 +22,9 @@ public class AllReminderJobs {
 
     public void addAppointmentJob(String externalId, Visit visit) {
         List<Reminder> reminders = visit.appointmentReminders();
-        if (reminders == null) return;
         for (int i = 0; i < reminders.size(); i++) {
-            schedulerService.safeScheduleJob(new AppointmentReminderJob(externalId,
-                    AppointmentReminderJob.getJobIdUsing(externalId, visit.name(), i), reminders.get(i), visit.name()));
+            String jobId = AppointmentReminderJob.getJobIdUsing(externalId, visit.name(), i);
+            schedulerService.safeScheduleJob(new AppointmentReminderJob(externalId, jobId, reminders.get(i), visit.name()));
         }
     }
 

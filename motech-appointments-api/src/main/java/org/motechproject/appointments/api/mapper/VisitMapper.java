@@ -18,13 +18,9 @@ public class VisitMapper {
     }
 
     private void createAppointment(CreateVisitRequest createVisitRequest, Visit visit) {
-        List<ReminderConfiguration> appointmentReminderConfigurations = createVisitRequest.getAppointmentReminderConfigurations();
-        List<Reminder> appointmentReminders = null;
-        if (appointmentReminderConfigurations != null) {
-            appointmentReminders = new ArrayList<Reminder>();
-            for (ReminderConfiguration appointmentReminderConfiguration : appointmentReminderConfigurations) {
-                appointmentReminders.add(new ReminderMapper().map(createVisitRequest.getAppointmentDueDate(), appointmentReminderConfiguration));
-            }
+        List<Reminder> appointmentReminders = new ArrayList<Reminder>();
+        for (ReminderConfiguration appointmentReminderConfiguration : createVisitRequest.getAppointmentReminderConfigurations()) {
+            appointmentReminders.add(new ReminderMapper().map(createVisitRequest.getAppointmentDueDate(), appointmentReminderConfiguration));
         }
         visit.addAppointment(createVisitRequest.getAppointmentDueDate(), appointmentReminders);
     }

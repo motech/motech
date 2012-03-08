@@ -20,7 +20,7 @@ public class Appointment extends ExtensibleDataObject {
     @JsonProperty
     private DateTime confirmedDate;
     @JsonProperty
-    private List<Reminder> reminders;
+    private List<Reminder> reminders = new ArrayList<Reminder>();
 
     public Appointment() {
         id = UUID.randomUUID().toString();
@@ -58,26 +58,12 @@ public class Appointment extends ExtensibleDataObject {
         return this;
     }
 
-    public Reminder reminder() {
-        if (reminders != null && !reminders.isEmpty())
-            return reminders.get(0);
-        return null;
+    public List<Reminder> reminders() {
+        return reminders;
     }
 
-    public Appointment reminder(Reminder reminder) {
-        if(reminders == null) {
-            reminders = new ArrayList<Reminder>();
-        }
-        this.reminders.add(reminder);
-        return this;
-    }
-    
     public Appointment reminders(List<Reminder> reminders) {
         this.reminders = reminders;
         return this;
-    }
-
-    public List<Reminder> reminders() {
-        return reminders;
     }
 }

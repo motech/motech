@@ -15,7 +15,7 @@ public class CreateVisitRequest {
 
     private DateTime appointmentDueDate;
 
-    private List<ReminderConfiguration> appointmentReminderConfigurations;
+    private List<ReminderConfiguration> appointmentReminderConfigurations = new ArrayList<ReminderConfiguration>();
 
     private Map<String, Object> data = new HashMap<String, Object>();
 
@@ -60,30 +60,12 @@ public class CreateVisitRequest {
         return this;
     }
 
-    public ReminderConfiguration getAppointmentReminderConfiguration() {
-        if (appointmentReminderConfigurations != null && !appointmentReminderConfigurations.isEmpty())
-            return appointmentReminderConfigurations.get(0);
-        return null;
-    }
-
-    @Deprecated
-    public CreateVisitRequest setAppointmentReminderConfiguration(ReminderConfiguration appointmentReminderConfiguration) {
-        if (appointmentReminderConfigurations == null) {
-            appointmentReminderConfigurations = new ArrayList<ReminderConfiguration>();
-        }
-        this.appointmentReminderConfigurations.add(appointmentReminderConfiguration);
-        return this;
+    public List<ReminderConfiguration> getAppointmentReminderConfigurations() {
+        return appointmentReminderConfigurations;
     }
 
     public CreateVisitRequest addAppointmentReminderConfiguration(ReminderConfiguration appointmentReminderConfiguration) {
-        if (appointmentReminderConfigurations == null) {
-            appointmentReminderConfigurations = new ArrayList<ReminderConfiguration>();
-        }
         this.appointmentReminderConfigurations.add(appointmentReminderConfiguration);
         return this;
-    }
-
-    public List<ReminderConfiguration> getAppointmentReminderConfigurations() {
-        return appointmentReminderConfigurations;
     }
 }

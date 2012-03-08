@@ -7,6 +7,8 @@ import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.appointments.api.model.Visit;
 import org.motechproject.scheduler.MotechSchedulerService;
 
+import java.util.Arrays;
+
 import static junit.framework.Assert.assertEquals;
 
 public class AppointmentReminderJobTest {
@@ -16,9 +18,10 @@ public class AppointmentReminderJobTest {
     private int reminderCount;
 
     public AppointmentReminderJobTest() {
-        visit = new Visit().appointment(new Appointment().reminder(new Reminder())).name("visitName");
+        Reminder reminder = new Reminder();
+        visit = new Visit().appointment(new Appointment().reminders(Arrays.asList(reminder))).name("visitName");
         reminderCount = 0;
-        appointmentReminderJob = new AppointmentReminderJob("externalId", AppointmentReminderJob.getJobIdUsing("externalId", visit.name(), reminderCount), visit.appointmentReminder(), visit.name());
+        appointmentReminderJob = new AppointmentReminderJob("externalId", AppointmentReminderJob.getJobIdUsing("externalId", visit.name(), reminderCount), reminder, visit.name());
     }
 
     @Test
