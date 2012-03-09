@@ -20,7 +20,7 @@ public class EnrollmentRecordMapper {
     public EnrollmentRecord map(Enrollment enrollment) {
         if (enrollment == null)
             return null;
-        return new EnrollmentRecord(enrollment.getExternalId(), enrollment.getScheduleName(), enrollment.getPreferredAlertTime(), enrollment.getReferenceDateTime(), enrollment.getEnrollmentDateTime(), null, null, null, null);
+        return new EnrollmentRecord(enrollment.getExternalId(), enrollment.getScheduleName(), enrollment.getCurrentMilestoneName(), enrollment.getPreferredAlertTime(), enrollment.getReferenceDateTime(), enrollment.getEnrollmentDateTime(), null, null, null, null);
     }
 
     public EnrollmentRecord mapWithDates(Enrollment enrollment) {
@@ -30,6 +30,6 @@ public class EnrollmentRecordMapper {
         DateTime dueStart = enrollmentService.getStartOfWindowForCurrentMilestone(enrollment, WindowName.due);
         DateTime lateStart = enrollmentService.getStartOfWindowForCurrentMilestone(enrollment, WindowName.late);
         DateTime maxStart = enrollmentService.getStartOfWindowForCurrentMilestone(enrollment, WindowName.max);
-        return new EnrollmentRecord(enrollment.getExternalId(), enrollment.getScheduleName(), enrollment.getPreferredAlertTime(), enrollment.getReferenceDateTime(), enrollment.getEnrollmentDateTime(), earliestStart, dueStart, lateStart, maxStart);
+        return new EnrollmentRecord(enrollment.getExternalId(), enrollment.getScheduleName(), enrollment.getCurrentMilestoneName(), enrollment.getPreferredAlertTime(), enrollment.getReferenceDateTime(), enrollment.getEnrollmentDateTime(), earliestStart, dueStart, lateStart, maxStart);
     }
 }
