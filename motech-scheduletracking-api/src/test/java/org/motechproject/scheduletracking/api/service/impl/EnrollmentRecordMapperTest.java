@@ -31,7 +31,7 @@ public class EnrollmentRecordMapperTest {
 
     @Test
     public void shouldMapEnrollmentToEnrollmentResponse(){
-        final Enrollment enrollment = new Enrollment("externalId", "scheduleName", null, DateUtil.newDateTime(2000, 2, 1, 0, 0, 0), DateUtil.newDateTime(2000, 2, 10, 0, 0, 0), new Time(10, 10), null);
+        final Enrollment enrollment = new Enrollment("externalId", "scheduleName", "milestoneX", DateUtil.newDateTime(2000, 2, 1, 0, 0, 0), DateUtil.newDateTime(2000, 2, 10, 0, 0, 0), new Time(10, 10), null);
         final EnrollmentRecord record = enrollmentRecordMapper.map(enrollment);
 
         assertRecordMatchesEnrollment(record, enrollment);
@@ -41,7 +41,7 @@ public class EnrollmentRecordMapperTest {
 
     @Test
     public void shouldMapEnrollmentToEnrollmentResponseAndPopulateWindowDates(){
-        Enrollment enrollment = new Enrollment("external_id_1", "schedule_1", null, null, null, null, null);
+        Enrollment enrollment = new Enrollment("external_id_1", "schedule_1", "milestoneX", null, null, null, null);
 
         when(enrollmentService.getStartOfWindowForCurrentMilestone(enrollment, WindowName.earliest)).thenReturn(newDateTime(2011, 12, 1, 0, 0, 0));
         when(enrollmentService.getStartOfWindowForCurrentMilestone(enrollment, WindowName.due)).thenReturn(newDateTime(2011, 12, 8, 0, 0, 0));
