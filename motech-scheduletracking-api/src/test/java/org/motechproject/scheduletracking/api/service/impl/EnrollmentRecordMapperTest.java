@@ -1,6 +1,5 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -10,11 +9,6 @@ import org.motechproject.scheduletracking.api.domain.WindowName;
 import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
 import org.motechproject.util.DateUtil;
 
-import java.util.List;
-
-import static ch.lambdaj.Lambda.on;
-import static java.util.Arrays.asList;
-import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -39,15 +33,11 @@ public class EnrollmentRecordMapperTest {
     public void shouldMapEnrollmentToEnrollmentResponse(){
         final Enrollment enrollment = new Enrollment("externalId", "scheduleName", null, DateUtil.newDateTime(2000, 2, 1, 0, 0, 0), DateUtil.newDateTime(2000, 2, 10, 0, 0, 0), new Time(10, 10), null);
         final EnrollmentRecord record = enrollmentRecordMapper.map(enrollment);
-        assertThat(record.getExternalId(), is(equalTo(enrollment.getExternalId())));
-        assertThat(record.getScheduleName(), is(equalTo(enrollment.getScheduleName())));
-        assertThat(record.getReferenceDateTime(), is(equalTo(enrollment.getReferenceDateTime())));
-        assertThat(record.getPreferredAlertTime(), is(equalTo(enrollment.getPreferredAlertTime())));
-        assertThat(record.getEnrollmentDateTime(), is(equalTo(enrollment.getEnrollmentDateTime())));
+
+        assertRecordMatchesEnrollment(record, enrollment);
 
         assertThat(new EnrollmentRecordMapper(enrollmentService).map(null), is(equalTo(null)));
     }
-
 
     @Test
     public void shouldMapEnrollmentToEnrollmentResponseAndPopulateWindowDates(){
@@ -60,11 +50,20 @@ public class EnrollmentRecordMapperTest {
 
         EnrollmentRecord record = enrollmentRecordMapper.mapWithDates(enrollment);
 
-        assertEquals("external_id_1", record.getExternalId());
-        assertEquals("schedule_1", record.getScheduleName());
-        assertEquals(newDateTime(2011, 12, 1, 0, 0, 0), record.getStartOfEarliestWindow());
-        assertEquals(newDateTime(2011, 12, 8, 0, 0, 0), record.getStartOfDueWindow());
-        assertEquals(newDateTime(2011, 12, 15, 0, 0, 0), record.getStartOfLateWindow());
-        assertEquals(newDateTime(2011, 12, 22, 0, 0, 0), record.getStartOfMaxWindow());
+        assertRecordMatchesEnrollment(record, enrollment);
+
+        assertThat(record.getStartOfEarliestWindow(), is(newDateTime(2011, 12, 1, 0, 0, 0)));
+        assertThat(record.getStartOfDueWindow(), is(newDateTime(2011, 12, 8, 0, 0, 0)));
+        assertThat(record.getStartOfLateWindow(), is(newDateTime(2011, 12, 15, 0, 0, 0)));
+        assertThat(record.getStartOfMaxWindow(), is(newDateTime(2011, 12, 22, 0, 0, 0)));
+    }
+
+    private void assertRecordMatchesEnrollment(EnrollmentRecord actualRecord, Enrollment expectedEnrollment) {
+        assertThat(actualRecord.getExternalId(), is(equalTo(expectedEnrollment.getExternalId())));
+        assertThat(actualRecord.getScheduleName(), is(equalTo(expectedEnrollment.getScheduleName())));
+        assertThat(actualRecord.getReferenceDateTime(), is(equalTo(expectedEnrollment.getReferenceDateTime())));
+        assertThat(actualRecord.getPreferredAlertTime(), is(equalTo(expectedEnrollment.getPreferredAlertTime())));
+        assertThat(actualRecord.getEnrollmentDateTime(), is(equalTo(expectedEnrollment.getEnrollmentDateTime())));
+        assertThat(actualRecord.getCurrentMilestoneName(), is(equalTo(expectedEnrollment.getCurrentMilestoneName())));
     }
 }

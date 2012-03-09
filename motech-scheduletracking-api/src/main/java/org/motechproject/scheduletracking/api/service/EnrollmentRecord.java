@@ -2,9 +2,6 @@ package org.motechproject.scheduletracking.api.service;
 
 import org.joda.time.DateTime;
 import org.motechproject.model.Time;
-import org.motechproject.scheduletracking.api.domain.WindowName;
-
-import java.util.Map;
 
 public class EnrollmentRecord {
     private String externalId;
@@ -16,11 +13,13 @@ public class EnrollmentRecord {
     private DateTime dueStart;
     private DateTime lateStart;
     private DateTime maxStart;
+    private String currentMilestoneName;
 
 
-    public EnrollmentRecord(String externalId, String scheduleName, Time preferredAlertTime, DateTime referenceDateTime, DateTime enrollmentDateTime, DateTime earliestStart, DateTime dueStart, DateTime lateStart, DateTime maxStart) {
+    public EnrollmentRecord(String externalId, String scheduleName, String currentMilestoneName, Time preferredAlertTime, DateTime referenceDateTime, DateTime enrollmentDateTime, DateTime earliestStart, DateTime dueStart, DateTime lateStart, DateTime maxStart) {
         this.externalId = externalId;
         this.scheduleName = scheduleName;
+        this.currentMilestoneName = currentMilestoneName;
         this.preferredAlertTime = preferredAlertTime;
         this.referenceDateTime = referenceDateTime;
         this.enrollmentDateTime = enrollmentDateTime;
@@ -64,5 +63,10 @@ public class EnrollmentRecord {
 
     public DateTime getStartOfMaxWindow() {
         return maxStart;
+    }
+
+
+    public String getCurrentMilestoneName() {
+        return currentMilestoneName;
     }
 }
