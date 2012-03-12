@@ -77,8 +77,7 @@ public class AllReminderJobsTest {
         String externalId = "externalId";
 
         allReminderJobs.removeAppointmentJob(externalId, visit);
-        verify(schedulerService).safeUnscheduleJob(AppointmentReminderJob.SUBJECT, externalId + "visit0");
-        verify(schedulerService).safeUnscheduleJob(AppointmentReminderJob.SUBJECT, externalId + "visit1");
+        verify(schedulerService).unscheduleAllJobs(AppointmentReminderJob.SUBJECT + externalId + "visit");
     }
 
     @Test
@@ -86,7 +85,7 @@ public class AllReminderJobsTest {
         String externalId = "externalId";
 
         allReminderJobs.removeVisitJob(externalId, visit);
-        verify(schedulerService).safeUnscheduleJob(VisitReminderJob.SUBJECT, externalId + "visit");
+        verify(schedulerService).unscheduleAllJobs(VisitReminderJob.SUBJECT + externalId + "visit");
     }
 
     @Test
@@ -96,7 +95,7 @@ public class AllReminderJobsTest {
         String jobId = AppointmentReminderJob.getJobIdUsing(externalId, visit.name(), 0);
         AppointmentReminderJob expectedJobForAppointment = new AppointmentReminderJob(externalId, jobId, visit.appointmentReminders().get(0), visit.name());
         allReminderJobs.rescheduleAppointmentJob(externalId, visit);
-        verify(schedulerService).safeUnscheduleJob(AppointmentReminderJob.SUBJECT, externalId + "visit0");
+        verify(schedulerService).unscheduleAllJobs(AppointmentReminderJob.SUBJECT + externalId + "visit");
         verify(schedulerService).safeScheduleJob(expectedJobForAppointment);
     }
 
@@ -106,7 +105,7 @@ public class AllReminderJobsTest {
 
         VisitReminderJob expectedJobForVisit = new VisitReminderJob(externalId, visit);
         allReminderJobs.rescheduleVisitJob(externalId, visit);
-        verify(schedulerService).safeUnscheduleJob(VisitReminderJob.SUBJECT, externalId + "visit");
+        verify(schedulerService).unscheduleAllJobs(VisitReminderJob.SUBJECT + externalId + "visit");
         verify(schedulerService).safeScheduleJob(expectedJobForVisit);
     }
 

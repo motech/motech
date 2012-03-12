@@ -35,14 +35,11 @@ public class AllReminderJobs {
     }
 
     public void removeAppointmentJob(String externalId, Visit visit) {
-        List<Reminder> reminders = visit.appointmentReminders();
-        for (int i = 0; i < reminders.size(); i++) {
-            schedulerService.safeUnscheduleJob(AppointmentReminderJob.SUBJECT, AppointmentReminderJob.getJobIdUsing(externalId, visit.name(), i));
-        }
+        schedulerService.unscheduleAllJobs(AppointmentReminderJob.SUBJECT + externalId + visit.name());
     }
 
     public void removeVisitJob(String externalId, Visit visit) {
-        schedulerService.safeUnscheduleJob(VisitReminderJob.SUBJECT, VisitReminderJob.getJobIdUsing(externalId, visit));
+        schedulerService.unscheduleAllJobs(VisitReminderJob.SUBJECT + externalId + visit.name());
     }
 
     public void rescheduleAppointmentJob(String externalId, Visit visit) {

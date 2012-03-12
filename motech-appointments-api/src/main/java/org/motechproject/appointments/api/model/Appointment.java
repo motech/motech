@@ -44,8 +44,9 @@ public class Appointment extends ExtensibleDataObject {
         return DateUtil.setTimeZone(originalDueDate);
     }
 
-    public Appointment adjustDueDate(DateTime adjustedDueDate) {
+    public Appointment adjustDueDate(DateTime adjustedDueDate, List<Reminder> reminders) {
         this.dueDate = adjustedDueDate;
+        this.reminders = reminders;
         return this;
     }
 

@@ -5,6 +5,9 @@ import org.joda.time.DateTime;
 import org.junit.Test;
 import org.motechproject.util.DateUtil;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
@@ -30,7 +33,10 @@ public class AppointmentTest {
         DateTime tomorrow = today.plusDays(1);
         Appointment appointment = new Appointment().dueDate(today);
 
-        appointment.adjustDueDate(tomorrow);
+        List<Reminder> reminders = Arrays.asList(new Reminder());
+        appointment.adjustDueDate(tomorrow, reminders);
+        assertEquals(reminders, appointment.reminders());
+        assertEquals(1, appointment.reminders().size());
         assertEquals(today, appointment.originalDueDate());
         assertEquals(tomorrow, appointment.dueDate());
     }
