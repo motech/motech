@@ -19,7 +19,7 @@ public interface AppointmentService {
 
     public void addCustomDataToVisit(String externalId, String visitName, Map<String, Object> data);
 
-    public void rescheduleAppointment(String externalId, String visitName, DateTime adjustedDueDate);
+    public void rescheduleAppointment(RescheduleAppointmentRequest rescheduleAppointmentRequest);
 
     public void confirmAppointment(ConfirmAppointmentRequest confirmAppointmentRequest);
 

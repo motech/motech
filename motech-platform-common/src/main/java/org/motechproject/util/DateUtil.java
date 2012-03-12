@@ -44,6 +44,10 @@ public class DateUtil {
         return newDateTime(date, 0, 0, 0);
     }
 
+    public static Time time(DateTime dateTime) {
+        return new Time(dateTime.getHourOfDay(), dateTime.getMinuteOfHour());
+    }
+
     public static LocalDate newDate(Date date) {
         if (date == null) return null;
         return new LocalDate(date.getTime(), DateTimeSourceUtil.SourceInstance.timeZone());

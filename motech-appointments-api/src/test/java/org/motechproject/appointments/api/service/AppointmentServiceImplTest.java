@@ -175,13 +175,17 @@ public class AppointmentServiceImplTest {
         final DateTime now = DateUtil.now();
         final DateTime adjustedDueDate = DateUtil.now().plusDays(2);
         Visit visit = new Visit().name(visitName).appointment(new Appointment().dueDate(now));
+
+        RescheduleAppointmentRequest rescheduleAppointmentRequest = new RescheduleAppointmentRequest().setExternalId(externalId).setVisitName(visitName).
+                setAppointmentDueDate(adjustedDueDate).addAppointmentReminderConfiguration(new ReminderConfiguration());
         AppointmentCalendar appointmentCalendar = new AppointmentCalendar().addVisit(visit).externalId(externalId);
 
         when(allAppointmentCalendars.findByExternalId(externalId)).thenReturn(appointmentCalendar);
 
-        appointmentService.rescheduleAppointment(externalId, visitName, adjustedDueDate);
+        appointmentService.rescheduleAppointment(rescheduleAppointmentRequest);
 
         assertEquals(adjustedDueDate, visit.appointment().dueDate());
+        assertEquals(1, visit.appointment().reminders().size());
 
         verify(allReminderJobs).rescheduleAppointmentJob(externalId, visit);
         verify(allAppointmentCalendars).saveAppointmentCalendar(appointmentCalendar);

@@ -6,6 +6,7 @@ import org.joda.time.LocalDate;
 import org.junit.After;
 import org.junit.Test;
 import org.motechproject.model.DayOfWeek;
+import org.motechproject.model.Time;
 import org.motechproject.util.datetime.DateTimeSource;
 import org.motechproject.util.datetime.DefaultDateTimeSource;
 
@@ -117,6 +118,12 @@ public class DateUtilTest {
         assertFalse(DateUtil.inRange(reference, new DateTime(2010, 10, 10, 12, 22, 22, 224), new DateTime(2010, 10, 10, 12, 22, 22, 223)));
         assertTrue(DateUtil.inRange(reference, new DateTime(2010, 10, 9, 12, 22, 22, 224), new DateTime(2010, 10, 10, 12, 22, 22, 223)));
 
+    }
+
+    @Test
+    public void shouldReturnTimeFromDateTime() {
+        assertThat(DateUtil.time(new DateTime(2012, 12, 2, 19, 9, 38)), is(new Time(19, 9)));
+        assertThat(DateUtil.time(new DateTime(2012, 12, 2, 1, 58, 57)), is(new Time(1, 58)));
     }
 
     private void mockCurrentDate(final DateTime currentDate) {

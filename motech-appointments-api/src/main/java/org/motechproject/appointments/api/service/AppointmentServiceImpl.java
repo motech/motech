@@ -5,6 +5,7 @@ import org.motechproject.appointments.api.contract.*;
 import org.motechproject.appointments.api.dao.AllAppointmentCalendars;
 import org.motechproject.appointments.api.dao.AllReminderJobs;
 import org.motechproject.appointments.api.mapper.ReminderMapper;
+import org.motechproject.appointments.api.mapper.RescheduleAppointmentMapper;
 import org.motechproject.appointments.api.mapper.VisitMapper;
 import org.motechproject.appointments.api.mapper.VisitResponseMapper;
 import org.motechproject.appointments.api.model.AppointmentCalendar;
@@ -71,11 +72,12 @@ public class AppointmentServiceImpl implements AppointmentService {
         allAppointmentCalendars.saveAppointmentCalendar(appointmentCalendar);
     }
 
-    public void rescheduleAppointment(String externalId, String visitName, DateTime adjustedDueDate) {
-        AppointmentCalendar appointmentCalendar = getAppointmentCalendar(externalId);
-        Visit visit = appointmentCalendar.getVisit(visitName);
-        visit.appointment().adjustDueDate(adjustedDueDate);
-        allReminderJobs.rescheduleAppointmentJob(externalId, visit);
+    public void rescheduleAppointment(RescheduleAppointmentRequest rescheduleAppointmentRequest) {
+        AppointmentCalendar appointmentCalendar = getAppointmentCalendar(rescheduleAppointmentRequest.getExternalId());
+        Visit visit = appointmentCalendar.getVisit(rescheduleAppointmentRequest.getVisitName());
+        List<Reminder> appointmentReminders = new RescheduleAppointmentMapper().map(rescheduleAppointmentRequest);
+        visit.appointment().adjustDueDate(rescheduleAppointmentRequest.getAppointmentDueDate(), appointmentReminders);
+        allReminderJobs.rescheduleAppointmentJob(rescheduleAppointmentRequest.getExternalId(), visit);
         allAppointmentCalendars.saveAppointmentCalendar(appointmentCalendar);
     }
 
