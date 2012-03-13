@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static junit.framework.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -26,6 +29,7 @@ public class AllStringContentsIT {
     @Before
     public void setUp() {
         stringContent = new StringContent("language", "name", "value");
+
     }
 
     @Test
@@ -37,6 +41,22 @@ public class AllStringContentsIT {
         assertEquals(stringContent.getName(), fetchedContent.getName());
         assertEquals(stringContent.getLanguage(), fetchedContent.getLanguage());
         assertEquals(stringContent.getValue(), fetchedContent.getValue());
+
+        couchDbConnector.delete(fetchedContent);
+    }
+
+    @Test
+    public void shouldAddStringContentWithMetaData() throws CMSLiteException {
+        HashMap<String, String> metadata = new HashMap<String, String>();
+        metadata.put("duration", "100");
+        stringContent = new StringContent("language", "name", "value", metadata);
+        allStringContents.addContent(stringContent);
+
+        StringContent fetchedContent = couchDbConnector.get(StringContent.class, stringContent.getId());
+        assertNotNull(fetchedContent);
+        Map<String,String> savedMetaData = stringContent.getMetadata();
+        assertEquals(savedMetaData.size(),1 );
+        assertEquals(savedMetaData.get("duration"), "100");
 
         couchDbConnector.delete(fetchedContent);
     }

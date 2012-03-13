@@ -3,6 +3,8 @@ package org.motechproject.cmslite.api.model;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 
+import java.util.Map;
+
 @TypeDiscriminator("doc.type === 'StringContent'")
 public class StringContent extends Content {
     @JsonProperty
@@ -13,6 +15,11 @@ public class StringContent extends Content {
 
     public StringContent(String language, String name, String value) {
         super(language, name);
+        this.value = value;
+    }
+    
+    public StringContent(String language, String name, String value, Map<String, String> metadata) {
+        super(language, name, metadata);
         this.value = value;
     }
 
