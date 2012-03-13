@@ -13,10 +13,12 @@ public class AppointmentReminderJobTest {
 
     private Visit visit;
     private AppointmentReminderJob appointmentReminderJob;
+    private int reminderCount;
 
     public AppointmentReminderJobTest() {
         visit = new Visit().appointment(new Appointment().reminder(new Reminder())).name("visitName");
-        appointmentReminderJob = new AppointmentReminderJob("externalId", visit);
+        reminderCount = 0;
+        appointmentReminderJob = new AppointmentReminderJob("externalId", AppointmentReminderJob.getJobIdUsing("externalId", visit.name(), reminderCount), visit.appointmentReminder(), visit.name());
     }
 
     @Test
@@ -36,6 +38,6 @@ public class AppointmentReminderJobTest {
 
     @Test
     public void shouldAddCombinationOfVisitNameAndExternalId_AsJobId() {
-        assertEquals("externalId" + visit.name(), appointmentReminderJob.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
+        assertEquals("externalId" + visit.name() + reminderCount, appointmentReminderJob.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
     }
 }

@@ -2,7 +2,9 @@ package org.motechproject.appointments.api.contract;
 
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CreateVisitRequest {
@@ -13,7 +15,7 @@ public class CreateVisitRequest {
 
     private DateTime appointmentDueDate;
 
-    private ReminderConfiguration appointmentReminderConfiguration;
+    private List<ReminderConfiguration> appointmentReminderConfigurations;
 
     private Map<String, Object> data = new HashMap<String, Object>();
 
@@ -59,11 +61,29 @@ public class CreateVisitRequest {
     }
 
     public ReminderConfiguration getAppointmentReminderConfiguration() {
-        return appointmentReminderConfiguration;
+        if (appointmentReminderConfigurations != null && !appointmentReminderConfigurations.isEmpty())
+            return appointmentReminderConfigurations.get(0);
+        return null;
     }
 
+    @Deprecated
     public CreateVisitRequest setAppointmentReminderConfiguration(ReminderConfiguration appointmentReminderConfiguration) {
-        this.appointmentReminderConfiguration = appointmentReminderConfiguration;
+        if (appointmentReminderConfigurations == null) {
+            appointmentReminderConfigurations = new ArrayList<ReminderConfiguration>();
+        }
+        this.appointmentReminderConfigurations.add(appointmentReminderConfiguration);
         return this;
+    }
+
+    public CreateVisitRequest addAppointmentReminderConfiguration(ReminderConfiguration appointmentReminderConfiguration) {
+        if (appointmentReminderConfigurations == null) {
+            appointmentReminderConfigurations = new ArrayList<ReminderConfiguration>();
+        }
+        this.appointmentReminderConfigurations.add(appointmentReminderConfiguration);
+        return this;
+    }
+
+    public List<ReminderConfiguration> getAppointmentReminderConfigurations() {
+        return appointmentReminderConfigurations;
     }
 }

@@ -41,6 +41,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     public VisitResponse addVisit(String externalId, CreateVisitRequest createVisitRequest) {
         AppointmentCalendar appointmentCalendar = getAppointmentCalendar(externalId);
+        if (appointmentCalendar == null) {
+            appointmentCalendar = new AppointmentCalendar().externalId(externalId);
+        }
         List<VisitResponse> visitResponses = addVisits(appointmentCalendar, Arrays.asList(createVisitRequest));
         return visitResponses.get(0);
     }
@@ -88,6 +91,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     public void visited(String externalId, String visitName, DateTime visitedDate) {
         AppointmentCalendar appointmentCalendar = getAppointmentCalendar(externalId);
+        if (appointmentCalendar == null) {
+            return;
+        }
         Visit visit = appointmentCalendar.getVisit(visitName);
         visit.visitDate(visitedDate);
         allReminderJobs.removeAll(externalId);

@@ -15,11 +15,15 @@ public class VisitMapperTest {
 
     private DateTime now;
     private VisitMapper visitMapper;
-    private ReminderConfiguration reminderConfiguration;
+    private ReminderConfiguration reminderConfiguration2;
+    private ReminderConfiguration reminderConfiguration1;
 
     @Before
     public void setUp() {
-        reminderConfiguration = new ReminderConfiguration().setRemindFrom(10).setIntervalCount(1).setIntervalUnit(ReminderConfiguration.IntervalUnit.HOURS).setRepeatCount(20);
+        reminderConfiguration1 = new ReminderConfiguration().setRemindFrom(10).setIntervalCount(1)
+                .setIntervalUnit(ReminderConfiguration.IntervalUnit.WEEKS).setRepeatCount(20);
+        reminderConfiguration2 = new ReminderConfiguration().setRemindFrom(10).setIntervalCount(1)
+                .setIntervalUnit(ReminderConfiguration.IntervalUnit.HOURS).setRepeatCount(20);
         now = DateTime.now();
         visitMapper = new VisitMapper();
     }
@@ -40,10 +44,12 @@ public class VisitMapperTest {
     @Test
     public void shouldMapAVisit_GivenAnAppointment() {
         DateTime dueDate = now.plusWeeks(2);
-        CreateVisitRequest createVisitRequest = new CreateVisitRequest().setVisitName("week2").setTypeOfVisit("Scheduled").setAppointmentDueDate(dueDate).setAppointmentReminderConfiguration(reminderConfiguration);
+        CreateVisitRequest createVisitRequest = new CreateVisitRequest().setVisitName("week2").setTypeOfVisit("Scheduled")
+                .setAppointmentDueDate(dueDate).setAppointmentReminderConfiguration(reminderConfiguration1).addAppointmentReminderConfiguration(reminderConfiguration2);
         createVisitRequest.addData("key", "value");
         Visit visit = visitMapper.map(createVisitRequest);
 
+        assertEquals(2, visit.appointmentReminders().size());
         assertEquals("week2", visit.name());
         assertEquals("Scheduled", visit.typeOfVisit());
         assertNotNull(visit.appointment());
