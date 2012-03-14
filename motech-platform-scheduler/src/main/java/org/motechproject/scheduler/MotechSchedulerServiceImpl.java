@@ -90,10 +90,10 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
     }
 
     private void setMisfirePolicy(Trigger trigger, String misfireInstruction, int defaultMisfireInstruction) {
-        if (StringUtil.isNullOrEmpty(cronTriggerMisfirePolicy)) {
-            trigger.setMisfireInstruction(Integer.valueOf(misfireInstruction));
-        } else {
+        if (StringUtil.isNullOrEmpty(misfireInstruction)) {
             trigger.setMisfireInstruction(defaultMisfireInstruction);
+        } else {
+            trigger.setMisfireInstruction(Integer.valueOf(misfireInstruction));
         }
     }
 
