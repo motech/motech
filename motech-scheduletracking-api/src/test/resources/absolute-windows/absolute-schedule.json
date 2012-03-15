@@ -1,13 +1,14 @@
 {
-    "name":"IPTI Schedule",
+    "name":"Absolute Schedule",
+    "absoluteWindows": true,
     "milestones":[
         {
-            "name":"IPTI 1",
+            "name":"milestone1",
             "scheduleWindows":{
-                "earliest":["13 Weeks"],
-                "due":["14 Weeks", "2 hours"],
-                "late":["1 year", "2 month", "16 Weeks"],
-                "max":["", "", "", ""]
+                "earliest":["1 Week"],
+                "due":["2 Weeks"],
+                "late":["3 Weeks"],
+                "max":[""]
             },
             "data":{
                 "Foo":"Bar"
@@ -28,12 +29,12 @@
             ]
         },
         {
-            "name":"IPTI 2",
+            "name":"milestone2",
             "scheduleWindows":{
-                "earliest":["1 Weeks"],
-                "due":["2 Weeks"],
-                "late":["3 Weeks"],
-                "max":[""]
+                "earliest":["5 Weeks"],
+                "due":["6 Weeks"],
+                "late":["7 Weeks"],
+                "max":["8 Weeks"]
             },
             "data":{
                 "doo":"Bar"
