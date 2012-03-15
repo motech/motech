@@ -51,11 +51,7 @@ public class MessageCampaignServiceIT {
     public void testEnrollForRepeatingProgram() throws Exception {
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length;
 
-        CampaignRequest enrollRequest = new CampaignRequest();
-        enrollRequest.setCampaignName("Relative Parameterized Dates Message Program");
-        enrollRequest.setExternalId("patiend_Id3");
-        enrollRequest.setReferenceDate(DateUtil.today().plusDays(1));
-        enrollRequest.setReminderTime(new Time(9, 30));
+        CampaignRequest enrollRequest = new CampaignRequest("patiend_Id3", "Relative Parameterized Dates Message Program", new Time(9, 30), DateUtil.today().plusDays(1));
         messageCampaignService.startFor(enrollRequest);
         assertEquals(scheduledJobsNum + 5, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
     }

@@ -74,11 +74,14 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
     }
 
     private String getCronExpression(RepeatingCampaignMessage message) {
-        return (dispatchMessagesEvery24Hours) ?
-                String.format("0 %d %d %s * ? *", campaignRequest.reminderTime().getMinute(),
-                        campaignRequest.reminderTime().getHour(), Constants.DAILY_REPEATING_DAYS_CRON_EXPRESSION) :
-                String.format("0 %d %d ? * %s *", message.deliverTime().getMinute(),
-                        message.deliverTime().getHour(), StringUtils.join(getShortNames(message.weekDaysApplicable()).iterator(), ","));
+        if(dispatchMessagesEvery24Hours)
+             return String.format("0 %d %d %s * ? *", campaignRequest.reminderTime().getMinute(),
+                    campaignRequest.reminderTime().getHour(), Constants.DAILY_REPEATING_DAYS_CRON_EXPRESSION);
+
+        String deliverDates = StringUtils.join(getShortNames(campaignRequest.getUserPreferredDays().isEmpty() ? message.weekDaysApplicable() : campaignRequest.getUserPreferredDays()).iterator(), ",");
+
+        return String.format("0 %d %d ? * %s *", message.deliverTime().getMinute(),message.deliverTime().getHour(),
+                deliverDates);
     }
 
     private void scheduleRepeatingJob(LocalDate startDate, Time deliverTime, Date endDate, Map<String, Object> params, String cronExpression) {
