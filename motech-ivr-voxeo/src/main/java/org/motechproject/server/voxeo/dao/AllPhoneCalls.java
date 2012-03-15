@@ -7,9 +7,11 @@ import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.server.voxeo.domain.PhoneCall;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class AllPhoneCalls extends MotechBaseRepository<PhoneCall> {
 
     @Autowired

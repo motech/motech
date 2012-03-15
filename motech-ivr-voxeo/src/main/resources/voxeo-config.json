@@ -1,0 +1,7 @@
+{
+    "serverUrl":"http://127.0.0.1:9998/SessionControl/VoiceXML.start",
+    "applications":{
+                "platform":"platform",
+                "testApplication2":"0858bc70143a994a9dfc42b066452d9b4a8bc96e15e6558aaa71bb1990d44e407c935af7e3958e2585b7be77"
+            }
+}
