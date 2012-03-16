@@ -16,6 +16,7 @@ import static org.motechproject.util.DateUtil.today;
 public class Schedule implements Serializable {
     private String name;
     private List<Milestone> milestones = new ArrayList<Milestone>();
+    private boolean isBasedOnAbsoluteWindows;
 
     public Schedule(String name) {
         this.name = name;
@@ -78,5 +79,18 @@ public class Schedule implements Serializable {
     @Override
     public int hashCode() {
         return name != null ? name.hashCode() : 0;
+    }
+
+    public boolean maxMilestoneCountReached(int milestoneCount) {
+        return milestoneCount >= milestones.size();
+    }
+
+    public Schedule isBasedOnAbsoluteWindows(boolean value) {
+        this.isBasedOnAbsoluteWindows = value;
+        return this;
+    }
+
+    public boolean isBasedOnAbsoluteWindows() {
+        return this.isBasedOnAbsoluteWindows;
     }
 }

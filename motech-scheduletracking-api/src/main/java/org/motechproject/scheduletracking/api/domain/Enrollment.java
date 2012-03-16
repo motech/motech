@@ -29,13 +29,15 @@ public class Enrollment extends MotechBaseDataObject {
     private Time preferredAlertTime;
 
     private EnrollmentStatus status;
+
+    private Schedule schedule;
     private List<MilestoneFulfillment> fulfillments = new LinkedList<MilestoneFulfillment>();
 
     // For ektorp
     private Enrollment() {
     }
 
-    public Enrollment(String externalId, String scheduleName, String currentMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime, EnrollmentStatus enrollmentStatus) {
+    public Enrollment(String externalId, String scheduleName, String currentMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime, EnrollmentStatus enrollmentStatus, Schedule schedule) {
         this.externalId = externalId;
         this.scheduleName = scheduleName;
         this.currentMilestoneName = currentMilestoneName;
@@ -43,6 +45,7 @@ public class Enrollment extends MotechBaseDataObject {
         this.referenceDateTime = referenceDateTime;
         this.preferredAlertTime = preferredAlertTime;
         this.status = enrollmentStatus;
+        this.schedule = schedule;
     }
 
     public String getScheduleName() {
@@ -90,6 +93,15 @@ public class Enrollment extends MotechBaseDataObject {
         return status.equals(COMPLETED);
     }
 
+    @JsonIgnore
+    public Schedule getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(Schedule schedule) {
+        this.schedule = schedule;
+    }
+
     public void setCurrentMilestoneName(String currentMilestoneName) {
         this.currentMilestoneName = currentMilestoneName;
     }
@@ -121,5 +133,12 @@ public class Enrollment extends MotechBaseDataObject {
 
     public void fulfillCurrentMilestone(DateTime fulfillmentDateTime) {
         fulfillments.add(new MilestoneFulfillment(currentMilestoneName, fulfillmentDateTime));
+    }
+
+    @JsonIgnore
+    public DateTime getCurrentMilestoneStartDate() {
+        if (currentMilestoneName.equals(schedule.getFirstMilestone().getName()) || schedule.isBasedOnAbsoluteWindows())
+            return getReferenceDateTime();
+        return (fulfillments.isEmpty()) ? getEnrollmentDateTime() : getLastFulfilledDate();
     }
 }

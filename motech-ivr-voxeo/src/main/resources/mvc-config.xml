@@ -7,20 +7,7 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd http://www.springframework.org/schema/mvc
 		http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
-    <import resource="applicationPlatformCommon.xml"/>
-    <context:annotation-config/>
     <mvc:annotation-driven />
+    <context:component-scan base-package="org.motechproject.server.voxeo.web" />
 
-    <context:component-scan base-package="org.motechproject.server" />
-
-    <bean id="voxeoDbConnector" class="org.ektorp.impl.StdCouchDbConnector">
-        <constructor-arg value="motech-ivr-voxeo"/>
-        <constructor-arg ref="couchDbInstance"/>
-    </bean>
-
-    <bean id="allCallDetailRecords" class="org.motechproject.server.voxeo.dao.AllPhoneCalls" >
-        <constructor-arg ref="voxeoDbConnector"/>
-    </bean>
-
-    <bean id="commonsHttpClient" class="org.apache.commons.httpclient.HttpClient" />
 </beans>

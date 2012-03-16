@@ -14,6 +14,10 @@ import java.util.List;
 
 @Component
 public class AllEnrollments extends MotechBaseRepository<Enrollment> {
+
+    @Autowired
+    private AllTrackedSchedules allTrackedSchedules;
+
     @Autowired
     public AllEnrollments(@Qualifier("scheduleTrackingDbConnector") CouchDbConnector db) {
         super(Enrollment.class, db);
@@ -22,7 +26,21 @@ public class AllEnrollments extends MotechBaseRepository<Enrollment> {
     @View(name = "find_active_by_external_id_and_schedule_name", map = "function(doc) {{emit([doc.externalId, doc.scheduleName, doc.status]);}}")
     public Enrollment getActiveEnrollment(String externalId, String scheduleName) {
         List<Enrollment> enrollments = queryView("find_active_by_external_id_and_schedule_name", ComplexKey.of(externalId, scheduleName, EnrollmentStatus.ACTIVE.name()));
-        return enrollments.isEmpty() ? null : enrollments.get(0);
+        return enrollments.isEmpty() ? null : populateSchedule(enrollments.get(0));
+    }
+
+    @Override
+    public List<Enrollment> getAll()
+    {
+        List<Enrollment> enrollments = super.getAll();
+        for(Enrollment enrollment : enrollments)
+            populateSchedule(enrollment);
+        return enrollments;
+    }
+
+    private Enrollment populateSchedule(Enrollment enrollment) {
+        enrollment.setSchedule(allTrackedSchedules.getByName(enrollment.getScheduleName()));
+        return enrollment;
     }
 
     public Enrollment addOrReplace(Enrollment enrollment) {

@@ -75,7 +75,7 @@ public abstract class MotechListenerAbstractProxy implements EventListener {
 		try {
 			callHandler(event);
 		} catch (Exception e) {
-			LoggerFactory.getLogger(bean.getClass()).error(e.toString());
+			LoggerFactory.getLogger(bean.getClass()).error("Failed to handle event", e);
             throw new MotechException("Failed to handle event", e);
 		}
 	}

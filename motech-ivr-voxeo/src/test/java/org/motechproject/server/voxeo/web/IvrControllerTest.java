@@ -1,34 +1,3 @@
-/**
- * MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
- *
- * Copyright (c) 2011 Grameen Foundation USA.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * 3. Neither the name of Grameen Foundation USA, nor its respective contributors
- * may be used to endorse or promote products derived from this software without
- * specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY GRAMEEN FOUNDATION USA AND ITS CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL GRAMEEN FOUNDATION USA OR ITS CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
- * OF SUCH DAMAGE.
- */
 package org.motechproject.server.voxeo.web;
 
 import org.junit.Before;
@@ -39,6 +8,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.ivr.service.CallRequest;
+import org.motechproject.server.voxeo.VoxeoIVRService;
 import org.motechproject.server.voxeo.dao.AllPhoneCalls;
 import org.motechproject.server.voxeo.domain.PhoneCall;
 import org.motechproject.server.voxeo.domain.PhoneCallEvent;
@@ -50,9 +20,6 @@ import java.util.Date;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-/**
- *
- */
 @RunWith(MockitoJUnitRunner.class)
 public class IvrControllerTest
 {
@@ -62,15 +29,14 @@ public class IvrControllerTest
 
     @Mock
     private HttpServletRequest request;
-
     @Mock
     HttpServletResponse response;
-
     @Mock
     private EventRelay eventRelay;
-
     @Mock
     private AllPhoneCalls allPhoneCalls;
+    @Mock
+    private VoxeoIVRService voxeoIvrService;
 
     String sessionId = "12e64ab9d5faf166cd1aff16362016bb";
     String callerId = "1234567890";
@@ -307,19 +273,35 @@ public class IvrControllerTest
         assertNotNull(phoneCall.getEndDate());
     }
 
+    @Test
+    public void shouldFlashTheCaller() {
+        when(request.getParameter("phoneNumber")).thenReturn("12345");
+        when(request.getParameter("applicationName")).thenReturn("voxeoApplicationName");
+
+        ivrController.flash(request,null);
+
+        ArgumentCaptor<CallRequest> callRequestCaptor = ArgumentCaptor.forClass(CallRequest.class);
+        verify(voxeoIvrService).initiateCall(callRequestCaptor.capture());
+
+        CallRequest callRequest = callRequestCaptor.getValue();
+        assertEquals("12345", callRequest.getPhone());
+        assertEquals("voxeoApplicationName", callRequest.getPayload().get(VoxeoIVRService.APPLICATION_NAME));
+
+    }
+
     private void setIncomingRequestParameters(String sessionId, String status, String callerId, String timestamp) {
-        Mockito.when(request.getParameter("session.id")).thenReturn(sessionId);
-        Mockito.when(request.getParameter("status")).thenReturn(status);
-        Mockito.when(request.getParameter("application.callerId")).thenReturn(callerId);
-        Mockito.when(request.getParameter("timestamp")).thenReturn(timestamp);
+        when(request.getParameter("session.id")).thenReturn(sessionId);
+        when(request.getParameter("status")).thenReturn(status);
+        when(request.getParameter("application.callerId")).thenReturn(callerId);
+        when(request.getParameter("timestamp")).thenReturn(timestamp);
     }
 
     private void setOutgoingRequestParameters(String sessionId, String externalId, String status, String reason, String callerId, String timestamp) {
-        Mockito.when(request.getParameter("session.id")).thenReturn(sessionId);
-        Mockito.when(request.getParameter("externalId")).thenReturn(externalId);
-        Mockito.when(request.getParameter("status")).thenReturn(status);
-        Mockito.when(request.getParameter("reason")).thenReturn(reason);
-        Mockito.when(request.getParameter("application.callerId")).thenReturn(callerId);
-        Mockito.when(request.getParameter("timestamp")).thenReturn(timestamp);
+        when(request.getParameter("session.id")).thenReturn(sessionId);
+        when(request.getParameter("externalId")).thenReturn(externalId);
+        when(request.getParameter("status")).thenReturn(status);
+        when(request.getParameter("reason")).thenReturn(reason);
+        when(request.getParameter("application.callerId")).thenReturn(callerId);
+        when(request.getParameter("timestamp")).thenReturn(timestamp);
     }
 }

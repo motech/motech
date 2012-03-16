@@ -28,7 +28,7 @@ public class EndOfMilestoneListenerTest {
 
     @Test
     public void shouldDefaultEnrollmentAtTheCurrentMilestoneIfNotFulfilled() {
-        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "first_milestone", weeksAgo(4), weeksAgo(4), new Time(8, 10), null);
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "first_milestone", weeksAgo(4), weeksAgo(4), new Time(8, 10), null, null);
         enrollment.setId("enrollment_1");
         when(allEnrollments.get("enrollment_1")).thenReturn(enrollment);
 

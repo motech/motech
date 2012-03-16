@@ -1,7 +1,11 @@
 package org.motechproject.server.messagecampaign.contract;
 
 import org.joda.time.LocalDate;
+import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.Time;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CampaignRequest {
     private String externalId;
@@ -9,20 +13,27 @@ public class CampaignRequest {
     private Time reminderTime;
     private LocalDate referenceDate;
     private Integer startOffset;
+    private List<DayOfWeek> userPreferredDays;
 
     public CampaignRequest() {
     }
 
     public CampaignRequest(String externalId, String campaignName, Time reminderTime, LocalDate referenceDate) {
-        this(externalId, campaignName, reminderTime, referenceDate, null);
-    }
-
-    public CampaignRequest(String externalId, String campaignName, Time reminderTime, LocalDate referenceDate, Integer startOffset) {
         this.externalId = externalId;
         this.campaignName = campaignName;
         this.reminderTime = reminderTime;
         this.referenceDate = referenceDate;
+        userPreferredDays = new ArrayList<DayOfWeek>();
+    }
+
+    public CampaignRequest(String externalId, String campaignName, Time reminderTime, LocalDate referenceDate, Integer startOffset) {
+        this(externalId, campaignName, reminderTime, referenceDate);
         this.startOffset = startOffset;
+    }
+
+    public CampaignRequest(String externalId, String campaignName, Time reminderTime, LocalDate referenceDate, List<DayOfWeek> userPreferredDays) {
+        this(externalId, campaignName, reminderTime, referenceDate);
+        this.userPreferredDays.addAll(userPreferredDays);
     }
 
     public void setCampaignName(String campaignName) {
@@ -74,5 +85,14 @@ public class CampaignRequest {
                 ", referenceDate=" + referenceDate +
                 ", startOffset=" + startOffset +
                 '}';
+    }
+
+
+    public List<DayOfWeek> getUserPreferredDays() {
+        return userPreferredDays;
+    }
+
+    public void setUserPreferredDays(List<DayOfWeek> userPreferredDays) {
+        this.userPreferredDays = userPreferredDays;
     }
 }

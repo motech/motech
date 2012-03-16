@@ -51,6 +51,8 @@ public class ScheduleFactory {
                 milestone.addAlert(WindowName.valueOf(alertRecord.window()), new Alert(getWindowPeriod(offset), getWindowPeriod(alertRecord.interval()), Integer.parseInt(alertRecord.count()), alertIndex++));
             }
             schedule.addMilestones(milestone);
+
+            schedule.isBasedOnAbsoluteWindows(scheduleRecord.hasAbsoluteWindows());
         }
         return schedule;
     }
@@ -81,6 +83,10 @@ public class ScheduleFactory {
         parsers.add(new PeriodFormatterBuilder()
                 .appendHours()
                 .appendSuffix(" hour", " hours")
+                .toParser());
+        parsers.add(new PeriodFormatterBuilder()
+                .appendMinutes()
+                .appendSuffix(" minute", " minutes")
                 .toParser());
     }
 

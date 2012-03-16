@@ -10,6 +10,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.model.CronSchedulableJob;
+import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
@@ -24,6 +25,7 @@ import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaign
 import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 import org.motechproject.util.DateUtil;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -140,6 +142,28 @@ public class RepeatingProgramSchedulerTest {
         assertDate(jobs.get(0).getEndTime(), interval);
         assertThat(jobs.get(0).getCronExpression(), is("0 30 10 ? * MON,WED *"));
     }
+
+    @Test
+    public void shouldScheduleJobsOnlyOnUserSpecifiedDaysWithCalendarDayOfWeekAsMonday() {
+        Time reminderTime = new Time(9, 30);
+        RepeatingCampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForDaysApplicable("OM2", asList("Monday", "Wednesday"), "child-info-week-{Offset}-{WeekDay}").deliverTime(new Time(10, 30));
+        RepeatingCampaign campaign = new CampaignBuilder().repeatingCampaign("campaignName", "2 Weeks", asList(campaignMessage));
+        List<DayOfWeek> userSpecifiedDays = asList(new DayOfWeek[]{DayOfWeek.Tuesday,DayOfWeek.Friday});
+        CampaignRequest request = defaultBuilder().withReferenceDate(new LocalDate(2012, 2, 17)).withReminderTime(reminderTime).withUserSpecifiedDays(userSpecifiedDays).build();
+
+        RepeatingProgramScheduler repeatingProgramScheduler = new RepeatingProgramScheduler(mockSchedulerService, request, campaign, mockCampaignEnrollmentService, false);
+
+        repeatingProgramScheduler.start();
+        ArgumentCaptor<CronSchedulableJob> capture = ArgumentCaptor.forClass(CronSchedulableJob.class);
+        verify(mockSchedulerService, times(1)).safeScheduleJob(capture.capture());
+
+        Date interval = dateAtEndOfDay(2012, 3, 1);
+
+        List<CronSchedulableJob> jobs = capture.getAllValues();
+        assertDate(jobs.get(0).getEndTime(), interval);
+        assertThat(jobs.get(0).getCronExpression(), is("0 30 10 ? * TUE,FRI *"));
+    }
+
 
     @Test
     public void shouldScheduleJobsForFiveWeeksAsMaxDurationWithCalendarDayOfWeekAsMonday() {
