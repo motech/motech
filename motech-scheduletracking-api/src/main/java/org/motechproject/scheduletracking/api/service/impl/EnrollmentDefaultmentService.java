@@ -17,22 +17,20 @@ import static org.motechproject.util.DateUtil.now;
 
 @Component
 public class EnrollmentDefaultmentService {
-    private AllTrackedSchedules allTrackedSchedules;
     private MotechSchedulerService schedulerService;
 
     @Autowired
-    public EnrollmentDefaultmentService(AllTrackedSchedules allTrackedSchedules, MotechSchedulerService schedulerService) {
-        this.allTrackedSchedules = allTrackedSchedules;
+    public EnrollmentDefaultmentService(MotechSchedulerService schedulerService) {
         this.schedulerService = schedulerService;
     }
 
     public void scheduleJobToCaptureDefaultment(Enrollment enrollment) {
-        Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
+        Schedule schedule = enrollment.getSchedule();
         Milestone currentMilestone = schedule.getMilestone(enrollment.getCurrentMilestoneName());
         if (currentMilestone == null)
             return;
 
-        DateTime currentMilestoneStartDate = enrollment.getCurrentMilestoneStartDate(schedule.getFirstMilestone().getName(), schedule.isBasedOnAbsoluteWindows());
+        DateTime currentMilestoneStartDate = enrollment.getCurrentMilestoneStartDate();
         DateTime milestoneEndDateTime = currentMilestoneStartDate.plus(currentMilestone.getMaximumDuration());
 
         if (milestoneEndDateTime.isBefore(now()))
@@ -41,15 +39,6 @@ public class EnrollmentDefaultmentService {
         MotechEvent event = new DefaultmentCaptureEvent(enrollment.getId(), enrollment.getId()).toMotechEvent();
         schedulerService.safeScheduleRunOnceJob(new RunOnceSchedulableJob(event, milestoneEndDateTime.toDate()));
     }
-
-    // duplicated and tested in enrollment service!
-    private DateTime getCurrentMilestoneStartDate(Enrollment enrollment) {
-        Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
-        if (enrollment.getCurrentMilestoneName().equals(schedule.getFirstMilestone().getName()))
-            return enrollment.getReferenceDateTime();
-        return (enrollment.getFulfillments().isEmpty()) ? enrollment.getEnrollmentDateTime() : enrollment.getLastFulfilledDate();
-    }
-
 
     public void unscheduleDefaultmentCaptureJob(Enrollment enrollment) {
         schedulerService.safeUnscheduleAllJobs(String.format("%s-%s", DEFAULTMENT_CAPTURE, enrollment.getId()));

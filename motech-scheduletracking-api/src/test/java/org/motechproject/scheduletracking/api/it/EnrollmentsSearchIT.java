@@ -9,6 +9,7 @@ import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.WindowName;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
+import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
 import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
@@ -37,6 +38,8 @@ public class EnrollmentsSearchIT {
     private ScheduleTrackingService scheduleTrackingService;
     @Autowired
     private AllEnrollments allEnrollments;
+    @Autowired
+    private AllTrackedSchedules allTrackedSchedules;
 
     @After
     public void tearDown() {
@@ -113,7 +116,7 @@ public class EnrollmentsSearchIT {
     }
 
     private Enrollment createEnrollment(String externalId, String scheduleName, String currentMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime, EnrollmentStatus enrollmentStatus) {
-        Enrollment enrollment = new Enrollment(externalId, scheduleName, currentMilestoneName, referenceDateTime, enrollmentDateTime, preferredAlertTime, enrollmentStatus);
+        Enrollment enrollment = new Enrollment(externalId, scheduleName, currentMilestoneName, referenceDateTime, enrollmentDateTime, preferredAlertTime, enrollmentStatus, allTrackedSchedules.getByName(scheduleName));
         allEnrollments.add(enrollment);
         return enrollment;
     }

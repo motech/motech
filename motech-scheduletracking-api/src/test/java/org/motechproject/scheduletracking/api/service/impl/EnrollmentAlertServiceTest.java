@@ -41,8 +41,6 @@ public class EnrollmentAlertServiceTest {
     private EnrollmentAlertService enrollmentAlertService;
 
     @Mock
-    private AllTrackedSchedules allTrackedSchedules;
-    @Mock
     private MotechSchedulerService schedulerService;
 
     @Before
@@ -54,7 +52,7 @@ public class EnrollmentAlertServiceTest {
         given(DateUtil.now()).willReturn(now);
         given(DateUtil.today()).willReturn(now.toLocalDate());
 
-        enrollmentAlertService = new EnrollmentAlertService(allTrackedSchedules, schedulerService);
+        enrollmentAlertService = new EnrollmentAlertService(schedulerService);
     }
 
     @Test
@@ -66,8 +64,7 @@ public class EnrollmentAlertServiceTest {
         milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
-        when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
-        Enrollment enrollment = new Enrollment(externalId, scheduleName, milestone.getName(), weeksAgo(0), weeksAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE);
+        Enrollment enrollment = new Enrollment(externalId, scheduleName, milestone.getName(), weeksAgo(0), weeksAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE, schedule);
 
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
@@ -89,9 +86,8 @@ public class EnrollmentAlertServiceTest {
         milestone.addAlert(WindowName.due, new Alert(weeks(1), hours(2), 2, 1));
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
-        when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
         DateTime now = DateUtil.now();
-        Enrollment enrollment = new Enrollment(externalId, scheduleName, milestone.getName(), now, now, null, EnrollmentStatus.ACTIVE);
+        Enrollment enrollment = new Enrollment(externalId, scheduleName, milestone.getName(), now, now, null, EnrollmentStatus.ACTIVE, schedule);
 
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
@@ -117,8 +113,7 @@ public class EnrollmentAlertServiceTest {
         milestone.addAlert(WindowName.due, new Alert(days(0), days(3), 2, 1));
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
-        when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
-        Enrollment enrollment = new Enrollment(externalId, scheduleName, milestone.getName(), weeksAgo(0), weeksAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE);
+        Enrollment enrollment = new Enrollment(externalId, scheduleName, milestone.getName(), weeksAgo(0), weeksAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE, schedule);
 
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
@@ -140,8 +135,7 @@ public class EnrollmentAlertServiceTest {
         milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
-        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
-        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(0), weeksAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE);
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(0), weeksAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE, schedule);
 
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
@@ -161,8 +155,7 @@ public class EnrollmentAlertServiceTest {
         milestone.addAlert(WindowName.earliest, new Alert(days(0), days(3), 3, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
-        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
-        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", daysAgo(4), daysAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE);
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", daysAgo(4), daysAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE, schedule);
 
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
@@ -179,9 +172,8 @@ public class EnrollmentAlertServiceTest {
         milestone.addAlert(WindowName.earliest, new Alert(days(0), days(3), 3, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
-        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
 
-        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", daysAgo(0), daysAgo(0), new Time(8, 10), EnrollmentStatus.ACTIVE);
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", daysAgo(0), daysAgo(0), new Time(8, 10), EnrollmentStatus.ACTIVE, schedule);
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
         RepeatingSchedulableJob job = expectAndCaptureRepeatingJob();
@@ -196,9 +188,8 @@ public class EnrollmentAlertServiceTest {
         milestone.addAlert(WindowName.earliest, new Alert(days(0), days(3), 3, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
-        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
 
-        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", daysAgo(0), daysAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE);
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", daysAgo(0), daysAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE, schedule);
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
         RepeatingSchedulableJob job = expectAndCaptureRepeatingJob();
@@ -212,9 +203,8 @@ public class EnrollmentAlertServiceTest {
         milestone.addAlert(WindowName.earliest, new Alert(days(0), days(3), 1, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
-        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
 
-        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", daysAgo(4), daysAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE);
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", daysAgo(4), daysAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE, schedule);
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
         verify(schedulerService, times(0)).safeScheduleRepeatingJob(Matchers.<RepeatingSchedulableJob>any());
@@ -226,8 +216,7 @@ public class EnrollmentAlertServiceTest {
         milestone.addAlert(WindowName.due, new Alert(days(3), days(1), 3, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
-        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
-        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(0), weeksAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE);
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(0), weeksAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE, schedule);
 
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
@@ -248,9 +237,8 @@ public class EnrollmentAlertServiceTest {
         schedule.isBasedOnAbsoluteWindows(true);
         schedule.addMilestones(firstMilestone);
         schedule.addMilestones(secondMilestone);
-        when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
 
-        Enrollment enrollmentIntoSecondMilestone = new Enrollment("some_id", scheduleName, secondMilestoneName, weeksAgo(1), weeksAgo(0), new Time(14, 0), EnrollmentStatus.ACTIVE);
+        Enrollment enrollmentIntoSecondMilestone = new Enrollment("some_id", scheduleName, secondMilestoneName, weeksAgo(1), weeksAgo(0), new Time(14, 0), EnrollmentStatus.ACTIVE, schedule);
         enrollmentIntoSecondMilestone.fulfillCurrentMilestone(DateUtil.now());
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollmentIntoSecondMilestone);
 
@@ -265,8 +253,7 @@ public class EnrollmentAlertServiceTest {
         secondMilestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(firstMilestone, secondMilestone);
-        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
-        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(0), weeksAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE);
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(0), weeksAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE, schedule);
 
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
@@ -279,8 +266,7 @@ public class EnrollmentAlertServiceTest {
         milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 4, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
-        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
-        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone_1", weeksAgo(1), weeksAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE);
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone_1", weeksAgo(1), weeksAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE, schedule);
 
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
         verify(schedulerService, times(0)).scheduleRepeatingJob(Matchers.<RepeatingSchedulableJob>any());
@@ -294,8 +280,7 @@ public class EnrollmentAlertServiceTest {
         secondMilestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 2, 1));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(firstMilestone, secondMilestone);
-        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
-        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone_2", weeksAgo(4), weeksAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE);
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone_2", weeksAgo(4), weeksAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE, schedule);
 
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
@@ -307,7 +292,7 @@ public class EnrollmentAlertServiceTest {
     }
 
     public void shouldUnenrollEntityFromTheSchedule() {
-        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(4), weeksAgo(4), new Time(8, 20), EnrollmentStatus.ACTIVE);
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(4), weeksAgo(4), new Time(8, 20), EnrollmentStatus.ACTIVE, null);
         enrollment.setId("enrollment_1");
         enrollmentAlertService.unscheduleAllAlerts(enrollment);
 

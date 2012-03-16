@@ -16,39 +16,28 @@ import static org.motechproject.util.DateUtil.newDateTime;
 @Component
 public class EnrollmentAlertService {
 
-    private AllTrackedSchedules allTrackedSchedules;
     private MotechSchedulerService schedulerService;
 
     @Autowired
-    public EnrollmentAlertService(AllTrackedSchedules allTrackedSchedules, MotechSchedulerService schedulerService) {
-        this.allTrackedSchedules = allTrackedSchedules;
+    public EnrollmentAlertService(MotechSchedulerService schedulerService) {
         this.schedulerService = schedulerService;
     }
 
     public void scheduleAlertsForCurrentMilestone(Enrollment enrollment) {
-        Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
+        Schedule schedule = enrollment.getSchedule();
         Milestone currentMilestone = schedule.getMilestone(enrollment.getCurrentMilestoneName());
         if (currentMilestone == null)
             return;
 
-        String firstMilestoneName = schedule.getFirstMilestone().getName();
-        DateTime currentMilestoneStartDate = enrollment.getCurrentMilestoneStartDate(firstMilestoneName, schedule.isBasedOnAbsoluteWindows());
+        DateTime currentMilestoneStartDate = enrollment.getCurrentMilestoneStartDate();
         for (MilestoneWindow milestoneWindow : currentMilestone.getMilestoneWindows()) {
             if (currentMilestone.windowElapsed(milestoneWindow.getName(), currentMilestoneStartDate))
                 continue;
 
-            MilestoneAlert milestoneAlert = MilestoneAlert.fromMilestone(currentMilestone, getCurrentMilestoneStartDate(enrollment));
+            MilestoneAlert milestoneAlert = MilestoneAlert.fromMilestone(currentMilestone, currentMilestoneStartDate);
             for (Alert alert : milestoneWindow.getAlerts())
                 scheduleAlertJob(alert, enrollment, currentMilestone, milestoneWindow, milestoneAlert, currentMilestoneStartDate);
         }
-    }
-
-    // duplicated and tested in enrollment service!
-    private DateTime getCurrentMilestoneStartDate(Enrollment enrollment) {
-        Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
-        if (enrollment.getCurrentMilestoneName().equals(schedule.getFirstMilestone().getName()))
-            return enrollment.getReferenceDateTime();
-        return (enrollment.getFulfillments().isEmpty()) ? enrollment.getEnrollmentDateTime() : enrollment.getLastFulfilledDate();
     }
 
     private void scheduleAlertJob(Alert alert, Enrollment enrollment, Milestone currentMilestone, MilestoneWindow milestoneWindow, MilestoneAlert milestoneAlert, DateTime currentMilestoneStartDate) {

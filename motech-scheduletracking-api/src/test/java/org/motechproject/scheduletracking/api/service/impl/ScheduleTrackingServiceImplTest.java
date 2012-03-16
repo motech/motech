@@ -179,7 +179,7 @@ public class ScheduleTrackingServiceImplTest {
         when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
 
         String externalId = "entity_1";
-        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(4), weeksAgo(4), new Time(8, 10), EnrollmentStatus.ACTIVE);
+        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "milestone", weeksAgo(4), weeksAgo(4), new Time(8, 10), EnrollmentStatus.ACTIVE, null);
         when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(enrollment);
         scheduleTrackingService.unenroll(externalId, Arrays.asList(scheduleName));
 
@@ -203,9 +203,9 @@ public class ScheduleTrackingServiceImplTest {
         when(allTrackedSchedules.getByName(schedule2Name)).thenReturn(schedule2);
 
         String externalId = "entity_1";
-        Enrollment enrollment1 = new Enrollment(externalId, schedule1Name, "milestone1", weeksAgo(4), weeksAgo(4), new Time(8, 10), EnrollmentStatus.ACTIVE);
+        Enrollment enrollment1 = new Enrollment(externalId, schedule1Name, "milestone1", weeksAgo(4), weeksAgo(4), new Time(8, 10), EnrollmentStatus.ACTIVE, null);
         when(allEnrollments.getActiveEnrollment(externalId, schedule1Name)).thenReturn(enrollment1);
-        Enrollment enrollment2 = new Enrollment(externalId, schedule2Name, "milestone2", weeksAgo(4), weeksAgo(4), new Time(8, 10), EnrollmentStatus.ACTIVE);
+        Enrollment enrollment2 = new Enrollment(externalId, schedule2Name, "milestone2", weeksAgo(4), weeksAgo(4), new Time(8, 10), EnrollmentStatus.ACTIVE, null);
         when(allEnrollments.getActiveEnrollment(externalId, schedule2Name)).thenReturn(enrollment2);
 
         scheduleTrackingService.unenroll(externalId, Arrays.asList(schedule1Name, schedule2Name));
@@ -231,7 +231,7 @@ public class ScheduleTrackingServiceImplTest {
     public void shouldReturnEnrollmentDetails() {
         String externalId = "external id";
         String scheduleName = "schedule name";
-        final Enrollment enrollment = new Enrollment(externalId, scheduleName, null, null, null, null, EnrollmentStatus.ACTIVE);
+        final Enrollment enrollment = new Enrollment(externalId, scheduleName, null, null, null, null, EnrollmentStatus.ACTIVE, null);
         when(allEnrollments.getActiveEnrollment(externalId, scheduleName)).thenReturn(enrollment);
 
         EnrollmentRecord record = mock(EnrollmentRecord.class);
@@ -269,8 +269,8 @@ public class ScheduleTrackingServiceImplTest {
     @Test
     public void shouldReturnListOfEnrollmentRecordsForTheGivenQuery() {
         EnrollmentsQuery enrollmentQuery = mock(EnrollmentsQuery.class);
-        Enrollment enrollment1 = new Enrollment("external_id_1", "schedule_1", null, null, null, null, null);
-        Enrollment enrollment2 = new Enrollment("external_id_2", "schedule_1", null, null, null, null, null);
+        Enrollment enrollment1 = new Enrollment("external_id_1", "schedule_1", null, null, null, null, null, null);
+        Enrollment enrollment2 = new Enrollment("external_id_2", "schedule_1", null, null, null, null, null, null);
         List<Enrollment> enrollments = asList(new Enrollment[]{enrollment1, enrollment2});
 
         when(enrollmentsQueryService.search(enrollmentQuery)).thenReturn(enrollments);
