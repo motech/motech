@@ -9,6 +9,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAfter;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
 import static org.motechproject.util.DateUtil.newDateTime;
@@ -92,6 +93,7 @@ public class EnrollmentTest {
         assertEquals(referenceDateTime, enrollment.getReferenceForAlerts());
     }
 
+
     @Test
     public void shouldReturnEnrollmentDateWhenEnrolledIntoSecondMilestoneAndNoMilestonesFulfilled() {
         String firstMilestoneName = "First Shot";
@@ -116,6 +118,21 @@ public class EnrollmentTest {
     }
 
     @Test
+    public void shouldReturnMilestoneStartForAbsoluteScedule() {
+        Schedule schedule = new Schedule("test scedule");
+        Milestone milestone1 = new Milestone("milestone 1", weeks(1), weeks(1), weeks(1), weeks(1));
+        Milestone milestone2 = new Milestone("milestone 2", weeks(1), weeks(1), weeks(1), weeks(1));
+        Milestone milestone3 = new Milestone("milestone 3", weeks(1), weeks(1), weeks(1), weeks(1));
+        schedule.addMilestones(milestone1, milestone2, milestone3);
+        schedule.isBasedOnAbsoluteWindows(true);
+
+        DateTime now = now();
+        Enrollment enrollment = new Enrollment("ID-074285", schedule, "milestone 3", now, now, new Time(0, 0), EnrollmentStatus.ACTIVE);
+
+        assertEquals(now.plusWeeks(8), enrollment.getReferenceForAlerts());
+    }
+
+    @Test
     public void shouldFulfillCurrentMilestone() {
         Schedule schedule = new Schedule("some_schedule");
         Enrollment enrollment = new Enrollment("externalId", schedule, "currentMilestoneName", weeksAgo(1), weeksAgo(1), new Time(8, 10), EnrollmentStatus.ACTIVE);
@@ -128,9 +145,8 @@ public class EnrollmentTest {
         assertEquals(newDateTime(2011, 6, 5, 0, 0, 0), milestoneFulfillment.getFulfillmentDateTime());
         assertEquals("currentMilestoneName", milestoneFulfillment.getMilestoneName());
     }
-    
-    private Schedule getMockedSchedule(String firstMilestoneName, boolean isBasedOnAbsoluteWindows)
-    {
+
+    private Schedule getMockedSchedule(String firstMilestoneName, boolean isBasedOnAbsoluteWindows) {
         Schedule schedule = mock(Schedule.class);
         Milestone milestone = mock(Milestone.class);
         when(milestone.getName()).thenReturn(firstMilestoneName);

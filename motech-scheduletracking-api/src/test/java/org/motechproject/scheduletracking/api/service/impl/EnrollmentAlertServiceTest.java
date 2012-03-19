@@ -224,21 +224,20 @@ public class EnrollmentAlertServiceTest {
     }
 
     @Test
-    public void shouldScheduleJobsOfSecondMilestoneBasedOnReferenceDateIfTheScheduleIsBasedOnAbsoluteWindows() {
+    public void shouldSceduleJobForAbsoluteSchedule() {
         Milestone firstMilestone = new Milestone("milestone_1", weeks(1), weeks(1), weeks(1), weeks(1));
-        Milestone secondMilestone = new Milestone("milestone_2", weeks(5), weeks(3), weeks(3), weeks(3));
+        Milestone secondMilestone = new Milestone("milestone_2", weeks(1), weeks(1), weeks(1), weeks(1));
         secondMilestone.addAlert(WindowName.due, new Alert(days(0), days(1), 1, 0));
 
         Schedule schedule = new Schedule("my_schedule");
         schedule.isBasedOnAbsoluteWindows(true);
         schedule.addMilestones(firstMilestone, secondMilestone);
 
-        Enrollment enrollmentIntoSecondMilestone = new Enrollment("some_id", schedule, "milestone_2", weeksAgo(1), weeksAgo(0), new Time(14, 0), EnrollmentStatus.ACTIVE);
-        enrollmentIntoSecondMilestone.fulfillCurrentMilestone(DateUtil.now());
+        Enrollment enrollmentIntoSecondMilestone = new Enrollment("some_id", schedule, "milestone_2", weeksAgo(0), weeksAgo(0), new Time(0, 0), EnrollmentStatus.ACTIVE);
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollmentIntoSecondMilestone);
 
         RepeatingSchedulableJob job = expectAndCaptureRepeatingJob();
-        assertEquals(newDateTime(weeksAfter(4).toLocalDate(), new Time(14, 0)).toDate(), job.getStartTime());
+        assertEquals(newDateTime(weeksAfter(5).toLocalDate(), new Time(0, 0)).toDate(), job.getStartTime());
     }
 
     @Test

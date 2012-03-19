@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import junit.framework.Assert;
 import org.joda.time.Period;
 import org.junit.Test;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
@@ -8,12 +9,14 @@ import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonRea
 
 import java.util.List;
 
+import static junit.framework.Assert.assertTrue;
 import static org.joda.time.Period.minutes;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.motechproject.scheduletracking.api.utility.PeriodFactory.*;
 
 public class ScheduleFactoryTest {
+
     @Test
     public void shouldCreateTheSchedule() {
         TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules");
@@ -66,6 +69,37 @@ public class ScheduleFactoryTest {
         assertEquals(weeks(14), milestone.getWindowEnd(WindowName.due).minus(milestone.getWindowStart(WindowName.due)));
         assertEquals(months(4).minus(weeks(14)), milestone.getWindowEnd(WindowName.late).minus(milestone.getWindowStart(WindowName.late)));
         assertEquals(years(1).minus(months(4)), milestone.getWindowEnd(WindowName.max).minus(milestone.getWindowStart(WindowName.max)));
+    }
+
+    @Test
+    public void shouldCreateAbsoluteSchedule() {
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/absolute-windows");
+        ScheduleRecord scheduleRecord = findRecord("Absolute Schedule", jsonReader.records());
+        Schedule schedule = new ScheduleFactory().build(scheduleRecord);
+
+        assertTrue(schedule.isBasedOnAbsoluteWindows());
+
+        List<Milestone> milestones = schedule.getMilestones();
+        Milestone milestone1 = milestones.get(0);
+        Milestone milestone2 = milestones.get(1);
+
+        assertEquals(weeks(0), milestone1.getWindowStart(WindowName.earliest));
+        assertEquals(weeks(1), milestone1.getWindowEnd(WindowName.earliest));
+        assertEquals(weeks(1), milestone1.getWindowStart(WindowName.due));
+        assertEquals(weeks(2), milestone1.getWindowEnd(WindowName.due));
+        assertEquals(weeks(2), milestone1.getWindowStart(WindowName.late));
+        assertEquals(weeks(3), milestone1.getWindowEnd(WindowName.late));
+        assertEquals(weeks(3), milestone1.getWindowStart(WindowName.max));
+        assertEquals(weeks(3), milestone1.getWindowEnd(WindowName.max));
+
+        assertEquals(weeks(0), milestone2.getWindowStart(WindowName.earliest));
+        assertEquals(weeks(2), milestone2.getWindowEnd(WindowName.earliest));
+        assertEquals(weeks(2), milestone2.getWindowStart(WindowName.due));
+        assertEquals(weeks(3), milestone2.getWindowEnd(WindowName.due));
+        assertEquals(weeks(3), milestone2.getWindowStart(WindowName.late));
+        assertEquals(weeks(4), milestone2.getWindowEnd(WindowName.late));
+        assertEquals(weeks(4), milestone2.getWindowStart(WindowName.max));
+        assertEquals(weeks(5), milestone2.getWindowEnd(WindowName.max));
     }
 
     @Test

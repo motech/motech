@@ -90,7 +90,19 @@ public class Enrollment extends MotechBaseDataObject {
 
     @JsonIgnore
     public DateTime getReferenceForAlerts() {
-        if (currentMilestoneName.equals(schedule.getFirstMilestone().getName()) || schedule.isBasedOnAbsoluteWindows())
+        if( schedule.isBasedOnAbsoluteWindows())
+        {
+            DateTime startOfSchedule = getStartOfSchedule();
+            List<Milestone> milestones = schedule.getMilestones();
+            for(Milestone milestone:milestones)
+            {
+                if(milestone.getName().equals(currentMilestoneName))
+                    break;
+                startOfSchedule = startOfSchedule.plus(milestone.getMaximumDuration());
+            }
+            return startOfSchedule;
+        }
+        if (currentMilestoneName.equals(schedule.getFirstMilestone().getName()))
             return getStartOfSchedule();
         return (fulfillments.isEmpty()) ? getEnrolledOn() : getLastFulfilledDate();
     }

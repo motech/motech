@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import org.apache.commons.lang.mutable.Mutable;
 import org.joda.time.MutablePeriod;
 import org.joda.time.Period;
 import org.joda.time.ReadWritablePeriod;
@@ -25,7 +26,9 @@ public class ScheduleFactory {
 
     public Schedule build(ScheduleRecord scheduleRecord) {
         Schedule schedule = new Schedule(scheduleRecord.name());
+        schedule.isBasedOnAbsoluteWindows(scheduleRecord.hasAbsoluteWindows());
         int alertIndex = 0;
+        Period previousMilestonesDuration = new Period();
         for (MilestoneRecord milestoneRecord : scheduleRecord.milestoneRecords()) {
             ScheduleWindowsRecord windowsRecord = milestoneRecord.scheduleWindowsRecord();
 
@@ -37,12 +40,20 @@ public class ScheduleFactory {
             Period earliest = new Period(), due = new Period(), late = new Period(), max = new Period();
             if (isWindowNotEmpty(earliestValue))
                 earliest = getWindowPeriod(earliestValue);
+            if (scheduleRecord.hasAbsoluteWindows())
+                earliest = earliest.minus(previousMilestonesDuration);
             if (isWindowNotEmpty(dueValue))
                 due = getWindowPeriod(dueValue).minus(earliest);
+            if (scheduleRecord.hasAbsoluteWindows())
+                due = due.minus(previousMilestonesDuration);
             if (isWindowNotEmpty(lateValue))
                 late = getWindowPeriod(lateValue).minus(earliest.plus(due));
+            if (scheduleRecord.hasAbsoluteWindows())
+                late = late.minus(previousMilestonesDuration);
             if (isWindowNotEmpty(maxValue))
                 max = getWindowPeriod(maxValue).minus(earliest.plus(due).plus(late));
+            if (scheduleRecord.hasAbsoluteWindows())
+                max = max.minus(previousMilestonesDuration);
 
             Milestone milestone = new Milestone(milestoneRecord.name(), earliest, due, late, max);
             milestone.setData(milestoneRecord.data());
@@ -50,9 +61,8 @@ public class ScheduleFactory {
                 List<String> offset = alertRecord.offset();
                 milestone.addAlert(WindowName.valueOf(alertRecord.window()), new Alert(getWindowPeriod(offset), getWindowPeriod(alertRecord.interval()), Integer.parseInt(alertRecord.count()), alertIndex++));
             }
+            previousMilestonesDuration = previousMilestonesDuration.plus(milestone.getMaximumDuration());
             schedule.addMilestones(milestone);
-
-            schedule.isBasedOnAbsoluteWindows(scheduleRecord.hasAbsoluteWindows());
         }
         return schedule;
     }
