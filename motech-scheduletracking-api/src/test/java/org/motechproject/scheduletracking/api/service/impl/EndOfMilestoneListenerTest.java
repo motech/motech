@@ -6,6 +6,7 @@ import org.mockito.Mock;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.events.DefaultmentCaptureEvent;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 
@@ -28,7 +29,8 @@ public class EndOfMilestoneListenerTest {
 
     @Test
     public void shouldDefaultEnrollmentAtTheCurrentMilestoneIfNotFulfilled() {
-        Enrollment enrollment = new Enrollment("entity_1", "my_schedule", "first_milestone", weeksAgo(4), weeksAgo(4), new Time(8, 10), null, null);
+        Schedule schedule = new Schedule("some_schedule");
+        Enrollment enrollment = new Enrollment("entity_1", schedule, "first_milestone", weeksAgo(4), weeksAgo(4), new Time(8, 10), null);
         enrollment.setId("enrollment_1");
         when(allEnrollments.get("enrollment_1")).thenReturn(enrollment);
 

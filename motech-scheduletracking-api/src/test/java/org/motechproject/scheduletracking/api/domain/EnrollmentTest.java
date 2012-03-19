@@ -21,7 +21,7 @@ public class EnrollmentTest {
         Milestone secondMilestone = new Milestone("Second Shot", weeks(1), weeks(1), weeks(1), weeks(1));
         Milestone firstMilestone = new Milestone("First Shot", weeks(1), weeks(1), weeks(1), weeks(1));
         schedule.addMilestones(firstMilestone, secondMilestone);
-        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(5), weeksAgo(3), null, EnrollmentStatus.ACTIVE, null);
+        Enrollment enrollment = new Enrollment("ID-074285", schedule, "First Shot", weeksAgo(5), weeksAgo(3), null, EnrollmentStatus.ACTIVE);
 
         assertEquals(firstMilestone.getName(), enrollment.getCurrentMilestoneName());
     }
@@ -32,7 +32,7 @@ public class EnrollmentTest {
         Milestone secondMilestone = new Milestone("Second Shot", weeks(1), weeks(1), weeks(1), weeks(1));
         Milestone firstMilestone = new Milestone("First Shot", weeks(1), weeks(1), weeks(1), weeks(1));
         schedule.addMilestones(firstMilestone, secondMilestone);
-        Enrollment lateEnrollment = new Enrollment("my_entity_1", "Yellow Fever Vaccination", "Second Shot", weeksAgo(3), weeksAgo(3), null, EnrollmentStatus.ACTIVE, null);
+        Enrollment lateEnrollment = new Enrollment("my_entity_1", schedule, "Second Shot", weeksAgo(3), weeksAgo(3), null, EnrollmentStatus.ACTIVE);
 
         assertEquals(secondMilestone.getName(), lateEnrollment.getCurrentMilestoneName());
     }
@@ -43,7 +43,7 @@ public class EnrollmentTest {
         Milestone secondMilestone = new Milestone("Second Shot", weeks(1), weeks(1), weeks(1), weeks(1));
         Milestone firstMilestone = new Milestone("First Shot", weeks(1), weeks(1), weeks(1), weeks(1));
         schedule.addMilestones(firstMilestone, secondMilestone);
-        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(5), weeksAgo(3), null, EnrollmentStatus.ACTIVE, null);
+        Enrollment enrollment = new Enrollment("ID-074285", schedule, "First Shot", weeksAgo(5), weeksAgo(3), null, EnrollmentStatus.ACTIVE);
 
         assertEquals(null, enrollment.getLastFulfilledDate());
     }
@@ -54,7 +54,7 @@ public class EnrollmentTest {
         Milestone secondMilestone = new Milestone("Second Shot", weeks(1), weeks(1), weeks(1), weeks(1));
         Milestone firstMilestone = new Milestone("First Shot", weeks(1), weeks(1), weeks(1), weeks(1));
         schedule.addMilestones(firstMilestone, secondMilestone);
-        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(5), weeksAgo(3), null, EnrollmentStatus.ACTIVE, null);
+        Enrollment enrollment = new Enrollment("ID-074285", schedule, "First Shot", weeksAgo(5), weeksAgo(3), null, EnrollmentStatus.ACTIVE);
         enrollment.getFulfillments().add(new MilestoneFulfillment("First Shot", weeksAgo(0)));
 
         assertEquals(weeksAgo(0), enrollment.getLastFulfilledDate());
@@ -62,22 +62,24 @@ public class EnrollmentTest {
 
     @Test
     public void newEnrollmentShouldBeActive() {
-        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", "First Shot", weeksAgo(5), weeksAgo(3), null, EnrollmentStatus.ACTIVE, null);
+        Schedule schedule = new Schedule("some_schedule");
+        Enrollment enrollment = new Enrollment("ID-074285", schedule, "First Shot", weeksAgo(5), weeksAgo(3), null, EnrollmentStatus.ACTIVE);
         assertTrue(enrollment.isActive());
     }
 
     @Test
     public void shouldCopyFromTheGivenEnrollment() {
-        Enrollment newEnrollment = new Enrollment("externalId", "scheduleName", "newCurrentMilestoneName", weeksAgo(2), now(), new Time(8, 10), EnrollmentStatus.ACTIVE, null);
-        Enrollment originalEnrollment = new Enrollment("externalId", "scheduleName", "currentMilestoneName", weeksAgo(3), weeksAgo(2), new Time(2, 5), EnrollmentStatus.ACTIVE, null);
+        Schedule schedule = new Schedule("some_schedule");
+        Enrollment newEnrollment = new Enrollment("externalId", schedule, "newCurrentMilestoneName", weeksAgo(2), now(), new Time(8, 10), EnrollmentStatus.ACTIVE);
+        Enrollment originalEnrollment = new Enrollment("externalId", schedule, "currentMilestoneName", weeksAgo(3), weeksAgo(2), new Time(2, 5), EnrollmentStatus.ACTIVE);
 
         Enrollment enrollment = originalEnrollment.copyFrom(newEnrollment);
 
         assertEquals(newEnrollment.getExternalId(), enrollment.getExternalId());
         assertEquals(newEnrollment.getScheduleName(), enrollment.getScheduleName());
         assertEquals(newEnrollment.getCurrentMilestoneName(), enrollment.getCurrentMilestoneName());
-        assertEquals(newEnrollment.getReferenceDateTime(), enrollment.getReferenceDateTime());
-        assertEquals(newEnrollment.getEnrollmentDateTime(), enrollment.getEnrollmentDateTime());
+        assertEquals(newEnrollment.getStartOfSchedule(), enrollment.getStartOfSchedule());
+        assertEquals(newEnrollment.getEnrolledOn(), enrollment.getEnrolledOn());
         assertEquals(newEnrollment.getPreferredAlertTime(), enrollment.getPreferredAlertTime());
     }
 
@@ -85,9 +87,9 @@ public class EnrollmentTest {
     public void shouldReturnReferenceDateWhenCurrentMilestoneIsTheFirstMilestone() {
         String firstMilestoneName = "first milestone";
         DateTime referenceDateTime = weeksAgo(5);
-        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", firstMilestoneName, referenceDateTime, weeksAgo(3), new Time(8, 20), EnrollmentStatus.ACTIVE, getMockedSchedule(firstMilestoneName, false));
+        Enrollment enrollment = new Enrollment("ID-074285", getMockedSchedule(firstMilestoneName, false), firstMilestoneName, referenceDateTime, weeksAgo(3), new Time(8, 20), EnrollmentStatus.ACTIVE);
 
-        assertEquals(referenceDateTime, enrollment.getCurrentMilestoneStartDate());
+        assertEquals(referenceDateTime, enrollment.getReferenceForAlerts());
     }
 
     @Test
@@ -95,9 +97,9 @@ public class EnrollmentTest {
         String firstMilestoneName = "First Shot";
         String secondMilestoneName = "Second Shot";
         DateTime enrollmentDateTime = weeksAgo(3);
-        Enrollment enrollment = new Enrollment("ID-074285", "Yellow Fever Vaccination", secondMilestoneName, weeksAgo(5), enrollmentDateTime, null, EnrollmentStatus.ACTIVE, getMockedSchedule(firstMilestoneName, false));
+        Enrollment enrollment = new Enrollment("ID-074285", getMockedSchedule(firstMilestoneName, false), secondMilestoneName, weeksAgo(5), enrollmentDateTime, null, EnrollmentStatus.ACTIVE);
 
-        assertEquals(enrollmentDateTime, enrollment.getCurrentMilestoneStartDate());
+        assertEquals(enrollmentDateTime, enrollment.getReferenceForAlerts());
     }
 
     @Test
@@ -106,16 +108,17 @@ public class EnrollmentTest {
         String secondMilestoneName = "Second Milestone";
         DateTime referenceDate = weeksAgo(5);
 
-        Enrollment enrollmentIntoFirstMilestone = new Enrollment("ID-074285", "Yellow Fever Vaccination", firstMilestoneName, referenceDate, weeksAgo(3), null, EnrollmentStatus.ACTIVE, getMockedSchedule(firstMilestoneName, true));
-        Enrollment enrollmentIntoSecondMilestone = new Enrollment("ID-074285", "Yellow Fever Vaccination", secondMilestoneName, referenceDate, weeksAgo(3), null, EnrollmentStatus.ACTIVE, getMockedSchedule(firstMilestoneName, true));
+        Enrollment enrollmentIntoFirstMilestone = new Enrollment("ID-074285", getMockedSchedule(firstMilestoneName, true), firstMilestoneName, referenceDate, weeksAgo(3), null, EnrollmentStatus.ACTIVE);
+        Enrollment enrollmentIntoSecondMilestone = new Enrollment("ID-074285", getMockedSchedule(firstMilestoneName, true), secondMilestoneName, referenceDate, weeksAgo(3), null, EnrollmentStatus.ACTIVE);
 
-        assertEquals(referenceDate, enrollmentIntoFirstMilestone.getCurrentMilestoneStartDate());
-        assertEquals(referenceDate, enrollmentIntoSecondMilestone.getCurrentMilestoneStartDate());
+        assertEquals(referenceDate, enrollmentIntoFirstMilestone.getReferenceForAlerts());
+        assertEquals(referenceDate, enrollmentIntoSecondMilestone.getReferenceForAlerts());
     }
 
     @Test
     public void shouldFulfillCurrentMilestone() {
-        Enrollment enrollment = new Enrollment("externalId", "scheduleName", "currentMilestoneName", weeksAgo(1), weeksAgo(1), new Time(8, 10), EnrollmentStatus.ACTIVE, null);
+        Schedule schedule = new Schedule("some_schedule");
+        Enrollment enrollment = new Enrollment("externalId", schedule, "currentMilestoneName", weeksAgo(1), weeksAgo(1), new Time(8, 10), EnrollmentStatus.ACTIVE);
 
         assertEquals(0, enrollment.getFulfillments().size());
         enrollment.fulfillCurrentMilestone(DateUtil.newDateTime(2011, 6, 5, 0, 0, 0));

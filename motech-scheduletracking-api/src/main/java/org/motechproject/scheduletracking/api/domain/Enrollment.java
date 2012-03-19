@@ -17,17 +17,18 @@ import static org.motechproject.util.DateUtil.setTimeZone;
 @TypeDiscriminator("doc.type == 'Enrollment'")
 public class Enrollment extends MotechBaseDataObject {
     @JsonProperty
-    private DateTime enrollmentDateTime;
+    private String externalId;
     @JsonProperty
     private String scheduleName;
     @JsonProperty
-    private String externalId;
     private String currentMilestoneName;
     @JsonProperty
-    private DateTime referenceDateTime;
+    private DateTime startOfSchedule;
+    @JsonProperty
+    private DateTime enrolledOn;
     @JsonProperty
     private Time preferredAlertTime;
-
+    @JsonProperty
     private EnrollmentStatus status;
 
     private Schedule schedule;
@@ -37,15 +38,15 @@ public class Enrollment extends MotechBaseDataObject {
     private Enrollment() {
     }
 
-    public Enrollment(String externalId, String scheduleName, String currentMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime, EnrollmentStatus enrollmentStatus, Schedule schedule) {
+    public Enrollment(String externalId, Schedule schedule, String currentMilestoneName, DateTime startOfSchedule, DateTime enrolledOn, Time preferredAlertTime, EnrollmentStatus enrollmentStatus) {
         this.externalId = externalId;
-        this.scheduleName = scheduleName;
+        this.scheduleName = schedule.getName();
+        this.schedule = schedule;
         this.currentMilestoneName = currentMilestoneName;
-        this.enrollmentDateTime = enrollmentDateTime;
-        this.referenceDateTime = referenceDateTime;
+        this.startOfSchedule = startOfSchedule;
+        this.enrolledOn = enrolledOn;
         this.preferredAlertTime = preferredAlertTime;
         this.status = enrollmentStatus;
-        this.schedule = schedule;
     }
 
     public String getScheduleName() {
@@ -56,12 +57,12 @@ public class Enrollment extends MotechBaseDataObject {
         return externalId;
     }
 
-    public DateTime getReferenceDateTime() {
-        return setTimeZone(referenceDateTime);
+    public DateTime getStartOfSchedule() {
+        return setTimeZone(startOfSchedule);
     }
 
-    public DateTime getEnrollmentDateTime() {
-        return setTimeZone(enrollmentDateTime);
+    public DateTime getEnrolledOn() {
+        return setTimeZone(enrolledOn);
     }
 
     public Time getPreferredAlertTime() {
@@ -81,6 +82,17 @@ public class Enrollment extends MotechBaseDataObject {
         if (fulfillments.isEmpty())
             return null;
         return fulfillments.get(fulfillments.size() - 1).getFulfillmentDateTime();
+    }
+
+    public void fulfillCurrentMilestone(DateTime fulfillmentDateTime) {
+        fulfillments.add(new MilestoneFulfillment(currentMilestoneName, fulfillmentDateTime));
+    }
+
+    @JsonIgnore
+    public DateTime getReferenceForAlerts() {
+        if (currentMilestoneName.equals(schedule.getFirstMilestone().getName()) || schedule.isBasedOnAbsoluteWindows())
+            return getStartOfSchedule();
+        return (fulfillments.isEmpty()) ? getEnrolledOn() : getLastFulfilledDate();
     }
 
     @JsonIgnore
@@ -115,9 +127,9 @@ public class Enrollment extends MotechBaseDataObject {
     }
 
     public Enrollment copyFrom(Enrollment enrollment) {
-        enrollmentDateTime = enrollment.getEnrollmentDateTime();
+        enrolledOn = enrollment.getEnrolledOn();
         currentMilestoneName = enrollment.getCurrentMilestoneName();
-        referenceDateTime = enrollment.getReferenceDateTime();
+        startOfSchedule = enrollment.getStartOfSchedule();
         preferredAlertTime = enrollment.getPreferredAlertTime();
         return this;
     }
@@ -129,16 +141,5 @@ public class Enrollment extends MotechBaseDataObject {
 
     private void setType(String type) {
         this.type = type;
-    }
-
-    public void fulfillCurrentMilestone(DateTime fulfillmentDateTime) {
-        fulfillments.add(new MilestoneFulfillment(currentMilestoneName, fulfillmentDateTime));
-    }
-
-    @JsonIgnore
-    public DateTime getCurrentMilestoneStartDate() {
-        if (currentMilestoneName.equals(schedule.getFirstMilestone().getName()) || schedule.isBasedOnAbsoluteWindows())
-            return getReferenceDateTime();
-        return (fulfillments.isEmpty()) ? getEnrollmentDateTime() : getLastFulfilledDate();
     }
 }

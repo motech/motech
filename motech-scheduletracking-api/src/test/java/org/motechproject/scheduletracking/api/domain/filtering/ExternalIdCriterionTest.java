@@ -2,6 +2,7 @@ package org.motechproject.scheduletracking.api.domain.filtering;
 
 import org.junit.Test;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.scheduletracking.api.domain.Schedule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +16,12 @@ public class ExternalIdCriterionTest {
 
     @Test
     public void shouldFilterByExternalId() {
+        Schedule schedule = new Schedule("some_schedule");
         List<Enrollment> allEnrollments = new ArrayList<Enrollment>();
-        allEnrollments.add(new Enrollment("someExternalId", null, null, null, null, null, null, null));
-        allEnrollments.add(new Enrollment("someOtherExternalId", null, null, null, null, null, null, null));
-        allEnrollments.add(new Enrollment("oneMoreExternalId", null, null, null, null, null, null, null));
-        allEnrollments.add(new Enrollment("someExternalId", null, null, null, null, null, null, null));
+        allEnrollments.add(new Enrollment("someExternalId", schedule, null, null, null, null, null));
+        allEnrollments.add(new Enrollment("someOtherExternalId", schedule, null, null, null, null, null));
+        allEnrollments.add(new Enrollment("oneMoreExternalId", schedule, null, null, null, null, null));
+        allEnrollments.add(new Enrollment("someExternalId", schedule, null, null, null, null, null));
 
         List<Enrollment> filteredEnrollments = new ExternalIdCriterion("someExternalId").filter(allEnrollments, null);
         assertEquals(asList(new String[]{"someExternalId", "someExternalId"}), extract(filteredEnrollments, on(Enrollment.class).getExternalId()));
