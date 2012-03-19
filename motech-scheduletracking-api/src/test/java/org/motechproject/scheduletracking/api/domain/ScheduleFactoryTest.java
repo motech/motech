@@ -1,6 +1,5 @@
 package org.motechproject.scheduletracking.api.domain;
 
-import junit.framework.Assert;
 import org.joda.time.Period;
 import org.junit.Test;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
@@ -9,6 +8,7 @@ import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonRea
 
 import java.util.List;
 
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.joda.time.Period.minutes;
 import static org.junit.Assert.assertEquals;
@@ -18,13 +18,10 @@ import static org.motechproject.scheduletracking.api.utility.PeriodFactory.*;
 public class ScheduleFactoryTest {
 
     @Test
-    public void shouldCreateTheSchedule() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules");
-        ScheduleRecord scheduleRecord = findRecord("IPTI Schedule", jsonReader.records());
-        Schedule schedule = new ScheduleFactory().build(scheduleRecord);
-
+    public void shouldCreateTheScheduleWithName() {
+        Schedule schedule = loadSchedule("IPTI Schedule", "/schedules");
         assertNotNull(schedule);
-        assertEquals(scheduleRecord.name(), schedule.getName());
+        assertEquals("IPTI Schedule", schedule.getName());
     }
 
 	@Test
@@ -73,9 +70,7 @@ public class ScheduleFactoryTest {
 
     @Test
     public void shouldCreateAbsoluteSchedule() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/absolute-windows");
-        ScheduleRecord scheduleRecord = findRecord("Absolute Schedule", jsonReader.records());
-        Schedule schedule = new ScheduleFactory().build(scheduleRecord);
+        Schedule schedule = loadSchedule("Absolute Schedule", "/absolute-windows");
 
         assertTrue(schedule.isBasedOnAbsoluteWindows());
 
@@ -101,6 +96,36 @@ public class ScheduleFactoryTest {
         assertEquals(weeks(4), milestone2.getWindowStart(WindowName.max));
         assertEquals(weeks(5), milestone2.getWindowEnd(WindowName.max));
     }
+
+@Test
+    public void shouldCreateRelativeSchedule() {
+        Schedule schedule = loadSchedule("Relative Schedule", "/relative-windows");
+
+        assertFalse(schedule.isBasedOnAbsoluteWindows());
+
+        List<Milestone> milestones = schedule.getMilestones();
+        Milestone milestone1 = milestones.get(0);
+        Milestone milestone2 = milestones.get(1);
+
+        assertEquals(weeks(0), milestone1.getWindowStart(WindowName.earliest));
+        assertEquals(weeks(1), milestone1.getWindowEnd(WindowName.earliest));
+        assertEquals(weeks(1), milestone1.getWindowStart(WindowName.due));
+        assertEquals(weeks(2), milestone1.getWindowEnd(WindowName.due));
+        assertEquals(weeks(2), milestone1.getWindowStart(WindowName.late));
+        assertEquals(weeks(3), milestone1.getWindowEnd(WindowName.late));
+        assertEquals(weeks(3), milestone1.getWindowStart(WindowName.max));
+        assertEquals(weeks(3), milestone1.getWindowEnd(WindowName.max));
+
+        assertEquals(weeks(0), milestone2.getWindowStart(WindowName.earliest));
+        assertEquals(weeks(1), milestone2.getWindowEnd(WindowName.earliest));
+        assertEquals(weeks(1), milestone2.getWindowStart(WindowName.due));
+        assertEquals(weeks(2), milestone2.getWindowEnd(WindowName.due));
+        assertEquals(weeks(2), milestone2.getWindowStart(WindowName.late));
+        assertEquals(weeks(3), milestone2.getWindowEnd(WindowName.late));
+        assertEquals(weeks(3), milestone2.getWindowStart(WindowName.max));
+        assertEquals(weeks(4), milestone2.getWindowEnd(WindowName.max));
+    }
+
 
     @Test
     public void shouldCreateEmptyWindowIfDurationIsNotSpecified() {
@@ -129,15 +154,9 @@ public class ScheduleFactoryTest {
         assertEquals(years(1).plus(months(2)).plus(weeks(16)), firstMilestone.getWindowEnd(WindowName.late));
     }
 
-    public void shouldAddAbsoluteWindowFlagToSchedule() {
-        Schedule schedule = getSchedule("IPTI Schedule");
-
-        assertEquals(true, schedule.isBasedOnAbsoluteWindows());
-    }
-
     @Test
     public void shouldCreateEmptyWindowIfOffsetIsNotSpecified() {
-        Schedule schedule = getSchedule("IPTI Schedule");
+        Schedule schedule = loadSchedule("IPTI Schedule", "/schedules");
 
         List<Milestone> milestones = schedule.getMilestones();
         Milestone firstMilestone = milestones.get(0);
@@ -174,8 +193,8 @@ public class ScheduleFactoryTest {
         assertEquals(hours(1).plus(minutes(2)), firstMilestone.getMilestoneWindow(WindowName.late).getAlerts().get(0).getInterval());
     }
 
-    private Schedule getSchedule(String scheduleName) {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules");
+    private Schedule loadSchedule(String scheduleName, String directoryWithSchedules) {
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl(directoryWithSchedules);
         ScheduleRecord scheduleRecord = findRecord(scheduleName, jsonReader.records());
         return new ScheduleFactory().build(scheduleRecord);
     }
@@ -185,11 +204,5 @@ public class ScheduleFactoryTest {
             if (record.name().equals(name))
                 return record;
         return null;
-    }
-
-    private Schedule loadSchedule(String scheduleName, String directoryWithSchedules) {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl(directoryWithSchedules);
-        ScheduleRecord scheduleRecord = findRecord(scheduleName, jsonReader.records());
-        return new ScheduleFactory().build(scheduleRecord);
     }
 }

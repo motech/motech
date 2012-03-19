@@ -1,6 +1,5 @@
 package org.motechproject.scheduletracking.api.domain;
 
-import org.apache.commons.lang.mutable.Mutable;
 import org.joda.time.MutablePeriod;
 import org.joda.time.Period;
 import org.joda.time.ReadWritablePeriod;
@@ -13,91 +12,58 @@ import org.motechproject.scheduletracking.api.domain.json.ScheduleWindowsRecord;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class ScheduleFactory {
 
+    public static final Period EMPTY_PERIOD = new Period(0);
     private List<PeriodParser> parsers;
 
     public ScheduleFactory() {
-        initializePeriodParsers();
+        parsers = new ArrayList<PeriodParser>();
+        parsers.add(new PeriodFormatterBuilder().appendYears().appendSuffix(" year", " years").toParser());
+        parsers.add(new PeriodFormatterBuilder().appendMonths().appendSuffix(" month", " months").toParser());
+        parsers.add(new PeriodFormatterBuilder().appendWeeks().appendSuffix(" week", " weeks").toParser());
+        parsers.add(new PeriodFormatterBuilder().appendDays().appendSuffix(" day", " days").toParser());
+        parsers.add(new PeriodFormatterBuilder().appendHours().appendSuffix(" hour", " hours").toParser());
+        parsers.add(new PeriodFormatterBuilder().appendMinutes().appendSuffix(" minute", " minutes").toParser());
     }
 
     public Schedule build(ScheduleRecord scheduleRecord) {
         Schedule schedule = new Schedule(scheduleRecord.name());
         schedule.isBasedOnAbsoluteWindows(scheduleRecord.hasAbsoluteWindows());
         int alertIndex = 0;
-        Period previousMilestonesDuration = new Period();
+        Period previousWindow = new Period();
+
         for (MilestoneRecord milestoneRecord : scheduleRecord.milestoneRecords()) {
             ScheduleWindowsRecord windowsRecord = milestoneRecord.scheduleWindowsRecord();
+            Map<WindowName, List<String>> values = new HashMap<WindowName, List<String>>();
+            values.put(WindowName.earliest, windowsRecord.earliest());
+            values.put(WindowName.due, windowsRecord.due());
+            values.put(WindowName.late, windowsRecord.late());
+            values.put(WindowName.max, windowsRecord.max());
 
-            List<String> earliestValue = windowsRecord.earliest();
-            List<String> dueValue = windowsRecord.due();
-            List<String> lateValue = windowsRecord.late();
-            List<String> maxValue = windowsRecord.max();
-
-            Period earliest = new Period(), due = new Period(), late = new Period(), max = new Period();
-            if (isWindowNotEmpty(earliestValue))
-                earliest = getWindowPeriod(earliestValue);
-            if (scheduleRecord.hasAbsoluteWindows())
-                earliest = earliest.minus(previousMilestonesDuration);
-            if (isWindowNotEmpty(dueValue))
-                due = getWindowPeriod(dueValue).minus(earliest);
-            if (scheduleRecord.hasAbsoluteWindows())
-                due = due.minus(previousMilestonesDuration);
-            if (isWindowNotEmpty(lateValue))
-                late = getWindowPeriod(lateValue).minus(earliest.plus(due));
-            if (scheduleRecord.hasAbsoluteWindows())
-                late = late.minus(previousMilestonesDuration);
-            if (isWindowNotEmpty(maxValue))
-                max = getWindowPeriod(maxValue).minus(earliest.plus(due).plus(late));
-            if (scheduleRecord.hasAbsoluteWindows())
-                max = max.minus(previousMilestonesDuration);
-
-            Milestone milestone = new Milestone(milestoneRecord.name(), earliest, due, late, max);
-            milestone.setData(milestoneRecord.data());
-            for (AlertRecord alertRecord : milestoneRecord.alerts()) {
-                List<String> offset = alertRecord.offset();
-                milestone.addAlert(WindowName.valueOf(alertRecord.window()), new Alert(getWindowPeriod(offset), getWindowPeriod(alertRecord.interval()), Integer.parseInt(alertRecord.count()), alertIndex++));
+            Map<WindowName, Period> periods = new HashMap<WindowName, Period>();
+            for (WindowName windowName : WindowName.values()) {
+                Period currentWindow = getWindowPeriod(values.get(windowName));
+                if (currentWindow.equals(EMPTY_PERIOD))
+                    periods.put(windowName, currentWindow);
+                else {
+                    periods.put(windowName, currentWindow.minus(previousWindow));
+                    previousWindow = currentWindow;
+                }
             }
-            previousMilestonesDuration = previousMilestonesDuration.plus(milestone.getMaximumDuration());
+            Milestone milestone = new Milestone(milestoneRecord.name(), periods.get(WindowName.earliest), periods.get(WindowName.due), periods.get(WindowName.late), periods.get(WindowName.max));
+            milestone.setData(milestoneRecord.data());
+            alertIndex = setAlerts(alertIndex, milestone, milestoneRecord.alerts());
             schedule.addMilestones(milestone);
+            if(!scheduleRecord.hasAbsoluteWindows())
+                previousWindow = EMPTY_PERIOD;
         }
         return schedule;
-    }
-
-    private boolean isWindowNotEmpty(List<String> windowValue) {
-        return !getWindowPeriod(windowValue).equals(new Period());
-    }
-
-    private void initializePeriodParsers() {
-        parsers = new ArrayList<PeriodParser>();
-
-        parsers.add(new PeriodFormatterBuilder()
-                .appendYears()
-                .appendSuffix(" year", " years")
-                .toParser());
-        parsers.add(new PeriodFormatterBuilder()
-                .appendMonths()
-                .appendSuffix(" month", " months")
-                .toParser());
-        parsers.add(new PeriodFormatterBuilder()
-                .appendWeeks()
-                .appendSuffix(" week", " weeks")
-                .toParser());
-        parsers.add(new PeriodFormatterBuilder()
-                .appendDays()
-                .appendSuffix(" day", " days")
-                .toParser());
-        parsers.add(new PeriodFormatterBuilder()
-                .appendHours()
-                .appendSuffix(" hour", " hours")
-                .toParser());
-        parsers.add(new PeriodFormatterBuilder()
-                .appendMinutes()
-                .appendSuffix(" minute", " minutes")
-                .toParser());
     }
 
     private Period getWindowPeriod(List<String> readableValues) {
@@ -115,5 +81,13 @@ public class ScheduleFactory {
             }
         }
         return period.toPeriod();
+    }
+
+    private int setAlerts(int alertIndex, Milestone milestone, List<AlertRecord> alertRecords) {
+        for (AlertRecord alertRecord : alertRecords) {
+            List<String> offset = alertRecord.offset();
+            milestone.addAlert(WindowName.valueOf(alertRecord.window()), new Alert(getWindowPeriod(offset), getWindowPeriod(alertRecord.interval()), Integer.parseInt(alertRecord.count()), alertIndex++));
+        }
+        return alertIndex;
     }
 }
