@@ -15,14 +15,14 @@
             },
             "alerts":[
                 {
-                    "window":"due",
+                    "window":"earliest",
                     "offset":["0 Weeks"],
                     "interval":["1 Day"],
                     "count":"7"
                 },
                 {
                     "window":"late",
-                    "offset":["1 Week", "4 hours"],
+                    "offset":["2 Week", "4 hours"],
                     "interval":["1 Week"],
                     "count":"51"
                 }
@@ -38,7 +38,22 @@
             },
             "data":{
                 "doo":"Bar"
-            }
+            },
+            "alerts":[
+                {
+                    "window":"earliest",
+                    "offset":["4 Weeks"],
+                    "interval":["1 Day"],
+                    "count":"7"
+                },
+                {
+                    "window":"max",
+                    "offset":["7 Weeks", "1 Day"],
+                    "interval":["1 Day"],
+                    "count":"7"
+                }
+
+            ]
         }
     ]
 }

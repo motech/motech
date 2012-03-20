@@ -39,7 +39,7 @@ public class ScheduleFactoryTest {
 	}
 
 	@Test
-	public void shouldAddAlertsToTheWindows() {
+	public void shouldAddRelativeAlertsToTheWindows() {
         Schedule schedule = loadSchedule("IPTI Schedule", "/schedules");
 
         List<Milestone> milestones = schedule.getMilestones();
@@ -53,6 +53,20 @@ public class ScheduleFactoryTest {
         assertEquals(weeks(1).plus(hours(4)), firstMilestone.getAlerts().get(1).getOffset());
 
         assertEquals(0, secondMilestone.getAlerts().size());
+    }
+
+    @Test
+	public void shouldAddAbsoluteAlertsToTheWindows() {
+        Schedule schedule = loadSchedule("Absolute Schedule", "/absolute-windows");
+
+        List<Milestone> milestones = schedule.getMilestones();
+        Milestone firstMilestone = milestones.get(0);
+        Milestone secondMilestone = milestones.get(1);
+
+        assertEquals(weeks(0), firstMilestone.getAlerts().get(0).getOffset());
+        assertEquals(hours(4), firstMilestone.getAlerts().get(1).getOffset());
+        assertEquals(weeks(1), secondMilestone.getAlerts().get(0).getOffset());
+        assertEquals(days(1), secondMilestone.getAlerts().get(1).getOffset());
     }
 
     @Test
