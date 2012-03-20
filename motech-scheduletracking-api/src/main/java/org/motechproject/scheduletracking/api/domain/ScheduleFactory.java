@@ -34,7 +34,7 @@ public class ScheduleFactory {
 
     public Schedule build(ScheduleRecord scheduleRecord) {
         Schedule schedule = new Schedule(scheduleRecord.name());
-        schedule.isBasedOnAbsoluteWindows(scheduleRecord.hasAbsoluteWindows());
+        schedule.isBasedOnAbsoluteWindows(scheduleRecord.isAbsoluteSchedule());
         int alertIndex = 0;
         Period previousWindowEnd = new Period();
 
@@ -53,12 +53,12 @@ public class ScheduleFactory {
                     previousWindowEnd = currentWindowEnd;
                 }
             }
-            if (!scheduleRecord.hasAbsoluteWindows())
+            if (!scheduleRecord.isAbsoluteSchedule())
                 previousWindowEnd = EMPTY_PERIOD;
 
             Milestone milestone = new Milestone(milestoneRecord.name(), windowDurations.get(WindowName.earliest), windowDurations.get(WindowName.due), windowDurations.get(WindowName.late), windowDurations.get(WindowName.max));
             milestone.setData(milestoneRecord.data());
-            addAlertsToMilestone(milestone, milestoneRecord.alerts(), windowStarts, scheduleRecord.hasAbsoluteWindows(), alertIndex);
+            addAlertsToMilestone(milestone, milestoneRecord.alerts(), windowStarts, scheduleRecord.isAbsoluteSchedule(), alertIndex);
             schedule.addMilestones(milestone);
 
             alertIndex += milestoneRecord.alerts().size();

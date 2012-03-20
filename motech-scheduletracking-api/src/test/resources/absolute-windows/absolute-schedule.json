@@ -1,6 +1,6 @@
 {
     "name":"Absolute Schedule",
-    "absoluteWindows": true,
+    "absolute": true,
     "milestones":[
         {
             "name":"milestone1",
