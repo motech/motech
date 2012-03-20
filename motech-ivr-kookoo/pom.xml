@@ -23,7 +23,6 @@
         <dependency>
             <groupId>com.ozonetel.kookoo</groupId>
             <artifactId>kookoo</artifactId>
-            <version>1.0</version>
             <scope>compile</scope>
         </dependency>
         <!-- Spring dependencies -->
