@@ -83,8 +83,8 @@ public class KookooIVRResponseBuilderTest {
         when(messages.getText("txt1")).thenReturn("txt1");
         when(messages.getText("txt2")).thenReturn("txt2");
         String response = builder.withPlayTexts("txt1").withPlayTexts("txt2").withSid("sid").create(messages);
-        assertTrue(response.contains("<playtext>txt1</playtext>"));
-        assertTrue(response.contains("<playtext>txt2</playtext>"));
+        assertTrue(response.contains("<playtext lang=\"EN\" speed=\"2\">txt1</playtext>"));
+        assertTrue(response.contains("<playtext lang=\"EN\" speed=\"2\">txt2</playtext>"));
     }
 
     @Test
@@ -116,6 +116,6 @@ public class KookooIVRResponseBuilderTest {
     @Test
     public void shouldAddDialWhenPhoneNumberIsSet(){
         String response = builder.withPhoneNumber("1234567890").create(messages);
-        assertTrue(response.contains("<dial>1234567890</dial>"));
+        assertTrue(response.contains("<dial moh=\"ring\">1234567890</dial>"));
     }
 }
