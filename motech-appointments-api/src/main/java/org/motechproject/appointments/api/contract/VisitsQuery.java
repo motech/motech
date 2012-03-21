@@ -10,6 +10,7 @@ import java.util.List;
 
 public class VisitsQuery {
 
+    private String externalId;
     private List<Criterion> criteria = new ArrayList<Criterion>();
 
     public VisitsQuery() {
@@ -23,6 +24,19 @@ public class VisitsQuery {
     public VisitsQuery unvisited() {
         criteria.add(new UnvisitedCriterion());
         return this;
+    }
+
+    public VisitsQuery havingExternalId(String externalId) {
+        this.externalId = externalId;
+        return this;
+    }
+
+    public String getExternalIdCriterion() {
+        return externalId;
+    }
+
+    public boolean hasExternalIdCriterion() {
+        return externalId != null;
     }
 
     public List<Criterion> getCriteria() {

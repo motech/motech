@@ -35,4 +35,11 @@ public class VisitsQueryTest {
         assertEquals(criteria.size(), 1);
         assertTrue(criteria.get(0) instanceof UnvisitedCriterion);
     }
+
+    @Test
+    public void shouldQueryBasedOnExternalId() {
+        VisitsQuery query = visitsQuery.havingExternalId("entity1");
+        assertTrue(visitsQuery.hasExternalIdCriterion());
+        assertEquals("entity1", visitsQuery.getExternalIdCriterion());
+    }
 }

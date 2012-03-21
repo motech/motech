@@ -58,6 +58,25 @@ public class VisitsQueryServiceIT extends AppointmentsBaseIntegrationTest {
         allAppointmentCalendars.add(new AppointmentCalendar().externalId("foo1").addVisit(visit1).addVisit(visit2));
         allAppointmentCalendars.add(new AppointmentCalendar().externalId("foo2").addVisit(visit3));
 
-        assertEquals(asList(new String[]{ "foo1", "foo1","foo2" }), extract(visitsQueryService.search(new VisitsQuery()), on(VisitResponse.class).getExternalId()));
+        assertEquals(asList(new String[]{ "foo1", "foo1" }), extract(visitsQueryService.search(new VisitsQuery().havingExternalId("foo1")), on(VisitResponse.class).getExternalId()));
+    }
+
+    @Test
+    public void shouldFetchVisitsThatAreDueForaGivenExternalId() {
+        Visit visit1 = new Visit().name("visit1").addAppointment(newDateTime(2011, 6, 5, 0, 0, 0), null).visitDate(newDateTime(2011, 6, 5, 0, 0, 0));
+        Visit visit2 = new Visit().name("visit2").addAppointment(newDateTime(2011, 7, 1, 0, 0, 0), null);
+        Visit visit3 = new Visit().name("visit3").addAppointment(newDateTime(2011, 8, 3, 0, 0, 0), null).visitDate(newDateTime(2011, 8, 3, 0, 0, 0));
+        Visit visit4 = new Visit().name("visit4").addAppointment(newDateTime(2011, 9, 5, 0, 0, 0), null);
+        Visit visit5 = new Visit().name("visit5").addAppointment(newDateTime(2011, 10, 2, 0, 0, 0), null);
+        Visit visit6 = new Visit().name("visit6").addAppointment(newDateTime(2011, 10, 20, 0, 0, 0), null);
+        Visit visit7 = new Visit().name("visit7").addAppointment(newDateTime(2011, 11, 2, 0, 0, 0), null);
+
+        allAppointmentCalendars.add(new AppointmentCalendar().externalId("foo1").addVisit(visit1).addVisit(visit2));
+        allAppointmentCalendars.add(new AppointmentCalendar().externalId("foo2").addVisit(visit3).addVisit(visit4).addVisit(visit5));
+        allAppointmentCalendars.add(new AppointmentCalendar().externalId("foo3").addVisit(visit6).addVisit(visit7));
+
+        DateTime start = newDateTime(2011, 7, 1, 0, 0, 0);
+        DateTime end = newDateTime(2011, 11, 1, 0, 0, 0);
+        assertEquals(asList(new String[]{ "visit4", "visit5" }), extract(visitsQueryService.search(new VisitsQuery().havingExternalId("foo2").withDueDateIn(start, end).unvisited()), on(VisitResponse.class).getName()));
     }
 }

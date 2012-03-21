@@ -24,7 +24,14 @@ public class VisitsQueryService {
     private VisitResponseMapper visitResponseMapper = new VisitResponseMapper();
 
     public List<VisitResponse> search(VisitsQuery query) {
-        List<AppointmentCalendar> appointmentCalendars = allAppointmentCalendars.getAll();
+        List<AppointmentCalendar> appointmentCalendars = new ArrayList<AppointmentCalendar>();
+        if (query.hasExternalIdCriterion()) {
+            AppointmentCalendar appointmentCalendar = allAppointmentCalendars.findByExternalId(query.getExternalIdCriterion());
+            if (appointmentCalendar != null)
+                appointmentCalendars.add(appointmentCalendar);
+        } else {
+            appointmentCalendars = allAppointmentCalendars.getAll();
+        }
 
         Map<Visit, String> externalIdFromVisit = new HashMap<Visit, String>();
         List<Visit> visits = new ArrayList<Visit>();
@@ -32,8 +39,9 @@ public class VisitsQueryService {
             List<Visit> calendarVisits = calendar.visits();
             visits.addAll(calendarVisits);
             for (Visit visit : calendarVisits)
-                externalIdFromVisit.put(visit, calendar.externalId());
+                externalIdFromVisit.put(visit, calendar.externalId());  // visit must be uniquely identifiable!
         }
+
         for (Criterion criterion : query.getCriteria())
             visits = criterion.filter(visits);
 
