@@ -8,6 +8,7 @@ import java.util.Map;
 public class VisitResponse {
 
     private String name;
+    private String externalId;
     private String typeOfVisit;
     private DateTime visitDate;
     private boolean missed;
@@ -23,6 +24,14 @@ public class VisitResponse {
     public VisitResponse setName(String name) {
         this.name = name;
         return this;
+    }
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 
     public String getTypeOfVisit() {
