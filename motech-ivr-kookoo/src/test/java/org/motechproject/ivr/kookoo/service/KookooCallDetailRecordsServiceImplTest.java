@@ -1,10 +1,12 @@
 package org.motechproject.ivr.kookoo.service;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.motechproject.context.EventContext;
 import org.motechproject.event.EventRelay;
 import org.motechproject.ivr.event.CallEvent;
@@ -16,7 +18,7 @@ import org.motechproject.ivr.kookoo.repository.AllKooKooCallDetailRecords;
 import org.motechproject.ivr.model.CallDetailRecord;
 import org.motechproject.ivr.model.CallDirection;
 import org.motechproject.model.MotechEvent;
-import org.powermock.api.mockito.PowerMockito;
+import org.motechproject.util.DateUtil;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 
@@ -26,9 +28,10 @@ import java.util.List;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
-@PrepareForTest(EventContext.class)
+@PrepareForTest({DateUtil.class, EventContext.class})
 public class KookooCallDetailRecordsServiceImplTest {
 
     @Rule
@@ -45,19 +48,23 @@ public class KookooCallDetailRecordsServiceImplTest {
     private KookooCallDetailRecord kookooCallDetailRecord;
 
     private final String callDetailRecordId = "callId";
+    private DateTime now;
 
     @Before
     public void setUp() {
         initMocks(this);
 
-        PowerMockito.mockStatic(EventContext.class);
+        mockStatic(EventContext.class);
+        mockStatic(DateUtil.class);
         when(EventContext.getInstance()).thenReturn(eventContext);
         when(eventContext.getEventRelay()).thenReturn(eventRelay);
+        now = new DateTime(2011, 1, 1, 10, 25, 30, 0);
+        Mockito.when(DateUtil.now()).thenReturn(now);
 
-        kookooCallDetailRecordsService = new KookooCallDetailRecordsServiceImpl(allKooKooCallDetailRecords, allKooKooCallDetailRecords);
+        kookooCallDetailRecordsService = new KookooCallDetailRecordsServiceImpl(allKooKooCallDetailRecords, allKooKooCallDetailRecords, eventRelay);
         CallDetailRecord callDetailRecord = CallDetailRecord.create("85437", CallDirection.Inbound, CallDetailRecord.Disposition.ANSWERED);
         kookooCallDetailRecord = new KookooCallDetailRecord(callDetailRecord, "fdsfdsf");
-        when(allKooKooCallDetailRecords.get(callDetailRecordId)).thenReturn(kookooCallDetailRecord);
+        Mockito.when(allKooKooCallDetailRecords.get(callDetailRecordId)).thenReturn(kookooCallDetailRecord);
     }
 
     @Test
@@ -80,12 +87,40 @@ public class KookooCallDetailRecordsServiceImplTest {
     }
 
     @Test
+    public void shouldSetAnsweredDate_WhenSettingCallAsAnswered() {
+        String callDetailRecordId = "callId";
+        CallDetailRecord callDetailRecord = CallDetailRecord.create("85437", CallDirection.Inbound, CallDetailRecord.Disposition.UNKNOWN);
+        kookooCallDetailRecord = new KookooCallDetailRecord(callDetailRecord, "fdsfdsf");
+        when(allKooKooCallDetailRecords.get(callDetailRecordId)).thenReturn(kookooCallDetailRecord);
+
+        kookooCallDetailRecordsService.setCallRecordAsAnswered(callDetailRecordId);
+
+        assertEquals(now.toDate(), callDetailRecord.getAnswerDate());
+        assertEquals(CallDetailRecord.Disposition.ANSWERED, callDetailRecord.getDisposition());
+        verify(allKooKooCallDetailRecords).update(kookooCallDetailRecord);
+    }
+
+    @Test
+    public void shouldSetAsNotAnswered_WhenCallNotAnswered() {
+        String callDetailRecordId = "callId";
+        CallDetailRecord callDetailRecord = CallDetailRecord.create("85437", CallDirection.Inbound, CallDetailRecord.Disposition.UNKNOWN);
+        kookooCallDetailRecord = new KookooCallDetailRecord(callDetailRecord, "fdsfdsf");
+        when(allKooKooCallDetailRecords.get(callDetailRecordId)).thenReturn(kookooCallDetailRecord);
+
+        kookooCallDetailRecordsService.setCallRecordAsNotAnswered(callDetailRecordId);
+
+        assertEquals(CallDetailRecord.Disposition.NO_ANSWER, callDetailRecord.getDisposition());
+        verify(allKooKooCallDetailRecords).update(kookooCallDetailRecord);
+
+    }
+
+    @Test
     public void appendEvent() {
         assertEquals(0, kookooCallDetailRecord.getCallDetailRecord().getCallEvents().size());
         kookooCallDetailRecordsService.appendEvent(callDetailRecordId, IVREvent.NewCall, null);
         assertEquals(1, kookooCallDetailRecord.getCallDetailRecord().getCallEvents().size());
     }
-    
+
     @Test
     public void appendEventShouldAddTheEventIfUserInput_IsNotEmpty() {
         String dtmfInput = "2";
@@ -94,7 +129,7 @@ public class KookooCallDetailRecordsServiceImplTest {
         assertEquals(1, callEvents.size());
         assertEquals(dtmfInput, callEvents.get(0).getData().getFirst(CallEventConstants.DTMF_DATA));
     }
-    
+
     @Test
     public void appendLastCallEvent() {
         kookooCallDetailRecordsService.appendEvent(callDetailRecordId, IVREvent.GotDTMF, "1");
@@ -109,7 +144,7 @@ public class KookooCallDetailRecordsServiceImplTest {
         assertEquals(1, callEvents.size());
         assertEquals(response, callEvents.get(0).getData().getFirst(CallEventConstants.CUSTOM_DATA_LIST));
     }
-   
+
     @Test
     public void scenario1() {
         kookooCallDetailRecordsService.appendEvent(callDetailRecordId, IVREvent.GotDTMF, "1");
@@ -128,6 +163,6 @@ public class KookooCallDetailRecordsServiceImplTest {
         ArgumentCaptor<KookooCallDetailRecord> capture = ArgumentCaptor.forClass(KookooCallDetailRecord.class);
         verify(allKooKooCallDetailRecords).add(capture.capture());
         KookooCallDetailRecord newKookooCallDetailRecord = capture.getValue();
-        assertEquals(1, newKookooCallDetailRecord.getCallDetailRecord().getCallEvents().size());
+        assertEquals(0, newKookooCallDetailRecord.getCallDetailRecord().getCallEvents().size());
     }
 }

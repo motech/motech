@@ -8,7 +8,6 @@ import org.motechproject.ivr.kookoo.KookooCallbackRequest;
 import org.motechproject.ivr.kookoo.KookooRequest;
 import org.motechproject.ivr.kookoo.extensions.CallFlowController;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
-import org.motechproject.ivr.model.CallDetailRecord;
 import org.motechproject.ivr.service.IVRService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -42,10 +41,11 @@ public class IVRController {
     @ResponseBody
     public String callback(KookooCallbackRequest kookooCallbackRequest) {
         if (kookooCallbackRequest.notAnswered()) {
-            String kooKooCallDetailRecordId = kookooCallDetailRecordsService.createOutgoing(kookooCallbackRequest.getSid(), kookooCallbackRequest.getPhone_no(), CallDetailRecord.Disposition.NO_ANSWER);
+            String callDetailRecordId = kookooCallbackRequest.getCall_detail_record_id();
+            kookooCallDetailRecordsService.setCallRecordAsNotAnswered(callDetailRecordId);
             final CallEvent callEvent = new CallEvent(IVREvent.Missed.toString());
             callEvent.appendData(IVRService.CALL_TYPE, kookooCallbackRequest.getCall_type());
-            kookooCallDetailRecordsService.close(kooKooCallDetailRecordId, kookooCallbackRequest.getExternal_id(), callEvent);
+            kookooCallDetailRecordsService.close(callDetailRecordId, kookooCallbackRequest.getExternal_id(), callEvent);
         }
         return "";
     }
@@ -58,8 +58,13 @@ public class IVRController {
             switch (ivrEvent) {
                 case NewCall:
                     ivrContext.initialize();
-                    String kooKooCallDetailRecordId = kookooCallDetailRecordsService.createAnsweredRecord(ivrContext.callId(), ivrContext.callerId(), ivrContext.callDirection());
-                    ivrContext.callDetailRecordId(kooKooCallDetailRecordId);
+                    if(ivrContext.callDetailRecordId() == null) {
+                        String kooKooCallDetailRecordId = kookooCallDetailRecordsService.createAnsweredRecord(ivrContext.callId(), ivrContext.callerId(), ivrContext.callDirection());
+                        ivrContext.callDetailRecordId(kooKooCallDetailRecordId);
+                    } else {
+                        kookooCallDetailRecordsService.setCallRecordAsAnswered(ivrContext.callDetailRecordId());
+                    }
+                    kookooCallDetailRecordsService.appendEvent(ivrContext.callDetailRecordId(), ivrEvent, "");
                     break;
                 case Disconnect:
                 case Hangup:
