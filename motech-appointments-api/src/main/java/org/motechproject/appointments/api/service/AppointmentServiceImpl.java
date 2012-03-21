@@ -60,6 +60,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         return new VisitResponseMapper().map(visit);
     }
 
+    @Deprecated
     public List<VisitResponse> getAllVisits(String externalId) {
         AppointmentCalendar appointmentCalendar = getAppointmentCalendar(externalId);
         if (appointmentCalendar == null) return new ArrayList<VisitResponse>();
