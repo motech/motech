@@ -45,7 +45,7 @@ public class EnrollmentDefaultmentServiceTest {
         schedule.addMilestones(milestone);
         String externalId = "entity_1";
         DateTime now = now();
-        Enrollment enrollment = new Enrollment(externalId, schedule, milestone.getName(), now, now, new Time(8, 10), EnrollmentStatus.ACTIVE);
+        Enrollment enrollment = new Enrollment(externalId, schedule, milestone.getName(), now, now, new Time(8, 10), EnrollmentStatus.ACTIVE, null);
         enrollment.setId("enrollment_1");
 
         enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
@@ -70,7 +70,7 @@ public class EnrollmentDefaultmentServiceTest {
         String externalId = "entity_1";
         DateTime referenceDateTime = newDateTime(2012, 1, 1, 0, 0, 0).minusMonths(10);
         DateTime enrollmentDateTime = now();
-        Enrollment enrollment = new Enrollment(externalId, schedule, milestone.getName(), referenceDateTime, enrollmentDateTime, new Time(8, 10), EnrollmentStatus.ACTIVE);
+        Enrollment enrollment = new Enrollment(externalId, schedule, milestone.getName(), referenceDateTime, enrollmentDateTime, new Time(8, 10), EnrollmentStatus.ACTIVE, null);
         enrollment.setId("enrollment_1");
 
         enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
@@ -81,7 +81,7 @@ public class EnrollmentDefaultmentServiceTest {
     @Test
     public void shouldUnscheduleDefaultmentCaptureJob() {
         Schedule schedule = new Schedule("some_schedule");
-        Enrollment enrollment = new Enrollment("entity_1", schedule, "milestone", weeksAgo(0), weeksAgo(0), new Time(8, 10), EnrollmentStatus.ACTIVE);
+        Enrollment enrollment = new Enrollment("entity_1", schedule, "milestone", weeksAgo(0), weeksAgo(0), new Time(8, 10), EnrollmentStatus.ACTIVE, null);
         enrollment.setId("enrollment_1");
 
         enrollmentDefaultmentService.unscheduleDefaultmentCaptureJob(enrollment);

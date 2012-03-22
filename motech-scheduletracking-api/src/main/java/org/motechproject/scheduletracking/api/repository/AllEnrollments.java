@@ -29,6 +29,15 @@ public class AllEnrollments extends MotechBaseRepository<Enrollment> {
         return enrollments.isEmpty() ? null : populateSchedule(enrollments.get(0));
     }
 
+    public static final String FUNCTION_DOC_EMIT_DOC_METADATA = "function(doc) {\n" +
+            "  for (i = 0; i < doc.metadata.length; i++)\n" +
+            "    emit([doc.metadata[i].property, doc.metadata[i].value], doc._id);\n" +
+            "}";
+    @View(name = "find_by_property", map = FUNCTION_DOC_EMIT_DOC_METADATA)
+    public List<Enrollment> findByMetadataProperty(String property, String value) {
+        return queryView("find_by_property", ComplexKey.of(property, value));
+    }
+
     @Override
     public List<Enrollment> getAll()
     {

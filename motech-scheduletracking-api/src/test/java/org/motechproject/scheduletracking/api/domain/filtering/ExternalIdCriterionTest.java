@@ -18,10 +18,10 @@ public class ExternalIdCriterionTest {
     public void shouldFilterByExternalId() {
         Schedule schedule = new Schedule("some_schedule");
         List<Enrollment> allEnrollments = new ArrayList<Enrollment>();
-        allEnrollments.add(new Enrollment("someExternalId", schedule, null, null, null, null, null));
-        allEnrollments.add(new Enrollment("someOtherExternalId", schedule, null, null, null, null, null));
-        allEnrollments.add(new Enrollment("oneMoreExternalId", schedule, null, null, null, null, null));
-        allEnrollments.add(new Enrollment("someExternalId", schedule, null, null, null, null, null));
+        allEnrollments.add(new Enrollment("someExternalId", schedule, null, null, null, null, null, null));
+        allEnrollments.add(new Enrollment("someOtherExternalId", schedule, null, null, null, null, null, null));
+        allEnrollments.add(new Enrollment("oneMoreExternalId", schedule, null, null, null, null, null, null));
+        allEnrollments.add(new Enrollment("someExternalId", schedule, null, null, null, null, null, null));
 
         List<Enrollment> filteredEnrollments = new ExternalIdCriterion("someExternalId").filter(allEnrollments, null);
         assertEquals(asList(new String[]{"someExternalId", "someExternalId"}), extract(filteredEnrollments, on(Enrollment.class).getExternalId()));
