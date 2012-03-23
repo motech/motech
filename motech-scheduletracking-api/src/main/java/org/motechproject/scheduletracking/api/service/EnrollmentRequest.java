@@ -5,6 +5,9 @@ import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
 import org.motechproject.util.DateUtil;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.motechproject.util.DateUtil.newDateTime;
 
 public class EnrollmentRequest {
@@ -16,8 +19,9 @@ public class EnrollmentRequest {
     private LocalDate enrollmentDate;
     private Time enrollmentTime;
     private String startingMilestoneName;
+    private Map<String, String> metadata;
 
-    public EnrollmentRequest(String externalId, String scheduleName, Time preferredAlertTime, LocalDate referenceDate, Time referenceTime, LocalDate enrollmentDate, Time enrollmentTime, String startingMilestoneName) {
+    public EnrollmentRequest(String externalId, String scheduleName, Time preferredAlertTime, LocalDate referenceDate, Time referenceTime, LocalDate enrollmentDate, Time enrollmentTime, String startingMilestoneName, Map<String, String> metadata) {
         this.externalId = externalId;
         this.scheduleName = scheduleName;
         this.preferredAlertTime = preferredAlertTime;
@@ -26,6 +30,7 @@ public class EnrollmentRequest {
         this.enrollmentDate = enrollmentDate;
         this.enrollmentTime = enrollmentTime;
         this.startingMilestoneName = startingMilestoneName;
+        this.metadata = (metadata != null)? metadata : new HashMap<String, String>();
     }
 
     public String getExternalId() {
@@ -66,5 +71,13 @@ public class EnrollmentRequest {
         LocalDate referenceDate = this.referenceDate != null ? this.referenceDate : DateUtil.today();
         Time referenceTime = this.referenceTime != null ? this.referenceTime : new Time(0, 0);
         return newDateTime(referenceDate, referenceTime);
+    }
+
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
     }
 }
