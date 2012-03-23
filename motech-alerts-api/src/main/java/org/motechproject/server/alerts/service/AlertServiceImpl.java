@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 public class AlertServiceImpl implements AlertService {
+
     private AllAlerts allAlerts;
     private AlertFilter alertFilter;
 
@@ -33,6 +34,13 @@ public class AlertServiceImpl implements AlertService {
     @Override
     public List<Alert> search(AlertCriteria alertCriteria) {
         return alertFilter.search(alertCriteria);
+    }
+
+    @Override
+    public void changeDescription(String id, String description) {
+        Alert alert = get(id);
+        alert.setDescription(description);
+        allAlerts.update(alert);
     }
 
     @Override

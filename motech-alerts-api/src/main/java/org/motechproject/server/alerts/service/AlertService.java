@@ -9,9 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 public interface AlertService {
+
     void create(String entityId, String name, String description, AlertType type, AlertStatus status, int priority, Map<String, String> data);
 
     List<Alert> search(AlertCriteria alertCriteria);
+
+    public void changeDescription(String id, String description);
 
     void changeStatus(String id, AlertStatus status);
 
