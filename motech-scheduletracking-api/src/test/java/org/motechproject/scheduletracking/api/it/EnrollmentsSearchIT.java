@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
+import org.motechproject.scheduletracking.api.domain.Metadata;
 import org.motechproject.scheduletracking.api.domain.WindowName;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.extract;
@@ -50,12 +52,12 @@ public class EnrollmentsSearchIT {
     @Test
     public void shouldReturnExternalIdsOfActiveEnrollmentsThatAreEitherInLateOrMaxWindowForAGivenSchedule() {
         DateTime now = now();
-        createEnrollment("entity_1", "IPTI Schedule", "IPTI 1", weeksAgo(1), now, new Time(6, 30), EnrollmentStatus.ACTIVE);
-        createEnrollment("entity_2", "IPTI Schedule", "IPTI 1", weeksAgo(14), now, new Time(6, 30), EnrollmentStatus.ACTIVE);
-        createEnrollment("entity_3", "IPTI Schedule", "IPTI 1", yearsAgo(1), now, new Time(6, 30), EnrollmentStatus.ACTIVE);
-        createEnrollment("entity_4", "IPTI Schedule", "IPTI 2", daysAgo(20), daysAgo(20), new Time(6, 30), EnrollmentStatus.ACTIVE);
-        createEnrollment("entity_5", "IPTI Schedule", "IPTI 1", yearsAgo(1), now, new Time(6, 30), EnrollmentStatus.DEFAULTED);
-        createEnrollment("entity_6", "Delivery", "Default", yearsAgo(1), now, new Time(6, 30), EnrollmentStatus.ACTIVE);
+        createEnrollment("entity_1", "IPTI Schedule", "IPTI 1", weeksAgo(1), now, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
+        createEnrollment("entity_2", "IPTI Schedule", "IPTI 1", weeksAgo(14), now, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
+        createEnrollment("entity_3", "IPTI Schedule", "IPTI 1", yearsAgo(1), now, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
+        createEnrollment("entity_4", "IPTI Schedule", "IPTI 2", daysAgo(20), daysAgo(20), new Time(6, 30), EnrollmentStatus.ACTIVE, null);
+        createEnrollment("entity_5", "IPTI Schedule", "IPTI 1", yearsAgo(1), now, new Time(6, 30), EnrollmentStatus.DEFAULTED, null);
+        createEnrollment("entity_6", "Delivery", "Default", yearsAgo(1), now, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
 
         EnrollmentsQuery query = new EnrollmentsQuery().havingSchedule("IPTI Schedule").currentlyInWindow(WindowName.late, WindowName.max).havingState("active");
         List<EnrollmentRecord> result = scheduleTrackingService.search(query);
@@ -65,12 +67,12 @@ public class EnrollmentsSearchIT {
     @Test
     public void shouldReturnExternalIdsOfActiveEnrollmentsThatHaveEnteredDueWindowDuringTheLastWeek() {
         DateTime now = now();
-        createEnrollment("entity_1", "IPTI Schedule", "IPTI 1", weeksAgo(10), now, new Time(6, 30), EnrollmentStatus.ACTIVE);
-        createEnrollment("entity_2", "IPTI Schedule", "IPTI 1", weeksAgo(13).minusDays(1), now, new Time(6, 30), EnrollmentStatus.ACTIVE);
-        createEnrollment("entity_3", "IPTI Schedule", "IPTI 1", weeksAgo(14).plusHours(1), now, new Time(6, 30), EnrollmentStatus.ACTIVE);
-        createEnrollment("entity_4", "IPTI Schedule", "IPTI 2", weeksAgo(15), now, new Time(6, 30), EnrollmentStatus.ACTIVE);
-        createEnrollment("entity_5", "IPTI Schedule", "IPTI 1", weeksAgo(13), now, new Time(6, 30), EnrollmentStatus.DEFAULTED);
-        createEnrollment("entity_6", "Delivery", "Default", weeksAgo(14), now, new Time(6, 30), EnrollmentStatus.ACTIVE);
+        createEnrollment("entity_1", "IPTI Schedule", "IPTI 1", weeksAgo(10), now, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
+        createEnrollment("entity_2", "IPTI Schedule", "IPTI 1", weeksAgo(13).minusDays(1), now, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
+        createEnrollment("entity_3", "IPTI Schedule", "IPTI 1", weeksAgo(14).plusHours(1), now, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
+        createEnrollment("entity_4", "IPTI Schedule", "IPTI 2", weeksAgo(15), now, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
+        createEnrollment("entity_5", "IPTI Schedule", "IPTI 1", weeksAgo(13), now, new Time(6, 30), EnrollmentStatus.DEFAULTED, null);
+        createEnrollment("entity_6", "Delivery", "Default", weeksAgo(14), now, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
 
         EnrollmentsQuery query = new EnrollmentsQuery().havingSchedule("IPTI Schedule").havingState("active").havingWindowStartingDuring(WindowName.due, weeksAgo(1), now);
         List<EnrollmentRecord> result = scheduleTrackingService.search(query);
@@ -80,16 +82,16 @@ public class EnrollmentsSearchIT {
     @Test
     public void shouldReturnExternalIdsOfActiveEnrollmentsThatAreCompletedDuringTheLastWeek() {
         DateTime referenceDate = newDateTime(2012, 10, 1, 0, 0, 0);
-        createEnrollment("entity_1", "IPTI Schedule", "IPTI 2", referenceDate, referenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE);
+        createEnrollment("entity_1", "IPTI Schedule", "IPTI 2", referenceDate, referenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
         scheduleTrackingService.fulfillCurrentMilestone("entity_1", "IPTI Schedule", newDate(2012, 10, 10));
-        createEnrollment("entity_2", "IPTI Schedule", "IPTI 2", referenceDate, referenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE);
+        createEnrollment("entity_2", "IPTI Schedule", "IPTI 2", referenceDate, referenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
         scheduleTrackingService.fulfillCurrentMilestone("entity_2", "IPTI Schedule", newDate(2012, 10, 20));
-        createEnrollment("entity_3", "IPTI Schedule", "IPTI 1", referenceDate, referenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE);
+        createEnrollment("entity_3", "IPTI Schedule", "IPTI 1", referenceDate, referenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
         scheduleTrackingService.fulfillCurrentMilestone("entity_3", "IPTI Schedule", newDate(2012, 10, 8));
         scheduleTrackingService.fulfillCurrentMilestone("entity_3", "IPTI Schedule", newDate(2012, 10, 9));
-        createEnrollment("entity_4", "IPTI Schedule", "IPTI 2", referenceDate, referenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE);
-        createEnrollment("entity_5", "IPTI Schedule", "IPTI 1", referenceDate, referenceDate, new Time(6, 30), EnrollmentStatus.DEFAULTED);
-        createEnrollment("entity_6", "Delivery", "Default", referenceDate, referenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE);
+        createEnrollment("entity_4", "IPTI Schedule", "IPTI 2", referenceDate, referenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
+        createEnrollment("entity_5", "IPTI Schedule", "IPTI 1", referenceDate, referenceDate, new Time(6, 30), EnrollmentStatus.DEFAULTED, null);
+        createEnrollment("entity_6", "Delivery", "Default", referenceDate, referenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
 
         EnrollmentsQuery query = new EnrollmentsQuery().havingSchedule("IPTI Schedule").completedDuring(newDateTime(2012, 10, 9, 0, 0, 0), newDateTime(2012, 10, 15, 23, 59, 59));
         List<EnrollmentRecord> result = scheduleTrackingService.search(query);
@@ -100,10 +102,10 @@ public class EnrollmentsSearchIT {
     public void forAGivenEntityshouldReturnAllSchedulesWithDatesWhoseDueDateFallsInTheLastWeek() {
         DateTime IptiReferenceDate = newDateTime(2012, 1, 1, 0, 0 ,0);
         DateTime deliveryReferenceDateTime = newDateTime(2011, 7, 9, 0, 0 ,0);
-        createEnrollment("entity_1", "IPTI Schedule", "IPTI 1", IptiReferenceDate, IptiReferenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE);
-        createEnrollment("entity_1", "Delivery", "Default", deliveryReferenceDateTime, deliveryReferenceDateTime, new Time(6, 30), EnrollmentStatus.ACTIVE);
-        createEnrollment("entity_1", "IPTI Schedule", "IPTI 1", IptiReferenceDate, IptiReferenceDate, new Time(6, 30), EnrollmentStatus.DEFAULTED);
-        createEnrollment("entity_2", "IPTI Schedule", "IPTI 1", IptiReferenceDate, IptiReferenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE);
+        createEnrollment("entity_1", "IPTI Schedule", "IPTI 1", IptiReferenceDate, IptiReferenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
+        createEnrollment("entity_1", "Delivery", "Default", deliveryReferenceDateTime, deliveryReferenceDateTime, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
+        createEnrollment("entity_1", "IPTI Schedule", "IPTI 1", IptiReferenceDate, IptiReferenceDate, new Time(6, 30), EnrollmentStatus.DEFAULTED, null);
+        createEnrollment("entity_2", "IPTI Schedule", "IPTI 1", IptiReferenceDate, IptiReferenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
 
         EnrollmentsQuery query = new EnrollmentsQuery()
                                     .havingExternalId("entity_1")
@@ -115,8 +117,36 @@ public class EnrollmentsSearchIT {
         assertEquals(asList(new DateTime[]{ newDateTime(2012, 4, 1, 0, 0, 0), newDateTime(2012, 4, 7, 0, 0, 0)}), extract(result, on(EnrollmentRecord.class).getStartOfDueWindow()));
     }
 
-    private Enrollment createEnrollment(String externalId, String scheduleName, String currentMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime, EnrollmentStatus enrollmentStatus) {
-        Enrollment enrollment = new Enrollment(externalId, allTrackedSchedules.getByName(scheduleName), currentMilestoneName, referenceDateTime, enrollmentDateTime, preferredAlertTime, enrollmentStatus);
+    @Test
+    public void shouldFindEnrollmentsByMetadataProperties() {
+        List<Metadata> metadata;
+        metadata = new ArrayList<Metadata>();
+        metadata.add(new Metadata("foo", "bar"));
+        metadata.add(new Metadata("fuu", "baz"));
+        createEnrollment("entity1", "Delivery", "milestone1", newDateTime(2010, 1, 1, 0, 0, 0), newDateTime(2010, 1, 1, 0, 0, 0), new Time(0, 0), EnrollmentStatus.ACTIVE, metadata);
+        metadata = new ArrayList<Metadata>();
+        metadata.add(new Metadata("foo", "cad"));
+        metadata.add(new Metadata("fuu", "cab"));
+        createEnrollment("entity2", "Delivery", "milestone1", newDateTime(2010, 1, 1, 0, 0, 0), newDateTime(2010, 1, 1, 0, 0, 0), new Time(0, 0), EnrollmentStatus.ACTIVE, metadata);
+        metadata = new ArrayList<Metadata>();
+        metadata.add(new Metadata("foo", "bar"));
+        metadata.add(new Metadata("fuu", "baz"));
+        createEnrollment("entity3", "Delivery", "milestone1", newDateTime(2010, 1, 1, 0, 0, 0), newDateTime(2010, 1, 1, 0, 0, 0), new Time(0, 0), EnrollmentStatus.ACTIVE, metadata);
+        metadata = new ArrayList<Metadata>();
+        metadata.add(new Metadata("foo", "biz"));
+        metadata.add(new Metadata("fuu", "boz"));
+        createEnrollment("entity4", "Delivery", "milestone1", newDateTime(2010, 1, 1, 0, 0, 0), newDateTime(2010, 1, 1, 0, 0, 0), new Time(0, 0), EnrollmentStatus.ACTIVE, metadata);
+        metadata = new ArrayList<Metadata>();
+        metadata.add(new Metadata("foo", "quz"));
+        metadata.add(new Metadata("fuu", "qux"));
+        createEnrollment("entity5", "Delivery", "milestone1", newDateTime(2010, 1, 1, 0, 0, 0), newDateTime(2010, 1, 1, 0, 0, 0), new Time(0, 0), EnrollmentStatus.ACTIVE, metadata);
+
+        assertEquals(asList(new String[]{ "entity1", "entity3" }), extract(allEnrollments.findByMetadataProperty("foo", "bar"), on(Enrollment.class).getExternalId()));
+        assertEquals(asList(new String[] { "entity4" }), extract(allEnrollments.findByMetadataProperty("fuu", "boz"), on(Enrollment.class).getExternalId()));
+    }
+
+    private Enrollment createEnrollment(String externalId, String scheduleName, String currentMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime, EnrollmentStatus enrollmentStatus, List<Metadata> metadata) {
+        Enrollment enrollment = new Enrollment(externalId, allTrackedSchedules.getByName(scheduleName), currentMilestoneName, referenceDateTime, enrollmentDateTime, preferredAlertTime, enrollmentStatus, metadata);
         allEnrollments.add(enrollment);
         return enrollment;
     }

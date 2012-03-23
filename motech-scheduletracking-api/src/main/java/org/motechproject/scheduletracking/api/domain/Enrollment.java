@@ -30,6 +30,8 @@ public class Enrollment extends MotechBaseDataObject {
     private Time preferredAlertTime;
     @JsonProperty
     private EnrollmentStatus status;
+    @JsonProperty
+    private List<Metadata> metadata;
 
     private Schedule schedule;
     private List<MilestoneFulfillment> fulfillments = new LinkedList<MilestoneFulfillment>();
@@ -38,7 +40,7 @@ public class Enrollment extends MotechBaseDataObject {
     private Enrollment() {
     }
 
-    public Enrollment(String externalId, Schedule schedule, String currentMilestoneName, DateTime startOfSchedule, DateTime enrolledOn, Time preferredAlertTime, EnrollmentStatus enrollmentStatus) {
+    public Enrollment(String externalId, Schedule schedule, String currentMilestoneName, DateTime startOfSchedule, DateTime enrolledOn, Time preferredAlertTime, EnrollmentStatus enrollmentStatus, List<Metadata> metadata) {
         this.externalId = externalId;
         this.scheduleName = schedule.getName();
         this.schedule = schedule;
@@ -47,6 +49,15 @@ public class Enrollment extends MotechBaseDataObject {
         this.enrolledOn = enrolledOn;
         this.preferredAlertTime = preferredAlertTime;
         this.status = enrollmentStatus;
+        this.metadata = metadata;
+    }
+
+    public List<Metadata> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(List<Metadata> metadata) {
+        this.metadata = metadata;
     }
 
     public String getScheduleName() {

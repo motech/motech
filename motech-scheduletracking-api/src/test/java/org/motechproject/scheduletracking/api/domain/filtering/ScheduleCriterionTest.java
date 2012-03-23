@@ -19,10 +19,10 @@ public class ScheduleCriterionTest {
         Schedule schedule = new Schedule("schedule_1");
         Schedule schedule2 = new Schedule("schedule_2");
         List<Enrollment> allEnrollments = new ArrayList<Enrollment>();
-        allEnrollments.add(new Enrollment(null, schedule, null, null, null, null, null));
-        allEnrollments.add(new Enrollment(null, schedule, null, null, null, null, null));
-        allEnrollments.add(new Enrollment(null, schedule2, null, null, null, null, null));
-        allEnrollments.add(new Enrollment(null, schedule2, null, null, null, null, null));
+        allEnrollments.add(new Enrollment(null, schedule, null, null, null, null, null, null));
+        allEnrollments.add(new Enrollment(null, schedule, null, null, null, null, null, null));
+        allEnrollments.add(new Enrollment(null, schedule2, null, null, null, null, null, null));
+        allEnrollments.add(new Enrollment(null, schedule2, null, null, null, null, null, null));
 
         List<Enrollment> filteredEnrollments = new ScheduleCriterion("schedule_1").filter(allEnrollments, null);
         assertEquals(asList(new String[]{"schedule_1", "schedule_1"}), extract(filteredEnrollments, on(Enrollment.class).getScheduleName()));

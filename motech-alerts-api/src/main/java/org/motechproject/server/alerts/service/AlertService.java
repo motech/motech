@@ -9,13 +9,20 @@ import java.util.List;
 import java.util.Map;
 
 public interface AlertService {
+
     void create(String entityId, String name, String description, AlertType type, AlertStatus status, int priority, Map<String, String> data);
 
     List<Alert> search(AlertCriteria alertCriteria);
 
+    Alert get(String id);
+
     void changeStatus(String id, AlertStatus status);
 
-    void setData(String id, String key, String value);
+    public void setDescription(String id, String description);
 
-    Alert get(String id);
+    void setPriority(String id, int priority);
+
+    void setName(String id, String name);
+
+    void setData(String id, String key, String value);
 }
