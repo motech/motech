@@ -37,9 +37,23 @@ public class AlertServiceImpl implements AlertService {
     }
 
     @Override
-    public void changeDescription(String id, String description) {
+    public void setDescription(String id, String description) {
         Alert alert = get(id);
         alert.setDescription(description);
+        allAlerts.update(alert);
+    }
+
+    @Override
+    public void setPriority(String id, int priority) {
+        Alert alert = get(id);
+        alert.setPriority(priority);
+        allAlerts.update(alert);
+    }
+
+    @Override
+    public void setName(String id, String name) {
+        Alert alert = get(id);
+        alert.setName(name);
         allAlerts.update(alert);
     }
 

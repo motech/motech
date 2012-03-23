@@ -14,11 +14,15 @@ public interface AlertService {
 
     List<Alert> search(AlertCriteria alertCriteria);
 
-    public void changeDescription(String id, String description);
+    Alert get(String id);
 
     void changeStatus(String id, AlertStatus status);
 
-    void setData(String id, String key, String value);
+    public void setDescription(String id, String description);
 
-    Alert get(String id);
+    void setPriority(String id, int priority);
+
+    void setName(String id, String name);
+
+    void setData(String id, String key, String value);
 }

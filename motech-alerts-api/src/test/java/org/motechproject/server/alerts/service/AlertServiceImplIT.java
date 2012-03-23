@@ -78,10 +78,35 @@ public class AlertServiceImplIT {
         Alert alert = alertService.search(new AlertCriteria().byExternalId(externalId)).get(0);
         assertEquals("description", alert.getDescription());
 
-        alertService.changeDescription(alert.getId(), "new description");
+        alertService.setDescription(alert.getId(), "new description");
 
         alert = alertService.search(new AlertCriteria().byExternalId(externalId)).get(0);
         assertEquals("new description", alert.getDescription());
+    }
+
+    @Test
+    public void shouldSetPriority() {
+        String externalId = UUID.randomUUID().toString();
+        createAlert(externalId, AlertType.CRITICAL, AlertStatus.NEW, 1, "description", new HashMap<String, String>());
+        Alert alert = alertService.search(new AlertCriteria().byExternalId(externalId)).get(0);
+        assertEquals(1, alert.getPriority());
+
+        alertService.setPriority(alert.getId(), 2);
+
+        alert = alertService.search(new AlertCriteria().byExternalId(externalId)).get(0);
+        assertEquals(2, alert.getPriority());
+    }
+
+    @Test
+    public void shouldSetName() {
+        String externalId = UUID.randomUUID().toString();
+        createAlert(externalId, AlertType.CRITICAL, AlertStatus.NEW, 1, "description", new HashMap<String, String>());
+        Alert alert = alertService.search(new AlertCriteria().byExternalId(externalId)).get(0);
+
+        alertService.setName(alert.getId(), "new name");
+
+        alert = alertService.search(new AlertCriteria().byExternalId(externalId)).get(0);
+        assertEquals("new name", alert.getName());
     }
 
     private void createAlert(String externalId, AlertType critical, AlertStatus aNew, int priority, String description, HashMap<String, String> alertData) {
