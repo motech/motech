@@ -31,22 +31,25 @@ public class EnrollmentsQueryServiceTest {
     }
 
     @Test
-    public void shouldFilterEnrollmentsBasedOnTheQuery() {
-        List<Criterion> criteria = new ArrayList<Criterion>();
-        Criterion criterion1 = mock(Criterion.class);
-        Criterion criterion2 = mock(Criterion.class);
-        criteria.addAll(asList(new Criterion[]{ criterion1, criterion2 }));
+    public void shouldFetchByPrimaryCriterionFromDbAndFilterSubsequentCriteriaInCode() {
+
+        Criterion primaryCriterion = mock(Criterion.class);
+        List<Enrollment> filteredByMetadata = mock(List.class);
+        when(primaryCriterion.fetch(allEnrollments)).thenReturn(filteredByMetadata);
+
+        Criterion secondaryCriterion1 = mock(Criterion.class);
+        List<Enrollment> criterion1FilteredEnrollments = mock(List.class);
+        when(secondaryCriterion1.filter(filteredByMetadata, enrollmentService)).thenReturn(criterion1FilteredEnrollments);
+
+        Criterion secondaryCriterion2 = mock(Criterion.class);
+        List<Enrollment> expectedFilteredEnrollments = mock(List.class);
+        when(secondaryCriterion2.filter(criterion1FilteredEnrollments, enrollmentService)).thenReturn(expectedFilteredEnrollments);
 
         EnrollmentsQuery enrollmentQuery = mock(EnrollmentsQuery.class);
-        when(enrollmentQuery.getCriteria()).thenReturn(criteria);
+        when(enrollmentQuery.getPrimaryCriterion()).thenReturn(primaryCriterion);
+        when(enrollmentQuery.getSecondaryCriteria()).thenReturn(asList(new Criterion[]{ secondaryCriterion1, secondaryCriterion2 }));
 
-        List<Enrollment> enrollments = mock(List.class);
-        when(allEnrollments.getAll()).thenReturn(enrollments);
-        List<Enrollment> criterion1FilteredEnrollments = mock(List.class);
-        when(criterion1.filter(enrollments, enrollmentService)).thenReturn(criterion1FilteredEnrollments);
-        List<Enrollment> expectedFilteredEnrollments = mock(List.class);;
-        when(criterion2.filter(criterion1FilteredEnrollments, enrollmentService)).thenReturn(expectedFilteredEnrollments);
+        assertEquals(expectedFilteredEnrollments, new EnrollmentsQueryService(allEnrollments, enrollmentService).search(enrollmentQuery));
 
-        assertEquals(expectedFilteredEnrollments, new EnrollmentsQueryService(enrollmentService, allEnrollments).search(enrollmentQuery));
     }
 }

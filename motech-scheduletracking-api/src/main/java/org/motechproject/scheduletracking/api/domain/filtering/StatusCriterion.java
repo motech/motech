@@ -3,6 +3,7 @@ package org.motechproject.scheduletracking.api.domain.filtering;
 import ch.lambdaj.Lambda;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
+import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.service.impl.EnrollmentService;
 
 import java.util.List;
@@ -18,6 +19,11 @@ public class StatusCriterion implements Criterion {
 
     public StatusCriterion(List<EnrollmentStatus> statuses) {
         this.statuses = statuses;
+    }
+
+    @Override
+    public List<Enrollment> fetch(AllEnrollments allEnrollments) {
+        return null;
     }
 
     @Override

@@ -3,6 +3,7 @@ package org.motechproject.scheduletracking.api.domain.filtering;
 import org.joda.time.DateTime;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.WindowName;
+import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.service.impl.EnrollmentService;
 
 import java.util.ArrayList;
@@ -14,6 +15,11 @@ public class InWindowCriterion implements Criterion {
 
     public InWindowCriterion(List<WindowName> windowNames) {
         this.windowNames = windowNames;
+    }
+
+    @Override
+    public List<Enrollment> fetch(AllEnrollments allEnrollments) {
+        return null;
     }
 
     @Override

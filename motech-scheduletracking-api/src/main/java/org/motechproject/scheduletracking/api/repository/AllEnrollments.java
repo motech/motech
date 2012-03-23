@@ -38,6 +38,11 @@ public class AllEnrollments extends MotechBaseRepository<Enrollment> {
         return queryView("find_by_property", ComplexKey.of(property, value));
     }
 
+    @View(name = "find_by_external_id", map = "function(doc) { emit(doc.externalId); }")
+    public List<Enrollment> findByExternalId(String externalId) {
+        return queryView("find_by_external_id", externalId);
+    }
+
     @Override
     public List<Enrollment> getAll()
     {
