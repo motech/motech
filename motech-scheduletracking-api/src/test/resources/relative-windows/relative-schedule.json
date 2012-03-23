@@ -1,6 +1,5 @@
 {
-    "name":"Absolute Schedule",
-    "absolute": true,
+    "name":"Relative Schedule",
     "milestones":[
         {
             "name":"milestone1",
@@ -15,14 +14,14 @@
             },
             "alerts":[
                 {
-                    "window":"earliest",
+                    "window":"due",
                     "offset":["0 Weeks"],
                     "interval":["1 Day"],
                     "count":"7"
                 },
                 {
                     "window":"late",
-                    "offset":["2 Week", "4 hours"],
+                    "offset":["1 Week", "4 hours"],
                     "interval":["1 Week"],
                     "count":"51"
                 }
@@ -31,29 +30,14 @@
         {
             "name":"milestone2",
             "scheduleWindows":{
-                "earliest":["5 Weeks"],
-                "due":["6 Weeks"],
-                "late":["7 Weeks"],
-                "max":["8 Weeks"]
+                "earliest":["1 Weeks"],
+                "due":["2 Weeks"],
+                "late":["3 Weeks"],
+                "max":["4 Weeks"]
             },
             "data":{
                 "doo":"Bar"
-            },
-            "alerts":[
-                {
-                    "window":"earliest",
-                    "offset":["4 Weeks"],
-                    "interval":["1 Day"],
-                    "count":"7"
-                },
-                {
-                    "window":"max",
-                    "offset":["7 Weeks", "1 Day"],
-                    "interval":["1 Day"],
-                    "count":"7"
-                }
-
-            ]
+            }
         }
     ]
 }

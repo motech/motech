@@ -37,7 +37,7 @@ public class CallEvent {
     }
 
     public void setTimeStamp(DateTime timeStamp) {
-        this.timeStamp = timeStamp;
+        this.timeStamp = DateUtil.setTimeZone(timeStamp);
     }
 
     public CallEventCustomData getData() {

@@ -7,7 +7,6 @@ import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.events.MilestoneEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
-import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,19 +28,19 @@ public class EnrollmentAlertService {
         if (currentMilestone == null)
             return;
 
-        DateTime currentMilestoneStartDate = enrollment.getCurrentMilestoneStartDate();
+        DateTime alertReference = enrollment.getReferenceForAlerts();
         for (MilestoneWindow milestoneWindow : currentMilestone.getMilestoneWindows()) {
-            if (currentMilestone.windowElapsed(milestoneWindow.getName(), currentMilestoneStartDate))
+            if (currentMilestone.windowElapsed(milestoneWindow.getName(), alertReference))
                 continue;
 
-            MilestoneAlert milestoneAlert = MilestoneAlert.fromMilestone(currentMilestone, currentMilestoneStartDate);
+            MilestoneAlert milestoneAlert = MilestoneAlert.fromMilestone(currentMilestone, alertReference);
             for (Alert alert : milestoneWindow.getAlerts())
-                scheduleAlertJob(alert, enrollment, currentMilestone, milestoneWindow, milestoneAlert, currentMilestoneStartDate);
+                scheduleAlertJob(alert, enrollment, currentMilestone, milestoneWindow, milestoneAlert, alertReference);
         }
     }
 
-    private void scheduleAlertJob(Alert alert, Enrollment enrollment, Milestone currentMilestone, MilestoneWindow milestoneWindow, MilestoneAlert milestoneAlert, DateTime currentMilestoneStartDate) {
-        DateTime windowStartDate = currentMilestoneStartDate.plus(currentMilestone.getWindowStart(milestoneWindow.getName()));
+    private void scheduleAlertJob(Alert alert, Enrollment enrollment, Milestone currentMilestone, MilestoneWindow milestoneWindow, MilestoneAlert milestoneAlert, DateTime reference) {
+        DateTime windowStartDate = reference.plus(currentMilestone.getWindowStart(milestoneWindow.getName()));
         int numberOfAlertsToSchedule = alert.getRemainingAlertCount(windowStartDate, enrollment.getPreferredAlertTime());
         if (numberOfAlertsToSchedule <= 0)
             return;

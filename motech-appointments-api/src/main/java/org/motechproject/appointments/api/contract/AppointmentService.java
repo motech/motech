@@ -1,6 +1,7 @@
 package org.motechproject.appointments.api.contract;
 
 import org.joda.time.DateTime;
+import org.motechproject.appointments.api.model.Visit;
 
 import java.util.List;
 import java.util.Map;
@@ -26,5 +27,7 @@ public interface AppointmentService {
     public void visited(String externalId, String visitName, DateTime visitedDate);
 
     public void markVisitAsMissed(String externalId, String visitName);
+
+    public List<VisitResponse> search(VisitsQuery query);
 
 }

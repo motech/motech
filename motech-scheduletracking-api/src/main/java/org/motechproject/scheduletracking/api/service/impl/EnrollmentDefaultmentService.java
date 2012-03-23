@@ -8,7 +8,6 @@ import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.Milestone;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.events.DefaultmentCaptureEvent;
-import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +29,7 @@ public class EnrollmentDefaultmentService {
         if (currentMilestone == null)
             return;
 
-        DateTime currentMilestoneStartDate = enrollment.getCurrentMilestoneStartDate();
+        DateTime currentMilestoneStartDate = enrollment.getReferenceForAlerts();
         DateTime milestoneEndDateTime = currentMilestoneStartDate.plus(currentMilestone.getMaximumDuration());
 
         if (milestoneEndDateTime.isBefore(now()))

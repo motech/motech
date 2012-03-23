@@ -15,4 +15,6 @@ public interface KookooCallDetailRecordsService {
     public void appendEvent(String callDetailRecordId, IVREvent callEvent, String userInput);
     public void close(String callDetailRecordId, String externalId, CallEvent callEvent);
     void appendToLastCallEvent(String callDetailRecordID,  HashMap<String, String> map);
+    void setCallRecordAsAnswered(String callDetailRecordID);
+    void setCallRecordAsNotAnswered(String callDetailRecordID);
 }

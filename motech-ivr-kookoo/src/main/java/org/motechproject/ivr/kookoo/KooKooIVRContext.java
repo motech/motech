@@ -19,7 +19,7 @@ public class KooKooIVRContext {
 
     private static final String CURRENT_DECISION_TREE_POSITION = "current_decision_tree_position";
     public static final String PREFERRED_LANGUAGE_CODE = "preferred_lang_code";
-    private static final String CALL_DETAIL_RECORD_ID = "call_detail_record_id";
+    public static final String CALL_DETAIL_RECORD_ID = "call_detail_record_id";
     public static final String TREE_NAME_KEY = "tree_name";
     public static final String EXTERNAL_ID = "external_id";
     public static final String POUND_SYMBOL = "%23";
@@ -148,6 +148,7 @@ public class KooKooIVRContext {
 
     public void initialize() {
         callId(kooKooRequest.getSid());
+        callDetailRecordId(kooKooRequest.getParameter(CALL_DETAIL_RECORD_ID));
     }
 
     public void setDefaults() {

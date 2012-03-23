@@ -116,7 +116,7 @@ public class EnrollmentsSearchIT {
     }
 
     private Enrollment createEnrollment(String externalId, String scheduleName, String currentMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime, EnrollmentStatus enrollmentStatus) {
-        Enrollment enrollment = new Enrollment(externalId, scheduleName, currentMilestoneName, referenceDateTime, enrollmentDateTime, preferredAlertTime, enrollmentStatus, allTrackedSchedules.getByName(scheduleName));
+        Enrollment enrollment = new Enrollment(externalId, allTrackedSchedules.getByName(scheduleName), currentMilestoneName, referenceDateTime, enrollmentDateTime, preferredAlertTime, enrollmentStatus);
         allEnrollments.add(enrollment);
         return enrollment;
     }

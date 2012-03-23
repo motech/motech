@@ -7,6 +7,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
+import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
+import org.motechproject.ivr.model.CallDetailRecord;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
 
@@ -17,6 +19,7 @@ import java.util.Properties;
 
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class KookooCallServiceImplTest {
@@ -25,6 +28,8 @@ public class KookooCallServiceImplTest {
     private String phoneNumber;
     @Mock
     private HttpClient httpClient;
+    @Mock
+    private KookooCallDetailRecordsService kookooCallDetailRecordsService;
 
     @Before
     public void setUp() {
@@ -34,7 +39,8 @@ public class KookooCallServiceImplTest {
         properties.setProperty(KookooCallServiceImpl.OUTBOUND_URL, "http://kookoo/outbound.php");
         properties.setProperty(KookooCallServiceImpl.API_KEY, "api_key_value");
 
-        ivrService = new KookooCallServiceImpl(properties, httpClient);
+        ivrService = new KookooCallServiceImpl(properties, httpClient, kookooCallDetailRecordsService);
+        when(kookooCallDetailRecordsService.createOutgoing(null, phoneNumber, CallDetailRecord.Disposition.UNKNOWN)).thenReturn("1234");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -51,9 +57,10 @@ public class KookooCallServiceImplTest {
         ivrService.initiateCall(new CallRequest(phoneNumber, params, CALLBACK_URL));
 
         String apiKey = "api_key=api_key_value";
-        String replyUrl = "&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FdataMap%3D%7B%22external_id%22%3A%22external_id%22%2C%22is_outbound_call%22%3A%22true%22%2C%22call_type%22%3A%22outbox%22%7D";
+        String replyUrl = "&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FdataMap%3D%7B%22external_id%22%3A%22external_id%22%2C%22is_outbound_call%22%3A%22true%22%2C%22call_type%22%3A%22outbox%22%2C%22call_detail_record_id%22%3A%221234%22%7D";
         String phoneNo = "&phone_no=9876543211";
-        String callbackUrl = "&callback_url=http://localhost/tama/ivr/reply/callback?external_id=external_id&call_type=outbox";
+        String callDetailRecordId = "&call_detail_record_id=1234";
+        String callbackUrl = "&callback_url=http://localhost/tama/ivr/reply/callback?external_id=external_id&call_type=outbox" + callDetailRecordId;
         verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://kookoo/outbound.php?" + apiKey + replyUrl + phoneNo + callbackUrl)));
     }
 
@@ -67,9 +74,10 @@ public class KookooCallServiceImplTest {
         ivrService.initiateCall(new CallRequest(phoneNumber, params, CALLBACK_URL));
 
         String apiKey = "api_key=api_key_value";
-        String replyUrl = "&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FdataMap%3D%7B%22external_id%22%3A%22external_id%22%2C%22hero%22%3A%22batman%22%2C%22is_outbound_call%22%3A%22true%22%2C%22call_type%22%3A%22outbox%22%7D";
+        String replyUrl = "&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FdataMap%3D%7B%22external_id%22%3A%22external_id%22%2C%22hero%22%3A%22batman%22%2C%22is_outbound_call%22%3A%22true%22%2C%22call_type%22%3A%22outbox%22%2C%22call_detail_record_id%22%3A%221234%22%7D";
         String phoneNo = "&phone_no=9876543211";
-        String callbackUrl = "&callback_url=http://localhost/tama/ivr/reply/callback?external_id=external_id&call_type=outbox";
+        String callDetailRecordId = "&call_detail_record_id=1234";
+        String callbackUrl = "&callback_url=http://localhost/tama/ivr/reply/callback?external_id=external_id&call_type=outbox" + callDetailRecordId;
         verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://kookoo/outbound.php?" + apiKey + replyUrl + phoneNo + callbackUrl)));
     }
 

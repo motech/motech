@@ -1,7 +1,6 @@
 package org.motechproject.scheduletracking.api.it;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,7 +9,6 @@ import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
-import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -53,7 +51,7 @@ public class ScheduleTrackingServiceIT {
         activeEnrollment = allEnrollments.get(enrollmentId);
         assertNotNull("No active enrollment present", activeEnrollment);
         assertEquals(originalPreferredAlertTime, activeEnrollment.getPreferredAlertTime());
-        assertEquals(newDateTime(originalReferenceDateTime.toLocalDate(), new Time(0, 0)), activeEnrollment.getReferenceDateTime());
+        assertEquals(newDateTime(originalReferenceDateTime.toLocalDate(), new Time(0, 0)), activeEnrollment.getStartOfSchedule());
 
         Time updatedPreferredAlertTime = new Time(2, 5);
         DateTime updatedReferenceDate = now.minusDays(1);
@@ -63,6 +61,6 @@ public class ScheduleTrackingServiceIT {
         activeEnrollment = allEnrollments.get(updatedEnrollmentId);
         assertNotNull("No active enrollment present", activeEnrollment);
         assertEquals(updatedPreferredAlertTime, activeEnrollment.getPreferredAlertTime());
-        assertEquals(newDateTime(updatedReferenceDate.toLocalDate(), new Time(0, 0)), activeEnrollment.getReferenceDateTime());
+        assertEquals(newDateTime(updatedReferenceDate.toLocalDate(), new Time(0, 0)), activeEnrollment.getStartOfSchedule());
     }
 }

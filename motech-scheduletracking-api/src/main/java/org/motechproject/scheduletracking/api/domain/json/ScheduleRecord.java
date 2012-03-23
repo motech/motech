@@ -5,7 +5,7 @@ import java.util.List;
 
 public class ScheduleRecord {
     private String name;
-    private boolean absoluteWindows;
+    private boolean absolute;
 
     private List<MilestoneRecord> milestones = new ArrayList<MilestoneRecord>();
 
@@ -17,7 +17,7 @@ public class ScheduleRecord {
         return milestones;
     }
 
-    public boolean hasAbsoluteWindows() {
-        return absoluteWindows;
+    public boolean isAbsoluteSchedule() {
+        return absolute;
     }
 }

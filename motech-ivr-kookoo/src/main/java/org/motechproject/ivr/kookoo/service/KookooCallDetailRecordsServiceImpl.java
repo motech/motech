@@ -1,7 +1,6 @@
 package org.motechproject.ivr.kookoo.service;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.context.EventContext;
 import org.motechproject.event.EventRelay;
 import org.motechproject.ivr.event.CallEvent;
 import org.motechproject.ivr.event.IVREvent;
@@ -11,6 +10,7 @@ import org.motechproject.ivr.kookoo.repository.AllKooKooCallDetailRecords;
 import org.motechproject.ivr.model.CallDetailRecord;
 import org.motechproject.ivr.model.CallDirection;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,10 +29,10 @@ public class KookooCallDetailRecordsServiceImpl implements KookooCallDetailRecor
     public static final String EXTERNAL_ID = "external_id";
 
     @Autowired
-    public KookooCallDetailRecordsServiceImpl(AllKooKooCallDetailRecords allKooKooCallDetailRecords, AllKooKooCallDetailRecords allCallDetailRecords) {
+    public KookooCallDetailRecordsServiceImpl(AllKooKooCallDetailRecords allKooKooCallDetailRecords, AllKooKooCallDetailRecords allCallDetailRecords, EventRelay eventRelay) {
         this.allKooKooCallDetailRecords = allKooKooCallDetailRecords;
         this.allCallDetailRecords = allCallDetailRecords;
-        this.eventRelay = EventContext.getInstance().getEventRelay();
+        this.eventRelay = eventRelay;
     }
 
     public KookooCallDetailRecord get(String callDetailRecordId) {
@@ -60,7 +60,6 @@ public class KookooCallDetailRecordsServiceImpl implements KookooCallDetailRecor
 
     private String addCallDetailRecord(String vendorCallId, CallDetailRecord callDetailRecord) {
         KookooCallDetailRecord kookooCallDetailRecord = new KookooCallDetailRecord(callDetailRecord, vendorCallId);
-        kookooCallDetailRecord.addCallEvent(new CallEvent(IVREvent.NewCall.toString()));
         allCallDetailRecords.add(kookooCallDetailRecord);
         return kookooCallDetailRecord.getId();
     }
@@ -77,6 +76,24 @@ public class KookooCallDetailRecordsServiceImpl implements KookooCallDetailRecor
         for (String key : map.keySet()) {
             callDetailRecord.appendToLastEvent(key, map.get(key));
         }
+        allKooKooCallDetailRecords.update(callDetailRecord);
+    }
+
+    @Override
+    public void setCallRecordAsAnswered(String callDetailRecordID) {
+        KookooCallDetailRecord callDetailRecord = get(callDetailRecordID);
+        CallDetailRecord record = callDetailRecord.getCallDetailRecord();
+        record.setDisposition(CallDetailRecord.Disposition.ANSWERED);
+        record.setAnswerDate(DateUtil.now().toDate());
+        allKooKooCallDetailRecords.update(callDetailRecord);
+
+    }
+
+    @Override
+    public void setCallRecordAsNotAnswered(String callDetailRecordID) {
+        KookooCallDetailRecord callDetailRecord = get(callDetailRecordID);
+        CallDetailRecord record = callDetailRecord.getCallDetailRecord();
+        record.setDisposition(CallDetailRecord.Disposition.NO_ANSWER);
         allKooKooCallDetailRecords.update(callDetailRecord);
     }
 

@@ -31,13 +31,15 @@ public class AppointmentServiceImplTest {
     private AllAppointmentCalendars allAppointmentCalendars;
     @Mock
     private AllReminderJobs allReminderJobs;
+    @Mock
+    private VisitsQueryService visitsQueryService;
 
     AppointmentService appointmentService;
 
     @Before
     public void setUp() {
         initMocks(this);
-        appointmentService = new AppointmentServiceImpl(allAppointmentCalendars, allReminderJobs);
+        appointmentService = new AppointmentServiceImpl(allAppointmentCalendars, allReminderJobs, visitsQueryService);
     }
 
     @Test
@@ -240,5 +242,15 @@ public class AppointmentServiceImplTest {
 
         assertEquals(dataMap, visit.getData());
         verify(allAppointmentCalendars).saveAppointmentCalendar(appointmentCalendar);
+    }
+
+    @Test
+    public void shouldFindVisitsBasedOnQuery() {
+        VisitsQuery query = mock(VisitsQuery.class);
+
+        List<VisitResponse> visitResponses = mock(List.class);
+        when(visitsQueryService.search(query)).thenReturn(visitResponses);
+
+        assertEquals(visitResponses, appointmentService.search(query));
     }
 }

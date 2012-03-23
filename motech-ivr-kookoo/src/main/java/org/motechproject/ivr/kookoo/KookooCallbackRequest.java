@@ -13,6 +13,7 @@ public class KookooCallbackRequest {
     private String start_time;
     private String external_id;
     private String call_type;
+    private String call_detail_record_id;
 
     public String getSid() {
         return sid;
@@ -80,5 +81,13 @@ public class KookooCallbackRequest {
 
     public boolean notAnswered() {
         return !ANSWERED.equals(status);
+    }
+
+    public String getCall_detail_record_id() {
+        return call_detail_record_id;
+    }
+
+    public void setCall_detail_record_id(String call_detail_record_id) {
+        this.call_detail_record_id = call_detail_record_id;
     }
 }

@@ -14,17 +14,22 @@ import org.motechproject.appointments.api.model.Visit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class AppointmentServiceImpl implements AppointmentService {
     private AllAppointmentCalendars allAppointmentCalendars;
     private AllReminderJobs allReminderJobs;
+    private VisitsQueryService visitsQueryService;
 
     @Autowired
-    public AppointmentServiceImpl(AllAppointmentCalendars allAppointmentCalendars, AllReminderJobs allReminderJobs) {
+    public AppointmentServiceImpl(AllAppointmentCalendars allAppointmentCalendars, AllReminderJobs allReminderJobs, VisitsQueryService visitsQueryService) {
         this.allAppointmentCalendars = allAppointmentCalendars;
         this.allReminderJobs = allReminderJobs;
+        this.visitsQueryService = visitsQueryService;
     }
 
     public void addCalendar(AppointmentCalendarRequest appointmentCalendarRequest) {
@@ -55,6 +60,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         return new VisitResponseMapper().map(visit);
     }
 
+    @Deprecated
     public List<VisitResponse> getAllVisits(String externalId) {
         AppointmentCalendar appointmentCalendar = getAppointmentCalendar(externalId);
         if (appointmentCalendar == null) return new ArrayList<VisitResponse>();
@@ -106,6 +112,11 @@ public class AppointmentServiceImpl implements AppointmentService {
         visit.markAsMissed();
         allReminderJobs.removeAll(externalId);
         allAppointmentCalendars.saveAppointmentCalendar(appointmentCalendar);
+    }
+
+    @Override
+    public List<VisitResponse> search(VisitsQuery query) {
+        return visitsQueryService.search(query);
     }
 
     private AppointmentCalendar getAppointmentCalendar(String externalId) {

@@ -1,7 +1,6 @@
 package org.motechproject.scheduletracking.api.events;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.MilestoneAlert;
@@ -39,7 +38,7 @@ public class MilestoneEvent {
         this.scheduleName = enrollment.getScheduleName();
         this.milestoneAlert = milestoneAlert;
         this.windowName = milestoneWindow.getName().toString();
-        this.referenceDateTime = enrollment.getReferenceDateTime();
+        this.referenceDateTime = enrollment.getStartOfSchedule();
     }
 
     public MotechEvent toMotechEvent() {

@@ -4,6 +4,8 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.json.JSONObject;
+import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
+import org.motechproject.ivr.model.CallDetailRecord;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,14 +33,18 @@ public class KookooCallServiceImpl implements IVRService {
     private HttpClient httpClient;
     private Logger log = Logger.getLogger(this.getClass().getName());
 
+    private KookooCallDetailRecordsService kookooCallDetailRecordsService;
+
     @Autowired
-    public KookooCallServiceImpl(@Qualifier("ivrProperties") Properties properties) {
-        this(properties, new HttpClient());
+    public KookooCallServiceImpl(@Qualifier("ivrProperties") Properties properties, KookooCallDetailRecordsService kookooCallDetailRecordsService) {
+        this(properties, new HttpClient(), kookooCallDetailRecordsService);
     }
 
-    KookooCallServiceImpl(Properties properties, HttpClient httpClient) {
+
+    KookooCallServiceImpl(Properties properties, HttpClient httpClient, KookooCallDetailRecordsService kookooCallDetailRecordsService) {
         this.properties = properties;
         this.httpClient = httpClient;
+        this.kookooCallDetailRecordsService = kookooCallDetailRecordsService;
     }
 
     @Override
@@ -46,11 +52,16 @@ public class KookooCallServiceImpl implements IVRService {
         if (callRequest == null) throw new IllegalArgumentException("Missing call request");
 
         try {
+            String kooKooCallDetailRecordId = kookooCallDetailRecordsService.createOutgoing(null, callRequest.getPhone(), CallDetailRecord.Disposition.UNKNOWN);
+
             final String externalId = callRequest.getPayload().get(EXTERNAL_ID);
             callRequest.getPayload().put(IS_OUTBOUND_CALL, "true");
+            callRequest.getPayload().put(KooKooIVRContext.CALL_DETAIL_RECORD_ID, kooKooCallDetailRecordId);
             JSONObject json = new JSONObject(callRequest.getPayload());
 
-            String applicationCallbackUrl = String.format("%s/callback?%s=%s&%s=%s", callRequest.getCallBackUrl(), EXTERNAL_ID, externalId, CALL_TYPE, callRequest.getPayload().get(CALL_TYPE));
+
+            String applicationCallbackUrl = String.format("%s/callback?%s=%s&%s=%s&%s=%s", callRequest.getCallBackUrl(), EXTERNAL_ID, externalId,
+                    CALL_TYPE, callRequest.getPayload().get(CALL_TYPE), KooKooIVRContext.CALL_DETAIL_RECORD_ID, kooKooCallDetailRecordId);
             String applicationReplyUrl = String.format("%s?%s=%s", callRequest.getCallBackUrl(), CUSTOM_DATA_KEY, json.toString());
 
             GetMethod getMethod = new GetMethod(properties.get(OUTBOUND_URL).toString());

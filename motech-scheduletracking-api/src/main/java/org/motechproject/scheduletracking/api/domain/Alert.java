@@ -37,8 +37,8 @@ public class Alert {
         return index;
     }
 
-    int getElapsedAlertCount(DateTime startDateTime, Time preferredAlertTime) {
-        DateTime idealStartDateTime = startDateTime.plus(offset);
+    int getElapsedAlertCount(DateTime startReferenceDateTime, Time preferredAlertTime) {
+        DateTime idealStartDateTime = startReferenceDateTime.plus(offset);
         DateTime idealStartDateWithPreferredTime = idealStartDateTime;
         if (preferredAlertTime != null)
             idealStartDateWithPreferredTime = DateUtil.newDateTime(idealStartDateTime.toLocalDate(), preferredAlertTime.getHour(), preferredAlertTime.getMinute(), 0);
@@ -52,9 +52,9 @@ public class Alert {
         return 0;
     }
 
-    public DateTime getNextAlertDateTime(DateTime startDateTime, Time preferredAlertTime) {
-        DateTime idealStartDateTime = startDateTime.plus(offset);
-        DateTime nextAlertDateTime = idealStartDateTime.plusDays(getElapsedAlertCount(startDateTime, preferredAlertTime) * interval.toStandardDays().getDays());
+    public DateTime getNextAlertDateTime(DateTime startReferenceDateTime, Time preferredAlertTime) {
+        DateTime idealStartDateTime = startReferenceDateTime.plus(offset);
+        DateTime nextAlertDateTime = idealStartDateTime.plusDays(getElapsedAlertCount(startReferenceDateTime, preferredAlertTime) * interval.toStandardDays().getDays());
         if (preferredAlertTime != null)
             return newDateTime(nextAlertDateTime.toLocalDate(), preferredAlertTime.getHour(), preferredAlertTime.getMinute(), 0);
         return nextAlertDateTime;

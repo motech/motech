@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.domain.WindowName;
 import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
 import org.motechproject.util.DateUtil;
@@ -31,7 +32,8 @@ public class EnrollmentRecordMapperTest {
 
     @Test
     public void shouldMapEnrollmentToEnrollmentResponse(){
-        final Enrollment enrollment = new Enrollment("externalId", "scheduleName", "milestoneX", DateUtil.newDateTime(2000, 2, 1, 0, 0, 0), DateUtil.newDateTime(2000, 2, 10, 0, 0, 0), new Time(10, 10), null, null);
+        Schedule schedule = new Schedule("some_schedule");
+        final Enrollment enrollment = new Enrollment("externalId", schedule, "milestoneX", DateUtil.newDateTime(2000, 2, 1, 0, 0, 0), DateUtil.newDateTime(2000, 2, 10, 0, 0, 0), new Time(10, 10), null);
         final EnrollmentRecord record = enrollmentRecordMapper.map(enrollment);
 
         assertRecordMatchesEnrollment(record, enrollment);
@@ -41,7 +43,8 @@ public class EnrollmentRecordMapperTest {
 
     @Test
     public void shouldMapEnrollmentToEnrollmentResponseAndPopulateWindowDates(){
-        Enrollment enrollment = new Enrollment("external_id_1", "schedule_1", "milestoneX", null, null, null, null, null);
+        Schedule schedule = new Schedule("some_schedule");
+        Enrollment enrollment = new Enrollment("external_id_1", schedule, "milestoneX", null, null, null, null);
 
         when(enrollmentService.getStartOfWindowForCurrentMilestone(enrollment, WindowName.earliest)).thenReturn(newDateTime(2011, 12, 1, 0, 0, 0));
         when(enrollmentService.getStartOfWindowForCurrentMilestone(enrollment, WindowName.due)).thenReturn(newDateTime(2011, 12, 8, 0, 0, 0));
@@ -61,9 +64,9 @@ public class EnrollmentRecordMapperTest {
     private void assertRecordMatchesEnrollment(EnrollmentRecord actualRecord, Enrollment expectedEnrollment) {
         assertThat(actualRecord.getExternalId(), is(equalTo(expectedEnrollment.getExternalId())));
         assertThat(actualRecord.getScheduleName(), is(equalTo(expectedEnrollment.getScheduleName())));
-        assertThat(actualRecord.getReferenceDateTime(), is(equalTo(expectedEnrollment.getReferenceDateTime())));
+        assertThat(actualRecord.getReferenceDateTime(), is(equalTo(expectedEnrollment.getStartOfSchedule())));
         assertThat(actualRecord.getPreferredAlertTime(), is(equalTo(expectedEnrollment.getPreferredAlertTime())));
-        assertThat(actualRecord.getEnrollmentDateTime(), is(equalTo(expectedEnrollment.getEnrollmentDateTime())));
+        assertThat(actualRecord.getEnrollmentDateTime(), is(equalTo(expectedEnrollment.getEnrolledOn())));
         assertThat(actualRecord.getCurrentMilestoneName(), is(equalTo(expectedEnrollment.getCurrentMilestoneName())));
     }
 }

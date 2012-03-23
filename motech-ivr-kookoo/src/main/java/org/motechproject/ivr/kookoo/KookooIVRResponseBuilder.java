@@ -32,22 +32,22 @@ public class KookooIVRResponseBuilder {
         return this;
     }
 
-	public KookooIVRResponseBuilder withPlayTexts(String... playTexts) {
+    public KookooIVRResponseBuilder withPlayTexts(String... playTexts) {
         Collections.addAll(this.playTexts, playTexts);
         return this;
     }
 
-	public KookooIVRResponseBuilder withPlayAudios(String... playAudios) {
+    public KookooIVRResponseBuilder withPlayAudios(String... playAudios) {
         Collections.addAll(this.playAudios, playAudios);
         return this;
     }
 
-	public KookooIVRResponseBuilder collectDtmfLength(Integer dtmfLength) {
+    public KookooIVRResponseBuilder collectDtmfLength(Integer dtmfLength) {
         this.dtmfLength = dtmfLength;
         return this;
     }
 
-	public KookooIVRResponseBuilder withHangUp() {
+    public KookooIVRResponseBuilder withHangUp() {
         this.isHangUp = true;
         return this;
     }
@@ -57,14 +57,14 @@ public class KookooIVRResponseBuilder {
         return this;
     }
 
-	public String create(IVRMessage ivrMessage) {
+    public String create(IVRMessage ivrMessage) {
         if (StringUtils.isEmpty(language)) withDefaultLanguage();
         Response response = new Response();
         if (StringUtils.isNotBlank(sid)) response.setSid(sid);
 
         if (isCollectDTMF()) {
             CollectDtmf collectDtmf = KookooCollectDtmfFactory.create();
-            if(dtmfLength > 0) collectDtmf.setMaxDigits(dtmfLength);
+            if (dtmfLength > 0) collectDtmf.setMaxDigits(dtmfLength);
             for (String playText : playTexts) collectDtmf.addPlayText(ivrMessage.getText(playText));
             for (String playAudio : playAudios) collectDtmf.addPlayAudio(ivrMessage.getWav(playAudio, language));
 
@@ -74,9 +74,11 @@ public class KookooIVRResponseBuilder {
                 response.addPlayText(ivrMessage.getText(playText));
             for (String playAudio : playAudios)
                 response.addPlayAudio(ivrMessage.getWav(playAudio, language));
-            if (StringUtils.isNotEmpty(phoneNumber)){
+            if (StringUtils.isNotEmpty(phoneNumber)) {
                 Dial dial = new Dial();
                 dial.setNumber(phoneNumber);
+                //TODO: This is a TAMA Specific thing.
+                dial.setMusicOnHold(Dial.MusicOnHold.RING);
                 response.addDial(dial);
             }
         }
@@ -85,11 +87,11 @@ public class KookooIVRResponseBuilder {
         return response.getXML();
     }
 
-	public boolean isHangUp() {
+    public boolean isHangUp() {
         return isHangUp;
     }
 
-	public boolean isCollectDTMF() {
+    public boolean isCollectDTMF() {
         return dtmfLength > 0;
     }
 
@@ -101,11 +103,11 @@ public class KookooIVRResponseBuilder {
         return !isNotEmpty();
     }
 
-	public List<String> getPlayTexts() {
+    public List<String> getPlayTexts() {
         return playTexts;
     }
 
-	public List<String> getPlayAudios() {
+    public List<String> getPlayAudios() {
         return playAudios;
     }
 

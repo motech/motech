@@ -37,13 +37,14 @@ public class MilestoneEventTest {
     public void shouldCreateMotechEventFromEnrollment() {
         String externalId = "externalId";
         String scheduleName = "scheduleName";
+        Schedule schedule = new Schedule("scheduleName");
         Milestone milestone = new Milestone("M1", weeks(1), weeks(1), weeks(1), weeks(1));
         DateTime referenceDateTime = now();
         DateTime enrollmentDateTime = now();
         MilestoneAlert milestoneAlert =  MilestoneAlert.fromMilestone(milestone, referenceDateTime);
 
         MilestoneWindow milestoneWindow = new MilestoneWindow(WindowName.due, weeks(1));
-        MilestoneEvent milestoneEvent = new  MilestoneEvent(new Enrollment(externalId, scheduleName, milestone.getName(), referenceDateTime, enrollmentDateTime, new Time(8, 10), EnrollmentStatus.ACTIVE, null), milestoneAlert, milestoneWindow);
+        MilestoneEvent milestoneEvent = new  MilestoneEvent(new Enrollment(externalId, schedule, milestone.getName(), referenceDateTime, enrollmentDateTime, new Time(8, 10), EnrollmentStatus.ACTIVE), milestoneAlert, milestoneWindow);
         MotechEvent motechEvent = milestoneEvent.toMotechEvent();
 
         assertEquals(EventSubjects.MILESTONE_ALERT, motechEvent.getSubject());

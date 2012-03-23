@@ -14,5 +14,6 @@
                                         destination="eventQueue"
                                         channel="eventChannel" acknowledge="transacted"/>
     <channel id="eventChannel"/>
-    <outbound-channel-adapter channel="eventChannel" ref="eventRelay" method="relayEvent"/>
+
+    <outbound-channel-adapter id="outboundChannelAdapter" channel="eventChannel" ref="eventRelay" method="relayEvent" />
 </beans:beans>
