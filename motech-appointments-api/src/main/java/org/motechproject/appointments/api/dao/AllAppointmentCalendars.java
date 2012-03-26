@@ -67,20 +67,19 @@ public class AllAppointmentCalendars extends MotechBaseRepository<AppointmentCal
     public List<VisitResponse> findMissedVisits()
     {
         List<VisitQueryResult> visitQueryResults = db.queryView(createQuery("find_by_missed_visits"), VisitQueryResult.class);
-
         return extractVisitResponse(visitQueryResults);
     }
-    
-    
-    public List<VisitResponse> findVisitsByExternalId(String externalId){
+
+    public List<VisitResponse> findVisitsByExternalId(String externalId) {
         AppointmentCalendar calendar = findByExternalId(externalId);
         List<VisitResponse> visitResponses = new ArrayList<VisitResponse>();
 
-        for(Visit visit : calendar.visits()){
-            VisitResponse visitResponse = transformVisitToResponse(visit, calendar.externalId());
-            visitResponses.add(visitResponse);
+        if (calendar != null) {
+            for (Visit visit : calendar.visits()) {
+                VisitResponse visitResponse = transformVisitToResponse(visit, calendar.externalId());
+                visitResponses.add(visitResponse);
+            }
         }
-
         return visitResponses;
     }
 

@@ -10,6 +10,7 @@ import org.motechproject.appointments.api.model.Visit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Collections;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.extract;
@@ -17,6 +18,8 @@ import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.motechproject.util.DateUtil.newDateTime;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -100,6 +103,11 @@ public class AllAppointmentCalendarsIT extends AppointmentsBaseIntegrationTest {
 
         assertEquals(asList(new String[]{ "visit3","visit4", "visit5" }), extract(visitsWithDueInRange, on(VisitResponse.class).getName()));
         assertEquals(asList(new String[]{ "foo2","foo2", "foo2" }), extract(visitsWithDueInRange, on(VisitResponse.class).getExternalId()));
+    }
+    
+    @Test
+    public void shouldReturnEmptyVisitResponseIfAppointmentCalendarIsNotPresent () {
+        assertThat(allAppointmentCalendars.findVisitsByExternalId("someExternalId"), is(Collections.<VisitResponse>emptyList()));
     }
 
     @After
