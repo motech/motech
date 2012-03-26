@@ -1,6 +1,8 @@
 package org.motechproject.appointments.api.model;
 
 import org.joda.time.DateTime;
+import org.motechproject.appointments.api.contract.VisitResponse;
+import org.motechproject.appointments.api.dao.AllAppointmentCalendars;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,13 +20,18 @@ public class DueDateInCriterion implements Criterion {
     }
 
     @Override
-    public List<Visit> filter(List<Visit> visits) {
-        List<Visit> filteredVisits = new ArrayList<Visit>();
-        for (Visit visit : visits) {
-            DateTime dueDate = visit.appointment().dueDate();
+    public List<VisitResponse> filter(List<VisitResponse> visitResponses) {
+        List<VisitResponse> filteredVisits = new ArrayList<VisitResponse>();
+        for (VisitResponse visitResponse : visitResponses) {
+            DateTime dueDate = visitResponse.getAppointmentDueDate();
             if (inRange(dueDate, start, end))
-                filteredVisits.add(visit);
+                filteredVisits.add(visitResponse);
         }
         return filteredVisits;
+    }
+
+    @Override
+    public List<VisitResponse> fetch(AllAppointmentCalendars allAppointmentCalendars) {
+        return allAppointmentCalendars.findVisitsWithDueInRange(start,end);
     }
 }

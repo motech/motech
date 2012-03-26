@@ -3,6 +3,7 @@ package org.motechproject.appointments.api.contract;
 import org.joda.time.DateTime;
 import org.motechproject.appointments.api.model.Criterion;
 import org.motechproject.appointments.api.model.DueDateInCriterion;
+import org.motechproject.appointments.api.model.ExternalIdCriterion;
 import org.motechproject.appointments.api.model.UnvisitedCriterion;
 
 import java.util.ArrayList;
@@ -10,7 +11,6 @@ import java.util.List;
 
 public class VisitsQuery {
 
-    private String externalId;
     private List<Criterion> criteria = new ArrayList<Criterion>();
 
     public VisitsQuery() {
@@ -27,16 +27,8 @@ public class VisitsQuery {
     }
 
     public VisitsQuery havingExternalId(String externalId) {
-        this.externalId = externalId;
+        criteria.add(new ExternalIdCriterion(externalId));
         return this;
-    }
-
-    public String getExternalIdCriterion() {
-        return externalId;
-    }
-
-    public boolean hasExternalIdCriterion() {
-        return externalId != null;
     }
 
     public List<Criterion> getCriteria() {
