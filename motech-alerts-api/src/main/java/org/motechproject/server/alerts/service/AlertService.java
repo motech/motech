@@ -17,15 +17,6 @@ public interface AlertService {
 
     Alert get(String id);
 
-    void changeStatus(String id, AlertStatus status);
-
-    public void setDescription(String id, String description);
-
-    void setPriority(String id, int priority);
-
-    void setName(String id, String name);
-
-    void setData(String id, String key, String value);
-
     void update(String alertId, UpdateCriteria updateCriteria);
+
 }

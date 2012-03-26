@@ -60,57 +60,6 @@ public class AlertServiceImplIT {
     }
 
     @Test
-    public void shouldChangeStatus() {
-        String externalId = UUID.randomUUID().toString();
-        createAlert(externalId, AlertType.CRITICAL, null, AlertStatus.NEW, 1, "description", new HashMap<String, String>());
-        Alert alert = alertService.search(new AlertCriteria().byExternalId(externalId)).get(0);
-        assertEquals(AlertStatus.NEW, alert.getStatus());
-
-        alertService.changeStatus(alert.getId(), AlertStatus.CLOSED);
-
-        alert = alertService.search(new AlertCriteria().byExternalId(externalId)).get(0);
-        assertEquals(AlertStatus.CLOSED, alert.getStatus());
-    }
-
-    @Test
-    public void shouldChangeDescription() {
-        String externalId = UUID.randomUUID().toString();
-        createAlert(externalId, AlertType.CRITICAL, null, AlertStatus.NEW, 1, "description", new HashMap<String, String>());
-        Alert alert = alertService.search(new AlertCriteria().byExternalId(externalId)).get(0);
-        assertEquals("description", alert.getDescription());
-
-        alertService.setDescription(alert.getId(), "new description");
-
-        alert = alertService.search(new AlertCriteria().byExternalId(externalId)).get(0);
-        assertEquals("new description", alert.getDescription());
-    }
-
-    @Test
-    public void shouldSetPriority() {
-        String externalId = UUID.randomUUID().toString();
-        createAlert(externalId, AlertType.CRITICAL, null, AlertStatus.NEW, 1, "description", new HashMap<String, String>());
-        Alert alert = alertService.search(new AlertCriteria().byExternalId(externalId)).get(0);
-        assertEquals(1, alert.getPriority());
-
-        alertService.setPriority(alert.getId(), 2);
-
-        alert = alertService.search(new AlertCriteria().byExternalId(externalId)).get(0);
-        assertEquals(2, alert.getPriority());
-    }
-
-    @Test
-    public void shouldSetName() {
-        String externalId = UUID.randomUUID().toString();
-        createAlert(externalId, AlertType.CRITICAL, null, AlertStatus.NEW, 1, "description", new HashMap<String, String>());
-        Alert alert = alertService.search(new AlertCriteria().byExternalId(externalId)).get(0);
-
-        alertService.setName(alert.getId(), "new name");
-
-        alert = alertService.search(new AlertCriteria().byExternalId(externalId)).get(0);
-        assertEquals("new name", alert.getName());
-    }
-
-    @Test
     public void shouldUpdateAlert() {
         String externalId = UUID.randomUUID().toString();
         createAlert(externalId, AlertType.CRITICAL, "name", AlertStatus.NEW, 1, "description", new HashMap<String, String>());
