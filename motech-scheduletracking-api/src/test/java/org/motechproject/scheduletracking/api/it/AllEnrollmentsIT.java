@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.it;
 
+import ch.lambdaj.Lambda;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Test;
@@ -18,6 +19,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
 
+import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 import static org.motechproject.util.DateUtil.now;
 
@@ -190,5 +193,19 @@ public class AllEnrollmentsIT {
         assertEquals(enrollmentWithUpdates.getStartOfSchedule(), enrollment.getStartOfSchedule());
         assertEquals(enrollmentWithUpdates.getEnrolledOn(), enrollment.getEnrolledOn());
         assertEquals(enrollmentWithUpdates.getPreferredAlertTime(), enrollment.getPreferredAlertTime());
+    }
+
+    @Test
+    public void shouldReturnEnrollmentsThatMatchAGivenExternalId() {
+        DateTime now = now();
+        Schedule iptiSchedule = allTrackedSchedules.getByName("IPTI Schedule");
+        Schedule deliverySchedule = allTrackedSchedules.getByName("Delivery");
+        allEnrollments.add(new Enrollment("entity_1", iptiSchedule, "IPTI 1", now, now, new Time(8, 10), EnrollmentStatus.ACTIVE, null));
+        allEnrollments.add(new Enrollment("entity_1", deliverySchedule, "Default", now, now, new Time(8, 10), EnrollmentStatus.ACTIVE, null));
+        allEnrollments.add(new Enrollment("entity_2", iptiSchedule, "IPTI 1", now, now, new Time(8, 10), EnrollmentStatus.ACTIVE, null));
+        allEnrollments.add(new Enrollment("entity_3", iptiSchedule, "IPTI 1", now, now, new Time(8, 10), EnrollmentStatus.ACTIVE, null));
+
+        List<Enrollment> filteredEnrollments = allEnrollments.findByExternalId("entity_1");
+        assertEquals(asList(new String[] { "entity_1", "entity_1"}), Lambda.extract(filteredEnrollments, on(Enrollment.class).getExternalId()));
     }
 }
