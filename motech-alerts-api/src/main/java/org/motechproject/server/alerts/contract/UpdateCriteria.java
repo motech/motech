@@ -36,9 +36,13 @@ public class UpdateCriteria {
         return this;
     }
 
-    public UpdateCriteria data(HashMap<String, String> newData) {
+    public UpdateCriteria data(Map<String, String> newData) {
         allCriteria.put(UpdateCriterion.data, newData);
         return this;
     }
 
+    @Override
+    public String toString() {
+        return "UpdateCriteria" + allCriteria;
+    }
 }

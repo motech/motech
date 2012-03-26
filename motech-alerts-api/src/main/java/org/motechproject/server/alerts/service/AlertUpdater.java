@@ -36,7 +36,7 @@ public enum AlertUpdater {
     }, dataUpdater {
         @Override
         public Alert update(Alert alert, Object newValue) {
-            alert.setData((Map<String, String>) newValue);
+            alert.getData().putAll((Map<String, String>) newValue);
             return alert;
         }
     };

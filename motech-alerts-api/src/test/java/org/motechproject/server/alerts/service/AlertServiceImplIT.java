@@ -62,7 +62,9 @@ public class AlertServiceImplIT {
     @Test
     public void shouldUpdateAlert() {
         String externalId = UUID.randomUUID().toString();
-        createAlert(externalId, AlertType.CRITICAL, "name", AlertStatus.NEW, 1, "description", new HashMap<String, String>());
+        HashMap<String, String> alertData = new HashMap<String, String>();
+        alertData.put("blah", "blah");
+        createAlert(externalId, AlertType.CRITICAL, "name", AlertStatus.NEW, 1, "description", alertData);
         Alert alert = alertService.search(new AlertCriteria().byExternalId(externalId)).get(0);
 
         HashMap<String, String> newData = new HashMap<String, String>();
@@ -78,7 +80,9 @@ public class AlertServiceImplIT {
         assertEquals("newName", updatedAlert.getName());
         assertEquals("newDescription", updatedAlert.getDescription());
         assertEquals(2, updatedAlert.getPriority());
-        assertEquals(newData, updatedAlert.getData());
+        assertEquals(2, updatedAlert.getData().size());
+        assertEquals("blah", updatedAlert.getData().get("blah"));
+        assertEquals("newValue", updatedAlert.getData().get("newKey"));
     }
 
     private void createAlert(String externalId, AlertType critical, String name, AlertStatus aNew, int priority, String description, HashMap<String, String> alertData) {
