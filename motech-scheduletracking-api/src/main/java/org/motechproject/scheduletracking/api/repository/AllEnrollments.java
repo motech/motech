@@ -68,7 +68,7 @@ public class AllEnrollments extends MotechBaseRepository<Enrollment> {
 
     @View(name = "by_completed_in_time_range", map = "function(doc){ if(doc.type === 'Enrollment' && doc.status == 'COMPLETED' && doc.fulfillments.length != 0) { emit(doc.fulfillments[doc.fulfillments.length - 1].fulfillmentDateTime, null); }} ")
     public List<Enrollment> completedDuring(DateTime start, DateTime end) {
-        List<Enrollment> enrollments = db.queryView(createQuery("by_completed_in_time_range").startKey(start).endKey(end).includeDocs(true).inclusiveEnd(true), Enrollment.class);
+        List<Enrollment> enrollments = db.queryView(createQuery("by_completed_in_time_range").startKey(start).endKey(end).includeDocs(true), Enrollment.class);
         return populateWithSchedule(enrollments);
     }
 
