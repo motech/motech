@@ -1,6 +1,8 @@
 package org.motechproject.server.alerts.service;
 
 import org.ektorp.DocumentNotFoundException;
+import org.motechproject.server.alerts.contract.UpdateCriteria;
+import org.motechproject.server.alerts.contract.UpdateCriterion;
 import org.motechproject.server.alerts.repository.AllAlerts;
 import org.motechproject.server.alerts.domain.Alert;
 import org.motechproject.server.alerts.domain.AlertCriteria;
@@ -69,6 +71,16 @@ public class AlertServiceImpl implements AlertService {
         Alert alert = get(id);
         final Map<String, String> data = alert.getData();
         data.put(key, value);
+        allAlerts.update(alert);
+    }
+
+    @Override
+    public void update(String alertId, UpdateCriteria updateCriteria) {
+        Alert alert = get(alertId);
+        Map<UpdateCriterion, Object> all = updateCriteria.getAll();
+        for (UpdateCriterion updateCriterion : all.keySet()) {
+            AlertUpdater.get(updateCriterion).update(alert, all.get(updateCriterion));
+        }
         allAlerts.update(alert);
     }
 

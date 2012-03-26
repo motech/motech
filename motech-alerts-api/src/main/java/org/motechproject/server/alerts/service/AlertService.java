@@ -1,5 +1,6 @@
 package org.motechproject.server.alerts.service;
 
+import org.motechproject.server.alerts.contract.UpdateCriteria;
 import org.motechproject.server.alerts.domain.Alert;
 import org.motechproject.server.alerts.domain.AlertCriteria;
 import org.motechproject.server.alerts.domain.AlertStatus;
@@ -25,4 +26,6 @@ public interface AlertService {
     void setName(String id, String name);
 
     void setData(String id, String key, String value);
+
+    void update(String alertId, UpdateCriteria updateCriteria);
 }
