@@ -20,7 +20,7 @@ public class ExternalIdCriterion implements Criterion {
     }
 
     @Override
-    public List<Enrollment> fetch(AllEnrollments allEnrollments) {
+    public List<Enrollment> fetch(AllEnrollments allEnrollments, EnrollmentService enrollmentService) {
         return allEnrollments.findByExternalId(externalId);
     }
 

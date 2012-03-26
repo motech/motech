@@ -2,10 +2,13 @@ package org.motechproject.scheduletracking.api.repository;
 
 import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
+import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
+import org.joda.time.DateTime;
 import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
+import org.motechproject.scheduletracking.api.domain.WindowName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -35,12 +38,32 @@ public class AllEnrollments extends MotechBaseRepository<Enrollment> {
             "}";
     @View(name = "find_by_property", map = FUNCTION_DOC_EMIT_DOC_METADATA)
     public List<Enrollment> findByMetadataProperty(String property, String value) {
-        return queryView("find_by_property", ComplexKey.of(property, value));
+        List<Enrollment> enrollments = queryView("find_by_property", ComplexKey.of(property, value));
+        return populateWithSchedule(enrollments);
     }
 
     @View(name = "find_by_external_id", map = "function(doc) { emit(doc.externalId); }")
     public List<Enrollment> findByExternalId(String externalId) {
-        return queryView("find_by_external_id", externalId);
+        List<Enrollment> enrollments = queryView("find_by_external_id", externalId);
+        return populateWithSchedule(enrollments);
+    }
+
+    @View(name = "find_by_schedule", map = "function(doc) { emit(doc.scheduleName); }")
+    public List<Enrollment> findBySchedule(String scheduleName) {
+        List<Enrollment> enrollments = queryView("find_by_schedule", scheduleName);
+        return populateWithSchedule(enrollments);
+    }
+
+    @View(name = "find_by_status", map = "function(doc) { emit(doc.status); }")
+    public List<Enrollment> findByStatus(EnrollmentStatus status) {
+        List<Enrollment> enrollments = queryView("find_by_status", status.name());
+        return populateWithSchedule(enrollments);
+    }
+
+    @View(name = "by_completed_in_time_range", map = "function(doc){ if(doc.type === 'Enrollment' && doc.status == 'COMPLETED' && doc.fulfillments.length != 0) { emit(doc.fulfillments[doc.fulfillments.length - 1].fulfillmentDateTime, null); }} ")
+    public List<Enrollment> completedDuring(DateTime start, DateTime end) {
+        List<Enrollment> enrollments = db.queryView(createQuery("by_completed_in_time_range").startKey(start).endKey(end).includeDocs(true).inclusiveEnd(true), Enrollment.class);
+        return populateWithSchedule(enrollments);
     }
 
     @Override
@@ -48,6 +71,12 @@ public class AllEnrollments extends MotechBaseRepository<Enrollment> {
     {
         List<Enrollment> enrollments = super.getAll();
         for(Enrollment enrollment : enrollments)
+            populateSchedule(enrollment);
+        return enrollments;
+    }
+
+    private List<Enrollment> populateWithSchedule(List<Enrollment> enrollments) {
+        for (Enrollment enrollment : enrollments)
             populateSchedule(enrollment);
         return enrollments;
     }

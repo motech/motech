@@ -21,8 +21,8 @@ public class CompletedDuringCriterion implements Criterion {
     }
 
     @Override
-    public List<Enrollment> fetch(AllEnrollments allEnrollments) {
-        return null;
+    public List<Enrollment> fetch(AllEnrollments allEnrollments, EnrollmentService enrollmentService) {
+        return allEnrollments.completedDuring(start, end);
     }
 
     @Override

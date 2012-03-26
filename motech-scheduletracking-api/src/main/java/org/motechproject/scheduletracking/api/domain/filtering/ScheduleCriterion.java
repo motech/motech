@@ -20,8 +20,8 @@ public class ScheduleCriterion implements Criterion {
     }
 
     @Override
-    public List<Enrollment> fetch(AllEnrollments allEnrollments) {
-        return null;
+    public List<Enrollment> fetch(AllEnrollments allEnrollments, EnrollmentService enrollmentService) {
+        return allEnrollments.findBySchedule(scheduleName);
     }
 
     @Override

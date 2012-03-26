@@ -7,6 +7,7 @@ import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.Metadata;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
+import org.motechproject.scheduletracking.api.service.impl.EnrollmentService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,8 @@ public class MetadataPropertyCriterionTest {
 
     @Mock
     private AllEnrollments allEnrollments;
+    @Mock
+    private EnrollmentService enrollmentService;
 
     @Before
     public void setup() {
@@ -34,7 +37,7 @@ public class MetadataPropertyCriterionTest {
     public void shouldFetchFromDbUsingCriteria() {
         List<Enrollment> result = mock(List.class);
         when(allEnrollments.findByMetadataProperty("foo", "bar")).thenReturn(result);
-        assertEquals(result, new MetadataPropertyCriterion("foo", "bar").fetch(allEnrollments));
+        assertEquals(result, new MetadataPropertyCriterion("foo", "bar").fetch(allEnrollments, enrollmentService));
     }
 
     @Test

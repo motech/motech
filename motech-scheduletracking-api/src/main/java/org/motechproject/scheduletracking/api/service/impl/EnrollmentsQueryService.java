@@ -26,7 +26,7 @@ public class EnrollmentsQueryService {
         List<Enrollment> enrollments = new ArrayList<Enrollment>();
         Criterion primaryCriterion = query.getPrimaryCriterion();
         if (primaryCriterion != null)
-            enrollments = primaryCriterion.fetch(allEnrollments);
+            enrollments = primaryCriterion.fetch(allEnrollments, enrollmentService);
         for (Criterion criterion : query.getSecondaryCriteria())
             enrollments = criterion.filter(enrollments, enrollmentService);
         return enrollments;

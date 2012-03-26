@@ -6,6 +6,7 @@ import org.mockito.Mock;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
+import org.motechproject.scheduletracking.api.service.impl.EnrollmentService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,8 @@ public class ExternalIdCriterionTest {
 
     @Mock
     private AllEnrollments allEnrollments;
+    @Mock
+    private EnrollmentService enrollmentService;
 
     @Before
     public void setup() {
@@ -32,7 +35,7 @@ public class ExternalIdCriterionTest {
     public void shouldFetchByExternalId() {
         List<Enrollment> result = mock(List.class);
         when(allEnrollments.findByExternalId("entity1")).thenReturn(result);
-        assertEquals(result, new ExternalIdCriterion("entity1").fetch(allEnrollments));
+        assertEquals(result, new ExternalIdCriterion("entity1").fetch(allEnrollments, enrollmentService));
     }
 
     @Test

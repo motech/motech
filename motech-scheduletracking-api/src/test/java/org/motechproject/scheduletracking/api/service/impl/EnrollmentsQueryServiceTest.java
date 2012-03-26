@@ -8,7 +8,6 @@ import org.motechproject.scheduletracking.api.domain.filtering.Criterion;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -35,7 +34,7 @@ public class EnrollmentsQueryServiceTest {
 
         Criterion primaryCriterion = mock(Criterion.class);
         List<Enrollment> filteredByMetadata = mock(List.class);
-        when(primaryCriterion.fetch(allEnrollments)).thenReturn(filteredByMetadata);
+        when(primaryCriterion.fetch(allEnrollments, enrollmentService)).thenReturn(filteredByMetadata);
 
         Criterion secondaryCriterion1 = mock(Criterion.class);
         List<Enrollment> criterion1FilteredEnrollments = mock(List.class);
