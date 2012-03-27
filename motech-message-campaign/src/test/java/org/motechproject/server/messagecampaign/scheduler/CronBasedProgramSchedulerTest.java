@@ -1,5 +1,6 @@
 package org.motechproject.server.messagecampaign.scheduler;
 
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -18,6 +19,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.util.DateUtil.newDateTime;
 
 public class CronBasedProgramSchedulerTest {
 
@@ -52,6 +54,20 @@ public class CronBasedProgramSchedulerTest {
         assertEquals("org.motechproject.server.messagecampaign.send-campaign-message", allJobs.get(1).getMotechEvent().getSubject());
         assertMotechEvent(allJobs.get(1), "testCampaign.12345.cron-message2", "cron-message2");
     }
+
+    @Test
+    public void shouldReturnCampaignEndTime()
+    {
+        LocalDate referenceDate = new LocalDate(2012, 4, 4);
+        CampaignRequest request = new EnrollRequestBuilder().withDefaults().withReferenceDate(referenceDate).build();
+        CronBasedCampaign campaign = new CampaignBuilder().defaultCronBasedCampaign();
+
+        CronBasedProgramScheduler cronBasedProgramScheduler = new CronBasedProgramScheduler(schedulerService, request, campaign,mockCampaignEnrollmentService);
+
+        assertEquals(newDateTime(referenceDate).plusWeeks(1),cronBasedProgramScheduler.getCampaignEnd());
+    }
+
+    
 
     private void assertMotechEvent(CronSchedulableJob cronSchedulableJob, String expectedJobId, String messageKey) {
         assertEquals(expectedJobId, cronSchedulableJob.getMotechEvent().getParameters().get("JobID"));

@@ -19,6 +19,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.util.DateUtil.newDateTime;
 
 public class AbsoluteProgramSchedulerTest {
 
@@ -39,7 +40,7 @@ public class AbsoluteProgramSchedulerTest {
         CampaignRequest request = new EnrollRequestBuilder().withDefaults().build();
         AbsoluteCampaign campaign = new CampaignBuilder().defaultAbsoluteCampaign();
 
-        AbsoluteProgramScheduler absoluteProgramScheduler = new AbsoluteProgramScheduler(schedulerService, request, campaign,mockCampaignEnrollmentService);
+        AbsoluteProgramScheduler absoluteProgramScheduler = new AbsoluteProgramScheduler(schedulerService, request, campaign, mockCampaignEnrollmentService);
 
         absoluteProgramScheduler.start();
         ArgumentCaptor<RunOnceSchedulableJob> capture = ArgumentCaptor.forClass(RunOnceSchedulableJob.class);
@@ -56,6 +57,15 @@ public class AbsoluteProgramSchedulerTest {
         assertEquals(startDate2.toString(), allJobs.get(1).getStartDate().toString());
         assertEquals("org.motechproject.server.messagecampaign.send-campaign-message", allJobs.get(1).getMotechEvent().getSubject());
         assertMotechEvent(allJobs.get(1), "testCampaign.12345.random-2", "random-2");
+    }
+
+    @Test
+    public void shouldGetDurationOfSchedule() {
+        CampaignRequest request = new EnrollRequestBuilder().withDefaults().build();
+        AbsoluteCampaign campaign = new CampaignBuilder().defaultAbsoluteCampaign();
+        AbsoluteProgramScheduler absoluteProgramScheduler = new AbsoluteProgramScheduler(schedulerService, request, campaign, mockCampaignEnrollmentService);
+
+        assertEquals(newDateTime(DateUtil.today().plusDays(2), request.reminderTime()), absoluteProgramScheduler.getCampaignEnd());
     }
 
     private void assertMotechEvent(RunOnceSchedulableJob runOnceSchedulableJob, String expectedJobId, Object messageKey) {

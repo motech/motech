@@ -19,6 +19,8 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.util.DateUtil.newDate;
+import static org.motechproject.util.DateUtil.newDateTime;
 
 public class OffsetProgramSchedulerTest {
 
@@ -26,6 +28,7 @@ public class OffsetProgramSchedulerTest {
     private MotechSchedulerService schedulerService;
     @Mock
     private CampaignEnrollmentService mockCampaignEnrollmentService;
+
     @Before
     public void setUp() {
         schedulerService = mock(MotechSchedulerService.class);
@@ -37,7 +40,7 @@ public class OffsetProgramSchedulerTest {
         CampaignRequest request = new EnrollRequestBuilder().withDefaults().build();
         OffsetCampaign campaign = new CampaignBuilder().defaultOffsetCampaign();
 
-        OffsetProgramScheduler offsetProgramScheduler = new OffsetProgramScheduler(schedulerService, request, campaign,mockCampaignEnrollmentService);
+        OffsetProgramScheduler offsetProgramScheduler = new OffsetProgramScheduler(schedulerService, request, campaign, mockCampaignEnrollmentService);
 
         offsetProgramScheduler.start();
         ArgumentCaptor<RunOnceSchedulableJob> capture = ArgumentCaptor.forClass(RunOnceSchedulableJob.class);
@@ -54,6 +57,15 @@ public class OffsetProgramSchedulerTest {
         assertEquals(startDate2.toString(), allJobs.get(1).getStartDate().toString());
         assertEquals(MESSAGE_CAMPAIGN_EVENT_SUBJECT, allJobs.get(1).getMotechEvent().getSubject());
         assertMotechEvent(allJobs.get(1), "testCampaign.12345.child-info-week-1a", "child-info-week-1a");
+    }
+
+    @Test
+    public void shouldReturnCampaignEndTime() {
+        CampaignRequest request = new EnrollRequestBuilder().withDefaults().withReferenceDate(newDate(2011, 5, 5)).build();
+        OffsetCampaign campaign = new CampaignBuilder().defaultOffsetCampaign();
+        OffsetProgramScheduler offsetProgramScheduler = new OffsetProgramScheduler(schedulerService, request, campaign, mockCampaignEnrollmentService);
+
+        assertEquals(newDateTime(2011, 5, 5, 9, 30, 0).plusWeeks(2), offsetProgramScheduler.getCampaignEnd());
     }
 
     private void assertMotechEvent(RunOnceSchedulableJob runOnceSchedulableJob, String expectedJobId, String messageKey) {

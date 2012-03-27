@@ -1,6 +1,7 @@
 package org.motechproject.server.messagecampaign.scheduler;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.DayOfWeek;
@@ -28,7 +29,7 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
 
     public RepeatingProgramScheduler(MotechSchedulerService schedulerService, CampaignRequest enrollRequest, RepeatingCampaign campaign,
                                      CampaignEnrollmentService campaignEnrollmentService, Boolean dispatchMessagesEvery24Hours) {
-        super(schedulerService, enrollRequest, campaign,campaignEnrollmentService);
+        super(schedulerService, enrollRequest, campaign, campaignEnrollmentService);
         this.dispatchMessagesEvery24Hours = dispatchMessagesEvery24Hours;
     }
 
@@ -49,18 +50,24 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
         scheduleRepeatingJob(startDate, getDeliveryTime(message), endDateToEndOfDay, params, getCronExpression(message));
     }
 
+    @Override
+    protected DateTime getCampaignEnd() {
+        int maxDuration = wallTime(campaign.maxDuration()).inDays();
+        return newDateTime(campaignRequest.referenceDate().plusDays(maxDuration));
+    }
+
     private Time getDeliveryTime(RepeatingCampaignMessage message) {
         return (dispatchMessagesEvery24Hours) ? campaignRequest.reminderTime() : message.deliverTime();
     }
 
     private String getCronExpression(RepeatingCampaignMessage message) {
-        if(dispatchMessagesEvery24Hours)
-             return String.format("0 %d %d %s * ? *", campaignRequest.reminderTime().getMinute(),
+        if (dispatchMessagesEvery24Hours)
+            return String.format("0 %d %d %s * ? *", campaignRequest.reminderTime().getMinute(),
                     campaignRequest.reminderTime().getHour(), Constants.DAILY_REPEATING_DAYS_CRON_EXPRESSION);
 
         String deliverDates = StringUtils.join(getShortNames(campaignRequest.getUserPreferredDays().isEmpty() ? message.weekDaysApplicable() : campaignRequest.getUserPreferredDays()).iterator(), ",");
 
-        return String.format("0 %d %d ? * %s *", message.deliverTime().getMinute(),message.deliverTime().getHour(),
+        return String.format("0 %d %d ? * %s *", message.deliverTime().getMinute(), message.deliverTime().getHour(),
                 deliverDates);
     }
 

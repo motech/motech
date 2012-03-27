@@ -37,7 +37,7 @@ public class CampaignBuilder {
     public CronBasedCampaign defaultCronBasedCampaign() {
         CronBasedCampaign campaign = new CronBasedCampaign();
         campaign.setName("testCampaign");
-
+        campaign.maxDuration("1 Week");
         final CronBasedCampaignMessage campaignMessage1 = new CampaignMessageBuilder().cronBasedCampaignMessage("CM1", "0 11 11 11 11 ?", "cron-message1");
         final CronBasedCampaignMessage campaignMessage2 = new CampaignMessageBuilder().cronBasedCampaignMessage("CM2", "0 11 11 11 12 ?", "cron-message2");
 

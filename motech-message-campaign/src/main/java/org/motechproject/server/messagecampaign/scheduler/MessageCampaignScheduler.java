@@ -1,7 +1,11 @@
 package org.motechproject.server.messagecampaign.scheduler;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.motechproject.model.*;
+import org.motechproject.model.CronSchedulableJob;
+import org.motechproject.model.MotechEvent;
+import org.motechproject.model.RunOnceSchedulableJob;
+import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.builder.SchedulerPayloadBuilder;
@@ -43,7 +47,6 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage, E exte
     }
 
     public void stop(String messageName) {
-
         MessageCampaignScheduledJobId jobId = new MessageCampaignScheduledJobId(campaign.name(), campaignRequest.externalId(), messageName);
         schedulerService.safeUnscheduleJob(CampaignTypeHandlersRegistery.subjectFor(campaign), jobId.value());
     }
@@ -56,6 +59,7 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage, E exte
     }
 
     protected abstract void scheduleJobFor(T message);
+    protected abstract DateTime getCampaignEnd();
 
     protected void scheduleJobOn(Time startTime, LocalDate startDate, Map<String, Object> params) {
         MotechEvent motechEvent = new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, params);
