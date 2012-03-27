@@ -28,6 +28,9 @@ public class CampaignRecord {
         if (type == CampaignType.REPEATING) {
             ((RepeatingCampaign) campaign).maxDuration(maxDuration);
         }
+        if (type == CampaignType.CRON) {
+            ((CronBasedCampaign) campaign).maxDuration(maxDuration);
+        }
         return campaign;
     }
 

@@ -82,6 +82,7 @@ public class AllMessageCampaignsTest {
         CronBasedCampaign campaign = (CronBasedCampaign) allMessageCampaigns.get(campaignName);
         assertNotNull(campaign);
         assertEquals(campaignName, campaign.name());
+        assertEquals("5 weeks", campaign.maxDuration());
         List<CronBasedCampaignMessage> messages = campaign.messages();
         assertEquals(1, messages.size());
         assertMessageWithCronSchedule(messages.get(0), "First", new String[]{"IVR", "SMS"}, "cron-message", "0 11 11 11 11 ?");
