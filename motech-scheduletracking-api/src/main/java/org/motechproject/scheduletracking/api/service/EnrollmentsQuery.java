@@ -53,6 +53,11 @@ public class EnrollmentsQuery {
         return this;
     }
 
+    public EnrollmentsQuery havingMetaData(String metaField, String value) {
+        criteria.add(new MetadataPropertyCriterion(metaField, value));
+        return this;
+    }
+
     private List<EnrollmentStatus> toEnum(List<String> values) {
         List<EnrollmentStatus> statuses = new ArrayList<EnrollmentStatus>();
         for (String value : values) {
