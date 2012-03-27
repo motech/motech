@@ -3,6 +3,7 @@ package org.motechproject.scheduletracking.api.service.impl;
 import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.scheduletracking.api.domain.Metadata;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.domain.exception.InvalidEnrollmentException;
 import org.motechproject.scheduletracking.api.domain.exception.ScheduleTrackingException;
@@ -17,9 +18,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import static ch.lambdaj.Lambda.extract;
-import static ch.lambdaj.Lambda.on;
 import static java.text.MessageFormat.format;
 import static org.motechproject.util.DateUtil.newDateTime;
 import static org.motechproject.util.DateUtil.today;
@@ -75,7 +75,14 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
         else
             startingMilestoneName = schedule.getFirstMilestone().getName();
 
-        return enrollmentService.enroll(enrollmentRequest.getExternalId(), enrollmentRequest.getScheduleName(), startingMilestoneName, enrollmentRequest.getReferenceDateTime(), enrollmentRequest.getEnrollmentDateTime(), enrollmentRequest.getPreferredAlertTime());
+        return enrollmentService.enroll(enrollmentRequest.getExternalId(), enrollmentRequest.getScheduleName(), startingMilestoneName, enrollmentRequest.getReferenceDateTime(), enrollmentRequest.getEnrollmentDateTime(), enrollmentRequest.getPreferredAlertTime(), constructMetadataList(enrollmentRequest.getMetadata()));
+    }
+
+    private List<Metadata> constructMetadataList(Map<String, String> metadataMap) {
+        List<Metadata> metadataList = new ArrayList<Metadata>();
+        for (String metadataKey : metadataMap.keySet())
+            metadataList.add(new Metadata(metadataKey, metadataMap.get(metadataKey)));
+        return metadataList;
     }
 
     @Override

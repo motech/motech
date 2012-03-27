@@ -1,12 +1,12 @@
 package org.motechproject.server.alerts.domain;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.model.MotechBaseDataObject;
 import org.motechproject.util.DateUtil;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @TypeDiscriminator("doc.type == 'Alert'")
@@ -20,7 +20,7 @@ public class Alert extends MotechBaseDataObject implements Comparable<Alert> {
     private int priority;
     private AlertStatus status;
     private String description;
-    private Map<String, String> data;
+    private Map<String, String> data = new HashMap<String, String>();
 
 
     public Alert() {
@@ -38,7 +38,9 @@ public class Alert extends MotechBaseDataObject implements Comparable<Alert> {
         this.status = status;
         this.priority = priority;
         this.dateTime = DateUtil.now();
-        this.data = data;
+        if (data != null) {
+            this.data.putAll(data);
+        }
     }
 
     public String getId() {

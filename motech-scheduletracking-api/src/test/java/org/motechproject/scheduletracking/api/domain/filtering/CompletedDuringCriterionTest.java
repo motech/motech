@@ -1,8 +1,11 @@
 package org.motechproject.scheduletracking.api.domain.filtering;
 
 import org.joda.time.DateTime;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +14,31 @@ import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
+import static org.mockito.Matchers.startsWith;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.util.DateUtil.newDateTime;
 
 public class CompletedDuringCriterionTest {
+
+    @Mock
+    private AllEnrollments allEnrollments;
+
+    @Before
+    public void setup() {
+        initMocks(this);
+    }
+
+    @Test
+    public void shouldFetchEnrollmentsCompletedDuringTheGivenTimeRangeFromTheDb() {
+        DateTime start = newDateTime(2012, 1, 2, 0, 0, 0);
+        DateTime end = newDateTime(2012, 1, 3, 0, 0, 0);
+        List<Enrollment> enrollments = mock(List.class);
+        when(allEnrollments.completedDuring(start,  end)).thenReturn(enrollments);
+
+        assertEquals(enrollments, new CompletedDuringCriterion(start, end).fetch(allEnrollments, null));
+    }
 
     @Test
     public void shouldReturnEnrollmentsThatWereCompletedDuringGivenPeriod() {

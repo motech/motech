@@ -3,6 +3,7 @@ package org.motechproject.scheduletracking.api.domain.filtering;
 import org.joda.time.DateTime;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.WindowName;
+import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.service.impl.EnrollmentService;
 import org.motechproject.util.DateUtil;
 
@@ -19,6 +20,11 @@ public class EndOfWindowCriterion implements Criterion {
         this.windowName = windowName;
         this.start = start;
         this.end = end;
+    }
+
+    @Override
+    public List<Enrollment> fetch(AllEnrollments allEnrollments, EnrollmentService enrollmentService) {
+        return filter(allEnrollments.getAll(), enrollmentService);
     }
 
     @Override

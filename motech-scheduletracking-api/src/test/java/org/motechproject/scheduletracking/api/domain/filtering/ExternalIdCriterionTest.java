@@ -1,8 +1,12 @@
 package org.motechproject.scheduletracking.api.domain.filtering;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.Schedule;
+import org.motechproject.scheduletracking.api.repository.AllEnrollments;
+import org.motechproject.scheduletracking.api.service.impl.EnrollmentService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +15,28 @@ import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ExternalIdCriterionTest {
+
+    @Mock
+    private AllEnrollments allEnrollments;
+    @Mock
+    private EnrollmentService enrollmentService;
+
+    @Before
+    public void setup() {
+        initMocks(this);
+    }
+
+    @Test
+    public void shouldFetchByExternalId() {
+        List<Enrollment> result = mock(List.class);
+        when(allEnrollments.findByExternalId("entity1")).thenReturn(result);
+        assertEquals(result, new ExternalIdCriterion("entity1").fetch(allEnrollments, enrollmentService));
+    }
 
     @Test
     public void shouldFilterByExternalId() {

@@ -7,6 +7,7 @@ import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -16,16 +17,18 @@ public class EnrollmentsQueryService {
     private AllEnrollments allEnrollments;
 
     @Autowired
-    public EnrollmentsQueryService(EnrollmentService enrollmentService, AllEnrollments allEnrollments) {
+    public EnrollmentsQueryService(AllEnrollments allEnrollments, EnrollmentService enrollmentService) {
         this.enrollmentService = enrollmentService;
         this.allEnrollments = allEnrollments;
     }
 
     public List<Enrollment> search(EnrollmentsQuery query) {
-        List<Enrollment> enrollments = allEnrollments.getAll();
-        for (Criterion criterion : query.getCriteria()) {
+        List<Enrollment> enrollments = new ArrayList<Enrollment>();
+        Criterion primaryCriterion = query.getPrimaryCriterion();
+        if (primaryCriterion != null)
+            enrollments = primaryCriterion.fetch(allEnrollments, enrollmentService);
+        for (Criterion criterion : query.getSecondaryCriteria())
             enrollments = criterion.filter(enrollments, enrollmentService);
-        }
         return enrollments;
     }
 }

@@ -16,8 +16,7 @@ import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
 import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
@@ -45,6 +44,8 @@ public class ScheduleTrackingServiceImplTest {
     @Mock
     private EnrollmentRecordMapper enrollmentRecordMapper;
 
+    public static final List<Metadata> EMPTY_METADATA_LIST = new ArrayList<Metadata>();
+
     @Before
     public void setUp() {
         initMocks(this);
@@ -63,9 +64,9 @@ public class ScheduleTrackingServiceImplTest {
         String externalId = "my_entity_1";
         DateTime referenceDateTime = now().minusDays(10);
         Time preferredAlertTime = new Time(8, 10);
-        scheduleTrackingService.enroll(new EnrollmentRequest(externalId, scheduleName, preferredAlertTime, referenceDateTime.toLocalDate(), null, null, null, null));
+        scheduleTrackingService.enroll(new EnrollmentRequest(externalId, scheduleName, preferredAlertTime, referenceDateTime.toLocalDate(), null, null, null, null, null));
 
-        verify(enrollmentService).enroll(externalId, scheduleName, firstMilestone.getName(), newDateTime(referenceDateTime.toLocalDate(), new Time(0, 0)), newDateTime(now().toLocalDate(), new Time(0, 0)), preferredAlertTime);
+        verify(enrollmentService).enroll(externalId, scheduleName, firstMilestone.getName(), newDateTime(referenceDateTime.toLocalDate(), new Time(0, 0)), newDateTime(now().toLocalDate(), new Time(0, 0)), preferredAlertTime, EMPTY_METADATA_LIST);
     }
 
     @Test
@@ -80,9 +81,24 @@ public class ScheduleTrackingServiceImplTest {
         String externalId = "entity_1";
         Time preferredAlertTime = new Time(8, 10);
         DateTime referenceDateTime = newDateTime(2012, 11, 2, 0, 0, 0);
-        scheduleTrackingService.enroll(new EnrollmentRequest(externalId, scheduleName, preferredAlertTime, referenceDateTime.toLocalDate(), null, null, null, secondMilestone.getName()));
+        scheduleTrackingService.enroll(new EnrollmentRequest(externalId, scheduleName, preferredAlertTime, referenceDateTime.toLocalDate(), null, null, null, secondMilestone.getName(), null));
 
-        verify(enrollmentService).enroll(externalId, scheduleName, secondMilestone.getName(), newDateTime(referenceDateTime.toLocalDate(), new Time(0, 0)), newDateTime(now().toLocalDate(), new Time(0, 0)), preferredAlertTime);
+        verify(enrollmentService).enroll(externalId, scheduleName, secondMilestone.getName(), newDateTime(referenceDateTime.toLocalDate(), new Time(0, 0)), newDateTime(now().toLocalDate(), new Time(0, 0)), preferredAlertTime, EMPTY_METADATA_LIST);
+    }
+
+    @Test
+    public void shouldEnrollEntityIntoAScheduleWithMetadata() {
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(new Milestone("milestone1", weeks(1), weeks(1), weeks(1), weeks(1)));
+        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
+
+        Map<String, String> metadata = new HashMap<String, String>();
+        metadata.put("foo", "bar");
+        metadata.put("fuu", "baz");
+        scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), newDateTime(2012, 11, 2, 0, 0, 0).toLocalDate(), null, null, null, "milestone1", metadata));
+
+        List<Metadata> metadataList = asList(new Metadata[]{ new Metadata("foo", "bar"), new Metadata("fuu", "baz") });
+        verify(enrollmentService).enroll("entity_1", "my_schedule", "milestone1", newDateTime(newDateTime(2012, 11, 2, 0, 0, 0).toLocalDate(), new Time(0, 0)), newDateTime(now().toLocalDate(), new Time(0, 0)), new Time(8, 10), metadataList);
     }
 
     @Test
@@ -97,9 +113,9 @@ public class ScheduleTrackingServiceImplTest {
         String externalId = "entity_1";
         DateTime referenceDateTime = newDateTime(2012, 11, 2, 0, 0, 0);
         Time preferredAlertTime = new Time(8, 10);
-        scheduleTrackingService.enroll(new EnrollmentRequest(externalId, scheduleName, preferredAlertTime, referenceDateTime.toLocalDate(), null, null, null, null));
+        scheduleTrackingService.enroll(new EnrollmentRequest(externalId, scheduleName, preferredAlertTime, referenceDateTime.toLocalDate(), null, null, null, null, null));
 
-        verify(enrollmentService).enroll(externalId, scheduleName, milestone.getName(), newDateTime(referenceDateTime.toLocalDate(), new Time(0, 0)), newDateTime(now().toLocalDate(), new Time(0, 0)), preferredAlertTime);
+        verify(enrollmentService).enroll(externalId, scheduleName, milestone.getName(), newDateTime(referenceDateTime.toLocalDate(), new Time(0, 0)), newDateTime(now().toLocalDate(), new Time(0, 0)), preferredAlertTime, EMPTY_METADATA_LIST);
     }
 
     @Test
@@ -111,7 +127,7 @@ public class ScheduleTrackingServiceImplTest {
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
 
         when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(null);
-        scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2), null, null, null, null));
+        scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2), null, null, null, null, null));
 
         Enrollment enrollment = mock(Enrollment.class);
         when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(enrollment);
@@ -130,7 +146,7 @@ public class ScheduleTrackingServiceImplTest {
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
 
         when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(null);
-        scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2), null, null, null, null));
+        scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2), null, null, null, null, null));
 
         Enrollment enrollment = mock(Enrollment.class);
         when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(enrollment);
@@ -150,7 +166,7 @@ public class ScheduleTrackingServiceImplTest {
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
 
         when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(null);
-        scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2), null, null, null, null));
+        scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2), null, null, null, null, null));
 
         Enrollment enrollment = mock(Enrollment.class);
         when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(enrollment);

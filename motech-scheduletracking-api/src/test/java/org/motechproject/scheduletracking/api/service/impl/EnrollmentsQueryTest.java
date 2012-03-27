@@ -12,7 +12,9 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.daysAgo;
+import static org.springframework.util.Assert.isInstanceOf;
 
 public class EnrollmentsQueryTest {
 
@@ -82,5 +84,19 @@ public class EnrollmentsQueryTest {
         List<Criterion> criteria = query.getCriteria();
         assertEquals(criteria.size(), 1);
         assertTrue(criteria.get(0) instanceof CompletedDuringCriterion);
+    }
+
+    @Test
+    public void shouldReturnPrimaryCriterion() {
+        EnrollmentsQuery query = enrollmentsQuery.havingExternalId("entity1").havingState("active");
+        isInstanceOf(ExternalIdCriterion.class, enrollmentsQuery.getPrimaryCriterion());
+    }
+
+    @Test
+    public void shouldReturnSecondaryCriteria() {
+        EnrollmentsQuery query = enrollmentsQuery.havingExternalId("entity1").havingState("active").completedDuring(null, null);
+        List<Criterion> secondaryCriteria = enrollmentsQuery.getSecondaryCriteria();
+        isInstanceOf(StatusCriterion.class, secondaryCriteria.get(0));
+        isInstanceOf(CompletedDuringCriterion.class, secondaryCriteria.get(1));
     }
 }

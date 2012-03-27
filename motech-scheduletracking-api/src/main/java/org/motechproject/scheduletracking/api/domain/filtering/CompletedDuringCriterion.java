@@ -2,6 +2,7 @@ package org.motechproject.scheduletracking.api.domain.filtering;
 
 import org.joda.time.DateTime;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.service.impl.EnrollmentService;
 
 import java.util.ArrayList;
@@ -17,6 +18,11 @@ public class CompletedDuringCriterion implements Criterion {
     public CompletedDuringCriterion(DateTime start, DateTime end) {
         this.start = start;
         this.end = end;
+    }
+
+    @Override
+    public List<Enrollment> fetch(AllEnrollments allEnrollments, EnrollmentService enrollmentService) {
+        return allEnrollments.completedDuring(start, end);
     }
 
     @Override

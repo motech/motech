@@ -10,6 +10,8 @@ import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.COMPLETED;
 import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.UNENROLLED;
 import static org.motechproject.util.StringUtil.isNullOrEmpty;
@@ -30,13 +32,13 @@ public class EnrollmentService {
         this.enrollmentDefaultmentService = enrollmentDefaultmentService;
     }
 
-    public String enroll(String externalId, String scheduleName, String startingMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime) {
+    public String enroll(String externalId, String scheduleName, String startingMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime, List<Metadata> metadata) {
         Schedule schedule = allTrackedSchedules.getByName(scheduleName);
         EnrollmentStatus enrollmentStatus = EnrollmentStatus.ACTIVE;
         if (schedule.hasExpiredSince(referenceDateTime))
             enrollmentStatus = EnrollmentStatus.DEFAULTED;
 
-        Enrollment enrollment = allEnrollments.addOrReplace(new Enrollment(externalId, schedule, startingMilestoneName, referenceDateTime, enrollmentDateTime, preferredAlertTime, enrollmentStatus, null));
+        Enrollment enrollment = allEnrollments.addOrReplace(new Enrollment(externalId, schedule, startingMilestoneName, referenceDateTime, enrollmentDateTime, preferredAlertTime, enrollmentStatus, metadata));
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
         enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
 

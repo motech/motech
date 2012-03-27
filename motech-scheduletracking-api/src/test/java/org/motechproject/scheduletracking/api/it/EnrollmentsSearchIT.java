@@ -100,12 +100,12 @@ public class EnrollmentsSearchIT {
 
     @Test
     public void forAGivenEntityshouldReturnAllSchedulesWithDatesWhoseDueDateFallsInTheLastWeek() {
-        DateTime IptiReferenceDate = newDateTime(2012, 1, 1, 0, 0 ,0);
+        DateTime iptiReferenceDate = newDateTime(2012, 1, 1, 0, 0 ,0);
         DateTime deliveryReferenceDateTime = newDateTime(2011, 7, 9, 0, 0 ,0);
-        createEnrollment("entity_1", "IPTI Schedule", "IPTI 1", IptiReferenceDate, IptiReferenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
+        createEnrollment("entity_1", "IPTI Schedule", "IPTI 1", iptiReferenceDate, iptiReferenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
         createEnrollment("entity_1", "Delivery", "Default", deliveryReferenceDateTime, deliveryReferenceDateTime, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
-        createEnrollment("entity_1", "IPTI Schedule", "IPTI 1", IptiReferenceDate, IptiReferenceDate, new Time(6, 30), EnrollmentStatus.DEFAULTED, null);
-        createEnrollment("entity_2", "IPTI Schedule", "IPTI 1", IptiReferenceDate, IptiReferenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
+        createEnrollment("entity_1", "IPTI Schedule", "IPTI 1", iptiReferenceDate, iptiReferenceDate, new Time(6, 30), EnrollmentStatus.DEFAULTED, null);
+        createEnrollment("entity_2", "IPTI Schedule", "IPTI 1", iptiReferenceDate, iptiReferenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
 
         EnrollmentsQuery query = new EnrollmentsQuery()
                                     .havingExternalId("entity_1")

@@ -10,15 +10,20 @@ import static ch.lambdaj.Lambda.having;
 import static ch.lambdaj.Lambda.on;
 import static org.hamcrest.Matchers.equalTo;
 
-public class UnvisitedCriterion implements Criterion {
+public class ExternalIdCriterion implements Criterion {
+    private String externalId;
 
-    @Override
-    public List<VisitResponse> filter(List<VisitResponse> visitResponses) {
-        return Lambda.filter(having(on(VisitResponse.class).getVisitDate(), equalTo(null)), visitResponses);
+    public ExternalIdCriterion(String externalId) {
+        this.externalId = externalId;
     }
 
     @Override
-    public List<VisitResponse> fetch(AllAppointmentCalendars allAppointmentCalendars)  {
-        return allAppointmentCalendars.findMissedVisits();
+    public List<VisitResponse> filter(List<VisitResponse> visitResponses) {
+        return Lambda.filter(having(on(VisitResponse.class).getExternalId(), equalTo(externalId)), visitResponses);
+    }
+
+    @Override
+    public List<VisitResponse> fetch(AllAppointmentCalendars allAppointmentCalendars) {
+        return allAppointmentCalendars.findVisitsByExternalId(externalId);
     }
 }

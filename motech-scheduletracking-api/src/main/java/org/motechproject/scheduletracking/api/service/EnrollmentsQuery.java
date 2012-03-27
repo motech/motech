@@ -68,4 +68,12 @@ public class EnrollmentsQuery {
     public List<Criterion> getCriteria() {
         return criteria;
     }
+
+    public Criterion getPrimaryCriterion() {
+        return (criteria.size() > 0)? criteria.get(0) : null;
+    }
+
+    public List<Criterion> getSecondaryCriteria() {
+        return (criteria.size() > 1)? criteria.subList(1, criteria.size()) : new ArrayList<Criterion>();
+    }
 }

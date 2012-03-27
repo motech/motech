@@ -1,6 +1,8 @@
 package org.motechproject.server.alerts.service;
 
 import org.ektorp.DocumentNotFoundException;
+import org.motechproject.server.alerts.contract.UpdateCriteria;
+import org.motechproject.server.alerts.contract.UpdateCriterion;
 import org.motechproject.server.alerts.repository.AllAlerts;
 import org.motechproject.server.alerts.domain.Alert;
 import org.motechproject.server.alerts.domain.AlertCriteria;
@@ -37,41 +39,6 @@ public class AlertServiceImpl implements AlertService {
     }
 
     @Override
-    public void setDescription(String id, String description) {
-        Alert alert = get(id);
-        alert.setDescription(description);
-        allAlerts.update(alert);
-    }
-
-    @Override
-    public void setPriority(String id, int priority) {
-        Alert alert = get(id);
-        alert.setPriority(priority);
-        allAlerts.update(alert);
-    }
-
-    @Override
-    public void setName(String id, String name) {
-        Alert alert = get(id);
-        alert.setName(name);
-        allAlerts.update(alert);
-    }
-
-    @Override
-    public void changeStatus(String id, AlertStatus status) {
-        Alert alert = get(id);
-        alert.setStatus(status);
-        allAlerts.update(alert);
-    }
-
-    @Override
-    public void setData(String id, String key, String value) {
-        Alert alert = get(id);
-        final Map<String, String> data = alert.getData();
-        data.put(key, value);
-        allAlerts.update(alert);
-    }
-
     public Alert get(String id) {
         try {
             return allAlerts.get(id);
@@ -79,5 +46,15 @@ public class AlertServiceImpl implements AlertService {
             logger.error(String.format("No Alert found for the given id: %s.", id), e);
             return null;
         }
+    }
+
+    @Override
+    public void update(String alertId, UpdateCriteria updateCriteria) {
+        Alert alert = get(alertId);
+        Map<UpdateCriterion, Object> all = updateCriteria.getAll();
+        for (UpdateCriterion updateCriterion : all.keySet()) {
+            AlertUpdater.get(updateCriterion).update(alert, all.get(updateCriterion));
+        }
+        allAlerts.update(alert);
     }
 }
