@@ -6,13 +6,14 @@ import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.OffsetCampaign;
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
+import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.factory.WallTimeFactory;
 
 public class OffsetProgramScheduler extends MessageCampaignScheduler<OffsetCampaignMessage, OffsetCampaign> {
 
-    public OffsetProgramScheduler(MotechSchedulerService schedulerService, CampaignRequest enrollRequest, OffsetCampaign campaign) {
-        super(schedulerService, enrollRequest, campaign);
+    public OffsetProgramScheduler(MotechSchedulerService schedulerService, CampaignRequest enrollRequest, OffsetCampaign campaign, CampaignEnrollmentService campaignEnrollmentService) {
+        super(schedulerService, enrollRequest, campaign, campaignEnrollmentService);
     }
 
     @Override

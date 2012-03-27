@@ -3,12 +3,14 @@ package org.motechproject.server.messagecampaign.scheduler;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.builder.CampaignBuilder;
 import org.motechproject.server.messagecampaign.builder.EnrollRequestBuilder;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.OffsetCampaign;
+import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 import org.motechproject.util.DateUtil;
 
 import java.util.Date;
@@ -22,7 +24,8 @@ public class OffsetProgramSchedulerTest {
 
     public static final String MESSAGE_CAMPAIGN_EVENT_SUBJECT = "org.motechproject.server.messagecampaign.send-campaign-message";
     private MotechSchedulerService schedulerService;
-
+    @Mock
+    private CampaignEnrollmentService mockCampaignEnrollmentService;
     @Before
     public void setUp() {
         schedulerService = mock(MotechSchedulerService.class);
@@ -34,7 +37,7 @@ public class OffsetProgramSchedulerTest {
         CampaignRequest request = new EnrollRequestBuilder().withDefaults().build();
         OffsetCampaign campaign = new CampaignBuilder().defaultOffsetCampaign();
 
-        OffsetProgramScheduler offsetProgramScheduler = new OffsetProgramScheduler(schedulerService, request, campaign);
+        OffsetProgramScheduler offsetProgramScheduler = new OffsetProgramScheduler(schedulerService, request, campaign,mockCampaignEnrollmentService);
 
         offsetProgramScheduler.start();
         ArgumentCaptor<RunOnceSchedulableJob> capture = ArgumentCaptor.forClass(RunOnceSchedulableJob.class);

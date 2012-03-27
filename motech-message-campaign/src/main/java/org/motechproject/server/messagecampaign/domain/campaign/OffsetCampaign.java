@@ -22,7 +22,7 @@ public class OffsetCampaign extends Campaign<OffsetCampaignMessage> {
 
     @Override
     public MessageCampaignScheduler getScheduler(MotechSchedulerService schedulerService, CampaignEnrollmentService campaignEnrollmentService, CampaignRequest enrollRequest) {
-        return new OffsetProgramScheduler(schedulerService, enrollRequest, this);
+        return new OffsetProgramScheduler(schedulerService, enrollRequest, this,campaignEnrollmentService);
     }
 
     @Override

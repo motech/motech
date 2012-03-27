@@ -20,7 +20,7 @@ public class CronBasedCampaign extends Campaign<CronBasedCampaignMessage> {
 
     @Override
     public MessageCampaignScheduler getScheduler(MotechSchedulerService schedulerService, CampaignEnrollmentService campaignEnrollmentService, CampaignRequest enrollRequest) {
-        return new CronBasedProgramScheduler(schedulerService, enrollRequest, this);
+        return new CronBasedProgramScheduler(schedulerService, enrollRequest, this,campaignEnrollmentService);
     }
 
     @Override

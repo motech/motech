@@ -19,13 +19,11 @@ import org.motechproject.server.messagecampaign.builder.CampaignMessageBuilder;
 import org.motechproject.server.messagecampaign.builder.EnrollRequestBuilder;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
-import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
 import org.motechproject.server.messagecampaign.domain.campaign.RepeatingCampaign;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 import org.motechproject.util.DateUtil;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -35,12 +33,9 @@ import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduler.INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT;
-import static org.springframework.test.util.ReflectionTestUtils.getField;
 
 public class RepeatingProgramSchedulerTest {
 
@@ -86,15 +81,8 @@ public class RepeatingProgramSchedulerTest {
         assertJob(jobs.get(3), startJobDate, jobEndDateForCalWeekSchedule);
         assertMotechEvent(jobs.get(3), "testCampaign.12345.child-info-week-{Offset}-{WeekDay}", "child-info-week-{Offset}-{WeekDay}");
 
-        ArgumentCaptor<CampaignEnrollment> campaignEnrollmentCaptor = ArgumentCaptor.forClass(CampaignEnrollment.class);
-        verify(mockCampaignEnrollmentService, times(1)).register(campaignEnrollmentCaptor.capture());
-        assertCampaignEnrollment(startOffset, startDate, campaignEnrollmentCaptor.getValue());
-        verify(mockSchedulerService, times(4)).safeScheduleJob(Matchers.<CronSchedulableJob>any());
-    }
 
-    private void assertCampaignEnrollment(Integer startOffset, LocalDate startDate, CampaignEnrollment campaignEnrollment) {
-        assertThat(campaignEnrollment.getStartDate(), is(startDate));
-        assertThat((Integer) getField(campaignEnrollment, "startOffset"), is(startOffset));
+        verify(mockSchedulerService, times(4)).safeScheduleJob(Matchers.<CronSchedulableJob>any());
     }
 
     @Test
@@ -190,9 +178,6 @@ public class RepeatingProgramSchedulerTest {
         assertJob(jobs.get(2), startJobDate, jobEndDateForWeekSchedule);
         assertJob(jobs.get(3), startJobDate, jobEndDateForCalWeekSchedule);
 
-        ArgumentCaptor<CampaignEnrollment> campaignEnrollmentCaptor = ArgumentCaptor.forClass(CampaignEnrollment.class);
-        verify(mockCampaignEnrollmentService, times(1)).register(campaignEnrollmentCaptor.capture());
-        assertCampaignEnrollment(startOffset, new LocalDate(startJobDate), campaignEnrollmentCaptor.getValue());
     }
 
     @Test
@@ -209,10 +194,6 @@ public class RepeatingProgramSchedulerTest {
         repeatingProgramScheduler.start();
 
         verify(mockSchedulerService, times(2)).safeScheduleJob(Matchers.<CronSchedulableJob>any());
-
-        ArgumentCaptor<CampaignEnrollment> campaignEnrollmentCaptor = ArgumentCaptor.forClass(CampaignEnrollment.class);
-        verify(mockCampaignEnrollmentService, times(1)).register(campaignEnrollmentCaptor.capture());
-        assertCampaignEnrollment(startOffset, startDate, campaignEnrollmentCaptor.getValue());
     }
 
     @Test
@@ -260,12 +241,11 @@ public class RepeatingProgramSchedulerTest {
     }
 
     @Test
-    public void shouldDeleteEnrollmentOnStopCampaign() {
+    public void shouldUnscheduleOnStopCampaign() {
         RepeatingCampaign campaign = new CampaignBuilder().defaultRepeatingCampaign("2 Weeks");
         CampaignRequest request = defaultBuilder().withReferenceDate(new LocalDate(2011, 11, 28)).withStartOffset(1).build();
         RepeatingProgramScheduler repeatingProgramScheduler = new RepeatingProgramScheduler(mockSchedulerService, request, campaign, mockCampaignEnrollmentService, false);
         repeatingProgramScheduler.stop();
-        verify(mockCampaignEnrollmentService).unregister(request.externalId(), request.campaignName());
         verify(mockSchedulerService, times(4)).safeUnscheduleJob(Matchers.<String>any(), Matchers.<String>any());
     }
 

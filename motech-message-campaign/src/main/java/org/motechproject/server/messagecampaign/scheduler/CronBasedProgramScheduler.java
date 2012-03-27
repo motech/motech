@@ -4,11 +4,12 @@ import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.CronBasedCampaign;
 import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
+import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 
 public class CronBasedProgramScheduler extends MessageCampaignScheduler<CronBasedCampaignMessage, CronBasedCampaign> {
 
-    public CronBasedProgramScheduler(MotechSchedulerService schedulerService, CampaignRequest enrollRequest, CronBasedCampaign campaign) {
-        super(schedulerService, enrollRequest, campaign);
+    public CronBasedProgramScheduler(MotechSchedulerService schedulerService, CampaignRequest enrollRequest, CronBasedCampaign campaign, CampaignEnrollmentService campaignEnrollmentService) {
+        super(schedulerService, enrollRequest, campaign, campaignEnrollmentService);
     }
 
     @Override

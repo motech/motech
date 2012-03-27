@@ -9,18 +9,13 @@ import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.Constants;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
-import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
 import org.motechproject.server.messagecampaign.domain.campaign.RepeatingCampaign;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 import org.motechproject.valueobjects.WallTime;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.lang.String.format;
 import static org.motechproject.util.DateUtil.endOfDay;
@@ -29,29 +24,14 @@ import static org.motechproject.valueobjects.factory.WallTimeFactory.wallTime;
 
 public class RepeatingProgramScheduler extends MessageCampaignScheduler<RepeatingCampaignMessage, RepeatingCampaign> {
 
-    private CampaignEnrollmentService campaignEnrollmentService;
     public Boolean dispatchMessagesEvery24Hours;
 
     public RepeatingProgramScheduler(MotechSchedulerService schedulerService, CampaignRequest enrollRequest, RepeatingCampaign campaign,
                                      CampaignEnrollmentService campaignEnrollmentService, Boolean dispatchMessagesEvery24Hours) {
-        super(schedulerService, enrollRequest, campaign);
-        this.campaignEnrollmentService = campaignEnrollmentService;
+        super(schedulerService, enrollRequest, campaign,campaignEnrollmentService);
         this.dispatchMessagesEvery24Hours = dispatchMessagesEvery24Hours;
     }
 
-    @Override
-    public void start() {
-        CampaignEnrollment enrollment = new CampaignEnrollment(campaignRequest.externalId(), campaignRequest.campaignName())
-                .setStartDate(referenceDate()).setStartOffset(campaignRequest.startOffset());
-        campaignEnrollmentService.register(enrollment);
-        super.start();
-    }
-
-    @Override
-    public void stop() {
-        super.stop();
-        campaignEnrollmentService.unregister(campaignRequest.externalId(), campaignRequest.campaignName());
-    }
 
     @Override
     protected void scheduleJobFor(RepeatingCampaignMessage message) {

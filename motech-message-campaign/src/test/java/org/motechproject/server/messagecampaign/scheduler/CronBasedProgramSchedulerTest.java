@@ -3,12 +3,14 @@ package org.motechproject.server.messagecampaign.scheduler;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.builder.CampaignBuilder;
 import org.motechproject.server.messagecampaign.builder.EnrollRequestBuilder;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.CronBasedCampaign;
+import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 import org.motechproject.util.DateUtil;
 
 import java.util.List;
@@ -20,7 +22,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class CronBasedProgramSchedulerTest {
 
     private MotechSchedulerService schedulerService;
-
+    @Mock
+    private CampaignEnrollmentService mockCampaignEnrollmentService;
     @Before
     public void setUp() {
         schedulerService = mock(MotechSchedulerService.class);
@@ -32,7 +35,7 @@ public class CronBasedProgramSchedulerTest {
         CampaignRequest request = new EnrollRequestBuilder().withDefaults().build();
         CronBasedCampaign campaign = new CampaignBuilder().defaultCronBasedCampaign();
 
-        CronBasedProgramScheduler cronBasedProgramScheduler = new CronBasedProgramScheduler(schedulerService, request, campaign);
+        CronBasedProgramScheduler cronBasedProgramScheduler = new CronBasedProgramScheduler(schedulerService, request, campaign,mockCampaignEnrollmentService);
 
         cronBasedProgramScheduler.start();
         ArgumentCaptor<CronSchedulableJob> capture = ArgumentCaptor.forClass(CronSchedulableJob.class);

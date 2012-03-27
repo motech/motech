@@ -3,12 +3,14 @@ package org.motechproject.server.messagecampaign.scheduler;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.builder.CampaignBuilder;
 import org.motechproject.server.messagecampaign.builder.EnrollRequestBuilder;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.AbsoluteCampaign;
+import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 import org.motechproject.util.DateUtil;
 
 import java.util.Date;
@@ -22,6 +24,10 @@ public class AbsoluteProgramSchedulerTest {
 
     private MotechSchedulerService schedulerService;
 
+    @Mock
+    private CampaignEnrollmentService mockCampaignEnrollmentService;
+
+
     @Before
     public void setUp() {
         schedulerService = mock(MotechSchedulerService.class);
@@ -33,7 +39,7 @@ public class AbsoluteProgramSchedulerTest {
         CampaignRequest request = new EnrollRequestBuilder().withDefaults().build();
         AbsoluteCampaign campaign = new CampaignBuilder().defaultAbsoluteCampaign();
 
-        AbsoluteProgramScheduler absoluteProgramScheduler = new AbsoluteProgramScheduler(schedulerService, request, campaign);
+        AbsoluteProgramScheduler absoluteProgramScheduler = new AbsoluteProgramScheduler(schedulerService, request, campaign,mockCampaignEnrollmentService);
 
         absoluteProgramScheduler.start();
         ArgumentCaptor<RunOnceSchedulableJob> capture = ArgumentCaptor.forClass(RunOnceSchedulableJob.class);
