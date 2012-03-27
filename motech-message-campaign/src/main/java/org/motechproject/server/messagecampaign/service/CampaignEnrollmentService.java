@@ -2,6 +2,7 @@ package org.motechproject.server.messagecampaign.service;
 
 import org.motechproject.server.messagecampaign.dao.AllCampaignEnrollments;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
+import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollmentStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +18,13 @@ public class CampaignEnrollmentService {
 
     public void unregister(String externalId, String campaignName) {
         CampaignEnrollment enrollment = allCampaignEnrollments.findByExternalIdAndCampaignName(externalId, campaignName);
-        allCampaignEnrollments.remove(enrollment);
+        enrollment.setStatus(CampaignEnrollmentStatus.INACTIVE);
+        allCampaignEnrollments.saveOrUpdate(enrollment);
     }
 
     public void unregister(CampaignEnrollment enrollment) {
-        allCampaignEnrollments.remove(enrollment);
+        enrollment.setStatus(CampaignEnrollmentStatus.INACTIVE);
+        allCampaignEnrollments.saveOrUpdate(enrollment);
     }
 
     public CampaignEnrollment findByExternalIdAndCampaignName(String externalId, String campaignName) {

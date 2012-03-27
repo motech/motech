@@ -18,6 +18,9 @@ public class CampaignEnrollment extends MotechBaseDataObject {
     private String campaignName;
     @JsonProperty
     private Integer startOffset;
+    @JsonProperty
+    private CampaignEnrollmentStatus status;
+
     private LocalDate startDate;
 
     private CampaignEnrollment() {
@@ -26,6 +29,7 @@ public class CampaignEnrollment extends MotechBaseDataObject {
     public CampaignEnrollment(String externalId, String campaignName) {
         this.externalId = externalId;
         this.campaignName = campaignName;
+        this.status = CampaignEnrollmentStatus.ACTIVE;
     }
 
     public String getExternalId() {
@@ -64,5 +68,13 @@ public class CampaignEnrollment extends MotechBaseDataObject {
         this.startDate = enrollment.getStartDate();
         this.startOffset = enrollment.startOffset;
         return this;
+    }
+
+    public CampaignEnrollmentStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(CampaignEnrollmentStatus status) {
+        this.status = status;
     }
 }

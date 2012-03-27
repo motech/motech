@@ -6,8 +6,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.server.messagecampaign.dao.AllCampaignEnrollments;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
+import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollmentStatus;
 
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -34,14 +36,19 @@ public class CampaignEnrollmentServiceTest {
     }
 
     @Test
-    public void shouldDeleteEnrollmentOnUnregister() {
+    public void shouldSetInactiveStatusForEnrollmentOnUnregister() {
         CampaignEnrollment enrollment = new CampaignEnrollment("externalId", "cccaaName");
         service.unregister(enrollment);
-        verify(mockAllCampaignEnrollments).remove(enrollment);
+        assertEquals(CampaignEnrollmentStatus.INACTIVE,enrollment.getStatus());
+        ArgumentCaptor<CampaignEnrollment> campaignEnrollmentCaptor = ArgumentCaptor.forClass(CampaignEnrollment.class);
+        verify(mockAllCampaignEnrollments).saveOrUpdate(campaignEnrollmentCaptor.capture());
+        assertThat(campaignEnrollmentCaptor.getValue().getCampaignName(), is(enrollment.getCampaignName()));
+        assertThat(campaignEnrollmentCaptor.getValue().getExternalId(), is(enrollment.getExternalId()));
+        assertThat(campaignEnrollmentCaptor.getValue().getStatus(), is(CampaignEnrollmentStatus.INACTIVE));
     }
 
     @Test
-    public void shouldDeleteEnrollmentByUnregisterBasedOnCampaignNameAndExternalId() {
+    public void shouldSetInactiveStatusForEnrollmentByUnregisterBasedOnCampaignNameAndExternalId() {
 
         String externalId = "newExternalId";
         String campaignName = "NewCampaignName";
@@ -51,9 +58,10 @@ public class CampaignEnrollmentServiceTest {
         service.unregister(enrollment.getExternalId(), enrollment.getCampaignName());
 
         ArgumentCaptor<CampaignEnrollment> campaignEnrollmentCaptor = ArgumentCaptor.forClass(CampaignEnrollment.class);
-        verify(mockAllCampaignEnrollments).remove(campaignEnrollmentCaptor.capture());
+        verify(mockAllCampaignEnrollments).saveOrUpdate(campaignEnrollmentCaptor.capture());
         assertThat(campaignEnrollmentCaptor.getValue().getCampaignName(), is(enrollment.getCampaignName()));
         assertThat(campaignEnrollmentCaptor.getValue().getExternalId(), is(enrollment.getExternalId()));
+        assertThat(campaignEnrollmentCaptor.getValue().getStatus(), is(CampaignEnrollmentStatus.INACTIVE));
     }
     
     @Test
