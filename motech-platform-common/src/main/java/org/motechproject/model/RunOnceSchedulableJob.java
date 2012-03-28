@@ -31,8 +31,6 @@
  */
 package org.motechproject.model;
 
-import org.motechproject.util.DateUtil;
-
 import java.io.Serializable;
 import java.util.Date;
 
@@ -69,12 +67,6 @@ public final class RunOnceSchedulableJob implements Serializable {
 
         if (startDate == null ) {
              throw new IllegalArgumentException("Start date can not be null");
-        }
-        Date currentDate = DateUtil.today().toDate();
-        if (startDate.before(currentDate) ) {
-             throw new IllegalArgumentException("Start date can not be in the past. \n" +
-                                                " Start date: " + startDate.toString() +
-                                                " now:" + currentDate.toString());
         }
 
         this.motechEvent = motechEvent;

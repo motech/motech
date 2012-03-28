@@ -85,11 +85,6 @@ public class TestRunOnceSchedulableJob
         new RunOnceSchedulableJob(motechEvent1, null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void newConstructor_InvalidDate() throws Exception{
-        new RunOnceSchedulableJob(motechEvent1, yesterday);
-    }
-
     @Test
     public void equalsTest() throws Exception{
         Calendar cal = Calendar.getInstance();
