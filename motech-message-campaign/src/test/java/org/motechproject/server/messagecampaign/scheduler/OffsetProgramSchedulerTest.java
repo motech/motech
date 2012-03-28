@@ -21,6 +21,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.util.DateUtil.newDate;
 import static org.motechproject.util.DateUtil.newDateTime;
+import static org.motechproject.util.DateUtil.today;
 
 public class OffsetProgramSchedulerTest {
 
@@ -37,7 +38,7 @@ public class OffsetProgramSchedulerTest {
 
     @Test
     public void shouldScheduleJobs() {
-        CampaignRequest request = new EnrollRequestBuilder().withDefaults().build();
+        CampaignRequest request = new EnrollRequestBuilder().withDefaults().withReferenceDate(today()).build();
         OffsetCampaign campaign = new CampaignBuilder().defaultOffsetCampaign();
 
         OffsetProgramScheduler offsetProgramScheduler = new OffsetProgramScheduler(schedulerService, request, campaign, mockCampaignEnrollmentService);
@@ -51,12 +52,12 @@ public class OffsetProgramSchedulerTest {
         Date startDate1 = DateUtil.newDateTime(DateUtil.today().plusDays(7), request.reminderTime().getHour(), request.reminderTime().getMinute(), 0).toDate();
         assertEquals(startDate1.toString(), allJobs.get(0).getStartDate().toString());
         assertEquals(MESSAGE_CAMPAIGN_EVENT_SUBJECT, allJobs.get(0).getMotechEvent().getSubject());
-        assertMotechEvent(allJobs.get(0), "testCampaign.12345.child-info-week-1", "child-info-week-1");
+        assertMotechEvent(allJobs.get(0), "MessageJob.testCampaign.12345.child-info-week-1", "child-info-week-1");
 
         Date startDate2 = DateUtil.newDateTime(DateUtil.today().plusDays(14), request.reminderTime().getHour(), request.reminderTime().getMinute(), 0).toDate();
         assertEquals(startDate2.toString(), allJobs.get(1).getStartDate().toString());
         assertEquals(MESSAGE_CAMPAIGN_EVENT_SUBJECT, allJobs.get(1).getMotechEvent().getSubject());
-        assertMotechEvent(allJobs.get(1), "testCampaign.12345.child-info-week-1a", "child-info-week-1a");
+        assertMotechEvent(allJobs.get(1), "MessageJob.testCampaign.12345.child-info-week-1a", "child-info-week-1a");
     }
 
     @Test

@@ -51,12 +51,12 @@ public class AbsoluteProgramSchedulerTest {
         Date startDate1 = DateUtil.newDateTime(campaign.messages().get(0).date(), request.reminderTime().getHour(), request.reminderTime().getMinute(), 0).toDate();
         assertEquals(startDate1.toString(), allJobs.get(0).getStartDate().toString());
         assertEquals("org.motechproject.server.messagecampaign.send-campaign-message", allJobs.get(0).getMotechEvent().getSubject());
-        assertMotechEvent(allJobs.get(0), "testCampaign.12345.random-1", "random-1");
+        assertMotechEvent(allJobs.get(0), "MessageJob.testCampaign.12345.random-1", "random-1");
 
         Date startDate2 = DateUtil.newDateTime(campaign.messages().get(1).date(), request.reminderTime().getHour(), request.reminderTime().getMinute(), 0).toDate();
         assertEquals(startDate2.toString(), allJobs.get(1).getStartDate().toString());
         assertEquals("org.motechproject.server.messagecampaign.send-campaign-message", allJobs.get(1).getMotechEvent().getSubject());
-        assertMotechEvent(allJobs.get(1), "testCampaign.12345.random-2", "random-2");
+        assertMotechEvent(allJobs.get(1), "MessageJob.testCampaign.12345.random-2", "random-2");
     }
 
     @Test

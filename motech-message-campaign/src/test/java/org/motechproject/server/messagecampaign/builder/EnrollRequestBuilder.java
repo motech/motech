@@ -25,6 +25,11 @@ public class EnrollRequestBuilder {
         return this;
     }
 
+    public EnrollRequestBuilder withExternalId(String externalId) {
+        this.externalId = externalId;
+        return this;
+    }
+
     public EnrollRequestBuilder withReferenceDate(LocalDate date) {
         this.referenceDate = date;
         return this;

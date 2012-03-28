@@ -28,6 +28,7 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
         getScheduler(request).start();
     }
 
+    //TODO should remove this method
     public void stopFor(CampaignRequest request, String message) {
         getScheduler(request).stop(message);
     }

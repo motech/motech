@@ -29,12 +29,14 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage, E exte
     private CampaignEnrollmentService campaignEnrollmentService;
     protected E campaign;
     public final static String INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT = BASE_SUBJECT + "internal-repeating-campaign";
+    private JobIdFactory jobIdFactory;
 
     protected MessageCampaignScheduler(MotechSchedulerService schedulerService, CampaignRequest campaignRequest, E campaign, CampaignEnrollmentService campaignEnrollmentService) {
         this.schedulerService = schedulerService;
         this.campaign = campaign;
         this.campaignRequest = campaignRequest;
         this.campaignEnrollmentService = campaignEnrollmentService;
+        jobIdFactory = new JobIdFactory();
     }
 
     public void start() {
@@ -44,11 +46,20 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage, E exte
 
         for (T message : campaign.messages())
             scheduleJobFor(message);
+
+        scheduleCompletionJob(enrollment);
+    }
+
+    private void scheduleCompletionJob(CampaignEnrollment enrollment) {
+        HashMap<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put(EventKeys.ENROLLMENT_KEY, enrollment);
+        parameters.put(EventKeys.SCHEDULE_JOB_ID_KEY, jobIdFactory.getCampaignCompletedJobIdFor(campaign.name(), campaignRequest.externalId()));
+        MotechEvent event = new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_COMPLETED_EVENT_SUBJECT, parameters);
+        schedulerService.safeScheduleRunOnceJob(new RunOnceSchedulableJob(event, getCampaignEnd().toDate()));
     }
 
     public void stop(String messageName) {
-        MessageCampaignScheduledJobId jobId = new MessageCampaignScheduledJobId(campaign.name(), campaignRequest.externalId(), messageName);
-        schedulerService.safeUnscheduleJob(CampaignTypeHandlersRegistery.subjectFor(campaign), jobId.value());
+        schedulerService.safeUnscheduleJob(CampaignTypeHandlersRegistery.subjectFor(campaign), getMessageJobId(messageName));
     }
 
     public void stop() {
@@ -56,9 +67,11 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage, E exte
             stop(message.messageKey());
         }
         campaignEnrollmentService.unregister(campaignRequest.externalId(), campaignRequest.campaignName());
+        schedulerService.safeUnscheduleJob(EventKeys.MESSAGE_CAMPAIGN_COMPLETED_EVENT_SUBJECT, jobIdFactory.getCampaignCompletedJobIdFor(campaign.name(), campaignRequest.externalId()));
     }
 
     protected abstract void scheduleJobFor(T message);
+
     protected abstract DateTime getCampaignEnd();
 
     protected void scheduleJobOn(Time startTime, LocalDate startDate, Map<String, Object> params) {
@@ -80,7 +93,7 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage, E exte
     }
 
     protected HashMap jobParams(String messageKey) {
-        String jobId = getJobId(messageKey);
+        String jobId = getMessageJobId(messageKey);
         return new SchedulerPayloadBuilder()
                 .withJobId(jobId)
                 .withCampaignName(campaign.name())
@@ -89,9 +102,8 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage, E exte
                 .payload();
     }
 
-    protected String getJobId(String messageKey) {
-        MessageCampaignScheduledJobId jobId = new MessageCampaignScheduledJobId(campaign.name(), campaignRequest.externalId(), messageKey);
-        return jobId.value();
+    protected String getMessageJobId(String messageKey) {
+        return jobIdFactory.getMessageJobIdFor(campaign.name(), campaignRequest.externalId(), messageKey);
     }
 }
 

@@ -71,16 +71,16 @@ public class RepeatingProgramSchedulerTest {
 
         List<CronSchedulableJob> jobs = capture.getAllValues();
         assertJob(jobs.get(0), startJobDate, jobEndDateForRepeatInterval1);
-        assertMotechEvent(jobs.get(0), "testCampaign.12345.child-info-week-{Offset}-1", "child-info-week-{Offset}-1");
+        assertMotechEvent(jobs.get(0), "MessageJob.testCampaign.12345.child-info-week-{Offset}-1", "child-info-week-{Offset}-1");
 
         assertJob(jobs.get(1), startJobDate, jobEndDateForRepeatInterval2);
-        assertMotechEvent(jobs.get(1), "testCampaign.12345.child-info-week-{Offset}-2", "child-info-week-{Offset}-2");
+        assertMotechEvent(jobs.get(1), "MessageJob.testCampaign.12345.child-info-week-{Offset}-2", "child-info-week-{Offset}-2");
 
         assertJob(jobs.get(2), startJobDate, jobEndDateForWeekSchedule);
-        assertMotechEvent(jobs.get(2), "testCampaign.12345.child-info-week-{Offset}-{WeekDay}", "child-info-week-{Offset}-{WeekDay}");
+        assertMotechEvent(jobs.get(2), "MessageJob.testCampaign.12345.child-info-week-{Offset}-{WeekDay}", "child-info-week-{Offset}-{WeekDay}");
 
         assertJob(jobs.get(3), startJobDate, jobEndDateForCalWeekSchedule);
-        assertMotechEvent(jobs.get(3), "testCampaign.12345.child-info-week-{Offset}-{WeekDay}", "child-info-week-{Offset}-{WeekDay}");
+        assertMotechEvent(jobs.get(3), "MessageJob.testCampaign.12345.child-info-week-{Offset}-{WeekDay}", "child-info-week-{Offset}-{WeekDay}");
 
 
         verify(mockSchedulerService, times(4)).safeScheduleJob(Matchers.<CronSchedulableJob>any());
@@ -149,7 +149,7 @@ public class RepeatingProgramSchedulerTest {
         Time reminderTime = new Time(9, 30);
         RepeatingCampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForDaysApplicable("OM2", asList("Monday", "Wednesday"), "child-info-week-{Offset}-{WeekDay}").deliverTime(new Time(10, 30));
         RepeatingCampaign campaign = new CampaignBuilder().repeatingCampaign("campaignName", "2 Weeks", asList(campaignMessage));
-        List<DayOfWeek> userSpecifiedDays = asList(new DayOfWeek[]{DayOfWeek.Tuesday,DayOfWeek.Friday});
+        List<DayOfWeek> userSpecifiedDays = asList(new DayOfWeek[]{DayOfWeek.Tuesday, DayOfWeek.Friday});
         CampaignRequest request = defaultBuilder().withReferenceDate(new LocalDate(2012, 2, 17)).withReminderTime(reminderTime).withUserSpecifiedDays(userSpecifiedDays).build();
 
         RepeatingProgramScheduler repeatingProgramScheduler = new RepeatingProgramScheduler(mockSchedulerService, request, campaign, mockCampaignEnrollmentService, false);
@@ -259,7 +259,7 @@ public class RepeatingProgramSchedulerTest {
         CampaignRequest request = defaultBuilder().withReferenceDate(new LocalDate(2011, 11, 28)).withStartOffset(1).build();
         RepeatingProgramScheduler repeatingProgramScheduler = new RepeatingProgramScheduler(mockSchedulerService, request, campaign, mockCampaignEnrollmentService, false);
         repeatingProgramScheduler.stop();
-        verify(mockSchedulerService, times(4)).safeUnscheduleJob(Matchers.<String>any(), Matchers.<String>any());
+        verify(mockSchedulerService, times(5)).safeUnscheduleJob(Matchers.<String>any(), Matchers.<String>any());
     }
 
     @Test
@@ -292,7 +292,7 @@ public class RepeatingProgramSchedulerTest {
         assertDate(jobEndDate, actualJob.getEndTime());
         assertEquals(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, actualJob.getMotechEvent().getSubject());
         assertEquals("0 30 10 ? * MON,WED,FRI *", actualJob.getCronExpression());
-        assertEquals("PREGNANCY.12345.PREGNANCY-cw{Offset}-{WeekDay}", actualJob.getMotechEvent().getParameters().get("JobID"));
+        assertEquals("MessageJob.PREGNANCY.12345.PREGNANCY-cw{Offset}-{WeekDay}", actualJob.getMotechEvent().getParameters().get("JobID"));
         assertEquals("PREGNANCY", actualJob.getMotechEvent().getParameters().get("CampaignName"));
         assertEquals("12345", actualJob.getMotechEvent().getParameters().get("ExternalID"));
         assertEquals("PREGNANCY-cw{Offset}-{WeekDay}", actualJob.getMotechEvent().getParameters().get("MessageKey"));
