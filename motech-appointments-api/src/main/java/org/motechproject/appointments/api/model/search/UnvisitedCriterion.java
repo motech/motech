@@ -11,7 +11,6 @@ import static ch.lambdaj.Lambda.on;
 import static org.hamcrest.Matchers.equalTo;
 
 public class UnvisitedCriterion implements Criterion {
-
     @Override
     public List<VisitResponse> filter(List<VisitResponse> visitResponses) {
         return Lambda.filter(having(on(VisitResponse.class).getVisitDate(), equalTo(null)), visitResponses);

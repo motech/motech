@@ -10,11 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VisitsQuery {
-
     private List<Criterion> criteria = new ArrayList<Criterion>();
-
-    public VisitsQuery() {
-    }
 
     public VisitsQuery withDueDateIn(DateTime start, DateTime end) {
         criteria.add(new DueDateInCriterion(start, end));
@@ -32,6 +28,6 @@ public class VisitsQuery {
     }
 
     public List<Criterion> getCriteria() {
-        return criteria;
+        return new ArrayList<Criterion>(criteria);
     }
 }
