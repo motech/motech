@@ -92,4 +92,21 @@ public class TreeNodeLocatorTest {
 
         assertEquals(2, rootNode.getPrompts().size());
     }
+
+    @Test
+    public void addPromptToBeginning() {
+        final Node rootNode = tree.getRootNode();
+        AudioPrompt audioPrompt_1 = new AudioPrompt();
+        audioPrompt_1.setName("1");
+        AudioPrompt audioPrompt_2 = new AudioPrompt();
+        audioPrompt_2.setName("2");
+
+        rootNode.addPrompts(audioPrompt_1);
+        assertEquals(1, rootNode.getPrompts().size());
+
+        rootNode.addPromptToBeginning(audioPrompt_2);
+        assertEquals(2, rootNode.getPrompts().size());
+        assertEquals("2", rootNode.getPrompts().get(0).getName());
+        assertEquals("1", rootNode.getPrompts().get(1).getName());
+    }
 }

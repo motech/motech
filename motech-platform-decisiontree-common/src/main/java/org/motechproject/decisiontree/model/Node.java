@@ -50,6 +50,12 @@ public class Node {
         return this;
     }
 
+    @JsonIgnore
+    public Node addPromptToBeginning(Prompt prompt) {
+        this.prompts.add(0, prompt);
+        return this;
+    }
+
     private Node setPrompts(List<Prompt> prompts) {
         this.prompts.addAll(prompts);
         return this;
