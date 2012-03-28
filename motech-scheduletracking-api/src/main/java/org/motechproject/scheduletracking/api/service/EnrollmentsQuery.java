@@ -53,7 +53,7 @@ public class EnrollmentsQuery {
         return this;
     }
 
-    public EnrollmentsQuery havingMetaData(String metaField, String value) {
+    public EnrollmentsQuery havingMetadata(String metaField, String value) {
         criteria.add(new MetadataPropertyCriterion(metaField, value));
         return this;
     }

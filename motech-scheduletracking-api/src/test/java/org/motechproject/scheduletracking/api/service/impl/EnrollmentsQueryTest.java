@@ -12,7 +12,6 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.daysAgo;
 import static org.springframework.util.Assert.isInstanceOf;
 
@@ -71,6 +70,14 @@ public class EnrollmentsQueryTest {
         List<Criterion> criteria = query.getCriteria();
         assertEquals(criteria.size(), 1);
         assertTrue(criteria.get(0) instanceof StatusCriterion);
+    }
+
+    @Test
+    public void shouldHaveMetaDataCriterion() {
+        EnrollmentsQuery query = enrollmentsQuery.havingMetadata("metaData", "value");
+        List<Criterion> criteria = query.getCriteria();
+        assertEquals(criteria.size(), 1);
+        assertTrue(criteria.get(0) instanceof MetadataPropertyCriterion);
     }
 
     @Test(expected = InvalidQueryException.class)
