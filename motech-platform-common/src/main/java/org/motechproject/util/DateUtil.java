@@ -67,16 +67,16 @@ public class DateUtil {
         return count;
     }
 
-    public static boolean isOnOrBefore(LocalDate firstDate, LocalDate secondDate) {
+    public static boolean isOnOrBefore(DateTime firstDate, DateTime secondDate) {
         return firstDate.equals(secondDate) || firstDate.isBefore(secondDate);
     }
 
-    public static boolean isOnOrAfter(LocalDate firstDate, LocalDate secondDate) {
+    public static boolean isOnOrAfter(DateTime firstDate, DateTime secondDate) {
         return firstDate.equals(secondDate) || firstDate.isAfter(secondDate);
     }
 
     public static boolean inRange(DateTime reference, DateTime start, DateTime end) {
-        return (reference.equals(start) || reference.isAfter(start)) && (reference.equals(end) || reference.isBefore(end));
+        return (isOnOrAfter(reference, start)) && (isOnOrBefore(reference, end));
     }
 
     public static int daysToCalendarWeekEnd(LocalDate date, int calendarWeekStartDay) {

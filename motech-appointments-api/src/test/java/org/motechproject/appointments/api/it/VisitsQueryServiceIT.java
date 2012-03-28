@@ -1,4 +1,4 @@
-package org.motechproject.appointments.api.service;
+package org.motechproject.appointments.api.it;
 
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -6,12 +6,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.appointments.api.contract.VisitResponse;
 import org.motechproject.appointments.api.contract.VisitsQuery;
-import org.motechproject.appointments.api.dao.AllAppointmentCalendars;
-import org.motechproject.appointments.api.dao.AppointmentsBaseIntegrationTest;
 import org.motechproject.appointments.api.model.AppointmentCalendar;
 import org.motechproject.appointments.api.model.Visit;
+import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
+import org.motechproject.appointments.api.repository.AppointmentsBaseIntegrationTest;
+import org.motechproject.appointments.api.service.VisitsQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.List;
 
 import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
@@ -20,21 +24,20 @@ import static junit.framework.Assert.assertEquals;
 import static org.motechproject.util.DateUtil.newDateTime;
 
 @RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "/applicationAppointmentsAPI.xml")
 public class VisitsQueryServiceIT extends AppointmentsBaseIntegrationTest {
-
     @Autowired
     AllAppointmentCalendars allAppointmentCalendars;
-
     @Autowired
     VisitsQueryService visitsQueryService;
 
     @After
-    public void teardown() {
+    public void tearDown() {
         allAppointmentCalendars.removeAll();
     }
 
     @Test
-    public void shouldFetchVisitsForGivenQuery() {
+    public void shouldFetchMissedVisits() {
         Visit visit1 = new Visit().name("visit1").addAppointment(newDateTime(2011, 6, 5, 0, 0, 0), null).visitDate(newDateTime(2011, 6, 5, 0, 0, 0));
         Visit visit2 = new Visit().name("visit2").addAppointment(newDateTime(2011, 7, 1, 0, 0, 0), null);
         Visit visit3 = new Visit().name("visit3").addAppointment(newDateTime(2011, 8, 3, 0, 0, 0), null).visitDate(newDateTime(2011, 8, 3, 0, 0, 0));
@@ -46,7 +49,8 @@ public class VisitsQueryServiceIT extends AppointmentsBaseIntegrationTest {
 
         DateTime start = newDateTime(2011, 7, 1, 0, 0, 0);
         DateTime end = newDateTime(2011, 10, 1, 0, 0, 0);
-        assertEquals(asList(new String[]{ "visit2", "visit4" }), extract(visitsQueryService.search(new VisitsQuery().withDueDateIn(start, end).unvisited()), on(VisitResponse.class).getName()));
+        List<VisitResponse> missedVisits = visitsQueryService.search(new VisitsQuery().withDueDateIn(start, end).unvisited());
+        assertEquals(asList("visit2", "visit4"), extract(missedVisits, on(VisitResponse.class).getName()));
     }
 
     @Test
@@ -58,7 +62,8 @@ public class VisitsQueryServiceIT extends AppointmentsBaseIntegrationTest {
         allAppointmentCalendars.add(new AppointmentCalendar().externalId("foo1").addVisit(visit1).addVisit(visit2));
         allAppointmentCalendars.add(new AppointmentCalendar().externalId("foo2").addVisit(visit3));
 
-        assertEquals(asList(new String[]{ "foo1", "foo1" }), extract(visitsQueryService.search(new VisitsQuery().havingExternalId("foo1")), on(VisitResponse.class).getExternalId()));
+        List<VisitResponse> visitsResults = visitsQueryService.search(new VisitsQuery().havingExternalId("foo1"));
+        assertEquals(asList("foo1", "foo1"), extract(visitsResults, on(VisitResponse.class).getExternalId()));
     }
 
     @Test
@@ -77,6 +82,7 @@ public class VisitsQueryServiceIT extends AppointmentsBaseIntegrationTest {
 
         DateTime start = newDateTime(2011, 7, 1, 0, 0, 0);
         DateTime end = newDateTime(2011, 11, 1, 0, 0, 0);
-        assertEquals(asList(new String[]{ "visit4", "visit5" }), extract(visitsQueryService.search(new VisitsQuery().havingExternalId("foo2").withDueDateIn(start, end).unvisited()), on(VisitResponse.class).getName()));
+        List<VisitResponse> dueVisits = visitsQueryService.search(new VisitsQuery().havingExternalId("foo2").withDueDateIn(start, end).unvisited());
+        assertEquals(asList("visit4", "visit5"), extract(dueVisits, on(VisitResponse.class).getName()));
     }
 }

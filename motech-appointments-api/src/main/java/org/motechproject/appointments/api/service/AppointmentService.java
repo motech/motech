@@ -1,13 +1,12 @@
-package org.motechproject.appointments.api.contract;
+package org.motechproject.appointments.api.service;
 
 import org.joda.time.DateTime;
-import org.motechproject.appointments.api.model.Visit;
+import org.motechproject.appointments.api.contract.*;
 
 import java.util.List;
 import java.util.Map;
 
 public interface AppointmentService {
-
     public void addCalendar(AppointmentCalendarRequest appointmentCalendarRequest);
 
     public void removeCalendar(String externalId);
@@ -29,5 +28,4 @@ public interface AppointmentService {
     public void markVisitAsMissed(String externalId, String visitName);
 
     public List<VisitResponse> search(VisitsQuery query);
-
 }

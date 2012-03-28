@@ -2,9 +2,9 @@ package org.motechproject.appointments.api.contract;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.appointments.api.model.Criterion;
-import org.motechproject.appointments.api.model.DueDateInCriterion;
-import org.motechproject.appointments.api.model.UnvisitedCriterion;
+import org.motechproject.appointments.api.model.search.Criterion;
+import org.motechproject.appointments.api.model.search.DueDateInCriterion;
+import org.motechproject.appointments.api.model.search.UnvisitedCriterion;
 
 import java.util.List;
 

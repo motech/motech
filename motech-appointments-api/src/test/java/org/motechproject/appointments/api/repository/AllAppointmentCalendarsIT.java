@@ -1,4 +1,4 @@
-package org.motechproject.appointments.api.dao;
+package org.motechproject.appointments.api.repository;
 
 import org.joda.time.DateTime;
 import org.junit.After;

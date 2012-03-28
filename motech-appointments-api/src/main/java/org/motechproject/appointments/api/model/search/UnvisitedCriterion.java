@@ -1,8 +1,8 @@
-package org.motechproject.appointments.api.model;
+package org.motechproject.appointments.api.model.search;
 
 import ch.lambdaj.Lambda;
 import org.motechproject.appointments.api.contract.VisitResponse;
-import org.motechproject.appointments.api.dao.AllAppointmentCalendars;
+import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
 
 import java.util.List;
 

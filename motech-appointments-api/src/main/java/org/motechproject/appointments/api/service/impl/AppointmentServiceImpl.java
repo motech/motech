@@ -1,9 +1,9 @@
-package org.motechproject.appointments.api.service;
+package org.motechproject.appointments.api.service.impl;
 
 import org.joda.time.DateTime;
 import org.motechproject.appointments.api.contract.*;
-import org.motechproject.appointments.api.dao.AllAppointmentCalendars;
-import org.motechproject.appointments.api.dao.AllReminderJobs;
+import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
+import org.motechproject.appointments.api.repository.AllReminderJobs;
 import org.motechproject.appointments.api.mapper.ReminderMapper;
 import org.motechproject.appointments.api.mapper.RescheduleAppointmentMapper;
 import org.motechproject.appointments.api.mapper.VisitMapper;
@@ -11,6 +11,8 @@ import org.motechproject.appointments.api.mapper.VisitResponseMapper;
 import org.motechproject.appointments.api.model.AppointmentCalendar;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.appointments.api.model.Visit;
+import org.motechproject.appointments.api.service.AppointmentService;
+import org.motechproject.appointments.api.service.VisitsQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

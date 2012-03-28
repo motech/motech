@@ -1,4 +1,4 @@
-package org.motechproject.appointments.api.service;
+package org.motechproject.appointments.api.it;
 
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -6,25 +6,28 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.appointments.api.contract.AppointmentService;
 import org.motechproject.appointments.api.contract.VisitsQuery;
-import org.motechproject.appointments.api.dao.AllAppointmentCalendars;
-import org.motechproject.appointments.api.dao.AppointmentsBaseIntegrationTest;
-import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.AppointmentCalendar;
 import org.motechproject.appointments.api.model.Visit;
+import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
+import org.motechproject.appointments.api.repository.AppointmentsBaseIntegrationTest;
+import org.motechproject.appointments.api.service.AppointmentService;
+import org.motechproject.appointments.api.service.VisitsQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 import static java.lang.System.currentTimeMillis;
-import static junit.framework.Assert.assertEquals;
 import static org.motechproject.util.DateUtil.newDateTime;
 
 @RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "/applicationAppointmentsAPI.xml")
 public class VisitsQueryServicePerformanceTest extends AppointmentsBaseIntegrationTest {
-
     private static final int MAX_CALENDARS = 1000;
 
     @Autowired

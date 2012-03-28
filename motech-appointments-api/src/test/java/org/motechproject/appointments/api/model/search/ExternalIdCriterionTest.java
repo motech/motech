@@ -1,8 +1,9 @@
-package org.motechproject.appointments.api.model;
+package org.motechproject.appointments.api.model.search;
 
 import org.junit.Test;
 import org.motechproject.appointments.api.contract.VisitResponse;
-import org.motechproject.appointments.api.dao.AllAppointmentCalendars;
+import org.motechproject.appointments.api.model.search.ExternalIdCriterion;
+import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
 
 import java.util.ArrayList;
 import java.util.List;

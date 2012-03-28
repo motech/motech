@@ -1,4 +1,4 @@
-package org.motechproject.appointments.api.dao;
+package org.motechproject.appointments.api.repository;
 
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.appointments.api.model.Visit;

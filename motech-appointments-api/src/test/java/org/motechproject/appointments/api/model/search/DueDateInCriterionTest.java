@@ -1,9 +1,9 @@
-package org.motechproject.appointments.api.model;
+package org.motechproject.appointments.api.model.search;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.motechproject.appointments.api.contract.VisitResponse;
-import org.motechproject.appointments.api.dao.AllAppointmentCalendars;
+import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,6 @@ import static org.mockito.Mockito.*;
 import static org.motechproject.util.DateUtil.newDateTime;
 
 public class DueDateInCriterionTest {
-
     @Test
     public void shouldFilterVisitsByDueInTimeRange() {
         VisitResponse visit1 = getVisitResponseInstance(newDateTime(2011, 3, 5, 1, 2, 3));
@@ -25,7 +24,7 @@ public class DueDateInCriterionTest {
         VisitResponse visit4 = getVisitResponseInstance(newDateTime(2011, 7, 5, 1, 2, 3));
         VisitResponse visit5 = getVisitResponseInstance(newDateTime(2011, 8, 3, 0, 0, 0));
         VisitResponse visit6 = getVisitResponseInstance(newDateTime(2011, 8, 3, 0, 0, 3));
-        List<VisitResponse> visits = asList(new VisitResponse[]{visit1, visit2, visit3, visit4, visit5, visit6});
+        List<VisitResponse> visits = asList(visit1, visit2, visit3, visit4, visit5, visit6);
 
         DateTime start = newDateTime(2011, 5, 3, 0, 0, 0);
         DateTime end = newDateTime(2011, 8, 3, 0, 0, 0);
@@ -50,7 +49,4 @@ public class DueDateInCriterionTest {
         visitResponse.setAppointmentDueDate(appointmentDate);
         return visitResponse;
     }
-    
-    
-
 }

@@ -1,4 +1,4 @@
-package org.motechproject.appointments.api.dao;
+package org.motechproject.appointments.api.repository;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.motechproject.appointments.api.model.Visit;

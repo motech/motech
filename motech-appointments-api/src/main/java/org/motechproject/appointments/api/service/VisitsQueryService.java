@@ -2,9 +2,9 @@ package org.motechproject.appointments.api.service;
 
 import org.motechproject.appointments.api.contract.VisitResponse;
 import org.motechproject.appointments.api.contract.VisitsQuery;
-import org.motechproject.appointments.api.dao.AllAppointmentCalendars;
+import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
 import org.motechproject.appointments.api.mapper.VisitResponseMapper;
-import org.motechproject.appointments.api.model.Criterion;
+import org.motechproject.appointments.api.model.search.Criterion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

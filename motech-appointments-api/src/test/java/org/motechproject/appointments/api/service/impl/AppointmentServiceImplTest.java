@@ -1,4 +1,4 @@
-package org.motechproject.appointments.api.service;
+package org.motechproject.appointments.api.service.impl;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -7,11 +7,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.appointments.api.contract.*;
-import org.motechproject.appointments.api.dao.AllAppointmentCalendars;
-import org.motechproject.appointments.api.dao.AllReminderJobs;
+import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
+import org.motechproject.appointments.api.repository.AllReminderJobs;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.AppointmentCalendar;
 import org.motechproject.appointments.api.model.Visit;
+import org.motechproject.appointments.api.service.AppointmentService;
+import org.motechproject.appointments.api.service.VisitsQueryService;
+import org.motechproject.appointments.api.service.impl.AppointmentServiceImpl;
 import org.motechproject.util.DateUtil;
 
 import java.util.HashMap;

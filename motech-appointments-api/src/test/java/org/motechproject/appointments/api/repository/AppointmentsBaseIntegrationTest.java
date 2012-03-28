@@ -1,15 +1,13 @@
-package org.motechproject.appointments.api.dao;
+package org.motechproject.appointments.api.repository;
 
 import org.ektorp.BulkDeleteDocument;
 import org.ektorp.CouchDbConnector;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.runner.RunWith;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
 
