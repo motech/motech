@@ -86,12 +86,16 @@ public class AllAppointmentCalendarsIT extends AppointmentsBaseIntegrationTest {
         Visit visit4 = new Visit().name("visit4").addAppointment(newDateTime(2011, 10, 1, 0, 0, 0), null);
         Visit visit5 = new Visit().name("visit5").addAppointment(newDateTime(2011, 10, 2, 0, 0, 0), null);
 
-        allAppointmentCalendars.add(new AppointmentCalendar().externalId("foo1").addVisit(visit1).addVisit(visit2));
-        allAppointmentCalendars.add(new AppointmentCalendar().externalId("foo2").addVisit(visit3).addVisit(visit4).addVisit(visit5));
+        AppointmentCalendar appointmentCalendar1 = new AppointmentCalendar().externalId("foo1").addVisit(visit1).addVisit(visit2);
+        AppointmentCalendar appointmentCalendar2 = new AppointmentCalendar().externalId("foo2").addVisit(visit3).addVisit(visit4).addVisit(visit5);
+        allAppointmentCalendars.add(appointmentCalendar1);
+        allAppointmentCalendars.add(appointmentCalendar2);
         List<VisitResponse> visitsWithDueInRange = allAppointmentCalendars.findMissedVisits();
 
         assertEquals(asList(new String[]{"visit2", "visit4", "visit5"}), extract(visitsWithDueInRange, on(VisitResponse.class).getName()));
         assertEquals(asList(new String[]{"foo1", "foo2", "foo2"}), extract(visitsWithDueInRange, on(VisitResponse.class).getExternalId()));
+
+        markForDeletion(appointmentCalendar1, appointmentCalendar2);
     }
 
     @Test
@@ -102,12 +106,16 @@ public class AllAppointmentCalendarsIT extends AppointmentsBaseIntegrationTest {
         Visit visit4 = new Visit().name("visit4").addAppointment(newDateTime(2011, 10, 1, 0, 0, 0), null);
         Visit visit5 = new Visit().name("visit5").addAppointment(newDateTime(2011, 10, 2, 0, 0, 0), null);
 
-        allAppointmentCalendars.add(new AppointmentCalendar().externalId("foo1").addVisit(visit1).addVisit(visit2));
-        allAppointmentCalendars.add(new AppointmentCalendar().externalId("foo2").addVisit(visit3).addVisit(visit4).addVisit(visit5));
+        AppointmentCalendar appointmentCalendar1 = new AppointmentCalendar().externalId("foo1").addVisit(visit1).addVisit(visit2);
+        AppointmentCalendar appointmentCalendar2 = new AppointmentCalendar().externalId("foo2").addVisit(visit3).addVisit(visit4).addVisit(visit5);
+        allAppointmentCalendars.add(appointmentCalendar1);
+        allAppointmentCalendars.add(appointmentCalendar2);
         List<VisitResponse> visitsWithDueInRange = allAppointmentCalendars.findVisitsByExternalId("foo2");
 
         assertEquals(asList(new String[]{"visit3", "visit4", "visit5"}), extract(visitsWithDueInRange, on(VisitResponse.class).getName()));
         assertEquals(asList(new String[]{"foo2", "foo2", "foo2"}), extract(visitsWithDueInRange, on(VisitResponse.class).getExternalId()));
+
+        markForDeletion(appointmentCalendar1, appointmentCalendar2);
     }
 
     @Test
