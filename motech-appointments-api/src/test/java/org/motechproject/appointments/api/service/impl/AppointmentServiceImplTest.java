@@ -13,8 +13,6 @@ import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.AppointmentCalendar;
 import org.motechproject.appointments.api.model.Visit;
 import org.motechproject.appointments.api.service.AppointmentService;
-import org.motechproject.appointments.api.service.VisitsQueryService;
-import org.motechproject.appointments.api.service.impl.AppointmentServiceImpl;
 import org.motechproject.util.DateUtil;
 
 import java.util.HashMap;
@@ -66,7 +64,7 @@ public class AppointmentServiceImplTest {
         verify(allAppointmentCalendars).saveAppointmentCalendar(appointmentCalendarArgumentCaptor.capture());
 
         AppointmentCalendar calendar = appointmentCalendarArgumentCaptor.getValue();
-        assertEquals(externalId, calendar.externalId());
+        assertEquals(externalId, calendar.getExternalId());
         assertEquals(3, calendar.visits().size());
         assertEquals("baseline", calendar.visits().get(0).name());
         assertEquals("week2", calendar.visits().get(1).name());

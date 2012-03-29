@@ -39,9 +39,9 @@ public class DueDateInCriterionTest {
         AllAppointmentCalendars allAppointmentCalendars = mock(AllAppointmentCalendars.class);
         List<VisitResponse> visitResponses = new ArrayList<VisitResponse>();
 
-        when(allAppointmentCalendars.findVisitsWithDueInRange(start,end)).thenReturn(visitResponses);
+        when(allAppointmentCalendars.findVisitsWithDueDateInRange(start, end)).thenReturn(visitResponses);
         assertThat(new DueDateInCriterion(start, end).fetch(allAppointmentCalendars), is(visitResponses));
-        verify(allAppointmentCalendars).findVisitsWithDueInRange(start, end);
+        verify(allAppointmentCalendars).findVisitsWithDueDateInRange(start, end);
     }
     
     public VisitResponse getVisitResponseInstance(DateTime appointmentDate){

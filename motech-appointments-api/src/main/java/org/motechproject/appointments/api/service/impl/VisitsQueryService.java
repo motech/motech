@@ -1,10 +1,9 @@
-package org.motechproject.appointments.api.service;
+package org.motechproject.appointments.api.service.impl;
 
 import org.motechproject.appointments.api.contract.VisitResponse;
 import org.motechproject.appointments.api.contract.VisitsQuery;
-import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
-import org.motechproject.appointments.api.mapper.VisitResponseMapper;
 import org.motechproject.appointments.api.model.search.Criterion;
+import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,16 +12,12 @@ import java.util.List;
 
 @Service
 public class VisitsQueryService {
-
     @Autowired
     AllAppointmentCalendars allAppointmentCalendars;
 
-    private VisitResponseMapper visitResponseMapper = new VisitResponseMapper();
-
     public List<VisitResponse> search(VisitsQuery query) {
-        
         List<Criterion> criteria = query.getCriteria();
-        if(criteria.size()==0)
+        if (criteria.isEmpty())
             return new ArrayList<VisitResponse>();
 
         Criterion primaryCriterion = criteria.get(0);

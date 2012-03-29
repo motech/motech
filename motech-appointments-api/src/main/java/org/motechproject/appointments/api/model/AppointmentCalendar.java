@@ -9,20 +9,12 @@ import java.util.List;
 
 @TypeDiscriminator("doc.type === 'AppointmentCalendar'")
 public class AppointmentCalendar extends MotechBaseDataObject {
-
-    @JsonProperty
     private String externalId;
-
     @JsonProperty
     private List<Visit> visits = new ArrayList<Visit>();
 
-    public String externalId() {
+    public String getExternalId() {
         return externalId;
-    }
-
-    public AppointmentCalendar externalId(String externalId) {
-        this.externalId = externalId;
-        return this;
     }
 
     public List<Visit> visits() {
@@ -38,8 +30,19 @@ public class AppointmentCalendar extends MotechBaseDataObject {
         return null;
     }
 
+    public AppointmentCalendar externalId(String externalId) {
+        this.externalId = externalId;
+        return this;
+    }
+
     public AppointmentCalendar addVisit(Visit visit) {
         visits.add(visit);
         return this;
+    }
+
+    // For ektorp
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 }

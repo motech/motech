@@ -10,7 +10,6 @@ import java.util.List;
 import static org.motechproject.util.DateUtil.inRange;
 
 public class DueDateInCriterion implements Criterion {
-
     private DateTime start;
     private DateTime end;
 
@@ -32,6 +31,6 @@ public class DueDateInCriterion implements Criterion {
 
     @Override
     public List<VisitResponse> fetch(AllAppointmentCalendars allAppointmentCalendars) {
-        return allAppointmentCalendars.findVisitsWithDueInRange(start,end);
+        return allAppointmentCalendars.findVisitsWithDueDateInRange(start, end);
     }
 }

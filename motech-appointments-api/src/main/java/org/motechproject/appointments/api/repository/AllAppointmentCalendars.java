@@ -2,6 +2,7 @@ package org.motechproject.appointments.api.repository;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
+import org.ektorp.support.GenerateView;
 import org.ektorp.support.View;
 import org.joda.time.DateTime;
 import org.motechproject.appointments.api.contract.VisitResponse;
@@ -11,14 +12,13 @@ import org.motechproject.appointments.api.model.Visit;
 import org.motechproject.dao.MotechBaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@Repository
 public class AllAppointmentCalendars extends MotechBaseRepository<AppointmentCalendar> {
-
     @Autowired
     public VisitResponseMapper visitResponseMapper;
 
@@ -28,16 +28,15 @@ public class AllAppointmentCalendars extends MotechBaseRepository<AppointmentCal
     }
 
     public void saveAppointmentCalendar(AppointmentCalendar appointmentCalendar) {
-        addOrReplace(appointmentCalendar, "externalId", appointmentCalendar.externalId());
+        addOrReplace(appointmentCalendar, "externalId", appointmentCalendar.getExternalId());
     }
 
-    @View(name = "by_externalId", map = "function(doc) { if(doc.type === 'AppointmentCalendar' && doc.externalId) {emit(doc.externalId, doc._id)} }")
+    @GenerateView
     public AppointmentCalendar findByExternalId(String externalId) {
-        List<AppointmentCalendar> appointmentCalendars = queryView("by_externalId", externalId);
-        return singleResult(appointmentCalendars);
+        return singleResult(queryView("by_externalId", externalId));
     }
 
-    @View(name = "by_dueDate" , map = "function(doc) { \n" +
+    @View(name = "by_dueDate", map = "function(doc) { \n" +
             "if(doc.type === 'AppointmentCalendar') {\n" +
             "for(var i=0;i<doc.visits.length;i++)\n" +
             "{\n" +
@@ -45,27 +44,24 @@ public class AllAppointmentCalendars extends MotechBaseRepository<AppointmentCal
             "}\n" +
             "}\n" +
             "}")
-
-
-    public List<VisitResponse> findVisitsWithDueInRange(DateTime start,DateTime end) {
+    public List<VisitResponse> findVisitsWithDueDateInRange(DateTime start, DateTime end) {
         ViewQuery query = createQuery("by_dueDate").startKey(start).endKey(end);
         List<VisitQueryResult> visitQueryResults = db.queryView(query, VisitQueryResult.class);
 
         return extractVisitResponse(visitQueryResults);
     }
 
-    @View(name = "find_by_missed_visits" , map = "function(doc) { \n" +
+    @View(name = "find_by_missed_visits", map = "function(doc) { \n" +
             "if(doc.type === 'AppointmentCalendar') {\n" +
             "for(var i=0;i<doc.visits.length;i++)\n" +
             "{\n" +
-            "if(doc.visits[i].visitDate == null) {\n"+
+            "if(doc.visits[i].visitDate == null) {\n" +
             "emit(doc._id,{\"externalId\" :doc.externalId,\"visit\" : doc.visits[i]});\n" +
             "}\n" +
             "}\n" +
             "}\n" +
             "}")
-    public List<VisitResponse> findMissedVisits()
-    {
+    public List<VisitResponse> findMissedVisits() {
         List<VisitQueryResult> visitQueryResults = db.queryView(createQuery("find_by_missed_visits"), VisitQueryResult.class);
         return extractVisitResponse(visitQueryResults);
     }
@@ -76,7 +72,7 @@ public class AllAppointmentCalendars extends MotechBaseRepository<AppointmentCal
 
         if (calendar != null) {
             for (Visit visit : calendar.visits()) {
-                VisitResponse visitResponse = transformVisitToResponse(visit, calendar.externalId());
+                VisitResponse visitResponse = transformVisitToResponse(visit, calendar.getExternalId());
                 visitResponses.add(visitResponse);
             }
         }
@@ -91,9 +87,8 @@ public class AllAppointmentCalendars extends MotechBaseRepository<AppointmentCal
 
     private List<VisitResponse> extractVisitResponse(List<VisitQueryResult> visitQueryResults) {
         List<VisitResponse> visitResponses = new ArrayList<VisitResponse>();
-        for(VisitQueryResult visitQueryResult : visitQueryResults)
-        {
-            visitResponses.add(transformVisitToResponse(visitQueryResult.getVisit(),visitQueryResult.getExternalId()));
+        for (VisitQueryResult visitQueryResult : visitQueryResults) {
+            visitResponses.add(transformVisitToResponse(visitQueryResult.getVisit(), visitQueryResult.getExternalId()));
         }
         return visitResponses;
     }
