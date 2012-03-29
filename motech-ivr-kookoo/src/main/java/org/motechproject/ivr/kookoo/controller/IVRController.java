@@ -62,7 +62,7 @@ public class IVRController {
                         String kooKooCallDetailRecordId = kookooCallDetailRecordsService.createAnsweredRecord(ivrContext.callId(), ivrContext.callerId(), ivrContext.callDirection());
                         ivrContext.callDetailRecordId(kooKooCallDetailRecordId);
                     } else {
-                        kookooCallDetailRecordsService.setCallRecordAsAnswered(ivrContext.callDetailRecordId());
+                        kookooCallDetailRecordsService.setCallRecordAsAnswered(ivrContext.callId(), ivrContext.callDetailRecordId());
                     }
                     kookooCallDetailRecordsService.appendEvent(ivrContext.callDetailRecordId(), ivrEvent, "");
                     break;

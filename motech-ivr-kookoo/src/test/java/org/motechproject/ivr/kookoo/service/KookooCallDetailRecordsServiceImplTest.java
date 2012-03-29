@@ -88,13 +88,15 @@ public class KookooCallDetailRecordsServiceImplTest {
 
     @Test
     public void shouldSetAnsweredDate_WhenSettingCallAsAnswered() {
-        String callDetailRecordId = "callId";
+        String vendorCallId = "callId";
+        String callDetailRecordId = "callDetailRecordId";
         CallDetailRecord callDetailRecord = CallDetailRecord.create("85437", CallDirection.Inbound, CallDetailRecord.Disposition.UNKNOWN);
-        kookooCallDetailRecord = new KookooCallDetailRecord(callDetailRecord, "fdsfdsf");
+        kookooCallDetailRecord = new KookooCallDetailRecord(callDetailRecord, null);
         when(allKooKooCallDetailRecords.get(callDetailRecordId)).thenReturn(kookooCallDetailRecord);
 
-        kookooCallDetailRecordsService.setCallRecordAsAnswered(callDetailRecordId);
+        kookooCallDetailRecordsService.setCallRecordAsAnswered(vendorCallId, callDetailRecordId);
 
+        assertEquals(vendorCallId, kookooCallDetailRecord.getVendorCallId());
         assertEquals(now.toDate(), callDetailRecord.getAnswerDate());
         assertEquals(CallDetailRecord.Disposition.ANSWERED, callDetailRecord.getDisposition());
         verify(allKooKooCallDetailRecords).update(kookooCallDetailRecord);
@@ -102,9 +104,10 @@ public class KookooCallDetailRecordsServiceImplTest {
 
     @Test
     public void shouldSetAsNotAnswered_WhenCallNotAnswered() {
-        String callDetailRecordId = "callId";
+        String vendorCallId = "callId";
+        String callDetailRecordId = "callDetailRecordId";
         CallDetailRecord callDetailRecord = CallDetailRecord.create("85437", CallDirection.Inbound, CallDetailRecord.Disposition.UNKNOWN);
-        kookooCallDetailRecord = new KookooCallDetailRecord(callDetailRecord, "fdsfdsf");
+        kookooCallDetailRecord = new KookooCallDetailRecord(callDetailRecord, vendorCallId);
         when(allKooKooCallDetailRecords.get(callDetailRecordId)).thenReturn(kookooCallDetailRecord);
 
         kookooCallDetailRecordsService.setCallRecordAsNotAnswered(callDetailRecordId);

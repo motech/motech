@@ -68,7 +68,7 @@ public class IVRControllerTest {
 
         ivrController.reply(ivrContextForTest);
 
-        verify(callDetailRecordsService).setCallRecordAsAnswered(ivrContextForTest.callDetailRecordId());
+        verify(callDetailRecordsService).setCallRecordAsAnswered(ivrContextForTest.callId(), ivrContextForTest.callDetailRecordId());
         verify(callDetailRecordsService, never()).createAnsweredRecord(ivrContextForTest.callId(), ivrContextForTest.callerId(), ivrContextForTest.callDirection());
         ArgumentCaptor<IVREvent> ivrEventArgumentCaptor = ArgumentCaptor.forClass(IVREvent.class);
         verify(callDetailRecordsService).appendEvent(eq(ivrContextForTest.callDetailRecordId()), ivrEventArgumentCaptor.capture(), eq(""));
@@ -134,7 +134,7 @@ public class IVRControllerTest {
 
         ivrController.callback(kookooCallbackRequest);
         verify(callDetailRecordsService).setCallRecordAsNotAnswered(call_detail_record_id);
-        verify(callDetailRecordsService, never()).createOutgoing(anyString(), eq("phone_no"), eq(CallDetailRecord.Disposition.NO_ANSWER));
+        verify(callDetailRecordsService, never()).createOutgoing(eq("phone_no"), eq(CallDetailRecord.Disposition.NO_ANSWER));
 
         ArgumentCaptor<CallEvent> callEventArgumentCaptor = ArgumentCaptor.forClass(CallEvent.class);
         verify(callDetailRecordsService).close(anyString(), eq("external_id"), callEventArgumentCaptor.capture());

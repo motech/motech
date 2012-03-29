@@ -44,9 +44,15 @@ public class KookooCallDetailRecordsServiceImpl implements KookooCallDetailRecor
         return addCallDetailRecord(vendorCallId, callDetailRecord);
     }
 
-    public String createOutgoing(String vendorCallId, String callerId, CallDetailRecord.Disposition disposition) {
+    public String createOutgoing(String callerId, CallDetailRecord.Disposition disposition) {
         CallDetailRecord callDetailRecord = CallDetailRecord.create(callerId, CallDirection.Outbound, disposition);
-        return addCallDetailRecord(vendorCallId, callDetailRecord);
+        return addCallDetailRecord(null, callDetailRecord);
+    }
+
+    private String addCallDetailRecord(String vendorCallId, CallDetailRecord callDetailRecord) {
+        KookooCallDetailRecord kookooCallDetailRecord = new KookooCallDetailRecord(callDetailRecord, vendorCallId);
+        allCallDetailRecords.add(kookooCallDetailRecord);
+        return kookooCallDetailRecord.getId();
     }
 
     @Override
@@ -56,12 +62,6 @@ public class KookooCallDetailRecordsServiceImpl implements KookooCallDetailRecor
             kookooCallDetailRecord.appendToLastEvent(CallEventConstants.DTMF_DATA, userInput);
         }
         allKooKooCallDetailRecords.update(kookooCallDetailRecord);
-    }
-
-    private String addCallDetailRecord(String vendorCallId, CallDetailRecord callDetailRecord) {
-        KookooCallDetailRecord kookooCallDetailRecord = new KookooCallDetailRecord(callDetailRecord, vendorCallId);
-        allCallDetailRecords.add(kookooCallDetailRecord);
-        return kookooCallDetailRecord.getId();
     }
 
     private KookooCallDetailRecord appendToCallDetailRecord(String callDetailRecordId, CallEvent callEvent) {
@@ -80,8 +80,9 @@ public class KookooCallDetailRecordsServiceImpl implements KookooCallDetailRecor
     }
 
     @Override
-    public void setCallRecordAsAnswered(String callDetailRecordID) {
+    public void setCallRecordAsAnswered(String vendorCallId, String callDetailRecordID) {
         KookooCallDetailRecord callDetailRecord = get(callDetailRecordID);
+        callDetailRecord.setVendorCallId(vendorCallId);
         CallDetailRecord record = callDetailRecord.getCallDetailRecord();
         record.setDisposition(CallDetailRecord.Disposition.ANSWERED);
         record.setAnswerDate(DateUtil.now().toDate());
