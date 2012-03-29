@@ -10,9 +10,9 @@ import java.util.Map;
 public class MetadataPropertyCriterion implements Criterion {
 
     private final String property;
-    private final Object value;
+    private final String value;
 
-    public MetadataPropertyCriterion(String property, Object value) {
+    public MetadataPropertyCriterion(String property, String value) {
         this.property = property;
         this.value = value;
     }
@@ -27,7 +27,7 @@ public class MetadataPropertyCriterion implements Criterion {
         return filteredVisits;
     }
 
-    private boolean visitHasMetadata(VisitResponse visit, String property, Object value) {
+    private boolean visitHasMetadata(VisitResponse visit, String property, String value) {
         Map<String, Object> visitData = visit.getVisitData();
         if (visitData.containsKey(property) && visitData.get(property).equals(value))
             return true;

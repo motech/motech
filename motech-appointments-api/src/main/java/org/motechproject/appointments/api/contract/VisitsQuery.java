@@ -24,7 +24,7 @@ public class VisitsQuery {
         return this;
     }
 
-    public VisitsQuery havingMetadata(String property, Object value) {
+    public VisitsQuery havingMetadata(String property, String value) {
         criteria.add(new MetadataPropertyCriterion(property, value));
         return this;
     }

@@ -75,7 +75,7 @@ public class AllAppointmentCalendars extends MotechBaseRepository<AppointmentCal
             "  }\n" +
             "}\n"
     )
-    public List<VisitResponse> findByMetadataProperty(String property, Object value) {
+    public List<VisitResponse> findByMetadataProperty(String property, String value) {
         List<VisitQueryResult> visitQueryResults = db.queryView(createQuery("find_by_property").key(ComplexKey.of(property, value)).includeDocs(false), VisitQueryResult.class);
         return extractVisitResponse(visitQueryResults);
     }
