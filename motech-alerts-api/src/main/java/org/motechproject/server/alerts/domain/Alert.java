@@ -125,7 +125,7 @@ public class Alert extends MotechBaseDataObject implements Comparable<Alert> {
 
     @Override
     public int compareTo(Alert o) {
-        return new Integer(this.priority).compareTo(new Integer(o.priority));
+        return new Integer(this.priority).compareTo(o.priority);
     }
 
     public Map<String, String> getData() {
