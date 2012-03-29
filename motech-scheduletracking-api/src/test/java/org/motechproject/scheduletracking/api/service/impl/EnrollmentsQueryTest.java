@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.scheduletracking.api.domain.WindowName;
 import org.motechproject.scheduletracking.api.domain.exception.InvalidQueryException;
-import org.motechproject.scheduletracking.api.domain.filtering.*;
+import org.motechproject.scheduletracking.api.domain.search.*;
 import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
 
 import java.util.List;
@@ -85,7 +85,7 @@ public class EnrollmentsQueryTest {
         EnrollmentsQuery query = enrollmentsQuery.havingMetadata("metaData", "value");
         List<Criterion> criteria = query.getCriteria();
         assertEquals(criteria.size(), 1);
-        assertTrue(criteria.get(0) instanceof MetadataPropertyCriterion);
+        assertTrue(criteria.get(0) instanceof MetadataCriterion);
     }
 
     @Test(expected = InvalidQueryException.class)

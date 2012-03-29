@@ -1,4 +1,4 @@
-package org.motechproject.scheduletracking.api.domain.filtering;
+package org.motechproject.scheduletracking.api.domain.search;
 
 import ch.lambdaj.Lambda;
 import org.motechproject.scheduletracking.api.domain.Enrollment;

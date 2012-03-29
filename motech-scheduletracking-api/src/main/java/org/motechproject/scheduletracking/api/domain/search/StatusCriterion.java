@@ -1,7 +1,8 @@
-package org.motechproject.scheduletracking.api.domain.filtering;
+package org.motechproject.scheduletracking.api.domain.search;
 
 import ch.lambdaj.Lambda;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.service.impl.EnrollmentService;
 
@@ -9,23 +10,23 @@ import java.util.List;
 
 import static ch.lambdaj.Lambda.having;
 import static ch.lambdaj.Lambda.on;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.isIn;
 
-public class MilestoneCriterion implements Criterion {
+public class StatusCriterion implements Criterion {
 
-    private String milestoneName;
+    private List<EnrollmentStatus> statuses;
 
-    public MilestoneCriterion(String milestoneName) {
-        this.milestoneName = milestoneName;
+    public StatusCriterion(List<EnrollmentStatus> statuses) {
+        this.statuses = statuses;
     }
 
     @Override
     public List<Enrollment> fetch(AllEnrollments allEnrollments, EnrollmentService enrollmentService) {
-        return allEnrollments.findByCurrentMilestone(milestoneName);
+        return null;
     }
 
     @Override
     public List<Enrollment> filter(List<Enrollment> enrollments, EnrollmentService enrollmentService) {
-        return Lambda.filter(having(on(Enrollment.class).getCurrentMilestoneName(), equalTo(milestoneName)), enrollments);
+        return Lambda.filter(having(on(Enrollment.class).getStatus(), isIn(statuses)), enrollments);
     }
 }

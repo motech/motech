@@ -1,25 +1,20 @@
-package org.motechproject.scheduletracking.api.domain.filtering;
+package org.motechproject.scheduletracking.api.domain.search;
 
 import org.joda.time.DateTime;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.WindowName;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.service.impl.EnrollmentService;
-import org.motechproject.util.DateUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class EndOfWindowCriterion implements Criterion {
+public class InWindowCriterion implements Criterion {
 
-    private WindowName windowName;
-    private DateTime start;
-    private DateTime end;
+    private List<WindowName> windowNames;
 
-    public EndOfWindowCriterion(WindowName windowName, DateTime start, DateTime end) {
-        this.windowName = windowName;
-        this.start = start;
-        this.end = end;
+    public InWindowCriterion(List<WindowName> windowNames) {
+        this.windowNames = windowNames;
     }
 
     @Override
@@ -30,9 +25,9 @@ public class EndOfWindowCriterion implements Criterion {
     @Override
     public List<Enrollment> filter(List<Enrollment> enrollments, EnrollmentService enrollmentService) {
         List<Enrollment> filteredEnrollments = new ArrayList<Enrollment>();
+        DateTime now = DateTime.now();
         for (Enrollment enrollment : enrollments) {
-            DateTime endOfWindowForCurrentMilestone = enrollmentService.getEndOfWindowForCurrentMilestone(enrollment, windowName);
-            if (DateUtil.inRange(endOfWindowForCurrentMilestone, start, end))
+            if (windowNames.contains(enrollmentService.getCurrentWindowAsOf(enrollment, now)))
                 filteredEnrollments.add(enrollment);
         }
         return filteredEnrollments;
