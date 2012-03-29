@@ -15,9 +15,9 @@ public class Encoder {
 		if (b == null || b.length < 1)
 			return "";
         StringBuilder s = new StringBuilder();
-		for (int i = 0; i < b.length; i++) {
-			s.append(Integer.toHexString(b[i] & 0xFF));
-		}
+        for (byte aB : b) {
+            s.append(Integer.toHexString(aB & 0xFF));
+        }
 		return s.toString();
 	}
 }
