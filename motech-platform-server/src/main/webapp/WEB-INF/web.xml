@@ -49,6 +49,11 @@
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 
+    <!-- Osgi -->
+    <listener>
+        <listener-class>org.motechproject.server.osgi.OsgiListener</listener-class>
+    </listener>
+
     <listener>
         <listener-class>org.apache.felix.http.proxy.ProxyListener</listener-class>
     </listener>
