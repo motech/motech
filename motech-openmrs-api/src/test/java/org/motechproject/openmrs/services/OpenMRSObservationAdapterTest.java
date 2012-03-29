@@ -63,7 +63,7 @@ public class OpenMRSObservationAdapterTest {
         String dependentObservationValueConceptName = "concept3";
 
         Date observationDate = new LocalDate(2011, 12, 31).toDate();
-        Date dependentObservationDate = new Date(1999, 1, 1);
+        Date dependentObservationDate = new LocalDate(1999, 1, 1).toDate();
 
         MRSConcept observationValueConcept = new MRSConcept(observationValueConceptName);
         MRSConcept dependentConceptValue = new MRSConcept(dependentObservationValueConceptName);

@@ -1,6 +1,7 @@
 package org.motechproject.openmrs.services;
 
 
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -73,7 +74,7 @@ public class OpenMRSPersonAdapterTest {
         String firstName = "FirstName";
         String middleName = "MiddleName";
         String familyName = "FamilyName";
-        Date birthdate = new Date(2011, 12, 12);
+        Date birthdate = new LocalDate(2011, 12, 12).toDate();
         int patientId = 89;
         String address = "Address1";
         String email = "email";
