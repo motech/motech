@@ -54,6 +54,12 @@ public class AllEnrollments extends MotechBaseRepository<Enrollment> {
         return populateWithSchedule(enrollments);
     }
 
+    @View(name = "find_by_current_milestone", map = "function(doc) { emit(doc.currentMilestoneName); }")
+    public List<Enrollment> findByCurrentMilestone(String milestoneName) {
+        List<Enrollment> enrollments = queryView("find_by_current_milestone", milestoneName);
+        return populateWithSchedule(enrollments);
+    }
+
     @View(name = "find_by_status", map = "function(doc) { emit(doc.status); }")
     public List<Enrollment> findByStatus(EnrollmentStatus status) {
         List<Enrollment> enrollments = queryView("find_by_status", status.name());
@@ -85,6 +91,7 @@ public class AllEnrollments extends MotechBaseRepository<Enrollment> {
         enrollment.setSchedule(allTrackedSchedules.getByName(enrollment.getScheduleName()));
         return enrollment;
     }
+
 
     public Enrollment addOrReplace(Enrollment enrollment) {
         Enrollment existingEnrollment = getActiveEnrollment(enrollment.getExternalId(), enrollment.getScheduleName());

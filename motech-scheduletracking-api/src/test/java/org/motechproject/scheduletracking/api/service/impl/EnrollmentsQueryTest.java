@@ -41,6 +41,14 @@ public class EnrollmentsQueryTest {
     }
 
     @Test
+    public void shouldVerifyHavingCurrentMilestoneQuery() {
+        EnrollmentsQuery query = enrollmentsQuery.havingCurrentMilestone("some_milestone");
+        List<Criterion> criteria = query.getCriteria();
+        assertEquals(criteria.size(), 1);
+        assertTrue(criteria.get(0) instanceof MilestoneCriterion);
+    }
+
+    @Test
     public void shouldVerifyhavingWindowStartingDuringQuery() {
         EnrollmentsQuery query = enrollmentsQuery.havingWindowStartingDuring(WindowName.due, DateTime.now(), daysAgo(2));
         List<Criterion> criteria = query.getCriteria();

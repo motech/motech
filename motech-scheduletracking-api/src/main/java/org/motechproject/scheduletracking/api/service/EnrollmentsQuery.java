@@ -28,6 +28,11 @@ public class EnrollmentsQuery {
         return this;
     }
 
+    public EnrollmentsQuery havingCurrentMilestone(String milestoneName) {
+        criteria.add(new MilestoneCriterion(milestoneName));
+        return this;
+    }
+
     public EnrollmentsQuery havingWindowStartingDuring(WindowName windowName, DateTime start, DateTime end) {
         criteria.add(new StartOfWindowCriterion(windowName, start, end));
         return this;
