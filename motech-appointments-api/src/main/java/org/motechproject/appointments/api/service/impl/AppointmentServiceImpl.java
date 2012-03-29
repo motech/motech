@@ -2,8 +2,6 @@ package org.motechproject.appointments.api.service.impl;
 
 import org.joda.time.DateTime;
 import org.motechproject.appointments.api.contract.*;
-import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
-import org.motechproject.appointments.api.repository.AllReminderJobs;
 import org.motechproject.appointments.api.mapper.ReminderMapper;
 import org.motechproject.appointments.api.mapper.RescheduleAppointmentMapper;
 import org.motechproject.appointments.api.mapper.VisitMapper;
@@ -11,17 +9,18 @@ import org.motechproject.appointments.api.mapper.VisitResponseMapper;
 import org.motechproject.appointments.api.model.AppointmentCalendar;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.appointments.api.model.Visit;
+import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
+import org.motechproject.appointments.api.repository.AllReminderJobs;
 import org.motechproject.appointments.api.service.AppointmentService;
-import org.motechproject.appointments.api.service.VisitsQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-@Component
+@Service
 public class AppointmentServiceImpl implements AppointmentService {
     private AllAppointmentCalendars allAppointmentCalendars;
     private AllReminderJobs allReminderJobs;
@@ -131,7 +130,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             Visit visit = new VisitMapper().map(createVisitRequest);
             visitResponses.add(new VisitResponseMapper().map(visit));
             appointmentCalendar.addVisit(visit);
-            allReminderJobs.addAppointmentJob(appointmentCalendar.externalId(), visit);
+            allReminderJobs.addAppointmentJob(appointmentCalendar.getExternalId(), visit);
         }
         allAppointmentCalendars.saveAppointmentCalendar(appointmentCalendar);
         return visitResponses;

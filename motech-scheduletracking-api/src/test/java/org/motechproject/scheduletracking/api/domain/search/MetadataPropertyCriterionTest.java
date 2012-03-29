@@ -1,4 +1,4 @@
-package org.motechproject.scheduletracking.api.domain.filtering;
+package org.motechproject.scheduletracking.api.domain.search;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +17,6 @@ import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -37,7 +36,7 @@ public class MetadataPropertyCriterionTest {
     public void shouldFetchFromDbUsingCriteria() {
         List<Enrollment> result = mock(List.class);
         when(allEnrollments.findByMetadataProperty("foo", "bar")).thenReturn(result);
-        assertEquals(result, new MetadataPropertyCriterion("foo", "bar").fetch(allEnrollments, enrollmentService));
+        assertEquals(result, new MetadataCriterion("foo", "bar").fetch(allEnrollments, enrollmentService));
     }
 
     @Test
@@ -49,7 +48,7 @@ public class MetadataPropertyCriterionTest {
         enrollments.add(new Enrollment("entity3", schedule, null, null, null, null, null, asList(new Metadata[]{new Metadata("foo", "bar")})));
         enrollments.add(new Enrollment("entity4", schedule, null, null, null, null, null, asList(new Metadata[]{new Metadata("foo", "boz"), new Metadata("fuu", "ber")})));
 
-        List<Enrollment> filtered = new MetadataPropertyCriterion("foo", "bar").filter(enrollments, null);
+        List<Enrollment> filtered = new MetadataCriterion("foo", "bar").filter(enrollments, null);
         assertEquals(asList(new String[]{ "entity1", "entity3" }), extract(filtered, on(Enrollment.class).getExternalId()));
     }
 }

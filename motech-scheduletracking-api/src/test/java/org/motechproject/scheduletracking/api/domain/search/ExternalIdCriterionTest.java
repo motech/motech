@@ -1,4 +1,4 @@
-package org.motechproject.scheduletracking.api.domain.filtering;
+package org.motechproject.scheduletracking.api.domain.search;
 
 import org.junit.Before;
 import org.junit.Test;

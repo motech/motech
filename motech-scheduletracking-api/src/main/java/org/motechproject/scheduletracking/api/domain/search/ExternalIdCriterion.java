@@ -1,8 +1,7 @@
-package org.motechproject.scheduletracking.api.domain.filtering;
+package org.motechproject.scheduletracking.api.domain.search;
 
 import ch.lambdaj.Lambda;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
-import org.motechproject.scheduletracking.api.domain.Metadata;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.service.impl.EnrollmentService;
 
@@ -10,25 +9,23 @@ import java.util.List;
 
 import static ch.lambdaj.Lambda.having;
 import static ch.lambdaj.Lambda.on;
-import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.equalTo;
 
-public class MetadataPropertyCriterion implements Criterion {
+public class ExternalIdCriterion implements Criterion {
 
-    private String key;
-    private String value;
+    private String externalId;
 
-    public MetadataPropertyCriterion(String key, String value) {
-        this.key = key;
-        this.value = value;
+    public ExternalIdCriterion(String externalId) {
+        this.externalId = externalId;
     }
 
     @Override
     public List<Enrollment> fetch(AllEnrollments allEnrollments, EnrollmentService enrollmentService) {
-        return allEnrollments.findByMetadataProperty(key, value);
+        return allEnrollments.findByExternalId(externalId);
     }
 
     @Override
     public List<Enrollment> filter(List<Enrollment> enrollments, EnrollmentService enrollmentService) {
-        return Lambda.filter(having(on(Enrollment.class).getMetadata(), hasItem(new Metadata(key, value))), enrollments);
+        return Lambda.filter(having(on(Enrollment.class).getExternalId(), equalTo(externalId)), enrollments);
     }
 }

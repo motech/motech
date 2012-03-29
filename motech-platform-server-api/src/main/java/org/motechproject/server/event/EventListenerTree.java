@@ -74,14 +74,14 @@ class EventListenerTree
             throw new IllegalArgumentException("Wildcard must be last element of subject: " + subject);
         }
 
-        if (subject.indexOf("..") != -1) {
+        if (subject.contains("..")) {
             throw new IllegalArgumentException("Subject can not contain an empty path segment: " + subject);
         }
 
         // Split the subject into it's path components
         String[] path = subject.split(SPLIT_REGEX);
 
-        if (path[path.length - 1].indexOf("*") != -1 && path[path.length - 1].length() > 1) {
+        if (path[path.length - 1].contains("*") && path[path.length - 1].length() > 1) {
             throw new IllegalArgumentException("Wildcard can not be mixed with characters");
         }
 

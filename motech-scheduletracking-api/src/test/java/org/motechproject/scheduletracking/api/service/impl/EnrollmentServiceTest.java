@@ -251,8 +251,9 @@ public class EnrollmentServiceTest {
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
 
-        Enrollment enrollment = new Enrollment("ID-074285", schedule, "second_milestone", weeksAgo(5), weeksAgo(3), null, EnrollmentStatus.ACTIVE, null);
-        assertEquals(weeksAgo(3), enrollment.getReferenceForAlerts());
+        DateTime expected = weeksAgo(3);
+        Enrollment enrollment = new Enrollment("ID-074285", schedule, "second_milestone", weeksAgo(5), expected, null, EnrollmentStatus.ACTIVE, null);
+        assertEquals(expected, enrollment.getReferenceForAlerts());
     }
 
     @Test

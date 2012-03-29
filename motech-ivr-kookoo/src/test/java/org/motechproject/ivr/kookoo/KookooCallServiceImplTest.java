@@ -40,7 +40,7 @@ public class KookooCallServiceImplTest {
         properties.setProperty(KookooCallServiceImpl.API_KEY, "api_key_value");
 
         ivrService = new KookooCallServiceImpl(properties, httpClient, kookooCallDetailRecordsService);
-        when(kookooCallDetailRecordsService.createOutgoing(null, phoneNumber, CallDetailRecord.Disposition.UNKNOWN)).thenReturn("1234");
+        when(kookooCallDetailRecordsService.createOutgoing(phoneNumber, CallDetailRecord.Disposition.UNKNOWN)).thenReturn("1234");
     }
 
     @Test(expected = IllegalArgumentException.class)

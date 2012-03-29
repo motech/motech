@@ -4,7 +4,7 @@ import org.joda.time.DateTime;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.WindowName;
 import org.motechproject.scheduletracking.api.domain.exception.InvalidQueryException;
-import org.motechproject.scheduletracking.api.domain.filtering.*;
+import org.motechproject.scheduletracking.api.domain.search.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,11 +12,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 public class EnrollmentsQuery {
-
     private List<Criterion> criteria = new ArrayList<Criterion>();
-
-    public EnrollmentsQuery() {
-    }
 
     public EnrollmentsQuery havingExternalId(String externalId) {
         criteria.add(new ExternalIdCriterion(externalId));
@@ -25,6 +21,11 @@ public class EnrollmentsQuery {
 
     public EnrollmentsQuery havingSchedule(String scheduleName) {
         criteria.add(new ScheduleCriterion(scheduleName));
+        return this;
+    }
+
+    public EnrollmentsQuery havingCurrentMilestone(String milestoneName) {
+        criteria.add(new MilestoneCriterion(milestoneName));
         return this;
     }
 
@@ -53,8 +54,8 @@ public class EnrollmentsQuery {
         return this;
     }
 
-    public EnrollmentsQuery havingMetadata(String metaField, String value) {
-        criteria.add(new MetadataPropertyCriterion(metaField, value));
+    public EnrollmentsQuery havingMetadata(String key, String value) {
+        criteria.add(new MetadataCriterion(key, value));
         return this;
     }
 
