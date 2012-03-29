@@ -20,7 +20,6 @@ public class AllPhoneCalls extends MotechBaseRepository<PhoneCall> {
     }
 
     public PhoneCall findBySessionId(String sessionId) {
-    	PhoneCall detailRecord = db.get(PhoneCall.class, sessionId);
-    	return detailRecord;
+        return db.get(PhoneCall.class, sessionId);
     }
 }

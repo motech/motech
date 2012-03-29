@@ -186,18 +186,16 @@ public class VxmlController extends MultiActionController {
 
                 if (node == null || 
                 		(node.getPrompts().isEmpty() && node.getActionsAfter().isEmpty() && node.getActionsBefore().isEmpty() && node.getTransitions().isEmpty())) {
-                	if (treeNames.length > 1) {					
+                	if (treeNames.length > 1) {
                 		//reduce the current tree and redirect to the next tree
                 		treeNames = (String[])ArrayUtils.remove(treeNames, 0);
                 		String view = String.format("redirect:/tree/vxml/node?"+PATIENT_ID_PARAM+"=%s&"+TREE_NAME_PARAM+"=%s&"+LANGUAGE_PARAM+"=%s", patientId, StringUtils.join(treeNames, TREE_NAME_SEPARATOR), language);
-                		ModelAndView mav = new ModelAndView(view);
-                		return mav;
+                        return new ModelAndView(view);
 					} else {
 						//TODO: Add support for return url
-                		ModelAndView mav = new ModelAndView(EXIT_TEMPLATE_NAME);
-                		return mav;
+                        return new ModelAndView(EXIT_TEMPLATE_NAME);
 					}
-                    
+
                 } else {
                 	transitionPath = parentTransitionPath +
                 	(TreeNodeLocator.PATH_DELIMITER.equals(parentTransitionPath) ? "": TreeNodeLocator.PATH_DELIMITER)
