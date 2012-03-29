@@ -1,8 +1,7 @@
-package org.motechproject.scheduletracking.api.domain.filtering;
+package org.motechproject.scheduletracking.api.domain.search;
 
 import org.joda.time.Period;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.scheduletracking.api.domain.Enrollment;

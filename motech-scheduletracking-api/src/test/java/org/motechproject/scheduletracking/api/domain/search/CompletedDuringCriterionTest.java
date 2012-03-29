@@ -1,4 +1,4 @@
-package org.motechproject.scheduletracking.api.domain.filtering;
+package org.motechproject.scheduletracking.api.domain.search;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -10,11 +10,8 @@ import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ch.lambdaj.Lambda.extract;
-import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Matchers.startsWith;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;

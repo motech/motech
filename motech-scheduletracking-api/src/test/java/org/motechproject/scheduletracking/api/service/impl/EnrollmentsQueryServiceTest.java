@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
-import org.motechproject.scheduletracking.api.domain.filtering.Criterion;
+import org.motechproject.scheduletracking.api.domain.search.Criterion;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
 
