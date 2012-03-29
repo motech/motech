@@ -21,8 +21,8 @@ import java.util.*;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 public class OpenMRSUserAdapter implements MRSUserAdapter {
-    private static Integer PASSWORD_LENGTH = 8;
-    private static String PERSON_UNKNOWN_GENDER = "?";
+    private static final Integer PASSWORD_LENGTH = 8;
+    private static final String PERSON_UNKNOWN_GENDER = "?";
 
     private UserService userService;
     private PersonService personService;
