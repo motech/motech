@@ -57,7 +57,7 @@ public abstract class BaseFormServlet extends HttpServlet {
     @Override
     protected abstract void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
 
-    protected FormValidator getValidatorFor(FormBean formBean) throws ClassNotFoundException {
+    protected FormValidator getValidatorFor(FormBean formBean) {
         return (FormValidator) getServletContext().getAttribute(formBean.getValidator());
     }
 

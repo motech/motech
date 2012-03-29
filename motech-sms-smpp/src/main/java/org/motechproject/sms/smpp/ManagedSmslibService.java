@@ -86,7 +86,7 @@ public class ManagedSmslibService {
         smslibService.removeGroup(TEMPORARY_GROUP);
     }
 
-    public void queueMessageAt(List<String> recipients, final String message, DateTime dateTime) throws GatewayException, IOException, TimeoutException, InterruptedException {
+    public void queueMessageAt(List<String> recipients, final String message, DateTime dateTime) {
         createGroupOfRecipients(recipients);
 
         OutboundMessage outboundMessage = getOutboundMessage(message);
