@@ -78,7 +78,7 @@ public class OpenMRSFacilityAdapterTest {
         String district = "district";
         String province = "province";
 
-        List<Location> locations = Arrays.asList(this.createALocation(locationId, name, country, region, district, province));
+        List<Location> locations = Arrays.asList(createALocation(locationId, name, country, region, district, province));
         when(mockLocationService.getAllLocations()).thenReturn(locations);
         List<MRSFacility> returnedFacilities = mrsFacilityAdapter.getFacilities();
         assertEquals(Arrays.asList(new MRSFacility(locationId, name, country, region, district, province)), returnedFacilities);
@@ -93,7 +93,7 @@ public class OpenMRSFacilityAdapterTest {
         String district = "district";
         String province = "province";
 
-        Location location = this.createALocation(locationId, name, country, region, district, province);
+        Location location = createALocation(locationId, name, country, region, district, province);
         when(mockLocationService.getLocations(name)).thenReturn(Arrays.asList(location));
         final List<MRSFacility> facilities = mrsFacilityAdapter.getFacilities(name);
         assertEquals(Arrays.asList(new MRSFacility(locationId, name, country, region, district, province)), facilities);
