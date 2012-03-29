@@ -1,5 +1,6 @@
 package org.motechproject.appointments.api.repository;
 
+import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.GenerateView;
@@ -47,7 +48,6 @@ public class AllAppointmentCalendars extends MotechBaseRepository<AppointmentCal
     public List<VisitResponse> findVisitsWithDueDateInRange(DateTime start, DateTime end) {
         ViewQuery query = createQuery("by_dueDate").startKey(start).endKey(end);
         List<VisitQueryResult> visitQueryResults = db.queryView(query, VisitQueryResult.class);
-
         return extractVisitResponse(visitQueryResults);
     }
 
@@ -63,6 +63,20 @@ public class AllAppointmentCalendars extends MotechBaseRepository<AppointmentCal
             "}")
     public List<VisitResponse> findMissedVisits() {
         List<VisitQueryResult> visitQueryResults = db.queryView(createQuery("find_by_missed_visits"), VisitQueryResult.class);
+        return extractVisitResponse(visitQueryResults);
+    }
+
+    @View(name = "find_by_property", map = "function(doc) { \n" +
+            "  if (doc.type === 'AppointmentCalendar') {\n" +
+            "    for (var i = 0; i < doc.visits.length; i++) {\n" +
+            "       for (var prop in doc.visits[i].data)\n" +
+            "          emit([prop, doc.visits[i].data[prop]], {\"externalId\" :doc.externalId,\"visit\" : doc.visits[i]});\n" +
+            "    }\n" +
+            "  }\n" +
+            "}\n"
+    )
+    public List<VisitResponse> findByMetadataProperty(String property, Object value) {
+        List<VisitQueryResult> visitQueryResults = db.queryView(createQuery("find_by_property").key(ComplexKey.of(property, value)).includeDocs(false), VisitQueryResult.class);
         return extractVisitResponse(visitQueryResults);
     }
 

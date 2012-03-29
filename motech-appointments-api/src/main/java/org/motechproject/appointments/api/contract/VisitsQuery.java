@@ -1,10 +1,7 @@
 package org.motechproject.appointments.api.contract;
 
 import org.joda.time.DateTime;
-import org.motechproject.appointments.api.model.search.Criterion;
-import org.motechproject.appointments.api.model.search.DueDateInCriterion;
-import org.motechproject.appointments.api.model.search.ExternalIdCriterion;
-import org.motechproject.appointments.api.model.search.UnvisitedCriterion;
+import org.motechproject.appointments.api.model.search.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +21,11 @@ public class VisitsQuery {
 
     public VisitsQuery havingExternalId(String externalId) {
         criteria.add(new ExternalIdCriterion(externalId));
+        return this;
+    }
+
+    public VisitsQuery havingMetadata(String property, Object value) {
+        criteria.add(new MetadataPropertyCriterion(property, value));
         return this;
     }
 
