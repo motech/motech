@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InWindowCriterion implements Criterion {
-
     private List<WindowName> windowNames;
 
     public InWindowCriterion(List<WindowName> windowNames) {

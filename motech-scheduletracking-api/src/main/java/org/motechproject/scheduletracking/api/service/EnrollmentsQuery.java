@@ -3,7 +3,6 @@ package org.motechproject.scheduletracking.api.service;
 import org.joda.time.DateTime;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.WindowName;
-import org.motechproject.scheduletracking.api.domain.exception.InvalidQueryException;
 import org.motechproject.scheduletracking.api.domain.search.*;
 
 import java.util.ArrayList;
@@ -44,15 +43,9 @@ public class EnrollmentsQuery {
         return this;
     }
 
-    public EnrollmentsQuery havingState(String state) {
-        try {
-            EnrollmentStatus status = EnrollmentStatus.valueOf(state.toUpperCase());
-            criteria.add(new StatusCriterion(status));
-            return this;
-        } catch (Exception e) {
-            throw new InvalidQueryException("Invalid enrollment status: " + state);
-        }
-
+    public EnrollmentsQuery havingState(EnrollmentStatus enrollmentStatus) {
+        criteria.add(new StatusCriterion(enrollmentStatus));
+        return this;
     }
 
     public EnrollmentsQuery completedDuring(DateTime start, DateTime end) {
@@ -63,18 +56,6 @@ public class EnrollmentsQuery {
     public EnrollmentsQuery havingMetadata(String key, String value) {
         criteria.add(new MetadataCriterion(key, value));
         return this;
-    }
-
-    private List<EnrollmentStatus> toEnum(List<String> values) {
-        List<EnrollmentStatus> statuses = new ArrayList<EnrollmentStatus>();
-        for (String value : values) {
-            try {
-                statuses.add(EnrollmentStatus.valueOf(value.toUpperCase()));
-            } catch (Exception e) {
-                throw new InvalidQueryException("Invalid enrollment status: " + value);
-            }
-        }
-        return statuses;
     }
 
     public List<Criterion> getCriteria() {

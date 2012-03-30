@@ -59,7 +59,7 @@ public class EnrollmentsSearchIT {
         createEnrollment("entity_5", "IPTI Schedule", "IPTI 1", yearsAgo(1), now, new Time(6, 30), EnrollmentStatus.DEFAULTED, null);
         createEnrollment("entity_6", "Delivery", "Default", yearsAgo(1), now, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
 
-        EnrollmentsQuery query = new EnrollmentsQuery().havingSchedule("IPTI Schedule").currentlyInWindow(WindowName.late, WindowName.max).havingState("active");
+        EnrollmentsQuery query = new EnrollmentsQuery().havingSchedule("IPTI Schedule").currentlyInWindow(WindowName.late, WindowName.max).havingState(EnrollmentStatus.ACTIVE);
         List<EnrollmentRecord> result = scheduleTrackingService.search(query);
         assertEquals(asList(new String[]{ "entity_3", "entity_4" }), extract(result, on(EnrollmentRecord.class).getExternalId()));
     }
@@ -74,7 +74,7 @@ public class EnrollmentsSearchIT {
         createEnrollment("entity_5", "IPTI Schedule", "IPTI 1", weeksAgo(13), now, new Time(6, 30), EnrollmentStatus.DEFAULTED, null);
         createEnrollment("entity_6", "Delivery", "Default", weeksAgo(14), now, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
 
-        EnrollmentsQuery query = new EnrollmentsQuery().havingSchedule("IPTI Schedule").havingState("active").havingWindowStartingDuring(WindowName.due, weeksAgo(1), now);
+        EnrollmentsQuery query = new EnrollmentsQuery().havingSchedule("IPTI Schedule").havingState(EnrollmentStatus.ACTIVE).havingWindowStartingDuring(WindowName.due, weeksAgo(1), now);
         List<EnrollmentRecord> result = scheduleTrackingService.search(query);
         assertEquals(asList(new String[]{ "entity_2", "entity_3" }), extract(result, on(EnrollmentRecord.class).getExternalId()));
     }
@@ -109,7 +109,7 @@ public class EnrollmentsSearchIT {
 
         EnrollmentsQuery query = new EnrollmentsQuery()
                                     .havingExternalId("entity_1")
-                                    .havingState("active")
+                                    .havingState(EnrollmentStatus.ACTIVE)
                                     .havingWindowStartingDuring(WindowName.due, newDateTime(2012, 4, 1, 0, 0, 0), newDateTime(2012, 4, 7, 23, 59, 59));
 
         List<EnrollmentRecord> result = scheduleTrackingService.searchWithWindowDates(query);

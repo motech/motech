@@ -12,7 +12,6 @@ import static ch.lambdaj.Lambda.on;
 import static org.hamcrest.Matchers.equalTo;
 
 public class MilestoneCriterion implements Criterion {
-
     private String milestoneName;
 
     public MilestoneCriterion(String milestoneName) {

@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StartOfWindowCriterion implements Criterion {
-
     private WindowName windowName;
     private DateTime start;
     private DateTime end;

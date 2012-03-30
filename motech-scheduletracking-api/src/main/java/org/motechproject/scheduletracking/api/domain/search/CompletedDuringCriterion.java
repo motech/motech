@@ -11,7 +11,6 @@ import java.util.List;
 import static org.motechproject.util.DateUtil.inRange;
 
 public class CompletedDuringCriterion implements Criterion {
-
     private DateTime start;
     private DateTime end;
 

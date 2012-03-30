@@ -3,8 +3,8 @@ package org.motechproject.scheduletracking.api.service.impl;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.WindowName;
-import org.motechproject.scheduletracking.api.domain.exception.InvalidQueryException;
 import org.motechproject.scheduletracking.api.domain.search.*;
 import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
 
@@ -16,11 +16,10 @@ import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.daysAg
 import static org.springframework.util.Assert.isInstanceOf;
 
 public class EnrollmentsQueryTest {
-
-    EnrollmentsQuery enrollmentsQuery;
+    private EnrollmentsQuery enrollmentsQuery;
 
     @Before
-    public void before() {
+    public void setUp() {
         enrollmentsQuery = new EnrollmentsQuery();
     }
 
@@ -49,7 +48,7 @@ public class EnrollmentsQueryTest {
     }
 
     @Test
-    public void shouldVerifyhavingWindowStartingDuringQuery() {
+    public void shouldVerifyHavingWindowStartingDuringQuery() {
         EnrollmentsQuery query = enrollmentsQuery.havingWindowStartingDuring(WindowName.due, DateTime.now(), daysAgo(2));
         List<Criterion> criteria = query.getCriteria();
         assertEquals(criteria.size(), 1);
@@ -57,7 +56,7 @@ public class EnrollmentsQueryTest {
     }
 
     @Test
-    public void shouldVerifyhavingWindowEndingDuringQuery() {
+    public void shouldVerifyHavingWindowEndingDuringQuery() {
         EnrollmentsQuery query = enrollmentsQuery.havingWindowEndingDuring(WindowName.due, DateTime.now(), daysAgo(2));
         List<Criterion> criteria = query.getCriteria();
         assertEquals(criteria.size(), 1);
@@ -73,8 +72,8 @@ public class EnrollmentsQueryTest {
     }
 
     @Test
-    public void shouldVerifyhavingStateQuery() {
-        EnrollmentsQuery query = enrollmentsQuery.havingState("acTive");
+    public void shouldVerifyHavingStateQuery() {
+        EnrollmentsQuery query = enrollmentsQuery.havingState(EnrollmentStatus.ACTIVE);
         List<Criterion> criteria = query.getCriteria();
         assertEquals(criteria.size(), 1);
         assertTrue(criteria.get(0) instanceof StatusCriterion);
@@ -88,11 +87,6 @@ public class EnrollmentsQueryTest {
         assertTrue(criteria.get(0) instanceof MetadataCriterion);
     }
 
-    @Test(expected = InvalidQueryException.class)
-    public void shouldThrowExceptionForInvalidState() {
-        enrollmentsQuery.havingState("EaRliestzjxh");
-    }
-
     @Test
     public void shouldBuildQueryForCompletedDuringCriterion() {
         EnrollmentsQuery query = enrollmentsQuery.completedDuring(null, null);
@@ -103,13 +97,13 @@ public class EnrollmentsQueryTest {
 
     @Test
     public void shouldReturnPrimaryCriterion() {
-        EnrollmentsQuery query = enrollmentsQuery.havingExternalId("entity1").havingState("active");
+        enrollmentsQuery.havingExternalId("entity1").havingState(EnrollmentStatus.ACTIVE);
         isInstanceOf(ExternalIdCriterion.class, enrollmentsQuery.getPrimaryCriterion());
     }
 
     @Test
     public void shouldReturnSecondaryCriteria() {
-        EnrollmentsQuery query = enrollmentsQuery.havingExternalId("entity1").havingState("active").completedDuring(null, null);
+        enrollmentsQuery.havingExternalId("entity1").havingState(EnrollmentStatus.ACTIVE).completedDuring(null, null);
         List<Criterion> secondaryCriteria = enrollmentsQuery.getSecondaryCriteria();
         isInstanceOf(StatusCriterion.class, secondaryCriteria.get(0));
         isInstanceOf(CompletedDuringCriterion.class, secondaryCriteria.get(1));

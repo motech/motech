@@ -12,7 +12,6 @@ import static ch.lambdaj.Lambda.on;
 import static org.hamcrest.Matchers.equalTo;
 
 public class ExternalIdCriterion implements Criterion {
-
     private String externalId;
 
     public ExternalIdCriterion(String externalId) {
