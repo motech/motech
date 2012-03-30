@@ -22,7 +22,7 @@ public class StatusCriterion implements Criterion {
 
     @Override
     public List<Enrollment> fetch(AllEnrollments allEnrollments, EnrollmentService enrollmentService) {
-        return null;
+        return allEnrollments.findByStatus(status);
     }
 
     @Override
