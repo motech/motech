@@ -20,7 +20,7 @@ public abstract class Prompt {
 	public static class PromptResolver extends TypeNameIdResolver {
 		static HashMap<String, String> typeToId = new HashMap<String, String>();
 		static HashMap<String, JavaType> idToType = new HashMap<String, JavaType>();
-		{
+		static {
 			typeToId.put(TextToSpeechPrompt.class.getName(), "text");
 			typeToId.put(AudioPrompt.class.getName(), "audio");
 			idToType.put("text", TypeFactory.fastSimpleType(TextToSpeechPrompt.class));
