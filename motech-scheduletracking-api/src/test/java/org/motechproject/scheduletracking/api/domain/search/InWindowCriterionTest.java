@@ -46,11 +46,11 @@ public class InWindowCriterionTest {
         when(enrollmentService.getCurrentWindowAsOf(eq(enrollment2), Matchers.<DateTime>any())).thenReturn(WindowName.due);
         when(enrollmentService.getCurrentWindowAsOf(eq(enrollment3), Matchers.<DateTime>any())).thenReturn(WindowName.earliest);
 
-        assertEquals(asList(enrollment1, enrollment3), new InWindowCriterion((asList(new WindowName[]{WindowName.earliest}))).fetch(allEnrollments, enrollmentService));
-        assertEquals(asList(enrollment1, enrollment3), new InWindowCriterion((asList(new WindowName[]{WindowName.earliest}))).filter(enrollments, enrollmentService));
+        assertEquals(asList(enrollment1, enrollment3), new InWindowCriterion((asList(WindowName.earliest))).fetch(allEnrollments, enrollmentService));
+        assertEquals(asList(enrollment1, enrollment3), new InWindowCriterion((asList(WindowName.earliest))).filter(enrollments, enrollmentService));
 
-        assertEquals(asList(enrollment2), new InWindowCriterion((asList(new WindowName[]{WindowName.due}))).fetch(allEnrollments, enrollmentService));
-        assertEquals(asList(enrollment2), new InWindowCriterion((asList(new WindowName[]{WindowName.due}))).filter(enrollments, enrollmentService));
+        assertEquals(asList(enrollment2), new InWindowCriterion((asList(WindowName.due))).fetch(allEnrollments, enrollmentService));
+        assertEquals(asList(enrollment2), new InWindowCriterion((asList(WindowName.due))).filter(enrollments, enrollmentService));
     }
 
     @Test
@@ -67,7 +67,7 @@ public class InWindowCriterionTest {
         when(enrollmentService.getCurrentWindowAsOf(eq(enrollment2), Matchers.<DateTime>any())).thenReturn(WindowName.due);
         when(enrollmentService.getCurrentWindowAsOf(eq(enrollment3), Matchers.<DateTime>any())).thenReturn(WindowName.late);
 
-        assertEquals(asList(enrollment1, enrollment3), new InWindowCriterion((asList(new WindowName[]{WindowName.earliest, WindowName.late}))).fetch(allEnrollments, enrollmentService));
-        assertEquals(asList(enrollment1, enrollment3), new InWindowCriterion((asList(new WindowName[]{WindowName.earliest, WindowName.late}))).filter(enrollments, enrollmentService));
+        assertEquals(asList(enrollment1, enrollment3), new InWindowCriterion((asList(WindowName.earliest, WindowName.late))).fetch(allEnrollments, enrollmentService));
+        assertEquals(asList(enrollment1, enrollment3), new InWindowCriterion((asList(WindowName.earliest, WindowName.late))).filter(enrollments, enrollmentService));
     }
 }

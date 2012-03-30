@@ -322,7 +322,7 @@ public class VoiceOutboxServiceTest {
 
         verify(outboundVoiceMessageDao).add(outboundVoiceMessage);
 
-        ArgumentCaptor<MotechEvent> argument = ArgumentCaptor.<MotechEvent>forClass(MotechEvent.class);
+        ArgumentCaptor<MotechEvent> argument = ArgumentCaptor.forClass(MotechEvent.class);
         verify(eventRelay).sendEventMessage(argument.capture());
         assertEquals(argument.getValue().getSubject(), EventKeys.OUTBOX_MAX_PENDING_MESSAGES_EVENT_SUBJECT);
         assertEquals(EventKeys.getPartyID(argument.getValue()), partyId);

@@ -149,7 +149,7 @@ public class RepeatingProgramSchedulerTest {
         Time reminderTime = new Time(9, 30);
         RepeatingCampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForDaysApplicable("OM2", asList("Monday", "Wednesday"), "child-info-week-{Offset}-{WeekDay}").deliverTime(new Time(10, 30));
         RepeatingCampaign campaign = new CampaignBuilder().repeatingCampaign("campaignName", "2 Weeks", asList(campaignMessage));
-        List<DayOfWeek> userSpecifiedDays = asList(new DayOfWeek[]{DayOfWeek.Tuesday, DayOfWeek.Friday});
+        List<DayOfWeek> userSpecifiedDays = asList(DayOfWeek.Tuesday, DayOfWeek.Friday);
         CampaignRequest request = defaultBuilder().withReferenceDate(new LocalDate(2012, 2, 17)).withReminderTime(reminderTime).withUserSpecifiedDays(userSpecifiedDays).build();
 
         RepeatingProgramScheduler repeatingProgramScheduler = new RepeatingProgramScheduler(mockSchedulerService, request, campaign, mockCampaignEnrollmentService, false);

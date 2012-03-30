@@ -19,7 +19,7 @@ public class ExternalIdCriterionTest  {
     @Test
     public void ShouldFilterVisitsByExternalId() {
          VisitResponse visitResponse1 = getVisitResponseInstance("foo1"),visitResponse2 = getVisitResponseInstance("foo2"),visitResponse3 = getVisitResponseInstance("foo2");
-         assertEquals(asList(new VisitResponse[]{visitResponse2,visitResponse3}),new ExternalIdCriterion("foo2").filter(asList(new VisitResponse[]{visitResponse1,visitResponse2,visitResponse3})));
+         assertEquals(asList(new VisitResponse[]{visitResponse2,visitResponse3}),new ExternalIdCriterion("foo2").filter(asList(visitResponse1,visitResponse2,visitResponse3)));
     }
 
     @Test

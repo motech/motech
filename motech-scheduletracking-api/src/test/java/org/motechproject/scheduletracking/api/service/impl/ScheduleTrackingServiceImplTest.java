@@ -97,7 +97,7 @@ public class ScheduleTrackingServiceImplTest {
         metadata.put("fuu", "baz");
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), newDateTime(2012, 11, 2, 0, 0, 0).toLocalDate(), null, null, null, "milestone1", metadata));
 
-        List<Metadata> metadataList = asList(new Metadata[]{ new Metadata("foo", "bar"), new Metadata("fuu", "baz") });
+        List<Metadata> metadataList = asList(new Metadata("foo", "bar"), new Metadata("fuu", "baz"));
         verify(enrollmentService).enroll("entity_1", "my_schedule", "milestone1", newDateTime(newDateTime(2012, 11, 2, 0, 0, 0).toLocalDate(), new Time(0, 0)), newDateTime(now().toLocalDate(), new Time(0, 0)), new Time(8, 10), metadataList);
     }
 
@@ -271,7 +271,7 @@ public class ScheduleTrackingServiceImplTest {
         EnrollmentsQuery enrollmentQuery = mock(EnrollmentsQuery.class);
         Enrollment enrollment1 = mock(Enrollment.class);
         Enrollment enrollment2 = mock(Enrollment.class);
-        List<Enrollment> enrollments = asList(new Enrollment[]{enrollment1, enrollment2});
+        List<Enrollment> enrollments = asList(enrollment1, enrollment2);
         when(enrollmentsQueryService.search(enrollmentQuery)).thenReturn(enrollments);
 
         EnrollmentRecord record1 = mock(EnrollmentRecord.class);
@@ -289,7 +289,7 @@ public class ScheduleTrackingServiceImplTest {
         EnrollmentsQuery enrollmentQuery = mock(EnrollmentsQuery.class);
         Enrollment enrollment1 = new Enrollment("external_id_1", schedule, null, null, null, null, null, null);
         Enrollment enrollment2 = new Enrollment("external_id_2", schedule, null, null, null, null, null, null);
-        List<Enrollment> enrollments = asList(new Enrollment[]{enrollment1, enrollment2});
+        List<Enrollment> enrollments = asList(enrollment1, enrollment2);
 
         when(enrollmentsQueryService.search(enrollmentQuery)).thenReturn(enrollments);
 

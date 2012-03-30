@@ -128,7 +128,7 @@ class EventListenerTree
 
         EventListenerTree child = getChild(path[0]);
         if (child == null) {
-            return Collections.<EventListener>emptySet();
+            return Collections.emptySet();
         }
 
         return child.getListeners(path, 0);

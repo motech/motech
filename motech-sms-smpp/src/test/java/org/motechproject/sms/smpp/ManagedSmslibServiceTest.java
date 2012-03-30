@@ -141,7 +141,7 @@ public class ManagedSmslibServiceTest {
 
 		assertEquals("message", outboundMessageCaptor.getValue().getText());
 		assertEquals(groupNameCaptor.getValue(), outboundMessageCaptor.getValue().getRecipient());
-		assertEquals(new DateTime(2011, 11, 21, 13, 12, 0, 0).toDate(), (Date) dateCaptor.getValue());
+		assertEquals(new DateTime(2011, 11, 21, 13, 12, 0, 0).toDate(), dateCaptor.getValue());
 
 		verify(smslibService).removeGroup((String) groupNameCaptor.getValue());
 	}

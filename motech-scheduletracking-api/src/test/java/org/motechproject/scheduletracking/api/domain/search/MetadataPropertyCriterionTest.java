@@ -43,10 +43,10 @@ public class MetadataPropertyCriterionTest {
     public void shouldFilter() {
         Schedule schedule = new Schedule("my_schedule");
         List<Enrollment> enrollments = new ArrayList<Enrollment>();
-        enrollments.add(new Enrollment("entity1", schedule, null, null, null, null, null, asList(new Metadata[]{new Metadata("foo", "bar"), new Metadata("fuu", "bar")})));
-        enrollments.add(new Enrollment("entity2", schedule, null, null, null, null, null, asList(new Metadata[]{new Metadata("foo", "baz"), new Metadata("fuu", "biz")})));
-        enrollments.add(new Enrollment("entity3", schedule, null, null, null, null, null, asList(new Metadata[]{new Metadata("foo", "bar")})));
-        enrollments.add(new Enrollment("entity4", schedule, null, null, null, null, null, asList(new Metadata[]{new Metadata("foo", "boz"), new Metadata("fuu", "ber")})));
+        enrollments.add(new Enrollment("entity1", schedule, null, null, null, null, null, asList(new Metadata("foo", "bar"), new Metadata("fuu", "bar"))));
+        enrollments.add(new Enrollment("entity2", schedule, null, null, null, null, null, asList(new Metadata("foo", "baz"), new Metadata("fuu", "biz"))));
+        enrollments.add(new Enrollment("entity3", schedule, null, null, null, null, null, asList(new Metadata("foo", "bar"))));
+        enrollments.add(new Enrollment("entity4", schedule, null, null, null, null, null, asList(new Metadata("foo", "boz"), new Metadata("fuu", "ber"))));
 
         List<Enrollment> filtered = new MetadataCriterion("foo", "bar").filter(enrollments, null);
         assertEquals(asList(new String[]{ "entity1", "entity3" }), extract(filtered, on(Enrollment.class).getExternalId()));

@@ -140,7 +140,7 @@ public class PhoneCall extends MotechBaseDataObject {
     public Set<PhoneCallEvent> getEvents() {
         Set<PhoneCallEvent> ret = events;
         if (null == events) {
-            ret = Collections.<PhoneCallEvent>emptySet();
+            ret = Collections.emptySet();
         }
 
         return ret;
