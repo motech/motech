@@ -47,7 +47,7 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
     }
 
     @Override
-    public Map saveUser(MRSUser mrsUser) throws UserAlreadyExistsException {
+    public Map<String, Object> saveUser(MRSUser mrsUser) throws UserAlreadyExistsException {
         MRSUser userByUserName = getUserByUserName(mrsUser.getPerson().attrValue("Email"));
         if (userByUserName != null && !isSystemAdmin(userByUserName.getSystemId())) {
             throw new UserAlreadyExistsException();

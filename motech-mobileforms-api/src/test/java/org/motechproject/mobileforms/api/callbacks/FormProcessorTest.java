@@ -49,7 +49,7 @@ public class FormProcessorTest {
     @Test
     public void shouldMakeFormBeansOutOfFormXML() {
         formProcessor.start();
-        Map map = new HashMap();
+        Map<String, String> map = new HashMap<String, String>();
         map.put("formname", "formName");
         map.put("country", "india");
         map.put("district", "katpadi");

@@ -59,10 +59,10 @@ public class OpenMRSEncounterAdapterIT extends OpenMRSIntegrationTestBase {
         MRSPerson provider = userJohn.getPerson();
 
         Set<MRSObservation> observations = new HashSet<MRSObservation>();
-        observations.add(new MRSObservation(new Date(), "GRAVIDA", Double.valueOf("100.0")));
-        observations.add(new MRSObservation(new Date(), "SERIAL NUMBER", "free text data serail number"));
-        observations.add(new MRSObservation(new Date(), "NEXT ANC DATE", new DateTime(2012, 11, 10, 1, 10).toDate()));
-        observations.add(new MRSObservation(new Date(), "PREGNANCY STATUS", false));
+        observations.add(new MRSObservation<Double>(new Date(), "GRAVIDA", Double.valueOf("100.0")));
+        observations.add(new MRSObservation<String>(new Date(), "SERIAL NUMBER", "free text data serail number"));
+        observations.add(new MRSObservation<Date>(new Date(), "NEXT ANC DATE", new DateTime(2012, 11, 10, 1, 10).toDate()));
+        observations.add(new MRSObservation<Boolean>(new Date(), "PREGNANCY STATUS", false));
         final String encounterType = "PEDSRETURN";
         MRSEncounter expectedEncounter = new MRSEncounter(provider.getId(), userCreator.getId(), facility.getId(), new Date(), patientAlan.getId(), observations, encounterType);
         MRSEncounter actualMRSEncounter = mrsEncounterAdapter.createEncounter(expectedEncounter);

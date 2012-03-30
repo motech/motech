@@ -92,7 +92,7 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage, E exte
         return campaignRequest.referenceDate() != null ? campaignRequest.referenceDate() : DateUtil.today();
     }
 
-    protected HashMap jobParams(String messageKey) {
+    protected HashMap<String, Object> jobParams(String messageKey) {
         String jobId = getMessageJobId(messageKey);
         return new SchedulerPayloadBuilder()
                 .withJobId(jobId)

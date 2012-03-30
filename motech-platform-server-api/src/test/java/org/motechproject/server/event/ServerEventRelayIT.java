@@ -87,7 +87,7 @@ public class ServerEventRelayIT {
     }
 
     private MotechEvent createEvent(MotechEvent motechEvent, String destination) {
-        Map params =  new HashMap();
+        Map<String, Object> params =  new HashMap<String, Object>();
         params.put("message-destination", destination);
         params.put("original-parameters", motechEvent.getParameters());
         return motechEvent.copy(motechEvent.getSubject(), params);

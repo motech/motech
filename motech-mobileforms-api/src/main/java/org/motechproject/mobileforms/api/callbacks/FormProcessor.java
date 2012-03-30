@@ -48,8 +48,8 @@ public class FormProcessor extends DeserializationListenerAdapter {
     @Override
     public void formProcessed(StudyData studyData, FormData formData, String formXml) {
         try {
-            Map data = parser.parse(formXml);
-            Form form = allMobileForms.getFormByName((String) data.get(marker));
+            Map<String, String> data = parser.parse(formXml);
+            Form form = allMobileForms.getFormByName(data.get(marker));
 
             FormBean formBean = (FormBean) Class.forName(form.bean()).newInstance();
             formBean.setValidator(form.validator());

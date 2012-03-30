@@ -43,7 +43,7 @@ public abstract class MotechBaseRepository<T extends MotechBaseDataObject> exten
     }
 
     private void removeAll(List<T> entities) {
-        List<BulkDeleteDocument> bulkDeleteQueue = new ArrayList(entities.size());
+        List<BulkDeleteDocument> bulkDeleteQueue = new ArrayList<BulkDeleteDocument>(entities.size());
         for (T entity : entities) {
             bulkDeleteQueue.add(BulkDeleteDocument.of(entity));
         }

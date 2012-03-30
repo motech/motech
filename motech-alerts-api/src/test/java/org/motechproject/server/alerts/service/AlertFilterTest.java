@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.motechproject.server.alerts.domain.Alert;
 import org.motechproject.server.alerts.repository.AllAlerts;
 import org.motechproject.server.alerts.domain.AlertCriteria;
 import org.motechproject.server.alerts.domain.AlertStatus;
@@ -41,7 +42,7 @@ public class AlertFilterTest {
 
     @Test
     public void shouldSearchByPrimaryCriterion() {
-        List alerts = mock(List.class);
+        List<Alert> alerts = (List<Alert>) mock(List.class);
         when(allAlerts.findByAlertType(AlertType.HIGH)).thenReturn(alerts);
         assertEquals(alerts, alertFilter.search(new AlertCriteria().byType(AlertType.HIGH)));
     }

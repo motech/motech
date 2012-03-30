@@ -198,7 +198,7 @@ public class ReminderEventHandlerTest extends BaseUnitTest {
     }
 
     private MotechEvent buildMotechEvent(String externalId, String dosageId) {
-        HashMap eventParams = new SchedulerPayloadBuilder().withDosageId(dosageId).withExternalId(externalId).payload();
+        HashMap<String, Object> eventParams = new SchedulerPayloadBuilder().withDosageId(dosageId).withExternalId(externalId).payload();
         return new MotechEvent(EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT, eventParams);
     }
 
