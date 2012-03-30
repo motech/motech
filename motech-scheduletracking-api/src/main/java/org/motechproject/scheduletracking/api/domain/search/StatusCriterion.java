@@ -10,14 +10,14 @@ import java.util.List;
 
 import static ch.lambdaj.Lambda.having;
 import static ch.lambdaj.Lambda.on;
-import static org.hamcrest.Matchers.isIn;
+import static org.hamcrest.Matchers.equalTo;
 
 public class StatusCriterion implements Criterion {
 
-    private List<EnrollmentStatus> statuses;
+    private EnrollmentStatus status;
 
-    public StatusCriterion(List<EnrollmentStatus> statuses) {
-        this.statuses = statuses;
+    public StatusCriterion(EnrollmentStatus status) {
+        this.status = status;
     }
 
     @Override
@@ -27,6 +27,6 @@ public class StatusCriterion implements Criterion {
 
     @Override
     public List<Enrollment> filter(List<Enrollment> enrollments, EnrollmentService enrollmentService) {
-        return Lambda.filter(having(on(Enrollment.class).getStatus(), isIn(statuses)), enrollments);
+        return Lambda.filter(having(on(Enrollment.class).getStatus(), equalTo(status)), enrollments);
     }
 }

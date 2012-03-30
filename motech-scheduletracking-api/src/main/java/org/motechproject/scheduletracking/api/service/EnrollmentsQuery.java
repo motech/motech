@@ -44,9 +44,15 @@ public class EnrollmentsQuery {
         return this;
     }
 
-    public EnrollmentsQuery havingState(String... states) {
-        criteria.add(new StatusCriterion(toEnum(asList(states))));
-        return this;
+    public EnrollmentsQuery havingState(String state) {
+        try {
+            EnrollmentStatus status = EnrollmentStatus.valueOf(state.toUpperCase());
+            criteria.add(new StatusCriterion(status));
+            return this;
+        } catch (Exception e) {
+            throw new InvalidQueryException("Invalid enrollment status: " + state);
+        }
+
     }
 
     public EnrollmentsQuery completedDuring(DateTime start, DateTime end) {
@@ -76,10 +82,10 @@ public class EnrollmentsQuery {
     }
 
     public Criterion getPrimaryCriterion() {
-        return (criteria.size() > 0)? criteria.get(0) : null;
+        return (criteria.size() > 0) ? criteria.get(0) : null;
     }
 
     public List<Criterion> getSecondaryCriteria() {
-        return (criteria.size() > 1)? criteria.subList(1, criteria.size()) : new ArrayList<Criterion>();
+        return (criteria.size() > 1) ? criteria.subList(1, criteria.size()) : new ArrayList<Criterion>();
     }
 }

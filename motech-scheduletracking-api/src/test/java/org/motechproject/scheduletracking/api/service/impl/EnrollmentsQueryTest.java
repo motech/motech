@@ -74,7 +74,7 @@ public class EnrollmentsQueryTest {
 
     @Test
     public void shouldVerifyhavingStateQuery() {
-        EnrollmentsQuery query = enrollmentsQuery.havingState("ACTIVE", "deFaulted");
+        EnrollmentsQuery query = enrollmentsQuery.havingState("acTive");
         List<Criterion> criteria = query.getCriteria();
         assertEquals(criteria.size(), 1);
         assertTrue(criteria.get(0) instanceof StatusCriterion);
@@ -90,7 +90,7 @@ public class EnrollmentsQueryTest {
 
     @Test(expected = InvalidQueryException.class)
     public void shouldThrowExceptionForInvalidState() {
-        enrollmentsQuery.havingState("ACTIVE", "EaRliestzjxh");
+        enrollmentsQuery.havingState("EaRliestzjxh");
     }
 
     @Test
