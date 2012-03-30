@@ -2,7 +2,7 @@ package org.motechproject.appointments.api.mapper;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
-import org.motechproject.appointments.api.contract.VisitResponse;
+import org.motechproject.appointments.api.service.contract.VisitResponse;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.appointments.api.model.Visit;
 import org.motechproject.util.DateUtil;
@@ -12,7 +12,6 @@ import java.util.Collections;
 import static junit.framework.Assert.*;
 
 public class VisitResponseMapperTest {
-
     @Test
     public void mapVisitToVisitResponse() {
         DateTime now = DateUtil.now();

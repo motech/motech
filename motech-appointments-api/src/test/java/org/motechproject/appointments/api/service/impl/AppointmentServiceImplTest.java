@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.motechproject.appointments.api.contract.*;
+import org.motechproject.appointments.api.service.contract.*;
 import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
 import org.motechproject.appointments.api.repository.AllReminderJobs;
 import org.motechproject.appointments.api.model.Appointment;

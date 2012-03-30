@@ -1,10 +1,11 @@
 package org.motechproject.appointments.api.it;
 
 import org.joda.time.DateTime;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.appointments.api.contract.VisitResponse;
-import org.motechproject.appointments.api.contract.VisitsQuery;
+import org.motechproject.appointments.api.service.contract.VisitResponse;
+import org.motechproject.appointments.api.service.contract.VisitsQuery;
 import org.motechproject.appointments.api.model.AppointmentCalendar;
 import org.motechproject.appointments.api.model.Visit;
 import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
@@ -23,11 +24,16 @@ import static org.motechproject.util.DateUtil.newDateTime;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/applicationAppointmentsAPI.xml")
-public class VisitsQueryServiceIT extends AppointmentsBaseIntegrationTest {
+public class VisitsQueryServiceIT {
     @Autowired
     AllAppointmentCalendars allAppointmentCalendars;
     @Autowired
     VisitsQueryService visitsQueryService;
+
+    @After
+    public void tearDown() throws Exception {
+        allAppointmentCalendars.removeAll();
+    }
 
     @Test
     public void shouldFetchMissedVisits() {
@@ -46,8 +52,6 @@ public class VisitsQueryServiceIT extends AppointmentsBaseIntegrationTest {
         DateTime end = newDateTime(2011, 10, 1, 0, 0, 0);
         List<VisitResponse> missedVisits = visitsQueryService.search(new VisitsQuery().withDueDateIn(start, end).unvisited());
         assertEquals(asList("visit2", "visit4"), extract(missedVisits, on(VisitResponse.class).getName()));
-
-        markForDeletion(appointmentCalendar1, appointmentCalendar2);
     }
 
     @Test
@@ -63,8 +67,6 @@ public class VisitsQueryServiceIT extends AppointmentsBaseIntegrationTest {
 
         List<VisitResponse> visitsResults = visitsQueryService.search(new VisitsQuery().havingExternalId("foo1"));
         assertEquals(asList("foo1", "foo1"), extract(visitsResults, on(VisitResponse.class).getExternalId()));
-
-        markForDeletion(appointmentCalendar1, appointmentCalendar2);
     }
 
     @Test
@@ -88,7 +90,5 @@ public class VisitsQueryServiceIT extends AppointmentsBaseIntegrationTest {
         DateTime end = newDateTime(2011, 11, 1, 0, 0, 0);
         List<VisitResponse> dueVisits = visitsQueryService.search(new VisitsQuery().havingExternalId("foo2").withDueDateIn(start, end).unvisited());
         assertEquals(asList("visit4", "visit5"), extract(dueVisits, on(VisitResponse.class).getName()));
-
-        markForDeletion(appointmentCalendar1, appointmentCalendar2, appointmentCalendar3);
     }
 }

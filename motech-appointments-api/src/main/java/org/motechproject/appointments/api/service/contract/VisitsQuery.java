@@ -1,4 +1,4 @@
-package org.motechproject.appointments.api.contract;
+package org.motechproject.appointments.api.service.contract;
 
 import org.joda.time.DateTime;
 import org.motechproject.appointments.api.model.search.*;
@@ -30,8 +30,7 @@ public class VisitsQuery {
      * @return currently built query
      */
     public VisitsQuery havingMetadata(String property, String value) {
-
-        criteria.add(new MetadataPropertyCriterion(property, value));
+        criteria.add(new MetadataCriterion(property, value));
         return this;
     }
 

@@ -4,7 +4,7 @@ import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.appointments.api.contract.VisitResponse;
+import org.motechproject.appointments.api.service.contract.VisitResponse;
 import org.motechproject.appointments.api.model.AppointmentCalendar;
 import org.motechproject.appointments.api.model.Visit;
 import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
@@ -26,13 +26,12 @@ import static org.motechproject.util.DateUtil.newDateTime;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/applicationAppointmentsAPI.xml")
-public class AllAppointmentCalendarsIT extends AppointmentsBaseIntegrationTest {
-
+public class AllAppointmentCalendarsIT {
     @Autowired
     private AllAppointmentCalendars allAppointmentCalendars;
 
     @After
-    public void teardown() {
+    public void tearDown() {
         allAppointmentCalendars.removeAll();
     }
 

@@ -6,7 +6,7 @@ import org.ektorp.ViewQuery;
 import org.ektorp.support.GenerateView;
 import org.ektorp.support.View;
 import org.joda.time.DateTime;
-import org.motechproject.appointments.api.contract.VisitResponse;
+import org.motechproject.appointments.api.service.contract.VisitResponse;
 import org.motechproject.appointments.api.mapper.VisitResponseMapper;
 import org.motechproject.appointments.api.model.AppointmentCalendar;
 import org.motechproject.appointments.api.model.Visit;
@@ -51,7 +51,7 @@ public class AllAppointmentCalendars extends MotechBaseRepository<AppointmentCal
         return extractVisitResponse(visitQueryResults);
     }
 
-    @View(name = "find_by_missed_visits", map = "function(doc) { \n" +
+    @View(name = "by_missed_visits", map = "function(doc) { \n" +
             "if(doc.type === 'AppointmentCalendar') {\n" +
             "for(var i=0;i<doc.visits.length;i++)\n" +
             "{\n" +
@@ -62,11 +62,11 @@ public class AllAppointmentCalendars extends MotechBaseRepository<AppointmentCal
             "}\n" +
             "}")
     public List<VisitResponse> findMissedVisits() {
-        List<VisitQueryResult> visitQueryResults = db.queryView(createQuery("find_by_missed_visits"), VisitQueryResult.class);
+        List<VisitQueryResult> visitQueryResults = db.queryView(createQuery("by_missed_visits"), VisitQueryResult.class);
         return extractVisitResponse(visitQueryResults);
     }
 
-    @View(name = "find_by_property", map = "function(doc) { \n" +
+    @View(name = "by_property", map = "function(doc) { \n" +
             "  if (doc.type === 'AppointmentCalendar') {\n" +
             "    for (var i = 0; i < doc.visits.length; i++) {\n" +
             "       for (var prop in doc.visits[i].data)\n" +
@@ -76,7 +76,7 @@ public class AllAppointmentCalendars extends MotechBaseRepository<AppointmentCal
             "}\n"
     )
     public List<VisitResponse> findByMetadataProperty(String property, String value) {
-        List<VisitQueryResult> visitQueryResults = db.queryView(createQuery("find_by_property").key(ComplexKey.of(property, value)).includeDocs(false), VisitQueryResult.class);
+        List<VisitQueryResult> visitQueryResults = db.queryView(createQuery("by_property").key(ComplexKey.of(property, value)).includeDocs(false), VisitQueryResult.class);
         return extractVisitResponse(visitQueryResults);
     }
 

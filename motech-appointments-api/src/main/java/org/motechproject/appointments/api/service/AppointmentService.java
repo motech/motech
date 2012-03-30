@@ -1,7 +1,7 @@
 package org.motechproject.appointments.api.service;
 
 import org.joda.time.DateTime;
-import org.motechproject.appointments.api.contract.*;
+import org.motechproject.appointments.api.service.contract.*;
 
 import java.util.List;
 import java.util.Map;

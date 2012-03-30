@@ -4,7 +4,7 @@ import ch.lambdaj.Lambda;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.appointments.api.contract.VisitResponse;
+import org.motechproject.appointments.api.service.contract.VisitResponse;
 import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
 
 import java.util.ArrayList;
@@ -13,26 +13,27 @@ import java.util.List;
 import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class MetadataPropertyCriterionTest {
-
+public class MetadataCriterionTest {
     @Mock
     private AllAppointmentCalendars allAppointmentCalendars;
 
     @Before
-    public void setup() {
+    public void setUp() {
         initMocks(this);
     }
 
     @Test
     public void shouldFetchVisitsMatchingGivenMetadataValueDirectlyFromTheDb() {
-        List<VisitResponse> result = mock(List.class);
+        VisitResponse visitResponse = new VisitResponse();
+        visitResponse.addVisitData("foo", "bar");
+
+        List<VisitResponse> result = new ArrayList<VisitResponse>();
         when(allAppointmentCalendars.findByMetadataProperty("foo", "bar")).thenReturn(result);
-        MetadataPropertyCriterion criterion = new MetadataPropertyCriterion("foo", "bar");
+        MetadataCriterion criterion = new MetadataCriterion("foo", "bar");
+
         assertEquals(result, criterion.fetch(allAppointmentCalendars));
     }
 
@@ -44,7 +45,7 @@ public class MetadataPropertyCriterionTest {
         visits.add(new VisitResponse().setName("visit3").addVisitData("Goo", "bar").addVisitData("foo", "bar"));
         visits.add(new VisitResponse().setName("visit4").addVisitData("foo", "baz"));
 
-        MetadataPropertyCriterion criterion = new MetadataPropertyCriterion("foo", "bar");
-        assertEquals(asList(new String[]{ "visit1", "visit3" }), Lambda.extract(criterion.filter(visits), on(VisitResponse.class).getName()));
+        MetadataCriterion criterion = new MetadataCriterion("foo", "bar");
+        assertEquals(asList("visit1", "visit3"), Lambda.extract(criterion.filter(visits), on(VisitResponse.class).getName()));
     }
 }

@@ -1,7 +1,7 @@
 package org.motechproject.appointments.api.model.search;
 
 import org.joda.time.DateTime;
-import org.motechproject.appointments.api.contract.VisitResponse;
+import org.motechproject.appointments.api.service.contract.VisitResponse;
 import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
 
 import java.util.ArrayList;

@@ -2,11 +2,9 @@ package org.motechproject.appointments.api.mapper;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.motechproject.appointments.api.contract.ReminderConfiguration;
-import org.motechproject.appointments.api.contract.ReminderConfiguration.IntervalUnit;
+import org.motechproject.appointments.api.service.contract.ReminderConfiguration;
+import org.motechproject.appointments.api.service.contract.ReminderConfiguration.IntervalUnit;
 import org.motechproject.appointments.api.model.Reminder;
-
-import java.util.Date;
 
 public class ReminderMapper {
 

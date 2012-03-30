@@ -1,4 +1,4 @@
-package org.motechproject.appointments.api.contract;
+package org.motechproject.appointments.api.service.contract;
 
 import java.util.ArrayList;
 import java.util.List;
