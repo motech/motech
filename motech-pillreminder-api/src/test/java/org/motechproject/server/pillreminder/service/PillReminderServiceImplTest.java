@@ -129,7 +129,7 @@ public class PillReminderServiceImplTest {
         String pillRegimenId = "pillRegimenId";
         String patientId = "patientId";
 
-        Dosage dosage = new Dosage(new Time(20, 05), new HashSet<Medicine>());
+        Dosage dosage = new Dosage(new Time(20, 5), new HashSet<Medicine>());
         dosage.setId(dosageId);
 
         HashSet<Dosage> dosages = new HashSet<Dosage>();
