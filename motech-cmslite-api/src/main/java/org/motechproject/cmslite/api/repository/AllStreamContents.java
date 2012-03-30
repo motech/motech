@@ -71,7 +71,7 @@ public class AllStreamContents extends BaseContentRepository<StreamContent> {
         }
     }
 
-    private void createOrUpdateContent(StreamContent streamContent, StreamContent streamContentFromDB, boolean resourceDoesNotExist) throws IOException {
+    private void createOrUpdateContent(StreamContent streamContent, StreamContent streamContentFromDB, boolean resourceDoesNotExist) {
         if (resourceDoesNotExist){
             db.create(streamContent);
             createAttachment(streamContent);
