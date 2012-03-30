@@ -24,7 +24,13 @@ public class VisitsQuery {
         return this;
     }
 
+    /** Builds query to filter visits by given metadata key value pair
+     * @param property  Property of the metadata
+     * @param value     Value of the property to be matched
+     * @return currently built query
+     */
     public VisitsQuery havingMetadata(String property, String value) {
+
         criteria.add(new MetadataPropertyCriterion(property, value));
         return this;
     }

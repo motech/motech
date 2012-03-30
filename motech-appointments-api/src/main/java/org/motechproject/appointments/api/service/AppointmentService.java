@@ -27,5 +27,10 @@ public interface AppointmentService {
 
     public void markVisitAsMissed(String externalId, String visitName);
 
+    /** Returns visits filtered by the query passed in
+     *
+     * @param query Query by which you want to filter visits
+     * @return  List of matched visits
+     */
     public List<VisitResponse> search(VisitsQuery query);
 }
