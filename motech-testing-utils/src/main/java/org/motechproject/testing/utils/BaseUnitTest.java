@@ -49,7 +49,7 @@ public class BaseUnitTest {
     }
 
     @After
-    public final void tearDown() {
+    public void tearDown() {
         resetDateTimeSource();
     }
 
