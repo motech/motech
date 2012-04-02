@@ -4,6 +4,8 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
@@ -15,8 +17,12 @@ import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
 import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
 import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
+import org.motechproject.scheduletracking.api.service.contract.UpdateCriteria;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
@@ -44,7 +50,7 @@ public class ScheduleTrackingServiceImplTest {
     @Mock
     private EnrollmentRecordMapper enrollmentRecordMapper;
 
-    public static final Map<String,String> EMPTY_METADATA_LIST = new HashMap<String, String>();
+    public static final Map<String, String> EMPTY_METADATA_LIST = new HashMap<String, String>();
 
     @Before
     public void setUp() {
@@ -97,10 +103,10 @@ public class ScheduleTrackingServiceImplTest {
         metadata.put("fuu", "baz");
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), newDateTime(2012, 11, 2, 0, 0, 0).toLocalDate(), null, null, null, "milestone1", metadata));
 
-        Map<String,String> expectedMetadata = new HashMap<String, String>();
+        Map<String, String> expectedMetadata = new HashMap<String, String>();
         expectedMetadata.put("foo", "bar");
         expectedMetadata.put("fuu", "baz");
-        
+
         verify(enrollmentService).enroll("entity_1", "my_schedule", "milestone1", newDateTime(newDateTime(2012, 11, 2, 0, 0, 0).toLocalDate(), new Time(0, 0)), newDateTime(now().toLocalDate(), new Time(0, 0)), new Time(8, 10), expectedMetadata);
     }
 
@@ -302,5 +308,40 @@ public class ScheduleTrackingServiceImplTest {
         when(enrollmentRecordMapper.mapWithDates(enrollment2)).thenReturn(record2);
 
         assertEquals(asList(new EnrollmentRecord[]{record1, record2}), scheduleTrackingService.searchWithWindowDates(enrollmentQuery));
+    }
+
+    @Test
+    public void shouldUpdateValuesOnEnrollment() {
+        Schedule schedule = new Schedule("some_schedule");
+        Map<String, String> metadata = new HashMap<String, String>();
+        metadata.put("foo1", "bar1");
+        metadata.put("foo2", "bar2");
+        Enrollment enrollment = new Enrollment("external_id_1", schedule, null, null, null, null, null, metadata);
+        HashMap<String, String> toBeUpdatedMetada = new HashMap<String, String>();
+        toBeUpdatedMetada.put("foo2", "val2");
+        toBeUpdatedMetada.put("foo3", "val3");
+
+        when(allEnrollments.getActiveEnrollment("foo", "some_schedule")).thenReturn(enrollment);
+
+        ArgumentCaptor<Enrollment> enrollmentArgumentCaptor = ArgumentCaptor.forClass(Enrollment.class);
+
+        scheduleTrackingService.updateEnrollment("foo", "some_schedule", new UpdateCriteria().Metadata(toBeUpdatedMetada));
+
+        verify(allEnrollments).update(enrollmentArgumentCaptor.capture());
+        Enrollment updatedEnrollment = enrollmentArgumentCaptor.getValue();
+
+        Map<String, String> updatedMetadata = updatedEnrollment.getMetadata();
+        assertEquals("bar1", updatedMetadata.get("foo1"));
+        assertEquals("val2", updatedMetadata.get("foo2"));
+        assertEquals("val3", updatedMetadata.get("foo3"));
+
+
+    }
+
+    @Test(expected = InvalidEnrollmentException.class)
+    public void UpdateShouldThrowExceptionForInvalidData() {
+        when(allEnrollments.getActiveEnrollment("foo", "some_schedule")).thenReturn(null);
+        scheduleTrackingService.updateEnrollment("foo", "some_schedule", new UpdateCriteria().Metadata(new HashMap<String, String>()));
+        verify(allEnrollments, times(0)).update(Matchers.<Enrollment>any());
     }
 }

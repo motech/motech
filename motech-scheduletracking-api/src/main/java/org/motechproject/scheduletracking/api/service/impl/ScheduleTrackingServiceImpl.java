@@ -8,16 +8,15 @@ import org.motechproject.scheduletracking.api.domain.exception.InvalidEnrollment
 import org.motechproject.scheduletracking.api.domain.exception.ScheduleTrackingException;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
-import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
-import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
-import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
-import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
+import org.motechproject.scheduletracking.api.service.*;
 import org.motechproject.scheduletracking.api.service.contract.UpdateCriteria;
+import org.motechproject.scheduletracking.api.service.contract.UpdateCriterion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static java.text.MessageFormat.format;
 import static org.motechproject.util.DateUtil.newDateTime;
@@ -44,6 +43,22 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
     public EnrollmentRecord getEnrollment(String externalId, String scheduleName) {
         Enrollment activeEnrollment = allEnrollments.getActiveEnrollment(externalId, scheduleName);
         return enrollmentRecordMapper.map(activeEnrollment);
+    }
+
+    @Override
+    public void updateEnrollment(String externalId, String scheduleName, UpdateCriteria updateCriteria) {
+        Enrollment enrollment = allEnrollments.getActiveEnrollment(externalId, scheduleName);
+        if (enrollment == null) {
+            throw new InvalidEnrollmentException(
+                    format("Cannot find an active enrollment with " +
+                            "External ID: {0} & Schedule name: {1}", externalId, scheduleName));
+        } else {
+            Map<UpdateCriterion, Object> criteria = updateCriteria.getAll();
+            for (UpdateCriterion updateCriterion : criteria.keySet()) {
+                EnrollmentUpdater.get(updateCriterion).update(enrollment, criteria.get(updateCriterion));
+            }
+            allEnrollments.update(enrollment);
+        }
     }
 
     @Override
