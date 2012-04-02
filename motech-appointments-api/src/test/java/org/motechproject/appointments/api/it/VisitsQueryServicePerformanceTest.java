@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.appointments.api.contract.VisitsQuery;
+import org.motechproject.appointments.api.service.contract.VisitsQuery;
 import org.motechproject.appointments.api.model.AppointmentCalendar;
 import org.motechproject.appointments.api.model.Visit;
 import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
@@ -26,7 +26,7 @@ import static org.motechproject.util.DateUtil.newDateTime;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/applicationAppointmentsAPI.xml")
-public class VisitsQueryServicePerformanceTest extends AppointmentsBaseIntegrationTest {
+public class VisitsQueryServicePerformanceTest {
     private static final int MAX_CALENDARS = 1000;
 
     @Autowired
@@ -39,7 +39,7 @@ public class VisitsQueryServicePerformanceTest extends AppointmentsBaseIntegrati
     private Random random;
 
     @Before
-    public void setup() {
+    public void setUp() {
         List<AppointmentCalendar> calendars = new ArrayList<AppointmentCalendar>();
 
         random = new Random();
@@ -56,6 +56,11 @@ public class VisitsQueryServicePerformanceTest extends AppointmentsBaseIntegrati
             allAppointmentCalendars.add(calendar);
 
         allAppointmentCalendars.getAll();
+    }
+
+    @After
+    public void tearDown() {
+        allAppointmentCalendars.removeAll();
     }
 
     private Visit randomVisit() {
@@ -82,10 +87,5 @@ public class VisitsQueryServicePerformanceTest extends AppointmentsBaseIntegrati
         visitsQueryService.search(new VisitsQuery().withDueDateIn(start, end).unvisited());
         long execEnd = currentTimeMillis();
         System.out.println(execEnd - execStart);
-    }
-
-    @After
-    public void teardown() {
-        allAppointmentCalendars.removeAll();
     }
 }

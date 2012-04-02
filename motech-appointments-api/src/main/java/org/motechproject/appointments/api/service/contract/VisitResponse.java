@@ -1,4 +1,4 @@
-package org.motechproject.appointments.api.contract;
+package org.motechproject.appointments.api.service.contract;
 
 import org.joda.time.DateTime;
 
@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class VisitResponse {
-
     private String name;
     private String externalId;
     private String typeOfVisit;
@@ -100,5 +99,10 @@ public class VisitResponse {
     public VisitResponse setAppointmentConfirmDate(DateTime appointmentConfirmDate) {
         this.appointmentConfirmDate = appointmentConfirmDate;
         return this;
+    }
+
+    public boolean hasMetadata(String property, String value) {
+        return visitData.containsKey(property) && visitData.get(property).equals(value);
+
     }
 }

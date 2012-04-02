@@ -48,7 +48,7 @@ public class AllStringContents extends BaseContentRepository<StringContent> {
         }
     }
 
-    private void createOrUpdateContent(StringContent stringContent, StringContent stringContentFromDB, boolean resourceDoesNotExist) throws IOException {
+    private void createOrUpdateContent(StringContent stringContent, StringContent stringContentFromDB, boolean resourceDoesNotExist) {
         if (resourceDoesNotExist)
             db.create(stringContent);
         else {

@@ -184,13 +184,13 @@ public class OpenMRSEncounterAdapterTest {
         EncounterType encounterType1 = new EncounterType();
         encounterType1.setName(encounterName);
         encounter1.setEncounterType(encounterType1);
-        Date encounterDatetime1 = new Date(1999, 11, 2);
+        Date encounterDatetime1 = new LocalDate(1999, 11, 2).toDate();
         encounter1.setEncounterDatetime(encounterDatetime1);
         encounter1.setCreator(new User(12));
         encounter1.setProvider(new Person());
         Encounter encounter2 = new Encounter(2);
         encounter2.setEncounterType(encounterType1);
-        encounter2.setEncounterDatetime(new Date(1998, 11, 6));
+        encounter2.setEncounterDatetime(new LocalDate(1998, 11, 6).toDate());
 
         when(mockEncounterService.getEncountersByPatientIdentifier(motechId)).thenReturn(Arrays.asList(encounter1, encounter2));
         MRSEncounter actualEncounter = encounterAdapter.getLatestEncounterByPatientMotechId(motechId, encounterName);

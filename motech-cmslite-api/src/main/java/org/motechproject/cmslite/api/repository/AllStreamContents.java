@@ -71,7 +71,7 @@ public class AllStreamContents extends BaseContentRepository<StreamContent> {
         }
     }
 
-    private void createOrUpdateContent(StreamContent streamContent, StreamContent streamContentFromDB, boolean resourceDoesNotExist) throws IOException {
+    private void createOrUpdateContent(StreamContent streamContent, StreamContent streamContentFromDB, boolean resourceDoesNotExist) {
         if (resourceDoesNotExist){
             db.create(streamContent);
             createAttachment(streamContent);
@@ -84,7 +84,7 @@ public class AllStreamContents extends BaseContentRepository<StreamContent> {
         }
     }
 
-    private void createAttachment(StreamContent streamContent) throws IOException {
+    private void createAttachment(StreamContent streamContent) {
         BufferedInputStream bufferedInputStream = new BufferedInputStream(streamContent.getInputStream());
 
         AttachmentInputStream attachmentInputStream = new AttachmentInputStream(streamContent.getId(), bufferedInputStream, streamContent.getContentType());

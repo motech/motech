@@ -1,7 +1,7 @@
 package org.motechproject.appointments.api.mapper;
 
-import org.motechproject.appointments.api.contract.ReminderConfiguration;
-import org.motechproject.appointments.api.contract.RescheduleAppointmentRequest;
+import org.motechproject.appointments.api.service.contract.ReminderConfiguration;
+import org.motechproject.appointments.api.service.contract.RescheduleAppointmentRequest;
 import org.motechproject.appointments.api.model.Reminder;
 
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
 package org.motechproject.appointments.api.service.impl;
 
 import org.joda.time.DateTime;
-import org.motechproject.appointments.api.contract.*;
+import org.motechproject.appointments.api.service.contract.*;
 import org.motechproject.appointments.api.mapper.ReminderMapper;
 import org.motechproject.appointments.api.mapper.RescheduleAppointmentMapper;
 import org.motechproject.appointments.api.mapper.VisitMapper;

@@ -71,14 +71,11 @@ public class RuleBundleLoaderTest {
         KnowledgeBaseManager kbm = mock(KnowledgeBaseManager.class);
 
         doAnswer(new Answer() {
-            public Object answer(InvocationOnMock invocation) {
+            public Object answer(InvocationOnMock invocation) throws IOException {
                 Object[] args = invocation.getArguments();
                 System.out.println("test");
                 BufferedReader br = new BufferedReader(new InputStreamReader((InputStream)args[2]));
-                try {
-                    assertEquals(br.readLine(), "//test");
-                } catch (IOException e) {
-                }
+                assertEquals(br.readLine(), "//test");
                 return null;
             }})
         .when(kbm).addOrUpdateRule(eq(ruleFile), eq(bundleSymbolicName), any(InputStream.class));

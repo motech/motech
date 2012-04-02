@@ -23,7 +23,7 @@ public class AbsoluteProgramScheduler extends MessageCampaignScheduler<AbsoluteC
 
     @Override
     protected void scheduleJobFor(AbsoluteCampaignMessage absoluteCampaignMessage) {
-        HashMap params = jobParams(absoluteCampaignMessage.messageKey());
+        HashMap<String, Object> params = jobParams(absoluteCampaignMessage.messageKey());
         scheduleJobOn(campaignRequest.reminderTime(), absoluteCampaignMessage.date(), params);
     }
 

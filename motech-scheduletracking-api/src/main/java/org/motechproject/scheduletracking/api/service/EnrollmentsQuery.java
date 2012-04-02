@@ -3,7 +3,6 @@ package org.motechproject.scheduletracking.api.service;
 import org.joda.time.DateTime;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.WindowName;
-import org.motechproject.scheduletracking.api.domain.exception.InvalidQueryException;
 import org.motechproject.scheduletracking.api.domain.search.*;
 
 import java.util.ArrayList;
@@ -44,8 +43,8 @@ public class EnrollmentsQuery {
         return this;
     }
 
-    public EnrollmentsQuery havingState(String... states) {
-        criteria.add(new StatusCriterion(toEnum(asList(states))));
+    public EnrollmentsQuery havingState(EnrollmentStatus enrollmentStatus) {
+        criteria.add(new StatusCriterion(enrollmentStatus));
         return this;
     }
 
@@ -59,27 +58,15 @@ public class EnrollmentsQuery {
         return this;
     }
 
-    private List<EnrollmentStatus> toEnum(List<String> values) {
-        List<EnrollmentStatus> statuses = new ArrayList<EnrollmentStatus>();
-        for (String value : values) {
-            try {
-                statuses.add(EnrollmentStatus.valueOf(value.toUpperCase()));
-            } catch (Exception e) {
-                throw new InvalidQueryException("Invalid enrollment status: " + value);
-            }
-        }
-        return statuses;
-    }
-
     public List<Criterion> getCriteria() {
         return criteria;
     }
 
     public Criterion getPrimaryCriterion() {
-        return (criteria.size() > 0)? criteria.get(0) : null;
+        return (criteria.size() > 0) ? criteria.get(0) : null;
     }
 
     public List<Criterion> getSecondaryCriteria() {
-        return (criteria.size() > 1)? criteria.subList(1, criteria.size()) : new ArrayList<Criterion>();
+        return (criteria.size() > 1) ? criteria.subList(1, criteria.size()) : new ArrayList<Criterion>();
     }
 }

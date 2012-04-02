@@ -87,9 +87,7 @@ public class Node {
     }
 
     public Node setTreeCommands(ITreeCommand... treeCommands) {
-        for (ITreeCommand treeCommand : treeCommands) {
-            this.treeCommands.add(treeCommand);
-        }
+        Collections.addAll(this.treeCommands, treeCommands);
         return this;
     }
 

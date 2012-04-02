@@ -66,8 +66,8 @@ public class TestMotechScheduledEvent {
 
         assertNotNull("Expecting param object", params);
 
-        HashMap hashMap = new HashMap();
-        hashMap.put("One", new Integer(1));
+        HashMap<String, Object> hashMap = new HashMap<String, Object>();
+        hashMap.put("One", 1);
 
         MotechEvent nonNullParams = new MotechEvent("testEvent", hashMap);
         params = nonNullParams.getParameters();
@@ -83,8 +83,8 @@ public class TestMotechScheduledEvent {
         MotechEvent motechEventDifferentJobId = new MotechEvent("testEvent", null);
         MotechEvent scheduledEventDifferentEventType = new MotechEvent("testEvent2", null);
 
-        HashMap hashMap = new HashMap();
-        hashMap.put("One", new Integer(1));
+        HashMap<String, Object> hashMap = new HashMap<String, Object>();
+        hashMap.put("One", 1);
 
         MotechEvent nonNullParams = new MotechEvent("testEvent", hashMap);
         MotechEvent nonNullParams2 = new MotechEvent("testEvent", hashMap);

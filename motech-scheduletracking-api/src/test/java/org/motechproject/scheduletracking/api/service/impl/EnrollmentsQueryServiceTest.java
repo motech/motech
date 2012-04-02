@@ -46,7 +46,7 @@ public class EnrollmentsQueryServiceTest {
 
         EnrollmentsQuery enrollmentQuery = mock(EnrollmentsQuery.class);
         when(enrollmentQuery.getPrimaryCriterion()).thenReturn(primaryCriterion);
-        when(enrollmentQuery.getSecondaryCriteria()).thenReturn(asList(new Criterion[]{ secondaryCriterion1, secondaryCriterion2 }));
+        when(enrollmentQuery.getSecondaryCriteria()).thenReturn(asList(secondaryCriterion1, secondaryCriterion2));
 
         assertEquals(expectedFilteredEnrollments, new EnrollmentsQueryService(allEnrollments, enrollmentService).search(enrollmentQuery));
 

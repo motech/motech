@@ -21,8 +21,8 @@ import java.util.*;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 public class OpenMRSUserAdapter implements MRSUserAdapter {
-    private static Integer PASSWORD_LENGTH = 8;
-    private static String PERSON_UNKNOWN_GENDER = "?";
+    private static final Integer PASSWORD_LENGTH = 8;
+    private static final String PERSON_UNKNOWN_GENDER = "?";
 
     private UserService userService;
     private PersonService personService;
@@ -47,7 +47,7 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
     }
 
     @Override
-    public Map saveUser(MRSUser mrsUser) throws UserAlreadyExistsException {
+    public Map<String, Object> saveUser(MRSUser mrsUser) throws UserAlreadyExistsException {
         MRSUser userByUserName = getUserByUserName(mrsUser.getPerson().attrValue("Email"));
         if (userByUserName != null && !isSystemAdmin(userByUserName.getSystemId())) {
             throw new UserAlreadyExistsException();

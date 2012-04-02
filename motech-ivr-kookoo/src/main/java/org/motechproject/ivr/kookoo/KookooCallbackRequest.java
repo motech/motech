@@ -2,8 +2,8 @@ package org.motechproject.ivr.kookoo;
 
 public class KookooCallbackRequest {
 
-    private final String ANSWERED = "answered";
-    private final String NOT_ANSWERED = "ring";
+    private static final String ANSWERED = "answered";
+    private static final String NOT_ANSWERED = "ring";
 
     private String sid;
     private String status_details;

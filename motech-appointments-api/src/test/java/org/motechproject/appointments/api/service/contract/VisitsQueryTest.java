@@ -1,10 +1,10 @@
-package org.motechproject.appointments.api.contract;
+package org.motechproject.appointments.api.service.contract;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.appointments.api.model.search.Criterion;
 import org.motechproject.appointments.api.model.search.DueDateInCriterion;
-import org.motechproject.appointments.api.model.search.MetadataPropertyCriterion;
+import org.motechproject.appointments.api.model.search.MetadataCriterion;
 import org.motechproject.appointments.api.model.search.UnvisitedCriterion;
 
 import java.util.List;
@@ -42,7 +42,7 @@ public class VisitsQueryTest {
         VisitsQuery query = visitsQuery.havingMetadata("foo", "bar");
         List<Criterion> criteria = query.getCriteria();
         assertEquals(1, criteria.size());
-        assertTrue(criteria.get(0) instanceof MetadataPropertyCriterion);
+        assertTrue(criteria.get(0) instanceof MetadataCriterion);
 
     }
 

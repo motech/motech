@@ -1,6 +1,6 @@
 package org.motechproject.appointments.api.mapper;
 
-import org.motechproject.appointments.api.contract.VisitResponse;
+import org.motechproject.appointments.api.service.contract.VisitResponse;
 import org.motechproject.appointments.api.model.Visit;
 import org.springframework.stereotype.Component;
 

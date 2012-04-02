@@ -89,7 +89,7 @@ public class PhoneCall extends MotechBaseDataObject {
             return null;
         }
 
-        return new Integer((int) ((endDate.getTime() - startDate.getTime()) / 1000));
+        return (int) ((endDate.getTime() - startDate.getTime()) / 1000);
     }
 
     public CallRequest getCallRequest()
@@ -140,7 +140,7 @@ public class PhoneCall extends MotechBaseDataObject {
     public Set<PhoneCallEvent> getEvents() {
         Set<PhoneCallEvent> ret = events;
         if (null == events) {
-            ret = Collections.<PhoneCallEvent>emptySet();
+            ret = Collections.emptySet();
         }
 
         return ret;

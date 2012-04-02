@@ -4,7 +4,7 @@ import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.appointments.api.contract.VisitResponse;
+import org.motechproject.appointments.api.service.contract.VisitResponse;
 import org.motechproject.appointments.api.model.AppointmentCalendar;
 import org.motechproject.appointments.api.model.Visit;
 import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
@@ -26,13 +26,12 @@ import static org.motechproject.util.DateUtil.newDateTime;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/applicationAppointmentsAPI.xml")
-public class AllAppointmentCalendarsIT extends AppointmentsBaseIntegrationTest {
-
+public class AllAppointmentCalendarsIT {
     @Autowired
     private AllAppointmentCalendars allAppointmentCalendars;
 
     @After
-    public void teardown() {
+    public void tearDown() {
         allAppointmentCalendars.removeAll();
     }
 
@@ -122,11 +121,10 @@ public class AllAppointmentCalendarsIT extends AppointmentsBaseIntegrationTest {
     @Test
     public void shouldReturnVisitsMatchingGivenMetadataPropertyValuePair() {
         Visit visit1 = new Visit().name("visit1").addAppointment(newDateTime(2011, 7, 1, 0, 0, 0), null);
-        List<String> values = asList(new String[]{"val1", "val2"});
-        visit1.addData("key1", values);
+        visit1.addData("key1", "val1");
         visit1.addData("key2", "val2");
         Visit visit2 = new Visit().name("visit2").addAppointment(newDateTime(2011, 7, 1, 0, 0, 0), null);
-        visit2.addData("key1", values);
+        visit2.addData("key1", "val1");
         Visit visit3 = new Visit().name("visit3").addAppointment(newDateTime(2011, 8, 3, 0, 0, 0), null).visitDate(newDateTime(2011, 8, 3, 0, 0, 0));
         Visit visit4 = new Visit().name("visit4").addAppointment(newDateTime(2011, 10, 1, 0, 0, 0), null);
         visit4.addData("key1", "val2");
@@ -134,7 +132,7 @@ public class AllAppointmentCalendarsIT extends AppointmentsBaseIntegrationTest {
         allAppointmentCalendars.add(new AppointmentCalendar().externalId("foo1").addVisit(visit1).addVisit(visit2));
         allAppointmentCalendars.add(new AppointmentCalendar().externalId("foo2").addVisit(visit3).addVisit(visit4));
 
-        List<VisitResponse> result = allAppointmentCalendars.findByMetadataProperty("key1", values);
+        List<VisitResponse> result = allAppointmentCalendars.findByMetadataProperty("key1", "val1");
         assertEquals(asList(new String[]{"visit1", "visit2"}), extract(result, on(VisitResponse.class).getName()));
     }
 }

@@ -33,7 +33,7 @@ public class Context {
         this.openmrsPassword = openmrsPassword;
     }
 
-    public void initialize() throws InputRequiredException, DatabaseUpdateException, IOException, URISyntaxException {
+    public void initialize() throws InputRequiredException, DatabaseUpdateException, URISyntaxException {
         logger.warn(format("connecting to openmrs instance at %s", url));
         Properties properties = new Properties();
         properties.setProperty(AUTO_UPDATE_DATABASE_RUNTIME_PROPERTY, String.valueOf(true));

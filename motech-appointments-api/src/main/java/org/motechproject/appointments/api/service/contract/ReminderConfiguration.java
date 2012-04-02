@@ -1,4 +1,4 @@
-package org.motechproject.appointments.api.contract;
+package org.motechproject.appointments.api.service.contract;
 
 public class ReminderConfiguration {
     public enum IntervalUnit {SECONDS, MINUTES, HOURS, DAYS, WEEKS}

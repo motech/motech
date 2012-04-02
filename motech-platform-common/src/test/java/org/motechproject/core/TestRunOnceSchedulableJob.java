@@ -57,7 +57,6 @@ public class TestRunOnceSchedulableJob
     private MotechEvent motechEvent2;
 
     private Date currentDate;
-    private Date yesterday;
 
     @Before
     public void setUp() {
@@ -72,7 +71,6 @@ public class TestRunOnceSchedulableJob
         Calendar cal = Calendar.getInstance();
         currentDate = cal.getTime();
         cal.add(Calendar.DATE, -1);
-        yesterday = cal.getTime();
     }
 
     @Test(expected = IllegalArgumentException.class)

@@ -1,8 +1,7 @@
 package org.motechproject.appointments.api.model.search;
 
 import org.junit.Test;
-import org.motechproject.appointments.api.contract.VisitResponse;
-import org.motechproject.appointments.api.model.search.UnvisitedCriterion;
+import org.motechproject.appointments.api.service.contract.VisitResponse;
 import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
 
 import java.util.ArrayList;
@@ -26,7 +25,7 @@ public class UnvisitedCriterionTest {
         VisitResponse visit3 = new VisitResponse();
         visit3.setVisitDate(newDateTime(2012, 1, 2, 0, 0, 0));
         VisitResponse visit4 = new VisitResponse();
-        List<VisitResponse> visits = asList(new VisitResponse[]{visit1, visit2, visit3, visit4});
+        List<VisitResponse> visits = asList(visit1, visit2, visit3, visit4);
 
         assertEquals(asList(new VisitResponse[]{visit1, visit4}), new UnvisitedCriterion().filter(visits));
     }

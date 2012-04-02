@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class CampaignTypeHandlersRegistery {
-    private static Map<CampaignType, String> map = new HashMap();
+    private static Map<CampaignType, String> map = new HashMap<CampaignType, String>();
 
     static {
         map.put(CampaignType.REPEATING, MessageCampaignScheduler.INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT);

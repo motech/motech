@@ -6,7 +6,7 @@ public class CronJobSimpleExpressionBuilder {
 
     private Time startTime;
 
-    private final String CRON_JOB_EXPR = "0 %d %d %s * ?";
+    private static final String CRON_JOB_EXPR = "0 %d %d %s * ?";
     private int dayOfMonth;
 
     public CronJobSimpleExpressionBuilder(Time startTime) {
