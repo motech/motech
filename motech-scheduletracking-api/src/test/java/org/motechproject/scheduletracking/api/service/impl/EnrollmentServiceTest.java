@@ -276,22 +276,6 @@ public class EnrollmentServiceTest {
     }
 
     @Test
-    public void shouldReturnTheStartOfAGivenWindowForTheCurrentMilestone() {
-        Milestone firstMilestone = new Milestone("first_milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        Schedule schedule = new Schedule("my_schedule");
-        schedule.addMilestones(firstMilestone);
-        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
-
-        DateTime referenceDate = newDateTime(2012, 12, 4, 8, 30, 0);
-        Enrollment enrollment = new Enrollment("ID-074285", schedule, "first_milestone", referenceDate, referenceDate, null, EnrollmentStatus.ACTIVE, null);
-
-        assertEquals(referenceDate, enrollmentService.getStartOfWindowForCurrentMilestone(enrollment, WindowName.earliest));
-        assertEquals(referenceDate.plusWeeks(1), enrollmentService.getStartOfWindowForCurrentMilestone(enrollment, WindowName.due));
-        assertEquals(referenceDate.plusWeeks(2), enrollmentService.getStartOfWindowForCurrentMilestone(enrollment, WindowName.late));
-        assertEquals(referenceDate.plusWeeks(3), enrollmentService.getStartOfWindowForCurrentMilestone(enrollment, WindowName.max));
-    }
-
-    @Test
     public void shouldReturnTheEndOfAGivenWindowForTheCurrentMilestone() {
         Milestone firstMilestone = new Milestone("first_milestone", weeks(1), weeks(1), weeks(1), weeks(1));
         Schedule schedule = new Schedule("my_schedule");

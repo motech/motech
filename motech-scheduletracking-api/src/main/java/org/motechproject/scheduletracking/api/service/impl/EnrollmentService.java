@@ -84,12 +84,6 @@ public class EnrollmentService {
         return null;
     }
 
-    public DateTime getStartOfWindowForCurrentMilestone(Enrollment enrollment, WindowName windowName) {
-        DateTime currentMilestoneStartDate = enrollment.getReferenceForAlerts();
-        Milestone currentMilestone = enrollment.getSchedule().getMilestone(enrollment.getCurrentMilestoneName());
-        return currentMilestoneStartDate.plus(currentMilestone.getWindowStart(windowName));
-    }
-
     public DateTime getEndOfWindowForCurrentMilestone(Enrollment enrollment, WindowName windowName) {
         Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
         DateTime currentMilestoneStartDate = enrollment.getReferenceForAlerts();

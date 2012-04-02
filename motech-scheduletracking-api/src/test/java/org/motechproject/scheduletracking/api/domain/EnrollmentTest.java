@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import junit.framework.Assert;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.motechproject.model.Time;
@@ -153,4 +154,18 @@ public class EnrollmentTest {
         when(schedule.isBasedOnAbsoluteWindows()).thenReturn(isBasedOnAbsoluteWindows);
         return schedule;
     }
-}
+
+    @Test
+    public void shouldReturnTheStartOfAGivenWindowForTheCurrentMilestone() {
+        Milestone firstMilestone = new Milestone("first_milestone", weeks(1), weeks(1), weeks(1), weeks(1));
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(firstMilestone);
+
+        DateTime referenceDate = newDateTime(2012, 12, 4, 8, 30, 0);
+        Enrollment enrollment = new Enrollment("ID-074285", schedule, "first_milestone", referenceDate, referenceDate, null, EnrollmentStatus.ACTIVE, null);
+
+        Assert.assertEquals(referenceDate, enrollment.getStartOfWindowForCurrentMilestone(WindowName.earliest));
+        Assert.assertEquals(referenceDate.plusWeeks(1), enrollment.getStartOfWindowForCurrentMilestone(WindowName.due));
+        Assert.assertEquals(referenceDate.plusWeeks(2), enrollment.getStartOfWindowForCurrentMilestone(WindowName.late));
+        Assert.assertEquals(referenceDate.plusWeeks(3), enrollment.getStartOfWindowForCurrentMilestone(WindowName.max));
+    }}
