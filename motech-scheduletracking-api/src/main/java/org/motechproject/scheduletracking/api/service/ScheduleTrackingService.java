@@ -13,6 +13,11 @@ public interface ScheduleTrackingService {
     void fulfillCurrentMilestone(String externalId, String scheduleName, LocalDate fulfillmentDate, Time fulfillmentTime);
     void unenroll(String externalId, List<String> scheduleNames);
     EnrollmentRecord getEnrollment(String externalId, String scheduleName);
+
+    /** Updates an active Enrollment which has the given external id and schedule name
+     *
+     * @param updateCriteria states the fields to be updated in the enrollment
+     */
     void updateEnrollment(String externalId, String scheduleName, UpdateCriteria updateCriteria);
     List<EnrollmentRecord> search(EnrollmentsQuery query);
     List<EnrollmentRecord> searchWithWindowDates(EnrollmentsQuery query);

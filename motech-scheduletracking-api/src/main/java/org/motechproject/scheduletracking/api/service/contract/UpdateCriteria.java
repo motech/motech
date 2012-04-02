@@ -11,6 +11,11 @@ public class UpdateCriteria {
         return allCriteria;
     }
 
+    /** Adds metadata criteria to the update criteria list
+     *
+     * @param metadata value to be updated in the enrollment
+     * @return returns the instance with metadata criteria added to the criteria list
+     */
     public UpdateCriteria Metadata(HashMap<String,String> metadata)
     {
         allCriteria.put(UpdateCriterion.Metadata,metadata);
