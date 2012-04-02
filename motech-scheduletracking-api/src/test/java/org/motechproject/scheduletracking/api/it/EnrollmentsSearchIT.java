@@ -95,7 +95,7 @@ public class EnrollmentsSearchIT {
     }
 
     @Test
-    public void forAGivenEntityshouldReturnAllSchedulesWithDatesWhoseDueDateFallsInTheLastWeek() {
+    public void forAGivenEntityShouldReturnAllSchedulesWithDatesWhoseDueDateFallsInTheLastWeek() {
         DateTime iptiReferenceDate = newDateTime(2012, 1, 1, 0, 0 ,0);
         DateTime deliveryReferenceDateTime = newDateTime(2011, 7, 9, 0, 0 ,0);
         createEnrollment("entity_1", "IPTI Schedule", "IPTI 1", iptiReferenceDate, iptiReferenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE, null);

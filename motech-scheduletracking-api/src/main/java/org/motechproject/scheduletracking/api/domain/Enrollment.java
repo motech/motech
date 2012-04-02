@@ -32,7 +32,7 @@ public class Enrollment extends MotechBaseDataObject {
     @JsonProperty
     private EnrollmentStatus status;
     @JsonProperty
-    private Map<String,String> metadata;
+    private Map<String, String> metadata;
 
     private Schedule schedule;
     private List<MilestoneFulfillment> fulfillments = new LinkedList<MilestoneFulfillment>();
@@ -53,11 +53,11 @@ public class Enrollment extends MotechBaseDataObject {
         this.metadata = metadata;
     }
 
-    public Map<String,String> getMetadata() {
+    public Map<String, String> getMetadata() {
         return metadata;
     }
 
-    public void setMetadata(Map<String,String> metadata) {
+    public void setMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
     }
 
@@ -102,13 +102,11 @@ public class Enrollment extends MotechBaseDataObject {
 
     @JsonIgnore
     public DateTime getReferenceForAlerts() {
-        if( schedule.isBasedOnAbsoluteWindows())
-        {
+        if (schedule.isBasedOnAbsoluteWindows()) {
             DateTime startOfSchedule = getStartOfSchedule();
             List<Milestone> milestones = schedule.getMilestones();
-            for(Milestone milestone:milestones)
-            {
-                if(milestone.getName().equals(currentMilestoneName))
+            for (Milestone milestone : milestones) {
+                if (milestone.getName().equals(currentMilestoneName))
                     break;
                 startOfSchedule = startOfSchedule.plus(milestone.getMaximumDuration());
             }
@@ -156,6 +154,12 @@ public class Enrollment extends MotechBaseDataObject {
         startOfSchedule = enrollment.getStartOfSchedule();
         preferredAlertTime = enrollment.getPreferredAlertTime();
         return this;
+    }
+
+    public DateTime getStartOfWindowForCurrentMilestone(WindowName windowName) {
+        DateTime currentMilestoneStartDate = getReferenceForAlerts();
+        Milestone currentMilestone = schedule.getMilestone(currentMilestoneName);
+        return currentMilestoneStartDate.plus(currentMilestone.getWindowStart(windowName));
     }
 
     // ektorp methods follow

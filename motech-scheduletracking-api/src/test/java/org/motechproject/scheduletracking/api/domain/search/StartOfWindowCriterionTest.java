@@ -14,14 +14,12 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.util.DateUtil.newDateTime;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 public class StartOfWindowCriterionTest {
-
     @Mock
     EnrollmentService enrollmentService;
     @Mock
@@ -41,10 +39,10 @@ public class StartOfWindowCriterionTest {
         Enrollment enrollment4 = mock(Enrollment.class);
         enrollments.addAll(asList(enrollment1, enrollment2, enrollment3, enrollment4));
 
-        when(enrollmentService.getStartOfWindowForCurrentMilestone(enrollment1, WindowName.due)).thenReturn(newDateTime(2012, 2, 3, 5, 10, 0));
-        when(enrollmentService.getStartOfWindowForCurrentMilestone(enrollment2, WindowName.due)).thenReturn(newDateTime(2012, 2, 3, 0, 0, 0));
-        when(enrollmentService.getStartOfWindowForCurrentMilestone(enrollment3, WindowName.due)).thenReturn(newDateTime(2012, 2, 5, 0, 0, 0));
-        when(enrollmentService.getStartOfWindowForCurrentMilestone(enrollment4, WindowName.due)).thenReturn(newDateTime(2012, 2, 6, 0, 0, 0));
+        when(enrollment1.getStartOfWindowForCurrentMilestone(WindowName.due)).thenReturn(newDateTime(2012, 2, 3, 5, 10, 0));
+        when(enrollment2.getStartOfWindowForCurrentMilestone(WindowName.due)).thenReturn(newDateTime(2012, 2, 3, 0, 0, 0));
+        when(enrollment3.getStartOfWindowForCurrentMilestone(WindowName.due)).thenReturn(newDateTime(2012, 2, 5, 0, 0, 0));
+        when(enrollment4.getStartOfWindowForCurrentMilestone(WindowName.due)).thenReturn(newDateTime(2012, 2, 6, 0, 0, 0));
 
         when(allEnrollments.getAll()).thenReturn(enrollments);
 
