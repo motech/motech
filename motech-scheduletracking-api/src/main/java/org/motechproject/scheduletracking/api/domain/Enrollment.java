@@ -15,7 +15,7 @@ import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.ACT
 import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.COMPLETED;
 import static org.motechproject.util.DateUtil.setTimeZone;
 
-@TypeDiscriminator("doc.type == 'Enrollment'")
+@TypeDiscriminator("doc.type === 'Enrollment'")
 public class Enrollment extends MotechBaseDataObject {
     @JsonProperty
     private String externalId;
@@ -160,14 +160,5 @@ public class Enrollment extends MotechBaseDataObject {
         DateTime currentMilestoneStartDate = getReferenceForAlerts();
         Milestone currentMilestone = schedule.getMilestone(currentMilestoneName);
         return currentMilestoneStartDate.plus(currentMilestone.getWindowStart(windowName));
-    }
-
-    // ektorp methods follow
-    private String getType() {
-        return type;
-    }
-
-    private void setType(String type) {
-        this.type = type;
     }
 }

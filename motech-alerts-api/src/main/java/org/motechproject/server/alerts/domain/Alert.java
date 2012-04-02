@@ -9,7 +9,7 @@ import org.motechproject.util.DateUtil;
 import java.util.HashMap;
 import java.util.Map;
 
-@TypeDiscriminator("doc.type == 'Alert'")
+@TypeDiscriminator("doc.type === 'Alert'")
 public class Alert extends MotechBaseDataObject implements Comparable<Alert> {
 
     private String id;
