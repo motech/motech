@@ -44,7 +44,7 @@ public class ScheduleTrackingServiceImplTest {
     @Mock
     private EnrollmentRecordMapper enrollmentRecordMapper;
 
-    public static final List<Metadata> EMPTY_METADATA_LIST = new ArrayList<Metadata>();
+    public static final Map<String,String> EMPTY_METADATA_LIST = new HashMap<String, String>();
 
     @Before
     public void setUp() {
@@ -97,8 +97,11 @@ public class ScheduleTrackingServiceImplTest {
         metadata.put("fuu", "baz");
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), newDateTime(2012, 11, 2, 0, 0, 0).toLocalDate(), null, null, null, "milestone1", metadata));
 
-        List<Metadata> metadataList = asList(new Metadata("foo", "bar"), new Metadata("fuu", "baz"));
-        verify(enrollmentService).enroll("entity_1", "my_schedule", "milestone1", newDateTime(newDateTime(2012, 11, 2, 0, 0, 0).toLocalDate(), new Time(0, 0)), newDateTime(now().toLocalDate(), new Time(0, 0)), new Time(8, 10), metadataList);
+        Map<String,String> expectedMetadata = new HashMap<String, String>();
+        expectedMetadata.put("foo", "bar");
+        expectedMetadata.put("fuu", "baz");
+        
+        verify(enrollmentService).enroll("entity_1", "my_schedule", "milestone1", newDateTime(newDateTime(2012, 11, 2, 0, 0, 0).toLocalDate(), new Time(0, 0)), newDateTime(now().toLocalDate(), new Time(0, 0)), new Time(8, 10), expectedMetadata);
     }
 
     @Test

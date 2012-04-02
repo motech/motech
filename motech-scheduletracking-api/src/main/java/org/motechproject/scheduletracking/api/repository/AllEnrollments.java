@@ -30,8 +30,8 @@ public class AllEnrollments extends MotechBaseRepository<Enrollment> {
     }
 
     private static final String FUNCTION_DOC_EMIT_DOC_METADATA = "function(doc) {\n" +
-            "  for (i = 0; i < doc.metadata.length; i++)\n" +
-            "    emit([doc.metadata[i].property, doc.metadata[i].value], doc._id);\n" +
+            "for (var prop in doc.metadata)" +
+            "    emit([prop, doc.metadata[prop]], doc._id);\n" +
             "}";
 
     @View(name = "by_property", map = FUNCTION_DOC_EMIT_DOC_METADATA)

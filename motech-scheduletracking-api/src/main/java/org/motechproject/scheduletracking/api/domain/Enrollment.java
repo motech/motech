@@ -9,6 +9,7 @@ import org.motechproject.model.Time;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.ACTIVE;
 import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.COMPLETED;
@@ -31,7 +32,7 @@ public class Enrollment extends MotechBaseDataObject {
     @JsonProperty
     private EnrollmentStatus status;
     @JsonProperty
-    private List<Metadata> metadata;
+    private Map<String,String> metadata;
 
     private Schedule schedule;
     private List<MilestoneFulfillment> fulfillments = new LinkedList<MilestoneFulfillment>();
@@ -40,7 +41,7 @@ public class Enrollment extends MotechBaseDataObject {
     private Enrollment() {
     }
 
-    public Enrollment(String externalId, Schedule schedule, String currentMilestoneName, DateTime startOfSchedule, DateTime enrolledOn, Time preferredAlertTime, EnrollmentStatus enrollmentStatus, List<Metadata> metadata) {
+    public Enrollment(String externalId, Schedule schedule, String currentMilestoneName, DateTime startOfSchedule, DateTime enrolledOn, Time preferredAlertTime, EnrollmentStatus enrollmentStatus, Map<String, String> metadata) {
         this.externalId = externalId;
         this.scheduleName = schedule.getName();
         this.schedule = schedule;
@@ -52,11 +53,11 @@ public class Enrollment extends MotechBaseDataObject {
         this.metadata = metadata;
     }
 
-    public List<Metadata> getMetadata() {
+    public Map<String,String> getMetadata() {
         return metadata;
     }
 
-    public void setMetadata(List<Metadata> metadata) {
+    public void setMetadata(Map<String,String> metadata) {
         this.metadata = metadata;
     }
 
