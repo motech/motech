@@ -7,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
-import org.motechproject.scheduletracking.api.domain.Metadata;
 import org.motechproject.scheduletracking.api.domain.WindowName;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
@@ -18,19 +17,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
-import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.daysAgo;
-import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
-import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.yearsAgo;
-import static org.motechproject.util.DateUtil.newDate;
-import static org.motechproject.util.DateUtil.newDateTime;
-import static org.motechproject.util.DateUtil.now;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.*;
+import static org.motechproject.util.DateUtil.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:applicationSchedulerTrackingAPI.xml")
@@ -99,7 +95,7 @@ public class EnrollmentsSearchIT {
     }
 
     @Test
-    public void forAGivenEntityshouldReturnAllSchedulesWithDatesWhoseDueDateFallsInTheLastWeek() {
+    public void forAGivenEntityShouldReturnAllSchedulesWithDatesWhoseDueDateFallsInTheLastWeek() {
         DateTime iptiReferenceDate = newDateTime(2012, 1, 1, 0, 0 ,0);
         DateTime deliveryReferenceDateTime = newDateTime(2011, 7, 9, 0, 0 ,0);
         createEnrollment("entity_1", "IPTI Schedule", "IPTI 1", iptiReferenceDate, iptiReferenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
@@ -119,33 +115,33 @@ public class EnrollmentsSearchIT {
 
     @Test
     public void shouldFindEnrollmentsByMetadataProperties() {
-        List<Metadata> metadata;
-        metadata = new ArrayList<Metadata>();
-        metadata.add(new Metadata("foo", "bar"));
-        metadata.add(new Metadata("fuu", "baz"));
+        HashMap<String,String> metadata;
+        metadata = new HashMap<String, String>();
+        metadata.put("foo", "bar");
+        metadata.put("fuu", "baz");
         createEnrollment("entity1", "Delivery", "milestone1", newDateTime(2010, 1, 1, 0, 0, 0), newDateTime(2010, 1, 1, 0, 0, 0), new Time(0, 0), EnrollmentStatus.ACTIVE, metadata);
-        metadata = new ArrayList<Metadata>();
-        metadata.add(new Metadata("foo", "cad"));
-        metadata.add(new Metadata("fuu", "cab"));
+        metadata = new HashMap<String, String>();
+        metadata.put("foo", "cad");
+        metadata.put("fuu", "cab");
         createEnrollment("entity2", "Delivery", "milestone1", newDateTime(2010, 1, 1, 0, 0, 0), newDateTime(2010, 1, 1, 0, 0, 0), new Time(0, 0), EnrollmentStatus.ACTIVE, metadata);
-        metadata = new ArrayList<Metadata>();
-        metadata.add(new Metadata("foo", "bar"));
-        metadata.add(new Metadata("fuu", "baz"));
+        metadata = new HashMap<String, String>();
+        metadata.put("foo", "bar");
+        metadata.put("fuu", "baz");
         createEnrollment("entity3", "Delivery", "milestone1", newDateTime(2010, 1, 1, 0, 0, 0), newDateTime(2010, 1, 1, 0, 0, 0), new Time(0, 0), EnrollmentStatus.ACTIVE, metadata);
-        metadata = new ArrayList<Metadata>();
-        metadata.add(new Metadata("foo", "biz"));
-        metadata.add(new Metadata("fuu", "boz"));
+        metadata = new HashMap<String, String>();
+        metadata.put("foo", "biz");
+        metadata.put("fuu", "boz");
         createEnrollment("entity4", "Delivery", "milestone1", newDateTime(2010, 1, 1, 0, 0, 0), newDateTime(2010, 1, 1, 0, 0, 0), new Time(0, 0), EnrollmentStatus.ACTIVE, metadata);
-        metadata = new ArrayList<Metadata>();
-        metadata.add(new Metadata("foo", "quz"));
-        metadata.add(new Metadata("fuu", "qux"));
+        metadata = new HashMap<String, String>();
+        metadata.put("foo", "quz");
+        metadata.put("fuu", "qux");
         createEnrollment("entity5", "Delivery", "milestone1", newDateTime(2010, 1, 1, 0, 0, 0), newDateTime(2010, 1, 1, 0, 0, 0), new Time(0, 0), EnrollmentStatus.ACTIVE, metadata);
 
         assertEquals(asList(new String[]{ "entity1", "entity3" }), extract(allEnrollments.findByMetadataProperty("foo", "bar"), on(Enrollment.class).getExternalId()));
         assertEquals(asList(new String[] { "entity4" }), extract(allEnrollments.findByMetadataProperty("fuu", "boz"), on(Enrollment.class).getExternalId()));
     }
 
-    private Enrollment createEnrollment(String externalId, String scheduleName, String currentMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime, EnrollmentStatus enrollmentStatus, List<Metadata> metadata) {
+    private Enrollment createEnrollment(String externalId, String scheduleName, String currentMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime, EnrollmentStatus enrollmentStatus, Map<String,String> metadata) {
         Enrollment enrollment = new Enrollment(externalId, allTrackedSchedules.getByName(scheduleName), currentMilestoneName, referenceDateTime, enrollmentDateTime, preferredAlertTime, enrollmentStatus, metadata);
         allEnrollments.add(enrollment);
         return enrollment;

@@ -14,7 +14,7 @@ import java.util.Set;
 @TypeDiscriminator("doc.type === 'PhoneCall'")
 public class PhoneCall extends MotechBaseDataObject {
     public enum Direction {
-	    INCOMING, OUTGOING
+        INCOMING, OUTGOING
     }
 
     @JsonProperty
@@ -23,8 +23,6 @@ public class PhoneCall extends MotechBaseDataObject {
     private Date endDate;
     @JsonProperty
     private Date answerDate;
-    @JsonProperty
-    private Integer duration;
     @JsonProperty
     private CallDetailRecord.Disposition disposition;
     @JsonProperty
@@ -43,48 +41,39 @@ public class PhoneCall extends MotechBaseDataObject {
         this.callRequest = callRequest;
     }
 
-    public String getSessionId()
-    {
+    public String getSessionId() {
         return sessionId;
     }
 
-    public void setSessionId(String sessionId)
-    {
+    public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
     }
 
-    public Date getStartDate()
-    {
+    public Date getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate)
-    {
+    public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate()
-    {
+    public Date getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate)
-    {
+    public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
 
-    public Date getAnswerDate()
-    {
+    public Date getAnswerDate() {
         return answerDate;
     }
 
-    public void setAnswerDate(Date answerDate)
-    {
+    public void setAnswerDate(Date answerDate) {
         this.answerDate = answerDate;
     }
 
-    public Integer getDuration()
-    {
+    public Integer getDuration() {
         if (null == endDate || null == startDate) {
             return null;
         }
@@ -92,41 +81,27 @@ public class PhoneCall extends MotechBaseDataObject {
         return (int) ((endDate.getTime() - startDate.getTime()) / 1000);
     }
 
-    public CallRequest getCallRequest()
-    {
+    public CallRequest getCallRequest() {
         return callRequest;
     }
 
-    public void setCallRequest(CallRequest callRequest)
-    {
+    public void setCallRequest(CallRequest callRequest) {
         this.callRequest = callRequest;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public CallDetailRecord.Disposition getDisposition()
-    {
+    public CallDetailRecord.Disposition getDisposition() {
         return disposition;
     }
 
-    public void setDisposition(CallDetailRecord.Disposition disposition)
-    {
+    public void setDisposition(CallDetailRecord.Disposition disposition) {
         this.disposition = disposition;
     }
 
-    public Direction getDirection()
-    {
+    public Direction getDirection() {
         return direction;
     }
 
-    public void setDirection(Direction direction)
-    {
+    public void setDirection(Direction direction) {
         this.direction = direction;
     }
 

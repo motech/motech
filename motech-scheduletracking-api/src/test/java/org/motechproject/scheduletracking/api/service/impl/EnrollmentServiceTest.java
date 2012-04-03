@@ -13,8 +13,8 @@ import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.motechproject.util.DateUtil;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -22,8 +22,8 @@ import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.ACTIVE;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
-import static org.motechproject.scheduletracking.api.utility.PeriodFactory.days;
-import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
+import static org.motechproject.scheduletracking.api.utility.PeriodUtil.days;
+import static org.motechproject.scheduletracking.api.utility.PeriodUtil.weeks;
 import static org.motechproject.util.DateUtil.newDateTime;
 import static org.motechproject.util.DateUtil.now;
 
@@ -64,7 +64,7 @@ public class EnrollmentServiceTest {
         dummyEnrollment.setId("enrollmentId");
         when(allEnrollments.addOrReplace(any(Enrollment.class))).thenReturn(dummyEnrollment);
 
-        List<Metadata> metadata = new ArrayList<Metadata>();
+        Map<String,String> metadata = new HashMap<String, String>();
         enrollmentService.enroll(externalId, scheduleName, milestone.getName(), referenceDate, enrollmentDate, preferredAlertTime, metadata);
 
         ArgumentCaptor<Enrollment> enrollmentArgumentCaptor = ArgumentCaptor.forClass(Enrollment.class);
@@ -102,7 +102,7 @@ public class EnrollmentServiceTest {
         assertEnrollment(enrollmentArgumentCaptor.getValue(), externalId, scheduleName, milestone, enrollmentStatus, schedule, null);
     }
 
-    private void assertEnrollment(Enrollment enrollment, String externalId, String scheduleName, Milestone milestone, EnrollmentStatus enrollmentStatus, Schedule schedule, List<Metadata> metadata) {
+    private void assertEnrollment(Enrollment enrollment, String externalId, String scheduleName, Milestone milestone, EnrollmentStatus enrollmentStatus, Schedule schedule, Map<String,String> metadata) {
         assertEquals(externalId, enrollment.getExternalId());
         assertEquals(scheduleName, enrollment.getScheduleName());
         assertEquals(milestone.getName(), enrollment.getCurrentMilestoneName());
@@ -273,22 +273,6 @@ public class EnrollmentServiceTest {
         assertEquals(WindowName.late, enrollmentService.getCurrentWindowAsOf(enrollment, newDateTime(2012, 12, 18, 9, 30, 0)));
         assertEquals(WindowName.max, enrollmentService.getCurrentWindowAsOf(enrollment, newDateTime(2012, 12, 28, 9, 30, 0)));
         assertEquals(null, enrollmentService.getCurrentWindowAsOf(enrollment, newDateTime(2013, 1, 28, 9, 30, 0)));
-    }
-
-    @Test
-    public void shouldReturnTheStartOfAGivenWindowForTheCurrentMilestone() {
-        Milestone firstMilestone = new Milestone("first_milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        Schedule schedule = new Schedule("my_schedule");
-        schedule.addMilestones(firstMilestone);
-        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
-
-        DateTime referenceDate = newDateTime(2012, 12, 4, 8, 30, 0);
-        Enrollment enrollment = new Enrollment("ID-074285", schedule, "first_milestone", referenceDate, referenceDate, null, EnrollmentStatus.ACTIVE, null);
-
-        assertEquals(referenceDate, enrollmentService.getStartOfWindowForCurrentMilestone(enrollment, WindowName.earliest));
-        assertEquals(referenceDate.plusWeeks(1), enrollmentService.getStartOfWindowForCurrentMilestone(enrollment, WindowName.due));
-        assertEquals(referenceDate.plusWeeks(2), enrollmentService.getStartOfWindowForCurrentMilestone(enrollment, WindowName.late));
-        assertEquals(referenceDate.plusWeeks(3), enrollmentService.getStartOfWindowForCurrentMilestone(enrollment, WindowName.max));
     }
 
     @Test

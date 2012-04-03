@@ -1,6 +1,6 @@
 package org.motechproject.outbox.api.context;
 
-import org.motechproject.outbox.api.VoiceOutboxService;
+import org.motechproject.outbox.api.service.VoiceOutboxService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 

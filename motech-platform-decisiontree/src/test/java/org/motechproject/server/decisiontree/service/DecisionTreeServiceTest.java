@@ -4,11 +4,11 @@ package org.motechproject.server.decisiontree.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.decisiontree.dao.TreeDao;
 import org.motechproject.decisiontree.model.ITreeCommand;
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.decisiontree.model.Tree;
+import org.motechproject.decisiontree.repository.AllTrees;
 import org.motechproject.server.decisiontree.TreeNodeLocator;
 
 import java.util.Arrays;
@@ -19,9 +19,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 
 public class DecisionTreeServiceTest {
-
     @Mock
-    private TreeDao treeDao;
+    private AllTrees allTrees;
 
     @Mock
     private TreeNodeLocator treeNodeLocator;
@@ -51,8 +50,8 @@ public class DecisionTreeServiceTest {
                 .setName("PillReminderTree")
                 .setRootNode(rootNode);
 
-        when(treeDao.findByName(pillReminderTree.getName())).thenReturn(Arrays.asList(pillReminderTree));
-        decisionTreeService = new DecisionTreeServiceImpl(treeDao, treeNodeLocator);
+        when(allTrees.findByName(pillReminderTree.getName())).thenReturn(Arrays.asList(pillReminderTree));
+        decisionTreeService = new DecisionTreeServiceImpl(allTrees, treeNodeLocator);
     }
 
     @Test

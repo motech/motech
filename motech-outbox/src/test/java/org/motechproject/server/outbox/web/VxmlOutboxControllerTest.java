@@ -37,10 +37,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.outbox.api.VoiceOutboxService;
-import org.motechproject.outbox.api.model.OutboundVoiceMessage;
-import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
-import org.motechproject.outbox.api.model.VoiceMessageType;
+import org.motechproject.outbox.api.service.VoiceOutboxService;
+import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
+import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
+import org.motechproject.outbox.api.domain.VoiceMessageType;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;

@@ -29,36 +29,28 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.decisiontree.dao.couchdb;
+package org.motechproject.decisiontree.repository;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
 import org.motechproject.dao.MotechBaseRepository;
-import org.motechproject.decisiontree.dao.TreeDao;
 import org.motechproject.decisiontree.model.Tree;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Tree DAO implementation
- * @author yyonkov
- * 
- */
-@Component
-public class TreeDaoImpl extends MotechBaseRepository<Tree> implements
-		TreeDao {
-	@Autowired
-	protected TreeDaoImpl(@Qualifier("treesDatabase") CouchDbConnector db) {
-		super(Tree.class, db);
-	}
+@Repository
+public class AllTrees extends MotechBaseRepository<Tree> {
+    @Autowired
+    protected AllTrees(@Qualifier("treesDatabase") CouchDbConnector db) {
+        super(Tree.class, db);
+    }
 
-	@Override
-	@GenerateView
-	public List<Tree> findByName(String name) {
-		return queryView("by_name", name);
-	}
+    @GenerateView
+    public List<Tree> findByName(String name) {
+        return queryView("by_name", name);
+    }
 
 }

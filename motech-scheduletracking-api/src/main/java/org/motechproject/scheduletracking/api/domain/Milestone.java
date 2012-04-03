@@ -1,10 +1,8 @@
 package org.motechproject.scheduletracking.api.domain;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.joda.time.MutablePeriod;
 import org.joda.time.Period;
-import org.motechproject.util.DateUtil;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,7 +13,6 @@ import java.util.Map;
 import static org.motechproject.util.DateUtil.now;
 
 public class Milestone implements Serializable {
-
     private String name;
     private Map<String, String> data = new HashMap<String, String>();
     private List<MilestoneWindow> windows = new ArrayList<MilestoneWindow>();
@@ -70,24 +67,28 @@ public class Milestone implements Serializable {
         return getWindowEnd(WindowName.max);
     }
 
-    public Period getWindowStart(WindowName name) {
+    public Period getWindowStart(WindowName windowName) {
         MutablePeriod period = new MutablePeriod();
         for (MilestoneWindow window : windows) {
-            if (window.getName().equals(name))
+            if (window.getName().equals(windowName))
                 break;
             period.add(window.getPeriod());
         }
         return period.toPeriod();
     }
 
-    public Period getWindowEnd(WindowName name) {
+    public Period getWindowEnd(WindowName windowName) {
         MutablePeriod period = new MutablePeriod();
         for (MilestoneWindow window : windows) {
             period.add(window.getPeriod());
-            if (window.getName().equals(name))
+            if (window.getName().equals(windowName))
                 break;
         }
         return period.toPeriod();
+    }
+
+    public Period getWindowDuration(WindowName windowName) {
+        return getWindowEnd(windowName).minus(getWindowStart(windowName));
     }
 
     public boolean windowElapsed(WindowName windowName, DateTime milestoneStartDateTime) {

@@ -3,16 +3,14 @@ package org.motechproject.scheduletracking.api.service.impl;
 import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
-import org.motechproject.scheduletracking.api.domain.Metadata;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.domain.exception.InvalidEnrollmentException;
 import org.motechproject.scheduletracking.api.domain.exception.ScheduleTrackingException;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
-import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
-import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
-import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
-import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
+import org.motechproject.scheduletracking.api.service.*;
+import org.motechproject.scheduletracking.api.service.contract.UpdateCriteria;
+import org.motechproject.scheduletracking.api.service.contract.UpdateCriterion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +46,22 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
     }
 
     @Override
+    public void updateEnrollment(String externalId, String scheduleName, UpdateCriteria updateCriteria) {
+        Enrollment enrollment = allEnrollments.getActiveEnrollment(externalId, scheduleName);
+        if (enrollment == null) {
+            throw new InvalidEnrollmentException(
+                    format("Cannot find an active enrollment with " +
+                            "External ID: {0} & Schedule name: {1}", externalId, scheduleName));
+        } else {
+            Map<UpdateCriterion, Object> criteria = updateCriteria.getAll();
+            for (UpdateCriterion updateCriterion : criteria.keySet()) {
+                EnrollmentUpdater.get(updateCriterion).update(enrollment, criteria.get(updateCriterion));
+            }
+            allEnrollments.update(enrollment);
+        }
+    }
+
+    @Override
     public List<EnrollmentRecord> search(EnrollmentsQuery query) {
         List<EnrollmentRecord> enrollmentRecords = new ArrayList<EnrollmentRecord>();
         for (Enrollment enrollment : enrollmentsQueryService.search(query))
@@ -75,14 +89,7 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
         else
             startingMilestoneName = schedule.getFirstMilestone().getName();
 
-        return enrollmentService.enroll(enrollmentRequest.getExternalId(), enrollmentRequest.getScheduleName(), startingMilestoneName, enrollmentRequest.getReferenceDateTime(), enrollmentRequest.getEnrollmentDateTime(), enrollmentRequest.getPreferredAlertTime(), constructMetadataList(enrollmentRequest.getMetadata()));
-    }
-
-    private List<Metadata> constructMetadataList(Map<String, String> metadataMap) {
-        List<Metadata> metadataList = new ArrayList<Metadata>();
-        for (String metadataKey : metadataMap.keySet())
-            metadataList.add(new Metadata(metadataKey, metadataMap.get(metadataKey)));
-        return metadataList;
+        return enrollmentService.enroll(enrollmentRequest.getExternalId(), enrollmentRequest.getScheduleName(), startingMilestoneName, enrollmentRequest.getReferenceDateTime(), enrollmentRequest.getEnrollmentDateTime(), enrollmentRequest.getPreferredAlertTime(), enrollmentRequest.getMetadata());
     }
 
     @Override

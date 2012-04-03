@@ -30,7 +30,7 @@ public class StartOfWindowCriterion implements Criterion {
     public List<Enrollment> filter(List<Enrollment> enrollments, EnrollmentService enrollmentService) {
         List<Enrollment> filteredEnrollments = new ArrayList<Enrollment>();
         for (Enrollment enrollment : enrollments) {
-            DateTime startOfWindowForCurrentMilestone = enrollmentService.getStartOfWindowForCurrentMilestone(enrollment, windowName);
+            DateTime startOfWindowForCurrentMilestone = enrollment.getStartOfWindowForCurrentMilestone(windowName);
             if (DateUtil.inRange(startOfWindowForCurrentMilestone, start, end))
                 filteredEnrollments.add(enrollment);
         }

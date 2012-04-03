@@ -32,10 +32,10 @@
 package org.motechproject.server.outbox.web;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.motechproject.outbox.api.VoiceOutboxService;
-import org.motechproject.outbox.api.model.OutboundVoiceMessage;
-import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
-import org.motechproject.outbox.api.model.VoiceMessageType;
+import org.motechproject.outbox.api.service.VoiceOutboxService;
+import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
+import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
+import org.motechproject.outbox.api.domain.VoiceMessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

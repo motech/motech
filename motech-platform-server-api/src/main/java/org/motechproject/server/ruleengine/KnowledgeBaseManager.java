@@ -48,7 +48,7 @@ import org.drools.builder.KnowledgeBuilderConfiguration;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.io.ResourceFactory;
-import org.motechproject.dao.RuleRepository;
+import org.motechproject.dao.AllRules;
 import org.motechproject.model.Rule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +61,7 @@ public class KnowledgeBaseManager {
     private Map<String, KnowledgeBase> knowledgeBaseLookup = new ConcurrentHashMap<String, KnowledgeBase>();
 
     @Autowired
-    private RuleRepository ruleRepository;   
+    private AllRules allRules;
 
     /**
      * 
@@ -98,8 +98,8 @@ public class KnowledgeBaseManager {
         logger.debug("Adding rule [" + ruleId + "," + bundleSymbolicName + "]");
 
         Rule rule = null;
-        if (ruleRepository.contains(ruleId)) {
-            rule = ruleRepository.get(ruleId);
+        if (allRules.contains(ruleId)) {
+            rule = allRules.get(ruleId);
         } else {
             rule = new Rule();
             rule.setId(ruleId);
@@ -108,9 +108,9 @@ public class KnowledgeBaseManager {
         rule.setBundleSymbolicName(bundleSymbolicName);
 
         if (rule.isNew()) {
-            ruleRepository.add(rule);
+            allRules.add(rule);
         } else {
-            ruleRepository.update(rule);
+            allRules.update(rule);
         }
 
         // update the in-memory knowledgeBaseLookup
@@ -141,8 +141,8 @@ public class KnowledgeBaseManager {
 		}
     }
     
-    public void setRuleRepository(RuleRepository ruleRepository) {
-        this.ruleRepository = ruleRepository;
+    public void setAllRules(AllRules allRules) {
+        this.allRules = allRules;
     }
 
 }

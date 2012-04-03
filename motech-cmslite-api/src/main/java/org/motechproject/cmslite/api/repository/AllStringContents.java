@@ -7,6 +7,7 @@ import org.ektorp.support.View;
 import org.motechproject.cmslite.api.model.CMSLiteException;
 import org.motechproject.cmslite.api.model.StringContent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
@@ -15,7 +16,7 @@ import java.util.List;
 @Repository
 public class AllStringContents extends BaseContentRepository<StringContent> {
     @Autowired
-	protected AllStringContents(CouchDbConnector db) {
+	protected AllStringContents(@Qualifier("cmsLiteDatabase") CouchDbConnector db) {
         super(StringContent.class, db);
     }
 

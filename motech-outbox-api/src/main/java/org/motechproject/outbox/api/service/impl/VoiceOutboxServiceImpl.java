@@ -1,4 +1,4 @@
-package org.motechproject.outbox.api;
+package org.motechproject.outbox.api.service.impl;
 
 
 import org.apache.commons.lang.ArrayUtils;
@@ -7,9 +7,11 @@ import org.motechproject.MotechObject;
 import org.motechproject.context.EventContext;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;
-import org.motechproject.outbox.api.model.OutboundVoiceMessage;
-import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
+import org.motechproject.outbox.api.EventKeys;
+import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
+import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
+import org.motechproject.outbox.api.repository.AllOutboundVoiceMessages;
+import org.motechproject.outbox.api.service.VoiceOutboxService;
 import org.motechproject.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +37,7 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
     private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
 
     @Autowired
-    private OutboundVoiceMessageDao outboundVoiceMessageDao;
+    private AllOutboundVoiceMessages allOutboundVoiceMessages;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -45,12 +47,12 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
 
         outboundVoiceMessage.setStatus(OutboundVoiceMessageStatus.PENDING);
         outboundVoiceMessage.setCreationTime(DateUtil.now().toDate());
-        outboundVoiceMessageDao.add(outboundVoiceMessage);
+        allOutboundVoiceMessages.add(outboundVoiceMessage);
 
         //sends max-pending-messages event if needed
         String pId = outboundVoiceMessage.getPartyId();
         Assert.hasText(pId, "VoiceMessage must have a valid partyId");
-        int msgNum = outboundVoiceMessageDao.getPendingMessagesCount(pId);
+        int msgNum = allOutboundVoiceMessages.getPendingMessagesCount(pId);
         if (maxNumberOfPendingMessages == msgNum) {
             log.warn(String.format("Max number (%d) of pending messages reached!", msgNum));
             eventRelay.sendEventMessage(new MotechEvent(EventKeys.OUTBOX_MAX_PENDING_MESSAGES_EVENT_SUBJECT, ArrayUtils.toMap(new Object[][]{{EventKeys.PARTY_ID_KEY, pId}})));
@@ -61,7 +63,7 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
     public OutboundVoiceMessage getNextPendingMessage(String partyId) {
         assertArgumentNotEmpty("PartyId", partyId);
         logInfo("Get next pending message for the party ID: %s", partyId);
-        List<OutboundVoiceMessage> pendingVoiceMessages = outboundVoiceMessageDao.getPendingMessages(partyId);
+        List<OutboundVoiceMessage> pendingVoiceMessages = allOutboundVoiceMessages.getPendingMessages(partyId);
         return pendingVoiceMessages.size() > 0 ? pendingVoiceMessages.get(0) : null;
     }
 
@@ -69,7 +71,7 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
     public OutboundVoiceMessage getNextSavedMessage(String partyId) {
         assertArgumentNotEmpty("PartyID", partyId);
         logInfo(String.format("Get next saved message for the party ID: %s", partyId));
-        List<OutboundVoiceMessage> savedVoiceMessages = outboundVoiceMessageDao.getSavedMessages(partyId);
+        List<OutboundVoiceMessage> savedVoiceMessages = allOutboundVoiceMessages.getSavedMessages(partyId);
         return savedVoiceMessages.size() > 0 ? savedVoiceMessages.get(0) : null;
     }
 
@@ -77,7 +79,7 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
     public OutboundVoiceMessage getMessageById(String outboundVoiceMessageId) {
         assertArgumentNotEmpty("OutboundVoiceMessageId", outboundVoiceMessageId);
         logInfo("Get message by ID: %s", outboundVoiceMessageId);
-        return outboundVoiceMessageDao.get(outboundVoiceMessageId);
+        return allOutboundVoiceMessages.get(outboundVoiceMessageId);
     }
 
     @Override
@@ -85,16 +87,16 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
         assertArgumentNotEmpty("OutboundVoiceMessageId", outboundVoiceMessageId);
         logInfo("Remove message ID: %s", outboundVoiceMessageId);
         OutboundVoiceMessage outboundVoiceMessage = getMessageById(outboundVoiceMessageId);
-        outboundVoiceMessageDao.safeRemove(outboundVoiceMessage);
+        allOutboundVoiceMessages.safeRemove(outboundVoiceMessage);
     }
 
     @Override
     public void setMessageStatus(String outboundVoiceMessageId, OutboundVoiceMessageStatus status) {
         assertArgumentNotEmpty("OutboundVoiceMessageId", outboundVoiceMessageId);
         logInfo("Set status: %s to the message ID: %s", status, outboundVoiceMessageId);
-        OutboundVoiceMessage outboundVoiceMessage = outboundVoiceMessageDao.get(outboundVoiceMessageId);
+        OutboundVoiceMessage outboundVoiceMessage = allOutboundVoiceMessages.get(outboundVoiceMessageId);
         outboundVoiceMessage.setStatus(status);
-        outboundVoiceMessageDao.update(outboundVoiceMessage);
+        allOutboundVoiceMessages.update(outboundVoiceMessage);
     }
 
     @Override
@@ -108,21 +110,21 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, numDayskeepSavedMessages);
         outboundVoiceMessage.setExpirationDate(calendar.getTime());
-        outboundVoiceMessageDao.update(outboundVoiceMessage);
+        allOutboundVoiceMessages.update(outboundVoiceMessage);
     }
 
     @Override
     public int getNumberPendingMessages(String partyId) {
         logInfo("Get number of pending messages for the party ID: %s", partyId);
         assertArgumentNotEmpty("PartyID", partyId);
-        return outboundVoiceMessageDao.getPendingMessagesCount(partyId);
+        return allOutboundVoiceMessages.getPendingMessagesCount(partyId);
     }
 
     @Override
     public int getNumberPendingMessages(String partyId, String voiceMessageTypeName) {
         logInfo("Get number of pending messages for the party ID: %s", partyId);
         assertArgumentNotEmpty("PartyID", partyId);
-        return outboundVoiceMessageDao.getPendingMessagesCount(partyId, voiceMessageTypeName);
+        return allOutboundVoiceMessages.getPendingMessagesCount(partyId, voiceMessageTypeName);
     }
 
     @Override

@@ -11,15 +11,11 @@ import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleWindowsRecord;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class ScheduleFactory {
-
-    public static final Period EMPTY_PERIOD = new Period(0);
+    public static final Period EMPTY_PERIOD = Period.ZERO;
     private List<PeriodParser> parsers;
 
     public ScheduleFactory() {
@@ -47,7 +43,7 @@ public class ScheduleFactory {
                 Period currentWindowEnd = getPeriodFromValue(values.get(windowName));
                 windowStarts.put(windowName, previousWindowEnd);
                 if (currentWindowEnd.equals(EMPTY_PERIOD))
-                    windowDurations.put(windowName, currentWindowEnd);
+                    windowDurations.put(windowName, EMPTY_PERIOD);
                 else {
                     windowDurations.put(windowName, currentWindowEnd.minus(previousWindowEnd));
                     previousWindowEnd = currentWindowEnd;
@@ -94,7 +90,7 @@ public class ScheduleFactory {
     private Period parse(String s) {
         ReadWritablePeriod period = new MutablePeriod();
         for (PeriodParser parser : parsers) {
-            if (parser.parseInto(period, s, 0, null) > 0) {
+            if (parser.parseInto(period, s, 0, Locale.getDefault()) > 0) {
                 return period.toPeriod();
             }
         }

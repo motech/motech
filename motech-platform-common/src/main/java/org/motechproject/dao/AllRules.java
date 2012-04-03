@@ -29,18 +29,18 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.decisiontree.dao;
+package org.motechproject.dao;
 
-import org.motechproject.dao.BaseDao;
-import org.motechproject.decisiontree.model.Tree;
+import org.ektorp.CouchDbConnector;
+import org.motechproject.model.Rule;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
-/**
- * Tree DAO interface CRUD + able to find Trees by name
- * @author yyonkov
- *
- */
-public interface TreeDao extends BaseDao<Tree> {
-	List<Tree> findByName(String name);
+@Repository
+public class AllRules extends MotechBaseRepository<Rule> {
+    @Autowired
+    public AllRules(@Qualifier("ruleDatabase") CouchDbConnector db) {
+        super(Rule.class, db);
+    }
 }

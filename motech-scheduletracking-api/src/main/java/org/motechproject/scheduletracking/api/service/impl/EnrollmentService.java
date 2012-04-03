@@ -10,7 +10,7 @@ import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.Map;
 
 import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.COMPLETED;
 import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.UNENROLLED;
@@ -32,7 +32,7 @@ public class EnrollmentService {
         this.enrollmentDefaultmentService = enrollmentDefaultmentService;
     }
 
-    public String enroll(String externalId, String scheduleName, String startingMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime, List<Metadata> metadata) {
+    public String enroll(String externalId, String scheduleName, String startingMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime, Map<String,String> metadata) {
         Schedule schedule = allTrackedSchedules.getByName(scheduleName);
         EnrollmentStatus enrollmentStatus = EnrollmentStatus.ACTIVE;
         if (schedule.hasExpiredSince(referenceDateTime))
@@ -82,12 +82,6 @@ public class EnrollmentService {
                 return window.getName();
         }
         return null;
-    }
-
-    public DateTime getStartOfWindowForCurrentMilestone(Enrollment enrollment, WindowName windowName) {
-        DateTime currentMilestoneStartDate = enrollment.getReferenceForAlerts();
-        Milestone currentMilestone = enrollment.getSchedule().getMilestone(enrollment.getCurrentMilestoneName());
-        return currentMilestoneStartDate.plus(currentMilestone.getWindowStart(windowName));
     }
 
     public DateTime getEndOfWindowForCurrentMilestone(Enrollment enrollment, WindowName windowName) {

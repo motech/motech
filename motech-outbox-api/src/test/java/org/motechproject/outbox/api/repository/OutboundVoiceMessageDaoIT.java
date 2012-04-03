@@ -29,19 +29,17 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.outbox.api.dao;
+package org.motechproject.outbox.api.repository;
 
-import org.apache.commons.lang.time.DateUtils;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.outbox.api.dao.couchdb.OutboundVoiceMessageDaoImpl;
-import org.motechproject.outbox.api.model.MessagePriority;
-import org.motechproject.outbox.api.model.OutboundVoiceMessage;
-import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
-import org.motechproject.outbox.api.model.VoiceMessageType;
+import org.motechproject.outbox.api.domain.MessagePriority;
+import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
+import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
+import org.motechproject.outbox.api.domain.VoiceMessageType;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -58,7 +56,7 @@ import static org.junit.Assert.*;
 @ContextConfiguration(locations = {"/applicationOutboxAPI.xml"})
 public class OutboundVoiceMessageDaoIT {
     @Autowired
-    private OutboundVoiceMessageDaoImpl outboundVoiceMessageDao;
+    private AllOutboundVoiceMessages outboundVoiceMessageDao;
 
     private String partyId1 = "0001";
     private String partyId2 = "0002";

@@ -9,11 +9,11 @@ import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Component
+@Repository
 public class AllEnrollments extends MotechBaseRepository<Enrollment> {
     @Autowired
     private AllTrackedSchedules allTrackedSchedules;
@@ -30,8 +30,8 @@ public class AllEnrollments extends MotechBaseRepository<Enrollment> {
     }
 
     private static final String FUNCTION_DOC_EMIT_DOC_METADATA = "function(doc) {\n" +
-            "  for (i = 0; i < doc.metadata.length; i++)\n" +
-            "    emit([doc.metadata[i].property, doc.metadata[i].value], doc._id);\n" +
+            "for (var prop in doc.metadata)" +
+            "    emit([prop, doc.metadata[prop]], doc._id);\n" +
             "}";
 
     @View(name = "by_property", map = FUNCTION_DOC_EMIT_DOC_METADATA)

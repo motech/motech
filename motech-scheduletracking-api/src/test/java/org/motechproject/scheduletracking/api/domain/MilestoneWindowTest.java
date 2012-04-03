@@ -2,12 +2,10 @@ package org.motechproject.scheduletracking.api.domain;
 
 import org.joda.time.Period;
 import org.junit.Test;
-import org.motechproject.valueobjects.WallTime;
-import org.motechproject.valueobjects.WallTimeUnit;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
-import static org.motechproject.scheduletracking.api.utility.PeriodFactory.days;
+import static org.motechproject.scheduletracking.api.utility.PeriodUtil.days;
 
 public class MilestoneWindowTest {
 

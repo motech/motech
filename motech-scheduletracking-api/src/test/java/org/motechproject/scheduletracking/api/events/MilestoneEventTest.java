@@ -11,7 +11,7 @@ import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
+import static org.motechproject.scheduletracking.api.utility.PeriodUtil.weeks;
 import static org.motechproject.util.DateUtil.now;
 
 public class MilestoneEventTest {

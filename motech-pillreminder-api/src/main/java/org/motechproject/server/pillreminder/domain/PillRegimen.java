@@ -47,14 +47,6 @@ public class PillRegimen extends MotechBaseDataObject {
         this.scheduleDetails = scheduleDetails;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public void validate() {
         for (Dosage dosage : dosages) {
             dosage.validate();
