@@ -8,15 +8,12 @@ import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.daysAfter;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.daysAgo;
-import static org.motechproject.scheduletracking.api.utility.PeriodFactory.*;
+import static org.motechproject.scheduletracking.api.utility.PeriodUtil.*;
 
 public class MilestoneTest {
-
     @Test
     public void shouldCreateMilestoneWindows() {
         Milestone milestone = new Milestone("M1", weeks(1), weeks(1), weeks(1), weeks(1));
@@ -59,6 +56,15 @@ public class MilestoneTest {
         assertEquals(weeks(3), milestone.getWindowEnd(WindowName.due));
         assertEquals(weeks(3).plus(hours(3)), milestone.getWindowEnd(WindowName.late));
         assertEquals(months(1).plus(weeks(3)).plus(hours(3)), milestone.getWindowEnd(WindowName.max));
+    }
+
+    @Test
+    public void shouldReturnDurationForAGivenMilestoneWindow() {
+        Milestone milestone = new Milestone("M1", weeks(1), hours(2), years(1), weeks(1));
+        assertEquals(weeks(1), milestone.getWindowDuration(WindowName.earliest));
+        assertEquals(hours(2), milestone.getWindowDuration(WindowName.due));
+        assertEquals(years(1), milestone.getWindowDuration(WindowName.late));
+        assertEquals(weeks(1), milestone.getWindowDuration(WindowName.max));
     }
 
     @Test
