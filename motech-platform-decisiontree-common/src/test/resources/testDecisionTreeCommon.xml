@@ -19,5 +19,5 @@
 			</bean>
 		</constructor-arg>
 	</bean>
-	<bean id="treeDao" class="org.motechproject.decisiontree.dao.couchdb.TreeDaoImpl"/>
+	<bean id="treeDao" class="org.motechproject.decisiontree.repository.AllTrees"/>
 </beans>

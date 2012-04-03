@@ -29,7 +29,7 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.decisiontree.dao;
+package org.motechproject.decisiontree.repository;
 
 import org.junit.After;
 import org.junit.Before;
@@ -56,7 +56,7 @@ import static org.junit.Assert.assertEquals;
 @ContextConfiguration(locations = {"/testDecisionTreeCommon.xml"})
 public class TreeDaoTestIT {
     @Autowired
-    private TreeDao treeDao;
+    private AllTrees allTrees;
     private final String NAME = "TREE";
 
     @Before
@@ -82,20 +82,20 @@ public class TreeDaoTestIT {
                                             .setDestinationNode(new Node().setPrompts(new TextToSpeechPrompt().setMessage("Check with us again")))}
                             }));
             tree.setName(NAME + i);
-            treeDao.add(tree);
+            allTrees.add(tree);
         }
     }
 
     @After
     public void tearDown() throws Exception {
-        for (Tree t : treeDao.getAll()) {
-            treeDao.remove(t);
+        for (Tree t : allTrees.getAll()) {
+            allTrees.remove(t);
         }
     }
 
     @Test
     public void testFindByName() {
-        List<Tree> trees = treeDao.findByName(NAME + 5);
+        List<Tree> trees = allTrees.findByName(NAME + 5);
         System.out.print(trees.get(0));
         assertEquals(1, trees.size());
     }
