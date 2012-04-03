@@ -18,7 +18,6 @@ import java.util.Map;
 
 @Component
 public class ScheduleFactory {
-
     public static final Period EMPTY_PERIOD = new Period(0);
     private List<PeriodParser> parsers;
 

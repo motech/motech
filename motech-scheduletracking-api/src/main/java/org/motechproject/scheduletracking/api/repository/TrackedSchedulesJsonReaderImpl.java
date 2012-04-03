@@ -18,9 +18,10 @@ import static ch.lambdaj.Lambda.on;
 
 @Component
 public class TrackedSchedulesJsonReaderImpl implements TrackedSchedulesJsonReader {
-    private List<String> definitionFilenames;
+    private List<String> definitionFileNames;
     private MotechJsonReader motechJsonReader;
     private String definitionsDirectoryName;
+    private final String json_extension = ".json";
 
     @Autowired
     public TrackedSchedulesJsonReaderImpl(@Value("#{schedule_tracking['schedule.definitions.directory']}") String definitionsDirectoryName) {
@@ -28,10 +29,10 @@ public class TrackedSchedulesJsonReaderImpl implements TrackedSchedulesJsonReade
         File[] definitionFiles = new File(schedulesDirectoryPath).listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File file, String filename) {
-                return filename.endsWith(".json");
+                return filename.endsWith(json_extension);
             }
         });
-        definitionFilenames = extract(definitionFiles, on(File.class).getName());
+        definitionFileNames = extract(definitionFiles, on(File.class).getName());
         this.definitionsDirectoryName = definitionsDirectoryName;
         this.motechJsonReader = new MotechJsonReader();
     }
@@ -41,7 +42,7 @@ public class TrackedSchedulesJsonReaderImpl implements TrackedSchedulesJsonReade
         List<ScheduleRecord> scheduleRecords = new ArrayList<ScheduleRecord>();
         Type type = new TypeToken<ScheduleRecord>() {
         }.getType();
-        for (String filename : definitionFilenames)
+        for (String filename : definitionFileNames)
             scheduleRecords.add((ScheduleRecord) motechJsonReader.readFromFile(definitionsDirectoryName + "/" + filename, type));
         return scheduleRecords;
     }
