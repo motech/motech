@@ -9,21 +9,20 @@ import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-@Component
+@Repository
 @Views({
         @View(name = "getPendingMessages", map = "function(doc) { if (doc.partyId && doc.status=='PENDING') { emit([doc.partyId, doc.expirationDate], doc._id); } }"),
         @View(name = "getPendingMessagesWithMessageTypeName", map = "function(doc) { if (doc.partyId && doc.status=='PENDING' && doc.voiceMessageType) { emit([doc.partyId, doc.voiceMessageType.voiceMessageTypeName, doc.expirationDate], doc._id); } }"),
         @View(name = "getSavedMessages", map = "function(doc) { if (doc.partyId && doc.status=='SAVED') { emit([doc.partyId, doc.expirationDate], doc._id); } }")
 })
-public class AllOutboundVoiceMessages extends
-        MotechBaseRepository<OutboundVoiceMessage> {
+public class AllOutboundVoiceMessages extends MotechBaseRepository<OutboundVoiceMessage> {
     @Autowired
     protected AllOutboundVoiceMessages(@Qualifier("outboxDatabase") CouchDbConnector db) {
         super(OutboundVoiceMessage.class, db);

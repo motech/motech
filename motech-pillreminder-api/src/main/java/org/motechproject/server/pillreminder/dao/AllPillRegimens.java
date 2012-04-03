@@ -9,11 +9,11 @@ import org.motechproject.server.pillreminder.domain.Dosage;
 import org.motechproject.server.pillreminder.domain.PillRegimen;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Component
+@Repository
 public class AllPillRegimens extends MotechBaseRepository<PillRegimen> {
     @Autowired
     public AllPillRegimens(@Qualifier("pillReminderDbConnector") CouchDbConnector db) {

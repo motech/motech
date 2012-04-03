@@ -7,13 +7,12 @@ import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Component
+@Repository
 public class AllCampaignEnrollments extends MotechBaseRepository<CampaignEnrollment> {
-
     @Autowired
     protected AllCampaignEnrollments(@Qualifier("messageCampaignDBConnector") CouchDbConnector db) {
         super(CampaignEnrollment.class, db);

@@ -5,6 +5,7 @@ import org.ektorp.support.View;
 import org.motechproject.cmslite.api.model.CMSLiteException;
 import org.motechproject.cmslite.api.model.StreamContent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import java.io.BufferedInputStream;
@@ -14,7 +15,7 @@ import java.util.List;
 @Repository
 public class AllStreamContents extends BaseContentRepository<StreamContent> {
     @Autowired
-    protected AllStreamContents(CouchDbConnector db) {
+    protected AllStreamContents(@Qualifier("cmsLiteDatabase") CouchDbConnector db) {
         super(StreamContent.class, db);
     }
 

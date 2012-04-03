@@ -37,11 +37,11 @@ import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.decisiontree.model.Tree;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Component
+@Repository
 public class AllTrees extends MotechBaseRepository<Tree> {
     @Autowired
     protected AllTrees(@Qualifier("treesDatabase") CouchDbConnector db) {
