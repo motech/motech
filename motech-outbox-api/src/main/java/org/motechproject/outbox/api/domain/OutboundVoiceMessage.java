@@ -1,4 +1,4 @@
-package org.motechproject.outbox.api.model;
+package org.motechproject.outbox.api.domain;
 
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechBaseDataObject;

@@ -1,4 +1,4 @@
-package org.motechproject.outbox.api.model;
+package org.motechproject.outbox.api.domain;
 
 /**
  *

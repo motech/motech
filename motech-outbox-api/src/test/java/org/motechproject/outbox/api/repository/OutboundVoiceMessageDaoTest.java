@@ -29,7 +29,7 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.outbox.api.dao.couchdb;
+package org.motechproject.outbox.api.repository;
 
 
 import org.ektorp.CouchDbConnector;
@@ -41,11 +41,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;
-import org.motechproject.outbox.api.model.MessagePriority;
-import org.motechproject.outbox.api.model.OutboundVoiceMessage;
-import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
-import org.motechproject.outbox.api.model.VoiceMessageType;
+import org.motechproject.outbox.api.domain.MessagePriority;
+import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
+import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
+import org.motechproject.outbox.api.domain.VoiceMessageType;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -94,7 +93,7 @@ public class OutboundVoiceMessageDaoTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testSortingMessages() {
-        OutboundVoiceMessageDao dao = new OutboundVoiceMessageDaoImpl(db);
+        AllOutboundVoiceMessages dao = new AllOutboundVoiceMessages(db);
         when(db.queryView(any(ViewQuery.class), any(Class.class))).thenReturn(messages);
         ArrayList<OutboundVoiceMessage> msgs = (ArrayList<OutboundVoiceMessage>) dao.getPendingMessages(PARTY_ID);
         for (int i = 1; i < msgs.size(); i++) {

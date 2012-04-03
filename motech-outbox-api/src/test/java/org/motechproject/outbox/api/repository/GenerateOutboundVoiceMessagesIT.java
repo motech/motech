@@ -1,13 +1,13 @@
-package org.motechproject.outbox.api.dao;
+package org.motechproject.outbox.api.repository;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.outbox.api.model.MessagePriority;
-import org.motechproject.outbox.api.model.OutboundVoiceMessage;
-import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
-import org.motechproject.outbox.api.model.VoiceMessageType;
+import org.motechproject.outbox.api.domain.MessagePriority;
+import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
+import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
+import org.motechproject.outbox.api.domain.VoiceMessageType;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -27,7 +27,7 @@ import java.util.Map;
 @ContextConfiguration(locations = {"/applicationOutboxAPI.xml"})
 public class GenerateOutboundVoiceMessagesIT {
     @Autowired
-    private OutboundVoiceMessageDao outboundVoiceMessageDao;
+    private AllOutboundVoiceMessages allOutboundVoiceMessages;
     private String partyId1 = "10";
 
     @Before
@@ -62,7 +62,7 @@ public class GenerateOutboundVoiceMessagesIT {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("message", "with doctor John Doe");
         msg1.setParameters(params);
-        outboundVoiceMessageDao.add(msg1);
+        allOutboundVoiceMessages.add(msg1);
 
 
         OutboundVoiceMessage msg2 = new OutboundVoiceMessage();
@@ -74,7 +74,7 @@ public class GenerateOutboundVoiceMessagesIT {
         params.clear();
         params.put("message", "with doctor Simpson");
         msg2.setParameters(params);
-        outboundVoiceMessageDao.add(msg2);
+        allOutboundVoiceMessages.add(msg2);
 
 
         OutboundVoiceMessage msg3 = new OutboundVoiceMessage();
@@ -86,7 +86,7 @@ public class GenerateOutboundVoiceMessagesIT {
         params.clear();
         params.put("message", "with doctor House");
         msg3.setParameters(params);
-        outboundVoiceMessageDao.add(msg3);
+        allOutboundVoiceMessages.add(msg3);
 
 
     }
@@ -94,7 +94,7 @@ public class GenerateOutboundVoiceMessagesIT {
     @Test
     public void dummyTest() {
 
-        List<OutboundVoiceMessage> msgs = outboundVoiceMessageDao.getPendingMessages(partyId1);
+        List<OutboundVoiceMessage> msgs = allOutboundVoiceMessages.getPendingMessages(partyId1);
 
         for (OutboundVoiceMessage msg : msgs) {
             System.out.println(msg);

@@ -1,4 +1,4 @@
-package org.motechproject.outbox.api.dao.couchdb;
+package org.motechproject.outbox.api.repository;
 
 import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
@@ -6,9 +6,7 @@ import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
 import org.ektorp.support.Views;
 import org.motechproject.dao.MotechBaseRepository;
-import org.motechproject.outbox.api.dao.InvalidDataException;
-import org.motechproject.outbox.api.dao.OutboundVoiceMessageDao;
-import org.motechproject.outbox.api.model.OutboundVoiceMessage;
+import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -18,20 +16,16 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-/**
- * @author yyonkov
- */
 @Component
 @Views({
         @View(name = "getPendingMessages", map = "function(doc) { if (doc.partyId && doc.status=='PENDING') { emit([doc.partyId, doc.expirationDate], doc._id); } }"),
         @View(name = "getPendingMessagesWithMessageTypeName", map = "function(doc) { if (doc.partyId && doc.status=='PENDING' && doc.voiceMessageType) { emit([doc.partyId, doc.voiceMessageType.voiceMessageTypeName, doc.expirationDate], doc._id); } }"),
         @View(name = "getSavedMessages", map = "function(doc) { if (doc.partyId && doc.status=='SAVED') { emit([doc.partyId, doc.expirationDate], doc._id); } }")
 })
-public class OutboundVoiceMessageDaoImpl extends
-        MotechBaseRepository<OutboundVoiceMessage> implements
-        OutboundVoiceMessageDao {
+public class AllOutboundVoiceMessages extends
+        MotechBaseRepository<OutboundVoiceMessage> {
     @Autowired
-    protected OutboundVoiceMessageDaoImpl(@Qualifier("outboxDatabase") CouchDbConnector db) {
+    protected AllOutboundVoiceMessages(@Qualifier("outboxDatabase") CouchDbConnector db) {
         super(OutboundVoiceMessage.class, db);
     }
 
@@ -70,17 +64,14 @@ public class OutboundVoiceMessageDaoImpl extends
         return messages;
     }
 
-    @Override
     public List<OutboundVoiceMessage> getPendingMessages(String partyId) {
         return getMessages("getPendingMessages", partyId);
     }
 
-    @Override
     public List<OutboundVoiceMessage> getSavedMessages(String partyId) {
         return getMessages("getSavedMessages", partyId);
     }
 
-    @Override
     public int getPendingMessagesCount(String partyId) {
         ComplexKey startKey = ComplexKey.of(partyId, new Date());
         ComplexKey endKey = ComplexKey.of(partyId, ComplexKey.emptyObject());
@@ -88,7 +79,6 @@ public class OutboundVoiceMessageDaoImpl extends
         return db.queryView(q).getSize();
     }
 
-    @Override
     public int getPendingMessagesCount(String partyId, String voiceMessageTypeName) {
         ComplexKey startKey = ComplexKey.of(partyId, voiceMessageTypeName, new Date());
         ComplexKey endKey = ComplexKey.of(partyId, voiceMessageTypeName, ComplexKey.emptyObject());

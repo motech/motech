@@ -1,7 +1,7 @@
-package org.motechproject.outbox.api;
+package org.motechproject.outbox.api.service;
 
-import org.motechproject.outbox.api.model.OutboundVoiceMessage;
-import org.motechproject.outbox.api.model.OutboundVoiceMessageStatus;
+import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
+import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 
 
 /**
