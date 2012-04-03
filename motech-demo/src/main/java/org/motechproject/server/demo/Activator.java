@@ -31,16 +31,17 @@
  */
 package org.motechproject.server.demo;
 
-import org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor;
+import org.motechproject.server.demo.web.CallMeServlet;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.http.HttpService;
+import org.osgi.service.http.NamespaceException;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.web.servlet.DispatcherServlet;
+
+import javax.servlet.ServletException;
 
 /**
  * 
@@ -48,7 +49,6 @@ import org.springframework.web.servlet.DispatcherServlet;
  */
 public class Activator implements BundleActivator {
 	private static Logger logger = LoggerFactory.getLogger(Activator.class);
-	private static final String CONTEXT_CONFIG_LOCATION = "classpath:applicationDemo.xml";
 	private static final String SERVLET_URL_MAPPING = "/demo";
 	private ServiceTracker tracker;
 
@@ -77,27 +77,16 @@ public class Activator implements BundleActivator {
 		this.tracker.close();
 	}
 
-	private void serviceAdded(HttpService service) {
-		try {
-			DispatcherServlet dispatcherServlet = new DispatcherServlet();
-			dispatcherServlet.setContextConfigLocation(CONTEXT_CONFIG_LOCATION);
-			ClassLoader old = Thread.currentThread().getContextClassLoader();
-			try {
-				Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-				service.registerServlet(SERVLET_URL_MAPPING, dispatcherServlet, null, null);
-				logger.debug("Servlet registered");
-			} finally {
-				Thread.currentThread().setContextClassLoader(old);
-			}
-			
-			// register all annotated handlers
-			EventAnnotationBeanPostProcessor.registerHandlers(BeanFactoryUtils.beansOfTypeIncludingAncestors(dispatcherServlet.getWebApplicationContext(), Object.class));
-
-        } catch (Exception e) {
+    private void serviceAdded(HttpService service) {
+        try {
+            service.registerServlet(SERVLET_URL_MAPPING, new CallMeServlet(), null, null);
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        } catch (NamespaceException e) {
             throw new RuntimeException(e);
         }
-
-	}
+        logger.debug("Servlet registered");
+    }
 
 	private void serviceRemoved(HttpService service) {
 		service.unregister(SERVLET_URL_MAPPING);
