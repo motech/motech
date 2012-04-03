@@ -44,7 +44,7 @@ import org.drools.KnowledgeBase;
 import org.drools.runtime.StatelessKnowledgeSession;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.motechproject.dao.RuleRepository;
+import org.motechproject.dao.AllRules;
 import org.motechproject.model.Rule;
 
 
@@ -56,8 +56,8 @@ public class KnowledgeBaseManagerTest {
         String ruleFile = "test.drl";
         
         KnowledgeBaseManager kbm = new KnowledgeBaseManager();
-        RuleRepository repo = mock(RuleRepository.class);
-        kbm.setRuleRepository(repo);
+        AllRules repo = mock(AllRules.class);
+        kbm.setAllRules(repo);
         
         File file = new File(URLDecoder.decode(getClass().getResource(ruleFolder + "/" + ruleFile).getFile(), "UTF-8"));
         
