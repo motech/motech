@@ -115,8 +115,7 @@
                         </goals>
                         <configuration>
                             <includeArtifactIds>
-                                org.apache.felix.http.bridge,org.apache.felix.webconsole,
-                                org.apache.felix.scr,org.apache.felix.shell
+                                org.apache.felix.http.bridge,org.apache.felix.webconsole,org.apache.felix.scr,org.apache.felix.shell
                             </includeArtifactIds>
                             <stripVersion>true</stripVersion>
                             <outputDirectory>
