@@ -1,11 +1,10 @@
 package org.motechproject.server.messagecampaign.userspecified;
 
+import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.motechproject.model.DayOfWeek;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingMessageMode;
-import org.springframework.test.annotation.ExpectedException;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -13,7 +12,8 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 import static org.motechproject.server.messagecampaign.builder.CampaignMessageRecordBuilder.*;
 import static org.motechproject.server.messagecampaign.domain.message.RepeatingMessageMode.*;
 
@@ -79,11 +79,14 @@ public class CampaignMessageRecordTest {
     }
 
     @Test
-    @ExpectedException(IllegalArgumentException.class)
-    public void shouldthrowIllegalArguementException_WhenBothIntervalAndApplicableDaysArePresent(){
-        CampaignMessageRecord mock = Mockito.mock(CampaignMessageRecord.class);
-        when(mock.validate()).thenReturn(false);
-        mock.createRepeatingCampaignMessageFromRecord();
+    public void shouldThrowIllegalArguementException_WhenBothIntervalAndApplicableDaysArePresent(){
+        CampaignMessageRecord recordSpy = spy(new CampaignMessageRecord());
+        doReturn(false).when(recordSpy).validate();
+        try {
+            recordSpy.createRepeatingCampaignMessageFromRecord();
+            Assert.fail("expected illegal argument exception");
+        } catch(IllegalArgumentException iae) {
+        }
     }
 
     private void assertMessage(RepeatingMessageMode mode, CampaignMessageRecord record, List<DayOfWeek> expectedApplicableDays, RepeatingCampaignMessage actualMessage) {
