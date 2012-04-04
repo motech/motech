@@ -2,7 +2,7 @@
 
     MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
 
-    Copyright (c) 2011 Grameen Foundation USA.  All rights reserved.
+    Copyright (c) 2012 Grameen Foundation USA.  All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:
@@ -31,8 +31,34 @@
     OF SUCH DAMAGE.
 
 --%>
+<%@ page language="java" pageEncoding="UTF-8"%>
+<%
+java.util.jar.Manifest manifest = new java.util.jar.Manifest();
+manifest.read(pageContext.getServletContext().getResourceAsStream("/META-INF/MANIFEST.MF"));
+java.util.jar.Attributes attributes = manifest.getMainAttributes();
+%>
+
 <html>
 <body>
-<h2>Hello World!</h2>
+<h2>MOTECH - Mobile Technology for Community Health</h2>
+<hr/>
+<h3>Main module</h3>
+<ul>
+<li><b>Title:</b><%=attributes.getValue("Implementation-Title")%>
+<li><b>Version:</b><%=attributes.getValue("Implementation-Version")%>
+</ul>
+
+<h3>Bundled modules</h3>
+<ul>
+<li>...
+</ul>
+
+<h3>External bundles</h3>
+<ul>
+<li>...
+</ul>
+
+<hr/>
+<b>Generated at:</b> <%= new java.util.Date() %>
 </body>
 </html>
