@@ -13,8 +13,8 @@ import org.motechproject.scheduletracking.api.events.DefaultmentCaptureEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
 
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 import static org.motechproject.scheduletracking.api.utility.PeriodUtil.days;
@@ -36,7 +36,6 @@ public class EnrollmentDefaultmentServiceTest {
 
     @Test
     public void shouldScheduleJobAtEndOfMilestoneToCaptureDefaultmentState() {
-
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
         milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
         milestone.addAlert(WindowName.due, new Alert(days(0), weeks(1), 2, 1));
@@ -75,7 +74,7 @@ public class EnrollmentDefaultmentServiceTest {
 
         enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
 
-        verify(schedulerService, times(0)).safeScheduleRunOnceJob(any(RunOnceSchedulableJob.class));
+        verifyNoMoreInteractions(schedulerService);
     }
 
     @Test
