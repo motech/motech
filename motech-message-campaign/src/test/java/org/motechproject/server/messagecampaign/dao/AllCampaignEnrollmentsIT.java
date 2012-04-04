@@ -1,15 +1,21 @@
 package org.motechproject.server.messagecampaign.dao;
 
+import ch.lambdaj.Lambda;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
+import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollmentStatus;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.List;
+
+import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -55,9 +61,51 @@ public class AllCampaignEnrollmentsIT {
         assertEquals(1, allCampaignEnrollments.getAll().size());
     }
 
-	@After
+    @Test
+    public void shouldReturnEnrollmentsThatMatchGivenStatus() {
+        CampaignEnrollment activeEnrollment1 = new CampaignEnrollment("active_external_id_1", campaignName);
+        allCampaignEnrollments.add(activeEnrollment1);
+
+        CampaignEnrollment activeEnrollment2 = new CampaignEnrollment("active_external_id_2", campaignName);
+        allCampaignEnrollments.add(activeEnrollment2);
+
+        CampaignEnrollment inActiveEnrollment = new CampaignEnrollment("some_external_id", campaignName);
+        inActiveEnrollment.setStatus(CampaignEnrollmentStatus.INACTIVE);
+        allCampaignEnrollments.add(inActiveEnrollment);
+
+        CampaignEnrollment completedEnrollment = new CampaignEnrollment("some_other_external_id", campaignName);
+        completedEnrollment.setStatus(CampaignEnrollmentStatus.COMPLETED);
+        allCampaignEnrollments.add(completedEnrollment);
+
+        List<CampaignEnrollment> filteredEnrollments = allCampaignEnrollments.findByStatus(CampaignEnrollmentStatus.ACTIVE);
+        assertEquals(asList(new String[]{"active_external_id_1", "active_external_id_2"}), Lambda.extract(filteredEnrollments, on(CampaignEnrollment.class).getExternalId()));
+
+        filteredEnrollments = allCampaignEnrollments.findByStatus(CampaignEnrollmentStatus.INACTIVE);
+        assertEquals(asList(new String[] { "some_external_id"}), Lambda.extract(filteredEnrollments, on(CampaignEnrollment.class).getExternalId()));
+    }
+
+    @Test
+    public void shouldFindByExternalId() {
+        allCampaignEnrollments.add(new CampaignEnrollment(externalId, campaignName));
+        allCampaignEnrollments.add(new CampaignEnrollment(externalId, "different_campaign"));
+        allCampaignEnrollments.add(new CampaignEnrollment("some_other_external_id", campaignName));
+
+        List<CampaignEnrollment> filteredEnrollments = allCampaignEnrollments.findByExternalId(externalId);
+        assertEquals(asList(new String[]{externalId, externalId}), Lambda.extract(filteredEnrollments, on(CampaignEnrollment.class).getExternalId()));
+    }
+
+    @Test
+    public void shouldFindByCampaignName() {
+        allCampaignEnrollments.add(new CampaignEnrollment(externalId, campaignName));
+        allCampaignEnrollments.add(new CampaignEnrollment(externalId, "different_campaign"));
+        allCampaignEnrollments.add(new CampaignEnrollment("some_other_external_id", campaignName));
+
+        List<CampaignEnrollment> filteredEnrollments = allCampaignEnrollments.findByCampaignName(campaignName);
+        assertEquals(asList(new String[]{campaignName, campaignName}), Lambda.extract(filteredEnrollments, on(CampaignEnrollment.class).getCampaignName()));
+    }
+
+    @After
 	public void tearDown() {
 		allCampaignEnrollments.removeAll();
 	}
-
 }

@@ -8,8 +8,13 @@ import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.MessageCampaignException;
 import org.motechproject.server.messagecampaign.domain.campaign.AbsoluteCampaign;
+import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
 import org.motechproject.server.messagecampaign.scheduler.MessageCampaignScheduler;
 
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -23,11 +28,13 @@ public class MessageCampaignServiceImplTest {
     private MotechSchedulerService schedulerService;
     @Mock
     private MessageCampaignScheduler scheduler;
+    @Mock
+    private CampaignEnrollmentRecordMapper mockCampaignEnrollmentRecordMapper;
 
     @Before
     public void setUp() {
         initMocks(this);
-        messageCampaignService = new MessageCampaignServiceImpl(allMessageCampaigns, schedulerService, mockCampaignEnrollmentService);
+        messageCampaignService = new MessageCampaignServiceImpl(allMessageCampaigns, schedulerService, mockCampaignEnrollmentService, mockCampaignEnrollmentRecordMapper);
     }
 
     @Test
@@ -71,5 +78,21 @@ public class MessageCampaignServiceImplTest {
         when(allMessageCampaigns.get(campaignName)).thenReturn(null);
 
         messageCampaignService.startFor(enrollRequest);
+    }
+
+    @Test
+    public void shouldReturnListOfCampaignEnrollmentsForTheGivenQuery() {
+        CampaignEnrollmentsQuery enrollmentQuery = mock(CampaignEnrollmentsQuery.class);
+        CampaignEnrollment enrollment1 = new CampaignEnrollment("external_id_1", null);
+        CampaignEnrollment enrollment2 = new CampaignEnrollment("external_id_2", null);
+        List<CampaignEnrollment> enrollments = asList(enrollment1, enrollment2);
+
+        when(mockCampaignEnrollmentService.search(enrollmentQuery)).thenReturn(enrollments);
+        CampaignEnrollmentRecord record1 = new CampaignEnrollmentRecord(null, null, null, null);
+        CampaignEnrollmentRecord record2 = new CampaignEnrollmentRecord(null, null, null, null);
+        when(mockCampaignEnrollmentRecordMapper.map(enrollment1)).thenReturn(record1);
+        when(mockCampaignEnrollmentRecordMapper.map(enrollment2)).thenReturn(record2);
+
+        assertEquals(asList(new CampaignEnrollmentRecord[]{record1, record2}), messageCampaignService.search(enrollmentQuery));
     }
 }

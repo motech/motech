@@ -1,5 +1,6 @@
 package org.motechproject.server.messagecampaign.service;
 
+import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -7,7 +8,11 @@ import org.mockito.Mock;
 import org.motechproject.server.messagecampaign.dao.AllCampaignEnrollments;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollmentStatus;
+import org.motechproject.server.messagecampaign.search.Criterion;
 
+import java.util.List;
+
+import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -65,11 +70,23 @@ public class CampaignEnrollmentServiceTest {
     }
     
     @Test
-    public void shouldFindByExternalIdAndCampaignName() {
-        String externalId = "externalId";
-        String campaignName = "cccaaName";
-        service.findByExternalIdAndCampaignName(externalId, campaignName);
-        verify(mockAllCampaignEnrollments).findByExternalIdAndCampaignName(externalId, campaignName);
-    }
+    public void shouldSearchTheCampaignEnrollmentsBasedOnTheGivenQuery() {
+        Criterion primaryCriterion = mock(Criterion.class);
+        List<CampaignEnrollment> primaryCriterionFilteredEnrollments = mock(List.class);
+        when(primaryCriterion.fetch(mockAllCampaignEnrollments)).thenReturn(primaryCriterionFilteredEnrollments);
 
+        Criterion secondaryCriterion1 = mock(Criterion.class);
+        List<CampaignEnrollment> secondaryCriterion1FilteredEnrollments = mock(List.class);
+        when(secondaryCriterion1.filter(primaryCriterionFilteredEnrollments)).thenReturn(secondaryCriterion1FilteredEnrollments);
+
+        Criterion secondaryCriterion2 = mock(Criterion.class);
+        List<CampaignEnrollment> expectedFilteredEnrollments = mock(List.class);
+        when(secondaryCriterion2.filter(secondaryCriterion1FilteredEnrollments)).thenReturn(expectedFilteredEnrollments);
+
+        CampaignEnrollmentsQuery enrollmentQuery = mock(CampaignEnrollmentsQuery.class);
+        when(enrollmentQuery.getPrimaryCriterion()).thenReturn(primaryCriterion);
+        when(enrollmentQuery.getSecondaryCriteria()).thenReturn(asList(secondaryCriterion1, secondaryCriterion2));
+
+        Assert.assertEquals(expectedFilteredEnrollments, service.search(enrollmentQuery));
+    }
 }
