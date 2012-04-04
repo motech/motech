@@ -12,8 +12,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
+import static junit.framework.Assert.assertTrue;
 import static org.motechproject.server.messagecampaign.builder.CampaignMessageRecordBuilder.*;
 import static org.motechproject.server.messagecampaign.domain.message.RepeatingMessageMode.*;
 
@@ -80,12 +79,12 @@ public class CampaignMessageRecordTest {
 
     @Test
     public void shouldThrowIllegalArguementException_WhenBothIntervalAndApplicableDaysArePresent(){
-        CampaignMessageRecord recordSpy = spy(new CampaignMessageRecord());
-        doReturn(false).when(recordSpy).validate();
+        CampaignMessageRecord record = new CampaignMessageRecord().repeatInterval("1 Weeks").weekDaysApplicable(asList("Monday", "Wednesday")).deliverTime("10:30");
         try {
-            recordSpy.createRepeatingCampaignMessageFromRecord();
+            record.createRepeatingCampaignMessageFromRecord();
             Assert.fail("expected illegal argument exception");
         } catch(IllegalArgumentException iae) {
+            assertTrue(iae.getMessage(), iae.getMessage().contains("expected repeatInterval or (calendarStartOfWeek, weekDaysApplicable) only"));
         }
     }
 
