@@ -68,7 +68,8 @@
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-testing-utils</artifactId>
-            <version>0.8-SNAPSHOT</version>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 	<build>
