@@ -257,4 +257,12 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         jarsHandler.initHandler();
         return jarsHandler.getJarList();
     }
+    
+    public List<BundleInformation> getExternalBundles() {
+        List<BundleInformation> bundles = new ArrayList<BundleInformation>();
+        for (Bundle bundle : osgiFramework.getBundleContext().getBundles()) {
+            bundles.add(new BundleInformation(bundle));
+        }
+        return bundles;
+    }
 }

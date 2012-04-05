@@ -51,7 +51,7 @@ org.motechproject.server.osgi.OsgiFrameworkService osgiService = org.motechproje
 <li><b>External Bundle Folder:</b> <%=osgiService.getExternalBundleFolder()%>
 </ul>
 
-<h3>Bundled modules</h3>
+<h3>Modules</h3>
 <ul>
 <%
     for ( org.motechproject.server.osgi.JarInformation jarInfo : osgiService.getBundledModules() ) {
@@ -69,9 +69,18 @@ org.motechproject.server.osgi.OsgiFrameworkService osgiService = org.motechproje
 %>
 </ul>
 
-<h3>External bundles</h3>
+<h3>Bundles</h3>
 <ul>
-<li>...
+<%
+    for ( org.motechproject.server.osgi.BundleInformation bundleInfo : osgiService.getExternalBundles() ) {
+%>
+        <li><b><%= bundleInfo.getBundleId() %></b>)
+        [<%= bundleInfo.getState() %>]
+        <b><%= bundleInfo.getSymbolicName() %></b> <%= bundleInfo.getVersion() %>
+        (<%= bundleInfo.getLocation() %>)
+<%
+    }
+%>
 </ul>
 
 <hr/>
