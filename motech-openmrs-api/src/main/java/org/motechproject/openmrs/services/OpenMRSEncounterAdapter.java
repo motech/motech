@@ -14,6 +14,9 @@ import java.util.Set;
 import static ch.lambdaj.Lambda.on;
 import static ch.lambdaj.Lambda.sort;
 
+/**
+ * Manages OpenMRS Encounters
+ */
 public class OpenMRSEncounterAdapter implements MRSEncounterAdapter {
     @Autowired
     private EncounterService encounterService;
@@ -32,12 +35,23 @@ public class OpenMRSEncounterAdapter implements MRSEncounterAdapter {
     public OpenMRSEncounterAdapter() {
     }
 
+    /**
+     * Saves the given MRS Encounter to the OpenMRS system
+     * @param mrsEncounter The object to be saved
+     * @return The saved instance of MRS Encounter
+     */
     @Override
     public MRSEncounter createEncounter(MRSEncounter mrsEncounter) {
         Encounter savedEncounter = encounterService.saveEncounter(mrsToOpenMRSEncounter(mrsEncounter));
         return openmrsToMrsEncounter(savedEncounter);
     }
 
+    /**
+     * Fetches the latest encounter of a patient identified by MOTECH ID and the encounter type.
+     * @param motechId Identifier of the patient
+     * @param encounterType Type of the encounter. (e.g. ANCVISIT)
+     * @return The latest MRSEncounter if found, else null.
+     */
     @Override
     public MRSEncounter getLatestEncounterByPatientMotechId(String motechId, String encounterType) {
         final List<Encounter> encounters = encounterService.getEncountersByPatientIdentifier(motechId);

@@ -26,7 +26,7 @@ public class OpenMRSPersonAdapter {
         this.personService = personService;
     }
 
-    public MRSPerson openMRSToMRSPerson(Person person) {
+    MRSPerson openMRSToMRSPerson(Person person) {
 
         Set<PersonName> personNames = person.getNames();
         PersonName personName = getFirstName(personNames);
@@ -53,11 +53,11 @@ public class OpenMRSPersonAdapter {
         return address;
     }
 
-    public Person getPersonById(String id) {
+    Person getPersonById(String id) {
         return personService.getPerson(Integer.valueOf(id));
     }
 
-    public PersonName getFirstName(Set<PersonName> names) {
+    PersonName getFirstName(Set<PersonName> names) {
         List<PersonName> personNames = filter(having(on(PersonName.class).isPreferred(), is(false)), names);
         if(CollectionUtils.isEmpty(personNames))
             personNames = filter(having(on(PersonName.class).isPreferred(), is(true)), names);

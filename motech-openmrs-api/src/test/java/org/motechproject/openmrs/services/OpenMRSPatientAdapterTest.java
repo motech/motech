@@ -8,6 +8,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.motechproject.mrs.exception.PatientNotFoundException;
 import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.MRSFacility;
 import org.motechproject.mrs.model.MRSPatient;
@@ -230,7 +231,7 @@ public class OpenMRSPatientAdapterTest {
     }
 
     @Test
-    public void shouldSaveCauseOfDeath() {
+    public void shouldSaveCauseOfDeath() throws PatientNotFoundException {
         String patientId = "patientId";
         Patient patient = new Patient();
         Date dateOfDeath = mock(Date.class);
@@ -247,6 +248,17 @@ public class OpenMRSPatientAdapterTest {
         order.verify(mockPatientService).savePatient(patient);
         order.verify(mockPatientService).saveCauseOfDeathObs(patient, dateOfDeath, concept, null);
         assertThat(patient.getCauseOfDeath(), is(concept));
+    }
+
+    @Test(expected = PatientNotFoundException.class)
+    public void shouldThrowPatientNotFoundExceptionIfPatientIsNotFound() throws PatientNotFoundException {
+        String patientId = "patientId";
+        Date dateOfDeath = mock(Date.class);
+        String conceptName = "NONE";
+
+        openMRSPatientAdapter = spy(openMRSPatientAdapter);
+        doReturn(null).when(openMRSPatientAdapter).getOpenmrsPatientByMotechId(patientId);
+        openMRSPatientAdapter.deceasePatient(patientId, conceptName, dateOfDeath, null);
     }
 
     @Test

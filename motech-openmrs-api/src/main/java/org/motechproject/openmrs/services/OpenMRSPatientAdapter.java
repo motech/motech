@@ -3,6 +3,7 @@ package org.motechproject.openmrs.services;
 import ch.lambdaj.function.convert.Converter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.mrs.exception.PatientNotFoundException;
 import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.MRSFacility;
 import org.motechproject.mrs.model.MRSPatient;
@@ -19,6 +20,9 @@ import java.util.*;
 
 import static ch.lambdaj.Lambda.convert;
 
+/**
+ * Manages Patients in OpenMRS
+ */
 public class OpenMRSPatientAdapter implements MRSPatientAdapter {
 
     @Autowired
@@ -39,36 +43,48 @@ public class OpenMRSPatientAdapter implements MRSPatientAdapter {
     @Autowired
     OpenMRSConceptAdapter openMrsConceptAdapter;
 
+    /**
+     * Finds a patient by patient id
+     *
+     * @param patientId Value to be used to find a patient
+     * @return Patient object if found, else null
+     */
     @Override
     public MRSPatient getPatient(String patientId) {
         org.openmrs.Patient openMrsPatient = getOpenMrsPatient(patientId);
         return (openMrsPatient == null) ? null : getMrsPatient(openMrsPatient);
     }
 
-    @Override
-    @Deprecated
     /**
-     * The caller should instead get Patient and get the age from that
+     * Gets the patient's age
+     *
+     * @param motechId Motech id of the patient
+     * @return The age of the patient if found, else null
      */
+    @Override
     public Integer getAgeOfPatientByMotechId(String motechId) {
         Patient patient = getOpenmrsPatientByMotechId(motechId);
-        return (patient != null) ? patient.getAge() :null;
+        return (patient != null) ? patient.getAge() : null;
     }
 
+    /**
+     * Finds a patient by motech id
+     *
+     * @param motechId Value to be used to find a patient
+     * @return Patient object if found, else null
+     */
     @Override
     public MRSPatient getPatientByMotechId(String motechId) {
         final Patient patient = getOpenmrsPatientByMotechId(motechId);
         return (patient != null) ? getMrsPatient(patient) : null;
     }
 
-    Patient getOpenmrsPatientByMotechId(String motechId) {
-        PatientIdentifierType motechIdType = patientService.getPatientIdentifierTypeByName(IdentifierType.IDENTIFIER_MOTECH_ID.getName());
-        List<PatientIdentifierType> idTypes = new ArrayList<PatientIdentifierType>();
-        idTypes.add(motechIdType);
-        List<org.openmrs.Patient> patients = patientService.getPatients(null, motechId, idTypes, true);
-        return (CollectionUtils.isNotEmpty(patients)) ? patients.get(0) : null;
-    }
-
+    /**
+     * Saves a patient to the OpenMRS system
+     *
+     * @param patient Object to be saved
+     * @return saved instance of Patient
+     */
     @Override
     public MRSPatient savePatient(MRSPatient patient) {
         final org.openmrs.Patient openMRSPatient = patientHelper.buildOpenMrsPatient(patient,
@@ -78,6 +94,12 @@ public class OpenMRSPatientAdapter implements MRSPatientAdapter {
         return getMrsPatient(patientService.savePatient(openMRSPatient));
     }
 
+    /**
+     * Finds a patient by Motech id and updates the patient's details in the MRS system
+     *
+     * @param patient Patient instance with updated values (MOTECH identifier cannot be changed)
+     * @return The updated Patient object if found, else null
+     */
     @Override
     public String updatePatient(MRSPatient patient) {
         Patient openMrsPatient = getOpenmrsPatientByMotechId(patient.getMotechId());
@@ -143,7 +165,11 @@ public class OpenMRSPatientAdapter implements MRSPatientAdapter {
         }
     }
 
-    public MRSPatient getMrsPatient(org.openmrs.Patient patient) {
+    PatientIdentifierType getPatientIdentifierType(IdentifierType identifierType) {
+        return patientService.getPatientIdentifierTypeByName(identifierType.getName());
+    }
+
+    MRSPatient getMrsPatient(org.openmrs.Patient patient) {
         final PatientIdentifier patientIdentifier = patient.getPatientIdentifier();
         MRSFacility mrsFacility = (patientIdentifier != null) ? facilityAdapter.convertLocationToFacility(patientIdentifier.getLocation()) : null;
         String motechId = (patientIdentifier != null) ? patientIdentifier.getIdentifier() : null;
@@ -151,21 +177,20 @@ public class OpenMRSPatientAdapter implements MRSPatientAdapter {
         return new MRSPatient(String.valueOf(patient.getId()), motechId, mrsPerson, mrsFacility);
     }
 
-    public PatientIdentifierType getPatientIdentifierType(IdentifierType identifierType) {
-        return patientService.getPatientIdentifierTypeByName(identifierType.getName());
-    }
-
-    private List<PersonAttributeType> getAllPersonAttributeTypes() {
-        return personService.getAllPersonAttributeTypes(false);
-    }
-
-    public org.openmrs.Patient getOpenMrsPatient(String patientId) {
+    org.openmrs.Patient getOpenMrsPatient(String patientId) {
         return patientService.getPatient(Integer.parseInt(patientId));
     }
 
+    /**
+     * Searches for patients in the MRS system by patient's name and/or MOTECH id
+     *
+     * @param name     Name of the patient to be searched for (Optional : can be null)
+     * @param motechId Motech id of the patient to be searched for (Optional : can be null)
+     * @return Matched patients for the given search criteria [if both parameters are null, will return all the patients]
+     */
     @Override
-    public List<MRSPatient> search(String name, String id) {
-        List<MRSPatient> patients = convert(patientService.getPatients(name, id, Arrays.asList(patientService.getPatientIdentifierTypeByName(IdentifierType.IDENTIFIER_MOTECH_ID.getName())), false),
+    public List<MRSPatient> search(String name, String motechId) {
+        List<MRSPatient> patients = convert(patientService.getPatients(name, motechId, Arrays.asList(patientService.getPatientIdentifierTypeByName(IdentifierType.IDENTIFIER_MOTECH_ID.getName())), false),
                 new Converter<Patient, MRSPatient>() {
                     @Override
                     public MRSPatient convert(Patient patient) {
@@ -191,14 +216,38 @@ public class OpenMRSPatientAdapter implements MRSPatientAdapter {
         return patients;
     }
 
+    /**
+     * Marks a patient as dead with the given date of death and comment
+     *
+     * @param motechId    Deceased patient's MOTECH id
+     * @param conceptName Concept name for tracking deceased patients
+     * @param dateOfDeath Patient's date of death
+     * @param comment     Additional information for the cause of death
+     * @throws PatientNotFoundException Throws this exception if patient with the given MOTECH id does not exists
+     */
     @Override
-    public void deceasePatient(String patientMotechId, String conceptName, Date dateOfDeath, String comment) {
-        Patient patient = getOpenmrsPatientByMotechId(patientMotechId);
+    public void deceasePatient(String motechId, String conceptName, Date dateOfDeath, String comment) throws PatientNotFoundException {
+        Patient patient = getOpenmrsPatientByMotechId(motechId);
+        if (patient == null) {
+            throw new PatientNotFoundException("Patient for the MOTECH ID: " + motechId + " is not found");
+        }
         patient.setDeathDate(dateOfDeath);
         patient.setDead(true);
         Concept concept = openMrsConceptAdapter.getConceptByName(conceptName);
         patient.setCauseOfDeath(concept);
         patientService.savePatient(patient);
         patientService.saveCauseOfDeathObs(patient, dateOfDeath, concept, comment);
+    }
+
+    private List<PersonAttributeType> getAllPersonAttributeTypes() {
+        return personService.getAllPersonAttributeTypes(false);
+    }
+
+    Patient getOpenmrsPatientByMotechId(String motechId) {
+        PatientIdentifierType motechIdType = patientService.getPatientIdentifierTypeByName(IdentifierType.IDENTIFIER_MOTECH_ID.getName());
+        List<PatientIdentifierType> idTypes = new ArrayList<PatientIdentifierType>();
+        idTypes.add(motechIdType);
+        List<org.openmrs.Patient> patients = patientService.getPatients(null, motechId, idTypes, true);
+        return (CollectionUtils.isNotEmpty(patients)) ? patients.get(0) : null;
     }
 }

@@ -1,5 +1,6 @@
 package org.motechproject.openmrs.services;
 
+import org.motechproject.mrs.exception.ObservationNotFoundException;
 import org.motechproject.mrs.model.MRSConcept;
 import org.motechproject.mrs.model.MRSObservation;
 import org.motechproject.mrs.services.MRSObservationAdapter;
@@ -28,6 +29,45 @@ public class OpenMRSObservationAdapter implements MRSObservationAdapter {
     @Autowired
     OpenMRSPatientAdapter openMRSPatientAdapter;
 
+    /**
+     * Voids an observation for the MOTECH user, with the given reason
+     *
+     * @param mrsObservation MRSObservation to be voided
+     * @param reason         Reason for voiding the MRSObservation
+     * @param userMotechId   MOTECH ID of the user who's MRSObservation needs to be voided
+     * @throws ObservationNotFoundException Exception when the expected Observation does not exist
+     */
+    @Override
+    public void voidObservation(MRSObservation mrsObservation, String reason, String userMotechId) throws ObservationNotFoundException {
+        Obs obs = obsService.getObs(Integer.valueOf(mrsObservation.getId()));
+        if (obs == null) {
+            throw new ObservationNotFoundException("Observation not found for MOTECH id :" + userMotechId + " and with MRS observation id :" + mrsObservation.getId());
+        }
+        obs.setVoided(true);
+        obs.setVoidReason(reason);
+        obs.setDateVoided(new Date());
+        obs.setVoidedBy(openMRSUserAdapter.getOpenMrsUserByUserName(userMotechId));
+        obsService.voidObs(obs, reason);
+    }
+
+    /**
+     * Returns the Latest MRSObservation of the MRS patient, given the concept name. (e.g. WEIGHT)
+     *
+     * @param patientMotechId MOTECH Id of the patient
+     * @param conceptName     Concept Name of the MRSObservation
+     * @return MRSObservation if present, else null.
+     */
+    @Override
+    public MRSObservation findObservation(String patientMotechId, String conceptName) {
+        Patient patient = openMRSPatientAdapter.getOpenmrsPatientByMotechId(patientMotechId);
+        Concept concept = openMRSConceptAdapter.getConceptByName(conceptName);
+        List<Obs> observations = obsService.getObservationsByPersonAndConcept(patient, concept);
+
+        if (!observations.isEmpty()) {
+            return convertOpenMRSToMRSObservation(observations.get(0));
+        }
+        return null;
+    }
 
     <T> Obs createOpenMRSObservationForEncounter(MRSObservation<T> mrsObservation, Encounter encounter, Patient patient, Location location, User staff) {
         Obs openMrsObservation = new Obs();
@@ -109,27 +149,5 @@ public class OpenMRSObservationAdapter implements MRSObservationAdapter {
             }
         }
         return mrsObservation;
-    }
-
-    @Override
-    public void voidObservation(MRSObservation mrsObservation, String reason, String userMotechId) {
-        Obs obs = obsService.getObs(Integer.valueOf(mrsObservation.getId()));
-        obs.setVoided(true);
-        obs.setVoidReason(reason);
-        obs.setDateVoided(new Date());
-        obs.setVoidedBy(openMRSUserAdapter.getOpenMrsUserByUserName(userMotechId));
-        obsService.voidObs(obs, reason);
-    }
-
-    @Override
-    public MRSObservation findObservation(String patientMotechId, String conceptName) {
-        Patient patient = openMRSPatientAdapter.getOpenmrsPatientByMotechId(patientMotechId);
-        Concept concept = openMRSConceptAdapter.getConceptByName(conceptName);
-        List<Obs> observations = obsService.getObservationsByPersonAndConcept(patient, concept);
-
-        if (!observations.isEmpty()) {
-            return convertOpenMRSToMRSObservation(observations.get(0));
-        }
-        return null;
     }
 }

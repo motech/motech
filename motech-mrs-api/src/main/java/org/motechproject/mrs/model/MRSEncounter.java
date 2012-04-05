@@ -4,20 +4,15 @@ import java.util.Date;
 import java.util.Set;
 
 public class MRSEncounter {
-    public String getId() {
-        return id;
-    }
-
     private String id;
     private MRSPerson provider;
-
     private MRSUser creator;
-
     private MRSFacility facility;
     private Date date;
     private Set<MRSObservation> observations;
     private MRSPatient patient;
     private String encounterType;
+
     public MRSEncounter() {
     }
 
@@ -66,5 +61,9 @@ public class MRSEncounter {
 
     public String getEncounterType() {
         return encounterType;
+    }
+
+    public String getId() {
+        return id;
     }
 }

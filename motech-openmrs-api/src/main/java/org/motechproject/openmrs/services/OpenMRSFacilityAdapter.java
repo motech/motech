@@ -10,15 +10,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Manages OpenMRS Facilities
+ */
 public class OpenMRSFacilityAdapter implements MRSFacilityAdapter {
+
     @Autowired
     private LocationService locationService;
 
+    /**
+     * Saves a MRSFacility into OpenMRS
+     *
+     * @param facility Object to be saved
+     * @return The saved Facility
+     */
     @Override
     public MRSFacility saveFacility(MRSFacility facility) {
         String facilityId = facility.getId();
         Location location = new Location();
-        if(facilityId != null) {
+        if (facilityId != null) {
             location = locationService.getLocation(Integer.parseInt(facilityId));
         }
 
@@ -32,6 +42,11 @@ public class OpenMRSFacilityAdapter implements MRSFacilityAdapter {
         return convertLocationToFacility(savedLocation);
     }
 
+    /**
+     * Gets all the Facilities in OpenMRS
+     *
+     * @return List of all Facilities
+     */
     @Override
     public List<MRSFacility> getFacilities() {
         List<Location> locations = locationService.getAllLocations();
@@ -42,6 +57,12 @@ public class OpenMRSFacilityAdapter implements MRSFacilityAdapter {
         return facilities;
     }
 
+    /**
+     * Finds List of all Facilities matching the given facility name.
+     *
+     * @param locationName Value to be used to search
+     * @return List of matches Facilities, else empty list
+     */
     @Override
     public List<MRSFacility> getFacilities(String locationName) {
         final List<Location> locations = locationService.getLocations(locationName);
@@ -52,9 +73,15 @@ public class OpenMRSFacilityAdapter implements MRSFacilityAdapter {
         return facilities;
     }
 
+    /**
+     * Finds the Facility in OpenMRS by facility ID.
+     *
+     * @param facilityId Id of the facility to be fetched
+     * @return Facility Object if found, else null
+     */
     @Override
     public MRSFacility getFacility(String facilityId) {
-        if(StringUtils.isEmpty(facilityId)) return null;
+        if (StringUtils.isEmpty(facilityId)) return null;
         final Location location = getLocation(facilityId);
         return (location != null) ? convertLocationToFacility(location) : null;
     }
