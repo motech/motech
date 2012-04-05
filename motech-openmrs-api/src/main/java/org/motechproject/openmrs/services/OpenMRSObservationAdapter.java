@@ -8,10 +8,7 @@ import org.openmrs.*;
 import org.openmrs.api.ObsService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.apache.commons.lang.math.NumberUtils.isNumber;
 
@@ -149,5 +146,17 @@ public class OpenMRSObservationAdapter implements MRSObservationAdapter {
             }
         }
         return mrsObservation;
+    }
+
+    @Override
+    public List<MRSObservation> findObservations(String patientMotechId, String conceptName) {
+        Patient patient = openMRSPatientAdapter.getOpenmrsPatientByMotechId(patientMotechId);
+        Concept concept = openMRSConceptAdapter.getConceptByName(conceptName);
+        List<Obs> observations = obsService.getObservationsByPersonAndConcept(patient, concept);
+        List<MRSObservation> mrsObservations = new ArrayList<MRSObservation>();
+        for (Obs observation : observations) {
+            mrsObservations.add(convertOpenMRSToMRSObservation(observation));
+        }
+        return mrsObservations;
     }
 }

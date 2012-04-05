@@ -11,6 +11,7 @@ import java.util.List;
 
 public class CronBasedCampaign extends Campaign<CronBasedCampaignMessage> {
 
+    private String maxDuration;
     private List<CronBasedCampaignMessage> messages;
 
     @Override
@@ -20,11 +21,20 @@ public class CronBasedCampaign extends Campaign<CronBasedCampaignMessage> {
 
     @Override
     public MessageCampaignScheduler getScheduler(MotechSchedulerService schedulerService, CampaignEnrollmentService campaignEnrollmentService, CampaignRequest enrollRequest) {
-        return new CronBasedProgramScheduler(schedulerService, enrollRequest, this);
+        return new CronBasedProgramScheduler(schedulerService, enrollRequest, this,campaignEnrollmentService);
     }
 
     @Override
     public void setMessages(List<CronBasedCampaignMessage> messages) {
         this.messages = messages;
+    }
+
+
+    public void maxDuration(String maxDuration) {
+        this.maxDuration = maxDuration;
+    }
+
+    public String maxDuration() {
+        return maxDuration;
     }
 }

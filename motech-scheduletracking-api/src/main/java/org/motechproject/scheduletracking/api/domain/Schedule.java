@@ -1,7 +1,6 @@
 package org.motechproject.scheduletracking.api.domain;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.joda.time.MutablePeriod;
 import org.joda.time.Period;
 
@@ -11,7 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.motechproject.util.DateUtil.now;
-import static org.motechproject.util.DateUtil.today;
 
 public class Schedule implements Serializable {
     private String name;
@@ -60,8 +58,9 @@ public class Schedule implements Serializable {
         return duration.toPeriod();
     }
 
-    public boolean hasExpiredSince(DateTime referenceDateTime) {
-        return referenceDateTime.plus(getDuration()).isBefore(now());
+    public boolean hasExpiredSince(DateTime referenceDateTime, String currentMilestoneStr) {
+        Milestone currentMilestone = getMilestone(currentMilestoneStr);
+        return referenceDateTime.plus(currentMilestone.getMaximumDuration()).isBefore(now());
     }
 
     @Override
@@ -79,10 +78,6 @@ public class Schedule implements Serializable {
     @Override
     public int hashCode() {
         return name != null ? name.hashCode() : 0;
-    }
-
-    public boolean maxMilestoneCountReached(int milestoneCount) {
-        return milestoneCount >= milestones.size();
     }
 
     public Schedule isBasedOnAbsoluteWindows(boolean value) {

@@ -35,7 +35,7 @@ public class MotechEventTest {
 
         MotechEvent event = new MotechEvent("subject", params("1", "2"))
                 .setEndTime(endDate).setLastEvent(true);
-        Map paramsToReplace = params("3", "4");
+        Map<String, Object> paramsToReplace = params("3", "4");
         MotechEvent copy = event.copy("newsubject", paramsToReplace);
 
         assertEvent(copy, endDate, paramsToReplace, true);
@@ -44,7 +44,7 @@ public class MotechEventTest {
     @Test
     public void shouldCopyMotechEventWithoutStartAndEndTime() {
         MotechEvent event = new MotechEvent("subject", params("1", "2"));
-        Map paramsToReplace = params("3", "4");
+        Map<String, Object> paramsToReplace = params("3", "4");
         MotechEvent copy = event.copy("newsubject", paramsToReplace);
 
         assertEvent(copy, null, paramsToReplace, false);
@@ -63,8 +63,8 @@ public class MotechEventTest {
             assertNotSame(endDate, copy.getEndTime());
     }
 
-    private Map params(String val1, String val2) {
-        Map map = new HashMap();
+    private Map<String, Object> params(String val1, String val2) {
+        Map<String, Object> map = new HashMap<String, Object>();
         map.put("A", val1);
         map.put("C", val2);
         return map;

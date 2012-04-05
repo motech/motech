@@ -12,11 +12,13 @@ import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollme
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
+import org.motechproject.server.messagecampaign.service.CampaignEnrollmentsQuery;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.replace;
@@ -77,8 +79,9 @@ public class RepeatingProgramScheduleHandler {
     }
 
     private CampaignEnrollment enrollment(Map<String, Object> map) {
-        return campaignEnrollmentService.findByExternalIdAndCampaignName(
-                (String) map.get(EventKeys.EXTERNAL_ID_KEY), (String) map.get(EventKeys.CAMPAIGN_NAME_KEY));
+        CampaignEnrollmentsQuery query = new CampaignEnrollmentsQuery().withExternalId((String) map.get(EventKeys.EXTERNAL_ID_KEY)).withCampaignName((String) map.get(EventKeys.CAMPAIGN_NAME_KEY));
+        List<CampaignEnrollment> filteredEnrollments = campaignEnrollmentService.search(query);
+        return filteredEnrollments.get(0);
     }
 
     private void replaceMessageKeyParams(Map<String, Object> parameters, String parameterName, String value) {

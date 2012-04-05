@@ -113,6 +113,7 @@
     {
         "name" : "Cron based Message Program",
         "type" : "CRON",
+        "maxDuration" : "5 weeks",
         "messages" : [
             {
                 "name" : "First",

@@ -52,7 +52,7 @@ public class KookooCallServiceImpl implements IVRService {
         if (callRequest == null) throw new IllegalArgumentException("Missing call request");
 
         try {
-            String kooKooCallDetailRecordId = kookooCallDetailRecordsService.createOutgoing(null, callRequest.getPhone(), CallDetailRecord.Disposition.UNKNOWN);
+            String kooKooCallDetailRecordId = kookooCallDetailRecordsService.createOutgoing(callRequest.getPhone(), CallDetailRecord.Disposition.UNKNOWN);
 
             final String externalId = callRequest.getPayload().get(EXTERNAL_ID);
             callRequest.getPayload().put(IS_OUTBOUND_CALL, "true");

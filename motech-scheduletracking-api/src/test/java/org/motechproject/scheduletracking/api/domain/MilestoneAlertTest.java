@@ -1,14 +1,12 @@
 package org.motechproject.scheduletracking.api.domain;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.junit.Test;
-import org.motechproject.util.DateUtil;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
+import static org.motechproject.scheduletracking.api.utility.PeriodUtil.weeks;
 import static org.motechproject.util.DateUtil.newDateTime;
 
 public class MilestoneAlertTest {

@@ -14,4 +14,10 @@ public class CampaignEnrollmentTest {
         int startOffset = enrollment.startOffset(message);
         assertEquals(1, startOffset);
     }
+
+    @Test
+    public void shouldSetStatusAsActiveOnCreatingEnrollment() {
+        CampaignEnrollment enrollment = new CampaignEnrollment("123", "Campaign name");
+        assertEquals(CampaignEnrollmentStatus.ACTIVE, enrollment.getStatus());
+    }
 }

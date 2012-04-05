@@ -5,29 +5,36 @@ import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.MessageCampaignException;
 import org.motechproject.server.messagecampaign.domain.campaign.Campaign;
+import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.scheduler.MessageCampaignScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class MessageCampaignServiceImpl implements MessageCampaignService {
     private MotechSchedulerService schedulerService;
     private AllMessageCampaigns allMessageCampaigns;
     private CampaignEnrollmentService campaignEnrollmentService;
+    private CampaignEnrollmentRecordMapper campaignEnrollmentRecordMapper;
 
     @Autowired
     public MessageCampaignServiceImpl(AllMessageCampaigns allMessageCampaigns, MotechSchedulerService schedulerService,
-                                      CampaignEnrollmentService campaignEnrollmentService) {
+                                      CampaignEnrollmentService campaignEnrollmentService, CampaignEnrollmentRecordMapper campaignEnrollmentRecordMapper) {
         this.allMessageCampaigns = allMessageCampaigns;
         this.schedulerService = schedulerService;
         this.campaignEnrollmentService = campaignEnrollmentService;
+        this.campaignEnrollmentRecordMapper = campaignEnrollmentRecordMapper;
     }
 
     public void startFor(CampaignRequest request) {
         getScheduler(request).start();
     }
 
+    //TODO should remove this method
     public void stopFor(CampaignRequest request, String message) {
         getScheduler(request).stop(message);
     }
@@ -36,6 +43,14 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
     public void stopAll(CampaignRequest enrollRequest) {
         MessageCampaignScheduler scheduler = getScheduler(enrollRequest);
         scheduler.stop();
+    }
+
+    @Override
+    public List<CampaignEnrollmentRecord> search(CampaignEnrollmentsQuery query) {
+        List<CampaignEnrollmentRecord> campaignEnrollmentRecords = new ArrayList<CampaignEnrollmentRecord>();
+        for (CampaignEnrollment campaignEnrollment : campaignEnrollmentService.search(query))
+            campaignEnrollmentRecords.add(campaignEnrollmentRecordMapper.map(campaignEnrollment));
+        return campaignEnrollmentRecords;
     }
 
     private MessageCampaignScheduler getScheduler(CampaignRequest enrollRequest) {

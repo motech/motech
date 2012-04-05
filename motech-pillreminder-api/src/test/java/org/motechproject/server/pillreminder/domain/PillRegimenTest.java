@@ -12,7 +12,6 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 
 public class PillRegimenTest {
-
     @Test(expected = ValidationException.class)
     public void shouldNotValidateIfEndDateIsBeforeTheStartDate() {
         LocalDate startDate = DateUtil.newDate(2011, 2, 1);
@@ -58,10 +57,6 @@ public class PillRegimenTest {
         Set<Dosage> dosages = new HashSet<Dosage>();
         regimen.setDosages(dosages);
         assertEquals(dosages, regimen.getDosages());
-
-        regimen.setType("type");
-        assertEquals("type", regimen.getType());
-
     }
 
     @Test

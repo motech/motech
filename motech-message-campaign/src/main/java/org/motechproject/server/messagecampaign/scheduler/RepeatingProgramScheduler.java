@@ -1,6 +1,7 @@
 package org.motechproject.server.messagecampaign.scheduler;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.DayOfWeek;
@@ -9,18 +10,13 @@ import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.Constants;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
-import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
 import org.motechproject.server.messagecampaign.domain.campaign.RepeatingCampaign;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 import org.motechproject.valueobjects.WallTime;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.lang.String.format;
 import static org.motechproject.util.DateUtil.endOfDay;
@@ -29,29 +25,14 @@ import static org.motechproject.valueobjects.factory.WallTimeFactory.wallTime;
 
 public class RepeatingProgramScheduler extends MessageCampaignScheduler<RepeatingCampaignMessage, RepeatingCampaign> {
 
-    private CampaignEnrollmentService campaignEnrollmentService;
     public Boolean dispatchMessagesEvery24Hours;
 
     public RepeatingProgramScheduler(MotechSchedulerService schedulerService, CampaignRequest enrollRequest, RepeatingCampaign campaign,
                                      CampaignEnrollmentService campaignEnrollmentService, Boolean dispatchMessagesEvery24Hours) {
-        super(schedulerService, enrollRequest, campaign);
-        this.campaignEnrollmentService = campaignEnrollmentService;
+        super(schedulerService, enrollRequest, campaign, campaignEnrollmentService);
         this.dispatchMessagesEvery24Hours = dispatchMessagesEvery24Hours;
     }
 
-    @Override
-    public void start() {
-        CampaignEnrollment enrollment = new CampaignEnrollment(campaignRequest.externalId(), campaignRequest.campaignName())
-                .setStartDate(referenceDate()).setStartOffset(campaignRequest.startOffset());
-        campaignEnrollmentService.register(enrollment);
-        super.start();
-    }
-
-    @Override
-    public void stop() {
-        super.stop();
-        campaignEnrollmentService.unregister(campaignRequest.externalId(), campaignRequest.campaignName());
-    }
 
     @Override
     protected void scheduleJobFor(RepeatingCampaignMessage message) {
@@ -69,18 +50,24 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
         scheduleRepeatingJob(startDate, getDeliveryTime(message), endDateToEndOfDay, params, getCronExpression(message));
     }
 
+    @Override
+    protected DateTime getCampaignEnd() {
+        int maxDuration = wallTime(campaign.maxDuration()).inDays();
+        return newDateTime(campaignRequest.referenceDate().plusDays(maxDuration));
+    }
+
     private Time getDeliveryTime(RepeatingCampaignMessage message) {
         return (dispatchMessagesEvery24Hours) ? campaignRequest.reminderTime() : message.deliverTime();
     }
 
     private String getCronExpression(RepeatingCampaignMessage message) {
-        if(dispatchMessagesEvery24Hours)
-             return String.format("0 %d %d %s * ? *", campaignRequest.reminderTime().getMinute(),
+        if (dispatchMessagesEvery24Hours)
+            return String.format("0 %d %d %s * ? *", campaignRequest.reminderTime().getMinute(),
                     campaignRequest.reminderTime().getHour(), Constants.DAILY_REPEATING_DAYS_CRON_EXPRESSION);
 
         String deliverDates = StringUtils.join(getShortNames(campaignRequest.getUserPreferredDays().isEmpty() ? message.weekDaysApplicable() : campaignRequest.getUserPreferredDays()).iterator(), ",");
 
-        return String.format("0 %d %d ? * %s *", message.deliverTime().getMinute(),message.deliverTime().getHour(),
+        return String.format("0 %d %d ? * %s *", message.deliverTime().getMinute(), message.deliverTime().getHour(),
                 deliverDates);
     }
 

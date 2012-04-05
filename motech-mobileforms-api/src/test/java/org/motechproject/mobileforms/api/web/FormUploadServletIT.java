@@ -100,7 +100,7 @@ public class FormUploadServletIT {
     }
 
 
-    private DataInputStream readResponse(MockHttpServletResponse response) throws IOException {
+    private DataInputStream readResponse(MockHttpServletResponse response) {
         return new DataInputStream(new ZInputStream(new ByteArrayInputStream(response.getContentAsByteArray())));
     }
 

@@ -21,7 +21,7 @@ public class DosageResponseBuilderTest {
         HashSet<Medicine> medicines = new HashSet<Medicine>();
         medicines.add(new Medicine("medicine1", date, date));
         medicines.add(new Medicine("medicine2", date, date));
-        Dosage dosage = new Dosage(new Time(10, 05), medicines);
+        Dosage dosage = new Dosage(new Time(10, 5), medicines);
         dosage.setId("dosageId");
 
         DosageResponse dosageResponse = new DosageResponseBuilder().createFrom(dosage);

@@ -22,11 +22,14 @@ public class CampaignRecord {
         campaign.setMessages(buildCampaignMessages());
         campaign.setName(this.name());
         campaign.setType(this.type);
-        if (type == CampaignType.OFFSET) {
+        if (type == CampaignType.OFFSET && campaign instanceof  OffsetCampaign) {
             ((OffsetCampaign) campaign).maxDuration(maxDuration);
         }
-        if (type == CampaignType.REPEATING) {
+        if (type == CampaignType.REPEATING && campaign instanceof RepeatingCampaign) {
             ((RepeatingCampaign) campaign).maxDuration(maxDuration);
+        }
+        if (type == CampaignType.CRON && campaign instanceof  CronBasedCampaign) {
+            ((CronBasedCampaign) campaign).maxDuration(maxDuration);
         }
         return campaign;
     }

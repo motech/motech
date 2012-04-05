@@ -268,6 +268,7 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
         Trigger trigger = new SimpleTrigger(jobId.value(), JOB_GROUP_NAME, jobStartDate);
+        trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_FIRE_NOW);
         scheduleJob(jobDetail, trigger);
     }
 

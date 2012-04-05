@@ -50,6 +50,12 @@ public class Node {
         return this;
     }
 
+    @JsonIgnore
+    public Node addPromptToBeginning(Prompt prompt) {
+        this.prompts.add(0, prompt);
+        return this;
+    }
+
     private Node setPrompts(List<Prompt> prompts) {
         this.prompts.addAll(prompts);
         return this;
@@ -81,9 +87,7 @@ public class Node {
     }
 
     public Node setTreeCommands(ITreeCommand... treeCommands) {
-        for (ITreeCommand treeCommand : treeCommands) {
-            this.treeCommands.add(treeCommand);
-        }
+        Collections.addAll(this.treeCommands, treeCommands);
         return this;
     }
 

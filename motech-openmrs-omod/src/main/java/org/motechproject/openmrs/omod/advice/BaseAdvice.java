@@ -23,7 +23,7 @@ public abstract class BaseAdvice implements AfterReturningAdvice {
     @Override
     public void afterReturning(Object returnValue, Method method, Object[] args, Object target) throws Throwable {
         String methodName = method.getName();
-        Map params = new HashMap();
+        Map<String, Object> params = new HashMap<String, Object>();
         params.put(ADVICE_EVENT_METHOD_INVOKED, methodName);
         params.put(ADVICE_EVENT_RETURNED_VALUE, returnValue);
 

@@ -8,7 +8,7 @@ public class CronJobExpressionBuilder {
     private Integer repeatWindowInHours;
     private Integer repeatIntervalInMinutes;
 
-    private final String CRON_JOB_EXPR = "0 %d/%d %d-%d * * ?";
+    private static final String CRON_JOB_EXPR = "0 %d/%d %d-%d * * ?";
 
     public CronJobExpressionBuilder(Time startTime, Integer repeatWindowInHours, Integer repeatIntervalInMinutes) {
         this.startTime = startTime;

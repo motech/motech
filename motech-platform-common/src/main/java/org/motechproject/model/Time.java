@@ -15,8 +15,8 @@ public class Time implements Comparable<Time>, Serializable {
     }
 
     public Time(int hour, int minute) {
-        this.hour = Integer.valueOf(hour);
-        this.minute = Integer.valueOf(minute);
+        this.hour = hour;
+        this.minute = minute;
     }
 
     public Time(Integer hour, Integer minute) {

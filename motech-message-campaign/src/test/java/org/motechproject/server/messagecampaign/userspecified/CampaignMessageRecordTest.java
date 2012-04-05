@@ -1,11 +1,10 @@
 package org.motechproject.server.messagecampaign.userspecified;
 
+import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.motechproject.model.DayOfWeek;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingMessageMode;
-import org.springframework.test.annotation.ExpectedException;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.when;
+import static junit.framework.Assert.assertTrue;
 import static org.motechproject.server.messagecampaign.builder.CampaignMessageRecordBuilder.*;
 import static org.motechproject.server.messagecampaign.domain.message.RepeatingMessageMode.*;
 
@@ -79,11 +78,14 @@ public class CampaignMessageRecordTest {
     }
 
     @Test
-    @ExpectedException(IllegalArgumentException.class)
-    public void shouldthrowIllegalArguementException_WhenBothIntervalAndApplicableDaysArePresent(){
-        CampaignMessageRecord mock = Mockito.mock(CampaignMessageRecord.class);
-        when(mock.validate()).thenReturn(false);
-        mock.createRepeatingCampaignMessageFromRecord();
+    public void shouldThrowIllegalArguementException_WhenBothIntervalAndApplicableDaysArePresent(){
+        CampaignMessageRecord record = new CampaignMessageRecord().repeatInterval("1 Weeks").weekDaysApplicable(asList("Monday", "Wednesday")).deliverTime("10:30");
+        try {
+            record.createRepeatingCampaignMessageFromRecord();
+            Assert.fail("expected illegal argument exception");
+        } catch(IllegalArgumentException iae) {
+            assertTrue(iae.getMessage(), iae.getMessage().contains("expected repeatInterval or (calendarStartOfWeek, weekDaysApplicable) only"));
+        }
     }
 
     private void assertMessage(RepeatingMessageMode mode, CampaignMessageRecord record, List<DayOfWeek> expectedApplicableDays, RepeatingCampaignMessage actualMessage) {

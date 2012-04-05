@@ -10,7 +10,6 @@ import org.motechproject.model.Time;
 import org.motechproject.util.datetime.DateTimeSource;
 import org.motechproject.util.datetime.DefaultDateTimeSource;
 
-import java.util.Date;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -47,7 +46,7 @@ public class DateUtilTest {
     @Test
     public void shouldReturnTheNumberOfYearsFromAGivenDate(){
         mockCurrentDate(new DateTime(2011, 9, 9, 9, 30, 0, 0));
-        assertEquals(getDifferenceOfDatesInYears(new Date(108, 12, 12)), 2);
+        assertEquals(2, getDifferenceOfDatesInYears(newDate(2008, 12, 12).toDate()));
     }
 
     @Test

@@ -31,7 +31,7 @@ public class FormDataParserTest {
                  "<formName>patientreg</formName>" +
                  "</patientreg>";
 
-        Map map = parser.parse(xml);
+        Map<String, String> map = parser.parse(xml);
         assertEquals("uganda",map.get("country"));
         assertEquals("patientreg",map.get("formName"));
         assertEquals("data", map.get("formType"));

@@ -1,13 +1,19 @@
 package org.motechproject.server.messagecampaign.scheduler;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.motechproject.model.*;
+import org.motechproject.model.CronSchedulableJob;
+import org.motechproject.model.MotechEvent;
+import org.motechproject.model.RunOnceSchedulableJob;
+import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.builder.SchedulerPayloadBuilder;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.Campaign;
+import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
+import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 import org.motechproject.server.messagecampaign.service.CampaignTypeHandlersRegistery;
 import org.motechproject.util.DateUtil;
 
@@ -20,32 +26,53 @@ import static org.motechproject.server.messagecampaign.EventKeys.BASE_SUBJECT;
 public abstract class MessageCampaignScheduler<T extends CampaignMessage, E extends Campaign<T>> {
     protected MotechSchedulerService schedulerService;
     protected CampaignRequest campaignRequest;
+    private CampaignEnrollmentService campaignEnrollmentService;
     protected E campaign;
     public final static String INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT = BASE_SUBJECT + "internal-repeating-campaign";
+    private JobIdFactory jobIdFactory;
 
-    protected MessageCampaignScheduler(MotechSchedulerService schedulerService, CampaignRequest campaignRequest, E campaign) {
+    protected MessageCampaignScheduler(MotechSchedulerService schedulerService, CampaignRequest campaignRequest, E campaign, CampaignEnrollmentService campaignEnrollmentService) {
         this.schedulerService = schedulerService;
         this.campaign = campaign;
         this.campaignRequest = campaignRequest;
+        this.campaignEnrollmentService = campaignEnrollmentService;
+        jobIdFactory = new JobIdFactory();
     }
 
     public void start() {
+        CampaignEnrollment enrollment = new CampaignEnrollment(campaignRequest.externalId(), campaignRequest.campaignName())
+                .setStartDate(referenceDate()).setStartOffset(campaignRequest.startOffset());
+        campaignEnrollmentService.register(enrollment);
+
         for (T message : campaign.messages())
             scheduleJobFor(message);
+
+        scheduleCompletionJob(enrollment);
+    }
+
+    private void scheduleCompletionJob(CampaignEnrollment enrollment) {
+        HashMap<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put(EventKeys.ENROLLMENT_KEY, enrollment);
+        parameters.put(EventKeys.SCHEDULE_JOB_ID_KEY, jobIdFactory.getCampaignCompletedJobIdFor(campaign.name(), campaignRequest.externalId()));
+        MotechEvent event = new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_COMPLETED_EVENT_SUBJECT, parameters);
+        schedulerService.safeScheduleRunOnceJob(new RunOnceSchedulableJob(event, getCampaignEnd().toDate()));
     }
 
     public void stop(String messageName) {
-        MessageCampaignScheduledJobId jobId = new MessageCampaignScheduledJobId(campaign.name(), campaignRequest.externalId(), messageName);
-        schedulerService.safeUnscheduleJob(CampaignTypeHandlersRegistery.subjectFor(campaign), jobId.value());
+        schedulerService.safeUnscheduleJob(CampaignTypeHandlersRegistery.subjectFor(campaign), getMessageJobId(messageName));
     }
 
     public void stop() {
         for (T message : campaign.messages()) {
             stop(message.messageKey());
         }
+        campaignEnrollmentService.unregister(campaignRequest.externalId(), campaignRequest.campaignName());
+        schedulerService.safeUnscheduleJob(EventKeys.MESSAGE_CAMPAIGN_COMPLETED_EVENT_SUBJECT, jobIdFactory.getCampaignCompletedJobIdFor(campaign.name(), campaignRequest.externalId()));
     }
 
     protected abstract void scheduleJobFor(T message);
+
+    protected abstract DateTime getCampaignEnd();
 
     protected void scheduleJobOn(Time startTime, LocalDate startDate, Map<String, Object> params) {
         MotechEvent motechEvent = new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, params);
@@ -65,8 +92,8 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage, E exte
         return campaignRequest.referenceDate() != null ? campaignRequest.referenceDate() : DateUtil.today();
     }
 
-    protected HashMap jobParams(String messageKey) {
-        String jobId = getJobId(messageKey);
+    protected HashMap<String, Object> jobParams(String messageKey) {
+        String jobId = getMessageJobId(messageKey);
         return new SchedulerPayloadBuilder()
                 .withJobId(jobId)
                 .withCampaignName(campaign.name())
@@ -75,9 +102,8 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage, E exte
                 .payload();
     }
 
-    protected String getJobId(String messageKey) {
-        MessageCampaignScheduledJobId jobId = new MessageCampaignScheduledJobId(campaign.name(), campaignRequest.externalId(), messageKey);
-        return jobId.value();
+    protected String getMessageJobId(String messageKey) {
+        return jobIdFactory.getMessageJobIdFor(campaign.name(), campaignRequest.externalId(), messageKey);
     }
 }
 

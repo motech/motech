@@ -3,9 +3,8 @@ package org.motechproject.mrs.services;
 import org.motechproject.mrs.exception.ObservationNotFoundException;
 import org.motechproject.mrs.model.MRSObservation;
 
-/**
- * Interface for handling MRSObservations
- */
+import java.util.List;
+
 public interface MRSObservationAdapter {
     /**
      * Voids an observation for the MOTECH user, with the given reason
@@ -25,4 +24,5 @@ public interface MRSObservationAdapter {
      * @return MRSObservation if present.
      */
     MRSObservation findObservation(String patientMotechId, String conceptName);
+    List<MRSObservation> findObservations(String patientMotechId, String conceptName);
 }

@@ -1,21 +1,37 @@
 package org.motechproject.server.messagecampaign.scheduler;
 
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.AbsoluteCampaign;
 import org.motechproject.server.messagecampaign.domain.message.AbsoluteCampaignMessage;
+import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 
 import java.util.HashMap;
 
+import static ch.lambdaj.Lambda.max;
+import static ch.lambdaj.Lambda.on;
+import static org.motechproject.util.DateUtil.newDateTime;
+
 public class AbsoluteProgramScheduler extends MessageCampaignScheduler<AbsoluteCampaignMessage, AbsoluteCampaign> {
 
-    public AbsoluteProgramScheduler(MotechSchedulerService schedulerService, CampaignRequest enrollRequest, AbsoluteCampaign campaign) {
-        super(schedulerService, enrollRequest, campaign);
+    private CampaignEnrollmentService campaignEnrollmentService;
+    public AbsoluteProgramScheduler(MotechSchedulerService schedulerService, CampaignRequest campaignRequest, AbsoluteCampaign campaign, CampaignEnrollmentService campaignEnrollmentService) {
+        super(schedulerService, campaignRequest, campaign, campaignEnrollmentService);
     }
 
     @Override
     protected void scheduleJobFor(AbsoluteCampaignMessage absoluteCampaignMessage) {
-        HashMap params = jobParams(absoluteCampaignMessage.messageKey());
+        HashMap<String, Object> params = jobParams(absoluteCampaignMessage.messageKey());
         scheduleJobOn(campaignRequest.reminderTime(), absoluteCampaignMessage.date(), params);
     }
+
+    @Override
+    protected DateTime getCampaignEnd() {
+        LocalDate maxDate = max(campaign.messages(), on(AbsoluteCampaignMessage.class).date());
+        return newDateTime(maxDate, campaignRequest.reminderTime());
+    }
+
+
 }

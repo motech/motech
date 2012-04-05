@@ -5,6 +5,7 @@ import org.ektorp.support.View;
 import org.motechproject.cmslite.api.model.CMSLiteException;
 import org.motechproject.cmslite.api.model.StreamContent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import java.io.BufferedInputStream;
@@ -14,7 +15,7 @@ import java.util.List;
 @Repository
 public class AllStreamContents extends BaseContentRepository<StreamContent> {
     @Autowired
-    protected AllStreamContents(CouchDbConnector db) {
+    protected AllStreamContents(@Qualifier("cmsLiteDatabase") CouchDbConnector db) {
         super(StreamContent.class, db);
     }
 
@@ -71,7 +72,7 @@ public class AllStreamContents extends BaseContentRepository<StreamContent> {
         }
     }
 
-    private void createOrUpdateContent(StreamContent streamContent, StreamContent streamContentFromDB, boolean resourceDoesNotExist) throws IOException {
+    private void createOrUpdateContent(StreamContent streamContent, StreamContent streamContentFromDB, boolean resourceDoesNotExist) {
         if (resourceDoesNotExist){
             db.create(streamContent);
             createAttachment(streamContent);
@@ -84,7 +85,7 @@ public class AllStreamContents extends BaseContentRepository<StreamContent> {
         }
     }
 
-    private void createAttachment(StreamContent streamContent) throws IOException {
+    private void createAttachment(StreamContent streamContent) {
         BufferedInputStream bufferedInputStream = new BufferedInputStream(streamContent.getInputStream());
 
         AttachmentInputStream attachmentInputStream = new AttachmentInputStream(streamContent.getId(), bufferedInputStream, streamContent.getContentType());

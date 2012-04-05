@@ -13,10 +13,9 @@ import static junit.framework.Assert.assertTrue;
 import static org.joda.time.Period.minutes;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.motechproject.scheduletracking.api.utility.PeriodFactory.*;
+import static org.motechproject.scheduletracking.api.utility.PeriodUtil.*;
 
 public class ScheduleFactoryTest {
-
     @Test
     public void shouldCreateTheScheduleWithName() {
         Schedule schedule = loadSchedule("IPTI Schedule", "/schedules");
@@ -24,8 +23,8 @@ public class ScheduleFactoryTest {
         assertEquals("IPTI Schedule", schedule.getName());
     }
 
-	@Test
-	public void shouldAddMilestonesToTheSchedule() {
+    @Test
+    public void shouldAddMilestonesToTheSchedule() {
         Schedule schedule = loadSchedule("IPTI Schedule", "/schedules");
 
         List<Milestone> milestones = schedule.getMilestones();
@@ -36,10 +35,10 @@ public class ScheduleFactoryTest {
         assertEquals("IPTI 1", firstMilestone.getName());
         assertEquals("Bar", firstMilestone.getData().get("Foo"));
         assertEquals("IPTI 2", secondMilestone.getName());
-	}
+    }
 
-	@Test
-	public void shouldAddRelativeAlertsToTheWindows() {
+    @Test
+    public void shouldAddRelativeAlertsToTheWindows() {
         Schedule schedule = loadSchedule("IPTI Schedule", "/schedules");
 
         List<Milestone> milestones = schedule.getMilestones();
@@ -56,7 +55,7 @@ public class ScheduleFactoryTest {
     }
 
     @Test
-	public void shouldAddAbsoluteAlertsToTheWindows() {
+    public void shouldAddAbsoluteAlertsToTheWindows() {
         Schedule schedule = loadSchedule("Absolute Schedule", "/absolute-windows");
 
         List<Milestone> milestones = schedule.getMilestones();
@@ -111,7 +110,7 @@ public class ScheduleFactoryTest {
         assertEquals(weeks(5), milestone2.getWindowEnd(WindowName.max));
     }
 
-@Test
+    @Test
     public void shouldCreateRelativeSchedule() {
         Schedule schedule = loadSchedule("Relative Schedule", "/relative-windows");
 
@@ -151,15 +150,15 @@ public class ScheduleFactoryTest {
         Milestone lateEmpty = milestones.get(2);
         Milestone maxEmpty = milestones.get(3);
 
-        assertEquals(days(0), earliestEmpty.getWindowEnd(WindowName.earliest).minus(earliestEmpty.getWindowStart(WindowName.earliest)));
-        assertEquals(days(0), dueEmpty.getWindowEnd(WindowName.due).minus(dueEmpty.getWindowStart(WindowName.due)));
-        assertEquals(days(0), lateEmpty.getWindowEnd(WindowName.late).minus(lateEmpty.getWindowStart(WindowName.late)));
-        assertEquals(days(0), maxEmpty.getWindowEnd(WindowName.max).minus(maxEmpty.getWindowStart(WindowName.max)));
+        assertEquals(days(0), earliestEmpty.getWindowDuration(WindowName.earliest));
+        assertEquals(days(0), dueEmpty.getWindowDuration(WindowName.due));
+        assertEquals(days(0), lateEmpty.getWindowDuration(WindowName.late));
+        assertEquals(days(0), maxEmpty.getWindowDuration(WindowName.max));
     }
 
     @Test
     public void shouldCreateEmptyWindowWithCombinationOfUnits() {
-       Schedule schedule = loadSchedule("IPTI Schedule", "/schedules");
+        Schedule schedule = loadSchedule("IPTI Schedule", "/schedules");
 
         List<Milestone> milestones = schedule.getMilestones();
         Milestone firstMilestone = milestones.get(0);

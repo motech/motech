@@ -72,7 +72,7 @@
 
 	<bean id="treeNodeLocator" class="org.motechproject.server.decisiontree.TreeNodeLocator">
 	</bean>
-	<bean id="treeDao" class="org.motechproject.decisiontree.dao.couchdb.TreeDaoImpl">
+	<bean id="treeDao" class="org.motechproject.decisiontree.repository.AllTrees">
         <constructor-arg ref="treesDatabase"/>
 	</bean>
     <bean id="treeEventProcessor"

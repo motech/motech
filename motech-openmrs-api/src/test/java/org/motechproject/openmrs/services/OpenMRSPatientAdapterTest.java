@@ -203,7 +203,7 @@ public class OpenMRSPatientAdapterTest {
 
         doReturn(mockOpenMRSPatient).when(openMRSPatientAdapterSpy).getOpenmrsPatientByMotechId(motechId);
         when(mockOpenMRSPatient.getAge()).thenReturn(expectedAge);
-        Integer age = openMRSPatientAdapterSpy.getAgeOfPatientByMotechId(motechId);
+        Integer age = openMRSPatientAdapterSpy.getOpenmrsPatientByMotechId(motechId).getAge();
         verify(mockOpenMRSPatient).getAge();
         assertEquals(age, expectedAge);
     }
@@ -301,7 +301,7 @@ public class OpenMRSPatientAdapterTest {
         final MRSFacility mrsFacilityOld = new MRSFacility("61", facilityName + "Old", facilityCountry + "Old", facilityRegion + "Old", facilityDistrict + "Old", facilitySubDistrict + "Old");
         MRSPatient mrsPatient = new MRSPatient(motechId, person, mrsFacility);
 
-        final org.openmrs.Patient mockPatient = patientTestUtil.setUpOpenMRSPatient(new Person(), "diffFirst", "diffMiddle", "diffLast", "diffAddress", new Date(2001, 10, 10), !estimatedDate, "female", mrsFacilityOld, motechId);
+        final org.openmrs.Patient mockPatient = patientTestUtil.setUpOpenMRSPatient(new Person(), "diffFirst", "diffMiddle", "diffLast", "diffAddress", new LocalDate(2001, 10, 10).toDate(), !estimatedDate, "female", mrsFacilityOld, motechId);
 
         final PersonAttributeType nhisAttributeType = new PersonAttributeType(1);
         nhisAttributeType.setName(nhisNumberAttribute);
@@ -334,7 +334,7 @@ public class OpenMRSPatientAdapterTest {
         assertThat(actualPatient.getAttribute(nhisExpirationDateAttribute).getValue(), is(nhisExpiryDateString));
         assertThat(actualPatient.getAttribute(insuredAttribute).getValue(), is(String.valueOf(insured)));
         assertThat(actualPatient.getPatientIdentifier().getLocation().getCountry(), is(facilityCountry));
-        assertThat(actualPatient.getPatientIdentifier().getLocation().getRegion(), is(facilityRegion));
+        assertThat(actualPatient.getPatientIdentifier().getLocation().getAddress6(), is(facilityRegion));
         assertThat(actualPatient.getPatientIdentifier().getLocation().getCountyDistrict(), is(facilityDistrict));
         assertThat(actualPatient.getPatientIdentifier().getLocation().getStateProvince(), is(facilitySubDistrict));
         assertThat(actualPatient.getPatientIdentifier().getLocation().getName(), is(facilityName));

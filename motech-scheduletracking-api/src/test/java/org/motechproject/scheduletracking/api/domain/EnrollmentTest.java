@@ -1,8 +1,10 @@
 package org.motechproject.scheduletracking.api.domain;
 
+import junit.framework.Assert;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.motechproject.model.Time;
+import org.motechproject.testing.utils.BaseUnitTest;
 import org.motechproject.util.DateUtil;
 
 import static junit.framework.Assert.assertTrue;
@@ -10,11 +12,11 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
-import static org.motechproject.scheduletracking.api.utility.PeriodFactory.weeks;
+import static org.motechproject.scheduletracking.api.utility.PeriodUtil.weeks;
 import static org.motechproject.util.DateUtil.newDateTime;
 import static org.motechproject.util.DateUtil.now;
 
-public class EnrollmentTest {
+public class EnrollmentTest extends BaseUnitTest {
     @Test
     public void shouldStartWithFirstMilestoneByDefault() {
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
@@ -50,6 +52,7 @@ public class EnrollmentTest {
 
     @Test
     public void shouldReturnTheDateWhenAMilestoneWasLastFulfilled() {
+        mockCurrentDate(new DateTime(2012, 2, 20, 8, 15, 0, 0));
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
         Milestone secondMilestone = new Milestone("Second Shot", weeks(1), weeks(1), weeks(1), weeks(1));
         Milestone firstMilestone = new Milestone("First Shot", weeks(1), weeks(1), weeks(1), weeks(1));
@@ -153,4 +156,18 @@ public class EnrollmentTest {
         when(schedule.isBasedOnAbsoluteWindows()).thenReturn(isBasedOnAbsoluteWindows);
         return schedule;
     }
-}
+
+    @Test
+    public void shouldReturnTheStartOfAGivenWindowForTheCurrentMilestone() {
+        Milestone firstMilestone = new Milestone("first_milestone", weeks(1), weeks(1), weeks(1), weeks(1));
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(firstMilestone);
+
+        DateTime referenceDate = newDateTime(2012, 12, 4, 8, 30, 0);
+        Enrollment enrollment = new Enrollment("ID-074285", schedule, "first_milestone", referenceDate, referenceDate, null, EnrollmentStatus.ACTIVE, null);
+
+        Assert.assertEquals(referenceDate, enrollment.getStartOfWindowForCurrentMilestone(WindowName.earliest));
+        Assert.assertEquals(referenceDate.plusWeeks(1), enrollment.getStartOfWindowForCurrentMilestone(WindowName.due));
+        Assert.assertEquals(referenceDate.plusWeeks(2), enrollment.getStartOfWindowForCurrentMilestone(WindowName.late));
+        Assert.assertEquals(referenceDate.plusWeeks(3), enrollment.getStartOfWindowForCurrentMilestone(WindowName.max));
+    }}

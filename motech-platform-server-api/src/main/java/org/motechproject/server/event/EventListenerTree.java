@@ -74,14 +74,14 @@ class EventListenerTree
             throw new IllegalArgumentException("Wildcard must be last element of subject: " + subject);
         }
 
-        if (subject.indexOf("..") != -1) {
+        if (subject.contains("..")) {
             throw new IllegalArgumentException("Subject can not contain an empty path segment: " + subject);
         }
 
         // Split the subject into it's path components
         String[] path = subject.split(SPLIT_REGEX);
 
-        if (path[path.length - 1].indexOf("*") != -1 && path[path.length - 1].length() > 1) {
+        if (path[path.length - 1].contains("*") && path[path.length - 1].length() > 1) {
             throw new IllegalArgumentException("Wildcard can not be mixed with characters");
         }
 
@@ -128,7 +128,7 @@ class EventListenerTree
 
         EventListenerTree child = getChild(path[0]);
         if (child == null) {
-            return Collections.<EventListener>emptySet();
+            return Collections.emptySet();
         }
 
         return child.getListeners(path, 0);
@@ -157,11 +157,8 @@ class EventListenerTree
         String[] path = subject.split(SPLIT_REGEX);
 
         EventListenerTree child = getChild(path[0]);
-        if (child == null) {
-            return false;
-        }
+        return child != null && child.hasListener(path, 0);
 
-        return child.hasListener(path, 0);
     }
 
     private boolean hasListener(String[] path, int pathLevel) {
@@ -174,11 +171,8 @@ class EventListenerTree
         }
 
         EventListenerTree child = getChild(path[pathLevel + 1]);
-        if (child == null) {
-            return false;
-        }
+        return child != null && child.hasListener(path, (pathLevel + 1));
 
-        return child.hasListener(path, (pathLevel + 1));
     }
 
     public int getListenerCount(String subject) {

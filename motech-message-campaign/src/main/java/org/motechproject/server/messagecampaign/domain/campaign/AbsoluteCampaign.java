@@ -20,7 +20,7 @@ public class AbsoluteCampaign extends Campaign<AbsoluteCampaignMessage> {
 
     @Override
     public MessageCampaignScheduler getScheduler(MotechSchedulerService motechSchedulerService, CampaignEnrollmentService campaignEnrollmentService, CampaignRequest enrollRequest) {
-        return new AbsoluteProgramScheduler(motechSchedulerService, enrollRequest, this);
+        return new AbsoluteProgramScheduler(motechSchedulerService, enrollRequest, this,campaignEnrollmentService);
     }
 
     @Override

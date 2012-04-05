@@ -1,7 +1,7 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
 import org.motechproject.scheduletracking.api.domain.Enrollment;
-import org.motechproject.scheduletracking.api.domain.filtering.Criterion;
+import org.motechproject.scheduletracking.api.domain.search.Criterion;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
 import org.springframework.beans.factory.annotation.Autowired;
