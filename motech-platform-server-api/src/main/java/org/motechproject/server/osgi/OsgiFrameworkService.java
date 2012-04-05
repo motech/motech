@@ -243,4 +243,11 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         this.bundleLoaders = bundleLoaders;
     }
 
+    public String getInternalBundleFolder() {
+        return internalBundleFolder;
+    }
+
+    public String getExternalBundleFolder() {
+        return externalBundleFolder;
+    }
 }

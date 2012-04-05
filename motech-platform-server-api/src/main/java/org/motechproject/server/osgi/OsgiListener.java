@@ -31,7 +31,6 @@
  */
 package org.motechproject.server.osgi;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -41,8 +40,7 @@ import javax.servlet.ServletContextListener;
 
 public class OsgiListener implements ServletContextListener {
 
-    @Autowired
-    private OsgiFrameworkService service;
+    private static OsgiFrameworkService service;
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
@@ -60,6 +58,10 @@ public class OsgiListener implements ServletContextListener {
             ApplicationContext applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
             service = applicationContext.getBean(OsgiFrameworkService.class);
         }
+        return service;
+    }
+
+    public static OsgiFrameworkService getOsgiService() {
         return service;
     }
 }

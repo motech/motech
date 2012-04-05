@@ -36,6 +36,7 @@
 java.util.jar.Manifest manifest = new java.util.jar.Manifest();
 manifest.read(pageContext.getServletContext().getResourceAsStream("/META-INF/MANIFEST.MF"));
 java.util.jar.Attributes attributes = manifest.getMainAttributes();
+org.motechproject.server.osgi.OsgiFrameworkService osgiService = org.motechproject.server.osgi.OsgiListener.getOsgiService();
 %>
 
 <html>
@@ -44,8 +45,10 @@ java.util.jar.Attributes attributes = manifest.getMainAttributes();
 <hr/>
 <h3>Main module</h3>
 <ul>
-<li><b>Title:</b><%=attributes.getValue("Implementation-Title")%>
-<li><b>Version:</b><%=attributes.getValue("Implementation-Version")%>
+<li><b>Title:</b> <%=attributes.getValue("Implementation-Title")%>
+<li><b>Version:</b> <%=attributes.getValue("Implementation-Version")%>
+<li><b>Internal Bundle Folder:</b> <%=osgiService.getInternalBundleFolder()%>
+<li><b>External Bundle Folder:</b> <%=osgiService.getExternalBundleFolder()%>
 </ul>
 
 <h3>Bundled modules</h3>
