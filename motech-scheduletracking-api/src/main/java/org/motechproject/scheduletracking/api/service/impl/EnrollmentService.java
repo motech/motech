@@ -34,11 +34,11 @@ public class EnrollmentService {
 
     public String enroll(String externalId, String scheduleName, String startingMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime, Map<String,String> metadata) {
         Schedule schedule = allTrackedSchedules.getByName(scheduleName);
-        EnrollmentStatus enrollmentStatus = EnrollmentStatus.ACTIVE;
-        if (schedule.hasExpiredSince(referenceDateTime))
-            enrollmentStatus = EnrollmentStatus.DEFAULTED;
-
-        Enrollment enrollment = allEnrollments.addOrReplace(new Enrollment(externalId, schedule, startingMilestoneName, referenceDateTime, enrollmentDateTime, preferredAlertTime, enrollmentStatus, metadata));
+        Enrollment enrollment = new Enrollment(externalId, schedule, startingMilestoneName, referenceDateTime, enrollmentDateTime, preferredAlertTime, EnrollmentStatus.ACTIVE, metadata);
+        if (schedule.hasExpiredSince(enrollment.getReferenceForAlerts(), startingMilestoneName)) {
+            enrollment.setStatus(EnrollmentStatus.DEFAULTED);
+        }
+        enrollment = allEnrollments.addOrReplace(enrollment);
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
         enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
 

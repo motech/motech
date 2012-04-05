@@ -58,8 +58,9 @@ public class Schedule implements Serializable {
         return duration.toPeriod();
     }
 
-    public boolean hasExpiredSince(DateTime referenceDateTime) {
-        return referenceDateTime.plus(getDuration()).isBefore(now());
+    public boolean hasExpiredSince(DateTime referenceDateTime, String currentMilestoneStr) {
+        Milestone currentMilestone = getMilestone(currentMilestoneStr);
+        return referenceDateTime.plus(currentMilestone.getMaximumDuration()).isBefore(now());
     }
 
     @Override
