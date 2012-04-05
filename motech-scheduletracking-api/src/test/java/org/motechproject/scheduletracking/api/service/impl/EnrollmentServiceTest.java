@@ -11,7 +11,7 @@ import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.domain.exception.NoMoreMilestonesToFulfillException;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
-import org.motechproject.util.DateUtil;
+import org.motechproject.testing.utils.BaseUnitTest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +27,7 @@ import static org.motechproject.scheduletracking.api.utility.PeriodUtil.weeks;
 import static org.motechproject.util.DateUtil.newDateTime;
 import static org.motechproject.util.DateUtil.now;
 
-public class EnrollmentServiceTest {
+public class EnrollmentServiceTest extends BaseUnitTest {
     private EnrollmentService enrollmentService;
 
     @Mock
@@ -79,27 +79,38 @@ public class EnrollmentServiceTest {
     }
 
     @Test
-    public void shouldEnrollEntityAsDefaultedOneIfScheduleDurationHasExpired() {
+    public void shouldEnrollEntityAsDefaultedOneIfMilestoneDurationHasExpired() {
         String externalId = "entity_1";
+        String externalId2 = "entity_2";
+        String externalId3 = "entity_3";
         String scheduleName = "my_schedule";
-        DateTime referenceDateTime = DateUtil.now().minusDays(29);
-        DateTime enrollmentDateTime = DateUtil.now();
+        DateTime now = newDateTime(2012, 4, 4, 3, 3, 59);
+        DateTime referenceDateTime = now.minusDays(29);
+        DateTime enrollmentDateTime = now;
         Time preferredAlertTime = new Time(8, 10);
         EnrollmentStatus enrollmentStatus = EnrollmentStatus.DEFAULTED;
 
+        mockCurrentDate(now);
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
+        Milestone milestone2 = new Milestone("milestone2", weeks(4), weeks(1), weeks(1), weeks(0));
         Schedule schedule = new Schedule(scheduleName);
-        schedule.addMilestones(milestone);
+        schedule.addMilestones(milestone, milestone2);
         when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
         Enrollment dummyEnrollment = new Enrollment(externalId, schedule, milestone.getName(), referenceDateTime, enrollmentDateTime, preferredAlertTime, EnrollmentStatus.ACTIVE, null);
         dummyEnrollment.setId("enrollmentId");
         when(allEnrollments.addOrReplace(any(Enrollment.class))).thenReturn(dummyEnrollment);
 
         enrollmentService.enroll(externalId, scheduleName, milestone.getName(), referenceDateTime, enrollmentDateTime, preferredAlertTime, null);
+        DateTime enrollmentDateTimeBeforeMilestone2 = now.minusWeeks(6).minusSeconds(1);
+        enrollmentService.enroll(externalId2, scheduleName, milestone2.getName(), null, enrollmentDateTimeBeforeMilestone2, preferredAlertTime, null);
+        DateTime enrollmentDateTimeInMilestone2Start = now.minusWeeks(6);
+        enrollmentService.enroll(externalId3, scheduleName, milestone2.getName(), null, enrollmentDateTimeInMilestone2Start, preferredAlertTime, null);
 
         ArgumentCaptor<Enrollment> enrollmentArgumentCaptor = ArgumentCaptor.forClass(Enrollment.class);
-        verify(allEnrollments).addOrReplace(enrollmentArgumentCaptor.capture());
-        assertEnrollment(enrollmentArgumentCaptor.getValue(), externalId, scheduleName, milestone, enrollmentStatus, schedule, null);
+        verify(allEnrollments, times(3)).addOrReplace(enrollmentArgumentCaptor.capture());
+        assertEnrollment(enrollmentArgumentCaptor.getAllValues().get(0), externalId, scheduleName, milestone, enrollmentStatus, schedule, null);
+        assertEnrollment(enrollmentArgumentCaptor.getAllValues().get(1), externalId2, scheduleName, milestone2, EnrollmentStatus.DEFAULTED, schedule, null);
+        assertEnrollment(enrollmentArgumentCaptor.getAllValues().get(2), externalId3, scheduleName, milestone2, EnrollmentStatus.ACTIVE, schedule, null);
     }
 
     private void assertEnrollment(Enrollment enrollment, String externalId, String scheduleName, Milestone milestone, EnrollmentStatus enrollmentStatus, Schedule schedule, Map<String,String> metadata) {

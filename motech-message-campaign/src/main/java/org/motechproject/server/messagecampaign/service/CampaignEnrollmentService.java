@@ -3,8 +3,12 @@ package org.motechproject.server.messagecampaign.service;
 import org.motechproject.server.messagecampaign.dao.AllCampaignEnrollments;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollmentStatus;
+import org.motechproject.server.messagecampaign.search.Criterion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class CampaignEnrollmentService {
@@ -27,7 +31,13 @@ public class CampaignEnrollmentService {
         allCampaignEnrollments.saveOrUpdate(enrollment);
     }
 
-    public CampaignEnrollment findByExternalIdAndCampaignName(String externalId, String campaignName) {
-        return allCampaignEnrollments.findByExternalIdAndCampaignName(externalId, campaignName);
+    public List<CampaignEnrollment> search(CampaignEnrollmentsQuery query) {
+        List<CampaignEnrollment> enrollments = new ArrayList<CampaignEnrollment>();
+        Criterion primaryCriterion = query.getPrimaryCriterion();
+        if (primaryCriterion != null)
+            enrollments = primaryCriterion.fetch(allCampaignEnrollments);
+        for (Criterion criterion : query.getSecondaryCriteria())
+            enrollments = criterion.filter(enrollments);
+        return enrollments;
     }
 }

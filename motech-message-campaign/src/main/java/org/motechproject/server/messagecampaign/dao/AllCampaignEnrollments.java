@@ -5,6 +5,7 @@ import org.ektorp.CouchDbConnector;
 import org.ektorp.support.View;
 import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
+import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollmentStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -31,5 +32,20 @@ public class AllCampaignEnrollments extends MotechBaseRepository<CampaignEnrollm
         } else {
             add(enrollment);
         }
+    }
+
+    @View(name = "by_status", map = "function(doc) { emit(doc.status); }")
+    public List<CampaignEnrollment> findByStatus(CampaignEnrollmentStatus status) {
+        return queryView("by_status", status.name());
+    }
+
+    @View(name = "by_externalId", map = "function(doc) { emit(doc.externalId); }")
+    public List<CampaignEnrollment> findByExternalId(String externalId) {
+        return queryView("by_externalId", externalId);
+    }
+
+    @View(name = "by_campaignName", map = "function(doc) { emit(doc.campaignName); }")
+    public List<CampaignEnrollment> findByCampaignName(String campaignName) {
+        return queryView("by_campaignName", campaignName);
     }
 }

@@ -3,12 +3,12 @@
 	<parent>
 		<groupId>org.motechproject</groupId>
 		<artifactId>motech</artifactId>
-		<version>0.9-SNAPSHOT</version>
+		<version>0.10-SNAPSHOT</version>
 	</parent>
 	<artifactId>motech-scheduletracking-api</artifactId>
 	<name>MoTeCH Schedule Tracking API</name>
 	<description>Motech Schedule Tracking API</description>
-	<version>0.9-SNAPSHOT</version>
+	<version>0.10-SNAPSHOT</version>
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -63,6 +63,12 @@
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-mockito</artifactId>
             <version>1.4.9</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-testing-utils</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

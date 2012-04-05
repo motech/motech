@@ -18,6 +18,7 @@ import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollme
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
+import org.motechproject.server.messagecampaign.service.CampaignEnrollmentsQuery;
 import org.motechproject.testing.utils.BaseUnitTest;
 
 import java.util.Date;
@@ -28,6 +29,7 @@ import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -86,8 +88,8 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
     private CampaignEnrollment mockCampaignEnrollment(Date startDate, int startOffset) {
         reset(mockCampaignEnrollmentService);
         CampaignEnrollment enrollment = new CampaignEnrollment(externalId, campaignName).setStartDate(new LocalDate(startDate));
-        when(mockCampaignEnrollmentService.findByExternalIdAndCampaignName(externalId, campaignName)).thenReturn(enrollment
-                .setStartOffset(startOffset));
+        CampaignEnrollment campaignEnrollment = enrollment.setStartOffset(startOffset);
+        when(mockCampaignEnrollmentService.search(any(CampaignEnrollmentsQuery.class))).thenReturn(asList(campaignEnrollment));
         return enrollment;
     }
 
@@ -196,7 +198,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
         doReturn("Monday").when(campaignMessage).applicableWeekDayInNext24Hours();
 
         CampaignEnrollment enrollment = new CampaignEnrollment("", campaignName).setStartDate(today.toLocalDate());
-        when(mockCampaignEnrollmentService.findByExternalIdAndCampaignName(Matchers.<String>any(), Matchers.<String>any())).thenReturn(enrollment);
+        when(mockCampaignEnrollmentService.search(any(CampaignEnrollmentsQuery.class))).thenReturn(asList(enrollment));
         when(allMessageCampaigns.get(campaignName, jobMessageKey)).thenReturn(campaignMessage);
 
         callHandleEvent(today, motechEvent(may102012, jobMessageKey, true).setLastEvent(true));
@@ -218,7 +220,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
         doReturn("Monday").when(campaignMessage).applicableWeekDayInNext24Hours();
 
         CampaignEnrollment enrollment = new CampaignEnrollment("", campaignName).setStartDate(today.toLocalDate());
-        when(mockCampaignEnrollmentService.findByExternalIdAndCampaignName(Matchers.<String>any(), Matchers.<String>any())).thenReturn(enrollment);
+        when(mockCampaignEnrollmentService.search(any(CampaignEnrollmentsQuery.class))).thenReturn(asList(enrollment));
         when(allMessageCampaigns.get(campaignName, jobMessageKey)).thenReturn(campaignMessage);
 
         callHandleEvent(today, motechEvent(may102012, jobMessageKey, true).setLastEvent(false));
