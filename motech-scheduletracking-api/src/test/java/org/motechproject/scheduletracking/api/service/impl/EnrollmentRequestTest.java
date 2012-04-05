@@ -39,7 +39,7 @@ public class EnrollmentRequestTest {
     @Test
     public void enrollmentDateShouldBeTodayAndEnrollmentTimeShouldBeMidnightWhenNotDefined() {
         EnrollmentRequest enrollmentRequest = new EnrollmentRequest("externalId", "scheduleName", new Time(10, 10), null, null, null, null, null, null);
-        assertEquals(newDateTime(today(), 0, 0, 0), enrollmentRequest.getEnrollmentDateTime());
+        assertEquals(newDateTime(today()), enrollmentRequest.getEnrollmentDateTime());
     }
 
     @Test
@@ -51,7 +51,7 @@ public class EnrollmentRequestTest {
     @Test
     public void referenceDateShouldBeTodayAndReferenceTimeShouldBeMidnightWhenNotDefined() {
         EnrollmentRequest referenceRequest = new EnrollmentRequest("externalId", "scheduleName", new Time(10, 10), null, null, null, null, null, null);
-        assertEquals(newDateTime(today(), 0, 0, 0), referenceRequest.getReferenceDateTime());
+        assertEquals(newDateTime(today()), referenceRequest.getReferenceDateTime());
     }
 
     @Test
