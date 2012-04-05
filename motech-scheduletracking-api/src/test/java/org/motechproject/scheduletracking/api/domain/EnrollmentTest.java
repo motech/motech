@@ -4,6 +4,7 @@ import junit.framework.Assert;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.motechproject.model.Time;
+import org.motechproject.testing.utils.BaseUnitTest;
 import org.motechproject.util.DateUtil;
 
 import static junit.framework.Assert.assertTrue;
@@ -15,7 +16,7 @@ import static org.motechproject.scheduletracking.api.utility.PeriodUtil.weeks;
 import static org.motechproject.util.DateUtil.newDateTime;
 import static org.motechproject.util.DateUtil.now;
 
-public class EnrollmentTest {
+public class EnrollmentTest extends BaseUnitTest {
     @Test
     public void shouldStartWithFirstMilestoneByDefault() {
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
@@ -51,6 +52,7 @@ public class EnrollmentTest {
 
     @Test
     public void shouldReturnTheDateWhenAMilestoneWasLastFulfilled() {
+        mockCurrentDate(new DateTime(2012, 2, 20, 8, 15, 0, 0));
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
         Milestone secondMilestone = new Milestone("Second Shot", weeks(1), weeks(1), weeks(1), weeks(1));
         Milestone firstMilestone = new Milestone("First Shot", weeks(1), weeks(1), weeks(1), weeks(1));
