@@ -1,7 +1,6 @@
 package org.motechproject.server.messagecampaign.service;
 
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
-import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
 
 import java.util.List;
 
@@ -13,6 +12,13 @@ public interface MessageCampaignService {
     void startFor(CampaignRequest enrollRequest);
     void stopFor(CampaignRequest enrollRequest, String message);
     void stopAll(CampaignRequest enrollRequest);
+
+    /** Searches and returns the Campaign Enrollment Records as per the criteria in the given CampaignEnrollmentsQuery
+     * The query consists of various criteria based on Status, ExternalId and CampaignName of the CampaignEnrollment
+     *
+     * @param query
+     * @return List<CampaignEnrollmentRecord>
+     */
     List<CampaignEnrollmentRecord> search(CampaignEnrollmentsQuery query);
 
 }
