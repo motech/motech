@@ -44,7 +44,7 @@
 	</bean>
 <!---->
 
-	<bean id="commcare" class="org.motechproject.demo.Commcare.web.CommcareController">
+	<bean id="commcare" class="org.motechproject.demo.commcare.web.CommcareController">
 	</bean>
 
 	<!-- <bean id="viewResolver" -->

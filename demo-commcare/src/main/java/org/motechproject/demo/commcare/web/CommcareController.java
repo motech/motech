@@ -1,6 +1,5 @@
 package org.motechproject.demo.commcare.web;
 
-import org.ektorp.UpdateConflictException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,8 @@ public class CommcareController extends MultiActionController {
 
     @RequestMapping("/incomingForm")
     public String incomingForm(HttpServletRequest request, HttpServletResponse response) {
-    	return "Test commcare";
+    	System.out.println("Testing");
+    	return null;
     }
 
     public ModelAndView incoming(HttpServletRequest request, HttpServletResponse response) {

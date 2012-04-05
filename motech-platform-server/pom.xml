@@ -11,6 +11,11 @@
     <name>MoTeCH Platform Server</name>
 
     <dependencies>
+            <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demo-commcare</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-server-api</artifactId>
