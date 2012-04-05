@@ -39,13 +39,13 @@
          http://www.springframework.org/schema/context
          http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-<!--	<bean id="controllerClassNameUrlMapping"-->
-<!--		class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping">-->
-<!--	</bean>-->
+	<bean id="controllerClassNameUrlMapping"
+		class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping">
+	</bean>
 <!---->
-<!--	<bean id="test" class="org.motechproject.tama.server.TestController">-->
-<!--		<property name="contextProvider" ref="contextProvider" />-->
-<!--	</bean>-->
+
+	<bean id="commcare" class="org.motechproject.demo.Commcare.web.CommcareController">
+	</bean>
 
 	<!-- <bean id="viewResolver" -->
 	<!-- class="org.springframework.web.servlet.view.InternalResourceViewResolver"> -->
