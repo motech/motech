@@ -53,7 +53,20 @@ org.motechproject.server.osgi.OsgiFrameworkService osgiService = org.motechproje
 
 <h3>Bundled modules</h3>
 <ul>
-<li>...
+<%
+    for ( org.motechproject.server.osgi.JarInformation jarInfo : osgiService.getBundledModules() ) {
+        if ("org.motechproject".equals(jarInfo.getImplementationVendorID())) {
+%>
+            <li><b><%= jarInfo.getImplementationTitle() %></b>
+            <ul>
+                <li>Version: <b><%= jarInfo.getImplementationVersion() %></b>
+                <li>Path: <%= jarInfo.getPath() %>
+                <li>File: <%= jarInfo.getFilename() %>
+            </ul>
+<%
+        }
+    }
+%>
 </ul>
 
 <h3>External bundles</h3>

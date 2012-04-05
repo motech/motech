@@ -1,7 +1,7 @@
 /**
  * MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
  *
- * Copyright (c) 2011 Grameen Foundation USA.  All rights reserved.
+ * Copyright (c) 2012 Grameen Foundation USA.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -249,5 +249,12 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     public String getExternalBundleFolder() {
         return externalBundleFolder;
+    }
+    
+    public List<JarInformation> getBundledModules() {
+        ServletContext servletContext = ((WebApplicationContext) applicationContext).getServletContext();
+        JarInformationHandler jarsHandler = new JarInformationHandler(servletContext.getRealPath("/"));
+        jarsHandler.initHandler();
+        return jarsHandler.getJarList();
     }
 }
