@@ -42,8 +42,6 @@ import java.util.Map;
  * <p/>
  * This class is immutable
  *
- * @author Igor (iopushnyev@2paths.com)
- *         Date: 16/02/11
  */
 public final class MotechEvent implements Serializable {
     public static final String EVENT_TYPE_KEY_NAME = "eventType";
