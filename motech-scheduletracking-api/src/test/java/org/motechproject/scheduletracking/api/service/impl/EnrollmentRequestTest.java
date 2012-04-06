@@ -15,25 +15,25 @@ public class EnrollmentRequestTest {
     @Test
     public void shouldReturnFalseIfStartingMilestoneNotProvided() {
         EnrollmentRequest enrollmentRequest = new EnrollmentRequest("externalId", "scheduleName", new Time(10, 10), LocalDate.now(), null, null, null, null, null);
-        assertFalse("Starting milestone not expected, but was provided!", enrollmentRequest.enrollIntoMilestone());
+        assertFalse("Starting milestone not expected, but was provided!", enrollmentRequest.isStartingMilestoneSpecified());
     }
 
     @Test
     public void shouldReturnTrueIfStartingMilestoneProvided() {
         EnrollmentRequest enrollmentRequest = new EnrollmentRequest("externalId", "scheduleName", new Time(10, 10), LocalDate.now(), null, null, null, "Milestone", null);
-        assertTrue("Starting milestone expected, but was not provided!", enrollmentRequest.enrollIntoMilestone());
+        assertTrue("Starting milestone expected, but was not provided!", enrollmentRequest.isStartingMilestoneSpecified());
     }
 
     @Test
     public void shouldReturnFalseIfEmptyStartingMilestoneProvided() {
         EnrollmentRequest enrollmentRequest = new EnrollmentRequest("externalId", "scheduleName", new Time(10, 10), LocalDate.now(), null, null, null, "", null);
-        assertFalse("Starting milestone not expected, but was provided!", enrollmentRequest.enrollIntoMilestone());
+        assertFalse("Starting milestone not expected, but was provided!", enrollmentRequest.isStartingMilestoneSpecified());
     }
 
     @Test
     public void shouldReturnFalseIfNullStartingMilestoneProvided() {
         EnrollmentRequest enrollmentRequest = new EnrollmentRequest("externalId", "scheduleName", new Time(10, 10), LocalDate.now(), null, null, null, null, null);
-        assertFalse("Starting milestone not expected, but was provided!", enrollmentRequest.enrollIntoMilestone());
+        assertFalse("Starting milestone not expected, but was provided!", enrollmentRequest.isStartingMilestoneSpecified());
     }
 
     @Test
