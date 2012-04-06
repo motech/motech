@@ -19,6 +19,7 @@ public class KooKooIVRContextForTest extends KooKooIVRContext {
     private CallDirection callDirection;
     private String callDetailRecordId;
     private boolean isValidSession = true;
+    private boolean isAnswered;
 
     @Override
     public HttpServletRequest httpRequest() {
@@ -157,6 +158,11 @@ public class KooKooIVRContextForTest extends KooKooIVRContext {
         return "";
     }
 
+    @Override
+    public boolean isAnswered() {
+        return isAnswered;
+    }
+
     public KooKooIVRContextForTest isValidSession(boolean isValidSession) {
         this.isValidSession = isValidSession;
         return this;
@@ -165,5 +171,9 @@ public class KooKooIVRContextForTest extends KooKooIVRContext {
     @Override
     public boolean isValidSession() {
         return isValidSession;
+    }
+
+    public void setAnswered(boolean answered) {
+        isAnswered = answered;
     }
 }

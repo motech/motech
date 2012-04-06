@@ -5,6 +5,7 @@ import org.motechproject.ivr.event.IVREvent;
 import org.motechproject.ivr.kookoo.KooKooIVRContext;
 import org.motechproject.ivr.kookoo.KookooIVRResponseBuilder;
 import org.motechproject.ivr.kookoo.KookooRequest;
+import org.motechproject.ivr.kookoo.KookooResponseFactory;
 import org.motechproject.ivr.kookoo.eventlogging.CallEventConstants;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
 import org.motechproject.ivr.message.IVRMessage;
@@ -55,6 +56,13 @@ public abstract class SafeIVRController {
         return safeCall(kooKooIVRContext);
     }
 
+    @RequestMapping(value = "hangup", method = RequestMethod.GET)
+    @ResponseBody
+    public final String hangup(@ModelAttribute KookooRequest kooKooRequest, HttpServletRequest request, HttpServletResponse response) {
+        KooKooIVRContext kooKooIVRContext = new KooKooIVRContext(kooKooRequest, request, response);
+        return hangup(kooKooIVRContext);
+    }
+
     String safeCall(KooKooIVRContext ivrContext) {
         try {
             IVREvent ivrEvent = Enum.valueOf(IVREvent.class, ivrContext.ivrEvent());
@@ -88,12 +96,6 @@ public abstract class SafeIVRController {
         return "";
     }
 
-    @RequestMapping(value = "hangup", method = RequestMethod.GET)
-    @ResponseBody
-    public final String hangup(HttpServletRequest request) {
-        return "";
-    }
-
     public KookooIVRResponseBuilder newCall(KooKooIVRContext kooKooIVRContext) {
         throw new UnsupportedOperationException("The extending controller should have implemeted this kookoo event.");
     }
@@ -104,5 +106,10 @@ public abstract class SafeIVRController {
 
     public KookooIVRResponseBuilder dial(KooKooIVRContext kooKooIVRContext) {
         throw new UnsupportedOperationException("The extending controller should have implemeted this kookoo event.");
+    }
+
+    public String hangup(KooKooIVRContext kooKooIVRContext){
+        kooKooIVRContext.invalidateSession();
+        return KookooResponseFactory.empty(kooKooIVRContext.kooKooRequest().getSid()).create(null);
     }
 }
