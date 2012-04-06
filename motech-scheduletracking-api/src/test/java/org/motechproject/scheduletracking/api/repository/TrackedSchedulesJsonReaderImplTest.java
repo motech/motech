@@ -14,7 +14,7 @@ public class TrackedSchedulesJsonReaderImplTest {
     public void shouldReadTheScheduleJsonFileCorrectly() {
         TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules");
         List<ScheduleRecord> records = jsonReader.records();
-        assertEquals(2, records.size());
+        assertEquals(8, records.size());
 
         ScheduleRecord iptScheduleRecord = findRecord("IPTI Schedule", records);
         ScheduleRecord eddScheduleRecord = findRecord("Delivery", records);
@@ -41,7 +41,6 @@ public class TrackedSchedulesJsonReaderImplTest {
     @Test
     public void shouldBeAbleReadJsonFilesFromADirectory() {
         assertNotNull(new TrackedSchedulesJsonReaderImpl("/schedules").records());
-        assertNotNull(new TrackedSchedulesJsonReaderImpl("/alert-without-offset").records());
     }
 
     private ScheduleRecord findRecord(String name, List<ScheduleRecord> records) {
