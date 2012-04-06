@@ -70,6 +70,7 @@ public class IVRController {
                 case Hangup:
                     if (ivrContext.isValidSession()) {
                         kookooCallDetailRecordsService.close(ivrContext.callDetailRecordId(), ivrContext.externalId(), new CallEvent(ivrEvent.toString()));
+                        if (ivrContext.isAnswered()) break;
                         ivrContext.invalidateSession();
                     }
                     String url = AllIVRURLs.springTransferUrlToEmptyResponse();
