@@ -56,7 +56,7 @@ public class ScheduleFactoryTest {
 
     @Test
     public void shouldAddAbsoluteAlertsToTheWindows() {
-        Schedule schedule = loadSchedule("Absolute Schedule", "/absolute-windows");
+        Schedule schedule = loadSchedule("Absolute Schedule", "/schedules");
 
         List<Milestone> milestones = schedule.getMilestones();
         Milestone firstMilestone = milestones.get(0);
@@ -70,7 +70,7 @@ public class ScheduleFactoryTest {
 
     @Test
     public void shouldSetWindowPeriodsFromOffsetsSpecifiedInJson() {
-        Schedule schedule = loadSchedule("empty", "/empty-windows");
+        Schedule schedule = loadSchedule("empty", "/schedules");
 
         List<Milestone> milestones = schedule.getMilestones();
         Milestone milestone = milestones.get(0);
@@ -83,7 +83,7 @@ public class ScheduleFactoryTest {
 
     @Test
     public void shouldCreateAbsoluteSchedule() {
-        Schedule schedule = loadSchedule("Absolute Schedule", "/absolute-windows");
+        Schedule schedule = loadSchedule("Absolute Schedule", "/schedules");
 
         assertTrue(schedule.isBasedOnAbsoluteWindows());
 
@@ -112,7 +112,7 @@ public class ScheduleFactoryTest {
 
     @Test
     public void shouldCreateRelativeSchedule() {
-        Schedule schedule = loadSchedule("Relative Schedule", "/relative-windows");
+        Schedule schedule = loadSchedule("Relative Schedule", "/schedules");
 
         assertFalse(schedule.isBasedOnAbsoluteWindows());
 
@@ -142,7 +142,7 @@ public class ScheduleFactoryTest {
 
     @Test
     public void shouldCreateEmptyWindowIfDurationIsNotSpecified() {
-        Schedule schedule = loadSchedule("empty", "/empty-windows");
+        Schedule schedule = loadSchedule("empty", "/schedules");
 
         List<Milestone> milestones = schedule.getMilestones();
         Milestone earliestEmpty = milestones.get(0);
@@ -180,19 +180,19 @@ public class ScheduleFactoryTest {
 
     @Test
     public void offsetIsZeroIfNotDefined() {
-        Schedule schedule = loadSchedule("schedule-without-offset-for-alert", "/alert-without-offset");
+        Schedule schedule = loadSchedule("schedule-without-offset-for-alert", "/schedules");
         assertEquals(new Period(), schedule.getFirstMilestone().getMilestoneWindow(WindowName.due).getAlerts().get(0).getOffset());
     }
 
     @Test
     public void offsetIsZeroIfEmpty() {
-        Schedule schedule = loadSchedule("schedule-with-empty-offset-for-alert", "/alert-with-empty-offset");
+        Schedule schedule = loadSchedule("schedule-with-empty-offset-for-alert", "/schedules");
         assertEquals(new Period(), schedule.getFirstMilestone().getMilestoneWindow(WindowName.due).getAlerts().get(0).getOffset());
     }
 
     @Test
     public void shouldSupportMinutesAndHoursInAlertAndWindowTimes() {
-        Schedule schedule = loadSchedule("Schedule X", "/schedules-with-hours-and-minutes");
+        Schedule schedule = loadSchedule("Schedule X", "/schedules");
 
         Milestone firstMilestone = schedule.getMilestones().get(0);
 

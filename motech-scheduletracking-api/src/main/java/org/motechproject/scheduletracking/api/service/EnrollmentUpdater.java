@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum EnrollmentUpdater {
-
     metadataUpdater {
         @Override
         public Enrollment update(Enrollment enrollment, Object newValue) {

@@ -84,7 +84,7 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
             throw new ScheduleTrackingException("No schedule with name: %s", enrollmentRequest.getScheduleName());
 
         String startingMilestoneName;
-        if (enrollmentRequest.enrollIntoMilestone())
+        if (enrollmentRequest.isStartingMilestoneSpecified())
             startingMilestoneName = enrollmentRequest.getStartingMilestoneName();
         else
             startingMilestoneName = schedule.getFirstMilestone().getName();

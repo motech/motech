@@ -10,6 +10,9 @@ import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
 
 import java.util.HashMap;
 
+/**
+ * This is the event which will be raised as per the alert configuration
+ */
 public class MilestoneEvent {
     private String windowName;
     private MilestoneAlert milestoneAlert;
@@ -17,6 +20,14 @@ public class MilestoneEvent {
     private String externalId;
     private DateTime referenceDateTime;
 
+    /**
+     * Creates a MilestoneEvent
+     * @param externalId
+     * @param scheduleName
+     * @param milestoneAlert
+     * @param windowName
+     * @param referenceDateTime
+     */
     public MilestoneEvent(String externalId, String scheduleName, MilestoneAlert milestoneAlert, String windowName, DateTime referenceDateTime) {
         this.scheduleName = scheduleName;
         this.milestoneAlert = milestoneAlert;
@@ -25,6 +36,10 @@ public class MilestoneEvent {
         this.referenceDateTime = referenceDateTime;
     }
 
+    /**
+     * Creates a MilestoneEvent from an Enrollment by passing in an MotechEvent
+     * @param motechEvent
+     */
     public MilestoneEvent(MotechEvent motechEvent) {
         this.scheduleName = (String) motechEvent.getParameters().get(EventDataKeys.SCHEDULE_NAME);
         this.milestoneAlert = (MilestoneAlert) motechEvent.getParameters().get(EventDataKeys.MILESTONE_NAME);
@@ -33,6 +48,12 @@ public class MilestoneEvent {
         this.referenceDateTime = (DateTime) motechEvent.getParameters().get(EventDataKeys.REFERENCE_DATE);
     }
 
+    /**
+     * Creates a MilestoneEvent from an Enrollment
+     * @param enrollment
+     * @param milestoneAlert
+     * @param milestoneWindow
+     */
     public MilestoneEvent(Enrollment enrollment, MilestoneAlert milestoneAlert, MilestoneWindow milestoneWindow) {
         this.externalId = enrollment.getExternalId();
         this.scheduleName = enrollment.getScheduleName();
@@ -41,6 +62,10 @@ public class MilestoneEvent {
         this.referenceDateTime = enrollment.getStartOfSchedule();
     }
 
+    /**
+     * Creates an MotechEvent from a MilestoneEvent
+     * @return MotechEvent
+     */
     public MotechEvent toMotechEvent() {
         HashMap<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(EventDataKeys.WINDOW_NAME, windowName);
@@ -51,22 +76,42 @@ public class MilestoneEvent {
         return new MotechEvent(EventSubjects.MILESTONE_ALERT, parameters);
     }
 
+    /**
+     * Returns the Window name of the MilestoneEvent
+     * @return String
+     */
     public String getWindowName() {
         return windowName;
     }
 
+    /**
+     * Returns the MilestoneAlert of the MilestoneEvent
+     * @return MilestoneAlert
+     */
     public MilestoneAlert getMilestoneAlert() {
         return milestoneAlert;
     }
 
+    /**
+     * Returns the Schedule Name of the MilestoneEvent
+     * @return String
+     */
     public String getScheduleName() {
         return scheduleName;
     }
 
+    /**
+     * Returns the External Id of the MilestoneEvent
+     * @return String
+     */
     public String getExternalId() {
         return externalId;
     }
 
+    /**
+     * Returns the ReferenceDateTime of the MilestoneEvent
+     * @return DateTime
+     */
     public DateTime getReferenceDateTime() {
         return referenceDateTime;
     }

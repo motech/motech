@@ -1,5 +1,8 @@
 package org.motechproject.scheduletracking.api.events.constants;
 
+/**
+ * Keys for accessing the Event Payload
+ */
 public class EventDataKeys {
 
 	// MilestoneEvent
