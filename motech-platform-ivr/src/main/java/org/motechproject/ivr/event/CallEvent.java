@@ -3,6 +3,10 @@ package org.motechproject.ivr.event;
 import org.joda.time.DateTime;
 import org.motechproject.util.DateUtil;
 
+/**
+ * Represents IVR event like DTMF key press, Dial
+ * @see IVREvent
+ */
 public class CallEvent {
     private String name;
     private DateTime timeStamp;
@@ -20,6 +24,10 @@ public class CallEvent {
         this.timeStamp = timeStamp;
     }
 
+    /**
+     * Factory method to create new dial event.
+     * @return Dial event
+     */
     public static CallEvent newDialEvent() {
         return new CallEvent("Dial", DateUtil.now());
     }
@@ -40,14 +48,29 @@ public class CallEvent {
         this.timeStamp = DateUtil.setTimeZone(timeStamp);
     }
 
+    /**
+     * Get additional data for call event such as audio played etc.
+     * @return Data map with key value pair
+     *
+     */
     public CallEventCustomData getData() {
         return callEventCustomData;
     }
 
+    /**
+     * Set additional data for call event such as audio played etc.
+     * @param callEventCustomData
+     */
     public void setData(CallEventCustomData callEventCustomData) {
         this.callEventCustomData = callEventCustomData;
     }
 
+    /**
+     * Add key value pair to additional data in call event.
+     * It can be used to store information related to IVR event like audio played etc.
+     * @param key
+     * @param value
+     */
     public void appendData(String key, String value) {
         callEventCustomData.add(key, value);
     }
