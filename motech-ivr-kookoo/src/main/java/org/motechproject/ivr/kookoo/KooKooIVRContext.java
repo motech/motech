@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * KooKoo IVR context includes user session information such as caller information, request info, etc.
+ */
 public class KooKooIVRContext {
     private KookooRequest kooKooRequest;
     private HttpServletRequest request;
@@ -40,6 +43,10 @@ public class KooKooIVRContext {
         return request;
     }
 
+    /**
+     * Get Current user input (dtmf digit pressed on phone)
+     * @return return DTMF value as String
+     */
     public String userInput() {
         return StringUtils.remove(kooKooRequest.getData(), POUND_SYMBOL);
     }
@@ -53,6 +60,10 @@ public class KooKooIVRContext {
         cookies.add(CURRENT_DECISION_TREE_POSITION, path);
     }
 
+    /**
+     * Get current call id
+     * @return
+     */
     public String callId() {
         String callId = cookies.getValue(CALL_ID);
         return callId == null ? kooKooRequest.getSid() : callId;
