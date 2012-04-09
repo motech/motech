@@ -5,7 +5,6 @@ import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
@@ -34,7 +33,6 @@ import static org.motechproject.scheduletracking.api.utility.PeriodUtil.weeks;
 import static org.motechproject.util.DateUtil.*;
 
 public class ScheduleTrackingServiceImplTest {
-
     private ScheduleTrackingService scheduleTrackingService;
 
     @Mock
@@ -317,31 +315,30 @@ public class ScheduleTrackingServiceImplTest {
         metadata.put("foo1", "bar1");
         metadata.put("foo2", "bar2");
         Enrollment enrollment = new Enrollment("external_id_1", schedule, null, null, null, null, null, metadata);
-        HashMap<String, String> toBeUpdatedMetada = new HashMap<String, String>();
-        toBeUpdatedMetada.put("foo2", "val2");
-        toBeUpdatedMetada.put("foo3", "val3");
+        HashMap<String, String> toBeUpdatedMetadata = new HashMap<String, String>();
+        toBeUpdatedMetadata.put("foo2", "val2");
+        toBeUpdatedMetadata.put("foo3", "val3");
 
         when(allEnrollments.getActiveEnrollment("foo", "some_schedule")).thenReturn(enrollment);
 
         ArgumentCaptor<Enrollment> enrollmentArgumentCaptor = ArgumentCaptor.forClass(Enrollment.class);
 
-        scheduleTrackingService.updateEnrollment("foo", "some_schedule", new UpdateCriteria().Metadata(toBeUpdatedMetada));
+        scheduleTrackingService.updateEnrollment("foo", "some_schedule", new UpdateCriteria().Metadata(toBeUpdatedMetadata));
 
         verify(allEnrollments).update(enrollmentArgumentCaptor.capture());
         Enrollment updatedEnrollment = enrollmentArgumentCaptor.getValue();
 
         Map<String, String> updatedMetadata = updatedEnrollment.getMetadata();
+        assertEquals(3, updatedMetadata.size());
         assertEquals("bar1", updatedMetadata.get("foo1"));
         assertEquals("val2", updatedMetadata.get("foo2"));
         assertEquals("val3", updatedMetadata.get("foo3"));
-
-
     }
 
     @Test(expected = InvalidEnrollmentException.class)
     public void UpdateShouldThrowExceptionForInvalidData() {
         when(allEnrollments.getActiveEnrollment("foo", "some_schedule")).thenReturn(null);
         scheduleTrackingService.updateEnrollment("foo", "some_schedule", new UpdateCriteria().Metadata(new HashMap<String, String>()));
-        verify(allEnrollments, times(0)).update(Matchers.<Enrollment>any());
+        verifyNoMoreInteractions(allEnrollments);
     }
 }

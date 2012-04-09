@@ -15,31 +15,31 @@ public class EnrollmentRequestTest {
     @Test
     public void shouldReturnFalseIfStartingMilestoneNotProvided() {
         EnrollmentRequest enrollmentRequest = new EnrollmentRequest("externalId", "scheduleName", new Time(10, 10), LocalDate.now(), null, null, null, null, null);
-        assertFalse("Starting milestone not expected, but was provided!", enrollmentRequest.enrollIntoMilestone());
+        assertFalse("Starting milestone not expected, but was provided!", enrollmentRequest.isStartingMilestoneSpecified());
     }
 
     @Test
     public void shouldReturnTrueIfStartingMilestoneProvided() {
         EnrollmentRequest enrollmentRequest = new EnrollmentRequest("externalId", "scheduleName", new Time(10, 10), LocalDate.now(), null, null, null, "Milestone", null);
-        assertTrue("Starting milestone expected, but was not provided!", enrollmentRequest.enrollIntoMilestone());
+        assertTrue("Starting milestone expected, but was not provided!", enrollmentRequest.isStartingMilestoneSpecified());
     }
 
     @Test
     public void shouldReturnFalseIfEmptyStartingMilestoneProvided() {
         EnrollmentRequest enrollmentRequest = new EnrollmentRequest("externalId", "scheduleName", new Time(10, 10), LocalDate.now(), null, null, null, "", null);
-        assertFalse("Starting milestone not expected, but was provided!", enrollmentRequest.enrollIntoMilestone());
+        assertFalse("Starting milestone not expected, but was provided!", enrollmentRequest.isStartingMilestoneSpecified());
     }
 
     @Test
     public void shouldReturnFalseIfNullStartingMilestoneProvided() {
         EnrollmentRequest enrollmentRequest = new EnrollmentRequest("externalId", "scheduleName", new Time(10, 10), LocalDate.now(), null, null, null, null, null);
-        assertFalse("Starting milestone not expected, but was provided!", enrollmentRequest.enrollIntoMilestone());
+        assertFalse("Starting milestone not expected, but was provided!", enrollmentRequest.isStartingMilestoneSpecified());
     }
 
     @Test
     public void enrollmentDateShouldBeTodayAndEnrollmentTimeShouldBeMidnightWhenNotDefined() {
         EnrollmentRequest enrollmentRequest = new EnrollmentRequest("externalId", "scheduleName", new Time(10, 10), null, null, null, null, null, null);
-        assertEquals(newDateTime(today(), 0, 0, 0), enrollmentRequest.getEnrollmentDateTime());
+        assertEquals(newDateTime(today()), enrollmentRequest.getEnrollmentDateTime());
     }
 
     @Test
@@ -51,7 +51,7 @@ public class EnrollmentRequestTest {
     @Test
     public void referenceDateShouldBeTodayAndReferenceTimeShouldBeMidnightWhenNotDefined() {
         EnrollmentRequest referenceRequest = new EnrollmentRequest("externalId", "scheduleName", new Time(10, 10), null, null, null, null, null, null);
-        assertEquals(newDateTime(today(), 0, 0, 0), referenceRequest.getReferenceDateTime());
+        assertEquals(newDateTime(today()), referenceRequest.getReferenceDateTime());
     }
 
     @Test

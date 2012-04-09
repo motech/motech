@@ -1,8 +1,23 @@
 package org.motechproject.sms.smpp.constants;
 
+/**
+ * properties related to the SMPP connection between the SMSC and the ESME
+ */
 public class SmppProperties {
-	public static final String HOST = "host";
-	public static final String PORT = "port";
-	public static final String SYSTEM_ID = "system_id";
-	public static final String PASSWORD = "password";
+    /**
+     * the hostname of the SMSC
+     */
+    public static final String HOST = "host";
+    /**
+     * the port where the SMSC is listening for SMPP messages
+     */
+    public static final String PORT = "port";
+    /**
+     * identifies the ESME requesting a connection to the SMSC
+     */
+    public static final String SYSTEM_ID = "system_id";
+    /**
+     * password to authenticate the ESME on the SMSC
+     */
+    public static final String PASSWORD = "password";
 }

@@ -3,10 +3,17 @@ package org.motechproject.scheduletracking.api.service.contract;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This is the criteria builder which is used to form an enrollment update criteria
+ */
 public class UpdateCriteria {
 
     private Map<UpdateCriterion, Object> allCriteria = new HashMap<UpdateCriterion, Object>();
 
+    /**
+     * This gives the list of all the criterion specified to update an enrollment
+     * @return
+     */
     public Map<UpdateCriterion, Object> getAll() {
         return allCriteria;
     }
