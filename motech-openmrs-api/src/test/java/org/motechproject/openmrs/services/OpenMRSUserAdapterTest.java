@@ -8,7 +8,7 @@ import org.motechproject.mrs.exception.UserAlreadyExistsException;
 import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.MRSPerson;
 import org.motechproject.mrs.model.MRSUser;
-import org.motechproject.mrs.services.MRSException;
+import org.motechproject.mrs.exception.MRSException;
 import org.motechproject.openmrs.builder.UserBuilder;
 import org.openmrs.*;
 import org.openmrs.api.PersonService;

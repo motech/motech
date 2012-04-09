@@ -1,8 +1,15 @@
 package org.motechproject.mrs.model;
 
+/**
+ * Maintains observation types
+ */
 public class MRSConcept {
     private String name;
 
+    /**
+     * Creates a MRS concept with the given name
+     * @param name Name of the concept
+     */
     public MRSConcept(String name) {
         this.name = name;
     }

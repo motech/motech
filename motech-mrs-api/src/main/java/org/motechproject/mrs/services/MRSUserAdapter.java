@@ -1,5 +1,6 @@
 package org.motechproject.mrs.services;
 
+import org.motechproject.mrs.exception.MRSException;
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
 import org.motechproject.mrs.model.MRSUser;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,7 +18,7 @@ public interface MRSUserAdapter {
      *
      * @param currentPassword Old password
      * @param newPassword     New password
-     * @throws MRSException Thrown when change password fails
+     * @throws org.motechproject.mrs.exception.MRSException Thrown when change password fails
      */
     void changeCurrentUserPassword(String currentPassword, String newPassword) throws MRSException;
 

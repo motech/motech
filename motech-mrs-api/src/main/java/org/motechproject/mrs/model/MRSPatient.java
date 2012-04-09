@@ -1,5 +1,8 @@
 package org.motechproject.mrs.model;
 
+/**
+ * Domain to hold patient information
+ */
 public class MRSPatient {
 
     private String id;
@@ -7,19 +10,39 @@ public class MRSPatient {
     private MRSPerson person;
     private String motechId;
 
+    /**
+     * Creates a new Patient
+     *
+     * @param id Patient ID
+     */
     public MRSPatient(String id) {
         this.id = id;
     }
 
+    /**
+     * Creates a new Patient
+     *
+     * @param motechId    MOTECH Id of the patient
+     * @param person      Person object containing the personal details of the patient
+     * @param mrsFacility Location of the patient
+     */
     public MRSPatient(String motechId, MRSPerson person, MRSFacility mrsFacility) {
         this.facility = mrsFacility;
         this.person = person;
         this.motechId = motechId;
     }
 
-    public MRSPatient(String patientId, String motechId, MRSPerson mrsPerson, MRSFacility mrsFacility) {
-        this(motechId, mrsPerson, mrsFacility);
-        this.id = patientId;
+    /**
+     * Creates a new Patient
+     *
+     * @param id          Patient ID
+     * @param motechId    MOTECH Id of the patient
+     * @param person      Person object containing the personal details of the patient
+     * @param mrsFacility Location of the patient
+     */
+    public MRSPatient(String id, String motechId, MRSPerson person, MRSFacility mrsFacility) {
+        this(motechId, person, mrsFacility);
+        this.id = id;
     }
 
     public String getId() {

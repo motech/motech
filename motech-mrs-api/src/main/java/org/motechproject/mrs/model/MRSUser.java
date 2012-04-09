@@ -1,13 +1,20 @@
 package org.motechproject.mrs.model;
 
+/**
+ * Holds the information of MRS Staff
+ */
 public class MRSUser {
     private String id;
     private String systemId;
     private String securityRole;
     private String userName;
-
     private MRSPerson person;
 
+    /**
+     * Creates a MRS User
+     * @param id User ID
+     * @return
+     */
     public MRSUser id(String id) {
         this.id = id;
         return this;

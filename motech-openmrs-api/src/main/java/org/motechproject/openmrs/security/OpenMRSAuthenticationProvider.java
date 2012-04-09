@@ -1,6 +1,6 @@
 package org.motechproject.openmrs.security;
 
-import org.motechproject.mrs.security.InvalidCredentialsException;
+import org.motechproject.mrs.exception.InvalidCredentialsException;
 import org.motechproject.mrs.security.MRSAuthenticationProvider;
 import org.motechproject.mrs.security.MRSSecurityUser;
 import org.openmrs.api.context.ContextAuthenticationException;

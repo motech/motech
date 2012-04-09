@@ -1,5 +1,8 @@
 package org.motechproject.mrs.model;
 
+/**
+ * Maintains details about the facility
+ */
 public class MRSFacility {
     private String id;
 
@@ -8,10 +11,23 @@ public class MRSFacility {
     private String region;
     private String countyDistrict;
     private String stateProvince;
+
+    /**
+     * Creates a facility with the given facility id
+     * @param id Facility id
+     */
     public MRSFacility(String id) {
         this.id = id;
     }
 
+    /**
+     * Creates a facility object with the given details
+     * @param name  Name of the facility
+     * @param country Name of the country
+     * @param region Name of the region
+     * @param countyDistrict Name of the county/District
+     * @param stateProvince Name of the State/Province
+     */
     public MRSFacility(String name, String country, String region, String countyDistrict, String stateProvince) {
         this.name = name;
         this.country = country;
@@ -20,6 +36,15 @@ public class MRSFacility {
         this.stateProvince = stateProvince;
     }
 
+    /**
+     * Creates a facility object with the given details
+     * @param id Facility id
+     * @param name  Name of the facility
+     * @param country Name of the country
+     * @param region Name of the region
+     * @param countyDistrict Name of the county/District
+     * @param stateProvince Name of the State/Province
+     */
     public MRSFacility(String id, String name, String country, String region, String countyDistrict, String stateProvince) {
         this(name, country, region, countyDistrict, stateProvince);
         this.id = id;

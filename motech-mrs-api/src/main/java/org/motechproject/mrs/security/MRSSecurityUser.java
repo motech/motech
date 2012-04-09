@@ -6,6 +6,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Hold authentication Details of the user
+ */
 public class MRSSecurityUser implements UserDetails {
     private String userName;
     private boolean accountNonExpired;
@@ -14,6 +17,12 @@ public class MRSSecurityUser implements UserDetails {
     private boolean enabled;
     private List<GrantedAuthority> authorities;
 
+    /**
+     * Creates a new Security User
+     *
+     * @param userName Login ID of the User
+     * @param authorities List of permissions given to the user.
+     */
     public MRSSecurityUser(String userName, List<GrantedAuthority> authorities) {
         this.userName = userName;
         this.authorities = authorities;
