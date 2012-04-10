@@ -59,6 +59,16 @@ public class ServerEventRelayTransactionIT {
     }
 
     @Test
+    public void shouldInvokeListenerConcurrently() throws Exception {
+        int numberOfMessagesInQueue = queueExplorer.queueSize(eventQueue);
+        MotechEvent motechEvent = new MotechEvent(EventHandlerForServerEventRelayTransactionIT.LONG_RUNNING_PROCESS);
+        outboundEventGateway.sendEventMessage(motechEvent);
+        outboundEventGateway.sendEventMessage(motechEvent);
+        Thread.sleep(EventHandlerForServerEventRelayTransactionIT.TASK_DURATION *1000 + 1000);
+        assertEquals(0, queueExplorer.queueSize(eventQueue) - numberOfMessagesInQueue);
+    }
+
+    @Test
     public void failureToHandleEventShouldNotDestroyTheEvent() throws Exception {
         handler.setupForFailure(true);
         MotechEvent motechEvent = new MotechEvent(EventHandlerForServerEventRelayTransactionIT.FAILING_EVENT_SUBJECT);
