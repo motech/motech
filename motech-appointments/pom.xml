@@ -101,7 +101,7 @@
                         <Private-Package>
                             org.motechproject.server.appointments.*
                         </Private-Package>
-                        <Embed-Dependency>!*</Embed-Dependency>
+                        <Embed-Dependency>motech-appointments-api;inline=applicationAppointmentsAPI.xml</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>

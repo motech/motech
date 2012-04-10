@@ -31,8 +31,6 @@
  */
 package org.motechproject.server.appointments;
 
-import org.motechproject.appointments.api.EventKeys;
-import org.motechproject.context.Context;
 import org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -52,7 +50,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  */
 public class Activator implements BundleActivator {
 	private static Logger logger = LoggerFactory.getLogger(Activator.class);
-	private static final String CONTEXT_CONFIG_LOCATION = "applicationAppointments.xml";
+	private static final String CONTEXT_CONFIG_LOCATION = "classpath:applicationAppointmentsAPI.xml";
 	private static final String SERVLET_URL_MAPPING = "/appointments";
 	private ServiceTracker tracker;
 
