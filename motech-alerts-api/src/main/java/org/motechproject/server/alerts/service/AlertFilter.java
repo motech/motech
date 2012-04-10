@@ -1,9 +1,9 @@
 package org.motechproject.server.alerts.service;
 
-import org.motechproject.server.alerts.repository.AllAlerts;
+import org.motechproject.server.alerts.contract.AlertCriteria;
 import org.motechproject.server.alerts.domain.Alert;
-import org.motechproject.server.alerts.domain.AlertCriteria;
 import org.motechproject.server.alerts.domain.Criterion;
+import org.motechproject.server.alerts.repository.AllAlerts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;

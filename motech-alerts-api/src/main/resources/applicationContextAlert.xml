@@ -19,7 +19,7 @@
         <constructor-arg ref="alertDbConnector"/>
     </bean>
 
-    <bean id="alertService" class="org.motechproject.server.alerts.contract.AlertServiceImpl">
+    <bean id="alertService" class="org.motechproject.server.alerts.service.AlertServiceImpl">
         <constructor-arg ref="allAlerts"/>
     </bean>
 </beans>

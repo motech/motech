@@ -1,8 +1,4 @@
-package org.motechproject.server.alerts.service;
-
-import org.motechproject.server.alerts.domain.Alert;
-import org.motechproject.server.alerts.domain.AlertStatus;
-import org.motechproject.server.alerts.domain.UpdateCriterion;
+package org.motechproject.server.alerts.domain;
 
 import java.util.HashMap;
 import java.util.Map;

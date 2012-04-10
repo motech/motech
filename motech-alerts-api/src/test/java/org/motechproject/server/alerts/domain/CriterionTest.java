@@ -5,6 +5,7 @@ import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.motechproject.server.alerts.contract.AlertCriteria;
 import org.motechproject.server.alerts.repository.AllAlerts;
 import org.motechproject.util.DateUtil;
 
