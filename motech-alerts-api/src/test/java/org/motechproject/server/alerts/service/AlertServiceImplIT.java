@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.server.alerts.contract.AlertServiceImpl;
 import org.motechproject.server.alerts.contract.UpdateCriteria;
 import org.motechproject.server.alerts.repository.AllAlerts;
 import org.motechproject.server.alerts.domain.Alert;
