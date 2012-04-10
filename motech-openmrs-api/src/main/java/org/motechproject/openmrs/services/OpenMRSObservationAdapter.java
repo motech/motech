@@ -108,7 +108,11 @@ public class OpenMRSObservationAdapter implements MRSObservationAdapter {
     }
 
     MRSObservation saveObservation(MRSObservation mrsObservation, Encounter encounter, Patient patient, Location facility, User creator) {
-        return convertOpenMRSToMRSObservation(obsService.saveObs(createOpenMRSObservationForEncounter(mrsObservation, encounter, patient, facility, creator), null));
+        return convertOpenMRSToMRSObservation(saveObs(mrsObservation, encounter, patient, facility, creator));
+    }
+
+    private Obs saveObs(MRSObservation mrsObservation, Encounter encounter, Patient patient, Location facility, User creator) {
+        return obsService.saveObs(createOpenMRSObservationForEncounter(mrsObservation, encounter, patient, facility, creator), null);
     }
 
     Set<MRSObservation> convertOpenMRSToMRSObservations(Set<Obs> openMrsObservations) {
@@ -158,5 +162,20 @@ public class OpenMRSObservationAdapter implements MRSObservationAdapter {
             mrsObservations.add(convertOpenMRSToMRSObservation(observation));
         }
         return mrsObservations;
+    }
+
+    void purgeObservations(Set<Obs> allObs) {
+        for (Obs obs : allObs) {
+            obsService.purgeObs(obs);
+        }
+    }
+
+    void saveObservations(Set<MRSObservation> observations, Encounter existingMRSEncounter) {
+        Set<Obs> allObs = new HashSet<Obs>();
+        for (MRSObservation observation : observations) {
+            Obs mrsObservation = saveObs(observation, existingMRSEncounter, existingMRSEncounter.getPatient(), existingMRSEncounter.getLocation(), existingMRSEncounter.getCreator());
+            allObs.add(mrsObservation);
+        }
+        existingMRSEncounter.setObs(allObs);
     }
 }

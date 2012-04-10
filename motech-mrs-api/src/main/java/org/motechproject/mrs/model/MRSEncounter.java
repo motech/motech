@@ -103,4 +103,14 @@ public class MRSEncounter {
     public String getId() {
         return id;
     }
+    
+    public MRSEncounter updateWithoutObs(MRSEncounter fromEncounter) {
+        this.patient = fromEncounter.getPatient();
+        this.creator = fromEncounter.getCreator();
+        this.provider = fromEncounter.getProvider();
+        this.facility = fromEncounter.getFacility();
+        this.date = fromEncounter.getDate();
+        this.encounterType = fromEncounter.getEncounterType();
+        return this;
+    }
 }
