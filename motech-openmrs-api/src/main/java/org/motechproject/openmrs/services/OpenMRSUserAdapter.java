@@ -4,7 +4,7 @@ import org.motechproject.mrs.exception.UserAlreadyExistsException;
 import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.MRSPerson;
 import org.motechproject.mrs.model.MRSUser;
-import org.motechproject.mrs.services.MRSException;
+import org.motechproject.mrs.exception.MRSException;
 import org.motechproject.mrs.services.MRSUserAdapter;
 import org.motechproject.openmrs.model.Password;
 import org.openmrs.*;
@@ -37,8 +37,15 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
         this.openMRSPersonAdapter = openMRSPersonAdapter;
     }
 
+    /**
+     * Changes the password of the user.
+     *
+     * @param currentPassword Old password
+     * @param newPassword     New password
+     * @throws MRSException Thrown when change password fails
+     */
     @Override
-    public void changeCurrentUserPassword(String currentPassword, String newPassword) {
+    public void changeCurrentUserPassword(String currentPassword, String newPassword) throws MRSException {
         try {
             userService.changePassword(currentPassword, newPassword);
         } catch (APIException e) {
@@ -46,6 +53,13 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
         }
     }
 
+    /**
+     * Creates a new MRSUser
+     *
+     * @param mrsUser Instance of the User object to be saved
+     * @return A Map containing saved user's data
+     * @throws UserAlreadyExistsException Thrown if the user already exists
+     */
     @Override
     public Map<String, Object> saveUser(MRSUser mrsUser) throws UserAlreadyExistsException {
         MRSUser userByUserName = getUserByUserName(mrsUser.getPerson().attrValue("Email"));
@@ -55,14 +69,26 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
         return save(mrsUser);
     }
 
+    /**
+     * Updates User attributes if found, else creates the user.
+     *
+     * @param mrsUser MRS User object
+     * @return A Map containing saved user's data
+     */
     @Override
     public Map<String, Object> updateUser(MRSUser mrsUser) {
         return save(mrsUser);
     }
 
+    /**
+     * Finds user by UserName
+     *
+     * @param userId User's unique Identifier ( email or MOTECH id )
+     * @return The User object, if found, else null.
+     */
     @Override
-    public MRSUser getUserByUserName(String userName) {
-        org.openmrs.User openMrsUser = getOpenMrsUserByUserName(userName);
+    public MRSUser getUserByUserName(String userId) {
+        org.openmrs.User openMrsUser = getOpenMrsUserByUserName(userId);
         if (openMrsUser == null) return null;
         return (!isSystemAdmin(openMrsUser.getSystemId())) ? openMrsToMrsUser(openMrsUser)
                 : new MRSUser().systemId(openMrsUser.getSystemId()).id(Integer.toString(openMrsUser.getId()))
@@ -77,6 +103,11 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
         return userService.getUser(Integer.valueOf(id));
     }
 
+    /**
+     * Gets all users present in the openMRS system
+     *
+     * @return List of all Users if users exist, else empty list
+     */
     @Override
     public List<MRSUser> getAllUsers() {
         List<MRSUser> mrsUsers = new ArrayList<MRSUser>();
@@ -158,12 +189,19 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
         return isNotEmpty(dbId) ? userService.getUser(Integer.parseInt(dbId)) : new org.openmrs.User(new Person());
     }
 
+    /**
+     * Resets the password of a given User
+     *
+     * @param userId User's unique identifier (email or MOTECH id)
+     * @return New password
+     * @throws UsernameNotFoundException If the user is not found.
+     */
     @Override
-    public String setNewPasswordForUser(String emailID) throws UsernameNotFoundException {
+    public String setNewPasswordForUser(String userId) throws UsernameNotFoundException {
         org.openmrs.User userByUsername;
         try {
-            userByUsername = userService.getUserByUsername(emailID);
-        } catch (Exception e) {
+            userByUsername = userService.getUserByUsername(userId);
+        } catch (APIException e) {
             throw new UsernameNotFoundException("User was not found");
         }
 

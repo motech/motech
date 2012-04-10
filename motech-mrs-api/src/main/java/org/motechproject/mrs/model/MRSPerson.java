@@ -11,6 +11,9 @@ import static ch.lambdaj.Lambda.on;
 import static ch.lambdaj.Lambda.select;
 import static org.hamcrest.Matchers.equalTo;
 
+/**
+ * Domain to hold personal details of a Person (MRSUser and MRSPatient)
+ */
 public class MRSPerson {
 
     private String id;
@@ -31,7 +34,7 @@ public class MRSPerson {
         this.preferredName = preferredName;
         return this;
     }
-    
+
     public MRSPerson age(Integer age) {
         this.age = age;
         return this;
@@ -85,7 +88,7 @@ public class MRSPerson {
         return this;
     }
 
-    public MRSPerson dead(Boolean dead){
+    public MRSPerson dead(Boolean dead) {
         this.dead = dead;
         return this;
     }

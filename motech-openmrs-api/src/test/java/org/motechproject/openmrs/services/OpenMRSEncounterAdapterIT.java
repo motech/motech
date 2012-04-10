@@ -2,19 +2,22 @@ package org.motechproject.openmrs.services;
 
 import ch.lambdaj.Lambda;
 import ch.lambdaj.function.matcher.LambdaJMatcher;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
 import org.motechproject.mrs.model.*;
 import org.motechproject.mrs.services.MRSEncounterAdapter;
 import org.motechproject.openmrs.OpenMRSIntegrationTestBase;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.PatientService;
-import org.openmrs.api.UserService;
+import org.motechproject.util.DateUtil;
+import org.openmrs.Encounter;
+import org.openmrs.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
@@ -22,10 +25,23 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.having;
+import static ch.lambdaj.Lambda.on;
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
-import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
+import static junit.framework.Assert.fail;
+import static org.apache.commons.collections.CollectionUtils.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isIn;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.spy;
 import static org.motechproject.openmrs.services.OpenMRSUserAdapter.USER_KEY;
+import static org.motechproject.util.DateUtil.newDate;
 
 public class OpenMRSEncounterAdapterIT extends OpenMRSIntegrationTestBase {
 
@@ -34,14 +50,20 @@ public class OpenMRSEncounterAdapterIT extends OpenMRSIntegrationTestBase {
     @Autowired
     EncounterService encounterService;
     @Autowired
+    ObsService obsService;
+    @Autowired
     PatientService patientService;
     @Autowired
     UserService userService;
     @Autowired
     ConceptService conceptService;
+    @Autowired
+    OpenMRSUserAdapter userAdapter;
 
     MRSFacility facility;
     MRSPatient patientAlan;
+    @Autowired
+    private OpenMRSObservationAdapter openMRSObservationAdapter;
 
     public void doOnceBefore() {
         facility = facilityAdapter.saveFacility(new MRSFacility("name", "country", "region", "district", "province"));
@@ -66,13 +88,157 @@ public class OpenMRSEncounterAdapterIT extends OpenMRSIntegrationTestBase {
         final String encounterType = "PEDSRETURN";
         MRSEncounter expectedEncounter = new MRSEncounter(provider.getId(), userCreator.getId(), facility.getId(), new Date(), patientAlan.getId(), observations, encounterType);
         MRSEncounter actualMRSEncounter = mrsEncounterAdapter.createEncounter(expectedEncounter);
-        compareEncounters(expectedEncounter, actualMRSEncounter);
+        assertEncounter(expectedEncounter, actualMRSEncounter);
 
         final MRSEncounter mrsEncounter = mrsEncounterAdapter.getLatestEncounterByPatientMotechId(patientAlan.getMotechId(), encounterType);
-        compareEncounters(expectedEncounter, mrsEncounter);
+        assertEncounter(expectedEncounter, mrsEncounter);
     }
 
-    private void compareEncounters(MRSEncounter expectedEncounter, MRSEncounter actualMRSEncounter) {
+    @Test
+    @Transactional(readOnly = true)
+    public void creationOfEncounterShouldHappenInIdempotentWay() throws UserAlreadyExistsException {
+
+        MRSPerson personCreator = new MRSPerson().firstName("SampleTest");
+        MRSPerson personJohn = new MRSPerson().firstName("John");
+        patientAlan = createPatient(facility);
+        MRSUser userCreator = createUser(new MRSUser().userName("UserSuper").systemId("1000015").securityRole("Provider").person(personCreator));
+        MRSUser userJohn = createUser(new MRSUser().userName("UserJohn").systemId("1000027").securityRole("Provider").person(personJohn));
+        MRSPerson provider = userJohn.getPerson();
+
+        final Set<MRSObservation> observations = new HashSet<MRSObservation>();
+        final Date encounterTime = DateUtil.newDateTime(newDate(2012, 3, 4), 3, 4, 3).toDate();
+        final Date observationDate = new Date();
+        observations.add(new MRSObservation(observationDate, "SERIAL NUMBER", "free text data serail number"));
+        observations.add(new MRSObservation(observationDate, "NEXT ANC DATE", new DateTime(2012, 11, 10, 1, 10).toDate()));
+        observations.add(new MRSObservation(observationDate, "GRAVIDA", Double.valueOf("100.0")));
+        final String encounterType = "PEDSRETURN";
+        MRSEncounter expectedEncounter = new MRSEncounter(provider.getId(), userCreator.getId(), facility.getId(), encounterTime, patientAlan.getId(), observations, encounterType);
+        MRSEncounter duplicateEncounter = new MRSEncounter(provider.getId(), userCreator.getId(), facility.getId(), encounterTime, patientAlan.getId(), new HashSet<MRSObservation>() {{
+            add(new MRSObservation(observationDate, "SERIAL NUMBER", "free text data serail number"));
+            add(new MRSObservation(observationDate, "NEXT ANC DATE", new DateTime(2012, 11, 10, 1, 10).toDate()));
+            add(new MRSObservation(observationDate, "PREGNANCY STATUS", false));
+        }}, encounterType);
+
+        MRSEncounter oldEncounter = mrsEncounterAdapter.createEncounter(expectedEncounter);
+        MRSEncounter newEncounter = mrsEncounterAdapter.createEncounter(duplicateEncounter);
+        assertEncounter(expectedEncounter, oldEncounter);
+        assertEncounter(duplicateEncounter, newEncounter);
+        assertThat(newEncounter.getId(), is(oldEncounter.getId()));
+
+        List<MRSObservation> oldObservations = Lambda.select(oldEncounter.getObservations(), having(on(MRSObservation.class).getConceptName(), isIn(asList("SERIAL NUMBER", "NEXT ANC DATE"))));
+        List<MRSObservation> newObservations = Lambda.select(newEncounter.getObservations(), having(on(MRSObservation.class).getConceptName(), isIn(asList("SERIAL NUMBER", "NEXT ANC DATE"))));
+        assertObservation(new HashSet<MRSObservation>(oldObservations), new HashSet<MRSObservation>(newObservations));
+
+        assertTrue(CollectionUtils.isEmpty(Lambda.select(newEncounter.getObservations(), having(on(MRSObservation.class).getConceptName(), is("GRAVIDA")))));
+        assertTrue(CollectionUtils.isNotEmpty(Lambda.select(newEncounter.getObservations(), having(on(MRSObservation.class).getConceptName(), is("PREGNANCY STATUS")))));
+
+        final List<String> oldObservationIds = extract(oldEncounter.getObservations(), on(MRSObservation.class).getId());
+        for (String observationId : oldObservationIds) {
+            assertNull("[" + observationId + "]," + newEncounter.getObservations(), obsService.getObs(Integer.parseInt(observationId)));
+        }
+    }
+
+    @Test
+    @Transactional(readOnly = true)
+    public void shouldNotCreateDuplicateEvenWithImproperSave() throws UserAlreadyExistsException {
+        MRSPerson personCreator = new MRSPerson().firstName("SampleTest");
+        MRSPerson personJohn = new MRSPerson().firstName("John");
+        patientAlan = createPatient(facility);
+        MRSUser userCreator = createUser(new MRSUser().userName("UserSuper").systemId("1000015").securityRole("Provider").person(personCreator));
+        MRSUser userJohn = createUser(new MRSUser().userName("UserJohn").systemId("1000027").securityRole("Provider").person(personJohn));
+        MRSPerson provider = userJohn.getPerson();
+
+        final Set<MRSObservation> observations = new HashSet<MRSObservation>();
+        final Date encounterTime = DateUtil.newDateTime(newDate(2012, 3, 4), 3, 4, 3).toDate();
+        final Date observationDate = new Date();
+        observations.add(new MRSObservation(observationDate, "SERIAL NUMBER", "free text data serail number"));
+        observations.add(new MRSObservation(observationDate, "NEXT ANC DATE", new DateTime(2012, 11, 10, 1, 10).toDate()));
+        observations.add(new MRSObservation(observationDate, "GRAVIDA", Double.valueOf("100.0")));
+        final String encounterType = "PEDSRETURN";
+        MRSEncounter expectedEncounter = new MRSEncounter(provider.getId(), userCreator.getId(), facility.getId(), encounterTime, patientAlan.getId(), observations, encounterType);
+        MRSEncounter duplicateEncounter = new MRSEncounter(provider.getId(), userCreator.getId(), facility.getId(), encounterTime, patientAlan.getId(), new HashSet<MRSObservation>() {{
+            add(new MRSObservation(observationDate, "SERIAL NUMBER", "free text data serail number"));
+            add(new MRSObservation(observationDate, "NEXT ANC DATE", new DateTime(2012, 11, 10, 1, 10).toDate()));
+            add(new MRSObservation(observationDate, "PREGNANCY STATUS", false));
+        }}, encounterType);
+
+        MRSEncounter actualMRSEncounter = mrsEncounterAdapter.createEncounter(expectedEncounter);
+        OpenMRSObservationAdapter openMRSObservationAdapterProxy = spy(openMRSObservationAdapter);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                invocation.callRealMethod();
+                throw new RuntimeException("re");
+            }
+        }).when(openMRSObservationAdapterProxy).saveObservations(any(Set.class), any(Encounter.class));
+        final OpenMRSEncounterAdapter proxyEncounterAdapter = createMRSEncounterAdaptor(openMRSObservationAdapterProxy);
+
+        try {
+            proxyEncounterAdapter.createEncounter(duplicateEncounter);
+            fail("Expected Runtime Exception");
+        } catch (RuntimeException ex) {
+        }
+
+        MRSEncounter actualMRSEncounter2 = mrsEncounterAdapter.createEncounter(duplicateEncounter);
+        assertEncounter(expectedEncounter, actualMRSEncounter);
+        assertEncounter(duplicateEncounter, actualMRSEncounter2);
+        assertThat(actualMRSEncounter2.getId(), is(actualMRSEncounter.getId()));
+
+        List<MRSObservation> observationIds1 = Lambda.select(actualMRSEncounter.getObservations(), having(on(MRSObservation.class).getConceptName(), isIn(asList("SERIAL NUMBER", "NEXT ANC DATE"))));
+        List<MRSObservation> observationIds2 = Lambda.select(actualMRSEncounter2.getObservations(), having(on(MRSObservation.class).getConceptName(), isIn(asList("SERIAL NUMBER", "NEXT ANC DATE"))));
+        assertObservation(new HashSet<MRSObservation>(observationIds1), new HashSet<MRSObservation>(observationIds2));
+
+        observationIds1 = Lambda.select(actualMRSEncounter.getObservations(), having(on(MRSObservation.class).getConceptName(), isIn(asList("GRAVIDA"))));
+        observationIds2 = Lambda.select(actualMRSEncounter2.getObservations(), having(on(MRSObservation.class).getConceptName(), isIn(asList("PREGNANCY STATUS"))));
+        assertTrue(isEmpty(intersection(observationIds1, observationIds2)));
+    }
+
+    private OpenMRSEncounterAdapter createMRSEncounterAdaptor(OpenMRSObservationAdapter openMRSObservationAdapter) {
+        return new OpenMRSEncounterAdapter(this.<EncounterService>getField(mrsEncounterAdapter, "encounterService"),
+                this.<OpenMRSUserAdapter>getField(mrsEncounterAdapter, "openMRSUserAdapter"),
+                this.<OpenMRSFacilityAdapter>getField(mrsEncounterAdapter, "openMRSFacilityAdapter"),
+                this.<OpenMRSPatientAdapter>getField(mrsEncounterAdapter, "openMRSPatientAdapter"),
+                openMRSObservationAdapter,
+                this.<OpenMRSPersonAdapter>getField(mrsEncounterAdapter, "openMRSPersonAdapter"));
+    }
+
+    @Test
+    @Transactional(readOnly = true)
+    public void shouldPurgeObservations() throws UserAlreadyExistsException {
+
+        MRSPerson personCreator = new MRSPerson().firstName("SampleTest");
+        MRSPerson personJohn = new MRSPerson().firstName("John");
+        patientAlan = createPatient(facility);
+        MRSUser userCreator = createUser(new MRSUser().userName("UserSuper").systemId("1000015").securityRole("Provider").person(personCreator));
+        MRSUser userJohn = createUser(new MRSUser().userName("UserJohn").systemId("1000027").securityRole("Provider").person(personJohn));
+        MRSPerson provider = userJohn.getPerson();
+
+        final Set<MRSObservation> observations = new HashSet<MRSObservation>();
+        final Date encounterTime = DateUtil.newDateTime(newDate(2012, 3, 4), 3, 4, 3).toDate();
+        final Date observationDate = new Date();
+        observations.add(new MRSObservation(observationDate, "SERIAL NUMBER", "free text data serail number"));
+        observations.add(new MRSObservation(observationDate, "NEXT ANC DATE", new DateTime(2012, 11, 10, 1, 10).toDate()));
+        observations.add(new MRSObservation(observationDate, "GRAVIDA", Double.valueOf("100.0")));
+        final String encounterType = "PEDSRETURN";
+        MRSEncounter expectedEncounter = new MRSEncounter(provider.getId(), userCreator.getId(), facility.getId(), encounterTime, patientAlan.getId(), observations, encounterType);
+        MRSEncounter actualEncounter = mrsEncounterAdapter.createEncounter(expectedEncounter);
+        assertEncounter(expectedEncounter, actualEncounter);
+
+        openMRSObservationAdapter.purgeObservations(encounterService.getEncounter(Integer.parseInt(actualEncounter.getId())).getAllObs());
+
+        final List<String> oldObservationIds = extract(actualEncounter.getObservations(), on(MRSObservation.class).getId());
+        for (String observationId : oldObservationIds) {
+            final int obsId = Integer.parseInt(observationId);
+            assertNull(obsService.getObs(obsId));
+        }
+    }
+
+
+    private <T> T getField(Object object, String fieldName) {
+        return (T) ReflectionTestUtils.getField(object, fieldName);
+    }
+
+    private void assertEncounter(MRSEncounter expectedEncounter, MRSEncounter actualMRSEncounter) {
         assertEquals(expectedEncounter.getDate(), actualMRSEncounter.getDate());
         assertEquals(expectedEncounter.getCreator().getId(), actualMRSEncounter.getCreator().getId());
         assertEquals(expectedEncounter.getProvider().getId(), actualMRSEncounter.getProvider().getId());

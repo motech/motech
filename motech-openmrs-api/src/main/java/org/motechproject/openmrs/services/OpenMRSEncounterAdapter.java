@@ -6,38 +6,70 @@ import org.openmrs.*;
 import org.openmrs.api.EncounterService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static ch.lambdaj.Lambda.on;
 import static ch.lambdaj.Lambda.sort;
+import static java.util.Arrays.asList;
 
+/**
+ * Manages OpenMRS Encounters
+ */
 public class OpenMRSEncounterAdapter implements MRSEncounterAdapter {
-    @Autowired
     private EncounterService encounterService;
-    @Autowired
     private OpenMRSUserAdapter openMRSUserAdapter;
-    @Autowired
     private OpenMRSFacilityAdapter openMRSFacilityAdapter;
-    @Autowired
     private OpenMRSPatientAdapter openMRSPatientAdapter;
-    @Autowired
     private OpenMRSObservationAdapter openMRSObservationAdapter;
-    @Autowired
     private OpenMRSPersonAdapter openMRSPersonAdapter;
 
-
-    public OpenMRSEncounterAdapter() {
+    @Autowired
+    public OpenMRSEncounterAdapter(EncounterService encounterService, OpenMRSUserAdapter openMRSUserAdapter, OpenMRSFacilityAdapter openMRSFacilityAdapter, OpenMRSPatientAdapter openMRSPatientAdapter, OpenMRSObservationAdapter openMRSObservationAdapter, OpenMRSPersonAdapter openMRSPersonAdapter) {
+        this.encounterService = encounterService;
+        this.openMRSUserAdapter = openMRSUserAdapter;
+        this.openMRSFacilityAdapter = openMRSFacilityAdapter;
+        this.openMRSPatientAdapter = openMRSPatientAdapter;
+        this.openMRSObservationAdapter = openMRSObservationAdapter;
+        this.openMRSPersonAdapter = openMRSPersonAdapter;
     }
 
+    /**
+     * Saves the given MRS Encounter to the OpenMRS system
+     * @param mrsEncounter The object to be saved
+     * @return The saved instance of MRS Encounter
+     */
     @Override
     public MRSEncounter createEncounter(MRSEncounter mrsEncounter) {
-        Encounter savedEncounter = encounterService.saveEncounter(mrsToOpenMRSEncounter(mrsEncounter));
-        return openmrsToMrsEncounter(savedEncounter);
+        Encounter existingOpenMrsEncounter = findDuplicateOpenMrsEncounter(mrsEncounter);
+        if (existingOpenMrsEncounter == null) {
+            return openmrsToMrsEncounter(encounterService.saveEncounter(mrsToOpenMRSEncounter(mrsEncounter)));
+        } else {
+            MRSEncounter existingMRSEncounter = openmrsToMrsEncounter(existingOpenMrsEncounter);
+            final Set<Obs> existingObs = existingOpenMrsEncounter.getAllObs();
+            existingMRSEncounter.updateWithoutObs(mrsEncounter);
+            existingOpenMrsEncounter.setObs(null);
+            encounterService.saveEncounter(existingOpenMrsEncounter);
+            openMRSObservationAdapter.purgeObservations(existingObs);
+            openMRSObservationAdapter.saveObservations(mrsEncounter.getObservations(), existingOpenMrsEncounter);
+            encounterService.saveEncounter(existingOpenMrsEncounter);
+            return openmrsToMrsEncounter(existingOpenMrsEncounter);
+        }
     }
 
+    Encounter findDuplicateOpenMrsEncounter(MRSEncounter encounter) {
+        Patient patient = openMRSPatientAdapter.getOpenmrsPatientByMotechId(encounter.getPatient().getMotechId());
+        EncounterType encounterType = encounterService.getEncounterType(encounter.getEncounterType());
+        Date encounterTime = encounter.getDate();
+        List<Encounter> encounters = encounterService.getEncounters(patient, null, encounterTime, encounterTime, null, asList(encounterType), null, false);
+        return encounters.size() > 0 ? encounters.get(0) : null;
+    }
+
+    /**
+     * Fetches the latest encounter of a patient identified by MOTECH ID and the encounter type.
+     * @param motechId Identifier of the patient
+     * @param encounterType Type of the encounter. (e.g. ANCVISIT)
+     * @return The latest MRSEncounter if found, else null.
+     */
     @Override
     public MRSEncounter getLatestEncounterByPatientMotechId(String motechId, String encounterType) {
         final List<Encounter> encounters = encounterService.getEncountersByPatientIdentifier(motechId);
@@ -88,5 +120,4 @@ public class OpenMRSEncounterAdapter implements MRSEncounterAdapter {
         }
         return openMrsEncounter;
     }
-
 }

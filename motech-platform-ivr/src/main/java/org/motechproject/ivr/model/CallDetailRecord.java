@@ -7,7 +7,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Call Detail Record represents call events and data captured in a call along with call metrics.
+ */
 public class CallDetailRecord {
+    /**
+     * Call status
+     */
     public enum Disposition {
         ANSWERED, BUSY, FAILED, NO_ANSWER, UNKNOWN;
     }
@@ -26,6 +32,14 @@ public class CallDetailRecord {
     private CallDetailRecord() {
     }
 
+    /**
+     * Constructor to create CallDetailRecord
+     * @param startDate
+     * @param endDate
+     * @param answerDate
+     * @param disposition
+     * @param duration
+     */
     public CallDetailRecord(Date startDate, Date endDate, Date answerDate,
                             Disposition disposition, Integer duration) {
         this.startDate = startDate;
@@ -35,11 +49,23 @@ public class CallDetailRecord {
         this.duration = duration;
     }
 
+    /**
+     * CallDetailRecord constructor for failed calls
+     * @param disposition: Status of call
+     * @param errorMessage
+     */
     public CallDetailRecord(Disposition disposition, String errorMessage) {
         this.errorMessage = errorMessage;
         this.disposition = disposition;
     }
 
+    /**
+     * Creates a call details record for given phone number and call details
+     * @param phoneNumber: phone number of user.
+     * @param callDirection: Incoming/outgoing
+     * @param disposition: Call status (busy, failed etc)
+     * @return
+     */
     public static CallDetailRecord create(String phoneNumber, CallDirection callDirection, Disposition disposition){
         CallDetailRecord callDetailRecord = new CallDetailRecord();
         callDetailRecord.startDate = DateUtil.now().toDate();
@@ -123,10 +149,18 @@ public class CallDetailRecord {
         this.errorMessage = errorMessage;
     }
 
+    /**
+     * Adds IVR events such as key press, hangup etc., to current call detail record.
+     * @param callEvent
+     */
     public void addCallEvent(CallEvent callEvent) {
         callEvents.add(callEvent);
     }
 
+    /**
+     * Get last call event for current call.
+     * @return Call event
+     */
     public CallEvent lastCallEvent() {
         return callEvents.size() == 0 ? null : callEvents.get(callEvents.size() - 1);
     }

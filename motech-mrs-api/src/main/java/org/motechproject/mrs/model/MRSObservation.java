@@ -2,6 +2,11 @@ package org.motechproject.mrs.model;
 
 import java.util.*;
 
+/**
+ * Maintains patient's data collected during visits (Encounters)
+ *
+ * @param <T> Type of the observation's value
+ */
 public class MRSObservation<T> {
 
     private String id;
@@ -10,12 +15,27 @@ public class MRSObservation<T> {
     private T value;
     private Set<MRSObservation> dependantObservations;
 
+    /**
+     * Creates an observation object with the given details
+     *
+     * @param date        Date of the observation
+     * @param conceptName Name of the concept
+     * @param value       Value of the observation
+     */
     public MRSObservation(Date date, String conceptName, T value) {
         this.date = date;
         this.conceptName = conceptName;
         this.value = value;
     }
 
+    /**
+     * Creates an observation object with the given details
+     *
+     * @param id          Observation id
+     * @param date        Date of the observation
+     * @param conceptName Name of the concept
+     * @param value       Value of the observation
+     */
     public MRSObservation(String id, Date date, String conceptName, T value) {
         this(date, conceptName, value);
         this.id = id;

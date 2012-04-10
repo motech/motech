@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.motechproject.mrs.exception.ObservationNotFoundException;
 import org.motechproject.mrs.model.MRSConcept;
 import org.motechproject.mrs.model.MRSObservation;
 import org.openmrs.*;
@@ -336,7 +337,7 @@ public class OpenMRSObservationAdapterTest {
     }
 
     @Test
-    public void shouldVoidObservation() {
+    public void shouldVoidObservation() throws ObservationNotFoundException {
         String observationId = "34";
         String mrsUserId="userId";
         MRSObservation mrsObservation = new MRSObservation(observationId, new Date(), "name", Integer.valueOf("34"));

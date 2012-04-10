@@ -171,7 +171,7 @@ public class OpenMRSPatientAdapterIT extends OpenMRSIntegrationTestBase {
 
     @Test
     @Transactional(readOnly = true)
-    public void shouldSaveCauseOfDeath() {
+    public void shouldSaveCauseOfDeath() throws Exception {
         final String first = "First";
         final String middle = "Middle";
         final String last = "Last";

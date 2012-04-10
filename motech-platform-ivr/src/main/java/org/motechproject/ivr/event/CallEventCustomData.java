@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
+/**
+ * Extra data stored as key value pair along with call event.
+ */
 public class CallEventCustomData {
     private Map<String, List<String>> data = new HashMap<String, List<String>>();
 
