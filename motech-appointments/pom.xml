@@ -37,6 +37,12 @@
             <version>3.0.5.RELEASE</version>
         </dependency>
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>3.0.5.RELEASE</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-server-api</artifactId>
             <version>0.10-SNAPSHOT</version>
@@ -101,7 +107,9 @@
                         <Private-Package>
                             org.motechproject.server.appointments.*
                         </Private-Package>
-                        <Embed-Dependency>motech-appointments-api;inline=applicationAppointmentsAPI.xml</Embed-Dependency>
+                        <Embed-Dependency>
+                            motech-appointments-api;inline=applicationAppointmentsAPI.xml
+                        </Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
