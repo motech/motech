@@ -15,7 +15,7 @@
     <context:property-placeholder location="classpath:activemq.properties"/>
     <jms:message-driven-channel-adapter id="jmsin"
                                         destination="eventQueue"
-                                        channel="eventChannel" acknowledge="transacted" concurrent-consumers="${concurrentConsumers}" max-concurrent-consumers="${maxConcurrentConsumers}"/>
+                                        channel="eventChannel" acknowledge="transacted" concurrent-consumers= "${concurrentConsumers:1}" max-concurrent-consumers="${maxConcurrentConsumers:10}"/>
     <channel id="eventChannel"/>
 
     <outbound-channel-adapter id="outboundChannelAdapter" channel="eventChannel" ref="eventRelay" method="relayEvent" />
