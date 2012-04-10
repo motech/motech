@@ -12,5 +12,17 @@
     </bean>
 
     <import resource="classpath:applicationPlatformServerAPI.xml"/>
+
+    <!-- overwrite osgiFrameworkService definition -->
+    <bean id="osgiFrameworkService" class="org.motechproject.server.osgi.OsgiFrameworkService">
+        <property name="internalBundleFolder" value="/WEB-INF/bundles" />
+        <property name="externalBundleFolder" value="" /> <!-- we do not use external bundles during tests -->
+        <property name="bundleLoaders">
+            <list>
+                <bean id="log4jBundleLoader" class="org.motechproject.server.osgi.Log4JBundleLoader" />
+            </list>
+        </property>
+    </bean>
+
     <util:properties id="activeMQProperties" location="classpath:activemq.properties"/>
 </beans>

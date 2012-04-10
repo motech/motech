@@ -31,7 +31,6 @@
  */
 package org.motechproject.server.osgi;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.osgi.framework.Bundle;
@@ -44,6 +43,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.GenericWebApplicationContext;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -61,7 +63,6 @@ public class OsgiFrameworkServiceTest {
     private ApplicationContext applicationContext;
 
     @Test
-    @Ignore
     public void startStopTest() throws Exception {
         service.setApplicationContext(getWebApplicationContext());
 
@@ -70,10 +71,13 @@ public class OsgiFrameworkServiceTest {
         service.start();
         assertEquals(Bundle.ACTIVE, framework.getState());
 
-        // expect framework bundle + fake bundle
+        List<String> expectedBundles = Arrays.asList("org.apache.felix.framework", "org.apache.felix.http.bridge");
+
         Bundle[] bundles = framework.getBundleContext().getBundles();
-        assertTrue(bundles.length > 1);
+        assertEquals(expectedBundles.size(), bundles.length);
         for (Bundle bundle : bundles) {
+            assertTrue("Bundle '" + bundle.getSymbolicName() + "' was not expected to be found!",
+                    expectedBundles.contains(bundle.getSymbolicName()));
             assertEquals(Bundle.ACTIVE, bundle.getState());
         }
 
