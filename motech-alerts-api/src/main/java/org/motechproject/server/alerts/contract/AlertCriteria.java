@@ -1,10 +1,16 @@
-package org.motechproject.server.alerts.domain;
+package org.motechproject.server.alerts.contract;
 
 import org.joda.time.DateTime;
+import org.motechproject.server.alerts.domain.AlertStatus;
+import org.motechproject.server.alerts.domain.AlertType;
+import org.motechproject.server.alerts.domain.Criterion;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Maintains the criteria by which search for alerts to be done
+ */
 public class AlertCriteria {
     private String externalId;
     private AlertStatus alertStatus;
@@ -15,14 +21,26 @@ public class AlertCriteria {
 
     private List<Criterion> orderedFilters;
 
+    /**
+     * Instantiates alert criteria
+     */
     public AlertCriteria() {
         orderedFilters = new ArrayList<Criterion>();
     }
 
+    /**
+     * Gets all the search criteria that have been added so far
+     * @return List of search criteria
+     */
     public List<Criterion> getFilters() {
         return orderedFilters;
     }
 
+    /**
+     * Adds criterion to search by external id of alert
+     * @param externalId external id of the alert to be searched for
+     * @return Instance with the current criterion added to it.
+     */
     public AlertCriteria byExternalId(String externalId) {
         this.externalId = externalId;
         this.orderedFilters.add(Criterion.externalId);
@@ -33,6 +51,11 @@ public class AlertCriteria {
         return this.externalId;
     }
 
+    /**
+     * Adds criterion to search by status of alert
+     * @param alertStatus status of the alert to be searched for
+     * @return Instance with the current criterion added to it.
+     */
     public AlertCriteria byStatus(AlertStatus alertStatus) {
         this.alertStatus = alertStatus;
         this.orderedFilters.add(Criterion.alertStatus);
@@ -43,6 +66,11 @@ public class AlertCriteria {
         return this.alertStatus;
     }
 
+    /**
+     * Adds criterion to search by type of alert
+     * @param alertType type of the alert to be searched for
+     * @return Instance with the current criterion added to it.
+     */
     public AlertCriteria byType(AlertType alertType) {
         this.alertType = alertType;
         this.orderedFilters.add(Criterion.alertType);
@@ -53,6 +81,11 @@ public class AlertCriteria {
         return this.alertType;
     }
 
+    /**
+     * Adds criterion to search by priority of alert
+     * @param alertPriority priority of the alert to be searched for
+     * @return Instance with the current criterion added to it.
+     */
     public AlertCriteria byPriority(int alertPriority) {
         this.alertPriority = alertPriority;
         this.orderedFilters.add(Criterion.alertPriority);
@@ -63,6 +96,12 @@ public class AlertCriteria {
         return this.alertPriority;
     }
 
+    /**
+     * Adds criterion to search by the date of alert in the given range
+     * @param fromDate Start date of the alerts to be searched for
+     * @param toDate End date of the alerts to be searched for
+     * @return Instance with the current criterion added to it.
+     */
     public AlertCriteria byDateRange(DateTime fromDate, DateTime toDate) {
         this.fromDate = fromDate;
         this.toDate = toDate;

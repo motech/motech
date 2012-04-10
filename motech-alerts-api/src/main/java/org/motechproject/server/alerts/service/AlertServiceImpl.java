@@ -1,11 +1,11 @@
-package org.motechproject.server.alerts.contract;
+package org.motechproject.server.alerts.service;
 
 import org.ektorp.DocumentNotFoundException;
+import org.motechproject.server.alerts.contract.AlertCriteria;
+import org.motechproject.server.alerts.contract.AlertService;
+import org.motechproject.server.alerts.contract.UpdateCriteria;
 import org.motechproject.server.alerts.domain.*;
 import org.motechproject.server.alerts.repository.AllAlerts;
-import org.motechproject.server.alerts.service.AlertFilter;
-import org.motechproject.server.alerts.service.AlertUpdater;
-import org.motechproject.server.alerts.domain.UpdateCriterion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -16,7 +16,11 @@ public class UpdateCriteria {
     public UpdateCriteria() {
     }
 
-    Map<UpdateCriterion, Object> getAll() {
+    /**
+     * Gets all the update criteria that have been added so far
+     * @return A map with criterion type as key and new value for the field as value
+     */
+    public Map<UpdateCriterion, Object> getAll() {
         return allCriteria;
     }
 

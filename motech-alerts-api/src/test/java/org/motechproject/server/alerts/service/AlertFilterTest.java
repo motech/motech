@@ -4,11 +4,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.motechproject.server.alerts.contract.AlertCriteria;
 import org.motechproject.server.alerts.domain.Alert;
-import org.motechproject.server.alerts.repository.AllAlerts;
-import org.motechproject.server.alerts.domain.AlertCriteria;
 import org.motechproject.server.alerts.domain.AlertStatus;
 import org.motechproject.server.alerts.domain.AlertType;
+import org.motechproject.server.alerts.repository.AllAlerts;
 
 import java.util.List;
 
