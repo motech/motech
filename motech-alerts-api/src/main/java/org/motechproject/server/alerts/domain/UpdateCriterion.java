@@ -1,4 +1,4 @@
-package org.motechproject.server.alerts.contract;
+package org.motechproject.server.alerts.domain;
 
 public enum UpdateCriterion {
     status,

@@ -1,8 +1,8 @@
 package org.motechproject.server.alerts.service;
 
-import org.motechproject.server.alerts.contract.UpdateCriterion;
 import org.motechproject.server.alerts.domain.Alert;
 import org.motechproject.server.alerts.domain.AlertStatus;
+import org.motechproject.server.alerts.domain.UpdateCriterion;
 
 import java.util.HashMap;
 import java.util.Map;
