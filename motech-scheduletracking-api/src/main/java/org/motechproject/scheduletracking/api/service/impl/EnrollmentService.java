@@ -32,16 +32,24 @@ public class EnrollmentService {
         this.enrollmentDefaultmentService = enrollmentDefaultmentService;
     }
 
-    public String enroll(String externalId, String scheduleName, String startingMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime, Map<String,String> metadata) {
+    public String enroll(String externalId, String scheduleName, String startingMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime, Map<String, String> metadata) {
         Schedule schedule = allTrackedSchedules.getByName(scheduleName);
         Enrollment enrollment = new Enrollment(externalId, schedule, startingMilestoneName, referenceDateTime, enrollmentDateTime, preferredAlertTime, EnrollmentStatus.ACTIVE, metadata);
+
         if (schedule.hasExpiredSince(enrollment.getReferenceForAlerts(), startingMilestoneName)) {
             enrollment.setStatus(EnrollmentStatus.DEFAULTED);
         }
-        enrollment = allEnrollments.addOrReplace(enrollment);
-        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
-        enrollmentDefaultmentService.scheduleJobToCaptureDefaultment(enrollment);
 
+        Enrollment activeEnrollment = allEnrollments.getActiveEnrollment(externalId, scheduleName);
+        if (activeEnrollment == null)
+            allEnrollments.add(enrollment);
+        else {
+            unscheduleJobs(activeEnrollment);
+            enrollment = activeEnrollment.copyFrom(enrollment);
+            allEnrollments.update(enrollment);
+        }
+
+        scheduleJobs(enrollment);
         return enrollment.getId();
     }
 

@@ -146,61 +146,6 @@ public class AllEnrollmentsIT {
     }
 
     @Test
-    public void shouldUpdateEnrollmentIfAnActiveEnrollmentForTheScheduleAlreadyAvailable() {
-        DateTime now = now();
-        Schedule schedule = allTrackedSchedules.getByName("IPTI Schedule");
-        Enrollment enrollment = new Enrollment("externalId", schedule, "IPTI 1", now, now, new Time(8, 10), EnrollmentStatus.ACTIVE, null);
-        allEnrollments.add(enrollment);
-
-        Enrollment updatedEnrollment = new Enrollment(enrollment.getExternalId(), schedule, "IPTI 1", enrollment.getStartOfSchedule().plusDays(1), enrollment.getEnrolledOn().plusDays(1), new Time(2, 5), EnrollmentStatus.ACTIVE, null);
-        allEnrollments.addOrReplace(updatedEnrollment);
-
-        enrollment = allEnrollments.getActiveEnrollment(enrollment.getExternalId(), "IPTI Schedule");
-
-        assertEquals(updatedEnrollment.getCurrentMilestoneName(), enrollment.getCurrentMilestoneName());
-        assertEquals(updatedEnrollment.getStartOfSchedule(), enrollment.getStartOfSchedule());
-        assertEquals(updatedEnrollment.getEnrolledOn(), enrollment.getEnrolledOn());
-        assertEquals(updatedEnrollment.getPreferredAlertTime(), enrollment.getPreferredAlertTime());
-    }
-
-    @Test
-    public void shouldCreateEnrollmentIfADefaultedEnrollmentForTheScheduleAlreadyExists() {
-        DateTime now = now();
-        Schedule schedule = allTrackedSchedules.getByName("IPTI Schedule");
-        Enrollment enrollment = new Enrollment("externalId", schedule, "IPTI 1", now, now, new Time(8, 10), EnrollmentStatus.ACTIVE, null);
-        enrollment.setStatus(EnrollmentStatus.DEFAULTED);
-        allEnrollments.add(enrollment);
-
-        Enrollment newEnrollment = new Enrollment(enrollment.getExternalId(), schedule, "IPTI 1", enrollment.getStartOfSchedule().plusDays(1), enrollment.getEnrolledOn().plusDays(1), new Time(2, 5), EnrollmentStatus.ACTIVE, null);
-        allEnrollments.addOrReplace(newEnrollment);
-
-        enrollment = allEnrollments.getActiveEnrollment(enrollment.getExternalId(), "IPTI Schedule");
-        assertEquals(newEnrollment.getCurrentMilestoneName(), enrollment.getCurrentMilestoneName());
-        assertEquals(newEnrollment.getStartOfSchedule(), enrollment.getStartOfSchedule());
-        assertEquals(newEnrollment.getEnrolledOn(), enrollment.getEnrolledOn());
-        assertEquals(newEnrollment.getPreferredAlertTime(), enrollment.getPreferredAlertTime());
-    }
-
-    @Test
-    public void shouldCreateEnrollmentIfAnUnenrolledEnrollmentForTheScheduleAlreadyExists() {
-        DateTime now = now();
-        Schedule schedule = allTrackedSchedules.getByName("IPTI Schedule");
-        Enrollment enrollment = new Enrollment("externalId", schedule, "IPTI 1", now, now, new Time(8, 10), EnrollmentStatus.ACTIVE, null);
-        enrollment.setStatus(EnrollmentStatus.UNENROLLED);
-        allEnrollments.add(enrollment);
-
-        Enrollment enrollmentWithUpdates = new Enrollment(enrollment.getExternalId(), schedule, "IPTI 1", enrollment.getStartOfSchedule().plusDays(1), enrollment.getEnrolledOn().plusDays(1), new Time(2, 5), EnrollmentStatus.ACTIVE, null);
-        allEnrollments.addOrReplace(enrollmentWithUpdates);
-
-        enrollment = allEnrollments.getActiveEnrollment(enrollment.getExternalId(), "IPTI Schedule");
-
-        assertEquals(enrollmentWithUpdates.getCurrentMilestoneName(), enrollment.getCurrentMilestoneName());
-        assertEquals(enrollmentWithUpdates.getStartOfSchedule(), enrollment.getStartOfSchedule());
-        assertEquals(enrollmentWithUpdates.getEnrolledOn(), enrollment.getEnrolledOn());
-        assertEquals(enrollmentWithUpdates.getPreferredAlertTime(), enrollment.getPreferredAlertTime());
-    }
-
-    @Test
     public void shouldReturnEnrollmentsThatMatchAGivenExternalId() {
         DateTime now = now();
         Schedule iptiSchedule = allTrackedSchedules.getByName("IPTI Schedule");
