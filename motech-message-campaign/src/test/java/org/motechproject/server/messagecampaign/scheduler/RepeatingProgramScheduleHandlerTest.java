@@ -8,6 +8,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.gateway.OutboundEventGateway;
+import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.Time;
 import org.motechproject.server.messagecampaign.Constants;
@@ -195,7 +196,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
                 "Monday", asList("Monday", "Friday"), jobMessageKey);
         campaignMessage = spy(campaignMessage);
         doReturn(false).when(campaignMessage).hasEnded(Matchers.<Date>any());
-        doReturn("Monday").when(campaignMessage).applicableWeekDayInNext24Hours();
+        doReturn(DayOfWeek.Monday).when(campaignMessage).applicableWeekDayInNext24Hours();
 
         CampaignEnrollment enrollment = new CampaignEnrollment("", campaignName).setStartDate(today.toLocalDate());
         when(mockCampaignEnrollmentService.search(any(CampaignEnrollmentsQuery.class))).thenReturn(asList(enrollment));
@@ -217,7 +218,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
         RepeatingCampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForInterval(campaignName, "2 Weeks", jobMessageKey);
         campaignMessage = spy(campaignMessage);
         doReturn(true).when(campaignMessage).hasEnded(Matchers.<Date>any());
-        doReturn("Monday").when(campaignMessage).applicableWeekDayInNext24Hours();
+        doReturn(DayOfWeek.Monday).when(campaignMessage).applicableWeekDayInNext24Hours();
 
         CampaignEnrollment enrollment = new CampaignEnrollment("", campaignName).setStartDate(today.toLocalDate());
         when(mockCampaignEnrollmentService.search(any(CampaignEnrollmentsQuery.class))).thenReturn(asList(enrollment));
