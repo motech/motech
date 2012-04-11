@@ -30,7 +30,7 @@ public class BaseUnitTest {
 
     protected Date date(String date) {
         try {
-            return new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss").parse(date);
+            return new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").parse(date);
         } catch (ParseException e) {
             throw new IllegalArgumentException(e);
         }
