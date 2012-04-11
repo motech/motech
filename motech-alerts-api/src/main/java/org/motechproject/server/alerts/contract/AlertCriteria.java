@@ -30,6 +30,7 @@ public class AlertCriteria {
 
     /**
      * Gets all the search criteria that have been added so far
+     *
      * @return List of search criteria
      */
     public List<Criterion> getFilters() {
@@ -38,6 +39,7 @@ public class AlertCriteria {
 
     /**
      * Adds criterion to search by external id of alert
+     *
      * @param externalId external id of the alert to be searched for
      * @return Instance with the current criterion added to it.
      */
@@ -53,6 +55,7 @@ public class AlertCriteria {
 
     /**
      * Adds criterion to search by status of alert
+     *
      * @param alertStatus status of the alert to be searched for
      * @return Instance with the current criterion added to it.
      */
@@ -68,6 +71,7 @@ public class AlertCriteria {
 
     /**
      * Adds criterion to search by type of alert
+     *
      * @param alertType type of the alert to be searched for
      * @return Instance with the current criterion added to it.
      */
@@ -83,6 +87,7 @@ public class AlertCriteria {
 
     /**
      * Adds criterion to search by priority of alert
+     *
      * @param alertPriority priority of the alert to be searched for
      * @return Instance with the current criterion added to it.
      */
@@ -98,8 +103,9 @@ public class AlertCriteria {
 
     /**
      * Adds criterion to search by the date of alert in the given range
+     *
      * @param fromDate Start date of the alerts to be searched for
-     * @param toDate End date of the alerts to be searched for
+     * @param toDate   End date of the alerts to be searched for
      * @return Instance with the current criterion added to it.
      */
     public AlertCriteria byDateRange(DateTime fromDate, DateTime toDate) {

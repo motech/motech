@@ -39,9 +39,9 @@ public enum RepeatingMessageMode {
         }
 
         @Override
-        public String applicableWeekDayInNext24Hours(RepeatingCampaignMessage message) {
+        public DayOfWeek applicableWeekDayInNext24Hours(RepeatingCampaignMessage message) {
             DateTime applicableDateTime = applicableWeekDateInNext24Hours(message);
-            return applicableDateTime != null ? applicableDateTime.dayOfWeek().getAsText() : null;
+            return applicableDateTime != null ? DayOfWeek.getDayOfWeek(applicableDateTime.dayOfWeek()) : null;
         }
 
         // TODO: applicableWeekDayInNext24hours is wrong, so isEnded should be changed.
@@ -74,9 +74,9 @@ public enum RepeatingMessageMode {
         }
 
         @Override
-        public String applicableWeekDayInNext24Hours(RepeatingCampaignMessage message) {
+        public DayOfWeek applicableWeekDayInNext24Hours(RepeatingCampaignMessage message) {
             DateTime applicableDateTime = applicableWeekDateInNext24Hours(message);
-            return applicableDateTime != null ? applicableDateTime.dayOfWeek().getAsText() : null;
+            return applicableDateTime != null ? DayOfWeek.getDayOfWeek(applicableDateTime.dayOfWeek()) : null;
         }
 
         @Override
@@ -125,9 +125,9 @@ public enum RepeatingMessageMode {
         }
 
         @Override
-        public String applicableWeekDayInNext24Hours(RepeatingCampaignMessage message) {
+        public DayOfWeek applicableWeekDayInNext24Hours(RepeatingCampaignMessage message) {
             DateTime applicableDateTime = applicableWeekDayTime(message);
-            return applicableDateTime != null ? applicableDateTime.dayOfWeek().getAsText() : null;
+            return applicableDateTime != null ? DayOfWeek.getDayOfWeek(applicableDateTime.dayOfWeek()) : null;
         }
 
         @Override
@@ -183,7 +183,7 @@ public enum RepeatingMessageMode {
 
     public abstract int durationInDaysToAdd(WallTime maxDuration, CampaignRequest campaignRequest, RepeatingCampaignMessage message);
 
-    public abstract String applicableWeekDayInNext24Hours(RepeatingCampaignMessage message);
+    public abstract DayOfWeek applicableWeekDayInNext24Hours(RepeatingCampaignMessage message);
 
     public abstract boolean hasEnded(RepeatingCampaignMessage message, Date endTime);
 }

@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface ScheduleTrackingService {
     /**
-     * Enrolls a user with externalid into a schedule using the details in the EnrollmentRequest
+     * Enrolls a user with external id into a schedule using the details in the EnrollmentRequest and schedules alerts. If the user has already enrolled for the same schedule which is currently active, then we update the existing details and reschedule alerts
      * @param enrollmentRequest
      * @return enrollmentId string
      */

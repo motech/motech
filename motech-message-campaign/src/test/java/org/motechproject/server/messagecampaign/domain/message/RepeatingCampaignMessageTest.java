@@ -1,6 +1,7 @@
 package org.motechproject.server.messagecampaign.domain.message;
 
 import org.junit.Test;
+import org.motechproject.model.DayOfWeek;
 import org.motechproject.server.messagecampaign.builder.CampaignMessageBuilder;
 import org.motechproject.testing.utils.BaseUnitTest;
 
@@ -55,11 +56,11 @@ public class RepeatingCampaignMessageTest extends BaseUnitTest {
 
         mockCurrentDate(date(2011, 12, 14).withHourOfDay(11));                  // Wednesday
         repeatingCampaignMessage = new RepeatingCampaignMessage("Sunday", weekDaysApplicable, "11:00");
-        assertThat(repeatingCampaignMessage.applicableWeekDayInNext24Hours(), is(equalTo("Wednesday")));
+        assertThat(repeatingCampaignMessage.applicableWeekDayInNext24Hours(), is(equalTo(DayOfWeek.Wednesday)));
 
         mockCurrentDate(date(2011, 12, 15).withHourOfDay(11));                  // Thursday
         repeatingCampaignMessage = new RepeatingCampaignMessage("Sunday", weekDaysApplicable, "10:30");
-        assertThat(repeatingCampaignMessage.applicableWeekDayInNext24Hours(), is(equalTo("Friday")));
+        assertThat(repeatingCampaignMessage.applicableWeekDayInNext24Hours(), is(equalTo(DayOfWeek.Friday)));
 
         mockCurrentDate(date(2011, 12, 16).withHourOfDay(11));                 // Friday
         repeatingCampaignMessage = new RepeatingCampaignMessage("Sunday", weekDaysApplicable, "10:30");
@@ -67,7 +68,7 @@ public class RepeatingCampaignMessageTest extends BaseUnitTest {
 
         mockCurrentDate(date(2011, 12, 16).withHourOfDay(10).withMinuteOfHour(30)); // Friday
         repeatingCampaignMessage = new RepeatingCampaignMessage("Sunday", weekDaysApplicable, "10:30");
-        assertThat(repeatingCampaignMessage.applicableWeekDayInNext24Hours(), is(equalTo("Friday")));
+        assertThat(repeatingCampaignMessage.applicableWeekDayInNext24Hours(), is(equalTo(DayOfWeek.Friday)));
     }
 
     private CampaignMessageBuilder builder() {

@@ -88,16 +88,4 @@ public class AllEnrollments extends MotechBaseRepository<Enrollment> {
         enrollment.setSchedule(allTrackedSchedules.getByName(enrollment.getScheduleName()));
         return enrollment;
     }
-
-    public Enrollment addOrReplace(Enrollment enrollment) {
-        Enrollment existingEnrollment = getActiveEnrollment(enrollment.getExternalId(), enrollment.getScheduleName());
-
-        if (existingEnrollment == null) {
-            add(enrollment);
-            existingEnrollment = enrollment;
-        } else
-            update(existingEnrollment.copyFrom(enrollment));
-
-        return existingEnrollment;
-    }
 }

@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.*;
@@ -17,7 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.ACTIVE;
@@ -59,23 +59,70 @@ public class EnrollmentServiceTest extends BaseUnitTest {
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
+        when(allEnrollments.getActiveEnrollment(externalId, scheduleName)).thenReturn(null);
 
         Enrollment dummyEnrollment = new Enrollment(externalId, schedule, milestone.getName(), referenceDate, enrollmentDate, preferredAlertTime, ACTIVE, null);
         dummyEnrollment.setId("enrollmentId");
-        when(allEnrollments.addOrReplace(any(Enrollment.class))).thenReturn(dummyEnrollment);
 
-        Map<String,String> metadata = new HashMap<String, String>();
+        Map<String, String> metadata = new HashMap<String, String>();
+        enrollmentService.enroll(externalId, scheduleName, milestone.getName(), referenceDate, enrollmentDate, preferredAlertTime, metadata);
+
+        verify(allEnrollments, times(0)).update(Matchers.<Enrollment>any());
+        ArgumentCaptor<Enrollment> enrollmentArgumentCaptor = ArgumentCaptor.forClass(Enrollment.class);
+        verify(allEnrollments, times(1)).add(enrollmentArgumentCaptor.capture());
+        assertEnrollment(enrollmentArgumentCaptor.getValue(), externalId, scheduleName, milestone, ACTIVE, schedule, metadata);
+
+
+        verify(enrollmentAlertService).scheduleAlertsForCurrentMilestone(enrollmentArgumentCaptor.capture());
+        assertEnrollment(enrollmentArgumentCaptor.getValue(), externalId, scheduleName, milestone, ACTIVE, schedule, metadata);
+
+        verify(enrollmentDefaultmentService).scheduleJobToCaptureDefaultment(enrollmentArgumentCaptor.getValue());
+        assertEnrollment(enrollmentArgumentCaptor.getValue(), externalId, scheduleName, milestone, ACTIVE, schedule, metadata);
+
+        verify(enrollmentAlertService, times(0)).unscheduleAllAlerts(Matchers.<Enrollment>any());
+        verify(enrollmentDefaultmentService, times(0)).unscheduleDefaultmentCaptureJob(Matchers.<Enrollment>any());
+    }
+
+    @Test
+    public void shouldUnenrollOldEntityIfTheSameEntityIsEnrolledAgain() {
+        String externalId = "entity_1";
+        String scheduleName = "my_schedule";
+        DateTime referenceDate = weeksAgo(0);
+        DateTime enrollmentDate = weeksAgo(0);
+        Time preferredAlertTime = new Time(8, 10);
+
+        Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
+        milestone.addAlert(WindowName.due, new Alert(days(0), weeks(1), 2, 1));
+        Schedule schedule = new Schedule(scheduleName);
+        schedule.addMilestones(milestone);
+        when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
+        Enrollment dummyEnrollment = new Enrollment(externalId, schedule, milestone.getName(), referenceDate, enrollmentDate, preferredAlertTime, ACTIVE, null);
+        Enrollment oldEnrollment = new Enrollment(externalId, schedule, "milestone", null, null, null, EnrollmentStatus.ACTIVE, null);
+        when(allEnrollments.getActiveEnrollment(externalId, scheduleName)).thenReturn(oldEnrollment);
+
+        dummyEnrollment.setId("enrollmentId");
+
+        Map<String, String> metadata = new HashMap<String, String>();
         enrollmentService.enroll(externalId, scheduleName, milestone.getName(), referenceDate, enrollmentDate, preferredAlertTime, metadata);
 
         ArgumentCaptor<Enrollment> enrollmentArgumentCaptor = ArgumentCaptor.forClass(Enrollment.class);
-        verify(allEnrollments).addOrReplace(enrollmentArgumentCaptor.capture());
-        assertEnrollment(enrollmentArgumentCaptor.getValue(), externalId, scheduleName, milestone, ACTIVE, schedule, metadata);
+        verify(allEnrollments, times(1)).update(enrollmentArgumentCaptor.capture());
+        assertEnrollment(enrollmentArgumentCaptor.getValue(), externalId, scheduleName, milestone, ACTIVE, schedule, null);
+        verify(allEnrollments, times(0)).add(Matchers.<Enrollment>any());
 
-        verify(enrollmentAlertService).scheduleAlertsForCurrentMilestone(enrollmentArgumentCaptor.capture());
+        verify(enrollmentAlertService).unscheduleAllAlerts(enrollmentArgumentCaptor.capture());
+        assertEnrollment(enrollmentArgumentCaptor.getValue(), externalId, scheduleName, new Milestone("milestone", null, null, null, null), EnrollmentStatus.ACTIVE, schedule, null);
+
+        verify(enrollmentDefaultmentService).unscheduleDefaultmentCaptureJob(enrollmentArgumentCaptor.capture());
+        assertEnrollment(enrollmentArgumentCaptor.getValue(), externalId, scheduleName, new Milestone("milestone", null, null, null, null), EnrollmentStatus.ACTIVE, schedule, null);
+
+        verify(enrollmentAlertService, times(1)).scheduleAlertsForCurrentMilestone(enrollmentArgumentCaptor.capture());
         assertEnrollment(enrollmentArgumentCaptor.getValue(), externalId, scheduleName, milestone, ACTIVE, schedule, null);
 
-        verify(enrollmentDefaultmentService).scheduleJobToCaptureDefaultment(enrollmentArgumentCaptor.getValue());
+        verify(enrollmentDefaultmentService, times(1)).scheduleJobToCaptureDefaultment(enrollmentArgumentCaptor.getValue());
         assertEnrollment(enrollmentArgumentCaptor.getValue(), externalId, scheduleName, milestone, ACTIVE, schedule, null);
+
     }
 
     @Test
@@ -98,7 +145,7 @@ public class EnrollmentServiceTest extends BaseUnitTest {
         when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
         Enrollment dummyEnrollment = new Enrollment(externalId, schedule, milestone.getName(), referenceDateTime, enrollmentDateTime, preferredAlertTime, EnrollmentStatus.ACTIVE, null);
         dummyEnrollment.setId("enrollmentId");
-        when(allEnrollments.addOrReplace(any(Enrollment.class))).thenReturn(dummyEnrollment);
+        when(allEnrollments.getActiveEnrollment(externalId, scheduleName)).thenReturn(null);
 
         enrollmentService.enroll(externalId, scheduleName, milestone.getName(), referenceDateTime, enrollmentDateTime, preferredAlertTime, null);
         DateTime enrollmentDateTimeBeforeMilestone2 = now.minusWeeks(6).minusSeconds(1);
@@ -106,14 +153,16 @@ public class EnrollmentServiceTest extends BaseUnitTest {
         DateTime enrollmentDateTimeInMilestone2Start = now.minusWeeks(6);
         enrollmentService.enroll(externalId3, scheduleName, milestone2.getName(), null, enrollmentDateTimeInMilestone2Start, preferredAlertTime, null);
 
+        verify(allEnrollments, times(0)).update(Matchers.<Enrollment>any());
+
         ArgumentCaptor<Enrollment> enrollmentArgumentCaptor = ArgumentCaptor.forClass(Enrollment.class);
-        verify(allEnrollments, times(3)).addOrReplace(enrollmentArgumentCaptor.capture());
+        verify(allEnrollments, times(3)).add(enrollmentArgumentCaptor.capture());
         assertEnrollment(enrollmentArgumentCaptor.getAllValues().get(0), externalId, scheduleName, milestone, enrollmentStatus, schedule, null);
         assertEnrollment(enrollmentArgumentCaptor.getAllValues().get(1), externalId2, scheduleName, milestone2, EnrollmentStatus.DEFAULTED, schedule, null);
         assertEnrollment(enrollmentArgumentCaptor.getAllValues().get(2), externalId3, scheduleName, milestone2, EnrollmentStatus.ACTIVE, schedule, null);
     }
 
-    private void assertEnrollment(Enrollment enrollment, String externalId, String scheduleName, Milestone milestone, EnrollmentStatus enrollmentStatus, Schedule schedule, Map<String,String> metadata) {
+    private void assertEnrollment(Enrollment enrollment, String externalId, String scheduleName, Milestone milestone, EnrollmentStatus enrollmentStatus, Schedule schedule, Map<String, String> metadata) {
         assertEquals(externalId, enrollment.getExternalId());
         assertEquals(scheduleName, enrollment.getScheduleName());
         assertEquals(milestone.getName(), enrollment.getCurrentMilestoneName());
