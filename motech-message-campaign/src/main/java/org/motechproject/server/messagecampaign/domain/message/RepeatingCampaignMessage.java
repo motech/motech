@@ -120,7 +120,7 @@ public class RepeatingCampaignMessage extends CampaignMessage {
         return repeatingMessageMode.durationInDaysToAdd(duration, campaignRequest, this);
     }
 
-    public String applicableWeekDayInNext24Hours() {
+    public DayOfWeek applicableWeekDayInNext24Hours() {
         return repeatingMessageMode.applicableWeekDayInNext24Hours(this);
     }
 

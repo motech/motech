@@ -69,7 +69,7 @@ public class RepeatingProgramScheduleHandler {
     private String getApplicableDay(MotechEvent event, RepeatingCampaignMessage repeatingCampaignMessage) {
         return (!(Boolean) event.getParameters().get(Constants.REPEATING_PROGRAM_24HRS_MESSAGE_DISPATCH_STRATEGY)) ?
                 DayOfWeek.getDayOfWeek(DateUtil.now().toLocalDate().getDayOfWeek()).name() :
-                repeatingCampaignMessage.applicableWeekDayInNext24Hours();
+                repeatingCampaignMessage.applicableWeekDayInNext24Hours().name();
     }
 
     private void setCampaignLastEvent(RepeatingCampaignMessage message, MotechEvent eventToSend) {

@@ -1,5 +1,6 @@
 package org.motechproject.model;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.motechproject.util.DateUtil;
 
@@ -50,5 +51,9 @@ public enum DayOfWeek {
 
     public String getShortName() {
         return shortName;
+    }
+
+    public static DayOfWeek getDayOfWeek(DateTime.Property property) {
+        return DayOfWeek.getDayOfWeek(property.get());
     }
 }
