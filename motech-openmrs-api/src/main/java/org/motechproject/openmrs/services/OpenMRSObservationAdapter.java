@@ -171,6 +171,7 @@ public class OpenMRSObservationAdapter implements MRSObservationAdapter {
     }
 
     void saveObservations(Set<MRSObservation> observations, Encounter existingMRSEncounter) {
+        if(observations == null) return;
         Set<Obs> allObs = new HashSet<Obs>();
         for (MRSObservation observation : observations) {
             Obs mrsObservation = saveObs(observation, existingMRSEncounter, existingMRSEncounter.getPatient(), existingMRSEncounter.getLocation(), existingMRSEncounter.getCreator());
