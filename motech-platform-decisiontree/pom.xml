@@ -10,6 +10,8 @@
     <artifactId>motech-platform-decisiontree</artifactId>
     <version>0.10-SNAPSHOT</version>
     <name>MoTeCH Platform Decision Tree</name>
+    <packaging>bundle</packaging>
+    <description>MoTeCH Platform Decision Tree</description>
     <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -94,11 +96,15 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Export-Package>
+                            org.motechproject.decisiontree.model;
+                            org.motechproject.decisiontree.repository;
+                        </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.server.decisiontree.Activator
                         </Bundle-Activator>
                         <Private-Package>
-                            org.motechproject.server.decisiontree*
+                            org.motechproject.server.decisiontree.*
                         </Private-Package>
                         <Import-Package>
                             *;org.ektorp;org.ektorp.impl;org.ektorp.spring;resolution:=optional
