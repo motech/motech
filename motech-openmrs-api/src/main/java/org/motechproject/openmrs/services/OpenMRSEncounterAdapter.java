@@ -44,9 +44,7 @@ public class OpenMRSEncounterAdapter implements MRSEncounterAdapter {
         if (existingOpenMrsEncounter == null) {
             return openmrsToMrsEncounter(encounterService.saveEncounter(mrsToOpenMRSEncounter(mrsEncounter)));
         } else {
-            MRSEncounter existingMRSEncounter = openmrsToMrsEncounter(existingOpenMrsEncounter);
-            final Set<Obs> existingObs = existingOpenMrsEncounter.getAllObs();
-            existingMRSEncounter.updateWithoutObs(mrsEncounter);
+            final Set<Obs> existingObs = existingOpenMrsEncounter.getAllObs(true);
             existingOpenMrsEncounter.setObs(null);
             encounterService.saveEncounter(existingOpenMrsEncounter);
             openMRSObservationAdapter.purgeObservations(existingObs);
