@@ -105,9 +105,6 @@
                         <Private-Package>
                             org.motechproject.server.pillreminder.*
                         </Private-Package>
-                        <Import-Package>
-                            *;org.motechproject.context;org.ektorp;org.ektorp.impl;org.ektorp.spring;resolution:=optional
-                        </Import-Package>
                         <Embed-Dependency>!*</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
