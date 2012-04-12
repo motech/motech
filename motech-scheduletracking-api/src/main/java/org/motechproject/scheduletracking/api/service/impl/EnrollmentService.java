@@ -36,7 +36,7 @@ public class EnrollmentService {
         Schedule schedule = allTrackedSchedules.getByName(scheduleName);
         Enrollment enrollment = new Enrollment(externalId, schedule, startingMilestoneName, referenceDateTime, enrollmentDateTime, preferredAlertTime, EnrollmentStatus.ACTIVE, metadata);
 
-        if (schedule.hasExpiredSince(enrollment.getReferenceForAlerts(), startingMilestoneName)) {
+        if (schedule.hasExpiredSince(enrollment.getCurrentMilestoneStartDate(), startingMilestoneName)) {
             enrollment.setStatus(EnrollmentStatus.DEFAULTED);
         }
 
@@ -79,7 +79,7 @@ public class EnrollmentService {
 
     public WindowName getCurrentWindowAsOf(Enrollment enrollment, DateTime asOf) {
         Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
-        DateTime milestoneStart = enrollment.getReferenceForAlerts();
+        DateTime milestoneStart = enrollment.getCurrentMilestoneStartDate();
         Milestone milestone = schedule.getMilestone(enrollment.getCurrentMilestoneName());
         for (MilestoneWindow window : milestone.getMilestoneWindows()) {
             Period windowStart = milestone.getWindowStart(window.getName());
@@ -94,7 +94,7 @@ public class EnrollmentService {
 
     public DateTime getEndOfWindowForCurrentMilestone(Enrollment enrollment, WindowName windowName) {
         Schedule schedule = allTrackedSchedules.getByName(enrollment.getScheduleName());
-        DateTime currentMilestoneStartDate = enrollment.getReferenceForAlerts();
+        DateTime currentMilestoneStartDate = enrollment.getCurrentMilestoneStartDate();
         Milestone currentMilestone = schedule.getMilestone(enrollment.getCurrentMilestoneName());
         return currentMilestoneStartDate.plus(currentMilestone.getWindowEnd(windowName));
     }
