@@ -1,5 +1,6 @@
 package org.motechproject.openmrs.services;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mrs.exception.ObservationNotFoundException;
 import org.motechproject.mrs.model.MRSConcept;
 import org.motechproject.mrs.model.MRSObservation;
@@ -27,7 +28,7 @@ public class OpenMRSObservationAdapter implements MRSObservationAdapter {
     OpenMRSPatientAdapter openMRSPatientAdapter;
 
     /**
-     * Voids an observation for the MOTECH user, with the given reason
+     * Voids an observation for the `MOTECH user, with the given reason
      *
      * @param mrsObservation MRSObservation to be voided
      * @param reason         Reason for voiding the MRSObservation
@@ -165,17 +166,19 @@ public class OpenMRSObservationAdapter implements MRSObservationAdapter {
     }
 
     void purgeObservations(Set<Obs> allObs) {
+        if (CollectionUtils.isEmpty(allObs))
+            return;
         for (Obs obs : allObs) {
             obsService.purgeObs(obs);
         }
     }
 
-    void saveObservations(Set<MRSObservation> observations, Encounter existingMRSEncounter) {
+    void saveObservations(Set<MRSObservation> observations, Encounter existingOpenMRSEncounter) {
         Set<Obs> allObs = new HashSet<Obs>();
         for (MRSObservation observation : observations) {
-            Obs mrsObservation = saveObs(observation, existingMRSEncounter, existingMRSEncounter.getPatient(), existingMRSEncounter.getLocation(), existingMRSEncounter.getCreator());
+            Obs mrsObservation = saveObs(observation, existingOpenMRSEncounter, existingOpenMRSEncounter.getPatient(), existingOpenMRSEncounter.getLocation(), existingOpenMRSEncounter.getCreator());
             allObs.add(mrsObservation);
         }
-        existingMRSEncounter.setObs(allObs);
+        existingOpenMRSEncounter.setObs(allObs);
     }
 }
