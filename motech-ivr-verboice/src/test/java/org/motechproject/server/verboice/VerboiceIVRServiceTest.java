@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.motechproject.ivr.service.CallRequest;
-import org.motechproject.server.voxeo.VerboiceIVRService;
 
 import java.io.IOException;
 import java.util.Properties;
