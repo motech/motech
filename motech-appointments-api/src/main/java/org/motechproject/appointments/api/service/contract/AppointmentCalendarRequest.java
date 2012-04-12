@@ -3,6 +3,10 @@ package org.motechproject.appointments.api.service.contract;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Appointment schedule template for creating multiple appointments/scheduled visits.
+ * It takes {@link CreateVisitRequest} list and user id and schedules appointments/visits.
+ */
 public class AppointmentCalendarRequest {
 
     private String externalId;
