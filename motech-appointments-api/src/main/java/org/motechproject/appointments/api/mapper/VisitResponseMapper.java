@@ -4,7 +4,6 @@ import org.motechproject.appointments.api.service.contract.VisitResponse;
 import org.motechproject.appointments.api.model.Visit;
 import org.springframework.stereotype.Component;
 
-@Component
 public class VisitResponseMapper {
 
     public VisitResponse map(Visit visit) {

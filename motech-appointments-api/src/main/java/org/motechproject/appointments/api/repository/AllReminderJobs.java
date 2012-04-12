@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
 public class AllReminderJobs {
 
     private MotechSchedulerService schedulerService;

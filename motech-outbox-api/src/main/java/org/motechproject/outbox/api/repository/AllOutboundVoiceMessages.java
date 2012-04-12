@@ -16,7 +16,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-@Repository
 @Views({
         @View(name = "getPendingMessages", map = "function(doc) { if (doc.partyId && doc.status=='PENDING') { emit([doc.partyId, doc.expirationDate], doc._id); } }"),
         @View(name = "getPendingMessagesWithMessageTypeName", map = "function(doc) { if (doc.partyId && doc.status=='PENDING' && doc.voiceMessageType) { emit([doc.partyId, doc.voiceMessageType.voiceMessageTypeName, doc.expirationDate], doc._id); } }"),

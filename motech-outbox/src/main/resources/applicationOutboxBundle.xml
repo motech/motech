@@ -54,7 +54,5 @@
     </bean>
 
     <context:annotation-config/>
-    <!-- TODO
-    possible workaround: http://stackoverflow.com/questions/9215544/spring-felix-war-filenotfoundexception
-    <context:component-scan base-package="org.motechproject.outbox.api"/> -->
+    <context:component-scan base-package="org.motechproject.outbox.api"/>
 </beans>

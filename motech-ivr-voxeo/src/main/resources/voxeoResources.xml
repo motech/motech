@@ -29,7 +29,5 @@
     <context:annotation-config/>
     <mvc:annotation-driven/>
 
-    <!-- TODO
-    possible workaround: http://stackoverflow.com/questions/9215544/spring-felix-war-filenotfoundexception
-    <context:component-scan base-package="org.motechproject.server"/>-->
+    <context:component-scan base-package="org.motechproject.server"/>
 </beans>
