@@ -68,7 +68,7 @@ public class VoxeoIVRService implements IVRService
     public static final String SUCCESS = "success";
     private static Logger log = LoggerFactory.getLogger(VoxeoIVRService.class);
 
-    @Autowired
+    @Autowired(required = false)
     private AllPhoneCalls allPhoneCalls;
 
     private ConfigReader configReader;

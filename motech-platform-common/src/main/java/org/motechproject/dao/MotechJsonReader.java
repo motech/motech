@@ -20,6 +20,15 @@ public class MotechJsonReader {
         standardTypeAdapters.put(Date.class, new DateDeserializer());
     }
 
+    public Object readFromStream(InputStream stream, Type ofType) {
+        try {
+            String jsonText = IOUtils.toString(stream);
+            return from(jsonText, ofType, standardTypeAdapters);
+        } catch (IOException e) {
+            throw new JsonIOException(e);
+        }
+    }
+
     public Object readFromFile(String classpathFile, Type ofType) {
         InputStream inputStream = getClass().getResourceAsStream(classpathFile);
         if (inputStream == null) {

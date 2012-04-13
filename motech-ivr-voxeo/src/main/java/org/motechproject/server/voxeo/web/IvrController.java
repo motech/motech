@@ -52,6 +52,7 @@ public class IvrController extends MultiActionController {
         voxeoIVRService.initiateCall(new CallRequest(phoneNumber, params, ""));
     }
 
+    @RequestMapping(value = "/incoming")
     public ModelAndView incoming(HttpServletRequest request, HttpServletResponse response) {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
@@ -110,6 +111,7 @@ public class IvrController extends MultiActionController {
         return mav;
     }
 
+    @RequestMapping(value = "/outgoing")
     public ModelAndView outgoing(HttpServletRequest request, HttpServletResponse response) {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
