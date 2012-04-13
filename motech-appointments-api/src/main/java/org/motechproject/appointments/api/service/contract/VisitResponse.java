@@ -5,6 +5,9 @@ import org.joda.time.DateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Visit details, returned by querying visits. see {@linkplain org.motechproject.appointments.api.service.AppointmentService#search(VisitsQuery)}
+ */
 public class VisitResponse {
     private String name;
     private String externalId;
@@ -74,6 +77,10 @@ public class VisitResponse {
         return this;
     }
 
+    /**
+     * Gets due date set while creating calendar. If due date was never changed then this will be same as {@link #appointmentDueDate}
+     * @return
+     */
     public DateTime getOriginalAppointmentDueDate() {
         return originalAppointmentDueDate;
     }

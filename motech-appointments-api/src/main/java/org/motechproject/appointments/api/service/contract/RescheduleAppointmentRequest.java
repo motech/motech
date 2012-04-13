@@ -5,6 +5,10 @@ import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Used as parameter for {@link org.motechproject.appointments.api.service.AppointmentService#rescheduleAppointment(RescheduleAppointmentRequest)},
+ * specifies new due date and reminder configuration.
+ */
 public class RescheduleAppointmentRequest {
 
     private String externalId;

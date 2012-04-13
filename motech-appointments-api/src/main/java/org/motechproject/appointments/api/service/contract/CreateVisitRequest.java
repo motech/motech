@@ -7,16 +7,36 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Used as configuration for creating appointment / scheduled visit.
+ * Reminders can be configured by {@link ReminderConfiguration}
+ * Custom data can be stored as key value pair in {@link CreateVisitRequest#data} map.
+ */
 public class CreateVisitRequest {
 
+    /**
+     * Visit Name, should be unique with in a calendar
+     */
     private String visitName;
 
+    /**
+     * Type of visit, example : Scheduled, Ad-hoc etc
+     */
     private String typeOfVisit;
 
+    /**
+     * Due date for appointment, can be adjusted later on.
+     */
     private DateTime appointmentDueDate;
 
+    /**
+     * Reminder Schedule template, can handle multiple reminders.
+     */
     private List<ReminderConfiguration> appointmentReminderConfigurations = new ArrayList<ReminderConfiguration>();
 
+    /**
+     * Additional application specific data related to clinic visit can be stored here.
+     */
     private Map<String, Object> data = new HashMap<String, Object>();
 
     public String getVisitName() {

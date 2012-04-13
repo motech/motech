@@ -1,4 +1,4 @@
-package org.motechproject.server.voxeo;
+package org.motechproject.server.verboice;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
