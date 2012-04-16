@@ -3,6 +3,7 @@ package org.motechproject.server.pillreminder.domain;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 import org.motechproject.model.Time;
 import org.motechproject.util.DateUtil;
 
@@ -63,7 +64,12 @@ public class Dosage {
 
     @JsonIgnore
     public boolean isTodaysDosageResponseCaptured() {
-        return responseLastCapturedDate != null && responseLastCapturedDate.equals(DateUtil.today());
+        LocalDate today = DateUtil.today();
+        LocalDate yesterday = today.minusDays(1);
+        LocalTime localNow = DateUtil.now().toLocalTime();
+        if (responseLastCapturedDate == null) return false;
+        if (responseLastCapturedDate.equals(today)) return true;
+        return responseLastCapturedDate.equals(yesterday) && new Time(localNow.getHourOfDay(), localNow.getMinuteOfHour()).isBefore(dosageTime);
     }
 
     @JsonIgnore
