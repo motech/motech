@@ -118,7 +118,7 @@ public class AllEnrollmentsIT {
         allEnrollments.add(enrollment);
 
         Enrollment enrollmentFromDatabase = allEnrollments.getActiveEnrollment("entity_1", scheduleName);
-        assertEquals(now.minusDays(2), enrollmentFromDatabase.getCurrentMilestoneStartDate());
+        assertEquals(now.minusDays(2), enrollmentFromDatabase.getReferenceForAlerts());
     }
 
     @Test
@@ -131,7 +131,7 @@ public class AllEnrollmentsIT {
         allEnrollments.update(enrollment);
 
         Enrollment enrollmentFromDatabase = allEnrollments.getActiveEnrollment("entity_1", "IPTI Schedule");
-        assertEquals(now, enrollmentFromDatabase.getCurrentMilestoneStartDate());
+        assertEquals(now, enrollmentFromDatabase.getReferenceForAlerts());
     }
 
     @Test
@@ -142,7 +142,7 @@ public class AllEnrollmentsIT {
         allEnrollments.add(enrollment);
 
         Enrollment enrollmentFromDatabase = allEnrollments.getActiveEnrollment("entity_1", "IPTI Schedule");
-        assertEquals(now, enrollmentFromDatabase.getCurrentMilestoneStartDate());
+        assertEquals(now, enrollmentFromDatabase.getReferenceForAlerts());
     }
 
     @Test
