@@ -5,8 +5,12 @@ import org.motechproject.mrs.services.MRSEncounterAdapter;
 import org.openmrs.*;
 import org.openmrs.api.EncounterService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 import static ch.lambdaj.Lambda.on;
 import static ch.lambdaj.Lambda.sort;
@@ -39,23 +43,19 @@ public class OpenMRSEncounterAdapter implements MRSEncounterAdapter {
      * @return The saved instance of MRS Encounter
      */
     @Override
+    @Transactional
     public MRSEncounter createEncounter(MRSEncounter mrsEncounter) {
         Encounter existingOpenMrsEncounter = findDuplicateOpenMrsEncounter(mrsEncounter);
         if (existingOpenMrsEncounter == null) {
             return openmrsToMrsEncounter(encounterService.saveEncounter(mrsToOpenMRSEncounter(mrsEncounter)));
         } else {
-            final Set<Obs> existingObs = existingOpenMrsEncounter.getAllObs(true);
-            openMRSObservationAdapter.purgeObservations(existingObs);
-            existingOpenMrsEncounter.setObs(null);
-            encounterService.saveEncounter(existingOpenMrsEncounter);
-            openMRSObservationAdapter.saveObservations(mrsEncounter.getObservations(), existingOpenMrsEncounter);
-            encounterService.saveEncounter(existingOpenMrsEncounter);
-            return openmrsToMrsEncounter(existingOpenMrsEncounter);
+            encounterService.purgeEncounter(existingOpenMrsEncounter);
+            return openmrsToMrsEncounter(encounterService.saveEncounter(mrsToOpenMRSEncounter(mrsEncounter)));
         }
     }
 
     Encounter findDuplicateOpenMrsEncounter(MRSEncounter encounter) {
-        Patient patient = openMRSPatientAdapter.getOpenmrsPatientByMotechId(encounter.getPatient().getMotechId());
+        Patient patient = openMRSPatientAdapter.getOpenMrsPatient(encounter.getPatient().getId());
         EncounterType encounterType = encounterService.getEncounterType(encounter.getEncounterType());
         Date encounterTime = encounter.getDate();
         List<Encounter> encounters = encounterService.getEncounters(patient, null, encounterTime, encounterTime, null, asList(encounterType), null, false);
