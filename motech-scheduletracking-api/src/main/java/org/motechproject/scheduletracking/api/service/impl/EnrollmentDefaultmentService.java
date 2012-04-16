@@ -29,7 +29,7 @@ public class EnrollmentDefaultmentService {
         if (currentMilestone == null)
             return;
 
-        DateTime currentMilestoneStartDate = enrollment.getReferenceForAlerts();
+        DateTime currentMilestoneStartDate = enrollment.getCurrentMilestoneStartDate();
         DateTime milestoneEndDateTime = currentMilestoneStartDate.plus(currentMilestone.getMaximumDuration());
 
         if (milestoneEndDateTime.isBefore(now()))

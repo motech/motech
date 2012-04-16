@@ -92,7 +92,7 @@ public class EnrollmentTest extends BaseUnitTest {
         DateTime referenceDateTime = weeksAgo(5);
         Enrollment enrollment = new Enrollment("ID-074285", getMockedSchedule(firstMilestoneName, false), firstMilestoneName, referenceDateTime, weeksAgo(3), new Time(8, 20), EnrollmentStatus.ACTIVE, null);
 
-        assertEquals(referenceDateTime, enrollment.getReferenceForAlerts());
+        assertEquals(referenceDateTime, enrollment.getCurrentMilestoneStartDate());
     }
 
 
@@ -103,7 +103,7 @@ public class EnrollmentTest extends BaseUnitTest {
         DateTime enrollmentDateTime = weeksAgo(3);
         Enrollment enrollment = new Enrollment("ID-074285", getMockedSchedule(firstMilestoneName, false), secondMilestoneName, weeksAgo(5), enrollmentDateTime, null, EnrollmentStatus.ACTIVE, null);
 
-        assertEquals(enrollmentDateTime, enrollment.getReferenceForAlerts());
+        assertEquals(enrollmentDateTime, enrollment.getCurrentMilestoneStartDate());
     }
 
     @Test
@@ -115,8 +115,8 @@ public class EnrollmentTest extends BaseUnitTest {
         Enrollment enrollmentIntoFirstMilestone = new Enrollment("ID-074285", getMockedSchedule(firstMilestoneName, true), firstMilestoneName, referenceDate, weeksAgo(3), null, EnrollmentStatus.ACTIVE, null);
         Enrollment enrollmentIntoSecondMilestone = new Enrollment("ID-074285", getMockedSchedule(firstMilestoneName, true), secondMilestoneName, referenceDate, weeksAgo(3), null, EnrollmentStatus.ACTIVE, null);
 
-        assertEquals(referenceDate, enrollmentIntoFirstMilestone.getReferenceForAlerts());
-        assertEquals(referenceDate, enrollmentIntoSecondMilestone.getReferenceForAlerts());
+        assertEquals(referenceDate, enrollmentIntoFirstMilestone.getCurrentMilestoneStartDate());
+        assertEquals(referenceDate, enrollmentIntoSecondMilestone.getCurrentMilestoneStartDate());
     }
 
     @Test
@@ -131,7 +131,7 @@ public class EnrollmentTest extends BaseUnitTest {
         DateTime now = now();
         Enrollment enrollment = new Enrollment("ID-074285", schedule, "milestone 3", now, now, new Time(0, 0), EnrollmentStatus.ACTIVE, null);
 
-        assertEquals(now.plusWeeks(8), enrollment.getReferenceForAlerts());
+        assertEquals(now.plusWeeks(8), enrollment.getCurrentMilestoneStartDate());
     }
 
     @Test

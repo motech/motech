@@ -1,7 +1,6 @@
 package org.motechproject.scheduletracking.api.domain;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
 import org.motechproject.util.DateUtil;
 import org.joda.time.Period;
@@ -38,15 +37,12 @@ public class Alert {
     }
 
     int getElapsedAlertCount(DateTime startReferenceDateTime, Time preferredAlertTime) {
-        DateTime idealStartDateTime = startReferenceDateTime.plus(offset);
-        DateTime idealStartDateWithPreferredTime = idealStartDateTime;
-        if (preferredAlertTime != null)
-            idealStartDateWithPreferredTime = DateUtil.newDateTime(idealStartDateTime.toLocalDate(), preferredAlertTime.getHour(), preferredAlertTime.getMinute(), 0);
+        DateTime idealStartDateWithPreferredTime = preferredAlertDateTime(startReferenceDateTime, preferredAlertTime);
 
         DateTime now = now();
         if (idealStartDateWithPreferredTime.isBefore(now)) {
             long secsSinceIdealStartOfAlert = (now.getMillis() - idealStartDateWithPreferredTime.getMillis()) / 1000;
-            int elapsedAlerts = (int) ceil(secsSinceIdealStartOfAlert / (double) interval.toStandardSeconds().getSeconds());
+            int elapsedAlerts = possibleNumbersOfAlertsInDuration(secsSinceIdealStartOfAlert);
             return min(elapsedAlerts, count);
         }
         return 0;
@@ -60,7 +56,25 @@ public class Alert {
         return nextAlertDateTime;
     }
 
-    public int getRemainingAlertCount(DateTime milestoneWindowStartDateTime, Time preferredAlertTime) {
-        return count - getElapsedAlertCount(milestoneWindowStartDateTime,  preferredAlertTime);
+    public int getRemainingAlertCount(DateTime startTimeForAlerts, DateTime windowEndTime, Time preferredAlertTime) {
+        return min(count - getElapsedAlertCount(startTimeForAlerts, preferredAlertTime), maximumPossibleAlertsCount(startTimeForAlerts, windowEndTime, preferredAlertTime));
+    }
+
+    private int maximumPossibleAlertsCount(DateTime startTimeForAlerts, DateTime windowEndTime, Time preferredAlertTime) {
+        DateTime preferredStartTimeForAlerts = preferredAlertDateTime(startTimeForAlerts, preferredAlertTime);
+        long windowForAlerts = windowEndTime.minus(preferredStartTimeForAlerts.getMillis()).getMillis();
+        return possibleNumbersOfAlertsInDuration(windowForAlerts / 1000);
+    }
+
+    private int possibleNumbersOfAlertsInDuration(long secsSinceIdealStartOfAlert) {
+        return (int) ceil(secsSinceIdealStartOfAlert / (double) interval.toStandardSeconds().getSeconds());
+    }
+
+    private DateTime preferredAlertDateTime(DateTime startReferenceDateTime, Time preferredAlertTime) {
+        DateTime idealStartDateTime = startReferenceDateTime.plus(offset);
+        DateTime idealStartDateWithPreferredTime = idealStartDateTime;
+        if (preferredAlertTime != null)
+            idealStartDateWithPreferredTime = DateUtil.newDateTime(idealStartDateTime.toLocalDate(), preferredAlertTime.getHour(), preferredAlertTime.getMinute(), 0);
+        return idealStartDateWithPreferredTime;
     }
 }
