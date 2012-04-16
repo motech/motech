@@ -11,6 +11,7 @@ import java.util.Set;
 import static org.junit.Assert.*;
 
 public class DosageTest {
+
     @Test
     public void shouldGetStartDateWhichIsTheEarliestStartDateOfItsMedicines() {
         Set<Medicine> medicines = new HashSet<Medicine>();
@@ -39,24 +40,6 @@ public class DosageTest {
         Dosage dosage = new Dosage(new Time(9, 5), medicines);
 
         assertNull(dosage.getEndDate());
-    }
-
-    @Test
-    public void isDosageCapturedForToday(){
-        Dosage dosage = new Dosage(new Time(9, 5), new HashSet<Medicine>());
-
-        assertFalse(dosage.isTodaysDosageResponseCaptured());
-
-        dosage.setResponseLastCapturedDate(DateUtil.today());
-        assertTrue(dosage.isTodaysDosageResponseCaptured());
-    }
-
-    @Test
-    public void isDosageCapturedForTodayIsFalse_WhenCapturedForYesterday(){
-        Dosage dosage = new Dosage(new Time(9, 5), new HashSet<Medicine>());
-
-        dosage.setResponseLastCapturedDate(DateUtil.today().minusDays(1));
-        assertFalse(dosage.isTodaysDosageResponseCaptured());
     }
 
     @Test
