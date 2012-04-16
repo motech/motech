@@ -53,7 +53,7 @@ public class CcxmlController
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
 
     @RequestMapping(value = "/ccxml", method = RequestMethod.GET)
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) {
         logger.info("Generate CCXML");
 
         response.setContentType("text/xml");
