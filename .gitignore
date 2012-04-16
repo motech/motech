@@ -15,7 +15,7 @@ maven-eclipse.xml
 *.log
 debug.txt
 out/
-docs/
+docs/*
 Error_log/
 test-output/
 felix-cache/
