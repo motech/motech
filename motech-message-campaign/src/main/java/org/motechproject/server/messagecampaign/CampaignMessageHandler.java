@@ -6,7 +6,9 @@ import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CampaignMessageHandler {
 
     private OutboundEventGateway outboundEventGateway;
