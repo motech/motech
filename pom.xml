@@ -177,6 +177,15 @@
                 <artifactId>maven-site-plugin</artifactId>
                 <version>2.2</version>
             </plugin>
+            <plugin>
+                <groupId>com.soebes.maven.plugins.dmg</groupId>
+                <artifactId>doxygen-maven-plugin</artifactId>
+                <version>1.0.1</version>
+                <configuration>
+                    <reportOutputDirectory>docs</reportOutputDirectory>
+                    <configurationFile>doxygen.config</configurationFile>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

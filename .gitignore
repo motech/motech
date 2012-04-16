@@ -13,7 +13,9 @@ maven-eclipse.xml
 *.iws
 *.class
 *.log
+debug.txt
 out/
+docs/
 Error_log/
 test-output/
 felix-cache/
