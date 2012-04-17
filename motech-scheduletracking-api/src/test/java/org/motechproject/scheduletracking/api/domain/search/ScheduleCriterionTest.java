@@ -31,22 +31,24 @@ public class ScheduleCriterionTest {
     @Test
     public void shouldFetchBySchedule() {
         List<Enrollment> enrollments = mock(List.class);
-        when(allEnrollments.findBySchedule("schedule")).thenReturn(enrollments);
+        when(allEnrollments.findBySchedule(asList(new String[]{ "schedule1", "schedule2" }))).thenReturn(enrollments);
 
-        assertEquals(enrollments, new ScheduleCriterion("schedule").fetch(allEnrollments, null));
+        assertEquals(enrollments, new ScheduleCriterion("schedule1", "schedule2").fetch(allEnrollments, null));
     }
 
     @Test
-    public void shouldFilterByExternalId() {
+    public void shouldFilterByScheduleNames() {
         Schedule schedule = new Schedule("schedule_1");
         Schedule schedule2 = new Schedule("schedule_2");
+        Schedule schedule3 = new Schedule("schedule_3");
         List<Enrollment> allEnrollments = new ArrayList<Enrollment>();
         allEnrollments.add(new Enrollment(null, schedule, null, null, null, null, null, null));
         allEnrollments.add(new Enrollment(null, schedule, null, null, null, null, null, null));
         allEnrollments.add(new Enrollment(null, schedule2, null, null, null, null, null, null));
         allEnrollments.add(new Enrollment(null, schedule2, null, null, null, null, null, null));
+        allEnrollments.add(new Enrollment(null, schedule3, null, null, null, null, null, null));
 
-        List<Enrollment> filteredEnrollments = new ScheduleCriterion("schedule_1").filter(allEnrollments, null);
-        assertEquals(asList(new String[]{"schedule_1", "schedule_1"}), extract(filteredEnrollments, on(Enrollment.class).getScheduleName()));
+        List<Enrollment> filteredEnrollments = new ScheduleCriterion("schedule_1", "schedule_3").filter(allEnrollments, null);
+        assertEquals(asList(new String[]{"schedule_1", "schedule_1", "schedule_3"}), extract(filteredEnrollments, on(Enrollment.class).getScheduleName()));
     }
 }

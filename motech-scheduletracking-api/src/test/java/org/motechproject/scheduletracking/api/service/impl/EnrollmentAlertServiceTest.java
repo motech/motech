@@ -151,23 +151,6 @@ public class EnrollmentAlertServiceTest {
     }
 
     @Test
-    public void shouldNotScheduleJobsForElapsedAlerts() {
-        Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(3), 3, 0));
-        Schedule schedule = new Schedule("my_schedule");
-        schedule.addMilestones(milestone);
-
-        Enrollment enrollment = new Enrollment("entity_1", schedule, "milestone", daysAgo(4), daysAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE, null);
-        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
-
-        RepeatingSchedulableJob job = expectAndCaptureRepeatingJob();
-        assertEquals(newDateTime(daysAfter(2).toLocalDate(), new Time(8, 20)).toDate(), job.getStartTime());
-
-        assertRepeatIntervalValue(MILLIS_PER_DAY * 3, job.getRepeatInterval());
-        assertEquals(0, job.getRepeatCount().intValue());
-    }
-
-    @Test
     public void alertIsElapsedTodayIfItIsBeforePreferredAlertTime() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
         milestone.addAlert(WindowName.earliest, new Alert(days(0), days(3), 3, 0));
@@ -199,9 +182,9 @@ public class EnrollmentAlertServiceTest {
     }
 
     @Test
-    public void shouldNotScheduleJobsIfAllAlertsHaveElapsed() {
+    public void shouldNotScheduleJobsIfAlertOffsetFallsOutsideTheWindow() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(3), 1, 0));
+        milestone.addAlert(WindowName.earliest, new Alert(days(4), days(3), 1, 0));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
 
@@ -212,16 +195,13 @@ public class EnrollmentAlertServiceTest {
     }
 
     @Test
-    public void shouldScheduleAllJobsFromEnrollmentCreatedAtTimeForMilestonesOtherThanFirstOne() {
-        Milestone milestone1 = new Milestone("milestone1", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone1.addAlert(WindowName.earliest, new Alert(days(0), days(2), 1, 0));
-        Milestone milestone2 = new Milestone("milestone2", weeks(2), weeks(1), weeks(1), weeks(1));
-        milestone2.addAlert(WindowName.earliest, new Alert(days(0), days(2), 5, 0));
+    public void shouldScheduleAllJobsFromEnrollmentCreatedAtTimeForMilestones() {
+        Milestone milestone = new Milestone("milestone1", weeks(2), weeks(1), weeks(1), weeks(1));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(2), 5, 0));
         Schedule schedule = new Schedule("my_schedule");
-        schedule.addMilestones(milestone1);
-        schedule.addMilestones(milestone2);
+        schedule.addMilestones(milestone);
 
-        Enrollment enrollment = new Enrollment("entity_1", schedule, "milestone2", daysAgo(4), daysAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE, null);
+        Enrollment enrollment = new Enrollment("entity_1", schedule, "milestone1", daysAgo(4), daysAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE, null);
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
         ArgumentCaptor<RepeatingSchedulableJob> jobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
@@ -230,7 +210,7 @@ public class EnrollmentAlertServiceTest {
     }
 
     @Test
-    public void shouldSchedulePossibleJobsFromEnrollmentCreatedAtTimeForMilestonesOtherThanFirstOneConsideringPreferredAlertTime() {
+    public void shouldSchedulePossibleJobsFromEnrollmentCreatedAtTimeForMilestonesConsideringPreferredAlertTime() {
         Milestone milestone1 = new Milestone("milestone1", weeks(1), weeks(1), weeks(1), weeks(1));
         milestone1.addAlert(WindowName.earliest, new Alert(days(0), days(2), 1, 0));
         Milestone milestone2 = new Milestone("milestone2", weeks(1), weeks(1), weeks(1), weeks(1));
@@ -249,7 +229,7 @@ public class EnrollmentAlertServiceTest {
     }
 
     @Test
-    public void shouldSchedulePossibleJobsFromEnrollmentCreatedAtTimeForMilestonesOtherThanFirstOne() {
+    public void shouldSchedulePossibleJobsFromEnrollmentCreatedAtTimeForMilestones() {
         Milestone milestone1 = new Milestone("milestone1", weeks(1), weeks(1), weeks(1), weeks(1));
         milestone1.addAlert(WindowName.earliest, new Alert(days(0), days(2), 1, 0));
         Milestone milestone2 = new Milestone("milestone2", weeks(1), weeks(1), weeks(1), weeks(1));
@@ -267,7 +247,7 @@ public class EnrollmentAlertServiceTest {
     }
 
     @Test
-    public void shouldNotScheduleJobsFromEnrollmentCreatedAtTimeForMilestonesOtherThanFirstOneIfTheWindowHasElapsed() {
+    public void shouldNotScheduleJobsFromEnrollmentCreatedAtTimeForMilestonesIfTheWindowHasElapsed() {
         Milestone milestone1 = new Milestone("milestone1", weeks(1), weeks(1), weeks(1), weeks(1));
         milestone1.addAlert(WindowName.earliest, new Alert(days(0), days(2), 1, 0));
         Milestone milestone2 = new Milestone("milestone2", days(1), weeks(1), weeks(1), weeks(1));
