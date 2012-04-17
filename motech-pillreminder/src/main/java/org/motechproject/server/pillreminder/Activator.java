@@ -51,6 +51,7 @@ public class Activator implements BundleActivator {
 	private static final String CONTEXT_CONFIG_LOCATION = "classpath:applicationPillReminderBundle.xml";
 	private static final String SERVLET_URL_MAPPING = "/pillReminder";
 	private ServiceTracker tracker;
+    private ServiceReference httpService;
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -71,10 +72,19 @@ public class Activator implements BundleActivator {
 			}
 		};
 		this.tracker.open();
+        httpService = context.getServiceReference(HttpService.class.getName());
+        if (httpService != null) {
+            HttpService service = (HttpService) context.getService(httpService);
+            serviceAdded(service);
+        }
 	}
 
 	public void stop(BundleContext context) throws Exception {
 		this.tracker.close();
+        if (httpService != null) {
+            HttpService service = (HttpService) context.getService(httpService);
+            serviceRemoved(service);
+        }
 	}
 
 	private void serviceAdded(HttpService service) {
