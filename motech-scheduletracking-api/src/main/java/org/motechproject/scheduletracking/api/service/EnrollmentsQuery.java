@@ -32,11 +32,12 @@ public class EnrollmentsQuery {
 
     /**
      * This adds the criteria using which enrollments are filtered based on their schedule name
-     * @param scheduleName
+     *
+     * @param scheduleNames - one or more string values indicating the schedule names
      * @return returns the instance with schedule criteria added to the criteria list
      */
-    public EnrollmentsQuery havingSchedule(String scheduleName) {
-        criteria.add(new ScheduleCriterion(scheduleName));
+    public EnrollmentsQuery havingSchedule(String... scheduleNames) {
+        criteria.add(new ScheduleCriterion(scheduleNames));
         return this;
     }
 

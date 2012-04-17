@@ -161,18 +161,21 @@ public class AllEnrollmentsIT {
     }
 
     @Test
-    public void shouldReturnEnrollmentsThatMatchAGivenSchedule() {
-        DateTime now = now();
+    public void shouldFindAllEnrollmentsThatMatchesGivenScheduleNames() {
         Schedule iptiSchedule = allTrackedSchedules.getByName("IPTI Schedule");
-        Schedule deliverySchedule = allTrackedSchedules.getByName("Delivery");
-        allEnrollments.add(new Enrollment("entity_1", iptiSchedule, "IPTI 1", now, now, new Time(8, 10), EnrollmentStatus.ACTIVE, null));
-        allEnrollments.add(new Enrollment("entity_2", deliverySchedule, "Default", now, now, new Time(8, 10), EnrollmentStatus.ACTIVE, null));
-        allEnrollments.add(new Enrollment("entity_3", iptiSchedule, "IPTI 1", now, now, new Time(8, 10), EnrollmentStatus.ACTIVE, null));
-        allEnrollments.add(new Enrollment("entity_4", iptiSchedule, "IPTI 1", now, now, new Time(8, 10), EnrollmentStatus.ACTIVE, null));
+        Schedule absoluteSchedule = allTrackedSchedules.getByName("Absolute Schedule");
+        Schedule relativeSchedule = allTrackedSchedules.getByName("Relative Schedule");
 
-        List<Enrollment> filteredEnrollments = allEnrollments.findBySchedule("IPTI Schedule");
-        assertNotNull(filteredEnrollments.get(0).getSchedule());
+        allEnrollments.add(new Enrollment("entity_1", iptiSchedule, "IPTI 1", now(), now(), new Time(DateUtil.now().toLocalTime()), EnrollmentStatus.ACTIVE, null));
+        allEnrollments.add(new Enrollment("entity_2", absoluteSchedule, "milestone1", now(), now(), new Time(DateUtil.now().toLocalTime()), EnrollmentStatus.ACTIVE, null));
+        allEnrollments.add(new Enrollment("entity_3", relativeSchedule, "milestone1", now(), now(), new Time(DateUtil.now().toLocalTime()), EnrollmentStatus.ACTIVE, null));
+        allEnrollments.add(new Enrollment("entity_4", relativeSchedule, "milestone1", now(), now(), new Time(DateUtil.now().toLocalTime()), EnrollmentStatus.ACTIVE, null));
+
+        List<Enrollment> filteredEnrollments = allEnrollments.findBySchedule(asList(new String[]{"IPTI Schedule", "Relative Schedule"}));
+
+        assertEquals(3, filteredEnrollments.size());
         assertEquals(asList(new String[] { "entity_1", "entity_3", "entity_4" }), Lambda.extract(filteredEnrollments, on(Enrollment.class).getExternalId()));
+        assertEquals(asList(new String[] {"IPTI Schedule", "Relative Schedule", "Relative Schedule"}), Lambda.extract(filteredEnrollments, on(Enrollment.class).getScheduleName()));
     }
 
     @Test

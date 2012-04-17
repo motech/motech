@@ -8,6 +8,7 @@ import org.ektorp.support.GenerateView;
 import org.motechproject.model.MotechBaseDataObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class MotechBaseRepository<T extends MotechBaseDataObject> extends CouchDbRepositorySupport<T> {
@@ -72,5 +73,12 @@ public abstract class MotechBaseRepository<T extends MotechBaseDataObject> exten
 
     protected T singleResult(List<T> resultSet) {
         return (resultSet == null || resultSet.isEmpty()) ? null : resultSet.get(0);
+    }
+
+    public List<T> queryViewWithKeyList(String viewName, List<String> keys) {
+        return db.queryView(createQuery(viewName)
+                .includeDocs(true)
+                .keys(keys),
+                type);
     }
 }

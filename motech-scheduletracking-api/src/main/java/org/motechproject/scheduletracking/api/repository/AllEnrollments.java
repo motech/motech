@@ -47,8 +47,8 @@ public class AllEnrollments extends MotechBaseRepository<Enrollment> {
     }
 
     @View(name = "by_schedule", map = "function(doc) { emit(doc.scheduleName); }")
-    public List<Enrollment> findBySchedule(String scheduleName) {
-        List<Enrollment> enrollments = queryView("by_schedule", scheduleName);
+    public List<Enrollment> findBySchedule(List<String> scheduleName) {
+        List<Enrollment> enrollments = queryViewWithKeyList("by_schedule", scheduleName);
         return populateWithSchedule(enrollments);
     }
 
