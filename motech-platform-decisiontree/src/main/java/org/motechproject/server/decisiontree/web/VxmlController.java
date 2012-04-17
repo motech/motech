@@ -51,6 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
@@ -111,6 +112,7 @@ public class VxmlController extends MultiActionController {
      * The HTTP request should contain the Tree ID, Node ID, Patient ID and Selected Transition Key (optional) parameters
      *
      */
+    @RequestMapping(value = "/node")
     public ModelAndView node(HttpServletRequest request, HttpServletResponse response) {
         logger.info("Generating decision tree node VXML");
 
