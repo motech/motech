@@ -3,6 +3,8 @@ package org.motechproject.demo.commcare.web;
 import org.joda.time.DateTime;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
@@ -69,45 +71,6 @@ public class CommcareController  {
 
 	private Logger logger = LoggerFactory.getLogger((this.getClass()));
 
-	private void testSchedule() {
-		EnrollmentRequest enrollmentRequest = new EnrollmentRequest("RussellTest", "Health Worker Form Submission Tracking", null, null, null, null, null, null, null);
-
-		scheduleTrackingService.enroll(enrollmentRequest);
-		EnrollmentRecord enrollmentRecord = scheduleTrackingService.getEnrollment("RussellTest", "Health Worker Form Submission Tracking");
-
-		enrollmentRecord.getStartOfDueWindow();
-		Enrollment enrollment = enrollments.getActiveEnrollment("RussellTest", "Health Worker Form Submission Tracking");
-
-		DateTime early = enrollment.getStartOfWindowForCurrentMilestone(WindowName.earliest);
-		DateTime due = enrollment.getStartOfWindowForCurrentMilestone(WindowName.due);
-		DateTime late = enrollment.getStartOfWindowForCurrentMilestone(WindowName.late);
-		DateTime max = enrollment.getStartOfWindowForCurrentMilestone(WindowName.max);
-
-		scheduleTrackingService.fulfillCurrentMilestone("RussellTest", "Health Worker Form Submission Tracking");
-		enrollment = enrollments.getActiveEnrollment("RussellTest", "Health Worker Form Submission Tracking");
-		enrollmentRecord = scheduleTrackingService.getEnrollment("RussellTest", "Health Worker Form Submission Tracking");
-
-		early = enrollment.getStartOfWindowForCurrentMilestone(WindowName.earliest);
-		due = enrollment.getStartOfWindowForCurrentMilestone(WindowName.due);
-		late = enrollment.getStartOfWindowForCurrentMilestone(WindowName.late);
-		max = enrollment.getStartOfWindowForCurrentMilestone(WindowName.max);
-
-		Schedule schedule = schedules.getByName("Health Worker Form Submission Tracking");
-
-		schedule.getMilestone("blah").getData().get("FormID");
-
-		List<Milestone> milestones = schedule.getMilestones();
-
-		for (Milestone milestone : milestones) {
-			System.out.println(milestone.getName());
-			List <MilestoneWindow> windows = milestone.getMilestoneWindows();
-			for (MilestoneWindow window: windows) {
-				System.out.println(window.getPeriod());
-			}
-		}
-
-
-	}
 
 	@RequestMapping("/testCommcare")
 	public ModelAndView testCommcare(HttpServletRequest request,
@@ -128,26 +91,26 @@ public class CommcareController  {
 		return null;
 	}
 
-	@RequestMapping("/commcare")
-	public ModelAndView handleRequest(HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
-
-		//			testSchedule();
-
-		BufferedReader reader = request.getReader();
-		boolean end = false;
-		String forwardedRequest = "";
-		while (!end) {
-			String line = reader.readLine();
-			if (line == null) { end = true; } else {
-				forwardedRequest += line;
-			}
+	@RequestMapping("/commcareforms")
+	public ModelAndView handleForwardedForm(HttpServletRequest request,
+			HttpServletResponse response) {
+		
+		String formXml = "";
+		
+		try {
+			formXml = getRequestBodyAsString(request);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		System.out.println(forwardedRequest);
-
-		CommcareParserUtil parser = new CommcareParserUtil(forwardedRequest);
+		
+		CommcareParserUtil parser = null;
+		try {
+			parser = new CommcareParserUtil(formXml);
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		}
 		String xmlns = parser.findAttributeByElement("data", "xmlns");
-
+		
 		if (xmlns != null) {
 			System.out.println("There's an xmlns");
 			System.out.println(xmlns);
@@ -161,7 +124,7 @@ public class CommcareController  {
 				}
 			} 
 		} else {
-			
+
 			String registrationXmlns = parser.findAttributeByElement("n0:registration", "xmlns:n0");
 			System.out.println("Registration form: " + registrationXmlns);
 			if (registrationXmlns.equals("http://openrosa.org/user-registration")) {
@@ -174,15 +137,50 @@ public class CommcareController  {
 				}
 			}
 		}
+		
+		return null;
+	}
 
-		Case caseInstance = parser.parseCaseFromForm(forwardedRequest);
+	@RequestMapping("/commcarecases")
+	public ModelAndView handleForwardedCase(HttpServletRequest request,
+			HttpServletResponse response) {
+
+		String caseXml = "";
+		
+		try {
+			caseXml = getRequestBodyAsString(request);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		CommcareParserUtil parser = null;
+		
+		try {
+			parser = new CommcareParserUtil(caseXml);
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		}
+		Case caseInstance = parser.parseCaseFromForm(caseXml);
+		
 		if (caseInstance != null) {
 			System.out.println("There's a case");
 		} else {
 			System.out.println("No case");
 		}
-
+		
 		return null;
+	}
+
+	private String getRequestBodyAsString(HttpServletRequest request) throws IOException {
+		BufferedReader reader = request.getReader();
+		boolean end = false;
+		String forwardedRequest = "";
+		while (!end) {
+			String line = reader.readLine();
+			if (line == null) { end = true; } else {
+				forwardedRequest += line;
+			}
+		}
+		return forwardedRequest;
 	}
 
 	private void handleFormForEnrollment(Enrollment enrollment, String commcareId, String scheduleName) {
