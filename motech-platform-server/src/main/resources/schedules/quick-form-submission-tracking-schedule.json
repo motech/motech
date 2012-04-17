@@ -1,0 +1,257 @@
+{
+    "name":"Quick Health Worker Form Submission Tracking",
+    "absolute": true,
+    "milestones":[
+        {
+            "name":"formWeek1",
+            "scheduleWindows":{
+                "earliest":["0 Days"],
+                "due":["7 Days"],
+                "late":["52 Weeks"],
+                "max":["52 Weeks"]
+            },
+            "data":{
+            },
+            "alerts":[
+                {
+                    "window":"due",
+                    "offset":["0 Days"],
+                    "interval":["1 Day"],
+                    "count":"1"
+                },
+                {
+                    "window":"late",
+                    "offset":["0 Days"],
+                    "interval":["1 Day"],
+                    "count":"1"
+                }
+            ]
+        },
+        {
+            "name":"formWeek2",
+            "scheduleWindows":{
+                "earliest":["7 Days"],
+                "due":["14 Days"],
+                "late":["52 Weeks"],
+                "max":["52 Weeks"]
+            },
+            "data":{
+            },
+            "alerts":[
+                {
+                    "window":"due",
+                    "offset":["0 Days"],
+                    "interval":["1 Day"],
+                    "count":"1"
+                },
+                {
+                    "window":"late",
+                    "offset":["0 Days"],
+                    "interval":["1 Day"],
+                    "count":"1"
+                }
+
+            ]
+        },
+         {
+            "name":"formWeek3",
+            "scheduleWindows":{
+                "earliest":["2 Weeks"],
+                "due":["3 Weeks"],
+                "late":["52 Weeks"],
+                "max":["52 Weeks"]
+            },
+            "data":{
+            },
+            "alerts":[
+                {
+                    "window":"due",
+                    "offset":["0 Days"],
+                    "interval":["1 Day"],
+                    "count":"1"
+                },
+                {
+                    "window":"late",
+                    "offset":["0 Days"],
+                    "interval":["1 Day"],
+                    "count":"1"
+                }
+            ]
+        },
+         {
+            "name":"formWeek4",
+            "scheduleWindows":{
+                "earliest":["3 Weeks"],
+                "due":["4 Weeks"],
+                "late":["52 Weeks"],
+                "max":["52 Weeks"]
+            },
+            "data":{
+            },
+            "alerts":[
+                {
+                    "window":"due",
+                    "offset":["0 Days"],
+                    "interval":["1 Day"],
+                    "count":"1"
+                },
+                {
+                    "window":"late",
+                    "offset":["0 Days"],
+                    "interval":["1 Day"],
+                    "count":"1"
+                }
+            ]
+        },
+         {
+            "name":"formWeek5",
+            "scheduleWindows":{
+                "earliest":["4 Weeks"],
+                "due":["5 Weeks"],
+                "late":["52 Weeks"],
+                "max":["52 Weeks"]
+            },
+            "data":{
+            },
+            "alerts":[
+                {
+                    "window":"due",
+                    "offset":["0 Days"],
+                    "interval":["1 Day"],
+                    "count":"1"
+                },
+                {
+                    "window":"late",
+                    "offset":["0 Days"],
+                    "interval":["1 Day"],
+                    "count":"1"
+                }
+            ]
+        },
+         {
+            "name":"formWeek6",
+            "scheduleWindows":{
+                "earliest":["5 Weeks"],
+                "due":["6 Weeks"],
+                "late":["52 Weeks"],
+                "max":["52 Weeks"]
+            },
+            "data":{
+            },
+            "alerts":[
+                {
+                    "window":"due",
+                    "offset":["0 Days"],
+                    "interval":["1 Day"],
+                    "count":"1"
+                },
+                {
+                    "window":"late",
+                    "offset":["0 Days"],
+                    "interval":["1 Day"],
+                    "count":"1"
+                }
+            ]
+        },
+         {
+            "name":"formWeek7",
+            "scheduleWindows":{
+                "earliest":["6 Weeks"],
+                "due":["7 Weeks"],
+                "late":["52 Weeks"],
+                "max":["52 Weeks"]
+            },
+            "data":{
+            },
+            "alerts":[
+                {
+                    "window":"due",
+                    "offset":["0 Days"],
+                    "interval":["1 Day"],
+                    "count":"1"
+                },
+                {
+                    "window":"late",
+                    "offset":["0 Days"],
+                    "interval":["1 Day"],
+                    "count":"1"
+                }
+            ]
+        },
+         {
+            "name":"formWeek8",
+            "scheduleWindows":{
+                "earliest":["7 Weeks"],
+                "due":["8 Weeks"],
+                "late":["52 Weeks"],
+                "max":["52 Weeks"]
+            },
+            "data":{
+            },
+            "alerts":[
+                {
+                    "window":"due",
+                    "offset":["0 Days"],
+                    "interval":["1 Day"],
+                    "count":"1"
+                },
+                {
+                    "window":"late",
+                    "offset":["0 Days"],
+                    "interval":["1 Day"],
+                    "count":"1"
+                }
+            ]
+        },
+         {
+            "name":"formWeek9",
+            "scheduleWindows":{
+                "earliest":["8 Weeks"],
+                "due":["9 Weeks"],
+                "late":["52 Weeks"],
+                "max":["52 Weeks"]
+            },
+            "data":{
+            },
+            "alerts":[
+                {
+                    "window":"due",
+                    "offset":["0 Days"],
+                    "interval":["1 Day"],
+                    "count":"1"
+                },
+                {
+                    "window":"late",
+                    "offset":["0 Days"],
+                    "interval":["1 Day"],
+                    "count":"1"
+                }
+            ]
+        },
+         {
+            "name":"formWeek10",
+            "scheduleWindows":{
+                "earliest":["9 Weeks"],
+                "due":["10 Weeks"],
+                "late":["52 Weeks"],
+                "max":["52 Weeks"]
+            },
+            "data":{
+            },
+            "alerts":[
+                {
+                    "window":"due",
+                    "offset":["0 Days"],
+                    "interval":["1 Day"],
+                    "count":"1"
+                },
+                {
+                    "window":"late",
+                    "offset":["0 Days"],
+                    "interval":["1 Day"],
+                    "count":"1"
+                }
+            ]
+        }
+    ]
+}
