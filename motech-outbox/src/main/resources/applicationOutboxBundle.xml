@@ -55,4 +55,27 @@
 
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.outbox.api"/>
+
+    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="urlMap">
+            <map>
+                <entry key="/vxml/outboxMessage" value-ref="vxmlOutboxController"/>
+                <entry key="/vxml/messageMenu" value-ref="vxmlOutboxController"/>
+                <entry key="/vxml/save" value-ref="vxmlOutboxController"/>
+                <entry key="/vxml/remove" value-ref="vxmlOutboxController"/>
+                <entry key="/vxml/savedMessage" value-ref="vxmlOutboxController"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="voiceOutboxService" class="org.motechproject.outbox.api.service.impl.VoiceOutboxServiceImpl">
+        <property name="numDayskeepSavedMessages" value="10"/>
+        <property name="maxNumberOfPendingMessages" value="15"/>
+    </bean>
+
+    <bean id="outboundVoiceMessageDao" class="org.motechproject.outbox.api.repository.AllOutboundVoiceMessages">
+        <constructor-arg ref="outboxDatabase"/>
+    </bean>
+
+    <bean id="vxmlOutboxController" class="org.motechproject.server.outbox.web.VxmlOutboxController"/>
 </beans>

@@ -90,7 +90,7 @@
                             org.motechproject.server.outbox.Activator
                         </Bundle-Activator>
 						<Private-Package>
-							org.motechproject.server.outbox.*
+							org.motechproject.server.outbox.*;org.motechproject.outbox.api.service.*;org.motechproject.outbox.api.repository;org.motechproject.outbox.api.domain
                         </Private-Package>
 						<Embed-Dependency>!*</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>
