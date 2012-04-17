@@ -2,6 +2,8 @@ package org.motechproject.demo.commcare.listeners;
 import java.util.Properties;
 
 import org.motechproject.cmslite.api.service.CMSLiteService;
+import org.motechproject.demo.commcare.domain.CommcareUser;
+import org.motechproject.demo.commcare.services.CommcareUserService;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.sms.api.service.SmsService;
@@ -25,6 +27,9 @@ public class FormMilestoneListener {
     
 	@Autowired
 	private AllEnrollments enrollments;
+	
+	@Autowired
+	private CommcareUserService commcareUserService;
 
 	@MotechListener(subjects = { EventSubjects.MILESTONE_ALERT })
 	public void listenOnFormMilestone(MotechEvent event) {
@@ -34,10 +39,16 @@ public class FormMilestoneListener {
 		String windowName = mEvent.getWindowName();
 		String commcareId = mEvent.getExternalId();
 		
+		CommcareUser user = commcareUserService.getCommcareUserById(commcareId);
+		
+		String phoneNum = user.getDefaultPhoneNumber();
+		
 		if (windowName.equals("late")) {
 			System.out.println("Late alert...");
+			sendLateNotification(phoneNum);
 		} else if (windowName.equals("due")) {
 			System.out.println("Due alert...");
+			sendDueNotification(phoneNum);
 		}
 		
 		
