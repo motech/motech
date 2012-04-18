@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public class AllPillRegimens extends MotechBaseRepository<PillRegimen> {
     @Autowired
     public AllPillRegimens(@Qualifier("pillReminderDbConnector") CouchDbConnector db) {

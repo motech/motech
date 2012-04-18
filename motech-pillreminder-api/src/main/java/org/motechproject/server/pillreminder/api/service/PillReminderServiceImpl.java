@@ -10,6 +10,7 @@ import org.motechproject.server.pillreminder.api.domain.PillRegimen;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+@Component
 public class PillReminderServiceImpl implements PillReminderService {
     private AllPillRegimens allPillRegimens;
     private PillRegimenJobScheduler pillRegimenJobScheduler;
