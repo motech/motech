@@ -24,8 +24,6 @@ import static org.joda.time.DateTimeConstants.MILLIS_PER_DAY;
 import static org.joda.time.DateTimeConstants.MILLIS_PER_HOUR;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -209,77 +207,6 @@ public class EnrollmentAlertServiceTest {
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
         verify(schedulerService, times(0)).safeScheduleRepeatingJob(Matchers.<RepeatingSchedulableJob>any());
-    }
-
-    @Test
-    public void shouldScheduleAllJobsFromEnrollmentCreatedAtTimeForMilestonesOtherThanFirstOne() {
-        Milestone milestone1 = new Milestone("milestone1", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone1.addAlert(WindowName.earliest, new Alert(days(0), days(2), 1, 0));
-        Milestone milestone2 = new Milestone("milestone2", weeks(2), weeks(1), weeks(1), weeks(1));
-        milestone2.addAlert(WindowName.earliest, new Alert(days(0), days(2), 5, 0));
-        Schedule schedule = new Schedule("my_schedule");
-        schedule.addMilestones(milestone1);
-        schedule.addMilestones(milestone2);
-
-        Enrollment enrollment = new Enrollment("entity_1", schedule, "milestone2", daysAgo(4), daysAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE, null);
-        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
-
-        ArgumentCaptor<RepeatingSchedulableJob> jobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
-        verify(schedulerService).safeScheduleRepeatingJob(jobCaptor.capture());
-        assertEquals(4, jobCaptor.getValue().getRepeatCount().intValue());
-    }
-
-    @Test
-    public void shouldSchedulePossibleJobsFromEnrollmentCreatedAtTimeForMilestonesOtherThanFirstOneConsideringPreferredAlertTime() {
-        Milestone milestone1 = new Milestone("milestone1", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone1.addAlert(WindowName.earliest, new Alert(days(0), days(2), 1, 0));
-        Milestone milestone2 = new Milestone("milestone2", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone2.addAlert(WindowName.earliest, new Alert(days(0), days(1), 8, 0));
-        Schedule schedule = new Schedule("my_schedule");
-        schedule.addMilestones(milestone1);
-        schedule.addMilestones(milestone2);
-
-        Enrollment enrollment = new Enrollment("entity_1", schedule, "milestone2", daysAgo(4), daysAgo(0), new Time(8, 10), EnrollmentStatus.ACTIVE, null);
-        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
-
-        ArgumentCaptor<RepeatingSchedulableJob> jobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
-        verify(schedulerService).safeScheduleRepeatingJob(jobCaptor.capture());
-        assertEquals(6, jobCaptor.getValue().getRepeatCount().intValue());
-        assertEquals(DateUtil.now().plusDays(1).withHourOfDay(8).withMinuteOfHour(10).toDate(), jobCaptor.getValue().getStartTime());
-    }
-
-    @Test
-    public void shouldSchedulePossibleJobsFromEnrollmentCreatedAtTimeForMilestonesOtherThanFirstOne() {
-        Milestone milestone1 = new Milestone("milestone1", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone1.addAlert(WindowName.earliest, new Alert(days(0), days(2), 1, 0));
-        Milestone milestone2 = new Milestone("milestone2", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone2.addAlert(WindowName.earliest, new Alert(days(0), days(2), 5, 0));
-        Schedule schedule = new Schedule("my_schedule");
-        schedule.addMilestones(milestone1);
-        schedule.addMilestones(milestone2);
-
-        Enrollment enrollment = new Enrollment("entity_1", schedule, "milestone2", daysAgo(4), daysAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE, null);
-        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
-
-        ArgumentCaptor<RepeatingSchedulableJob> jobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
-        verify(schedulerService).safeScheduleRepeatingJob(jobCaptor.capture());
-        assertEquals(3, jobCaptor.getValue().getRepeatCount().intValue());
-    }
-
-    @Test
-    public void shouldNotScheduleJobsFromEnrollmentCreatedAtTimeForMilestonesOtherThanFirstOneIfTheWindowHasElapsed() {
-        Milestone milestone1 = new Milestone("milestone1", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone1.addAlert(WindowName.earliest, new Alert(days(0), days(2), 1, 0));
-        Milestone milestone2 = new Milestone("milestone2", days(1), weeks(1), weeks(1), weeks(1));
-        milestone2.addAlert(WindowName.earliest, new Alert(days(0), days(2), 5, 0));
-        Schedule schedule = new Schedule("my_schedule");
-        schedule.addMilestones(milestone1);
-        schedule.addMilestones(milestone2);
-
-        Enrollment enrollment = new Enrollment("entity_1", schedule, "milestone2", daysAgo(4), daysAgo(2), new Time(8, 20), EnrollmentStatus.ACTIVE, null);
-        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
-
-        verify(schedulerService, never()).safeScheduleRepeatingJob(any(RepeatingSchedulableJob.class));
     }
 
     @Test

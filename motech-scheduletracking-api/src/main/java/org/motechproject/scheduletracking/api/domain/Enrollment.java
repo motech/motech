@@ -6,7 +6,6 @@ import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.model.MotechBaseDataObject;
 import org.motechproject.model.Time;
-import org.motechproject.util.DateUtil;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -34,25 +33,15 @@ public class Enrollment extends MotechBaseDataObject {
     private EnrollmentStatus status;
     @JsonProperty
     private Map<String, String> metadata;
-    @JsonProperty
-    private DateTime createdAt;
 
     private Schedule schedule;
-
     private List<MilestoneFulfillment> fulfillments = new LinkedList<MilestoneFulfillment>();
 
     // For ektorp
     private Enrollment() {
     }
 
-    public Enrollment(String externalId,
-                      Schedule schedule,
-                      String currentMilestoneName,
-                      DateTime startOfSchedule,
-                      DateTime enrolledOn,
-                      Time preferredAlertTime,
-                      EnrollmentStatus enrollmentStatus,
-                      Map<String, String> metadata) {
+    public Enrollment(String externalId, Schedule schedule, String currentMilestoneName, DateTime startOfSchedule, DateTime enrolledOn, Time preferredAlertTime, EnrollmentStatus enrollmentStatus, Map<String, String> metadata) {
         this.externalId = externalId;
         this.scheduleName = schedule.getName();
         this.schedule = schedule;
@@ -62,7 +51,6 @@ public class Enrollment extends MotechBaseDataObject {
         this.preferredAlertTime = preferredAlertTime;
         this.status = enrollmentStatus;
         this.metadata = metadata;
-        this.createdAt = DateUtil.now();
     }
 
     public Map<String, String> getMetadata() {
@@ -113,7 +101,7 @@ public class Enrollment extends MotechBaseDataObject {
     }
 
     @JsonIgnore
-    public DateTime getCurrentMilestoneStartDate() {
+    public DateTime getReferenceForAlerts() {
         if (schedule.isBasedOnAbsoluteWindows()) {
             DateTime startOfSchedule = getStartOfSchedule();
             List<Milestone> milestones = schedule.getMilestones();
@@ -127,23 +115,6 @@ public class Enrollment extends MotechBaseDataObject {
         if (currentMilestoneName.equals(schedule.getFirstMilestone().getName()))
             return getStartOfSchedule();
         return (fulfillments.isEmpty()) ? getEnrolledOn() : getLastFulfilledDate();
-    }
-
-    @JsonIgnore
-    public DateTime getReferenceDateForAlerts() {
-        if (schedule.isBasedOnAbsoluteWindows()) {
-            DateTime startOfSchedule = getStartOfSchedule();
-            List<Milestone> milestones = schedule.getMilestones();
-            for (Milestone milestone : milestones) {
-                if (milestone.getName().equals(currentMilestoneName))
-                    break;
-                startOfSchedule = startOfSchedule.plus(milestone.getMaximumDuration());
-            }
-            return startOfSchedule;
-        }
-        if (currentMilestoneName.equals(schedule.getFirstMilestone().getName()))
-            return getStartOfSchedule();
-        return (fulfillments.isEmpty()) ? createdAt : getLastFulfilledDate();
     }
 
     @JsonIgnore
@@ -186,7 +157,7 @@ public class Enrollment extends MotechBaseDataObject {
     }
 
     public DateTime getStartOfWindowForCurrentMilestone(WindowName windowName) {
-        DateTime currentMilestoneStartDate = getCurrentMilestoneStartDate();
+        DateTime currentMilestoneStartDate = getReferenceForAlerts();
         Milestone currentMilestone = schedule.getMilestone(currentMilestoneName);
         return currentMilestoneStartDate.plus(currentMilestone.getWindowStart(windowName));
     }
