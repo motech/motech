@@ -1,12 +1,7 @@
-package org.eclipse.core.runtime;
-
-import java.io.IOException;
-import java.net.URL;
-
 /**
  * MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
  *
- * Copyright (c) 2011 Grameen Foundation USA.  All rights reserved.
+ * Copyright (c) 2012 Grameen Foundation USA.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -34,11 +29,24 @@ import java.net.URL;
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
+package org.eclipse.core.runtime;
+
+import org.motechproject.server.osgi.OsgiFrameworkService;
+import org.motechproject.server.osgi.OsgiListener;
+
+import java.io.IOException;
+import java.net.URL;
 
 public class FileLocator {
+
     public static URL resolve(URL url) throws IOException {
-        // TODO: the bundle should be unpacked to some temporary dir, the returned url should point to this dir
-        // the other solution is to change url from bundle: to jar:
-        return new URL(String.format("file:%s/.motech/classes%s", System.getProperty("user.home"), url.getPath()));
+        if ("bundle".equals(url.getProtocol())) {
+            OsgiFrameworkService osgiService = OsgiListener.getOsgiService();
+            String bundleLocation = osgiService.getBundleLocationByBundleId(url.getHost());
+            if (bundleLocation != null) {
+                return new URL("jar:" + bundleLocation + "!" + url.getFile());
+            }
+        }
+        return url;
     }
 }

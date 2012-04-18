@@ -68,6 +68,8 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     private List<BundleLoader> bundleLoaders;
     
     private Map<String, ClassLoader> bundleClassLoaderLookup = new HashMap<String, ClassLoader>();
+    
+    private Map<String, String> bundleLocationMapping = new HashMap<String, String>();
 
 	public static final String BUNDLE_ACTIVATOR_HEADER = "Bundle-Activator";
 
@@ -134,22 +136,18 @@ public class OsgiFrameworkService implements ApplicationContextAware {
      * @param bundleSymbolicName
      * @return The ClassLoader of the bundle
      */
-    public ClassLoader getClassLoaderBySymbolicName(String bundleSymbolicName){
+    public ClassLoader getClassLoaderBySymbolicName(String bundleSymbolicName) {
         return bundleClassLoaderLookup.get(bundleSymbolicName);
     }
-    
-    /**
-     * 
-     * @return
-     */
+
+    public String getBundleLocationByBundleId(String bundleId) {
+        return bundleLocationMapping.get(bundleId);
+    }
+
     public Map<String, ClassLoader> getBundleClassLoaderLookup() {
 		return bundleClassLoaderLookup;
 	}    
-    
-    /**
-     * @param bundle
-     * @throws Exception
-     */
+
     private void storeClassCloader(Bundle bundle) throws Exception {
         String key = bundle.getSymbolicName();
         String activator = (String)bundle.getHeaders().get(BUNDLE_ACTIVATOR_HEADER);
@@ -158,6 +156,10 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             Class activatorClass = bundle.loadClass(activator);
             if (activatorClass != null) {
                 bundleClassLoaderLookup.put(key, activatorClass.getClassLoader());
+                String bundleLocation = bundle.getLocation();
+                if (bundleLocation.startsWith("file:")) { // we do not want any jndi locations
+                    bundleLocationMapping.put(bundle.getBundleId() + ".0", bundleLocation);
+                }
             }
         }
     }
