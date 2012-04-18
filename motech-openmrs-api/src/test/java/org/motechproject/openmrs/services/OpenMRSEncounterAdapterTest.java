@@ -3,7 +3,6 @@ package org.motechproject.openmrs.services;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.mrs.model.*;
 import org.openmrs.*;
@@ -11,7 +10,6 @@ import org.openmrs.api.EncounterService;
 
 import java.util.*;
 
-import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -145,29 +143,6 @@ public class OpenMRSEncounterAdapterTest {
         openMrsEncounter.setPatient(mockOpenMRSPatient);
         openMrsEncounter.setEncounterDatetime(encounterDate);
         return openMrsEncounter;
-    }
-
-    @Test
-    public void shouldSaveAnEncounter() {
-        OpenMRSEncounterAdapter encounterAdapterSpy = spy(encounterAdapter);
-        Encounter openMrsEncounter = mock(Encounter.class);
-        final Date encounterDate = new Date();
-        MRSEncounter mrsEncounter = new MRSEncounter("id", null, null, null, encounterDate, new MRSPatient("motechId", null,null), null, null);
-        Encounter savedOpenMrsEncounter = mock(Encounter.class);
-        MRSEncounter savedMrsEncounter = mock(MRSEncounter.class);
-        final Patient patient = mock(Patient.class);
-
-        doReturn(openMrsEncounter).when(encounterAdapterSpy).mrsToOpenMRSEncounter(mrsEncounter);
-        when(mockEncounterService.saveEncounter(openMrsEncounter)).thenReturn(savedOpenMrsEncounter);
-        doReturn(savedMrsEncounter).when(encounterAdapterSpy).openmrsToMrsEncounter(savedOpenMrsEncounter);
-
-        final EncounterType encounterType = new EncounterType();
-        when(mockEncounterService.getEncounterType(anyString())).thenReturn(encounterType);
-        when(mockEncounterService.getEncounters(patient, null, encounterDate, encounterDate, null, asList(encounterType), null, false)).thenReturn(null);
-
-        MRSEncounter returnedMRSEncounterAfterSaving = encounterAdapterSpy.createEncounter(mrsEncounter);
-        assertThat(returnedMRSEncounterAfterSaving, is(equalTo(savedMrsEncounter)));
-        verify(mockOpenMrsObservationAdapter, never()).saveObservations(anySet(), Matchers.any(Encounter.class));
     }
 
     @Test

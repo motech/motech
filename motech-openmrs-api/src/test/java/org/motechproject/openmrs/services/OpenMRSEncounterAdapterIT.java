@@ -16,7 +16,6 @@ import org.openmrs.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -32,6 +31,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.motechproject.openmrs.TestIdGenerator.newGUID;
 import static org.motechproject.openmrs.services.OpenMRSUserAdapter.USER_KEY;
 import static org.motechproject.util.DateUtil.newDate;
 
@@ -87,14 +87,13 @@ public class OpenMRSEncounterAdapterIT extends OpenMRSIntegrationTestBase {
     }
 
     @Test
-    @Transactional(readOnly = true)
     public void creationOfEncounterShouldHappenInIdempotentWay() throws UserAlreadyExistsException {
 
         MRSPerson personCreator = new MRSPerson().firstName("SampleTest");
         MRSPerson personJohn = new MRSPerson().firstName("John");
         patientAlan = createPatient(facility);
-        MRSUser userCreator = createUser(new MRSUser().userName("UserSuper1").systemId("10000151").securityRole("Provider").person(personCreator));
-        MRSUser userJohn = createUser(new MRSUser().userName("UserJohn1").systemId("10000271").securityRole("Provider").person(personJohn));
+        MRSUser userCreator = createUser(new MRSUser().userName(newGUID("UserAdmin")).systemId(newGUID("10000151")).securityRole("Provider").person(personCreator));
+        MRSUser userJohn = createUser(new MRSUser().userName(newGUID("UserJohn1")).systemId(newGUID("10000271")).securityRole("Provider").person(personJohn));
         MRSPerson provider = userJohn.getPerson();
 
         final Set<MRSObservation> observations = new HashSet<MRSObservation>();
@@ -130,60 +129,6 @@ public class OpenMRSEncounterAdapterIT extends OpenMRSIntegrationTestBase {
         }
     }
 
-    private OpenMRSEncounterAdapter createMRSEncounterAdaptor(OpenMRSObservationAdapter openMRSObservationAdapter) {
-        return new OpenMRSEncounterAdapter(this.<EncounterService>getField(mrsEncounterAdapter, "encounterService"),
-                this.<OpenMRSUserAdapter>getField(mrsEncounterAdapter, "openMRSUserAdapter"),
-                this.<OpenMRSFacilityAdapter>getField(mrsEncounterAdapter, "openMRSFacilityAdapter"),
-                this.<OpenMRSPatientAdapter>getField(mrsEncounterAdapter, "openMRSPatientAdapter"),
-                openMRSObservationAdapter,
-                this.<OpenMRSPersonAdapter>getField(mrsEncounterAdapter, "openMRSPersonAdapter"));
-    }
-
-    @Test
-    @Transactional(readOnly = true)
-    public void shouldPurgeObservations() throws UserAlreadyExistsException {
-
-        MRSPerson personCreator = new MRSPerson().firstName("SampleTest");
-        MRSPerson personJohn = new MRSPerson().firstName("John");
-        patientAlan = createPatient(facility);
-        MRSUser userCreator = createUser(new MRSUser().userName("UserSuper").systemId("1000015").securityRole("Provider").person(personCreator));
-        MRSUser userJohn = createUser(new MRSUser().userName("UserJohn").systemId("1000027").securityRole("Provider").person(personJohn));
-        MRSPerson provider = userJohn.getPerson();
-
-        final Set<MRSObservation> observations = new HashSet<MRSObservation>();
-        final Date encounterTime = DateUtil.newDateTime(newDate(2012, 3, 4), 3, 4, 3).toDate();
-        final Date observationDate = new Date();
-        observations.add(new MRSObservation(observationDate, "SERIAL NUMBER", "free text data serail number"));
-        observations.add(new MRSObservation(observationDate, "NEXT ANC DATE", new DateTime(2012, 11, 10, 1, 10).toDate()));
-        observations.add(new MRSObservation(observationDate, "GRAVIDA", Double.valueOf("100.0")));
-        final String encounterType = "PEDSRETURN";
-        MRSEncounter expectedEncounter = new MRSEncounter(provider.getId(), userCreator.getId(), facility.getId(), encounterTime, patientAlan.getId(), observations, encounterType);
-        MRSEncounter actualEncounter = mrsEncounterAdapter.createEncounter(expectedEncounter);
-        assertEncounter(expectedEncounter, actualEncounter);
-
-        openMRSObservationAdapter.purgeObservations(encounterService.getEncounter(Integer.parseInt(actualEncounter.getId())).getAllObs());
-
-        final List<String> oldObservationIds = extract(actualEncounter.getObservations(), on(MRSObservation.class).getId());
-        for (String observationId : oldObservationIds) {
-            final int obsId = Integer.parseInt(observationId);
-            assertNull(obsService.getObs(obsId));
-        }
-    }
-
-
-    private <T> T getField(Object object, String fieldName) {
-        final Field declaredField;
-        try {
-            declaredField = object.getClass().getDeclaredField(fieldName);
-            declaredField.setAccessible(true);
-            return (T) declaredField.get(object);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-
-    }
-
     private void assertEncounter(MRSEncounter expectedEncounter, MRSEncounter actualMRSEncounter) {
         assertEquals(expectedEncounter.getDate(), actualMRSEncounter.getDate());
         assertEquals(expectedEncounter.getCreator().getId(), actualMRSEncounter.getCreator().getId());
@@ -202,7 +147,7 @@ public class OpenMRSEncounterAdapterIT extends OpenMRSIntegrationTestBase {
         final Date birthDate = new LocalDate(1970, 3, 11).toDate();
         final String gender = "M";
         Boolean birthDateEstimated = true;
-        String patientSystemId = "10000045555";
+        String patientSystemId = newGUID("10000045555");
 
         MRSPerson mrsPerson = new MRSPerson().firstName(first).lastName(last).middleName(middle).preferredName("prefName").
                 birthDateEstimated(birthDateEstimated).dateOfBirth(birthDate).address(address1).gender(gender);

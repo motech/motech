@@ -1,6 +1,5 @@
 package org.motechproject.openmrs.services;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mrs.exception.ObservationNotFoundException;
 import org.motechproject.mrs.model.MRSConcept;
 import org.motechproject.mrs.model.MRSObservation;
@@ -163,23 +162,5 @@ public class OpenMRSObservationAdapter implements MRSObservationAdapter {
             mrsObservations.add(convertOpenMRSToMRSObservation(observation));
         }
         return mrsObservations;
-    }
-
-    void purgeObservations(Set<Obs> allObs) {
-        if (CollectionUtils.isEmpty(allObs))
-            return;
-        for (Obs obs : allObs) {
-            obsService.purgeObs(obs);
-        }
-    }
-
-    void saveObservations(Set<MRSObservation> observations, Encounter existingOpenMRSEncounter) {
-        if(observations == null) return;
-        Set<Obs> allObs = new HashSet<Obs>();
-        for (MRSObservation observation : observations) {
-            Obs mrsObservation = saveObs(observation, existingOpenMRSEncounter, existingOpenMRSEncounter.getPatient(), existingOpenMRSEncounter.getLocation(), existingOpenMRSEncounter.getCreator());
-            allObs.add(mrsObservation);
-        }
-        existingOpenMRSEncounter.setObs(allObs);
     }
 }
