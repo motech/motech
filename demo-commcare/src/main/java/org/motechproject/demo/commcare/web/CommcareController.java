@@ -116,7 +116,7 @@ public class CommcareController  {
 			System.out.println(xmlns);
 			System.out.println(isValidForm(xmlns));
 			String commcareId = parser.getValueByElement("userID");
-			if (commcareId != null) {
+			if (commcareId != null && isValidForm(xmlns)) {
 				System.out.println("ID of: " + commcareId);
 				Enrollment enrollment = enrollments.getActiveEnrollment(commcareId, scheduleName);
 				if (enrollment != null) {
