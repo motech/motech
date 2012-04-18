@@ -1,7 +1,7 @@
 /**
  * MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
  *
- * Copyright (c) 2011 Grameen Foundation USA.  All rights reserved.
+ * Copyright (c) 2012 Grameen Foundation USA.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,33 +32,27 @@
 package org.motechproject.server.demo.web;
 
 import org.motechproject.server.demo.service.DemoService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Calendar;
 import java.util.Date;
 
-/**
- * Spring MVC controller implementation provides method to handle HTTP requests and generate
- * IVR entry VXML documents
- *
- */
-public class CallMeController implements Controller {
-
-    private Logger logger = LoggerFactory.getLogger((this.getClass()));
+@Controller
+@RequestMapping("/makeCall")
+public class CallMeController {
 
     @Autowired
     @Qualifier("demoService")
     private DemoService demoService;
 
-	@Override
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    @RequestMapping(method = RequestMethod.GET)
+	public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("text/html");
         response.setCharacterEncoding("UTF-8");
 
@@ -69,12 +63,8 @@ public class CallMeController implements Controller {
         now.add(Calendar.MINUTE, delay);
         Date callTime = now.getTime();
 
-		ModelAndView mav = new ModelAndView();
-
         demoService.schedulePhoneCall(phoneNumber, callTime);
 
-        mav.setViewName("successView");
-
-		return mav;
+        response.getWriter().write("Made a phone call to " + phoneNumber + " at " + callTime);
 	}	
 }

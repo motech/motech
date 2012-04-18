@@ -41,14 +41,6 @@
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.server"/>
 
-    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-        <property name="urlMap">
-            <map>
-                <entry key="/makeCall" value-ref="callMeController"/>
-            </map>
-        </property>
-    </bean>
-
     <bean id="demoService" class="org.motechproject.server.demo.service.impl.DemoServiceImpl"/>
 
     <bean id="callMeController" class="org.motechproject.server.demo.web.CallMeController"/>
