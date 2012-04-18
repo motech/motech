@@ -28,6 +28,7 @@ import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
 import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
+import org.motechproject.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,9 +64,6 @@ public class CommcareController  {
 	@Autowired
 	@Qualifier(value = "validForms")
 	private Properties validForms;
-
-	@Autowired
-	private AllTrackedSchedules schedules;
 
 	@Autowired
 	private AllEnrollments enrollments;
@@ -199,7 +197,9 @@ public class CommcareController  {
 		System.out.println("Handling..." + now + " vs " + dueWindowStart);
 		if (now.isAfter(dueWindowStart)) {
 			System.out.println("Fulfilling..");
-			scheduleTrackingService.fulfillCurrentMilestone(commcareId, scheduleName);
+			LocalDate today = DateUtil.today();
+			Time time = DateUtil.time(DateUtil.now());
+			scheduleTrackingService.fulfillCurrentMilestone(commcareId, scheduleName, today, time);
 		}
 	}
 
