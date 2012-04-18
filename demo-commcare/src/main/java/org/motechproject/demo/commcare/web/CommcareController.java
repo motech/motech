@@ -1,6 +1,9 @@
 package org.motechproject.demo.commcare.web;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
+
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
@@ -14,6 +17,7 @@ import org.motechproject.commcare.parser.CommcareCaseParser;
 import org.motechproject.demo.commcare.domain.CommcareUser;
 import org.motechproject.demo.commcare.services.CommcareUserService;
 import org.motechproject.demo.commcare.util.CommcareParserUtil;
+import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.Milestone;
 import org.motechproject.scheduletracking.api.domain.MilestoneWindow;
@@ -51,7 +55,7 @@ import java.util.Properties;
 @Controller
 public class CommcareController  {
 
-	private String scheduleName = "Health Worker Form Submission Tracking";
+	public static final String SCHEDULE_NAME = "Quick Health Worker Form Submission Tracking";
 
 	@Autowired
 	private CommcareUserService commcareUserService;
@@ -118,9 +122,9 @@ public class CommcareController  {
 			String commcareId = parser.getValueByElement("userID");
 			if (commcareId != null && isValidForm(xmlns)) {
 				System.out.println("ID of: " + commcareId);
-				Enrollment enrollment = enrollments.getActiveEnrollment(commcareId, scheduleName);
+				Enrollment enrollment = enrollments.getActiveEnrollment(commcareId, SCHEDULE_NAME);
 				if (enrollment != null) {
-					handleFormForEnrollment(enrollment, commcareId, scheduleName);
+					handleFormForEnrollment(enrollment, commcareId, SCHEDULE_NAME);
 				}
 			} 
 		} else {
@@ -132,7 +136,13 @@ public class CommcareController  {
 				System.out.println(enrollmentId);
 				if (enrollmentId != null) {
 					System.out.println("Enrolling...");
-					EnrollmentRequest enrollmentRequest = new EnrollmentRequest(enrollmentId, "Quick Health Worker Form Submission Tracking", null, null, null, null, null, null, null);
+					DateTime now = DateTime.now();
+					LocalDate localDate = now.toLocalDate();
+					Time time = new Time();
+					time.setHour(now.getHourOfDay());
+					time.setMinute(now.getMinuteOfHour());
+					
+					EnrollmentRequest enrollmentRequest = new EnrollmentRequest(enrollmentId, SCHEDULE_NAME, null, localDate, time, localDate, time, null, null);
 					scheduleTrackingService.enroll(enrollmentRequest);
 				}
 			}
@@ -186,7 +196,9 @@ public class CommcareController  {
 	private void handleFormForEnrollment(Enrollment enrollment, String commcareId, String scheduleName) {
 		DateTime now = DateTime.now();
 		DateTime dueWindowStart = enrollment.getStartOfWindowForCurrentMilestone(WindowName.due);
+		System.out.println("Handling..." + now + " vs " + dueWindowStart);
 		if (now.isAfter(dueWindowStart)) {
+			System.out.println("Fulfilling..");
 			scheduleTrackingService.fulfillCurrentMilestone(commcareId, scheduleName);
 		}
 	}

@@ -14,14 +14,17 @@
 	<context:annotation-config />
 	<mvc:annotation-driven />
 
-    <context:component-scan base-package="org.motechproject.demo.commcare"/>
+	<context:component-scan base-package="org.motechproject.demo.commcare" />
 
 	<import resource="classpath:applicationSchedulerTrackingAPI.xml" />
 	<import resource="applicationCmsLiteApi.xml" />
 	<import resource="applicationSmsHttp.xml" />
+	<import resource="applicationSmsAPI.xml" />
 
 	<util:properties id="validForms" location="classpath:validForms.properties" />
-	<util:properties id="commcareUserApi" location="classpath:commcareUserApi.properties" />
+	<util:properties id="commcareUserApi"
+		location="classpath:commcareUserApi.properties" />
 	<util:properties id="smsMessages" location="classpath:smsMessages.properties" />
-
+	<util:properties id="credentialProperties"
+		location="classpath:smscredentials.properties" />
 </beans>

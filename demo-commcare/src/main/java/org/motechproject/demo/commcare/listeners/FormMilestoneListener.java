@@ -4,6 +4,7 @@ import java.util.Properties;
 import org.motechproject.cmslite.api.service.CMSLiteService;
 import org.motechproject.demo.commcare.domain.CommcareUser;
 import org.motechproject.demo.commcare.services.CommcareUserService;
+import org.motechproject.demo.commcare.web.CommcareController;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.sms.api.service.SmsService;
@@ -13,20 +14,18 @@ import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
+@Component
 public class FormMilestoneListener {
 	
-	@Autowired
-    private CMSLiteService cmsliteService;
-    
+	
+	
     @Autowired
     private SmsService smsService;
 	
     @Autowired
 	private ScheduleTrackingService scheduleTrackingService;
-    
-	@Autowired
-	private AllEnrollments enrollments;
 	
 	@Autowired
 	private CommcareUserService commcareUserService;
@@ -42,7 +41,7 @@ public class FormMilestoneListener {
 		MilestoneEvent mEvent = new MilestoneEvent(event);
 		String scheduleName = mEvent.getScheduleName();
 		
-		if (scheduleName.equals("Schedule name here")) {
+		if (scheduleName.equals(CommcareController.SCHEDULE_NAME)) {
 			handleAlert(mEvent);
 		}
 	}
@@ -51,6 +50,7 @@ public class FormMilestoneListener {
 		String windowName = mEvent.getWindowName();
 		String commcareId = mEvent.getExternalId();
 		
+		System.out.println("Window: " + windowName);
 		System.out.println(mEvent.getMilestoneAlert().getMilestoneName());
 		
 		CommcareUser user = commcareUserService.getCommcareUserById(commcareId);
@@ -68,6 +68,7 @@ public class FormMilestoneListener {
 		if (windowName.equals("late")) {
 			System.out.println("Late alert...");
 			sendLateNotification(phoneNum);
+			scheduleTrackingService.fulfillCurrentMilestone(commcareId, mEvent.getScheduleName());
 		} else if (windowName.equals("due")) {
 			System.out.println("Due alert...");
 			sendDueNotification(phoneNum);

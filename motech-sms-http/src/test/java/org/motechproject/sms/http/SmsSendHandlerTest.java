@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Properties;
 
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
@@ -28,6 +29,8 @@ public class SmsSendHandlerTest {
     private HttpClient httpClient;
     @Mock
     private TemplateReader templateReader;
+    @Mock
+    private Properties properties;
 
     @Before
     public void setUp() {
@@ -50,7 +53,7 @@ public class SmsSendHandlerTest {
         when(template.generateRequestFor(Arrays.asList("0987654321"), "foo bar")).thenReturn(httpMethod);
         when(templateReader.getTemplate(anyString())).thenReturn(template);
 
-        SmsSendHandler handler = new SmsSendHandler(templateReader, httpClient);
+        SmsSendHandler handler = new SmsSendHandler(templateReader, httpClient, properties);
         handler.handle(new MotechEvent(EventSubjects.SEND_SMS, new HashMap<String, Object>() {{
             put(EventDataKeys.RECIPIENTS, Arrays.asList("0987654321"));
             put(EventDataKeys.MESSAGE, "foo bar");
@@ -71,7 +74,7 @@ public class SmsSendHandlerTest {
         when(template.getResponse()).thenReturn(response);
         when(templateReader.getTemplate(Matchers.<String>any())).thenReturn(template);
 
-        SmsSendHandler handler = new SmsSendHandler(templateReader, httpClient);
+        SmsSendHandler handler = new SmsSendHandler(templateReader, httpClient, properties);
         handler.handle(new MotechEvent(EventSubjects.SEND_SMS));
     }
 
@@ -87,7 +90,7 @@ public class SmsSendHandlerTest {
         when(template.getResponse()).thenReturn(response);
         when(templateReader.getTemplate(Matchers.<String>any())).thenReturn(template);
 
-        SmsSendHandler handler = new SmsSendHandler(templateReader, httpClient);
+        SmsSendHandler handler = new SmsSendHandler(templateReader, httpClient, properties);
         handler.handle(new MotechEvent(EventSubjects.SEND_SMS));
     }
 
@@ -103,7 +106,7 @@ public class SmsSendHandlerTest {
         when(template.getResponse()).thenReturn(response);
         when(templateReader.getTemplate(Matchers.<String>any())).thenReturn(template);
 
-        SmsSendHandler handler = new SmsSendHandler(templateReader, httpClient);
+        SmsSendHandler handler = new SmsSendHandler(templateReader, httpClient, properties);
         handler.handle(new MotechEvent(EventSubjects.SEND_SMS));
     }
 }

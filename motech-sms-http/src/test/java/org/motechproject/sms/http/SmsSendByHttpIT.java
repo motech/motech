@@ -12,12 +12,14 @@ import org.motechproject.model.MotechEvent;
 import org.motechproject.sms.api.constants.EventDataKeys;
 import org.motechproject.sms.api.constants.EventSubjects;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Properties;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
@@ -35,6 +37,9 @@ public class SmsSendByHttpIT {
     private HttpClient mockHttpClient;
     @Autowired
     private HttpClient httpClient;
+    @Autowired
+    @Qualifier(value = "credentialProperties")
+    private Properties properties;
 
     @Before
     public void setup() {
@@ -43,7 +48,7 @@ public class SmsSendByHttpIT {
 
     @Test
     public void shouldUseSmsHttpTemplateFileForGeneratingRequest() throws IOException, SmsDeliveryFailureException {
-        smsSendHandler = new SmsSendHandler(templateReader, mockHttpClient);
+        smsSendHandler = new SmsSendHandler(templateReader, mockHttpClient, properties);
 
         MotechEvent motechEvent = new MotechEvent(EventSubjects.SEND_SMS, new HashMap<String, Object>() {{
             put(EventDataKeys.RECIPIENTS, Arrays.asList("123", "456"));
@@ -59,7 +64,7 @@ public class SmsSendByHttpIT {
     @Test
     @Ignore("use template for kookoo in sms-http-template.json")
     public void shouldSendSmsThroughKookoo() throws IOException, SmsDeliveryFailureException {
-        smsSendHandler = new SmsSendHandler(templateReader, httpClient);
+        smsSendHandler = new SmsSendHandler(templateReader, httpClient, properties);
 
         MotechEvent motechEvent = new MotechEvent(EventSubjects.SEND_SMS, new HashMap<String, Object>() {{
             put(EventDataKeys.RECIPIENTS, Arrays.asList("9686202448"));

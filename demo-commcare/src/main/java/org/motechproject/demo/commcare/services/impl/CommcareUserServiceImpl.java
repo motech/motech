@@ -61,8 +61,6 @@ public class CommcareUserServiceImpl implements CommcareUserService{
 			e.printStackTrace();
 		}
 		
-		System.out.println(response);
-		
 		Type commcareUserType = new TypeToken<CommcareUsersJson>() {}.getType();
         
         CommcareUsersJson allUsers = (CommcareUsersJson) motechJsonReader.readFromString(response, commcareUserType);
@@ -91,12 +89,10 @@ public class CommcareUserServiceImpl implements CommcareUserService{
 	}
 	
 	private String getUsername() {
-		System.out.println(commcareUserProperties.getProperty("username"));
 		return commcareUserProperties.getProperty("username");
 	}
 	
 	private String getPassword() {
-		System.out.println(commcareUserProperties.getProperty("password"));
 		return commcareUserProperties.getProperty("password");
 	}
 
