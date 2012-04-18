@@ -22,4 +22,6 @@
 
 	<util:properties id="validForms" location="classpath:validForms.properties" />
 	<util:properties id="commcareUserApi" location="classpath:commcareUserApi.properties" />
+	<util:properties id="smsMessages" location="classpath:smsMessages.properties" />
+
 </beans>

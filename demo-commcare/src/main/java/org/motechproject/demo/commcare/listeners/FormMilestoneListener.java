@@ -30,18 +30,40 @@ public class FormMilestoneListener {
 	
 	@Autowired
 	private CommcareUserService commcareUserService;
+	
+	@Autowired
+	@Qualifier(value="smsMessages")
+	private Properties smsMessages;
 
 	@MotechListener(subjects = { EventSubjects.MILESTONE_ALERT })
 	public void listenOnFormMilestone(MotechEvent event) {
 		System.out.println("Milestone alert!");
 
 		MilestoneEvent mEvent = new MilestoneEvent(event);
+		String scheduleName = mEvent.getScheduleName();
+		
+		if (scheduleName.equals("Schedule name here")) {
+			handleAlert(mEvent);
+		}
+	}
+	
+	private void handleAlert(MilestoneEvent mEvent) {
 		String windowName = mEvent.getWindowName();
 		String commcareId = mEvent.getExternalId();
 		
+		System.out.println(mEvent.getMilestoneAlert().getMilestoneName());
+		
 		CommcareUser user = commcareUserService.getCommcareUserById(commcareId);
 		
-		String phoneNum = user.getDefaultPhoneNumber();
+		String phoneNum = null;
+		
+		if (user != null) {
+			phoneNum = user.getDefaultPhoneNumber();
+		}
+		
+		if (phoneNum == null) {
+			return;
+		}
 		
 		if (windowName.equals("late")) {
 			System.out.println("Late alert...");
@@ -50,25 +72,22 @@ public class FormMilestoneListener {
 			System.out.println("Due alert...");
 			sendDueNotification(phoneNum);
 		}
-		
-		
 	}
 	
 	private void sendLateNotification(String phoneNum) {
-		//get phone num
-		smsService.sendSMS(phoneNum, getLateMessage("123Late"));
+		smsService.sendSMS(phoneNum, getLateMessage("lateMessage"));
 	}
 	
 	private void sendDueNotification(String phoneNum) {
-		smsService.sendSMS(phoneNum, getDueMessage("123Due"));
+		smsService.sendSMS(phoneNum, getDueMessage("dueMessage"));
 	}
 	
 	private String getLateMessage(String messageId) {
-		return "You're late";
+		return smsMessages.getProperty(messageId);
 	}
 	
 	private String getDueMessage(String messageId) {
-		return "You're due";
+		return smsMessages.getProperty(messageId);
 	}
 	
 }
