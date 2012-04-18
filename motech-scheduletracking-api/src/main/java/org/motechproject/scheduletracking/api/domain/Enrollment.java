@@ -141,6 +141,8 @@ public class Enrollment extends MotechBaseDataObject {
             }
             return startOfSchedule;
         }
+        if (currentMilestoneName.equals(schedule.getFirstMilestone().getName()))
+            return getStartOfSchedule();
         return (fulfillments.isEmpty()) ? createdAt : getLastFulfilledDate();
     }
 
