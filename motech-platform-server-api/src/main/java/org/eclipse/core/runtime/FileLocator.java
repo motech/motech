@@ -37,6 +37,8 @@ import java.net.URL;
 
 public class FileLocator {
     public static URL resolve(URL url) throws IOException {
+        // TODO: the bundle should be unpacked to some temporary dir, the returned url should point to this dir
+        // the other solution is to change url from bundle: to jar:
         return new URL(String.format("file:%s/.motech/classes%s", System.getProperty("user.home"), url.getPath()));
     }
 }
