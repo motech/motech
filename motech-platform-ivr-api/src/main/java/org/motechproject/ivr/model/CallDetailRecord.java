@@ -8,8 +8,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Call Detail Record represents call events and data captured in a call along with call metrics.
- */
+* Call Detail Record represents call events and data captured in a call along with call metrics.
+*/
 public class CallDetailRecord {
     /**
      * Call status

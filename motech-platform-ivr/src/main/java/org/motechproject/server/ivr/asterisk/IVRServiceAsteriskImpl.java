@@ -29,15 +29,11 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.ivr.asterisk;
+package org.motechproject.server.ivr.asterisk;
 
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.net.URLCodec;
-import org.asteriskjava.live.AsteriskServer;
-import org.asteriskjava.live.DefaultAsteriskServer;
-import org.asteriskjava.live.ManagerCommunicationException;
-import org.asteriskjava.live.NoSuchChannelException;
-import org.asteriskjava.live.OriginateCallback;
+import org.asteriskjava.live.*;
 import org.motechproject.ivr.model.CallInitiationException;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;

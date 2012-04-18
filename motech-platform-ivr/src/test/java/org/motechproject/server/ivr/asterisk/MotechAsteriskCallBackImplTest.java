@@ -29,7 +29,7 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.ivr.asterisk;
+package org.motechproject.server.ivr.asterisk;
 
 import junitx.util.PrivateAccessor;
 import org.asteriskjava.live.AsteriskChannel;
@@ -47,10 +47,10 @@ import org.motechproject.ivr.service.CallRequest;
 import static org.mockito.Mockito.*;
 
 class MyServerEventRelay implements EventRelay {
-	@Override
-	public void sendEventMessage(MotechEvent motechEvent) {
-		
-	}
+    @Override
+    public void sendEventMessage(MotechEvent motechEvent) {
+
+    }
 }
 
 @RunWith(MockitoJUnitRunner.class)

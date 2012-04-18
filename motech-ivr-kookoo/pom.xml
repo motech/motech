@@ -120,7 +120,7 @@
         </dependency>
         <dependency>
             <groupId>org.motechproject</groupId>
-            <artifactId>motech-platform-ivr</artifactId>
+            <artifactId>motech-platform-ivr-api</artifactId>
             <version>0.10-SNAPSHOT</version>
         </dependency>
         <dependency>

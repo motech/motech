@@ -113,6 +113,7 @@
         <module>motech-platform-server</module>
         <module>motech-platform-scheduler</module>
         <module>motech-platform-ivr</module>
+        <module>motech-platform-ivr-api</module>
         <module>motech-platform-server-api</module>
         <module>motech-outbox</module>
         <module>motech-outbox-api</module>
