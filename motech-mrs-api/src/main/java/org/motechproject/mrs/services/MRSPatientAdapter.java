@@ -24,7 +24,7 @@ public interface MRSPatientAdapter {
      * @param patient Patient instance with updated values (MOTECH identifier cannot be changed)
      * @return The MOTECH identifier of the updated patient if successfully updated
      */
-    String updatePatient(MRSPatient patient);
+    MRSPatient updatePatient(MRSPatient patient);
 
     /**
      * Fetches a patient by the given patient id

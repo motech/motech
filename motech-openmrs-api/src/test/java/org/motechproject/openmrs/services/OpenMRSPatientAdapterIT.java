@@ -73,11 +73,11 @@ public class OpenMRSPatientAdapterIT extends OpenMRSIntegrationTestBase {
                 .gender(gender).address("address changed").addAttribute(new Attribute("Insured", "true")).addAttribute(new Attribute("NHIS Number", "123465"));
 
         final MRSFacility changedFacility = facilityAdapter.saveFacility(new MRSFacility("name", "country", "region", null, null));
-        final MRSPatient updatedPatient = new MRSPatient(savedPatient.getId(), "1234567", mrsPersonUpdated, changedFacility);
-        final String updatedMotechId = patientAdapter.updatePatient(updatedPatient);
+        final MRSPatient patientToBeUpdated = new MRSPatient(savedPatient.getId(), "1234567", mrsPersonUpdated, changedFacility);
+        final MRSPatient updatedPatient = patientAdapter.updatePatient(patientToBeUpdated);
 
-        assertThat(savedPatient.getMotechId(), is(equalTo(updatedMotechId)));
-        assertThat(patientAdapter.getPatientByMotechId(savedPatient.getMotechId()).getPerson().getMiddleName(), is(equalTo(updatedMiddleName)));
+        assertThat(savedPatient.getMotechId(), is(equalTo(updatedPatient.getMotechId())));
+        assertThat(updatedPatient.getPerson().getMiddleName(), is(equalTo(updatedMiddleName)));
     }
 
     private MRSPatient createMRSPatient(String first, String middle, String last, String address1, Date birthDate, String gender, Boolean birthDateEstimated, String motechId) {
@@ -94,12 +94,12 @@ public class OpenMRSPatientAdapterIT extends OpenMRSIntegrationTestBase {
     public void shouldSearchPatientsByNameOrId() {
 //        Should also handle when name is null in the DB for production records
         final String motechId1 = "423546";
-        final String firstName1 = "Allan";
+        final String firstName1 = "Amesh";
         final String middleName1 = "Ben";
         final String lastName1 = "Doug";
 
         final String motechId2 = "12356";
-        final String firstName2 = "Ashley";
+        final String firstName2 = "Amet";
         final String middleName2 = "Brit";
         final String lastName2 = "Cathey";
 
@@ -125,7 +125,7 @@ public class OpenMRSPatientAdapterIT extends OpenMRSIntegrationTestBase {
         createPatientInOpenMrs(motechId3, firstName3, middleName3, lastName3, address, birthDate, gender, birthDateEstimated, savedFacility);
         createPatientInOpenMrs(motechId4, firstName4, middleName4, lastName4, address, birthDate, gender, birthDateEstimated, savedFacility);
 
-        List<MRSPatient> returnedPatients = patientAdapter.search("A", null);
+        List<MRSPatient> returnedPatients = patientAdapter.search("Am", null);
 
         new PatientTestUtil().verifyReturnedPatient(firstName1, middleName1, lastName1, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(0), motechId1);
         new PatientTestUtil().verifyReturnedPatient(firstName2, middleName2, lastName2, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(1), motechId2);
@@ -133,12 +133,9 @@ public class OpenMRSPatientAdapterIT extends OpenMRSIntegrationTestBase {
 
         assertThat(patientAdapter.search("x", null), is(equalTo(Arrays.<MRSPatient>asList())));
 
-        returnedPatients = patientAdapter.search("All", null);
+        returnedPatients = patientAdapter.search("Ames", null);
         assertThat(returnedPatients.size(), is(equalTo(1)));
         new PatientTestUtil().verifyReturnedPatient(firstName1, middleName1, lastName1, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(0), motechId1);
-
-        returnedPatients = patientAdapter.search("A", null);
-        assertThat(returnedPatients.size(), is(equalTo(2)));
 
         returnedPatients = patientAdapter.search(null, "423546");
         assertThat(returnedPatients.size(), is(equalTo(1)));
@@ -149,7 +146,7 @@ public class OpenMRSPatientAdapterIT extends OpenMRSIntegrationTestBase {
 
         assertThat(patientAdapter.search(null, "0000"), is(equalTo(Arrays.<MRSPatient>asList())));
 
-        returnedPatients = patientAdapter.search("Ashley", "12356");
+        returnedPatients = patientAdapter.search("Cathey", "12356");
         assertThat(returnedPatients.size(), is(equalTo(1)));
         new PatientTestUtil().verifyReturnedPatient(firstName2, middleName2, lastName2, address, birthDate, birthDateEstimated, gender, savedFacility, returnedPatients.get(0), motechId2);
 
@@ -167,6 +164,31 @@ public class OpenMRSPatientAdapterIT extends OpenMRSIntegrationTestBase {
         assertThat(returnedPatients.size(), is(equalTo(0)));
 
         assertThat(patientAdapter.search("x", "0000"), is(equalTo(Arrays.<MRSPatient>asList())));
+    }
+
+    @Test
+    @Transactional(readOnly = true)
+    public void shouldCreatePatientInIdempotentWayWithMotechId() {
+        final String first = "First";
+        final String middle = "Middle";
+        final String last = "Last";
+        final String address1 = "a good street in ghana";
+        final Date birthDate = new LocalDate(1970, 3, 11).toDate();
+        final String gender = "M";
+        Boolean birthDateEstimated = true;
+        String motechId = "1234567";
+
+        final MRSFacility savedFacility = facilityAdapter.saveFacility(new MRSFacility("name", "country", "region", "district", "province"));
+
+        MRSPerson mrsPerson = new MRSPerson().firstName(first).middleName(middle).lastName(last).dateOfBirth(birthDate).birthDateEstimated(birthDateEstimated)
+                .gender(gender).address(address1);
+        final MRSPatient patient = new MRSPatient(motechId, mrsPerson, savedFacility);
+        final MRSPatient savedPatient = patientAdapter.savePatient(patient);
+        final MRSPatient duplicatePatient = patientAdapter.savePatient(patient);
+
+        assertThat(savedPatient.getMotechId(), is(duplicatePatient.getMotechId()));
+        new PatientTestUtil().verifyReturnedPatient(first, middle, last, address1, birthDate, birthDateEstimated, gender, savedFacility, savedPatient, motechId);
+        new PatientTestUtil().verifyReturnedPatient(first, middle, last, address1, birthDate, birthDateEstimated, gender, savedFacility, duplicatePatient, motechId);
     }
 
     @Test

@@ -87,6 +87,7 @@ public class OpenMRSEncounterAdapterIT extends OpenMRSIntegrationTestBase {
     }
 
     @Test
+    @Transactional(readOnly = true)
     public void creationOfEncounterShouldHappenInIdempotentWay() throws UserAlreadyExistsException {
 
         MRSPerson personCreator = new MRSPerson().firstName("SampleTest");
