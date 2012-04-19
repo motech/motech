@@ -87,6 +87,11 @@
             <artifactId>spring-oxm-tiger</artifactId>
             <version>1.0-m2</version>
         </dependency>
+        <dependency>
+            <groupId>aopalliance</groupId>
+            <artifactId>aopalliance</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -105,7 +110,14 @@
                         <Private-Package>
                             org.motechproject.server.pillreminder.*
                         </Private-Package>
-                        <Embed-Dependency>!*</Embed-Dependency>
+                        <Import-Package>
+                            org.aopalliance.aop;version=1.0,
+                            *
+                        </Import-Package>
+                        <Embed-Dependency>
+                            motech-platform-scheduler,
+                            quartz
+                        </Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
