@@ -32,78 +32,85 @@ public class AlertTest {
 
     @Test
     public void shouldReturnElapsedAlertCountWithZeroOffset() {
-        Alert alert = new Alert(days(0), days(1), 10, 0);
+        Alert alert = new Alert(days(0), days(1), 10, 0, false);
         int alertCount = alert.getElapsedAlertCount(newDateTime(2012, 2, 18, 0, 0, 0), new Time(8, 10));
         assertEquals(3, alertCount);
     }
 
     @Test
     public void shouldReturnElapsedAlertCountWithNonZeroOffset() {
-        Alert alert = new Alert(days(1), days(1), 10, 0);
+        Alert alert = new Alert(days(1), days(1), 10, 0, false);
         int alertCount = alert.getElapsedAlertCount(newDateTime(2012, 2, 18, 0, 0, 0), new Time(8, 10));
         assertEquals(2, alertCount);
     }
 
     @Test
     public void shouldReturnElapsedAlertCountWhenStartDateIsTodayAndPreferredTimeIsAfterNow() {
-        Alert alert = new Alert(days(0), days(1), 10, 0);
+        Alert alert = new Alert(days(0), days(1), 10, 0, false);
         int elapsedAlertCount = alert.getElapsedAlertCount(newDateTime(2012, 2, 20, 0, 0, 0), new Time(8, 20));
         assertEquals(0, elapsedAlertCount);
     }
 
     @Test
     public void shouldReturnElapsedAlertCountWhenStartDateIsTodayAndAlertTimeIsAfterNow() {
-        Alert alert = new Alert(days(0), days(1), 10, 0);
+        Alert alert = new Alert(days(0), days(1), 10, 0, false);
         assertEquals(0, alert.getElapsedAlertCount(newDateTime(2012, 2, 20, 8, 20, 0), null));
-        assertEquals(10, alert.getRemainingAlertCount(newDateTime(2012, 2, 20, 8, 20, 0), null));
+        assertEquals(10, alert.getRemainingAlertCount(newDateTime(2012, 2, 20, 8, 20, 0), newDateTime(2012, 3, 20, 8, 20, 0), null));
     }
 
     @Test
     public void shouldNotElapseMoreAlertsThanItsCount() {
-        Alert alert = new Alert(days(0), days(1), 3, 0);
+        Alert alert = new Alert(days(0), days(1), 3, 0, false);
         int elapsedAlertCount = alert.getElapsedAlertCount(newDateTime(2012, 2, 15, 0, 0, 0), new Time(8, 20));
         assertEquals(3, elapsedAlertCount);
     }
 
     @Test
     public void twoAlertsShouldBeElapsed_TestingWithHourUnits() {
-        Alert alert = new Alert(hours(0), hours(1), 3, 0);
+        Alert alert = new Alert(hours(0), hours(1), 3, 0, false);
         assertEquals(2, alert.getElapsedAlertCount(newDateTime(2012, 2, 20, 7, 10, 0), null));
-        assertEquals(1, alert.getRemainingAlertCount(newDateTime(2012, 2, 20, 7, 10, 0), null));
+        assertEquals(1, alert.getRemainingAlertCount(newDateTime(2012, 2, 20, 7, 10, 0), newDateTime(2012, 3, 20, 7, 10, 0), null));
     }
 
     @Test
     public void alertWithAlertTimeAtCurrentTimeIsNotElapsed_TestingWithHourUnits() {
-        Alert alert = new Alert(hours(0), hours(1), 3, 0);
+        Alert alert = new Alert(hours(0), hours(1), 3, 0, false);
         assertEquals(0, alert.getElapsedAlertCount(newDateTime(2012, 2, 20, 8, 15, 0), null));
-        assertEquals(3, alert.getRemainingAlertCount(newDateTime(2012, 2, 20, 8, 15, 0), null));
+        assertEquals(3, alert.getRemainingAlertCount(newDateTime(2012, 2, 20, 8, 15, 0), newDateTime(2012, 3, 20, 8, 15, 0), null));
     }
 
     @Test
     public void shouldGetNextAlertDateTimeAtThePreferredTime() {
-        Alert alert = new Alert(days(0), days(1), 10, 0);
-        DateTime nextAlertDateTime = alert.getNextAlertDateTime(DateUtil.newDateTime(2012, 2, 18, 0, 0, 0), new Time(8, 10));
-        assertEquals(DateUtil.newDateTime(2012, 2, 21, 8, 10, 0), nextAlertDateTime);
+        Alert alert = new Alert(days(0), days(1), 10, 0, false);
+        DateTime nextAlertDateTime = alert.getNextAlertDateTime(newDateTime(2012, 2, 18, 0, 0, 0), new Time(8, 10));
+        assertEquals(newDateTime(2012, 2, 21, 8, 10, 0), nextAlertDateTime);
     }
 
     @Test
     public void shouldGetNextAlertDateTime() {
-        Alert alert = new Alert(days(0), days(1), 10, 0);
-        DateTime nextAlertDateTime = alert.getNextAlertDateTime(DateUtil.newDateTime(2012, 2, 18, 5, 4, 3), null);
-        assertEquals(DateUtil.newDateTime(2012, 2, 21, 5, 4, 3), nextAlertDateTime);
+        Alert alert = new Alert(days(0), days(1), 10, 0, false);
+        DateTime nextAlertDateTime = alert.getNextAlertDateTime(newDateTime(2012, 2, 18, 5, 4, 3), null);
+        assertEquals(newDateTime(2012, 2, 21, 5, 4, 3), nextAlertDateTime);
     }
 
     @Test
     public void alertsForTodayWillBeElapsedIfPreferredTimeIsBeforeCurrentTime() {
-        Alert alert = new Alert(days(0), days(1), 10, 0);
-        int alertCount = alert.getRemainingAlertCount(DateUtil.newDateTime(2012, 2, 18, 0, 0, 0), new Time(8, 10));
+        Alert alert = new Alert(days(0), days(1), 10, 0, false);
+        int alertCount = alert.getRemainingAlertCount(newDateTime(2012, 2, 18, 0, 0, 0), newDateTime(2012, 3, 18, 0, 0, 0), new Time(8, 10));
         assertEquals(7, alertCount);
     }
 
     @Test
     public void alertsForTodayWillBeElapsedIfAlertTimeIsBeforeCurrentTime() {
-        Alert alert = new Alert(days(0), days(1), 10, 0);
-        int alertCount = alert.getRemainingAlertCount(DateUtil.newDateTime(2012, 2, 18, 8, 10, 0), null);
+        Alert alert = new Alert(days(0), days(1), 10, 0, false);
+        int alertCount = alert.getRemainingAlertCount(newDateTime(2012, 2, 18, 8, 10, 0), newDateTime(2012, 3, 18, 8, 10, 0), null);
         assertEquals(7, alertCount);
+    }
+
+    @Test
+    public void alertsShouldNotBeScheduledOutsideTheWindow() {
+        Alert alert = new Alert(days(0), days(1), 10, 0, false);
+        int alertCount = alert.getRemainingAlertCount(newDateTime(2012, 2, 20, 8, 10, 0), newDateTime(2012, 2, 24, 8, 10, 0), null);
+        assertEquals(4, alertCount);
     }
 }

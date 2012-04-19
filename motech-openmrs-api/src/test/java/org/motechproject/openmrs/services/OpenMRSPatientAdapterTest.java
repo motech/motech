@@ -290,13 +290,7 @@ public class OpenMRSPatientAdapterTest {
                         nhisExpiryDateString)).addAttribute(new Attribute(insuredAttribute, String.valueOf(insured)));
         String newFacilityId = "60";
         final MRSFacility mrsFacility = new MRSFacility(newFacilityId);
-        Location location = new Location();
-        location.setName(facilityName);
-        location.setAddress6(facilityRegion);
-        location.setStateProvince(facilitySubDistrict);
-        location.setCountyDistrict(facilityDistrict);
-        location.setCountry(facilityCountry);
-        location.setName(facilityName);
+        Location location = location(facilityName, facilityCountry, facilityRegion, facilityDistrict, facilitySubDistrict);
         when(mockFacilityAdapter.getLocation(newFacilityId)).thenReturn(location);
         final MRSFacility mrsFacilityOld = new MRSFacility("61", facilityName + "Old", facilityCountry + "Old", facilityRegion + "Old", facilityDistrict + "Old", facilitySubDistrict + "Old");
         MRSPatient mrsPatient = new MRSPatient(motechId, person, mrsFacility);
@@ -314,14 +308,15 @@ public class OpenMRSPatientAdapterTest {
         when(mockPersonService.getPersonAttributeTypeByName(nhisExpirationDateAttribute)).thenReturn(expirationDateAttributeType);
         when(mockPatientService.getPatient(Integer.valueOf(mrsPatient.getMotechId()))).thenReturn(mockPatient);
         when(mockPatientService.getPatient(Integer.valueOf(mrsPatient.getMotechId()))).thenReturn(mockPatient);
+        when(mockPatientService.savePatient(Matchers.any(Patient.class))).thenReturn(mockPatient);
+
         final OpenMRSPatientAdapter spyPatientAdapter = spy(openMRSPatientAdapter);
         doReturn(mockPatient).when(spyPatientAdapter).getOpenmrsPatientByMotechId(mrsPatient.getMotechId());
         spyPatientAdapter.updatePatient(mrsPatient);
+
         final ArgumentCaptor<Patient> captor = ArgumentCaptor.forClass(Patient.class);
         verify(mockPatientService).savePatient(captor.capture());
-
         final Patient actualPatient = captor.getValue();
-
         assertThat(actualPatient.getPatientIdentifier().getIdentifier(), is(motechId));
         assertThat(actualPatient.getGivenName(), is(preferredName));
         assertThat(actualPatient.getMiddleName(), is(middleName));
@@ -338,6 +333,16 @@ public class OpenMRSPatientAdapterTest {
         assertThat(actualPatient.getPatientIdentifier().getLocation().getCountyDistrict(), is(facilityDistrict));
         assertThat(actualPatient.getPatientIdentifier().getLocation().getStateProvince(), is(facilitySubDistrict));
         assertThat(actualPatient.getPatientIdentifier().getLocation().getName(), is(facilityName));
+    }
 
+    private Location location(String facilityName, String facilityCountry, String facilityRegion, String facilityDistrict, String facilitySubDistrict) {
+        Location location = new Location();
+        location.setName(facilityName);
+        location.setAddress6(facilityRegion);
+        location.setStateProvince(facilitySubDistrict);
+        location.setCountyDistrict(facilityDistrict);
+        location.setCountry(facilityCountry);
+        location.setName(facilityName);
+        return location;
     }
 }

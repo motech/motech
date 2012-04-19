@@ -8,6 +8,7 @@ public class AlertRecord {
     private List<String> offset = new ArrayList<String>();
     private List<String> interval = new ArrayList<String>();
     private String count;
+    private boolean floating;
 
     public List<String> offset() {
         return offset;
@@ -23,5 +24,9 @@ public class AlertRecord {
 
     public String count() {
         return count;
+    }
+
+    public boolean isFloating() {
+        return floating;
     }
 }

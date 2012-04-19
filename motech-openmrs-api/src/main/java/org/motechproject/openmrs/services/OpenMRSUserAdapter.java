@@ -1,10 +1,10 @@
 package org.motechproject.openmrs.services;
 
+import org.motechproject.mrs.exception.MRSException;
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
 import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.MRSPerson;
 import org.motechproject.mrs.model.MRSUser;
-import org.motechproject.mrs.exception.MRSException;
 import org.motechproject.mrs.services.MRSUserAdapter;
 import org.motechproject.openmrs.model.Password;
 import org.openmrs.*;

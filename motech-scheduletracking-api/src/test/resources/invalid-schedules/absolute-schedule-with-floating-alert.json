@@ -1,0 +1,25 @@
+{
+    "name":"Absolute Schedule with floating alert",
+    "absolute": true,
+    "milestones":[
+        {
+            "name":"Default",
+            "scheduleWindows":{
+                "earliest":["1 Weeks"],
+                "due":["2 Weeks"],
+                "late":["3 Weeks"],
+                "max":["4 Weeks"]
+            },
+            "alerts":[
+                {
+                    "window":"due",
+                    "offset" : ["0 Days"],
+                    "interval":["1 Day"],
+                    "count":"1",
+                    "floating": "true"
+                }
+            ]
+        }
+
+    ]
+}

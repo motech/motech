@@ -38,6 +38,17 @@ public class OpenMRSFacilityAdapterIT extends OpenMRSIntegrationTestBase {
 
     @Test
     @Transactional(readOnly = true)
+    public void testIdempotencyWhileSavingLocation() {
+        MRSFacility facility = new MRSFacility("my facility", "ghana", "region", "district", "kaseena");
+        final MRSFacility savedFacility = mrsFacilityAdapter.saveFacility(facility);
+        assertNotNull(savedFacility);
+        final MRSFacility duplicateFacility = mrsFacilityAdapter.saveFacility(facility);
+
+        assertEquals(savedFacility.getId(), duplicateFacility.getId());
+    }
+
+    @Test
+    @Transactional(readOnly = true)
     public void testGetLocations() {
         int size = mrsFacilityAdapter.getFacilities().size();
         String facilityName = "my facility";

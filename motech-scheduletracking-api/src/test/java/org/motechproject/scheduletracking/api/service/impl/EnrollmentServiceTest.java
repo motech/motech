@@ -54,8 +54,8 @@ public class EnrollmentServiceTest extends BaseUnitTest {
         Time preferredAlertTime = new Time(8, 10);
 
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
-        milestone.addAlert(WindowName.due, new Alert(days(0), weeks(1), 2, 1));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0, false));
+        milestone.addAlert(WindowName.due, new Alert(days(0), weeks(1), 2, 1, false));
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
@@ -92,8 +92,8 @@ public class EnrollmentServiceTest extends BaseUnitTest {
         Time preferredAlertTime = new Time(8, 10);
 
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
-        milestone.addAlert(WindowName.due, new Alert(days(0), weeks(1), 2, 1));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0, false));
+        milestone.addAlert(WindowName.due, new Alert(days(0), weeks(1), 2, 1, false));
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
@@ -175,7 +175,7 @@ public class EnrollmentServiceTest extends BaseUnitTest {
     public void shouldFulfillCurrentMilestoneInEnrollment() {
         Milestone firstMilestone = new Milestone("First Shot", weeks(1), weeks(1), weeks(1), weeks(1));
         Milestone secondMilestone = new Milestone("Second Shot", weeks(1), weeks(1), weeks(1), weeks(1));
-        secondMilestone.addAlert(WindowName.earliest, new Alert(days(0), weeks(1), 3, 0));
+        secondMilestone.addAlert(WindowName.earliest, new Alert(days(0), weeks(1), 3, 0, false));
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
@@ -194,7 +194,7 @@ public class EnrollmentServiceTest extends BaseUnitTest {
     public void shouldScheduleJobsForNextMilestoneWhenCurrentMilestoneIsFulfilled() {
         Milestone firstMilestone = new Milestone("First Shot", weeks(1), weeks(1), weeks(1), weeks(1));
         Milestone secondMilestone = new Milestone("Second Shot", weeks(1), weeks(1), weeks(1), weeks(1));
-        secondMilestone.addAlert(WindowName.earliest, new Alert(days(0), weeks(1), 3, 0));
+        secondMilestone.addAlert(WindowName.earliest, new Alert(days(0), weeks(1), 3, 0, false));
         Schedule schedule = new Schedule("Yellow Fever Vaccination");
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allTrackedSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
@@ -268,7 +268,7 @@ public class EnrollmentServiceTest extends BaseUnitTest {
     @Test
     public void shouldUnenrollEntityFromTheSchedule() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0, false));
         String scheduleName = "my_schedule";
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
@@ -300,7 +300,7 @@ public class EnrollmentServiceTest extends BaseUnitTest {
         DateTime startOfSchedule = weeksAgo(5);
         DateTime enrolledOn = weeksAgo(3);
         Enrollment enrollment = new Enrollment("ID-074285", schedule, "milestone", startOfSchedule, enrolledOn, new Time(8, 20), EnrollmentStatus.ACTIVE, null);
-        assertEquals(startOfSchedule, enrollment.getReferenceForAlerts());
+        assertEquals(startOfSchedule, enrollment.getCurrentMilestoneStartDate());
     }
 
     @Test
@@ -313,7 +313,7 @@ public class EnrollmentServiceTest extends BaseUnitTest {
 
         DateTime expected = weeksAgo(3);
         Enrollment enrollment = new Enrollment("ID-074285", schedule, "second_milestone", weeksAgo(5), expected, null, EnrollmentStatus.ACTIVE, null);
-        assertEquals(expected, enrollment.getReferenceForAlerts());
+        assertEquals(expected, enrollment.getCurrentMilestoneStartDate());
     }
 
     @Test

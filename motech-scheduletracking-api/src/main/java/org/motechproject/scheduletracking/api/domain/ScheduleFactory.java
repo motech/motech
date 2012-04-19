@@ -5,6 +5,7 @@ import org.joda.time.Period;
 import org.joda.time.ReadWritablePeriod;
 import org.joda.time.format.PeriodFormatterBuilder;
 import org.joda.time.format.PeriodParser;
+import org.motechproject.scheduletracking.api.domain.exception.InvalidScheduleDefinitionException;
 import org.motechproject.scheduletracking.api.domain.json.AlertRecord;
 import org.motechproject.scheduletracking.api.domain.json.MilestoneRecord;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
@@ -65,9 +66,12 @@ public class ScheduleFactory {
     private void addAlertsToMilestone(Milestone milestone, List<AlertRecord> alerts, Map<WindowName, Period> windowStarts, boolean isAbsoluteAlert, int alertIndex) {
         for (AlertRecord alertRecord : alerts) {
             Period offset = getPeriodFromValue(alertRecord.offset());
-            if (isAbsoluteAlert)
+            if (isAbsoluteAlert) {
                 offset = offset.minus(windowStarts.get(WindowName.valueOf(alertRecord.window())));
-            milestone.addAlert(WindowName.valueOf(alertRecord.window()), new Alert(offset, getPeriodFromValue(alertRecord.interval()), Integer.parseInt(alertRecord.count()), alertIndex++));
+                if (alertRecord.isFloating())
+                    throw new InvalidScheduleDefinitionException("cannot define floating alerts for absoulte schedules.");
+            }
+            milestone.addAlert(WindowName.valueOf(alertRecord.window()), new Alert(offset, getPeriodFromValue(alertRecord.interval()), Integer.parseInt(alertRecord.count()), alertIndex++, alertRecord.isFloating()));
         }
     }
 

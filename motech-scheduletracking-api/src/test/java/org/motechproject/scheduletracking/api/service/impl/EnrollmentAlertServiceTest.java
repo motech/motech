@@ -60,7 +60,7 @@ public class EnrollmentAlertServiceTest {
         String scheduleName = "my_schedule";
 
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(22));
-        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0, false));
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
 
@@ -81,8 +81,8 @@ public class EnrollmentAlertServiceTest {
         String scheduleName = "my_schedule";
 
         Milestone milestone = new Milestone("milestone", hours(3), weeks(1).plus(hours(4)), hours(1), hours(5));
-        milestone.addAlert(WindowName.earliest, new Alert(hours(1), hours(1), 2, 0));
-        milestone.addAlert(WindowName.due, new Alert(weeks(1), hours(2), 2, 1));
+        milestone.addAlert(WindowName.earliest, new Alert(hours(1), hours(1), 2, 0, false));
+        milestone.addAlert(WindowName.due, new Alert(weeks(1), hours(2), 2, 1, false));
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
         DateTime now = DateUtil.now();
@@ -108,8 +108,8 @@ public class EnrollmentAlertServiceTest {
         String scheduleName = "my_schedule";
 
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(22));
-        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
-        milestone.addAlert(WindowName.due, new Alert(days(0), days(3), 2, 1));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0, false));
+        milestone.addAlert(WindowName.due, new Alert(days(0), days(3), 2, 1, false));
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
 
@@ -131,7 +131,7 @@ public class EnrollmentAlertServiceTest {
     @Test
     public void shouldPassMilestoneAlertAsPayloadWhileSchedulingTheJob() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(22));
-        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0, false));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
 
@@ -151,7 +151,7 @@ public class EnrollmentAlertServiceTest {
     @Test
     public void shouldNotScheduleJobsForElapsedAlerts() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(3), 3, 0));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(3), 3, 0, false));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
 
@@ -168,7 +168,7 @@ public class EnrollmentAlertServiceTest {
     @Test
     public void alertIsElapsedTodayIfItIsBeforePreferredAlertTime() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(3), 3, 0));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(3), 3, 0, false));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
 
@@ -184,7 +184,7 @@ public class EnrollmentAlertServiceTest {
     @Test
     public void alertIsNotElapsedTodayIfItIsNotBeforePreferredAlertTime() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(3), 3, 0));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(3), 3, 0, false));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
 
@@ -199,7 +199,7 @@ public class EnrollmentAlertServiceTest {
     @Test
     public void shouldNotScheduleJobsIfAllAlertsHaveElapsed() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(3), 1, 0));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(3), 1, 0, false));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
 
@@ -212,7 +212,7 @@ public class EnrollmentAlertServiceTest {
     @Test
     public void shouldScheduleAlertJobWithOffset() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.due, new Alert(days(3), days(1), 3, 0));
+        milestone.addAlert(WindowName.due, new Alert(days(3), days(1), 3, 0, false));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
 
@@ -227,7 +227,7 @@ public class EnrollmentAlertServiceTest {
     public void shouldSceduleJobForAbsoluteSchedule() {
         Milestone firstMilestone = new Milestone("milestone_1", weeks(1), weeks(1), weeks(1), weeks(1));
         Milestone secondMilestone = new Milestone("milestone_2", weeks(1), weeks(1), weeks(1), weeks(1));
-        secondMilestone.addAlert(WindowName.due, new Alert(days(0), days(1), 1, 0));
+        secondMilestone.addAlert(WindowName.due, new Alert(days(0), days(1), 1, 0, false));
 
         Schedule schedule = new Schedule("my_schedule");
         schedule.isBasedOnAbsoluteWindows(true);
@@ -241,10 +241,28 @@ public class EnrollmentAlertServiceTest {
     }
 
     @Test
+    public void shouldScheduleJobForFloatingAlerts() {
+        Milestone firstMilestone = new Milestone("milestone_1", weeks(1), weeks(1), weeks(1), weeks(1));
+        firstMilestone.addAlert(WindowName.due, new Alert(days(0), days(1), 7, 0, true));
+
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(firstMilestone);
+
+        Enrollment enrollmentIntoSecondMilestone = new Enrollment("some_id", schedule, "milestone_1", daysAgo(12), DateUtil.now(), new Time(8, 15), EnrollmentStatus.ACTIVE, null);
+        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollmentIntoSecondMilestone);
+
+        ArgumentCaptor<RepeatingSchedulableJob> repeatJobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
+        verify(schedulerService, times(1)).safeScheduleRepeatingJob(repeatJobCaptor.capture());
+
+        assertEquals(DateUtil.now().toDate(), repeatJobCaptor.getValue().getStartTime());
+        assertEquals(1, repeatJobCaptor.getValue().getRepeatCount().intValue());
+    }
+
+    @Test
     public void shouldNotScheduleJobsForFutureMilestones() {
         Milestone firstMilestone = new Milestone("milestone_1", weeks(1), weeks(1), weeks(1), weeks(1));
         Milestone secondMilestone = new Milestone("milestone_2", weeks(1), weeks(1), weeks(1), weeks(1));
-        secondMilestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
+        secondMilestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0, false));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(firstMilestone, secondMilestone);
 
@@ -257,7 +275,7 @@ public class EnrollmentAlertServiceTest {
     @Test
     public void shouldNotScheduleJobsForPassedWindowInTheFirstMilestone() {
         Milestone milestone = new Milestone("milestone_1", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 4, 0));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 4, 0, false));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
 
@@ -270,9 +288,9 @@ public class EnrollmentAlertServiceTest {
     @Test
     public void shouldNotScheduleJobsForPassedMilestones() {
         Milestone firstMilestone = new Milestone("milestone_1", weeks(1), weeks(1), weeks(1), weeks(1));
-        firstMilestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 4, 0));
+        firstMilestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 4, 0, false));
         Milestone secondMilestone = new Milestone("milestone_2", weeks(1), weeks(1), weeks(1), weeks(1));
-        secondMilestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 2, 1));
+        secondMilestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 2, 1, false));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(firstMilestone, secondMilestone);
 

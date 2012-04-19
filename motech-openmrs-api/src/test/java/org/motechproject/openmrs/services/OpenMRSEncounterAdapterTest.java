@@ -3,7 +3,6 @@ package org.motechproject.openmrs.services;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.mrs.model.*;
 import org.openmrs.*;
@@ -167,7 +166,6 @@ public class OpenMRSEncounterAdapterTest {
 
         MRSEncounter returnedMRSEncounterAfterSaving = encounterAdapterSpy.createEncounter(mrsEncounter);
         assertThat(returnedMRSEncounterAfterSaving, is(equalTo(savedMrsEncounter)));
-        verify(mockOpenMrsObservationAdapter, never()).saveObservations(anySet(), Matchers.any(Encounter.class));
     }
 
     @Test

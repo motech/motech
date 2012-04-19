@@ -37,8 +37,8 @@ public class EnrollmentDefaultmentServiceTest {
     @Test
     public void shouldScheduleJobAtEndOfMilestoneToCaptureDefaultmentState() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
-        milestone.addAlert(WindowName.due, new Alert(days(0), weeks(1), 2, 1));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0, false));
+        milestone.addAlert(WindowName.due, new Alert(days(0), weeks(1), 2, 1, false));
         String scheduleName = "my_schedule";
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
@@ -61,8 +61,8 @@ public class EnrollmentDefaultmentServiceTest {
     @Test
     public void shouldScheduleJobOnlyIfMaxWindowEndDateIsNotInThePast() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
-        milestone.addAlert(WindowName.due, new Alert(days(0), weeks(1), 2, 1));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0, false));
+        milestone.addAlert(WindowName.due, new Alert(days(0), weeks(1), 2, 1, false));
         String scheduleName = "my_schedule";
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);

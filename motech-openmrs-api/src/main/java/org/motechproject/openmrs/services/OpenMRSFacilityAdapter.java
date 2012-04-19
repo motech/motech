@@ -1,6 +1,10 @@
 package org.motechproject.openmrs.services;
 
+import ch.lambdaj.Lambda;
+import ch.lambdaj.function.matcher.LambdaJMatcher;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.motechproject.mrs.model.MRSFacility;
 import org.motechproject.mrs.services.MRSFacilityAdapter;
 import org.openmrs.Location;
@@ -9,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static ch.lambdaj.Lambda.having;
+import static ch.lambdaj.Lambda.on;
 
 /**
  * Manages OpenMRS Facilities
@@ -25,13 +32,18 @@ public class OpenMRSFacilityAdapter implements MRSFacilityAdapter {
      * @return The saved Facility
      */
     @Override
-    public MRSFacility saveFacility(MRSFacility facility) {
+    public MRSFacility saveFacility(final MRSFacility facility) {
         String facilityId = facility.getId();
         Location location = new Location();
         if (facilityId != null) {
             location = locationService.getLocation(Integer.parseInt(facilityId));
+        } else {
+            final List<Location> locationsWithSameName = locationService.getLocations(facility.getName());
+            final List<Location> matchedLocation = Lambda.select(locationsWithSameName, having(on(Location.class), locationMatcher(facility)));
+            if (CollectionUtils.isNotEmpty(matchedLocation)) {
+                location = matchedLocation.get(0);
+            }
         }
-
         location.setName(facility.getName());
         location.setCountry(facility.getCountry());
         location.setAddress6(facility.getRegion());
@@ -40,6 +52,21 @@ public class OpenMRSFacilityAdapter implements MRSFacilityAdapter {
 
         Location savedLocation = this.locationService.saveLocation(location);
         return convertLocationToFacility(savedLocation);
+    }
+
+    private LambdaJMatcher<Location> locationMatcher(final MRSFacility facility) {
+        return new LambdaJMatcher<Location>() {
+            @Override
+            public boolean matches(Object o) {
+                Location location = (Location) o;
+                return new EqualsBuilder().append(location.getName(), facility.getName())
+                        .append(location.getCountry(), facility.getCountry())
+                        .append(location.getAddress6(), facility.getRegion())
+                        .append(location.getStateProvince(), facility.getStateProvince())
+                        .append(location.getCountyDistrict(), facility.getCountyDistrict())
+                        .isEquals();
+            }
+        };
     }
 
     /**

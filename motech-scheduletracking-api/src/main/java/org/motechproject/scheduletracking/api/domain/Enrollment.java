@@ -6,6 +6,7 @@ import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.model.MotechBaseDataObject;
 import org.motechproject.model.Time;
+import org.motechproject.util.DateUtil;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -101,16 +102,16 @@ public class Enrollment extends MotechBaseDataObject {
     }
 
     @JsonIgnore
-    public DateTime getReferenceForAlerts() {
+    public DateTime getCurrentMilestoneStartDate() {
         if (schedule.isBasedOnAbsoluteWindows()) {
-            DateTime startOfSchedule = getStartOfSchedule();
+            DateTime startOfMilestone = getStartOfSchedule();
             List<Milestone> milestones = schedule.getMilestones();
             for (Milestone milestone : milestones) {
                 if (milestone.getName().equals(currentMilestoneName))
                     break;
-                startOfSchedule = startOfSchedule.plus(milestone.getMaximumDuration());
+                startOfMilestone = startOfMilestone.plus(milestone.getMaximumDuration());
             }
-            return startOfSchedule;
+            return startOfMilestone;
         }
         if (currentMilestoneName.equals(schedule.getFirstMilestone().getName()))
             return getStartOfSchedule();
@@ -157,7 +158,7 @@ public class Enrollment extends MotechBaseDataObject {
     }
 
     public DateTime getStartOfWindowForCurrentMilestone(WindowName windowName) {
-        DateTime currentMilestoneStartDate = getReferenceForAlerts();
+        DateTime currentMilestoneStartDate = getCurrentMilestoneStartDate();
         Milestone currentMilestone = schedule.getMilestone(currentMilestoneName);
         return currentMilestoneStartDate.plus(currentMilestone.getWindowStart(windowName));
     }

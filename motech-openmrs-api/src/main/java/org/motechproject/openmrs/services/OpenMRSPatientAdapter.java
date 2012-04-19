@@ -87,11 +87,15 @@ public class OpenMRSPatientAdapter implements MRSPatientAdapter {
      */
     @Override
     public MRSPatient savePatient(MRSPatient patient) {
-        final org.openmrs.Patient openMRSPatient = patientHelper.buildOpenMrsPatient(patient,
-                getPatientIdentifierType(IdentifierType.IDENTIFIER_MOTECH_ID),
-                facilityAdapter.getLocation(patient.getFacility().getId()), getAllPersonAttributeTypes());
-
-        return getMrsPatient(patientService.savePatient(openMRSPatient));
+        Patient existingOpenMrsPatient = getOpenmrsPatientByMotechId(patient.getMotechId());
+        if (existingOpenMrsPatient != null) {
+            return updatePatient(patient, existingOpenMrsPatient);
+        } else {
+            org.openmrs.Patient openMRSPatient = patientHelper.buildOpenMrsPatient(patient,
+                    getPatientIdentifierType(IdentifierType.IDENTIFIER_MOTECH_ID),
+                    facilityAdapter.getLocation(patient.getFacility().getId()), getAllPersonAttributeTypes());
+            return getMrsPatient(patientService.savePatient(openMRSPatient));
+        }
     }
 
     /**
@@ -101,10 +105,42 @@ public class OpenMRSPatientAdapter implements MRSPatientAdapter {
      * @return The updated Patient object if found, else null
      */
     @Override
-    public String updatePatient(MRSPatient patient) {
-        Patient openMrsPatient = getOpenmrsPatientByMotechId(patient.getMotechId());
+    public MRSPatient updatePatient(MRSPatient patient) {
+        return updatePatient(patient, getOpenmrsPatientByMotechId(patient.getMotechId()));
+    }
 
-        MRSPerson person = patient.getPerson();
+    MRSPatient updatePatient(MRSPatient fromMRSPatient, Patient openMrsPatient) {
+        MRSPerson person = fromMRSPatient.getPerson();
+        updatePersonName(openMrsPatient, person);
+        openMrsPatient.setBirthdate(person.getDateOfBirth());
+        openMrsPatient.setBirthdateEstimated(person.getBirthDateEstimated());
+        openMrsPatient.setGender(person.getGender());
+
+        for (Attribute attribute : person.getAttributes()) {
+            PersonAttribute personAttribute = openMrsPatient.getAttribute(attribute.name());
+            if (personAttribute != null) {
+                openMrsPatient.removeAttribute(personAttribute);
+            }
+            openMrsPatient.addAttribute(new PersonAttribute(personService.getPersonAttributeTypeByName(attribute.name()), attribute.value()));
+        }
+        Set<PersonAddress> addresses = openMrsPatient.getAddresses();
+        if (!addresses.isEmpty()) {
+            PersonAddress address = addresses.iterator().next();
+            address.setAddress1(person.getAddress());
+        } else {
+            final String address = person.getAddress();
+            PersonAddress personAddress = new PersonAddress();
+            personAddress.setAddress1(address);
+            openMrsPatient.addAddress(personAddress);
+        }
+        openMrsPatient.getPatientIdentifier().setLocation(facilityAdapter.getLocation(fromMRSPatient.getFacility().getId()));
+        openMrsPatient.setDead(person.isDead());
+        openMrsPatient.setDeathDate(person.deathDate());
+
+        return getMrsPatient(patientService.savePatient(openMrsPatient));
+    }
+
+    private void updatePersonName(Patient openMrsPatient, MRSPerson person) {
         if (StringUtils.isNotEmpty(person.getPreferredName())) {
             if (openMrsPatient.getNames().size() == 2) {
                 for (PersonName name : openMrsPatient.getNames()) {
@@ -130,38 +166,6 @@ public class OpenMRSPatientAdapter implements MRSPatientAdapter {
             personName.setGivenName(person.getFirstName());
             personName.setMiddleName(person.getMiddleName());
             personName.setFamilyName(person.getLastName());
-        }
-
-        openMrsPatient.setBirthdate(person.getDateOfBirth());
-        openMrsPatient.setBirthdateEstimated(person.getBirthDateEstimated());
-        openMrsPatient.setGender(person.getGender());
-
-        for (Attribute attribute : person.getAttributes()) {
-            PersonAttribute personAttribute = openMrsPatient.getAttribute(attribute.name());
-            if (personAttribute != null) {
-                openMrsPatient.removeAttribute(personAttribute);
-            }
-            openMrsPatient.addAttribute(new PersonAttribute(personService.getPersonAttributeTypeByName(attribute.name()), attribute.value()));
-        }
-        Set<PersonAddress> addresses = openMrsPatient.getAddresses();
-        if (!addresses.isEmpty()) {
-            PersonAddress address = addresses.iterator().next();
-            address.setAddress1(person.getAddress());
-        } else {
-            final String address = person.getAddress();
-            PersonAddress personAddress = new PersonAddress();
-            personAddress.setAddress1(address);
-            openMrsPatient.addAddress(personAddress);
-        }
-        openMrsPatient.getPatientIdentifier().setLocation(facilityAdapter.getLocation(patient.getFacility().getId()));
-        openMrsPatient.setDead(person.isDead());
-        openMrsPatient.setDeathDate(person.deathDate());
-
-        final Patient savedPatient = patientService.savePatient(openMrsPatient);
-        if (savedPatient != null) {
-            return savedPatient.getPatientIdentifier().getIdentifier();
-        } else {
-            return null;
         }
     }
 
