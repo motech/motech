@@ -112,11 +112,11 @@
                         </Private-Package>
                         <Import-Package>
                             org.aopalliance.aop;version=1.0,
+                            org.springframework.aop;version=3.0.5,
                             *
                         </Import-Package>
                         <Embed-Dependency>
-                            motech-platform-scheduler,
-                            quartz
+                            motech-platform-scheduler
                         </Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
