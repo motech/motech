@@ -57,11 +57,6 @@
         <constructor-arg ref="couchDbInstance"/>
     </bean>
 
-    <bean id="controllerClassNameUrlMapping"
-          class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping">
-    </bean>
-
-    <bean id="decisionTreeVxmlController" class="org.motechproject.server.decisiontree.web.VxmlController"/>
     <bean id="decisionTreeService" class="org.motechproject.server.decisiontree.service.DecisionTreeServiceImpl"/>
 
     <bean id="velocityConfig"
@@ -86,12 +81,4 @@
     </bean>
     <bean id="treeEventProcessor"
           class="org.motechproject.server.decisiontree.service.TreeEventProcessor"/>
-
-    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-        <property name="urlMap">
-            <map>
-                <entry key="/node" value-ref="decisionTreeVxmlController"/>
-            </map>
-        </property>
-    </bean>
 </beans>

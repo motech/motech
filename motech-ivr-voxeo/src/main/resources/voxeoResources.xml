@@ -31,17 +31,6 @@
 
     <context:component-scan base-package="org.motechproject.server"/>
 
-    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-        <property name="urlMap">
-            <map>
-                <entry key="/ccxml" value-ref="ccxmlController"/>
-                <entry key="/flash" value-ref="ivrController"/>
-                <entry key="/incoming" value-ref="ivrController"/>
-                <entry key="/outgoing" value-ref="ivrController"/>
-            </map>
-        </property>
-    </bean>
-
     <bean id="ConfigReader" class="org.motechproject.server.voxeo.config.ConfigReader"/>
     <bean id="commonsHttpClient" class=" org.apache.commons.httpclient.HttpClient"/>
 
