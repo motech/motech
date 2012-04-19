@@ -5,7 +5,6 @@ import ch.lambdaj.function.matcher.LambdaJMatcher;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.motechproject.mrs.exception.UserAlreadyExistsException;
 import org.motechproject.mrs.model.*;
@@ -32,7 +31,6 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.motechproject.openmrs.TestIdGenerator.newGUID;
-import static org.motechproject.openmrs.services.OpenMRSUserAdapter.USER_KEY;
 import static org.motechproject.util.DateUtil.newDate;
 
 public class OpenMRSEncounterAdapterIT extends OpenMRSIntegrationTestBase {
@@ -140,22 +138,6 @@ public class OpenMRSEncounterAdapterIT extends OpenMRSIntegrationTestBase {
         assertObservation(expectedEncounter.getObservations(), actualMRSEncounter.getObservations());
     }
 
-    private MRSPatient createPatient(MRSFacility facility) {
-        final String first = "AlanTest";
-        final String middle = "Wilkinson";
-        final String last = "no";
-        final String address1 = "a good street in ghana";
-        final Date birthDate = new LocalDate(1970, 3, 11).toDate();
-        final String gender = "M";
-        Boolean birthDateEstimated = true;
-        String patientSystemId = newGUID("10000045555");
-
-        MRSPerson mrsPerson = new MRSPerson().firstName(first).lastName(last).middleName(middle).preferredName("prefName").
-                birthDateEstimated(birthDateEstimated).dateOfBirth(birthDate).address(address1).gender(gender);
-        final MRSPatient patient = new MRSPatient(patientSystemId, mrsPerson, facility);
-        return patientAdapter.savePatient(patient);
-    }
-
     private void assertObservation(Set<MRSObservation> expectedSet, Set<MRSObservation> actualSet) {
         assertEquals(expectedSet.size(), actualSet.size());
         for (MRSObservation actual : actualSet) {
@@ -179,10 +161,5 @@ public class OpenMRSEncounterAdapterIT extends OpenMRSIntegrationTestBase {
         return new EqualsBuilder().append(expected.getConceptName(), actual.getConceptName())
                 .append(expected.getDate(), actual.getDate())
                 .append(expected.getValue(), actual.getValue()).isEquals();
-    }
-
-    private MRSUser createUser(MRSUser userCreator) throws UserAlreadyExistsException {
-        userCreator = (MRSUser) userAdapter.saveUser(userCreator).get(USER_KEY);
-        return userCreator;
     }
 }
