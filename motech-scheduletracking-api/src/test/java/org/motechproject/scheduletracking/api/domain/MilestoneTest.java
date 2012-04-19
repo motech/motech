@@ -33,8 +33,8 @@ public class MilestoneTest {
     @Test
     public void shouldAddAlertUnderTheMilestone() {
         Milestone milestone = new Milestone("M1", weeks(1), weeks(1), weeks(1), weeks(1));
-        Alert alert1 = new Alert(days(0), days(0), 0, 0);
-        Alert alert2 = new Alert(days(0), days(0), 0, 1);
+        Alert alert1 = new Alert(days(0), days(0), 0, 0, false);
+        Alert alert2 = new Alert(days(0), days(0), 0, 1, false);
         milestone.addAlert(WindowName.late, alert1);
         milestone.addAlert(WindowName.max, alert2);
         assertArrayEquals(new Alert[]{alert1, alert2}, milestone.getAlerts().toArray());

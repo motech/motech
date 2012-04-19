@@ -111,7 +111,7 @@ public class ScheduleTrackingServiceImplTest {
     @Test
     public void shouldScheduleOneRepeatJobForTheSingleAlertInTheFirstMilestone() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0, false));
         String scheduleName = "my_schedule";
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
@@ -128,7 +128,7 @@ public class ScheduleTrackingServiceImplTest {
     @Test
     public void shouldFulfillTheCurrentMilestone() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0, false));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
@@ -147,7 +147,7 @@ public class ScheduleTrackingServiceImplTest {
     @Test
     public void shouldFulfillTheCurrentMilestoneWithTheSpecifiedDateOnlyUsingDefaultTime() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0, false));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
@@ -167,7 +167,7 @@ public class ScheduleTrackingServiceImplTest {
     @Test
     public void shouldFulfillTheCurrentMilestoneWithTheSpecifiedDateAndTime() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0, false));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
         when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
@@ -195,7 +195,7 @@ public class ScheduleTrackingServiceImplTest {
     @Test
     public void shouldUnenrollEntityFromTheSchedule() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0, false));
         String scheduleName = "my_schedule";
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
@@ -212,14 +212,14 @@ public class ScheduleTrackingServiceImplTest {
     @Test
     public void shouldSafelyUnenrollEntityFromListOfSchedule() {
         Milestone milestone1 = new Milestone("milestone1", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone1.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
+        milestone1.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0, false));
         String schedule1Name = "my_schedule1";
         Schedule schedule1 = new Schedule(schedule1Name);
         schedule1.addMilestones(milestone1);
         when(allTrackedSchedules.getByName(schedule1Name)).thenReturn(schedule1);
 
         Milestone milestone2 = new Milestone("milestone2", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone2.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
+        milestone2.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0, false));
         String schedule2Name = "my_schedule2";
         Schedule schedule2 = new Schedule(schedule2Name);
         schedule2.addMilestones(milestone2);
@@ -240,7 +240,7 @@ public class ScheduleTrackingServiceImplTest {
     @Test
     public void shouldNotThrowAnyExceptionIfEntityIsNotEnrolledIntoSchedule() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
-        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0));
+        milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0, false));
         String scheduleName = "scheduleName";
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);

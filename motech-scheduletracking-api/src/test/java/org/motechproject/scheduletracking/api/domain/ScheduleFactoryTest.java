@@ -2,6 +2,7 @@ package org.motechproject.scheduletracking.api.domain;
 
 import org.joda.time.Period;
 import org.junit.Test;
+import org.motechproject.scheduletracking.api.domain.exception.InvalidScheduleDefinitionException;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReader;
 import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReaderImpl;
@@ -66,6 +67,22 @@ public class ScheduleFactoryTest {
         assertEquals(hours(4), firstMilestone.getAlerts().get(1).getOffset());
         assertEquals(weeks(1), secondMilestone.getAlerts().get(0).getOffset());
         assertEquals(days(1), secondMilestone.getAlerts().get(1).getOffset());
+    }
+
+    @Test
+    public void shouldAddFloatingParameterToAlerts() {
+        Schedule schedule = loadSchedule("Schedule with floating alert", "/schedules");
+
+        List<Milestone> milestones = schedule.getMilestones();
+        Milestone firstMilestone = milestones.get(0);
+
+        assertTrue(firstMilestone.getAlerts().get(0).isFloating());
+        assertFalse(firstMilestone.getAlerts().get(1).isFloating());
+    }
+
+    @Test(expected = InvalidScheduleDefinitionException.class)
+    public void shouldThrowExceptionIfAbsoluteScheduleHasFloatingAlerts() {
+        loadSchedule("Absolute Schedule with floating alert", "/invalid-schedules");
     }
 
     @Test

@@ -17,12 +17,14 @@ public class Alert {
     private Period interval;
     private int count;
     private int index;
+    private boolean floating;
 
-    public Alert(Period offset, Period interval, int count, int index) {
+    public Alert(Period offset, Period interval, int count, int index, boolean floating) {
         this.offset = offset;
         this.interval = interval;
         this.count = count;
         this.index = index;
+        this.floating = floating;
     }
 
     public Period getOffset() {
@@ -37,16 +39,17 @@ public class Alert {
         return index;
     }
 
+    public boolean isFloating() {
+        return floating;
+    }
+
     int getElapsedAlertCount(DateTime startReferenceDateTime, Time preferredAlertTime) {
-        DateTime idealStartDateTime = startReferenceDateTime.plus(offset);
-        DateTime idealStartDateWithPreferredTime = idealStartDateTime;
-        if (preferredAlertTime != null)
-            idealStartDateWithPreferredTime = DateUtil.newDateTime(idealStartDateTime.toLocalDate(), preferredAlertTime.getHour(), preferredAlertTime.getMinute(), 0);
+        DateTime idealStartDateWithPreferredTime = preferredAlertDateTime(startReferenceDateTime, preferredAlertTime);
 
         DateTime now = now();
         if (idealStartDateWithPreferredTime.isBefore(now)) {
             long secsSinceIdealStartOfAlert = (now.getMillis() - idealStartDateWithPreferredTime.getMillis()) / 1000;
-            int elapsedAlerts = (int) ceil(secsSinceIdealStartOfAlert / (double) interval.toStandardSeconds().getSeconds());
+            int elapsedAlerts = possibleNumbersOfAlertsInDuration(secsSinceIdealStartOfAlert);
             return min(elapsedAlerts, count);
         }
         return 0;
@@ -60,7 +63,25 @@ public class Alert {
         return nextAlertDateTime;
     }
 
-    public int getRemainingAlertCount(DateTime milestoneWindowStartDateTime, Time preferredAlertTime) {
-        return count - getElapsedAlertCount(milestoneWindowStartDateTime,  preferredAlertTime);
+    public int getRemainingAlertCount(DateTime startTimeForAlerts, DateTime windowEndTime, Time preferredAlertTime) {
+        return min(count - getElapsedAlertCount(startTimeForAlerts, preferredAlertTime), maximumPossibleAlertsCount(startTimeForAlerts, windowEndTime, preferredAlertTime));
+    }
+
+    private int maximumPossibleAlertsCount(DateTime startTimeForAlerts, DateTime windowEndTime, Time preferredAlertTime) {
+        DateTime preferredStartTimeForAlerts = preferredAlertDateTime(startTimeForAlerts, preferredAlertTime);
+        long windowForAlerts = windowEndTime.minus(preferredStartTimeForAlerts.getMillis()).getMillis() / 1000;
+        return possibleNumbersOfAlertsInDuration(windowForAlerts);
+    }
+
+    private int possibleNumbersOfAlertsInDuration(long duration) {
+        return (int) ceil(duration / (double) interval.toStandardSeconds().getSeconds());
+    }
+
+    private DateTime preferredAlertDateTime(DateTime startReferenceDateTime, Time preferredAlertTime) {
+        DateTime idealStartDateTime = startReferenceDateTime.plus(offset);
+        DateTime idealStartDateWithPreferredTime = idealStartDateTime;
+        if (preferredAlertTime != null)
+            idealStartDateWithPreferredTime = DateUtil.newDateTime(idealStartDateTime.toLocalDate(), preferredAlertTime.getHour(), preferredAlertTime.getMinute(), 0);
+        return idealStartDateWithPreferredTime;
     }
 }
