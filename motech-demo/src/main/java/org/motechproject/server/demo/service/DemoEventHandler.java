@@ -52,7 +52,7 @@ public class DemoEventHandler
     private IVRService ivrService = Context.getInstance().getIvrService();
     private MotechSchedulerGateway schedulerGateway = Context.getInstance().getMotechSchedulerGateway();
 
-    private String vxmlUrl;
+    private String vxmlUrl = "vxml.url";
 
 	@MotechListener(subjects = { EventKeys.CALL_EVENT_SUBJECT })
 	public void call(MotechEvent event) {
