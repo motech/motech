@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,15 +45,14 @@ import java.util.Calendar;
 import java.util.Date;
 
 @Controller
-@RequestMapping("/makeCall")
-public class CallMeController {
+public class CallMeController extends MultiActionController {
 
     @Autowired
     @Qualifier("demoService")
     private DemoService demoService;
 
-    @RequestMapping(method = RequestMethod.GET)
-	public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    @RequestMapping(value="/scheduleCall", method = RequestMethod.GET)
+	public void scheduleCall(HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("text/html");
         response.setCharacterEncoding("UTF-8");
 
@@ -65,6 +65,18 @@ public class CallMeController {
 
         demoService.schedulePhoneCall(phoneNumber, callTime);
 
-        response.getWriter().write("Made a phone call to " + phoneNumber + " at " + callTime);
-	}	
+        response.getWriter().write("Scheduled a phone call to " + phoneNumber + " at " + callTime);
+	}
+
+    @RequestMapping(value="/initiateCall", method = RequestMethod.GET)
+    public void initiateCall(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        response.setContentType("text/html");
+        response.setCharacterEncoding("UTF-8");
+
+        String phoneNumber = request.getParameter("phone");
+
+        demoService.initiatePhoneCall(phoneNumber);
+
+        response.getWriter().write("Initiated a phone call to " + phoneNumber);
+    }
 }
