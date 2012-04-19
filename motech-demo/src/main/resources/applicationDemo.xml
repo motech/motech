@@ -43,5 +43,7 @@
 
     <bean id="demoService" class="org.motechproject.server.demo.service.impl.DemoServiceImpl"/>
 
+    <bean id="demoEventHandler" class="org.motechproject.server.demo.service.DemoEventHandler"/>
+
     <bean id="callMeController" class="org.motechproject.server.demo.web.CallMeController"/>
 </beans>
