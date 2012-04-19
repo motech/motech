@@ -31,7 +31,9 @@
  */
 package org.motechproject.server.ivr;
 
+import org.motechproject.ivr.service.IVRService;
 import org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor;
+import org.motechproject.server.ivr.asterisk.IVRServiceAsteriskImpl;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -42,10 +44,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.web.servlet.DispatcherServlet;
 
-/**
- * 
- * 
- */
+import java.util.Hashtable;
+
 public class Activator implements BundleActivator {
 	private static Logger logger = LoggerFactory.getLogger(Activator.class);
 	private static final String CONTEXT_CONFIG_LOCATION = "classpath:applicationPlatformIvrBundle.xml";
@@ -77,6 +77,12 @@ public class Activator implements BundleActivator {
             HttpService service = (HttpService) context.getService(httpService);
             serviceAdded(service);
         }
+
+        // TODO take the constructor arguments from the configuration file
+        Hashtable<String, String> props = new Hashtable<String, String>();
+        props.put("IvrProvider", "Asterisk");
+        props.put("Host", "localhost");
+        context.registerService(IVRService.class.getName(), new IVRServiceAsteriskImpl("localhost", "admin", "admin"), props);
 	}
 
 	public void stop(BundleContext context) throws Exception {

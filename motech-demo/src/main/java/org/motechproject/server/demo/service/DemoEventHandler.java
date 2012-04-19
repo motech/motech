@@ -31,10 +31,9 @@
  */
 package org.motechproject.server.demo.service;
 
-import org.motechproject.context.Context;
-import org.motechproject.gateway.MotechSchedulerGateway;
 import org.motechproject.ivr.model.CallInitiationException;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.server.demo.Activator;
 import org.motechproject.server.demo.EventKeys;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.ivr.service.CallRequest;
@@ -49,13 +48,15 @@ public class DemoEventHandler
 {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private IVRService ivrService = Context.getInstance().getIvrService();
-    private MotechSchedulerGateway schedulerGateway = Context.getInstance().getMotechSchedulerGateway();
-
-    private String vxmlUrl = "vxml.url";
-
 	@MotechListener(subjects = { EventKeys.CALL_EVENT_SUBJECT })
 	public void call(MotechEvent event) {
+        IVRService ivrService = Activator.getInstance().getIvrService();
+
+        if (ivrService == null ) {
+            logger.error("IVR service is not available!");
+            return;
+        }
+
 
         String phoneNumber = EventKeys.getPhoneNumber(event);
         if (null == phoneNumber || 0 == phoneNumber.length()) {
@@ -66,7 +67,7 @@ public class DemoEventHandler
         }
 
 		try {
-			CallRequest callRequest = new CallRequest(phoneNumber, 30, vxmlUrl);
+			CallRequest callRequest = new CallRequest(phoneNumber, 30, "vxml.url");
 
 			ivrService.initiateCall(callRequest);
 		} catch (CallInitiationException e) {
