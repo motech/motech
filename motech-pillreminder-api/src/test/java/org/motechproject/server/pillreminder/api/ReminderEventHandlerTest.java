@@ -52,6 +52,7 @@ public class ReminderEventHandlerTest extends BaseUnitTest {
 
     @Test
     public void shouldRaiseEventsForEachPillWindow() {
+        mockCurrentDate(dateTime(DateUtil.today(), reminderStartTime.plusMinutes(25)));
         int pillWindow = 1;
         String externalId = "externalId";
         String dosageId = "dosageId";
@@ -114,6 +115,7 @@ public class ReminderEventHandlerTest extends BaseUnitTest {
 
     @Test
     public void shouldRaiseEventWithInformationAboutTheRetryIntervalTime() {
+        mockCurrentDate(dateTime(DateUtil.today(), reminderStartTime.plusMinutes(25)));
         int pillWindow = 0;
         String externalId = "externalId";
         String dosageId = "dosageId";
