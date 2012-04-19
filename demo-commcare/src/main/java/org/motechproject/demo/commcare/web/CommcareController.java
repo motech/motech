@@ -114,26 +114,18 @@ public class CommcareController  {
 		String xmlns = parser.findAttributeByElement("data", "xmlns");
 		
 		if (xmlns != null) {
-			System.out.println("There's an xmlns");
-			System.out.println(xmlns);
-			System.out.println(isValidForm(xmlns));
 			String commcareId = parser.getValueByElement("userID");
 			if (commcareId != null && isValidForm(xmlns)) {
-				System.out.println("ID of: " + commcareId);
 				Enrollment enrollment = enrollments.getActiveEnrollment(commcareId, SCHEDULE_NAME);
 				if (enrollment != null) {
 					handleFormForEnrollment(enrollment, commcareId, SCHEDULE_NAME);
 				}
 			} 
 		} else {
-
 			String registrationXmlns = parser.findAttributeByElement("n0:registration", "xmlns:n0");
-			System.out.println("Registration form: " + registrationXmlns);
 			if (registrationXmlns.equals("http://openrosa.org/user-registration")) {
 				String enrollmentId = parser.getValueByElement("uuid");
-				System.out.println(enrollmentId);
 				if (enrollmentId != null) {
-					System.out.println("Enrolling...");
 					DateTime now = DateTime.now();
 					LocalDate localDate = now.toLocalDate();
 					Time time = new Time();
@@ -169,12 +161,6 @@ public class CommcareController  {
 		}
 		Case caseInstance = parser.parseCaseFromForm(caseXml);
 		
-		if (caseInstance != null) {
-			System.out.println("There's a case");
-		} else {
-			System.out.println("No case");
-		}
-		
 		return null;
 	}
 
@@ -194,9 +180,8 @@ public class CommcareController  {
 	private void handleFormForEnrollment(Enrollment enrollment, String commcareId, String scheduleName) {
 		DateTime now = DateTime.now();
 		DateTime dueWindowStart = enrollment.getStartOfWindowForCurrentMilestone(WindowName.due);
-		System.out.println("Handling..." + now + " vs " + dueWindowStart);
+
 		if (now.isAfter(dueWindowStart)) {
-			System.out.println("Fulfilling..");
 			LocalDate today = DateUtil.today();
 			Time time = DateUtil.time(DateUtil.now());
 			scheduleTrackingService.fulfillCurrentMilestone(commcareId, scheduleName, today, time);

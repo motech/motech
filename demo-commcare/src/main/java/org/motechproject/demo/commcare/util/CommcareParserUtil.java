@@ -81,26 +81,12 @@ public class CommcareParserUtil {
 		int caseClosedIndex = formXml.indexOf("</case>");
 		if (caseOpenIndex > 0 && caseClosedIndex > 0) {
 			formXml = formXml.substring(caseOpenIndex, caseClosedIndex + 7);
-			System.out.println("Chopped down case: " + formXml);
 		}
 		try {
 			CommcareCaseParser<Case> parser = new CommcareCaseParser<Case>(Case.class, formXml.trim());
 			Case caseInstance = parser.parseCase();
-			System.out.println("Have the case: ");
-			System.out.println("Case id: " + caseInstance.getCase_id());
-			System.out.println("Case userId: " + caseInstance.getUser_id());
-			System.out.println("Case action: " + caseInstance.getAction());
-			System.out.println("Case name: " + caseInstance.getCase_name());
-			System.out.println("Date modified: " + caseInstance.getDate_modified());
-			System.out.println("Owner id: " + caseInstance.getOwner_id());
 			Map<String, String> fieldValues = caseInstance.getFieldValues();
-			System.out.println("Field values in case: ");
-			System.out.println("----------------------");
 
-			for (Map.Entry<String, String> entry : fieldValues.entrySet()) {
-				System.out.println(entry.getKey() + "   :  " + entry.getValue());
-			}
-			System.out.println("----------------------");
 			return caseInstance;
 		} catch (Exception e) {
 			return null;

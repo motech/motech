@@ -9,7 +9,7 @@
 	<groupId>org.motechproject</groupId>
 	<artifactId>demo-commcare</artifactId>
 	<version>0.9</version>
-	<name>MoTeCH IVR Voxeo</name>
+	<name>MoTeCH Commcare Demo</name>
 	<packaging>jar</packaging>
 	<description>Commcare integration demo</description>
 	<properties>

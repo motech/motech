@@ -40,7 +40,6 @@ public class FormMilestoneListener {
 
 	@MotechListener(subjects = { EventSubjects.MILESTONE_ALERT })
 	public void listenOnFormMilestone(MotechEvent event) {
-		System.out.println("Milestone alert!");
 
 		MilestoneEvent mEvent = new MilestoneEvent(event);
 		String scheduleName = mEvent.getScheduleName();
@@ -53,9 +52,6 @@ public class FormMilestoneListener {
 	private void handleAlert(MilestoneEvent mEvent) {
 		String windowName = mEvent.getWindowName();
 		String commcareId = mEvent.getExternalId();
-		
-		System.out.println("Window: " + windowName);
-		System.out.println(mEvent.getMilestoneAlert().getMilestoneName());
 		
 		CommcareUser user = commcareUserService.getCommcareUserById(commcareId);
 		
@@ -70,13 +66,11 @@ public class FormMilestoneListener {
 		}
 		
 		if (windowName.equals("late")) {
-			System.out.println("Late alert...");
 			sendLateNotification(phoneNum);
 			LocalDate now = DateUtil.today();
 			Time time = DateUtil.time(DateUtil.now());
 			scheduleTrackingService.fulfillCurrentMilestone(commcareId, mEvent.getScheduleName(), now, time);
 		} else if (windowName.equals("due")) {
-			System.out.println("Due alert...");
 			sendDueNotification(phoneNum);
 		}
 	}
