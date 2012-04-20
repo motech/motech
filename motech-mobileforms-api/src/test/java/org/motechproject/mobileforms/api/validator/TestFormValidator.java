@@ -3,11 +3,13 @@ package org.motechproject.mobileforms.api.validator;
 import org.motechproject.mobileforms.api.domain.FormBean;
 import org.motechproject.mobileforms.api.domain.FormError;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class TestFormValidator extends FormValidator {
+public class TestFormValidator<V extends FormBean> extends FormValidator<V> {
+
     @Override
-    public List<FormError> validate(FormBean formBean) {
-        return super.validate(formBean);
+    public List<FormError> businessValidations(FormBean formBean) {
+        return new ArrayList<FormError>();
     }
 }
