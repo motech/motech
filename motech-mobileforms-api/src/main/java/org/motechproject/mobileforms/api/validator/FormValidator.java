@@ -11,7 +11,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.motechproject.mobileforms.api.utils.CollectionUtils.addIfNotNull;
@@ -38,13 +37,8 @@ public abstract class FormValidator <V extends FormBean>{
                 formErrors.add(new FormError(fieldName, "Server exception, contact your administrator"));
             }
         }
-
-        final List<FormError> businessValidations = businessValidations(formBean);
-        formErrors.addAll(businessValidations != null ? businessValidations : Collections.<FormError>emptyList());
         return formErrors;
     }
-
-    public abstract List<FormError> businessValidations(final V formBean);
 
     private FieldValidator getValidationHandler(Annotation annotation) {
         Annotation validationMarker = annotation.annotationType().getAnnotation(ValidationMarker.class);
