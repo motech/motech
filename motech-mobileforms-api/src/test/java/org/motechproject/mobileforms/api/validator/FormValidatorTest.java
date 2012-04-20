@@ -14,27 +14,27 @@ public class FormValidatorTest {
     @Test
     public void shouldReturnErrorIfInvalidValidationAnnotationHasBeenConfiguredToTheFormBeanField() {
         TestFormBeanWithInvalidValidatorAnnotation formBean = new TestFormBeanWithInvalidValidatorAnnotation("FamilyName");
-        assertThat(new TestFormValidator<TestFormBeanWithInvalidValidatorAnnotation>().validate(formBean), hasItem(new FormError("familyName", "Server exception, contact your administrator")));
+        assertThat(new TestFormValidator().validate(formBean), hasItem(new FormError("familyName", "Server exception, contact your administrator")));
     }
 
     @Test
     public void shouldReturnNoErrorsIfAllFieldsAreValid() {
-        assertThat(new TestFormValidator<TestFormBean>().validate(new TestFormBean().setFirstName("First Name")), is(equalTo(Collections.<FormError>emptyList())));
+        assertThat(new TestFormValidator().validate(new TestFormBean().setFirstName("First Name")), is(equalTo(Collections.<FormError>emptyList())));
     }
 
     @Test
     public void shouldCheckIfAttributesAnnotatedAsRequiredHaveAValue() {
-        assertThat(new TestFormValidator<TestFormBean>().validate(new TestFormBean()), hasItem(new FormError("firstName", "is mandatory")));
+        assertThat(new TestFormValidator().validate(new TestFormBean()), hasItem(new FormError("firstName", "is mandatory")));
     }
 
     @Test
     public void shouldCheckIfAttributesAnnotatedWithRegularExpressionGetValidatedAgainstThePattern() {
-        assertThat(new TestFormValidator<TestFormBean>().validate(new TestFormBean().setFirstName("First 1 name")), is(equalTo(Arrays.asList(new FormError("firstName", "wrong format")))));
+        assertThat(new TestFormValidator().validate(new TestFormBean().setFirstName("First 1 name")), is(equalTo(Arrays.asList(new FormError("firstName", "wrong format")))));
     }
 
     @Test
     public void shouldCheckIfAttributesAnnotatedWithMaxLengthGetValidatedAgainstMaxAllowedLength() {
-        assertThat(new TestFormValidator<TestFormBean>().validate(new TestFormBean().setFirstName("very looooooooooonnnnnnnnnngggggggg name")), hasItem(new FormError("firstName", "too long")));
+        assertThat(new TestFormValidator().validate(new TestFormBean().setFirstName("very looooooooooonnnnnnnnnngggggggg name")), hasItem(new FormError("firstName", "too long")));
     }
 }
 
