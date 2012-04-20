@@ -61,7 +61,7 @@ public class KookooCallDetailRecordsServiceImplTest {
         now = new DateTime(2011, 1, 1, 10, 25, 30, 0);
         Mockito.when(DateUtil.now()).thenReturn(now);
 
-        kookooCallDetailRecordsService = new KookooCallDetailRecordsServiceImpl(allKooKooCallDetailRecords, allKooKooCallDetailRecords, eventRelay);
+        kookooCallDetailRecordsService = new KookooCallDetailRecordsServiceImpl(allKooKooCallDetailRecords, allKooKooCallDetailRecords);
         CallDetailRecord callDetailRecord = CallDetailRecord.create("85437", CallDirection.Inbound, CallDetailRecord.Disposition.ANSWERED);
         kookooCallDetailRecord = new KookooCallDetailRecord(callDetailRecord, "fdsfdsf");
         Mockito.when(allKooKooCallDetailRecords.get(callDetailRecordId)).thenReturn(kookooCallDetailRecord);

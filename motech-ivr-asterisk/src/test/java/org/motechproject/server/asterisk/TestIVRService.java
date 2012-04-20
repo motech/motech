@@ -29,7 +29,7 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.ivr.asterisk;
+package org.motechproject.server.asterisk;
 
 import org.asteriskjava.live.AsteriskServer;
 import org.asteriskjava.live.ManagerCommunicationException;
@@ -40,6 +40,7 @@ import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.motechproject.ivr.model.CallInitiationException;
 import org.motechproject.ivr.service.CallRequest;
+import org.motechproject.server.asterisk.callback.MotechAsteriskCallBackImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
