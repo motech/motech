@@ -1,21 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd http://www.springframework.org/schema/mvc
-		http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
-    <import resource="applicationPlatformCommon.xml"/>
-    <context:annotation-config/>
+    <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
+    <util:properties id="verboiceProperties" location="classpath:verboice.properties"/>
 
-    <context:component-scan base-package="org.motechproject.server" />
+    <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean"/>
 
-    <bean id="commonsHttpClient" class="org.apache.commons.httpclient.HttpClient" />
+    <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
+        <constructor-arg ref="httpClient"/>
+    </bean>
 
     <bean id="verboiceDbConnector" class="org.ektorp.impl.StdCouchDbConnector">
         <constructor-arg value="motech-ivr-verboice"/>
         <constructor-arg ref="couchDbInstance"/>
     </bean>
+
+    <bean id="commonsHttpClient" class="org.apache.commons.httpclient.HttpClient" />
+
+    <context:annotation-config/>
+    <mvc:annotation-driven/>
+
+    <context:component-scan base-package="org.motechproject.server"/>
+
+    <bean id="verboiceIVRController" class="org.motechproject.server.verboice.web.VerboiceIVRController"/>
 </beans>
