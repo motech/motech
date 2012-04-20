@@ -1,6 +1,16 @@
 package org.motechproject.mrs.model;
 
-import java.util.*;
+import ch.lambdaj.Lambda;
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static ch.lambdaj.Lambda.having;
+import static ch.lambdaj.Lambda.on;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 
 /**
  * Maintains patient's data collected during visits (Encounters)
@@ -69,6 +79,10 @@ public class MRSObservation<T> {
         if (this.dependantObservations == null) {
             dependantObservations = new HashSet<MRSObservation>();
         }
+        //to remove duplicate observation
+        List<MRSObservation> existingObservationList = Lambda.filter(having(on(MRSObservation.class).getConceptName(), is(equalTo(mrsObservation.getConceptName()))), dependantObservations);
+        if(!existingObservationList.isEmpty())
+            dependantObservations.remove(existingObservationList.get(0));
         dependantObservations.add(mrsObservation);
     }
 
