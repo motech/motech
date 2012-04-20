@@ -29,7 +29,7 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.ivr.asterisk;
+package org.motechproject.server.asterisk;
 
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.net.URLCodec;
@@ -37,6 +37,7 @@ import org.asteriskjava.live.*;
 import org.motechproject.ivr.model.CallInitiationException;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
+import org.motechproject.server.asterisk.callback.MotechAsteriskCallBackImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

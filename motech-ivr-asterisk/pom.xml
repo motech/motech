@@ -8,9 +8,9 @@
         <version>0.10-SNAPSHOT</version>
     </parent>
     <groupId>org.motechproject</groupId>
-    <artifactId>motech-platform-ivr</artifactId>
+    <artifactId>motech-ivr-asterisk</artifactId>
     <version>0.10-SNAPSHOT</version>
-    <name>MoTeCH Platform Server IVR</name>
+    <name>MoTeCH IVR Asterisk</name>
     <packaging>bundle</packaging>
     <dependencies>
         <dependency>
@@ -87,13 +87,13 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.server.ivr.asterisk.*;
+                            org.motechproject.server.asterisk.*;
                         </Export-Package>
                         <Bundle-Activator>
-                            org.motechproject.server.ivr.Activator
+                            org.motechproject.server.asterisk.Activator
                         </Bundle-Activator>
                         <Private-Package>
-                            org.motechproject.server.ivr.*;org.asteriskjava.*;org.asteriskjava.live.*;org.apache.log4j.*;
+                            org.motechproject.server.asterisk.callback.*;org.asteriskjava.*;org.asteriskjava.live.*;org.apache.log4j.*;
                         </Private-Package>
                         <Embed-Dependency>!*</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>

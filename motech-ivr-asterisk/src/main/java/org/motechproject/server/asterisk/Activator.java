@@ -29,11 +29,10 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.ivr;
+package org.motechproject.server.asterisk;
 
 import org.motechproject.ivr.service.IVRService;
 import org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor;
-import org.motechproject.server.ivr.asterisk.IVRServiceAsteriskImpl;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -48,8 +47,8 @@ import java.util.Hashtable;
 
 public class Activator implements BundleActivator {
 	private static Logger logger = LoggerFactory.getLogger(Activator.class);
-	private static final String CONTEXT_CONFIG_LOCATION = "classpath:applicationPlatformIvrBundle.xml";
-	private static final String SERVLET_URL_MAPPING = "/platformIvr";
+	private static final String CONTEXT_CONFIG_LOCATION = "classpath:applicationAsteriskBundle.xml";
+	private static final String SERVLET_URL_MAPPING = "/asterisk";
 	private ServiceTracker tracker;
     private ServiceReference httpService;
 

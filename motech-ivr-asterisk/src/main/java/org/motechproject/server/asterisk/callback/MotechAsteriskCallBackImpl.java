@@ -29,7 +29,7 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  */
-package org.motechproject.server.ivr.asterisk;
+package org.motechproject.server.asterisk.callback;
 
 import org.asteriskjava.live.AsteriskChannel;
 import org.asteriskjava.live.Disposition;

@@ -112,7 +112,6 @@
         <module>motech-platform-common</module>
         <module>motech-platform-server</module>
         <module>motech-platform-scheduler</module>
-        <module>motech-platform-ivr</module>
         <module>motech-platform-ivr-api</module>
         <module>motech-platform-server-api</module>
         <module>motech-outbox</module>
@@ -128,7 +127,8 @@
         <module>motech-message-campaign</module>
         <module>motech-mobileforms-api</module>
         <module>motech-alerts-api</module>
-	    <module>motech-ivr-kookoo</module>
+        <module>motech-ivr-asterisk</module>
+        <module>motech-ivr-kookoo</module>
 	    <module>motech-ivr-voxeo</module>
 	    <module>motech-ivr-verboice</module>
 	    <module>motech-demo</module>

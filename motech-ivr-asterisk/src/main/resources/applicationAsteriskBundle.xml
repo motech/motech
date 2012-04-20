@@ -49,10 +49,10 @@
     </bean>
 
     <bean id="platformIvrDbConnector" class="org.ektorp.impl.StdCouchDbConnector">
-        <constructor-arg value="motech-platform-ivr"/>
+        <constructor-arg value="motech-ivr-asterisk"/>
         <constructor-arg ref="couchDbInstance"/>
     </bean>
 
     <context:annotation-config/>
-    <context:component-scan base-package="org.motechproject.ivr"/>
+    <context:component-scan base-package="org.motechproject.server"/>
 </beans>
