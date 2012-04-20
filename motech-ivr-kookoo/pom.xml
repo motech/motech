@@ -1,17 +1,17 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
         <version>0.10-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
-
     <groupId>org.motechproject</groupId>
     <artifactId>motech-ivr-kookoo</artifactId>
-
-    <name>MoTeCH IVR KooKoo</name>
-    <description>KooKoo IVR Provider</description>
     <version>0.10-SNAPSHOT</version>
+    <name>MoTeCH IVR KooKoo</name>
+    <packaging>bundle</packaging>
+    <description>KooKoo IVR Provider</description>
 
     <properties>
         <spring.version>3.0.5.RELEASE</spring.version>
@@ -20,6 +20,25 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <version>4.2.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.2.0</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>com.ozonetel.kookoo</groupId>
             <artifactId>kookoo</artifactId>
@@ -119,14 +138,20 @@
             <version>20080701</version>
         </dependency>
         <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>motech-platform-ivr-api</artifactId>
-            <version>0.10-SNAPSHOT</version>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.motechproject</groupId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-ivr-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-decisiontree</artifactId>
-            <version>0.10-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
@@ -147,4 +172,67 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.4</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-Activator>
+                            org.motechproject.ivr.kookoo.Activator
+                        </Bundle-Activator>
+                        <Private-Package>
+                            org.motechproject.ivr.kookoo,
+                            com.ozonetel.kookoo;version=1.1,
+                            org.apache.commons.lang;version=2.6.0,
+                            org.apache.commons.lang.builder;version=2.6.0,
+                            org.apache.commons.lang.exception;version=2.6.0,
+                            org.apache.commons.lang.math;version=2.6.0,
+                            org.apache.commons.lang.reflect;version=2.6.0,
+                            org.apache.commons.lang.text;version=2.6.0,
+                            org.apache.log4j,
+                            org.apache.log4j.config,
+                            org.apache.log4j.helpers,
+                            org.apache.log4j.or,
+                            org.apache.log4j.pattern,
+                            org.apache.log4j.spi,
+                            org.json;version=20080701,
+                            org.motechproject.decisiontree,
+                            org.motechproject.decisiontree.model,
+                            org.motechproject.server.decisiontree
+                        </Private-Package>
+                        <Embed-Dependency>!*</Embed-Dependency>
+                        <Embed-Transitive>true</Embed-Transitive>
+                    </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
+                <executions>
+                    <execution>
+                        <id>copy-bundles</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${user.home}/.motech/bundles</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>target</directory>
+                                    <includes>
+                                        <include>*.jar</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

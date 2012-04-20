@@ -19,9 +19,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 
 public abstract class SafeIVRController {
-    static final String NEW_CALL_URL_ACTION = "newcall";
-    static final String GOT_DTMF_URL_ACTION = "gotdtmf";
-    static final String DIAL_URL_ACTION = "dial";
+    static final String NEW_CALL_URL_ACTION = "/newcall";
+    static final String GOT_DTMF_URL_ACTION = "/gotdtmf";
+    static final String DIAL_URL_ACTION = "/dial";
+    static final String HANGUP_URL_ACTION = "/hangup";
+    static final String DISCONNECT_URL_ACTION = "/disconnect";
 
     protected Logger logger = Logger.getLogger(this.getClass());
     protected IVRMessage ivrMessage;
@@ -56,7 +58,7 @@ public abstract class SafeIVRController {
         return safeCall(kooKooIVRContext);
     }
 
-    @RequestMapping(value = "hangup", method = RequestMethod.GET)
+    @RequestMapping(value = HANGUP_URL_ACTION, method = RequestMethod.GET)
     @ResponseBody
     public final String hangup(@ModelAttribute KookooRequest kooKooRequest, HttpServletRequest request, HttpServletResponse response) {
         KooKooIVRContext kooKooIVRContext = new KooKooIVRContext(kooKooRequest, request, response);
@@ -90,7 +92,7 @@ public abstract class SafeIVRController {
         }
     }
 
-    @RequestMapping(value = "disconnect", method = RequestMethod.GET)
+    @RequestMapping(value = DISCONNECT_URL_ACTION, method = RequestMethod.GET)
     @ResponseBody
     public final String disconnect(HttpServletRequest request) {
         return "";

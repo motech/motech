@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Controller
-@RequestMapping("/ivr")
 public class IVRController {
     Logger logger = Logger.getLogger(this.getClass());
     private CallFlowController callFlowController;
@@ -31,13 +30,13 @@ public class IVRController {
         this.kookooCallDetailRecordsService = kookooCallDetailRecordsService;
     }
 
-    @RequestMapping(value = "reply", method = RequestMethod.GET)
+    @RequestMapping(value = "/ivr/reply", method = RequestMethod.GET)
     public String reply(KookooRequest kookooRequest, HttpServletRequest request, HttpServletResponse response) {
         KooKooIVRContext kooKooIVRContext = new KooKooIVRContext(kookooRequest, request, response);
         return reply(kooKooIVRContext);
     }
 
-    @RequestMapping(value = "/reply/callback", method = RequestMethod.POST)
+    @RequestMapping(value = "/ivr/reply/callback", method = RequestMethod.POST)
     @ResponseBody
     public String callback(KookooCallbackRequest kookooCallbackRequest) {
         if (kookooCallbackRequest.notAnswered()) {

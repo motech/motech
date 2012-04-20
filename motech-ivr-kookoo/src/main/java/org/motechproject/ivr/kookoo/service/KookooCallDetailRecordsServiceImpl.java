@@ -1,6 +1,7 @@
 package org.motechproject.ivr.kookoo.service;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.context.EventContext;
 import org.motechproject.event.EventRelay;
 import org.motechproject.ivr.event.CallEvent;
 import org.motechproject.ivr.event.IVREvent;
@@ -22,17 +23,16 @@ public class KookooCallDetailRecordsServiceImpl implements KookooCallDetailRecor
 
     private AllKooKooCallDetailRecords allKooKooCallDetailRecords;
     private AllKooKooCallDetailRecords allCallDetailRecords;
-    private EventRelay eventRelay;
+    private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
 
     public static final String CLOSE_CALL_SUBJECT = "close_call";
     public static final String CALL_ID = "call_id";
     public static final String EXTERNAL_ID = "external_id";
 
     @Autowired
-    public KookooCallDetailRecordsServiceImpl(AllKooKooCallDetailRecords allKooKooCallDetailRecords, AllKooKooCallDetailRecords allCallDetailRecords, EventRelay eventRelay) {
+    public KookooCallDetailRecordsServiceImpl(AllKooKooCallDetailRecords allKooKooCallDetailRecords, AllKooKooCallDetailRecords allCallDetailRecords) {
         this.allKooKooCallDetailRecords = allKooKooCallDetailRecords;
         this.allCallDetailRecords = allCallDetailRecords;
-        this.eventRelay = eventRelay;
     }
 
     public KookooCallDetailRecord get(String callDetailRecordId) {
