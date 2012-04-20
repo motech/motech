@@ -202,8 +202,8 @@ public class AllEnrollmentsIT {
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "IPTI Schedule", new Time(8, 10), today, null, today, null, "IPTI 1", null));
 
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_2", "IPTI Schedule", new Time(8, 10), today.minusWeeks(2), null, today.minusWeeks(2), null, "IPTI 1", null));
-        scheduleTrackingService.fulfillCurrentMilestone("entity_2", "IPTI Schedule", today.minusDays(2));
-        scheduleTrackingService.fulfillCurrentMilestone("entity_2", "IPTI Schedule", today.minusDays(1));
+        scheduleTrackingService.fulfillCurrentMilestone("entity_2", "IPTI Schedule", today.minusDays(2), new Time(0, 0));
+        scheduleTrackingService.fulfillCurrentMilestone("entity_2", "IPTI Schedule", today.minusDays(1), new Time(0, 0));
 
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_3", "IPTI Schedule", new Time(8, 10), today, null, today, null, "IPTI 2", null));
         scheduleTrackingService.fulfillCurrentMilestone("entity_3", "IPTI Schedule", today, new Time(0, 0));
@@ -211,8 +211,8 @@ public class AllEnrollmentsIT {
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_4", "IPTI Schedule", new Time(8, 10), today.minusYears(2), null, today, null, "IPTI 1", null));
 
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_5", "IPTI Schedule", new Time(8, 10), today.minusWeeks(2), null, today.minusWeeks(2), null, "IPTI 1", null));
-        scheduleTrackingService.fulfillCurrentMilestone("entity_5", "IPTI Schedule", today.minusDays(10));
-        scheduleTrackingService.fulfillCurrentMilestone("entity_5", "IPTI Schedule", today.minusDays(9));
+        scheduleTrackingService.fulfillCurrentMilestone("entity_5", "IPTI Schedule", today.minusDays(10), new Time(0, 0));
+        scheduleTrackingService.fulfillCurrentMilestone("entity_5", "IPTI Schedule", today.minusDays(9), new Time(0, 0));
 
         DateTime start = newDateTime(today.minusWeeks(1), new Time(0, 0));
         DateTime end = newDateTime(today, new Time(0, 0));

@@ -20,7 +20,6 @@ import java.util.Map;
 
 import static java.text.MessageFormat.format;
 import static org.motechproject.util.DateUtil.newDateTime;
-import static org.motechproject.util.DateUtil.today;
 
 @Service
 public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
@@ -108,24 +107,22 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
     }
 
     @Override
-    public void fulfillCurrentMilestone(String externalId, String scheduleName) {
-        fulfillCurrentMilestone(externalId, scheduleName, today(), new Time(0, 0));
+    public void fulfillCurrentMilestone(String externalId, String scheduleName, LocalDate fulfillmentDate, Time fulfillmentTime) {
+        Enrollment activeEnrollment = allEnrollments.getActiveEnrollment(externalId, scheduleName);
+        if (activeEnrollment == null)
+            throw new InvalidEnrollmentException(format("Can fulfill only active enrollments. This enrollment has: External ID: {0}, Schedule name: {1}", externalId, scheduleName));
+        if (isDuplicateFulfillment(activeEnrollment, fulfillmentDate, fulfillmentTime))
+            return;
+        enrollmentService.fulfillCurrentMilestone(activeEnrollment, newDateTime(fulfillmentDate, fulfillmentTime));
+    }
+
+    private boolean isDuplicateFulfillment(Enrollment activeEnrollment, LocalDate fulfillmentDate, Time fulfillmentTime) {
+        return activeEnrollment.getFulfillments().size() > 0 && activeEnrollment.getLastFulfilledDate().equals(newDateTime(fulfillmentDate, fulfillmentTime));
     }
 
     @Override
     public void fulfillCurrentMilestone(String externalId, String scheduleName, LocalDate fulfillmentDate) {
         fulfillCurrentMilestone(externalId, scheduleName, fulfillmentDate, new Time(0, 0));
-    }
-
-    @Override
-    public void fulfillCurrentMilestone(String externalId, String scheduleName, LocalDate fulfillmentDate, Time fulfillmentTime) {
-        Enrollment activeEnrollment = allEnrollments.getActiveEnrollment(externalId, scheduleName);
-        if (activeEnrollment == null) {
-            throw new InvalidEnrollmentException(format("Can fulfill only active enrollments. " +
-                    "This enrollment has: External ID: {0}, Schedule name: {1}", externalId, scheduleName));
-        }
-
-        enrollmentService.fulfillCurrentMilestone(activeEnrollment, newDateTime(fulfillmentDate, fulfillmentTime));
     }
 
     @Override

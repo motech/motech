@@ -24,21 +24,6 @@ public interface ScheduleTrackingService {
     String enroll(EnrollmentRequest enrollmentRequest);
 
     /**
-     * Fulfills the current milestone(with now as the fulfillment date time) of the enrollment which belongs to the given externalId and schedule name
-     * @param externalId
-     * @param scheduleName
-     */
-    void fulfillCurrentMilestone(String externalId, String scheduleName);
-
-    /**
-     * Fulfills the current milestone of the enrollment(with fulfillmentDate as the the given date and time as midnight) which belongs to the given externalId and schedule name
-     * @param externalId
-     * @param scheduleName
-     * @param fulfillmentDate
-     */
-    void fulfillCurrentMilestone(String externalId, String scheduleName, LocalDate fulfillmentDate);
-
-    /**
      * Fulfills the current milestone of the enrollment(with fulfillmentDate and time as the the given date and time) which belongs to the given externalId and schedule name     *
      * @param externalId
      * @param scheduleName
@@ -46,6 +31,14 @@ public interface ScheduleTrackingService {
      * @param fulfillmentTime
      */
     void fulfillCurrentMilestone(String externalId, String scheduleName, LocalDate fulfillmentDate, Time fulfillmentTime);
+
+    /**
+     * Fulfills the current milestone of the enrollment(with fulfillmentDate and time as midnight) which belongs to the given externalId and schedule name     *
+     * @param externalId
+     * @param scheduleName
+     * @param fulfillmentDate
+     */
+    void fulfillCurrentMilestone(String externalId, String scheduleName, LocalDate fulfillmentDate);
 
     /**
      * Unenrolls / Removes all the scheduled jobs of enrollments which belongs to the given externalId and schedule names

@@ -138,9 +138,35 @@ public class ScheduleTrackingServiceImplTest {
         Enrollment enrollment = mock(Enrollment.class);
         when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(enrollment);
 
-        scheduleTrackingService.fulfillCurrentMilestone("entity_1", "my_schedule");
+        scheduleTrackingService.fulfillCurrentMilestone("entity_1", "my_schedule", today(), new Time(0, 0));
 
         verify(enrollmentService).fulfillCurrentMilestone(enrollment, newDateTime(now().toLocalDate(), new Time(0, 0)));
+    }
+
+    @Test
+    public void shouldFulfillTheCurrentMilestoneDefaultingTheTimeComponent() {
+        Enrollment enrollment = mock(Enrollment.class);
+        MilestoneFulfillment fulfillment = mock(MilestoneFulfillment.class);
+        when(enrollment.getFulfillments()).thenReturn(asList(new MilestoneFulfillment[]{fulfillment}));
+        when(enrollment.getLastFulfilledDate()).thenReturn(newDateTime(2012, 2, 10, 8, 20, 0));
+        when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(enrollment);
+
+        scheduleTrackingService.fulfillCurrentMilestone("entity_1", "my_schedule", newDate(2012, 2, 10));
+
+        verify(enrollmentService).fulfillCurrentMilestone(enrollment, newDateTime(2012, 2, 10, new Time(0, 0)));
+    }
+
+    @Test
+    public void shouldNotFulfillTheCurrentMilestoneIftheFulfillmentDateTimeMatchesLastMilestoneFulfillmentDate() {
+        Enrollment enrollment = mock(Enrollment.class);
+        MilestoneFulfillment fulfillment = mock(MilestoneFulfillment.class);
+        when(enrollment.getFulfillments()).thenReturn(asList(new MilestoneFulfillment[]{fulfillment}));
+        when(enrollment.getLastFulfilledDate()).thenReturn(newDateTime(2012, 2, 10, 8, 20, 0));
+        when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(enrollment);
+
+        scheduleTrackingService.fulfillCurrentMilestone("entity_1", "my_schedule", newDate(2012, 2, 10), new Time(8, 20));
+
+        verifyZeroInteractions(enrollmentService);
     }
 
     @Test
@@ -158,7 +184,7 @@ public class ScheduleTrackingServiceImplTest {
         when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(enrollment);
 
         DateTime fulfillmentDateTime = newDateTime(2012, 12, 10, 0, 0, 0);
-        scheduleTrackingService.fulfillCurrentMilestone("entity_1", "my_schedule", fulfillmentDateTime.toLocalDate());
+        scheduleTrackingService.fulfillCurrentMilestone("entity_1", "my_schedule", fulfillmentDateTime.toLocalDate(), new Time(0, 0));
 
         verify(enrollmentService).fulfillCurrentMilestone(enrollment, fulfillmentDateTime);
     }
@@ -186,7 +212,7 @@ public class ScheduleTrackingServiceImplTest {
     public void shouldFailToFulfillCurrentMilestoneIfItIsNotFoundOrNotActive() {
         when(allEnrollments.getActiveEnrollment("WRONG-ID", "WRONG-NAME")).thenReturn(null);
 
-        scheduleTrackingService.fulfillCurrentMilestone("WRONG-ID", "WRONG-NAME");
+        scheduleTrackingService.fulfillCurrentMilestone("WRONG-ID", "WRONG-NAME", today(), new Time(0, 0));
 
         verifyZeroInteractions(enrollmentService);
     }
@@ -269,7 +295,7 @@ public class ScheduleTrackingServiceImplTest {
         String scheduleName = "scheduleName";
         when(allEnrollments.getActiveEnrollment(externalId, scheduleName)).thenReturn(null);
 
-        scheduleTrackingService.fulfillCurrentMilestone(externalId, scheduleName);
+        scheduleTrackingService.fulfillCurrentMilestone(externalId, scheduleName, today(), new Time(0, 0));
     }
 
     @Test

@@ -81,12 +81,12 @@ public class EnrollmentsSearchIT {
     public void shouldReturnExternalIdsOfActiveEnrollmentsThatAreCompletedDuringTheLastWeek() {
         DateTime referenceDate = newDateTime(2012, 10, 1, 0, 0, 0);
         createEnrollment("entity_1", "IPTI Schedule", "IPTI 2", referenceDate, referenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
-        scheduleTrackingService.fulfillCurrentMilestone("entity_1", "IPTI Schedule", newDate(2012, 10, 10));
+        scheduleTrackingService.fulfillCurrentMilestone("entity_1", "IPTI Schedule", newDate(2012, 10, 10), new Time(0, 0));
         createEnrollment("entity_2", "IPTI Schedule", "IPTI 2", referenceDate, referenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
-        scheduleTrackingService.fulfillCurrentMilestone("entity_2", "IPTI Schedule", newDate(2012, 10, 20));
+        scheduleTrackingService.fulfillCurrentMilestone("entity_2", "IPTI Schedule", newDate(2012, 10, 20), new Time(0, 0));
         createEnrollment("entity_3", "IPTI Schedule", "IPTI 1", referenceDate, referenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
-        scheduleTrackingService.fulfillCurrentMilestone("entity_3", "IPTI Schedule", newDate(2012, 10, 8));
-        scheduleTrackingService.fulfillCurrentMilestone("entity_3", "IPTI Schedule", newDate(2012, 10, 9));
+        scheduleTrackingService.fulfillCurrentMilestone("entity_3", "IPTI Schedule", newDate(2012, 10, 8), new Time(0, 0));
+        scheduleTrackingService.fulfillCurrentMilestone("entity_3", "IPTI Schedule", newDate(2012, 10, 9), new Time(0, 0));
         createEnrollment("entity_4", "IPTI Schedule", "IPTI 2", referenceDate, referenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
         createEnrollment("entity_5", "IPTI Schedule", "IPTI 1", referenceDate, referenceDate, new Time(6, 30), EnrollmentStatus.DEFAULTED, null);
         createEnrollment("entity_6", "Delivery", "Default", referenceDate, referenceDate, new Time(6, 30), EnrollmentStatus.ACTIVE, null);
