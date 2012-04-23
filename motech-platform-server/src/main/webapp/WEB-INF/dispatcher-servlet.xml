@@ -35,10 +35,6 @@
 	<bean id="commcare" class="org.motechproject.demo.commcare.web.CommcareController">
 	</bean>
 
-	<bean id="commcareEnroll" class="org.motechproject.demo.commcare.web.EnrollController">
-	</bean>
-
-
 	<context:annotation-config />
 	<!-- <bean id="viewResolver" -->
 	<!-- class="org.springframework.web.servlet.view.InternalResourceViewResolver"> -->
