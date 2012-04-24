@@ -1,3 +1,7 @@
+/**
+ * \ingroup MRS
+ * Domain classes for MRS
+ */
 package org.motechproject.mrs.model;
 
 /**

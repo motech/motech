@@ -4,8 +4,8 @@ import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.List;
-
 /**
+ * \ingroup sms
  * SmsService defines an interface for sending sms
  */
 public interface SmsService {

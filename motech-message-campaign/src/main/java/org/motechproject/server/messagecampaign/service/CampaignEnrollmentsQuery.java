@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * \ingroup MessageCampaign
+ *
  * This is the Query builder for retrieving campaign enrollments
  * Provides methods for different query criteria
  * The order of criteria matters, as the first criterion is used to fetch the result from database

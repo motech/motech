@@ -1,8 +1,11 @@
+/**
+ * \ingroup MRS
+ *  Services offered by MRS
+*/
 package org.motechproject.mrs.services;
 
 import org.motechproject.mrs.model.MRSEncounter;
-
-/**
+ /**
  * Interface for fetching and storing MRSEncounter details
  */
 public interface MRSEncounterAdapter {

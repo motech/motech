@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * \ingroup Appointments
+ *
  * Appointment Service exposes appointment management operations such as create appointment, find and mark as visited etc.
  *
  * @see org.motechproject.appointments.api.service.contract

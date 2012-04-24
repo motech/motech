@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * \ingroup Appointments
+ *
  * Visit details, returned by querying visits. see {@linkplain org.motechproject.appointments.api.service.AppointmentService#search(VisitsQuery)}
  */
 public class VisitResponse {

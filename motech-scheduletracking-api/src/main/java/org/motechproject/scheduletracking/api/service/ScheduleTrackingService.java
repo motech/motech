@@ -7,6 +7,8 @@ import org.motechproject.scheduletracking.api.service.contract.UpdateCriteria;
 import java.util.List;
 
 /**
+ * \ingroup sts
+ *
  * Schedule Tracking Service interface
  * Provides methods to enroll an external id into a schedule, fulfill milestones in a schedule
  * and uneroll an external id from a schedule.
@@ -79,4 +81,12 @@ public interface ScheduleTrackingService {
      * @return List<EnrollmentRecord>
      */
     List<EnrollmentRecord> searchWithWindowDates(EnrollmentsQuery query);
+
+    /**
+     * Gives the alert timings of all the windows in the milestone without actually scheduling the alert jobs
+     *
+     * @param enrollmentRequest
+     * @return MilestoneAlerts : contains the alert timings for all the windows of the milestone
+     */
+    MilestoneAlerts getAlertTimings(EnrollmentRequest enrollmentRequest);
 }

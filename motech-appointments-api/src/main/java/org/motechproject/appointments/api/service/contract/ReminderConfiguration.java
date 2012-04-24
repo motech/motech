@@ -1,13 +1,17 @@
 package org.motechproject.appointments.api.service.contract;
 
 /**
+ * \ingroup Appointments
+ *
  * Specification for reminders, allows different time units and parameters such as start date and repeat count
  */
 public class ReminderConfiguration {
     /**
-     * specifies the unit for {@link #intervalCount}. Can specify units - seconds, minutes, hours, days, weeks
+     * specifies the unit for interval. Can specify units - seconds, minutes, hours, days, weeks
      */
-    public enum IntervalUnit {SECONDS, MINUTES, HOURS, DAYS, WEEKS}
+    public enum IntervalUnit {
+        SECONDS, MINUTES, HOURS, DAYS, WEEKS
+    }
 
     private int remindFrom;
 

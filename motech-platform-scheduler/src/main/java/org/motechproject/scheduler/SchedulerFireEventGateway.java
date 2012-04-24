@@ -3,6 +3,8 @@ package org.motechproject.scheduler;
 import org.motechproject.model.MotechEvent;
 
 /**
+ * \ingroup scheduler
+ *
  *A gateway interface to a Spring Integration message channel.
  * This interface configured in schedulerFiredEventChannelAdapter.xml
  *

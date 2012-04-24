@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * \ingroup Appointments
+ *
  * Used as configuration for creating appointment / scheduled visit.
  * Reminders can be configured by {@link ReminderConfiguration}
  * Custom data can be stored as key value pair in {@link CreateVisitRequest#data} map.

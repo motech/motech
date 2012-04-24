@@ -25,6 +25,8 @@ import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
+import static org.hamcrest.Matchers.hasItems;
+import static org.junit.Assert.assertThat;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.*;
 import static org.motechproject.util.DateUtil.*;
 
@@ -91,7 +93,8 @@ public class EnrollmentsSearchIT {
 
         EnrollmentsQuery query = new EnrollmentsQuery().havingSchedule("IPTI Schedule").completedDuring(newDateTime(2012, 10, 9, 0, 0, 0), newDateTime(2012, 10, 15, 23, 59, 59));
         List<EnrollmentRecord> result = scheduleTrackingService.search(query);
-        assertEquals(asList(new String[]{ "entity_1", "entity_3" }), extract(result, on(EnrollmentRecord.class).getExternalId()));
+
+        assertThat(extract(result, on(EnrollmentRecord.class).getExternalId()), hasItems("entity_1", "entity_3"));
     }
 
     @Test

@@ -2,6 +2,12 @@ package org.motechproject.appointments.api.service.contract;
 
 import org.joda.time.DateTime;
 
+/**
+ * \ingroup Appointments
+ *
+ * Appointment schedule template for confirming appointments/scheduled visits.
+ */
+
 public class ConfirmAppointmentRequest {
 
     private String externalId;

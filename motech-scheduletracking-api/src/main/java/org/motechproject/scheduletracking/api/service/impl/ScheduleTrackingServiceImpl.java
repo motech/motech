@@ -78,6 +78,21 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
     }
 
     @Override
+    public MilestoneAlerts getAlertTimings(EnrollmentRequest enrollmentRequest) {
+        Schedule schedule = allTrackedSchedules.getByName(enrollmentRequest.getScheduleName());
+        if (schedule == null)
+            throw new ScheduleTrackingException("No schedule with name: %s", enrollmentRequest.getScheduleName());
+
+        String startingMilestoneName;
+        if (enrollmentRequest.isStartingMilestoneSpecified())
+            startingMilestoneName = enrollmentRequest.getStartingMilestoneName();
+        else
+            startingMilestoneName = schedule.getFirstMilestone().getName();
+
+        return enrollmentService.getAlertTimings(enrollmentRequest.getExternalId(), enrollmentRequest.getScheduleName(), startingMilestoneName, enrollmentRequest.getReferenceDateTime(), enrollmentRequest.getEnrollmentDateTime(), enrollmentRequest.getPreferredAlertTime());
+    }
+
+    @Override
     public String enroll(EnrollmentRequest enrollmentRequest) {
         Schedule schedule = allTrackedSchedules.getByName(enrollmentRequest.getScheduleName());
         if (schedule == null)

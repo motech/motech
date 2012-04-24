@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * \ingroup scheduler
+ *
  * Main class that can bootstrap a Motech Scheduler
  *
  * @author Igor (iopushnyev@2paths.com)

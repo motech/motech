@@ -3,8 +3,11 @@ package org.motechproject.outbox.api.service;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 
-
 /**
+ * \defgroup Outbox
+ */
+/**
+ * \ingroup Outbox
  * Voice Outbox Service interface
  * Provides methods to get information and manage messages in the party voice outbox.
  * Each party (Patient, Nurse, Doctor, etc.) can have a voice outbox.

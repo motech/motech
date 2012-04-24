@@ -15,9 +15,9 @@ maven-eclipse.xml
 *.log
 debug.txt
 out/
-docs/*
 Error_log/
 test-output/
 felix-cache/
 activemq-data/
 tools/SMPPSim/
+*.tmp

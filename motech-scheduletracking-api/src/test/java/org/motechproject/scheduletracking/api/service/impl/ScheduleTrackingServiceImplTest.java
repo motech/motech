@@ -10,6 +10,7 @@ import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.domain.exception.InvalidEnrollmentException;
+import org.motechproject.scheduletracking.api.domain.exception.ScheduleTrackingException;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
 import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
@@ -17,11 +18,9 @@ import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
 import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
 import org.motechproject.scheduletracking.api.service.contract.UpdateCriteria;
+import org.motechproject.util.DateUtil;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
@@ -340,5 +339,76 @@ public class ScheduleTrackingServiceImplTest {
         when(allEnrollments.getActiveEnrollment("foo", "some_schedule")).thenReturn(null);
         scheduleTrackingService.updateEnrollment("foo", "some_schedule", new UpdateCriteria().Metadata(new HashMap<String, String>()));
         verifyNoMoreInteractions(allEnrollments);
+    }
+
+    @Test
+    public void shouldInvokeEnrollmentServiceForAlertTimings() {
+        String scheduleName = "my_schedule";
+        Schedule schedule = new Schedule(scheduleName);
+        Milestone secondMilestone = new Milestone("second_milestone", weeks(1), weeks(1), weeks(1), weeks(1));
+        Milestone firstMilestone = new Milestone("first_milestone", weeks(1), weeks(1), weeks(1), weeks(1));
+        schedule.addMilestones(firstMilestone, secondMilestone);
+        when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
+
+        String externalId = "my_entity_1";
+        LocalDate referenceDate = DateUtil.today();
+        Time referenceTime = new Time(8, 10);
+        LocalDate enrollmentDate = DateUtil.today();
+        Time enrollmentTime = new Time(8, 10);
+        Time preferredAlertTime = new Time(8, 10);
+
+        scheduleTrackingService.getAlertTimings(new EnrollmentRequest(externalId, scheduleName, preferredAlertTime, referenceDate, referenceTime, enrollmentDate, enrollmentTime, "first_milestone", null));
+
+        verify(enrollmentService).getAlertTimings(externalId, scheduleName, firstMilestone.getName(), newDateTime(referenceDate, new Time(8, 10)), newDateTime(now().toLocalDate(), new Time(8, 10)), preferredAlertTime);
+    }
+
+    @Test
+    public void shouldInvokeEnrollmentServiceForAlertTimingsWithStartingMilestoneFromEnrollmentRequest() {
+        String scheduleName = "my_schedule";
+        Schedule schedule = new Schedule(scheduleName);
+        Milestone secondMilestone = new Milestone("second_milestone", weeks(1), weeks(1), weeks(1), weeks(1));
+        Milestone firstMilestone = new Milestone("first_milestone", weeks(1), weeks(1), weeks(1), weeks(1));
+        schedule.addMilestones(firstMilestone, secondMilestone);
+        when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
+
+        String externalId = "my_entity_1";
+        LocalDate referenceDate = DateUtil.today();
+        Time referenceTime = new Time(8, 10);
+        LocalDate enrollmentDate = DateUtil.today();
+        Time enrollmentTime = new Time(8, 10);
+        Time preferredAlertTime = new Time(8, 10);
+
+        scheduleTrackingService.getAlertTimings(new EnrollmentRequest(externalId, scheduleName, preferredAlertTime, referenceDate, referenceTime, enrollmentDate, enrollmentTime, "second_milestone", null));
+
+        verify(enrollmentService).getAlertTimings(externalId, scheduleName, secondMilestone.getName(), newDateTime(referenceDate, new Time(8, 10)), newDateTime(now().toLocalDate(), new Time(8, 10)), preferredAlertTime);
+    }
+
+    @Test
+    public void shouldInvokeEnrollmentServiceForAlertTimingsWithStartingMilestoneFromScheduleFirstMilestone() {
+        String scheduleName = "my_schedule";
+        Schedule schedule = new Schedule(scheduleName);
+        Milestone secondMilestone = new Milestone("second_milestone", weeks(1), weeks(1), weeks(1), weeks(1));
+        Milestone firstMilestone = new Milestone("first_milestone", weeks(1), weeks(1), weeks(1), weeks(1));
+        schedule.addMilestones(firstMilestone, secondMilestone);
+        when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
+
+        String externalId = "my_entity_1";
+        LocalDate referenceDate = DateUtil.today();
+        Time referenceTime = new Time(8, 10);
+        LocalDate enrollmentDate = DateUtil.today();
+        Time enrollmentTime = new Time(8, 10);
+        Time preferredAlertTime = new Time(8, 10);
+
+        scheduleTrackingService.getAlertTimings(new EnrollmentRequest(externalId, scheduleName, preferredAlertTime, referenceDate, referenceTime, enrollmentDate, enrollmentTime, null, null));
+
+        verify(enrollmentService).getAlertTimings(externalId, scheduleName, firstMilestone.getName(), newDateTime(referenceDate, new Time(8, 10)), newDateTime(now().toLocalDate(), new Time(8, 10)), preferredAlertTime);
+    }
+
+    @Test(expected = ScheduleTrackingException.class)
+    public void shouldThrowAnExceptionIfScheduleIsInvalidWhileAskingForAlertTimings() {
+        String scheduleName = "my_schedule";
+        when(allTrackedSchedules.getByName(scheduleName)).thenReturn(null);
+
+        scheduleTrackingService.getAlertTimings(new EnrollmentRequest(null, scheduleName, null, null, null, null, null, null, null));
     }
 }

@@ -2,8 +2,11 @@ package org.motechproject.scheduletracking.api.service.contract;
 
 import java.util.HashMap;
 import java.util.Map;
-
 /**
+ * \defgroup sts Schedule Tracking Service
+ */
+/**
+ * \ingroup sts
  * This is the criteria builder which is used to form an enrollment update criteria
  */
 public class UpdateCriteria {

@@ -4,6 +4,9 @@ import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 
 import java.util.List;
 
+/**
+ * \ingroup MessageCampaign
+ */
 public interface MessageCampaignService {
     /** Enrolls the external id into the campaign as specified in the request. The enrolled entity will have events raised against it according to the campaign definition.
      *

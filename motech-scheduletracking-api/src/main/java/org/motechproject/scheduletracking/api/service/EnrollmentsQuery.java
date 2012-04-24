@@ -11,6 +11,8 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 /**
+ * \ingroup sts
+ *
  * This is the Query builder for retrieving enrollments
  * Provides methods for different query criteria
  * The order of criteria matters, as the first criterion is used to fetch the result from database
