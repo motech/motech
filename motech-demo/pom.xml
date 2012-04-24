@@ -101,7 +101,11 @@
                             org.motechproject.server.demo.Activator
                         </Bundle-Activator>
 						<Private-Package>
-                            org.motechproject.server.demo.*
+                            org.motechproject.server.demo.*,
+                            org.springframework.context.config,
+                            org.springframework.context.support,
+                            org.springframework.osgi.config,
+                            org.springframework.web.servlet.mvc
                         </Private-Package>
 						<Embed-Dependency>!*</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>

@@ -31,36 +31,26 @@
  */
 package org.motechproject.server.demo;
 
-import org.motechproject.ivr.service.IVRService;
 import org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.http.HttpService;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class Activator implements BundleActivator, ServiceListener {
+public class Activator implements BundleActivator {
 	private static Logger logger = LoggerFactory.getLogger(Activator.class);
-	private static final String CONTEXT_CONFIG_LOCATION = "classpath:applicationDemo.xml";
+	private static final String CONTEXT_CONFIG_LOCATION = "applicationDemo.xml";
 	private static final String SERVLET_URL_MAPPING = "/demo";
 	private ServiceTracker tracker;
     private ServiceReference httpService;
 
-    private static Activator instance;
-    private BundleContext context = null;
-    private final List<ServiceReference> ivrServiceList = new ArrayList<ServiceReference>();
-    private final Map<ServiceReference, Object> refToObjMap = new HashMap<ServiceReference, Object>();
+    private static BundleContext bundleContext = null;
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -87,25 +77,7 @@ public class Activator implements BundleActivator, ServiceListener {
             serviceAdded(service);
         }
 
-        instance = this;
-        this.context = context;
-
-        synchronized (ivrServiceList) {
-            context.addServiceListener(this, "(objectClass=" + IVRService.class.getName() + ")");
-
-            ServiceReference[] refs = context.getServiceReferences(IVRService.class.getName(), "(objectClass=" + IVRService.class.getName() + ")");
-
-            if (refs != null) {
-                for (ServiceReference ref : refs) {
-                    Object service = context.getService(ref);
-
-                    if ((service != null) && (refToObjMap.get(ref) == null)) {
-                        ivrServiceList.add(ref);
-                        refToObjMap.put(ref, service);
-                    }
-                }
-            }
-        }
+        bundleContext = context;
     }
 
     public void stop(BundleContext context) throws Exception {
@@ -116,10 +88,20 @@ public class Activator implements BundleActivator, ServiceListener {
         }
     }
 
+    public static class BAC extends OsgiBundleXmlWebApplicationContext {
+
+        public BAC() {
+            super();
+            setBundleContext(bundleContext);
+        }
+
+    }
+
 	private void serviceAdded(HttpService service) {
 		try {
 			DispatcherServlet dispatcherServlet = new DispatcherServlet();
 			dispatcherServlet.setContextConfigLocation(CONTEXT_CONFIG_LOCATION);
+            dispatcherServlet.setContextClass(BAC.class);
 			ClassLoader old = Thread.currentThread().getContextClassLoader();
 			try {
 				Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
@@ -142,40 +124,4 @@ public class Activator implements BundleActivator, ServiceListener {
 		service.unregister(SERVLET_URL_MAPPING);
 		logger.debug("Servlet unregistered");
 	}
-
-    @Override
-    public void serviceChanged(ServiceEvent serviceEvent) {
-        synchronized (ivrServiceList) {
-            if (serviceEvent.getType() == ServiceEvent.REGISTERED) {
-                Object service = context.getService(serviceEvent.getServiceReference());
-
-                if ((service != null) && (refToObjMap.get(serviceEvent.getServiceReference()) == null)) {
-                    ivrServiceList.add(serviceEvent.getServiceReference());
-                    refToObjMap.put(serviceEvent.getServiceReference(), service);
-                }
-                else if (service != null) {
-                    context.ungetService(serviceEvent.getServiceReference());
-                }
-            }
-            else if (serviceEvent.getType() == ServiceEvent.UNREGISTERING) {
-                if (refToObjMap.get(serviceEvent.getServiceReference()) != null) {
-                    context.ungetService(serviceEvent.getServiceReference());
-                    ivrServiceList.remove(serviceEvent.getServiceReference());
-                    refToObjMap.remove(serviceEvent.getServiceReference());
-                }
-            }
-        }
-    }
-
-    public static Activator getInstance() {
-        return instance;
-    }
-
-    public IVRService getIvrService() {
-        if (ivrServiceList.size() > 0) {
-            return (IVRService) refToObjMap.get(ivrServiceList.get(0));
-        }
-
-        return null;
-    }
 }
