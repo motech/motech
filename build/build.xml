@@ -1,0 +1,5 @@
+<project name="Motech Platform" basedir="..">
+    <target name="generate.javadoc">
+        <echo message="generating java doc..." />
+    </target>
+</project>
