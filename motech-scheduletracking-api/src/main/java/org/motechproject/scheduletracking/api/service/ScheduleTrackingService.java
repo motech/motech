@@ -80,5 +80,11 @@ public interface ScheduleTrackingService {
      */
     List<EnrollmentRecord> searchWithWindowDates(EnrollmentsQuery query);
 
+    /**
+     * Gives the alert timings of all the windows in the milestone without actually scheduling the alert jobs
+     *
+     * @param enrollmentRequest
+     * @return MilestoneAlerts : contains the alert timings for all the windows of the milestone
+     */
     MilestoneAlerts getAlertTimings(EnrollmentRequest enrollmentRequest);
 }
