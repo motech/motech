@@ -1,5 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project name="Motech Platform" basedir="..">
-    <target name="generate.javadoc">
-        <echo message="generating java doc..." />
+    <property file="${basedir}/build/build.properties"/>
+    <property name="javadoc.dir" value="${basedir}/docs/html"/>
+
+
+    <target name="test">
+        <echo message="${motech.github.com.dir}"/>
     </target>
+    <target name="generate.javadoc" description="Generates the java documentation using doxygen">
+        <delete dir="${javadoc.dir}" quiet="true"/>
+        <exec executable="doxygen">
+            <arg value="doxygen.config"/>
+        </exec>
+    </target>
+
+    <target name="publish.javadoc" depends="generate.javadoc"
+            description="Publishes java documentation  to http://motechproject.org">
+        <git argline="pull --rebase origin master"/>
+
+        <delete dir="${motech.github.com.dir}/javadoc" quiet="true"/>
+        <copy todir="${motech.github.com.dir}/javadoc">
+            <fileset dir="${javadoc.dir}"/>
+        </copy>
+
+        <git argline="add ."/>
+        <!-- todo stamp the git hash of the javacode on which the doc is generated [katta/deva] -->
+        <git argline="commit -m 'publishing java doc'"/>
+        <git argline="push origin master"/>
+    </target>
+
+    <macrodef name="git">
+        <attribute name="workingdir" default="${motech.github.com.dir}"/>
+
+        <attribute name="argline"/>
+        <sequential>
+            <exec executable="git" dir="@{workingdir}">
+                <arg line="@{argline}"/>
+            </exec>
+        </sequential>
+    </macrodef>
+
 </project>
