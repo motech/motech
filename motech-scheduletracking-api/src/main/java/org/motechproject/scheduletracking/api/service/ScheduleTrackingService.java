@@ -79,4 +79,6 @@ public interface ScheduleTrackingService {
      * @return List<EnrollmentRecord>
      */
     List<EnrollmentRecord> searchWithWindowDates(EnrollmentsQuery query);
+
+    MilestoneAlerts getAlertTimings(EnrollmentRequest enrollmentRequest);
 }

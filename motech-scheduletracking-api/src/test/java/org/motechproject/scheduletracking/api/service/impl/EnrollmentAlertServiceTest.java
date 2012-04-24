@@ -13,15 +13,18 @@ import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.events.MilestoneEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
+import org.motechproject.scheduletracking.api.service.MilestoneAlerts;
 import org.motechproject.util.DateUtil;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Date;
+import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static org.joda.time.DateTimeConstants.MILLIS_PER_DAY;
 import static org.joda.time.DateTimeConstants.MILLIS_PER_HOUR;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -30,8 +33,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.*;
 import static org.motechproject.scheduletracking.api.utility.PeriodUtil.*;
 import static org.motechproject.util.DateUtil.newDateTime;
+import static org.motechproject.util.DateUtil.now;
 import static org.powermock.api.mockito.PowerMockito.spy;
-import static org.powermock.api.mockito.PowerMockito.when;
 
 @PrepareForTest(DateUtil.class)
 @RunWith(PowerMockRunner.class)
@@ -248,14 +251,128 @@ public class EnrollmentAlertServiceTest {
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(firstMilestone);
 
-        Enrollment enrollmentIntoSecondMilestone = new Enrollment("some_id", schedule, "milestone_1", daysAgo(12), DateUtil.now(), new Time(8, 15), EnrollmentStatus.ACTIVE, null);
-        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollmentIntoSecondMilestone);
+        Enrollment enrollment = new Enrollment("some_id", schedule, "milestone_1", daysAgo(12), DateUtil.now(), new Time(8, 15), EnrollmentStatus.ACTIVE, null);
+        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
         ArgumentCaptor<RepeatingSchedulableJob> repeatJobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
         verify(schedulerService, times(1)).safeScheduleRepeatingJob(repeatJobCaptor.capture());
 
         assertEquals(DateUtil.now().toDate(), repeatJobCaptor.getValue().getStartTime());
         assertEquals(1, repeatJobCaptor.getValue().getRepeatCount().intValue());
+    }
+
+    @Test
+    public void shouldReturnAlertTimingsForTheGivenMilestone() {
+        Milestone firstMilestone = new Milestone("milestone_1", weeks(1), weeks(1), weeks(1), weeks(1));
+        firstMilestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 2, 0, false));
+        firstMilestone.addAlert(WindowName.earliest, new Alert(days(2), days(1), 1, 0, false));
+        firstMilestone.addAlert(WindowName.due, new Alert(days(1), days(1), 7, 0, false));
+        firstMilestone.addAlert(WindowName.max, new Alert(days(2), days(2), 7, 0, false));
+
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(firstMilestone);
+
+        Enrollment enrollment = new Enrollment("some_id", schedule, "milestone_1", now(), now(), new Time(8, 15), EnrollmentStatus.ACTIVE, null);
+        MilestoneAlerts milestoneAlerts = enrollmentAlertService.getAlertTimings(enrollment);
+
+        List<DateTime> earliestWindowAlertTimings = milestoneAlerts.getEarliestWindowAlertTimings();
+        assertEquals(3, earliestWindowAlertTimings.size());
+        assertEquals(new DateTime(2012, 3, 16, 8, 15, 0, 0), earliestWindowAlertTimings.get(0));
+        assertEquals(new DateTime(2012, 3, 17, 8, 15, 0, 0), earliestWindowAlertTimings.get(1));
+        assertEquals(new DateTime(2012, 3, 18, 8, 15, 0, 0), earliestWindowAlertTimings.get(2));
+
+        List<DateTime> dueWindowAlertTimings = milestoneAlerts.getDueWindowAlertTimings();
+        assertEquals(7, dueWindowAlertTimings.size());
+        assertEquals(new DateTime(2012, 3, 24, 8, 15, 0, 0), dueWindowAlertTimings.get(0));
+        assertEquals(new DateTime(2012, 3, 30, 8, 15, 0, 0), dueWindowAlertTimings.get(6));
+
+        List<DateTime> maxWindowAlertTimings = milestoneAlerts.getMaxWindowAlertTimings();
+        assertEquals(7, maxWindowAlertTimings.size());
+        assertEquals(new DateTime(2012, 4, 8, 8, 15, 0, 0), maxWindowAlertTimings.get(0));
+        assertEquals(new DateTime(2012, 4, 20, 8, 15, 0, 0), maxWindowAlertTimings.get(6));
+    }
+
+    @Test
+    public void shouldReturnAlertTimingsAsNullForTheGivenNonExistingMilestone() {
+        Milestone firstMilestone = new Milestone("milestone_1", weeks(1), weeks(1), weeks(1), weeks(1));
+        firstMilestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 2, 0, false));
+
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(firstMilestone);
+
+        Enrollment enrollment = new Enrollment("some_id", schedule, "milestone_non_existent", now(), now(), new Time(8, 15), EnrollmentStatus.ACTIVE, null);
+        MilestoneAlerts milestoneAlerts = enrollmentAlertService.getAlertTimings(enrollment);
+
+        List<DateTime> earliestWindowAlertTimings = milestoneAlerts.getEarliestWindowAlertTimings();
+        assertNull(earliestWindowAlertTimings);
+    }
+
+    @Test
+    public void shouldReturnAlertTimingsForElapsedAlertsAlsoInTheMilestoneWindow() {
+        Milestone firstMilestone = new Milestone("milestone_1", weeks(1), weeks(1), weeks(1), weeks(1));
+        firstMilestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 5, 0, false));
+
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(firstMilestone);
+
+        Enrollment enrollment = new Enrollment("some_id", schedule, "milestone_1", daysAgo(3), daysAgo(3), new Time(8, 15), EnrollmentStatus.ACTIVE, null);
+        MilestoneAlerts milestoneAlerts = enrollmentAlertService.getAlertTimings(enrollment);
+
+        List<DateTime> earliestWindowAlertTimings = milestoneAlerts.getEarliestWindowAlertTimings();
+        assertEquals(5, earliestWindowAlertTimings.size());
+        assertEquals(new DateTime(2012, 3, 13, 8, 15, 0, 0), earliestWindowAlertTimings.get(0));
+        assertEquals(new DateTime(2012, 3, 14, 8, 15, 0, 0), earliestWindowAlertTimings.get(1));
+    }
+
+    @Test
+    public void shouldReturnAlertTimingsForElapsedWindowAlsoInTheMilestone() {
+        Milestone firstMilestone = new Milestone("milestone_1", weeks(1), weeks(1), weeks(1), weeks(1));
+        firstMilestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 5, 0, false));
+
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(firstMilestone);
+
+        Enrollment enrollment = new Enrollment("some_id", schedule, "milestone_1", weeksAgo(1), weeksAgo(1), new Time(8, 15), EnrollmentStatus.ACTIVE, null);
+        MilestoneAlerts milestoneAlerts = enrollmentAlertService.getAlertTimings(enrollment);
+
+        List<DateTime> earliestWindowAlertTimings = milestoneAlerts.getEarliestWindowAlertTimings();
+        assertEquals(5, earliestWindowAlertTimings.size());
+        assertEquals(new DateTime(2012, 3, 9, 8, 15, 0, 0), earliestWindowAlertTimings.get(0));
+        assertEquals(new DateTime(2012, 3, 10, 8, 15, 0, 0), earliestWindowAlertTimings.get(1));
+    }
+
+    @Test
+    public void shouldReturnAlertTimingsForAbsoluteSchedule() {
+        Milestone firstMilestone = new Milestone("milestone_1", weeks(1), weeks(1), weeks(1), weeks(1));
+        Milestone secondMilestone = new Milestone("milestone_2", weeks(1), weeks(1), weeks(1), weeks(1));
+        secondMilestone.addAlert(WindowName.due, new Alert(days(0), days(1), 3, 0, false));
+
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.isBasedOnAbsoluteWindows(true);
+        schedule.addMilestones(firstMilestone, secondMilestone);
+
+        Enrollment enrollmentIntoSecondMilestone = new Enrollment("some_id", schedule, "milestone_2", weeksAgo(0), weeksAgo(0), new Time(0, 0), EnrollmentStatus.ACTIVE, null);
+        MilestoneAlerts milestoneAlerts = enrollmentAlertService.getAlertTimings(enrollmentIntoSecondMilestone);
+
+        List<DateTime> dueWindowAlertTimings = milestoneAlerts.getDueWindowAlertTimings();
+        assertEquals(3, dueWindowAlertTimings.size());
+        assertEquals(new DateTime(2012, 4, 20, 8, 15, 0, 0), dueWindowAlertTimings.get(0));
+    }
+
+    @Test
+    public void shouldReturnAlertTimingsForFloatingAlerts() {
+        Milestone firstMilestone = new Milestone("milestone_1", weeks(1), weeks(1), weeks(1), weeks(1));
+        firstMilestone.addAlert(WindowName.due, new Alert(days(0), days(1), 7, 0, true));
+
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(firstMilestone);
+
+        Enrollment enrollment = new Enrollment("some_id", schedule, "milestone_1", daysAgo(12), DateUtil.now(), new Time(8, 15), EnrollmentStatus.ACTIVE, null);
+        MilestoneAlerts milestoneAlerts = enrollmentAlertService.getAlertTimings(enrollment);
+
+        List<DateTime> dueWindowAlertTimings = milestoneAlerts.getDueWindowAlertTimings();
+        assertEquals(7, dueWindowAlertTimings.size());
+        assertEquals(now(), dueWindowAlertTimings.get(0));
     }
 
     @Test

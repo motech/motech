@@ -12,6 +12,7 @@ import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.domain.exception.NoMoreMilestonesToFulfillException;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
+import org.motechproject.scheduletracking.api.service.MilestoneAlerts;
 import org.motechproject.testing.utils.BaseUnitTest;
 
 import java.util.HashMap;
@@ -349,5 +350,28 @@ public class EnrollmentServiceTest extends BaseUnitTest {
         assertEquals(referenceDate.plusWeeks(2), enrollmentService.getEndOfWindowForCurrentMilestone(enrollment, WindowName.due));
         assertEquals(referenceDate.plusWeeks(3), enrollmentService.getEndOfWindowForCurrentMilestone(enrollment, WindowName.late));
         assertEquals(referenceDate.plusWeeks(4), enrollmentService.getEndOfWindowForCurrentMilestone(enrollment, WindowName.max));
+    }
+
+    @Test
+    public void ShouldInvokeEnrollmentAlertServiceToGetAlertTimings() {
+        DateTime now = now();
+        Schedule schedule = new Schedule("my_schedule");
+        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
+        MilestoneAlerts mockedMilestoneAlerts = mock(MilestoneAlerts.class);
+        when(enrollmentAlertService.getAlertTimings(any(Enrollment.class))).thenReturn(mockedMilestoneAlerts);
+
+        MilestoneAlerts milestoneAlerts = enrollmentService.getAlertTimings("external_id", "my_schedule", "milestone_1", now, now, new Time(8, 15));
+
+        ArgumentCaptor<Enrollment> enrollmentArgumentCaptor = ArgumentCaptor.forClass(Enrollment.class);
+        verify(enrollmentAlertService).getAlertTimings(enrollmentArgumentCaptor.capture());
+        Enrollment enrollment = enrollmentArgumentCaptor.getValue();
+        assertEquals("external_id", enrollment.getExternalId());
+        assertEquals("my_schedule", enrollment.getScheduleName());
+        assertEquals("milestone_1", enrollment.getCurrentMilestoneName());
+        assertEquals(now, enrollment.getStartOfSchedule());
+        assertEquals(now, enrollment.getEnrolledOn());
+        assertEquals(new Time(8, 15), enrollment.getPreferredAlertTime());
+
+        assertEquals(mockedMilestoneAlerts, milestoneAlerts);
     }
 }

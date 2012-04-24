@@ -27,6 +27,10 @@ public class Alert {
         this.floating = floating;
     }
 
+    public int getCount() {
+        return count;
+    }
+
     public Period getOffset() {
         return offset;
     }
