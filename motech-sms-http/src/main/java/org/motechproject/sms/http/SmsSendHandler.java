@@ -41,7 +41,6 @@ public class SmsSendHandler implements SmsEventHandler {
     @Override
     @MotechListener(subjects = EventSubjects.SEND_SMS)
     public void handle(MotechEvent event) throws IOException, SmsDeliveryFailureException {
-    	System.out.println("Handling");
     	List<String> recipients = (List<String>) event.getParameters().get(EventDataKeys.RECIPIENTS);
         String message = (String) event.getParameters().get(EventDataKeys.MESSAGE);
         HttpMethod httpMethod = template.generateRequestFor(recipients, message);
@@ -52,9 +51,9 @@ public class SmsSendHandler implements SmsEventHandler {
         
         int status = commonsHttpClient.executeMethod(httpMethod);
         
-        System.out.println("Status: " + status);
+
         String response = httpMethod.getResponseBodyAsString();
-        System.out.println("Response: " + response);
+
         log.info("HTTP Status:" + status + "|Response:" + response);
 
         if (response != null && !response.contains(template.getResponse().success)) {

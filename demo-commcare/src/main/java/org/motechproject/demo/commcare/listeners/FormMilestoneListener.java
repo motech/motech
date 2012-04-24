@@ -59,10 +59,15 @@ public class FormMilestoneListener {
 		
 		if (user != null) {
 			phoneNum = user.getDefaultPhoneNumber();
+		} else {
+			return;
 		}
 		
 		if (phoneNum == null) {
-			return;
+			phoneNum = user.getUserData().get("default_phone_number");
+			if (phoneNum == null) {
+				return;
+			} 
 		}
 		
 		if (windowName.equals("late")) {

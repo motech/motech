@@ -23,7 +23,6 @@ public class EnrollmentAlertService {
     }
 
     public void scheduleAlertsForCurrentMilestone(Enrollment enrollment) {
-        System.out.println("Attempting to schedule alerts");
     	Schedule schedule = enrollment.getSchedule();
         Milestone currentMilestone = schedule.getMilestone(enrollment.getCurrentMilestoneName());
         if (currentMilestone == null)
@@ -41,11 +40,8 @@ public class EnrollmentAlertService {
     }
 
     private void scheduleAlertJob(Alert alert, Enrollment enrollment, Milestone currentMilestone, MilestoneWindow milestoneWindow, MilestoneAlert milestoneAlert, DateTime reference) {
-        System.out.println("In scheduleAlertJob");
     	DateTime windowStartDate = reference.plus(currentMilestone.getWindowStart(milestoneWindow.getName()));
         int numberOfAlertsToSchedule = alert.getRemainingAlertCount(windowStartDate, enrollment.getPreferredAlertTime());
- 
-        System.out.println(numberOfAlertsToSchedule);
         
         if (numberOfAlertsToSchedule <= 0)
             return;
@@ -54,7 +50,7 @@ public class EnrollmentAlertService {
         event.getParameters().put(MotechSchedulerService.JOB_ID_KEY, String.format("%s.%d", enrollment.getId(), alert.getIndex()));
 
         DateTime startTime = alert.getNextAlertDateTime(windowStartDate, enrollment.getPreferredAlertTime());
-        System.out.println("Scheduling job for: " + milestoneWindow.getName() + " with a reapt of " + numberOfAlertsToSchedule + "at " + startTime);
+
         long repeatIntervalInMillis = (long) alert.getInterval().toStandardSeconds().getSeconds() * 1000;
         schedulerService.safeScheduleRepeatingJob(new RepeatingSchedulableJob(event, startTime.toDate(), null, numberOfAlertsToSchedule - 1, repeatIntervalInMillis));
     }

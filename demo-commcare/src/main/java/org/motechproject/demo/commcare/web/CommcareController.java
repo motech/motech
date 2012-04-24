@@ -87,11 +87,20 @@ public class CommcareController  {
 	}
 
 	@RequestMapping("/endSchedule") 
-	public ModelAndView endSchedule(HttpServletRequest request,
+	public String endSchedule(HttpServletRequest request,
 			HttpServletResponse response) {
-		//TODO
-		return null;
+		
+		String userId = request.getParameter("user");
+		
+		if (userId != null) {
+			List<String> scheduleNames = new ArrayList<String>();
+			scheduleNames.add(SCHEDULE_NAME);
+			scheduleTrackingService.unenroll(userId, scheduleNames);
+		}
+		
+		return "Successfully removed user: " + userId;
 	}
+	
 
 	@RequestMapping("/commcareforms")
 	public ModelAndView handleForwardedForm(HttpServletRequest request,

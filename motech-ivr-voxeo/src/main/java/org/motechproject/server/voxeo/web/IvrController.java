@@ -79,7 +79,6 @@ public class IvrController extends MultiActionController {
 
             try {
                 allPhoneCalls.add(phoneCall);
-                System.out.println("Added new one...session id SHOULD BE THERE");
             } catch (UpdateConflictException e) {
                 // I eat this exception since it means there was a race condition and the document has already been created.
                 // I can continue with the new version
@@ -168,7 +167,6 @@ public class IvrController extends MultiActionController {
     private void updateState(PhoneCall phoneCall, PhoneCallEvent event) {
         MotechEvent motechEvent = null;
 
-        System.out.println("Updating event status: " + event.getStatus());
         switch (event.getStatus()) {
             case ALERTING:
                 phoneCall.setStartDate(new Date(event.getTimestamp()));
