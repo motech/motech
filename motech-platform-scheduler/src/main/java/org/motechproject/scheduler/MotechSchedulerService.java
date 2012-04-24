@@ -6,6 +6,11 @@ import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.RunOnceSchedulableJob;
 
 /**
+ * \defgroup scheduler Scheduler
+ */
+
+/**
+ * \ingroup scheduler
  * Motech Scheduler Service Interface provides methods to schedule reschedule and unschedule a job
  *
  * @author Igor (iopushnyev@2paths.com)

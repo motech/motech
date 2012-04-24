@@ -7,6 +7,8 @@ import org.motechproject.scheduletracking.api.service.contract.UpdateCriteria;
 import java.util.List;
 
 /**
+ * \ingroup sts
+ *
  * Schedule Tracking Service interface
  * Provides methods to enroll an external id into a schedule, fulfill milestones in a schedule
  * and uneroll an external id from a schedule.

@@ -7,8 +7,12 @@ import org.motechproject.server.alerts.domain.Criterion;
 
 import java.util.ArrayList;
 import java.util.List;
-
 /**
+ * \defgroup Alerts
+ */
+/**
+ * \ingroup Alerts
+
  * Maintains the criteria by which search for alerts to be done
  */
 public class AlertCriteria {

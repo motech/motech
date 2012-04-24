@@ -15,6 +15,8 @@ import java.util.Map;
 
 
 /**
+ * \ingroup Alerts
+
  * Creates and maintains alerts
  */
 public class AlertServiceImpl implements AlertService {

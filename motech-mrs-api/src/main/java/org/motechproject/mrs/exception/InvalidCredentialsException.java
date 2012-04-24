@@ -1,3 +1,10 @@
+/**
+ * \defgroup MRS
+ */
+/**
+ * \ingroup MRS
+ * Exceptions thrown by MRS
+ */
 package org.motechproject.mrs.exception;
 
 import org.springframework.security.authentication.BadCredentialsException;

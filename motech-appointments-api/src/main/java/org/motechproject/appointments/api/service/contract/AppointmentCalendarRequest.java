@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * \defgroup Appointments
+ */
+/**
+ * \ingroup Appointments
+ *
  * Appointment schedule template for creating multiple appointments/scheduled visits.
  * It takes {@link CreateVisitRequest} list and user id and schedules appointments/visits.
  */

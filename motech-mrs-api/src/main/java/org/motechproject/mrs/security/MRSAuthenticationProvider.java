@@ -1,3 +1,7 @@
+/**
+ * \ingroup MRS
+ * Authentication Handler package
+ */
 package org.motechproject.mrs.security;
 
 import org.motechproject.mrs.exception.InvalidCredentialsException;

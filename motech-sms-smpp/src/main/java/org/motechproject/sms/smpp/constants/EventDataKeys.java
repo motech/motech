@@ -1,3 +1,10 @@
+/**
+ * \defgroup smpp SMS SMPP
+ */
+/**
+ * \ingroup smpp
+ * Constants used in SMS SMPP module
+ */
 package org.motechproject.sms.smpp.constants;
 
 public class EventDataKeys {

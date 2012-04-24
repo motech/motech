@@ -11,6 +11,8 @@ import java.util.Map;
 import static org.motechproject.util.DateUtil.newDateTime;
 
 /**
+ * \ingroup sts
+ *
  * This is the request document to create an enrollment
  */
 public class EnrollmentRequest {

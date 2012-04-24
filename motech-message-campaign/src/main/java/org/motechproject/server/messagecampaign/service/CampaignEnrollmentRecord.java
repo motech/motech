@@ -4,6 +4,11 @@ import org.joda.time.LocalDate;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollmentStatus;
 
 /**
+ * \defgroup MessageCampaign Message Campaign
+ */
+/**
+ * \ingroup MessageCampaign
+ *
  * This is the record which will be returned when message campaign service is queried for enrollments
  * It holds the details of an enrollment
  *

@@ -1,3 +1,10 @@
+/**
+ * \defgroup openMRS Open MRS
+ */
+/**
+ * \ingroup openMRS
+ * Services offered by Open MRS
+ */
 package org.motechproject.openmrs.services;
 
 import org.openmrs.Concept;

@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * \ingroup Appointments
+ *
  * Used as parameter for {@link org.motechproject.appointments.api.service.AppointmentService#rescheduleAppointment(RescheduleAppointmentRequest)},
  * specifies new due date and reminder configuration.
  */

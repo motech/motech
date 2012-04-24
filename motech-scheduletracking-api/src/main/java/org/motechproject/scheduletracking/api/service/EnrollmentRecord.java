@@ -3,6 +3,8 @@ package org.motechproject.scheduletracking.api.service;
 import org.joda.time.DateTime;
 import org.motechproject.model.Time;
 /**
+ * \ingroup sts
+ *
  * This is the record which will be returned when schedule tracking service is queried for enrollments
  * It holds the details of an enrollment
  *

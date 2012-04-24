@@ -1,3 +1,10 @@
+/**
+ * \defgroup sms SMS
+ */
+/**
+ * \ingroup sms
+ * Constants used in SMS module
+ */
 package org.motechproject.sms.api.constants;
 
 public class EventDataKeys {

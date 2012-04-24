@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * \ingroup Appointments
+ *
  * Allows to build query to search for visits by {@link org.motechproject.appointments.api.service.AppointmentService#search(VisitsQuery)}
  */
 public class VisitsQuery {
