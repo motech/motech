@@ -5,6 +5,8 @@ import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class AppointmentCalendarTest {
 
@@ -26,5 +28,17 @@ public class AppointmentCalendarTest {
         assertEquals(baselineVisit, appointmentCalendar.getVisit("BaseLINE"));
         assertEquals(week2Visit, appointmentCalendar.getVisit("week2"));
         assertNull(appointmentCalendar.getVisit("week4"));
+    }
+
+    @Test
+    public void shouldBeIdempotentOnDuplicateVisit(){
+
+        Visit visit = new Visit().name("week2").appointment(new Appointment());
+        AppointmentCalendar appointmentCalendar = new AppointmentCalendar().externalId("externalId");
+        appointmentCalendar.addVisit(visit);
+        appointmentCalendar.addVisit(visit);
+
+        assertThat(appointmentCalendar.visits().size(), is(1));
+        assertThat(appointmentCalendar.visits().get(0), is(visit));
     }
 }
