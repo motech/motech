@@ -3,14 +3,11 @@
     <property file="${basedir}/build/build.properties"/>
     <property name="javadoc.dir" value="${basedir}/docs/html"/>
 
-
-    <target name="test">
-        <echo message="${motech.github.com.dir}"/>
-    </target>
     <target name="generate.javadoc" description="Generates the java documentation using doxygen">
         <delete dir="${javadoc.dir}" quiet="true"/>
-        <exec executable="doxygen">
-            <arg value="doxygen.config"/>
+		<exec executable="sh">
+        <arg line="-c &quot;(cat doxygen.config; echo 'PROJECT_NUMBER=${releaseVersion}') | doxygen -&quot;" />
+        <arg value="ls foo/bar | wc -l" />
         </exec>
     </target>
 
@@ -18,17 +15,21 @@
             description="Publishes java documentation  to http://motechproject.org">
         <git argline="checkout ."/>
         <git argline="pull --rebase origin master"/>
-
-        <delete dir="${motech.github.com.dir}/javadoc" quiet="true"/>
-        <copy todir="${motech.github.com.dir}/javadoc">
-            <fileset dir="${javadoc.dir}"/>
-        </copy>
+		
+		<antcall target="copy.javadoc" />
 
         <git argline="add ."/>
         <!-- todo stamp the git hash of the javacode on which the doc is generated [katta/deva] -->
         <git argline="commit -m 'publishing java doc'"/>
         <git argline="push origin master"/>
     </target>
+	
+	<target name="copy.javadoc">
+        <delete dir="${motech.github.com.dir}/javadoc" quiet="true"/>
+        <copy todir="${motech.github.com.dir}/javadoc">
+            <fileset dir="${javadoc.dir}"/>
+        </copy>
+	</target>
 
     <macrodef name="git">
         <attribute name="workingdir" default="${motech.github.com.dir}"/>
