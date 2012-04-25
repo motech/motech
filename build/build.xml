@@ -16,6 +16,7 @@
 
     <target name="publish.javadoc" depends="generate.javadoc"
             description="Publishes java documentation  to http://motechproject.org">
+        <git argline="checkout ."/>
         <git argline="pull --rebase origin master"/>
 
         <delete dir="${motech.github.com.dir}/javadoc" quiet="true"/>
