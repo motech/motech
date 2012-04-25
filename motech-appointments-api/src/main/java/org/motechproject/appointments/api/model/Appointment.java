@@ -1,5 +1,6 @@
 package org.motechproject.appointments.api.model;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.DateTime;
 import org.motechproject.model.ExtensibleDataObject;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Appointment extends ExtensibleDataObject {
+public class Appointment extends ExtensibleDataObject<Appointment> {
 
     @JsonProperty
     private String id;
@@ -66,5 +67,15 @@ public class Appointment extends ExtensibleDataObject {
     public Appointment reminders(List<Reminder> reminders) {
         this.reminders = reminders;
         return this;
+    }
+
+    public boolean isSame(Appointment appointment) {
+        return new EqualsBuilder()
+                .append(getData(), appointment.getData())
+                .append(dueDate, appointment.dueDate())
+                .append(confirmedDate, appointment.confirmedDate())
+                .append(originalDueDate, appointment.originalDueDate())
+                .append(reminders, appointment.reminders())
+                .isEquals();
     }
 }

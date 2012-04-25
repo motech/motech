@@ -25,6 +25,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.*;
 
+import static java.util.Arrays.asList;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -99,6 +100,43 @@ public class FormUploadServletTest {
 
         verify(formOutput).addStudy(study);
         verify(failureForm).setFormErrors(formErrors);
+        verify(successForm, never()).setFormErrors(anyList());
+        verify(formOutput).writeFormErrors(any(DataOutputStream.class));
+        verify(formPublisher).publish(successForm);
+        verify(epihandySerializer).addDeserializationListener(formProcessor);
+        verify(epihandySerializer).deserializeStudiesWithEvents(any(DataInputStream.class), eq(formIdMap));
+
+    }
+
+    @Test
+    public void shouldContinueProcessingUploadedFormsIfAnyFailureHappensInAnyForm() throws Exception {
+        String validatorClass = "org.motechproject.mobileforms.api.validator.TestANCVisitFormValidator";
+        FormBean errorForm = mock(FormBean.class);
+        FormBean successForm = mock(FormBean.class);
+        FormValidator formValidator = mock(FormValidator.class);
+        final String errorFormName = "error form";
+
+        List<FormBean> formBeans = Arrays.asList(errorForm, successForm);
+        Map<Integer, String> formIdMap = new HashMap<Integer, String>();
+        Study study = new Study("study", formBeans);
+
+        when(formProcessor.getStudies()).thenReturn(Arrays.asList(study));
+        when(successForm.getValidator()).thenReturn(validatorClass);
+        when(errorForm.getValidator()).thenReturn(validatorClass);
+        when(errorForm.getFormname()).thenReturn(errorFormName);
+        when(successForm.getXmlContent()).thenReturn("xml");
+        when(errorForm.getXmlContent()).thenReturn("xml");
+        when(mockServletContext.getAttribute(validatorClass)).thenReturn(formValidator);
+        when(formValidator.validate(errorForm)).thenThrow(new RuntimeException("some error in processing form"));
+        when(formValidator.validate(successForm)).thenReturn(Collections.EMPTY_LIST);
+        when(mobileFormsService.getFormIdMap()).thenReturn(formIdMap);
+
+        populateHttpRequest(request, "username", "password", groupIndex);
+
+        formUploadServlet.doPost(request, response);
+
+        verify(formOutput).addStudy(study);
+        verify(errorForm).setFormErrors(asList(new FormError("Form Error:" + errorFormName, "Server exception, contact your administrator")));
         verify(successForm, never()).setFormErrors(anyList());
         verify(formOutput).writeFormErrors(any(DataOutputStream.class));
         verify(formPublisher).publish(successForm);

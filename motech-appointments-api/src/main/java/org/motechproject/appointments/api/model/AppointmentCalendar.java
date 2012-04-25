@@ -35,8 +35,11 @@ public class AppointmentCalendar extends MotechBaseDataObject {
         return this;
     }
 
-    public AppointmentCalendar addVisit(Visit visit) {
-        visits.add(visit);
+    public AppointmentCalendar addVisit(Visit newVisit) {
+        for (Visit visit : visits) {
+            if (visit.isSame(newVisit)) return this;
+        }
+        visits.add(newVisit);
         return this;
     }
 

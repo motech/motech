@@ -1,5 +1,6 @@
 package org.motechproject.util;
 
+import junitx.framework.Assert;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -10,6 +11,7 @@ import org.motechproject.model.Time;
 import org.motechproject.util.datetime.DateTimeSource;
 import org.motechproject.util.datetime.DefaultDateTimeSource;
 
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -123,6 +125,19 @@ public class DateUtilTest {
     public void shouldReturnTimeFromDateTime() {
         assertThat(DateUtil.time(new DateTime(2012, 12, 2, 19, 9, 38)), is(new Time(19, 9)));
         assertThat(DateUtil.time(new DateTime(2012, 12, 2, 1, 58, 57)), is(new Time(1, 58)));
+    }
+
+    @Test
+    public void shouldThrowExceptionIfApplicableDaysIsEmptyForNextApplicableDate() {
+        try {
+            nextApplicableWeekDayIncludingFromDate(new DateTime(2011, 10, 6, 3, 0), Collections.<DayOfWeek>emptyList());
+            Assert.fail("expected invalid argument exception");
+        } catch (IllegalArgumentException iae) {}
+
+        try {
+            nextApplicableWeekDay(new DateTime(2011, 10, 6, 3, 0), Collections.<DayOfWeek>emptyList());
+            Assert.fail("expected invalid argument exception");
+        } catch (IllegalArgumentException iae) {}
     }
 
     private void mockCurrentDate(final DateTime currentDate) {

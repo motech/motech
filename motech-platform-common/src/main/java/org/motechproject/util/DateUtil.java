@@ -3,11 +3,13 @@ package org.motechproject.util;
 import org.joda.time.*;
 import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.Time;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
 
 import static org.motechproject.model.DayOfWeek.getDayOfWeek;
+import static org.springframework.util.CollectionUtils.*;
 
 public class DateUtil {
     public static DateTime now() {
@@ -113,6 +115,9 @@ public class DateUtil {
     }
 
     public static DateTime nextApplicableWeekDayIncludingFromDate(DateTime fromDate, List<DayOfWeek> applicableDays) {
+        if (isEmpty(applicableDays))
+            throw new IllegalArgumentException("Applicable Days should not be empty");
+
         int dayOfWeek = fromDate.getDayOfWeek();
         int noOfDaysToNearestCycleDate = 0;
         int WEEK_MAX_DAY = DayOfWeek.Sunday.getValue();
