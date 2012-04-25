@@ -18,6 +18,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+import static java.util.Arrays.asList;
+
 public class FormUploadServlet extends BaseFormServlet {
 
     private final Logger log = LoggerFactory.getLogger(FormUploadServlet.class);
@@ -34,11 +36,16 @@ public class FormUploadServlet extends BaseFormServlet {
             List<Study> studies = extractBeans(dataInput);
             for (Study study : studies) {
                 for (FormBean formBean : study.forms()) {
-                    List<FormError> formErrors = getValidatorFor(formBean).validate(formBean);
-                    if (formErrors.isEmpty())
-                        formPublisher.publish(formBean);
-                    else {
-                        formBean.setFormErrors(formErrors);
+                    try {
+                        List<FormError> formErrors = getValidatorFor(formBean).validate(formBean);
+                        if (formErrors.isEmpty())
+                            formPublisher.publish(formBean);
+                        else {
+                            formBean.setFormErrors(formErrors);
+                        }
+                    } catch (Exception e) {
+                        log.error("Encountered exception while validating form submitted from mobile: ", e);
+                        formBean.setFormErrors(asList(new FormError("Form Error:" + formBean.getFormname(), "Server exception, contact your administrator")));
                     }
                 }
                 formOutput.addStudy(study);
