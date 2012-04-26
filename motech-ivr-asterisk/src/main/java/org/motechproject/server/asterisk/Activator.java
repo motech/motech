@@ -41,16 +41,19 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import java.util.Hashtable;
 
 public class Activator implements BundleActivator {
 	private static Logger logger = LoggerFactory.getLogger(Activator.class);
-	private static final String CONTEXT_CONFIG_LOCATION = "classpath:applicationAsteriskBundle.xml";
+	private static final String CONTEXT_CONFIG_LOCATION = "applicationAsteriskBundle.xml";
 	private static final String SERVLET_URL_MAPPING = "/asterisk";
 	private ServiceTracker tracker;
     private ServiceReference httpService;
+
+    private static BundleContext bundleContext = null;
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -77,11 +80,7 @@ public class Activator implements BundleActivator {
             serviceAdded(service);
         }
 
-        // TODO take the constructor arguments from the configuration file
-        Hashtable<String, String> props = new Hashtable<String, String>();
-        props.put("IvrProvider", "Asterisk");
-        props.put("Host", "localhost");
-        context.registerService(IVRService.class.getName(), new IVRServiceAsteriskImpl("localhost", "admin", "admin"), props);
+        bundleContext = context;
 	}
 
 	public void stop(BundleContext context) throws Exception {
@@ -92,10 +91,20 @@ public class Activator implements BundleActivator {
         }
 	}
 
+    public static class AsteriskApplicationContext extends OsgiBundleXmlWebApplicationContext {
+
+        public AsteriskApplicationContext() {
+            super();
+            setBundleContext(Activator.bundleContext);
+        }
+
+    }
+
 	private void serviceAdded(HttpService service) {
 		try {
 			DispatcherServlet dispatcherServlet = new DispatcherServlet();
 			dispatcherServlet.setContextConfigLocation(CONTEXT_CONFIG_LOCATION);
+            dispatcherServlet.setContextClass(AsteriskApplicationContext.class);
 			ClassLoader old = Thread.currentThread().getContextClassLoader();
 			try {
 				Thread.currentThread().setContextClassLoader(getClass().getClassLoader());

@@ -88,11 +88,11 @@ public class Activator implements BundleActivator {
         }
     }
 
-    public static class BAC extends OsgiBundleXmlWebApplicationContext {
+    public static class DemoApplicationContext extends OsgiBundleXmlWebApplicationContext {
 
-        public BAC() {
+        public DemoApplicationContext() {
             super();
-            setBundleContext(bundleContext);
+            setBundleContext(Activator.bundleContext);
         }
 
     }
@@ -101,7 +101,7 @@ public class Activator implements BundleActivator {
 		try {
 			DispatcherServlet dispatcherServlet = new DispatcherServlet();
 			dispatcherServlet.setContextConfigLocation(CONTEXT_CONFIG_LOCATION);
-            dispatcherServlet.setContextClass(BAC.class);
+            dispatcherServlet.setContextClass(DemoApplicationContext.class);
 			ClassLoader old = Thread.currentThread().getContextClassLoader();
 			try {
 				Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
