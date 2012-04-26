@@ -60,6 +60,8 @@ public class Activator implements BundleActivator {
 
 	@Override
 	public void start(BundleContext context) throws Exception {
+        bundleContext = context;
+
 		this.tracker = new ServiceTracker(context,
 				HttpService.class.getName(), null) {
 			
@@ -82,8 +84,6 @@ public class Activator implements BundleActivator {
             HttpService service = (HttpService) context.getService(httpService);
             serviceAdded(service);
         }
-
-        bundleContext = context;
 	}
 
 	public void stop(BundleContext context) throws Exception {
