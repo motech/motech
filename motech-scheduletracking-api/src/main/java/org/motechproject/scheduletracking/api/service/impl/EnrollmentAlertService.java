@@ -1,6 +1,7 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
 import org.joda.time.DateTime;
+import org.joda.time.Period;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
@@ -91,13 +92,13 @@ public class EnrollmentAlertService {
             for (Alert alert : milestoneWindow.getAlerts()) {
                 DateTime alertReference = getAlertReference(alert, enrollment, currentMilestone, milestoneWindow, currentMilestoneStartDate);
 
-                long repeatIntervalInMillis = (long) alert.getInterval().toStandardSeconds().getSeconds() * 1000;
+                Period alertInterval = alert.getInterval();
                 DateTime startTimeForAlerts = alertReference.plus(alert.getOffset());
                 alertTimingsForWindow.add(startTimeForAlerts);
                 DateTime currentAlertTime = startTimeForAlerts;
                 DateTime nextAlertTime;
                 for(int i = 1; i <= (alert.getCount() - 1); i++) {
-                    nextAlertTime = currentAlertTime.plus(repeatIntervalInMillis);
+                    nextAlertTime = currentAlertTime.plus(alertInterval);
                     alertTimingsForWindow.add(nextAlertTime);
                     currentAlertTime = nextAlertTime;
                 }
