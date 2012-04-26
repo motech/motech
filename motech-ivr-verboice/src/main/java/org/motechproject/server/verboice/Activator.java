@@ -40,14 +40,17 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
 public class Activator implements BundleActivator {
     private static Logger logger = LoggerFactory.getLogger(Activator.class);
-    private static final String CONTEXT_CONFIG_LOCATION = "classpath:ivrVerboiceContext.xml";
+    private static final String CONTEXT_CONFIG_LOCATION = "ivrVerboiceContext.xml";
     private static final String SERVLET_URL_MAPPING = "/verboice";
     private ServiceTracker tracker;
     private ServiceReference httpService;
+
+    private static BundleContext bundleContext = null;
 
     @Override
     public void start(BundleContext context) throws Exception {
@@ -73,6 +76,8 @@ public class Activator implements BundleActivator {
             HttpService service = (HttpService) context.getService(httpService);
             serviceAdded(service);
         }
+
+        bundleContext = context;
     }
 
     public void stop(BundleContext context) throws Exception {
@@ -83,10 +88,20 @@ public class Activator implements BundleActivator {
         }
     }
 
+    public static class VerboiceApplicationContext extends OsgiBundleXmlWebApplicationContext {
+
+        public VerboiceApplicationContext() {
+            super();
+            setBundleContext(Activator.bundleContext);
+        }
+
+    }
+
     private void serviceAdded(HttpService service) {
         try {
             DispatcherServlet dispatcherServlet = new DispatcherServlet();
             dispatcherServlet.setContextConfigLocation(CONTEXT_CONFIG_LOCATION);
+            dispatcherServlet.setContextClass(VerboiceApplicationContext.class);
             ClassLoader old = Thread.currentThread().getContextClassLoader();
             try {
                 Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
