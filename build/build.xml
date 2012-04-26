@@ -6,7 +6,7 @@
     <target name="generate.javadoc" description="Generates the java documentation using doxygen">
         <delete dir="${javadoc.dir}" quiet="true"/>
 		<exec executable="sh">
-        <arg line="-c &quot;(cat doxygen.config; echo 'PROJECT_NUMBER=${releaseVersion}') | doxygen -&quot;" />
+        <arg line="-c &quot;(cat doxygen.config; echo 'PROJECT_NUMBER=${RELEASE_VERSION}') | doxygen -&quot;" />
         <arg value="ls foo/bar | wc -l" />
         </exec>
     </target>
@@ -20,7 +20,7 @@
 
         <git argline="add ."/>
         <!-- todo stamp the git hash of the javacode on which the doc is generated [katta/deva] -->
-        <git argline="commit -m 'publishing java doc'"/>
+        <git argline="commit -m 'publishing java doc for release ${RELEASE_VERSION}'"/>
         <git argline="push origin master"/>
     </target>
 	
