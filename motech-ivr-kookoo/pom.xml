@@ -187,22 +187,13 @@
                         <Private-Package>
                             org.motechproject.ivr.kookoo,
                             com.ozonetel.kookoo;version=1.1,
-                            org.apache.commons.lang;version=2.6.0,
-                            org.apache.commons.lang.builder;version=2.6.0,
-                            org.apache.commons.lang.exception;version=2.6.0,
-                            org.apache.commons.lang.math;version=2.6.0,
-                            org.apache.commons.lang.reflect;version=2.6.0,
-                            org.apache.commons.lang.text;version=2.6.0,
-                            org.apache.log4j,
-                            org.apache.log4j.config,
-                            org.apache.log4j.helpers,
-                            org.apache.log4j.or,
-                            org.apache.log4j.pattern,
-                            org.apache.log4j.spi,
-                            org.json;version=20080701,
-                            org.motechproject.decisiontree,
-                            org.motechproject.decisiontree.model,
-                            org.motechproject.server.decisiontree
+                            org.springframework.context.config,
+                            org.springframework.context.support,
+                            org.springframework.osgi.config,
+                            org.springframework.web.servlet.mvc,
+                            org.ektorp.spring,
+                            org.ektorp.impl,
+                            org.motechproject.decisiontree.model
                         </Private-Package>
                         <Embed-Dependency>!*</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>

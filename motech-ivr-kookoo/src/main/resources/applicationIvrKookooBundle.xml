@@ -2,9 +2,11 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
@@ -29,5 +31,14 @@
     <bean id="callFlowController" class="org.motechproject.ivr.kookoo.extensions.CallFlowControllerImpl"/>
 
     <bean id="ivrMessage" class="org.motechproject.ivr.kookoo.domain.KookooIVRMessage"/>
+
+    <bean id="ivrServiceKookoo" class="org.motechproject.ivr.kookoo.KookooCallServiceImpl"/>
+
+    <osgi:service id="ivrServiceOsgi" interface="org.motechproject.ivr.service.IVRService" auto-export="interfaces" ref="ivrServiceKookoo">
+        <osgi:service-properties>
+            <entry key="IvrProvider" value="Kookoo"/>
+            <entry key="Host" value="localhost"/>
+        </osgi:service-properties>
+    </osgi:service>
 
 </beans>
