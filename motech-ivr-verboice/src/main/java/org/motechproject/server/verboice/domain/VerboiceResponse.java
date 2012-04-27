@@ -8,6 +8,9 @@ public class VerboiceResponse extends AggregatedVerboiceAction {
         this.callbackUrl = callbackUrl;
     }
 
+    public VerboiceResponse() {
+    }
+
     @Override
     public String toXMLString() {
         final StringBuffer buffer = new StringBuffer();

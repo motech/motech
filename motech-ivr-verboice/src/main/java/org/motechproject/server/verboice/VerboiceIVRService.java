@@ -4,6 +4,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
+import org.motechproject.server.verboice.domain.VerboiceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +25,18 @@ public class VerboiceIVRService implements IVRService {
 
     private static Logger log = LoggerFactory.getLogger(VerboiceIVRService.class);
 
-    @Qualifier("verboiceProperties")
     private Properties verboiceProperties;
     private HttpClient commonsHttpClient;
+    private VerboiceHandler handler;
 
     @Autowired
-    public VerboiceIVRService(Properties verboiceProperties, HttpClient commonsHttpClient) {
+    public VerboiceIVRService(@Qualifier("verboiceProperties") Properties verboiceProperties, HttpClient commonsHttpClient) {
         this.verboiceProperties = verboiceProperties;
         this.commonsHttpClient = commonsHttpClient;
+    }
+
+    public void registerHandler(VerboiceHandler handler){
+        this.handler = handler;
     }
 
     @Override
@@ -51,5 +56,9 @@ public class VerboiceIVRService implements IVRService {
                 callRequest.getCallBackUrl(),
                 callRequest.getPhone()
         );
+    }
+
+    public VerboiceHandler getHandler() {
+        return handler;
     }
 }
