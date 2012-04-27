@@ -1,6 +1,6 @@
 package org.motechproject.server.verboice.domain;
 
-public class Say implements VerboiceAction {
+public class Say implements VerboiceVerb {
     int loop;
     String voice;
     private String text;

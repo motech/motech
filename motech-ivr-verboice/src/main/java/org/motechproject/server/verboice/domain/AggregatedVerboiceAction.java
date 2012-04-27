@@ -3,40 +3,44 @@ package org.motechproject.server.verboice.domain;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class AggregatedVerboiceAction implements VerboiceAction {
+public abstract class AggregatedVerboiceAction implements VerboiceVerb {
 
-    List<VerboiceAction> verboiceActions = new LinkedList<VerboiceAction>();
+    List<VerboiceVerb> verboiceVerbs = new LinkedList<VerboiceVerb>();
     
     @Override
     public String toXMLString() {
         final StringBuffer buffer = new StringBuffer();
-        for (VerboiceAction verboiceAction : verboiceActions) {
-            buffer.append(verboiceAction.toXMLString());
+        for (VerboiceVerb verboiceVerb : verboiceVerbs) {
+            buffer.append(verboiceVerb.toXMLString());
         }
         return buffer.toString();
     }
 
 
     public void playUrl(String url) {
-        verboiceActions.add(new Play(url));
+        verboiceVerbs.add(new Play(url));
     }
 
     public void playInLoopUrl(String url, int loopCount) {
-        verboiceActions.add(new Play(url, loopCount));
+        verboiceVerbs.add(new Play(url, loopCount));
     }
 
     public void say(String text){
-        verboiceActions.add(new Say(text));
+        verboiceVerbs.add(new Say(text));
     }
 
     public void say(String text,String voice, int loop){
-        verboiceActions.add(new Say(text,voice,loop));
+        verboiceVerbs.add(new Say(text,voice,loop));
     }
-    
+
+    public void gather(String action, int numDigits, char finishOnKey, int timeout){
+        verboiceVerbs.add(new Gather(action, numDigits, finishOnKey, timeout));
+    }
+
     public void redirect(String url) {
-        verboiceActions.add(new Redirect(url));
+        verboiceVerbs.add(new Redirect(url));
     }
     public void hangup(){
-        verboiceActions.add(new Hangup());
+        verboiceVerbs.add(new Hangup());
     }
 }
