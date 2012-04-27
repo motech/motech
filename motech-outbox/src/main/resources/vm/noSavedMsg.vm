@@ -6,7 +6,7 @@
                 <audio src="$contextPath/../audio/$language/hello.wav"/>
                 There are no saved messages in your outbox
             </prompt>
-             #set ($url = "$contextPath/tama/menu/select?pId=$partyId")
+             #set ($url = "$contextPath/tama/menu/select?pId=$externalId")
             <goto next="$escape.escapeXml($url)"/>
 		</block>
 	</form>

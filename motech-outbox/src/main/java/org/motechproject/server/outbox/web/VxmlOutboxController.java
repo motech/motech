@@ -91,8 +91,8 @@ public class VxmlOutboxController extends MultiActionController {
 
 
         //Interim implementation. Party ID will be obtained from the Authentication context
-        //String partyId = "1";
-        String partyId = request.getParameter("pId");
+        //String externalId = "1";
+        String externalId = request.getParameter("pId");
 
         String messageId = request.getParameter(MESSAGE_ID_PARAM);
         String language = request.getParameter(LANGUAGE_PARAM);
@@ -128,9 +128,9 @@ public class VxmlOutboxController extends MultiActionController {
         } else {
             logger.info("Generating VXML for the next voice message in outbox... ");
             try {
-                voiceMessage = voiceOutboxService.getNextPendingMessage(partyId);
+                voiceMessage = voiceOutboxService.getNextPendingMessage(externalId);
             } catch (Exception e) {
-                logger.error("Can not obtain next message from the outbox of the party ID: " + partyId +
+                logger.error("Can not obtain next message from the outbox of the external ID: " + externalId +
                         " " + e.getMessage(), e);
                 logger.warn("Generating a VXML with the error message...");
                 mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
@@ -140,9 +140,9 @@ public class VxmlOutboxController extends MultiActionController {
 
         if (voiceMessage == null) {
 
-            logger.info("There are no more messages in the outbox of the party ID: " + partyId);
+            logger.info("There are no more messages in the outbox of the external ID: " + externalId);
             mav.setViewName(NO_MESSAGE_TEMPLATE_NAME);
-            mav.addObject("partyId", partyId);
+            mav.addObject("externalId", externalId);
             return mav;
         }
 
@@ -151,7 +151,7 @@ public class VxmlOutboxController extends MultiActionController {
         if (voiceMessageType == null) {
             logger.error("Invalid Outbound voice message: " + voiceMessage + " Voice message type can not be null.");
             mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
-            mav.addObject("partyId", partyId);
+            mav.addObject("externalId", externalId);
             return mav;
         }
 
@@ -272,19 +272,19 @@ public class VxmlOutboxController extends MultiActionController {
             return mav;
         }
 
-         //TODO - get party ID proper way from security principal or authentication context when it is available
-        String partyId;
+         //TODO - get exernal ID proper way from security principal or authentication context when it is available
+        String externalId;
         try {
             OutboundVoiceMessage message =  voiceOutboxService.getMessageById(messageId);
-            partyId = message.getPartyId();
+            externalId = message.getExternalId();
         } catch (Exception e) {
-            logger.error("Can not obtain message ID: " + messageId + " to get party ID");
+            logger.error("Can not obtain message ID: " + messageId + " to get external ID");
             mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
             return mav;
         }
 
         mav.addObject("days", voiceOutboxService.getNumDayskeepSavedMessages());
-        mav.addObject("partyId", partyId);
+        mav.addObject("externalId", externalId);
         return mav;
 
     }
@@ -333,20 +333,20 @@ public class VxmlOutboxController extends MultiActionController {
             return mav;
         }
 
-          //TODO - get party ID proper way from security principal or authentication context when it is available
-        String partyId;
+          //TODO - get external ID proper way from security principal or authentication context when it is available
+        String externalId;
         try {
             OutboundVoiceMessage message =  voiceOutboxService.getMessageById(messageId);
-            partyId = message.getPartyId();
+            externalId = message.getExternalId();
         } catch (Exception e) {
-            logger.error("Can not obtain message ID: " + messageId + " to get party ID");
+            logger.error("Can not obtain message ID: " + messageId + " to get external ID");
             mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
             return mav;
         }
 
-         logger.debug("partyId: " + partyId);
+         logger.debug("externalId: " + externalId);
 
-        mav.addObject("partyId", partyId);
+        mav.addObject("externalId", externalId);
         return mav;
 
     }
@@ -366,8 +366,8 @@ public class VxmlOutboxController extends MultiActionController {
         response.setCharacterEncoding("UTF-8");
 
         //Interim implementation. Party ID will be obtained from the Authentication context
-        //String partyId = "1";
-        String partyId = request.getParameter("pId");
+        //String externalId = "1";
+        String externalId = request.getParameter("pId");
 
 
         String language = request.getParameter(LANGUAGE_PARAM);
@@ -379,16 +379,16 @@ public class VxmlOutboxController extends MultiActionController {
         mav.addObject("language", language);
         mav.addObject("escape", new StringEscapeUtils());
 
-        logger.debug("Party ID: " + partyId);
+        logger.debug("External ID: " + externalId);
 
         OutboundVoiceMessage voiceMessage = null;
 
 
             logger.info("Generating VXML for the next saved voice message in outbox... ");
             try {
-                voiceMessage = voiceOutboxService.getNextSavedMessage(partyId);
+                voiceMessage = voiceOutboxService.getNextSavedMessage(externalId);
             } catch (Exception e) {
-                logger.error("Can not obtain next saved message from the outbox of the party ID: " + partyId +
+                logger.error("Can not obtain next saved message from the outbox of the external ID: " + externalId +
                         " " + e.getMessage(), e);
                 logger.warn("Generating a VXML with the error message...");
                 mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
@@ -397,9 +397,9 @@ public class VxmlOutboxController extends MultiActionController {
 
         if (voiceMessage == null) {
 
-            logger.info("There are no more messages in the outbox of the party ID: " + partyId);
+            logger.info("There are no more messages in the outbox of the external ID: " + externalId);
             mav.setViewName(NO_SAVED_MESSAGE_TEMPLATE_NAME);
-            mav.addObject("partyId", partyId);
+            mav.addObject("externalId", externalId);
             return mav;
         }
 
@@ -408,7 +408,7 @@ public class VxmlOutboxController extends MultiActionController {
         if (voiceMessageType == null) {
             logger.error("Invalid Outbound voice message: " + voiceMessage + " Voice message type can not be null.");
             mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
-            mav.addObject("partyId", partyId);
+            mav.addObject("externalId", externalId);
             return mav;
         }
 

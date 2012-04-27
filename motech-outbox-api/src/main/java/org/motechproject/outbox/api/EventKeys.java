@@ -14,7 +14,7 @@ public class EventKeys
     public final static String CALL_HOUR_KEY = "CallHour";
     public final static String CALL_MINUTE_KEY = "CallMinute";
     public final static String PHONE_NUMBER_KEY = "PhoneNumber";
-    public final static String PARTY_ID_KEY = "PartyID";
+    public final static String EXTERNAL_ID_KEY = "ExternalID";
     public final static String SCHEDULE_JOB_ID_KEY = "JobID";
     public final static String LANGUAGE_KEY = "Language";
     
@@ -47,9 +47,9 @@ public class EventKeys
         return getStringValue(event, EventKeys.PHONE_NUMBER_KEY);
     }
 
-    public static String getPartyID(MotechEvent event)
+    public static String getExternalID(MotechEvent event)
     {
-        return getStringValue(event, EventKeys.PARTY_ID_KEY);
+        return getStringValue(event, EventKeys.EXTERNAL_ID_KEY);
     }
 
     public static String getLanguageKey(MotechEvent event)

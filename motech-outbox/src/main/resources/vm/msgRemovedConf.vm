@@ -8,7 +8,7 @@
             <prompt>
                 The message has been removed from your outbox.
             </prompt>
-             #set ($url = "$contextPath/outbox/vxml/savedMessage?pId=$partyId&ln=$language")
+             #set ($url = "$contextPath/outbox/vxml/savedMessage?pId=$externalId&ln=$language")
             <goto next="$escape.escapeXml($url)"/>
 		</block>
 	</form>

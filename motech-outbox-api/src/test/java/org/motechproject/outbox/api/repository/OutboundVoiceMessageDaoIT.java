@@ -58,8 +58,8 @@ public class OutboundVoiceMessageDaoIT {
     @Autowired
     private AllOutboundVoiceMessages outboundVoiceMessageDao;
 
-    private String partyId1 = "0001";
-    private String partyId2 = "0002";
+    private String externalId1 = "0001";
+    private String externalId2 = "0002";
 
     @Before
     public void setUp() {
@@ -74,7 +74,7 @@ public class OutboundVoiceMessageDaoIT {
         for (int i = 0; i < 20; i++) {
             OutboundVoiceMessage msg = new OutboundVoiceMessage();
             msg.setVoiceMessageType(messageType);
-            msg.setPartyId(i < 10 ? partyId1 : partyId2);
+            msg.setExternalId(i < 10 ? externalId1 : externalId2);
             msg.setCreationTime(now.plusDays(2).toDate());
             msg.setExpirationDate(now.plusDays(1 - 2 * (i & 2)).toDate());
             msg.setStatus((i & 1) > 0 ? OutboundVoiceMessageStatus.PENDING : OutboundVoiceMessageStatus.SAVED);
@@ -96,7 +96,7 @@ public class OutboundVoiceMessageDaoIT {
 
         String patientId = "Patient1";
         OutboundVoiceMessage messageWithAudioFiles = new OutboundVoiceMessage();
-        messageWithAudioFiles.setPartyId(patientId);
+        messageWithAudioFiles.setExternalId(patientId);
         messageWithAudioFiles.setVoiceMessageType(messageType);
 
         HashMap<String, Object> parameters = new HashMap<String, Object>();
@@ -117,7 +117,7 @@ public class OutboundVoiceMessageDaoIT {
 
     @Test
     public void testGetNextPendingMessage() {
-        List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getPendingMessages(partyId1);
+        List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getPendingMessages(externalId1);
         assertNotNull(messages);
         assertEquals(3, messages.size());
         for (OutboundVoiceMessage m : messages) {
@@ -128,7 +128,7 @@ public class OutboundVoiceMessageDaoIT {
 
     @Test
     public void testGetSavedMessage() {
-        List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getSavedMessages(partyId1);
+        List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getSavedMessages(externalId1);
         assertNotNull(messages);
         assertEquals(3, messages.size());
         for (OutboundVoiceMessage m : messages) {
@@ -140,7 +140,7 @@ public class OutboundVoiceMessageDaoIT {
 
     @Test
     public void testGet() {
-        int count = outboundVoiceMessageDao.getPendingMessagesCount(partyId1);
+        int count = outboundVoiceMessageDao.getPendingMessagesCount(externalId1);
         System.out.println(count);
     }
 }

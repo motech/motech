@@ -174,7 +174,7 @@ public class VxmlOutboxControllerTest {
     @Test
     public void testSavedMessage() {
 
-        String partyId = "1";
+        String externalId = "1";
         String voiceMessageTypeName = "voicemessagetypename";
 
         OutboundVoiceMessage voiceMessage = new OutboundVoiceMessage();
@@ -182,8 +182,8 @@ public class VxmlOutboxControllerTest {
         voiceMessageType.setVoiceMessageTypeName(voiceMessageTypeName);
         voiceMessage.setVoiceMessageType(voiceMessageType);
 
-        when(request.getParameter("pId")).thenReturn(partyId);
-        when(voiceOutboxService.getNextSavedMessage(partyId)).thenReturn(voiceMessage);
+        when(request.getParameter("pId")).thenReturn(externalId);
+        when(voiceOutboxService.getNextSavedMessage(externalId)).thenReturn(voiceMessage);
 
         ModelAndView modelAndView = vxmlOutboxController.savedMessage(request, response);
 
@@ -206,8 +206,8 @@ public class VxmlOutboxControllerTest {
     @Test
     public void testSavedMessageNoMessage() {
 
-        String partyId = "1";
-        when(voiceOutboxService.getNextSavedMessage(partyId)).thenReturn(null);
+        String externalId = "1";
+        when(voiceOutboxService.getNextSavedMessage(externalId)).thenReturn(null);
 
         ModelAndView modelAndView = vxmlOutboxController.savedMessage(request, response);
 
@@ -218,12 +218,12 @@ public class VxmlOutboxControllerTest {
     @Test
         public void testSavedMessageInvalidNoMessageType() {
 
-            String partyId = "1";
+            String externalId = "1";
 
             OutboundVoiceMessage voiceMessage = new OutboundVoiceMessage();
 
-            when(request.getParameter("pId")).thenReturn(partyId);
-            when(voiceOutboxService.getNextSavedMessage(partyId)).thenReturn(voiceMessage);
+            when(request.getParameter("pId")).thenReturn(externalId);
+            when(voiceOutboxService.getNextSavedMessage(externalId)).thenReturn(voiceMessage);
 
             ModelAndView modelAndView = vxmlOutboxController.savedMessage(request, response);
 

@@ -28,7 +28,7 @@ import java.util.Map;
 public class GenerateOutboundVoiceMessagesIT {
     @Autowired
     private AllOutboundVoiceMessages allOutboundVoiceMessages;
-    private String partyId1 = "10";
+    private String externalId1 = "10";
 
     @Before
     public void setUp() {
@@ -55,7 +55,7 @@ public class GenerateOutboundVoiceMessagesIT {
 
         OutboundVoiceMessage msg1 = new OutboundVoiceMessage();
         msg1.setVoiceMessageType(messageType);
-        msg1.setPartyId(partyId1);
+        msg1.setExternalId(externalId1);
         msg1.setCreationTime(now.toDate());
         msg1.setExpirationDate(now.plusDays(2).toDate());
         msg1.setStatus(OutboundVoiceMessageStatus.PENDING);
@@ -67,7 +67,7 @@ public class GenerateOutboundVoiceMessagesIT {
 
         OutboundVoiceMessage msg2 = new OutboundVoiceMessage();
         msg2.setVoiceMessageType(messageType1);
-        msg2.setPartyId(partyId1);
+        msg2.setExternalId(externalId1);
         msg2.setCreationTime(now.toDate());
         msg2.setExpirationDate(now.plusDays(2).toDate());
         msg2.setStatus(OutboundVoiceMessageStatus.PENDING);
@@ -79,7 +79,7 @@ public class GenerateOutboundVoiceMessagesIT {
 
         OutboundVoiceMessage msg3 = new OutboundVoiceMessage();
         msg3.setVoiceMessageType(messageType2);
-        msg3.setPartyId(partyId1);
+        msg3.setExternalId(externalId1);
         msg3.setCreationTime(now.toDate());
         msg3.setExpirationDate(now.plusDays(2).toDate());
         msg3.setStatus(OutboundVoiceMessageStatus.PENDING);
@@ -94,7 +94,7 @@ public class GenerateOutboundVoiceMessagesIT {
     @Test
     public void dummyTest() {
 
-        List<OutboundVoiceMessage> msgs = allOutboundVoiceMessages.getPendingMessages(partyId1);
+        List<OutboundVoiceMessage> msgs = allOutboundVoiceMessages.getPendingMessages(externalId1);
 
         for (OutboundVoiceMessage msg : msgs) {
             System.out.println(msg);

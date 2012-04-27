@@ -74,7 +74,7 @@ public class OutboxExecutionHandlerTest
 	public void testExecute() {
 		MotechEvent event = new MotechEvent("", null);
 		event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
-		event.getParameters().put(EventKeys.PARTY_ID_KEY, "pID");
+		event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
 		event.getParameters().put(EventKeys.LANGUAGE_KEY, "en");
 
         when(context.getIvrService()).thenReturn(ivrServiceMock);
@@ -87,7 +87,7 @@ public class OutboxExecutionHandlerTest
 	@Test
 	public void testExecute_NoPhone() {
 		MotechEvent event = new MotechEvent("", null);
-		event.getParameters().put(EventKeys.PARTY_ID_KEY, "pID");
+		event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
 
         when(context.getIvrService()).thenReturn(ivrServiceMock);
 
@@ -114,7 +114,7 @@ public class OutboxExecutionHandlerTest
 		event.getParameters().put(EventKeys.CALL_HOUR_KEY, 12);
 		event.getParameters().put(EventKeys.CALL_MINUTE_KEY, 0);
 		event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
-		event.getParameters().put(EventKeys.PARTY_ID_KEY, "pID");
+		event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
 
 		when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
 
@@ -128,7 +128,7 @@ public class OutboxExecutionHandlerTest
 		MotechEvent event = new MotechEvent("", null);
 		event.getParameters().put(EventKeys.CALL_HOUR_KEY, 12);
 		event.getParameters().put(EventKeys.CALL_MINUTE_KEY, 0);
-		event.getParameters().put(EventKeys.PARTY_ID_KEY, "pID");
+		event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
 
 		when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
 
@@ -156,7 +156,7 @@ public class OutboxExecutionHandlerTest
         MotechEvent event = new MotechEvent("", null);
         event.getParameters().put(EventKeys.CALL_MINUTE_KEY, 0);
         event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
-        event.getParameters().put(EventKeys.PARTY_ID_KEY, "pID");
+        event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
 
         when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
 
@@ -171,7 +171,7 @@ public class OutboxExecutionHandlerTest
         event.getParameters().put(EventKeys.CALL_HOUR_KEY, "foo");
         event.getParameters().put(EventKeys.CALL_MINUTE_KEY, 0);
         event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
-        event.getParameters().put(EventKeys.PARTY_ID_KEY, "pID");
+        event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
 
         when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
 
@@ -185,7 +185,7 @@ public class OutboxExecutionHandlerTest
         MotechEvent event = new MotechEvent("", null);
         event.getParameters().put(EventKeys.CALL_HOUR_KEY, 12);
         event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
-        event.getParameters().put(EventKeys.PARTY_ID_KEY, "pID");
+        event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
 
         when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
 
@@ -200,7 +200,7 @@ public class OutboxExecutionHandlerTest
         event.getParameters().put(EventKeys.CALL_HOUR_KEY, 12);
         event.getParameters().put(EventKeys.CALL_MINUTE_KEY, "foo");
         event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
-        event.getParameters().put(EventKeys.PARTY_ID_KEY, "pID");
+        event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
 
         when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
 

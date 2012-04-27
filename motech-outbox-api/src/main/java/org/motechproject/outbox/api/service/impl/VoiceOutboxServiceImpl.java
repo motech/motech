@@ -50,28 +50,28 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
         allOutboundVoiceMessages.add(outboundVoiceMessage);
 
         //sends max-pending-messages event if needed
-        String pId = outboundVoiceMessage.getPartyId();
-        Assert.hasText(pId, "VoiceMessage must have a valid partyId");
+        String pId = outboundVoiceMessage.getExternalId();
+        Assert.hasText(pId, "VoiceMessage must have a valid externalId");
         int msgNum = allOutboundVoiceMessages.getPendingMessagesCount(pId);
         if (maxNumberOfPendingMessages == msgNum) {
             log.warn(String.format("Max number (%d) of pending messages reached!", msgNum));
-            eventRelay.sendEventMessage(new MotechEvent(EventKeys.OUTBOX_MAX_PENDING_MESSAGES_EVENT_SUBJECT, ArrayUtils.toMap(new Object[][]{{EventKeys.PARTY_ID_KEY, pId}})));
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.OUTBOX_MAX_PENDING_MESSAGES_EVENT_SUBJECT, ArrayUtils.toMap(new Object[][]{{EventKeys.EXTERNAL_ID_KEY, pId}})));
         }
     }
 
     @Override
-    public OutboundVoiceMessage getNextPendingMessage(String partyId) {
-        assertArgumentNotEmpty("PartyId", partyId);
-        logInfo("Get next pending message for the party ID: %s", partyId);
-        List<OutboundVoiceMessage> pendingVoiceMessages = allOutboundVoiceMessages.getPendingMessages(partyId);
+    public OutboundVoiceMessage getNextPendingMessage(String externalId) {
+        assertArgumentNotEmpty("ExternalId", externalId);
+        logInfo("Get next pending message for the external ID: %s", externalId);
+        List<OutboundVoiceMessage> pendingVoiceMessages = allOutboundVoiceMessages.getPendingMessages(externalId);
         return pendingVoiceMessages.size() > 0 ? pendingVoiceMessages.get(0) : null;
     }
 
     @Override
-    public OutboundVoiceMessage getNextSavedMessage(String partyId) {
-        assertArgumentNotEmpty("PartyID", partyId);
-        logInfo(String.format("Get next saved message for the party ID: %s", partyId));
-        List<OutboundVoiceMessage> savedVoiceMessages = allOutboundVoiceMessages.getSavedMessages(partyId);
+    public OutboundVoiceMessage getNextSavedMessage(String externalId) {
+        assertArgumentNotEmpty("ExternalID", externalId);
+        logInfo(String.format("Get next saved message for the external ID: %s", externalId));
+        List<OutboundVoiceMessage> savedVoiceMessages = allOutboundVoiceMessages.getSavedMessages(externalId);
         return savedVoiceMessages.size() > 0 ? savedVoiceMessages.get(0) : null;
     }
 
@@ -114,17 +114,17 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
     }
 
     @Override
-    public int getNumberPendingMessages(String partyId) {
-        logInfo("Get number of pending messages for the party ID: %s", partyId);
-        assertArgumentNotEmpty("PartyID", partyId);
-        return allOutboundVoiceMessages.getPendingMessagesCount(partyId);
+    public int getNumberPendingMessages(String externalId) {
+        logInfo("Get number of pending messages for the external ID: %s", externalId);
+        assertArgumentNotEmpty("ExternalID", externalId);
+        return allOutboundVoiceMessages.getPendingMessagesCount(externalId);
     }
 
     @Override
-    public int getNumberPendingMessages(String partyId, String voiceMessageTypeName) {
-        logInfo("Get number of pending messages for the party ID: %s", partyId);
-        assertArgumentNotEmpty("PartyID", partyId);
-        return allOutboundVoiceMessages.getPendingMessagesCount(partyId, voiceMessageTypeName);
+    public int getNumberPendingMessages(String externalId, String voiceMessageTypeName) {
+        logInfo("Get number of pending messages for the external ID: %s", externalId);
+        assertArgumentNotEmpty("ExternalID", externalId);
+        return allOutboundVoiceMessages.getPendingMessagesCount(externalId, voiceMessageTypeName);
     }
 
     @Override
@@ -148,9 +148,9 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
     }
 
     @Override
-    public OutboundVoiceMessage nextMessage(String lastMessageId, String partyId) {
+    public OutboundVoiceMessage nextMessage(String lastMessageId, String externalId) {
         if (StringUtils.isNotEmpty(lastMessageId))
             setMessageStatus(lastMessageId, OutboundVoiceMessageStatus.PLAYED);
-        return getNextPendingMessage(partyId);
+        return getNextPendingMessage(externalId);
     }
 }

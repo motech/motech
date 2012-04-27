@@ -45,10 +45,10 @@ public class VoiceOutboxServiceTest {
 
     @Test
     public void testAddMessage() {
-        String partyId = "pid";
+        String externalId = "pid";
 
         OutboundVoiceMessage outboundVoiceMessage = new OutboundVoiceMessage();
-        outboundVoiceMessage.setPartyId(partyId);
+        outboundVoiceMessage.setExternalId(externalId);
 
         voiceOutboxService.addMessage(outboundVoiceMessage);
 
@@ -67,7 +67,7 @@ public class VoiceOutboxServiceTest {
     @Test
     public void testGetNextPendingMessage() {
 
-        String partyId = "pid";
+        String externalId = "pid";
 
         OutboundVoiceMessage outboundVoiceMessage1 = new OutboundVoiceMessage();
         OutboundVoiceMessage outboundVoiceMessage2 = new OutboundVoiceMessage();
@@ -77,14 +77,14 @@ public class VoiceOutboxServiceTest {
         pendingVoiceMessages.add(outboundVoiceMessage1);
         pendingVoiceMessages.add(outboundVoiceMessage2);
 
-        when(allOutboundVoiceMessages.getPendingMessages(partyId)).thenReturn(pendingVoiceMessages);
+        when(allOutboundVoiceMessages.getPendingMessages(externalId)).thenReturn(pendingVoiceMessages);
 
-        assertEquals(outboundVoiceMessage1, voiceOutboxService.getNextPendingMessage(partyId));
+        assertEquals(outboundVoiceMessage1, voiceOutboxService.getNextPendingMessage(externalId));
 
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testGetNextPendingMessageNullPartyId() {
+    public void testGetNextPendingMessageNullExternalId() {
 
         voiceOutboxService.getNextPendingMessage(null);
 
@@ -92,7 +92,7 @@ public class VoiceOutboxServiceTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testGetNextPendingMessageEmptyPartyId() {
+    public void testGetNextPendingMessageEmptyExternalId() {
 
         voiceOutboxService.getNextPendingMessage("");
 
@@ -103,11 +103,11 @@ public class VoiceOutboxServiceTest {
     @Test
     public void testGetNextPendingMessageNoMessages() {
 
-        String partyId = "pid";
+        String externalId = "pid";
 
-        when(allOutboundVoiceMessages.getPendingMessages(partyId)).thenReturn(new ArrayList<OutboundVoiceMessage>());
+        when(allOutboundVoiceMessages.getPendingMessages(externalId)).thenReturn(new ArrayList<OutboundVoiceMessage>());
 
-        assertNull(voiceOutboxService.getNextPendingMessage(partyId));
+        assertNull(voiceOutboxService.getNextPendingMessage(externalId));
     }
 
     @Test
@@ -126,7 +126,7 @@ public class VoiceOutboxServiceTest {
     @Test
     public void testGetNextSavedMessage() {
 
-        String partyId = "pid";
+        String externalId = "pid";
 
         OutboundVoiceMessage outboundVoiceMessage1 = new OutboundVoiceMessage();
         OutboundVoiceMessage outboundVoiceMessage2 = new OutboundVoiceMessage();
@@ -136,14 +136,14 @@ public class VoiceOutboxServiceTest {
         pendingVoiceMessages.add(outboundVoiceMessage1);
         pendingVoiceMessages.add(outboundVoiceMessage2);
 
-        when(allOutboundVoiceMessages.getSavedMessages(partyId)).thenReturn(pendingVoiceMessages);
+        when(allOutboundVoiceMessages.getSavedMessages(externalId)).thenReturn(pendingVoiceMessages);
 
-        assertEquals(outboundVoiceMessage1, voiceOutboxService.getNextSavedMessage(partyId));
+        assertEquals(outboundVoiceMessage1, voiceOutboxService.getNextSavedMessage(externalId));
 
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testGetNextSavedMessageNullPartyId() {
+    public void testGetNextSavedMessageNullExternalId() {
 
         voiceOutboxService.getNextSavedMessage(null);
 
@@ -151,7 +151,7 @@ public class VoiceOutboxServiceTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testGetNextSavedMessageEmptyPartyId() {
+    public void testGetNextSavedMessageEmptyExternalId() {
 
         voiceOutboxService.getNextSavedMessage("");
 
@@ -162,11 +162,11 @@ public class VoiceOutboxServiceTest {
     @Test
     public void testGetNextSavedMessageNoMessages() {
 
-        String partyId = "pid";
+        String externalId = "pid";
 
-        when(allOutboundVoiceMessages.getSavedMessages(partyId)).thenReturn(new ArrayList<OutboundVoiceMessage>());
+        when(allOutboundVoiceMessages.getSavedMessages(externalId)).thenReturn(new ArrayList<OutboundVoiceMessage>());
 
-        assertNull(voiceOutboxService.getNextSavedMessage(partyId));
+        assertNull(voiceOutboxService.getNextSavedMessage(externalId));
     }
 
 
@@ -251,25 +251,25 @@ public class VoiceOutboxServiceTest {
     @Test
     public void testGetNumberPendingMessages() {
 
-        String partyId = "pid";
+        String externalId = "pid";
 
-        when(allOutboundVoiceMessages.getPendingMessagesCount(partyId)).thenReturn(2);
+        when(allOutboundVoiceMessages.getPendingMessagesCount(externalId)).thenReturn(2);
 
-        assertEquals(2, voiceOutboxService.getNumberPendingMessages(partyId));
+        assertEquals(2, voiceOutboxService.getNumberPendingMessages(externalId));
     }
 
     @Test
     public void testGetNumberPendingMessagesNoMessages() {
 
-        String partyId = "pid";
+        String externalId = "pid";
 
-        when(allOutboundVoiceMessages.getPendingMessages(partyId)).thenReturn(new ArrayList<OutboundVoiceMessage>());
+        when(allOutboundVoiceMessages.getPendingMessages(externalId)).thenReturn(new ArrayList<OutboundVoiceMessage>());
 
-        assertEquals(0, voiceOutboxService.getNumberPendingMessages(partyId));
+        assertEquals(0, voiceOutboxService.getNumberPendingMessages(externalId));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testGetNumberPendingMessagesNullPartyId() {
+    public void testGetNumberPendingMessagesNullExternalId() {
 
         voiceOutboxService.getNumberPendingMessages(null);
 
@@ -278,7 +278,7 @@ public class VoiceOutboxServiceTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testGetNumberPendingMessagesEmptyPartyId() {
+    public void testGetNumberPendingMessagesEmptyExternalId() {
 
         voiceOutboxService.getNumberPendingMessages("");
 
@@ -314,11 +314,11 @@ public class VoiceOutboxServiceTest {
 
     @Test
     public void testMaxPendingMessagesReached() {
-        String partyId = "001";
+        String externalId = "001";
         OutboundVoiceMessage outboundVoiceMessage = new OutboundVoiceMessage();
-        outboundVoiceMessage.setPartyId(partyId);
+        outboundVoiceMessage.setExternalId(externalId);
 
-        when(allOutboundVoiceMessages.getPendingMessagesCount(partyId)).thenReturn(MAX_MESSAGES_PENDING);
+        when(allOutboundVoiceMessages.getPendingMessagesCount(externalId)).thenReturn(MAX_MESSAGES_PENDING);
         voiceOutboxService.addMessage(outboundVoiceMessage);
 
         verify(allOutboundVoiceMessages).add(outboundVoiceMessage);
@@ -326,21 +326,21 @@ public class VoiceOutboxServiceTest {
         ArgumentCaptor<MotechEvent> argument = ArgumentCaptor.forClass(MotechEvent.class);
         verify(eventRelay).sendEventMessage(argument.capture());
         assertEquals(argument.getValue().getSubject(), EventKeys.OUTBOX_MAX_PENDING_MESSAGES_EVENT_SUBJECT);
-        assertEquals(EventKeys.getPartyID(argument.getValue()), partyId);
+        assertEquals(EventKeys.getExternalID(argument.getValue()), externalId);
     }
 
     @Test
     public void testMaxPendingMessagesMoreAndLess() {
-        String partyId = "001";
+        String externalId = "001";
         OutboundVoiceMessage outboundVoiceMessage = new OutboundVoiceMessage();
-        outboundVoiceMessage.setPartyId(partyId);
+        outboundVoiceMessage.setExternalId(externalId);
 
         // LESS
-        when(allOutboundVoiceMessages.getPendingMessagesCount(partyId)).thenReturn(MAX_MESSAGES_PENDING - 1);
+        when(allOutboundVoiceMessages.getPendingMessagesCount(externalId)).thenReturn(MAX_MESSAGES_PENDING - 1);
         voiceOutboxService.addMessage(outboundVoiceMessage);
 
         // MORE
-        when(allOutboundVoiceMessages.getPendingMessagesCount(partyId)).thenReturn(MAX_MESSAGES_PENDING + 1);
+        when(allOutboundVoiceMessages.getPendingMessagesCount(externalId)).thenReturn(MAX_MESSAGES_PENDING + 1);
         voiceOutboxService.addMessage(outboundVoiceMessage);
 
         verify(allOutboundVoiceMessages, times(2)).add(outboundVoiceMessage);
@@ -350,15 +350,15 @@ public class VoiceOutboxServiceTest {
     @Test
     public void getTheFirstMessage() {
         OutboundVoiceMessage outboundVoiceMessage = new OutboundVoiceMessage();
-        String partyId = "123";
-        when(allOutboundVoiceMessages.getPendingMessages(partyId)).thenReturn(Arrays.asList(outboundVoiceMessage));
-        OutboundVoiceMessage nextMessage = voiceOutboxService.nextMessage(null, partyId);
+        String externalId = "123";
+        when(allOutboundVoiceMessages.getPendingMessages(externalId)).thenReturn(Arrays.asList(outboundVoiceMessage));
+        OutboundVoiceMessage nextMessage = voiceOutboxService.nextMessage(null, externalId);
         assertEquals(outboundVoiceMessage, nextMessage);
     }
 
     @Test
     public void markMessageAsRead() {
-        String partyId = "123";
+        String externalId = "123";
         OutboundVoiceMessage currentMessage = mock(OutboundVoiceMessage.class);
         String currentMessageId = "1";
 
@@ -366,14 +366,14 @@ public class VoiceOutboxServiceTest {
         outboundVoiceMessage.setId("2");
 
         when(allOutboundVoiceMessages.get(currentMessageId)).thenReturn(currentMessage);
-        when(allOutboundVoiceMessages.getPendingMessages(partyId)).thenReturn(Arrays.asList(outboundVoiceMessage));
+        when(allOutboundVoiceMessages.getPendingMessages(externalId)).thenReturn(Arrays.asList(outboundVoiceMessage));
 
-        OutboundVoiceMessage nextMessage = voiceOutboxService.nextMessage(currentMessageId, partyId);
+        OutboundVoiceMessage nextMessage = voiceOutboxService.nextMessage(currentMessageId, externalId);
 
         InOrder inOrder = inOrder(currentMessage, allOutboundVoiceMessages);
         assertEquals(outboundVoiceMessage, nextMessage);
         inOrder.verify(currentMessage).setStatus(OutboundVoiceMessageStatus.PLAYED);
         inOrder.verify(allOutboundVoiceMessages).update(currentMessage);
-        inOrder.verify(allOutboundVoiceMessages).getPendingMessages(partyId);
+        inOrder.verify(allOutboundVoiceMessages).getPendingMessages(externalId);
     }
 }
