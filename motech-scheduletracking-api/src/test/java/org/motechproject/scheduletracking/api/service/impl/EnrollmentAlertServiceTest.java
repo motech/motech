@@ -1,6 +1,8 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
+
 import org.joda.time.DateTime;
+import org.joda.time.Period;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -246,7 +248,8 @@ public class EnrollmentAlertServiceTest {
     @Test
     public void shouldScheduleJobForFloatingAlerts() {
         Milestone firstMilestone = new Milestone("milestone_1", weeks(1), weeks(1), weeks(1), weeks(1));
-        firstMilestone.addAlert(WindowName.due, new Alert(days(0), days(1), 7, 0, true));
+        Alert alert = new Alert(days(0), days(1), 7, 0, true);
+        firstMilestone.addAlert(WindowName.due, alert);
 
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(firstMilestone);
@@ -259,6 +262,21 @@ public class EnrollmentAlertServiceTest {
 
         assertEquals(DateUtil.now().toDate(), repeatJobCaptor.getValue().getStartTime());
         assertEquals(1, repeatJobCaptor.getValue().getRepeatCount().intValue());
+    }
+
+    @Test
+    public void shouldConsiderZeroOffsetForBackDatedFloatingAlerts() {
+        Milestone firstMilestone = new Milestone("milestone_1", weeks(1), months(10), weeks(1), weeks(1));
+        Alert alert = new Alert(days(-5), days(1), 7, 0, true);
+        firstMilestone.addAlert(WindowName.due, alert);
+
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(firstMilestone);
+
+        Enrollment enrollment = new Enrollment("some_id", schedule, "milestone_1", daysAgo(30), DateUtil.now(), new Time(8, 15), EnrollmentStatus.ACTIVE, null);
+        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
+
+        assertEquals(Period.ZERO, alert.getOffset());
     }
 
     @Test
