@@ -41,7 +41,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.outbox.api.domain.MessagePriority;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.domain.VoiceMessageType;
@@ -67,11 +66,9 @@ public class OutboundVoiceMessageDaoTest {
     List<OutboundVoiceMessage> messages = new ArrayList<OutboundVoiceMessage>();
 
     static OutboundVoiceMessage buildMessage(
-            Date creationTime,
-            MessagePriority priority) {
+            Date creationTime) {
 
         VoiceMessageType mt = new VoiceMessageType();
-        mt.setPriority(priority);
         mt.setTemplateName("http://motech.2paths.com");
         OutboundVoiceMessage msg = new OutboundVoiceMessage();
         msg.setExternalId(PARTY_ID);
@@ -92,9 +89,9 @@ public class OutboundVoiceMessageDaoTest {
         AllOutboundVoiceMessages dao = new AllOutboundVoiceMessages(db);
 
         DateTime now = DateUtil.now();
-        OutboundVoiceMessage message1 = buildMessage(now.minusDays(1).toDate(), MessagePriority.HIGH);
-        OutboundVoiceMessage message2 = buildMessage(now.toDate(), MessagePriority.HIGH);
-        OutboundVoiceMessage message3 = buildMessage(now.plusDays(1).toDate(), MessagePriority.HIGH);
+        OutboundVoiceMessage message1 = buildMessage(now.minusDays(1).toDate());
+        OutboundVoiceMessage message2 = buildMessage(now.toDate());
+        OutboundVoiceMessage message3 = buildMessage(now.plusDays(1).toDate());
 
         messages.add(message1);
         messages.add(message2);

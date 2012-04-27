@@ -19,18 +19,6 @@ class OutboundVoiceMessageComparator implements Comparator<OutboundVoiceMessage>
         if (m2.getCreationTime() == null) {
             throw new InvalidDataException("Invalid object: " + m2 + " Creation time in OutboundVoiceMessage can not be null");
         }
-        int dateComp = m2.getCreationTime().compareTo(m1.getCreationTime());
-        if (dateComp != 0) {
-            return dateComp;
-        }
-
-        if (m1.getVoiceMessageType() == null) {
-            throw new InvalidDataException("Invalid object: " + m1 + " Voice Message Type in OutboundVoiceMessage can not be null");
-        }
-
-        if (m2.getVoiceMessageType() == null) {
-            throw new InvalidDataException("Invalid object: " + m2 + " Voice Message Type in OutboundVoiceMessage can not be null");
-        }
-        return m2.getVoiceMessageType().getPriority().compareTo(m1.getVoiceMessageType().getPriority());
+        return m2.getCreationTime().compareTo(m1.getCreationTime());
     }
 }

@@ -36,7 +36,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.outbox.api.domain.MessagePriority;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.domain.VoiceMessageType;
@@ -45,7 +44,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -66,7 +68,6 @@ public class OutboundVoiceMessageDaoIT {
         outboundVoiceMessageDao.removeAll();
         VoiceMessageType messageType = new VoiceMessageType();
         messageType.setVoiceMessageTypeName("Play something");
-        messageType.setPriority(MessagePriority.HIGH);
         messageType.setTemplateName("appointmentReminder");
 
         // create messages
@@ -91,7 +92,6 @@ public class OutboundVoiceMessageDaoIT {
     public void shouldSaveTheListSpecifiedAsAParameter() {
         VoiceMessageType messageType = new VoiceMessageType();
         messageType.setVoiceMessageTypeName("Play something");
-        messageType.setPriority(MessagePriority.HIGH);
         messageType.setTemplateName("playSequentially");
 
         String patientId = "Patient1";
