@@ -17,7 +17,7 @@ import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 public interface VoiceOutboxService {
 
     /**
-     * Adds the given outbound voice message to the parties' voice outbox.A party determines by party ID
+     * Adds the given outbound voice message to the parties' voice outbox.A party determines by external ID
      * in the given outbound voice message
      *
      * @param outboundVoiceMessage - outbound voice message to be added to the outbox
@@ -25,24 +25,24 @@ public interface VoiceOutboxService {
     public void addMessage(OutboundVoiceMessage outboundVoiceMessage);
 
     /**
-     * Returns the next pending message from the outbox of the party identified by the given party ID, or NULL
+     * Returns the next pending message from the outbox of the party identified by the given external ID, or NULL
      * if there is no more pending messages in the outbox.
      * A next pending message is a not expired message with the status "Pending" that belongs
-     * to this party, the oldest creation time and the highest priority among other pending messages in the party outbox.
+     * to this party, the oldest creation time and the highest priority among other pending messages in the external outbox.
      *
-     * @param partyId - unique identifier of the party from
+     * @param externalId - unique identifier of the party from
      * @return OutboundVoiceMessage
      */
-    public OutboundVoiceMessage getNextPendingMessage(String partyId);
+    public OutboundVoiceMessage getNextPendingMessage(String externalId);
 
     /**
-     * Returns the next saved message from the outbox of the party identified by the given party ID, or NULL
+     * Returns the next saved message from the outbox of the party identified by the given external ID, or NULL
      * if there is no more saved messages in the outbox.
      *
-     * @param partyId - unique identifier of the party from
+     * @param externalId - unique identifier of the party from
      * @return OutboundVoiceMessage
      */
-    public OutboundVoiceMessage getNextSavedMessage(String partyId);
+    public OutboundVoiceMessage getNextSavedMessage(String externalId);
 
     /**
      * Returns the outbound voice messages with the given message ID stored in the outbox
@@ -76,21 +76,21 @@ public interface VoiceOutboxService {
     public void saveMessage(String outboundVoiceMessageId);
 
     /**
-     * Returns number of pending messages in the voice outbox of the party with the given party ID
+     * Returns number of pending messages in the voice outbox of the party with the given external ID
      *
-     * @param partyId
+     * @param externalId
      * @return
      */
-    public int getNumberPendingMessages(String partyId);
+    public int getNumberPendingMessages(String externalId);
 
     /**
-     * Returns number of pending messages in the voice outbox of the party with the given party ID and the voice message type name
+     * Returns number of pending messages in the voice outbox of the party with the given external ID and the voice message type name
      *
-     * @param partyId
+     * @param externalId
      * @param voiceMessageTypeName
      * @return
      */
-    public int getNumberPendingMessages(String partyId, String voiceMessageTypeName);
+    public int getNumberPendingMessages(String externalId, String voiceMessageTypeName);
 
     /**
      * Sets the number of days for which a messages saved by the patient will be kept in outbox as SAVED messages
@@ -118,5 +118,5 @@ public interface VoiceOutboxService {
      */
     public int getMaxNumberOfPendingMessages();
 
-    public OutboundVoiceMessage nextMessage(String lastMessageId, String partyId);
+    public OutboundVoiceMessage nextMessage(String lastMessageId, String externalId);
 }

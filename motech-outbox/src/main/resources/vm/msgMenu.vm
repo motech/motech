@@ -4,8 +4,8 @@
       <property name="inputmodes" value="dtmf"/>
         #set ($repeatUrl = "$contextPath/outbox/vxml/outboxMessage?mId=$message.id&ln=$language")
         #set ($saveUrl = "$contextPath/outbox/vxml/save?mId=$message.id&ln=$language")
-        #set ($nextUrl = "$contextPath/outbox/vxml/outboxMessage?pId=$message.partyId&ln=$language")
-        #set ($mainMenuUrl = "$contextPath/tama/menu/select?pId=$message.partyId")
+        #set ($nextUrl = "$contextPath/outbox/vxml/outboxMessage?pId=$message.externalId&ln=$language")
+        #set ($mainMenuUrl = "$contextPath/tama/menu/select?pId=$message.externalId")
       <prompt>
           #if($message.voiceMessageType.canBeReplayed)
               To listen this message again press 1,

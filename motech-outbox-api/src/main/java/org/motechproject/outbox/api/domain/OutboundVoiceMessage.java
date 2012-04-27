@@ -8,20 +8,21 @@ import java.util.Map;
 
 public class OutboundVoiceMessage extends MotechBaseDataObject {
     private static final long serialVersionUID = 3598927460690914607L;
+
     @TypeDiscriminator
-    private String partyId;
+    private String externalId;
     private VoiceMessageType voiceMessageType;
     private OutboundVoiceMessageStatus status;
     private Map<String, Object> parameters;
     private Date creationTime;
     private Date expirationDate;
 
-    public String getPartyId() {
-        return partyId;
+    public String getExternalId() {
+        return externalId;
     }
 
-    public void setPartyId(String partyId) {
-        this.partyId = partyId;
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 
     public OutboundVoiceMessageStatus getStatus() {
@@ -66,7 +67,7 @@ public class OutboundVoiceMessage extends MotechBaseDataObject {
 
     @Override
     public String toString() {
-        return "OutboundVoiceMessage [partyId=" + partyId
+        return "OutboundVoiceMessage [externalId=" + externalId
                 + ", voiceMessageType=" + voiceMessageType + ", status="
                 + status + ", parameters=" + parameters + ", creationTime="
                 + creationTime + ", expirationDate=" + expirationDate + "]";
@@ -82,7 +83,7 @@ public class OutboundVoiceMessage extends MotechBaseDataObject {
                 + ((expirationDate == null) ? 0 : expirationDate.hashCode());
         result = prime * result
                 + ((parameters == null) ? 0 : parameters.hashCode());
-        result = prime * result + ((partyId == null) ? 0 : partyId.hashCode());
+        result = prime * result + ((externalId == null) ? 0 : externalId.hashCode());
         result = prime * result + ((status == null) ? 0 : status.hashCode());
         result = prime
                 * result
@@ -114,10 +115,10 @@ public class OutboundVoiceMessage extends MotechBaseDataObject {
                 return false;
         } else if (!parameters.equals(other.parameters))
             return false;
-        if (partyId == null) {
-            if (other.partyId != null)
+        if (externalId == null) {
+            if (other.externalId != null)
                 return false;
-        } else if (!partyId.equals(other.partyId))
+        } else if (!externalId.equals(other.externalId))
             return false;
         if (status != other.status)
             return false;

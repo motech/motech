@@ -6,7 +6,6 @@ package org.motechproject.outbox.api.domain;
  */
 public class VoiceMessageType {
     private String voiceMessageTypeName;
-    private MessagePriority priority;
     private String templateName;
     private boolean canBeSaved; // indicates if this type of messages allowed to be saved by patients in they voice outbox
     private boolean canBeReplayed; // indicates if this type of messages allowed to be replayed by a patient request after been played once
@@ -17,14 +16,6 @@ public class VoiceMessageType {
 
     public void setVoiceMessageTypeName(String voiceMessageTypeName) {
         this.voiceMessageTypeName = voiceMessageTypeName;
-    }
-
-    public MessagePriority getPriority() {
-        return priority;
-    }
-
-    public void setPriority(MessagePriority priority) {
-        this.priority = priority;
     }
 
     public String getTemplateName() {
@@ -56,7 +47,6 @@ public class VoiceMessageType {
     public String toString() {
         return "VoiceMessageType{" +
                 "voiceMessageTypeName='" + voiceMessageTypeName + '\'' +
-                ", priority=" + priority +
                 ", templateName='" + templateName + '\'' +
                 ", canBeSaved=" + canBeSaved +
                 ", canBeReplayed=" + canBeReplayed +

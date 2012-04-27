@@ -63,10 +63,10 @@ public class OutboxExecutionHandler {
 	@MotechListener(subjects={EventKeys.EXECUTE_OUTBOX_SUBJECT})
 	public void execute(MotechEvent event) {
 
-        String partyId = EventKeys.getPartyID(event);
-        if (partyId == null) {
+        String externalID = EventKeys.getExternalID(event);
+        if (externalID == null) {
             logger.error("Can not handle Event: " + event.getSubject() +
-                     ". The event is invalid - missing the " + EventKeys.PARTY_ID_KEY + " parameter");
+                     ". The event is invalid - missing the " + EventKeys.EXTERNAL_ID_KEY + " parameter");
             return;
         }
 
@@ -85,11 +85,11 @@ public class OutboxExecutionHandler {
         }        
 
         try {
-            String vxmlUrl = OUTBOX_VXML_BASE_URL + "?pId=" + partyId + "&ln=" + language;
+            String vxmlUrl = OUTBOX_VXML_BASE_URL + "?pId=" + externalID + "&ln=" + language;
             CallRequest callRequest = new CallRequest(phoneNumber, timeOut, vxmlUrl);
 
             Map<String, Object> messageParameters = new HashMap<String, Object>();
-            messageParameters.put(EventKeys.PARTY_ID_KEY, partyId);
+            messageParameters.put(EventKeys.EXTERNAL_ID_KEY, externalID);
             MotechEvent incompleteEvent = new MotechEvent(EventKeys.INCOMPLETE_OUTBOX_CALL_SUBJECT,
                                                           messageParameters);
 
@@ -104,7 +104,7 @@ public class OutboxExecutionHandler {
 
             ivrService.initiateCall(callRequest);
         } catch (CallInitiationException e) {
-            logger.warn("Unable to initiate call to partyId=" + partyId + " e: " + e.getMessage());
+            logger.warn("Unable to initiate call to externalId=" + externalID + " e: " + e.getMessage());
         }
 	}
 
@@ -125,10 +125,10 @@ public class OutboxExecutionHandler {
             return;
         }
 
-        String partyId = EventKeys.getPartyID(event);
-        if (partyId == null) {
+        String externalID = EventKeys.getExternalID(event);
+        if (externalID == null) {
             logger.error("Can not handle Event: " + event.getSubject() +
-                     ". The event is invalid - missing the " + EventKeys.PARTY_ID_KEY + " parameter");
+                     ". The event is invalid - missing the " + EventKeys.EXTERNAL_ID_KEY + " parameter");
             return;
         }
 
