@@ -7,6 +7,7 @@ import org.ektorp.support.View;
 import org.ektorp.support.Views;
 import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
+import org.motechproject.outbox.api.domain.SortKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -33,7 +34,7 @@ public class AllOutboundVoiceMessages extends MotechBaseRepository<OutboundVoice
         ViewQuery q = createQuery(view).startKey(startKey).endKey(endKey).includeDocs(true);
         List<OutboundVoiceMessage> messages = db.queryView(q, OutboundVoiceMessage.class);
         if (messages.size() > 0) {
-            Collections.sort(messages, OutboundVoiceMessageComparator.getComparator());
+            Collections.sort(messages, OutboundVoiceMessageComparator.getComparator(SortKey.CreationTime));
         }
         return messages;
     }

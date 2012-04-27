@@ -1,9 +1,5 @@
 package org.motechproject.outbox.api.domain;
 
-
-/**
- *
- */
 public class VoiceMessageType {
     private String voiceMessageTypeName;
     private String templateName;
