@@ -50,12 +50,12 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
         allOutboundVoiceMessages.add(outboundVoiceMessage);
 
         //sends max-pending-messages event if needed
-        String pId = outboundVoiceMessage.getExternalId();
-        Assert.hasText(pId, "VoiceMessage must have a valid externalId");
-        int msgNum = allOutboundVoiceMessages.getPendingMessagesCount(pId);
+        String externalId = outboundVoiceMessage.getExternalId();
+        Assert.hasText(externalId, "VoiceMessage must have a valid externalId");
+        int msgNum = allOutboundVoiceMessages.getPendingMessagesCount(externalId);
         if (maxNumberOfPendingMessages == msgNum) {
             log.warn(String.format("Max number (%d) of pending messages reached!", msgNum));
-            eventRelay.sendEventMessage(new MotechEvent(EventKeys.OUTBOX_MAX_PENDING_MESSAGES_EVENT_SUBJECT, ArrayUtils.toMap(new Object[][]{{EventKeys.EXTERNAL_ID_KEY, pId}})));
+            eventRelay.sendEventMessage(new MotechEvent(EventKeys.OUTBOX_MAX_PENDING_MESSAGES_EVENT_SUBJECT, ArrayUtils.toMap(new Object[][]{{EventKeys.EXTERNAL_ID_KEY, externalId}})));
         }
     }
 

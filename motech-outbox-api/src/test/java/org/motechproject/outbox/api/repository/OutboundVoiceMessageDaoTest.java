@@ -45,12 +45,14 @@ import org.motechproject.outbox.api.domain.MessagePriority;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.domain.VoiceMessageType;
+import org.motechproject.util.DateUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
@@ -80,28 +82,29 @@ public class OutboundVoiceMessageDaoTest {
         return msg;
     }
 
-
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        DateTime now = org.motechproject.util.DateUtil.now();
-        for (int i = 0; i < 10; i++) {
-            messages.add(buildMessage(now.plusDays(i >> 2).toDate(), (i & 1) > 0 ? MessagePriority.HIGH : MessagePriority.LOW));
-        }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
-    public void testSortingMessages() {
+    public void sortedBasedOnCreationTime_LatestFirst() {
         AllOutboundVoiceMessages dao = new AllOutboundVoiceMessages(db);
+
+        DateTime now = DateUtil.now();
+        OutboundVoiceMessage message1 = buildMessage(now.minusDays(1).toDate(), MessagePriority.HIGH);
+        OutboundVoiceMessage message2 = buildMessage(now.toDate(), MessagePriority.HIGH);
+        OutboundVoiceMessage message3 = buildMessage(now.plusDays(1).toDate(), MessagePriority.HIGH);
+
+        messages.add(message1);
+        messages.add(message2);
+        messages.add(message3);
+
         when(db.queryView(any(ViewQuery.class), any(Class.class))).thenReturn(messages);
-        ArrayList<OutboundVoiceMessage> msgs = (ArrayList<OutboundVoiceMessage>) dao.getPendingMessages(PARTY_ID);
-        for (int i = 1; i < msgs.size(); i++) {
-            // check for creation date order
-            assertTrue(msgs.get(i - 1).getCreationTime().compareTo(msgs.get(i).getCreationTime()) >= 0);
-            // if creation date is the same, check for priority order
-            assertTrue((msgs.get(i - 1).getCreationTime().compareTo(msgs.get(i).getCreationTime()) != 0) || (msgs.get(i - 1).getVoiceMessageType().getPriority().compareTo(msgs.get(i).getVoiceMessageType().getPriority()) >= 0));
-//			System.out.println(msgs.get(i));
-        }
+
+        List<OutboundVoiceMessage> pendingMessages = dao.getPendingMessages(PARTY_ID);
+        assertThat(pendingMessages.get(0), is(message3));
+        assertThat(pendingMessages.get(1), is(message2));
+        assertThat(pendingMessages.get(2), is(message1));
     }
 }

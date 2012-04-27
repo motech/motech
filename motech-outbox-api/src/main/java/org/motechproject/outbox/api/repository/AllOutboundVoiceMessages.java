@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -34,31 +33,7 @@ public class AllOutboundVoiceMessages extends MotechBaseRepository<OutboundVoice
         ViewQuery q = createQuery(view).startKey(startKey).endKey(endKey).includeDocs(true);
         List<OutboundVoiceMessage> messages = db.queryView(q, OutboundVoiceMessage.class);
         if (messages.size() > 0) {
-            Collections.sort(messages, new Comparator<OutboundVoiceMessage>() {
-                @Override
-                public int compare(OutboundVoiceMessage m1, OutboundVoiceMessage m2) {
-                    if (m1.getCreationTime() == null) {
-                        throw new InvalidDataException("Invalid object: " + m1 + " Creation time in OutboundVoiceMessage can not be null");
-                    }
-
-                    if (m2.getCreationTime() == null) {
-                        throw new InvalidDataException("Invalid object: " + m2 + " Creation time in OutboundVoiceMessage can not be null");
-                    }
-                    int dateComp = m2.getCreationTime().compareTo(m1.getCreationTime());
-                    if (dateComp != 0) {
-                        return dateComp;
-                    }
-
-                    if (m1.getVoiceMessageType() == null) {
-                        throw new InvalidDataException("Invalid object: " + m1 + " Voice Message Type in OutboundVoiceMessage can not be null");
-                    }
-
-                    if (m2.getVoiceMessageType() == null) {
-                        throw new InvalidDataException("Invalid object: " + m2 + " Voice Message Type in OutboundVoiceMessage can not be null");
-                    }
-                    return m2.getVoiceMessageType().getPriority().compareTo(m1.getVoiceMessageType().getPriority());
-                }
-            });
+            Collections.sort(messages, OutboundVoiceMessageComparator.getComparator());
         }
         return messages;
     }
@@ -84,4 +59,5 @@ public class AllOutboundVoiceMessages extends MotechBaseRepository<OutboundVoice
         ViewQuery q = createQuery("getPendingMessagesWithMessageTypeName").startKey(startKey).endKey(endKey);
         return db.queryView(q).getSize();
     }
+
 }
