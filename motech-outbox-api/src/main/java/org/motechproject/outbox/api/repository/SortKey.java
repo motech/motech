@@ -1,4 +1,4 @@
-package org.motechproject.outbox.api.domain;
+package org.motechproject.outbox.api.repository;
 
 public enum SortKey {
     SequenceNumber, CreationTime;

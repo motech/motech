@@ -1,7 +1,6 @@
 package org.motechproject.outbox.api.repository;
 
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
-import org.motechproject.outbox.api.domain.SortKey;
 
 import java.util.Comparator;
 

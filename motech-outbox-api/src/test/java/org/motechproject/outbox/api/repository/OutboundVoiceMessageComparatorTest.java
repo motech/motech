@@ -2,7 +2,6 @@ package org.motechproject.outbox.api.repository;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
-import org.motechproject.outbox.api.domain.SortKey;
 
 import static org.junit.Assert.assertThat;
 

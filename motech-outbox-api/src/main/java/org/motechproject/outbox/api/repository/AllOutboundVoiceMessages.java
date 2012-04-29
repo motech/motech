@@ -7,7 +7,6 @@ import org.ektorp.support.View;
 import org.ektorp.support.Views;
 import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
-import org.motechproject.outbox.api.domain.SortKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
