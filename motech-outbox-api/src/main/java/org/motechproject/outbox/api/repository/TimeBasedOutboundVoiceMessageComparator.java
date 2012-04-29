@@ -2,7 +2,9 @@ package org.motechproject.outbox.api.repository;
 
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 
-class TimeBasedOutboundVoiceMessageComparator extends OutboundVoiceMessageComparator
+import java.util.Comparator;
+
+class TimeBasedOutboundVoiceMessageComparator implements Comparator<OutboundVoiceMessage>
 {
     @Override
     public int compare(OutboundVoiceMessage m1, OutboundVoiceMessage m2) {

@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Repository
 @Views({
@@ -22,6 +20,13 @@ import java.util.List;
         @View(name = "getSavedMessages", map = "function(doc) { if (doc.externalId && doc.status=='SAVED') { emit([doc.externalId, doc.expirationDate], doc._id); } }")
 })
 public class AllOutboundVoiceMessages extends MotechBaseRepository<OutboundVoiceMessage> {
+
+    private Map<SortKey, Comparator<OutboundVoiceMessage>> comparators = new HashMap<SortKey, Comparator<OutboundVoiceMessage>>() {{
+        put(SortKey.CreationTime, new TimeBasedOutboundVoiceMessageComparator());
+        put(SortKey.SequenceNumber, new SequenceBasedOutboundVoiceMessageComparator());
+    }};
+
+
     @Autowired
     protected AllOutboundVoiceMessages(@Qualifier("outboxDatabase") CouchDbConnector db) {
         super(OutboundVoiceMessage.class, db);
@@ -33,7 +38,7 @@ public class AllOutboundVoiceMessages extends MotechBaseRepository<OutboundVoice
         ViewQuery q = createQuery(view).startKey(startKey).endKey(endKey).includeDocs(true);
         List<OutboundVoiceMessage> messages = db.queryView(q, OutboundVoiceMessage.class);
         if (messages.size() > 0) {
-            Collections.sort(messages, OutboundVoiceMessageComparator.getComparator(SortKey.CreationTime));
+            Collections.sort(messages, comparators.get(SortKey.CreationTime));
         }
         return messages;
     }
