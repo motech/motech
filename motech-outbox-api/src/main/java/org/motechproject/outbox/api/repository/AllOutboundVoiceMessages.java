@@ -16,7 +16,7 @@ import java.util.*;
 
 @Repository
 @Views({
-        @View(name = "getMessagesWithMessageTypeName", map = "function(doc) { if (doc.externalId && doc.voiceMessageType) { emit([doc.externalId, doc.status, doc.voiceMessageType.voiceMessageTypeName, doc.expirationDate], doc._id); } }"),
+        @View(name = "getMessagesWithTypeName", map = "function(doc) { if (doc.externalId && doc.voiceMessageType) { emit([doc.externalId, doc.status, doc.voiceMessageType.voiceMessageTypeName, doc.expirationDate], doc._id); } }"),
         @View(name = "getMessages", map = "function(doc) { if (doc.externalId) { emit([doc.externalId, doc.status, doc.expirationDate], doc._id); } }")
 })
 public class AllOutboundVoiceMessages extends MotechBaseRepository<OutboundVoiceMessage> {
@@ -32,13 +32,13 @@ public class AllOutboundVoiceMessages extends MotechBaseRepository<OutboundVoice
         super(OutboundVoiceMessage.class, db);
     }
 
-    public List<OutboundVoiceMessage> getMessages(String externalId, OutboundVoiceMessageStatus status) {
+    public List<OutboundVoiceMessage> getMessages(String externalId, OutboundVoiceMessageStatus status, SortKey sortKey) {
         ComplexKey startKey = ComplexKey.of(externalId, status, new Date());
         ComplexKey endKey = ComplexKey.of(externalId, status, ComplexKey.emptyObject());
         ViewQuery q = createQuery("getMessages").startKey(startKey).endKey(endKey).includeDocs(true);
         List<OutboundVoiceMessage> messages = db.queryView(q, OutboundVoiceMessage.class);
         if (messages.size() > 0) {
-            Collections.sort(messages, comparators.get(SortKey.CreationTime));
+            Collections.sort(messages, comparators.get(sortKey));
         }
         return messages;
     }
@@ -53,7 +53,7 @@ public class AllOutboundVoiceMessages extends MotechBaseRepository<OutboundVoice
     public int getMessagesCount(String externalId, OutboundVoiceMessageStatus messageStatus, String voiceMessageTypeName) {
         ComplexKey startKey = ComplexKey.of(externalId, messageStatus, voiceMessageTypeName, new Date());
         ComplexKey endKey = ComplexKey.of(externalId, messageStatus, voiceMessageTypeName, ComplexKey.emptyObject());
-        ViewQuery q = createQuery("getMessagesWithMessageTypeName").startKey(startKey).endKey(endKey);
+        ViewQuery q = createQuery("getMessagesWithTypeName").startKey(startKey).endKey(endKey);
         return db.queryView(q).getSize();
     }
 }
