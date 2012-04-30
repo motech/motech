@@ -16,6 +16,7 @@ public class OutboundVoiceMessage extends MotechBaseDataObject {
     private Map<String, Object> parameters;
     private Date creationTime;
     private Date expirationDate;
+    private long sequenceNumber;
 
     public String getExternalId() {
         return externalId;
@@ -65,12 +66,25 @@ public class OutboundVoiceMessage extends MotechBaseDataObject {
         this.voiceMessageType = voiceMessageType;
     }
 
+    public long getSequenceNumber() {
+        return sequenceNumber;
+    }
+
+    public void setSequenceNumber(long sequenceNumber) {
+        this.sequenceNumber = sequenceNumber;
+    }
+
     @Override
     public String toString() {
-        return "OutboundVoiceMessage [externalId=" + externalId
-                + ", voiceMessageType=" + voiceMessageType + ", status="
-                + status + ", parameters=" + parameters + ", creationTime="
-                + creationTime + ", expirationDate=" + expirationDate + "]";
+        return "OutboundVoiceMessage{" +
+                "externalId='" + externalId + '\'' +
+                ", voiceMessageType=" + voiceMessageType +
+                ", status=" + status +
+                ", parameters=" + parameters +
+                ", creationTime=" + creationTime +
+                ", expirationDate=" + expirationDate +
+                ", sequenceNumber=" + sequenceNumber +
+                '}';
     }
 
     @Override

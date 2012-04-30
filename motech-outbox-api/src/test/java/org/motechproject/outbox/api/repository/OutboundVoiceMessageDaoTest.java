@@ -41,9 +41,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.outbox.api.builder.OutboundVoiceMessageBuilder;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
-import org.motechproject.outbox.api.domain.VoiceMessageType;
 import org.motechproject.util.DateUtil;
 
 import java.util.ArrayList;
@@ -60,24 +60,11 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class OutboundVoiceMessageDaoTest {
-    private static final String PARTY_ID = "001";
     @Mock
-    CouchDbConnector db;
-    List<OutboundVoiceMessage> messages = new ArrayList<OutboundVoiceMessage>();
+    private CouchDbConnector db;
 
-    static OutboundVoiceMessage buildMessage(
-            Date creationTime) {
-
-        VoiceMessageType mt = new VoiceMessageType();
-        mt.setTemplateName("http://motech.2paths.com");
-        OutboundVoiceMessage msg = new OutboundVoiceMessage();
-        msg.setExternalId(PARTY_ID);
-        msg.setStatus(OutboundVoiceMessageStatus.PENDING);
-        msg.setCreationTime(creationTime);
-        msg.setExpirationDate(new Date());
-        msg.setVoiceMessageType(mt);
-        return msg;
-    }
+    private String EXTERNAL_ID = "001";
+    private List<OutboundVoiceMessage> messages = new ArrayList<OutboundVoiceMessage>();
 
     @Before
     public void setUp() throws Exception {
@@ -99,9 +86,13 @@ public class OutboundVoiceMessageDaoTest {
 
         when(db.queryView(any(ViewQuery.class), any(Class.class))).thenReturn(messages);
 
-        List<OutboundVoiceMessage> pendingMessages = dao.getPendingMessages(PARTY_ID);
+        List<OutboundVoiceMessage> pendingMessages = dao.getMessages(EXTERNAL_ID, OutboundVoiceMessageStatus.PENDING);
         assertThat(pendingMessages.get(0), is(message3));
         assertThat(pendingMessages.get(1), is(message2));
         assertThat(pendingMessages.get(2), is(message1));
+    }
+
+    private OutboundVoiceMessage buildMessage(Date creationTime) {
+        return new OutboundVoiceMessageBuilder().withDefaults().withCreationTime(creationTime).withExternalId(EXTERNAL_ID).build();
     }
 }

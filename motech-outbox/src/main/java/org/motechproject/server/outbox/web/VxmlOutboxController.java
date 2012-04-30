@@ -133,7 +133,7 @@ public class VxmlOutboxController extends MultiActionController {
         } else {
             logger.info("Generating VXML for the next voice message in outbox... ");
             try {
-                voiceMessage = voiceOutboxService.getNextPendingMessage(externalId);
+                voiceMessage = voiceOutboxService.getNextMessage(externalId, OutboundVoiceMessageStatus.PENDING);
             } catch (Exception e) {
                 logger.error("Can not obtain next message from the outbox of the external ID: " + externalId +
                         " " + e.getMessage(), e);
@@ -290,7 +290,7 @@ public class VxmlOutboxController extends MultiActionController {
             return mav;
         }
 
-        mav.addObject("days", voiceOutboxService.getNumDayskeepSavedMessages());
+        mav.addObject("days", voiceOutboxService.getNumDaysKeepSavedMessages());
         mav.addObject("externalId", externalId);
         return mav;
 
@@ -395,7 +395,7 @@ public class VxmlOutboxController extends MultiActionController {
 
             logger.info("Generating VXML for the next saved voice message in outbox... ");
             try {
-                voiceMessage = voiceOutboxService.getNextSavedMessage(externalId);
+                voiceMessage = voiceOutboxService.getNextMessage(externalId, OutboundVoiceMessageStatus.SAVED);
             } catch (Exception e) {
                 logger.error("Can not obtain next saved message from the outbox of the external ID: " + externalId +
                         " " + e.getMessage(), e);

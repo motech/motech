@@ -1,4 +1,4 @@
-package org.motechproject.outbox.api.repository;
+package org.motechproject.outbox.api.it;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.domain.VoiceMessageType;
+import org.motechproject.outbox.api.repository.AllOutboundVoiceMessages;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -90,7 +91,7 @@ public class GenerateOutboundVoiceMessagesIT {
     @Test
     public void dummyTest() {
 
-        List<OutboundVoiceMessage> msgs = allOutboundVoiceMessages.getPendingMessages(externalId1);
+        List<OutboundVoiceMessage> msgs = allOutboundVoiceMessages.getMessages(externalId1, OutboundVoiceMessageStatus.PENDING);
 
         for (OutboundVoiceMessage msg : msgs) {
             System.out.println(msg);

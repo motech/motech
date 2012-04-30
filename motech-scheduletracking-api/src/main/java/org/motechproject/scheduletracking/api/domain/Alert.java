@@ -1,14 +1,12 @@
 package org.motechproject.scheduletracking.api.domain;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
+import org.joda.time.Period;
 import org.motechproject.model.Time;
 import org.motechproject.util.DateUtil;
-import org.joda.time.Period;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.min;
-import static org.joda.time.Days.daysBetween;
 import static org.motechproject.util.DateUtil.newDateTime;
 import static org.motechproject.util.DateUtil.now;
 
@@ -69,6 +67,10 @@ public class Alert {
 
     public int getRemainingAlertCount(DateTime startTimeForAlerts, DateTime windowEndTime, Time preferredAlertTime) {
         return min(count - getElapsedAlertCount(startTimeForAlerts, preferredAlertTime), maximumPossibleAlertsCount(startTimeForAlerts, windowEndTime, preferredAlertTime));
+    }
+
+    public void setOffset(Period offset) {
+        this.offset = offset;
     }
 
     private int maximumPossibleAlertsCount(DateTime startTimeForAlerts, DateTime windowEndTime, Time preferredAlertTime) {
