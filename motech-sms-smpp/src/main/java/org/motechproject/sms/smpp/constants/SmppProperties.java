@@ -20,4 +20,8 @@ public class SmppProperties {
      * password to authenticate the ESME on the SMSC
      */
     public static final String PASSWORD = "password";
+    /**
+     * Flag to enable/ disable Delivery Reports for Outbound messages
+     */
+    public static final String DELIVERY_REPORTS = "delivery_reports";
 }

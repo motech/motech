@@ -6,9 +6,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.gateway.OutboundEventGateway;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.sms.DeliveryStatus;
+import org.motechproject.sms.OutboundSMS;
+import org.motechproject.sms.repository.AllOutboundSMS;
 import org.motechproject.sms.smpp.constants.SmsProperties;
 import org.smslib.AGateway;
 import org.smslib.OutboundMessage;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Map;
 import java.util.Properties;
@@ -27,40 +31,47 @@ public class OutboundMessageNotificationTest {
 	private OutboundEventGateway outboundEventGateway;
 
 	private OutboundMessageNotification outboundMessageNotification;
+    @Mock
+    private AllOutboundSMS mockAllOutboundSMS;
 
-	@Before
+    @Before
 	public void setUp() {
 		initMocks(this);
 		Properties smsProperties = new Properties() {{
 			setProperty(SmsProperties.MAX_RETRIES, "4");
 		}};
 		outboundMessageNotification = new OutboundMessageNotification(outboundEventGateway, smsProperties);
+        ReflectionTestUtils.setField(outboundMessageNotification, "allOutboundSMS", mockAllOutboundSMS);
 	}
 
 	@Test
 	public void shouldRaiseAnEventIfMessageDispatchHasFailedAfterMaxNumberOfRetries() {
-		OutboundMessage message = new OutboundMessage() {{
-			setRecipient("9876543210");
-			setText("Test Message");
+        final String recipient = "9876543210";
+        String myText = "Test Message";
+        OutboundMessage message = new OutboundMessage(recipient, myText) {{
+			setRefNo("refNo11111");
 			setMessageStatus(OutboundMessage.MessageStatuses.FAILED);
 			setRetryCount(4);
 		}};
+
 
 		outboundMessageNotification.process(gateway, message);
 
 		ArgumentCaptor<MotechEvent> motechEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
 		verify(outboundEventGateway).sendEventMessage(motechEventArgumentCaptor.capture());
-
 		Map<String, Object> parameters = motechEventArgumentCaptor.getValue().getParameters();
-		assertEquals("9876543210", parameters.get(RECIPIENT));
+		assertEquals(recipient, parameters.get(RECIPIENT));
 		assertEquals("Test Message", parameters.get(MESSAGE));
+
+        assertAuditMessage(recipient, "refNo11111", DeliveryStatus.ABORTED);
 	}
 
-	@Test
+    @Test
 	public void shouldNotRaiseAnEventIfMessageDispatchHasFailedAndIsGoingToBeRetried() {
-		OutboundMessage message = new OutboundMessage() {{
-			setRecipient("9876543210");
-			setText("Test Message");
+        String recipient = "9876543210";
+        String myText = "Test Message";
+        OutboundMessage message = new OutboundMessage(recipient, myText) {{
+            setRefNo("refNo2222");
 			setMessageStatus(OutboundMessage.MessageStatuses.FAILED);
 			setRetryCount(1);
 		}};
@@ -68,18 +79,30 @@ public class OutboundMessageNotificationTest {
 		outboundMessageNotification.process(gateway, message);
 
 		verifyZeroInteractions(outboundEventGateway);
+        assertAuditMessage(recipient, "refNo2222", DeliveryStatus.KEEPTRYING);
 	}
 
 	@Test
 	public void shouldNotRaiseAnyEventIfMessageDispatchIsSuccessful() {
-		OutboundMessage message = new OutboundMessage() {{
+        String recipient = "9876543210";
+        String myText = "Test Message";
+        OutboundMessage message = new OutboundMessage(recipient, myText) {{
 			setMessageStatus(OutboundMessage.MessageStatuses.SENT);
-			setRecipient("9876543210");
-			setText("Test Message");
+            setRefNo("refNo");
 		}};
 
 		outboundMessageNotification.process(gateway, message);
 
 		verifyZeroInteractions(outboundEventGateway);
+        assertAuditMessage(recipient, "refNo", DeliveryStatus.INPROGRESS);
 	}
+
+    private void assertAuditMessage(String recipient, String refNo, DeliveryStatus deliveryStatus) {
+        ArgumentCaptor<OutboundSMS> outboundSMSCaptor = ArgumentCaptor.forClass(OutboundSMS.class);
+
+        verify(mockAllOutboundSMS).createOrReplace(outboundSMSCaptor.capture());
+        assertEquals(refNo, outboundSMSCaptor.getValue().getSmscRefNo());
+        assertEquals(deliveryStatus, outboundSMSCaptor.getValue().getDeliveryStatus());
+        assertEquals(recipient, outboundSMSCaptor.getValue().getPhoneNumber());
+    }
 }

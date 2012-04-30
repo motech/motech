@@ -98,6 +98,7 @@ public class ManagedSmslibService {
     private OutboundMessage getOutboundMessage(String message) {
         OutboundMessage outboundMessage = new OutboundMessage();
         outboundMessage.setRecipient(TEMPORARY_GROUP);
+        outboundMessage.setStatusReport(Boolean.valueOf(smppProperties.getProperty(SmppProperties.DELIVERY_REPORTS)));
         outboundMessage.setText(message);
         outboundMessage.setGatewayId(GATEWAY_ID);
         return outboundMessage;
