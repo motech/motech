@@ -43,6 +43,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.outbox.api.builder.OutboundVoiceMessageBuilder;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
+import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 import org.motechproject.util.DateUtil;
 
 import java.util.ArrayList;
@@ -85,7 +86,7 @@ public class OutboundVoiceMessageDaoTest {
 
         when(db.queryView(any(ViewQuery.class), any(Class.class))).thenReturn(messages);
 
-        List<OutboundVoiceMessage> pendingMessages = dao.getPendingMessages(EXTERNAL_ID);
+        List<OutboundVoiceMessage> pendingMessages = dao.getMessages(EXTERNAL_ID, OutboundVoiceMessageStatus.PENDING);
         assertThat(pendingMessages.get(0), is(message3));
         assertThat(pendingMessages.get(1), is(message2));
         assertThat(pendingMessages.get(2), is(message1));

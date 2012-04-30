@@ -49,6 +49,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 /**
@@ -62,23 +63,36 @@ public class OutboundVoiceMessageDaoIT {
 
     private String externalId1 = "0001";
     private String externalId2 = "0002";
+    private VoiceMessageType type1;
 
     @Before
     public void setUp() {
         outboundVoiceMessageDao.removeAll();
-        VoiceMessageType messageType = new VoiceMessageType();
-        messageType.setVoiceMessageTypeName("Play something");
-        messageType.setTemplateName("appointmentReminder");
+        type1 = new VoiceMessageType();
+        type1.setVoiceMessageTypeName("Play something");
+        type1.setTemplateName("appointmentReminder");
+
+        VoiceMessageType type2 = new VoiceMessageType();
+        type2.setVoiceMessageTypeName("Text something");
+        type2.setTemplateName("appointmentReminder");
 
         // create messages
         DateTime now = DateUtil.now();
         for (int i = 0; i < 20; i++) {
             OutboundVoiceMessage msg = new OutboundVoiceMessage();
-            msg.setVoiceMessageType(messageType);
             msg.setExternalId(i < 10 ? externalId1 : externalId2);
+
+            if((i&1)>0) {
+                msg.setStatus(OutboundVoiceMessageStatus.PENDING);
+                msg.setVoiceMessageType(type1);
+
+            } else {
+                msg.setStatus(OutboundVoiceMessageStatus.SAVED);
+                msg.setVoiceMessageType(type2);
+            }
+
             msg.setCreationTime(now.plusDays(2).toDate());
             msg.setExpirationDate(now.plusDays(1 - 2 * (i & 2)).toDate());
-            msg.setStatus((i & 1) > 0 ? OutboundVoiceMessageStatus.PENDING : OutboundVoiceMessageStatus.SAVED);
             outboundVoiceMessageDao.add(msg);
         }
     }
@@ -108,7 +122,7 @@ public class OutboundVoiceMessageDaoIT {
 
         outboundVoiceMessageDao.add(messageWithAudioFiles);
 
-        List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getPendingMessages(patientId);
+        List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getMessages(patientId, OutboundVoiceMessageStatus.PENDING);
         assertEquals(1, messages.size());
         OutboundVoiceMessage message = messages.get(0);
         assertTrue(message.getParameters().containsKey("audioFiles"));
@@ -116,31 +130,23 @@ public class OutboundVoiceMessageDaoIT {
     }
 
     @Test
-    public void testGetNextPendingMessage() {
-        List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getPendingMessages(externalId1);
-        assertNotNull(messages);
-        assertEquals(3, messages.size());
-        for (OutboundVoiceMessage m : messages) {
-            assertEquals(OutboundVoiceMessageStatus.PENDING, m.getStatus());
-            assertTrue(m.getExpirationDate().after(new Date()));
-        }
-    }
-
-    @Test
-    public void testGetSavedMessage() {
-        List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getSavedMessages(externalId1);
+    public void getAllMessagesGivenStatusAndExternalId() {
+        List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getMessages(externalId1, OutboundVoiceMessageStatus.SAVED);
         assertNotNull(messages);
         assertEquals(3, messages.size());
         for (OutboundVoiceMessage m : messages) {
             assertEquals(OutboundVoiceMessageStatus.SAVED, m.getStatus());
             assertTrue(m.getExpirationDate().after(new Date()));
-//			System.out.println(m);
         }
     }
 
+
     @Test
-    public void testGet() {
-        int count = outboundVoiceMessageDao.getPendingMessagesCount(externalId1);
-        System.out.println(count);
+    public void getAllMessagesForGivenExternalIdStatusAndMessageType() {
+
+        int pendingMessagesCount = outboundVoiceMessageDao.getMessagesCount(externalId1, OutboundVoiceMessageStatus.PENDING, type1.getVoiceMessageTypeName());
+        assertThat(pendingMessagesCount, is(3));
+
     }
+
 }

@@ -30,19 +30,12 @@ public interface VoiceOutboxService {
      * A next pending message is a not expired message with the status "Pending" that belongs
      * to this party, the oldest creation time and the highest priority among other pending messages in the external outbox.
      *
-     * @param externalId - unique identifier of the party from
-     * @return OutboundVoiceMessage
-     */
-    public OutboundVoiceMessage getNextPendingMessage(String externalId);
-
-    /**
-     * Returns the next saved message from the outbox of the party identified by the given external ID, or NULL
-     * if there is no more saved messages in the outbox.
      *
      * @param externalId - unique identifier of the party from
+     * @param messageStatus
      * @return OutboundVoiceMessage
      */
-    public OutboundVoiceMessage getNextSavedMessage(String externalId);
+    public OutboundVoiceMessage getNextMessage(String externalId, OutboundVoiceMessageStatus messageStatus);
 
     /**
      * Returns the outbound voice messages with the given message ID stored in the outbox
@@ -78,33 +71,36 @@ public interface VoiceOutboxService {
     /**
      * Returns number of pending messages in the voice outbox of the party with the given external ID
      *
+     *
      * @param externalId
+     * @param messageStatus
      * @return
      */
-    public int getNumberPendingMessages(String externalId);
+    public int getNumberOfMessages(String externalId, OutboundVoiceMessageStatus messageStatus);
 
     /**
      * Returns number of pending messages in the voice outbox of the party with the given external ID and the voice message type name
      *
+     *
      * @param externalId
-     * @param voiceMessageTypeName
-     * @return
+     * @param messageStatus
+     *@param voiceMessageTypeName  @return
      */
-    public int getNumberPendingMessages(String externalId, String voiceMessageTypeName);
+    public int getNumberOfMessages(String externalId, OutboundVoiceMessageStatus messageStatus, String voiceMessageTypeName);
 
     /**
      * Sets the number of days for which a messages saved by the patient will be kept in outbox as SAVED messages
      *
-     * @param numDayskeepSavedMessages
+     * @param numDaysKeepSavedMessages
      */
-    public void setNumDayskeepSavedMessages(int numDayskeepSavedMessages);
+    public void setNumDaysKeepSavedMessages(int numDaysKeepSavedMessages);
 
     /**
      * Returns number of days for which a messages saved by the patient will be kept in outbox as SAVED messages
      *
      * @return
      */
-    public int getNumDayskeepSavedMessages();
+    public int getNumDaysKeepSavedMessages();
 
     /**
      * Sets max number of pending messages after which the outbox will send an event

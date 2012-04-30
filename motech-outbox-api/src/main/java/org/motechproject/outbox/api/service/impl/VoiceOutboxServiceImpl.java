@@ -25,7 +25,7 @@ import java.util.List;
 public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxService {
 
     final Logger log = LoggerFactory.getLogger(VoiceOutboxServiceImpl.class);
-    private int numDayskeepSavedMessages;
+    private int numDaysKeepSavedMessages;
 
     /**
      * Should be configurable externally.
@@ -52,7 +52,7 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
         //sends max-pending-messages event if needed
         String externalId = outboundVoiceMessage.getExternalId();
         Assert.hasText(externalId, "VoiceMessage must have a valid externalId");
-        int msgNum = allOutboundVoiceMessages.getPendingMessagesCount(externalId);
+        int msgNum = allOutboundVoiceMessages.getMessagesCount(externalId, OutboundVoiceMessageStatus.PENDING);
         if (maxNumberOfPendingMessages == msgNum) {
             log.warn(String.format("Max number (%d) of pending messages reached!", msgNum));
             eventRelay.sendEventMessage(new MotechEvent(EventKeys.OUTBOX_MAX_PENDING_MESSAGES_EVENT_SUBJECT, ArrayUtils.toMap(new Object[][]{{EventKeys.EXTERNAL_ID_KEY, externalId}})));
@@ -60,19 +60,13 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
     }
 
     @Override
-    public OutboundVoiceMessage getNextPendingMessage(String externalId) {
+    public OutboundVoiceMessage getNextMessage(String externalId, OutboundVoiceMessageStatus messageStatus) {
         assertArgumentNotEmpty("ExternalId", externalId);
-        logInfo("Get next pending message for the external ID: %s", externalId);
-        List<OutboundVoiceMessage> pendingVoiceMessages = allOutboundVoiceMessages.getPendingMessages(externalId);
-        return pendingVoiceMessages.size() > 0 ? pendingVoiceMessages.get(0) : null;
-    }
+        assertArgumentNotNull("OutboundVoiceMessageStatus", messageStatus);
+        logInfo("Get next message for the external ID: %s with status %s", externalId, messageStatus);
 
-    @Override
-    public OutboundVoiceMessage getNextSavedMessage(String externalId) {
-        assertArgumentNotEmpty("ExternalID", externalId);
-        logInfo(String.format("Get next saved message for the external ID: %s", externalId));
-        List<OutboundVoiceMessage> savedVoiceMessages = allOutboundVoiceMessages.getSavedMessages(externalId);
-        return savedVoiceMessages.size() > 0 ? savedVoiceMessages.get(0) : null;
+        List<OutboundVoiceMessage> voiceMessages = allOutboundVoiceMessages.getMessages(externalId, messageStatus);
+        return voiceMessages.size() > 0 ? voiceMessages.get(0) : null;
     }
 
     @Override
@@ -108,33 +102,35 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
         outboundVoiceMessage.setStatus(OutboundVoiceMessageStatus.SAVED);
 
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, numDayskeepSavedMessages);
+        calendar.add(Calendar.DATE, numDaysKeepSavedMessages);
         outboundVoiceMessage.setExpirationDate(calendar.getTime());
         allOutboundVoiceMessages.update(outboundVoiceMessage);
     }
 
     @Override
-    public int getNumberPendingMessages(String externalId) {
+    public int getNumberOfMessages(String externalId, OutboundVoiceMessageStatus messageStatus) {
+        logInfo("Get number of messages for the external ID: %s", externalId);
+        assertArgumentNotEmpty("ExternalID", externalId);
+        assertArgumentNotNull("OutboundVoiceMessageStatus", messageStatus);
+        return allOutboundVoiceMessages.getMessagesCount(externalId, messageStatus);
+    }
+
+    @Override
+    public int getNumberOfMessages(String externalId, OutboundVoiceMessageStatus messageStatus, String voiceMessageTypeName) {
         logInfo("Get number of pending messages for the external ID: %s", externalId);
         assertArgumentNotEmpty("ExternalID", externalId);
-        return allOutboundVoiceMessages.getPendingMessagesCount(externalId);
+        assertArgumentNotNull("OutboundVoiceMessageStatus", messageStatus);
+        return allOutboundVoiceMessages.getMessagesCount(externalId, messageStatus, voiceMessageTypeName);
     }
 
     @Override
-    public int getNumberPendingMessages(String externalId, String voiceMessageTypeName) {
-        logInfo("Get number of pending messages for the external ID: %s", externalId);
-        assertArgumentNotEmpty("ExternalID", externalId);
-        return allOutboundVoiceMessages.getPendingMessagesCount(externalId, voiceMessageTypeName);
+    public int getNumDaysKeepSavedMessages() {
+        return numDaysKeepSavedMessages;
     }
 
     @Override
-    public int getNumDayskeepSavedMessages() {
-        return numDayskeepSavedMessages;
-    }
-
-    @Override
-    public void setNumDayskeepSavedMessages(int numDayskeepSavedMessages) {
-        this.numDayskeepSavedMessages = numDayskeepSavedMessages;
+    public void setNumDaysKeepSavedMessages(int numDaysKeepSavedMessages) {
+        this.numDaysKeepSavedMessages = numDaysKeepSavedMessages;
     }
 
     @Override
@@ -151,6 +147,6 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
     public OutboundVoiceMessage nextMessage(String lastMessageId, String externalId) {
         if (StringUtils.isNotEmpty(lastMessageId))
             setMessageStatus(lastMessageId, OutboundVoiceMessageStatus.PLAYED);
-        return getNextPendingMessage(externalId);
+        return getNextMessage(externalId, OutboundVoiceMessageStatus.PENDING);
     }
 }

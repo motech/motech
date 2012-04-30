@@ -90,7 +90,7 @@ public class GenerateOutboundVoiceMessagesIT {
     @Test
     public void dummyTest() {
 
-        List<OutboundVoiceMessage> msgs = allOutboundVoiceMessages.getPendingMessages(externalId1);
+        List<OutboundVoiceMessage> msgs = allOutboundVoiceMessages.getMessages(externalId1, OutboundVoiceMessageStatus.PENDING);
 
         for (OutboundVoiceMessage msg : msgs) {
             System.out.println(msg);

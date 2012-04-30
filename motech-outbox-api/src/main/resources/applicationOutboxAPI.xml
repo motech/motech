@@ -43,7 +43,7 @@
     <import resource="applicationPlatformCommon.xml"/>
 
     <bean id="voiceOutboxService" class="org.motechproject.outbox.api.service.impl.VoiceOutboxServiceImpl">
-        <property name="numDayskeepSavedMessages" value="10"/>
+        <property name="numDaysKeepSavedMessages" value="10"/>
         <property name="maxNumberOfPendingMessages" value="15"/>
     </bean>
 

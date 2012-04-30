@@ -37,10 +37,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.outbox.api.service.VoiceOutboxService;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.domain.VoiceMessageType;
+import org.motechproject.outbox.api.service.VoiceOutboxService;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -85,8 +85,10 @@ public class VxmlOutboxControllerTest {
         voiceMessageType.setVoiceMessageTypeName(voiceMessageTypeName);
         voiceMessage.setVoiceMessageType(voiceMessageType);
 
+        String externalId = "ext1";
+        when(request.getParameter("pId")).thenReturn(externalId);
 
-        when(voiceOutboxService.getNextPendingMessage(anyString())).thenReturn(voiceMessage);
+        when(voiceOutboxService.getNextMessage(externalId, OutboundVoiceMessageStatus.PENDING)).thenReturn(voiceMessage);
 
         ModelAndView modelAndView = vxmlOutboxController.outboxMessage(request, response);
 
@@ -98,8 +100,9 @@ public class VxmlOutboxControllerTest {
     @Test
     public void testNextOutboxMessageException() {
 
-
-        when(voiceOutboxService.getNextPendingMessage(anyString())).thenThrow(new RuntimeException());
+        String externalId = "ext1";
+        when(request.getParameter("pId")).thenReturn(externalId);
+        when(voiceOutboxService.getNextMessage(externalId, OutboundVoiceMessageStatus.PENDING)).thenThrow(new RuntimeException());
 
         ModelAndView modelAndView = vxmlOutboxController.outboxMessage(request, response);
 
@@ -125,8 +128,9 @@ public class VxmlOutboxControllerTest {
 
         OutboundVoiceMessage voiceMessage = new OutboundVoiceMessage();
 
-
-        when(voiceOutboxService.getNextPendingMessage(anyString())).thenReturn(voiceMessage);
+        String externalId = "ext1";
+        when(request.getParameter("pId")).thenReturn(externalId);
+        when(voiceOutboxService.getNextMessage(externalId, OutboundVoiceMessageStatus.PENDING)).thenReturn(voiceMessage);
 
         ModelAndView modelAndView = vxmlOutboxController.outboxMessage(request, response);
 
@@ -183,7 +187,7 @@ public class VxmlOutboxControllerTest {
         voiceMessage.setVoiceMessageType(voiceMessageType);
 
         when(request.getParameter("pId")).thenReturn(externalId);
-        when(voiceOutboxService.getNextSavedMessage(externalId)).thenReturn(voiceMessage);
+        when(voiceOutboxService.getNextMessage(externalId, OutboundVoiceMessageStatus.SAVED)).thenReturn(voiceMessage);
 
         ModelAndView modelAndView = vxmlOutboxController.savedMessage(request, response);
 
@@ -195,7 +199,7 @@ public class VxmlOutboxControllerTest {
     public void testSavedMessageException() {
 
 
-        when(voiceOutboxService.getNextSavedMessage(anyString())).thenThrow(new RuntimeException());
+        when(voiceOutboxService.getNextMessage(anyString(), Matchers.<OutboundVoiceMessageStatus>any())).thenThrow(new RuntimeException());
 
         ModelAndView modelAndView = vxmlOutboxController.savedMessage(request, response);
 
@@ -207,7 +211,7 @@ public class VxmlOutboxControllerTest {
     public void testSavedMessageNoMessage() {
 
         String externalId = "1";
-        when(voiceOutboxService.getNextSavedMessage(externalId)).thenReturn(null);
+        when(voiceOutboxService.getNextMessage(externalId, OutboundVoiceMessageStatus.SAVED)).thenReturn(null);
 
         ModelAndView modelAndView = vxmlOutboxController.savedMessage(request, response);
 
@@ -216,21 +220,20 @@ public class VxmlOutboxControllerTest {
     }
 
     @Test
-        public void testSavedMessageInvalidNoMessageType() {
+    public void testSavedMessageInvalidNoMessageType() {
 
-            String externalId = "1";
+        String externalId = "1";
 
-            OutboundVoiceMessage voiceMessage = new OutboundVoiceMessage();
+        OutboundVoiceMessage voiceMessage = new OutboundVoiceMessage();
 
-            when(request.getParameter("pId")).thenReturn(externalId);
-            when(voiceOutboxService.getNextSavedMessage(externalId)).thenReturn(voiceMessage);
+        when(request.getParameter("pId")).thenReturn(externalId);
+        when(voiceOutboxService.getNextMessage(externalId, OutboundVoiceMessageStatus.SAVED)).thenReturn(voiceMessage);
 
-            ModelAndView modelAndView = vxmlOutboxController.savedMessage(request, response);
+        ModelAndView modelAndView = vxmlOutboxController.savedMessage(request, response);
 
-            Assert.assertEquals(VxmlOutboxController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
+        Assert.assertEquals(VxmlOutboxController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
 
-        }
-
+    }
 
 
     @Test
@@ -355,20 +358,19 @@ public class VxmlOutboxControllerTest {
     }
 
     @Test
-       public void testRemoveOutboxMessage() {
+    public void testRemoveOutboxMessage() {
 
-           String messageId = "mID";
+        String messageId = "mID";
 
 
-           when(request.getParameter("mId")).thenReturn(messageId);
-           when(voiceOutboxService.getMessageById(messageId)).thenReturn(new OutboundVoiceMessage());
+        when(request.getParameter("mId")).thenReturn(messageId);
+        when(voiceOutboxService.getMessageById(messageId)).thenReturn(new OutboundVoiceMessage());
 
-           ModelAndView modelAndView = vxmlOutboxController.remove(request, response);
-           verify(voiceOutboxService).setMessageStatus(messageId, OutboundVoiceMessageStatus.PLAYED);
-           Assert.assertEquals(VxmlOutboxController.MESSAGE_REMOVED_CONFIRMATION_TEMPLATE_NAME, modelAndView.getViewName());
+        ModelAndView modelAndView = vxmlOutboxController.remove(request, response);
+        verify(voiceOutboxService).setMessageStatus(messageId, OutboundVoiceMessageStatus.PLAYED);
+        Assert.assertEquals(VxmlOutboxController.MESSAGE_REMOVED_CONFIRMATION_TEMPLATE_NAME, modelAndView.getViewName());
 
-       }
-
+    }
 
 
     @Test
