@@ -1,5 +1,6 @@
 package org.motechproject.outbox.api.repository;
 
+import org.motechproject.outbox.api.InvalidDataException;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 
 import java.util.Comparator;

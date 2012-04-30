@@ -1,4 +1,4 @@
-package org.motechproject.outbox.api.repository;
+package org.motechproject.outbox.api;
 
 
 public class InvalidDataException extends RuntimeException {

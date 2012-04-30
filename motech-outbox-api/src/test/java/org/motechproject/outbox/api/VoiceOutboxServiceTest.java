@@ -8,10 +8,10 @@ import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.outbox.api.contract.SortKey;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.repository.AllOutboundVoiceMessages;
-import org.motechproject.outbox.api.repository.SortKey;
 import org.motechproject.outbox.api.service.impl.VoiceOutboxServiceImpl;
 
 import java.util.ArrayList;
