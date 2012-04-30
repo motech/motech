@@ -9,6 +9,7 @@ import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.domain.VoiceMessageType;
 import org.motechproject.outbox.api.repository.AllOutboundVoiceMessages;
+import org.motechproject.outbox.api.repository.SortKey;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -24,7 +25,7 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/applicationOutboxAPI.xml"})
-public class OutboundVoiceMessageDaoIT {
+public class AllOutboundVoiceMessagesIT {
     @Autowired
     private AllOutboundVoiceMessages outboundVoiceMessageDao;
 
@@ -62,7 +63,7 @@ public class OutboundVoiceMessageDaoIT {
             OutboundVoiceMessage msg = new OutboundVoiceMessage();
             msg.setCreationTime(now.minusDays(5).toDate());
             msg.setStatus(messageStatus);
-            msg.setExpirationDate(i<2 ? now.minusDays(1).toDate() : now.plusDays(2).toDate());
+            msg.setExpirationDate(i < 2 ? now.minusDays(1).toDate() : now.plusDays(2).toDate());
 
             if ((i % 2) != 0) {
                 msg.setExternalId(externalId1);
@@ -100,7 +101,7 @@ public class OutboundVoiceMessageDaoIT {
 
         outboundVoiceMessageDao.add(messageWithAudioFiles);
 
-        List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getMessages(patientId, OutboundVoiceMessageStatus.PENDING);
+        List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getMessages(patientId, OutboundVoiceMessageStatus.PENDING, SortKey.CreationTime);
         assertEquals(1, messages.size());
         OutboundVoiceMessage message = messages.get(0);
         assertTrue(message.getParameters().containsKey("audioFiles"));
@@ -109,7 +110,7 @@ public class OutboundVoiceMessageDaoIT {
 
     @Test
     public void getAllMessagesGivenStatusAndExternalId() {
-        List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getMessages(externalId1, OutboundVoiceMessageStatus.SAVED);
+        List<OutboundVoiceMessage> messages = outboundVoiceMessageDao.getMessages(externalId1, OutboundVoiceMessageStatus.SAVED, SortKey.CreationTime);
         assertNotNull(messages);
         assertEquals(1, messages.size());
         for (OutboundVoiceMessage m : messages) {

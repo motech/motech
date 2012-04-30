@@ -59,7 +59,7 @@ import static org.mockito.Mockito.when;
  * @author yyonkov
  */
 @RunWith(MockitoJUnitRunner.class)
-public class OutboundVoiceMessageDaoTest {
+public class AllOutboundVoiceMessagesTest {
     @Mock
     private CouchDbConnector db;
 
@@ -76,9 +76,9 @@ public class OutboundVoiceMessageDaoTest {
         AllOutboundVoiceMessages dao = new AllOutboundVoiceMessages(db);
 
         DateTime now = DateUtil.now();
-        OutboundVoiceMessage message1 = buildMessage(now.minusDays(1).toDate());
-        OutboundVoiceMessage message2 = buildMessage(now.toDate());
-        OutboundVoiceMessage message3 = buildMessage(now.plusDays(1).toDate());
+        OutboundVoiceMessage message1 = buildMessage(now.minusDays(1).toDate(), 0);
+        OutboundVoiceMessage message2 = buildMessage(now.toDate(), 0);
+        OutboundVoiceMessage message3 = buildMessage(now.plusDays(1).toDate(), 0);
 
         messages.add(message1);
         messages.add(message2);
@@ -86,13 +86,36 @@ public class OutboundVoiceMessageDaoTest {
 
         when(db.queryView(any(ViewQuery.class), any(Class.class))).thenReturn(messages);
 
-        List<OutboundVoiceMessage> pendingMessages = dao.getMessages(EXTERNAL_ID, OutboundVoiceMessageStatus.PENDING);
+        List<OutboundVoiceMessage> pendingMessages = dao.getMessages(EXTERNAL_ID, OutboundVoiceMessageStatus.PENDING, SortKey.CreationTime);
         assertThat(pendingMessages.get(0), is(message3));
         assertThat(pendingMessages.get(1), is(message2));
         assertThat(pendingMessages.get(2), is(message1));
     }
 
-    private OutboundVoiceMessage buildMessage(Date creationTime) {
-        return new OutboundVoiceMessageBuilder().withDefaults().withCreationTime(creationTime).withExternalId(EXTERNAL_ID).build();
+    @Test
+    public void sortedBasedOnSequenceNumber() {
+        AllOutboundVoiceMessages dao = new AllOutboundVoiceMessages(db);
+
+        DateTime now = DateUtil.now();
+        OutboundVoiceMessage message1 = buildMessage(now.minusDays(1).toDate(), 3);
+        OutboundVoiceMessage message2 = buildMessage(now.toDate(), 1);
+        OutboundVoiceMessage message3 = buildMessage(now.plusDays(1).toDate(), 2);
+
+        messages.add(message1);
+        messages.add(message2);
+        messages.add(message3);
+
+        when(db.queryView(any(ViewQuery.class), any(Class.class))).thenReturn(messages);
+
+        List<OutboundVoiceMessage> pendingMessages = dao.getMessages(EXTERNAL_ID, OutboundVoiceMessageStatus.PENDING, SortKey.SequenceNumber);
+        assertThat(pendingMessages.get(0), is(message2));
+        assertThat(pendingMessages.get(1), is(message3));
+        assertThat(pendingMessages.get(2), is(message1));
+
+    }
+
+    private OutboundVoiceMessage buildMessage(Date creationTime, long sequenceNumber) {
+        return new OutboundVoiceMessageBuilder().withDefaults().withCreationTime(creationTime).withExternalId(EXTERNAL_ID)
+                .withSequenceNumber(sequenceNumber).build();
     }
 }

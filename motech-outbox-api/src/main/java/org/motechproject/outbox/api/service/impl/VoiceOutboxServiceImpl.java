@@ -11,6 +11,7 @@ import org.motechproject.outbox.api.EventKeys;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.repository.AllOutboundVoiceMessages;
+import org.motechproject.outbox.api.repository.SortKey;
 import org.motechproject.outbox.api.service.VoiceOutboxService;
 import org.motechproject.util.DateUtil;
 import org.slf4j.Logger;
@@ -61,11 +62,16 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
 
     @Override
     public OutboundVoiceMessage getNextMessage(String externalId, OutboundVoiceMessageStatus messageStatus) {
+        return getNextMessage(externalId, messageStatus, SortKey.CreationTime);
+    }
+
+    public OutboundVoiceMessage getNextMessage(String externalId, OutboundVoiceMessageStatus messageStatus, SortKey sortKey) {
         assertArgumentNotEmpty("ExternalId", externalId);
         assertArgumentNotNull("OutboundVoiceMessageStatus", messageStatus);
+        assertArgumentNotNull("SortKey", sortKey);
         logInfo("Get next message for the external ID: %s with status %s", externalId, messageStatus);
 
-        List<OutboundVoiceMessage> voiceMessages = allOutboundVoiceMessages.getMessages(externalId, messageStatus);
+        List<OutboundVoiceMessage> voiceMessages = allOutboundVoiceMessages.getMessages(externalId, messageStatus, sortKey);
         return voiceMessages.size() > 0 ? voiceMessages.get(0) : null;
     }
 
