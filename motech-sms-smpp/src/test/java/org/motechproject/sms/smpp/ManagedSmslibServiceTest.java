@@ -43,6 +43,8 @@ public class ManagedSmslibServiceTest {
 			setProperty(SmppProperties.PASSWORD, "wpsd");
 			setProperty(SmppProperties.PORT, "8876");
 			setProperty(SmppProperties.SYSTEM_ID, "pavel");
+			setProperty(SmppProperties.DELIVERY_REPORTS, "true");
+			setProperty(SmppProperties.BINDTYPE, "TRANSMITTER");
 		}};
 		smsProperties = new Properties();
 	}

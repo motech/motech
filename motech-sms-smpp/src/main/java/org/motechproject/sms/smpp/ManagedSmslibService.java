@@ -62,7 +62,8 @@ public class ManagedSmslibService {
         JSMPPGateway jsmppGateway = new JSMPPGateway(GATEWAY_ID,
                 smppProperties.getProperty(SmppProperties.HOST),
                 Integer.parseInt(smppProperties.getProperty(SmppProperties.PORT)),
-                new BindAttributes(smppProperties.getProperty(SmppProperties.SYSTEM_ID), smppProperties.getProperty(SmppProperties.PASSWORD), null, BindAttributes.BindType.TRANSCEIVER));
+                new BindAttributes(smppProperties.getProperty(SmppProperties.SYSTEM_ID), smppProperties.getProperty(SmppProperties.PASSWORD), null,
+                        BindAttributes.BindType.valueOf(smppProperties.getProperty(SmppProperties.BINDTYPE))));
         try {
             smslibService.addGateway(jsmppGateway);
         } catch (GatewayException e) {
