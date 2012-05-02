@@ -17,7 +17,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:testApplicationSmsSmpp.xml"})
+@ContextConfiguration(locations = {"classpath:testApplicationRepository.xml"})
 public class AllInboundSMSTest {
 
     @Autowired
