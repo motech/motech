@@ -68,7 +68,7 @@ public class EnrollmentAlertService {
     private DateTime getAlertReference(Alert alert, Enrollment enrollment, Milestone currentMilestone, MilestoneWindow milestoneWindow, DateTime reference) {
         DateTime windowStartDate = reference.plus(currentMilestone.getWindowStart(milestoneWindow.getName()));
         DateTime alertReference;
-        if (alert.isFloating() && enrollment.getEnrolledOn().isAfter(windowStartDate))
+        if (alert.isFloating() && enrollment.getEnrolledOn().isAfter(windowStartDate.plus(alert.getOffset())))
         {
             alertReference = enrollment.getEnrolledOn();
             alert.setOffset(Period.ZERO);
