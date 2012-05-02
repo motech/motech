@@ -21,6 +21,10 @@ public class EventDataKeys {
      */
     public static final String INBOUND_MESSAGE = "inbound_message";
     /**
+     * Indicates the message text for an inbound sms
+     */
+    public static final String STATUS_MESSAGE = "status_message";
+    /**
      * the timestamp when the sender sent out the message
      */
     public static final String TIMESTAMP = "timestamp";

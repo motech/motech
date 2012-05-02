@@ -17,6 +17,8 @@ import org.smslib.InboundMessage;
 import org.smslib.StatusReportMessage;
 
 import static junit.framework.Assert.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -78,6 +80,10 @@ public class InboundMessageNotificationTest {
         inboundMessageNotification.process(gateway, STATUSREPORT, reportMessage);
 
         verify(allOutboundSMS).updateDeliveryStatus(destAddr, refNo, reportMessage.getStatus().name());
+        ArgumentCaptor<MotechEvent> eventCaptor = ArgumentCaptor.forClass(MotechEvent.class);
+        verify(eventRelay).sendEventMessage(eventCaptor.capture());
+        MotechEvent event = eventCaptor.getValue();
+        assertThat(event.getSubject(), is(EventSubjects.SMS_DELIVERY_REPORT));
     }
 
 }

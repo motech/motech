@@ -39,12 +39,20 @@ public class InboundMessageNotification implements IInboundMessageNotification {
             data.put(SENDER, msg.getOriginator());
             data.put(INBOUND_MESSAGE, msg.getText());
             data.put(TIMESTAMP, new DateTime(msg.getDate()));
-            eventRelay.sendEventMessage(new MotechEvent(EventSubjects.INBOUND_SMS, data));
+            relayEvent(data, EventSubjects.INBOUND_SMS);
             allInboundSMS.createOrReplace(new InboundSMS(msg.getOriginator(), msg.getText(), msg.getDate(), msg.getUuid()));
         } else if (msgType.equals(Message.MessageTypes.STATUSREPORT)) {
             StatusReportMessage statusMessage = (StatusReportMessage) msg;
+            HashMap<String, Object> data = new HashMap<String, Object>();
+            data.put(SENDER, msg.getOriginator());
+            data.put(STATUS_MESSAGE, statusMessage);
+            data.put(TIMESTAMP, new DateTime(msg.getDate()));
+            relayEvent(data, EventSubjects.SMS_DELIVERY_REPORT);
             allOutboundSMS.updateDeliveryStatus(statusMessage.getRecipient(), statusMessage.getRefNo(), statusMessage.getStatus().name());
         }
+    }
 
+    private void relayEvent(HashMap<String, Object> data, String subject) {
+        eventRelay.sendEventMessage(new MotechEvent(subject, data));
     }
 }
