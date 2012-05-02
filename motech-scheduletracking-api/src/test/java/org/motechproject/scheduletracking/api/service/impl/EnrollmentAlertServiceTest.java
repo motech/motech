@@ -280,6 +280,21 @@ public class EnrollmentAlertServiceTest {
     }
 
     @Test
+    public void shouldConsiderZeroOffsetForBackDatedFloatingAlertsWhenEnrolledInADifferentWindow() {
+        Milestone firstMilestone = new Milestone("milestone_1", weeks(4), months(10), weeks(0), weeks(0));
+        Alert alert = new Alert(weeks(-2), days(1), 1, 0, true);
+        firstMilestone.addAlert(WindowName.due, alert);
+
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(firstMilestone);
+
+        Enrollment enrollment = new Enrollment("some_id", schedule, "milestone_1", weeksAgo(4), weeksAgo(1), new Time(8, 15), EnrollmentStatus.ACTIVE, null);
+        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
+
+        assertEquals(Period.ZERO, alert.getOffset());
+    }
+
+    @Test
     public void shouldReturnAlertTimingsForTheGivenMilestone() {
         Milestone firstMilestone = new Milestone("milestone_1", weeks(1), weeks(1), weeks(1), weeks(1));
         firstMilestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 2, 0, false));
