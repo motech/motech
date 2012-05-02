@@ -56,14 +56,18 @@ public class RepeatingProgramScheduleHandler {
             Integer startIntervalOffset = enrollment.startOffset(repeatingCampaignMessage);
             Date startDate = enrollment.getStartDate().toDate();
 
-            Integer offset = repeatingCampaignMessage.currentOffset(startDate, startIntervalOffset);
-            replaceMessageKeyParams(params, OFFSET, offset.toString());
-            replaceMessageKeyParams(params, WEEK_DAY, nextApplicableDay);
+            Integer currentOffset = repeatingCampaignMessage.currentOffset(startDate, startIntervalOffset);
+            params.put(EventKeys.GENERATED_MESSAGE_KEY, generateMsgKey(params.get(MESSAGE_KEY).toString(), currentOffset.toString(), nextApplicableDay));
 
             MotechEvent campaignEvent = event.copy(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, event.getParameters());
             setCampaignLastEvent(repeatingCampaignMessage, campaignEvent);
             outboundEventGateway.sendEventMessage(campaignEvent);
         }
+    }
+
+    private String generateMsgKey(String originalMessageKey, String offset, String weekDay) {
+        String generatedKey = replace(originalMessageKey, OFFSET, offset);
+        return replace(generatedKey, WEEK_DAY, weekDay);
     }
 
     private String getApplicableDay(MotechEvent event, RepeatingCampaignMessage repeatingCampaignMessage) {
@@ -86,10 +90,6 @@ public class RepeatingProgramScheduleHandler {
         CampaignEnrollmentsQuery query = new CampaignEnrollmentsQuery().withExternalId((String) map.get(EventKeys.EXTERNAL_ID_KEY)).withCampaignName((String) map.get(EventKeys.CAMPAIGN_NAME_KEY));
         List<CampaignEnrollment> filteredEnrollments = campaignEnrollmentService.search(query);
         return filteredEnrollments.get(0);
-    }
-
-    private void replaceMessageKeyParams(Map<String, Object> parameters, String parameterName, String value) {
-        parameters.put(MESSAGE_KEY, replace(parameters.get(MESSAGE_KEY).toString(), parameterName, value));
     }
 
     private CampaignMessage getCampaignMessage(MotechEvent motechEvent) {
