@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 
 import static org.motechproject.sms.smpp.constants.EventDataKeys.*;
+import static org.motechproject.util.DateUtil.newDateTime;
 
 @Component
 public class InboundMessageNotification implements IInboundMessageNotification {
@@ -40,7 +41,7 @@ public class InboundMessageNotification implements IInboundMessageNotification {
             data.put(INBOUND_MESSAGE, msg.getText());
             data.put(TIMESTAMP, new DateTime(msg.getDate()));
             relayEvent(data, EventSubjects.INBOUND_SMS);
-            allInboundSMS.createOrReplace(new InboundSMS(msg.getOriginator(), msg.getText(), msg.getDate(), msg.getUuid()));
+            allInboundSMS.add(new InboundSMS(msg.getOriginator(), msg.getText(), newDateTime(msg.getDate())));
         } else if (msgType.equals(Message.MessageTypes.STATUSREPORT)) {
             StatusReportMessage statusMessage = (StatusReportMessage) msg;
             HashMap<String, Object> data = new HashMap<String, Object>();
@@ -48,7 +49,7 @@ public class InboundMessageNotification implements IInboundMessageNotification {
             data.put(STATUS_MESSAGE, statusMessage);
             data.put(TIMESTAMP, new DateTime(msg.getDate()));
             relayEvent(data, EventSubjects.SMS_DELIVERY_REPORT);
-            allOutboundSMS.updateDeliveryStatus(statusMessage.getRecipient(), statusMessage.getRefNo(), statusMessage.getStatus().name());
+            allOutboundSMS.updateDeliveryStatus(statusMessage.getRecipient(), statusMessage.getRefNo(), newDateTime(statusMessage.getSent()), statusMessage.getStatus().name());
         }
     }
 

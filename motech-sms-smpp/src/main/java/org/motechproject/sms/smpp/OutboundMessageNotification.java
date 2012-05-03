@@ -3,7 +3,6 @@ package org.motechproject.sms.smpp;
 import org.apache.log4j.Logger;
 import org.motechproject.gateway.OutboundEventGateway;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.sms.DeliveryStatus;
 import org.motechproject.sms.OutboundSMS;
 import org.motechproject.sms.repository.AllOutboundSMS;
 import org.motechproject.sms.smpp.constants.EventSubjects;
@@ -18,8 +17,10 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Properties;
 
+import static org.motechproject.sms.api.DeliveryStatus.*;
 import static org.motechproject.sms.api.constants.EventDataKeys.MESSAGE;
 import static org.motechproject.sms.smpp.constants.EventDataKeys.RECIPIENT;
+import static org.motechproject.util.DateUtil.newDateTime;
 
 @Component
 public class OutboundMessageNotification implements IOutboundMessageNotification {
@@ -43,10 +44,10 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
             if (msg.getRetryCount() >= maxRetries) {
                 raiseFailureEvent(msg);
             } else if (msg.getRetryCount() < maxRetries) {
-                allOutboundSMS.createOrReplace(new OutboundSMS(msg.getRecipient(), msg.getRefNo(), msg.getText(), msg.getDate(), DeliveryStatus.KEEPTRYING));
+                allOutboundSMS.createOrReplace(new OutboundSMS(msg.getRecipient(), msg.getRefNo(), msg.getText(), newDateTime(msg.getDate()), KEEPTRYING));
             }
         } else {
-            allOutboundSMS.createOrReplace(new OutboundSMS(msg.getRecipient(), msg.getRefNo(), msg.getText(), msg.getDate(), DeliveryStatus.INPROGRESS));
+            allOutboundSMS.createOrReplace(new OutboundSMS(msg.getRecipient(), msg.getRefNo(), msg.getText(), newDateTime(msg.getDate()), INPROGRESS));
         }
     }
 
@@ -55,7 +56,7 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
         parameters.put(RECIPIENT, msg.getRecipient());
         parameters.put(MESSAGE, msg.getText());
         outboundEventGateway.sendEventMessage(new MotechEvent(EventSubjects.SMS_FAILURE_NOTIFICATION, parameters));
-        allOutboundSMS.createOrReplace(new OutboundSMS(msg.getRecipient(), msg.getRefNo(), msg.getText(), msg.getDate(), DeliveryStatus.ABORTED));
+        allOutboundSMS.createOrReplace(new OutboundSMS(msg.getRecipient(), msg.getRefNo(), msg.getText(), newDateTime(msg.getDate()), ABORTED));
     }
 
     private boolean sendingFailed(OutboundMessage msg) {

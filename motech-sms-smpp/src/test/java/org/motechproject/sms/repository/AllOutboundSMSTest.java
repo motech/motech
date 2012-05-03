@@ -1,20 +1,23 @@
 package org.motechproject.sms.repository;
 
+import ch.lambdaj.Lambda;
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.sms.DeliveryStatus;
 import org.motechproject.sms.OutboundSMS;
+import org.motechproject.sms.api.DeliveryStatus;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Date;
 import java.util.List;
 
+import static ch.lambdaj.Lambda.on;
 import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -29,7 +32,7 @@ public class AllOutboundSMSTest {
         String refNo = "refNo";
         String recipient =  "9123456780";
         String messageContent = "Dummy Message";
-        Date sentDate = DateUtil.now().toDate();
+        DateTime sentDate = DateUtil.now();
 
         OutboundSMS outboundSMS = new OutboundSMS(recipient, refNo, messageContent, sentDate, deliveryStatus);
         allOutboundSMS.createOrReplace(outboundSMS);
@@ -44,7 +47,7 @@ public class AllOutboundSMSTest {
         String refNo = "refNo";
         String recipient =  "9123456780";
         String messageContent = "Dummy Message";
-        Date sentDate = DateUtil.now().toDate();
+        DateTime sentDate = DateUtil.now();
 
         OutboundSMS outboundSMS = new OutboundSMS(recipient, refNo, messageContent, sentDate, deliveryStatus);
         allOutboundSMS.createOrReplace(outboundSMS);
@@ -54,6 +57,29 @@ public class AllOutboundSMSTest {
         List<OutboundSMS> allMessages = allOutboundSMS.findAllBy(refNo, recipient);
         assertThat(allMessages.size(), is(1));
     }
+
+    @Test
+    public void shouldFetchMessagesSentBetweenATimeRange() {
+        String refNo = "refNo";
+        String recipient =  "9123456780";
+        String messageContent = "Dummy Message";
+        DateTime sentDate = DateUtil.now();
+        allOutboundSMS.createOrReplace(new OutboundSMS(recipient, refNo, messageContent, sentDate, DeliveryStatus.INPROGRESS));
+        allOutboundSMS.createOrReplace(new OutboundSMS("1234567890", refNo, messageContent + "1234", sentDate.minusMinutes(10), DeliveryStatus.DELIVERED));
+        allOutboundSMS.createOrReplace(new OutboundSMS("0986432112", refNo, messageContent + "5678", sentDate.minusHours(2), DeliveryStatus.KEEPTRYING));
+
+        List<OutboundSMS> outboundSMSes = allOutboundSMS.messagesSentBetween(sentDate, sentDate);
+        assertThat(outboundSMSes.get(0).getPhoneNumber(), is(recipient));
+        assertThat(outboundSMSes.get(0).getMessageContent(), is(messageContent));
+
+        outboundSMSes = allOutboundSMS.messagesSentBetween(sentDate.minusMinutes(30), sentDate);
+        List<String> phoneNumbers = Lambda.extract(outboundSMSes, on(OutboundSMS.class).getPhoneNumber());
+        assertThat(phoneNumbers, hasItem(recipient));
+        assertThat(phoneNumbers, hasItem("1234567890"));
+
+        assertThat(allOutboundSMS.messagesSentBetween(sentDate, sentDate.minusMinutes(30)).size(), is(0));
+    }
+
 
     @After
     public void tearDown() {

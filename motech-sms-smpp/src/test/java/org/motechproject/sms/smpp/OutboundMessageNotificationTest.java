@@ -6,7 +6,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.gateway.OutboundEventGateway;
 import org.motechproject.model.MotechEvent;
-import org.motechproject.sms.DeliveryStatus;
+import org.motechproject.sms.api.DeliveryStatus;
 import org.motechproject.sms.OutboundSMS;
 import org.motechproject.sms.repository.AllOutboundSMS;
 import org.motechproject.sms.smpp.constants.SmsProperties;
@@ -101,7 +101,7 @@ public class OutboundMessageNotificationTest {
         ArgumentCaptor<OutboundSMS> outboundSMSCaptor = ArgumentCaptor.forClass(OutboundSMS.class);
 
         verify(mockAllOutboundSMS).createOrReplace(outboundSMSCaptor.capture());
-        assertEquals(refNo, outboundSMSCaptor.getValue().getSmscRefNo());
+        assertEquals(refNo, outboundSMSCaptor.getValue().getRefNo());
         assertEquals(deliveryStatus, outboundSMSCaptor.getValue().getDeliveryStatus());
         assertEquals(recipient, outboundSMSCaptor.getValue().getPhoneNumber());
     }

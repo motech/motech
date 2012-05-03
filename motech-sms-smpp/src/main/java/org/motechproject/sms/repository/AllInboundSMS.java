@@ -1,14 +1,13 @@
 package org.motechproject.sms.repository;
 
-import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.View;
+import org.joda.time.DateTime;
 import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.sms.InboundSMS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -20,28 +19,13 @@ public class AllInboundSMS extends MotechBaseRepository<InboundSMS> {
         super(InboundSMS.class, db);
     }
 
-    public void createOrReplace(InboundSMS inboundSMS) {
-        InboundSMS sms = findBy(inboundSMS.getPhoneNumber(), inboundSMS.getUuid());
-        if (null != sms) {
-            update(copyDocumentInfo(inboundSMS, sms));
-        } else {
-            add(inboundSMS);
-        }
+    @View(name = "by_recipient", map = "function(doc) {  if (doc.type === 'InboundSMS') emit(doc.phoneNumber, doc) }")
+    public List<InboundSMS> findBy(String phoneNumber) {
+        return queryView("by_recipient", phoneNumber);
     }
 
-    private InboundSMS copyDocumentInfo(InboundSMS target, InboundSMS source) {
-        target.setId(source.getId());
-        target.setRevision(source.getRevision());
-        return target;
-    }
-
-    public InboundSMS findBy(String phoneNumber, String uuid) {
-        List<InboundSMS> smsList = findAllBy(phoneNumber, uuid);
-        return CollectionUtils.isEmpty(smsList) ? null : smsList.get(0);
-    }
-
-    @View(name = "inbound_sms_by_recipient_and_uuid", map = "function(doc) {  if (doc.type === 'InboundSMS') emit([doc.phoneNumber, doc.uuid], doc) }")
-    public List<InboundSMS> findAllBy(String phoneNumber, String uuid) {
-        return queryView("inbound_sms_by_recipient_and_uuid", ComplexKey.of(phoneNumber, uuid));
+    @View(name = "within_message_time_range", map = "function(doc) {  if (doc.type === 'InboundSMS') emit(doc.messageTime, doc) }")
+    public List<InboundSMS> messagesReceivedBetween(DateTime from, DateTime to) {
+        return db.queryView(createQuery("within_message_time_range").startKey(from).endKey(to).includeDocs(true), InboundSMS.class);
     }
 }
