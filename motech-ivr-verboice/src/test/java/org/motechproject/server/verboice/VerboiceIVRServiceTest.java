@@ -1,8 +1,10 @@
 package org.motechproject.server.verboice;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.params.HttpClientParams;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
@@ -33,28 +35,31 @@ public class VerboiceIVRServiceTest {
     public void shouldInitiateCallOverVerboice() throws IOException {
         when(verboiceProperties.getProperty("host")).thenReturn("verboice");
         when(verboiceProperties.getProperty("port")).thenReturn("3000");
-
+        when(verboiceProperties.getProperty("username")).thenReturn("test@test.com");
+        when(verboiceProperties.getProperty("password")).thenReturn("password");
+        when(httpClient.getParams()).thenReturn(new HttpClientParams());
+        when(httpClient.getState()).thenReturn(new HttpState());
         VerboiceIVRService ivrService = new VerboiceIVRService(verboiceProperties, httpClient);
 
         CallRequest callRequest = new CallRequest("1234567890", 1000, "foobar");
         ivrService.initiateCall(callRequest);
 
-        verify(httpClient).executeMethod(argThat(new PostMethodMatcher("http://verboice:3000/api/call?channel=foobar&address=1234567890")));
+        verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://verboice:3000/api/call?channel=foobar&address=1234567890")));
     }
 
-    public class PostMethodMatcher extends ArgumentMatcher<PostMethod> {
+    public class GetMethodMatcher extends ArgumentMatcher<GetMethod> {
 
         private String url;
 
-        public PostMethodMatcher(String url) {
+        public GetMethodMatcher(String url) {
             this.url = url;
         }
 
         @Override
         public boolean matches(Object o) {
-            PostMethod postMethod = (PostMethod) o;
+            GetMethod getMethod = (GetMethod) o;
             try {
-                String actualURL = postMethod.getURI().getURI();
+                String actualURL = getMethod.getURI().getURI();
                 return actualURL.equals(url);
             } catch (URIException e) {
                 return false;

@@ -1,7 +1,9 @@
 package org.motechproject.server.verboice;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
 import org.motechproject.server.verboice.domain.VerboiceHandler;
@@ -33,6 +35,8 @@ public class VerboiceIVRService implements IVRService {
     public VerboiceIVRService(@Qualifier("verboiceProperties") Properties verboiceProperties, HttpClient commonsHttpClient) {
         this.verboiceProperties = verboiceProperties;
         this.commonsHttpClient = commonsHttpClient;
+        this.commonsHttpClient.getParams().setAuthenticationPreemptive(true);
+        this.commonsHttpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(verboiceProperties.getProperty("username"), verboiceProperties.getProperty("password")));
     }
 
     public void registerHandler(VerboiceHandler handler){
@@ -42,7 +46,9 @@ public class VerboiceIVRService implements IVRService {
     @Override
     public void initiateCall(CallRequest callRequest) {
         try {
-            commonsHttpClient.executeMethod(new PostMethod(outgoingCallUri(callRequest)));
+            GetMethod getMethod = new GetMethod(outgoingCallUri(callRequest));
+            int status = commonsHttpClient.executeMethod(getMethod);
+            log.info(String.format("[%d]\n%s", status, getMethod.getResponseBodyAsString()));
         } catch (IOException e) {
             log.error("Exception when initiating call : ", e);
         }
