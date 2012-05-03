@@ -20,7 +20,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.sms.http.SmsSendTemplate.Response;
+import static org.motechproject.sms.http.SmsHttpTemplate.Response;
 
 public class SmsSendHandlerTest {
 
@@ -44,7 +44,7 @@ public class SmsSendHandlerTest {
 
     @Test
     public void shouldMakeRequest() throws IOException, SmsDeliveryFailureException {
-        SmsSendTemplate template = mock(SmsSendTemplate.class);
+        SmsHttpTemplate template = mock(SmsHttpTemplate.class);
         GetMethod httpMethod = mock(GetMethod.class);
 
         when(template.generateRequestFor(Arrays.asList("0987654321"), "foo bar")).thenReturn(httpMethod);
@@ -61,14 +61,17 @@ public class SmsSendHandlerTest {
 
     @Test
     public void shouldNotThrowExceptionIfResponseMessageIsExactlyTheSameAsTheExpectedSuccessMessage() throws IOException, SmsDeliveryFailureException {
+        SmsHttpTemplate.Outgoing outgoing = new SmsHttpTemplate.Outgoing();
         Response response = new Response();
-        response.success = "sent";
-        SmsSendTemplate template = mock(SmsSendTemplate.class);
+        response.setSuccess("sent");
+        outgoing.setResponse(response);
+
+        SmsHttpTemplate template = mock(SmsHttpTemplate.class);
         GetMethod httpMethod = mock(GetMethod.class);
 
         when(httpMethod.getResponseBodyAsString()).thenReturn("sent");
         when(template.generateRequestFor(anyList(), anyString())).thenReturn(httpMethod);
-        when(template.getResponse()).thenReturn(response);
+        when(template.getOutgoing()).thenReturn(outgoing);
         when(templateReader.getTemplate(Matchers.<String>any())).thenReturn(template);
 
         SmsSendHandler handler = new SmsSendHandler(templateReader, httpClient);
@@ -77,14 +80,17 @@ public class SmsSendHandlerTest {
 
     @Test
     public void shouldNotThrowExceptionIfResponseMessageContainsTheExpectedSuccessMessage() throws IOException, SmsDeliveryFailureException {
+        SmsHttpTemplate.Outgoing outgoing = new SmsHttpTemplate.Outgoing();
         Response response = new Response();
-        response.success = "part of success";
-        SmsSendTemplate template = mock(SmsSendTemplate.class);
+        response.setSuccess("part of success");
+        outgoing.setResponse(response);
+
+        SmsHttpTemplate template = mock(SmsHttpTemplate.class);
         GetMethod httpMethod = mock(GetMethod.class);
 
         when(httpMethod.getResponseBodyAsString()).thenReturn("real response containing the phrase part of success and more stuff");
         when(template.generateRequestFor(anyList(), anyString())).thenReturn(httpMethod);
-        when(template.getResponse()).thenReturn(response);
+        when(template.getOutgoing()).thenReturn(outgoing);
         when(templateReader.getTemplate(Matchers.<String>any())).thenReturn(template);
 
         SmsSendHandler handler = new SmsSendHandler(templateReader, httpClient);
@@ -93,14 +99,17 @@ public class SmsSendHandlerTest {
 
     @Test(expected = SmsDeliveryFailureException.class)
     public void shouldThrowExceptionIfResponseIsNotASuccess() throws IOException, SmsDeliveryFailureException {
-        SmsSendTemplate template = mock(SmsSendTemplate.class);
-        GetMethod httpMethod = mock(GetMethod.class);
+        SmsHttpTemplate.Outgoing outgoing = new SmsHttpTemplate.Outgoing();
         Response response = new Response();
-        response.success = "sent";
+        response.setSuccess("sent");
+        outgoing.setResponse(response);
+
+        SmsHttpTemplate template = mock(SmsHttpTemplate.class);
+        GetMethod httpMethod = mock(GetMethod.class);
 
         when(httpMethod.getResponseBodyAsString()).thenReturn("boom");
         when(template.generateRequestFor(anyList(), anyString())).thenReturn(httpMethod);
-        when(template.getResponse()).thenReturn(response);
+        when(template.getOutgoing()).thenReturn(outgoing);
         when(templateReader.getTemplate(Matchers.<String>any())).thenReturn(template);
 
         SmsSendHandler handler = new SmsSendHandler(templateReader, httpClient);

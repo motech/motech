@@ -18,7 +18,7 @@ import java.util.List;
 @Component
 public class SmsSendHandler implements SmsEventHandler {
 
-    private SmsSendTemplate template;
+    private SmsHttpTemplate template;
     private HttpClient commonsHttpClient;
     private static Logger log = LoggerFactory.getLogger(SmsSendHandler.class);
 
@@ -39,7 +39,7 @@ public class SmsSendHandler implements SmsEventHandler {
         String response = httpMethod.getResponseBodyAsString();
         log.info("HTTP Status:" + status + "|Response:" + response);
 
-        if (response != null && !response.contains(template.getResponse().success)) {
+        if (response != null && !response.contains(template.getOutgoing().getResponse().getSuccess())) {
             log.info("delivery failed, retrying...");
             throw new SmsDeliveryFailureException();
         }
