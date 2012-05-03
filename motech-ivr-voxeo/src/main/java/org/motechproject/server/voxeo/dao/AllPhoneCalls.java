@@ -7,6 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+/**
+ * AllPhoneCalls represents phone call repository -- aggregate of phone calls
+ */
+
 @Repository
 public class AllPhoneCalls extends MotechBaseRepository<PhoneCall> {
     @Autowired

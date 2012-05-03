@@ -55,7 +55,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Voxeo specific implementation of the IVR Service interface
+ * Voxeo specific implementation of the IVR Service interface, supports initiating call given call request.
  *
  * Date: 07/03/11
  *
@@ -83,6 +83,11 @@ public class VoxeoIVRService implements IVRService
         this.commonsHttpClient = commonsHttpClient;
         voxeoConfig = this.configReader.getConfig("/voxeo-config.json");
     }
+
+    /**
+     * Initiates call to given phone number/sip id in call request.
+     * @param callRequest - data required by IVR phone system to start outbound call
+     */
 
     @Override
     public void initiateCall(CallRequest callRequest)

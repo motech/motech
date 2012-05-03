@@ -1,4 +1,4 @@
-/**
+/*
  * MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
  *
  * Copyright (c) 2011 Grameen Foundation USA.  All rights reserved.
@@ -33,8 +33,8 @@ package org.motechproject.ivr.service;
 
 
 /**
- *  Interface to IVR System
- *
+ *  Interface to IVR Dial out call. Originates call as per given call request.
+ *  See implementation module for more configuration information.
  *
  */
 public interface IVRService {
