@@ -1,12 +1,10 @@
 package org.motechproject.sms.http;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.sms.api.constants.EventDataKeys;
@@ -19,8 +17,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -39,21 +35,6 @@ public class SmsSendByHttpIT {
     @Before
     public void setup() {
         initMocks(this);
-    }
-
-    @Test
-    public void shouldUseSmsHttpTemplateFileForGeneratingRequest() throws IOException, SmsDeliveryFailureException {
-        smsSendHandler = new SmsSendHandler(templateReader, mockHttpClient);
-
-        MotechEvent motechEvent = new MotechEvent(EventSubjects.SEND_SMS, new HashMap<String, Object>() {{
-            put(EventDataKeys.RECIPIENTS, Arrays.asList("123", "456"));
-            put(EventDataKeys.MESSAGE, "foobar");
-        }});
-        smsSendHandler.handle(motechEvent);
-
-        ArgumentCaptor<HttpMethod> argumentCaptor = ArgumentCaptor.forClass(HttpMethod.class);
-        verify(mockHttpClient).executeMethod(argumentCaptor.capture());
-        assertEquals("http://smshost.com/sms/send?recipients=123+456&message=foobar", argumentCaptor.getValue().getURI().getURI());
     }
 
     @Test

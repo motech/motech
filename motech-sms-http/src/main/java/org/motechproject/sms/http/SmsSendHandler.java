@@ -39,7 +39,7 @@ public class SmsSendHandler implements SmsEventHandler {
         String response = httpMethod.getResponseBodyAsString();
         log.info("HTTP Status:" + status + "|Response:" + response);
 
-        if (response != null && !response.contains(template.getOutgoing().getResponse().getSuccess())) {
+        if (response == null || !response.toLowerCase().contains(template.getOutgoing().getResponse().getSuccess().toLowerCase())) {
             log.info("delivery failed, retrying...");
             throw new SmsDeliveryFailureException();
         }
