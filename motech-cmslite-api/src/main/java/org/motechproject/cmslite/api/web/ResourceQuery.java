@@ -1,5 +1,8 @@
 package org.motechproject.cmslite.api.web;
 
+/**
+ * Resource query parameters : language, name/tag and type. Unique identification for CMS Content
+ */
 public class ResourceQuery {
     private String language;
     private String name;

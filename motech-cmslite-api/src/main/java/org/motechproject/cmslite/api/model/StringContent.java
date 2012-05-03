@@ -5,6 +5,10 @@ import org.ektorp.support.TypeDiscriminator;
 
 import java.util.Map;
 
+/**
+ * \ingroup cmslite
+ * Represents Text Content.
+ */
 @TypeDiscriminator("doc.type === 'StringContent'")
 public class StringContent extends Content {
     @JsonProperty

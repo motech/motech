@@ -5,6 +5,9 @@ import org.motechproject.model.MotechBaseDataObject;
 
 import java.util.Map;
 
+/**
+ * Abstract representation of CMS Lite content. Identified by name and language.
+ */
 public abstract class Content extends MotechBaseDataObject {
     @JsonProperty
     private String language;
