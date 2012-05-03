@@ -11,8 +11,15 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Phone call data entity represents entire call from dial/recieve to hangup/disconnect,
+ * used to store in data-store AllPhoneCalls. This is aggregates all phone events though-out the call duration
+ */
 @TypeDiscriminator("doc.type === 'PhoneCall'")
 public class PhoneCall extends MotechBaseDataObject {
+    /**
+     * Call direction, Incoming and Outgoing
+     */
     public enum Direction {
         INCOMING, OUTGOING
     }

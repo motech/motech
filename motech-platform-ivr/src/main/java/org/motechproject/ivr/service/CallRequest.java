@@ -93,6 +93,12 @@ public class CallRequest implements Serializable {
         this.callBackUrl = callBackUrl;
     }
 
+    /**
+     * Creates call request with name value pair additional config
+     * @param phone     dialing number / sip id
+     * @param params    custom data for additional parameters
+     * @param callBackUrl application endpoint to process callbacks
+     */
     public CallRequest(String phone, Map<String, String> params, String callBackUrl) {
         if (phone == null) {
             throw new IllegalArgumentException("phone can not be null");
