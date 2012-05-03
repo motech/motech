@@ -8,6 +8,7 @@ import org.motechproject.sms.InboundSMS;
 import org.motechproject.sms.repository.AllInboundSMS;
 import org.motechproject.sms.repository.AllOutboundSMS;
 import org.motechproject.sms.smpp.constants.EventSubjects;
+import org.motechproject.util.DateUtil;
 import org.smslib.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -41,7 +42,8 @@ public class InboundMessageNotification implements IInboundMessageNotification {
             data.put(INBOUND_MESSAGE, msg.getText());
             data.put(TIMESTAMP, new DateTime(msg.getDate()));
             relayEvent(data, EventSubjects.INBOUND_SMS);
-            allInboundSMS.add(new InboundSMS(msg.getOriginator(), msg.getText(), newDateTime(msg.getDate())));
+            DateTime receivedDate = newDateTime(msg.getDate());
+            allInboundSMS.add(new InboundSMS(msg.getOriginator(), msg.getText(), receivedDate.toLocalDate(), DateUtil.time(receivedDate)));
         } else if (msgType.equals(Message.MessageTypes.STATUSREPORT)) {
             StatusReportMessage statusMessage = (StatusReportMessage) msg;
             HashMap<String, Object> data = new HashMap<String, Object>();

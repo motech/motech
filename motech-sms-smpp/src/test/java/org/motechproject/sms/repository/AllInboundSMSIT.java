@@ -14,6 +14,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.motechproject.util.DateUtil.time;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:testApplicationRepository.xml"})
@@ -46,11 +47,11 @@ public class AllInboundSMSIT {
         List<InboundSMS> inboundSMSes = allInboundSMS.messagesReceivedBetween(receivedTime.minusWeeks(2), receivedTime.minusDays(2));
         assertThat(inboundSMSes.size(), is(1));
         assertThat(inboundSMSes.get(0).getPhoneNumber(), is("1234509876"));
-        assertThat(allInboundSMS.messagesReceivedBetween(receivedTime, receivedTime).get(0).getPhoneNumber(), is(phoneNumber));
+        assertThat(allInboundSMS.messagesReceivedBetween(receivedTime.withTimeAtStartOfDay(), receivedTime).get(0).getPhoneNumber(), is(phoneNumber));
     }
 
     private void createInboundMessage(String phoneNumber, String messageContent, DateTime receivedTime) {
-        allInboundSMS.add(new InboundSMS(phoneNumber, messageContent, receivedTime));
+        allInboundSMS.add(new InboundSMS(phoneNumber, messageContent, receivedTime.toLocalDate(), time(receivedTime)));
     }
 
 

@@ -1,6 +1,7 @@
 package org.motechproject.sms.smpp;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.motechproject.gateway.OutboundEventGateway;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.sms.OutboundSMS;
@@ -21,6 +22,7 @@ import static org.motechproject.sms.api.DeliveryStatus.*;
 import static org.motechproject.sms.api.constants.EventDataKeys.MESSAGE;
 import static org.motechproject.sms.smpp.constants.EventDataKeys.RECIPIENT;
 import static org.motechproject.util.DateUtil.newDateTime;
+import static org.motechproject.util.DateUtil.time;
 
 @Component
 public class OutboundMessageNotification implements IOutboundMessageNotification {
@@ -40,23 +42,24 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
     public void process(AGateway gateway, OutboundMessage msg) {
         log.info(String.format("[%s] Outbound notification for (%s) with message (%s) received from gateway (%s)", msg.getMessageStatus().toString(), msg.getRecipient(), msg.getText(), gateway.getGatewayId()));
 
+        DateTime sentTime = newDateTime(msg.getDate());
         if (sendingFailed(msg)) {
             if (msg.getRetryCount() >= maxRetries) {
-                raiseFailureEvent(msg);
+                raiseFailureEvent(msg, sentTime);
             } else if (msg.getRetryCount() < maxRetries) {
-                allOutboundSMS.createOrReplace(new OutboundSMS(msg.getRecipient(), msg.getRefNo(), msg.getText(), newDateTime(msg.getDate()), KEEPTRYING));
+                allOutboundSMS.createOrReplace(new OutboundSMS(msg.getRecipient(), msg.getRefNo(), msg.getText(), sentTime.toLocalDate(), time(sentTime), KEEPTRYING));
             }
         } else {
-            allOutboundSMS.createOrReplace(new OutboundSMS(msg.getRecipient(), msg.getRefNo(), msg.getText(), newDateTime(msg.getDate()), INPROGRESS));
+            allOutboundSMS.createOrReplace(new OutboundSMS(msg.getRecipient(), msg.getRefNo(), msg.getText(), sentTime.toLocalDate(), time(sentTime), INPROGRESS));
         }
     }
 
-    private void raiseFailureEvent(OutboundMessage msg) {
+    private void raiseFailureEvent(OutboundMessage msg, DateTime sentTime) {
         HashMap<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(RECIPIENT, msg.getRecipient());
         parameters.put(MESSAGE, msg.getText());
         outboundEventGateway.sendEventMessage(new MotechEvent(EventSubjects.SMS_FAILURE_NOTIFICATION, parameters));
-        allOutboundSMS.createOrReplace(new OutboundSMS(msg.getRecipient(), msg.getRefNo(), msg.getText(), newDateTime(msg.getDate()), ABORTED));
+        allOutboundSMS.createOrReplace(new OutboundSMS(msg.getRecipient(), msg.getRefNo(), msg.getText(), sentTime.toLocalDate(), time(sentTime), ABORTED));
     }
 
     private boolean sendingFailed(OutboundMessage msg) {
