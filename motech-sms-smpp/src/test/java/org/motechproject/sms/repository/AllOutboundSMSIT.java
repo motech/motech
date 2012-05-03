@@ -22,7 +22,7 @@ import static org.hamcrest.Matchers.is;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:testApplicationRepository.xml"})
-public class AllOutboundSMSTest {
+public class AllOutboundSMSIT {
     @Autowired
     private AllOutboundSMS allOutboundSMS;
 
@@ -80,11 +80,8 @@ public class AllOutboundSMSTest {
         assertThat(allOutboundSMS.messagesSentBetween(sentDate, sentDate.minusMinutes(30)).size(), is(0));
     }
 
-
     @After
     public void tearDown() {
         allOutboundSMS.removeAll();
     }
-
-
 }

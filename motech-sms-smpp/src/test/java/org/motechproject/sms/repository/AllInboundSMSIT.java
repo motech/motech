@@ -17,7 +17,7 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:testApplicationRepository.xml"})
-public class AllInboundSMSTest {
+public class AllInboundSMSIT {
 
     @Autowired
     private AllInboundSMS allInboundSMS;

@@ -10,10 +10,9 @@
 
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.sms.repository"/>
+
     <bean id="smppDBConnector" class="org.ektorp.impl.StdCouchDbConnector">
-        <constructor-arg value="motech-sms-audit"/>
+        <constructor-arg value="motech-sms-audit-test"/>
         <constructor-arg ref="couchDbInstance"/>
     </bean>
-
-
 </beans>

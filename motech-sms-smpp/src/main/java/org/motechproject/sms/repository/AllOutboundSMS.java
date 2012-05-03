@@ -27,8 +27,8 @@ public class AllOutboundSMS extends MotechBaseRepository<OutboundSMS> {
         update(outboundSMS);
     }
 
-    public OutboundSMS findBy(String smscRefNo, String phoneNumber) {
-        List<OutboundSMS> smses = findAllBy(smscRefNo, phoneNumber);
+    public OutboundSMS findBy(String refNo, String phoneNumber) {
+        List<OutboundSMS> smses = findAllBy(refNo, phoneNumber);
         return CollectionUtils.isEmpty(smses) ? null : smses.get(0);
     }
 
