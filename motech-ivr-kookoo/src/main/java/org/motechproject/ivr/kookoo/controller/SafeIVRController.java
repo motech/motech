@@ -66,12 +66,6 @@ public abstract class SafeIVRController {
         return hangup(kooKooIVRContext);
     }
 
-    @RequestMapping(value = DISCONNECT_URL_ACTION, method = RequestMethod.GET)
-    @ResponseBody
-    public final String disconnect(HttpServletRequest request) {
-        return "";
-    }
-
     private String safeCall(KooKooIVRContext ivrContext) {
         try {
             IVREvent ivrEvent = Enum.valueOf(IVREvent.class, ivrContext.ivrEvent());
