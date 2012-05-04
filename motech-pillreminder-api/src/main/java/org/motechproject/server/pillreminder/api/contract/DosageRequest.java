@@ -19,14 +19,26 @@ public class DosageRequest {
         this.medicineRequests = medicineRequests;
     }
 
+    /**
+     * Medicines prescribed for this dose.
+     * @return
+     */
     public List<MedicineRequest> getMedicineRequests() {
         return medicineRequests;
     }
 
+    /**
+     * Dosage time minute component
+     * @return
+     */
     public int getStartMinute() {
         return startMinute;
     }
 
+    /**
+     * Dosage time hour component
+     * @return
+     */
     public int getStartHour() {
         return startHour;
     }

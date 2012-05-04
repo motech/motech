@@ -2,6 +2,10 @@ package org.motechproject.server.pillreminder.api.contract;
 
 import java.util.List;
 
+/**
+ * PillRegimenResponse represents subscribers dosage prescription and reminder configuration
+ * @see org.motechproject.server.pillreminder.api.service.PillReminderService#getPillRegimen(String)
+ */
 public class PillRegimenResponse {
     private String pillRegimenId;
     private String externalId;
