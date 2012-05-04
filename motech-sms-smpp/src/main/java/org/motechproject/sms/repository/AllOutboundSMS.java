@@ -45,7 +45,7 @@ public class AllOutboundSMS extends MotechBaseRepository<OutboundSMS> {
 
     @View(name = "by_message_time_and_recipient_and_ref_no_", map = "function(doc) {  if (doc.type === 'OutboundSMS') emit([doc.messageTime, doc.refNo, doc.phoneNumber], doc) }")
     public OutboundSMS findBy(DateTime deliveryTime, String refNo, String phoneNumber) {
-        List<OutboundSMS> smses = queryView("by_recipient_and_ref_no_with_message_time", ComplexKey.of(deliveryTime, refNo, phoneNumber));
+        List<OutboundSMS> smses = queryView("by_message_time_and_recipient_and_ref_no_", ComplexKey.of(deliveryTime, refNo, phoneNumber));
         return CollectionUtils.isEmpty(smses) ? null : smses.get(0);
     }
 
