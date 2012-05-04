@@ -33,7 +33,8 @@ public abstract class SafeIVRController {
     protected SafeIVRController(IVRMessage ivrMessage, KookooCallDetailRecordsService callDetailRecordsService, StandardResponseController standardResponseController) {
         this.ivrMessage = ivrMessage;
         this.standardResponseController = standardResponseController;
-        if (callDetailRecordsService == null) throw new NullPointerException(String.format("%s cannot be null", KookooCallDetailRecordsService.class.getName()));
+        if (callDetailRecordsService == null)
+            throw new NullPointerException(String.format("%s cannot be null", KookooCallDetailRecordsService.class.getName()));
         this.callDetailRecordsService = callDetailRecordsService;
     }
 
@@ -65,7 +66,13 @@ public abstract class SafeIVRController {
         return hangup(kooKooIVRContext);
     }
 
-    String safeCall(KooKooIVRContext ivrContext) {
+    @RequestMapping(value = DISCONNECT_URL_ACTION, method = RequestMethod.GET)
+    @ResponseBody
+    public final String disconnect(HttpServletRequest request) {
+        return "";
+    }
+
+    private String safeCall(KooKooIVRContext ivrContext) {
         try {
             IVREvent ivrEvent = Enum.valueOf(IVREvent.class, ivrContext.ivrEvent());
             KookooIVRResponseBuilder kookooIVRResponseBuilder;
@@ -110,7 +117,7 @@ public abstract class SafeIVRController {
         throw new UnsupportedOperationException("The extending controller should have implemeted this kookoo event.");
     }
 
-    public String hangup(KooKooIVRContext kooKooIVRContext){
+    public String hangup(KooKooIVRContext kooKooIVRContext) {
         kooKooIVRContext.invalidateSession();
         return KookooResponseFactory.empty(kooKooIVRContext.kooKooRequest().getSid()).create(null);
     }

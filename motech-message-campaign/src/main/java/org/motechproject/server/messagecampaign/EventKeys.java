@@ -13,6 +13,7 @@ public class EventKeys {
     public final static String MESSAGE_LANGUAGES = "MessageLanguages";
     public final static String EXTERNAL_ID_KEY = "ExternalID";
     public static final String MESSAGE_KEY = "MessageKey";    
+    public static final String GENERATED_MESSAGE_KEY = "GenMsgKey";
     public static final String ENROLLMENT_KEY = "Enrollment";
 
     public final static String BASE_SUBJECT = "org.motechproject.server.messagecampaign.";

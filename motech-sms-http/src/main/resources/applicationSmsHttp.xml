@@ -7,7 +7,6 @@
 
     <context:component-scan base-package="org.motechproject.sms.http"/>
     <context:annotation-config />
-
     <bean id="commonsHttpClient" class="org.apache.commons.httpclient.HttpClient" />
 
 </beans>

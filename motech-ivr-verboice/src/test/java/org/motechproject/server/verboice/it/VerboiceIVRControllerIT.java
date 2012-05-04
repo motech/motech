@@ -1,8 +1,10 @@
-package org.motechproject.server.verboice;
+package org.motechproject.server.verboice.it;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.server.verboice.VerboiceIVRController;
+import org.motechproject.server.verboice.VerboiceIVRService;
 import org.motechproject.server.verboice.domain.VerboiceHandler;
 import org.motechproject.server.verboice.web.VerboiceIVRController;
 import org.springframework.beans.factory.annotation.Autowired;

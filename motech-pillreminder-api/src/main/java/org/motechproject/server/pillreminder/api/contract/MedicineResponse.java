@@ -2,6 +2,10 @@ package org.motechproject.server.pillreminder.api.contract;
 
 import org.joda.time.LocalDate;
 
+/**
+ * Medicine name and start date
+ * @see DosageResponse
+ */
 public class MedicineResponse {
     private String name;
     private LocalDate startDate;

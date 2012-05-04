@@ -51,8 +51,6 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Spring MVC controller implementation provides method to handle HTTP requests and generate
  * VXML documents based on stored in outbox objects and the corresponding Velocity template
- *
- * @author Igor (iopushnyev@2paths.com)
  */
 @Controller
 public class VxmlOutboxController extends MultiActionController {
@@ -81,8 +79,8 @@ public class VxmlOutboxController extends MultiActionController {
      * The HTTP request may contain an optional 'mId' parameter with value of ID of the message for which
      * VXML document will be generated. If the "mId" parameter is not passed the next pending voice message
      * will be obtained from the outbox and a VXML document will be generated for that message
-     * <p/>
-     * <p/>
+     * <p></p>
+     * <p></p>
      * URL to request appointment reminder VoiceXML:
      * http://<host>:<port>/<motech-platform-server>/module/outbox/vxml/outboxMessage?mId=<messageId>
      */
@@ -302,8 +300,8 @@ public class VxmlOutboxController extends MultiActionController {
       *
       * The message will not be physically removed. The message status will be set to PLAYED.
       *
-     * <p/>
-     * <p/>
+     * <p></p>
+     * <p></p>
      * URL to request a saved VoiceXML message from outbox :
      * http://<host>:<port>/<motech-platform-server>/module/outbox/vxml/remove?mId=$message.id&ln=$language>
      */
@@ -362,8 +360,8 @@ public class VxmlOutboxController extends MultiActionController {
 
     /**
      * Handles Outbox HTTP requests and generates a VXML document based on a Velocity template and data saved in the outbox.
-     * <p/>
-     * <p/>
+     * <p></p>
+     * <p></p>
      * URL to request a saved VoiceXML message from outbox :
      * http://<host>:<port>/<motech-platform-server>/module/outbox/vxml/savedMessage>
      */

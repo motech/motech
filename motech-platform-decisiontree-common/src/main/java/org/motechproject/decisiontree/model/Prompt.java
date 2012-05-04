@@ -8,28 +8,29 @@ import org.codehaus.jackson.type.JavaType;
 
 import java.util.HashMap;
 
-
 /**
- *
+ * Represents a prompt.
  */
-@JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property="@type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@type")
 @JsonTypeIdResolver(Prompt.PromptResolver.class)
 public abstract class Prompt {
-	protected ITreeCommand command;
+    protected ITreeCommand command;
 
-	public static class PromptResolver extends TypeNameIdResolver {
-		static HashMap<String, String> typeToId = new HashMap<String, String>();
-		static HashMap<String, JavaType> idToType = new HashMap<String, JavaType>();
-		static {
-			typeToId.put(TextToSpeechPrompt.class.getName(), "text");
-			typeToId.put(AudioPrompt.class.getName(), "audio");
-			idToType.put("text", TypeFactory.fastSimpleType(TextToSpeechPrompt.class));
-			idToType.put("audio", TypeFactory.fastSimpleType(AudioPrompt.class));
-		}
-		public PromptResolver() {
-			super(TypeFactory.fastSimpleType(Prompt.class), typeToId, idToType);
-		}
-	}
+    public static class PromptResolver extends TypeNameIdResolver {
+        static HashMap<String, String> typeToId = new HashMap<String, String>();
+        static HashMap<String, JavaType> idToType = new HashMap<String, JavaType>();
+
+        static {
+            typeToId.put(TextToSpeechPrompt.class.getName(), "text");
+            typeToId.put(AudioPrompt.class.getName(), "audio");
+            idToType.put("text", TypeFactory.fastSimpleType(TextToSpeechPrompt.class));
+            idToType.put("audio", TypeFactory.fastSimpleType(AudioPrompt.class));
+        }
+
+        public PromptResolver() {
+            super(TypeFactory.fastSimpleType(Prompt.class), typeToId, idToType);
+        }
+    }
 
     private String name;
 

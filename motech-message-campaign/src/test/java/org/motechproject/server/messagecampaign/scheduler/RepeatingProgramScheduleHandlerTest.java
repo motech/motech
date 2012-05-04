@@ -75,15 +75,15 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
 
         mockCampaignEnrollment(startDateNov112011, 1);
         callHandleEvent(today, motechEvent(may102012, jobMessageKey, true));
-        assertHandleEvent("message-key-1");
+        assertHandleEvent(jobMessageKey, "message-key-1");
 
         mockCampaignEnrollment(startDateNov112011, 3);
         callHandleEvent(today.plusDays(repeatIntervalInDays - 1), motechEvent(may102012, jobMessageKey, true));
-        assertHandleEvent("message-key-1");
+        assertHandleEvent(jobMessageKey, "message-key-1");
 
         mockCampaignEnrollment(startDateNov112011, 1);
         callHandleEvent(today.plusDays(repeatIntervalInDays * 2), motechEvent(may102012, jobMessageKey, true));
-        assertHandleEvent("message-key-3");
+        assertHandleEvent(jobMessageKey, "message-key-3");
     }
 
     private CampaignEnrollment mockCampaignEnrollment(Date startDate, int startOffset) {
@@ -110,7 +110,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
 
         mockCampaignEnrollment(startDateNov162011, 1);
         callHandleEvent(today, motechEvent(may102012, jobMessageKey, true));
-        assertHandleEvent("message-key-1-Wednesday");
+        assertHandleEvent(jobMessageKey, "message-key-1-Wednesday");
 
         mockCampaignEnrollment(startDateNov162011, 2);
         callHandleEvent(today.plusDays(1), motechEvent(may102012, jobMessageKey, true));
@@ -118,7 +118,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
 
         mockCampaignEnrollment(startDateNov162011, 2);
         callHandleEvent(today.plusDays(2), motechEvent(may102012, jobMessageKey, true));
-        assertHandleEvent("message-key-2-Friday");
+        assertHandleEvent(jobMessageKey, "message-key-2-Friday");
 
         mockCampaignEnrollment(startDateNov162011, 5);
         callHandleEvent(today.plusDays(11), motechEvent(may102012, jobMessageKey, true));
@@ -126,7 +126,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
 
         mockCampaignEnrollment(startDateNov162011, 5);
         callHandleEvent(today.plusDays(repeatIntervalAs7 * 3), motechEvent(may102012, jobMessageKey, true));
-        assertHandleEvent("message-key-8-Wednesday");
+        assertHandleEvent(jobMessageKey, "message-key-8-Wednesday");
     }
 
     @Test
@@ -142,7 +142,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
         mockCampaignEnrollment(today.toDate(), 1);
 
         callHandleEvent(today, motechEvent(currentDate, jobMessageKey, false));
-        assertHandleEvent("message-key-1-Wednesday");
+        assertHandleEvent(jobMessageKey, "message-key-1-Wednesday");
         verify(spyCampaignMessage, never()).applicableWeekDayInNext24Hours();
     }
 
@@ -162,7 +162,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
 
         mockCampaignEnrollment(startDateNov182011, 1);
         callHandleEvent(today, motechEvent(may102012, jobMessageKey, true));
-        assertHandleEvent("message-key-1-Friday");
+        assertHandleEvent(jobMessageKey, "message-key-1-Friday");
 
         mockCampaignEnrollment(startDateNov182011, 1);
         callHandleEvent(today.plusDays(1), motechEvent(may102012, jobMessageKey, true));
@@ -170,11 +170,11 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
 
         mockCampaignEnrollment(startDateNov182011, 3);
         callHandleEvent(today.plusDays(2), motechEvent(may102012, jobMessageKey, true));
-        assertHandleEvent("message-key-3-Sunday");
+        assertHandleEvent(jobMessageKey, "message-key-3-Sunday");
 
         mockCampaignEnrollment(startDateNov182011, 4);
         callHandleEvent(today.plusDays(3), motechEvent(may102012, jobMessageKey, true));
-        assertHandleEvent("message-key-5-Monday");
+        assertHandleEvent(jobMessageKey, "message-key-5-Monday");
 
         mockCampaignEnrollment(startDateNov182011, 1);
         callHandleEvent(today.plusDays(11), motechEvent(may102012, jobMessageKey, true));
@@ -182,7 +182,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
 
         mockCampaignEnrollment(startDateNov182011, 2);
         callHandleEvent(today.plusDays(14), motechEvent(may102012, jobMessageKey, true));
-        assertHandleEvent("message-key-4-Friday");
+        assertHandleEvent(jobMessageKey, "message-key-4-Friday");
     }
 
     @Test
@@ -236,24 +236,24 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
         handler.handleEvent(inputEvent);
     }
 
-    private void assertHandleEvent(String expectedMsgKey) {
-        assertHandleEvent(expectedMsgKey, true);
+    private void assertHandleEvent(String expectedMsgKey, String expectedGeneratedMsgKey) {
+        assertHandleEvent(expectedMsgKey, expectedGeneratedMsgKey, true);
     }
 
     private void assertHandleEvent_ThatItDoesntProceed() {
-        assertHandleEvent(null, false);
+        assertHandleEvent(null, null, false);
     }
 
-    private void assertHandleEvent(String expectedMsgKey, boolean shouldFireToEventGateway) {
+    private void assertHandleEvent(String expectedOrgMsgKey, String expectedGenMsgKey, boolean shouldFireToEventGateway) {
         ArgumentCaptor<MotechEvent> event = ArgumentCaptor.forClass(MotechEvent.class);
         if (shouldFireToEventGateway) {
             verify(outboundEventGateway, times(1)).sendEventMessage(event.capture());
-            assertOffsetForMessage(event, expectedMsgKey);
+            assertOffsetForMessage(event, expectedOrgMsgKey, expectedGenMsgKey);
         } else
             verify(outboundEventGateway, never()).sendEventMessage(event.capture());
     }
 
-    private void assertOffsetForMessage(ArgumentCaptor<MotechEvent> event, String messageKey) {
+    private void assertOffsetForMessage(ArgumentCaptor<MotechEvent> event, String messageKey, String generatedMessageKey) {
         Map<String, Object> params = event.getValue().getParameters();
         assertNotNull(params);
         assertEquals(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, event.getValue().getSubject());
@@ -261,6 +261,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
         assertEquals("job-id", params.get(EventKeys.SCHEDULE_JOB_ID_KEY));
         assertEquals("external-id", params.get(EventKeys.EXTERNAL_ID_KEY));
         assertEquals(messageKey, params.get(EventKeys.MESSAGE_KEY));
+        assertEquals(generatedMessageKey, params.get(EventKeys.GENERATED_MESSAGE_KEY));
     }
 
     private MotechEvent motechEvent(Date endTime, String messageKey, Boolean strategy) {

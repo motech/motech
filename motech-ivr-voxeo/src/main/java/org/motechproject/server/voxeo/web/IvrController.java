@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -28,6 +27,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * IVR Event handler for Voxeo handles flash and incoming call events and records it in  {@link PhoneCall}
+ */
 @Controller
 public class IvrController extends MultiActionController {
     private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
@@ -40,6 +42,12 @@ public class IvrController extends MultiActionController {
 
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
 
+    /**
+     * Flash is disconnecting incoming call and calling back same number. This is useful in saving call cost where incoming calls are free.
+     * Reads incoming caller id and calls back after 5 seconds
+     * @param request
+     * @param response
+     */
     @RequestMapping("/flash")
     public void flash(HttpServletRequest request, HttpServletResponse response) {
         String phoneNumber = request.getParameter("phoneNumber");
@@ -48,10 +56,16 @@ public class IvrController extends MultiActionController {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put(VoxeoIVRService.APPLICATION_NAME, applicationName);
 
-        sleep(5000);
+        sleep(5000);    // TODO: configurable param
         voxeoIVRService.initiateCall(new CallRequest(phoneNumber, params, ""));
     }
 
+    /**
+     * Handles incoming calls and records phone call details in data-store.
+     * @param request
+     * @param response
+     * @return
+     */
     @RequestMapping(value = "/incoming")
     public ModelAndView incoming(HttpServletRequest request, HttpServletResponse response) {
         response.setContentType("text/plain");

@@ -3,7 +3,10 @@ package org.motechproject.sms.smpp;
 import org.joda.time.DateTime;
 import org.motechproject.sms.smpp.constants.SmppProperties;
 import org.motechproject.sms.smpp.constants.SmsProperties;
-import org.smslib.*;
+import org.smslib.GatewayException;
+import org.smslib.OutboundMessage;
+import org.smslib.SMSLibException;
+import org.smslib.Service;
 import org.smslib.smpp.BindAttributes;
 import org.smslib.smpp.jsmpp.JSMPPGateway;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +18,11 @@ import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
 
 @Component
 public class ManagedSmslibService {
     private static final String GATEWAY_ID = "smpp_gateway";
-    private static final String TEMPORARY_GROUP = "temporary_group";
     private static final String QUEUE_PERSISTENCE_PATH = ".";
 
     @Qualifier("smsProperties")
@@ -59,7 +62,8 @@ public class ManagedSmslibService {
         JSMPPGateway jsmppGateway = new JSMPPGateway(GATEWAY_ID,
                 smppProperties.getProperty(SmppProperties.HOST),
                 Integer.parseInt(smppProperties.getProperty(SmppProperties.PORT)),
-                new BindAttributes(smppProperties.getProperty(SmppProperties.SYSTEM_ID), smppProperties.getProperty(SmppProperties.PASSWORD), null, BindAttributes.BindType.TRANSCEIVER));
+                new BindAttributes(smppProperties.getProperty(SmppProperties.SYSTEM_ID), smppProperties.getProperty(SmppProperties.PASSWORD), null,
+                        BindAttributes.BindType.valueOf(smppProperties.getProperty(SmppProperties.BINDTYPE))));
         try {
             smslibService.addGateway(jsmppGateway);
         } catch (GatewayException e) {
@@ -78,34 +82,42 @@ public class ManagedSmslibService {
     }
 
     public void queueMessage(List<String> recipients, final String message) {
-        createGroupOfRecipients(recipients);
+//        String uuid = randomGroupName();
+//        createGroupOfRecipients(recipients, uuid);
 
-        OutboundMessage outboundMessage = getOutboundMessage(message);
-
-        smslibService.queueMessage(outboundMessage);
-        smslibService.removeGroup(TEMPORARY_GROUP);
+        for (String recipient : recipients) {
+            OutboundMessage outboundMessage = getOutboundMessage(message, recipient);
+            smslibService.queueMessage(outboundMessage);
+        }
+//        smslibService.removeGroup(uuid);
     }
 
     public void queueMessageAt(List<String> recipients, final String message, DateTime dateTime) {
-        createGroupOfRecipients(recipients);
-
-        OutboundMessage outboundMessage = getOutboundMessage(message);
-
-        smslibService.queueMessageAt(outboundMessage, dateTime.toDate());
-        smslibService.removeGroup(TEMPORARY_GROUP);
+//        String uuid = randomGroupName();
+//        createGroupOfRecipients(recipients, uuid);
+        for (String recipient : recipients) {
+            OutboundMessage outboundMessage = getOutboundMessage(message, recipient);
+            smslibService.queueMessageAt(outboundMessage, dateTime.toDate());
+        }
+//        smslibService.removeGroup(uuid);
     }
 
-    private OutboundMessage getOutboundMessage(String message) {
+    private OutboundMessage getOutboundMessage(String message, String recipient) {
         OutboundMessage outboundMessage = new OutboundMessage();
-        outboundMessage.setRecipient(TEMPORARY_GROUP);
+        outboundMessage.setRecipient(recipient);
+        outboundMessage.setStatusReport(Boolean.valueOf(smppProperties.getProperty(SmppProperties.DELIVERY_REPORTS)));
         outboundMessage.setText(message);
         outboundMessage.setGatewayId(GATEWAY_ID);
         return outboundMessage;
     }
 
-    private void createGroupOfRecipients(List<String> recipients) {
-        smslibService.createGroup(TEMPORARY_GROUP);
+    private void createGroupOfRecipients(List<String> recipients, String groupName) {
+        smslibService.createGroup(groupName);
         for (String recipient : recipients)
-            smslibService.addToGroup(TEMPORARY_GROUP, recipient);
+            smslibService.addToGroup(groupName, recipient);
+    }
+
+    private String randomGroupName() {
+        return UUID.randomUUID().toString();
     }
 }

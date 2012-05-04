@@ -19,4 +19,5 @@ public class EventSubjects {
      * TIMESTAMP - the time at which the SMS
      */
     public static final String INBOUND_SMS = "inbound_sms";
+    public static final String SMS_DELIVERY_REPORT = "sms_delivery_report";
 }

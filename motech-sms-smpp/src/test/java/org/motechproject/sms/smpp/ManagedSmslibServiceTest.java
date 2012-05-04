@@ -18,6 +18,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import static junit.framework.Assert.assertEquals;
@@ -43,6 +44,8 @@ public class ManagedSmslibServiceTest {
 			setProperty(SmppProperties.PASSWORD, "wpsd");
 			setProperty(SmppProperties.PORT, "8876");
 			setProperty(SmppProperties.SYSTEM_ID, "pavel");
+			setProperty(SmppProperties.DELIVERY_REPORTS, "true");
+			setProperty(SmppProperties.BINDTYPE, "TRANSMITTER");
 		}};
 		smsProperties = new Properties();
 	}
@@ -127,42 +130,26 @@ public class ManagedSmslibServiceTest {
 	@Test
 	public void shouldScheduledSmsForDelivery() throws GatewayException, IOException, TimeoutException, InterruptedException {
 		ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, smsProperties, smppProperties, null, null);
-		managedSmslibService.queueMessageAt(Arrays.asList("recipient1", "recipient2"), "message", new DateTime(2011, 11, 21, 13, 12, 0, 0));
-
-		ArgumentCaptor groupNameCaptor = ArgumentCaptor.forClass(String.class);
-		verify(smslibService).createGroup((String) groupNameCaptor.capture());
-
-		verify(smslibService).addToGroup((String) groupNameCaptor.getValue(), "recipient1");
-		verify(smslibService).addToGroup((String) groupNameCaptor.getValue(), "recipient2");
+        List<String> recipients = Arrays.asList("recipient1", "recipient2");
+        managedSmslibService.queueMessageAt(recipients, "message", new DateTime(2011, 11, 21, 13, 12, 0, 0));
 
 		ArgumentCaptor<OutboundMessage> outboundMessageCaptor = ArgumentCaptor.forClass(OutboundMessage.class);
 		ArgumentCaptor<Date> dateCaptor = ArgumentCaptor.forClass(Date.class);
-		verify(smslibService).queueMessageAt(outboundMessageCaptor.capture(), dateCaptor.capture());
+		verify(smslibService, times(recipients.size())).queueMessageAt(outboundMessageCaptor.capture(), dateCaptor.capture());
 
 		assertEquals("message", outboundMessageCaptor.getValue().getText());
-		assertEquals(groupNameCaptor.getValue(), outboundMessageCaptor.getValue().getRecipient());
 		assertEquals(new DateTime(2011, 11, 21, 13, 12, 0, 0).toDate(), dateCaptor.getValue());
-
-		verify(smslibService).removeGroup((String) groupNameCaptor.getValue());
 	}
 
 	@Test
 	public void shouldNotScheduleSms() throws GatewayException, IOException, TimeoutException, InterruptedException {
 		ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, smsProperties, smppProperties, null, null);
-		managedSmslibService.queueMessage(Arrays.asList("recipient1", "recipient2"), "message");
-
-		ArgumentCaptor groupNameCaptor = ArgumentCaptor.forClass(String.class);
-		verify(smslibService).createGroup((String) groupNameCaptor.capture());
-
-		verify(smslibService).addToGroup((String) groupNameCaptor.getValue(), "recipient1");
-		verify(smslibService).addToGroup((String) groupNameCaptor.getValue(), "recipient2");
+        List<String> recipients = Arrays.asList("recipient1", "recipient2");
+        managedSmslibService.queueMessage(recipients, "message");
 
 		ArgumentCaptor<OutboundMessage> outboundMessageCaptor = ArgumentCaptor.forClass(OutboundMessage.class);
-		verify(smslibService).queueMessage(outboundMessageCaptor.capture());
+		verify(smslibService, times(recipients.size())).queueMessage(outboundMessageCaptor.capture());
 
 		assertEquals("message", outboundMessageCaptor.getValue().getText());
-		assertEquals(groupNameCaptor.getValue(), outboundMessageCaptor.getValue().getRecipient());
-
-		verify(smslibService).removeGroup((String) groupNameCaptor.getValue());
 	}
 }

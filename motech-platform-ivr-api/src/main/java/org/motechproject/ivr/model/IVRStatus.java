@@ -1,5 +1,8 @@
 package org.motechproject.ivr.model;
 
+/**
+ * Call status - answered or busy/not reachable etc
+ */
 public enum IVRStatus {
     Answered("answered"),
     NotAnswered("not_answered");

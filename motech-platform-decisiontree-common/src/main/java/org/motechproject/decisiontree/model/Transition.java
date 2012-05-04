@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- *
+ * Represents transition from one node to the other.
  */
 public class Transition {
 

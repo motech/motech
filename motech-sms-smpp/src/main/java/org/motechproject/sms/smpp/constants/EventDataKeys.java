@@ -8,6 +8,9 @@
 package org.motechproject.sms.smpp.constants;
 
 public class EventDataKeys {
+
+    //TODO: move common fields to sms api
+
     /**
      * Indicates the sender of the message
      */
@@ -21,7 +24,11 @@ public class EventDataKeys {
      */
     public static final String INBOUND_MESSAGE = "inbound_message";
     /**
-     * the timestamp when the sender sent out the message
+     * Indicates the message text for an inbound sms
      */
+    public static final String STATUS_MESSAGE = "status_message";
+    /**
+     * the timestamp when the sender sent out the message
+\     */
     public static final String TIMESTAMP = "timestamp";
 }

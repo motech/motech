@@ -3,18 +3,20 @@ package org.motechproject.server.voxeo.domain;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
- * Created by IntelliJ IDEA.
- * User: rob
- * Date: 8/31/11
- * Time: 3:18 PM
- * To change this template use File | Settings | File Templates.
- */
+ * Phone/IVR Event in IVR system, represents context of call such as caller id, call status etc.
+*/
 public class PhoneCallEvent
 {
+    /**
+     * Call status
+     */
     public enum Status {
 	    ALERTING, CONNECTED, DIALOG_STARTED, DIALOG_EXIT, DISCONNECTED, PROGRESSING, FAILED, UNKNOWN;
     }
 
+    /**
+     * Call failure reasons.
+     */
     public enum Reason {
         BAD_NUMBER("badnumber"), BUSY("busy"), REJECTED("rejected"), TIMEOUT("timeout"), UNKNOWN("unknown"), UNREACHABLE("unreachable"), UNAUTHORIZED("unauthorized");
 
