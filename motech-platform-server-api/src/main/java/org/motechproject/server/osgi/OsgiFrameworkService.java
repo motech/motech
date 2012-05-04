@@ -1,4 +1,4 @@
-/**
+/*
  * MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
  *
  * Copyright (c) 2012 Grameen Foundation USA.  All rights reserved.
