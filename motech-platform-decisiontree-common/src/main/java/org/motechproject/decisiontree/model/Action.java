@@ -1,26 +1,35 @@
+/**
+ * \ingroup decisionTree
+ */
 package org.motechproject.decisiontree.model;
 
-
+/**
+ * Represents an action that can be associated with a node to raise events.
+ */
 public class Action {
     private String eventId;
 
     public static class Builder {
-    	private Action obj;
-		public Builder() {
-			obj = new Action();
-		} 
-		public Action build() {
-			return obj;
-		}
-	    public Builder setEventId(String eventId) {
-	    	obj.eventId = eventId;
-	    	return this;
-	    }
+        private Action obj;
+
+        public Builder() {
+            obj = new Action();
+        }
+
+        public Action build() {
+            return obj;
+        }
+
+        public Builder setEventId(String eventId) {
+            obj.eventId = eventId;
+            return this;
+        }
     }
+
     public static Builder newBuilder() {
-    	return new Builder();
+        return new Builder();
     }
-    
+
     public String getEventId() {
         return eventId;
     }

@@ -6,7 +6,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import java.util.*;
 
 /**
- *
+ * Represents a node in the decision tree.
  */
 public class Node {
 

@@ -1,5 +1,8 @@
 package org.motechproject.decisiontree.model;
 
+/**
+ * Associates a node with its path on the decision tree.
+ */
 public class NodeInfo {
     private String path;
     private Node node;

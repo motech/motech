@@ -1,9 +1,11 @@
 package org.motechproject.sms.http;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.model.MotechEvent;
@@ -16,6 +18,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.Mockito.*;
@@ -46,9 +49,15 @@ public class SmsSendHandlerTest {
     public void shouldMakeRequest() throws IOException, SmsDeliveryFailureException {
         SmsHttpTemplate template = mock(SmsHttpTemplate.class);
         GetMethod httpMethod = mock(GetMethod.class);
+        SmsHttpTemplate.Outgoing outgoing = new SmsHttpTemplate.Outgoing();
+        Response response = new Response();
+        response.setSuccess("sent");
+        outgoing.setResponse(response);
 
         when(template.generateRequestFor(Arrays.asList("0987654321"), "foo bar")).thenReturn(httpMethod);
+        when(template.getOutgoing()).thenReturn(outgoing);
         when(templateReader.getTemplate(anyString())).thenReturn(template);
+        when(httpMethod.getResponseBodyAsString()).thenReturn("sent");
 
         SmsSendHandler handler = new SmsSendHandler(templateReader, httpClient);
         handler.handle(new MotechEvent(EventSubjects.SEND_SMS, new HashMap<String, Object>() {{
@@ -60,16 +69,16 @@ public class SmsSendHandlerTest {
     }
 
     @Test
-    public void shouldNotThrowExceptionIfResponseMessageIsExactlyTheSameAsTheExpectedSuccessMessage() throws IOException, SmsDeliveryFailureException {
+    public void shouldNotThrowExceptionIfResponseMessageWhenResponseHasExpectedSuccessMessage() throws IOException, SmsDeliveryFailureException {
         SmsHttpTemplate.Outgoing outgoing = new SmsHttpTemplate.Outgoing();
         Response response = new Response();
-        response.setSuccess("sent");
+        response.setSuccess("Sent");
         outgoing.setResponse(response);
 
         SmsHttpTemplate template = mock(SmsHttpTemplate.class);
         GetMethod httpMethod = mock(GetMethod.class);
 
-        when(httpMethod.getResponseBodyAsString()).thenReturn("sent");
+        when(httpMethod.getResponseBodyAsString()).thenReturn("message senT successfully");
         when(template.generateRequestFor(anyList(), anyString())).thenReturn(httpMethod);
         when(template.getOutgoing()).thenReturn(outgoing);
         when(templateReader.getTemplate(Matchers.<String>any())).thenReturn(template);
@@ -114,5 +123,26 @@ public class SmsSendHandlerTest {
 
         SmsSendHandler handler = new SmsSendHandler(templateReader, httpClient);
         handler.handle(new MotechEvent(EventSubjects.SEND_SMS));
+    }
+
+    @Test(expected = SmsDeliveryFailureException.class)
+    public void throwExceptionWhenResponseIsNull() throws IOException, SmsDeliveryFailureException {
+
+        SmsHttpTemplate template = mock(SmsHttpTemplate.class);
+        GetMethod httpMethod = mock(GetMethod.class);
+        when(httpMethod.getResponseBodyAsString()).thenReturn(null);
+        when(template.generateRequestFor(anyList(), anyString())).thenReturn(httpMethod);
+        when(templateReader.getTemplate(Matchers.<String>any())).thenReturn(template);
+
+        SmsSendHandler smsSendHandler = new SmsSendHandler(templateReader, httpClient);
+        MotechEvent motechEvent = new MotechEvent(EventSubjects.SEND_SMS, new HashMap<String, Object>() {{
+            put(EventDataKeys.RECIPIENTS, Arrays.asList("123", "456"));
+            put(EventDataKeys.MESSAGE, "foobar");
+        }});
+        smsSendHandler.handle(motechEvent);
+
+        ArgumentCaptor<HttpMethod> argumentCaptor = ArgumentCaptor.forClass(HttpMethod.class);
+        verify(httpClient).executeMethod(argumentCaptor.capture());
+        assertEquals(httpMethod,argumentCaptor.getValue());
     }
 }

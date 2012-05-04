@@ -2,12 +2,12 @@ package org.motechproject.decisiontree.model;
 
 
 /**
- *
+ * Represents the text to speech prompt.
  */
 public class TextToSpeechPrompt extends Prompt {
 
     private String message;
-    
+
     public String getMessage() {
         return message;
     }

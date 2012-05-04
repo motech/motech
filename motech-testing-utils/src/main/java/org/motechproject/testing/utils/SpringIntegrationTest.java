@@ -15,20 +15,22 @@ import java.util.List;
 @RunWith(SpringJUnit4ClassRunner.class)
 public abstract class SpringIntegrationTest extends BaseUnitTest{
 
-    @Autowired
-    protected CouchDbConnector dbConnector;
+    private CouchDbConnector dbConnector;
 
     protected ArrayList<BulkDeleteDocument> toDelete;
 
     @Before
     public void before() {
         toDelete = new ArrayList<BulkDeleteDocument>();
+        dbConnector = getDBConnector();
     }
 
     @After
     public void after() {
         deleteAll();
     }
+
+    public abstract CouchDbConnector getDBConnector() ;
 
     protected void deleteAll() {
         if (toDelete.size() > 0)

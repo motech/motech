@@ -41,11 +41,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.DispatcherServlet;
 
-/**
- * 
- * @author Igor (iopushnyev@2paths.com)
- * 
- */
 public class Activator implements BundleActivator {
 	private static Logger logger = LoggerFactory.getLogger(Activator.class);
 	private static final String CONTEXT_CONFIG_LOCATION = "applicationDecisionTree.xml";

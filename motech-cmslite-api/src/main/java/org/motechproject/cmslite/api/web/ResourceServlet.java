@@ -17,6 +17,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
+/**
+ * REST service for CMS Lite content retrieval. Implementer should define and map this servlet in web.xml
+ */
 public class ResourceServlet extends HttpServlet {
     private static ApplicationContext context;
     private Logger logger = Logger.getLogger(this.getClass());

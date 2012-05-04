@@ -7,6 +7,10 @@ import org.ektorp.support.TypeDiscriminator;
 
 import java.io.InputStream;
 
+/**
+ * \ingroup cmslite
+ * Represents stream content along with checksum.
+ */
 @TypeDiscriminator("doc.type === 'StreamContent'")
 public class StreamContent extends Content {
     private InputStream inputStream;
