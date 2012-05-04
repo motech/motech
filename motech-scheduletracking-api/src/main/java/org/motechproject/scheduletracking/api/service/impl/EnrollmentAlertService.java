@@ -44,25 +44,20 @@ public class EnrollmentAlertService {
     }
 
     private void scheduleAlertJob(Alert alert, Enrollment enrollment, Milestone currentMilestone, MilestoneWindow milestoneWindow, MilestoneAlert milestoneAlert, DateTime reference) {
-        DateTime alertReference = getAlertReference(alert, enrollment, currentMilestone, milestoneWindow, reference);
-
-        int numberOfAlertsToSchedule = getNumberOfAlertsToSchedule(alert, enrollment, currentMilestone, milestoneWindow, alertReference);
-        if (numberOfAlertsToSchedule <= 0)
-            return;
-
         MotechEvent event = new MilestoneEvent(enrollment, milestoneAlert, milestoneWindow).toMotechEvent();
         event.getParameters().put(MotechSchedulerService.JOB_ID_KEY, String.format("%s.%d", enrollment.getId(), alert.getIndex()));
-
-        DateTime startTime = alert.getNextAlertDateTime(alertReference, enrollment.getPreferredAlertTime());
         long repeatIntervalInMillis = (long) alert.getInterval().toStandardSeconds().getSeconds() * 1000;
-        schedulerService.safeScheduleRepeatingJob(new RepeatingSchedulableJob(event, startTime.toDate(), null, numberOfAlertsToSchedule - 1, repeatIntervalInMillis));
-    }
 
-    private int getNumberOfAlertsToSchedule(Alert alert, Enrollment enrollment, Milestone currentMilestone, MilestoneWindow milestoneWindow, DateTime alertReference) {
-        DateTime currentMilestoneStartTime = enrollment.getCurrentMilestoneStartDate();
-        DateTime windowEndTime = currentMilestoneStartTime.plus(currentMilestone.getWindowEnd(milestoneWindow.getName()));
+        Period windowStart = currentMilestone.getWindowStart(milestoneWindow.getName());
+        Period windowEnd = currentMilestone.getWindowEnd(milestoneWindow.getName());
 
-        return alert.getRemainingAlertCount(alertReference, windowEndTime, enrollment.getPreferredAlertTime());
+        DateTime currentMilestoneStartDate = enrollment.getCurrentMilestoneStartDate();
+
+        DateTime windowStartDateTime = currentMilestoneStartDate.plus(windowStart);
+        DateTime windowEndDateTime = currentMilestoneStartDate.plus(windowEnd);
+
+        AlertWindow alertWindow = new AlertWindow(windowStartDateTime, windowEndDateTime, enrollment.getEnrolledOn(), enrollment.getPreferredAlertTime(), alert);
+        schedulerService.safeScheduleRepeatingJob(new RepeatingSchedulableJob(event, alertWindow.scheduledAlertStartDate(), null, alertWindow.numberOfAlertsToSchedule() - 1, repeatIntervalInMillis));
     }
 
     private DateTime getAlertReference(Alert alert, Enrollment enrollment, Milestone currentMilestone, MilestoneWindow milestoneWindow, DateTime reference) {

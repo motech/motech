@@ -202,7 +202,7 @@ public class EnrollmentAlertServiceTest {
     }
 
     @Test
-    public void shouldNotScheduleJobsIfAllAlertsHaveElapsed() {
+    public void shouldScheduleOnlyOneJobIfAllAlertsHaveElapsed() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
         milestone.addAlert(WindowName.earliest, new Alert(days(0), days(3), 1, 0, false));
         Schedule schedule = new Schedule("my_schedule");
@@ -211,7 +211,9 @@ public class EnrollmentAlertServiceTest {
         Enrollment enrollment = new Enrollment("entity_1", schedule, "milestone", daysAgo(4), daysAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE, null);
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
-        verify(schedulerService, times(0)).safeScheduleRepeatingJob(Matchers.<RepeatingSchedulableJob>any());
+        verify(schedulerService, times(1)).safeScheduleRepeatingJob(Matchers.<RepeatingSchedulableJob>any());
+        RepeatingSchedulableJob job = expectAndCaptureRepeatingJob();
+        assertEquals(newDateTime(now().toLocalDate(), new Time(8, 20)).toDate(), job.getStartTime());
     }
 
     @Test
@@ -276,7 +278,11 @@ public class EnrollmentAlertServiceTest {
         Enrollment enrollment = new Enrollment("some_id", schedule, "milestone_1", daysAgo(30), DateUtil.now(), new Time(8, 15), EnrollmentStatus.ACTIVE, null);
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
-        assertEquals(Period.ZERO, alert.getOffset());
+        ArgumentCaptor<RepeatingSchedulableJob> repeatJobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
+        verify(schedulerService, times(1)).safeScheduleRepeatingJob(repeatJobCaptor.capture());
+
+        assertEquals(DateUtil.now().toDate(), repeatJobCaptor.getValue().getStartTime());
+        assertEquals(6, repeatJobCaptor.getValue().getRepeatCount().intValue());
     }
 
     @Test
@@ -291,7 +297,11 @@ public class EnrollmentAlertServiceTest {
         Enrollment enrollment = new Enrollment("some_id", schedule, "milestone_1", weeksAgo(4), weeksAgo(1), new Time(8, 15), EnrollmentStatus.ACTIVE, null);
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
-        assertEquals(Period.ZERO, alert.getOffset());
+        ArgumentCaptor<RepeatingSchedulableJob> repeatJobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
+        verify(schedulerService, times(1)).safeScheduleRepeatingJob(repeatJobCaptor.capture());
+
+        assertEquals(DateUtil.now().toDate(), repeatJobCaptor.getValue().getStartTime());
+        assertEquals(0, repeatJobCaptor.getValue().getRepeatCount().intValue());
     }
 
     @Test
