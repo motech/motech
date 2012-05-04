@@ -1,8 +1,5 @@
 /**
- * \defgroup MRS
- */
-/**
- * \ingroup MRS
+ * \ingroup mrs
  * Exceptions thrown by MRS
  */
 package org.motechproject.mrs.exception;

@@ -2,7 +2,7 @@ package org.motechproject.outbox.api.domain;
 
 
 /**
- * \ingroup Outbox
+ * \ingroup outbox
  *
  * Holds the possible statuses of the voice outbox message {@link OutboundVoiceMessage}
  */

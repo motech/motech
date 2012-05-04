@@ -6,14 +6,14 @@ import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.domain.VoiceMessageType;
 
 /**
- * \defgroup Outbox
+ * \defgroup outbox Outbox
  */
 
 /**
- * \ingroup Outbox
- * <p/>
+ * \ingroup outbox
+ * <p></p>
  * Voice Outbox Service
- * <p/>
+ * <p></p>
  * Provides methods to get information and manage messages in the party voice outbox. Each party (Patient, Nurse,
  * Doctor, etc.) can have a voice outbox.
  */
@@ -31,7 +31,7 @@ public interface VoiceOutboxService {
     /**
      * Retrieves the next message from the outbox of the party identified by the given ExternalID. Returns null if there
      * are no more pending messages in the outbox.
-     * <p/>
+     * <p></p>
      * A next message is a message which is not expired with the given status that belongs to this party, the oldest
      * creation time and the highest priority among other pending messages in the external outbox.
      *
@@ -66,7 +66,7 @@ public interface VoiceOutboxService {
 
     /**
      * Saves the message with given id in the outbox for period (number of days) specified in the outbox configuration.
-     * <p/>
+     * <p></p>
      * By default sets the message status to <i>SAVED</i> and expiration date to <i>current date + number of days</i>
      * in the outbox configuration. {@link #setNumDaysKeepSavedMessages(int)}
      *

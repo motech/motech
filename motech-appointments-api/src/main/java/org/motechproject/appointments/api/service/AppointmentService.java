@@ -7,7 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * \ingroup Appointments
+ * \defgroup appointments Appointments
+ */
+
+/**
+ * \ingroup appointments
  *
  * Appointment Service exposes appointment management operations such as create appointment, find and mark as visited etc.
  *

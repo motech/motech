@@ -7,6 +7,10 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * \defgroup mrs MRS
+ */
+
+/**
  * Interface for handling Patients
  */
 public interface MRSPatientAdapter {
