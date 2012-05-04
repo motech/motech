@@ -20,6 +20,7 @@ public class AlertWindow {
     private DateTime alertWindowEnd;
     private List<DateTime> schedulableAlertTimings;
     private Time preferredAlertTime;
+    private final List<DateTime> allAlertTimings;
 
     public AlertWindow(DateTime windowStart, DateTime windowEnd, DateTime enrolledOn, Time preferredAlertTime, Alert alert) {
         this.alertWindowStart = toPreferredTime(windowStart.plus(alert.getOffset()), preferredAlertTime);
@@ -28,7 +29,7 @@ public class AlertWindow {
         this.enrolledOn = enrolledOn;
         this.alert = alert;
 
-        List<DateTime> allAlertTimings = computeAllAlertTimings();
+        allAlertTimings = computeAllAlertTimings();
         schedulableAlertTimings = alertsFallingInAlertWindow(allAlertTimings);
     }
 
@@ -39,6 +40,11 @@ public class AlertWindow {
     public Date scheduledAlertStartDate() {
         if (schedulableAlertTimings.size() == 0) return null;
         return schedulableAlertTimings.get(0).toDate();
+    }
+
+    public List<DateTime> allPossibleAlerts() {
+        return allAlertTimings;
+
     }
 
     private List<DateTime> computeAllAlertTimings() {
@@ -71,7 +77,7 @@ public class AlertWindow {
     }
 
     private List<DateTime> alertsFallingInAlertWindow(List<DateTime> alertTimings) {
-        List<DateTime> alertsWithInEndDate = filter(lessThan(alertWindowEnd), alertTimings);
+        List<DateTime> alertsWithInEndDate = filterAlertsBeyondEndDate(alertTimings);
 
         DateTime alertToBeStartedOn = alertStartDateTime();
         List<DateTime> nonElapsedAlerts = filter(greaterThanOrEqualTo(alertToBeStartedOn), alertsWithInEndDate);
@@ -81,6 +87,10 @@ public class AlertWindow {
             nonElapsedAlerts.add(0, toPreferredTime(alertToBeStartedOn, preferredAlertTime));
         }
         return nonElapsedAlerts;
+    }
+
+    private List<DateTime> filterAlertsBeyondEndDate(List<DateTime> alertTimings) {
+        return filter(lessThan(alertWindowEnd), alertTimings);
     }
 
     private DateTime toPreferredTime(DateTime alertTime, Time preferredTime) {

@@ -399,7 +399,7 @@ public class EnrollmentAlertServiceTest {
 
         List<DateTime> dueWindowAlertTimings = milestoneAlerts.getDueWindowAlertTimings();
         assertEquals(3, dueWindowAlertTimings.size());
-        assertEquals(new DateTime(2012, 4, 20, 8, 15, 0, 0), dueWindowAlertTimings.get(0));
+        assertEquals(new DateTime(2012, 4, 20, 0, 0, 0, 0), dueWindowAlertTimings.get(0));
     }
 
     @Test

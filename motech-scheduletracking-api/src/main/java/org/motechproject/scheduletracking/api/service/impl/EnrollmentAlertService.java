@@ -43,11 +43,34 @@ public class EnrollmentAlertService {
         }
     }
 
+    public MilestoneAlerts getAlertTimings(Enrollment enrollment) {
+        Schedule schedule = enrollment.getSchedule();
+        Milestone currentMilestone = schedule.getMilestone(enrollment.getCurrentMilestoneName());
+        MilestoneAlerts milestoneAlerts = new MilestoneAlerts();
+        if (currentMilestone == null)
+            return milestoneAlerts;
+
+        for (MilestoneWindow milestoneWindow : currentMilestone.getMilestoneWindows()) {
+            List<DateTime> alertTimingsForWindow = new ArrayList<DateTime>();
+            for (Alert alert : milestoneWindow.getAlerts()) {
+                AlertWindow alertWindow = createAlertWindowFor(alert, enrollment, currentMilestone, milestoneWindow);
+                alertTimingsForWindow.addAll(alertWindow.allPossibleAlerts());
+            }
+            milestoneAlerts.getAlertTimings().put(milestoneWindow.getName().toString(), alertTimingsForWindow);
+        }
+        return milestoneAlerts;
+    }
+
     private void scheduleAlertJob(Alert alert, Enrollment enrollment, Milestone currentMilestone, MilestoneWindow milestoneWindow, MilestoneAlert milestoneAlert, DateTime reference) {
         MotechEvent event = new MilestoneEvent(enrollment, milestoneAlert, milestoneWindow).toMotechEvent();
         event.getParameters().put(MotechSchedulerService.JOB_ID_KEY, String.format("%s.%d", enrollment.getId(), alert.getIndex()));
         long repeatIntervalInMillis = (long) alert.getInterval().toStandardSeconds().getSeconds() * 1000;
 
+        AlertWindow alertWindow = createAlertWindowFor(alert, enrollment, currentMilestone, milestoneWindow);
+        schedulerService.safeScheduleRepeatingJob(new RepeatingSchedulableJob(event, alertWindow.scheduledAlertStartDate(), null, alertWindow.numberOfAlertsToSchedule() - 1, repeatIntervalInMillis));
+    }
+
+    private AlertWindow createAlertWindowFor(Alert alert, Enrollment enrollment, Milestone currentMilestone, MilestoneWindow milestoneWindow) {
         Period windowStart = currentMilestone.getWindowStart(milestoneWindow.getName());
         Period windowEnd = currentMilestone.getWindowEnd(milestoneWindow.getName());
 
@@ -56,53 +79,10 @@ public class EnrollmentAlertService {
         DateTime windowStartDateTime = currentMilestoneStartDate.plus(windowStart);
         DateTime windowEndDateTime = currentMilestoneStartDate.plus(windowEnd);
 
-        AlertWindow alertWindow = new AlertWindow(windowStartDateTime, windowEndDateTime, enrollment.getEnrolledOn(), enrollment.getPreferredAlertTime(), alert);
-        schedulerService.safeScheduleRepeatingJob(new RepeatingSchedulableJob(event, alertWindow.scheduledAlertStartDate(), null, alertWindow.numberOfAlertsToSchedule() - 1, repeatIntervalInMillis));
-    }
-
-    private DateTime getAlertReference(Alert alert, Enrollment enrollment, Milestone currentMilestone, MilestoneWindow milestoneWindow, DateTime reference) {
-        DateTime windowStartDate = reference.plus(currentMilestone.getWindowStart(milestoneWindow.getName()));
-        DateTime alertReference;
-        if (alert.isFloating() && enrollment.getEnrolledOn().isAfter(windowStartDate.plus(alert.getOffset())))
-        {
-            alertReference = enrollment.getEnrolledOn();
-            alert.setOffset(Period.ZERO);
-        }
-        else
-            alertReference = windowStartDate;
-        return alertReference;
+        return new AlertWindow(windowStartDateTime, windowEndDateTime, enrollment.getEnrolledOn(), enrollment.getPreferredAlertTime(), alert);
     }
 
     public void unscheduleAllAlerts(Enrollment enrollment) {
         schedulerService.safeUnscheduleAllJobs(String.format("%s-%s", EventSubjects.MILESTONE_ALERT, enrollment.getId()));
-    }
-
-    public MilestoneAlerts getAlertTimings(Enrollment enrollment) {
-        Schedule schedule = enrollment.getSchedule();
-        Milestone currentMilestone = schedule.getMilestone(enrollment.getCurrentMilestoneName());
-        MilestoneAlerts milestoneAlerts = new MilestoneAlerts();
-        if (currentMilestone == null)
-            return milestoneAlerts;
-
-        DateTime currentMilestoneStartDate = enrollment.getCurrentMilestoneStartDate();
-        for (MilestoneWindow milestoneWindow : currentMilestone.getMilestoneWindows()) {
-            List<DateTime> alertTimingsForWindow = new ArrayList<DateTime>();
-            for (Alert alert : milestoneWindow.getAlerts()) {
-                DateTime alertReference = getAlertReference(alert, enrollment, currentMilestone, milestoneWindow, currentMilestoneStartDate);
-
-                Period alertInterval = alert.getInterval();
-                DateTime startTimeForAlerts = alertReference.plus(alert.getOffset());
-                alertTimingsForWindow.add(startTimeForAlerts);
-                DateTime currentAlertTime = startTimeForAlerts;
-                DateTime nextAlertTime;
-                for(int i = 1; i <= (alert.getCount() - 1); i++) {
-                    nextAlertTime = currentAlertTime.plus(alertInterval);
-                    alertTimingsForWindow.add(nextAlertTime);
-                    currentAlertTime = nextAlertTime;
-                }
-            }
-            milestoneAlerts.getAlertTimings().put(milestoneWindow.getName().toString(), alertTimingsForWindow);
-        }
-        return milestoneAlerts;
     }
 }
