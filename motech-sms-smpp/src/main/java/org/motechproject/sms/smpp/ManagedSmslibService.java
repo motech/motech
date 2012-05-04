@@ -82,27 +82,29 @@ public class ManagedSmslibService {
     }
 
     public void queueMessage(List<String> recipients, final String message) {
-        String uuid = randomGroupName();
-        createGroupOfRecipients(recipients, uuid);
+//        String uuid = randomGroupName();
+//        createGroupOfRecipients(recipients, uuid);
 
-        OutboundMessage outboundMessage = getOutboundMessage(message, uuid);
-
-        smslibService.queueMessage(outboundMessage);
-        smslibService.removeGroup(uuid);
+        for (String recipient : recipients) {
+            OutboundMessage outboundMessage = getOutboundMessage(message, recipient);
+            smslibService.queueMessage(outboundMessage);
+        }
+//        smslibService.removeGroup(uuid);
     }
 
     public void queueMessageAt(List<String> recipients, final String message, DateTime dateTime) {
-        String uuid = randomGroupName();
-        createGroupOfRecipients(recipients, uuid);
-        OutboundMessage outboundMessage = getOutboundMessage(message, uuid);
-
-        smslibService.queueMessageAt(outboundMessage, dateTime.toDate());
-        smslibService.removeGroup(uuid);
+//        String uuid = randomGroupName();
+//        createGroupOfRecipients(recipients, uuid);
+        for (String recipient : recipients) {
+            OutboundMessage outboundMessage = getOutboundMessage(message, recipient);
+            smslibService.queueMessageAt(outboundMessage, dateTime.toDate());
+        }
+//        smslibService.removeGroup(uuid);
     }
 
-    private OutboundMessage getOutboundMessage(String message, String uuid) {
+    private OutboundMessage getOutboundMessage(String message, String recipient) {
         OutboundMessage outboundMessage = new OutboundMessage();
-        outboundMessage.setRecipient(uuid);
+        outboundMessage.setRecipient(recipient);
         outboundMessage.setStatusReport(Boolean.valueOf(smppProperties.getProperty(SmppProperties.DELIVERY_REPORTS)));
         outboundMessage.setText(message);
         outboundMessage.setGatewayId(GATEWAY_ID);

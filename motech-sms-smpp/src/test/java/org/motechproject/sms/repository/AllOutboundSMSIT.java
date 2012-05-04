@@ -81,6 +81,21 @@ public class AllOutboundSMSIT {
         assertThat(allOutboundSMS.messagesSentBetween(sentDate, sentDate.minusMinutes(30)).size(), is(0));
     }
 
+    @Test
+    public void shouldUpdateTheDeliveryStatusForLatestRecordForMatchingRefNoForASubscriber() {
+        String refNo = "refNo";
+        String recipient =  "9123456780";
+        DateTime sentDate = DateUtil.now();
+
+        allOutboundSMS.createOrReplace(new OutboundSMS(recipient, refNo, "LatestMessage", sentDate.toLocalDate(), time(sentDate), DeliveryStatus.INPROGRESS));
+        allOutboundSMS.createOrReplace(new OutboundSMS(recipient, refNo, "OlderMessage", sentDate.toLocalDate(), time(sentDate.minusMinutes(2)), DeliveryStatus.INPROGRESS));
+
+        allOutboundSMS.updateDeliveryStatus(recipient, refNo, sentDate, DeliveryStatus.DELIVERED.name());
+
+        List<OutboundSMS> smses = allOutboundSMS.findAllBy(refNo, recipient);
+        assertThat(smses.get(0).getMessageContent(), is("LatestMessage"));
+    }
+
     @After
     public void tearDown() {
         allOutboundSMS.removeAll();

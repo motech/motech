@@ -22,7 +22,8 @@ public class AllOutboundSMS extends MotechBaseRepository<OutboundSMS> {
     }
 
     public void updateDeliveryStatus(String recipient, String refNo, DateTime sentOn, String deliveryStatus) {
-        OutboundSMS outboundSMS = findBy(refNo, recipient, sentOn);
+        OutboundSMS outboundSMS = findBy(sentOn, refNo, recipient);
+        if (null == outboundSMS) outboundSMS = findBy(refNo, recipient);
         outboundSMS.setStatus(DeliveryStatus.valueOf(deliveryStatus));
         update(outboundSMS);
     }
@@ -42,14 +43,14 @@ public class AllOutboundSMS extends MotechBaseRepository<OutboundSMS> {
         return queryView("by_recipient_and_ref_no", ComplexKey.of(refNo, phoneNumber));
     }
 
-    @View(name = "by_recipient_and_ref_no_with_message_time", map = "function(doc) {  if (doc.type === 'OutboundSMS') emit([doc.refNo, doc.phoneNumber, doc.messageTime], doc) }")
-    public OutboundSMS findBy(String refNo, String phoneNumber, DateTime deliveryTime) {
-        List<OutboundSMS> smses = queryView("by_recipient_and_ref_no_with_message_time", ComplexKey.of(refNo, phoneNumber, deliveryTime));
+    @View(name = "by_message_time_and_recipient_and_ref_no_", map = "function(doc) {  if (doc.type === 'OutboundSMS') emit([doc.messageTime, doc.refNo, doc.phoneNumber], doc) }")
+    public OutboundSMS findBy(DateTime deliveryTime, String refNo, String phoneNumber) {
+        List<OutboundSMS> smses = queryView("by_recipient_and_ref_no_with_message_time", ComplexKey.of(deliveryTime, refNo, phoneNumber));
         return CollectionUtils.isEmpty(smses) ? null : smses.get(0);
     }
 
     public void createOrReplace(OutboundSMS outboundSMS) {
-        OutboundSMS sms = findBy(outboundSMS.getRefNo(), outboundSMS.getPhoneNumber(), outboundSMS.getMessageTime());
+        OutboundSMS sms = findBy(outboundSMS.getMessageTime(), outboundSMS.getRefNo(), outboundSMS.getPhoneNumber());
         if (null == sms)
             add(outboundSMS);
         else
