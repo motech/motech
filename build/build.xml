@@ -7,7 +7,6 @@
         <delete dir="${javadoc.dir}" quiet="true"/>
 		<exec executable="sh">
         <arg line="-c &quot;(cat doxygen.config; echo 'PROJECT_NUMBER=${RELEASE_VERSION}') | doxygen -&quot;" />
-        <arg value="ls foo/bar | wc -l" />
         </exec>
     </target>
 

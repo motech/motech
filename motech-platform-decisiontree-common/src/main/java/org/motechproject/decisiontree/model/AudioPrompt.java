@@ -1,10 +1,18 @@
 package org.motechproject.decisiontree.model;
 
+/**
+ * Represents an audio prompt.
+ */
 public class AudioPrompt extends Prompt {
 
     private String audioFileUrl;
     private String altMessage; //Text To Speech Alternate if audio file not available
 
+    /**
+     * Gets the URL for the audio file to be played.
+     *
+     * @return Url for the audio file
+     */
     public String getAudioFileUrl() {
         return audioFileUrl;
     }

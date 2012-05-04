@@ -4,6 +4,9 @@ import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechBaseDataObject;
 import org.motechproject.server.decisiontree.TreeNodeLocator;
 
+/**
+ * Represents a decision tree.
+ */
 public class Tree extends MotechBaseDataObject {
 
     private static final long serialVersionUID = 1L;
