@@ -39,7 +39,7 @@ import java.util.Map;
 /**
  * Motech Scheduled Event data carrier class,
  * Instance of this class with event specific data will be send by Motech Scheduler when a scheduled event is fired
- * <p/>
+ * <p></p>
  * This class is immutable
  *
  */

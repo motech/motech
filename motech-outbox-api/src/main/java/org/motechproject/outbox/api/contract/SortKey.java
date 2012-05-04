@@ -5,7 +5,7 @@ import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.service.VoiceOutboxService;
 
 /**
- * \ingroup Outbox
+ * \ingroup outbox
  *
  * Represents the sorting behaviour for retrieval of outbox messages. {@link VoiceOutboxService#getNextMessage(String, OutboundVoiceMessageStatus)}
  */
