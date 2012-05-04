@@ -1,5 +1,6 @@
 package org.motechproject.sms.http;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
