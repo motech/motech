@@ -36,34 +36,26 @@ import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.decisiontree.model.Tree;
 
 /**
- * Responsible for locating a tree Node by transitionPath
- * @author yyonkov
- *
+ * Locates a tree node by transitionPath.
  */
 public class TreeNodeLocator {
-	
-	public static final String PATH_DELIMITER = "/";
+    public static final String PATH_DELIMITER = "/";
 
-    /**
-	 * @param tree not null
-	 * @param path not null
-	 * @return null if node not found
-	 */
-	public Node findNode(Tree tree, String path) {
-		if(tree==null || path==null) {
-			throw new IllegalArgumentException(String.format("tree: %s path: %s", tree, path));
-		}
-		Node node = tree.getRootNode();
-		if(node!=null) {
-			String[] keys = path.split(PATH_DELIMITER);
-			for(String key : keys) {
-				if(key.isEmpty()) continue;
-				Transition transition=node.getTransitions().get(key);
-				if(transition==null) return null;
-				node = transition.getDestinationNode();
-				if(node==null) return null;
-			}
-		}
-		return node;
-	}
+    public Node findNode(Tree tree, String path) {
+        if (tree == null || path == null) {
+            throw new IllegalArgumentException(String.format("tree: %s path: %s", tree, path));
+        }
+        Node node = tree.getRootNode();
+        if (node != null) {
+            String[] keys = path.split(PATH_DELIMITER);
+            for (String key : keys) {
+                if (key.isEmpty()) continue;
+                Transition transition = node.getTransitions().get(key);
+                if (transition == null) return null;
+                node = transition.getDestinationNode();
+                if (node == null) return null;
+            }
+        }
+        return node;
+    }
 }
