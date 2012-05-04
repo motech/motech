@@ -1,6 +1,5 @@
 package org.motechproject.sms.http;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
@@ -16,7 +15,7 @@ public class ControllerIt {
 
 
     @Test
-    @Ignore("test with telecom provider")
+    @Ignore("test with telecom provider and app context")
     public void handleIncomingSms() throws Exception {
         Server server = new Server(8080);
         Context context = new Context(server, "/", Context.SESSIONS);
