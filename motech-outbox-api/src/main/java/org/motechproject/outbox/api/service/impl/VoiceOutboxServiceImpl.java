@@ -131,7 +131,7 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
 
     @Override
     public List<OutboundVoiceMessage> getMessages(String externalId, OutboundVoiceMessageStatus status, SortKey sortKey) {
-        return allOutboundVoiceMessages.getMessages(externalId,status,sortKey);
+        return allOutboundVoiceMessages.getMessages(externalId, status, sortKey);
     }
 
     @Override
