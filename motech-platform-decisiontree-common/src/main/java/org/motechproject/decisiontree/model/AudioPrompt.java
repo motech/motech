@@ -22,6 +22,10 @@ public class AudioPrompt extends Prompt {
         return this;
     }
 
+    /**
+     * Gets the alternate message to be played if the audio file is not available
+     * @return alternate message for audio file
+     */
     public String getAltMessage() {
         return altMessage;
     }

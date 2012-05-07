@@ -25,7 +25,31 @@ public class SmppProperties {
      */
     public static final String DELIVERY_REPORTS = "delivery_reports";
     /**
-     * Type used to bind to the target gateway. This is made configurable.
+     * Type used to bind to the target gateway.
      */
     public static final String BINDTYPE = "bind_type";
+    /**
+     * Bind Type Of Number
+     */
+    public static final String BIND_TON = "bind_ton";
+    /**
+     * Number plan indicator
+     */
+    public static final String BIND_NPI = "bind_npi";
+    /**
+     * Source type of number
+     */
+    public static final String SOURCE_TON = "source_ton";
+    /**
+     * Destination type of number
+     */
+    public static final String DESTINATION_TON = "dest_ton";
+    /**
+     * Source Numbering plan indicator
+     */
+    public static final String SOURCE_NPI = "source_npi";
+    /**
+     * Destination Numbering plan indicator
+     */
+    public static final String DESTINATION_NPI = "dest_npi";
 }

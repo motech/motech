@@ -396,4 +396,20 @@ public class VoiceOutboxServiceTest {
         inOrder.verify(allOutboundVoiceMessages).update(currentMessage);
         inOrder.verify(allOutboundVoiceMessages).getMessages(externalId, OutboundVoiceMessageStatus.PENDING, SortKey.CreationTime);
     }
+
+    @Test
+    public void getAllMessagesByExternalIdAndStatusSortedBygivenSortKey() {
+        String ext_id = "ext_id";
+        ArrayList<OutboundVoiceMessage> expectedResult = new ArrayList<OutboundVoiceMessage>();
+        OutboundVoiceMessageStatus status = OutboundVoiceMessageStatus.PENDING;
+        SortKey sequenceNumber = SortKey.SequenceNumber;
+        when(allOutboundVoiceMessages.getMessages(ext_id, status, sequenceNumber)).thenReturn(expectedResult);
+
+        List<OutboundVoiceMessage> actualResult = voiceOutboxService.getMessages(ext_id, status, sequenceNumber);
+
+        assertEquals(expectedResult,actualResult);
+
+        verify(allOutboundVoiceMessages, times(1)).getMessages(ext_id, status, sequenceNumber);
+
+    }
 }
