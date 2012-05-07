@@ -23,6 +23,10 @@ public class Transition {
         return this;
     }
 
+    /**
+     * Gets the next node after transition
+     * @return the next node after transition
+     */
     public Node getDestinationNode() {
         return destinationNode;
     }
@@ -32,6 +36,10 @@ public class Transition {
         return this;
     }
 
+    /**
+     * Gets the list of actions associated with the transition
+     * @return list of actions
+     */
     public List<Action> getActions() {
         return actions == null ? Collections.<Action>emptyList() : actions;
     }

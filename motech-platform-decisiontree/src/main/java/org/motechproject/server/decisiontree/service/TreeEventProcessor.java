@@ -57,9 +57,9 @@ public class TreeEventProcessor {
     /**
      * Emits an event before landing on to a particular node on the specified tree. Event subject is the eventId associated with the action.
      *
-     * @param node
-     * @param path
-     * @param params
+     * @param node landing node
+     * @param path path of the node in decision tree
+     * @param params extra information to be passed
      */
     public void sendActionsBefore(Node node, String path, Map<String, Object> params) {
         Assert.notNull(node, "Node must not be null");
@@ -72,9 +72,9 @@ public class TreeEventProcessor {
     /**
      * Emits an event after landing on to a particular node on the specified tree. Event subject is the eventId associated with the action.
      *
-     * @param node
-     * @param path
-     * @param params
+     * @param node landing node
+     * @param path path of the node in decision tree
+     * @param params extra information to be passed
      */
     public void sendActionsAfter(Node node, String path, Map<String, Object> params) {
         Assert.notNull(node, "Node must not be null");
@@ -87,8 +87,8 @@ public class TreeEventProcessor {
     /**
      * Emits an event before whenever a particular transition happens on the specified tree. Event subject is the eventId associated with the action.
      *
-     * @param transition
-     * @param params
+     * @param transition transition that is about to happen
+     * @param params extra information to be passed
      */
     public void sendTransitionActions(Transition transition, Map<String, Object> params) {
         Assert.notNull(transition, "Transition must not be null");
