@@ -1,13 +1,11 @@
 package org.motechproject.sms.smpp;
 
 import org.joda.time.DateTime;
-import org.motechproject.sms.smpp.constants.SmppProperties;
 import org.motechproject.sms.smpp.constants.SmsProperties;
 import org.smslib.GatewayException;
 import org.smslib.OutboundMessage;
 import org.smslib.SMSLibException;
 import org.smslib.Service;
-import org.smslib.smpp.BindAttributes;
 import org.smslib.smpp.jsmpp.JSMPPGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,7 +16,8 @@ import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
-import java.util.UUID;
+
+import static org.motechproject.sms.smpp.constants.SmppProperties.*;
 
 @Component
 public class ManagedSmslibService {
@@ -33,6 +32,7 @@ public class ManagedSmslibService {
     private Service smslibService;
     private OutboundMessageNotification outboundMessageNotification;
     private InboundMessageNotification inboundMessageNotification;
+    private JSMPPPropertiesMapper jsmppMapper;
 
     @Autowired
     public ManagedSmslibService(Service smslibService, Properties smsProperties, Properties smppProperties, OutboundMessageNotification outboundMessageNotification, InboundMessageNotification inboundMessageNotification) {
@@ -41,6 +41,7 @@ public class ManagedSmslibService {
         this.smppProperties = smppProperties;
         this.outboundMessageNotification = outboundMessageNotification;
         this.inboundMessageNotification = inboundMessageNotification;
+        this.jsmppMapper = new JSMPPPropertiesMapper(smppProperties);
         configureSmsLib();
         registerGateway();
         registerListeners();
@@ -60,10 +61,12 @@ public class ManagedSmslibService {
 
     private void registerGateway() {
         JSMPPGateway jsmppGateway = new JSMPPGateway(GATEWAY_ID,
-                smppProperties.getProperty(SmppProperties.HOST),
-                Integer.parseInt(smppProperties.getProperty(SmppProperties.PORT)),
-                new BindAttributes(smppProperties.getProperty(SmppProperties.SYSTEM_ID), smppProperties.getProperty(SmppProperties.PASSWORD), null,
-                        BindAttributes.BindType.valueOf(smppProperties.getProperty(SmppProperties.BINDTYPE))));
+                jsmppMapper.getHost(),
+                jsmppMapper.getPort(),
+                jsmppMapper.getBindAttributes());
+
+        jsmppGateway.setSourceAddress(jsmppMapper.getSourceAddress());
+        jsmppGateway.setDestinationAddress(jsmppMapper.getDestinationAddress());
         try {
             smslibService.addGateway(jsmppGateway);
         } catch (GatewayException e) {
@@ -82,42 +85,25 @@ public class ManagedSmslibService {
     }
 
     public void queueMessage(List<String> recipients, final String message) {
-//        String uuid = randomGroupName();
-//        createGroupOfRecipients(recipients, uuid);
-
         for (String recipient : recipients) {
             OutboundMessage outboundMessage = getOutboundMessage(message, recipient);
             smslibService.queueMessage(outboundMessage);
         }
-//        smslibService.removeGroup(uuid);
     }
 
     public void queueMessageAt(List<String> recipients, final String message, DateTime dateTime) {
-//        String uuid = randomGroupName();
-//        createGroupOfRecipients(recipients, uuid);
         for (String recipient : recipients) {
             OutboundMessage outboundMessage = getOutboundMessage(message, recipient);
             smslibService.queueMessageAt(outboundMessage, dateTime.toDate());
         }
-//        smslibService.removeGroup(uuid);
     }
 
     private OutboundMessage getOutboundMessage(String message, String recipient) {
         OutboundMessage outboundMessage = new OutboundMessage();
         outboundMessage.setRecipient(recipient);
-        outboundMessage.setStatusReport(Boolean.valueOf(smppProperties.getProperty(SmppProperties.DELIVERY_REPORTS)));
+        outboundMessage.setStatusReport(Boolean.valueOf(smppProperties.getProperty(DELIVERY_REPORTS)));
         outboundMessage.setText(message);
         outboundMessage.setGatewayId(GATEWAY_ID);
         return outboundMessage;
-    }
-
-    private void createGroupOfRecipients(List<String> recipients, String groupName) {
-        smslibService.createGroup(groupName);
-        for (String recipient : recipients)
-            smslibService.addToGroup(groupName, recipient);
-    }
-
-    private String randomGroupName() {
-        return UUID.randomUUID().toString();
     }
 }
