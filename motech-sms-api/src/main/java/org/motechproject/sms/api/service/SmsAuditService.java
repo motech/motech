@@ -6,8 +6,8 @@ import org.motechproject.sms.api.SMSRecord;
 import java.util.List;
 
 public interface SmsAuditService {
-    List<SMSRecord> outboundMessagesFor(String phoneNumber);
     List<SMSRecord> allOutboundMessagesBetween(DateTime from, DateTime to);
-    List<SMSRecord> inboundMessagesFor(String phoneNumber);
+    List<SMSRecord> allOutboundMessagesBetween(String phoneNumber, DateTime from, DateTime to);
     List<SMSRecord> allInboundMessagesBetween(DateTime from, DateTime to);
+    List<SMSRecord> allInboundMessagesBetween(String phoneNumber, DateTime from, DateTime to);
 }
