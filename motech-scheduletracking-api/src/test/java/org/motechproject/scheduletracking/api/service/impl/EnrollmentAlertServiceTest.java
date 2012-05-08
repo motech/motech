@@ -202,7 +202,7 @@ public class EnrollmentAlertServiceTest {
     }
 
     @Test
-    public void shouldScheduleOnlyOneJobIfAllAlertsHaveElapsed() {
+    public void shouldNotScheduleAnyJobIfAllAlertsHaveElapsed() {
         Milestone milestone = new Milestone("milestone", weeks(1), weeks(1), weeks(1), weeks(1));
         milestone.addAlert(WindowName.earliest, new Alert(days(0), days(3), 1, 0, false));
         Schedule schedule = new Schedule("my_schedule");
@@ -211,9 +211,6 @@ public class EnrollmentAlertServiceTest {
         Enrollment enrollment = new Enrollment("entity_1", schedule, "milestone", daysAgo(4), daysAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE, null);
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
-        verify(schedulerService, times(1)).safeScheduleRepeatingJob(Matchers.<RepeatingSchedulableJob>any());
-        RepeatingSchedulableJob job = expectAndCaptureRepeatingJob();
-        assertEquals(newDateTime(now().toLocalDate(), new Time(8, 20)).toDate(), job.getStartTime());
     }
 
     @Test

@@ -79,10 +79,11 @@ public class VoiceOutboxServiceTest {
         OutboundVoiceMessage nextMessage = voiceOutboxService.getNextMessage(externalId, OutboundVoiceMessageStatus.PENDING);
 
         //then
-        verify(allOutboundVoiceMessages,times(1)).getMessages(externalId,OutboundVoiceMessageStatus.PENDING,SortKey.CreationTime);
+        verify(allOutboundVoiceMessages, times(1)).getMessages(externalId, OutboundVoiceMessageStatus.PENDING, SortKey.CreationTime);
         assertEquals(outboundVoiceMessage1, nextMessage);
 
     }
+
     @Test
     public void testGetNextMessageWithDSequenceNumberSortKey() {
         //given
@@ -100,7 +101,7 @@ public class VoiceOutboxServiceTest {
         OutboundVoiceMessage nextMessage = voiceOutboxService.getNextMessage(externalId, OutboundVoiceMessageStatus.PENDING, SortKey.SequenceNumber);
 
         //then
-        verify(allOutboundVoiceMessages,times(1)).getMessages(externalId,OutboundVoiceMessageStatus.PENDING,SortKey.SequenceNumber);
+        verify(allOutboundVoiceMessages, times(1)).getMessages(externalId, OutboundVoiceMessageStatus.PENDING, SortKey.SequenceNumber);
         assertEquals(outboundVoiceMessage1, nextMessage);
 
     }
@@ -120,13 +121,13 @@ public class VoiceOutboxServiceTest {
 
         verify(allOutboundVoiceMessages, never()).getMessages("extid", null, SortKey.CreationTime);
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testGetNextMessageNullSortKey() {
 
-        voiceOutboxService.getNextMessage("extid",OutboundVoiceMessageStatus.PENDING,null);
+        voiceOutboxService.getNextMessage("extid", OutboundVoiceMessageStatus.PENDING, null);
 
-        verify(allOutboundVoiceMessages, never()).getMessages(anyString(),Matchers.<OutboundVoiceMessageStatus>any(),Matchers.<SortKey>any());
+        verify(allOutboundVoiceMessages, never()).getMessages(anyString(), Matchers.<OutboundVoiceMessageStatus>any(), Matchers.<SortKey>any());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -289,20 +290,20 @@ public class VoiceOutboxServiceTest {
     @Test(expected = IllegalArgumentException.class)
     public void externalIdShouldNotBeNull_getNumberOfMessages() {
 
-        voiceOutboxService.getNumberOfMessages(null,OutboundVoiceMessageStatus.SAVED,"");
+        voiceOutboxService.getNumberOfMessages(null, OutboundVoiceMessageStatus.SAVED, "");
         verify(allOutboundVoiceMessages, never()).getMessagesCount(anyString(), OutboundVoiceMessageStatus.SAVED, anyString());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void statusShouldNotBeNull_getNumberOfMessages() {
 
-        voiceOutboxService.getNumberOfMessages("ext_id",null,"");
+        voiceOutboxService.getNumberOfMessages("ext_id", null, "");
         verify(allOutboundVoiceMessages, never()).getMessagesCount(anyString(), Matchers.<OutboundVoiceMessageStatus>any(), anyString());
     }
 
     @Test
     public void getNumberOfMessages() {
-        voiceOutboxService.getNumberOfMessages("ext_id",OutboundVoiceMessageStatus.SAVED,"message_type");
+        voiceOutboxService.getNumberOfMessages("ext_id", OutboundVoiceMessageStatus.SAVED, "message_type");
         verify(allOutboundVoiceMessages, times(1)).getMessagesCount("ext_id", OutboundVoiceMessageStatus.SAVED, "message_type");
     }
 
@@ -395,5 +396,21 @@ public class VoiceOutboxServiceTest {
         inOrder.verify(currentMessage).setStatus(OutboundVoiceMessageStatus.PLAYED);
         inOrder.verify(allOutboundVoiceMessages).update(currentMessage);
         inOrder.verify(allOutboundVoiceMessages).getMessages(externalId, OutboundVoiceMessageStatus.PENDING, SortKey.CreationTime);
+    }
+
+    @Test
+    public void getAllMessagesByExternalIdAndStatusSortedBygivenSortKey() {
+        String externalID = "ext_id";
+        ArrayList<OutboundVoiceMessage> expectedResult = new ArrayList<OutboundVoiceMessage>();
+        OutboundVoiceMessageStatus status = OutboundVoiceMessageStatus.PENDING;
+        SortKey sequenceNumber = SortKey.SequenceNumber;
+        when(allOutboundVoiceMessages.getMessages(externalID, status, sequenceNumber)).thenReturn(expectedResult);
+
+        List<OutboundVoiceMessage> actualResult = voiceOutboxService.getMessages(externalID, status, sequenceNumber);
+
+        assertEquals(expectedResult, actualResult);
+
+        verify(allOutboundVoiceMessages, times(1)).getMessages(externalID, status, sequenceNumber);
+
     }
 }

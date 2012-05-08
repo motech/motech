@@ -22,7 +22,6 @@ import static org.motechproject.sms.api.DeliveryStatus.*;
 import static org.motechproject.sms.api.constants.EventDataKeys.MESSAGE;
 import static org.motechproject.sms.smpp.constants.EventDataKeys.RECIPIENT;
 import static org.motechproject.util.DateUtil.newDateTime;
-import static org.motechproject.util.DateUtil.time;
 
 @Component
 public class OutboundMessageNotification implements IOutboundMessageNotification {
@@ -47,10 +46,10 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
             if (msg.getRetryCount() >= maxRetries) {
                 raiseFailureEvent(msg, sentTime);
             } else if (msg.getRetryCount() < maxRetries) {
-                allOutboundSMS.createOrReplace(new OutboundSMS(msg.getRecipient(), msg.getRefNo(), msg.getText(), sentTime.toLocalDate(), time(sentTime), KEEPTRYING));
+                allOutboundSMS.createOrReplace(new OutboundSMS(msg.getRecipient(), msg.getRefNo(), msg.getText(), sentTime, KEEPTRYING));
             }
         } else {
-            allOutboundSMS.createOrReplace(new OutboundSMS(msg.getRecipient(), msg.getRefNo(), msg.getText(), sentTime.toLocalDate(), time(sentTime), INPROGRESS));
+            allOutboundSMS.createOrReplace(new OutboundSMS(msg.getRecipient(), msg.getRefNo(), msg.getText(), sentTime, INPROGRESS));
         }
     }
 
@@ -59,7 +58,7 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
         parameters.put(RECIPIENT, msg.getRecipient());
         parameters.put(MESSAGE, msg.getText());
         outboundEventGateway.sendEventMessage(new MotechEvent(EventSubjects.SMS_FAILURE_NOTIFICATION, parameters));
-        allOutboundSMS.createOrReplace(new OutboundSMS(msg.getRecipient(), msg.getRefNo(), msg.getText(), sentTime.toLocalDate(), time(sentTime), ABORTED));
+        allOutboundSMS.createOrReplace(new OutboundSMS(msg.getRecipient(), msg.getRefNo(), msg.getText(), sentTime, ABORTED));
     }
 
     private boolean sendingFailed(OutboundMessage msg) {

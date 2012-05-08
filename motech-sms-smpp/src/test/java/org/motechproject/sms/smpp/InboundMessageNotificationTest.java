@@ -23,7 +23,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.sms.smpp.constants.EventDataKeys.*;
-import static org.motechproject.util.DateUtil.newDateTime;
 import static org.smslib.Message.MessageTypes.*;
 
 public class InboundMessageNotificationTest {
@@ -80,7 +79,7 @@ public class InboundMessageNotificationTest {
 
         inboundMessageNotification.process(gateway, STATUSREPORT, reportMessage);
 
-        verify(allOutboundSMS).updateDeliveryStatus(destAddr, refNo, newDateTime(reportMessage.getSent()), reportMessage.getStatus().name());
+        verify(allOutboundSMS).updateDeliveryStatus(destAddr, refNo, reportMessage.getStatus().name());
         ArgumentCaptor<MotechEvent> eventCaptor = ArgumentCaptor.forClass(MotechEvent.class);
         verify(eventRelay).sendEventMessage(eventCaptor.capture());
         MotechEvent event = eventCaptor.getValue();

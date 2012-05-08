@@ -1,9 +1,12 @@
 package org.motechproject.outbox.api.service;
 
 import org.motechproject.model.MotechEvent;
+import org.motechproject.outbox.api.contract.SortKey;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.domain.VoiceMessageType;
+
+import java.util.List;
 
 /**
  * \defgroup outbox Outbox
@@ -94,6 +97,17 @@ public interface VoiceOutboxService {
      */
     public int getNumberOfMessages(String externalId, OutboundVoiceMessageStatus messageStatus, String voiceMessageTypeName);
 
+
+    /**
+     * Returns messages in the outbox of the party with the given ExternalId and {@link OutboundVoiceMessageStatus} sorted by the given {@link SortKey}
+     *
+     * @param externalId - unique identifier of the party
+     * @param status     - {@link OutboundVoiceMessageStatus} of the messages to be counted
+     * @param sortKey    - sort key to be used to sort the filtered list of messages. See {@link SortKey}
+     * @return - List of messages found in outbox
+     */
+    public List<OutboundVoiceMessage> getMessages(String externalId, OutboundVoiceMessageStatus status, SortKey sortKey);
+
     /**
      * Sets the number of days for which a message saved by the patient will be kept in outbox as SAVED message
      *
@@ -126,7 +140,7 @@ public interface VoiceOutboxService {
      * Retrieves the next pending message marking the lastMessage as PLAYED
      *
      * @param lastMessageId - the MessageId of the last message that has been PLAYED
-     * @param externalId - unique identifier of the party
+     * @param externalId    - unique identifier of the party
      * @return - the next pending message
      */
     public OutboundVoiceMessage nextMessage(String lastMessageId, String externalId);

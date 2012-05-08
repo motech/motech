@@ -82,10 +82,6 @@ public class AlertWindow {
         DateTime alertToBeStartedOn = alertStartDateTime();
         List<DateTime> nonElapsedAlerts = filter(greaterThanOrEqualTo(alertToBeStartedOn), alertsWithInEndDate);
 
-        if (hasAllAlertsElapsed(alertsWithInEndDate, nonElapsedAlerts)) {
-            //todo [katta/v2] based on config, send one or none. Right now this sends one by default
-            nonElapsedAlerts.add(0, toPreferredTime(alertToBeStartedOn, preferredAlertTime));
-        }
         return nonElapsedAlerts;
     }
 
@@ -100,9 +96,5 @@ public class AlertWindow {
 
     private DateTime alertStartDateTime() {
         return now().isBefore(enrolledOn) ? enrolledOn : now();
-    }
-
-    private boolean hasAllAlertsElapsed(List<DateTime> alertsWithInEndDate, List<DateTime> nonElapsedAlerts) {
-        return nonElapsedAlerts.size() == 0 && alertsWithInEndDate.size() > 0;
     }
 }
