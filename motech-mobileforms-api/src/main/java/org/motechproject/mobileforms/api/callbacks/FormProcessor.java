@@ -13,32 +13,34 @@ import org.motechproject.mobileforms.api.utils.MapToBeanConvertor;
 import org.motechproject.mobileforms.api.vo.Study;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component
 public class FormProcessor extends DeserializationListenerAdapter {
     private final Logger log = LoggerFactory.getLogger(FormProcessor.class);
 
     private List<Study> studies;
 
-    @Autowired
     private FormDataParser parser;
 
-    @Autowired
-    private AllMobileForms allMobileForms;
-
-    @Autowired
     private MapToBeanConvertor mapToBeanConvertor;
 
-    @Value("#{mobileFormsProperties['forms.xml.form.name']}")
+    private AllMobileForms allMobileForms;
+
     private String marker;
+
+    public FormProcessor() {
+    }
+
+    public FormProcessor(FormDataParser parser, MapToBeanConvertor mapToBeanConvertor, AllMobileForms allMobileForms, String marker) {
+        this.parser = parser;
+        this.mapToBeanConvertor = mapToBeanConvertor;
+        this.allMobileForms = allMobileForms;
+        this.marker = marker;
+    }
 
     @Override
 	public void processingStudy(StudyData studyData) {

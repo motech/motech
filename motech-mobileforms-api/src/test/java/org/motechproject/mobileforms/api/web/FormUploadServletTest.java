@@ -62,11 +62,10 @@ public class FormUploadServletTest {
         response = new MockHttpServletResponse();
         formUploadServlet = spy(new FormUploadServlet());
         doReturn(mockServletContext).when(formUploadServlet).getServletContext();
-
+        doReturn(formProcessor).when(formUploadServlet).createFormProcessor();
         ReflectionTestUtils.setField(formUploadServlet, "context", applicationContext);
         ReflectionTestUtils.setField(formUploadServlet, "mobileFormsService", mobileFormsService);
         ReflectionTestUtils.setField(formUploadServlet, "usersService", usersService);
-        ReflectionTestUtils.setField(formUploadServlet, "formProcessor", formProcessor);
         ReflectionTestUtils.setField(formUploadServlet, "formPublisher", formPublisher);
         doReturn(epihandySerializer).when(formUploadServlet).serializer();
         doReturn(formOutput).when(formUploadServlet).getFormOutput();

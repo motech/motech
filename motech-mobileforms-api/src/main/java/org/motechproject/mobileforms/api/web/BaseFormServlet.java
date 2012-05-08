@@ -5,11 +5,12 @@ import org.motechproject.mobileforms.api.callbacks.FormProcessor;
 import org.motechproject.mobileforms.api.callbacks.FormPublisher;
 import org.motechproject.mobileforms.api.domain.FormBean;
 import org.motechproject.mobileforms.api.domain.FormOutput;
+import org.motechproject.mobileforms.api.parser.FormDataParser;
+import org.motechproject.mobileforms.api.repository.AllMobileForms;
 import org.motechproject.mobileforms.api.service.MobileFormsService;
 import org.motechproject.mobileforms.api.service.UsersService;
+import org.motechproject.mobileforms.api.utils.MapToBeanConvertor;
 import org.motechproject.mobileforms.api.validator.FormValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.Properties;
 
 public abstract class BaseFormServlet extends HttpServlet {
 
@@ -27,20 +29,22 @@ public abstract class BaseFormServlet extends HttpServlet {
 
     public static final String FAILED_TO_SERIALIZE_DATA = "failed to serialize data";
     public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
-    private final Logger log = LoggerFactory.getLogger(FormProcessor.class);
 
     protected UsersService usersService;
     protected ApplicationContext context;
-    protected FormProcessor formProcessor;
     protected FormPublisher formPublisher;
     protected MobileFormsService mobileFormsService;
+    protected AllMobileForms allMobileForms;
+    protected String marker;
+
 
     protected BaseFormServlet() {
         context =  new ClassPathXmlApplicationContext("applicationMobileFormsAPI.xml");
         mobileFormsService = context.getBean("mobileFormsServiceImpl", MobileFormsService.class);
         usersService = context.getBean("usersServiceImpl", UsersService.class);
-        formProcessor = context.getBean("formProcessor", FormProcessor.class);
         formPublisher = context.getBean("formPublisher", FormPublisher.class);
+        allMobileForms = context.getBean("allMobileForms", AllMobileForms.class);
+        marker = context.getBean("mobileFormsProperties", Properties.class).getProperty("forms.xml.form.name");
     }
 
     protected EpihandyXformSerializer serializer() {
@@ -67,5 +71,9 @@ public abstract class BaseFormServlet extends HttpServlet {
 
     protected FormOutput getFormOutput() {
         return new FormOutput();
+    }
+
+    protected FormProcessor createFormProcessor() {
+        return new FormProcessor(new FormDataParser(), new MapToBeanConvertor(), allMobileForms, marker);
     }
 }

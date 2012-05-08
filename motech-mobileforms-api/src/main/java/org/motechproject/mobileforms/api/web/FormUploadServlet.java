@@ -3,6 +3,7 @@ package org.motechproject.mobileforms.api.web;
 import com.jcraft.jzlib.JZlib;
 import com.jcraft.jzlib.ZOutputStream;
 import org.fcitmuk.epihandy.EpihandyXformSerializer;
+import org.motechproject.mobileforms.api.callbacks.FormProcessor;
 import org.motechproject.mobileforms.api.domain.FormBean;
 import org.motechproject.mobileforms.api.domain.FormError;
 import org.motechproject.mobileforms.api.domain.FormOutput;
@@ -67,11 +68,10 @@ public class FormUploadServlet extends BaseFormServlet {
 
     private List<Study> extractBeans(DataInputStream dataInput) throws Exception {
         EpihandyXformSerializer serializer = serializer();
+        FormProcessor formProcessor = createFormProcessor();
         serializer.addDeserializationListener(formProcessor);
         serializer.deserializeStudiesWithEvents(dataInput, mobileFormsService.getFormIdMap());
         return formProcessor.getStudies();
     }
-
-
 
 }
