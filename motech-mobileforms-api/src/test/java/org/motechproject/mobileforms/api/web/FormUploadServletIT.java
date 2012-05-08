@@ -49,9 +49,9 @@ public class FormUploadServletIT {
     @Test
     public void shouldProcessUploadedFormAndReturnValidationErrorsIfErrorsAreFound() throws Exception {
         FormUploadServlet formUploadServlet = new FormUploadServlet();
-        ReflectionTestUtils.setField(formUploadServlet, "formProcessor", formProcessor);
         ReflectionTestUtils.setField(formUploadServlet, "formPublisher", formPublisher);
         FormUploadServlet servlet = spy(formUploadServlet);
+        doReturn(formProcessor).when(servlet).createFormProcessor();
 
         List<FormBean> formBeans = new ArrayList<FormBean>();
         TestFormBean formBeanWithOutValidationErrors = new TestFormBean();
