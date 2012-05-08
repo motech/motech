@@ -8,7 +8,6 @@ import org.joda.time.DateTime;
 import org.motechproject.MotechException;
 import org.motechproject.mobileforms.api.domain.FormBean;
 import org.motechproject.model.Time;
-import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
@@ -16,7 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-@Component
 public class MapToBeanConvertor {
     public static final String DATE_PATTERN = "yyyy-MM-dd";
     public static final String TIME_PATTERN_12_HOURS = "hh:mm:ss a";

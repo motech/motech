@@ -7,8 +7,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.sms.api.constants.EventDataKeys;
 import org.motechproject.sms.api.constants.EventSubjects;
+import org.motechproject.sms.http.service.SmsHttpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -26,11 +28,9 @@ public class SmsSendByHttpIT {
     private SmsSendHandler smsSendHandler;
 
     @Autowired
-    private TemplateReader templateReader;
-    @Mock
-    private HttpClient mockHttpClient;
+    private SmsHttpService smsHttpService;
     @Autowired
-    private HttpClient httpClient;
+    private MotechSchedulerService motechSchedulerService;
 
     @Before
     public void setup() {
@@ -40,7 +40,7 @@ public class SmsSendByHttpIT {
     @Test
     @Ignore("use template for kookoo in sms-http-template.json")
     public void shouldSendSmsThroughKookoo() throws IOException, SmsDeliveryFailureException {
-        smsSendHandler = new SmsSendHandler(templateReader, httpClient);
+        smsSendHandler = new SmsSendHandler(smsHttpService, motechSchedulerService);
 
         MotechEvent motechEvent = new MotechEvent(EventSubjects.SEND_SMS, new HashMap<String, Object>() {{
             put(EventDataKeys.RECIPIENTS, Arrays.asList("9686202448"));

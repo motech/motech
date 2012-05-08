@@ -19,7 +19,12 @@
 			<artifactId>motech-platform-server-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-scheduler</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>motech-sms-api</artifactId>
 			<version>${project.version}</version>

@@ -17,15 +17,15 @@ public class JSMPPPropertiesMapper {
 
     public Address getSourceAddress() {
         if (null != smppProperties.getProperty(SOURCE_TON))
-            return new Address(Address.TypeOfNumber.valueOf(smppProperties.getProperty(SOURCE_TON)),
-                    Address.NumberingPlanIndicator.valueOf(smppProperties.getProperty(SOURCE_NPI)));
+            return new Address(Address.TypeOfNumber.valueOf(Byte.valueOf(smppProperties.getProperty(SOURCE_TON))),
+                    Address.NumberingPlanIndicator.valueOf(Byte.valueOf(smppProperties.getProperty(SOURCE_NPI))));
         return new Address();
     }
 
     public Address getDestinationAddress() {
         if (null != smppProperties.getProperty(DESTINATION_TON))
-            return new Address(Address.TypeOfNumber.valueOf(smppProperties.getProperty(DESTINATION_TON)),
-                    Address.NumberingPlanIndicator.valueOf(smppProperties.getProperty(DESTINATION_NPI)));
+            return new Address(Address.TypeOfNumber.valueOf(Byte.valueOf(smppProperties.getProperty(DESTINATION_TON))),
+                    Address.NumberingPlanIndicator.valueOf(Byte.valueOf(smppProperties.getProperty(DESTINATION_NPI))));
         return new Address();
     }
 

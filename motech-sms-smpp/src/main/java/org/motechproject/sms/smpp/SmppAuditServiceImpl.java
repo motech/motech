@@ -22,22 +22,22 @@ public class SmppAuditServiceImpl implements SmsAuditService {
     }
 
     @Override
-    public List<SMSRecord> outboundMessagesFor(String phoneNumber) {
-        return new SMSRecordFactory().mapOutbound(allOutboundSMS.findBy(phoneNumber));
-    }
-
-    @Override
     public List<SMSRecord> allOutboundMessagesBetween(DateTime from, DateTime to) {
         return new SMSRecordFactory().mapOutbound(allOutboundSMS.messagesSentBetween(from, to));
     }
 
     @Override
-    public List<SMSRecord> inboundMessagesFor(String phoneNumber) {
-       return new SMSRecordFactory().mapInbound(allInboundSMS.findBy(phoneNumber));
+    public List<SMSRecord> allOutboundMessagesBetween(String phoneNumber, DateTime from, DateTime to) {
+        return new SMSRecordFactory().mapOutbound(allOutboundSMS.messagesSentBetween(phoneNumber, from, to));
     }
 
     @Override
     public List<SMSRecord> allInboundMessagesBetween(DateTime from, DateTime to) {
         return new SMSRecordFactory().mapInbound(allInboundSMS.messagesReceivedBetween(from, to));
+    }
+
+    @Override
+    public List<SMSRecord> allInboundMessagesBetween(String phoneNumber, DateTime from, DateTime to) {
+        return new SMSRecordFactory().mapInbound(allInboundSMS.messagesReceivedBetween(phoneNumber, from, to));
     }
 }

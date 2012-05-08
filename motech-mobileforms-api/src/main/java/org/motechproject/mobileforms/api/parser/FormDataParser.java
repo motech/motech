@@ -5,14 +5,12 @@ import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component
 public class FormDataParser {
     private final Logger log = LoggerFactory.getLogger(FormDataParser.class);
 

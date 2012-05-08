@@ -3,11 +3,8 @@ package org.motechproject.sms;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.motechproject.model.MotechBaseDataObject;
-import org.motechproject.model.Time;
 
-import static org.motechproject.util.DateUtil.newDateTime;
 import static org.motechproject.util.DateUtil.setTimeZone;
 
 public abstract class SMS extends MotechBaseDataObject {
@@ -17,17 +14,14 @@ public abstract class SMS extends MotechBaseDataObject {
     private String messageContent;
     @JsonProperty
     private DateTime messageTime;
-    @JsonProperty
-    private String refNo;
 
     public SMS() {
     }
 
-    public SMS(String refNo, String recipient, String messageContent, LocalDate sentDate, Time sentTime) {
-        this.refNo = refNo;
+    public SMS(String recipient, String messageContent, DateTime sentDate) {
         this.phoneNumber = recipient;
         this.messageContent = messageContent;
-        this.messageTime = newDateTime(sentDate, sentTime);
+        this.messageTime = sentDate;
     }
 
     public String getPhoneNumber() {
@@ -40,9 +34,5 @@ public abstract class SMS extends MotechBaseDataObject {
 
     public String getMessageContent() {
         return messageContent;
-    }
-
-    public String getRefNo() {
-        return refNo;
     }
 }
