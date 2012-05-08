@@ -85,12 +85,20 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
-                        <Export-Package>org.motechproject.outbox.api;org.motechproject.outbox.api.model;org.motechproject.outbox.api.context</Export-Package>
-						<Bundle-Activator>
+                        <Export-Package>
+                            org.motechproject.outbox.api,
+                            org.motechproject.outbox.api.model,
+                            org.motechproject.outbox.api.context
+                        </Export-Package>
+                        <Bundle-Activator>
                             org.motechproject.server.outbox.Activator
                         </Bundle-Activator>
-						<Private-Package>
-							org.motechproject.server.outbox.*;org.motechproject.outbox.api.service.*;org.motechproject.outbox.api.repository;org.motechproject.outbox.api.domain
+                        <Private-Package>
+                            org.motechproject.server.outbox.*,
+                            org.motechproject.outbox.api.service.*,
+                            org.motechproject.outbox.api.repository,
+                            org.motechproject.outbox.api.domain,
+                            org.motechproject.outbox.api.contract
                         </Private-Package>
 						<Embed-Dependency>!*</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>
