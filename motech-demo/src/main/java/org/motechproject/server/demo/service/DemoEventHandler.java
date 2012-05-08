@@ -74,6 +74,10 @@ public class DemoEventHandler
 		}
     }
 
+    public IVRService getIvrService() {
+        return ivrService;
+    }
+
     public void setIvrService(IVRService ivrService) {
         this.ivrService = ivrService;
     }

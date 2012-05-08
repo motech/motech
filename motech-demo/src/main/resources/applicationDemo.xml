@@ -45,11 +45,12 @@
 
     <bean id="demoService" class="org.motechproject.server.demo.service.impl.DemoServiceImpl"/>
 
-    <bean id="demoEventHandler" class="org.motechproject.server.demo.service.DemoEventHandler">
-        <property name="ivrService" ref="ivrServiceOsgi"/>
+    <bean id="demoEventHandler" class="org.motechproject.server.demo.service.DemoEventHandler"/>
+
+    <bean id="callMeController" class="org.motechproject.server.demo.web.CallMeController">
+        <property name="ivrServices" ref="ivrServiceList"/>
     </bean>
 
-    <bean id="callMeController" class="org.motechproject.server.demo.web.CallMeController"/>
+    <osgi:list id="ivrServiceList" interface="org.motechproject.ivr.service.IVRService" cardinality="0..N"/>
 
-    <osgi:reference id="ivrServiceOsgi" interface="org.motechproject.ivr.service.IVRService"/>
 </beans>
