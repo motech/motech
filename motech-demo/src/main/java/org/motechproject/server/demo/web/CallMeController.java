@@ -68,27 +68,31 @@ public class CallMeController {
 
         PrintWriter writer = response.getWriter();
 
-        writer.write("<form method=\"post\">\n");
-        writer.write("<select name=\"service\">\n");
+        if (ivrServices.isEmpty()) {
+            writer.write("Any IVR Service not found");
+        } else {
+            writer.write("<form method=\"post\">\n");
+            writer.write("<select name=\"service\">\n");
 
-        Iterator<IVRService> it = ivrServices.iterator();
-        int index = 0;
-        String format = "<option value=\"%d\" %s>%s</option>\n";
+            Iterator<IVRService> it = ivrServices.iterator();
+            int index = 0;
+            String format = "<option value=\"%d\" %s>%s</option>\n";
 
-        while(it.hasNext()) {
-            IVRService service = it.next();
-            int dot = service.toString().lastIndexOf('.');
-            int at = service.toString().lastIndexOf('@');
-            String name = service.toString().substring(dot + 1, at);
-            boolean selected = demoEventHandler.getIvrService() == null ? false : demoEventHandler.getIvrService() == service;
+            while (it.hasNext()) {
+                IVRService service = it.next();
+                int dot = service.toString().lastIndexOf('.');
+                int at = service.toString().lastIndexOf('@');
+                String name = service.toString().substring(dot + 1, at);
+                boolean selected = demoEventHandler.getIvrService() == null ? false : demoEventHandler.getIvrService() == service;
 
-            writer.write(String.format(format, index, selected ? "selected=\"selected\"" : "", name));
-            ++index;
+                writer.write(String.format(format, index, selected ? "selected=\"selected\"" : "", name));
+                ++index;
+            }
+
+            writer.write("</select>\n");
+            writer.write("<input type=\"submit\" value=\"Send\" />\n");
+            writer.write("</form>\n");
         }
-
-        writer.write("</select>\n");
-        writer.write("<input type=\"submit\" value=\"Send\" />\n");
-        writer.write("</form>\n");
     }
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
