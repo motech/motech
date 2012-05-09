@@ -7,7 +7,7 @@ import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.domain.exception.InvalidEnrollmentException;
 import org.motechproject.scheduletracking.api.domain.exception.ScheduleTrackingException;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
-import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
+import org.motechproject.scheduletracking.api.repository.AllSchedules;
 import org.motechproject.scheduletracking.api.service.*;
 import org.motechproject.scheduletracking.api.service.contract.UpdateCriteria;
 import org.motechproject.scheduletracking.api.service.contract.UpdateCriterion;
@@ -23,15 +23,15 @@ import static org.motechproject.util.DateUtil.newDateTime;
 
 @Service
 public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
-    private AllTrackedSchedules allTrackedSchedules;
+    private AllSchedules allSchedules;
     private AllEnrollments allEnrollments;
     private EnrollmentService enrollmentService;
     private EnrollmentsQueryService enrollmentsQueryService;
     private EnrollmentRecordMapper enrollmentRecordMapper;
 
     @Autowired
-    public ScheduleTrackingServiceImpl(AllTrackedSchedules allTrackedSchedules, AllEnrollments allEnrollments, EnrollmentService enrollmentService, EnrollmentsQueryService enrollmentsQueryService, EnrollmentRecordMapper enrollmentRecordMapper) {
-        this.allTrackedSchedules = allTrackedSchedules;
+    public ScheduleTrackingServiceImpl(AllSchedules allSchedules, AllEnrollments allEnrollments, EnrollmentService enrollmentService, EnrollmentsQueryService enrollmentsQueryService, EnrollmentRecordMapper enrollmentRecordMapper) {
+        this.allSchedules = allSchedules;
         this.allEnrollments = allEnrollments;
         this.enrollmentService = enrollmentService;
         this.enrollmentsQueryService = enrollmentsQueryService;
@@ -78,7 +78,7 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
 
     @Override
     public MilestoneAlerts getAlertTimings(EnrollmentRequest enrollmentRequest) {
-        Schedule schedule = allTrackedSchedules.getByName(enrollmentRequest.getScheduleName());
+        Schedule schedule = allSchedules.getByName(enrollmentRequest.getScheduleName());
         if (schedule == null)
             throw new ScheduleTrackingException("No schedule with name: %s", enrollmentRequest.getScheduleName());
 
@@ -93,7 +93,7 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
 
     @Override
     public String enroll(EnrollmentRequest enrollmentRequest) {
-        Schedule schedule = allTrackedSchedules.getByName(enrollmentRequest.getScheduleName());
+        Schedule schedule = allSchedules.getByName(enrollmentRequest.getScheduleName());
         if (schedule == null)
             throw new ScheduleTrackingException("No schedule with name: %s", enrollmentRequest.getScheduleName());
 
