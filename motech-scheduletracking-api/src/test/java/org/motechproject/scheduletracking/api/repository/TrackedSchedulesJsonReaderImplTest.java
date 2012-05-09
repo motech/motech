@@ -14,7 +14,7 @@ public class TrackedSchedulesJsonReaderImplTest {
     public void shouldReadTheScheduleJsonFileCorrectly() {
         TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules");
         List<ScheduleRecord> records = jsonReader.records();
-        assertEquals(10, records.size());
+        assertEquals(9, records.size());
 
         ScheduleRecord iptScheduleRecord = findRecord("IPTI Schedule", records);
         ScheduleRecord eddScheduleRecord = findRecord("Delivery", records);
