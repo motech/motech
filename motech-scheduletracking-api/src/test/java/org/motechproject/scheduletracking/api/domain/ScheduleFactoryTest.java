@@ -12,6 +12,7 @@ import java.util.List;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.joda.time.Period.minutes;
+import static org.joda.time.Period.seconds;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.motechproject.scheduletracking.api.utility.PeriodUtil.*;
@@ -221,6 +222,22 @@ public class ScheduleFactoryTest {
 
         assertEquals(weeks(1).plus(hours(4)).plus(minutes(3)), firstMilestone.getMilestoneWindow(WindowName.late).getAlerts().get(0).getOffset());
         assertEquals(hours(1).plus(minutes(2)), firstMilestone.getMilestoneWindow(WindowName.late).getAlerts().get(0).getInterval());
+    }
+
+    @Test
+    public void shouldSupportSecondsInAlertAndWindowTimes() {
+        Schedule schedule = loadSchedule("Schedule With Seconds", "/schedules");
+
+        Milestone firstMilestone = schedule.getMilestones().get(0);
+
+        assertEquals(seconds(1), firstMilestone.getWindowEnd(WindowName.earliest));
+        assertEquals(minutes(2).plus(seconds(3)), firstMilestone.getWindowEnd(WindowName.due));
+
+        assertEquals(seconds(1), firstMilestone.getMilestoneWindow(WindowName.due).getAlerts().get(0).getOffset());
+        assertEquals(seconds(3), firstMilestone.getMilestoneWindow(WindowName.due).getAlerts().get(0).getInterval());
+
+        assertEquals(minutes(1).plus(seconds(3)), firstMilestone.getMilestoneWindow(WindowName.late).getAlerts().get(0).getOffset());
+        assertEquals(minutes(1).plus(seconds(5)), firstMilestone.getMilestoneWindow(WindowName.late).getAlerts().get(0).getInterval());
     }
 
     private Schedule loadSchedule(String scheduleName, String directoryWithSchedules) {

@@ -27,6 +27,7 @@ public class ScheduleFactory {
         parsers.add(new PeriodFormatterBuilder().appendDays().appendSuffix(" day", " days").toParser());
         parsers.add(new PeriodFormatterBuilder().appendHours().appendSuffix(" hour", " hours").toParser());
         parsers.add(new PeriodFormatterBuilder().appendMinutes().appendSuffix(" minute", " minutes").toParser());
+        parsers.add(new PeriodFormatterBuilder().appendSeconds().appendSuffix(" second", " seconds").toParser());
     }
 
     public Schedule build(ScheduleRecord scheduleRecord) {

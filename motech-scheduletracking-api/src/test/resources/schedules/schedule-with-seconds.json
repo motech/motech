@@ -1,0 +1,31 @@
+{
+    "name":"Schedule With Seconds",
+    "milestones":[
+        {
+            "name":"Milestone 1",
+            "scheduleWindows":{
+                "earliest":["1 second"],
+                "due":["2 minutes", "3 second"],
+                "late":["3 minutes", "10 seconds"],
+                "max":["4 minutes", "59 seconds"]
+            },
+            "data":{
+                "Foo":"Bar"
+            },
+            "alerts":[
+                {
+                    "window":"due",
+                    "offset":["1 Second"],
+                    "interval":["3 Second"],
+                    "count":"7"
+                },
+                {
+                    "window":"late",
+                    "offset":["1 minutes", "3 seconds"],
+                    "interval":["1 minute", "5 seconds"],
+                    "count":"51"
+                }
+            ]
+        }
+    ]
+}
