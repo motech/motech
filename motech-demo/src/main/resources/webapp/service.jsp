@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<%--
 
     MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
 
@@ -31,32 +30,48 @@
     IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
     OF SUCH DAMAGE.
 
--->
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:osgi="http://www.springframework.org/schema/osgi"
-       xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
-            http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
-            http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+--%>
+<%@ page language="java" pageEncoding="UTF-8"%>
+<html>
+<body>
+<%
+    if (services.isEmpty()) {
+%>
+    Any IVR Service not found
+<%
+    } else {
+%>
+    <form method="post">
+        <select name="service">
+<%
+    Iterator<org.motechproject.ivr.service.IVRService> it = services.iterator();
+    int index = 0;
 
-    <context:annotation-config/>
-    <context:component-scan base-package="org.motechproject.server"/>
+    while (it.hasNext()) {
+        org.motechproject.ivr.service.IVRService service = it.next();
 
-    <bean id="demoService" class="org.motechproject.server.demo.service.impl.DemoServiceImpl"/>
+        int dot = service.toString().lastIndexOf('.');
+        int at = service.toString().lastIndexOf('@');
+        String name = service.toString().substring(dot + 1, at);
 
-    <bean id="demoEventHandler" class="org.motechproject.server.demo.service.DemoEventHandler"/>
+        boolean selected = current == null ? false : current == service;
 
-    <bean id="callMeController" class="org.motechproject.server.demo.web.CallMeController">
-        <property name="ivrServices" ref="ivrServiceList"/>
-    </bean>
+        if (selected) {
+%>
+            <option value="<%= index %>" selected="selected"><%= name %></option>
+<%
+        } else {
+%>
+            <option value="<%= index %>"><%= name %></option>
+<%
+        }
 
-    <osgi:list id="ivrServiceList" interface="org.motechproject.ivr.service.IVRService" cardinality="0..N"/>
+        ++index;
+    }
+%>
 
-    <mvc:annotation-driven/>
-    <!--<mvc:resources location="/demo/**" mapping="/demo"/>-->
-    <!--<mvc:default-servlet-handler default-servlet-name="servlet_2"/>-->
-
-</beans>
+        </select>
+        <input type="submit" value="Send" />
+    </form>
+</body>
+</html>
