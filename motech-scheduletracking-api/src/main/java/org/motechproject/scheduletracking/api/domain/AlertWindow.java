@@ -1,9 +1,8 @@
-package org.motechproject.scheduletracking.api.service.impl;
+package org.motechproject.scheduletracking.api.domain;
 
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.motechproject.model.Time;
-import org.motechproject.scheduletracking.api.domain.Alert;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,7 +10,6 @@ import java.util.List;
 
 import static ch.lambdaj.Lambda.filter;
 import static org.motechproject.util.DateUtil.*;
-
 
 public class AlertWindow {
     private DateTime enrolledOn;
@@ -78,11 +76,11 @@ public class AlertWindow {
 
     private List<DateTime> alertsFallingInAlertWindow(List<DateTime> alertTimings) {
         List<DateTime> alertsWithInEndDate = filterAlertsBeyondEndDate(alertTimings);
+        return filterElapsedAlerts(alertsWithInEndDate);
+    }
 
-        DateTime alertToBeStartedOn = alertStartDateTime();
-        List<DateTime> nonElapsedAlerts = filter(greaterThanOrEqualTo(alertToBeStartedOn), alertsWithInEndDate);
-
-        return nonElapsedAlerts;
+    private List<DateTime> filterElapsedAlerts(List<DateTime> alertsWithInEndDate) {
+        return filter(greaterThanOrEqualTo(alertStartDateTime()), alertsWithInEndDate);
     }
 
     private List<DateTime> filterAlertsBeyondEndDate(List<DateTime> alertTimings) {
