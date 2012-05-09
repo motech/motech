@@ -16,7 +16,7 @@ import java.util.List;
 @Repository
 public class AllEnrollments extends MotechBaseRepository<Enrollment> {
     @Autowired
-    private AllTrackedSchedules allTrackedSchedules;
+    private AllSchedules allSchedules;
 
     @Autowired
     public AllEnrollments(@Qualifier("scheduleTrackingDbConnector") CouchDbConnector db) {
@@ -85,7 +85,7 @@ public class AllEnrollments extends MotechBaseRepository<Enrollment> {
     }
 
     private Enrollment populateSchedule(Enrollment enrollment) {
-        enrollment.setSchedule(allTrackedSchedules.getByName(enrollment.getScheduleName()));
+        enrollment.setSchedule(allSchedules.getByName(enrollment.getScheduleName()));
         return enrollment;
     }
 }

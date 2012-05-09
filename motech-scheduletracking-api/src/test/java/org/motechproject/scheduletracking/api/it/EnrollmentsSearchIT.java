@@ -9,7 +9,7 @@ import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.WindowName;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
-import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
+import org.motechproject.scheduletracking.api.repository.AllSchedules;
 import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
 import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
@@ -39,7 +39,7 @@ public class EnrollmentsSearchIT {
     @Autowired
     private AllEnrollments allEnrollments;
     @Autowired
-    private AllTrackedSchedules allTrackedSchedules;
+    private AllSchedules allSchedules;
 
     @After
     public void tearDown() {
@@ -145,7 +145,7 @@ public class EnrollmentsSearchIT {
     }
 
     private Enrollment createEnrollment(String externalId, String scheduleName, String currentMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime, EnrollmentStatus enrollmentStatus, Map<String,String> metadata) {
-        Enrollment enrollment = new Enrollment(externalId, allTrackedSchedules.getByName(scheduleName), currentMilestoneName, referenceDateTime, enrollmentDateTime, preferredAlertTime, enrollmentStatus, metadata);
+        Enrollment enrollment = new Enrollment(externalId, allSchedules.getByName(scheduleName), currentMilestoneName, referenceDateTime, enrollmentDateTime, preferredAlertTime, enrollmentStatus, metadata);
         allEnrollments.add(enrollment);
         return enrollment;
     }

@@ -12,7 +12,7 @@ import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.domain.exception.InvalidEnrollmentException;
 import org.motechproject.scheduletracking.api.domain.exception.ScheduleTrackingException;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
-import org.motechproject.scheduletracking.api.repository.AllTrackedSchedules;
+import org.motechproject.scheduletracking.api.repository.AllSchedules;
 import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
 import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
 import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
@@ -35,7 +35,7 @@ public class ScheduleTrackingServiceImplTest {
     private ScheduleTrackingService scheduleTrackingService;
 
     @Mock
-    private AllTrackedSchedules allTrackedSchedules;
+    private AllSchedules allSchedules;
     @Mock
     private MotechSchedulerService schedulerService;
     @Mock
@@ -52,7 +52,7 @@ public class ScheduleTrackingServiceImplTest {
     @Before
     public void setUp() {
         initMocks(this);
-        scheduleTrackingService = new ScheduleTrackingServiceImpl(allTrackedSchedules, allEnrollments, enrollmentService, enrollmentsQueryService, enrollmentRecordMapper);
+        scheduleTrackingService = new ScheduleTrackingServiceImpl(allSchedules, allEnrollments, enrollmentService, enrollmentsQueryService, enrollmentRecordMapper);
     }
 
     @Test
@@ -62,7 +62,7 @@ public class ScheduleTrackingServiceImplTest {
         Milestone secondMilestone = new Milestone("second_milestone", weeks(1), weeks(1), weeks(1), weeks(1));
         Milestone firstMilestone = new Milestone("first_milestone", weeks(1), weeks(1), weeks(1), weeks(1));
         schedule.addMilestones(firstMilestone, secondMilestone);
-        when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
+        when(allSchedules.getByName(scheduleName)).thenReturn(schedule);
 
         String externalId = "my_entity_1";
         DateTime referenceDateTime = now().minusDays(10);
@@ -79,7 +79,7 @@ public class ScheduleTrackingServiceImplTest {
         String scheduleName = "my_schedule";
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(firstMilestone, secondMilestone);
-        when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
+        when(allSchedules.getByName(scheduleName)).thenReturn(schedule);
 
         String externalId = "entity_1";
         Time preferredAlertTime = new Time(8, 10);
@@ -93,7 +93,7 @@ public class ScheduleTrackingServiceImplTest {
     public void shouldEnrollEntityIntoAScheduleWithMetadata() {
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(new Milestone("milestone1", weeks(1), weeks(1), weeks(1), weeks(1)));
-        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
+        when(allSchedules.getByName("my_schedule")).thenReturn(schedule);
 
         Map<String, String> metadata = new HashMap<String, String>();
         metadata.put("foo", "bar");
@@ -114,7 +114,7 @@ public class ScheduleTrackingServiceImplTest {
         String scheduleName = "my_schedule";
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
-        when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
+        when(allSchedules.getByName(scheduleName)).thenReturn(schedule);
 
         String externalId = "entity_1";
         DateTime referenceDateTime = newDateTime(2012, 11, 2, 0, 0, 0);
@@ -130,7 +130,7 @@ public class ScheduleTrackingServiceImplTest {
         milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0, false));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
-        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
+        when(allSchedules.getByName("my_schedule")).thenReturn(schedule);
 
         when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(null);
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2), null, null, null, null, null));
@@ -175,7 +175,7 @@ public class ScheduleTrackingServiceImplTest {
         milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0, false));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
-        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
+        when(allSchedules.getByName("my_schedule")).thenReturn(schedule);
 
         when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(null);
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2), null, null, null, null, null));
@@ -195,7 +195,7 @@ public class ScheduleTrackingServiceImplTest {
         milestone.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0, false));
         Schedule schedule = new Schedule("my_schedule");
         schedule.addMilestones(milestone);
-        when(allTrackedSchedules.getByName("my_schedule")).thenReturn(schedule);
+        when(allSchedules.getByName("my_schedule")).thenReturn(schedule);
 
         when(allEnrollments.getActiveEnrollment("entity_1", "my_schedule")).thenReturn(null);
         scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "my_schedule", new Time(8, 10), new LocalDate(2012, 11, 2), null, null, null, null, null));
@@ -224,7 +224,7 @@ public class ScheduleTrackingServiceImplTest {
         String scheduleName = "my_schedule";
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
-        when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
+        when(allSchedules.getByName(scheduleName)).thenReturn(schedule);
 
         String externalId = "entity_1";
         Enrollment enrollment = new Enrollment("entity_1", schedule, "milestone", weeksAgo(4), weeksAgo(4), new Time(8, 10), EnrollmentStatus.ACTIVE, null);
@@ -241,14 +241,14 @@ public class ScheduleTrackingServiceImplTest {
         String schedule1Name = "my_schedule1";
         Schedule schedule1 = new Schedule(schedule1Name);
         schedule1.addMilestones(milestone1);
-        when(allTrackedSchedules.getByName(schedule1Name)).thenReturn(schedule1);
+        when(allSchedules.getByName(schedule1Name)).thenReturn(schedule1);
 
         Milestone milestone2 = new Milestone("milestone2", weeks(1), weeks(1), weeks(1), weeks(1));
         milestone2.addAlert(WindowName.earliest, new Alert(days(0), days(1), 3, 0, false));
         String schedule2Name = "my_schedule2";
         Schedule schedule2 = new Schedule(schedule2Name);
         schedule2.addMilestones(milestone2);
-        when(allTrackedSchedules.getByName(schedule2Name)).thenReturn(schedule2);
+        when(allSchedules.getByName(schedule2Name)).thenReturn(schedule2);
 
         String externalId = "entity_1";
         Enrollment enrollment1 = new Enrollment(externalId, schedule1, "milestone1", weeksAgo(4), weeksAgo(4), new Time(8, 10), EnrollmentStatus.ACTIVE, null);
@@ -269,7 +269,7 @@ public class ScheduleTrackingServiceImplTest {
         String scheduleName = "scheduleName";
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
-        when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
+        when(allSchedules.getByName(scheduleName)).thenReturn(schedule);
 
         when(allEnrollments.getActiveEnrollment("entity_1", scheduleName)).thenReturn(null);
         scheduleTrackingService.unenroll("entity_1", Arrays.asList(scheduleName));
@@ -374,7 +374,7 @@ public class ScheduleTrackingServiceImplTest {
         Milestone secondMilestone = new Milestone("second_milestone", weeks(1), weeks(1), weeks(1), weeks(1));
         Milestone firstMilestone = new Milestone("first_milestone", weeks(1), weeks(1), weeks(1), weeks(1));
         schedule.addMilestones(firstMilestone, secondMilestone);
-        when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
+        when(allSchedules.getByName(scheduleName)).thenReturn(schedule);
 
         String externalId = "my_entity_1";
         LocalDate referenceDate = DateUtil.today();
@@ -395,7 +395,7 @@ public class ScheduleTrackingServiceImplTest {
         Milestone secondMilestone = new Milestone("second_milestone", weeks(1), weeks(1), weeks(1), weeks(1));
         Milestone firstMilestone = new Milestone("first_milestone", weeks(1), weeks(1), weeks(1), weeks(1));
         schedule.addMilestones(firstMilestone, secondMilestone);
-        when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
+        when(allSchedules.getByName(scheduleName)).thenReturn(schedule);
 
         String externalId = "my_entity_1";
         LocalDate referenceDate = DateUtil.today();
@@ -416,7 +416,7 @@ public class ScheduleTrackingServiceImplTest {
         Milestone secondMilestone = new Milestone("second_milestone", weeks(1), weeks(1), weeks(1), weeks(1));
         Milestone firstMilestone = new Milestone("first_milestone", weeks(1), weeks(1), weeks(1), weeks(1));
         schedule.addMilestones(firstMilestone, secondMilestone);
-        when(allTrackedSchedules.getByName(scheduleName)).thenReturn(schedule);
+        when(allSchedules.getByName(scheduleName)).thenReturn(schedule);
 
         String externalId = "my_entity_1";
         LocalDate referenceDate = DateUtil.today();
@@ -433,7 +433,7 @@ public class ScheduleTrackingServiceImplTest {
     @Test(expected = ScheduleTrackingException.class)
     public void shouldThrowAnExceptionIfScheduleIsInvalidWhileAskingForAlertTimings() {
         String scheduleName = "my_schedule";
-        when(allTrackedSchedules.getByName(scheduleName)).thenReturn(null);
+        when(allSchedules.getByName(scheduleName)).thenReturn(null);
 
         scheduleTrackingService.getAlertTimings(new EnrollmentRequest(null, scheduleName, null, null, null, null, null, null, null));
     }
