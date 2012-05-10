@@ -55,8 +55,11 @@
 
     <osgi:list id="ivrServiceList" interface="org.motechproject.ivr.service.IVRService" cardinality="0..N"/>
 
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/demo/webapp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
     <mvc:annotation-driven/>
-    <!--<mvc:resources location="/demo/**" mapping="/demo"/>-->
-    <!--<mvc:default-servlet-handler default-servlet-name="servlet_2"/>-->
 
 </beans>
