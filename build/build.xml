@@ -18,7 +18,6 @@
 		<antcall target="copy.javadoc" />
 
         <git argline="add ."/>
-        <!-- todo stamp the git hash of the javacode on which the doc is generated [katta/deva] -->
         <git argline="commit -m 'publishing java doc for release ${RELEASE_VERSION}'"/>
         <git argline="push origin master"/>
     </target>

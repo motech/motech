@@ -2,8 +2,6 @@ package org.motechproject.outbox.api.domain;
 
 
 /**
- * \ingroup outbox
- *
  * Holds the possible statuses of the voice outbox message {@link OutboundVoiceMessage}
  */
 public enum OutboundVoiceMessageStatus {
