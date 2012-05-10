@@ -3,6 +3,8 @@
  */
 package org.motechproject.outbox.api.domain;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechBaseDataObject;
 
@@ -164,58 +166,32 @@ public class OutboundVoiceMessage extends MotechBaseDataObject {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result
-                + ((creationTime == null) ? 0 : creationTime.hashCode());
-        result = prime * result
-                + ((expirationDate == null) ? 0 : expirationDate.hashCode());
-        result = prime * result
-                + ((parameters == null) ? 0 : parameters.hashCode());
-        result = prime * result + ((externalId == null) ? 0 : externalId.hashCode());
-        result = prime * result + ((status == null) ? 0 : status.hashCode());
-        result = prime
-                * result
-                + ((voiceMessageType == null) ? 0 : voiceMessageType.hashCode());
-        return result;
+        return new HashCodeBuilder()
+                .append(this.externalId)
+                .append(this.sequenceNumber)
+                .append(this.creationTime)
+                .append(this.expirationDate)
+                .append(this.status)
+                .append(this.parameters)
+                .append(this.voiceMessageType)
+                .hashCode();
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        OutboundVoiceMessage other = (OutboundVoiceMessage) obj;
-        if (creationTime == null) {
-            if (other.creationTime != null)
-                return false;
-        } else if (!creationTime.equals(other.creationTime))
-            return false;
-        if (expirationDate == null) {
-            if (other.expirationDate != null)
-                return false;
-        } else if (!expirationDate.equals(other.expirationDate))
-            return false;
-        if (parameters == null) {
-            if (other.parameters != null)
-                return false;
-        } else if (!parameters.equals(other.parameters))
-            return false;
-        if (externalId == null) {
-            if (other.externalId != null)
-                return false;
-        } else if (!externalId.equals(other.externalId))
-            return false;
-        if (status != other.status)
-            return false;
-        if (voiceMessageType == null) {
-            if (other.voiceMessageType != null)
-                return false;
-        } else if (!voiceMessageType.equals(other.voiceMessageType))
-            return false;
-        return true;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof OutboundVoiceMessage)) return false;
+
+        OutboundVoiceMessage that = (OutboundVoiceMessage) o;
+
+        return new EqualsBuilder()
+                .append(this.externalId, that.externalId)
+                .append(this.sequenceNumber, that.sequenceNumber)
+                .append(this.creationTime, that.creationTime)
+                .append(this.expirationDate, that.expirationDate)
+                .append(this.status, that.status)
+                .append(this.parameters, that.parameters)
+                .append(this.voiceMessageType, that.voiceMessageType)
+                .isEquals();
     }
 }
