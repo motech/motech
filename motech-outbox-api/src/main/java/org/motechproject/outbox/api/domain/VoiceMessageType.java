@@ -1,5 +1,8 @@
 package org.motechproject.outbox.api.domain;
 
+/**
+ * Identifies the type of the message.
+ */
 public class VoiceMessageType {
     private String voiceMessageTypeName;
     private String templateName;

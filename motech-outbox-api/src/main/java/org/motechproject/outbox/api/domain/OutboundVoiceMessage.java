@@ -1,3 +1,6 @@
+/**
+ * \ingroup Outbox
+ */
 package org.motechproject.outbox.api.domain;
 
 import org.ektorp.support.TypeDiscriminator;
@@ -7,8 +10,6 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * \ingroup Outbox
- *
  * Holds the details of the outbound message which has to be placed in the partys' outbox.
  */
 public class OutboundVoiceMessage extends MotechBaseDataObject {
