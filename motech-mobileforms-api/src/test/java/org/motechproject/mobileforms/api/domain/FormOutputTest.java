@@ -21,7 +21,7 @@ public class FormOutputTest {
     }
 
     @Test
-    public void shouldWriteSuccessCumErrorCounts() throws IOException {
+    public void shouldWriteTotalFormsUploadedWithErrorCounts() throws IOException {
 
         FormBean formBean1 = new FormBean("xml1");
         formBean1.setStudyName("study1");
@@ -40,7 +40,7 @@ public class FormOutputTest {
         ByteArrayOutputStream expectedByteStream = new ByteArrayOutputStream();
         DataOutputStream expectedDataOutputStream = new DataOutputStream(expectedByteStream);
         expectedDataOutputStream.writeByte(ResponseHeader.STATUS_SUCCESS);
-        expectedDataOutputStream.writeInt(1);
+        expectedDataOutputStream.writeInt(2);
         expectedDataOutputStream.writeInt(1);
 
         expectedDataOutputStream.writeByte(0);
