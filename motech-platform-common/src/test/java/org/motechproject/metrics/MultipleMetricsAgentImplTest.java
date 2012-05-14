@@ -108,11 +108,9 @@ public class MultipleMetricsAgentImplTest {
         DateTime date1 = new DateTime(2011, 1, 1, 10, 25, 30, 0);
         DateTime date2 = new DateTime(2011, 1, 1, 10, 25, 31, 0);
         when(DateUtil.now()).thenReturn(date1);
-        metricsAgent.startTimer("test.metric");
-
+        long startTime = metricsAgent.startTimer();
         when(DateUtil.now()).thenReturn(date2);
-        metricsAgent.startTimer("test.metric");
-        metricsAgent.stopTimer("test.metric");
+        metricsAgent.stopTimer("test.metric", startTime);
 
         verify(agent).logTimedEvent(anyString(), argument.capture());
         assertEquals(1000, argument.getValue().longValue());
@@ -122,7 +120,7 @@ public class MultipleMetricsAgentImplTest {
     public void testStartTimerNoAgents() {
         MultipleMetricsAgentImpl metricsAgent = new MultipleMetricsAgentImpl();
 
-        metricsAgent.startTimer("test.metric");
+        metricsAgent.startTimer();
     }
 
     @Test
@@ -132,8 +130,8 @@ public class MultipleMetricsAgentImplTest {
         MetricsAgentBackend agent1 = mock(MetricsAgentBackend.class);
         metricsAgent.addMetricAgent(agent1);
 
-        metricsAgent.startTimer("test.metric");
-        metricsAgent.stopTimer("test.metric");
+        long startTime = metricsAgent.startTimer();
+        metricsAgent.stopTimer("test.metric", startTime);
 
         verify(agent1).logTimedEvent(anyString(), anyLong());
     }
@@ -148,25 +146,10 @@ public class MultipleMetricsAgentImplTest {
         MetricsAgentBackend agent2 = mock(MetricsAgentBackend.class);
         metricsAgent.addMetricAgent(agent2);
 
-        metricsAgent.startTimer("test.metric");
-        metricsAgent.stopTimer("test.metric");
+        long startTime = metricsAgent.startTimer();
+        metricsAgent.stopTimer("test.metric", startTime);
 
         verify(agent1).logTimedEvent(anyString(), anyLong());
         verify(agent2).logTimedEvent(anyString(), anyLong());
-    }
-
-
-    @Test
-    public void testDoubleStopTimerCall() {
-        MultipleMetricsAgentImpl metricsAgent = new MultipleMetricsAgentImpl();
-
-        MetricsAgentBackend agent = mock(MetricsAgentBackend.class);
-        metricsAgent.addMetricAgent(agent);
-
-        metricsAgent.startTimer("test.metric");
-        metricsAgent.stopTimer("test.metric");
-        metricsAgent.stopTimer("test.metric");
-
-        verify(agent, times(1)).logTimedEvent(anyString(), anyLong());
     }
 }

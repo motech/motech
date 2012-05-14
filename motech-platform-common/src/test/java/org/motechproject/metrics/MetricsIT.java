@@ -67,9 +67,9 @@ public class MetricsIT {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("Key", "Value");
 
-        metricsAgent.startTimer("timed.event");
+        long startTime = metricsAgent.startTimer();
         metricsAgent.logEvent("test.event", params);
         metricsAgent.logEvent("test.event2");
-        metricsAgent.stopTimer("timed.event");
+        metricsAgent.stopTimer("timed.event", startTime);
     }
 }
