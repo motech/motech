@@ -37,7 +37,7 @@ public class FormOutput {
         }
 
         dataOutput.writeByte(ResponseHeader.STATUS_SUCCESS);
-        dataOutput.writeInt(success);
+        dataOutput.writeInt(success + failures);
         dataOutput.writeInt(failures);
 
         for (FormErrorVO error : errors) {

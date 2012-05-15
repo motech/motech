@@ -5,6 +5,7 @@
 		<groupId>org.motechproject</groupId>
 		<version>0.10-SNAPSHOT</version>
 	</parent>
+
 	<artifactId>motech-platform-common</artifactId>
 	<name>MoTeCH Platform Common</name>
 

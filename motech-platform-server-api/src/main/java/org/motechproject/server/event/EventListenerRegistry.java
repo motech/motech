@@ -31,8 +31,6 @@
  */
 package org.motechproject.server.event;
 
-import org.motechproject.context.EventContext;
-import org.motechproject.event.*;
 import org.motechproject.metrics.MetricsAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,10 +97,9 @@ public class EventListenerRegistry {
             throw new IllegalArgumentException(errorMessage);
         }
 
-        String timer = "motech.listener-registry.addListener";
-        metricsAgent.startTimer(timer);
+        final long startTime = metricsAgent.startTimer();
         listenerTree.addListener(listener, subject);
-        metricsAgent.stopTimer(timer);
+        metricsAgent.stopTimer("motech.listener-registry.addListener", startTime);
     }
 
     /**
@@ -112,10 +109,9 @@ public class EventListenerRegistry {
      * @return A list of scheduled event listeners that are interested in that event
      */
     public Set<org.motechproject.server.event.EventListener> getListeners(String subject) {
-        String timer = "motech.listener-registry.getListeners";
-        metricsAgent.startTimer(timer);
+        final long startTime = metricsAgent.startTimer();
         Set<org.motechproject.server.event.EventListener> ret = listenerTree.getListeners(subject);
-        metricsAgent.stopTimer(timer);
+        metricsAgent.stopTimer("motech.listener-registry.getListeners", startTime);
 
         return ret;
     }
@@ -126,11 +122,10 @@ public class EventListenerRegistry {
      * @return
      */
     public boolean hasListener(String subject) {
-        String timer = "motech.listener-registry.hasListener";
 
-        metricsAgent.startTimer(timer);
+        final long startTime = metricsAgent.startTimer();
         boolean ret = listenerTree.hasListener(subject);
-        metricsAgent.stopTimer(timer);
+        metricsAgent.stopTimer("motech.listener-registry.hasListener", startTime);
 
         return ret;
     }
@@ -141,11 +136,10 @@ public class EventListenerRegistry {
      * @return
      */
     public int getListenerCount(String subject) {
-        String timer = "motech.listener-registry.hasListener";
 
-        metricsAgent.startTimer(timer);
+        final long startTime = metricsAgent.startTimer();
         int ret = listenerTree.getListenerCount(subject);
-        metricsAgent.stopTimer(timer);
+        metricsAgent.stopTimer("motech.listener-registry.hasListener", startTime);
 
         return ret;
     }

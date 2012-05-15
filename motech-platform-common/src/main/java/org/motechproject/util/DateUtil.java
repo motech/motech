@@ -6,13 +6,12 @@ import org.hamcrest.Matcher;
 import org.joda.time.*;
 import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.Time;
-import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
 
 import static org.motechproject.model.DayOfWeek.getDayOfWeek;
-import static org.springframework.util.CollectionUtils.*;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 public class DateUtil {
     public static DateTime now() {
@@ -98,6 +97,10 @@ public class DateUtil {
 
     public static DateTime newDateTime(int year, int month, int day, Time time) {
         return newDateTime(newDate(year, month, day), time.getHour(), time.getMinute(), 0);
+    }
+
+    public static DateTime newDateTime(int year, int month, int day) {
+        return newDateTime(newDate(year, month, day), 0, 0, 0);
     }
 
     public static DateTime newDateTime(int year, int month, int day, int hour, int minute, int second) {
