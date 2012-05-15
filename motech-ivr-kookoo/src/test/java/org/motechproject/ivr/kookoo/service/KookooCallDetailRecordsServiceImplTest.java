@@ -1,9 +1,10 @@
 package org.motechproject.ivr.kookoo.service;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -20,8 +21,9 @@ import org.motechproject.ivr.model.CallDirection;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.util.DateUtil;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.rule.PowerMockRule;
+import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,10 +34,11 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @PrepareForTest({DateUtil.class, EventContext.class})
+@RunWith(PowerMockRunner.class)
 public class KookooCallDetailRecordsServiceImplTest {
 
-    @Rule
-    public PowerMockRule rule = new PowerMockRule();
+//    @Rule
+//    public PowerMockRule rule = new PowerMockRule();
 
     @Mock
     private AllKooKooCallDetailRecords allKooKooCallDetailRecords;
@@ -59,7 +62,9 @@ public class KookooCallDetailRecordsServiceImplTest {
         when(EventContext.getInstance()).thenReturn(eventContext);
         when(eventContext.getEventRelay()).thenReturn(eventRelay);
         now = new DateTime(2011, 1, 1, 10, 25, 30, 0);
-        Mockito.when(DateUtil.now()).thenReturn(now);
+        when(DateUtil.now()).thenReturn(now);
+        when(DateUtil.newDateTime(now.toDate())).thenReturn(now);
+        when(DateUtil.setTimeZone(now)).thenReturn(now.toDateTime(DateTimeZone.forTimeZone(Calendar.getInstance().getTimeZone())));
 
         kookooCallDetailRecordsService = new KookooCallDetailRecordsServiceImpl(allKooKooCallDetailRecords, allKooKooCallDetailRecords);
         CallDetailRecord callDetailRecord = CallDetailRecord.create("85437", CallDirection.Inbound, CallDetailRecord.Disposition.ANSWERED);

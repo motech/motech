@@ -27,14 +27,14 @@ public interface MetricsAgent
      * Starts a timer for metric.  Later calls to startTimer without a corresponding call to endTimer for the same
      * metric are ignored
      *
-     * @param metric The metric being timed
      */
-    public void startTimer(String metric);
+    public long startTimer();
 
     /**
      * Ends the timer for metric and records it.  No action is taken if a start timer was not recorded for metric
      *
      * @param metric The metric being timed
+     * @param timerValue
      */
-    public void stopTimer(String metric);
+    public void stopTimer(String metric, long timerValue);
 }

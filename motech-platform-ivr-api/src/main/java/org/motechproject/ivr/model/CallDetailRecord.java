@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.motechproject.util.DateUtil.newDateTime;
+import static org.motechproject.util.DateUtil.setTimeZone;
+
 /**
 * Call Detail Record represents call events and data captured in a call along with call metrics.
 */
@@ -77,15 +80,15 @@ public class CallDetailRecord {
     }
 
     public Date getStartDate() {
-        return startDate;
+        return startDate != null? setTimeZone(newDateTime(startDate)).toDate() : startDate;
     }
 
     public Date getEndDate() {
-        return endDate;
+        return endDate != null? setTimeZone(newDateTime(endDate)).toDate() : endDate;
     }
 
     public Date getAnswerDate() {
-        return answerDate;
+        return answerDate != null? setTimeZone(newDateTime(answerDate)).toDate() : answerDate;
     }
 
     public Disposition getDisposition() {

@@ -89,11 +89,10 @@ public class ServerEventRelay implements EventRelay
   		            MotechEvent _event = event.copy(event.getSubject(),
                                                          (Map<String, Object>)event.getParameters().get(ORIGINAL_PARAMETERS));
 
-                    String timer = listener.getIdentifier() + ".handler." + event.getSubject() + Thread.currentThread().getId();
-                    metricsAgent.startTimer(timer);
+                    final long startTime = metricsAgent.startTimer();
                     metricsAgent.logEvent(_event.getSubject());
         			listener.handle(_event);
-                    metricsAgent.stopTimer(timer);
+                    metricsAgent.stopTimer(listener.getIdentifier() + ".handler." + event.getSubject(), startTime);
 
         			break;
         		}
@@ -110,11 +109,10 @@ public class ServerEventRelay implements EventRelay
 	        } else {
                 // Is there a way to get at a Sets elements other than an iterator?  I know there is only one
                 for (EventListener listener : listeners) {
-                    String timer = listener.getIdentifier() + ".handler." + event.getSubject() + Thread.currentThread().getId();
-                    metricsAgent.startTimer(timer);
+                    final long startTime = metricsAgent.startTimer();
                     metricsAgent.logEvent(event.getSubject());
                     listener.handle(event);
-                    metricsAgent.stopTimer(timer);
+                    metricsAgent.stopTimer(listener.getIdentifier() + ".handler." + event.getSubject(), startTime);
                 }
 	        } // END IF/ELSE if (listeners.size() > 1)
         } // END IF/ELSE if (event.getParameters().containsKey(MESSAGE_DESTINATION))
