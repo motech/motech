@@ -9,7 +9,10 @@
     <util:properties id="quartzProperties" location="classpath:quartz.properties"/>
     <context:annotation-config />
     <context:component-scan base-package="org.motechproject.sms.http"/>
-    <bean id="commonsHttpClient" class="org.apache.commons.httpclient.HttpClient" />
+    <bean id="multiThreadedHttpConnectionManager" class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager"/>
+    <bean id="commonsHttpClient" class="org.apache.commons.httpclient.HttpClient">
+            <constructor-arg ref="multiThreadedHttpConnectionManager"/>
+    </bean>
 
 </beans>
 

@@ -90,7 +90,7 @@ public class SmsHttpServiceTest {
     }
 
     @Test(expected = SmsDeliveryFailureException.class)
-    public void shouldThrowExceptionIfResponseIsNotASuccess() throws IOException, SmsDeliveryFailureException {
+    public void shouldThrowExceptionAndReleaseConnectionIfResponseIsNotASuccess() throws IOException, SmsDeliveryFailureException {
         SmsHttpTemplate.Outgoing outgoing = new SmsHttpTemplate.Outgoing();
         Response response = new Response();
         response.setSuccess("sent");
@@ -106,6 +106,7 @@ public class SmsHttpServiceTest {
 
         SmsHttpService smsHttpService = new SmsHttpService(templateReader, httpClient);
         smsHttpService.sendSms(asList("0987654321"), "foo bar");
+        verify(httpMethod).releaseConnection();
     }
 
     @Test(expected = SmsDeliveryFailureException.class)
