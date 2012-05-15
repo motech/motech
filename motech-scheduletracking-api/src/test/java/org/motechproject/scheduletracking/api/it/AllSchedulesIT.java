@@ -1,10 +1,12 @@
-package org.motechproject.scheduletracking.api.repository;
+package org.motechproject.scheduletracking.api.it;
 
 import org.ektorp.CouchDbConnector;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.scheduletracking.api.domain.ScheduleFactory;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
+import org.motechproject.scheduletracking.api.repository.AllSchedules;
+import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
@@ -18,8 +20,6 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:testApplicationSchedulerTrackingAPI.xml")
 public class AllSchedulesIT {
-
-
     @Autowired
     TrackedSchedulesJsonReader trackedSchedulesJsonReader;
     @Autowired
