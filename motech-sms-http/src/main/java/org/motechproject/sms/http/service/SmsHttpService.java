@@ -35,10 +35,11 @@ public class SmsHttpService {
             log.info("HTTP Status:" + status + "|Response:" + response);
         }
         catch (Exception e) {
-            throw new SmsDeliveryFailureException();
+            log.debug("SMSDeliveryFailure due to : ", e);
+            throw new SmsDeliveryFailureException(e);
         }
         if (response == null || !response.toLowerCase().contains(template.getOutgoing().getResponse().getSuccess().toLowerCase())) {
-            log.info("delivery failed, retrying...");
+            log.info("SMSDeliveryFailed retrying...");
             throw new SmsDeliveryFailureException();
         }
     }
