@@ -16,8 +16,9 @@ public class RepeatingCampaignMessageTest extends BaseUnitTest {
 
     @Test
     public void shouldReturnRepeatIntervalInDays_WhenRepeatIntervalIsNotNull() {
-        assertThat(new RepeatingCampaignMessage("2 Weeks", "0:0").repeatIntervalInDaysForOffset(), is(14));
-        assertThat(new RepeatingCampaignMessage("9 Days", "0:0").repeatIntervalInDaysForOffset(), is(9));
+        assertThat(new RepeatingCampaignMessage("2 Weeks", "0:0").repeatIntervalForOffset(), is(14));
+        assertThat(new RepeatingCampaignMessage("9 Days", "0:0").repeatIntervalForOffset(), is(9));
+        assertThat(new RepeatingCampaignMessage("7 Hour", "10:30").repeatIntervalForOffset(), is(7));
     }
 
     @Test
@@ -27,13 +28,14 @@ public class RepeatingCampaignMessageTest extends BaseUnitTest {
 
     @Test
     public void shouldReturn_7_ForOffsetInterval_WhenWeekDaysApplicableIsSet() {
-        assertThat(repeatMessageWithDaysApplicable(asList("Monday", "Tuesday")).repeatIntervalInDaysForOffset(), is(RepeatingCampaignMessage.WEEKLY_REPEAT_INTERVAL));
+        assertThat(repeatMessageWithDaysApplicable(asList("Monday", "Tuesday")).repeatIntervalForOffset(), is(RepeatingCampaignMessage.WEEKLY_REPEAT_INTERVAL));
     }
 
     @Test
     public void shouldReturnIsApplicableAsTrueIfTheRepeatIntervalIsSet() {
         assertThat(builder().repeatingCampaignMessageForInterval("name", "2 Weeks", "msgKey").isApplicable(), is(true));
         assertThat(builder().repeatingCampaignMessageForInterval("name", "9 Days", "key2").isApplicable(), is(true));
+        assertThat(builder().repeatingCampaignMessageForHourInterval("name", "3 Hour", "key12", "10:30").isApplicable(), is(true));
     }
 
     @Test

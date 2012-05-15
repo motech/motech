@@ -38,6 +38,12 @@ public class CampaignMessageBuilder {
         return repeatingCampaignMessage.mode(RepeatingMessageMode.REPEAT_INTERVAL);
     }
 
+    public RepeatingCampaignMessage repeatingCampaignMessageForHourInterval(String name, String repeatInterval, String messageKey, String deliverTime) {
+        RepeatingCampaignMessage repeatingCampaignMessage = new RepeatingCampaignMessage(repeatInterval, deliverTime);
+        repeatingCampaignParams(name, messageKey, repeatingCampaignMessage);
+        return repeatingCampaignMessage.mode(RepeatingMessageMode.REPEAT_INTERVAL);
+    }
+
     private RepeatingCampaignMessage repeatingCampaignParams(String name, String messageKey, RepeatingCampaignMessage repeatingCampaignMessage) {
         repeatingCampaignMessage.name(name);
         repeatingCampaignMessage.formats(Arrays.asList("IVR"));

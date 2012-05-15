@@ -1,5 +1,6 @@
 package org.motechproject.server.messagecampaign.domain.message;
 
+import org.joda.time.DateTime;
 import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.Time;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
@@ -52,7 +53,7 @@ public class RepeatingCampaignMessage extends CampaignMessage {
             return WallTimeFactory.wallTime(repeatInterval).inDays();
     }
 
-    public int repeatIntervalInDaysForOffset() {
+    public int repeatIntervalForOffset() {
         return this.repeatingMessageMode.repeatIntervalForOffSet(this);
     }
 
@@ -112,7 +113,7 @@ public class RepeatingCampaignMessage extends CampaignMessage {
         this.weekDaysApplicable = applicableDays;
     }
 
-    public Integer currentOffset(Date startTime, Integer startIntervalOffset) {
+    public Integer currentOffset(DateTime startTime, Integer startIntervalOffset) {
         return repeatingMessageMode.currentOffset(this, startTime, startIntervalOffset);
     }
 

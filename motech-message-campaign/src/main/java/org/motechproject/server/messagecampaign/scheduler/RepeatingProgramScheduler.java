@@ -12,8 +12,10 @@ import org.motechproject.server.messagecampaign.Constants;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.RepeatingCampaign;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
+import org.motechproject.server.messagecampaign.domain.message.RepeatingMessageMode;
 import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 import org.motechproject.valueobjects.WallTime;
+import org.motechproject.valueobjects.WallTimeUnit;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
@@ -64,6 +66,14 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
         if (dispatchMessagesEvery24Hours)
             return String.format("0 %d %d %s * ? *", campaignRequest.reminderTime().getMinute(),
                     campaignRequest.reminderTime().getHour(), Constants.DAILY_REPEATING_DAYS_CRON_EXPRESSION);
+
+        if (message.mode() == RepeatingMessageMode.REPEAT_INTERVAL) {
+            WallTime time = wallTime(message.repeatInterval());
+
+            if (time.getUnit() == WallTimeUnit.Hour) {
+                return String.format("0 %d %d/%d ? * ? *", message.deliverTime().getMinute(), message.deliverTime().getHour(), time.getValue());
+            }
+        }
 
         String deliverDates = StringUtils.join(getShortNames(campaignRequest.getUserPreferredDays().isEmpty() ? message.weekDaysApplicable() : campaignRequest.getUserPreferredDays()).iterator(), ",");
 

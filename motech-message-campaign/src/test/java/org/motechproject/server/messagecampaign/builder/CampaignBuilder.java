@@ -83,6 +83,17 @@ public class CampaignBuilder {
         return repeatingCampaign("testCampaign", maxDuration, campaignMessages);
     }
 
+    public RepeatingCampaign repeatingCampaignWithHourlyRepeatInterval(String maxDuration, String deliverTime) {
+        final RepeatingCampaignMessage repeatingCampaignMessage1 = new CampaignMessageBuilder().repeatingCampaignMessageForHourInterval("OM1", "1 Hour", "child-info-hour-{Offset}-1", deliverTime);
+        final RepeatingCampaignMessage repeatingCampaignMessage2 = new CampaignMessageBuilder().repeatingCampaignMessageForHourInterval("OM2", "12 Hour", "child-info-hour-{Offset}-2", deliverTime);
+
+        LinkedList<RepeatingCampaignMessage> campaignMessages = new LinkedList<RepeatingCampaignMessage>() {{
+            add(repeatingCampaignMessage1);
+            add(repeatingCampaignMessage2);
+        }};
+        return repeatingCampaign("testCampaign", maxDuration, campaignMessages);
+    }
+
     public RepeatingCampaign repeatingCampaign(String campaingName, String duration, List<RepeatingCampaignMessage> messages) {
         RepeatingCampaign campaign = new RepeatingCampaign();
         campaign.setName(campaingName);

@@ -39,6 +39,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduleHandler.HOUR;
 import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduleHandler.OFFSET;
 import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduleHandler.WEEK_DAY;
 import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduler.INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT;
@@ -66,7 +67,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
 
         String jobMessageKey = "message-key-" + OFFSET;
         CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForInterval(campaignName, "2 Weeks", jobMessageKey).deliverTime(new Time(10, 30));
-        int repeatIntervalInDays = ((RepeatingCampaignMessage) campaignMessage).repeatIntervalInDaysForOffset();
+        int repeatIntervalInDays = ((RepeatingCampaignMessage) campaignMessage).repeatIntervalForOffset();
         when(allMessageCampaigns.get(campaignName, jobMessageKey)).thenReturn(campaignMessage);
 
         DateTime today = date(2011, 11, 14);
@@ -100,7 +101,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
         String jobMessageKey = "message-key-" + OFFSET + "-" + WEEK_DAY;
         CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForDaysApplicable(campaignName,
                 asList("Monday", "Wednesday", "Friday", "Saturday"), jobMessageKey);
-        int repeatIntervalAs7 = ((RepeatingCampaignMessage) campaignMessage).repeatIntervalInDaysForOffset();
+        int repeatIntervalAs7 = ((RepeatingCampaignMessage) campaignMessage).repeatIntervalForOffset();
         when(allMessageCampaigns.get(campaignName, jobMessageKey)).thenReturn(campaignMessage);
 
         DateTime today = date(2011, 11, 16);
@@ -130,6 +131,74 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
     }
 
     @Test
+    public void shouldHandleEventForRepeatCampaignScheduleWith6HourRepeatInterval() {
+        String jobMessageKey = String.format("child-info-hour-%s-%s-%s", OFFSET, WEEK_DAY, HOUR);
+        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForHourInterval(campaignName,
+                "6 Hour", jobMessageKey, "10:30");
+
+        DateTime today = new DateTime(2012, 5, 15, 10, 30);
+        Date startDate = today.toDate();
+
+        when(allMessageCampaigns.get(campaignName, jobMessageKey)).thenReturn(campaignMessage);
+
+        int repeatIntervalAs6 = ((RepeatingCampaignMessage) campaignMessage).repeatIntervalForOffset();
+        assertEquals(6, repeatIntervalAs6);
+
+        mockCampaignEnrollment(startDate, 1);
+        callHandleEvent(today, motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent(jobMessageKey, "child-info-hour-1-Tuesday-10");
+
+        callHandleEvent(today.plusHours(4), motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent_ThatItDoesntProceed();
+
+        callHandleEvent(today.plusHours(8), motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent(jobMessageKey, "child-info-hour-2-Tuesday-16");
+
+        callHandleEvent(today.plusHours(13), motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent(jobMessageKey, "child-info-hour-3-Tuesday-22");
+
+        callHandleEvent(today.plusHours(16), motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent(jobMessageKey, "child-info-hour-3-Tuesday-22");
+
+        callHandleEvent(today.plusHours(repeatIntervalAs6 * 3), motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent(jobMessageKey, "child-info-hour-4-Wednesday-4");
+    }
+
+    @Test
+    public void shouldHandleEventForRepeatCampaignScheduleWith1HourRepeatInterval() {
+        String jobMessageKey = String.format("child-info-hour-%s-%s-%s", OFFSET, WEEK_DAY, HOUR);
+        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForHourInterval(campaignName,
+                "1 Hour", jobMessageKey, "10:30");
+
+        DateTime today = new DateTime(2012, 5, 15, 10, 30);
+        Date startDate = today.toDate();
+
+        when(allMessageCampaigns.get(campaignName, jobMessageKey)).thenReturn(campaignMessage);
+
+        int repeatIntervalAs1 = ((RepeatingCampaignMessage) campaignMessage).repeatIntervalForOffset();
+        assertEquals(1, repeatIntervalAs1);
+
+        mockCampaignEnrollment(startDate, 1);
+        callHandleEvent(today, motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent(jobMessageKey, "child-info-hour-1-Tuesday-10");
+
+        callHandleEvent(today.plusHours(1), motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent(jobMessageKey, "child-info-hour-2-Tuesday-11");
+
+        callHandleEvent(today.plusHours(2), motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent(jobMessageKey, "child-info-hour-3-Tuesday-12");
+
+        callHandleEvent(today.plusHours(4), motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent(jobMessageKey, "child-info-hour-5-Tuesday-14");
+
+        callHandleEvent(today.plusHours(10), motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent(jobMessageKey, "child-info-hour-11-Tuesday-20");
+
+        callHandleEvent(today.plusHours(repeatIntervalAs1 * 30), motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent(jobMessageKey, "child-info-hour-31-Wednesday-16");
+    }
+
+    @Test
     public void shouldHandleEventForRepeatCampaignScheduleIfTheMessageDispatchStrategyIsNot24Hours() {
         DateTime today = date(2011, 11, 16);
         Date currentDate = date(2012, 5, 10).toDate();
@@ -152,7 +221,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
         String jobMessageKey = "message-key-" + OFFSET + "-" + WEEK_DAY;
         CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForCalendarWeek(campaignName,
                 "Monday", asList("Monday", "Friday", "Sunday"), jobMessageKey);
-        int repeatIntervalAs7 = ((RepeatingCampaignMessage) campaignMessage).repeatIntervalInDaysForOffset();
+        int repeatIntervalAs7 = ((RepeatingCampaignMessage) campaignMessage).repeatIntervalForOffset();
         when(allMessageCampaigns.get(campaignName, jobMessageKey)).thenReturn(campaignMessage);
 
         DateTime today = date(2011, 11, 18);
