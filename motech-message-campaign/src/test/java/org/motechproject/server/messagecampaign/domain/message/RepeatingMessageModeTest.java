@@ -204,7 +204,7 @@ public class RepeatingMessageModeTest extends BaseUnitTest {
     ///
     public void shouldReturnIsEndedForRepeatInterval_IfNextToCurrentApplicableDateIsBeyondEndDate(){
 
-        RepeatingCampaignMessage message = new CampaignMessageBuilder().repeatingCampaignMessageForInterval("WeekType", "9 Days", "msgKey");
+        RepeatingCampaignMessage message = new CampaignMessageBuilder().repeatingCampaignMessageForInterval("WeekType", "9 Days", "msgKey", "0:0");
 
         RepeatingMessageMode weekSchedule = RepeatingMessageMode.REPEAT_INTERVAL;
         Date sat17Feb2012EndDate = date("17-02-2012 22:11:20 Fri");

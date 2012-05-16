@@ -16,6 +16,7 @@ import java.util.Date;
 
 import static org.joda.time.Days.daysBetween;
 import static org.joda.time.Hours.hoursBetween;
+import static org.joda.time.Minutes.minutesBetween;
 import static org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage.WEEKLY_REPEAT_INTERVAL;
 import static org.motechproject.util.DateUtil.*;
 import static org.motechproject.valueobjects.factory.WallTimeFactory.wallTime;
@@ -29,26 +30,38 @@ public enum RepeatingMessageMode {
 
         public Integer repeatIntervalForOffSet(RepeatingCampaignMessage message) {
             WallTime time = wallTime(message.repeatInterval());
-            int interval = time.inDays();
+            int interval;
 
-            if (time.getUnit() == WallTimeUnit.Hour) {
-                interval = time.inHours();
+            switch (time.getUnit()) {
+                case Minute:
+                    interval = time.inMinutes();
+                    break;
+                case Hour:
+                    interval = time.inHours();
+                    break;
+                default:
+                    interval = time.inDays();
             }
 
             return interval;
         }
 
         public Integer currentOffset(RepeatingCampaignMessage message, DateTime startTime, Integer startIntervalOffset) {
-            int passedOffsetCycles;
             WallTime time = wallTime(message.repeatInterval());
+            int interval;
 
-            if (time.getUnit() == WallTimeUnit.Hour) {
-                passedOffsetCycles = hoursBetween(startTime, DateUtil.now()).getHours() / repeatIntervalForOffSet(message);
-            } else {
-                passedOffsetCycles = daysBetween(newDate(startTime), today()).getDays() / repeatIntervalForOffSet(message);
+            switch (time.getUnit()) {
+                case Minute:
+                    interval = minutesBetween(startTime, DateUtil.now()).getMinutes();
+                    break;
+                case Hour:
+                    interval = hoursBetween(startTime, DateUtil.now()).getHours();
+                    break;
+                default:
+                    interval = daysBetween(newDate(startTime), today()).getDays();
             }
 
-            return passedOffsetCycles + 1;
+            return (interval / repeatIntervalForOffSet(message)) + 1;
         }
 
         public int durationInDaysToAdd(WallTime maxDuration, CampaignRequest campaignRequest, RepeatingCampaignMessage message) {

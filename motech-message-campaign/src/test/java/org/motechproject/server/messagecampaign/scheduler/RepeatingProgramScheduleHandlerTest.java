@@ -40,6 +40,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduleHandler.HOUR;
+import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduleHandler.MINUTE;
 import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduleHandler.OFFSET;
 import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduleHandler.WEEK_DAY;
 import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduler.INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT;
@@ -66,7 +67,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
     public void shouldHandleEventForRepeatCampaignScheduleAndUpdateMessageKey() {
 
         String jobMessageKey = "message-key-" + OFFSET;
-        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForInterval(campaignName, "2 Weeks", jobMessageKey).deliverTime(new Time(10, 30));
+        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForInterval(campaignName, "2 Weeks", jobMessageKey, "0:0").deliverTime(new Time(10, 30));
         int repeatIntervalInDays = ((RepeatingCampaignMessage) campaignMessage).repeatIntervalForOffset();
         when(allMessageCampaigns.get(campaignName, jobMessageKey)).thenReturn(campaignMessage);
 
@@ -131,10 +132,10 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
     }
 
     @Test
-    public void shouldHandleEventForRepeatCampaignScheduleWith6HourRepeatInterval() {
+    public void shouldHandleEventForRepeatCampaignScheduleWith6HoursRepeatInterval() {
         String jobMessageKey = String.format("child-info-hour-%s-%s-%s", OFFSET, WEEK_DAY, HOUR);
-        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForHourInterval(campaignName,
-                "6 Hour", jobMessageKey, "10:30");
+        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForInterval(campaignName,
+                "6 Hours", jobMessageKey, "10:30");
 
         DateTime today = new DateTime(2012, 5, 15, 10, 30);
         Date startDate = today.toDate();
@@ -167,7 +168,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
     @Test
     public void shouldHandleEventForRepeatCampaignScheduleWith1HourRepeatInterval() {
         String jobMessageKey = String.format("child-info-hour-%s-%s-%s", OFFSET, WEEK_DAY, HOUR);
-        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForHourInterval(campaignName,
+        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForInterval(campaignName,
                 "1 Hour", jobMessageKey, "10:30");
 
         DateTime today = new DateTime(2012, 5, 15, 10, 30);
@@ -196,6 +197,77 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
 
         callHandleEvent(today.plusHours(repeatIntervalAs1 * 30), motechEvent(startDate, jobMessageKey, false));
         assertHandleEvent(jobMessageKey, "child-info-hour-31-Wednesday-16");
+    }
+
+    @Test
+    public void shouldHandleEventForRepeatCampaignScheduleWith15MinutesRepeatInterval() {
+        String jobMessageKey = String.format("child-info-minute-%s-%s-%s-%s", OFFSET, WEEK_DAY, HOUR, MINUTE);
+        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForInterval(campaignName,
+                "15 Minutes", jobMessageKey, "10:00");
+
+        DateTime today = new DateTime(2012, 5, 15, 10, 0);
+        Date startDate = today.toDate();
+
+        when(allMessageCampaigns.get(campaignName, jobMessageKey)).thenReturn(campaignMessage);
+
+        int repeatIntervalAs15 = ((RepeatingCampaignMessage) campaignMessage).repeatIntervalForOffset();
+        assertEquals(15, repeatIntervalAs15);
+
+        mockCampaignEnrollment(startDate, 1);
+        callHandleEvent(today, motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent(jobMessageKey, "child-info-minute-1-Tuesday-10-00");
+
+        callHandleEvent(today.plusMinutes(10), motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent_ThatItDoesntProceed();
+
+        callHandleEvent(today.plusMinutes(15), motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent(jobMessageKey, "child-info-minute-2-Tuesday-10-15");
+
+        callHandleEvent(today.plusMinutes(30), motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent(jobMessageKey, "child-info-minute-3-Tuesday-10-30");
+
+        callHandleEvent(today.plusMinutes(40), motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent(jobMessageKey, "child-info-minute-3-Tuesday-10-30");
+
+        callHandleEvent(today.plusMinutes(repeatIntervalAs15 * 3), motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent(jobMessageKey, "child-info-minute-4-Tuesday-10-45");
+
+        callHandleEvent(today.plusMinutes(65), motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent_ThatItDoesntProceed();
+    }
+
+    @Test
+    public void shouldHandleEventForRepeatCampaignScheduleWith20MinutesRepeatInterval() {
+        String jobMessageKey = String.format("child-info-minute-%s-%s-%s-%s", OFFSET, WEEK_DAY, HOUR, MINUTE);
+        CampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForInterval(campaignName,
+                "20 Minutes", jobMessageKey, "10:05");
+
+        DateTime today = new DateTime(2012, 5, 15, 10, 05);
+        Date startDate = today.toDate();
+
+        when(allMessageCampaigns.get(campaignName, jobMessageKey)).thenReturn(campaignMessage);
+
+        int repeatIntervalAs20 = ((RepeatingCampaignMessage) campaignMessage).repeatIntervalForOffset();
+        assertEquals(20, repeatIntervalAs20);
+
+        mockCampaignEnrollment(startDate, 1);
+        callHandleEvent(today, motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent(jobMessageKey, "child-info-minute-1-Tuesday-10-05");
+
+        callHandleEvent(today.plusMinutes(10), motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent_ThatItDoesntProceed();
+
+        callHandleEvent(today.plusMinutes(20), motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent(jobMessageKey, "child-info-minute-2-Tuesday-10-25");
+
+        callHandleEvent(today.plusMinutes(30), motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent(jobMessageKey, "child-info-minute-2-Tuesday-10-25");
+
+        callHandleEvent(today.plusMinutes(45), motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent(jobMessageKey, "child-info-minute-3-Tuesday-10-45");
+
+        callHandleEvent(today.plusMinutes(repeatIntervalAs20 * 4), motechEvent(startDate, jobMessageKey, false));
+        assertHandleEvent(jobMessageKey, "child-info-minute-5-Tuesday-10-25");
     }
 
     @Test
@@ -284,7 +356,7 @@ public class RepeatingProgramScheduleHandlerTest extends BaseUnitTest {
         Date may102012 = date(2012, 5, 10).toDate();
 
         String jobMessageKey = "msgKey";
-        RepeatingCampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForInterval(campaignName, "2 Weeks", jobMessageKey);
+        RepeatingCampaignMessage campaignMessage = new CampaignMessageBuilder().repeatingCampaignMessageForInterval(campaignName, "2 Weeks", jobMessageKey, "0:0");
         campaignMessage = spy(campaignMessage);
         doReturn(true).when(campaignMessage).hasEnded(Matchers.<Date>any());
         doReturn(DayOfWeek.Monday).when(campaignMessage).applicableWeekDayInNext24Hours();

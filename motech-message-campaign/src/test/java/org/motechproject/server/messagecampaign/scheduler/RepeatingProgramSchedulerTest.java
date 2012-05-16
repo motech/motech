@@ -200,8 +200,8 @@ public class RepeatingProgramSchedulerTest {
     @Test
     public void shouldSetOffsetTo1_ForCampaignMessageWithRepeatInterval() {
 
-        final RepeatingCampaignMessage messageWeeks = new CampaignMessageBuilder().repeatingCampaignMessageForInterval("OM1", "1 Weeks", "child-info-week-{Offset}-1");
-        final RepeatingCampaignMessage messageDays = new CampaignMessageBuilder().repeatingCampaignMessageForInterval("OM1", "10 Days", "child-info-week-{Offset}-1");
+        final RepeatingCampaignMessage messageWeeks = new CampaignMessageBuilder().repeatingCampaignMessageForInterval("OM1", "1 Weeks", "child-info-week-{Offset}-1", "0:0");
+        final RepeatingCampaignMessage messageDays = new CampaignMessageBuilder().repeatingCampaignMessageForInterval("OM1", "10 Days", "child-info-week-{Offset}-1", "0:0");
         RepeatingCampaign campaign = new CampaignBuilder().repeatingCampaign("C", "2 Weeks", asList(messageWeeks, messageDays));
 
         int startOffset = 2;
@@ -307,8 +307,8 @@ public class RepeatingProgramSchedulerTest {
     @Test
     public void shouldScheduleJobsForOneWeekMaxDurationWithHourlyRepeatInterval() {
         Time reminderTime = new Time(8, 30);
-        RepeatingCampaign campaign = new CampaignBuilder().repeatingCampaignWithHourlyRepeatInterval("1 Weeks", "8:30");
         LocalDate startDate = new LocalDate(2011, 11, 22);
+        RepeatingCampaign campaign = new CampaignBuilder().repeatingCampaignWithHourRepeatInterval("1 Weeks", "8:30");
         CampaignRequest request = defaultBuilder().withReferenceDate(startDate).withReminderTime(reminderTime).build();
 
         RepeatingProgramScheduler repeatingProgramScheduler = new RepeatingProgramScheduler(mockSchedulerService, request, campaign, mockCampaignEnrollmentService, false);
@@ -326,6 +326,30 @@ public class RepeatingProgramSchedulerTest {
 
         assertJob(jobs.get(1), startJobDate, jobsEndDateForRepeatInterval, buildHourlyCronExpression(startJobDate, 12));
         assertMotechEvent(jobs.get(1), "MessageJob.testCampaign.12345.child-info-hour-{Offset}-2", "child-info-hour-{Offset}-2");
+    }
+
+    @Test
+    public void shouldScheduleJobsForOneWeekMaxDurationWithMinuteRepeatInterval() {
+        Time reminderTime = new Time(8, 30);
+        LocalDate startDate = new LocalDate(2011, 11, 22);
+        RepeatingCampaign campaign = new CampaignBuilder().repeatingCampaignWithMinuteRepeatInterval("1 Weeks", "8:30");
+        CampaignRequest request = defaultBuilder().withReferenceDate(startDate).withReminderTime(reminderTime).build();
+
+        RepeatingProgramScheduler repeatingProgramScheduler = new RepeatingProgramScheduler(mockSchedulerService, request, campaign, mockCampaignEnrollmentService, false);
+        repeatingProgramScheduler.start();
+        ArgumentCaptor<CronSchedulableJob> capture = ArgumentCaptor.forClass(CronSchedulableJob.class);
+        verify(mockSchedulerService, times(2)).safeScheduleJob(capture.capture());
+
+        Date startJobDate = DateUtil.newDateTime(request.referenceDate(), reminderTime).toDate();
+        Date jobsEndDateForRepeatInterval = dateAtEndOfDay(2011, 11, 28);
+
+        List<CronSchedulableJob> jobs = capture.getAllValues();
+
+        assertJob(jobs.get(0), startJobDate, jobsEndDateForRepeatInterval, buildMinuteCronExpression(startJobDate, 15));
+        assertMotechEvent(jobs.get(0), "MessageJob.testCampaign.12345.child-info-minute-{Offset}-1", "child-info-minute-{Offset}-1");
+
+        assertJob(jobs.get(1), startJobDate, jobsEndDateForRepeatInterval, buildMinuteCronExpression(startJobDate, 20));
+        assertMotechEvent(jobs.get(1), "MessageJob.testCampaign.12345.child-info-minute-{Offset}-2", "child-info-minute-{Offset}-2");
     }
 
     private void assertJob(CronSchedulableJob actualJob, Date jobStartDate, Date jobEndDate, String cronExpression) {
@@ -351,6 +375,15 @@ public class RepeatingProgramSchedulerTest {
         int sec = dateTime.get(DateTimeFieldType.secondOfMinute());
 
         return String.format("%d %d %d/%d ? * ? *", sec, min, hour, interval);
+    }
+
+    private String buildMinuteCronExpression(Date jobDate, int interval) {
+        DateTime dateTime = new DateTime(jobDate);
+        int hour = dateTime.get(DateTimeFieldType.hourOfDay());
+        int min = dateTime.get(DateTimeFieldType.minuteOfHour());
+        int sec = dateTime.get(DateTimeFieldType.secondOfMinute());
+
+        return String.format("%d %d/%d %d ? * ? *", sec, min, interval, hour);
     }
 
     private void assertDate(Date expectedDate, Date actualDate) {
