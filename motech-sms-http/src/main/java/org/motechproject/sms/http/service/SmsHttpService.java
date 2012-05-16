@@ -28,8 +28,9 @@ public class SmsHttpService {
 
     public void sendSms(List<String> recipients, String message) throws SmsDeliveryFailureException {
         String response;
-        HttpMethod httpMethod = template.generateRequestFor(recipients, message);
+        HttpMethod httpMethod = null;
         try {
+            httpMethod = template.generateRequestFor(recipients, message);
             int status = commonsHttpClient.executeMethod(httpMethod);
             response = httpMethod.getResponseBodyAsString();
             log.info("HTTP Status:" + status + "|Response:" + response);
@@ -37,7 +38,7 @@ public class SmsHttpService {
             log.debug("SMSDeliveryFailure due to : ", e);
             throw new SmsDeliveryFailureException(e);
         } finally {
-            httpMethod.releaseConnection();
+            if (httpMethod != null) httpMethod.releaseConnection();
         }
 
         if (response == null || !response.toLowerCase().contains(template.getOutgoing().getResponse().getSuccess().toLowerCase())) {
