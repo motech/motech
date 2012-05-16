@@ -9,21 +9,21 @@ import org.motechproject.server.pillreminder.api.contract.PillRegimenResponse;
 /**
  * \ingroup pillreminder
  * Pill reminder service supports creating/querying/deleting pill schedule as per prescription.
- * @see DailyPillRegimenRequest
+ * @see org.motechproject.server.pillreminder.api.contract.DailyPillRegimenRequest
  */
 
 public interface PillReminderService {
     /**
      * Subscribe to pill reminder
      * @param dailyPillRegimenRequest
-     * @see DailyPillRegimenRequest
+     * @see org.motechproject.server.pillreminder.api.contract.DailyPillRegimenRequest
      */
     void createNew(DailyPillRegimenRequest dailyPillRegimenRequest);
 
     /**
      * Update the pill reminder subscription
      * @param newDailyScheduleRequest
-     * @see DailyPillRegimenRequest
+     * @see org.motechproject.server.pillreminder.api.contract.DailyPillRegimenRequest
      */
     void renew(DailyPillRegimenRequest newDailyScheduleRequest);
 
@@ -39,7 +39,7 @@ public interface PillReminderService {
      * Get pill regimen for given subscriber (externalId)
      * @param externalId
      * @return Dosage details along with reminder config
-     * @see PillRegimenResponse
+     * @see org.motechproject.server.pillreminder.api.contract.PillRegimenResponse
      */
     PillRegimenResponse getPillRegimen(String externalId);
 

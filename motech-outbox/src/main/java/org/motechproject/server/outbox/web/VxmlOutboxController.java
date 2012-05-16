@@ -78,7 +78,7 @@ public class VxmlOutboxController extends MultiActionController {
      * <p></p>
      * <p></p>
      * URL to request appointment reminder VoiceXML:
-     * http://<host>:<port>/<motech-platform-server>/module/outbox/vxml/outboxMessage?mId=<messageId>
+     * http://{host}:{port}/{motech-platform-server{/module/outbox/vxml/outboxMessage?mId={messageId}
      */
     public ModelAndView outboxMessage(HttpServletRequest request, HttpServletResponse response) {
         logger.info("Generate appointment reminder VXML");
@@ -296,7 +296,7 @@ public class VxmlOutboxController extends MultiActionController {
      * <p></p>
      * <p></p>
      * URL to request a saved VoiceXML message from outbox :
-     * http://<host>:<port>/<motech-platform-server>/module/outbox/vxml/remove?mId=$message.id&ln=$language>
+     * http://{host}:{port}>/{motech-platform-server}>/module/outbox/vxml/remove?mId=$message.id&ln={language}
      */
      public ModelAndView remove(HttpServletRequest request, HttpServletResponse response) {
         logger.info("Removing saved message message...");
@@ -355,7 +355,7 @@ public class VxmlOutboxController extends MultiActionController {
      * <p></p>
      * <p></p>
      * URL to request a saved VoiceXML message from outbox :
-     * http://<host>:<port>/<motech-platform-server>/module/outbox/vxml/savedMessage>
+     * http://{host}:{port}/{motech-platform-server}/module/outbox/vxml/savedMessage
      */
     public ModelAndView savedMessage(HttpServletRequest request, HttpServletResponse response) {
         logger.info("Generate VXML for the next saved in the outbox message");

@@ -12,35 +12,25 @@ import java.util.Map;
  *
  * Used as configuration for creating appointment / scheduled visit.
  * Reminders can be configured by {@link ReminderConfiguration}
- * Custom data can be stored as key value pair in {@link CreateVisitRequest#data} map.
+ * Custom data can be stored as key value pair in {@link CreateVisitRequest#setData(Map<String, Object>) data}  setData} map.
  */
 public class CreateVisitRequest {
 
-    /**
-     * Visit Name, should be unique with in a calendar
-     */
     private String visitName;
 
-    /**
-     * Type of visit, example : Scheduled, Ad-hoc etc
-     */
+
     private String typeOfVisit;
 
-    /**
-     * Due date for appointment, can be adjusted later on.
-     */
     private DateTime appointmentDueDate;
 
-    /**
-     * Reminder Schedule template, can handle multiple reminders.
-     */
     private List<ReminderConfiguration> appointmentReminderConfigurations = new ArrayList<ReminderConfiguration>();
 
-    /**
-     * Additional application specific data related to clinic visit can be stored here.
-     */
     private Map<String, Object> data = new HashMap<String, Object>();
 
+    /**
+     * Visit Name, should be unique with in a calendar
+     * @return visit name uniquely identified in a calender
+     */
     public String getVisitName() {
         return visitName;
     }
@@ -50,6 +40,10 @@ public class CreateVisitRequest {
         return this;
     }
 
+    /**
+     * Type of visit, example : Scheduled, Ad-hoc etc
+     * @return type of visit.
+     */
     public String getTypeOfVisit() {
         return typeOfVisit;
     }
@@ -59,6 +53,10 @@ public class CreateVisitRequest {
         return this;
     }
 
+    /**
+     * Due date for appointment, can be adjusted later on.
+     * @return appointment due date
+     */
     public DateTime getAppointmentDueDate() {
         return appointmentDueDate;
     }
@@ -68,6 +66,10 @@ public class CreateVisitRequest {
         return this;
     }
 
+    /**
+     * Additional application specific data related to clinic visit can be stored here.
+     * @returns property=>value pair of application specific data
+     */
     public Map<String, Object> getData() {
         return data;
     }
@@ -82,6 +84,10 @@ public class CreateVisitRequest {
         return this;
     }
 
+    /**
+     * Reminder Schedule template, can handle multiple reminders.
+     * @return list of reminder configurations
+     */
     public List<ReminderConfiguration> getAppointmentReminderConfigurations() {
         return appointmentReminderConfigurations;
     }

@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * \ingroup Appointments
  *
- * Visit details, returned by querying visits. see {@linkplain org.motechproject.appointments.api.service.AppointmentService#search(VisitsQuery)}
+ * Visit details, returned by querying visits. see {@link org.motechproject.appointments.api.service.AppointmentService#search(VisitsQuery)}
  */
 public class VisitResponse {
     private String name;
@@ -80,7 +80,7 @@ public class VisitResponse {
     }
 
     /**
-     * Gets due date set while creating calendar. If due date was never changed then this will be same as {@link #appointmentDueDate}
+     * Gets due date set while creating calendar. If due date was never changed then this will be same as {@link #getAppointmentDueDate() appointmentDueDate}
      * @return
      */
     public DateTime getOriginalAppointmentDueDate() {

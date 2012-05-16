@@ -37,8 +37,8 @@ public interface CMSLiteService {
      * Add content to CMS data-store
      * @param content
      * @throws CMSLiteException
-     * @see StreamContent
-     * @see StringContent
+     * @see org.motechproject.cmslite.api.model.StreamContent
+     * @see org.motechproject.cmslite.api.model.StringContent
      */
     void addContent(Content content) throws CMSLiteException;
 
