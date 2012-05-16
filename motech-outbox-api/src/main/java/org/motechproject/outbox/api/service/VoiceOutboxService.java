@@ -98,7 +98,7 @@ public interface VoiceOutboxService {
 
 
     /**
-     * Returns messages in the outbox of the party with the given ExternalId and {@link org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus OutboundVoiceMessageStatus} sorted by the given {@link SortKey}
+     * Returns messages in the outbox of the party with the given ExternalId and {@link org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus OutboundVoiceMessageStatus} sorted by the given {@link org.motechproject.outbox.api.contract.SortKey SortKey}
      *
      * @param externalId - unique identifier of the party
      * @param status     - {@link org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus OutboundVoiceMessageStatus} of the messages to be counted
