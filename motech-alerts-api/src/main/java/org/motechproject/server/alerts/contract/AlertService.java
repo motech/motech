@@ -3,6 +3,7 @@ package org.motechproject.server.alerts.contract;
 import org.motechproject.server.alerts.domain.Alert;
 import org.motechproject.server.alerts.domain.AlertStatus;
 import org.motechproject.server.alerts.domain.AlertType;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
