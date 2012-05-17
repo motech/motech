@@ -5,8 +5,10 @@
         <groupId>org.motechproject</groupId>
         <version>0.10</version>
     </parent>
+    <groupId>org.motechproject</groupId>
     <artifactId>motech-pillreminder</artifactId>
     <name>MoTeCH Pill Reminder</name>
+    <version>0.10</version>
     <packaging>bundle</packaging>
     <description>Motech Pill Reminder</description>
     <dependencies>
@@ -102,22 +104,20 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>org.motechproject.pillreminder.api;org.motechproject.pillreminder.api.model
+                        <Export-Package>
+                            org.motechproject.pillreminder.api,
+                            org.motechproject.pillreminder.api.model
                         </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.server.pillreminder.Activator
                         </Bundle-Activator>
                         <Private-Package>
-                            org.motechproject.server.pillreminder.*
+                            org.ektorp.spring,
+                            org.ektorp.impl,
+                            org.motechproject.server.pillreminder,
+                            org.springframework.context.config
                         </Private-Package>
-                        <Import-Package>
-                            org.aopalliance.aop;version=1.0,
-                            org.springframework.aop;version=3.0.5,
-                            *
-                        </Import-Package>
-                        <Embed-Dependency>
-                            motech-platform-scheduler
-                        </Embed-Dependency>
+                        <Embed-Dependency>!*</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>

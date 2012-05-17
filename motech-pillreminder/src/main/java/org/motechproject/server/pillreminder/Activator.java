@@ -40,6 +40,7 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -48,13 +49,17 @@ import org.springframework.web.servlet.DispatcherServlet;
  */
 public class Activator implements BundleActivator {
 	private static Logger logger = LoggerFactory.getLogger(Activator.class);
-	private static final String CONTEXT_CONFIG_LOCATION = "classpath:applicationPillReminderBundle.xml";
+	private static final String CONTEXT_CONFIG_LOCATION = "applicationPillReminderBundle.xml";
 	private static final String SERVLET_URL_MAPPING = "/pillReminder";
 	private ServiceTracker tracker;
     private ServiceReference httpService;
 
+    private static BundleContext bundleContext = null;
+
 	@Override
 	public void start(BundleContext context) throws Exception {
+        bundleContext = context;
+
 		this.tracker = new ServiceTracker(context,
 				HttpService.class.getName(), null) {
 			
@@ -87,10 +92,19 @@ public class Activator implements BundleActivator {
         }
 	}
 
+    public static class PillReminderApplicationContext extends OsgiBundleXmlWebApplicationContext {
+
+        public PillReminderApplicationContext() {
+            super();
+            setBundleContext(Activator.bundleContext);
+        }
+    }
+
 	private void serviceAdded(HttpService service) {
 		try {
 			DispatcherServlet dispatcherServlet = new DispatcherServlet();
 			dispatcherServlet.setContextConfigLocation(CONTEXT_CONFIG_LOCATION);
+            dispatcherServlet.setContextClass(PillReminderApplicationContext.class);
 			ClassLoader old = Thread.currentThread().getContextClassLoader();
 			try {
 				Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
