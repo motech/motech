@@ -3,13 +3,13 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.10-SNAPSHOT</version>
+        <version>0.10</version>
     </parent>
 
     <artifactId>motech-ivr-kookoo</artifactId>
     <name>MoTeCH IVR KooKoo</name>
     <description>KooKoo IVR Provider</description>
-    <version>0.10-SNAPSHOT</version>
+    <version>0.10</version>
 
     <properties>
         <spring.version>3.0.5.RELEASE</spring.version>
