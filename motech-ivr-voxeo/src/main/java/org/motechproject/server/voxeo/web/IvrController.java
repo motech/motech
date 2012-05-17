@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * IVR Event handler for Voxeo handles flash and incoming call events and records it in  {@link PhoneCall}
+ * IVR Event handler for Voxeo handles flash and incoming call events and records it in  {@link org.motechproject.server.voxeo.domain.PhoneCall PhoneCall}
  */
 @Controller
 public class IvrController extends MultiActionController {

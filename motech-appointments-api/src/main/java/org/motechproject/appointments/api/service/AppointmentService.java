@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public interface AppointmentService {
     /**
-     * Adds appointment schedules based on {@link AppointmentCalendarRequest} and {@link CreateVisitRequest}.
+     * Adds appointment schedules based on {@link org.motechproject.appointments.api.service.contract.AppointmentCalendarRequest AppointmentCalendarRequest} and {@link org.motechproject.appointments.api.service.contract.CreateVisitRequest CreateVisitRequest}.
      *
      * @param appointmentCalendarRequest
      */
@@ -33,7 +33,7 @@ public interface AppointmentService {
     public void removeCalendar(String externalId);
 
     /**
-     * Adds a visit as per given {@link CreateVisitRequest}
+     * Adds a visit as per given {@link org.motechproject.appointments.api.service.contract.CreateVisitRequest CreateVisitRequest}
      *
      * @param externalId
      * @param createVisitRequest
@@ -71,7 +71,7 @@ public interface AppointmentService {
      * Change the due date and reminder configuration for given appointment/visit
      *
      * @param rescheduleAppointmentRequest specifies reschedule due date and reminder configuration.
-     * @see RescheduleAppointmentRequest
+     * @see org.motechproject.appointments.api.service.contract.RescheduleAppointmentRequest
      */
     public void rescheduleAppointment(RescheduleAppointmentRequest rescheduleAppointmentRequest);
 
@@ -79,7 +79,7 @@ public interface AppointmentService {
      * Sets confirmed visit/appointment date
      *
      * @param confirmAppointmentRequest specifies visit/appointment and confirmed date.
-     * @see ConfirmAppointmentRequest
+     * @see org.motechproject.appointments.api.service.contract.ConfirmAppointmentRequest
      */
     public void confirmAppointment(ConfirmAppointmentRequest confirmAppointmentRequest);
 

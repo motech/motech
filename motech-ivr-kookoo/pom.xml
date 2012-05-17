@@ -3,7 +3,7 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.10-SNAPSHOT</version>
+        <version>0.10</version>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-ivr-kookoo</artifactId>
@@ -12,6 +12,7 @@
     <name>MoTeCH IVR KooKoo</name>
     <packaging>bundle</packaging>
     <description>KooKoo IVR Provider</description>
+    <version>0.10</version>
 
     <properties>
         <spring.version>3.0.5.RELEASE</spring.version>

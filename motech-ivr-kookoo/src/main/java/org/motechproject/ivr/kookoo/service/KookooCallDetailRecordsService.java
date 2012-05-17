@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 /**
  *   Kookoo Call Detail Record Service provides call log extension point.
- *   Supports ivr events such as call answered, Record etc (@see IVREvent)
+ *   Supports ivr events such as call answered, Record etc ({@link org.motechproject.ivr.event.IVREvent IVREvent})
  */
 public interface KookooCallDetailRecordsService {
     /**
@@ -42,7 +42,7 @@ public interface KookooCallDetailRecordsService {
      * @param callDetailRecordId: current call detail record
      * @param callEvent: IVR event such as Newcall, Record, Dial
      * @param userInput: DTMF digit pressed.
-     * @see IVREvent
+     * @see org.motechproject.ivr.event.IVREvent
      */
     public void appendEvent(String callDetailRecordId, IVREvent callEvent, String userInput);
 
@@ -50,7 +50,7 @@ public interface KookooCallDetailRecordsService {
      * Marks the end of call either on Hangup event or Disconnect event.
      * @param callDetailRecordId: current call detail record
      * @param externalId: unique Id representing caller.
-     * @param callEvent:IVR event such as Newcall, Record, Dial
+     * @param callEvent: IVR event such as Newcall, Record, Dial
      */
     public void close(String callDetailRecordId, String externalId, CallEvent callEvent);
 

@@ -1,10 +1,9 @@
 package org.motechproject.outbox.api.service;
 
-import org.motechproject.model.MotechEvent;
+
 import org.motechproject.outbox.api.contract.SortKey;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
-import org.motechproject.outbox.api.domain.VoiceMessageType;
 
 import java.util.List;
 
@@ -39,7 +38,7 @@ public interface VoiceOutboxService {
      * creation time and the highest priority among other pending messages in the external outbox.
      *
      * @param externalId    - unique identifier of the party
-     * @param messageStatus - {@link OutboundVoiceMessageStatus} of the message
+     * @param messageStatus - {@link org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus OutboundVoiceMessageStatus} of the message
      * @return OutboundVoiceMessage - outbound voice message for the given external Id and status
      */
     public OutboundVoiceMessage getNextMessage(String externalId, OutboundVoiceMessageStatus messageStatus);
@@ -63,7 +62,7 @@ public interface VoiceOutboxService {
      * Updates the outbox message found by the MessageId with the given status
      *
      * @param outboundVoiceMessageId - unique id of the message to be updated
-     * @param status                 - {@link OutboundVoiceMessageStatus} with which the message has to be updated
+     * @param status                 - {@link org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus OutboundVoiceMessageStatus} with which the message has to be updated
      */
     public void setMessageStatus(String outboundVoiceMessageId, OutboundVoiceMessageStatus status);
 
@@ -78,32 +77,32 @@ public interface VoiceOutboxService {
     public void saveMessage(String outboundVoiceMessageId);
 
     /**
-     * Returns number of messages in the outbox of the party with the given ExternalId and {@link OutboundVoiceMessageStatus}
+     * Returns number of messages in the outbox of the party with the given ExternalId and {@link org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus OutboundVoiceMessageStatus}
      *
      * @param externalId    - unique identifier of the party
-     * @param messageStatus - {@link OutboundVoiceMessageStatus} of the messages to be counted
+     * @param messageStatus - {@link org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus OutboundVoiceMessageStatus} of the messages to be counted
      * @return - count of messages found in outbox
      */
     public int getNumberOfMessages(String externalId, OutboundVoiceMessageStatus messageStatus);
 
     /**
      * Returns number of  messages in the outbox of the party with the given ExternalId, VoiceMessageTypeName and
-     * {@link OutboundVoiceMessageStatus}
+     * {@link org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus OutboundVoiceMessageStatus}
      *
      * @param externalId           - unique identifier of the party
-     * @param messageStatus        - {@link OutboundVoiceMessageStatus} of the messages to be counted
-     * @param voiceMessageTypeName - name of the {@link VoiceMessageType}
+     * @param messageStatus        - {@link org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus OutboundVoiceMessageStatus} of the messages to be counted
+     * @param voiceMessageTypeName - name of the {@link org.motechproject.outbox.api.domain.VoiceMessageType VoiceMessageType}
      * @return - count of messages found in outbox
      */
     public int getNumberOfMessages(String externalId, OutboundVoiceMessageStatus messageStatus, String voiceMessageTypeName);
 
 
     /**
-     * Returns messages in the outbox of the party with the given ExternalId and {@link OutboundVoiceMessageStatus} sorted by the given {@link SortKey}
+     * Returns messages in the outbox of the party with the given ExternalId and {@link org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus OutboundVoiceMessageStatus} sorted by the given {@link org.motechproject.outbox.api.contract.SortKey SortKey}
      *
      * @param externalId - unique identifier of the party
-     * @param status     - {@link OutboundVoiceMessageStatus} of the messages to be counted
-     * @param sortKey    - sort key to be used to sort the filtered list of messages. See {@link SortKey}
+     * @param status     - {@link org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus OutboundVoiceMessageStatus} of the messages to be counted
+     * @param sortKey    - sort key to be used to sort the filtered list of messages. See {@link org.motechproject.outbox.api.contract.SortKey SortKey}
      * @return - List of messages found in outbox
      */
     public List<OutboundVoiceMessage> getMessages(String externalId, OutboundVoiceMessageStatus status, SortKey sortKey);
@@ -123,7 +122,7 @@ public interface VoiceOutboxService {
     public int getNumDaysKeepSavedMessages();
 
     /**
-     * Sets the max number of pending messages after which the outbox will send an event {@link MotechEvent}
+     * Sets the max number of pending messages after which the outbox will send an event {@link org.motechproject.model.MotechEvent MotechEvent}
      *
      * @param maxNumberOfPendingMessages - a value representing the maximum number of pending messages
      */

@@ -28,7 +28,7 @@ public class VisitsQuery {
 
     /**
      * Adds query to filter scheduled visits by missed visits.
-     * Result contain all future visits. Should be used after adding {@link #withDueDateIn(org.joda.time.DateTime, org.joda.time.DateTime)} to avoid future visits in result
+     * Result contain all future visits. Should be used after adding {@link #withDueDateIn(DateTime, DateTime)} to avoid future visits in result
      *
      * @return
      */

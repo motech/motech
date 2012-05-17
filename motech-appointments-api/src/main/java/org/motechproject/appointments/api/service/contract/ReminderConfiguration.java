@@ -41,7 +41,7 @@ public class ReminderConfiguration {
     }
 
     /**
-     * Duration between two reminders, used along with {@link ReminderConfiguration#intervalUnit}
+     * Duration between two reminders, used along with {@link org.motechproject.appointments.api.service.contract.ReminderConfiguration#getIntervalCount() intervalCount}
      *
      * @param intervalCount
      * @return
@@ -56,7 +56,7 @@ public class ReminderConfiguration {
     }
 
     /**
-     * Sets the interval unit for {@link #intervalCount}
+     * Sets the interval unit for intervalCount
      *
      * @param intervalUnit specify unit {@link IntervalUnit}
      * @return
