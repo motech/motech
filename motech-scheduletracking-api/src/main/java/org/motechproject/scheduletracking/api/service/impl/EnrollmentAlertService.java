@@ -67,7 +67,8 @@ public class EnrollmentAlertService {
         long repeatIntervalInMillis = (long) alert.getInterval().toStandardSeconds().getSeconds() * 1000;
 
         AlertWindow alertWindow = createAlertWindowFor(alert, enrollment, currentMilestone, milestoneWindow);
-        schedulerService.safeScheduleRepeatingJob(new RepeatingSchedulableJob(event, alertWindow.scheduledAlertStartDate(), null, alertWindow.numberOfAlertsToSchedule() - 1, repeatIntervalInMillis));
+        if(alertWindow.numberOfAlertsToSchedule() > 0)
+            schedulerService.safeScheduleRepeatingJob(new RepeatingSchedulableJob(event, alertWindow.scheduledAlertStartDate(), null, alertWindow.numberOfAlertsToSchedule() - 1, repeatIntervalInMillis));
     }
 
     private AlertWindow createAlertWindowFor(Alert alert, Enrollment enrollment, Milestone currentMilestone, MilestoneWindow milestoneWindow) {

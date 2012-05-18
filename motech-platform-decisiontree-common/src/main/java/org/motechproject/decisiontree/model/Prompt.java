@@ -43,6 +43,11 @@ public abstract class Prompt {
         return this;
     }
 
+    /**
+     * Gets the command to be executed as part of prompt
+     * @return ITreeCommand instance
+     * @see ITreeCommand
+     */
     public ITreeCommand getCommand() {
         return command;
     }
