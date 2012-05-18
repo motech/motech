@@ -2,11 +2,7 @@
     "outgoing":{
         "request":{
             "urlPath":"http://smshost.com/sms/send",
-            "type":"GET",
-            "queryParameters":{
-                "recipients":"$recipients",
-                "message":"$message"
-            },
+            "type":"POST",
             "recipientsSeparator":"+",
             "bodyParameters":{
                 "recipients":"$recipients",

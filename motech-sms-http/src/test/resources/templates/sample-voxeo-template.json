@@ -1,0 +1,28 @@
+{
+    "outgoing":{
+        "request":{
+            "urlPath":"http://api.messaging.staging.voxeo.net/1.0/messaging",
+            "type":"POST",
+            "bodyParameters":{
+                "user":"$recipients",
+                "msg":"$message",
+                "botkey":"botkey_from_voxeo",
+                "apimethod":"send",
+                "network":"SMS",
+                "from":"voicesms_key_from_voxeo"
+            },
+            "authentication":{
+                "username":"voxeo_username",
+                "password":"voxeo_password"
+            }
+        },
+        "response":{
+            "success":"success msg=\"accepted\""
+        }
+    },
+    "incoming":{
+        "messagekey":"message",
+        "senderKey":"from",
+        "timestampKey":"time"
+    }
+}

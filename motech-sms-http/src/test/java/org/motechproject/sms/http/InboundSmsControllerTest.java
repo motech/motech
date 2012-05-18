@@ -8,6 +8,8 @@ import org.motechproject.event.EventRelay;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.sms.api.constants.EventDataKeys;
 import org.motechproject.sms.api.constants.EventSubjects;
+import org.motechproject.sms.http.template.Incoming;
+import org.motechproject.sms.http.template.SmsHttpTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -31,12 +33,12 @@ public class InboundSmsControllerTest {
     @Test
     public void handleIncomingSms() {
         SmsHttpTemplate template = new SmsHttpTemplate();
-        SmsHttpTemplate.Incoming incoming = new SmsHttpTemplate.Incoming();
+        Incoming incoming = new Incoming();
         incoming.setMessageKey("message");
         incoming.setSenderKey("sender");
         incoming.setTimestampKey("timestamp");
         template.setIncoming(incoming);
-        when(templateReader.getTemplate("/sms-http-template.json")).thenReturn(template);
+        when(templateReader.getTemplate()).thenReturn(template);
 
         HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);
         when(httpServletRequest.getParameter(template.getIncoming().getMessageKey())).thenReturn("some text message");
@@ -58,11 +60,11 @@ public class InboundSmsControllerTest {
     @Test
     public void timestampIsOptionalForIncomingMessage() {
         SmsHttpTemplate template = new SmsHttpTemplate();
-        SmsHttpTemplate.Incoming incoming = new SmsHttpTemplate.Incoming();
+        Incoming incoming = new Incoming();
         incoming.setMessageKey("message");
         incoming.setSenderKey("sender");
         template.setIncoming(incoming);
-        when(templateReader.getTemplate("/sms-http-template.json")).thenReturn(template);
+        when(templateReader.getTemplate()).thenReturn(template);
 
         HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);
         when(httpServletRequest.getParameter(template.getIncoming().getMessageKey())).thenReturn("some text message");

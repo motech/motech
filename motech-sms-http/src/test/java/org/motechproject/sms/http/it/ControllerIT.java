@@ -1,4 +1,4 @@
-package org.motechproject.sms.http;
+package org.motechproject.sms.http.it;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -12,9 +12,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:applicationSmsHttp.xml"})
-public class ControllerIt {
-
-
+public class ControllerIT {
     @Test
     @Ignore("test with telecom provider and app context")
     public void handleIncomingSms() throws Exception {
