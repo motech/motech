@@ -3,6 +3,7 @@ package org.motechproject.scheduletracking.api.domain;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.motechproject.model.Time;
+import org.motechproject.util.DateUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -67,6 +68,10 @@ public class AlertWindow {
         DateTime preferredAlertStartDateTime = toPreferredTime(alertStartDateTime(), preferredAlertTime);
         Period periodToBeFloatedWith = new Period(alertWindowStart, preferredAlertStartDateTime);
         alertWindowStart = alertWindowStart.plus(periodToBeFloatedWith);
+
+        if(alertWindowStart.isBefore(DateUtil.now())) {
+            periodToBeFloatedWith = periodToBeFloatedWith.plusDays(1);
+        }
 
         for (DateTime alertTime : alertTimings)
             floatedAlertTimings.add(alertTime.plus(periodToBeFloatedWith));

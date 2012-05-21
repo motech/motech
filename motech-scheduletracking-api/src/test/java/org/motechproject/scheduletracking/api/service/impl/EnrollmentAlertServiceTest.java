@@ -28,9 +28,7 @@ import static org.joda.time.DateTimeConstants.MILLIS_PER_HOUR;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.*;
 import static org.motechproject.scheduletracking.api.utility.PeriodUtil.*;
@@ -263,6 +261,26 @@ public class EnrollmentAlertServiceTest {
         assertEquals(DateUtil.now().toDate(), repeatJobCaptor.getValue().getStartTime());
         assertEquals(1, repeatJobCaptor.getValue().getRepeatCount().intValue());
     }
+
+    @Test
+    public void shouldScheduleJobForFloatingAlerts_WithPreferredTimeEarlierThanCurrentTime() {
+        Milestone firstMilestone = new Milestone("milestone_1", weeks(1), weeks(1), weeks(1), weeks(1));
+        Alert alert = new Alert(days(0), days(3), 7, 0, true);
+        firstMilestone.addAlert(WindowName.due, alert);
+
+        Schedule schedule = new Schedule("my_schedule");
+        schedule.addMilestones(firstMilestone);
+
+        Enrollment enrollment = new Enrollment("some_id", schedule, "milestone_1", daysAgo(12), DateUtil.now(), new Time(6, 15), EnrollmentStatus.ACTIVE, null);
+        enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
+
+        ArgumentCaptor<RepeatingSchedulableJob> repeatJobCaptor = ArgumentCaptor.forClass(RepeatingSchedulableJob.class);
+        verify(schedulerService, times(1)).safeScheduleRepeatingJob(repeatJobCaptor.capture());
+
+        assertEquals(newDateTime(DateUtil.now().plusDays(1).toLocalDate(), new Time(6, 15)).toDate(), repeatJobCaptor.getValue().getStartTime());
+        assertEquals(0, repeatJobCaptor.getValue().getRepeatCount().intValue());
+    }
+
 
     @Test
     public void shouldConsiderZeroOffsetForBackDatedFloatingAlerts() {
