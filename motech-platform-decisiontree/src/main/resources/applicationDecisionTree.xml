@@ -52,12 +52,12 @@
 		class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping">
 	</bean>
 
-	<bean id="decisionTreeVxmlController" class="org.motechproject.server.decisiontree.web.VxmlController" />
+    <bean id="decisionTreeVxmlController" class="org.motechproject.server.decisiontree.web.DecisionTreeController" />
     <bean id="decisionTreeService" class="org.motechproject.server.decisiontree.service.DecisionTreeServiceImpl"/>
 
 	<bean id="velocityConfig"
 		class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
-		<property name="resourceLoaderPath" value="/vm" />
+		<property name="resourceLoaderPath" value="/" />
 	</bean>
 
 	<bean id="viewResolver"
@@ -77,4 +77,6 @@
 	</bean>
     <bean id="treeEventProcessor"
           class="org.motechproject.server.decisiontree.service.TreeEventProcessor"/>
+
+    <bean id="simpleControllerHandlerAdapter" class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
 </beans>

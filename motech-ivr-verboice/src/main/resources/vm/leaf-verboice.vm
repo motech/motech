@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Response>
+    #foreach( $prompt in $node.prompts )
+        #if($prompt.class.simpleName == "AudioPrompt")
+            <Play>$prompt.audioFileUrl</Play>
+        #else
+            <Say>$prompt.message</Say>
+        #end
+    #end
+
+    #if ("$treeName"  != "")
+        #set ($url = "$scheme://$host/verboice/ivr?type=$type&ln=$language&tNm=$treeName")
+        <Redirect method="POST">$escape.escapeXml($url)</Redirect>
+    #else
+
+    #end
+</Response>

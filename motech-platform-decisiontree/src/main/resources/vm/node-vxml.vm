@@ -6,7 +6,7 @@
         <prompt>
             #foreach( $prompt in $node.prompts )
                 #if($prompt.class.simpleName == "AudioPrompt")
-                    <audio src="$contentPath/../audio/$language/$prompt.audioFileUrl">
+                    <audio src="$prompt.audioFileUrl">
                            $prompt.altMessage
                     </audio>
                 #else
@@ -16,7 +16,7 @@
         </prompt>
         #if ($node.transitions.size() > 0)
             #foreach( $mapEntry in $node.transitions.entrySet() )
-                #set ($url = "$contentPath/tree/vxml/node?pId=$patientId&ln=$language&tNm=$treeName&trP=$transitionPath&trK=$mapEntry.key")
+                #set ($url = "$contentPath/decisiontree/node?pId=$patientId&ln=$language&tNm=$treeName&trP=$transitionPath&trK=$mapEntry.key")
                 <choice dtmf="$mapEntry.key"
                         next="$escape.escapeXml($url)"/>
             #end
