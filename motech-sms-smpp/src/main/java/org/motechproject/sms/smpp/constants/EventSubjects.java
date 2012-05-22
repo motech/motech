@@ -19,5 +19,12 @@ public class EventSubjects {
      * TIMESTAMP - the time at which the SMS
      */
     public static final String INBOUND_SMS = "inbound_sms";
+    /**
+     * This event is raised when the SMSC notifies the module with the delivery status of an outbound sms.
+     * Payload:
+     * SENDER - the sender's number
+     * STATUS_MESSAGE - the status for delivery of the outbound message
+     * TIMESTAMP - the time at which the SMS
+     */
     public static final String SMS_DELIVERY_REPORT = "sms_delivery_report";
 }
