@@ -3,7 +3,6 @@ package org.motechproject.ivr.kookoo.repository;
 import org.ektorp.CouchDbConnector;
 import org.joda.time.DateTime;
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.ivr.event.CallEvent;
@@ -26,7 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.motechproject.util.DateUtil.newDateTime;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/applicationIvrKookooBundle.xml"})
+@ContextConfiguration(locations = {"/ivrKookooRepositories.xml"})
 public class AllKooKooCallDetailRecordsIT {
 
     @Autowired
@@ -41,7 +40,6 @@ public class AllKooKooCallDetailRecordsIT {
         allKooKooCallDetailRecords.removeAll();
     }
 
-    @Ignore // TODO
     @Test
     public void shouldFindCallDetailRecordByCallId() {
         CallDetailRecord callDetailRecord = CallDetailRecord.create("phoneNumber", CallDirection.Inbound, CallDetailRecord.Disposition.ANSWERED);
@@ -55,7 +53,6 @@ public class AllKooKooCallDetailRecordsIT {
         ivrKookooCouchDbConnector.delete(kookooCallDetailRecord);
     }
 
-    @Ignore // TODO
     @Test
     public void shouldFetchCallLogsWithinADateRange() {
         createKookooCallDetailRecord("phoneNumber", CallDirection.Inbound, CallDetailRecord.Disposition.ANSWERED, newDateTime(2012, 10, 2), "1");
@@ -66,7 +63,6 @@ public class AllKooKooCallDetailRecordsIT {
         assertEquals(asList(new String[]{ "2", "3" }), extract(result, on(KookooCallDetailRecord.class).getVendorCallId()));
     }
 
-    @Ignore // TODO
     @Test
     public void shouldDeleteCallLogsWithinADateRange() {
         createKookooCallDetailRecord("phoneNumber", CallDirection.Inbound, CallDetailRecord.Disposition.ANSWERED, newDateTime(2012, 10, 2), "1");
@@ -78,7 +74,6 @@ public class AllKooKooCallDetailRecordsIT {
         assertEquals("1", allKooKooCallDetailRecords.getAll().get(0).getVendorCallId());
     }
 
-    @Ignore // TODO
     @Test
     public void shouldDeleteCallLogsInBatches() {
         for (int i = 0; i < 10; i++)
