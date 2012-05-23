@@ -24,7 +24,7 @@ import static java.lang.String.format;
 import static org.motechproject.util.DateUtil.newDateTime;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/ivrKookooRepositories.xml"})
+@ContextConfiguration(locations = {"/applicationIvrKookooBundle.xml"})
 public class AllKooKooCallDetailRecordsPerformanceTest {
 
     @Autowired

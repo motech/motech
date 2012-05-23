@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.motechproject.util.DateUtil.newDateTime;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/ivrKookooRepositories.xml"})
+@ContextConfiguration(locations = {"/applicationIvrKookooBundle.xml"})
 public class AllKooKooCallDetailRecordsIT {
 
     @Autowired
