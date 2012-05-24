@@ -5,7 +5,6 @@ import org.motechproject.server.event.EventListenerRegistry;
 import org.motechproject.gateway.MotechSchedulerGateway;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.server.ruleengine.KnowledgeBaseManager;
-import org.motechproject.ivr.service.IVRService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class Context {
@@ -24,19 +23,6 @@ public class Context {
 
     @Autowired(required=false)
     private MetricsAgent metricsAgent;
-
-    @Autowired(required=false)
-    private IVRService ivrService;
-
-    public IVRService getIvrService()
-    {
-        return ivrService;
-    }
-
-    public void setIvrService(IVRService ivrService)
-    {
-        this.ivrService = ivrService;
-    }
 
     public MetricsAgent getMetricsAgent() {
         return metricsAgent;

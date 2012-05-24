@@ -42,6 +42,7 @@ import org.motechproject.outbox.api.EventKeys;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +53,9 @@ import java.util.Map;
 public class OutboxExecutionHandler {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private MotechSchedulerGateway schedulerGateway = Context.getInstance().getMotechSchedulerGateway();
-    private IVRService ivrService = Context.getInstance().getIvrService();
+
+    @Autowired
+    IVRService ivrService;
 
     //TODO: move this out to config somewhere
     private static final String HOST_IP = "10.0.1.6";
