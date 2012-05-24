@@ -12,12 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
+import static java.lang.String.format;
+import static java.util.Arrays.asList;
 
 @Repository
 public class AllKooKooCallDetailRecords extends MotechBaseRepository<KookooCallDetailRecord> {
+
+    public static final int DEFAULT_BATCH_SIZE = 1000;
 
     @Autowired
     public AllKooKooCallDetailRecords(@Qualifier("kookooIvrDbConnector") CouchDbConnector db) {
@@ -35,11 +38,11 @@ public class AllKooKooCallDetailRecords extends MotechBaseRepository<KookooCallD
         return db.queryView(query, KookooCallDetailRecord.class);
     }
 
-    public void removeInRange(DateTime start, DateTime end) {
-        removeInRange(start, end, 1);
+    public void remove(DateTime start, DateTime end) {
+        remove(start, end, DEFAULT_BATCH_SIZE);
     }
 
-    public void removeInRange(DateTime start, DateTime end, int batchSize) {
+    public void remove(DateTime start, DateTime end, int batchSize) {
         DateTime startKey = start.toDateTime(DateTimeZone.UTC);
         DateTime endKey = end.toDateTime(DateTimeZone.UTC);
         while (true) {
@@ -50,6 +53,25 @@ public class AllKooKooCallDetailRecords extends MotechBaseRepository<KookooCallD
             for (KookooCallDetailRecord record : records)
                 deleteDocuments.add(BulkDeleteDocument.of(record));
             db.executeBulk(deleteDocuments);
+        }
+    }
+
+    public void purge(DateTime start, DateTime end) {
+        purge(start, end, DEFAULT_BATCH_SIZE);
+    }
+
+    public void purge(DateTime start, DateTime end, int batchSize) {
+        DateTime startKey = start.toDateTime(DateTimeZone.UTC);
+        DateTime endKey = end.toDateTime(DateTimeZone.UTC);
+        while (true) {
+            List<KookooCallDetailRecord> records = findByStartDate(startKey, endKey, batchSize);
+            if (records.size() == 0)
+                break;
+            Map<String, List<String>> purgeRequest = new HashMap<String, List<String>>();
+            for (KookooCallDetailRecord record : records)
+                purgeRequest.put(record.getId(), asList(new String[]{ record.getRevision() }));
+            db.purge(purgeRequest);
+            log.info(format("purged kookoo %d call logs between %s and %s", records.size(), records.get(0).getCallDetailRecord().getStartDate(), records.get(records.size() - 1).getCallDetailRecord().getStartDate()));
         }
     }
 }

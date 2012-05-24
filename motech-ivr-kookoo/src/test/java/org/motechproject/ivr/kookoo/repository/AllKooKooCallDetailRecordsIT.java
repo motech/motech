@@ -1,6 +1,8 @@
 package org.motechproject.ivr.kookoo.repository;
 
 import org.ektorp.CouchDbConnector;
+import org.ektorp.DocumentNotFoundException;
+import org.ektorp.Options;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Test;
@@ -15,13 +17,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.motechproject.util.DateUtil.newDateTime;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -69,7 +71,7 @@ public class AllKooKooCallDetailRecordsIT {
         createKookooCallDetailRecord("phoneNumber", CallDirection.Inbound, CallDetailRecord.Disposition.ANSWERED, newDateTime(2012, 10, 3), "2");
         createKookooCallDetailRecord("phoneNumber", CallDirection.Inbound, CallDetailRecord.Disposition.ANSWERED, newDateTime(2012, 10, 4), "3");
         createKookooCallDetailRecord("phoneNumber", CallDirection.Inbound, CallDetailRecord.Disposition.ANSWERED, newDateTime(2012, 10, 5), "4");
-        allKooKooCallDetailRecords.removeInRange(newDateTime(2012, 10, 3), newDateTime(2012, 10, 5));
+        allKooKooCallDetailRecords.remove(newDateTime(2012, 10, 3), newDateTime(2012, 10, 5));
         assertEquals(1, allKooKooCallDetailRecords.getAll().size());
         assertEquals("1", allKooKooCallDetailRecords.getAll().get(0).getVendorCallId());
     }
@@ -78,8 +80,55 @@ public class AllKooKooCallDetailRecordsIT {
     public void shouldDeleteCallLogsInBatches() {
         for (int i = 0; i < 10; i++)
             createKookooCallDetailRecord("phoneNumber", CallDirection.Inbound, CallDetailRecord.Disposition.ANSWERED, newDateTime(2012, 10, i + 1, 6, 0, 0), String.valueOf(i));
-        allKooKooCallDetailRecords.removeInRange(newDateTime(2012, 10, 1, 6, 0, 0), newDateTime(2012, 10, 7, 6, 0, 0), 3);
+        allKooKooCallDetailRecords.remove(newDateTime(2012, 10, 1, 6, 0, 0), newDateTime(2012, 10, 7, 6, 0, 0), 3);
         assertEquals(3, allKooKooCallDetailRecords.getAll().size());
+    }
+
+    @Test
+    public void shouldPurgCallLogsWithinADateRange() {
+        List<KookooCallDetailRecord> records = new ArrayList<KookooCallDetailRecord>();
+        records.add(createKookooCallDetailRecord("phoneNumber", CallDirection.Inbound, CallDetailRecord.Disposition.ANSWERED, newDateTime(2012, 10, 2), "1"));
+        records.add(createKookooCallDetailRecord("phoneNumber", CallDirection.Inbound, CallDetailRecord.Disposition.ANSWERED, newDateTime(2012, 10, 3), "2"));
+        records.add(createKookooCallDetailRecord("phoneNumber", CallDirection.Inbound, CallDetailRecord.Disposition.ANSWERED, newDateTime(2012, 10, 4), "3"));
+        records.add(createKookooCallDetailRecord("phoneNumber", CallDirection.Inbound, CallDetailRecord.Disposition.ANSWERED, newDateTime(2012, 10, 5), "4"));
+
+        allKooKooCallDetailRecords.purge(newDateTime(2012, 10, 3), newDateTime(2012, 10, 5));
+
+        List<KookooCallDetailRecord> dbRecords = allKooKooCallDetailRecords.getAll();
+        assertEquals(1, dbRecords.size());
+        assertEquals("1", dbRecords.get(0).getVendorCallId());
+
+        List<KookooCallDetailRecord> purgedRecords = records.subList(1, records.size() - 1);
+        for (KookooCallDetailRecord record : purgedRecords)
+            assertDocumentAbsent(record.getId(), record.getRevision());
+    }
+
+    @Test
+    public void shouldPurgCallLogsInBatches() {
+        List<KookooCallDetailRecord> records = new ArrayList<KookooCallDetailRecord>();
+        records.add(createKookooCallDetailRecord("phoneNumber", CallDirection.Inbound, CallDetailRecord.Disposition.ANSWERED, newDateTime(2012, 10, 2), "1"));
+        records.add(createKookooCallDetailRecord("phoneNumber", CallDirection.Inbound, CallDetailRecord.Disposition.ANSWERED, newDateTime(2012, 10, 3), "2"));
+        records.add(createKookooCallDetailRecord("phoneNumber", CallDirection.Inbound, CallDetailRecord.Disposition.ANSWERED, newDateTime(2012, 10, 4), "3"));
+        records.add(createKookooCallDetailRecord("phoneNumber", CallDirection.Inbound, CallDetailRecord.Disposition.ANSWERED, newDateTime(2012, 10, 5), "4"));
+
+        allKooKooCallDetailRecords.purge(newDateTime(2012, 10, 3), newDateTime(2012, 10, 5), 2);
+
+        List<KookooCallDetailRecord> dbRecords = allKooKooCallDetailRecords.getAll();
+        assertEquals(1, dbRecords.size());
+        assertEquals("1", dbRecords.get(0).getVendorCallId());
+
+        List<KookooCallDetailRecord> purgedRecords = records.subList(1, records.size() - 1);
+        for (KookooCallDetailRecord record : purgedRecords)
+            assertDocumentAbsent(record.getId(), record.getRevision());
+    }
+
+    private void assertDocumentAbsent(String id, String revision) {
+        try {
+            allKooKooCallDetailRecords.get(id, new Options().revision(revision));
+        } catch (DocumentNotFoundException e) {
+            return;
+        }
+        fail();
     }
 
     private KookooCallDetailRecord buildKookooCallDetailRecord(String phoneNumber, CallDirection callDirection, CallDetailRecord.Disposition disposition, DateTime startDate, String vendorCallId) {

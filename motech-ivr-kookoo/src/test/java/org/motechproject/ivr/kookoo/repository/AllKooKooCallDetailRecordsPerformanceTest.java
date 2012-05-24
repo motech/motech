@@ -60,7 +60,7 @@ public class AllKooKooCallDetailRecordsPerformanceTest {
         System.out.println(format("inserted %d records", numberOfRecords));
 
         long startTime = System.currentTimeMillis();
-        allKooKooCallDetailRecords.removeInRange(newDateTime(2000, 1, 1), newDateTime(2010, 1, 1), 5000);
+        allKooKooCallDetailRecords.purge(newDateTime(2000, 1, 1), newDateTime(2010, 1, 1), 5000);
         System.out.println(format("deleted in %ds", (System.currentTimeMillis() - startTime) / 1000));
     }
 
