@@ -77,8 +77,6 @@ public class OutboxExecutionHandlerTest
 		event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
 		event.getParameters().put(EventKeys.LANGUAGE_KEY, "en");
 
-        when(context.getIvrService()).thenReturn(ivrServiceMock);
-
 		outboxExecutionHandler.execute(event);
 
 		verify(ivrServiceMock).initiateCall(any(CallRequest.class));
@@ -89,8 +87,6 @@ public class OutboxExecutionHandlerTest
 		MotechEvent event = new MotechEvent("", null);
 		event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
 
-        when(context.getIvrService()).thenReturn(ivrServiceMock);
-
 		outboxExecutionHandler.execute(event);
 
 		verify(ivrServiceMock, times(0)).initiateCall(any(CallRequest.class));
@@ -100,8 +96,6 @@ public class OutboxExecutionHandlerTest
 	public void testExecute_NoPartyID() {
 		MotechEvent event = new MotechEvent("", null);
 		event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
-
-        when(context.getIvrService()).thenReturn(ivrServiceMock);
 
 		outboxExecutionHandler.execute(event);
 
