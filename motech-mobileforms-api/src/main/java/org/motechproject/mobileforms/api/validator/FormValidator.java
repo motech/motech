@@ -4,6 +4,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.log4j.Logger;
 import org.motechproject.MotechException;
 import org.motechproject.mobileforms.api.domain.FormBean;
+import org.motechproject.mobileforms.api.domain.FormBeanGroup;
 import org.motechproject.mobileforms.api.domain.FormError;
 import org.motechproject.mobileforms.api.validator.annotations.ValidationMarker;
 
@@ -18,8 +19,7 @@ import static org.motechproject.mobileforms.api.utils.CollectionUtils.addIfNotNu
 public abstract class FormValidator <V extends FormBean>{
     private static Logger log = Logger.getLogger(FormValidator.class);
 
-    public List<FormError> validate(final V formBean) {
-
+    public List<FormError> validate(final V formBean, FormBeanGroup formGroup) {
         List<FormError> formErrors = new ArrayList<FormError>();
         for (Field field : getInheritedFields(formBean.getClass())) {
             String fieldName = null;

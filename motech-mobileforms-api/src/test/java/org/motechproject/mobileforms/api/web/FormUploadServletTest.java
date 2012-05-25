@@ -3,15 +3,18 @@ package org.motechproject.mobileforms.api.web;
 import org.fcitmuk.epihandy.EpihandyXformSerializer;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.mobileforms.api.callbacks.FormProcessor;
-import org.motechproject.mobileforms.api.callbacks.FormPublisher;
+import org.motechproject.mobileforms.api.callbacks.FormGroupPublisher;
+import org.motechproject.mobileforms.api.callbacks.FormParser;
 import org.motechproject.mobileforms.api.domain.FormBean;
+import org.motechproject.mobileforms.api.domain.FormBeanGroup;
 import org.motechproject.mobileforms.api.domain.FormError;
 import org.motechproject.mobileforms.api.domain.FormOutput;
 import org.motechproject.mobileforms.api.service.MobileFormsService;
 import org.motechproject.mobileforms.api.service.UsersService;
 import org.motechproject.mobileforms.api.validator.FormValidator;
+import org.motechproject.mobileforms.api.validator.TestFormBean;
 import org.motechproject.mobileforms.api.vo.Study;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -25,7 +28,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.*;
 
-import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -45,9 +50,9 @@ public class FormUploadServletTest {
     @Mock
     private EpihandyXformSerializer epihandySerializer;
     @Mock
-    private FormProcessor formProcessor;
+    private FormParser formParser;
     @Mock
-    private FormPublisher formPublisher;
+    private FormGroupPublisher formGroupPublisher;
     @Mock
     private ServletContext mockServletContext;
     @Mock
@@ -62,35 +67,40 @@ public class FormUploadServletTest {
         response = new MockHttpServletResponse();
         formUploadServlet = spy(new FormUploadServlet());
         doReturn(mockServletContext).when(formUploadServlet).getServletContext();
-        doReturn(formProcessor).when(formUploadServlet).createFormProcessor();
+        doReturn(formParser).when(formUploadServlet).createFormProcessor();
         ReflectionTestUtils.setField(formUploadServlet, "context", applicationContext);
         ReflectionTestUtils.setField(formUploadServlet, "mobileFormsService", mobileFormsService);
         ReflectionTestUtils.setField(formUploadServlet, "usersService", usersService);
-        ReflectionTestUtils.setField(formUploadServlet, "formPublisher", formPublisher);
+        ReflectionTestUtils.setField(formUploadServlet, "formGroupPublisher", formGroupPublisher);
         doReturn(epihandySerializer).when(formUploadServlet).serializer();
         doReturn(formOutput).when(formUploadServlet).getFormOutput();
     }
 
     @Test
     public void shouldProcessUploadedForms() throws Exception {
-        String validatorClass = "org.motechproject.mobileforms.api.validator.TestANCVisitFormValidator";
-        FormBean successForm = mock(FormBean.class);
-        FormBean failureForm = mock(FormBean.class);
-        FormValidator formValidator = mock(FormValidator.class);
+        final String validatorClass = "org.motechproject.mobileforms.api.validator.TestANCVisitFormValidator";
+        final FormValidator formValidator = mock(FormValidator.class);
+        FormBean successForm = new TestFormBean("study", "form1", "xml", validatorClass, "type", Collections.<String>emptyList(), "group1", "last");
+        FormBean failureForm = new TestFormBean("study", "form2", "xml", validatorClass, "type", Collections.<String>emptyList(), "group1", "last");
+        FormBean formInDifferentGroup = new TestFormBean("study", "form3", "xml", validatorClass, "type", Collections.<String>emptyList(), "group2", "last");
 
-        List<FormBean> formBeans = Arrays.asList(successForm, failureForm);
+        List<FormBean> formBeans = Arrays.asList(successForm, failureForm, formInDifferentGroup);
         List<FormError> formErrors = Arrays.asList(new FormError("field_name", "error"));
         Map<Integer, String> formIdMap = new HashMap<Integer, String>();
         Study study = new Study("study", formBeans);
 
-        when(formProcessor.getStudies()).thenReturn(Arrays.asList(study));
-        when(successForm.getValidator()).thenReturn(validatorClass);
-        when(failureForm.getValidator()).thenReturn(validatorClass);
-        when(successForm.getXmlContent()).thenReturn("xml");
-        when(failureForm.getXmlContent()).thenReturn("xml");
-        when(mockServletContext.getAttribute(validatorClass)).thenReturn(formValidator);
-        when(formValidator.validate(successForm)).thenReturn(Collections.EMPTY_LIST);
-        when(formValidator.validate(failureForm)).thenReturn(formErrors);
+        when(formParser.getStudies()).thenReturn(Arrays.asList(study));
+
+        mockServletContextToReturnValidators(new HashMap<String, FormValidator>() {{
+            put(validatorClass, formValidator);
+        }});
+
+        final FormBeanGroup groupOne = new FormBeanGroup(Arrays.asList(successForm, failureForm));
+        FormBeanGroup groupTwo = new FormBeanGroup(Arrays.asList(formInDifferentGroup));
+        when(formValidator.validate(successForm, groupOne)).thenReturn(Collections.EMPTY_LIST);
+        when(formValidator.validate(failureForm, groupOne)).thenReturn(formErrors);
+        when(formValidator.validate(formInDifferentGroup, groupTwo)).thenReturn(Collections.EMPTY_LIST);
+
         when(mobileFormsService.getFormIdMap()).thenReturn(formIdMap);
 
         populateHttpRequest(request, "username", "password", groupIndex);
@@ -98,50 +108,26 @@ public class FormUploadServletTest {
         formUploadServlet.doPost(request, response);
 
         verify(formOutput).addStudy(study);
-        verify(failureForm).setFormErrors(formErrors);
-        verify(successForm, never()).setFormErrors(anyList());
+
+        assertThat(failureForm.getFormErrors(), is(equalTo(formErrors)));
+
         verify(formOutput).writeFormErrors(any(DataOutputStream.class));
-        verify(formPublisher).publish(successForm);
-        verify(epihandySerializer).addDeserializationListener(formProcessor);
+
+        ArgumentCaptor<FormBeanGroup> publishCaptor = ArgumentCaptor.forClass(FormBeanGroup.class);
+        verify(formGroupPublisher, times(2)).publish(publishCaptor.capture());
+        assertThat(publishCaptor.getAllValues(), is(equalTo(Arrays.asList(new FormBeanGroup(Arrays.asList(successForm)), new FormBeanGroup(Arrays.asList(formInDifferentGroup))))));
+
+        verify(epihandySerializer).addDeserializationListener(formParser);
         verify(epihandySerializer).deserializeStudiesWithEvents(any(DataInputStream.class), eq(formIdMap));
 
     }
 
-    @Test
-    public void shouldContinueProcessingUploadedFormsIfAnyFailureHappensInAnyForm() throws Exception {
-        String validatorClass = "org.motechproject.mobileforms.api.validator.TestANCVisitFormValidator";
-        FormBean errorForm = mock(FormBean.class);
-        FormBean successForm = mock(FormBean.class);
-        FormValidator formValidator = mock(FormValidator.class);
-        final String errorFormName = "error form";
-
-        List<FormBean> formBeans = Arrays.asList(errorForm, successForm);
-        Map<Integer, String> formIdMap = new HashMap<Integer, String>();
-        Study study = new Study("study", formBeans);
-
-        when(formProcessor.getStudies()).thenReturn(Arrays.asList(study));
-        when(successForm.getValidator()).thenReturn(validatorClass);
-        when(errorForm.getValidator()).thenReturn(validatorClass);
-        when(errorForm.getFormname()).thenReturn(errorFormName);
-        when(successForm.getXmlContent()).thenReturn("xml");
-        when(errorForm.getXmlContent()).thenReturn("xml");
-        when(mockServletContext.getAttribute(validatorClass)).thenReturn(formValidator);
-        when(formValidator.validate(errorForm)).thenThrow(new RuntimeException("some error in processing form"));
-        when(formValidator.validate(successForm)).thenReturn(Collections.EMPTY_LIST);
-        when(mobileFormsService.getFormIdMap()).thenReturn(formIdMap);
-
-        populateHttpRequest(request, "username", "password", groupIndex);
-
-        formUploadServlet.doPost(request, response);
-
-        verify(formOutput).addStudy(study);
-        verify(errorForm).setFormErrors(asList(new FormError("Form Error:" + errorFormName, "Server exception, contact your administrator")));
-        verify(successForm, never()).setFormErrors(anyList());
-        verify(formOutput).writeFormErrors(any(DataOutputStream.class));
-        verify(formPublisher).publish(successForm);
-        verify(epihandySerializer).addDeserializationListener(formProcessor);
-        verify(epihandySerializer).deserializeStudiesWithEvents(any(DataInputStream.class), eq(formIdMap));
-
+    private void mockServletContextToReturnValidators(Map<String, FormValidator> validators){
+        reset(mockServletContext);
+        when(mockServletContext.getAttributeNames()).thenReturn(Collections.enumeration(validators.keySet()));
+        for (Map.Entry<String, FormValidator> entry : validators.entrySet()) {
+            when(mockServletContext.getAttribute(entry.getKey())).thenReturn(entry.getValue());
+        }
     }
 
     private void populateHttpRequest(MockHttpServletRequest request, String userName, String password, Integer groupIndex)
@@ -154,5 +140,22 @@ public class FormUploadServletTest {
         dataOutputStream.writeUTF("en");
         if (groupIndex != null) dataOutputStream.writeInt(groupIndex);
         request.setContent(byteStream.toByteArray());
+    }
+
+    @Test
+    public void shouldReturnListOfValidatorInServletContext(){
+        when(mockServletContext.getAttributeNames()).thenReturn(Collections.enumeration(Arrays.asList("validator1", "validator2", "some_attribute_name")));
+        final FormValidator formValidator1 = mock(FormValidator.class);
+        final FormValidator formValidator2 = mock(FormValidator.class);
+
+        when(mockServletContext.getAttribute("validator1")).thenReturn(formValidator1);
+        when(mockServletContext.getAttribute("validator2")).thenReturn(formValidator2);
+
+        final Map<String, FormValidator> formValidators = formUploadServlet.getFormValidators();
+        Map<String, FormValidator> expected=new HashMap<String, FormValidator>(){{
+            put("validator1",formValidator1);
+            put("validator2",formValidator2);
+        }};
+        assertThat(formValidators,is(equalTo(expected)));
     }
 }

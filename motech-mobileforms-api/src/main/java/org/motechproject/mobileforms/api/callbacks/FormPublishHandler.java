@@ -4,5 +4,4 @@ import org.motechproject.model.MotechEvent;
 
 public interface FormPublishHandler {
     void handleFormEvent(MotechEvent event);
-
 }

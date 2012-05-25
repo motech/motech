@@ -19,8 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FormProcessor extends DeserializationListenerAdapter {
-    private final Logger log = LoggerFactory.getLogger(FormProcessor.class);
+public class FormParser extends DeserializationListenerAdapter {
+    private final Logger log = LoggerFactory.getLogger(FormParser.class);
 
     private List<Study> studies;
 
@@ -32,10 +32,10 @@ public class FormProcessor extends DeserializationListenerAdapter {
 
     private String marker;
 
-    public FormProcessor() {
+    public FormParser() {
     }
 
-    public FormProcessor(FormDataParser parser, MapToBeanConvertor mapToBeanConvertor, AllMobileForms allMobileForms, String marker) {
+    public FormParser(FormDataParser parser, MapToBeanConvertor mapToBeanConvertor, AllMobileForms allMobileForms, String marker) {
         this.parser = parser;
         this.mapToBeanConvertor = mapToBeanConvertor;
         this.allMobileForms = allMobileForms;

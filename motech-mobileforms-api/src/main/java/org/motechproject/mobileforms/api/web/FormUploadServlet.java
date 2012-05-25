@@ -3,10 +3,10 @@ package org.motechproject.mobileforms.api.web;
 import com.jcraft.jzlib.JZlib;
 import com.jcraft.jzlib.ZOutputStream;
 import org.fcitmuk.epihandy.EpihandyXformSerializer;
-import org.motechproject.mobileforms.api.callbacks.FormProcessor;
-import org.motechproject.mobileforms.api.domain.FormBean;
-import org.motechproject.mobileforms.api.domain.FormError;
+import org.motechproject.mobileforms.api.callbacks.FormParser;
+import org.motechproject.mobileforms.api.domain.FormBeanGroup;
 import org.motechproject.mobileforms.api.domain.FormOutput;
+import org.motechproject.mobileforms.api.validator.FormValidator;
 import org.motechproject.mobileforms.api.vo.Study;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +18,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
-
-import static java.util.Arrays.asList;
+import java.util.Map;
 
 public class FormUploadServlet extends BaseFormServlet {
 
@@ -35,23 +34,14 @@ public class FormUploadServlet extends BaseFormServlet {
             readParameters(dataInput);
             readActionByte(dataInput);
             List<Study> studies = extractBeans(dataInput);
+            final Map<String,FormValidator> formValidators = getFormValidators();
             for (Study study : studies) {
-                for (FormBean formBean : study.forms()) {
-                    try {
-                        List<FormError> formErrors = getValidatorFor(formBean).validate(formBean);
-                        if (formErrors.isEmpty())
-                            formPublisher.publish(formBean);
-                        else {
-                            formBean.setFormErrors(formErrors);
-                        }
-                    } catch (Exception e) {
-                        log.error("Encountered exception while validating form submitted from mobile: ", e);
-                        formBean.setFormErrors(asList(new FormError("Form Error:" + formBean.getFormname(), "Server exception, contact your administrator")));
-                    }
+                for (FormBeanGroup group : study.groupedForms()) {
+                    formGroupValidator.validate(group, formValidators);
+                    formGroupPublisher.publish(new FormBeanGroup(group.validForms()));
                 }
                 formOutput.addStudy(study);
             }
-
             response.setContentType(APPLICATION_OCTET_STREAM);
             formOutput.writeFormErrors(dataOutput);
             response.setStatus(HttpServletResponse.SC_OK);
@@ -68,10 +58,10 @@ public class FormUploadServlet extends BaseFormServlet {
 
     private List<Study> extractBeans(DataInputStream dataInput) throws Exception {
         EpihandyXformSerializer serializer = serializer();
-        FormProcessor formProcessor = createFormProcessor();
-        serializer.addDeserializationListener(formProcessor);
+        FormParser formParser = createFormProcessor();
+        serializer.addDeserializationListener(formParser);
         serializer.deserializeStudiesWithEvents(dataInput, mobileFormsService.getFormIdMap());
-        return formProcessor.getStudies();
+        return formParser.getStudies();
     }
 
 }

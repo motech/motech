@@ -3,13 +3,12 @@ package org.motechproject.mobileforms.api.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.mobileforms.api.domain.FormBean;
-import org.motechproject.mobileforms.api.repository.AllMobileForms;
 import org.motechproject.mobileforms.api.domain.Form;
 import org.motechproject.mobileforms.api.domain.FormGroup;
-import org.motechproject.mobileforms.api.vo.Study;
+import org.motechproject.mobileforms.api.repository.AllMobileForms;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -61,11 +60,13 @@ public class MobileFormsServiceImplTest {
         String formGroupOneName = "FormGroup-1";
         String formGroupTwoName = "FormGroup-2";
 
-        when(allMobileForms.getFormGroup(0)).thenReturn(new FormGroup(formGroupOneName, Arrays.asList(new Form("From-1", "Form-1.xml", formOneContent, null, null, null), new Form("Form-2", "Form-2.xml", formTwoContent, null, null, null))));
-        when(allMobileForms.getFormGroup(1)).thenReturn(new FormGroup(formGroupTwoName, Arrays.asList(new Form("From-3", "Form-3.xml", formThreeContent, null, null, null))));
+        final FormGroup formGroupOne = new FormGroup(formGroupOneName, Arrays.asList(new Form("From-1", "Form-1.xml", formOneContent, null, null, null, Collections.<String>emptyList()), new Form("Form-2", "Form-2.xml", formTwoContent, null, null, null, Collections.<String>emptyList())));
+        final FormGroup formGroupTwo = new FormGroup(formGroupTwoName, Arrays.asList(new Form("From-3", "Form-3.xml", formThreeContent, null, null, null, Collections.<String>emptyList())));
+        when(allMobileForms.getFormGroup(0)).thenReturn(formGroupOne);
+        when(allMobileForms.getFormGroup(1)).thenReturn(formGroupTwo);
 
-        assertThat(mobileFormsService.getForms(0), is(equalTo(new Study(formGroupOneName, Arrays.asList(new FormBean(formOneContent), new FormBean(formTwoContent))))));
-        assertThat(mobileFormsService.getForms(1), is(equalTo(new Study(formGroupTwoName, Arrays.asList(new FormBean(formThreeContent))))));
+        assertThat(mobileFormsService.getForms(0), is(equalTo(formGroupOne)));
+        assertThat(mobileFormsService.getForms(1), is(equalTo(formGroupTwo)));
 
     }
 

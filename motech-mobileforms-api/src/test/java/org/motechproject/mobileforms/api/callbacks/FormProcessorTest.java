@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class FormProcessorTest {
-    private FormProcessor formProcessor;
+    private FormParser formParser;
     @Mock
     private FormDataParser formDataParser;
     @Mock
@@ -39,16 +39,16 @@ public class FormProcessorTest {
     @Before
     public void setUp() {
         initMocks(this);
-        formProcessor = new FormProcessor();
-        ReflectionTestUtils.setField(formProcessor, "parser", formDataParser);
-        ReflectionTestUtils.setField(formProcessor, "allMobileForms", allMobileForms);
-        ReflectionTestUtils.setField(formProcessor, "marker", "formname");
-        ReflectionTestUtils.setField(formProcessor, "mapToBeanConvertor", new MapToBeanConvertor());
+        formParser = new FormParser();
+        ReflectionTestUtils.setField(formParser, "parser", formDataParser);
+        ReflectionTestUtils.setField(formParser, "allMobileForms", allMobileForms);
+        ReflectionTestUtils.setField(formParser, "marker", "formname");
+        ReflectionTestUtils.setField(formParser, "mapToBeanConvertor", new MapToBeanConvertor());
     }
 
     @Test
     public void shouldMakeFormBeansOutOfFormXML() {
-        formProcessor.start();
+        formParser.start();
         Map<String, String> map = new HashMap<String, String>();
         map.put("formname", "formName");
         map.put("country", "india");
@@ -66,10 +66,10 @@ public class FormProcessorTest {
         when(allMobileForms.getFormByName("formName")).thenReturn(form);
 
         StudyData mockStudyData = mock(StudyData.class);
-        formProcessor.processingStudy(mockStudyData);
-        formProcessor.formProcessed(null, null, "xml");
+        formParser.processingStudy(mockStudyData);
+        formParser.formProcessed(null, null, "xml");
 
-        TestForm testForm = (TestForm) formProcessor.getStudies().get(0).forms().get(0);
+        TestForm testForm = (TestForm) formParser.getStudies().get(0).forms().get(0);
         assertEquals("formName", testForm.getFormname());
         assertEquals("studyName", testForm.getStudyName());
         assertEquals("validator", testForm.getValidator());
@@ -82,7 +82,7 @@ public class FormProcessorTest {
 
     @Test
     public void shouldRemoveEmptyStringValuesAndHandleEnumValueTypesWhilePopulatingBeanFromMap() throws InvocationTargetException, IllegalAccessException, ParseException {
-        formProcessor.start();
+        formParser.start();
         Map<String, String> formAttributes = new HashMap<String, String>();
         formAttributes.put("addHistory", "");
         formAttributes.put("nhisExpires", "");
@@ -114,10 +114,10 @@ public class FormProcessorTest {
         when(allMobileForms.getFormByName("registerPatient-jf")).thenReturn(form);
 
         StudyData mockStudyData = mock(StudyData.class);
-        formProcessor.processingStudy(mockStudyData);
-        formProcessor.formProcessed(null, null, "xml");
+        formParser.processingStudy(mockStudyData);
+        formParser.formProcessed(null, null, "xml");
 
-        RegisterClientBean registerClientBean = (RegisterClientBean) formProcessor.getStudies().get(0).forms().get(0);
+        RegisterClientBean registerClientBean = (RegisterClientBean) formParser.getStudies().get(0).forms().get(0);
         assertThat(registerClientBean.getSender(), is(equalTo("0944442452")));
 
         assertThat(registerClientBean.getNhisExpires(), is(equalTo(null)));
@@ -143,9 +143,9 @@ public class FormProcessorTest {
 
     @Test
     public void shouldInitializeEmptyListToStudiesWhileBeforeParsingTheXml(){
-        assertThat(formProcessor.getStudies(), is(equalTo(null)));
-        formProcessor.start();
-        assertThat(formProcessor.getStudies(), is(equalTo(Collections.<Study>emptyList())));
+        assertThat(formParser.getStudies(), is(equalTo(null)));
+        formParser.start();
+        assertThat(formParser.getStudies(), is(equalTo(Collections.<Study>emptyList())));
     }
 
 }

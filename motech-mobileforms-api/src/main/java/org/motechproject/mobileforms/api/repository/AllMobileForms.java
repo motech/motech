@@ -41,6 +41,9 @@ public class AllMobileForms {
     public void initialize() {
         List<FormGroup> formGroupsFromConfigFile = (List<FormGroup>) motechJsonReader.readFromFile(configFile(), new TypeToken<List<FormGroup>>() {
         }.getType());
+
+        validateFormDependency(formGroupsFromConfigFile);
+
         this.formGroups = convert(formGroupsFromConfigFile, new Converter<FormGroup, FormGroup>() {
             @Override
             public FormGroup convert(final FormGroup formGroup) {
@@ -55,11 +58,18 @@ public class AllMobileForms {
                                                 ioUtils.getFileContent(form.fileName(), formGroup.getName()),
                                                 form.bean(),
                                                 form.validator(),
-                                                formGroup.getName());
+                                                formGroup.getName(),
+                                                form.getDepends());
                                     }
                                 }));
             }
         });
+    }
+
+    private void validateFormDependency(List<FormGroup> formGroups) {
+        for (FormGroup formGroup : formGroups) {
+
+        }
     }
 
     public List<FormGroup> getAllFormGroups() {

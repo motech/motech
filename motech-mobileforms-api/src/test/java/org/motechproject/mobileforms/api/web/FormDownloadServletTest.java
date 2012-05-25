@@ -9,10 +9,10 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.motechproject.mobileforms.api.domain.FormBean;
+import org.motechproject.mobileforms.api.domain.Form;
+import org.motechproject.mobileforms.api.domain.FormGroup;
 import org.motechproject.mobileforms.api.service.MobileFormsService;
 import org.motechproject.mobileforms.api.service.UsersService;
-import org.motechproject.mobileforms.api.vo.Study;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -104,8 +104,9 @@ public class FormDownloadServletTest {
         when(usersService.getUsers()).thenReturn(userDetails);
 
         final List<String> formXmlContents = Arrays.asList(formOneContent, formTwoContent);
-        final List<FormBean> formContents = Arrays.asList(new FormBean(formOneContent), new FormBean(formTwoContent));
-        when(mobileFormsService.getForms(groupIndex)).thenReturn(new Study(groupName, formContents));
+        final List<Form> forms = Arrays.asList(new Form(null, null, formOneContent, null, null, null, null),
+                new Form(null, null, formTwoContent, null, null, null, null));
+        when(mobileFormsService.getForms(groupIndex)).thenReturn(new FormGroup(groupName, forms));
 
         try {
             doAnswer(new Answer() {

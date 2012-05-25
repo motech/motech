@@ -3,6 +3,7 @@ package org.motechproject.mobileforms.api.domain;
 import org.fcitmuk.epihandy.ResponseHeader;
 import org.junit.Before;
 import org.junit.Test;
+import org.motechproject.mobileforms.api.validator.TestFormBean;
 import org.motechproject.mobileforms.api.vo.Study;
 
 import java.io.ByteArrayOutputStream;
@@ -23,13 +24,13 @@ public class FormOutputTest {
     @Test
     public void shouldWriteTotalFormsUploadedWithErrorCounts() throws IOException {
 
-        FormBean formBean1 = new FormBean("xml1");
+        FormBean formBean1 = new TestFormBean("xml1");
         formBean1.setStudyName("study1");
         formBean1.setFormname("form1");
-        FormBean formBean2 = new FormBean("xml2");
+        FormBean formBean2 = new TestFormBean("xml2");
         formBean2.setStudyName("study2");
         formBean2.setFormname("form2");
-        formBean2.setFormErrors(Arrays.asList(new FormError("field_name", "error")));
+        formBean2.addFormErrors(Arrays.asList(new FormError("field_name", "error")));
         Study study = new Study("study", Arrays.asList(formBean1, formBean2));
 
         ByteArrayOutputStream actualByteStream = new ByteArrayOutputStream();

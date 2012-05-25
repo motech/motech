@@ -5,9 +5,10 @@ import org.fcitmuk.epihandy.EpihandyXformSerializer;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.mobileforms.api.callbacks.FormProcessor;
-import org.motechproject.mobileforms.api.callbacks.FormPublisher;
+import org.motechproject.mobileforms.api.callbacks.FormGroupPublisher;
+import org.motechproject.mobileforms.api.callbacks.FormParser;
 import org.motechproject.mobileforms.api.domain.FormBean;
+import org.motechproject.mobileforms.api.domain.FormBeanGroup;
 import org.motechproject.mobileforms.api.validator.TestFormBean;
 import org.motechproject.mobileforms.api.validator.TestFormValidator;
 import org.motechproject.mobileforms.api.vo.Study;
@@ -16,9 +17,12 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.io.*;
-import java.util.ArrayList;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static junit.framework.Assert.assertFalse;
@@ -34,9 +38,9 @@ public class FormUploadServletIT {
     private MockHttpServletResponse response;
     private MockServletContext servletContext;
     @Mock
-    FormPublisher formPublisher;
+    FormGroupPublisher formGroupPublisher;
     @Mock
-    private FormProcessor formProcessor;
+    private FormParser formParser;
 
     @Before
     public void setUp() {
@@ -49,22 +53,17 @@ public class FormUploadServletIT {
     @Test
     public void shouldProcessUploadedFormAndReturnValidationErrorsIfErrorsAreFound() throws Exception {
         FormUploadServlet formUploadServlet = new FormUploadServlet();
-        ReflectionTestUtils.setField(formUploadServlet, "formPublisher", formPublisher);
+        ReflectionTestUtils.setField(formUploadServlet, "formGroupPublisher", formGroupPublisher);
         FormUploadServlet servlet = spy(formUploadServlet);
-        doReturn(formProcessor).when(servlet).createFormProcessor();
+        doReturn(formParser).when(servlet).createFormProcessor();
 
-        List<FormBean> formBeans = new ArrayList<FormBean>();
-        TestFormBean formBeanWithOutValidationErrors = new TestFormBean();
-        formBeanWithOutValidationErrors.setValidator(TestFormValidator.class.getName());
-        formBeanWithOutValidationErrors.setFirstName("Abc");
-        TestFormBean formBeanWithValidationErrors = new TestFormBean();
-        formBeanWithValidationErrors.setValidator(TestFormValidator.class.getName());
-        formBeanWithValidationErrors.setFirstName("1Abc");
-        formBeans.add(formBeanWithOutValidationErrors);
-        formBeans.add(formBeanWithValidationErrors);
+        final TestFormBean formBeanWithOutError = new TestFormBean("study", "form1", "<xml>xml</xml>", TestFormValidator.class.getName(), "type", Collections.<String>emptyList(), "Abc", null);
+        final TestFormBean formBeanWithError = new TestFormBean("study", "form2", "<xml>xml</xml>", TestFormValidator.class.getName(), "type", Collections.<String>emptyList(), "1Abc", null);
+        List<FormBean> formBeans = Arrays.<FormBean>asList(formBeanWithOutError, formBeanWithError);
+
         Study study = new Study("study_name", formBeans);
         List<Study> studies = Arrays.asList(study);
-        when(formProcessor.getStudies()).thenReturn(studies);
+        when(formParser.getStudies()).thenReturn(studies);
 
         EpihandyXformSerializer epihandyXformSerializer = spy(new EpihandyXformSerializer());
         doNothing().when(epihandyXformSerializer).deserializeStudiesWithEvents(any(DataInputStream.class), anyObject());
@@ -95,7 +94,7 @@ public class FormUploadServletIT {
             assertFalse(true);
         }
 
-        verify(formPublisher).publish(formBeanWithOutValidationErrors);
+        verify(formGroupPublisher).publish(new FormBeanGroup(Arrays.<FormBean>asList(formBeanWithOutError)));
     }
 
     private DataInputStream readResponse(MockHttpServletResponse response) {

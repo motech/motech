@@ -35,4 +35,12 @@ public class FormGroup {
         result = 31 * result + (forms != null ? forms.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "FormGroup{" +
+                "name='" + name + '\'' +
+                ", forms=" + forms +
+                '}';
+    }
 }

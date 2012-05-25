@@ -1,10 +1,8 @@
 package org.motechproject.mobileforms.api.service;
 
-import org.motechproject.mobileforms.api.domain.FormBean;
-import org.motechproject.mobileforms.api.repository.AllMobileForms;
 import org.motechproject.mobileforms.api.domain.Form;
 import org.motechproject.mobileforms.api.domain.FormGroup;
-import org.motechproject.mobileforms.api.vo.Study;
+import org.motechproject.mobileforms.api.repository.AllMobileForms;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +13,6 @@ import java.util.Map;
 
 import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
-import static ch.lambdaj.Lambda.project;
 
 @Service
 public class MobileFormsServiceImpl implements MobileFormsService {
@@ -33,9 +30,8 @@ public class MobileFormsServiceImpl implements MobileFormsService {
     }
 
     @Override
-    public Study getForms(Integer formGroupIndex) {
-        FormGroup formGroup = allMobileForms.getFormGroup(formGroupIndex);
-        return new Study(formGroup.getName(), project(formGroup.getForms(), FormBean.class, on(Form.class).content()));
+    public FormGroup getForms(Integer formGroupIndex) {
+        return allMobileForms.getFormGroup(formGroupIndex);
     }
 
     @Override

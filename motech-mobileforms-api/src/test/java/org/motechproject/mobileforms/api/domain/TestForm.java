@@ -48,4 +48,9 @@ public class TestForm extends FormBean{
     public void setBirthDate(Date birthDate) {
         this.birthDate = birthDate;
     }
+
+    @Override
+    public String groupId() {
+        return patientid.toString();
+    }
 }

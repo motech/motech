@@ -210,4 +210,9 @@ public class RegisterClientBean extends FormBean{
     public void setDate(Date date) {
         this.date = date;
     }
+
+    @Override
+    public String groupId() {
+        return motechId;
+    }
 }

@@ -3,15 +3,18 @@ package org.motechproject.mobileforms.api.web;
 import com.jcraft.jzlib.JZlib;
 import com.jcraft.jzlib.ZOutputStream;
 import org.fcitmuk.epihandy.EpihandyXformSerializer;
-import org.motechproject.mobileforms.api.domain.FormBean;
-import org.motechproject.mobileforms.api.vo.Study;
+import org.motechproject.mobileforms.api.domain.Form;
+import org.motechproject.mobileforms.api.domain.FormGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.collect;
@@ -62,8 +65,8 @@ public class FormDownloadServlet extends BaseFormServlet {
         EpihandyXformSerializer epiSerializer = serializer();
         epiSerializer.serializeUsers(byteStream, usersService.getUsers());
         int studyIndex = dataInput.readInt();
-        Study groupNameAndForms = mobileFormsService.getForms(studyIndex);
-        List<String> formsXmlContent = collect(groupNameAndForms.forms(), on(FormBean.class).getXmlContent());
-        epiSerializer.serializeForms(byteStream, formsXmlContent, studyIndex, groupNameAndForms.name());
+        FormGroup groupNameAndForms = mobileFormsService.getForms(studyIndex);
+        List<String> formsXmlContent = collect(groupNameAndForms.getForms(), on(Form.class).content());
+        epiSerializer.serializeForms(byteStream, formsXmlContent, studyIndex, groupNameAndForms.getName());
     }
 }
