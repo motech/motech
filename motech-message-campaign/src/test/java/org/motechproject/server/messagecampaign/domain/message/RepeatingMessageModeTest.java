@@ -26,7 +26,7 @@ public class RepeatingMessageModeTest extends BaseUnitTest {
     @Test
     public void shouldReturnOffsetForCalendarWeekWithTuesdayAsStartOfWeek() {
 
-        Date cycleStartDate = newDateTime(newDate(2011, 11, 2), 10, 11, 0).toDate();
+        DateTime cycleStartDate = newDateTime(newDate(2011, 11, 2), 10, 11, 0);
         RepeatingCampaignMessage calendarStartAsTuesday = new CampaignMessageBuilder().repeatingCampaignMessageForCalendarWeek("mess", "Tuesday", null, "msg");
 
         int startIntervalOffset = 1;
@@ -55,7 +55,7 @@ public class RepeatingMessageModeTest extends BaseUnitTest {
     @Test
     public void shouldReturnOffsetForCalendarWeekWithSundayAsStartOfWeek() {
 
-        Date cycleStartDate = newDateTime(newDate(2011, 11, 2), 10, 11, 0).toDate();
+        DateTime cycleStartDate = newDateTime(newDate(2011, 11, 2), 10, 11, 0);
         RepeatingCampaignMessage calendarStartAsSunday = repeatingCWCampaignMessage("mess", "Sunday", null, "msg");
 
         int startIntervalOffset = 1;
@@ -82,7 +82,7 @@ public class RepeatingMessageModeTest extends BaseUnitTest {
 
     @Test
     public void shouldThrowIllegalArguementExceptionIfCyleStartDateIsAheadCurrentDay() {
-        Date cycleStartDate = newDateTime(newDate(2011, 11, 2), 10, 11, 0).toDate();
+        DateTime cycleStartDate = newDateTime(newDate(2011, 11, 2), 10, 11, 0);
         RepeatingCampaignMessage calendarStartAsTuesday = repeatingCWCampaignMessage("mess", "Sunday", null, "msg");
 
         mockCurrentDate(date(2011, 11, 1));
@@ -204,7 +204,7 @@ public class RepeatingMessageModeTest extends BaseUnitTest {
     ///
     public void shouldReturnIsEndedForRepeatInterval_IfNextToCurrentApplicableDateIsBeyondEndDate(){
 
-        RepeatingCampaignMessage message = new CampaignMessageBuilder().repeatingCampaignMessageForInterval("WeekType", "9 Days", "msgKey");
+        RepeatingCampaignMessage message = new CampaignMessageBuilder().repeatingCampaignMessageForInterval("WeekType", "9 Days", "msgKey", "0:0");
 
         RepeatingMessageMode weekSchedule = RepeatingMessageMode.REPEAT_INTERVAL;
         Date sat17Feb2012EndDate = date("17-02-2012 22:11:20 Fri");

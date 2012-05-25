@@ -32,8 +32,8 @@ public class CampaignMessageBuilder {
         return offsetCampaignMessage;
     }
 
-    public RepeatingCampaignMessage repeatingCampaignMessageForInterval(String name, String repeatInterval, String messageKey) {
-        RepeatingCampaignMessage repeatingCampaignMessage = new RepeatingCampaignMessage(repeatInterval, "0:0");
+    public RepeatingCampaignMessage repeatingCampaignMessageForInterval(String name, String repeatInterval, String messageKey, String deliverTime) {
+        RepeatingCampaignMessage repeatingCampaignMessage = new RepeatingCampaignMessage(repeatInterval, deliverTime);
         repeatingCampaignParams(name, messageKey, repeatingCampaignMessage);
         return repeatingCampaignMessage.mode(RepeatingMessageMode.REPEAT_INTERVAL);
     }

@@ -138,7 +138,7 @@ public class AllMessageCampaignsTest {
 
     private void assertMessageWithParameterizedRelativeSchedule(RepeatingCampaignMessage message, String name, String[] formats, Object messageKey, int repeatInterval) {
         assertMessage(message, name, formats, messageKey);
-        assertEquals(repeatInterval, message.repeatIntervalInDaysForOffset());
+        assertEquals(repeatInterval, message.repeatIntervalForOffset());
     }
 
     private void assertMessageWithCronSchedule(CronBasedCampaignMessage message, String name, String[] formats, Object messageKey, String cron) {

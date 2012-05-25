@@ -68,8 +68,8 @@ public class CampaignBuilder {
 
     public RepeatingCampaign defaultRepeatingCampaign(String maxDuration ) {
 
-        final RepeatingCampaignMessage repeatingCampaignMessage1 = new CampaignMessageBuilder().repeatingCampaignMessageForInterval("OM1", "1 Week", "child-info-week-{Offset}-1");
-        final RepeatingCampaignMessage repeatingCampaignMessage2 = new CampaignMessageBuilder().repeatingCampaignMessageForInterval("OM2", "12 Days", "child-info-week-{Offset}-2");
+        final RepeatingCampaignMessage repeatingCampaignMessage1 = new CampaignMessageBuilder().repeatingCampaignMessageForInterval("OM1", "1 Week", "child-info-week-{Offset}-1", "0:0");
+        final RepeatingCampaignMessage repeatingCampaignMessage2 = new CampaignMessageBuilder().repeatingCampaignMessageForInterval("OM2", "12 Days", "child-info-week-{Offset}-2", "0:0");
         final RepeatingCampaignMessage repeatingCampaignMessage3 = new CampaignMessageBuilder().repeatingCampaignMessageForDaysApplicable("OM2", asList("Monday", "Wednesday"), "child-info-week-{Offset}-{WeekDay}");
         final RepeatingCampaignMessage repeatingCampaignMessage_CalendarWeek = new CampaignMessageBuilder().repeatingCampaignMessageForCalendarWeek("OM2", "Monday",
                 asList("Monday", "Wednesday"), "child-info-week-{Offset}-{WeekDay}");
@@ -79,6 +79,33 @@ public class CampaignBuilder {
             add(repeatingCampaignMessage2);
             add(repeatingCampaignMessage3);
             add(repeatingCampaignMessage_CalendarWeek);
+        }};
+        return repeatingCampaign("testCampaign", maxDuration, campaignMessages);
+    }
+
+    public RepeatingCampaign repeatingCampaignWithHourRepeatInterval(String maxDuration, String deliverTime) {
+        final RepeatingCampaignMessage repeatingCampaignMessage1 = new CampaignMessageBuilder().repeatingCampaignMessageForInterval("OM1", "1 Hour", "child-info-hour-{Offset}-1", deliverTime);
+        final RepeatingCampaignMessage repeatingCampaignMessage2 = new CampaignMessageBuilder()
+                .repeatingCampaignMessageForInterval("OM2", "12 Hours", "child-info-hour-{Offset}-2", deliverTime);
+
+        LinkedList<RepeatingCampaignMessage> campaignMessages = new LinkedList<RepeatingCampaignMessage>() {{
+            add(repeatingCampaignMessage1);
+            add(repeatingCampaignMessage2);
+        }};
+        return repeatingCampaign("testCampaign", maxDuration, campaignMessages);
+    }
+
+    public RepeatingCampaign repeatingCampaignWithMinuteRepeatInterval(String maxDuration, String deliverTime) {
+        final RepeatingCampaignMessage repeatingCampaignMessage1 = new CampaignMessageBuilder()
+                .repeatingCampaignMessageForInterval("OM1", "15 Minutes", "child-info-minute-{Offset}-1",
+                        deliverTime);
+        final RepeatingCampaignMessage repeatingCampaignMessage2 = new CampaignMessageBuilder()
+                .repeatingCampaignMessageForInterval("OM2", "20 Minutes", "child-info-minute-{Offset}-2",
+                        deliverTime);
+
+        LinkedList<RepeatingCampaignMessage> campaignMessages = new LinkedList<RepeatingCampaignMessage>() {{
+            add(repeatingCampaignMessage1);
+            add(repeatingCampaignMessage2);
         }};
         return repeatingCampaign("testCampaign", maxDuration, campaignMessages);
     }

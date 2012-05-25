@@ -1,9 +1,14 @@
 package org.motechproject.server.messagecampaign.scheduler;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Hours;
+import org.joda.time.LocalTime;
+import org.joda.time.Minutes;
 import org.motechproject.gateway.OutboundEventGateway;
 import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.model.Time;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.server.messagecampaign.Constants;
 import org.motechproject.server.messagecampaign.EventKeys;
@@ -11,13 +16,16 @@ import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
+import org.motechproject.server.messagecampaign.domain.message.RepeatingMessageMode;
 import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 import org.motechproject.server.messagecampaign.service.CampaignEnrollmentsQuery;
 import org.motechproject.util.DateUtil;
+import org.motechproject.valueobjects.WallTime;
+import org.motechproject.valueobjects.WallTimeUnit;
+import org.motechproject.valueobjects.factory.WallTimeFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +39,8 @@ public class RepeatingProgramScheduleHandler {
 
     public static final String OFFSET = "{Offset}";
     public static final String WEEK_DAY = "{WeekDay}";
+    public static final String HOUR = "{Hour}";
+    public static final String MINUTE = "{Minute}";
 
     private OutboundEventGateway outboundEventGateway;
     private AllMessageCampaigns allMessageCampaigns;
@@ -48,16 +58,19 @@ public class RepeatingProgramScheduleHandler {
         log.info("handled internal repeating campaign event and forwarding: " + event.getParameters().hashCode());
 
         RepeatingCampaignMessage repeatingCampaignMessage = (RepeatingCampaignMessage) getCampaignMessage(event);
-        String nextApplicableDay = getApplicableDay(event, repeatingCampaignMessage);
+        String nextApplicableHour = getApplicableHour(event, repeatingCampaignMessage);
+        String nextApplicableMinute = getApplicableMinute(event, repeatingCampaignMessage);
+        String nextApplicableDay = getApplicableDay(event, repeatingCampaignMessage, nextApplicableHour);
 
-        if (nextApplicableDay != null) {
+        if (nextApplicableDay != null && nextApplicableHour != null && nextApplicableMinute != null) {
             Map<String, Object> params = event.getParameters();
             CampaignEnrollment enrollment = enrollment(params);
             Integer startIntervalOffset = enrollment.startOffset(repeatingCampaignMessage);
-            Date startDate = enrollment.getStartDate().toDate();
+            Time deliverTime = repeatingCampaignMessage.deliverTime();
+            DateTime startDate = enrollment.getStartDate().toDateTime(new LocalTime(deliverTime.getHour(), deliverTime.getMinute()));
 
             Integer currentOffset = repeatingCampaignMessage.currentOffset(startDate, startIntervalOffset);
-            params.put(EventKeys.GENERATED_MESSAGE_KEY, generateMsgKey(params.get(MESSAGE_KEY).toString(), currentOffset.toString(), nextApplicableDay));
+            params.put(EventKeys.GENERATED_MESSAGE_KEY, generateMsgKey(params.get(MESSAGE_KEY).toString(), currentOffset.toString(), nextApplicableDay, nextApplicableHour, nextApplicableMinute));
 
             MotechEvent campaignEvent = event.copy(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, event.getParameters());
             setCampaignLastEvent(repeatingCampaignMessage, campaignEvent);
@@ -65,19 +78,72 @@ public class RepeatingProgramScheduleHandler {
         }
     }
 
-    private String generateMsgKey(String originalMessageKey, String offset, String weekDay) {
+    private String generateMsgKey(String originalMessageKey, String offset, String weekDay, String hour, String minute) {
         String generatedKey = replace(originalMessageKey, OFFSET, offset);
-        return replace(generatedKey, WEEK_DAY, weekDay);
+        generatedKey = replace(generatedKey, WEEK_DAY, weekDay);
+        generatedKey = replace(generatedKey, HOUR, hour);
+
+        return replace(generatedKey, MINUTE, minute);
     }
 
-    private String getApplicableDay(MotechEvent event, RepeatingCampaignMessage repeatingCampaignMessage) {
-        DayOfWeek dayOfWeek = (!(Boolean) event.getParameters().get(Constants.REPEATING_PROGRAM_24HRS_MESSAGE_DISPATCH_STRATEGY)) ?
-                DayOfWeek.getDayOfWeek(DateUtil.now().toLocalDate().getDayOfWeek()) :
-                repeatingCampaignMessage.applicableWeekDayInNext24Hours();
-        if (dayOfWeek != null) {
-            return dayOfWeek.name();
+    private String getApplicableDay(MotechEvent event, RepeatingCampaignMessage repeatingCampaignMessage, String nextApplicableHour) {
+        Boolean dispatchMessagesEvery24Hours = (Boolean) event.getParameters().get(Constants.REPEATING_PROGRAM_24HRS_MESSAGE_DISPATCH_STRATEGY);
+        DayOfWeek dayOfWeek;
+
+        if (!dispatchMessagesEvery24Hours) {
+            DateTime now = DateUtil.now();
+
+            if(repeatingCampaignMessage.mode() == RepeatingMessageMode.REPEAT_INTERVAL &&
+                    WallTimeFactory.wallTime(repeatingCampaignMessage.repeatInterval()).getUnit() == WallTimeUnit.Hour &&
+                    now.getHourOfDay() < repeatingCampaignMessage.deliverTime().getHour() &&
+                    now.getHourOfDay() < Integer.valueOf(nextApplicableHour)) {
+                now = now.minusDays(1);
+            }
+
+            dayOfWeek = DayOfWeek.getDayOfWeek(now.toLocalDate().getDayOfWeek());
+        } else {
+            dayOfWeek = repeatingCampaignMessage.applicableWeekDayInNext24Hours();
         }
-        return null;
+
+        return dayOfWeek != null ? dayOfWeek.name() : null;
+    }
+
+    private String getApplicableHour(MotechEvent event, RepeatingCampaignMessage repeatingCampaignMessage) {
+        Boolean dispatchMessagesEvery24Hours = (Boolean) event.getParameters().get(Constants.REPEATING_PROGRAM_24HRS_MESSAGE_DISPATCH_STRATEGY);
+        Integer applicableHour = repeatingCampaignMessage.deliverTime().getHour();
+
+        if (!dispatchMessagesEvery24Hours && repeatingCampaignMessage.mode() == RepeatingMessageMode.REPEAT_INTERVAL) {
+            WallTime time = WallTimeFactory.wallTime(repeatingCampaignMessage.repeatInterval());
+
+            if (time.getUnit() == WallTimeUnit.Hour) {
+                DateTime start = (DateUtil.now().getHourOfDay() < applicableHour ? DateUtil.now().minusDays(1) : DateUtil.now()).withHourOfDay(applicableHour);
+                Integer hoursInterval = Hours.hoursBetween(start, DateUtil.now()).getHours();
+                int count = hoursInterval / time.inHours();
+
+                applicableHour = hoursInterval == 0 ? applicableHour : (count > 0 ? (applicableHour + (count * time.inHours())) % 24 : null);
+            }
+        }
+
+        return applicableHour != null ? applicableHour.toString() : null;
+    }
+
+    private String getApplicableMinute(MotechEvent event, RepeatingCampaignMessage repeatingCampaignMessage) {
+        Boolean dispatchMessagesEvery24Hours = (Boolean) event.getParameters().get(Constants.REPEATING_PROGRAM_24HRS_MESSAGE_DISPATCH_STRATEGY);
+        Integer applicableMinute = repeatingCampaignMessage.deliverTime().getMinute();
+
+        if (!dispatchMessagesEvery24Hours && repeatingCampaignMessage.mode() == RepeatingMessageMode.REPEAT_INTERVAL) {
+            WallTime time = WallTimeFactory.wallTime(repeatingCampaignMessage.repeatInterval());
+
+            if (time.getUnit() == WallTimeUnit.Minute) {
+                DateTime start = (DateUtil.now().getMinuteOfHour() < applicableMinute ? DateUtil.now().minusDays(1) : DateUtil.now()).withMinuteOfHour(applicableMinute);
+                Integer minutesInterval = Minutes.minutesBetween(start, DateUtil.now()).getMinutes();
+                int count = minutesInterval / time.inMinutes();
+
+                applicableMinute = minutesInterval == 0 ? applicableMinute : (count > 0 ? (applicableMinute + (count * time.inMinutes())) % 60 : null);
+            }
+        }
+
+        return applicableMinute != null ? String.format("%02d", applicableMinute) : null;
     }
 
     private void setCampaignLastEvent(RepeatingCampaignMessage message, MotechEvent eventToSend) {

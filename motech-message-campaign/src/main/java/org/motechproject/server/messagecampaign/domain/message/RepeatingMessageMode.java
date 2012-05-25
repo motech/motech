@@ -10,10 +10,13 @@ import org.motechproject.server.messagecampaign.Constants;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.util.DateUtil;
 import org.motechproject.valueobjects.WallTime;
+import org.motechproject.valueobjects.WallTimeUnit;
 
 import java.util.Date;
 
 import static org.joda.time.Days.daysBetween;
+import static org.joda.time.Hours.hoursBetween;
+import static org.joda.time.Minutes.minutesBetween;
 import static org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage.WEEKLY_REPEAT_INTERVAL;
 import static org.motechproject.util.DateUtil.*;
 import static org.motechproject.valueobjects.factory.WallTimeFactory.wallTime;
@@ -26,12 +29,39 @@ public enum RepeatingMessageMode {
         }
 
         public Integer repeatIntervalForOffSet(RepeatingCampaignMessage message) {
-            return wallTime(message.repeatInterval()).inDays();
+            WallTime time = wallTime(message.repeatInterval());
+            int interval;
+
+            switch (time.getUnit()) {
+                case Minute:
+                    interval = time.inMinutes();
+                    break;
+                case Hour:
+                    interval = time.inHours();
+                    break;
+                default:
+                    interval = time.inDays();
+            }
+
+            return interval;
         }
 
-        public Integer currentOffset(RepeatingCampaignMessage message, Date startTime, Integer startIntervalOffset) {
-            int passedOffsetCycles = daysBetween(newDate(startTime), today()).getDays() / repeatIntervalForOffSet(message);
-            return passedOffsetCycles + 1;
+        public Integer currentOffset(RepeatingCampaignMessage message, DateTime startTime, Integer startIntervalOffset) {
+            WallTime time = wallTime(message.repeatInterval());
+            int interval;
+
+            switch (time.getUnit()) {
+                case Minute:
+                    interval = minutesBetween(startTime, DateUtil.now()).getMinutes();
+                    break;
+                case Hour:
+                    interval = hoursBetween(startTime, DateUtil.now()).getHours();
+                    break;
+                default:
+                    interval = daysBetween(newDate(startTime), today()).getDays();
+            }
+
+            return (interval / repeatIntervalForOffSet(message)) + 1;
         }
 
         public int durationInDaysToAdd(WallTime maxDuration, CampaignRequest campaignRequest, RepeatingCampaignMessage message) {
@@ -63,7 +93,7 @@ public enum RepeatingMessageMode {
             return WEEKLY_REPEAT_INTERVAL;
         }
 
-        public Integer currentOffset(RepeatingCampaignMessage message, Date startTime, Integer startIntervalOffset) {
+        public Integer currentOffset(RepeatingCampaignMessage message, DateTime startTime, Integer startIntervalOffset) {
             int passedOffsetCycles = daysBetween(newDate(startTime), today()).getDays() / repeatIntervalForOffSet(message);
             return passedOffsetCycles + startIntervalOffset;
         }
@@ -99,12 +129,12 @@ public enum RepeatingMessageMode {
             return WEEKLY_REPEAT_INTERVAL;
         }
 
-        public Integer currentOffset(RepeatingCampaignMessage message, Date cycleStartDate, Integer startIntervalOffset) {
+        public Integer currentOffset(RepeatingCampaignMessage message, DateTime cycleStartDate, Integer startIntervalOffset) {
 
             LocalDate cycleStartLocalDate = DateUtil.newDate(cycleStartDate);
             LocalDate currentDate = DateUtil.today();
 
-            if (cycleStartDate.compareTo(currentDate.toDate()) > 0)
+            if (cycleStartDate.toDate().compareTo(currentDate.toDate()) > 0)
                 throw new IllegalArgumentException("cycleStartDate cannot be in future");
 
             int daysDiff = new Period(cycleStartLocalDate, currentDate, PeriodType.days()).getDays();
@@ -177,7 +207,7 @@ public enum RepeatingMessageMode {
 
     public abstract boolean isApplicable(RepeatingCampaignMessage repeatingCampaignMessage);
 
-    public abstract Integer currentOffset(RepeatingCampaignMessage repeatingCampaignMessage, Date startTime, Integer startIntervalOffset);
+    public abstract Integer currentOffset(RepeatingCampaignMessage repeatingCampaignMessage, DateTime startTime, Integer startIntervalOffset);
 
     public abstract Integer repeatIntervalForOffSet(RepeatingCampaignMessage repeatingCampaignMessage);
 
