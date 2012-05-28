@@ -1,8 +1,7 @@
 package org.motechproject.ivr.kookoo;
 
-import org.motechproject.ivr.model.CallDirection;
 import org.motechproject.ivr.event.IVREvent;
-import org.motechproject.util.Cookies;
+import org.motechproject.ivr.model.CallDirection;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -13,12 +12,10 @@ public class KooKooIVRContextForTest extends KooKooIVRContext {
     private String callId;
     private String treeName;
     private String externalId;
-    private boolean sessionInvalidated;
     private IVREvent ivrEvent;
     private String callerId;
     private CallDirection callDirection;
     private String callDetailRecordId;
-    private boolean isValidSession = true;
     private boolean isAnswered;
 
     @Override
@@ -37,7 +34,7 @@ public class KooKooIVRContextForTest extends KooKooIVRContext {
     }
 
     @Override
-    public String currentTreePosition() {
+    public String currentDecisionTreePath() {
         return currentTreePosition;
     }
 
@@ -82,11 +79,6 @@ public class KooKooIVRContextForTest extends KooKooIVRContext {
     }
 
     @Override
-    public Cookies cookies() {
-        throw new RuntimeException("Please instead put the method in KooKooIVRContext to read/update the data from cookies. This method is only for creating wrappers around this.");
-    }
-
-    @Override
     public String externalId() {
         return externalId;
     }
@@ -94,15 +86,6 @@ public class KooKooIVRContextForTest extends KooKooIVRContext {
     public KooKooIVRContextForTest externalId(String externalId) {
         this.externalId = externalId;
         return this;
-    }
-
-    @Override
-    public void invalidateSession() {
-        sessionInvalidated = true;
-    }
-
-    public boolean sessionInvalidated() {
-        return sessionInvalidated;
     }
 
     @Override
@@ -154,23 +137,8 @@ public class KooKooIVRContextForTest extends KooKooIVRContext {
     }
 
     @Override
-    public String allCookies() {
-        return "";
-    }
-
-    @Override
     public boolean isAnswered() {
         return isAnswered;
-    }
-
-    public KooKooIVRContextForTest isValidSession(boolean isValidSession) {
-        this.isValidSession = isValidSession;
-        return this;
-    }
-
-    @Override
-    public boolean isValidSession() {
-        return isValidSession;
     }
 
     public void setAnswered(boolean answered) {

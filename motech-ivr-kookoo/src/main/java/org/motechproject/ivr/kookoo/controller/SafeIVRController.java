@@ -1,6 +1,7 @@
 package org.motechproject.ivr.kookoo.controller;
 
 import org.apache.log4j.Logger;
+import org.motechproject.ivr.domain.CallSessionRecord;
 import org.motechproject.ivr.event.IVREvent;
 import org.motechproject.ivr.kookoo.KooKooIVRContext;
 import org.motechproject.ivr.kookoo.KookooIVRResponseBuilder;
@@ -8,7 +9,9 @@ import org.motechproject.ivr.kookoo.KookooRequest;
 import org.motechproject.ivr.kookoo.KookooResponseFactory;
 import org.motechproject.ivr.kookoo.eventlogging.CallEventConstants;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
-import org.motechproject.ivr.message.IVRMessage;
+import org.motechproject.ivr.domain.IVRMessage;
+import org.motechproject.ivr.service.IVRSessionManagementService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,40 +33,62 @@ public abstract class SafeIVRController {
     private StandardResponseController standardResponseController;
     private KookooCallDetailRecordsService callDetailRecordsService;
 
+    @Autowired
+    private IVRSessionManagementService ivrSessionManagementService;
+
     protected SafeIVRController(IVRMessage ivrMessage, KookooCallDetailRecordsService callDetailRecordsService, StandardResponseController standardResponseController) {
         this.ivrMessage = ivrMessage;
         this.standardResponseController = standardResponseController;
-        if (callDetailRecordsService == null)
+        if (callDetailRecordsService == null) {
             throw new NullPointerException(String.format("%s cannot be null", KookooCallDetailRecordsService.class.getName()));
+        }
         this.callDetailRecordsService = callDetailRecordsService;
+    }
+
+    protected SafeIVRController(IVRMessage ivrMessage, KookooCallDetailRecordsService callDetailRecordsService,
+                                StandardResponseController standardResponseController,
+                                IVRSessionManagementService ivrSessionManagementService) {
+        this(ivrMessage, callDetailRecordsService, standardResponseController);
+        this.ivrSessionManagementService = ivrSessionManagementService;
     }
 
     @RequestMapping(value = NEW_CALL_URL_ACTION, method = RequestMethod.GET)
     @ResponseBody
     public final String safeNewCall(@ModelAttribute KookooRequest kooKooRequest, HttpServletRequest request, HttpServletResponse response) {
-        KooKooIVRContext kooKooIVRContext = new KooKooIVRContext(kooKooRequest, request, response);
+        KooKooIVRContext kooKooIVRContext = new KooKooIVRContext(kooKooRequest, request, response,
+                getCallSessionRecord(kooKooRequest.getSid()));
         return safeCall(kooKooIVRContext);
     }
 
     @RequestMapping(value = GOT_DTMF_URL_ACTION, method = RequestMethod.GET)
     @ResponseBody
     public final String safeGotDTMF(@ModelAttribute KookooRequest kooKooRequest, HttpServletRequest request, HttpServletResponse response) {
-        KooKooIVRContext kooKooIVRContext = new KooKooIVRContext(kooKooRequest, request, response);
+        KooKooIVRContext kooKooIVRContext = new KooKooIVRContext(kooKooRequest, request, response, getCallSessionRecord(kooKooRequest.getSid()));
         return safeCall(kooKooIVRContext);
     }
 
     @RequestMapping(value = DIAL_URL_ACTION, method = RequestMethod.GET)
     @ResponseBody
     public final String safeDial(@ModelAttribute KookooRequest kooKooRequest, HttpServletRequest request, HttpServletResponse response) {
-        KooKooIVRContext kooKooIVRContext = new KooKooIVRContext(kooKooRequest, request, response);
+        KooKooIVRContext kooKooIVRContext = new KooKooIVRContext(kooKooRequest, request, response, getCallSessionRecord(kooKooRequest.getSid()));
         return safeCall(kooKooIVRContext);
     }
 
     @RequestMapping(value = HANGUP_URL_ACTION, method = RequestMethod.GET)
     @ResponseBody
     public final String hangup(@ModelAttribute KookooRequest kooKooRequest, HttpServletRequest request, HttpServletResponse response) {
-        KooKooIVRContext kooKooIVRContext = new KooKooIVRContext(kooKooRequest, request, response);
+        KooKooIVRContext kooKooIVRContext = new KooKooIVRContext(kooKooRequest, request, response, getCallSessionRecord(kooKooRequest.getSid()));
         return hangup(kooKooIVRContext);
+    }
+
+    @RequestMapping(value = DISCONNECT_URL_ACTION, method = RequestMethod.GET)
+    @ResponseBody
+    public final String disconnect(HttpServletRequest request) {
+        return "";
+    }
+
+    private CallSessionRecord getCallSessionRecord(String sessionId) {
+        return ivrSessionManagementService.getCallSession(sessionId);
     }
 
     private String safeCall(KooKooIVRContext ivrContext) {
@@ -93,12 +118,6 @@ public abstract class SafeIVRController {
         }
     }
 
-    @RequestMapping(value = DISCONNECT_URL_ACTION, method = RequestMethod.GET)
-    @ResponseBody
-    public final String disconnect(HttpServletRequest request) {
-        return "";
-    }
-
     public KookooIVRResponseBuilder newCall(KooKooIVRContext kooKooIVRContext) {
         throw new UnsupportedOperationException("The extending controller should have implemeted this kookoo event.");
     }
@@ -112,7 +131,7 @@ public abstract class SafeIVRController {
     }
 
     public String hangup(KooKooIVRContext kooKooIVRContext) {
-        kooKooIVRContext.invalidateSession();
-        return KookooResponseFactory.empty(kooKooIVRContext.kooKooRequest().getSid()).create(null);
+        ivrSessionManagementService.removeCallSession(kooKooIVRContext.callId());
+        return KookooResponseFactory.empty(kooKooIVRContext.callId()).create(null);
     }
 }

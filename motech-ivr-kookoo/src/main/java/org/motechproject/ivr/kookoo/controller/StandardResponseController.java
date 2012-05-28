@@ -1,6 +1,7 @@
 package org.motechproject.ivr.kookoo.controller;
 
 import org.apache.log4j.Logger;
+import org.motechproject.ivr.domain.CallSessionRecord;
 import org.motechproject.ivr.event.CallEvent;
 import org.motechproject.ivr.event.IVREvent;
 import org.motechproject.ivr.kookoo.IVRException;
@@ -8,6 +9,7 @@ import org.motechproject.ivr.kookoo.KooKooIVRContext;
 import org.motechproject.ivr.kookoo.KookooRequest;
 import org.motechproject.ivr.kookoo.KookooResponseFactory;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
+import org.motechproject.ivr.service.IVRSessionManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -23,16 +25,19 @@ import javax.servlet.http.HttpServletResponse;
 public class StandardResponseController {
     Logger logger = Logger.getLogger(this.getClass());
     private KookooCallDetailRecordsService kookooCallDetailRecordsService;
+    private IVRSessionManagementService ivrSessionManagementService;
 
     @Autowired
-    public StandardResponseController(KookooCallDetailRecordsService kookooCallDetailRecordsService) {
+    public StandardResponseController(KookooCallDetailRecordsService kookooCallDetailRecordsService, IVRSessionManagementService ivrSessionManagementService) {
         this.kookooCallDetailRecordsService = kookooCallDetailRecordsService;
+        this.ivrSessionManagementService = ivrSessionManagementService;
     }
 
     @RequestMapping(value = AllIVRURLs.HANGUP_RESPONSE, method = RequestMethod.GET)
     @ResponseBody
     public String hangup(KookooRequest kookooRequest, HttpServletRequest request, HttpServletResponse response) {
-        KooKooIVRContext ivrContext = new KooKooIVRContext(kookooRequest, request, response);
+        CallSessionRecord callSessionRecord = ivrSessionManagementService.getCallSession(kookooRequest.getSid());
+        KooKooIVRContext ivrContext = new KooKooIVRContext(kookooRequest, request, response, callSessionRecord);
         return hangup(ivrContext);
     }
 
@@ -48,7 +53,7 @@ public class StandardResponseController {
 
     public void prepareForHangup(KooKooIVRContext ivrContext) {
         kookooCallDetailRecordsService.close(ivrContext.callDetailRecordId(), ivrContext.externalId(), new CallEvent(IVREvent.Hangup.toString()));
-        ivrContext.invalidateSession();
+        ivrSessionManagementService.removeCallSession(ivrContext.callId());
     }
 
     @RequestMapping(value = AllIVRURLs.EMPTY_RESPONSE, method = RequestMethod.GET)

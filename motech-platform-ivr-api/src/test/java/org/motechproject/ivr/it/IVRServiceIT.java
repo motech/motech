@@ -1,4 +1,4 @@
-package org.motechproject.ivr.service;
+package org.motechproject.ivr.it;
 /*
  * MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
  *
@@ -34,6 +34,8 @@ package org.motechproject.ivr.service;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.ivr.service.CallRequest;
+import org.motechproject.ivr.service.IVRService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -54,7 +56,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"/testIVRAppContext.xml"})
-public class IVRServiceImplIT {
+public class IVRServiceIT {
 
     @Autowired
     private IVRService ivrService;

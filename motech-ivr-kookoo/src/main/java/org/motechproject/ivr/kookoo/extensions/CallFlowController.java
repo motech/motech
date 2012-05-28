@@ -2,11 +2,13 @@ package org.motechproject.ivr.kookoo.extensions;
 
 import org.motechproject.decisiontree.model.Tree;
 import org.motechproject.ivr.kookoo.KooKooIVRContext;
+import org.springframework.stereotype.Component;
 
 /**
  * Call flow controller exposes handlers for implementing IVR flows. Next call branching will be decided by
  * implementation of CallFlowController
  */
+@Component
 public interface CallFlowController {
     /**
      * Extension point for determining next URL for handling IVR Event in the call flow.

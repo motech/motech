@@ -6,7 +6,7 @@ import org.motechproject.ivr.kookoo.domain.KookooCallDetailRecord;
 import org.motechproject.ivr.model.CallDetailRecord;
 import org.motechproject.ivr.model.CallDirection;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  *   Kookoo Call Detail Record Service provides call log extension point.
@@ -59,7 +59,7 @@ public interface KookooCallDetailRecordsService {
      * @param callDetailRecordID: current call detail record
      * @param map: Map of String key value pairs.
      */
-    void appendToLastCallEvent(String callDetailRecordID,  HashMap<String, String> map);
+    void appendToLastCallEvent(String callDetailRecordID,  Map<String, String> map);
 
     /**
      * Update call record as answered.

@@ -2,8 +2,8 @@ package org.motechproject.ivr.kookoo.domain;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
-import org.motechproject.ivr.model.CallDetailRecord;
 import org.motechproject.ivr.event.CallEvent;
+import org.motechproject.ivr.model.CallDetailRecord;
 import org.motechproject.util.DateUtil;
 
 import static junit.framework.Assert.assertEquals;

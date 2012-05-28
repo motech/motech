@@ -71,7 +71,7 @@ public class KookooCallDetailRecordsServiceImpl implements KookooCallDetailRecor
     }
 
     @Override
-    public void appendToLastCallEvent(String callDetailRecordID, HashMap<String, String> map) {
+    public void appendToLastCallEvent(String callDetailRecordID, Map<String, String> map) {
         KookooCallDetailRecord callDetailRecord = get(callDetailRecordID);
         for (String key : map.keySet()) {
             callDetailRecord.appendToLastEvent(key, map.get(key));
