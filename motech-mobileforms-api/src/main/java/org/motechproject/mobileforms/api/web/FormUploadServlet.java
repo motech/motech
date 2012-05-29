@@ -4,6 +4,7 @@ import com.jcraft.jzlib.JZlib;
 import com.jcraft.jzlib.ZOutputStream;
 import org.fcitmuk.epihandy.EpihandyXformSerializer;
 import org.motechproject.mobileforms.api.callbacks.FormParser;
+import org.motechproject.mobileforms.api.domain.FormBean;
 import org.motechproject.mobileforms.api.domain.FormBeanGroup;
 import org.motechproject.mobileforms.api.domain.FormOutput;
 import org.motechproject.mobileforms.api.validator.FormValidator;
@@ -20,6 +21,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static ch.lambdaj.Lambda.collect;
+import static ch.lambdaj.Lambda.flatten;
+import static ch.lambdaj.Lambda.on;
+
 public class FormUploadServlet extends BaseFormServlet {
 
     private final Logger log = LoggerFactory.getLogger(FormUploadServlet.class);
@@ -35,9 +40,10 @@ public class FormUploadServlet extends BaseFormServlet {
             readActionByte(dataInput);
             List<Study> studies = extractBeans(dataInput);
             final Map<String,FormValidator> formValidators = getFormValidators();
+            List<FormBean> allForms = flatten(collect(studies, on(Study.class).forms()));
             for (Study study : studies) {
                 for (FormBeanGroup group : study.groupedForms()) {
-                    formGroupValidator.validate(group, formValidators);
+                    formGroupValidator.validate(group, formValidators, allForms);
                     formGroupPublisher.publish(new FormBeanGroup(group.validForms()));
                 }
                 formOutput.addStudy(study);

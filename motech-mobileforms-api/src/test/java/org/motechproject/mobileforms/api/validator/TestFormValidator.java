@@ -6,9 +6,9 @@ import org.motechproject.mobileforms.api.domain.FormError;
 
 import java.util.List;
 
-public class TestFormValidator extends FormValidator {
+public class TestFormValidator extends FormValidator<FormBean> {
     @Override
-    public List<FormError> validate(FormBean formBean, FormBeanGroup formGroup) {
-        return super.validate(formBean, formGroup);
+    public List<FormError> validate(FormBean formBean, FormBeanGroup formGroup, List<FormBean> allForms) {
+        return super.validate(formBean, formGroup, allForms);
     }
 }

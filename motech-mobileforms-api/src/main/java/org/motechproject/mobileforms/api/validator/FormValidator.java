@@ -19,7 +19,7 @@ import static org.motechproject.mobileforms.api.utils.CollectionUtils.addIfNotNu
 public abstract class FormValidator <V extends FormBean>{
     private static Logger log = Logger.getLogger(FormValidator.class);
 
-    public List<FormError> validate(final V formBean, FormBeanGroup formGroup) {
+    public List<FormError> validate(final V formBean, FormBeanGroup formGroup, List<FormBean> allForms) {
         List<FormError> formErrors = new ArrayList<FormError>();
         for (Field field : getInheritedFields(formBean.getClass())) {
             String fieldName = null;

@@ -14,7 +14,7 @@ import static ch.lambdaj.Lambda.*;
 public class FormGroupValidator {
     private final Logger log = LoggerFactory.getLogger(FormGroupValidator.class);
 
-    public void validate(FormBeanGroup formGroup, Map<String, FormValidator> validators) {
+    public void validate(FormBeanGroup formGroup, Map<String, FormValidator> validators, List<FormBean> allForms) {
         try {
             final List<FormBean> formBeansOrderedByPriority = formGroup.sortByDependency();
             final Map<String, FormBean> formBeansIndexedByName = index(formBeansOrderedByPriority, on(FormBean.class).getFormname());
@@ -22,7 +22,7 @@ public class FormGroupValidator {
                 final List<String> invalidDependentForms = getInvalidDependentForms(formBean, formBeansIndexedByName);
                 if (CollectionUtils.isEmpty(invalidDependentForms)) {
                     try {
-                        formBean.addFormErrors(validators.get(formBean.getValidator()).validate(formBean, formGroup));
+                        formBean.addFormErrors(validators.get(formBean.getValidator()).validate(formBean, formGroup, allForms));
                     } catch (Exception e) {
                         formBean.addFormError(new FormError("Form Error:" + formBean.getFormname(), "Server exception, contact your administrator"));
                         log.error("Encountered exception while validating form group, " + formGroup.toString(), e);

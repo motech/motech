@@ -10,6 +10,7 @@ import org.motechproject.mobileforms.api.validator.TestFormBean;
 
 import java.util.*;
 
+import static org.hamcrest.Matchers.any;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -31,7 +32,8 @@ public class FormGroupValidatorTest {
         final TestFormBean formBean2 = new TestFormBean("study", "form2", "<xml>xml</xml>", "validator2", "formType", Arrays.asList("form1", "form3"), "fName2", "lName2");
         final TestFormBean formBean3 = new TestFormBean("study", "form3", "<xml>xml</xml>", "validator3", "formType", Collections.<String>emptyList(), "fName3", "lName3");
 
-        FormBeanGroup formGroup = new FormBeanGroup(Arrays.<FormBean>asList(formBean1, formBean2, formBean3));
+        List<FormBean> formBeans = Arrays.<FormBean>asList(formBean1, formBean2, formBean3);
+        FormBeanGroup formGroup = new FormBeanGroup(formBeans);
 
         final FormValidator formValidator1 = mock(FormValidator.class);
         final FormValidator formValidator2 = mock(FormValidator.class);
@@ -49,7 +51,7 @@ public class FormGroupValidatorTest {
             put("validator3", formValidator3);
         }};
 
-        validator.validate(formGroup, validators);
+        validator.validate(formGroup, validators, formBeans);
 
         assertTrue(methodCalls.indexOf("form2") > methodCalls.indexOf("form1"));
         assertTrue(methodCalls.indexOf("form2") > methodCalls.indexOf("form3"));
@@ -62,7 +64,8 @@ public class FormGroupValidatorTest {
         final TestFormBean formBean3 = new TestFormBean("study", "form3", "<xml>xml</xml>", "validator3", "formType", Collections.<String>emptyList(), "fName3", "lName3");
         final TestFormBean formBean4 = new TestFormBean("study", "form4", "<xml>xml</xml>", "validator4", "formType", Arrays.asList("form2"), "fName4", "lName4");
 
-        FormBeanGroup formGroup = new FormBeanGroup(Arrays.<FormBean>asList(formBean1, formBean2, formBean3, formBean4));
+        List<FormBean> formBeans = Arrays.<FormBean>asList(formBean1, formBean2, formBean3, formBean4);
+        FormBeanGroup formGroup = new FormBeanGroup(formBeans);
 
         final FormValidator formValidator1 = mock(FormValidator.class);
         final FormValidator formValidator2 = mock(FormValidator.class);
@@ -83,7 +86,7 @@ public class FormGroupValidatorTest {
             put("validator4", formValidator4);
         }};
 
-        validator.validate(formGroup, validators);
+        validator.validate(formGroup, validators, formBeans);
 
         assertThat(formBean1.getFormErrors(), is(equalTo(Arrays.asList(new FormError("parameter", "error")))));
         assertThat(formBean2.getFormErrors(), is(equalTo(Arrays.asList(new FormError("Form Error:form1", "Dependent form failed")))));
@@ -97,7 +100,7 @@ public class FormGroupValidatorTest {
         mockValidatorToPass(formBean3, formValidator3, methodCalls);
         mockValidatorToPass(formBean4, formValidator4, methodCalls);
 
-        validator.validate(formGroup, validators);
+        validator.validate(formGroup, validators, formBeans);
 
         assertThat(formBean1.getFormErrors(), is(equalTo(Collections.<FormError>emptyList())));
         assertThat(formBean2.getFormErrors(), is(equalTo(Arrays.asList(new FormError("parameter", "error")))));
@@ -110,7 +113,8 @@ public class FormGroupValidatorTest {
         final TestFormBean formBean1 = new TestFormBean("study", "form1", "<xml>xml</xml>", "validator1", "formType", Collections.<String>emptyList(), "fName1", "lName1");
         final TestFormBean formBean2 = new TestFormBean("study", "form2", "<xml>xml</xml>", "validator2", "formType", Arrays.asList("form1"), "fName2", "lName2");
 
-        FormBeanGroup formGroup = new FormBeanGroup(Arrays.<FormBean>asList(formBean1, formBean2));
+        List<FormBean> formBeans = Arrays.<FormBean>asList(formBean1, formBean2);
+        FormBeanGroup formGroup = new FormBeanGroup(formBeans);
 
         final FormValidator formValidator1 = mock(FormValidator.class);
         final FormValidator formValidator2 = mock(FormValidator.class);
@@ -123,9 +127,9 @@ public class FormGroupValidatorTest {
         }};
 
         mockValidatorToPass(formBean1, formValidator1, methodCalls);
-        doThrow(new RuntimeException()).when(formValidator2).validate(formBean2, formGroup);
+        doThrow(new RuntimeException()).when(formValidator2).validate(formBean2, formGroup, formBeans);
 
-        validator.validate(formGroup, validators);
+        validator.validate(formGroup, validators, formBeans);
 
         assertThat(formBean1.getFormErrors().size(), is(equalTo(0)));
         assertThat(formBean2.getFormErrors(), is(equalTo(Arrays.asList(new FormError("Form Error:form2", "Server exception, contact your administrator")))));
@@ -136,12 +140,13 @@ public class FormGroupValidatorTest {
         final TestFormBean formBean1 = new TestFormBean("study", "form1", "<xml>xml</xml>", "validator1", "formType", Collections.<String>emptyList(), "fName1", "lName1");
         final TestFormBean formBean2 = new TestFormBean("study", "form2", "<xml>xml</xml>", "validator2", "formType", Arrays.asList("form1"), "fName2", "lName2");
 
-        FormBeanGroup formGroup = spy(new FormBeanGroup(Arrays.<FormBean>asList(formBean1, formBean2)));
+        List<FormBean> formBeans = Arrays.<FormBean>asList(formBean1, formBean2);
+        FormBeanGroup formGroup = spy(new FormBeanGroup(formBeans));
         doThrow(new RuntimeException()).when(formGroup).sortByDependency();
 
         Map<String, FormValidator> validators = new HashMap<String, FormValidator>();
 
-        validator.validate(formGroup, validators);
+        validator.validate(formGroup, validators, formBeans);
 
         assertThat(formBean1.getFormErrors(), is(equalTo(Arrays.asList(new FormError("Form Error:form1", "Server exception, contact your administrator")))));
         assertThat(formBean2.getFormErrors(), is(equalTo(Arrays.asList(new FormError("Form Error:form2", "Server exception, contact your administrator")))));
@@ -169,6 +174,6 @@ public class FormGroupValidatorTest {
                 methodCalls.add(((FormBean) invocationOnMock.getArguments()[0]).getFormname());
                 return errorsToBeReturned;
             }
-        }).when(formValidator).validate(eq(formBean), Matchers.<FormBeanGroup>any());
+        }).when(formValidator).validate(eq(formBean), Matchers.<FormBeanGroup>any(), anyList());
     }
 }

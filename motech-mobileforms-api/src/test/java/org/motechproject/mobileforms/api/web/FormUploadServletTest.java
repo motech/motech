@@ -97,9 +97,9 @@ public class FormUploadServletTest {
 
         final FormBeanGroup groupOne = new FormBeanGroup(Arrays.asList(successForm, failureForm));
         FormBeanGroup groupTwo = new FormBeanGroup(Arrays.asList(formInDifferentGroup));
-        when(formValidator.validate(successForm, groupOne)).thenReturn(Collections.EMPTY_LIST);
-        when(formValidator.validate(failureForm, groupOne)).thenReturn(formErrors);
-        when(formValidator.validate(formInDifferentGroup, groupTwo)).thenReturn(Collections.EMPTY_LIST);
+        when(formValidator.validate(successForm, groupOne, formBeans)).thenReturn(Collections.EMPTY_LIST);
+        when(formValidator.validate(failureForm, groupOne, formBeans)).thenReturn(formErrors);
+        when(formValidator.validate(formInDifferentGroup, groupTwo, formBeans)).thenReturn(Collections.EMPTY_LIST);
 
         when(mobileFormsService.getFormIdMap()).thenReturn(formIdMap);
 

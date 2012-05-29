@@ -16,31 +16,31 @@ public class FormValidatorTest {
     @Test
     public void shouldReturnErrorIfInvalidValidationAnnotationHasBeenConfiguredToTheFormBeanField() {
         TestFormBeanWithInvalidValidatorAnnotation formBean = new TestFormBeanWithInvalidValidatorAnnotation("FamilyName");
-        assertThat(new TestFormValidator().validate(formBean, new FormBeanGroup(Arrays.<FormBean>asList(formBean))), hasItem(new FormError("familyName", "Server exception, contact your administrator")));
+        assertThat(new TestFormValidator().validate(formBean, new FormBeanGroup(Arrays.<FormBean>asList(formBean)), Arrays.<FormBean>asList(formBean)), hasItem(new FormError("familyName", "Server exception, contact your administrator")));
     }
 
     @Test
     public void shouldReturnNoErrorsIfAllFieldsAreValid() {
         final TestFormBean formBean = new TestFormBean().setFirstName("First Name");
-        assertThat(new TestFormValidator().validate(formBean, new FormBeanGroup(Arrays.<FormBean>asList(formBean))), is(equalTo(Collections.<FormError>emptyList())));
+        assertThat(new TestFormValidator().validate(formBean, new FormBeanGroup(Arrays.<FormBean>asList(formBean)), Arrays.<FormBean>asList(formBean)), is(equalTo(Collections.<FormError>emptyList())));
     }
 
     @Test
     public void shouldCheckIfAttributesAnnotatedAsRequiredHaveAValue() {
         final TestFormBean formBean = new TestFormBean();
-        assertThat(new TestFormValidator().validate(formBean, new FormBeanGroup(Arrays.<FormBean>asList(formBean))), hasItem(new FormError("firstName", "is mandatory")));
+        assertThat(new TestFormValidator().validate(formBean, new FormBeanGroup(Arrays.<FormBean>asList(formBean)), Arrays.<FormBean>asList(formBean)), hasItem(new FormError("firstName", "is mandatory")));
     }
 
     @Test
     public void shouldCheckIfAttributesAnnotatedWithRegularExpressionGetValidatedAgainstThePattern() {
         final TestFormBean formBean = new TestFormBean().setFirstName("First 1 name");
-        assertThat(new TestFormValidator().validate(formBean, new FormBeanGroup(Arrays.<FormBean>asList(formBean))), is(equalTo(Arrays.asList(new FormError("firstName", "wrong format")))));
+        assertThat(new TestFormValidator().validate(formBean, new FormBeanGroup(Arrays.<FormBean>asList(formBean)), Arrays.<FormBean>asList(formBean)), is(equalTo(Arrays.asList(new FormError("firstName", "wrong format")))));
     }
 
     @Test
     public void shouldCheckIfAttributesAnnotatedWithMaxLengthGetValidatedAgainstMaxAllowedLength() {
         final TestFormBean bean = new TestFormBean().setFirstName("very looooooooooonnnnnnnnnngggggggg name");
-        assertThat(new TestFormValidator().validate(bean, new FormBeanGroup(Arrays.<FormBean>asList(bean))), hasItem(new FormError("firstName", "too long")));
+        assertThat(new TestFormValidator().validate(bean, new FormBeanGroup(Arrays.<FormBean>asList(bean)), Arrays.<FormBean>asList(bean)), hasItem(new FormError("firstName", "too long")));
     }
 }
 
