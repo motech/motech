@@ -109,7 +109,7 @@
     </dependencies>
 
     <modules>
-        <module>motech-platform-common</module>
+        <module>motech-platform-common-api</module>
         <module>motech-platform-server</module>
         <module>motech-platform-scheduler</module>
         <module>motech-platform-ivr-api</module>

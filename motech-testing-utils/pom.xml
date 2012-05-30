@@ -12,7 +12,7 @@
     <dependencies>
         <dependency>
             <groupId>org.motechproject</groupId>
-            <artifactId>motech-platform-common</artifactId>
+            <artifactId>motech-platform-common-api</artifactId>
             <version>0.11-SNAPSHOT</version>
         </dependency>
         <dependency>
