@@ -3,9 +3,8 @@ package org.motechproject.server.event;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
+import org.mockito.Mock;
 import org.motechproject.gateway.OutboundEventGateway;
-import org.motechproject.gateway.StubOutboundEventGateway;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.metrics.impl.MultipleMetricsAgentImpl;
 import org.motechproject.model.MotechEvent;
@@ -17,27 +16,38 @@ import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ServerEventRelayIT {
     EventListenerRegistry registry;
 
-    ServerEventRelay eventRelay;
+    @Mock
     OutboundEventGateway outboundEventGateway;
+
+    ServerEventRelay eventRelay;
     MotechEvent motechEvent;
 
     @Before
     public void setUp() throws Exception {
         MetricsAgent metricsAgent = new MultipleMetricsAgentImpl();
         registry = new EventListenerRegistry(metricsAgent);
-        outboundEventGateway = Mockito.mock(StubOutboundEventGateway.class);
         eventRelay = new ServerEventRelay(outboundEventGateway, registry, metricsAgent);
 
         // Create the scheduled event message object
         Map<String, Object> messageParameters = new HashMap<String, Object>();
         messageParameters.put("test", "value");
         motechEvent = new MotechEvent("org.motechproject.server.someevent", messageParameters);
+
+        initMocks(this);
     }
 
     @Test
