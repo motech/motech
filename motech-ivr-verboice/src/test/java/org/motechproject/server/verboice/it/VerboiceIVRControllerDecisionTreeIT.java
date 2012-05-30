@@ -10,12 +10,12 @@ import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
-import org.mortbay.jetty.webapp.WebAppContext;
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.TextToSpeechPrompt;
 import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.decisiontree.model.Tree;
 import org.motechproject.decisiontree.repository.AllTrees;
+import org.motechproject.gateway.StubOutboundEventGateway;
 import org.motechproject.testing.utils.SpringIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,6 +29,9 @@ import java.util.HashMap;
 @ContextConfiguration(locations = {"/testVerboiceContext.xml"})
 public class VerboiceIVRControllerDecisionTreeIT extends SpringIntegrationTest {
     static private Server server;
+    public static final String CONTEXT_PATH = "/motech";
+    private static final String VERBOICE_URL = "/verboice/ivr";
+    private static final String SERVER_URL = "http://localhost:7080" + CONTEXT_PATH + VERBOICE_URL;
 
     @Autowired
     AllTrees allTrees;
@@ -43,7 +46,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends SpringIntegrationTest {
 
 
         server = new Server(7080);
-        Context context = new Context(server, "/");//new Context(server, "/", Context.SESSIONS);
+        Context context = new Context(server, CONTEXT_PATH);//new Context(server, "/", Context.SESSIONS);
 
         DispatcherServlet dispatcherServlet = new DispatcherServlet();
         dispatcherServlet.setContextConfigLocation("classpath:testVerboiceContext.xml");
@@ -79,11 +82,11 @@ public class VerboiceIVRControllerDecisionTreeIT extends SpringIntegrationTest {
     public void shouldTestVerboiceXMLResponse() throws Exception {
 
         HttpClient client = new DefaultHttpClient();
-        final String rootUrl = "http://localhost:7080/verboice/ivr?tree=someTree&trP=Lw&ln=en";
+        final String rootUrl = SERVER_URL + "?tree=someTree&trP=Lw&ln=en";
         final String response = client.execute(new HttpGet(rootUrl), new BasicResponseHandler());
-        Assert.assertTrue(response.contains("<Gather method=\"POST\" action=\"http://localhost:7080/verboice/ivr?type=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"1\"></Gather>"));
+        Assert.assertTrue(response.contains("<Gather method=\"POST\" action=\"" + SERVER_URL + "?type=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"1\"></Gather>"));
 
-        final String transitionUrl = "http://localhost:7080/verboice/ivr?tree=someTree&trP=Lw&ln=en&Digits=1";
+        final String transitionUrl = SERVER_URL + "?tree=someTree&trP=Lw&ln=en&Digits=1";
         final String response2 = client.execute(new HttpGet(transitionUrl), new BasicResponseHandler());
         Assert.assertTrue(response2.contains("<Say>Say this</Say>"));
     }
@@ -91,7 +94,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends SpringIntegrationTest {
     @Test
     public void shouldReturnVerboiceML() throws Exception {
         HttpClient client = new DefaultHttpClient();
-        final String vmlUrl = "http://localhost:7080/verboice/ivr?tree=someTree&type=verboice&pId=asd&ln=en&tNm=someTree&trP=Lw==";
+        final String vmlUrl = SERVER_URL + "?tree=someTree&type=verboice&pId=asd&ln=en&tNm=someTree&trP=Lw==";
         final String response = client.execute(new HttpGet(vmlUrl), new BasicResponseHandler());
         Assert.assertTrue(response.contains("<Response>"));
     }

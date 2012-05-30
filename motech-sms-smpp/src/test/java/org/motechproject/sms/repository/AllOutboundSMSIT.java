@@ -103,7 +103,6 @@ public class AllOutboundSMSIT {
         assertThat(phoneNumbers, hasItem(recipient));
         assertThat(phoneNumbers, hasItem("1234567890"));
 
-        assertThat(allOutboundSMS.messagesSentBetween(sentDate, sentDate.minusMinutes(30)).size(), is(0));
     }
 
     @Test
@@ -125,7 +124,6 @@ public class AllOutboundSMSIT {
         List<String> phoneNumbers = Lambda.extract(outboundSMSes, on(OutboundSMS.class).getPhoneNumber());
         assertThat(phoneNumbers, is(asList(recipient, recipient)));
 
-        assertThat(allOutboundSMS.messagesSentBetween("0986432112", sentDate, sentDate.minusMinutes(30)).size(), is(0));
     }
 
     @Test

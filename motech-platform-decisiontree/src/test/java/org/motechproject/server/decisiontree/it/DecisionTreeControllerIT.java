@@ -26,6 +26,8 @@ import java.util.HashMap;
 @ContextConfiguration(locations = {"classpath:applicationDecisionTree.xml"})
 public class DecisionTreeControllerIT extends SpringIntegrationTest {
 
+    public static final String AUDIO_FILE_URL = "https://tamaproject.in/tama/wav/stream/en/signature_music.wav";
+    public static final String CONTEXT_PATH = "/motech";
     @Autowired
     AllTrees allTrees;
 
@@ -38,7 +40,7 @@ public class DecisionTreeControllerIT extends SpringIntegrationTest {
     @BeforeClass
     public static void startServer() throws Exception {
         server = new Server(7080);
-        Context context = new Context(server, "/");
+        Context context = new Context(server, CONTEXT_PATH);
 
         DispatcherServlet dispatcherServlet = new DispatcherServlet();
         dispatcherServlet.setContextConfigLocation("classpath:applicationDecisionTree.xml");
@@ -58,7 +60,7 @@ public class DecisionTreeControllerIT extends SpringIntegrationTest {
 
         tree.setRootNode(new Node().addPrompts(
             new TextToSpeechPrompt().setMessage("Hello Welcome to motech")
-            ,new AudioPrompt().setAudioFileUrl("https://tamaproject.in/tama/wav/stream/en/signature_music.wav").setName("audioFile")
+            ,new AudioPrompt().setAudioFileUrl(AUDIO_FILE_URL).setName("audioFile")
         ).setTransitions(transitions));
         allTrees.addOrReplace(tree);
         markForDeletion(tree);
@@ -78,9 +80,10 @@ public class DecisionTreeControllerIT extends SpringIntegrationTest {
     @Test
     public void shouldReturnVXML() throws Exception {
         HttpClient client = new DefaultHttpClient();
-        final String vmlUrl = "http://localhost:7080/decisiontree/node?type=vxml&pId=asd&ln=en&tNm=someTree&trP=Lw==";
+        final String vmlUrl = "http://localhost:7080" + CONTEXT_PATH + "/decisiontree/node?type=vxml&pId=asd&ln=en&tree=someTree&trP=Lw==";
         final String response = client.execute(new HttpGet(vmlUrl), new BasicResponseHandler());
         Assert.assertTrue(response.contains("<vxml version=\"2.1\" xmlns=\"http://www.w3.org/2001/vxml\">"));
+        Assert.assertTrue(response.contains("<audio src=\""+ AUDIO_FILE_URL + "\">"));
 
     }
 

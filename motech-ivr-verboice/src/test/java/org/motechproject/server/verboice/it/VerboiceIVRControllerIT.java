@@ -20,7 +20,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/ivrVerboiceTestContext.xml"})
+@ContextConfiguration(locations = {"/testVerboiceContext.xml"})
 public class VerboiceIVRControllerIT {
     @Autowired
     private VerboiceIVRService verboiceIVRService;

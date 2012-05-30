@@ -5,7 +5,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,7 +20,6 @@ public class VerboiceIVRController {
         this.verboiceIVRService = verboiceIVRService;
     }
 
-    @ResponseBody
     @RequestMapping("/ivr")
     public String handleRequest(HttpServletRequest request) {
         final String treeName = request.getParameter("tree");
@@ -36,7 +34,7 @@ public class VerboiceIVRController {
 
     private String redirectToDecisionTree(String treeName, String digits, String treePath, String language) {
         final String transitionKey = digits == null ? "" : "&trK=" + digits;
-        return String.format("forward:/%s?type=verboice&tree=%s&trP=%s&ln=%s%s", DECISIONTREE_URL, treeName, treePath, language, transitionKey)
+        return String.format("forward:%s?type=verboice&tree=%s&trP=%s&ln=%s%s", DECISIONTREE_URL, treeName, treePath, language, transitionKey)
                 .replaceAll("//", "/");
     }
 

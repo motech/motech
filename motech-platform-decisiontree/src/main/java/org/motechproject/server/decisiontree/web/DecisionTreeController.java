@@ -12,7 +12,10 @@ import org.motechproject.server.decisiontree.service.TreeEventProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
@@ -26,6 +29,8 @@ import java.util.Set;
  * Spring MVC controller implementation provides method to handle HTTP requests and generate
  * Markup document based on a Decision Tree Node model object and the corresponding Velocity template.
  */
+@Controller
+@RequestMapping("/decisiontree")
 public class DecisionTreeController extends MultiActionController {
 
     public static final String TEMPLATE_BASE_PATH = "/vm/";
@@ -77,8 +82,9 @@ public class DecisionTreeController extends MultiActionController {
      * Handles Decision Tree Node HTTP requests and generates a Markup document based on a Velocity template and type (vxml or verboice etc).
      * The HTTP request should contain the Tree ID, Node ID, Patient ID and Selected Transition Key (optional) parameters
      */
+    @RequestMapping("/node")
     public ModelAndView node(HttpServletRequest request, HttpServletResponse response) {
-        System.out.println(request.getParameterMap());
+        logger.info(request.getParameterMap().toString());
         logger.info("Generating decision tree node xml");
 
         response.setContentType("text/plain");
