@@ -38,6 +38,8 @@ public class ServerEventRelayIT {
 
     @Before
     public void setUp() throws Exception {
+        initMocks(this);
+
         MetricsAgent metricsAgent = new MultipleMetricsAgentImpl();
         registry = new EventListenerRegistry(metricsAgent);
         eventRelay = new ServerEventRelay(outboundEventGateway, registry, metricsAgent);
@@ -46,8 +48,6 @@ public class ServerEventRelayIT {
         Map<String, Object> messageParameters = new HashMap<String, Object>();
         messageParameters.put("test", "value");
         motechEvent = new MotechEvent("org.motechproject.server.someevent", messageParameters);
-
-        initMocks(this);
     }
 
     @Test
