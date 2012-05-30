@@ -3,11 +3,11 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.10</version>
+        <version>0.11-SNAPSHOT</version>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-platform-common</artifactId>
-    <version>0.10</version>
+    <version>0.11-SNAPSHOT</version>
     <name>MoTeCH Platform Common</name>
     <packaging>bundle</packaging>
     <dependencies>
