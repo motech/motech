@@ -11,8 +11,6 @@ import org.motechproject.decisiontree.model.Tree;
 import org.motechproject.decisiontree.repository.AllTrees;
 import org.motechproject.server.decisiontree.TreeNodeLocator;
 
-import java.util.Arrays;
-
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -50,7 +48,7 @@ public class DecisionTreeServiceTest {
                 .setName("PillReminderTree")
                 .setRootNode(rootNode);
 
-        when(allTrees.findByName(pillReminderTree.getName())).thenReturn(Arrays.asList(pillReminderTree));
+        when(allTrees.findByName(pillReminderTree.getName())).thenReturn(pillReminderTree);
         decisionTreeService = new DecisionTreeServiceImpl(allTrees, treeNodeLocator);
     }
 

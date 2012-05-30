@@ -9,6 +9,9 @@
 		</layout>
 	</appender>
 
+    <logger name="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <level value="INFO"/>
+    </logger>
 	<logger name="org.motechproject">
 		<level value="WARN" />
 	</logger>

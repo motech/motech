@@ -1,5 +1,7 @@
 package org.motechproject.decisiontree.model;
 
+import org.codehaus.jackson.annotate.JsonTypeInfo;
+
 /**
  * Contract for tree command.<br/>
  * Known use cases:<br/>
@@ -10,6 +12,7 @@ package org.motechproject.decisiontree.model;
  * {@link AudioPrompt#setCommand(ITreeCommand)},
  * {@link TextToSpeechPrompt#setCommand(ITreeCommand)}
  */
+@JsonTypeInfo(include = JsonTypeInfo.As.PROPERTY, use = JsonTypeInfo.Id.CLASS, property = "@type")
 public interface ITreeCommand {
     String[] execute(Object obj);
 }

@@ -39,8 +39,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
 public class AllTrees extends MotechBaseRepository<Tree> {
     @Autowired
@@ -49,8 +47,11 @@ public class AllTrees extends MotechBaseRepository<Tree> {
     }
 
     @GenerateView
-    public List<Tree> findByName(String name) {
-        return queryView("by_name", name);
+    public Tree findByName(String name) {
+        return singleResult(queryView("by_name", name));
     }
 
+    public void addOrReplace(Tree entity) {
+        super.addOrReplace(entity, "name", entity.getName());
+    }
 }
