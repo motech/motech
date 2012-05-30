@@ -9,7 +9,7 @@ import java.util.List;
 
 import static ch.lambdaj.Lambda.*;
 
-public class FormBeanGroup implements Serializable{
+public class FormBeanGroup implements Serializable {
 
     private List<FormBean> formBeans;
 
@@ -21,7 +21,7 @@ public class FormBeanGroup implements Serializable{
         return formBeans;
     }
 
-    public void validate(){
+    public void validate() {
 
     }
 
@@ -35,21 +35,25 @@ public class FormBeanGroup implements Serializable{
                 formBeansClone.remove(formBean);
             }
         }
-        resolveDependency(sortedFormBeans, formBeansClone);
+
+        final List<String> namesOfForms = collect(formBeans, on(FormBean.class).getFormname());
+        resolveDependency(sortedFormBeans, formBeansClone, namesOfForms);
         return sortedFormBeans;
     }
 
 
-    private void resolveDependency(List<FormBean> sortedFormBeans, ArrayList<FormBean> unprocessedFormBeans) {
+    private void resolveDependency(List<FormBean> sortedFormBeans, List<FormBean> unprocessedFormBeans, List<String> namesOfForms) {
         if (!unprocessedFormBeans.isEmpty()) {
             int processedNodes = 0;
             for (FormBean unprocessedFormBean : new ArrayList<FormBean>(unprocessedFormBeans)) {
                 boolean independent = true;
                 for (String dependent : unprocessedFormBean.getDepends()) {
-                    List<String> processedFormNames = collect(sortedFormBeans, on(FormBean.class).getFormname());
-                    if (!processedFormNames.contains(dependent)) {
-                        independent = false;
-                        break;
+                    if (namesOfForms.contains(dependent)) {
+                        List<String> processedFormNames = collect(sortedFormBeans, on(FormBean.class).getFormname());
+                        if (!processedFormNames.contains(dependent)) {
+                            independent = false;
+                            break;
+                        }
                     }
                 }
 
@@ -61,7 +65,7 @@ public class FormBeanGroup implements Serializable{
             }
 
             if (processedNodes > 0) {
-                resolveDependency(sortedFormBeans, unprocessedFormBeans);
+                resolveDependency(sortedFormBeans, unprocessedFormBeans, namesOfForms);
             } else {
                 throw new MotechException("Detected cyclic mobile form dependencies");
             }

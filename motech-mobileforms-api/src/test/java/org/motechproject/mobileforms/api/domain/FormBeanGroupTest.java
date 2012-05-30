@@ -24,11 +24,24 @@ public class FormBeanGroupTest {
 
         FormBeanGroup group = new FormBeanGroup(Arrays.<FormBean>asList(formBean1, formBean2, formBean3, formBean4, formBean5));
 
-        final List<FormBean> sortedList = group.sortByDependency();
+        List<FormBean> sortedList = group.sortByDependency();
 
         assertTrue(sortedList.indexOf(formBean2) < sortedList.indexOf(formBean1));
         assertTrue(sortedList.indexOf(formBean3) < sortedList.indexOf(formBean1));
         assertTrue(sortedList.indexOf(formBean4) < sortedList.indexOf(formBean2));
+        assertTrue(sortedList.contains(formBean1));
+        assertTrue(sortedList.contains(formBean2));
+        assertTrue(sortedList.contains(formBean3));
+        assertTrue(sortedList.contains(formBean4));
+        assertTrue(sortedList.contains(formBean5));
+
+        // just with one form
+        group = new FormBeanGroup(Arrays.<FormBean>asList(formBean1));
+        assertThat(group.sortByDependency(), is(equalTo(Arrays.<FormBean>asList(formBean1))));
+
+        // more than one form but all dependents on in the list
+        group = new FormBeanGroup(Arrays.<FormBean>asList(formBean1, formBean3));
+        assertThat(group.sortByDependency(), is(equalTo(Arrays.<FormBean>asList(formBean3, formBean1))));
     }
 
     @Test(expected = MotechException.class)
