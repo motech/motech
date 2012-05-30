@@ -58,6 +58,7 @@ public class FormParser extends DeserializationListenerAdapter {
             formBean.setFormname(form.name());
             formBean.setStudyName(form.studyName());
             formBean.setXmlContent(formXml);
+            formBean.setDepends(form.getDepends());
 
             mapToBeanConvertor.convert(formBean, handleEmptyStrings(data));
             studies.get(studies.size() - 1).addForm(formBean);

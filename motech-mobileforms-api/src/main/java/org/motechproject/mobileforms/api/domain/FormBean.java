@@ -97,6 +97,10 @@ public abstract class FormBean implements Serializable{
         return depends;
     }
 
+    public void setDepends(List<String> depends) {
+        this.depends = depends;
+    }
+
     public void clearFormErrors() {
         getFormErrors().clear();
     }
