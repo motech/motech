@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+    #foreach( $prompt in $node.prompts )
+        #if($prompt.class.simpleName == "AudioPrompt")
+            <Play>$prompt.audioFileUrl</Play>
+        #else
+            <Say>$prompt.message</Say>
+        #end
+    #end
+    #if ($node.transitions.size() > 0)
+        #foreach( $mapEntry in $node.transitions.entrySet() )
+            #set ($url = "$scheme://$host/verboice/ivr?type=$type&ln=$language&tree=$treeName&trP=$transitionPath")
+            <Gather method="POST" action="$escape.escapeXml($url)" numDigits="$maxDigits"></Gather>
+        #end
+     #else
+    #end
+</Response>

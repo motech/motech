@@ -57,28 +57,31 @@
         <constructor-arg ref="couchDbInstance"/>
     </bean>
 
+    <bean id="decisionTreeVxmlController" class="org.motechproject.server.decisiontree.web.DecisionTreeController" />
     <bean id="decisionTreeService" class="org.motechproject.server.decisiontree.service.DecisionTreeServiceImpl"/>
 
-    <bean id="velocityConfig"
-          class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
-        <property name="resourceLoaderPath" value="/vm"/>
-    </bean>
+	<bean id="velocityConfig"
+		class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+		<property name="resourceLoaderPath" value="/" />
+	</bean>
 
-    <bean id="viewResolver"
-          class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
-        <property name="cache" value="true"/>
-        <property name="prefix" value=""/>
-        <property name="suffix" value=".vm"/>
-        <!-- if you want to use the Spring Velocity macros, set this property to
-              true -->
-        <property name="exposeSpringMacroHelpers" value="true"/>
-    </bean>
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+		<property name="cache" value="true" />
+		<property name="prefix" value="" />
+		<property name="suffix" value=".vm" />
+		<!-- if you want to use the Spring Velocity macros, set this property to
+			true -->
+		<property name="exposeSpringMacroHelpers" value="true" />
+	</bean>
 
-    <bean id="treeNodeLocator" class="org.motechproject.server.decisiontree.TreeNodeLocator">
-    </bean>
-    <bean id="treeDao" class="org.motechproject.decisiontree.repository.AllTrees">
+	<bean id="treeNodeLocator" class="org.motechproject.server.decisiontree.TreeNodeLocator">
+	</bean>
+	<bean id="treeDao" class="org.motechproject.decisiontree.repository.AllTrees">
         <constructor-arg ref="treesDatabase"/>
     </bean>
     <bean id="treeEventProcessor"
           class="org.motechproject.server.decisiontree.service.TreeEventProcessor"/>
+
+    <bean id="simpleControllerHandlerAdapter" class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
 </beans>

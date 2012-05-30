@@ -45,4 +45,5 @@
         </osgi:service-properties>
     </osgi:service>
 
+    <context:component-scan base-package="org.motechproject.server.verboice"/>
 </beans>
