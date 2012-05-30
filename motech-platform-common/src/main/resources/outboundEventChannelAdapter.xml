@@ -3,9 +3,11 @@
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xmlns:beans="http://www.springframework.org/schema/beans"
              xmlns:jms="http://www.springframework.org/schema/integration/jms"
+             xmlns:osgi="http://www.springframework.org/schema/osgi"
              xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
             http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
-            http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd">
+            http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd
+            http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
     <gateway service-interface="org.motechproject.gateway.OutboundEventGateway"
              id="outboundEventGateway"
@@ -14,5 +16,11 @@
     <channel id="eventGatewayToEventJmsoutChannel"/>
 
     <jms:outbound-channel-adapter id="eventjmsout" channel="eventGatewayToEventJmsoutChannel" destination="eventQueue"/>
+
+    <osgi:service id="outboundEventGatewayOsgi" ref="outboundEventGateway"
+                  interface="org.motechproject.gateway.OutboundEventGateway"/>
+
+    <osgi:service id="eventGatewayToEventJmsoutChannelOsgi" ref="eventGatewayToEventJmsoutChannel"
+                  interface="org.springframework.integration.core.SubscribableChannel"/>
 
 </beans:beans>
