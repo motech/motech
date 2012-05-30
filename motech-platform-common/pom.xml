@@ -102,6 +102,7 @@
                             org.motechproject.osgi.Activator
                         </Bundle-Activator>
                         <Private-Package>
+                            org.apache.activemq,
                             org.ektorp.impl,
                             org.ektorp.spring,
                             org.motechproject.osgi,
@@ -109,6 +110,7 @@
                             org.springframework.aop.framework,
                             org.springframework.aop.support,
                             org.springframework.context.config,
+                            org.springframework.integration.config,
                             org.springframework.integration.config.xml,
                             org.springframework.integration.gateway,
                             org.springframework.integration.jms.config,
