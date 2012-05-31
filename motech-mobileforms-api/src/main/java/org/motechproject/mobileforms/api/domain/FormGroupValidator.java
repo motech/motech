@@ -41,7 +41,7 @@ public class FormGroupValidator {
         List<String> failedForms = new ArrayList<String>();
         if (formBean.getDepends() != null && !formBean.getDepends().isEmpty()) {
             for (String name : formBean.getDepends()) {
-                if (formBeansIndexedByName.get(name).hasErrors()) {
+                if (formBeansIndexedByName.get(name)!=null && formBeansIndexedByName.get(name).hasErrors()) {
                     failedForms.add(name);
                 }
             }
