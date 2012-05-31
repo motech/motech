@@ -13,7 +13,7 @@
     <util:properties id="messageCampaignProperties" location="classpath:messageCampaign.properties"/>
 
     <import resource="classpath:applicationPlatformScheduler.xml"/>
-    <import resource="classpath:applicationPlatformCommon.xml"/>
+    <import resource="classpath:applicationPlatformCommonAPI.xml"/>
 
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.server.messagecampaign"/>

@@ -10,10 +10,10 @@
 
     <context:annotation-config />
 
-    <import resource="classpath:integrationCommon.xml"/>
+    <import resource="classpath:integrationCommonAPI.xml"/>
     <import resource="inboundEventChannelAdapter.xml"/>
     <import resource="outboundScheduleJobChannelAdapter.xml"/>
-    <import resource="classpath:applicationPlatformCommon.xml"/>
+    <import resource="classpath:applicationPlatformCommonAPI.xml"/>
 
     <bean id="eventRelay" class="org.motechproject.server.event.ServerEventRelay" />
 

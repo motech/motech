@@ -15,8 +15,8 @@
         <beans:property name="location" value="classpath:activemq.properties"/>
         <beans:property name="ignoreUnresolvablePlaceholders" value="true"/>
     </beans:bean>
-    <beans:import resource="classpath:integrationCommon.xml"/>
-    <beans:import resource="classpath:applicationPlatformCommon.xml"/>
+    <beans:import resource="classpath:integrationCommonAPI.xml"/>
+    <beans:import resource="classpath:applicationPlatformCommonAPI.xml"/>
 
 	<gateway service-interface="org.motechproject.gateway.MotechSchedulerGateway"
 	 		id="outboundScheduleJobGateway"

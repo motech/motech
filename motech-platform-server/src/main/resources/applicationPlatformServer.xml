@@ -9,7 +9,7 @@
 
     <context:annotation-config />
 
-    <import resource="classpath:applicationPlatformCommon.xml" />
+    <import resource="classpath:applicationPlatformCommonAPI.xml" />
 	<import resource="classpath:applicationPlatformServerAPI.xml" />
 
 	<bean id="knowledgeBaseManager" class="org.motechproject.server.ruleengine.KnowledgeBaseManager" />

@@ -42,7 +42,7 @@
 
     <context:annotation-config/>
 
-    <import resource="classpath:integrationCommon.xml"/>
+    <import resource="classpath:integrationCommonAPI.xml"/>
     <import resource="schedulerFiredEventChannelAdapter.xml"/>
 
     <util:properties id="quartzProperties" location="classpath:quartz.properties"/>

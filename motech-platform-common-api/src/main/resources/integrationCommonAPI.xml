@@ -28,6 +28,6 @@
         <constructor-arg value="${queue.for.events}"/>
     </bean>
 
-    <import resource="outboundEventChannelAdapter.xml"/>
+    <import resource="outboundEventChannelAdapterAPI.xml"/>
 
 </beans>

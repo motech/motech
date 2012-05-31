@@ -16,7 +16,7 @@
 
     <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean"/>
 
-    <import resource="classpath*:applicationPlatformCommon.xml"/>
+    <import resource="classpath*:applicationPlatformCommonAPI.xml"/>
 
     <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
         <constructor-arg ref="httpClient"/>

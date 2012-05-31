@@ -8,7 +8,7 @@
 
     <context:component-scan base-package="org.motechproject.ivr.kookoo.repository"/>
 
-    <import resource="classpath:applicationPlatformCommon.xml"/>
+    <import resource="classpath:applicationPlatformCommonAPI.xml"/>
 
     <bean id="kookooIvrDbConnector" class="org.ektorp.impl.StdCouchDbConnector">
         <constructor-arg value="motech-ivr-kookoo"/>
