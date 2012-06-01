@@ -9,7 +9,7 @@
     #end
 
     #if ("$treeName"  != "")
-        #set ($url = "$scheme://$host/verboice/ivr?type=$type&ln=$language&tNm=$treeName")
+        #set ($url = "$scheme://$host$contentPath/verboice/ivr?type=$type&ln=$language&tNm=$treeName")
         <Redirect method="POST">$escape.escapeXml($url)</Redirect>
     #else
 

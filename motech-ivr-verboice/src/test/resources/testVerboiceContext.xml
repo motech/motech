@@ -7,5 +7,6 @@
     <import resource="applicationDecisionTree.xml"/>
     <import resource="ivrVerboiceContext.xml"/>
     <mvc:annotation-driven/>
+    <bean id="ivrHandler" class="org.motechproject.server.verboice.TestIVRHandler"/>
 
 </beans>
