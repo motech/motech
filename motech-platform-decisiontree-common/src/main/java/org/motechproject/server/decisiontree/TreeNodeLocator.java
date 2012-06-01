@@ -31,6 +31,7 @@
  */
 package org.motechproject.server.decisiontree;
 
+import org.motechproject.decisiontree.model.ITransition;
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.decisiontree.model.Tree;
@@ -50,9 +51,9 @@ public class TreeNodeLocator {
             String[] keys = path.split(PATH_DELIMITER);
             for (String key : keys) {
                 if (key.isEmpty()) continue;
-                Transition transition = node.getTransitions().get(key);
+                ITransition transition = node.getTransitions().get(key);
                 if (transition == null) return null;
-                node = transition.getDestinationNode();
+                node = transition.getDestinationNode(key);
                 if (node == null) return null;
             }
         }

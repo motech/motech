@@ -16,6 +16,7 @@ import org.motechproject.decisiontree.repository.AllTrees;
 import org.motechproject.testing.utils.SpringIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -54,9 +55,10 @@ public class DecisionTreeControllerIT extends SpringIntegrationTest {
     private void createTree() {
         Tree tree = new Tree();
         tree.setName("someTree");
-        HashMap<String, Transition> transitions = new HashMap<String, Transition>();
+        HashMap<String, ITransition> transitions = new HashMap<String, ITransition>();
         final Node textToSpeechNode = new Node().addPrompts(new TextToSpeechPrompt().setName("Say this"));
         transitions.put("1", new Transition().setDestinationNode(textToSpeechNode));
+        transitions.put("11", new Transition().setDestinationNode(textToSpeechNode));
 
         tree.setRootNode(new Node().addPrompts(
             new TextToSpeechPrompt().setMessage("Hello Welcome to motech")
@@ -91,4 +93,6 @@ public class DecisionTreeControllerIT extends SpringIntegrationTest {
     public CouchDbConnector getDBConnector() {
         return connector;
     }
+
+
 }

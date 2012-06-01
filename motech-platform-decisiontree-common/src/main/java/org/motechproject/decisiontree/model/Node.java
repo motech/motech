@@ -13,7 +13,7 @@ public class Node {
     private List<Action> actionsBefore;
     private List<Action> actionsAfter;
     private List<Prompt> prompts = new ArrayList<Prompt>();
-    private Map<String, Transition> transitions;
+    private Map<String, ITransition> transitions;
     private List<ITreeCommand> treeCommands = new ArrayList<ITreeCommand>();
 
     public List<Action> getActionsBefore() {
@@ -91,8 +91,8 @@ public class Node {
      * Gets the transition from the current node.
      * @return a map of userInput => transition pairs
      */
-    public Map<String, Transition> getTransitions() {
-        return transitions == null ? Collections.<String, Transition>emptyMap() : transitions;
+    public Map<String, ITransition> getTransitions() {
+        return transitions == null ? Collections.<String, ITransition>emptyMap() : transitions;
     }
 
     /**
@@ -106,8 +106,8 @@ public class Node {
         return this;
     }
 
-    public Node setTransitions(Map<String, Transition> transitions) {
-        this.transitions = transitions;
+    public Node setTransitions(Map<String, ? extends ITransition> transitions) {
+        this.transitions = (Map<String, ITransition>) transitions;
         return this;
     }
 
@@ -134,7 +134,7 @@ public class Node {
      */
     public Node addTransition(String transitionKey, Transition transition) {
         if (transitions == null) {
-            transitions = new HashMap<String, Transition>();
+            transitions = new HashMap<String, ITransition>();
         }
         transitions.put(transitionKey, transition);
         return this;

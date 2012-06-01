@@ -1,14 +1,14 @@
 package org.motechproject.decisiontree.model;
 
 
+import org.codehaus.jackson.annotate.JsonTypeInfo;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Represents transition from one node to the other.
- */
-public class Transition {
+
+public class Transition implements ITransition {
 
     private String name;
     private Node destinationNode;
@@ -79,5 +79,10 @@ public class Transition {
         result = 31 * result + (destinationNode != null ? destinationNode.hashCode() : 0);
         result = 31 * result + (actions != null ? actions.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public Node getDestinationNode(String input) {
+        return getDestinationNode();
     }
 }

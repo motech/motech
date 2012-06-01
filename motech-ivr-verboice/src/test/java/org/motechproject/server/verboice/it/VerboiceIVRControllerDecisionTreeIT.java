@@ -4,6 +4,10 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.custommonkey.xmlunit.Diff;
+import org.custommonkey.xmlunit.XMLAssert;
+import org.custommonkey.xmlunit.XMLTestCase;
+import org.custommonkey.xmlunit.XMLUnit;
 import org.ektorp.CouchDbConnector;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -14,11 +18,9 @@ import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
-import org.motechproject.decisiontree.model.Node;
-import org.motechproject.decisiontree.model.TextToSpeechPrompt;
-import org.motechproject.decisiontree.model.Transition;
-import org.motechproject.decisiontree.model.Tree;
+import org.motechproject.decisiontree.model.*;
 import org.motechproject.decisiontree.repository.AllTrees;
+import org.motechproject.server.decisiontree.web.DecisionTreeController;
 import org.motechproject.testing.utils.SpringIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,6 +30,10 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 import java.util.HashMap;
 
+import static junit.framework.Assert.assertTrue;
+import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+import static org.junit.Assert.assertEquals;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/testVerboiceContext.xml"})
 public class VerboiceIVRControllerDecisionTreeIT extends SpringIntegrationTest {
@@ -35,6 +41,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends SpringIntegrationTest {
     public static final String CONTEXT_PATH = "/motech";
     private static final String VERBOICE_URL = "/verboice/ivr";
     private static final String SERVER_URL = "http://localhost:7080" + CONTEXT_PATH + VERBOICE_URL;
+    private static final String USER_INPUT = "1345234";
 
     @Autowired
     AllTrees allTrees;
@@ -68,9 +75,10 @@ public class VerboiceIVRControllerDecisionTreeIT extends SpringIntegrationTest {
     private void createTree() {
         Tree tree = new Tree();
         tree.setName("someTree");
-        HashMap<String, Transition> transitions = new HashMap<String, Transition>();
+        HashMap<String, ITransition> transitions = new HashMap<String, ITransition>();
         final Node textToSpeechNode = new Node().addPrompts(new TextToSpeechPrompt().setMessage("Say this"));
         transitions.put("1", new Transition().setDestinationNode(textToSpeechNode));
+        transitions.put("*", new CustomTransition());
 
         tree.setRootNode(new Node().addPrompts(
                 new TextToSpeechPrompt().setMessage("Hello Welcome to motech")
@@ -83,15 +91,21 @@ public class VerboiceIVRControllerDecisionTreeIT extends SpringIntegrationTest {
 
     @Test
     public void shouldTestVerboiceXMLResponse() throws Exception {
-
+        XMLUnit.setIgnoreWhitespace(true);
+        String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Say>Hello Welcome to motech</Say><Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"50\"></Gather><Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"50\"></Gather></Response>";
         HttpClient client = new DefaultHttpClient();
-        final String rootUrl = SERVER_URL + "?tree=someTree&trP=Lw&ln=en";
-        final String response = client.execute(new HttpGet(rootUrl), new BasicResponseHandler());
-        Assert.assertTrue(response.contains("<Gather method=\"POST\" action=\"" + SERVER_URL + "?type=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"1\"></Gather>"));
+        String rootUrl = SERVER_URL + "?tree=someTree&trP=Lw&ln=en";
+        String response = client.execute(new HttpGet(rootUrl), new BasicResponseHandler());
+        assertXMLEqual(expectedResponse, response);
 
-        final String transitionUrl = SERVER_URL + "?tree=someTree&trP=Lw&ln=en&Digits=1";
-        final String response2 = client.execute(new HttpGet(transitionUrl), new BasicResponseHandler());
-        Assert.assertTrue(response2.contains("<Say>Say this</Say>"));
+        String transitionUrl = SERVER_URL + "?tree=someTree&trP=Lw&ln=en&Digits=1";
+        String response2 = client.execute(new HttpGet(transitionUrl), new BasicResponseHandler());
+        assertTrue("got " + response2, response2.contains("<Say>Say this</Say>"));
+
+        String transitionUrl2 = SERVER_URL + "?tree=someTree&trP=Lw&ln=en&Digits=" + USER_INPUT;
+        String response3 = client.execute(new HttpGet(transitionUrl2), new BasicResponseHandler());
+        assertTrue("got " + response3, response3.contains("<Say>custom transition " + USER_INPUT + "</Say>"));
+        assertTrue("got " + response3, response3.contains("<Play>custom.wav</Play>"));
     }
 
     @Test
@@ -110,6 +124,14 @@ public class VerboiceIVRControllerDecisionTreeIT extends SpringIntegrationTest {
     @Override
     public CouchDbConnector getDBConnector() {
         return connector;
+    }
+
+    public static class CustomTransition implements ITransition {
+        @Override
+        public Node getDestinationNode(String input) {
+            return new Node().setPrompts(new TextToSpeechPrompt().setMessage("custom transition " + input),
+                    new AudioPrompt().setAudioFileUrl("custom.wav"));
+        }
     }
 
 }

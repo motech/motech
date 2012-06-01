@@ -4,6 +4,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.decisiontree.model.ITransition;
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.server.decisiontree.TreeNodeLocator;
@@ -48,6 +49,7 @@ public class DecisionTreeController extends MultiActionController {
     public static final String EXIT_TEMPLATE_NAME = TEMPLATE_BASE_PATH + "exit";
 
     public static final String TREE_NAME_SEPARATOR = ",";
+    public static final int MAX_INPUT_DIGITS = 50;
 
     @Autowired
     DecisionTreeService decisionTreeService;
@@ -147,8 +149,8 @@ public class DecisionTreeController extends MultiActionController {
             String parentTransitionPath;
             parentTransitionPath = getParentTransitionPath(encodedParentTransitionPath);
             Node parentNode = decisionTreeService.getNode(currentTree, parentTransitionPath);
-            Transition transition = sendTreeEventActions(params, transitionKey, parentTransitionPath, parentNode);
-            node = transition.getDestinationNode();
+            ITransition transition = sendTreeEventActions(params, transitionKey, parentTransitionPath, parentNode);
+            node = transition.getDestinationNode(transitionKey);
 
             if (node == null ||  (node.getPrompts().isEmpty() && node.getActionsAfter().isEmpty()
                     && node.getActionsBefore().isEmpty() && node.getTransitions().isEmpty())) {
@@ -196,24 +198,31 @@ public class DecisionTreeController extends MultiActionController {
     }
 
     private void validateNode(Node node) {
-        for (Map.Entry<String, Transition> transitionEntry : node.getTransitions().entrySet()) {
+        for (Map.Entry<String, ITransition> transitionEntry : node.getTransitions().entrySet()) {
 
+            final String key = transitionEntry.getKey();
+            if (anyInput(key)) return;
             try {
-                Integer.parseInt(transitionEntry.getKey());
+                Integer.parseInt(key);
             } catch (NumberFormatException e) {
                 throw new DecisionTreeException(Errors.INVALID_TRANSITION_KEY_TYPE, "Invalid node: " + node
                         + "\n In order  to be used in VXML transition keys should be an Integer");
             }
 
-            Transition transition = transitionEntry.getValue();
-            if (transition.getDestinationNode() == null) {
+            ITransition transition = transitionEntry.getValue();
+            if (transition instanceof Transition && ((Transition)transition).getDestinationNode() == null) {
                 throw new DecisionTreeException(Errors.NULL_DESTINATION_NODE, "Invalid node: " + node + "\n Null Destination Node in the Transition: " + transition);
             }
         }
     }
 
-    private Transition sendTreeEventActions(Map<String, Object> params, String transitionKey, String parentTransitionPath, Node parentNode) {
-        Transition transition = parentNode.getTransitions().get(transitionKey);
+    private boolean anyInput(String key) {
+        return anyKey().equals(key);
+    }
+
+    private ITransition sendTreeEventActions(Map<String, Object> params, String transitionKey, String parentTransitionPath, Node parentNode) {
+        ITransition transition = parentNode.getTransitions().get(transitionKey);
+        if (transition == null) transition = parentNode.getTransitions().get(anyKey());
 
         if (transition == null) {
             throw new DecisionTreeException(Errors.INVALID_TRANSITION_KEY,
@@ -222,8 +231,13 @@ public class DecisionTreeController extends MultiActionController {
 
         treeEventProcessor.sendActionsAfter(parentNode, parentTransitionPath, params);
 
-        treeEventProcessor.sendTransitionActions(transition, params);
+        if (transition instanceof Transition)
+            treeEventProcessor.sendTransitionActions((Transition)transition, params);
         return transition;
+    }
+
+    private String anyKey() {
+        return "*";
     }
 
     private String getParentTransitionPath(String encodedParentTransitionPath) {
@@ -234,9 +248,10 @@ public class DecisionTreeController extends MultiActionController {
         return new String(Base64.decodeBase64(encodedParentTransitionPath));
     }
 
-    private String maxDigits(Map<String, Transition> transitions) {
+    private String maxDigits(Map<String, ITransition> transitions) {
         int maxDigits = 1;
         for (String key : transitions.keySet()) {
+            if (anyInput(key)) return "" + MAX_INPUT_DIGITS;
             if (maxDigits < key.length()) maxDigits = key.length();
         }
         return Integer.toString(maxDigits);

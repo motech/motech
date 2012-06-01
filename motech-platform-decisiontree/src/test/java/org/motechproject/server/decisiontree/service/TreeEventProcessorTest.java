@@ -105,7 +105,7 @@ public class TreeEventProcessorTest {
 
     @Test
     public void testTransitionActions() {
-        treeEventProcessor.sendTransitionActions(node.getTransitions().get("1"), params);
+        treeEventProcessor.sendTransitionActions((Transition)node.getTransitions().get("1"), params);
         verify(eventRelay, times(1)).sendEventMessage(any(MotechEvent.class));
     }
 

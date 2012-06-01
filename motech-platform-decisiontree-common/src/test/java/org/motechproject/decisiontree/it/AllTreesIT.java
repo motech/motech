@@ -28,7 +28,7 @@ public class AllTreesIT extends SpringIntegrationTest {
     @Test
     public void shouldStoreTree() throws Exception {
         Tree tree = new Tree();
-        HashMap<String, Transition> transitions = new HashMap<String, Transition>();
+        HashMap<String, ITransition> transitions = new HashMap<String, ITransition>();
         final Node textToSpeechNode = new Node().addPrompts(new TextToSpeechPrompt().setName("Say this"));
         transitions.put("1", new Transition().setDestinationNode(textToSpeechNode));
         final Node audioPromptNode = new Node().addPrompts(new AudioPrompt().setName("abc")).setTransitions(transitions);
@@ -43,7 +43,7 @@ public class AllTreesIT extends SpringIntegrationTest {
         assertNotNull(rootNodeFromDb);
         assertEquals(AudioPrompt.class.getName(), rootNodeFromDb.getPrompts().get(0).getClass().getName());
 
-        final Node nextNode = rootNodeFromDb.getTransitions().get("1").getDestinationNode();
+        final Node nextNode = rootNodeFromDb.getTransitions().get("1").getDestinationNode("1");
         assertEquals(TextToSpeechPrompt.class.getName(), nextNode.getPrompts().get(0).getClass().getName());
 
     }
