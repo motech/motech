@@ -25,11 +25,11 @@ public class AllSchedules extends MotechBaseRepository<ScheduleRecord> {
         this.scheduleFactory = scheduleFactory;
         removeAll();
         List<ScheduleRecord> records = trackedSchedulesJsonReader.records();
-        for (ScheduleRecord record : records)
+        for (ScheduleRecord record : records) //TODO move adding to db to post bean creation stage.
             add(record);
     }
 
-    @View(name = "by_name", map = "function(doc) { emit(doc.name); }")
+    @View(name = "by_name", map = "function(doc) { if(doc.type === 'ScheduleRecord') emit(doc.name); }")
     public Schedule getByName(String name) {
         List<ScheduleRecord> records = queryView("by_name", name);
         if (records.isEmpty())
