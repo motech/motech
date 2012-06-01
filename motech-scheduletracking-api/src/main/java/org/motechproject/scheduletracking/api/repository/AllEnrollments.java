@@ -23,14 +23,14 @@ public class AllEnrollments extends MotechBaseRepository<Enrollment> {
         super(Enrollment.class, db);
     }
 
-    @View(name = "find_active_by_external_id_and_schedule_name", map = "function(doc) {{emit([doc.externalId, doc.scheduleName, doc.status]);}}")
+    @View(name = "find_active_by_external_id_and_schedule_name", map = "function(doc) {if(doc.type === 'Enrollment') emit([doc.externalId, doc.scheduleName, doc.status]);}")
     public Enrollment getActiveEnrollment(String externalId, String scheduleName) {
         List<Enrollment> enrollments = queryView("find_active_by_external_id_and_schedule_name", ComplexKey.of(externalId, scheduleName, EnrollmentStatus.ACTIVE.name()));
         return enrollments.isEmpty() ? null : populateSchedule(enrollments.get(0));
     }
 
     private static final String FUNCTION_DOC_EMIT_DOC_METADATA = "function(doc) {\n" +
-            "for (var prop in doc.metadata)" +
+            "if(doc.type === 'Enrollment') for (var prop in doc.metadata)" +
             "    emit([prop, doc.metadata[prop]], doc._id);\n" +
             "}";
 
@@ -40,25 +40,25 @@ public class AllEnrollments extends MotechBaseRepository<Enrollment> {
         return populateWithSchedule(enrollments);
     }
 
-    @View(name = "by_external_id", map = "function(doc) { emit(doc.externalId); }")
+    @View(name = "by_external_id", map = "function(doc) { if(doc.type === 'Enrollment') emit(doc.externalId); }")
     public List<Enrollment> findByExternalId(String externalId) {
         List<Enrollment> enrollments = queryView("by_external_id", externalId);
         return populateWithSchedule(enrollments);
     }
 
-    @View(name = "by_schedule", map = "function(doc) { emit(doc.scheduleName); }")
+    @View(name = "by_schedule", map = "function(doc) { if(doc.type === 'Enrollment') emit(doc.scheduleName); }")
     public List<Enrollment> findBySchedule(List<String> scheduleName) {
         List<Enrollment> enrollments = queryViewWithKeyList("by_schedule", scheduleName);
         return populateWithSchedule(enrollments);
     }
 
-    @View(name = "by_current_milestone", map = "function(doc) { emit(doc.currentMilestoneName); }")
+    @View(name = "by_current_milestone", map = "function(doc) { if(doc.type === 'Enrollment') emit(doc.currentMilestoneName); }")
     public List<Enrollment> findByCurrentMilestone(String milestoneName) {
         List<Enrollment> enrollments = queryView("by_current_milestone", milestoneName);
         return populateWithSchedule(enrollments);
     }
 
-    @View(name = "by_status", map = "function(doc) { emit(doc.status); }")
+    @View(name = "by_status", map = "function(doc) { if(doc.type === 'Enrollment') emit(doc.status); }")
     public List<Enrollment> findByStatus(EnrollmentStatus status) {
         List<Enrollment> enrollments = queryView("by_status", status.name());
         return populateWithSchedule(enrollments);
