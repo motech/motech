@@ -19,7 +19,7 @@ public class AllCampaignEnrollments extends MotechBaseRepository<CampaignEnrollm
         super(CampaignEnrollment.class, db);
     }
 
-    @View(name = "find_by_externalId_and_campaign", map = "function(doc) {{emit([doc.externalId, doc.campaignName]);}}")
+    @View(name = "find_by_externalId_and_campaign", map = "function(doc) {if(doc.type === 'CampaignEnrollment') emit([doc.externalId, doc.campaignName]);}")
     public CampaignEnrollment findByExternalIdAndCampaignName(String externalId, String campaignName) {
         List<CampaignEnrollment> enrollments = queryView("find_by_externalId_and_campaign", ComplexKey.of(externalId, campaignName));
         return enrollments.isEmpty() ? null : enrollments.get(0);
@@ -34,17 +34,17 @@ public class AllCampaignEnrollments extends MotechBaseRepository<CampaignEnrollm
         }
     }
 
-    @View(name = "by_status", map = "function(doc) { emit(doc.status); }")
+    @View(name = "by_status", map = "function(doc) { if(doc.type === 'CampaignEnrollment') emit(doc.status); }")
     public List<CampaignEnrollment> findByStatus(CampaignEnrollmentStatus status) {
         return queryView("by_status", status.name());
     }
 
-    @View(name = "by_externalId", map = "function(doc) { emit(doc.externalId); }")
+    @View(name = "by_externalId", map = "function(doc) { if(doc.type === 'CampaignEnrollment') emit(doc.externalId); }")
     public List<CampaignEnrollment> findByExternalId(String externalId) {
         return queryView("by_externalId", externalId);
     }
 
-    @View(name = "by_campaignName", map = "function(doc) { emit(doc.campaignName); }")
+    @View(name = "by_campaignName", map = "function(doc) { if(doc.type === 'CampaignEnrollment') emit(doc.campaignName); }")
     public List<CampaignEnrollment> findByCampaignName(String campaignName) {
         return queryView("by_campaignName", campaignName);
     }
