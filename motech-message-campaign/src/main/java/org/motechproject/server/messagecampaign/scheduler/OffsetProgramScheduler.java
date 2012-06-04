@@ -10,7 +10,6 @@ import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMes
 import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 import org.motechproject.util.DateUtil;
 import org.motechproject.valueobjects.WallTime;
-import org.motechproject.valueobjects.factory.WallTimeFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +50,7 @@ public class OffsetProgramScheduler extends MessageCampaignScheduler<OffsetCampa
     }
 
     private int offsetInDays(String timeOffset) {
-        WallTime wallTime = WallTimeFactory.wallTime(timeOffset);
+        WallTime wallTime = new WallTime(timeOffset);
         return wallTime.inDays();
     }
 }

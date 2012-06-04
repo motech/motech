@@ -3,13 +3,12 @@ package org.motechproject.scheduletracking.api.domain;
 import org.joda.time.MutablePeriod;
 import org.joda.time.Period;
 import org.joda.time.ReadWritablePeriod;
-import org.joda.time.format.PeriodFormatterBuilder;
-import org.joda.time.format.PeriodParser;
 import org.motechproject.scheduletracking.api.domain.exception.InvalidScheduleDefinitionException;
 import org.motechproject.scheduletracking.api.domain.json.AlertRecord;
 import org.motechproject.scheduletracking.api.domain.json.MilestoneRecord;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleWindowsRecord;
+import org.motechproject.util.TimeIntervalParser;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -17,17 +16,8 @@ import java.util.*;
 @Component
 public class ScheduleFactory {
     public static final Period EMPTY_PERIOD = Period.ZERO;
-    private List<PeriodParser> parsers;
 
     public ScheduleFactory() {
-        parsers = new ArrayList<PeriodParser>();
-        parsers.add(new PeriodFormatterBuilder().appendYears().appendSuffix(" year", " years").toParser());
-        parsers.add(new PeriodFormatterBuilder().appendMonths().appendSuffix(" month", " months").toParser());
-        parsers.add(new PeriodFormatterBuilder().appendWeeks().appendSuffix(" week", " weeks").toParser());
-        parsers.add(new PeriodFormatterBuilder().appendDays().appendSuffix(" day", " days").toParser());
-        parsers.add(new PeriodFormatterBuilder().appendHours().appendSuffix(" hour", " hours").toParser());
-        parsers.add(new PeriodFormatterBuilder().appendMinutes().appendSuffix(" minute", " minutes").toParser());
-        parsers.add(new PeriodFormatterBuilder().appendSeconds().appendSuffix(" second", " seconds").toParser());
     }
 
     public Schedule build(ScheduleRecord scheduleRecord) {
@@ -87,17 +77,9 @@ public class ScheduleFactory {
 
     private Period getPeriodFromValue(List<String> readableValues) {
         ReadWritablePeriod period = new MutablePeriod();
-        for (String s : readableValues)
-            period.add(parse(s));
-        return period.toPeriod();
-    }
-
-    private Period parse(String s) {
-        ReadWritablePeriod period = new MutablePeriod();
-        for (PeriodParser parser : parsers) {
-            if (parser.parseInto(period, s, 0, Locale.getDefault()) > 0) {
-                return period.toPeriod();
-            }
+        final TimeIntervalParser timeIntervalParser = new TimeIntervalParser();
+        for (String s : readableValues) {
+            period.add(timeIntervalParser.parse(s));
         }
         return period.toPeriod();
     }

@@ -5,8 +5,6 @@ import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.Time;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.valueobjects.WallTime;
-import org.motechproject.valueobjects.WallTimeUnit;
-import org.motechproject.valueobjects.factory.WallTimeFactory;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -51,7 +49,7 @@ public class RepeatingCampaignMessage extends CampaignMessage {
         if (!isEmpty(weekDaysApplicable))
             return DAILY_REPEAT_INTERVAL;
         else
-            return WallTimeFactory.wallTime(repeatInterval).inDays();
+            return new WallTime(repeatInterval).inDays();
     }
 
     public boolean repeatIntervalIsLessThanDay() {
@@ -59,9 +57,9 @@ public class RepeatingCampaignMessage extends CampaignMessage {
             return false;
         }
 
-        WallTime interval = WallTimeFactory.wallTime(repeatInterval);
+        WallTime interval =new WallTime(repeatInterval);
 
-        return interval.getUnit() == WallTimeUnit.Hour || interval.getUnit() == WallTimeUnit.Minute;
+        return interval.isLessThanADay();
     }
 
     public int repeatIntervalForOffset() {

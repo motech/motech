@@ -1,23 +1,16 @@
 package org.motechproject.valueobjects;
 
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.Period;
+import org.motechproject.util.TimeIntervalParser;
 
 import java.io.Serializable;
 
 public class WallTime implements Serializable {
-	@JsonProperty
-    private int value;
-	@JsonProperty
-    private WallTimeUnit unit;
 
-	// For ektorp
-	private WallTime() {
-	}
+    Period period;
 
-    public WallTime(int value, WallTimeUnit unit) {
-        this.value = value;
-        this.unit = unit;
+    public WallTime(String userReadableForm) {
+        period = new TimeIntervalParser().parse(userReadableForm);
     }
 
     @Override
@@ -25,51 +18,39 @@ public class WallTime implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        WallTime wallTime = (WallTime) o;
-
-        return value == wallTime.value && unit == wallTime.unit;
+        return period.equals(((WallTime) o).asPeriod());
     }
 
     @Override
     public int hashCode() {
-        int result = value;
-        result = 31 * result + (unit != null ? unit.hashCode() : 0);
-        return result;
-    }
-
-    public int getValue() {
-        return value;
-    }
-
-    public WallTimeUnit getUnit() {
-        return unit;
+        return period.hashCode();
     }
 
     public int inDays() {
-        if (value == 0 || unit == null)
-            return 0;
-        return unit.days * value;
+        return period.toStandardDays().getDays();
     }
 
-    public int inHours() {
-        if (value == 0 || unit == null) {
-            return 0;
-        }
+    public int getHours() {
+        return period.getHours();
+    }
 
-        return unit.hours * value;
+    public int getMinutes() {
+        return period.getMinutes();
     }
 
     public int inMinutes() {
-        if (value == 0 || unit == null) {
-            return 0;
-        }
+        return period.toStandardMinutes().getMinutes();
+    }
 
-        return unit.minutes * value;
+    public long inMillis() {
+        return period.toStandardSeconds().getSeconds() * 1000;
     }
 
     public Period asPeriod() {
-        if (unit == null)
-            return WallTimeUnit.Day.toPeriod(0);
-        return unit.toPeriod(value);
+        return period;
+    }
+
+    public boolean isLessThanADay() {
+        return period.toStandardDays().isLessThan(new Period(0, 0, 0, 1, 0, 0, 0, 0).toStandardDays());
     }
 }

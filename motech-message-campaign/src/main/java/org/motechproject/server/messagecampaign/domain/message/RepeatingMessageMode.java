@@ -10,7 +10,6 @@ import org.motechproject.server.messagecampaign.Constants;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.util.DateUtil;
 import org.motechproject.valueobjects.WallTime;
-import org.motechproject.valueobjects.WallTimeUnit;
 
 import java.util.Date;
 
@@ -19,7 +18,6 @@ import static org.joda.time.Hours.hoursBetween;
 import static org.joda.time.Minutes.minutesBetween;
 import static org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage.WEEKLY_REPEAT_INTERVAL;
 import static org.motechproject.util.DateUtil.*;
-import static org.motechproject.valueobjects.factory.WallTimeFactory.wallTime;
 
 public enum RepeatingMessageMode {
 
@@ -29,37 +27,23 @@ public enum RepeatingMessageMode {
         }
 
         public Integer repeatIntervalForOffSet(RepeatingCampaignMessage message) {
-            WallTime time = wallTime(message.repeatInterval());
+            WallTime time = new WallTime(message.repeatInterval());
             int interval;
 
-            switch (time.getUnit()) {
-                case Minute:
-                    interval = time.inMinutes();
-                    break;
-                case Hour:
-                    interval = time.inHours();
-                    break;
-                default:
-                    interval = time.inDays();
-            }
+            if (time.getMinutes() > 0 ) interval = time.getMinutes();
+            else if (time.getHours() > 0) interval = time.getHours();
+            else interval = time.inDays();
 
             return interval;
         }
 
         public Integer currentOffset(RepeatingCampaignMessage message, DateTime startTime, Integer startIntervalOffset) {
-            WallTime time = wallTime(message.repeatInterval());
+            WallTime time = new WallTime(message.repeatInterval());
             int interval;
 
-            switch (time.getUnit()) {
-                case Minute:
-                    interval = minutesBetween(startTime, DateUtil.now()).getMinutes();
-                    break;
-                case Hour:
-                    interval = hoursBetween(startTime, DateUtil.now()).getHours();
-                    break;
-                default:
-                    interval = daysBetween(newDate(startTime), today()).getDays();
-            }
+            if (time.getMinutes() > 0 )  interval = minutesBetween(startTime, DateUtil.now()).getMinutes();
+            else if (time.getHours() > 0) interval = hoursBetween(startTime, DateUtil.now()).getHours();
+            else  interval = daysBetween(newDate(startTime), today()).getDays();
 
             return (interval / repeatIntervalForOffSet(message)) + 1;
         }

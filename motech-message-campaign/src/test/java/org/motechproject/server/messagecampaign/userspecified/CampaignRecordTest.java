@@ -9,7 +9,7 @@ import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaign
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 import org.motechproject.util.DateUtil;
-import org.motechproject.valueobjects.factory.WallTimeFactory;
+import org.motechproject.valueobjects.WallTime;
 
 import java.util.List;
 
@@ -85,7 +85,7 @@ public class CampaignRecordTest {
         assertEquals(messageRecord.formats(), message.formats());
         assertEquals(messageRecord.languages(), message.languages());
         assertEquals(messageRecord.messageKey(), message.messageKey());
-        assertEquals(WallTimeFactory.wallTime(messageRecord.repeatInterval()).inDays(), message.repeatIntervalForOffset());
+        assertEquals(new WallTime(messageRecord.repeatInterval()).inDays(), message.repeatIntervalForOffset());
 
     }
 

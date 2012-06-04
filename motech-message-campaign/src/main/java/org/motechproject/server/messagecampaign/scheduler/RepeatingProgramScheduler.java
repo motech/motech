@@ -26,7 +26,6 @@ import java.util.Map;
 import static java.lang.String.format;
 import static org.motechproject.util.DateUtil.endOfDay;
 import static org.motechproject.util.DateUtil.newDateTime;
-import static org.motechproject.valueobjects.factory.WallTimeFactory.wallTime;
 
 public class RepeatingProgramScheduler extends MessageCampaignScheduler<RepeatingCampaignMessage, RepeatingCampaign> {
 
@@ -42,7 +41,7 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
     @Override
     protected void scheduleJobFor(RepeatingCampaignMessage message) {
         Boolean repeatIntervalLessThanDay = !dispatchMessagesEvery24Hours && message.repeatIntervalIsLessThanDay();
-        WallTime maxDuration = wallTime(campaign.maxDuration());
+        WallTime maxDuration = new WallTime(campaign.maxDuration());
         LocalDate startDate = referenceDate();
         Date endDate = repeatIntervalLessThanDay ?
                 newDateTime(startDate, getDeliveryTime(message)).plusMinutes(maxDuration.inMinutes()).toDate() :
@@ -64,7 +63,7 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
 
     @Override
     protected DateTime getCampaignEnd() {
-        int maxDuration = wallTime(campaign.maxDuration()).inDays();
+        int maxDuration = new WallTime(campaign.maxDuration()).inDays();
         return newDateTime(campaignRequest.referenceDate().plusDays(maxDuration));
     }
 
@@ -89,9 +88,9 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
     }
 
     private Long getRepeatIntervalInMilliSeconds(RepeatingCampaignMessage message) {
-        WallTime repeatInterval = wallTime(message.repeatInterval());
+        WallTime repeatInterval = new WallTime(message.repeatInterval());
 
-        return repeatInterval.inMinutes() * 60L * 1000L;
+        return repeatInterval.inMillis();
     }
 
     private void scheduleRepeatingJob(LocalDate startDate, Time deliverTime, Date endDate, Map<String, Object> params, String cronExpression) {

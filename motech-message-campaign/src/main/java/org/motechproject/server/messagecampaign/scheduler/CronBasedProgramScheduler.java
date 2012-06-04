@@ -6,9 +6,9 @@ import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.CronBasedCampaign;
 import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
 import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
+import org.motechproject.valueobjects.WallTime;
 
 import static org.motechproject.util.DateUtil.newDateTime;
-import static org.motechproject.valueobjects.factory.WallTimeFactory.wallTime;
 
 public class CronBasedProgramScheduler extends MessageCampaignScheduler<CronBasedCampaignMessage, CronBasedCampaign> {
 
@@ -23,6 +23,6 @@ public class CronBasedProgramScheduler extends MessageCampaignScheduler<CronBase
 
     @Override
     protected DateTime getCampaignEnd() {
-        return newDateTime(campaignRequest.referenceDate().plusDays(wallTime(campaign.maxDuration()).inDays()));
+        return newDateTime(campaignRequest.referenceDate().plusDays(new WallTime(campaign.maxDuration()).inDays()));
     }
 }

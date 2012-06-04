@@ -19,7 +19,6 @@ import org.motechproject.server.messagecampaign.service.CampaignEnrollmentServic
 import org.motechproject.server.messagecampaign.service.CampaignEnrollmentsQuery;
 import org.motechproject.util.DateUtil;
 import org.motechproject.valueobjects.WallTime;
-import org.motechproject.valueobjects.factory.WallTimeFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -110,7 +109,7 @@ public class RepeatingProgramScheduleHandler {
         String[] applicableTime = { hour.toString(), String.format("%02d", minute) };
 
         if (!dispatchMessagesEvery24Hours && repeatingCampaignMessage.repeatIntervalIsLessThanDay()) {
-            WallTime interval = WallTimeFactory.wallTime(repeatingCampaignMessage.repeatInterval());
+            WallTime interval = new WallTime(repeatingCampaignMessage.repeatInterval());
             DateTime then = DateUtil.now().getHourOfDay() < hour ? DateUtil.now().minusDays(1) : DateUtil.now();
 
             then = then.withHourOfDay(hour).withMinuteOfHour(minute);
@@ -153,5 +152,4 @@ public class RepeatingProgramScheduleHandler {
         String messageKey = (String) motechEvent.getParameters().get(EventKeys.MESSAGE_KEY);
         return allMessageCampaigns.get(campaignName, messageKey);
     }
-
 }
