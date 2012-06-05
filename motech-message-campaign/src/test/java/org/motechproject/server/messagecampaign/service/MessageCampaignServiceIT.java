@@ -1,7 +1,9 @@
 package org.motechproject.server.messagecampaign.service;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerServiceImpl;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
@@ -15,12 +17,15 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/testMessageCampaignApplicationContext.xml"})
-public class MessageCampaignServiceIT {
+public class MessageCampaignServiceIT{
 
     @Autowired
     private MessageCampaignService messageCampaignService;
     @Autowired
     private SchedulerFactoryBean schedulerFactoryBean;
+
+    @Autowired
+    private MotechBaseRepository allCampaignEnrollments;
 
     @Test
     public void testEnrollForAbsoluteProgram() throws Exception {
@@ -66,5 +71,10 @@ public class MessageCampaignServiceIT {
         enrollRequest.setReferenceDate(DateUtil.today());
         messageCampaignService.startFor(enrollRequest);
         assertEquals(scheduledJobsNum + 2, schedulerFactoryBean.getScheduler().getTriggerNames(MotechSchedulerServiceImpl.JOB_GROUP_NAME).length);
+    }
+
+    @After
+    public void tearDown() {
+        allCampaignEnrollments.removeAll();
     }
 }
