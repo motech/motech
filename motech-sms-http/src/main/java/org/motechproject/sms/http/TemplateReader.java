@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class TemplateReader {
 
-    @Value("${sms.http.configuration.filename}")
+    @Value("#{smsHttpProperties['sms.http.configuration.filename']}")
     private String templateFileName;
 
     public TemplateReader() {
