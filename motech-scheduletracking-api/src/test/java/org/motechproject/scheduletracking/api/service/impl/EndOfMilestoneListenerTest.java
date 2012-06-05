@@ -34,7 +34,7 @@ public class EndOfMilestoneListenerTest {
         enrollment.setId("enrollment_1");
         when(allEnrollments.get("enrollment_1")).thenReturn(enrollment);
 
-        MotechEvent event = new DefaultmentCaptureEvent("enrollment_1", "job_id").toMotechEvent();
+        MotechEvent event = new DefaultmentCaptureEvent("enrollment_1", "job_id", "externalId").toMotechEvent();
         endOfMilestoneListener.handle(event);
         verify(allEnrollments).update(enrollment);
     }

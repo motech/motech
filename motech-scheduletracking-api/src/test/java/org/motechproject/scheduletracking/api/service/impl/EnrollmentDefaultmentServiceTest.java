@@ -56,6 +56,7 @@ public class EnrollmentDefaultmentServiceTest {
         DefaultmentCaptureEvent event = new DefaultmentCaptureEvent(job.getMotechEvent());
         assertEquals("enrollment_1", event.getJobId());
         assertEquals(now.plusWeeks(4).toDate(), job.getStartDate());
+        assertEquals(externalId, event.getExternalId());
     }
 
     @Test

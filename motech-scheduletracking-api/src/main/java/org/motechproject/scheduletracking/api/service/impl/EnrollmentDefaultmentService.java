@@ -35,7 +35,7 @@ public class EnrollmentDefaultmentService {
         if (milestoneEndDateTime.isBefore(now()))
             return;
 
-        MotechEvent event = new DefaultmentCaptureEvent(enrollment.getId(), enrollment.getId()).toMotechEvent();
+        MotechEvent event = new DefaultmentCaptureEvent(enrollment.getId(), enrollment.getId(), enrollment.getExternalId()).toMotechEvent();
         schedulerService.safeScheduleRunOnceJob(new RunOnceSchedulableJob(event, milestoneEndDateTime.toDate()));
     }
 

@@ -15,13 +15,15 @@ public class DefaultmentCaptureEventTest {
     public void shouldCreateMotechEvent() {
         String enrollmentId = "enrollmentId";
         String jobId = "jobId";
+        final String externalId = "externalId";
 
-        DefaultmentCaptureEvent defaultmentCaptureEvent = new DefaultmentCaptureEvent(enrollmentId, jobId);
+        DefaultmentCaptureEvent defaultmentCaptureEvent = new DefaultmentCaptureEvent(enrollmentId, jobId, externalId);
         MotechEvent motechEvent = defaultmentCaptureEvent.toMotechEvent();
 
         assertEquals(EventSubjects.DEFAULTMENT_CAPTURE, motechEvent.getSubject());
         Map<String, Object> parameters = motechEvent.getParameters();
         assertEquals(enrollmentId, parameters.get(EventDataKeys.ENROLLMENT_ID));
         assertEquals(jobId, parameters.get(MotechSchedulerService.JOB_ID_KEY));
+        assertEquals(externalId, parameters.get(EventDataKeys.EXTERNAL_ID));
     }
 }
