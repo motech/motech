@@ -4,6 +4,7 @@ import ch.lambdaj.Lambda;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.model.Time;
@@ -40,6 +41,11 @@ public class AllEnrollmentsIT {
     private AllSchedules allSchedules;
     @Autowired
     private ScheduleTrackingService scheduleTrackingService;
+
+    @Before
+    public void setUp() {
+        allEnrollments.removeAll();
+    }
 
     @After
     public void tearDown() {

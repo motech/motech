@@ -34,6 +34,7 @@ public class AllCampaignEnrollmentsIT {
 
     @Before
     public void setUp() {
+        allCampaignEnrollments.removeAll();
     }
 
     @Test
