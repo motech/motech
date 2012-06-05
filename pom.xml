@@ -129,9 +129,9 @@
         <module>motech-alerts-api</module>
         <module>motech-ivr-asterisk</module>
         <module>motech-ivr-kookoo</module>
-	    <module>motech-ivr-voxeo</module>
-	    <module>motech-ivr-verboice</module>
-	    <module>motech-demo</module>
+        <module>motech-ivr-voxeo</module>
+        <module>motech-ivr-verboice</module>
+        <module>motech-demo</module>
         <module>motech-mrs-api</module>
         <module>motech-openmrs-api</module>
         <module>motech-openmrs-omod</module>
