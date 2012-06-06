@@ -6,19 +6,22 @@ import org.joda.time.LocalDate;
 import org.motechproject.model.CronSchedulableJob;
 import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.MotechEvent;
+import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.Constants;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.RepeatingCampaign;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
-import org.motechproject.server.messagecampaign.domain.message.RepeatingMessageMode;
 import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 import org.motechproject.valueobjects.WallTime;
-import org.motechproject.valueobjects.WallTimeUnit;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 import static org.motechproject.util.DateUtil.endOfDay;
@@ -38,18 +41,25 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
 
     @Override
     protected void scheduleJobFor(RepeatingCampaignMessage message) {
+        Boolean repeatIntervalLessThanDay = !dispatchMessagesEvery24Hours && message.repeatIntervalIsLessThanDay();
         WallTime maxDuration = wallTime(campaign.maxDuration());
         LocalDate startDate = referenceDate();
-        LocalDate endDate = startDate.plusDays(message.durationInDaysToAdd(maxDuration, campaignRequest));
-        Date endDateToEndOfDay = endOfDay(endDate.toDate()).toDate();
+        Date endDate = repeatIntervalLessThanDay ?
+                newDateTime(startDate, getDeliveryTime(message)).plusMinutes(maxDuration.inMinutes()).toDate() :
+                endOfDay(startDate.plusDays(message.durationInDaysToAdd(maxDuration, campaignRequest)).toDate()).toDate();
 
-        if (startDate.toDate().compareTo(endDateToEndOfDay) > 0) {
-            throw new IllegalArgumentException(format("startDate (%s) is after endDate (%s) for - (%s)", startDate, endDateToEndOfDay, campaignRequest));
+        if (startDate.toDate().compareTo(endDate) > 0) {
+            throw new IllegalArgumentException(format("startDate (%s) is after endDate (%s) for - (%s)", startDate, endDate, campaignRequest));
         }
 
         HashMap<String, Object> params = jobParams(message.messageKey());
         params.put(Constants.REPEATING_PROGRAM_24HRS_MESSAGE_DISPATCH_STRATEGY, dispatchMessagesEvery24Hours);
-        scheduleRepeatingJob(startDate, getDeliveryTime(message), endDateToEndOfDay, params, getCronExpression(message));
+
+        if (repeatIntervalLessThanDay) {
+            scheduleRepeatingJob(startDate, getDeliveryTime(message), endDate, params, getRepeatIntervalInMilliSeconds(message));
+        } else {
+            scheduleRepeatingJob(startDate, getDeliveryTime(message), endDate, params, getCronExpression(message));
+        }
     }
 
     @Override
@@ -74,25 +84,28 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
                     campaignRequest.reminderTime().getHour(), Constants.DAILY_REPEATING_DAYS_CRON_EXPRESSION);
         }
 
-        if (message.mode() == RepeatingMessageMode.REPEAT_INTERVAL) {
-            WallTime time = wallTime(message.repeatInterval());
-
-            if (time.getUnit() == WallTimeUnit.Hour) {
-                return String.format("0 %d %d/%d ? * ? *", getDeliveryTime(message).getMinute(), getDeliveryTime(message).getHour(), time.inHours());
-            } else if (time.getUnit() == WallTimeUnit.Minute) {
-                return String.format("0 %d/%d %d ? * ? *", getDeliveryTime(message).getMinute(), time.inMinutes(), getDeliveryTime(message).getHour());
-            }
-        }
-
         String deliverDates = StringUtils.join(getShortNames(campaignRequest.getUserPreferredDays().isEmpty() ? message.weekDaysApplicable() : campaignRequest.getUserPreferredDays()).iterator(), ",");
         return String.format("0 %d %d ? * %s *", getDeliveryTime(message).getMinute(), getDeliveryTime(message).getHour(), deliverDates);
+    }
+
+    private Long getRepeatIntervalInMilliSeconds(RepeatingCampaignMessage message) {
+        WallTime repeatInterval = wallTime(message.repeatInterval());
+
+        return repeatInterval.inMinutes() * 60L * 1000L;
     }
 
     private void scheduleRepeatingJob(LocalDate startDate, Time deliverTime, Date endDate, Map<String, Object> params, String cronExpression) {
         MotechEvent motechEvent = new MotechEvent(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, params);
         Date startDateAsDate = (startDate == null) ? null : newDateTime(startDate, deliverTime).withMillisOfSecond(0).toDate();
-        Date endDateAsDate = (endDate == null) ? null : endDate;
-        schedulerService.safeScheduleJob(new CronSchedulableJob(motechEvent, cronExpression, startDateAsDate, endDateAsDate));
+
+        schedulerService.safeScheduleJob(new CronSchedulableJob(motechEvent, cronExpression, startDateAsDate, endDate));
+    }
+
+    private void scheduleRepeatingJob(LocalDate startDate, Time deliverTime, Date endDate, Map<String, Object> params, Long repeatIntervalInMilliSeconds) {
+        MotechEvent motechEvent = new MotechEvent(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, params);
+        Date startDateAsDate = (startDate == null) ? null : newDateTime(startDate, deliverTime).withMillisOfSecond(0).toDate();
+
+        schedulerService.safeScheduleRepeatingJob(new RepeatingSchedulableJob(motechEvent, startDateAsDate, endDate, repeatIntervalInMilliSeconds));
     }
 
     private List<String> getShortNames(List<DayOfWeek> dayOfWeeks) {
