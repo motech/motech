@@ -8,6 +8,7 @@ import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.OffsetCampaign;
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
 import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
+import org.motechproject.util.DateUtil;
 import org.motechproject.valueobjects.WallTime;
 import org.motechproject.valueobjects.factory.WallTimeFactory;
 
@@ -26,20 +27,27 @@ public class OffsetProgramScheduler extends MessageCampaignScheduler<OffsetCampa
     @Override
     protected void scheduleJobFor(OffsetCampaignMessage offsetCampaignMessage) {
         Time reminderTime = campaignRequest.reminderTime();
-        int offset = offsetInDays(offsetCampaignMessage.timeOffset());
-        LocalDate jobDate = referenceDate().plusDays(offset);
+        int interval = offsetInDays(offsetCampaignMessage.timeOffset());
+        int startOffset = campaignRequest.startOffset() == null ? 0 : campaignRequest.startOffset();
 
-        scheduleJobOn(reminderTime, jobDate, jobParams(offsetCampaignMessage.messageKey()));
+        LocalDate jobDate = referenceDate().plusDays(interval).minusDays(startOffset);
+        if (isInFuture(jobDate, reminderTime)) {
+            scheduleJobOn(reminderTime, jobDate, jobParams(offsetCampaignMessage.messageKey()));
+        }
     }
 
     @Override
     protected DateTime getCampaignEnd() {
         List<Integer> timeOffsets = new ArrayList<Integer>();
-        for(OffsetCampaignMessage message : campaign.messages())
+        for (OffsetCampaignMessage message : campaign.messages())
             timeOffsets.add(offsetInDays(message.timeOffset()));
 
         LocalDate campaignEndDate = campaignRequest.referenceDate().plusDays(max(timeOffsets));
-        return newDateTime(campaignEndDate,campaignRequest.reminderTime());
+        return newDateTime(campaignEndDate, campaignRequest.reminderTime());
+    }
+
+    private boolean isInFuture(LocalDate date, Time time) {
+        return DateUtil.newDateTime(date, time).isAfter(DateUtil.now());
     }
 
     private int offsetInDays(String timeOffset) {

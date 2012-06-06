@@ -1,5 +1,6 @@
 package org.motechproject.server.messagecampaign.scheduler;
 
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -7,21 +8,23 @@ import org.mockito.Mock;
 import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.builder.CampaignBuilder;
+import org.motechproject.server.messagecampaign.builder.CampaignMessageBuilder;
 import org.motechproject.server.messagecampaign.builder.EnrollRequestBuilder;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.OffsetCampaign;
+import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
 import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 import org.motechproject.util.DateUtil;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.util.DateUtil.newDate;
-import static org.motechproject.util.DateUtil.newDateTime;
-import static org.motechproject.util.DateUtil.today;
+import static org.motechproject.util.DateUtil.*;
 
 public class OffsetProgramSchedulerTest {
 
@@ -37,7 +40,7 @@ public class OffsetProgramSchedulerTest {
     }
 
     @Test
-    public void shouldScheduleJobs() {
+    public void sshouldScheduleJobsAfterGivenTimeOffsetIntervalFromReferenceDate_WhenCampaignStartOffsetIsZero() {
         CampaignRequest request = new EnrollRequestBuilder().withDefaults().withReferenceDate(today()).build();
         OffsetCampaign campaign = new CampaignBuilder().defaultOffsetCampaign();
 
@@ -58,6 +61,29 @@ public class OffsetProgramSchedulerTest {
         assertEquals(startDate2.toString(), allJobs.get(1).getStartDate().toString());
         assertEquals(MESSAGE_CAMPAIGN_EVENT_SUBJECT, allJobs.get(1).getMotechEvent().getSubject());
         assertMotechEvent(allJobs.get(1), "MessageJob.testCampaign.12345.child-info-week-1a", "child-info-week-1a");
+    }
+
+    @Test
+    public void sdhouldScheduleJobsTakingIntoAccountCampaignStartOffset_WhenCampaignStartOffsetIsNotZero() {
+        CampaignRequest request = new EnrollRequestBuilder().withDefaults().withReferenceDate(today()).withStartOffset(10).build();
+        OffsetCampaign campaign = new CampaignBuilder().defaultOffsetCampaign();
+        List<OffsetCampaignMessage> campaignMessages = new ArrayList<OffsetCampaignMessage>();
+        campaignMessages.add(new CampaignMessageBuilder().offsetCampaignMessage("OM1", "1 Week", "child-info-week-1"));
+        campaignMessages.add(new CampaignMessageBuilder().offsetCampaignMessage("OM2", "2 weeks", "child-info-week-2"));
+        campaign.setMessages(campaignMessages);
+        OffsetProgramScheduler offsetProgramScheduler = new OffsetProgramScheduler(schedulerService, request, campaign, mockCampaignEnrollmentService);
+
+        offsetProgramScheduler.start();
+        ArgumentCaptor<RunOnceSchedulableJob> capture = ArgumentCaptor.forClass(RunOnceSchedulableJob.class);
+        verify(schedulerService, times(1)).scheduleRunOnceJob(capture.capture());
+
+        RunOnceSchedulableJob scheduledJob = capture.getAllValues().get(0);
+
+        LocalDate expectedStartDate = DateUtil.today().plusDays(14).minusDays(10); // 2 weeks with offset of 10 days
+        Date startDate = DateUtil.newDateTime(expectedStartDate, request.reminderTime().getHour(), request.reminderTime().getMinute(), 0).toDate();
+        assertEquals(startDate.toString(), scheduledJob.getStartDate().toString());
+        assertEquals(MESSAGE_CAMPAIGN_EVENT_SUBJECT, scheduledJob.getMotechEvent().getSubject());
+        assertMotechEvent(scheduledJob, "MessageJob.testCampaign.12345.child-info-week-2", "child-info-week-2");
     }
 
     @Test
