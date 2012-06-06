@@ -121,14 +121,21 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.decisiontree.model;
-                            org.motechproject.decisiontree.repository;
+                            org.motechproject.decisiontree.model,
+                            org.motechproject.decisiontree.repository
                         </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.server.decisiontree.Activator
                         </Bundle-Activator>
+                        <Import-Package>
+                            *,
+                            org.springframework.beans.factory.xml,
+                            org.springframework.context.config,
+                            org.springframework.web.servlet.config
+                        </Import-Package>
                         <Private-Package>
-                            org.motechproject.server.decisiontree.*
+                            org.motechproject.server.decisiontree,
+                            org.motechproject.server.decisiontree.service
                         </Private-Package>
                         <Embed-Dependency>!*</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>

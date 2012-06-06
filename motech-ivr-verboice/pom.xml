@@ -116,8 +116,9 @@
                         <Bundle-Activator>
                             org.motechproject.server.verboice.Activator
                         </Bundle-Activator>
-                        <Private-Package>
-                            org.motechproject.server.verboice.*,
+                        <Import-Package>
+                            *,
+                            org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.context.support,
                             org.springframework.osgi.config,
@@ -125,6 +126,9 @@
                             org.springframework.web.servlet.mvc,
                             org.ektorp.spring,
                             org.ektorp.impl
+                        </Import-Package>
+                        <Private-Package>
+                            org.motechproject.server.verboice
                         </Private-Package>
                         <Embed-Dependency>!*</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>

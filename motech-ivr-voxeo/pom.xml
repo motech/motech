@@ -99,16 +99,21 @@
 						<Bundle-Activator>
                             org.motechproject.server.voxeo.Activator
                         </Bundle-Activator>
-						<Private-Package>
-                            org.motechproject.server.voxeo.*,
-                            org.motechproject.server.verboice.*,
+                        <Import-Package>
+                            *,
+                            org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.context.support,
                             org.springframework.osgi.config,
+                            org.springframework.web.context.support,
                             org.springframework.web.servlet.config,
                             org.springframework.web.servlet.mvc,
+                            org.springframework.web.servlet.support,
                             org.ektorp.spring,
                             org.ektorp.impl
+                        </Import-Package>
+						<Private-Package>
+                            org.motechproject.server.voxeo
                         </Private-Package>
 						<Embed-Dependency>!*</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>

@@ -98,12 +98,19 @@
                         <Bundle-Activator>
                             org.motechproject.server.outbox.Activator
                         </Bundle-Activator>
+                        <Import-Package>
+                            *,
+                            org.springframework.beans.factory.xml,
+                            org.springframework.context.config
+                        </Import-Package>
                         <Private-Package>
-                            org.motechproject.server.outbox.*,
-                            org.motechproject.outbox.api.service.*,
-                            org.motechproject.outbox.api.repository,
                             org.motechproject.outbox.api.domain,
-                            org.motechproject.outbox.api.contract
+                            org.motechproject.outbox.api.contract,
+                            org.motechproject.outbox.api.repository,
+                            org.motechproject.outbox.api.service,
+                            org.motechproject.outbox.api.service.impl,
+                            org.motechproject.server.outbox,
+                            org.motechproject.server.outbox.web
                         </Private-Package>
 						<Embed-Dependency>!*</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>

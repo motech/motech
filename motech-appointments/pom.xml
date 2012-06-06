@@ -99,13 +99,19 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.appointments.api;org.motechproject.appointments.api.model
+                            org.motechproject.appointments.api,
+                            org.motechproject.appointments.api.model
                         </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.server.appointments.Activator
                         </Bundle-Activator>
+                        <Import-Package>
+                            *,
+                            org.springframework.beans.factory.xml,
+                            org.springframework.context.config
+                        </Import-Package>
                         <Private-Package>
-                            org.motechproject.server.appointments.*
+                            org.motechproject.server.appointments
                         </Private-Package>
                         <Embed-Dependency>
                             motech-appointments-api;inline=applicationAppointmentsAPI.xml

@@ -182,16 +182,19 @@
                         <Bundle-Activator>
                             org.motechproject.ivr.kookoo.Activator
                         </Bundle-Activator>
-                        <Private-Package>
-                            org.motechproject.ivr.kookoo,
-                            com.ozonetel.kookoo;version=1.1,
+                        <Import-Package>
+                            *,
+                            org.motechproject.decisiontree.model,
+                            org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.context.support,
                             org.springframework.osgi.config,
                             org.springframework.web.servlet.mvc,
                             org.ektorp.spring,
-                            org.ektorp.impl,
-                            org.motechproject.decisiontree.model
+                            org.ektorp.impl
+                        </Import-Package>
+                        <Private-Package>
+                            com.ozonetel.kookoo
                         </Private-Package>
                         <Embed-Dependency>!*</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>

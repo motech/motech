@@ -97,17 +97,21 @@
                         <Bundle-Activator>
                             org.motechproject.server.asterisk.Activator
                         </Bundle-Activator>
-                        <Private-Package>
-                            org.motechproject.server.asterisk.callback.*,
-                            org.asteriskjava.*,
-                            org.asteriskjava.live.*,
-                            org.apache.log4j.*,
+                        <Import-Package>
+                            *,
+                            org.asteriskjava,
+                            org.asteriskjava.live,
+                            org.apache.log4j,
+                            org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.context.support,
                             org.springframework.osgi.config,
                             org.springframework.web.servlet.mvc,
                             org.ektorp.spring,
                             org.ektorp.impl
+                        </Import-Package>
+                        <Private-Package>
+                            org.motechproject.server.asterisk.callback
                         </Private-Package>
                         <Embed-Dependency>!*</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>

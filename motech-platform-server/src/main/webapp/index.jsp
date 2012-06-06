@@ -69,7 +69,7 @@ org.motechproject.server.osgi.OsgiFrameworkService osgiService = org.motechproje
 %>
 </ul>
 
-<h3>Bundles</h3>
+<h3>Bundles (<%= osgiService.getExternalBundles().size() %>)</h3>
 <ul>
 <%
     for ( org.motechproject.server.osgi.BundleInformation bundleInfo : osgiService.getExternalBundles() ) {

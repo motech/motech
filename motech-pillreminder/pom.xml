@@ -106,11 +106,15 @@
                         <Bundle-Activator>
                             org.motechproject.server.pillreminder.Activator
                         </Bundle-Activator>
-                        <Private-Package>
+                        <Import-Package>
+                            *,
                             org.ektorp.spring,
                             org.ektorp.impl,
-                            org.motechproject.server.pillreminder,
+                            org.springframework.beans.factory.xml,
                             org.springframework.context.config
+                        </Import-Package>
+                        <Private-Package>
+                            org.motechproject.server.pillreminder
                         </Private-Package>
                         <Embed-Dependency>!*</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
