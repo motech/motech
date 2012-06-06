@@ -59,7 +59,13 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
     }
 
     private Time getDeliveryTime(RepeatingCampaignMessage message) {
-        return (dispatchMessagesEvery24Hours) ? campaignRequest.reminderTime() : message.deliverTime();
+        if (dispatchMessagesEvery24Hours) {
+            return campaignRequest.reminderTime();
+        }
+        if (campaignRequest.deliverTime() != null) {
+            return campaignRequest.deliverTime();
+        }
+        return message.deliverTime();
     }
 
     private String getCronExpression(RepeatingCampaignMessage message) {
@@ -72,15 +78,14 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
             WallTime time = wallTime(message.repeatInterval());
 
             if (time.getUnit() == WallTimeUnit.Hour) {
-                return String.format("0 %d %d/%d ? * ? *", message.deliverTime().getMinute(), message.deliverTime().getHour(), time.inHours());
+                return String.format("0 %d %d/%d ? * ? *", getDeliveryTime(message).getMinute(), getDeliveryTime(message).getHour(), time.inHours());
             } else if (time.getUnit() == WallTimeUnit.Minute) {
-                return String.format("0 %d/%d %d ? * ? *", message.deliverTime().getMinute(), time.inMinutes(), message.deliverTime().getHour());
+                return String.format("0 %d/%d %d ? * ? *", getDeliveryTime(message).getMinute(), time.inMinutes(), getDeliveryTime(message).getHour());
             }
         }
 
         String deliverDates = StringUtils.join(getShortNames(campaignRequest.getUserPreferredDays().isEmpty() ? message.weekDaysApplicable() : campaignRequest.getUserPreferredDays()).iterator(), ",");
-
-        return String.format("0 %d %d ? * %s *", message.deliverTime().getMinute(), message.deliverTime().getHour(), deliverDates);
+        return String.format("0 %d %d ? * %s *", getDeliveryTime(message).getMinute(), getDeliveryTime(message).getHour(), deliverDates);
     }
 
     private void scheduleRepeatingJob(LocalDate startDate, Time deliverTime, Date endDate, Map<String, Object> params, String cronExpression) {

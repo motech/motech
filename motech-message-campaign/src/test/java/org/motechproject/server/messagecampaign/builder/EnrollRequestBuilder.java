@@ -12,6 +12,7 @@ public class EnrollRequestBuilder {
 
     private String campaignName;
     private Time reminderTime;
+    private Time deliverTime;
     private String externalId;
     private LocalDate referenceDate;
     private Integer startOffset;
@@ -34,6 +35,7 @@ public class EnrollRequestBuilder {
         this.referenceDate = date;
         return this;
     }
+
     public EnrollRequestBuilder withStartOffset(int offset) {
         this.startOffset = offset;
         return this;
@@ -44,11 +46,16 @@ public class EnrollRequestBuilder {
         return this;
     }
 
-    public EnrollRequestBuilder withUserSpecifiedDays(List<DayOfWeek> userSpecifiedDays)
-    {
+    public EnrollRequestBuilder withUserSpecifiedDays(List<DayOfWeek> userSpecifiedDays) {
         this.userPreferredDays = userSpecifiedDays;
         return this;
     }
+
+    public EnrollRequestBuilder withDeliverTime(Time deliverTime) {
+        this.deliverTime = deliverTime;
+        return this;
+    }
+
     public CampaignRequest build() {
         CampaignRequest request = new CampaignRequest();
         request.setCampaignName(this.campaignName);
@@ -57,6 +64,7 @@ public class EnrollRequestBuilder {
         request.setReferenceDate(this.referenceDate);
         request.setStartOffset(this.startOffset);
         request.setUserPreferredDays(this.userPreferredDays);
+        request.setDeliverTime(this.deliverTime);
         return request;
     }
 }
