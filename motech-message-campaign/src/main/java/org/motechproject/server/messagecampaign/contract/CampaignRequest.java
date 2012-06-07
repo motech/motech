@@ -16,6 +16,7 @@ public class CampaignRequest {
     private String externalId;
     private String campaignName;
     private Time reminderTime;
+    private Time deliverTime;
     private LocalDate referenceDate;
     private Integer startOffset;
     private List<DayOfWeek> userPreferredDays;
@@ -36,6 +37,22 @@ public class CampaignRequest {
         this.reminderTime = reminderTime;
         this.referenceDate = referenceDate;
         userPreferredDays = new ArrayList<DayOfWeek>();
+    }
+
+    /**
+     * Creates a request for enrollment into a campaign. Holds all fields required for the enrollment.
+     * @param externalId - a client defined id to identify the enrollment
+     * @param campaignName - the campaign into which the entity should be enrolled
+     * @param referenceDate - the date the campaign has started for this enrollment. it can be in the past resulting in a delayed enrollment.
+     * @param deliverTime - time of the day at which the alert must be raised. This overrides the campaign's deliverTime.
+     * @param userPreferredDays - specify a list of days that override the days defined by the campaign. The enrollment will have alerts raised on these days only.
+     */
+    public CampaignRequest(String externalId, String campaignName, LocalDate referenceDate, Time deliverTime, List<DayOfWeek> userPreferredDays) {
+        this.externalId = externalId;
+        this.campaignName = campaignName;
+        this.referenceDate = referenceDate;
+        this.deliverTime = deliverTime;
+        this.userPreferredDays = userPreferredDays;
     }
 
     /**
@@ -86,6 +103,14 @@ public class CampaignRequest {
 
     public Time reminderTime() {
         return this.reminderTime;
+    }
+
+    public void setDeliverTime(Time deliverTime) {
+        this.deliverTime = deliverTime;
+    }
+
+    public Time deliverTime() {
+        return this.deliverTime;
     }
 
     public LocalDate referenceDate() {
