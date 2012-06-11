@@ -37,9 +37,6 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @RunWith(PowerMockRunner.class)
 public class KookooCallDetailRecordsServiceImplTest {
 
-//    @Rule
-//    public PowerMockRule rule = new PowerMockRule();
-
     @Mock
     private AllKooKooCallDetailRecords allKooKooCallDetailRecords;
     @Mock
