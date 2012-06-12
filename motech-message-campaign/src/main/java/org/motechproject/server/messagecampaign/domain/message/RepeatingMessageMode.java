@@ -134,7 +134,7 @@ public enum RepeatingMessageMode {
             LocalDate cycleStartLocalDate = DateUtil.newDate(cycleStartDate);
             LocalDate currentDate = DateUtil.today();
 
-            if (cycleStartDate.toDate().compareTo(currentDate.toDate()) > 0)
+            if (cycleStartDate.isAfter(DateUtil.now()))
                 throw new IllegalArgumentException("cycleStartDate cannot be in future");
 
             int daysDiff = new Period(cycleStartLocalDate, currentDate, PeriodType.days()).getDays();
