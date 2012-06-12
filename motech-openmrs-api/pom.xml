@@ -9,11 +9,6 @@
     <artifactId>motech-openmrs-api</artifactId>
     <name>MoTeCH OpenMRS API</name>
     <description>Motech interface to OpenMRS</description>
-
-    <properties>
-        <spring.version>3.0.5.RELEASE</spring.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
@@ -30,6 +25,24 @@
             <groupId>org.openmrs.api</groupId>
             <artifactId>openmrs-api</artifactId>
             <version>1.8.2</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring-beans</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-core</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-context</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-aop</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -40,6 +53,12 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
             <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -79,11 +98,6 @@
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
             <version>1.6.8</version>
-        </dependency>
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjweaver</artifactId>
-            <version>1.6.9</version>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>

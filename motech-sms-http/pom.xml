@@ -8,11 +8,6 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>motech-sms-http</artifactId>
 	<name>MoTeCH SMS HTTP</name>
-
-	<properties>
-		<spring.version>3.0.5.RELEASE</spring.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.motechproject</groupId>

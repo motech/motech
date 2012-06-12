@@ -15,7 +15,7 @@
         <moduleName>motech-platform</moduleName>
         <corePackage>org.motechproject.openmrs.omod</corePackage>
         <modulePackage>${corePackage}</modulePackage>
-        <springVersion>3.0.5.RELEASE</springVersion>
+        <springVersion>${spring.version}</springVersion>
     </properties>
 
     <dependencies>
@@ -41,26 +41,26 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>3.0.5.RELEASE</version>
+            <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
             <scope>provided</scope>
-            <version>3.0.5.RELEASE</version>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aspects</artifactId>
             <scope>provided</scope>
-            <version>3.0.5.RELEASE</version>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
             <scope>provided</scope>
-            <version>3.0.5.RELEASE</version>
+            <version>${spring.version}</version>
         </dependency>
         <!--TEST-->
         <dependency>

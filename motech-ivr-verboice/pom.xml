@@ -11,9 +11,6 @@
 	<name>MoTeCH IVR Verboice</name>
     <packaging>bundle</packaging>
     <description>IVR over Nuntium's Verboice</description>
-    <properties>
-        <spring.version>3.0.5.RELEASE</spring.version>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -43,7 +40,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>3.0.5.RELEASE</version>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

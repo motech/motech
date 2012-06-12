@@ -34,7 +34,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>3.0.5.RELEASE</version>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.velocity</groupId>
@@ -49,13 +49,13 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>3.0.5.RELEASE</version>
+            <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.integration</groupId>
             <artifactId>spring-integration-jms</artifactId>
-            <version>2.0.3.RELEASE</version>
+            <version>${spring.integration.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-codec</groupId>
@@ -78,11 +78,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-pillreminder-api</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-server</artifactId>
-            <version>1.7</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.ws</groupId>

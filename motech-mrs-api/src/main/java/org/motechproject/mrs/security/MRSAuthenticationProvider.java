@@ -36,5 +36,5 @@ public abstract class MRSAuthenticationProvider extends AbstractUserDetailsAuthe
      * @throws InvalidCredentialsException thrown when Credentials are invalid
      */
     @Override
-    protected abstract MRSSecurityUser retrieveUser(String userName, UsernamePasswordAuthenticationToken authentication) throws InvalidCredentialsException;
+    protected abstract MRSSecurityUser retrieveUser(String userName, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException;
 }

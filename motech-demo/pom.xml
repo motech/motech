@@ -18,6 +18,11 @@
 			<version>2.5</version>
 			<scope>provided</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.springframework.osgi</groupId>
+            <artifactId>spring-osgi-core</artifactId>
+            <version>1.2.1</version>
+        </dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.compendium</artifactId>
@@ -34,19 +39,24 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
-			<version>3.0.5.RELEASE</version>
+			<version>${spring.version}</version>
             <scope>provided</scope>
+		</dependency>
+        <dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring.version}</version>
 		</dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>3.0.5.RELEASE</version>
+            <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>3.0.5.RELEASE</version>
+            <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
 		<dependency>
@@ -57,13 +67,13 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
-			<version>3.0.5.RELEASE</version>
+			<version>${spring.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-jms</artifactId>
-			<version>2.0.3.RELEASE</version>
+			<version>${spring.integration.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-codec</groupId>
@@ -74,7 +84,7 @@
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-core</artifactId>
-			<version>5.4.2</version>
+			<version>${activemq.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-codec</groupId>
@@ -90,7 +100,7 @@
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-server-api</artifactId>
-            <version>0.11-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 	</dependencies>
 	<build>

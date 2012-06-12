@@ -10,11 +10,6 @@
     <packaging>jar</packaging>
     <version>0.11-SNAPSHOT</version>
     <name>MoTeCH Platform Scheduler</name>
-
-    <properties>
-        <spring.integration.version>2.0.3.RELEASE</spring.integration.version>
-        <activemq.version>5.4.2</activemq.version>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
@@ -24,7 +19,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
-            <version>3.0.5.RELEASE</version>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -44,12 +39,12 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>3.0.5.RELEASE</version>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>3.0.5.RELEASE</version>
+            <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
