@@ -135,7 +135,8 @@
                         </Import-Package>
                         <Private-Package>
                             org.motechproject.server.decisiontree,
-                            org.motechproject.server.decisiontree.service
+                            org.motechproject.server.decisiontree.service,
+                            org.motechproject.server.decisiontree.web
                         </Private-Package>
                         <Embed-Dependency>!*</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>

@@ -128,7 +128,9 @@
                             org.ektorp.impl
                         </Import-Package>
                         <Private-Package>
-                            org.motechproject.server.verboice
+                            org.motechproject.server.verboice,
+                            org.motechproject.server.verboice.domain,
+                            org.motechproject.server.verboice.web
                         </Private-Package>
                         <Embed-Dependency>!*</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>

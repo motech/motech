@@ -113,7 +113,11 @@
                             org.ektorp.impl
                         </Import-Package>
 						<Private-Package>
-                            org.motechproject.server.voxeo
+                            org.motechproject.server.voxeo,
+                            org.motechproject.server.voxeo.config,
+                            org.motechproject.server.voxeo.dao,
+                            org.motechproject.server.voxeo.domain,
+                            org.motechproject.server.voxeo.web
                         </Private-Package>
 						<Embed-Dependency>!*</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>
