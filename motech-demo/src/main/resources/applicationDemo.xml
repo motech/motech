@@ -56,8 +56,9 @@
     <osgi:list id="ivrServiceList" interface="org.motechproject.ivr.service.IVRService" cardinality="0..N"/>
 
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="prefix" value="/demo/webapp/"/>
+        <property name="prefix" value="/webapp/"/>
         <property name="suffix" value=".jsp"/>
+        <property name="viewClass" value="org.motechproject.server.demo.web.BundledJspView" />
     </bean>
 
     <mvc:annotation-driven/>

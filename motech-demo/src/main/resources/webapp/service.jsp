@@ -32,10 +32,15 @@
 
 --%>
 <%@ page language="java" pageEncoding="UTF-8"%>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Iterator" %>
+<%@ page import="org.motechproject.ivr.service.IVRService" %>
+
 <html>
 <body>
 <%
-    if (services.isEmpty()) {
+	List<IVRService> services = (List<IVRService>)request.getAttribute("services");
+	if (services.isEmpty()) {
 %>
     Any IVR Service not found
 <%
@@ -54,6 +59,7 @@
         int at = service.toString().lastIndexOf('@');
         String name = service.toString().substring(dot + 1, at);
 
+        IVRService current = (IVRService) request.getAttribute("current");
         boolean selected = current == null ? false : current == service;
 
         if (selected) {
@@ -73,5 +79,8 @@
         </select>
         <input type="submit" value="Send" />
     </form>
+<%
+    }
+%>
 </body>
 </html>
