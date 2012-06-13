@@ -1,7 +1,9 @@
 package org.motechproject.server.verboice.domain;
 
+import org.apache.commons.lang.StringUtils;
+
 public class VerboiceResponse extends AggregatedVerboiceAction {
-    
+
     String callbackUrl;
 
     public VerboiceResponse(String callbackUrl) {
@@ -16,7 +18,9 @@ public class VerboiceResponse extends AggregatedVerboiceAction {
         final StringBuffer buffer = new StringBuffer();
         buffer.append("<Response>");
         buffer.append(super.toXMLString());
-        buffer.append(new Redirect(callbackUrl).toXMLString());
+        if (StringUtils.isNotBlank(callbackUrl)) {
+            buffer.append(new Redirect(callbackUrl).toXMLString());
+        }
         buffer.append("</Response>");
         return buffer.toString();
     }

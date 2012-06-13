@@ -24,4 +24,22 @@ public class VerboiceResponseTest {
         assertEquals(expectedOutput, verboiceResponse.toXMLString());
     }
 
+    @Test
+    public void shouldNotIncludeRedirectInResponseIfCallbackUrlIsEmpty() throws Exception {
+        VerboiceResponse verboiceResponse = new VerboiceResponse();
+        final String url = "http://test";
+        final String text = "Welcome";
+        verboiceResponse.playUrl(url);
+        verboiceResponse.playInLoopUrl(url, 2);
+        verboiceResponse.say(text, "woman", 2);
+        String expectedOutput = "<Response>"+
+                "<Play loop=\"1\">" + url + "</Play>" +
+                "<Play loop=\"2\">" + url + "</Play>" +
+                "<Say voice=\"woman\" loop=\"2\">" + text + "</Say>" +
+                "</Response>";
+        assertEquals(expectedOutput, verboiceResponse.toXMLString());
+    }
+
+
+
 }

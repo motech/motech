@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.motechproject.ivr.service.CallRequest;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Properties;
 
 import static org.mockito.Matchers.argThat;
@@ -42,9 +43,12 @@ public class VerboiceIVRServiceTest {
         VerboiceIVRService ivrService = new VerboiceIVRService(verboiceProperties, httpClient);
 
         CallRequest callRequest = new CallRequest("1234567890", 1000, "foobar");
+        callRequest.setPayload(new HashMap<String, String>() {{
+            put("callback_url", "key");
+        }});
         ivrService.initiateCall(callRequest);
 
-        verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://verboice:3000/api/call?channel=foobar&address=1234567890")));
+        verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://verboice:3000/api/call?channel=foobar&address=1234567890&callback_url=key")));
     }
 
     public class GetMethodMatcher extends ArgumentMatcher<GetMethod> {
