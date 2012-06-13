@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
@@ -21,20 +21,20 @@ import java.util.Map;
  * @author yyonkov
  */
 @Component
-public class EventAnnotationBeanPostProcessor implements BeanPostProcessor {
+public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPostProcessor {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /* (non-Javadoc)
-      * @see org.springframework.beans.factory.config.BeanPostProcessor#postProcessBeforeInitialization(java.lang.Object, java.lang.String)
-      */
+     * @see org.springframework.beans.factory.config.BeanPostProcessor#postProcessBeforeInitialization(java.lang.Object, java.lang.String)
+     */
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         return bean;
     }
 
     /* (non-Javadoc)
-      * @see org.springframework.beans.factory.config.BeanPostProcessor#postProcessAfterInitialization(java.lang.Object, java.lang.String)
-      */
+     * @see org.springframework.beans.factory.config.BeanPostProcessor#postProcessAfterInitialization(java.lang.Object, java.lang.String)
+     */
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         processAnnotations(bean, beanName);
@@ -46,25 +46,31 @@ public class EventAnnotationBeanPostProcessor implements BeanPostProcessor {
 
             @Override
             public void doWith(Method method) throws IllegalArgumentException, IllegalAccessException {
-                MotechListener annotation;
                 Method methodOfOriginalClassIfProxied = ReflectionUtils.findMethod(AopUtils.getTargetClass(bean), method.getName(), method.getParameterTypes());
-                if (methodOfOriginalClassIfProxied != null && (annotation = methodOfOriginalClassIfProxied.getAnnotation(MotechListener.class)) != null) {
+                MotechListener annotation = methodOfOriginalClassIfProxied.getAnnotation(MotechListener.class);
+
+                if (methodOfOriginalClassIfProxied != null && annotation != null) {
                     final List<String> subjects = Arrays.asList(annotation.subjects());
                     MotechListenerAbstractProxy proxy = null;
+
                     switch (annotation.type()) {
-                        case ORDERED_PARAMETERS:
-                            proxy = new MotechListenerOrderedParametersProxy(beanName, bean, method);
-                            break;
-                        case MOTECH_EVENT:
-                            proxy = new MotechListenerEventProxy(beanName, bean, method);
-                            break;
-                        case NAMED_PARAMETERS:
-                            proxy = new MotechListenerNamedParametersProxy(beanName, bean, method);
-                            break;
+                    case ORDERED_PARAMETERS:
+                        proxy = new MotechListenerOrderedParametersProxy(beanName, bean, method);
+                        break;
+                    case MOTECH_EVENT:
+                        proxy = new MotechListenerEventProxy(beanName, bean, method);
+                        break;
+                    case NAMED_PARAMETERS:
+                        proxy = new MotechListenerNamedParametersProxy(beanName, bean, method);
+                        break;
                     }
+
                     logger.info(String.format("Registering listener type(%20s) bean: %s , method: %s, for subjects: %s", annotation.type().toString(), beanName, method.toGenericString(), subjects));
                     EventListenerRegistry eventListenerRegistry = Context.getInstance().getEventListenerRegistry();
-                    if (eventListenerRegistry != null) eventListenerRegistry.registerListener(proxy, subjects);
+
+                    if (eventListenerRegistry != null) {
+                        eventListenerRegistry.registerListener(proxy, subjects);
+                    }
                 }
             }
         });
@@ -77,6 +83,17 @@ public class EventAnnotationBeanPostProcessor implements BeanPostProcessor {
         EventAnnotationBeanPostProcessor processor = new EventAnnotationBeanPostProcessor();
         for (Map.Entry<String, Object> entry : beans.entrySet()) {
             processor.postProcessAfterInitialization(entry.getValue(), entry.getKey());
+        }
+    }
+
+    @Override
+    public void postProcessBeforeDestruction(Object bean, String beanName)
+            throws BeansException {
+
+        EventListenerRegistry eventListenerRegistry = Context.getInstance().getEventListenerRegistry();
+
+        if (eventListenerRegistry != null) {
+            eventListenerRegistry.clearListenersForBean(beanName);
         }
     }
 }

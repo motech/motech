@@ -6,12 +6,12 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 /**
-* Created by IntelliJ IDEA.
-* User: rob
-* Date: 4/9/11
-* Time: 10:02 PM
-* To change this template use File | Settings | File Templates.
-*/
+ * Created by IntelliJ IDEA.
+ * User: rob
+ * Date: 4/9/11
+ * Time: 10:02 PM
+ * To change this template use File | Settings | File Templates.
+ */
 class EventListenerTree
 {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -153,7 +153,7 @@ class EventListenerTree
     }
 
     public boolean  hasListener(String subject) {
-         // Split the subject into it's path components
+        // Split the subject into it's path components
         String[] path = subject.split(SPLIT_REGEX);
 
         EventListenerTree child = getChild(path[0]);
@@ -176,7 +176,7 @@ class EventListenerTree
     }
 
     public int getListenerCount(String subject) {
-         // Split the subject into it's path components
+        // Split the subject into it's path components
         String[] path = subject.split(SPLIT_REGEX);
 
         EventListenerTree child = getChild(path[0]);
@@ -255,7 +255,7 @@ class EventListenerTree
             listeners.add(listener); // Add the listener to the list
         } else {
             log.info(String.format("Ignoring second request to register listener %s for subject %s",
-                                   listener.getIdentifier(), getSubject()));
+                    listener.getIdentifier(), getSubject()));
         }
     }
 
@@ -269,7 +269,7 @@ class EventListenerTree
             wildcardListeners.add(listener); // Add the listener to the list
         } else {
             log.info(String.format("Ignoring second request to register wildcardListeners %s for subject %s.*",
-                                   listener.getIdentifier(), getSubject()));
+                    listener.getIdentifier(), getSubject()));
         }
     }
 
@@ -300,4 +300,64 @@ class EventListenerTree
         children.add(child);
     }
 
+    public void removeAllListeners(String beanName) {
+
+        for (Iterator<EventListenerTree> listenerIterator = children.iterator(); listenerIterator.hasNext(); ) {
+            EventListenerTree child = listenerIterator.next();
+            if (child.containsListenersForBeanName(beanName) && child.AllListenersEmpty()) {
+                listenerIterator.remove();
+            }
+        }
+    }
+
+    private boolean AllListenersEmpty() {
+
+        if (children.size() == 0) {
+            if (this.getAllListeners().size() == 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            for (Iterator<EventListenerTree> listenerIterator = children.iterator(); listenerIterator.hasNext(); ) {
+                EventListenerTree child = listenerIterator.next();
+                if (!child.AllListenersEmpty()) {
+                    return false;
+                } else {
+                    listenerIterator.remove();
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean containsListenersForBeanName(String beanName) {
+        boolean removed = false;
+
+        if (listeners != null) {
+            for (Iterator<EventListener> listenerIterator = listeners.iterator(); listenerIterator.hasNext(); ) {
+                EventListener nextListener = listenerIterator.next();
+                if (nextListener.getIdentifier().equals(beanName)) {
+                    listenerIterator.remove();
+                    removed = true;
+                }
+            }
+        }
+
+        if (wildcardListeners != null) {
+            for (Iterator<EventListener> listenerIterator = wildcardListeners.iterator(); listenerIterator.hasNext(); ) {
+                EventListener nextListener = listenerIterator.next();
+                if (nextListener.getIdentifier().equals(beanName)) {
+                    listenerIterator.remove();
+                    removed = true;
+                }
+            }
+        }
+        for (EventListenerTree childTree : children) {
+            if (childTree.containsListenersForBeanName(beanName)) {
+                removed = true;
+            }
+        }
+        return removed;
+    }
 }

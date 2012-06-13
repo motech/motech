@@ -74,8 +74,8 @@ public class EventListenerTreeTest
         Set<EventListener> listeners = tree.getListeners(EVENT1);
 
         assertNotNull(listeners);
-		assertTrue(listeners.size() == 1);
-		assertEquals(listeners.iterator().next(), el);
+        assertTrue(listeners.size() == 1);
+        assertEquals(listeners.iterator().next(), el);
     }
 
     @Test
@@ -87,8 +87,8 @@ public class EventListenerTreeTest
         Set<EventListener> listeners = tree.getListeners(EVENT1);
 
         assertNotNull(listeners);
-		assertTrue(listeners.size() == 1);
-		assertEquals(listeners.iterator().next(), el);
+        assertTrue(listeners.size() == 1);
+        assertEquals(listeners.iterator().next(), el);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -134,6 +134,20 @@ public class EventListenerTreeTest
 
         assertEquals(2, tree.getListenerCount(EVENT1));
         assertEquals(1, tree.getListenerCount(EVENT2));
+    }
+
+    @Test
+    public void testRemoveAllListeners() {
+        tree.addListener(new FooEventListener(), EVENT1);
+        tree.addListener(new FooEventListener(), EVENT2);
+
+        assertEquals(1, tree.getListenerCount(EVENT1));
+        assertEquals(1, tree.getListenerCount(EVENT2));
+
+        tree.removeAllListeners("FooEventListener");
+
+        assertEquals(0, tree.getListenerCount(EVENT1));
+        assertEquals(0, tree.getListenerCount(EVENT2));
     }
 
     class FooEventListener implements EventListener {
