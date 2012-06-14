@@ -162,6 +162,7 @@
         <module>motech-rpm</module>
         <module>motech-rules-api</module>
         <module>motech-rules</module>
+        <module>motech-web-security</module>
     </modules>
 
     <build>
