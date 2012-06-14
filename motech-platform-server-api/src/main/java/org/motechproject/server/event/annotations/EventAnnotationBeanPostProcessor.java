@@ -47,9 +47,9 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
             @Override
             public void doWith(Method method) throws IllegalArgumentException, IllegalAccessException {
                 Method methodOfOriginalClassIfProxied = ReflectionUtils.findMethod(AopUtils.getTargetClass(bean), method.getName(), method.getParameterTypes());
-                MotechListener annotation = methodOfOriginalClassIfProxied.getAnnotation(MotechListener.class);
+                MotechListener annotation;
 
-                if (methodOfOriginalClassIfProxied != null && annotation != null) {
+                if (methodOfOriginalClassIfProxied != null && (annotation = methodOfOriginalClassIfProxied.getAnnotation(MotechListener.class)) != null) {
                     final List<String> subjects = Arrays.asList(annotation.subjects());
                     MotechListenerAbstractProxy proxy = null;
 
