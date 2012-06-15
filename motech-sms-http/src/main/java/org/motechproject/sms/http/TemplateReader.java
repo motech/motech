@@ -21,7 +21,7 @@ public class TemplateReader {
     }
 
     public SmsHttpTemplate getTemplate() {
-        return (SmsHttpTemplate) new MotechJsonReader().readFromFile(templateFileName, new TypeToken<SmsHttpTemplate>() {
-        }.getType());
+        return (SmsHttpTemplate) new MotechJsonReader().readFromStream(getClass().getResourceAsStream(templateFileName),
+                new TypeToken<SmsHttpTemplate>() { }.getType());
     }
 }

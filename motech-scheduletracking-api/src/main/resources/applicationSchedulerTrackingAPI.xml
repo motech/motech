@@ -1,20 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
-		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd"
-       xmlns:util="http://www.springframework.org/schema/util">
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <import resource="classpath:applicationPlatformCommonAPI.xml"/>
-    <util:properties id="schedule_tracking" location="classpath:/schedule_tracking.properties"/>
+    <util:properties id="schedule_tracking" location="classpath:schedule_tracking.properties"/>
+    <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
+    <util:properties id="quartzProperties" location="classpath:quartz.properties"/>
 
-    <context:annotation-config/>
-    <context:component-scan base-package="org.motechproject.scheduletracking.api"/>
+    <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean"/>
+
+    <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
+        <constructor-arg ref="httpClient"/>
+    </bean>
 
     <bean id="scheduleTrackingDbConnector" class="org.ektorp.impl.StdCouchDbConnector">
-        <constructor-arg value="motech-scheduletracking"/>
+        <constructor-arg value="motech-scheduletracking-api"/>
         <constructor-arg ref="couchDbInstance"/>
     </bean>
+
+    <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="configLocation" value="classpath:quartz.properties"/>
+        <property name="applicationContextSchedulerContextKey" value="applicationContext"/>
+    </bean>
+
+    <context:annotation-config/>
+
+    <context:component-scan base-package="org.motechproject.scheduletracking.api"/>
+
+    <bean id="scheduleTrackingService"
+          class="org.motechproject.scheduletracking.api.service.impl.ScheduleTrackingServiceImpl"/>
+
+    <osgi:service id="scheduleTrackingServiceOsgi" auto-export="interfaces" ref="scheduleTrackingService"
+                  interface="org.motechproject.scheduletracking.api.service.ScheduleTrackingService"/>
+
+    <osgi:reference cardinality="0..1" id="schedulerServiceOsgi"
+                    interface="org.motechproject.scheduler.MotechSchedulerService"/>
+
 </beans>

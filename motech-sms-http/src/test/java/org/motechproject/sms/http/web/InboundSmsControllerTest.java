@@ -1,4 +1,4 @@
-package org.motechproject.sms.http;
+package org.motechproject.sms.http.web;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -8,6 +8,7 @@ import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduler.event.EventRelay;
 import org.motechproject.sms.api.constants.EventDataKeys;
 import org.motechproject.sms.api.constants.EventSubjects;
+import org.motechproject.sms.http.TemplateReader;
 import org.motechproject.sms.http.template.Incoming;
 import org.motechproject.sms.http.template.SmsHttpTemplate;
 
