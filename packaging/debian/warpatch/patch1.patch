@@ -1,0 +1,13 @@
+diff -rcB WEB-INF/classes/osgi.properties WEB-INF/classes/osgi.properties
+*** WEB-INF/classes/osgi.properties	2012-06-14 12:01:30.000000000 +0200
+--- WEB-INF/classes/osgi.properties	2012-06-14 12:06:51.273506527 +0200
+***************
+*** 30,35 ****
+--- 30,36 ----
+  # OF SUCH DAMAGE.
+  #
+  
++ org.osgi.framework.storage = /var/cache/motech/felix-cache
+  org.osgi.framework.storage.clean = onFirstInit
+  
+  org.osgi.framework.system.packages = \

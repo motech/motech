@@ -1,0 +1,11 @@
+Package: motech-base
+Version: 0.11-SNAPSHOT
+Section: web
+Priority: optional
+Architecture: all
+Depends: sysv-rc, curl, tomcat7-common
+Maintainer: Paweł Gesek <pgesek@soldevelo.com>
+Description: Linux system information
+ MOTECH is a software system from Grameen Foundation that harnesses the 
+ ubiquity of mobile phones to deliver and receive information from patients 
+ and caregivers. 
