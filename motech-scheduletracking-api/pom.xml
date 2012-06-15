@@ -12,7 +12,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>motech-platform-scheduler</artifactId>
+			<artifactId>motech-scheduler</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

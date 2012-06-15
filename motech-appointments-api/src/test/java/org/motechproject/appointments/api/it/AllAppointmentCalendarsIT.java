@@ -25,7 +25,7 @@ import static org.hamcrest.Matchers.is;
 import static org.motechproject.util.DateUtil.newDateTime;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/applicationAppointmentsAPI.xml")
+@ContextConfiguration(locations = "/testApplicationAppointmentsAPI.xml")
 public class AllAppointmentCalendarsIT {
     @Autowired
     private AllAppointmentCalendars allAppointmentCalendars;

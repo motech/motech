@@ -2,9 +2,9 @@ package org.motechproject.server.messagecampaign.scheduler;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.motechproject.model.CronSchedulableJob;
-import org.motechproject.model.MotechEvent;
-import org.motechproject.model.RunOnceSchedulableJob;
+import org.motechproject.scheduler.domain.CronSchedulableJob;
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.EventKeys;

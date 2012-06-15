@@ -1,13 +1,13 @@
 package org.motechproject.scheduler;
 
-import org.motechproject.model.CronSchedulableJob;
-import org.motechproject.model.MotechEvent;
-import org.motechproject.model.RepeatingSchedulableJob;
-import org.motechproject.model.RunOnceSchedulableJob;
-
 /**
  * \defgroup scheduler Scheduler
  */
+
+import org.motechproject.scheduler.domain.CronSchedulableJob;
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
+import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 
 /**
  * \ingroup scheduler

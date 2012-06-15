@@ -2,19 +2,26 @@ package org.motechproject.sms.smpp;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.motechproject.event.EventRelay;
-import org.motechproject.model.MotechEvent;
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.scheduler.event.EventRelay;
 import org.motechproject.sms.InboundSMS;
 import org.motechproject.sms.repository.AllInboundSMS;
 import org.motechproject.sms.repository.AllOutboundSMS;
 import org.motechproject.sms.smpp.constants.EventSubjects;
-import org.smslib.*;
+import org.smslib.AGateway;
+import org.smslib.IInboundMessageNotification;
+import org.smslib.InboundMessage;
+import org.smslib.Message;
+import org.smslib.StatusReportMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
-import static org.motechproject.sms.smpp.constants.EventDataKeys.*;
+import static org.motechproject.sms.smpp.constants.EventDataKeys.INBOUND_MESSAGE;
+import static org.motechproject.sms.smpp.constants.EventDataKeys.SENDER;
+import static org.motechproject.sms.smpp.constants.EventDataKeys.STATUS_MESSAGE;
+import static org.motechproject.sms.smpp.constants.EventDataKeys.TIMESTAMP;
 import static org.motechproject.util.DateUtil.newDateTime;
 
 @Component

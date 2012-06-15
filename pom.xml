@@ -143,6 +143,7 @@
         <module>motech-sms-smpp</module>
         <module>motech-testing-utils</module>
         <module>motech-platform-common</module>
+        <module>motech-scheduler</module>
     </modules>
 
     <build>

@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.model.RunOnceSchedulableJob;
+import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.builder.CampaignBuilder;
 import org.motechproject.server.messagecampaign.builder.EnrollRequestBuilder;

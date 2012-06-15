@@ -2,8 +2,8 @@ package org.motechproject.sms.smpp;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.motechproject.gateway.OutboundEventGateway;
-import org.motechproject.model.MotechEvent;
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.scheduler.gateway.OutboundEventGateway;
 import org.motechproject.sms.OutboundSMS;
 import org.motechproject.sms.repository.AllOutboundSMS;
 import org.motechproject.sms.smpp.constants.EventSubjects;
@@ -18,7 +18,9 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Properties;
 
-import static org.motechproject.sms.api.DeliveryStatus.*;
+import static org.motechproject.sms.api.DeliveryStatus.ABORTED;
+import static org.motechproject.sms.api.DeliveryStatus.INPROGRESS;
+import static org.motechproject.sms.api.DeliveryStatus.KEEPTRYING;
 import static org.motechproject.sms.api.constants.EventDataKeys.MESSAGE;
 import static org.motechproject.sms.smpp.constants.EventDataKeys.RECIPIENT;
 import static org.motechproject.util.DateUtil.newDateTime;

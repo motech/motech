@@ -31,7 +31,7 @@
  */
 package org.motechproject.server.event;
 
-import org.motechproject.model.MotechEvent;
+import org.motechproject.scheduler.domain.MotechEvent;
 
 public interface EventListener {
 	

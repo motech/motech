@@ -5,9 +5,9 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.motechproject.gateway.OutboundEventGateway;
 import org.motechproject.gateway.StubOutboundEventGateway;
-import org.motechproject.model.MotechEvent;
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.scheduler.gateway.OutboundEventGateway;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;

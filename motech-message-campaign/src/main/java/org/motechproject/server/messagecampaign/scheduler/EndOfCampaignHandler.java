@@ -1,6 +1,6 @@
 package org.motechproject.server.messagecampaign.scheduler;
 
-import org.motechproject.model.MotechEvent;
+import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.dao.AllCampaignEnrollments;

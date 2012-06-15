@@ -2,18 +2,22 @@ package org.motechproject.sms.api.service;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.motechproject.context.EventContext;
-import org.motechproject.event.EventRelay;
-import org.motechproject.model.MotechEvent;
-import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.scheduler.context.EventContext;
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
+import org.motechproject.scheduler.event.EventRelay;
 import org.motechproject.sms.api.MessageSplitter;
 import org.motechproject.sms.api.constants.EventDataKeys;
 import org.motechproject.sms.api.constants.EventSubjects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Properties;
 
 @Service
 public class SmsServiceImpl implements SmsService {

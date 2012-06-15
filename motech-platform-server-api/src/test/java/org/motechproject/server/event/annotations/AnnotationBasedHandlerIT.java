@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.MotechException;
 import org.motechproject.context.Context;
-import org.motechproject.model.MotechEvent;
+import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.server.event.EventListenerRegistry;
 import org.motechproject.server.event.ServerEventRelay;
 import org.springframework.beans.factory.annotation.Autowired;

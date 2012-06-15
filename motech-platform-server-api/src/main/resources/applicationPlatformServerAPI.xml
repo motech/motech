@@ -20,7 +20,7 @@
 	<bean id="eventListenerRegistry" class="org.motechproject.server.event.EventListenerRegistry"/>
 
     <bean id="motechContext" class="org.motechproject.context.Context" factory-method="getInstance"/>
-    <bean id="eventContext"  class="org.motechproject.context.EventContext" factory-method="getInstance"/>
+    <bean id="eventContext"  class="org.motechproject.scheduler.context.EventContext" factory-method="getInstance"/>
 
     <util:properties id="osgiConfig" location="classpath:osgi.properties" />
     

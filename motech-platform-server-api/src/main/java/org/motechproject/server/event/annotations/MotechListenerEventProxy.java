@@ -33,7 +33,7 @@ package org.motechproject.server.event.annotations;
 
 import java.lang.reflect.Method;
 
-import org.motechproject.model.MotechEvent;
+import org.motechproject.scheduler.domain.MotechEvent;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -53,7 +53,7 @@ public class MotechListenerEventProxy extends MotechListenerAbstractProxy {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.motechproject.server.event.annotations.MotechListenerAbstractProxy#callHandler(org.motechproject.model.MotechEvent)
+	 * @see org.motechproject.server.event.annotations.MotechListenerAbstractProxy#callHandler(org.motechproject.scheduler.model.MotechEvent)
 	 */
 	@Override
 	public void callHandler(MotechEvent event) {

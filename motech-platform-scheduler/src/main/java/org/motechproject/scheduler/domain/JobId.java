@@ -1,6 +1,5 @@
 package org.motechproject.scheduler.domain;
 
-import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
 
 public class JobId {

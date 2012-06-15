@@ -1,7 +1,7 @@
 package org.motechproject.sms.http;
 
-import org.motechproject.event.EventRelay;
-import org.motechproject.model.MotechEvent;
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.scheduler.event.EventRelay;
 import org.motechproject.sms.api.constants.EventDataKeys;
 import org.motechproject.sms.api.constants.EventSubjects;
 import org.motechproject.sms.http.template.SmsHttpTemplate;

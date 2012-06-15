@@ -32,7 +32,7 @@
 package org.motechproject.server.event.annotations;
 
 import org.motechproject.MotechException;
-import org.motechproject.model.MotechEvent;
+import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.server.event.EventListener;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +68,7 @@ public abstract class MotechListenerAbstractProxy implements EventListener {
 	public abstract void callHandler(MotechEvent event);
 	
 	/* (non-Javadoc)
-	 * @see org.motechproject.server.event.EventListener#handle(org.motechproject.model.MotechEvent)
+	 * @see org.motechproject.server.event.EventListener#handle(org.motechproject.scheduler.model.MotechEvent)
 	 */
 	@Override
 	public void handle(MotechEvent event) {

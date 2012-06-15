@@ -2,21 +2,17 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:util="http://www.springframework.org/schema/util"
-       xmlns:osgi="http://www.springframework.org/schema/osgi"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
-		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
-		http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
-		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
     <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
     <util:properties id="verboiceProperties" location="classpath:verboice.properties"/>
 
     <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean"/>
-
-    <import resource="classpath*:applicationPlatformCommonAPI.xml"/>
 
     <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
         <constructor-arg ref="httpClient"/>
@@ -31,8 +27,6 @@
 
     <context:annotation-config/>
     <mvc:annotation-driven/>
-
-    <context:component-scan base-package="org.motechproject.server"/>
 
     <bean id="verboiceIVRController" class="org.motechproject.server.verboice.web.VerboiceIVRController"/>
 

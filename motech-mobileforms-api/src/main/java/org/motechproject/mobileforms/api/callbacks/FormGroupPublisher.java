@@ -1,9 +1,9 @@
 package org.motechproject.mobileforms.api.callbacks;
 
-import org.motechproject.context.EventContext;
-import org.motechproject.event.EventRelay;
 import org.motechproject.mobileforms.api.domain.FormBeanGroup;
-import org.motechproject.model.MotechEvent;
+import org.motechproject.scheduler.context.EventContext;
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.scheduler.event.EventRelay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

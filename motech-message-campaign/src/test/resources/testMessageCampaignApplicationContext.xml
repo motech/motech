@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-			http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="location" value="classpath:activemq.properties"/>
@@ -10,9 +10,19 @@
     </bean>
 
     <import resource="classpath:applicationMessageCampaign.xml"/>
+    <import resource="classpath*:integrationCommonAPI.xml"/>
 
     <bean id="messageCampaignDBConnector" class="org.ektorp.impl.StdCouchDbConnector">
         <constructor-arg value="test-motech-message-campaign"/>
         <constructor-arg ref="couchDbInstance"/>
     </bean>
+
+    <util:properties id="quartzProperties" location="classpath:quartz.properties"/>
+
+    <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="configLocation" value="classpath:quartz.properties"/>
+        <property name="applicationContextSchedulerContextKey" value="applicationContext"/>
+    </bean>
+
+    <bean id="schedulerService" class="org.motechproject.scheduler.MotechSchedulerServiceImpl"/>
 </beans>
