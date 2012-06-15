@@ -14,7 +14,7 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/testPlatformSchedulerApplicationContext.xml")
+@ContextConfiguration(locations = "/testSchedulerApplicationContext.xml")
 public class SpringQuartzIT {
 
     @Autowired

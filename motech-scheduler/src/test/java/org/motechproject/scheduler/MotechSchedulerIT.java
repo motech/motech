@@ -61,7 +61,7 @@ import java.util.*;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testPlatformSchedulerApplicationContext.xml"})
+@ContextConfiguration(locations = {"/testSchedulerApplicationContext.xml"})
 public class MotechSchedulerIT {
 
     public static final String SUBJECT = "testEvent";

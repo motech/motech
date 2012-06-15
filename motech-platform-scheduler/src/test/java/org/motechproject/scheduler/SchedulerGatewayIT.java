@@ -53,7 +53,7 @@ import java.util.Map;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/testCommonApplicationContext.xml")
+@ContextConfiguration(locations = "/testPlatformSchedulerApplicationContext.xml")
 public class SchedulerGatewayIT {
     @Autowired
     private MotechSchedulerGateway motechSchedulerGateway;
