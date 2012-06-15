@@ -32,12 +32,12 @@
 package org.motechproject.server.outbox;
 
 import org.motechproject.context.Context;
-import org.motechproject.gateway.MotechSchedulerGateway;
+import org.motechproject.scheduler.gateway.MotechSchedulerGateway;
 import org.motechproject.ivr.model.CallInitiationException;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
-import org.motechproject.model.CronSchedulableJob;
-import org.motechproject.model.MotechEvent;
+import org.motechproject.scheduler.domain.CronSchedulableJob;
+import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.outbox.api.EventKeys;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.slf4j.Logger;

@@ -34,7 +34,7 @@ package org.motechproject.server.demo.service;
 import org.motechproject.ivr.model.CallInitiationException;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
-import org.motechproject.model.MotechEvent;
+import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.server.demo.EventKeys;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.slf4j.Logger;

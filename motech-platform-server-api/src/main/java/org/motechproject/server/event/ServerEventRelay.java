@@ -1,9 +1,9 @@
 package org.motechproject.server.event;
 
-import org.motechproject.event.EventRelay;
-import org.motechproject.gateway.OutboundEventGateway;
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.scheduler.event.EventRelay;
+import org.motechproject.scheduler.gateway.OutboundEventGateway;
 import org.motechproject.metrics.MetricsAgent;
-import org.motechproject.model.MotechEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

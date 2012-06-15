@@ -7,11 +7,11 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.motechproject.gateway.OutboundEventGateway;
-import org.motechproject.model.MotechEvent;
-import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
+import org.motechproject.scheduler.gateway.OutboundEventGateway;
 import org.motechproject.server.pillreminder.api.builder.SchedulerPayloadBuilder;
 import org.motechproject.server.pillreminder.api.builder.testbuilder.DosageBuilder;
 import org.motechproject.server.pillreminder.api.builder.testbuilder.PillRegimenBuilder;
@@ -26,7 +26,12 @@ import java.util.HashMap;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ReminderEventHandlerTest extends BaseUnitTest {

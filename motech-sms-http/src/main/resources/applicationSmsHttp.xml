@@ -7,7 +7,6 @@
                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
                            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
     <import resource="classpath:applicationSmsAPI.xml"/>
-    <import resource="classpath:applicationPlatformScheduler.xml"/>
     <util:properties id="smsHttpProperties" location="classpath:sms-http.properties"/>
     <context:annotation-config />
     <context:component-scan base-package="org.motechproject.sms.http"/>

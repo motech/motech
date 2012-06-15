@@ -8,21 +8,27 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.motechproject.context.EventContext;
-import org.motechproject.event.EventRelay;
-import org.motechproject.model.MotechEvent;
-import org.motechproject.model.RunOnceSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.scheduler.context.EventContext;
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
+import org.motechproject.scheduler.event.EventRelay;
 import org.motechproject.sms.api.MessageSplitter;
 import org.motechproject.sms.api.constants.EventDataKeys;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
 
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.powermock.api.mockito.PowerMockito.when;
 

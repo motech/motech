@@ -122,7 +122,7 @@ public interface VoiceOutboxService {
     public int getNumDaysKeepSavedMessages();
 
     /**
-     * Sets the max number of pending messages after which the outbox will send an event {@link org.motechproject.model.MotechEvent MotechEvent}
+     * Sets the max number of pending messages after which the outbox will send an event {@link org.motechproject.scheduler.domain.MotechEvent MotechEvent}
      *
      * @param maxNumberOfPendingMessages - a value representing the maximum number of pending messages
      */

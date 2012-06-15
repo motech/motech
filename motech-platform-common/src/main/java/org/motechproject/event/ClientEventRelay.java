@@ -31,8 +31,9 @@
  */
 package org.motechproject.event;
 
-import org.motechproject.gateway.OutboundEventGateway;
-import org.motechproject.model.MotechEvent;
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.scheduler.event.EventRelay;
+import org.motechproject.scheduler.gateway.OutboundEventGateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

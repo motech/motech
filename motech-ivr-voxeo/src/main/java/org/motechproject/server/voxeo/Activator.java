@@ -31,8 +31,8 @@
  */
 package org.motechproject.server.voxeo;
 
-import org.motechproject.context.EventContext;
-import org.motechproject.model.MotechEvent;
+import org.motechproject.scheduler.context.EventContext;
+import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

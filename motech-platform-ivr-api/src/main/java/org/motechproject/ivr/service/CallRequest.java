@@ -32,7 +32,7 @@
 package org.motechproject.ivr.service;
 
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.motechproject.model.MotechEvent;
+import org.motechproject.scheduler.domain.MotechEvent;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -42,7 +42,7 @@ import java.util.Map;
  * This class is used to request a call from the IVR system
  *
  * To receive events related to this call provide this class with the events to raise when the following
- * events within the IVR system happen.  The supplied event will be augmented with {@link org.motechproject.ivr.domain.CallDetailRecord}
+ * events within the IVR system happen.  The supplied event will be augmented with {@link org.motechproject.ivr.model.CallDetailRecord}
  * if one is available
  *
  * onSuccessEvent - Following the successful completion of the call

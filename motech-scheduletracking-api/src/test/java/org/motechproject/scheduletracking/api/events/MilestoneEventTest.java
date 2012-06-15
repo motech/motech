@@ -2,9 +2,15 @@ package org.motechproject.scheduletracking.api.events;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
-import org.motechproject.model.MotechEvent;
 import org.motechproject.model.Time;
-import org.motechproject.scheduletracking.api.domain.*;
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
+import org.motechproject.scheduletracking.api.domain.Milestone;
+import org.motechproject.scheduletracking.api.domain.MilestoneAlert;
+import org.motechproject.scheduletracking.api.domain.MilestoneWindow;
+import org.motechproject.scheduletracking.api.domain.Schedule;
+import org.motechproject.scheduletracking.api.domain.WindowName;
 import org.motechproject.scheduletracking.api.events.constants.EventDataKeys;
 import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
 

@@ -7,7 +7,7 @@
             http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
             http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd">
 
-    <gateway service-interface="org.motechproject.gateway.OutboundEventGateway"
+    <gateway service-interface="org.motechproject.scheduler.gateway.OutboundEventGateway"
              id="outboundEventGateway"
              default-request-channel="eventGatewayToEventJmsoutChannel"/>
 

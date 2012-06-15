@@ -2,10 +2,10 @@ package org.motechproject.server.pillreminder.api;
 
 import org.joda.time.DateTime;
 import org.motechproject.MotechObject;
-import org.motechproject.gateway.OutboundEventGateway;
-import org.motechproject.model.MotechEvent;
-import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
+import org.motechproject.scheduler.gateway.OutboundEventGateway;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.server.pillreminder.api.dao.AllPillRegimens;
 import org.motechproject.server.pillreminder.api.domain.DailyScheduleDetails;

@@ -23,7 +23,7 @@ import static junit.framework.Assert.assertEquals;
 import static org.motechproject.util.DateUtil.newDateTime;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/applicationAppointmentsAPI.xml")
+@ContextConfiguration(locations = "/testApplicationAppointmentsAPI.xml")
 public class VisitsQueryServiceIT {
     @Autowired
     AllAppointmentCalendars allAppointmentCalendars;

@@ -4,7 +4,6 @@ import org.apache.commons.lang.SerializationUtils;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 

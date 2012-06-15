@@ -18,7 +18,7 @@
     <beans:import resource="classpath:integrationCommonAPI.xml"/>
     <beans:import resource="classpath:applicationPlatformCommonAPI.xml"/>
 
-	<gateway service-interface="org.motechproject.gateway.MotechSchedulerGateway"
+	<gateway service-interface="org.motechproject.scheduler.gateway.MotechSchedulerGateway"
 	 		id="outboundScheduleJobGateway"
 	 		default-request-channel="scheduleJobGatewayToEventJmsoutChannel"/>
 

@@ -1,6 +1,6 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
-import org.motechproject.model.MotechEvent;
+import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.events.DefaultmentCaptureEvent;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;

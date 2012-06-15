@@ -1,11 +1,11 @@
 package org.motechproject.server.pillreminder.api.service;
 
 import org.joda.time.DateTime;
-import org.motechproject.model.CronSchedulableJob;
-import org.motechproject.model.MotechEvent;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.builder.CronJobSimpleExpressionBuilder;
+import org.motechproject.scheduler.domain.CronSchedulableJob;
+import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.server.pillreminder.api.EventKeys;
 import org.motechproject.server.pillreminder.api.builder.SchedulerPayloadBuilder;
 import org.motechproject.server.pillreminder.api.domain.Dosage;

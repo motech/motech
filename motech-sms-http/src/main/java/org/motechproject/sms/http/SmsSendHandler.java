@@ -1,6 +1,6 @@
 package org.motechproject.sms.http;
 
-import org.motechproject.model.MotechEvent;
+import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.sms.api.SmsEventHandler;
 import org.motechproject.sms.api.constants.EventDataKeys;

@@ -3,11 +3,16 @@ package org.motechproject.server.voxeo.web;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.event.EventRelay;
-import org.motechproject.model.MotechEvent;
 import org.motechproject.ivr.service.CallRequest;
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.scheduler.event.EventRelay;
 import org.motechproject.server.voxeo.VoxeoIVRService;
 import org.motechproject.server.voxeo.dao.AllPhoneCalls;
 import org.motechproject.server.voxeo.domain.PhoneCall;
@@ -17,8 +22,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IvrControllerTest

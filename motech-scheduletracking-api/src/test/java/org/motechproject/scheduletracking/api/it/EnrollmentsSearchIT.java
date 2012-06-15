@@ -31,7 +31,7 @@ import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.*;
 import static org.motechproject.util.DateUtil.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:applicationSchedulerTrackingAPI.xml")
+@ContextConfiguration(locations = "classpath:testApplicationSchedulerTrackingAPI.xml")
 public class EnrollmentsSearchIT {
 
     @Autowired

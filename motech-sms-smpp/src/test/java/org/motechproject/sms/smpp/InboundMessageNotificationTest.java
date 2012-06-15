@@ -6,8 +6,8 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.motechproject.event.EventRelay;
-import org.motechproject.model.MotechEvent;
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.scheduler.event.EventRelay;
 import org.motechproject.sms.repository.AllInboundSMS;
 import org.motechproject.sms.repository.AllOutboundSMS;
 import org.motechproject.sms.smpp.constants.EventSubjects;
@@ -22,8 +22,12 @@ import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.sms.smpp.constants.EventDataKeys.*;
-import static org.smslib.Message.MessageTypes.*;
+import static org.motechproject.sms.smpp.constants.EventDataKeys.INBOUND_MESSAGE;
+import static org.motechproject.sms.smpp.constants.EventDataKeys.SENDER;
+import static org.motechproject.sms.smpp.constants.EventDataKeys.TIMESTAMP;
+import static org.smslib.Message.MessageTypes.INBOUND;
+import static org.smslib.Message.MessageTypes.STATUSREPORT;
+import static org.smslib.Message.MessageTypes.UNKNOWN;
 
 public class InboundMessageNotificationTest {
     private InboundMessageNotification inboundMessageNotification;

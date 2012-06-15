@@ -4,10 +4,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.gateway.OutboundEventGateway;
-import org.motechproject.model.MotechEvent;
-import org.motechproject.sms.api.DeliveryStatus;
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.scheduler.gateway.OutboundEventGateway;
 import org.motechproject.sms.OutboundSMS;
+import org.motechproject.sms.api.DeliveryStatus;
 import org.motechproject.sms.repository.AllOutboundSMS;
 import org.motechproject.sms.smpp.constants.SmsProperties;
 import org.smslib.AGateway;
@@ -21,8 +21,8 @@ import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.sms.api.constants.EventDataKeys.*;
-import static org.motechproject.sms.smpp.constants.EventDataKeys.*;
+import static org.motechproject.sms.api.constants.EventDataKeys.MESSAGE;
+import static org.motechproject.sms.smpp.constants.EventDataKeys.RECIPIENT;
 
 public class OutboundMessageNotificationTest {
 	@Mock

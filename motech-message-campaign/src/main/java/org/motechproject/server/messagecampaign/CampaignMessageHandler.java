@@ -1,7 +1,7 @@
 package org.motechproject.server.messagecampaign;
 
-import org.motechproject.gateway.OutboundEventGateway;
-import org.motechproject.model.MotechEvent;
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.scheduler.gateway.OutboundEventGateway;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;

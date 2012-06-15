@@ -1,7 +1,6 @@
 package org.motechproject.scheduler.domain;
 
 import org.junit.Test;
-import org.motechproject.model.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
 
 import static junit.framework.Assert.assertEquals;
