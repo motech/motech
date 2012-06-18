@@ -41,41 +41,7 @@
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
        http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
-
-    <context:annotation-config/>
-    <context:property-placeholder location="classpath:activemq.properties" system-properties-mode="OVERRIDE"/>
-
-    <import resource="schedulerFiredEventChannelAdapter.xml"/>
-
-    <util:properties id="quartzProperties" location="classpath:quartz.properties"/>
-
-    <bean id="connectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
-        <property name="targetConnectionFactory">
-            <bean class="org.apache.activemq.ActiveMQConnectionFactory">
-                <property name="brokerURL" value="${broker.url}"/>
-                <property name="redeliveryPolicy.maximumRedeliveries" value="${maximumRedeliveries}"/>
-                <property name="redeliveryPolicy.initialRedeliveryDelay" value="${redeliveryDelayInMillis}"/>
-                <property name="redeliveryPolicy.redeliveryDelay" value="${redeliveryDelayInMillis}"/>
-            </bean>
-        </property>
-        <property name="sessionCacheSize" value="10"/>
-        <property name="cacheProducers" value="false"/>
-    </bean>
-
-    <bean id="schedulerQueue" class="org.apache.activemq.command.ActiveMQQueue">
-        <constructor-arg value="${queue.for.scheduler}"/>
-    </bean>
-
-    <bean id="eventQueue" class="org.apache.activemq.command.ActiveMQQueue">
-        <constructor-arg value="${queue.for.events}"/>
-    </bean>
-
-    <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-        <property name="configLocation" value="classpath:quartz.properties"/>
-        <property name="applicationContextSchedulerContextKey" value="applicationContext"/>
-    </bean>
-
-    <bean id="schedulerService" class="org.motechproject.scheduler.MotechSchedulerServiceImpl"/>
+    <import resource="applicationScheduler.xml" />
 
     <osgi:service id="schedulerServiceOsgi" auto-export="interfaces" ref="schedulerService"
                   interface="org.motechproject.scheduler.MotechSchedulerService"/>
