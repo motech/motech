@@ -103,7 +103,8 @@
                     <instructions>
                         <Export-Package>
                             org.motechproject.scheduletracking.api.service,
-                            org.motechproject.scheduletracking.api.service.impl
+                            org.motechproject.scheduletracking.api.service.impl,
+                            org.motechproject.scheduletracking.api.events.constants
                         </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.scheduletracking.api.Activator
@@ -120,16 +121,6 @@
                             org.springframework.osgi.config,
                             org.quartz.simpl
                         </Import-Package>
-                        <Private-Package>
-                            org.motechproject.scheduletracking.api,
-                            org.motechproject.scheduletracking.api.domain,
-                            org.motechproject.scheduletracking.api.domain.exception,
-                            org.motechproject.scheduletracking.api.domain.json,
-                            org.motechproject.scheduletracking.api.domain.search,
-                            org.motechproject.scheduletracking.api.events,
-                            org.motechproject.scheduletracking.api.repository,
-                            org.motechproject.scheduletracking.api.service.contract,
-                        </Private-Package>
                         <Embed-Dependency>!*</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
