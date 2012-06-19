@@ -93,10 +93,11 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                 logger.debug("Installing bundle [" + url + "]");
                 Bundle bundle = bundleContext.installBundle(url.toExternalForm());
                 bundles.add(bundle);
-                storeClassCloader(bundle);
             }
 
             for (Bundle bundle : bundles) {
+                logger.debug("Starting bundle [" + bundle + "]");
+                storeClassCloader(bundle);
                 // custom bundle loaders
                 if (bundleLoaders != null) {
                     for (BundleLoader loader : bundleLoaders) {
