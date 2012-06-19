@@ -45,7 +45,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 public class Activator implements BundleActivator {
     private static Logger logger = LoggerFactory.getLogger(Activator.class);
-    private static final String CONTEXT_CONFIG_LOCATION = "applicationSchedulerTrackingAPI.xml";
+    private static final String CONTEXT_CONFIG_LOCATION = "applicationSchedulerTrackingAPIBundle.xml";
     private static final String SERVLET_URL_MAPPING = "/scheduletrackingapi";
     private ServiceTracker tracker;
     private ServiceReference httpService;
