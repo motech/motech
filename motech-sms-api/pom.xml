@@ -76,11 +76,6 @@
             <version>1.4.9</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>motech-scheduler</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -92,22 +87,18 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.sms.http,
-                            org.motechproject.sms.http.service
+                            org.motechproject.sms.api,
+                            org.motechproject.sms.api.constants,
+                            org.motechproject.sms.api.service
                         </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.sms.api.Activator
                         </Bundle-Activator>
                         <Import-Package>
                             *,
-                            org.motechproject.scheduler,
-                            org.motechproject.scheduler.domain,
-                            org.motechproject.sms.api,
-                            org.motechproject.sms.api.service,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
-                            org.springframework.osgi.config,
-                            org.springframework.scheduling.quartz
+                            org.springframework.osgi.config
                         </Import-Package>
                         <Embed-Dependency>!*</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>

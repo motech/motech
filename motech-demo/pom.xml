@@ -130,12 +130,6 @@
                             org.springframework.web.servlet.mvc,
                             org.springframework.web.servlet.view
                         </Import-Package>
-                        <Private-Package>
-                            org.motechproject.server.demo,
-                            org.motechproject.server.demo.service,
-                            org.motechproject.server.demo.service.impl,
-                            org.motechproject.server.demo.web
-                        </Private-Package>
 						<Embed-Dependency>!*</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>
 					</instructions>

@@ -110,9 +110,6 @@
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config
                         </Import-Package>
-                        <Private-Package>
-                            org.motechproject.server.appointments
-                        </Private-Package>
                         <Embed-Dependency>
                             motech-appointments-api;inline=applicationAppointmentsAPI.xml
                         </Embed-Dependency>
