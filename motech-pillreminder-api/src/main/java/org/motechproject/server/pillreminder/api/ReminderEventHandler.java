@@ -51,7 +51,7 @@ public class ReminderEventHandler extends MotechObject {
 
         repeatingReminderEvent.getParameters().put(MotechSchedulerService.JOB_ID_KEY, dosage.getId());
         RepeatingSchedulableJob retryRemindersJob = new RepeatingSchedulableJob(repeatingReminderEvent,
-                startTime, endTime, scheduleDetails.getRepeatIntervalInMinutes() * 60 * 1000);
+                startTime, endTime, scheduleDetails.getRepeatIntervalInMinutes() * 60 * 1000L);
         schedulerService.safeScheduleRepeatingJob(retryRemindersJob);
     }
 

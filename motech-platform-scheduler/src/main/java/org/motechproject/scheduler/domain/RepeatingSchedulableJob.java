@@ -7,17 +7,16 @@ import java.util.Date;
  * Schedulable Job - a data carrier class for a scheduled job that can be fired set number of times
  */
 public class RepeatingSchedulableJob implements Serializable {
-
     private static final long serialVersionUID = 1L;
 
     private MotechEvent motechEvent;
     private Date startTime;
     private Date endTime;
     private Integer repeatCount;
-    private long repeatIntervalInMilliSeconds;
+    private Long repeatIntervalInMilliSeconds;
 
-    public RepeatingSchedulableJob(MotechEvent motechEvent, Date startTime, Date endTime,
-                                   Integer repeatCount, long repeatIntervalInMilliSeconds) {      // TODO: have consistentcy for using primitives/objects
+    public RepeatingSchedulableJob(final MotechEvent motechEvent, final Date startTime, final Date endTime,
+                                   final Integer repeatCount, final Long repeatIntervalInMilliSeconds) {
         this.motechEvent = motechEvent;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -25,8 +24,8 @@ public class RepeatingSchedulableJob implements Serializable {
         this.repeatIntervalInMilliSeconds = repeatIntervalInMilliSeconds;
     }
 
-    public RepeatingSchedulableJob(MotechEvent motechEvent, Date startTime, Date endTime,
-                                   long repeatIntervalInMilliSeconds) {
+    public RepeatingSchedulableJob(final MotechEvent motechEvent, final Date startTime, final Date endTime,
+                                   final Long repeatIntervalInMilliSeconds) {
         this(motechEvent, startTime, endTime, null, repeatIntervalInMilliSeconds);
     }
 
@@ -34,7 +33,7 @@ public class RepeatingSchedulableJob implements Serializable {
         return motechEvent;
     }
 
-    public void setMotechEvent(MotechEvent motechEvent) {
+    public void setMotechEvent(final MotechEvent motechEvent) {
         this.motechEvent = motechEvent;
     }
 
@@ -42,7 +41,7 @@ public class RepeatingSchedulableJob implements Serializable {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(final Date startTime) {
         this.startTime = startTime;
     }
 
@@ -50,7 +49,7 @@ public class RepeatingSchedulableJob implements Serializable {
         return endTime;
     }
 
-    public void setEndTime(Date endTime) {
+    public void setEndTime(final Date endTime) {
         this.endTime = endTime;
     }
 
@@ -58,15 +57,15 @@ public class RepeatingSchedulableJob implements Serializable {
         return repeatCount;
     }
 
-    public void setRepeatCount(int repeatCount) {
+    public void setRepeatCount(final Integer repeatCount) {
         this.repeatCount = repeatCount;
     }
 
-    public long getRepeatIntervalInMilliSeconds() {
+    public Long getRepeatIntervalInMilliSeconds() {
         return repeatIntervalInMilliSeconds;
     }
 
-    public void setRepeatIntervalInMilliSeconds(long repeatIntervalInMilliSeconds) {
+    public void setRepeatIntervalInMilliSeconds(final Long repeatIntervalInMilliSeconds) {
         this.repeatIntervalInMilliSeconds = repeatIntervalInMilliSeconds;
     }
 
