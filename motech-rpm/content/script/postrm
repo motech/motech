@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Exit on non-zero exit code
+set -e
+
+# Remove the cache folder, if it still exists
+if [ -d /var/cache/motech ]; then
+	rm -r /var/cache/motech
+fi
+
+# Remove the log folder, if it still exists
+if [ -d /var/log/motech ]; then
+	rm -r /var/log/motech
+fi

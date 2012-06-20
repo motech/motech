@@ -1,0 +1,33 @@
+#!/bin/sh
+
+# Exit on non-zero exit code
+set -e
+
+# Unregister service
+chkconfig --del motech
+
+# Delete the motech user, if he exists
+if [ ! `grep -c motech: /etc/passwd` -eq 0 ]; then
+	skill -KILL -u motech
+	userdel motech
+fi
+
+#Remove symlinks
+if [ -L /usr/share/motech/logs ]; then
+    rm /usr/share/motech/logs
+fi
+if [ -L /usr/share/motech/temp ]; then
+    rm /usr/share/motech/temp
+fi
+if [ -L /usr/share/motech/work ]; then
+    rm /usr/share/motech/work
+fi
+if [ -L /usr/share/motech/webapps ]; then
+    rm /usr/share/motech/webapps
+fi
+if [ -L /usr/share/motech/.motech ]; then
+    rm /usr/share/motech/.motech
+fi
+if [ -L /usr/share/motech/felix-cache ]; then
+    rm /usr/share/motech/felix-cache
+fi
