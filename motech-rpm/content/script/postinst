@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# Exit on non-zero exit code
+set -e
+
+# Create symlinks
+# logs
+ln -s /var/log/motech /usr/share/motech/logs
+# Cache
+ln -s /var/cache/motech/temp /usr/share/motech/temp
+ln -s /var/cache/motech/work /usr/share/motech/work
+ln -s /var/cache/motech/felix-cache /usr/share/motech/felix-cache
+# Data
+ln -s /var/lib/motech/webapps /usr/share/motech/webapps
+ln -s /var/lib/motech/data /usr/share/motech/.motech
+
+# Register service
+chkconfig --add motech

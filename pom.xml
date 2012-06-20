@@ -144,6 +144,7 @@
         <module>motech-testing-utils</module>
         <module>motech-platform-common</module>
         <module>motech-scheduler</module>
+        <module>motech-rpm</module>
     </modules>
 
     <build>
