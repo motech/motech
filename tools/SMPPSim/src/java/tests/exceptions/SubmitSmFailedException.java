@@ -7,8 +7,8 @@
 package tests.exceptions;
 
 public class SubmitSmFailedException extends Exception {
-	public SubmitSmFailedException() {
-		super();
-	}
+    public SubmitSmFailedException() {
+        super();
+    }
 
 }

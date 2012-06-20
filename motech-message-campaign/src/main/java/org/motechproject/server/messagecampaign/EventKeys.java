@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EventKeys {
-	private final static Logger log = LoggerFactory.getLogger(EventKeys.class);
+    private final static Logger log = LoggerFactory.getLogger(EventKeys.class);
 
     public final static String SCHEDULE_JOB_ID_KEY = "JobID";
     public final static String CAMPAIGN_NAME_KEY = "CampaignName";

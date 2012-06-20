@@ -33,57 +33,57 @@ import java.util.logging.*;
 
 public class DeterministicLifeCycleManager extends LifeCycleManager {
 
-	private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
-	private Smsc smsc = Smsc.getInstance();
-	private int discardThreshold;
+    private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
+    private Smsc smsc = Smsc.getInstance();
+    private int discardThreshold;
 
-	public DeterministicLifeCycleManager() {
-		discardThreshold = SMPPSim.getDiscardFromQueueAfter();
-		logger.finest("discardThreshold=" + discardThreshold);
-	}
+    public DeterministicLifeCycleManager() {
+        discardThreshold = SMPPSim.getDiscardFromQueueAfter();
+        logger.finest("discardThreshold=" + discardThreshold);
+    }
 
-	public MessageState setState(MessageState m) {
-		// Should a transition take place at all?
-		if (isTerminalState(m.getState()))
-			return m;	
-		byte currentState = m.getState();
-		String dest = m.getPdu().getDestination_addr();
-		if (dest.substring(0, 1).equals("1")) {
-			m.setState(PduConstants.EXPIRED);
-			m.setErr(903);
-		} else if (dest.substring(0, 1).equals("2")) {
-			m.setState(PduConstants.DELETED);
-			m.setErr(904);
-		} else if (dest.substring(0, 1).equals("3")) {
-			m.setState(PduConstants.UNDELIVERABLE);
-			m.setErr(901);
-		} else if (dest.substring(0, 1).equals("4")) {
-			m.setState(PduConstants.ACCEPTED);
-			m.setErr(2);
-		} else if (dest.substring(0, 1).equals("5")) {
-			m.setState(PduConstants.REJECTED);
-			m.setErr(902);
-		} else {
-			m.setState(PduConstants.DELIVERED);
-			m.setErr(0);
-		}
-		if (isTerminalState(m.getState())) {
-			m.setFinal_time(System.currentTimeMillis());
-			// If delivery receipt requested prepare it....
-			SubmitSM p = m.getPdu();
-			if (p.getRegistered_delivery_flag() == 1 &&
-			    currentState != m.getState()) {
-				// delivery_receipt requested
-				logger.info("Delivery Receipt requested");
-				smsc.prepareDeliveryReceipt(
-					p,
-					m.getMessage_id(),
-					m.getState(),
-					1,
-					1,
-					m.getErr());
-			}
-		}
-		return m;
-	}
+    public MessageState setState(MessageState m) {
+        // Should a transition take place at all?
+        if (isTerminalState(m.getState()))
+            return m;
+        byte currentState = m.getState();
+        String dest = m.getPdu().getDestination_addr();
+        if (dest.substring(0, 1).equals("1")) {
+            m.setState(PduConstants.EXPIRED);
+            m.setErr(903);
+        } else if (dest.substring(0, 1).equals("2")) {
+            m.setState(PduConstants.DELETED);
+            m.setErr(904);
+        } else if (dest.substring(0, 1).equals("3")) {
+            m.setState(PduConstants.UNDELIVERABLE);
+            m.setErr(901);
+        } else if (dest.substring(0, 1).equals("4")) {
+            m.setState(PduConstants.ACCEPTED);
+            m.setErr(2);
+        } else if (dest.substring(0, 1).equals("5")) {
+            m.setState(PduConstants.REJECTED);
+            m.setErr(902);
+        } else {
+            m.setState(PduConstants.DELIVERED);
+            m.setErr(0);
+        }
+        if (isTerminalState(m.getState())) {
+            m.setFinal_time(System.currentTimeMillis());
+            // If delivery receipt requested prepare it....
+            SubmitSM p = m.getPdu();
+            if (p.getRegistered_delivery_flag() == 1 &&
+                currentState != m.getState()) {
+                // delivery_receipt requested
+                logger.info("Delivery Receipt requested");
+                smsc.prepareDeliveryReceipt(
+                    p,
+                    m.getMessage_id(),
+                    m.getState(),
+                    1,
+                    1,
+                    m.getErr());
+            }
+        }
+        return m;
+    }
 }

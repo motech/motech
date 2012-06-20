@@ -5,7 +5,7 @@
 
     <target name="generate.javadoc" description="Generates the java documentation using doxygen">
         <delete dir="${javadoc.dir}" quiet="true"/>
-		<exec executable="sh">
+        <exec executable="sh">
         <arg line="-c &quot;(cat doxygen.config; echo 'PROJECT_NUMBER=${RELEASE_VERSION}') | doxygen -&quot;" />
         </exec>
     </target>
@@ -14,20 +14,20 @@
             description="Publishes java documentation  to http://motechproject.org">
         <git argline="checkout ."/>
         <git argline="pull --rebase origin master"/>
-		
-		<antcall target="copy.javadoc" />
+
+        <antcall target="copy.javadoc" />
 
         <git argline="add ."/>
         <git argline="commit -m 'publishing java doc for release ${RELEASE_VERSION}'"/>
         <git argline="push origin master"/>
     </target>
-	
-	<target name="copy.javadoc">
+
+    <target name="copy.javadoc">
         <delete dir="${motech.github.com.dir}/javadoc/${RELEASE_VERSION}" quiet="true"/>
         <copy todir="${motech.github.com.dir}/javadoc/${RELEASE_VERSION}">
             <fileset dir="${javadoc.dir}"/>
         </copy>
-	</target>
+    </target>
 
     <macrodef name="git">
         <attribute name="workingdir" default="${motech.github.com.dir}"/>

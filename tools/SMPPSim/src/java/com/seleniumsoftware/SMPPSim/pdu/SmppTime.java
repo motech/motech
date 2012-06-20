@@ -33,229 +33,229 @@ import java.util.logging.*;
 
 public class SmppTime {
 
-	private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
+    private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
 
-	// SMPP Date components
-	private String YY; // last two digits of the year (00-99)
-	private String MM; // month (01-12)
-	private String DD; // day (01-31)
-	private String hh; // hour (00-23)
-	private String mm; // minute (00-59)
-	private String ss; // second (00-59)
-	private String t; // tenths of second (0-9)
-	private String nn; // Time difference in quarter hours between local
-	// time (as expressed in the first 13 octets) and UTC
-	// (Universal Time Constant) time (00-48).
-	private String p;
-	// "+": Local time is in quarter hours advanced in relation
-	// to UTC time.
-	// "-": Local time is in quarter hours retarded in relation
-	// to UTC time.
-	// "R": Local time is relative to the current SMSC time.
+    // SMPP Date components
+    private String YY; // last two digits of the year (00-99)
+    private String MM; // month (01-12)
+    private String DD; // day (01-31)
+    private String hh; // hour (00-23)
+    private String mm; // minute (00-59)
+    private String ss; // second (00-59)
+    private String t; // tenths of second (0-9)
+    private String nn; // Time difference in quarter hours between local
+    // time (as expressed in the first 13 octets) and UTC
+    // (Universal Time Constant) time (00-48).
+    private String p;
+    // "+": Local time is in quarter hours advanced in relation
+    // to UTC time.
+    // "-": Local time is in quarter hours retarded in relation
+    // to UTC time.
+    // "R": Local time is relative to the current SMSC time.
 
-	// Note that SMPPSim currently only supports times with p="+" and nn="00"; Any other values are simply
-	// ignored.
+    // Note that SMPPSim currently only supports times with p="+" and nn="00"; Any other values are simply
+    // ignored.
 
-	private String milli;	// t plus "00"
-	
-	private String dateString;	// Whole field with nn and p sanitised if necessary
-	
-	// Equivalent Java date/time
-	private Date datetime;
-	
-	public SmppTime(String smppTime) throws ParseException {
-		String st = smppTime;
-		// 050219133817000+
-		YY = st.substring(0, 2);
-		MM = st.substring(2, 4);
-		DD = st.substring(4, 6);
-		hh = st.substring(6, 8);
-		mm = st.substring(8, 10);
-		ss = st.substring(10, 12);
-		t = st.substring(12, 13);
-		nn = st.substring(13, 15);
-		if (!nn.equals("00")) {
-			logger.warning("SMPPSim currently only supports time component nn=00. Value replaced with 00");
-			nn = "00";
-		}
-		p = st.substring(15, 16);
-		if (!p.equals("+")) {
-			logger.warning("SMPPSim currently only supports time component p=+. Value replaced with +");
-			p = "+";
-		}
-		milli = t + "00";
-		dateString = YY+MM+DD+hh+mm+ss+t+nn+p;
-		SimpleDateFormat formatter = new SimpleDateFormat("yyMMddHHmmssSSS");
-		datetime = formatter.parse(dateString);
-	}
+    private String milli;    // t plus "00"
 
-	public static String dateToSMPPString(Date date) {
-		//put the date into the format required for SMPP:
-		// YYMMDDhhmmsstnnp where items are as expected and t is tenths of a second, nn is time diff in qtr hours between local
-		// time and UTC. p is "+" or "-" indicating the whether the nn difference is < or > UTC.
+    private String dateString;    // Whole field with nn and p sanitised if necessary
 
-		SimpleDateFormat formatter = new SimpleDateFormat("yyMMddHHmmss");
+    // Equivalent Java date/time
+    private Date datetime;
 
-		// now append tenths of a second (hard-coded as zero, UTC diff and UTC sign
-		return (formatter.format(date) + "000+");
-	}
+    public SmppTime(String smppTime) throws ParseException {
+        String st = smppTime;
+        // 050219133817000+
+        YY = st.substring(0, 2);
+        MM = st.substring(2, 4);
+        DD = st.substring(4, 6);
+        hh = st.substring(6, 8);
+        mm = st.substring(8, 10);
+        ss = st.substring(10, 12);
+        t = st.substring(12, 13);
+        nn = st.substring(13, 15);
+        if (!nn.equals("00")) {
+            logger.warning("SMPPSim currently only supports time component nn=00. Value replaced with 00");
+            nn = "00";
+        }
+        p = st.substring(15, 16);
+        if (!p.equals("+")) {
+            logger.warning("SMPPSim currently only supports time component p=+. Value replaced with +");
+            p = "+";
+        }
+        milli = t + "00";
+        dateString = YY+MM+DD+hh+mm+ss+t+nn+p;
+        SimpleDateFormat formatter = new SimpleDateFormat("yyMMddHHmmssSSS");
+        datetime = formatter.parse(dateString);
+    }
 
-	/**
-	 * @return
-	 */
-	public Date getDatetime() {
-		return datetime;
-	}
+    public static String dateToSMPPString(Date date) {
+        //put the date into the format required for SMPP:
+        // YYMMDDhhmmsstnnp where items are as expected and t is tenths of a second, nn is time diff in qtr hours between local
+        // time and UTC. p is "+" or "-" indicating the whether the nn difference is < or > UTC.
 
-	/**
-	 * @return
-	 */
-	public String getDD() {
-		return DD;
-	}
+        SimpleDateFormat formatter = new SimpleDateFormat("yyMMddHHmmss");
 
-	/**
-	 * @return
-	 */
-	public String getHh() {
-		return hh;
-	}
+        // now append tenths of a second (hard-coded as zero, UTC diff and UTC sign
+        return (formatter.format(date) + "000+");
+    }
 
-	/**
-	 * @return
-	 */
-	public String getMm() {
-		return mm;
-	}
+    /**
+     * @return
+     */
+    public Date getDatetime() {
+        return datetime;
+    }
 
-	/**
-	 * @return
-	 */
-	public String getMM() {
-		return MM;
-	}
+    /**
+     * @return
+     */
+    public String getDD() {
+        return DD;
+    }
 
-	/**
-	 * @return
-	 */
-	public String getNn() {
-		return nn;
-	}
+    /**
+     * @return
+     */
+    public String getHh() {
+        return hh;
+    }
 
-	/**
-	 * @return
-	 */
-	public String getP() {
-		return p;
-	}
+    /**
+     * @return
+     */
+    public String getMm() {
+        return mm;
+    }
 
-	/**
-	 * @return
-	 */
-	public String getSs() {
-		return ss;
-	}
+    /**
+     * @return
+     */
+    public String getMM() {
+        return MM;
+    }
 
-	/**
-	 * @return
-	 */
-	public String getT() {
-		return t;
-	}
+    /**
+     * @return
+     */
+    public String getNn() {
+        return nn;
+    }
 
-	/**
-	 * @return
-	 */
-	public String getYY() {
-		return YY;
-	}
+    /**
+     * @return
+     */
+    public String getP() {
+        return p;
+    }
 
-	/**
-	 * @param date
-	 */
-	public void setDatetime(Date date) {
-		datetime = date;
-	}
+    /**
+     * @return
+     */
+    public String getSs() {
+        return ss;
+    }
 
-	/**
-	 * @param string
-	 */
-	public void setDD(String string) {
-		DD = string;
-	}
+    /**
+     * @return
+     */
+    public String getT() {
+        return t;
+    }
 
-	/**
-	 * @param string
-	 */
-	public void setHh(String string) {
-		hh = string;
-	}
+    /**
+     * @return
+     */
+    public String getYY() {
+        return YY;
+    }
 
-	/**
-	 * @param string
-	 */
-	public void setMm(String string) {
-		mm = string;
-	}
+    /**
+     * @param date
+     */
+    public void setDatetime(Date date) {
+        datetime = date;
+    }
 
-	/**
-	 * @param string
-	 */
-	public void setMM(String string) {
-		MM = string;
-	}
+    /**
+     * @param string
+     */
+    public void setDD(String string) {
+        DD = string;
+    }
 
-	/**
-	 * @param string
-	 */
-	public void setNn(String string) {
-		nn = string;
-	}
+    /**
+     * @param string
+     */
+    public void setHh(String string) {
+        hh = string;
+    }
 
-	/**
-	 * @param string
-	 */
-	public void setP(String string) {
-		p = string;
-	}
+    /**
+     * @param string
+     */
+    public void setMm(String string) {
+        mm = string;
+    }
 
-	/**
-	 * @param string
-	 */
-	public void setSs(String string) {
-		ss = string;
-	}
+    /**
+     * @param string
+     */
+    public void setMM(String string) {
+        MM = string;
+    }
 
-	/**
-	 * @param string
-	 */
-	public void setT(String string) {
-		t = string;
-	}
+    /**
+     * @param string
+     */
+    public void setNn(String string) {
+        nn = string;
+    }
 
-	/**
-	 * @param string
-	 */
-	public void setYY(String string) {
-		YY = string;
-	}
+    /**
+     * @param string
+     */
+    public void setP(String string) {
+        p = string;
+    }
 
-	/**
-	 * @return
-	 */
-	public String getDateString() {
-		return dateString;
-	}
+    /**
+     * @param string
+     */
+    public void setSs(String string) {
+        ss = string;
+    }
 
-	/**
-	 * @param string
-	 */
-	public void setDateString(String string) {
-		dateString = string;
-	}
-	
-	public String toString() {
-		return dateString;
-	}
+    /**
+     * @param string
+     */
+    public void setT(String string) {
+        t = string;
+    }
+
+    /**
+     * @param string
+     */
+    public void setYY(String string) {
+        YY = string;
+    }
+
+    /**
+     * @return
+     */
+    public String getDateString() {
+        return dateString;
+    }
+
+    /**
+     * @param string
+     */
+    public void setDateString(String string) {
+        dateString = string;
+    }
+
+    public String toString() {
+        return dateString;
+    }
 
 }

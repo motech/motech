@@ -1,34 +1,3 @@
-/*
- * MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
- *
- * Copyright (c) 2011 Grameen Foundation USA.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * 3. Neither the name of Grameen Foundation USA, nor its respective contributors
- * may be used to endorse or promote products derived from this software without
- * specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY GRAMEEN FOUNDATION USA AND ITS CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL GRAMEEN FOUNDATION USA OR ITS CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
- * OF SUCH DAMAGE.
- */
 package org.motechproject.server.outbox.web;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -67,8 +36,8 @@ public class VxmlOutboxController extends MultiActionController {
     public static final String SAVE_MESSAGE_ERROR_TEMPLATE_NAME = "saveMsgError";
     public static final String REMOVE_SAVED_MESSAGE_ERROR_TEMPLATE_NAME = "removeSavedMsgError";
 
-     public static final String MESSAGE_ID_PARAM = "mId";
-     
+    public static final String MESSAGE_ID_PARAM = "mId";
+
     public static final String LANGUAGE_PARAM = "ln";
 
     @Autowired
@@ -92,7 +61,6 @@ public class VxmlOutboxController extends MultiActionController {
         response.setCharacterEncoding("UTF-8");
 
 
-
         //Interim implementation. Party ID will be obtained from the Authentication context
         //String externalId = "1";
         String externalId = request.getParameter("pId");
@@ -100,7 +68,7 @@ public class VxmlOutboxController extends MultiActionController {
         String messageId = request.getParameter(MESSAGE_ID_PARAM);
         String language = request.getParameter(LANGUAGE_PARAM);
 
-        if(language == null) {
+        if (language == null) {
             language = "en";
         }
 
@@ -158,7 +126,7 @@ public class VxmlOutboxController extends MultiActionController {
             return mav;
         }
 
-         logger.debug(voiceMessage.toString());
+        logger.debug(voiceMessage.toString());
 
         String templateName = voiceMessageType.getTemplateName();
         if (templateName == null) {
@@ -194,22 +162,22 @@ public class VxmlOutboxController extends MultiActionController {
 
         OutboundVoiceMessage voiceMessage;
 
-         try {
-                voiceMessage = voiceOutboxService.getMessageById(messageId);
-            } catch (Exception e) {
-                logger.error("Can not get message by ID: " + messageId +
-                        " " + e.getMessage(), e);
-                logger.warn("Generating a VXML with the error message...");
-                mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
-                return mav;
-            }
+        try {
+            voiceMessage = voiceOutboxService.getMessageById(messageId);
+        } catch (Exception e) {
+            logger.error("Can not get message by ID: " + messageId +
+                    " " + e.getMessage(), e);
+            logger.warn("Generating a VXML with the error message...");
+            mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
+            return mav;
+        }
 
         if (voiceMessage == null) {
 
             logger.error("Can not get message by ID: " + messageId + "service returned null");
-                logger.warn("Generating a VXML with the error message...");
-                mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
-                return mav;
+            logger.warn("Generating a VXML with the error message...");
+            mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
+            return mav;
         }
 
 
@@ -227,7 +195,7 @@ public class VxmlOutboxController extends MultiActionController {
 
         String contextPath = request.getContextPath();
 
-         logger.debug(voiceMessage.toString());
+        logger.debug(voiceMessage.toString());
         logger.debug(mav.getViewName());
 
         mav.addObject("contextPath", contextPath);
@@ -259,7 +227,6 @@ public class VxmlOutboxController extends MultiActionController {
         mav.addObject("escape", new StringEscapeUtils());
 
 
-
         logger.info("Message ID: " + messageId);
 
         if (messageId == null) {
@@ -277,10 +244,10 @@ public class VxmlOutboxController extends MultiActionController {
             return mav;
         }
 
-         //TODO - get exernal ID proper way from security principal or authentication context when it is available
+        //TODO - get exernal ID proper way from security principal or authentication context when it is available
         String externalId;
         try {
-            OutboundVoiceMessage message =  voiceOutboxService.getMessageById(messageId);
+            OutboundVoiceMessage message = voiceOutboxService.getMessageById(messageId);
             externalId = message.getExternalId();
         } catch (Exception e) {
             logger.error("Can not obtain message ID: " + messageId + " to get external ID");
@@ -294,19 +261,19 @@ public class VxmlOutboxController extends MultiActionController {
 
     }
 
-     /**
+    /**
      * Handles Outbox HTTP requests to remove saved in the outbox message and generates a VXML document
-      * with message remove confirmation. The generated VXML document based on the msgRemovedConf.vm  Velocity template.
-      *
-      * The message will not be physically removed. The message status will be set to PLAYED.
-      *
+     * with message remove confirmation. The generated VXML document based on the msgRemovedConf.vm  Velocity template.
+     * <p/>
+     * The message will not be physically removed. The message status will be set to PLAYED.
+     * <p/>
      * <p></p>
      * <p></p>
      * URL to request a saved VoiceXML message from outbox :
      * http://{host}:{port}>/{motech-platform-server}>/module/outbox/vxml/remove?mId=$message.id&ln={language}
      */
-     @RequestMapping(value = "/vxml/remove")
-     public ModelAndView remove(HttpServletRequest request, HttpServletResponse response) {
+    @RequestMapping(value = "/vxml/remove")
+    public ModelAndView remove(HttpServletRequest request, HttpServletResponse response) {
         logger.info("Removing saved message message...");
 
         response.setContentType("text/plain");
@@ -315,9 +282,9 @@ public class VxmlOutboxController extends MultiActionController {
         String messageId = request.getParameter(MESSAGE_ID_PARAM);
         String language = request.getParameter(LANGUAGE_PARAM);
 
-         String contextPath = request.getContextPath();
+        String contextPath = request.getContextPath();
 
-         ModelAndView mav = new ModelAndView();
+        ModelAndView mav = new ModelAndView();
         mav.setViewName(MESSAGE_REMOVED_CONFIRMATION_TEMPLATE_NAME);
         mav.addObject("contextPath", contextPath);
         mav.addObject("language", language);
@@ -339,10 +306,10 @@ public class VxmlOutboxController extends MultiActionController {
             return mav;
         }
 
-          //TODO - get external ID proper way from security principal or authentication context when it is available
+        //TODO - get external ID proper way from security principal or authentication context when it is available
         String externalId;
         try {
-            OutboundVoiceMessage message =  voiceOutboxService.getMessageById(messageId);
+            OutboundVoiceMessage message = voiceOutboxService.getMessageById(messageId);
             externalId = message.getExternalId();
         } catch (Exception e) {
             logger.error("Can not obtain message ID: " + messageId + " to get external ID");
@@ -350,7 +317,7 @@ public class VxmlOutboxController extends MultiActionController {
             return mav;
         }
 
-         logger.debug("externalId: " + externalId);
+        logger.debug("externalId: " + externalId);
 
         mav.addObject("externalId", externalId);
         return mav;
@@ -391,16 +358,16 @@ public class VxmlOutboxController extends MultiActionController {
         OutboundVoiceMessage voiceMessage = null;
 
 
-            logger.info("Generating VXML for the next saved voice message in outbox... ");
-            try {
-                voiceMessage = voiceOutboxService.getNextMessage(externalId, OutboundVoiceMessageStatus.SAVED);
-            } catch (Exception e) {
-                logger.error("Can not obtain next saved message from the outbox of the external ID: " + externalId +
-                        " " + e.getMessage(), e);
-                logger.warn("Generating a VXML with the error message...");
-                mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
-                return mav;
-            }
+        logger.info("Generating VXML for the next saved voice message in outbox... ");
+        try {
+            voiceMessage = voiceOutboxService.getNextMessage(externalId, OutboundVoiceMessageStatus.SAVED);
+        } catch (Exception e) {
+            logger.error("Can not obtain next saved message from the outbox of the external ID: " + externalId +
+                    " " + e.getMessage(), e);
+            logger.warn("Generating a VXML with the error message...");
+            mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
+            return mav;
+        }
 
         if (voiceMessage == null) {
 

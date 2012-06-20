@@ -31,6 +31,6 @@ public interface Demarshaller {
  * own attributes from an input byte array
  */
 
-	public void demarshall(byte [] request) throws Exception;
+    public void demarshall(byte [] request) throws Exception;
 
 }

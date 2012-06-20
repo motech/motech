@@ -108,6 +108,6 @@ public class AllStringContentsIT {
     public void shouldReturnFalseIfStringContentNotAvailable() throws CMSLiteException {
         allStringContents.addContent(stringContent);
         assertFalse(allStringContents.isContentAvailable("en", "unknownContent"));
-	    couchDbConnector.delete(stringContent);
+        couchDbConnector.delete(stringContent);
     }
 }

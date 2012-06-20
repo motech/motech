@@ -32,29 +32,29 @@ import java.io.*;
 
 abstract public class Response extends Pdu implements Marshaller {
 
-	transient ByteArrayOutputStream out = new ByteArrayOutputStream();
+    transient ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-	public void prepareHeaderForMarshalling() throws Exception {
-		out.reset();
-		out.write(PduUtilities.makeByteArrayFromInt(getCmd_len(),4));
-		out.write(PduUtilities.makeByteArrayFromInt(getCmd_id(),4));
-		out.write(PduUtilities.makeByteArrayFromInt(getCmd_status(),4));
-		out.write(PduUtilities.makeByteArrayFromInt(getSeq_no(),4));
-	}
-	
-	public byte [] errorResponse(int cmd_id, int cmd_status, int seq_no) throws Exception {
-		out.reset();
-		setCmd_len(16);
-		setCmd_id(cmd_id);
-		setCmd_status(cmd_status);
-		setSeq_no(seq_no);
-		prepareHeaderForMarshalling();
-		byte [] response = out.toByteArray();
-		return response;
-	}
-	
-	public String toString() {
-		return super.toString();
-	}
+    public void prepareHeaderForMarshalling() throws Exception {
+        out.reset();
+        out.write(PduUtilities.makeByteArrayFromInt(getCmd_len(),4));
+        out.write(PduUtilities.makeByteArrayFromInt(getCmd_id(),4));
+        out.write(PduUtilities.makeByteArrayFromInt(getCmd_status(),4));
+        out.write(PduUtilities.makeByteArrayFromInt(getSeq_no(),4));
+    }
+
+    public byte [] errorResponse(int cmd_id, int cmd_status, int seq_no) throws Exception {
+        out.reset();
+        setCmd_len(16);
+        setCmd_id(cmd_id);
+        setCmd_status(cmd_status);
+        setSeq_no(seq_no);
+        prepareHeaderForMarshalling();
+        byte [] response = out.toByteArray();
+        return response;
+    }
+
+    public String toString() {
+        return super.toString();
+    }
 
 }

@@ -32,48 +32,48 @@ import java.util.*;
 import java.util.logging.*;
 
 public class MessageQueue {
-	private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
-	private String queueName;
-	private Vector<Pdu> queue;
-	private Object message = new Object();
+    private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
+    private String queueName;
+    private Vector<Pdu> queue;
+    private Object message = new Object();
 
-	public MessageQueue(String name) {
-		queueName = name;
-		queue = new Vector<Pdu>();
-	}
+    public MessageQueue(String name) {
+        queueName = name;
+        queue = new Vector<Pdu>();
+    }
 
-	protected synchronized void addMessage(Pdu message) {
-		logger.finest(
-			"MessageQueue(" + queueName + ") : adding message to queue");
-		queue.add(message);
-		notifyAll();
-	}
+    protected synchronized void addMessage(Pdu message) {
+        logger.finest(
+            "MessageQueue(" + queueName + ") : adding message to queue");
+        queue.add(message);
+        notifyAll();
+    }
 
-	protected synchronized Object getMessage() {
-		while (isEmpty()) {
-			try {
-				logger.finest(
-					"MessageQueue("
-						+ queueName
-						+ "):  waiting for message from queue");
-				wait();
-			} catch (InterruptedException e) {
-				logger.warning(
-					"Exception in MessageQueue("
-						+ queueName
-						+ ") : "
-						+ e.getMessage());
-				e.printStackTrace();
-			}
-		}
-		message = queue.firstElement();
-		queue.remove(message);
-		notifyAll();
-		return message;
-	}
+    protected synchronized Object getMessage() {
+        while (isEmpty()) {
+            try {
+                logger.finest(
+                    "MessageQueue("
+                        + queueName
+                        + "):  waiting for message from queue");
+                wait();
+            } catch (InterruptedException e) {
+                logger.warning(
+                    "Exception in MessageQueue("
+                        + queueName
+                        + ") : "
+                        + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        message = queue.firstElement();
+        queue.remove(message);
+        notifyAll();
+        return message;
+    }
 
-	protected synchronized boolean isEmpty() {
-		return queue.isEmpty();
-	}
+    protected synchronized boolean isEmpty() {
+        return queue.isEmpty();
+    }
 
 }

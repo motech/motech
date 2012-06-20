@@ -18,11 +18,11 @@ public class DemoServiceImpl implements DemoService
     private MotechSchedulerGateway schedulerGateway = Context.getInstance().getMotechSchedulerGateway();
     private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
 
-	@Override
-	public void schedulePhoneCall(String phoneNumber, Date callTime) {
+    @Override
+    public void schedulePhoneCall(String phoneNumber, Date callTime) {
         RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(createMotechEvent(phoneNumber), callTime);
         schedulerGateway.scheduleRunOnceJob(schedulableJob);
-	}
+    }
 
     @Override
     public void initiatePhoneCall(String phoneNumber) {

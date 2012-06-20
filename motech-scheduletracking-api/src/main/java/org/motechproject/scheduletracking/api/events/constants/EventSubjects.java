@@ -10,5 +10,5 @@ public class EventSubjects {
     public static final String DEFAULTMENT_CAPTURE = BASE_SUBJECT + "defaultment.capture";
 
     private EventSubjects() {
-	}
+    }
 }

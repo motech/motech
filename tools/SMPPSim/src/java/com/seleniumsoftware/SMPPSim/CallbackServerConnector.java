@@ -33,43 +33,43 @@ import java.util.logging.*;
 
 public class CallbackServerConnector implements Runnable {
 
-	private Smsc smsc = Smsc.getInstance();
+    private Smsc smsc = Smsc.getInstance();
 
-	private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
+    private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
 
-	private Object mutex;
+    private Object mutex;
 
-	public CallbackServerConnector(Object mutex) {
-		this.mutex = mutex;
-	}
+    public CallbackServerConnector(Object mutex) {
+        this.mutex = mutex;
+    }
 
-	public void run() {
+    public void run() {
 
-		if (SMPPSim.isCallback()) {
-			synchronized (mutex) {
-				boolean connected = false;
-				Socket callback;
-				while (!connected) {
-					try {
-						callback = new Socket(
-								SMPPSim.getCallback_target_host(), SMPPSim
-										.getCallback_port());
-						connected = true;
-						smsc.setCallback(callback);
-						smsc.setCallback_stream(callback.getOutputStream());
-						smsc.setCallback_server_online(true);
-						logger.info("Connected to callback server");
-					} catch (Exception ce) {
-						try {
-							logger
-									.info("Callback server not accepting connections - retrying");
-							Thread.sleep(1000);
-						} catch (InterruptedException ie) {
-						}
-					}
-				}
-				mutex.notifyAll();
-			}
-		}
-	}
+        if (SMPPSim.isCallback()) {
+            synchronized (mutex) {
+                boolean connected = false;
+                Socket callback;
+                while (!connected) {
+                    try {
+                        callback = new Socket(
+                                SMPPSim.getCallback_target_host(), SMPPSim
+                                        .getCallback_port());
+                        connected = true;
+                        smsc.setCallback(callback);
+                        smsc.setCallback_stream(callback.getOutputStream());
+                        smsc.setCallback_server_online(true);
+                        logger.info("Connected to callback server");
+                    } catch (Exception ce) {
+                        try {
+                            logger
+                                    .info("Callback server not accepting connections - retrying");
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ie) {
+                        }
+                    }
+                }
+                mutex.notifyAll();
+            }
+        }
+    }
 }

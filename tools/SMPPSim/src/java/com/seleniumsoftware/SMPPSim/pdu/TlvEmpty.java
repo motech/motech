@@ -29,41 +29,41 @@ package com.seleniumsoftware.SMPPSim.pdu;
 import com.seleniumsoftware.SMPPSim.pdu.util.*;
 
 public class TlvEmpty extends Tlv {
-	
-	private short tag;
-	private short len;
-	
-	public TlvEmpty(short t, short l) {
-		tag = t;
-		len = l;
-	}
-	
-	/**
-	 * @return Returns the len.
-	 */
-	public short getLen() {
-		return len;
-	}
-	/**
-	 * @param len The len to set.
-	 */
-	public void setLen(short len) {
-		this.len = len;
-	}
-	/**
-	 * @return Returns the tag.
-	 */
-	public short getTag() {
-		return tag;
-	}
-	/**
-	 * @param tag The tag to set.
-	 */
-	public void setTag(short tag) {
-		this.tag = tag;
-	}
-	
-	public String toString() {
-		return "tag="+tag+",len="+len;
-	}
+
+    private short tag;
+    private short len;
+
+    public TlvEmpty(short t, short l) {
+        tag = t;
+        len = l;
+    }
+
+    /**
+     * @return Returns the len.
+     */
+    public short getLen() {
+        return len;
+    }
+    /**
+     * @param len The len to set.
+     */
+    public void setLen(short len) {
+        this.len = len;
+    }
+    /**
+     * @return Returns the tag.
+     */
+    public short getTag() {
+        return tag;
+    }
+    /**
+     * @param tag The tag to set.
+     */
+    public void setTag(short tag) {
+        this.tag = tag;
+    }
+
+    public String toString() {
+        return "tag="+tag+",len="+len;
+    }
 }

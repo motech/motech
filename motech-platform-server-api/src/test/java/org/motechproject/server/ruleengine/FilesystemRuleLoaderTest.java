@@ -10,16 +10,16 @@ import org.junit.Test;
 import org.motechproject.server.osgi.OsgiFrameworkService;
 
 public class FilesystemRuleLoaderTest {
-	
-	@Test
+
+    @Test
     public void loadTest() throws Exception {
-		FilesystemRuleLoader loader = new FilesystemRuleLoader();
-		OsgiFrameworkService ofs = mock(OsgiFrameworkService.class);
-		KnowledgeBaseManager kbm = mock(KnowledgeBaseManager.class);
-		loader.setInternalRuleFolder("/rules");
-		loader.setOsgiFrameworkService(ofs);
-		loader.setKnowledgeBaseManager(kbm);
-		loader.load();
-		verify(kbm).addOrUpdateRule(any(File.class), any(ClassLoader.class));
-	}
+        FilesystemRuleLoader loader = new FilesystemRuleLoader();
+        OsgiFrameworkService ofs = mock(OsgiFrameworkService.class);
+        KnowledgeBaseManager kbm = mock(KnowledgeBaseManager.class);
+        loader.setInternalRuleFolder("/rules");
+        loader.setOsgiFrameworkService(ofs);
+        loader.setKnowledgeBaseManager(kbm);
+        loader.load();
+        verify(kbm).addOrUpdateRule(any(File.class), any(ClassLoader.class));
+    }
 }

@@ -29,23 +29,23 @@ package com.seleniumsoftware.SMPPSim.pdu;
 
 public class DestAddress {
 
-	private int dest_flag;
-	
-	/**
-	 * @return
-	 */
-	public int getDest_flag() {
-		return dest_flag;
-	}
+    private int dest_flag;
 
-	/**
-	 * @param i
-	 */
-	public void setDest_flag(int i) {
-		dest_flag = i;
-	}
-	
-	public String toString() {
-		return "dest_flag="+dest_flag;
-	}
+    /**
+     * @return
+     */
+    public int getDest_flag() {
+        return dest_flag;
+    }
+
+    /**
+     * @param i
+     */
+    public void setDest_flag(int i) {
+        dest_flag = i;
+    }
+
+    public String toString() {
+        return "dest_flag="+dest_flag;
+    }
 }

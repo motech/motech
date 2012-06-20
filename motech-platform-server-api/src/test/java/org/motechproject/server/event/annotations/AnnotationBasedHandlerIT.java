@@ -64,70 +64,70 @@ public class AnnotationBasedHandlerIT {
         @MotechListener(subjects = {"named"}, type = MotechListenerType.NAMED_PARAMETERS)
         public void namedParams(@MotechParam("id") String id, @MotechParam("key") String key) {
             test = true;
-		}
-	}
+        }
+    }
 
-	public static void clear() {
-		test=false;
-	}
+    public static void clear() {
+        test=false;
+    }
 
-	@Test
-	public void testRegistry() {
-		EventListenerRegistry registry = Context.getInstance().getEventListenerRegistry();
-		assertEquals(2, registry.getListenerCount("sub_a"));
-		assertEquals(1,registry.getListenerCount("sub_b"));
-		assertEquals(1,registry.getListenerCount("sub_c"));
-	}
-	
-	@Test
-	public void testRelay() {
-		MotechEvent e = new MotechEvent("sub_b", null);
-		clear();
-		eventRelay.relayEvent(e);
-		assertTrue(test);
-		
-		e = new MotechEvent("sub_c", null);
-		clear();
-		eventRelay.relayEvent(e);
-		assertTrue(test);
-	}
-	
-	@Test
-	public void testOrderedParams() {
-		clear();
-		send("params",23,44,null);
-		assertTrue(test);
-	}
-	
-	@Test (expected = MotechException.class)
-	public void testExeption() {
-		clear();
-		send("exception", 1, 3, null);
-		assertTrue(test);
-	}
+    @Test
+    public void testRegistry() {
+        EventListenerRegistry registry = Context.getInstance().getEventListenerRegistry();
+        assertEquals(2, registry.getListenerCount("sub_a"));
+        assertEquals(1,registry.getListenerCount("sub_b"));
+        assertEquals(1,registry.getListenerCount("sub_c"));
+    }
 
-	@Test
-	public void testNamedParamsHappy() {
-		clear();
-		MotechEvent event = new MotechEvent("named");
-		event.getParameters().put("id", "id0012");
-		event.getParameters().put("key", "2354");
-		eventRelay.relayEvent(event);
-		assertTrue(test);
-	}
+    @Test
+    public void testRelay() {
+        MotechEvent e = new MotechEvent("sub_b", null);
+        clear();
+        eventRelay.relayEvent(e);
+        assertTrue(test);
 
-	@Test (expected = MotechException.class)
-	public void testNamedParamsNotHappy() {
-		clear();
-		MotechEvent event = new MotechEvent("named");
-		event.getParameters().put("id", "id0012");
-		event.getParameters().put("key", 1);
-		eventRelay.relayEvent(event);
-		assertTrue(test);
-		clear();
-		event.getParameters().clear();
-		event.getParameters().put("id", "id0012");
-		eventRelay.relayEvent(event);
-		assertTrue(test);
-	}
+        e = new MotechEvent("sub_c", null);
+        clear();
+        eventRelay.relayEvent(e);
+        assertTrue(test);
+    }
+
+    @Test
+    public void testOrderedParams() {
+        clear();
+        send("params",23,44,null);
+        assertTrue(test);
+    }
+
+    @Test (expected = MotechException.class)
+    public void testExeption() {
+        clear();
+        send("exception", 1, 3, null);
+        assertTrue(test);
+    }
+
+    @Test
+    public void testNamedParamsHappy() {
+        clear();
+        MotechEvent event = new MotechEvent("named");
+        event.getParameters().put("id", "id0012");
+        event.getParameters().put("key", "2354");
+        eventRelay.relayEvent(event);
+        assertTrue(test);
+    }
+
+    @Test (expected = MotechException.class)
+    public void testNamedParamsNotHappy() {
+        clear();
+        MotechEvent event = new MotechEvent("named");
+        event.getParameters().put("id", "id0012");
+        event.getParameters().put("key", 1);
+        eventRelay.relayEvent(event);
+        assertTrue(test);
+        clear();
+        event.getParameters().clear();
+        event.getParameters().put("id", "id0012");
+        eventRelay.relayEvent(event);
+        assertTrue(test);
+    }
 }

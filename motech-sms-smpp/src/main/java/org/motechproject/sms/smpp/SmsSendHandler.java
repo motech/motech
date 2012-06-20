@@ -13,23 +13,23 @@ import java.util.List;
 
 @Component
 public class SmsSendHandler implements SmsEventHandler {
-	private ManagedSmslibService service;
+    private ManagedSmslibService service;
 
     @Autowired
-	public SmsSendHandler(ManagedSmslibService service) {
-		this.service = service;
-	}
+    public SmsSendHandler(ManagedSmslibService service) {
+        this.service = service;
+    }
 
-	@Override
-	@MotechListener(subjects = EventSubjects.SEND_SMS)
-	public void handle(MotechEvent event) throws Exception {
+    @Override
+    @MotechListener(subjects = EventSubjects.SEND_SMS)
+    public void handle(MotechEvent event) throws Exception {
         List<String> recipients = (List<String>) event.getParameters().get(EventDataKeys.RECIPIENTS);
-		String text = (String) event.getParameters().get(EventDataKeys.MESSAGE);
-		DateTime deliveryTime = (DateTime) event.getParameters().get(EventDataKeys.DELIVERY_TIME);
+        String text = (String) event.getParameters().get(EventDataKeys.MESSAGE);
+        DateTime deliveryTime = (DateTime) event.getParameters().get(EventDataKeys.DELIVERY_TIME);
 
         if (deliveryTime == null)
-    		service.queueMessage(recipients, text);
+            service.queueMessage(recipients, text);
         else
             service.queueMessageAt(recipients, text, deliveryTime);
-	}
+    }
 }

@@ -7,12 +7,12 @@
 package tests.exceptions;
 
 public class BindTransmitterException extends Exception {
-	public BindTransmitterException() {
-		super();
-	}
+    public BindTransmitterException() {
+        super();
+    }
 
-	public BindTransmitterException(String message) {
-		super(message);
-	}
+    public BindTransmitterException(String message) {
+        super(message);
+    }
 
 }

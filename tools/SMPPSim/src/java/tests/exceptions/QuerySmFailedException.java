@@ -7,8 +7,8 @@
 package tests.exceptions;
 
 public class QuerySmFailedException extends Exception {
-	public QuerySmFailedException() {
-		super();
-	}
+    public QuerySmFailedException() {
+        super();
+    }
 
 }

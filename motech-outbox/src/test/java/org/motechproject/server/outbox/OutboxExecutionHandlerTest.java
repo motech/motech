@@ -1,34 +1,3 @@
-/*
- * MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
- *
- * Copyright (c) 2011 Grameen Foundation USA.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * 3. Neither the name of Grameen Foundation USA, nor its respective contributors
- * may be used to endorse or promote products derived from this software without
- * specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY GRAMEEN FOUNDATION USA AND ITS CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL GRAMEEN FOUNDATION USA OR ITS CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
- * OF SUCH DAMAGE.
- */
 package org.motechproject.server.outbox;
 
 import org.junit.Before;
@@ -51,85 +20,84 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class OutboxExecutionHandlerTest
-{
-	@InjectMocks
-	private OutboxExecutionHandler outboxExecutionHandler = new OutboxExecutionHandler();
+public class OutboxExecutionHandlerTest {
+    @InjectMocks
+    private OutboxExecutionHandler outboxExecutionHandler = new OutboxExecutionHandler();
 
-	@Mock
-	private Context context;
+    @Mock
+    private Context context;
 
     @Mock
     IVRService ivrServiceMock;
 
-	@Mock
-	private MotechSchedulerGateway motechSchedulerGateway;   
+    @Mock
+    private MotechSchedulerGateway motechSchedulerGateway;
 
-	@Before
+    @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
     }
 
-	@Test
-	public void testExecute() {
-		MotechEvent event = new MotechEvent("", null);
-		event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
-		event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
-		event.getParameters().put(EventKeys.LANGUAGE_KEY, "en");
+    @Test
+    public void testExecute() {
+        MotechEvent event = new MotechEvent("", null);
+        event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
+        event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
+        event.getParameters().put(EventKeys.LANGUAGE_KEY, "en");
 
-		outboxExecutionHandler.execute(event);
+        outboxExecutionHandler.execute(event);
 
-		verify(ivrServiceMock).initiateCall(any(CallRequest.class));
-	}
+        verify(ivrServiceMock).initiateCall(any(CallRequest.class));
+    }
 
-	@Test
-	public void testExecute_NoPhone() {
-		MotechEvent event = new MotechEvent("", null);
-		event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
+    @Test
+    public void testExecute_NoPhone() {
+        MotechEvent event = new MotechEvent("", null);
+        event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
 
-		outboxExecutionHandler.execute(event);
+        outboxExecutionHandler.execute(event);
 
-		verify(ivrServiceMock, times(0)).initiateCall(any(CallRequest.class));
-	}
+        verify(ivrServiceMock, times(0)).initiateCall(any(CallRequest.class));
+    }
 
-	@Test
-	public void testExecute_NoPartyID() {
-		MotechEvent event = new MotechEvent("", null);
-		event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
+    @Test
+    public void testExecute_NoPartyID() {
+        MotechEvent event = new MotechEvent("", null);
+        event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
 
-		outboxExecutionHandler.execute(event);
+        outboxExecutionHandler.execute(event);
 
-		verify(ivrServiceMock, times(0)).initiateCall(any(CallRequest.class));
-	}
-	
-	@Test
-	public void testSchedule() {
-		MotechEvent event = new MotechEvent("", null);
-		event.getParameters().put(EventKeys.CALL_HOUR_KEY, 12);
-		event.getParameters().put(EventKeys.CALL_MINUTE_KEY, 0);
-		event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
-		event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
+        verify(ivrServiceMock, times(0)).initiateCall(any(CallRequest.class));
+    }
 
-		when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
+    @Test
+    public void testSchedule() {
+        MotechEvent event = new MotechEvent("", null);
+        event.getParameters().put(EventKeys.CALL_HOUR_KEY, 12);
+        event.getParameters().put(EventKeys.CALL_MINUTE_KEY, 0);
+        event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
+        event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
 
-		outboxExecutionHandler.schedule(event);
+        when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
 
-		verify(motechSchedulerGateway).scheduleJob(any(CronSchedulableJob.class));
-	}
+        outboxExecutionHandler.schedule(event);
 
-	@Test
-	public void testSchedule_NoPhone() {
-		MotechEvent event = new MotechEvent("", null);
-		event.getParameters().put(EventKeys.CALL_HOUR_KEY, 12);
-		event.getParameters().put(EventKeys.CALL_MINUTE_KEY, 0);
-		event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
+        verify(motechSchedulerGateway).scheduleJob(any(CronSchedulableJob.class));
+    }
 
-		when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
+    @Test
+    public void testSchedule_NoPhone() {
+        MotechEvent event = new MotechEvent("", null);
+        event.getParameters().put(EventKeys.CALL_HOUR_KEY, 12);
+        event.getParameters().put(EventKeys.CALL_MINUTE_KEY, 0);
+        event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
 
-		outboxExecutionHandler.schedule(event);
+        when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
 
-		verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
-	}
+        outboxExecutionHandler.schedule(event);
+
+        verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
+    }
 
     @Test
     public void testSchedule_NoParty() {
@@ -201,28 +169,28 @@ public class OutboxExecutionHandlerTest
         outboxExecutionHandler.schedule(event);
 
         verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
-    }	
-    
-	@Test
-	public void testUnschedule() {
-		MotechEvent event = new MotechEvent("", null);
-		event.getParameters().put(EventKeys.SCHEDULE_JOB_ID_KEY, "JobId");
+    }
 
-		when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
+    @Test
+    public void testUnschedule() {
+        MotechEvent event = new MotechEvent("", null);
+        event.getParameters().put(EventKeys.SCHEDULE_JOB_ID_KEY, "JobId");
 
-		outboxExecutionHandler.unschedule(event);
+        when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
 
-		verify(motechSchedulerGateway).unscheduleJob("JobId");
-	}
+        outboxExecutionHandler.unschedule(event);
 
-	@Test
-	public void testUnschedule_NoPhone() {
-		MotechEvent event = new MotechEvent("", null);
+        verify(motechSchedulerGateway).unscheduleJob("JobId");
+    }
 
-		when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
+    @Test
+    public void testUnschedule_NoPhone() {
+        MotechEvent event = new MotechEvent("", null);
 
-		outboxExecutionHandler.unschedule(event);
+        when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
 
-		verify(motechSchedulerGateway, times(0)).unscheduleJob(anyString());
-	}    
+        outboxExecutionHandler.unschedule(event);
+
+        verify(motechSchedulerGateway, times(0)).unscheduleJob(anyString());
+    }
 }

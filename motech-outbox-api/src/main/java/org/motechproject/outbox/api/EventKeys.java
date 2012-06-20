@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  */
 public class EventKeys
 {
-	private final static Logger log = LoggerFactory.getLogger(EventKeys.class);
+    private final static Logger log = LoggerFactory.getLogger(EventKeys.class);
 
     public final static String CALL_HOUR_KEY = "CallHour";
     public final static String CALL_MINUTE_KEY = "CallMinute";
@@ -54,7 +54,7 @@ public class EventKeys
 
     public static String getLanguageKey(MotechEvent event)
     {
-    	return getStringValue(event, EventKeys.LANGUAGE_KEY);
+        return getStringValue(event, EventKeys.LANGUAGE_KEY);
     }
 
     public static String getStringValue(MotechEvent event, String key)

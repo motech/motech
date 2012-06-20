@@ -31,59 +31,59 @@ import java.io.Serializable;
 import com.seleniumsoftware.SMPPSim.pdu.util.*;
 
 public class Tlv implements Serializable {
-	
-	private short tag;
-	private short len;
-	private byte [] value;
-	
-	public Tlv() {
-		
-	}
-	
-	public Tlv(short t, short l, byte[] v) {
-		tag = t;
-		len = l;
-		value = v;
-	}
-	
-	/**
-	 * @return Returns the len.
-	 */
-	public short getLen() {
-		return len;
-	}
-	/**
-	 * @param len The len to set.
-	 */
-	public void setLen(short len) {
-		this.len = len;
-	}
-	/**
-	 * @return Returns the tag.
-	 */
-	public short getTag() {
-		return tag;
-	}
-	/**
-	 * @param tag The tag to set.
-	 */
-	public void setTag(short tag) {
-		this.tag = tag;
-	}
-	/**
-	 * @return Returns the value.
-	 */
-	public byte[] getValue() {
-		return value;
-	}
-	/**
-	 * @param value The value to set.
-	 */
-	public void setValue(byte[] value) {
-		this.value = value;
-	}
-	
-	public String toString() {
-		return "tag="+tag+",len="+len+",value=0x"+PduUtilities.byteArrayToHexString(value);
-	}
+
+    private short tag;
+    private short len;
+    private byte [] value;
+
+    public Tlv() {
+
+    }
+
+    public Tlv(short t, short l, byte[] v) {
+        tag = t;
+        len = l;
+        value = v;
+    }
+
+    /**
+     * @return Returns the len.
+     */
+    public short getLen() {
+        return len;
+    }
+    /**
+     * @param len The len to set.
+     */
+    public void setLen(short len) {
+        this.len = len;
+    }
+    /**
+     * @return Returns the tag.
+     */
+    public short getTag() {
+        return tag;
+    }
+    /**
+     * @param tag The tag to set.
+     */
+    public void setTag(short tag) {
+        this.tag = tag;
+    }
+    /**
+     * @return Returns the value.
+     */
+    public byte[] getValue() {
+        return value;
+    }
+    /**
+     * @param value The value to set.
+     */
+    public void setValue(byte[] value) {
+        this.value = value;
+    }
+
+    public String toString() {
+        return "tag="+tag+",len="+len+",value=0x"+PduUtilities.byteArrayToHexString(value);
+    }
 }

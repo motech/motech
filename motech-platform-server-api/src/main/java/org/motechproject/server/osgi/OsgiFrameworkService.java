@@ -1,34 +1,3 @@
-/*
- * MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
- *
- * Copyright (c) 2012 Grameen Foundation USA.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * 3. Neither the name of Grameen Foundation USA, nor its respective contributors
- * may be used to endorse or promote products derived from this software without
- * specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY GRAMEEN FOUNDATION USA AND ITS CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL GRAMEEN FOUNDATION USA OR ITS CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
- * OF SUCH DAMAGE.
- */
 package org.motechproject.server.osgi;
 
 import org.apache.commons.lang.StringUtils;
@@ -49,7 +18,6 @@ import java.net.URL;
 import java.util.*;
 
 /**
- * 
  * @author Ricky Wang
  */
 public class OsgiFrameworkService implements ApplicationContextAware {
@@ -62,16 +30,16 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     private String externalBundleFolder;
 
-	@Autowired
+    @Autowired
     private Framework osgiFramework;
 
     private List<BundleLoader> bundleLoaders;
-    
+
     private Map<String, ClassLoader> bundleClassLoaderLookup = new HashMap<String, ClassLoader>();
-    
+
     private Map<String, String> bundleLocationMapping = new HashMap<String, String>();
 
-	public static final String BUNDLE_ACTIVATOR_HEADER = "Bundle-Activator";
+    public static final String BUNDLE_ACTIVATOR_HEADER = "Bundle-Activator";
 
     /**
      * Initialize and start the OSGi framework
@@ -129,11 +97,11 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             throw new RuntimeException(e);
         }
     }
-    
+
     /**
      * The current OSGi (4.2) doesn't provide a standard way to retrieve the bundle ClassLoader.
-     * So we have to use this as a workaround. 
-     * 
+     * So we have to use this as a workaround.
+     *
      * @param bundleSymbolicName
      * @return The ClassLoader of the bundle
      */
@@ -146,12 +114,12 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     }
 
     public Map<String, ClassLoader> getBundleClassLoaderLookup() {
-		return bundleClassLoaderLookup;
-	}    
+        return bundleClassLoaderLookup;
+    }
 
     private void storeClassCloader(Bundle bundle) throws Exception {
         String key = bundle.getSymbolicName();
-        String activator = (String)bundle.getHeaders().get(BUNDLE_ACTIVATOR_HEADER);
+        String activator = (String) bundle.getHeaders().get(BUNDLE_ACTIVATOR_HEADER);
         if (activator != null) {
             @SuppressWarnings("rawtypes")
             Class activatorClass = bundle.loadClass(activator);
@@ -166,14 +134,14 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     }
 
     private List<URL> findBundles(ServletContext servletContext) throws Exception {
-    	List<URL> list = findInternalBundles(servletContext);
-    	list.addAll(findExternalBundles());
-    	return list;
+        List<URL> list = findInternalBundles(servletContext);
+        list.addAll(findExternalBundles());
+        return list;
     }
-    
+
     /**
      * Find built-in/mandatory bundles
-     * 
+     *
      * @param servletContext
      * @return
      * @throws Exception
@@ -181,48 +149,48 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     private List<URL> findInternalBundles(ServletContext servletContext) throws Exception {
         List<URL> list = new ArrayList<URL>();
         if (StringUtils.isNotBlank(internalBundleFolder)) {
-	        @SuppressWarnings("unchecked")
-	        Set<String> paths = servletContext.getResourcePaths(internalBundleFolder);
-	        if (paths != null) {
-	            for (String path : paths) {
-	                if (path.endsWith(".jar")) {
-	                    URL url = servletContext.getResource(path);
-	                    if (url != null) {
-	                        list.add(url);
-	                    }
-	                }
-	            }
-	        }
+            @SuppressWarnings("unchecked")
+            Set<String> paths = servletContext.getResourcePaths(internalBundleFolder);
+            if (paths != null) {
+                for (String path : paths) {
+                    if (path.endsWith(".jar")) {
+                        URL url = servletContext.getResource(path);
+                        if (url != null) {
+                            list.add(url);
+                        }
+                    }
+                }
+            }
         }
         return list;
     }
-    
+
     /**
      * Find external/optional bundles
-     * 
+     *
      * @return
      * @throws Exception
      */
     private List<URL> findExternalBundles() throws Exception {
-    	List<URL> list = new ArrayList<URL>();
-    	if (StringUtils.isNotBlank(externalBundleFolder)) {
-	    	File folder = new File(externalBundleFolder);
-	    	
-			if (!folder.exists()) {
-				folder.mkdirs();
-			}
-			
-	    	File[] files = folder.listFiles();
-			for (File file : files) {
-				if (file.getAbsolutePath().endsWith(".jar")) {
-					URL url = file.toURI().toURL();
-					if (url != null) {
-						list.add(url);
-					}
-				}
-			}
-    	}
-    	return list;
+        List<URL> list = new ArrayList<URL>();
+        if (StringUtils.isNotBlank(externalBundleFolder)) {
+            File folder = new File(externalBundleFolder);
+
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
+
+            File[] files = folder.listFiles();
+            for (File file : files) {
+                if (file.getAbsolutePath().endsWith(".jar")) {
+                    URL url = file.toURI().toURL();
+                    if (url != null) {
+                        list.add(url);
+                    }
+                }
+            }
+        }
+        return list;
     }
 
     @Override
@@ -235,8 +203,8 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     }
 
     public void setExternalBundleFolder(String externalBundleFolder) {
-		this.externalBundleFolder = externalBundleFolder;
-	}
+        this.externalBundleFolder = externalBundleFolder;
+    }
 
     public void setOsgiFramework(Framework osgiFramework) {
         this.osgiFramework = osgiFramework;
@@ -253,14 +221,14 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     public String getExternalBundleFolder() {
         return externalBundleFolder;
     }
-    
+
     public List<JarInformation> getBundledModules() {
         ServletContext servletContext = ((WebApplicationContext) applicationContext).getServletContext();
         JarInformationHandler jarsHandler = new JarInformationHandler(servletContext.getRealPath("/"));
         jarsHandler.initHandler();
         return jarsHandler.getJarList();
     }
-    
+
     public List<BundleInformation> getExternalBundles() {
         List<BundleInformation> bundles = new ArrayList<BundleInformation>();
         for (Bundle bundle : osgiFramework.getBundleContext().getBundles()) {

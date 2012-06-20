@@ -7,8 +7,8 @@
 package tests.exceptions;
 
 public class CancelSmFailedException extends Exception {
-	public CancelSmFailedException() {
-		super();
-	}
+    public CancelSmFailedException() {
+        super();
+    }
 
 }

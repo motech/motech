@@ -25,77 +25,77 @@ import static org.motechproject.sms.api.constants.EventDataKeys.MESSAGE;
 import static org.motechproject.sms.smpp.constants.EventDataKeys.RECIPIENT;
 
 public class OutboundMessageNotificationTest {
-	@Mock
-	private AGateway gateway;
-	@Mock
-	private OutboundEventGateway outboundEventGateway;
+    @Mock
+    private AGateway gateway;
+    @Mock
+    private OutboundEventGateway outboundEventGateway;
 
-	private OutboundMessageNotification outboundMessageNotification;
+    private OutboundMessageNotification outboundMessageNotification;
     @Mock
     private AllOutboundSMS mockAllOutboundSMS;
 
     @Before
-	public void setUp() {
-		initMocks(this);
-		Properties smsProperties = new Properties() {{
-			setProperty(SmsProperties.MAX_RETRIES, "4");
-		}};
-		outboundMessageNotification = new OutboundMessageNotification(outboundEventGateway, smsProperties);
+    public void setUp() {
+        initMocks(this);
+        Properties smsProperties = new Properties() {{
+            setProperty(SmsProperties.MAX_RETRIES, "4");
+        }};
+        outboundMessageNotification = new OutboundMessageNotification(outboundEventGateway, smsProperties);
         ReflectionTestUtils.setField(outboundMessageNotification, "allOutboundSMS", mockAllOutboundSMS);
-	}
+    }
 
-	@Test
-	public void shouldRaiseAnEventIfMessageDispatchHasFailedAfterMaxNumberOfRetries() {
+    @Test
+    public void shouldRaiseAnEventIfMessageDispatchHasFailedAfterMaxNumberOfRetries() {
         final String recipient = "9876543210";
         String myText = "Test Message";
         OutboundMessage message = new OutboundMessage(recipient, myText) {{
-			setRefNo("refNo11111");
-			setMessageStatus(OutboundMessage.MessageStatuses.FAILED);
-			setRetryCount(4);
-		}};
+            setRefNo("refNo11111");
+            setMessageStatus(OutboundMessage.MessageStatuses.FAILED);
+            setRetryCount(4);
+        }};
 
 
-		outboundMessageNotification.process(gateway, message);
+        outboundMessageNotification.process(gateway, message);
 
-		ArgumentCaptor<MotechEvent> motechEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
-		verify(outboundEventGateway).sendEventMessage(motechEventArgumentCaptor.capture());
-		Map<String, Object> parameters = motechEventArgumentCaptor.getValue().getParameters();
-		assertEquals(recipient, parameters.get(RECIPIENT));
-		assertEquals("Test Message", parameters.get(MESSAGE));
+        ArgumentCaptor<MotechEvent> motechEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
+        verify(outboundEventGateway).sendEventMessage(motechEventArgumentCaptor.capture());
+        Map<String, Object> parameters = motechEventArgumentCaptor.getValue().getParameters();
+        assertEquals(recipient, parameters.get(RECIPIENT));
+        assertEquals("Test Message", parameters.get(MESSAGE));
 
         assertAuditMessage(recipient, "refNo11111", DeliveryStatus.ABORTED);
-	}
+    }
 
     @Test
-	public void shouldNotRaiseAnEventIfMessageDispatchHasFailedAndIsGoingToBeRetried() {
+    public void shouldNotRaiseAnEventIfMessageDispatchHasFailedAndIsGoingToBeRetried() {
         String recipient = "9876543210";
         String myText = "Test Message";
         OutboundMessage message = new OutboundMessage(recipient, myText) {{
             setRefNo("refNo2222");
-			setMessageStatus(OutboundMessage.MessageStatuses.FAILED);
-			setRetryCount(1);
-		}};
+            setMessageStatus(OutboundMessage.MessageStatuses.FAILED);
+            setRetryCount(1);
+        }};
 
-		outboundMessageNotification.process(gateway, message);
+        outboundMessageNotification.process(gateway, message);
 
-		verifyZeroInteractions(outboundEventGateway);
+        verifyZeroInteractions(outboundEventGateway);
         assertAuditMessage(recipient, "refNo2222", DeliveryStatus.KEEPTRYING);
-	}
+    }
 
-	@Test
-	public void shouldNotRaiseAnyEventIfMessageDispatchIsSuccessful() {
+    @Test
+    public void shouldNotRaiseAnyEventIfMessageDispatchIsSuccessful() {
         String recipient = "9876543210";
         String myText = "Test Message";
         OutboundMessage message = new OutboundMessage(recipient, myText) {{
-			setMessageStatus(OutboundMessage.MessageStatuses.SENT);
+            setMessageStatus(OutboundMessage.MessageStatuses.SENT);
             setRefNo("refNo");
-		}};
+        }};
 
-		outboundMessageNotification.process(gateway, message);
+        outboundMessageNotification.process(gateway, message);
 
-		verifyZeroInteractions(outboundEventGateway);
+        verifyZeroInteractions(outboundEventGateway);
         assertAuditMessage(recipient, "refNo", DeliveryStatus.INPROGRESS);
-	}
+    }
 
     private void assertAuditMessage(String recipient, String refNo, DeliveryStatus deliveryStatus) {
         ArgumentCaptor<OutboundSMS> outboundSMSCaptor = ArgumentCaptor.forClass(OutboundSMS.class);

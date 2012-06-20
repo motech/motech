@@ -32,88 +32,88 @@ import java.util.logging.Logger;
 
 abstract public class Pdu implements Serializable {
 
-	static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
+    static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
 
-	// need this for RMI use
-	public Pdu() {
-		
-	}
-	// All PDUs have a header
+    // need this for RMI use
+    public Pdu() {
 
-	private int cmd_len;
-	private int cmd_id;
-	private int cmd_status;
-	private int seq_no;
+    }
+    // All PDUs have a header
 
-	public boolean equals(Object o) {
-		if (o instanceof Pdu) {
-			Pdu p = (Pdu) o;
-			if (p.getSeq_no() == this.seq_no)
-				return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * @return
-	 */
-	public int getCmd_id() {
-		return cmd_id;
-	}
+    private int cmd_len;
+    private int cmd_id;
+    private int cmd_status;
+    private int seq_no;
 
-	/**
-	 * @return
-	 */
-	public int getCmd_len() {
-		return cmd_len;
-	}
+    public boolean equals(Object o) {
+        if (o instanceof Pdu) {
+            Pdu p = (Pdu) o;
+            if (p.getSeq_no() == this.seq_no)
+                return true;
+        }
+        return false;
+    }
 
-	/**
-	 * @return
-	 */
-	public int getCmd_status() {
-		return cmd_status;
-	}
+    /**
+     * @return
+     */
+    public int getCmd_id() {
+        return cmd_id;
+    }
 
-	/**
-	 * @return
-	 */
-	public int getSeq_no() {
-		return seq_no;
-	}
+    /**
+     * @return
+     */
+    public int getCmd_len() {
+        return cmd_len;
+    }
 
-	/**
-	 * @param i
-	 */
-	public void setCmd_id(int i) {
-		cmd_id = i;
-	}
+    /**
+     * @return
+     */
+    public int getCmd_status() {
+        return cmd_status;
+    }
 
-	/**
-	 * @param i
-	 */
-	public void setCmd_len(int i) {
-		cmd_len = i;
-	}
+    /**
+     * @return
+     */
+    public int getSeq_no() {
+        return seq_no;
+    }
 
-	/**
-	 * @param i
-	 */
-	public void setCmd_status(int i) {
-		cmd_status = i;
-	}
+    /**
+     * @param i
+     */
+    public void setCmd_id(int i) {
+        cmd_id = i;
+    }
 
-	/**
-	 * @param i
-	 */
-	public void setSeq_no(int i) {
-		seq_no = i;
-	}
-	
-	public String toString() {
-		return "cmd_len="+cmd_len+","+
-		"cmd_id="+cmd_id+","+
-		"cmd_status="+cmd_status+","+
-		"seq_no="+seq_no;
-	}
+    /**
+     * @param i
+     */
+    public void setCmd_len(int i) {
+        cmd_len = i;
+    }
+
+    /**
+     * @param i
+     */
+    public void setCmd_status(int i) {
+        cmd_status = i;
+    }
+
+    /**
+     * @param i
+     */
+    public void setSeq_no(int i) {
+        seq_no = i;
+    }
+
+    public String toString() {
+        return "cmd_len="+cmd_len+","+
+        "cmd_id="+cmd_id+","+
+        "cmd_status="+cmd_status+","+
+        "seq_no="+seq_no;
+    }
 }

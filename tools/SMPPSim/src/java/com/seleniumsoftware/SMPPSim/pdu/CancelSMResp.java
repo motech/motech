@@ -30,30 +30,30 @@ import com.seleniumsoftware.SMPPSim.pdu.util.PduUtilities;
 
 public class CancelSMResp extends Response implements Marshaller {
 
-	public CancelSMResp(CancelSM requestMsg) {
-		// message header fields except message length
-		setCmd_id(PduConstants.CANCEL_SM_RESP);
-		setCmd_status(PduConstants.ESME_ROK);
-		setSeq_no(requestMsg.getSeq_no());
-		// Set message length to zero since actual length will not be known until the object is
-		// converted back to a message complete with null terminated strings
-		setCmd_len(0);
-	}
+    public CancelSMResp(CancelSM requestMsg) {
+        // message header fields except message length
+        setCmd_id(PduConstants.CANCEL_SM_RESP);
+        setCmd_status(PduConstants.ESME_ROK);
+        setSeq_no(requestMsg.getSeq_no());
+        // Set message length to zero since actual length will not be known until the object is
+        // converted back to a message complete with null terminated strings
+        setCmd_len(0);
+    }
 
-	public byte[] marshall() throws Exception {
-		out.reset();
-		super.prepareHeaderForMarshalling();
-		byte[] response = out.toByteArray();
-		int l = response.length;
-		response = PduUtilities.setPduLength(response, l);
-		return response;
-	}
+    public byte[] marshall() throws Exception {
+        out.reset();
+        super.prepareHeaderForMarshalling();
+        byte[] response = out.toByteArray();
+        int l = response.length;
+        response = PduUtilities.setPduLength(response, l);
+        return response;
+    }
 
-	/**
-	 * *returns String representation of PDU
-	 */
-	public String toString() {
-		return super.toString();
-	}
+    /**
+     * *returns String representation of PDU
+     */
+    public String toString() {
+        return super.toString();
+    }
 
 }

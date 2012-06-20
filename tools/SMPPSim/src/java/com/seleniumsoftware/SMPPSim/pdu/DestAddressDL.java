@@ -29,24 +29,24 @@ package com.seleniumsoftware.SMPPSim.pdu;
 
 public class DestAddressDL extends DestAddress {
 
-	private String dl_name;
+    private String dl_name;
 
-	/**
-	 * @return
-	 */
-	public String getDl_name() {
-		return dl_name;
-	}
+    /**
+     * @return
+     */
+    public String getDl_name() {
+        return dl_name;
+    }
 
-	/**
-	 * @param string
-	 */
-	public void setDl_name(String string) {
-		dl_name = string;
-	}
+    /**
+     * @param string
+     */
+    public void setDl_name(String string) {
+        dl_name = string;
+    }
 
-	public String toString() {
-		return super.toString()+","+
-		"dl_name="+dl_name;
-	}
+    public String toString() {
+        return super.toString()+","+
+        "dl_name="+dl_name;
+    }
 }

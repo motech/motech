@@ -29,11 +29,11 @@ package com.seleniumsoftware.SMPPSim.exceptions;
 
 public class InternalException extends Exception
 {
-	public InternalException() {
-		super();
-	}
+    public InternalException() {
+        super();
+    }
 
-	public InternalException(String message) {
-		super(message);
-	}
+    public InternalException(String message) {
+        super(message);
+    }
 }

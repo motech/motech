@@ -34,288 +34,288 @@ import java.util.*;
 import java.util.logging.*;
 
 public class MessageState {
-	private static Logger logger = Logger
-			.getLogger("com.seleniumsoftware.smppsim");
+    private static Logger logger = Logger
+            .getLogger("com.seleniumsoftware.smppsim");
 
-	// key
-	private String message_id;
+    // key
+    private String message_id;
 
-	private int source_addr_ton;
+    private int source_addr_ton;
 
-	private int source_addr_npi;
+    private int source_addr_npi;
 
-	private String source_addr;
+    private String source_addr;
 
-	// Original pdu (only SUBMIT_SM currently)
-	SubmitSM pdu;
+    // Original pdu (only SUBMIT_SM currently)
+    SubmitSM pdu;
 
-	// other attributes
-	private byte state;
-	
-	private int err;
+    // other attributes
+    private byte state;
 
-	private boolean responseSent = false;
+    private int err;
 
-	private long submit_time;
+    private boolean responseSent = false;
 
-	private long final_time;
+    private long submit_time;
 
-	private SmppTime finalDate;
+    private long final_time;
 
-	private SmppTime validity_period;
+    private SmppTime finalDate;
 
-	private boolean intermediate_notification_requested = false;
+    private SmppTime validity_period;
 
-	public MessageState() {
-	}
+    private boolean intermediate_notification_requested = false;
 
-	public MessageState(SubmitSM pdu, String id) {
-		message_id = id;
-		source_addr_ton = pdu.getSource_addr_ton();
-		source_addr_npi = pdu.getSource_addr_npi();
-		source_addr = pdu.getSource_addr();
-		this.pdu = pdu;
-		// All messages start with state ENROUTE
-		state = PduConstants.ENROUTE;
-		byte rd = (byte) pdu.getRegistered_delivery_flag();
-		if ((rd & (byte) 0x10) == 0x10)
-			intermediate_notification_requested = true;
-		submit_time = System.currentTimeMillis();
-		try {
-			if (!pdu.getValidity_period().equals(""))
-				validity_period = new SmppTime(pdu.getValidity_period());
-			else {
-				logger
-						.info("Validity period is not set: defaulting to 5 minutes from now");
-				long now = System.currentTimeMillis() + 300000;
-				String st = SmppTime.dateToSMPPString(new Date(now));
-				validity_period = new SmppTime(st);
-				logger.info("Generated default validity period=" + st);
-			}
-		} catch (ParseException e) {
-			logger
-					.warning("Could not parse validity period : using default of 5 minutes");
-			long vtime = System.currentTimeMillis() + 300000;
-			Date vdate = new Date(vtime);
-			try {
-				validity_period = new SmppTime(SmppTime.dateToSMPPString(vdate));
-			} catch (ParseException e2) {
-				logger
-						.severe("Internal error: could not set default validity period due to parse error");
-			}
-		}
-	}
+    public MessageState() {
+    }
 
-	public boolean equals(Object other) {
-//		logger.info("MessageState.equals:"+other.getClass().getName());
-		if (other instanceof MessageState) {
-			MessageState ms = (MessageState) other;
-//			logger.info("MessageState equality1:" + this.keyToString());
-//			logger.info("MessageState equality2:" + ms.keyToString());
-			if (ms.getMessage_id().equals(message_id)
-					&& ms.getSource_addr_ton() == source_addr_ton
-					&& ms.getSource_addr_npi() == source_addr_npi
-					&& ms.getSource_addr().equals(source_addr))
-				return true;
-		}
-		return false;
-	}
+    public MessageState(SubmitSM pdu, String id) {
+        message_id = id;
+        source_addr_ton = pdu.getSource_addr_ton();
+        source_addr_npi = pdu.getSource_addr_npi();
+        source_addr = pdu.getSource_addr();
+        this.pdu = pdu;
+        // All messages start with state ENROUTE
+        state = PduConstants.ENROUTE;
+        byte rd = (byte) pdu.getRegistered_delivery_flag();
+        if ((rd & (byte) 0x10) == 0x10)
+            intermediate_notification_requested = true;
+        submit_time = System.currentTimeMillis();
+        try {
+            if (!pdu.getValidity_period().equals(""))
+                validity_period = new SmppTime(pdu.getValidity_period());
+            else {
+                logger
+                        .info("Validity period is not set: defaulting to 5 minutes from now");
+                long now = System.currentTimeMillis() + 300000;
+                String st = SmppTime.dateToSMPPString(new Date(now));
+                validity_period = new SmppTime(st);
+                logger.info("Generated default validity period=" + st);
+            }
+        } catch (ParseException e) {
+            logger
+                    .warning("Could not parse validity period : using default of 5 minutes");
+            long vtime = System.currentTimeMillis() + 300000;
+            Date vdate = new Date(vtime);
+            try {
+                validity_period = new SmppTime(SmppTime.dateToSMPPString(vdate));
+            } catch (ParseException e2) {
+                logger
+                        .severe("Internal error: could not set default validity period due to parse error");
+            }
+        }
+    }
 
-	public int hashCode() {
-		// An int derived from message_id plus the last 3 digits of source_addr
-		// should surely always be unique. Shouldn't it?
-		int sal = source_addr.length();
-		String key = message_id + source_addr.substring(sal - 3, sal);
-		byte[] bytearray = key.getBytes();
-		int l = bytearray.length;
-		int h = 0;
-		for (int i = 0; i < l; i++) {
-			h = h + bytearray[i] * 31 ^ (l - (i + 1));
-		}
-		return h;
-	}
+    public boolean equals(Object other) {
+//        logger.info("MessageState.equals:"+other.getClass().getName());
+        if (other instanceof MessageState) {
+            MessageState ms = (MessageState) other;
+//            logger.info("MessageState equality1:" + this.keyToString());
+//            logger.info("MessageState equality2:" + ms.keyToString());
+            if (ms.getMessage_id().equals(message_id)
+                    && ms.getSource_addr_ton() == source_addr_ton
+                    && ms.getSource_addr_npi() == source_addr_npi
+                    && ms.getSource_addr().equals(source_addr))
+                return true;
+        }
+        return false;
+    }
 
-	/**
-	 * @return
-	 */
-	public String getMessage_id() {
-		return message_id;
-	}
+    public int hashCode() {
+        // An int derived from message_id plus the last 3 digits of source_addr
+        // should surely always be unique. Shouldn't it?
+        int sal = source_addr.length();
+        String key = message_id + source_addr.substring(sal - 3, sal);
+        byte[] bytearray = key.getBytes();
+        int l = bytearray.length;
+        int h = 0;
+        for (int i = 0; i < l; i++) {
+            h = h + bytearray[i] * 31 ^ (l - (i + 1));
+        }
+        return h;
+    }
 
-	/**
-	 * @return
-	 */
-	public String getSource_addr() {
-		return source_addr;
-	}
+    /**
+     * @return
+     */
+    public String getMessage_id() {
+        return message_id;
+    }
 
-	/**
-	 * @return
-	 */
-	public int getSource_addr_npi() {
-		return source_addr_npi;
-	}
+    /**
+     * @return
+     */
+    public String getSource_addr() {
+        return source_addr;
+    }
 
-	/**
-	 * @return
-	 */
-	public int getSource_addr_ton() {
-		return source_addr_ton;
-	}
+    /**
+     * @return
+     */
+    public int getSource_addr_npi() {
+        return source_addr_npi;
+    }
 
-	/**
-	 * @return
-	 */
-	public byte getState() {
-		return state;
-	}
+    /**
+     * @return
+     */
+    public int getSource_addr_ton() {
+        return source_addr_ton;
+    }
 
-	/**
-	 * @param string
-	 */
-	public void setMessage_id(String string) {
-		message_id = string;
-	}
+    /**
+     * @return
+     */
+    public byte getState() {
+        return state;
+    }
 
-	/**
-	 * @param string
-	 */
-	public void setSource_addr(String string) {
-		source_addr = string;
-	}
+    /**
+     * @param string
+     */
+    public void setMessage_id(String string) {
+        message_id = string;
+    }
 
-	/**
-	 * @param i
-	 */
-	public void setSource_addr_npi(int i) {
-		source_addr_npi = i;
-	}
+    /**
+     * @param string
+     */
+    public void setSource_addr(String string) {
+        source_addr = string;
+    }
 
-	/**
-	 * @param i
-	 */
-	public void setSource_addr_ton(int i) {
-		source_addr_ton = i;
-	}
+    /**
+     * @param i
+     */
+    public void setSource_addr_npi(int i) {
+        source_addr_npi = i;
+    }
 
-	/**
-	 * @param b
-	 */
-	public void setState(byte b) {
-		state = b;
-	}
+    /**
+     * @param i
+     */
+    public void setSource_addr_ton(int i) {
+        source_addr_ton = i;
+    }
 
-	/**
-	 * @return
-	 */
-	public SubmitSM getPdu() {
-		return pdu;
-	}
+    /**
+     * @param b
+     */
+    public void setState(byte b) {
+        state = b;
+    }
 
-	/**
-	 * @return
-	 */
-	public long getSubmit_time() {
-		return submit_time;
-	}
+    /**
+     * @return
+     */
+    public SubmitSM getPdu() {
+        return pdu;
+    }
 
-	/**
-	 * @return
-	 */
-	public SmppTime getValidity_period() {
-		return validity_period;
-	}
+    /**
+     * @return
+     */
+    public long getSubmit_time() {
+        return submit_time;
+    }
 
-	/**
-	 * @param request
-	 */
-	public void setPdu(SubmitSM request) {
-		pdu = request;
-	}
+    /**
+     * @return
+     */
+    public SmppTime getValidity_period() {
+        return validity_period;
+    }
 
-	/**
-	 * @param date
-	 */
-	public void setSubmit_time(long date) {
-		submit_time = date;
-	}
+    /**
+     * @param request
+     */
+    public void setPdu(SubmitSM request) {
+        pdu = request;
+    }
 
-	/**
-	 * @param time
-	 */
-	public void setValidity_period(SmppTime time) {
-		validity_period = time;
-	}
+    /**
+     * @param date
+     */
+    public void setSubmit_time(long date) {
+        submit_time = date;
+    }
 
-	public String toString() {
-		return "message_id=" + message_id + "," + "source_addr_ton="
-				+ source_addr_ton + "," + "source_addr_npi=" + source_addr_npi
-				+ "," + "source_addr=" + source_addr + "," + "PDU=" + pdu + ","
-				+ "state=" + state + "," + "submit_time=" + submit_time + ","
-				+ "final_time=" + final_time + "," + "finalDate=" + finalDate
-				+ "," + "validity_period=" + validity_period;
-	}
+    /**
+     * @param time
+     */
+    public void setValidity_period(SmppTime time) {
+        validity_period = time;
+    }
 
-	public String keyToString() {
-		return "message_id=" + message_id + "," + "source_addr_ton="
-				+ source_addr_ton + "," + "source_addr_npi=" + source_addr_npi
-				+ "," + "source_addr=" + source_addr;
-	}
+    public String toString() {
+        return "message_id=" + message_id + "," + "source_addr_ton="
+                + source_addr_ton + "," + "source_addr_npi=" + source_addr_npi
+                + "," + "source_addr=" + source_addr + "," + "PDU=" + pdu + ","
+                + "state=" + state + "," + "submit_time=" + submit_time + ","
+                + "final_time=" + final_time + "," + "finalDate=" + finalDate
+                + "," + "validity_period=" + validity_period;
+    }
 
-	public long getFinal_time() {
-		return final_time;
-	}
+    public String keyToString() {
+        return "message_id=" + message_id + "," + "source_addr_ton="
+                + source_addr_ton + "," + "source_addr_npi=" + source_addr_npi
+                + "," + "source_addr=" + source_addr;
+    }
 
-	/**
-	 * @return
-	 */
-	public SmppTime getFinalDate() {
-		return finalDate;
-	}
+    public long getFinal_time() {
+        return final_time;
+    }
 
-	/**
-	 * @param l
-	 */
-	public void setFinal_time(long l) {
-		final_time = l;
-		String stime = SmppTime.dateToSMPPString(new Date(l));
-		try {
-			finalDate = new SmppTime(stime);
-		} catch (ParseException e) {
-			logger.warning("ParseException - this should be impossible");
-			finalDate = null;
-		}
-	}
+    /**
+     * @return
+     */
+    public SmppTime getFinalDate() {
+        return finalDate;
+    }
 
-	/**
-	 * @return
-	 */
-	public boolean responseSent() {
-		return responseSent;
-	}
+    /**
+     * @param l
+     */
+    public void setFinal_time(long l) {
+        final_time = l;
+        String stime = SmppTime.dateToSMPPString(new Date(l));
+        try {
+            finalDate = new SmppTime(stime);
+        } catch (ParseException e) {
+            logger.warning("ParseException - this should be impossible");
+            finalDate = null;
+        }
+    }
 
-	/**
-	 * @param b
-	 */
-	public void setResponseSent(boolean b) {
-		responseSent = b;
-	}
+    /**
+     * @return
+     */
+    public boolean responseSent() {
+        return responseSent;
+    }
 
-	public boolean isIntermediate_notification_requested() {
-		return intermediate_notification_requested;
-	}
+    /**
+     * @param b
+     */
+    public void setResponseSent(boolean b) {
+        responseSent = b;
+    }
 
-	public void setIntermediate_notification_requested(
-			boolean intermediate_notification_requested) {
-		this.intermediate_notification_requested = intermediate_notification_requested;
-	}
+    public boolean isIntermediate_notification_requested() {
+        return intermediate_notification_requested;
+    }
 
-	public int getErr() {
-		return err;
-	}
+    public void setIntermediate_notification_requested(
+            boolean intermediate_notification_requested) {
+        this.intermediate_notification_requested = intermediate_notification_requested;
+    }
 
-	public void setErr(int err) {
-		this.err = err;
-	}
+    public int getErr() {
+        return err;
+    }
+
+    public void setErr(int err) {
+        this.err = err;
+    }
 
 }

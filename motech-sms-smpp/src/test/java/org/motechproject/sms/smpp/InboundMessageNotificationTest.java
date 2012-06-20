@@ -33,8 +33,8 @@ public class InboundMessageNotificationTest {
     private InboundMessageNotification inboundMessageNotification;
     @Mock
     EventRelay eventRelay;
-	@Mock
-	AGateway gateway;
+    @Mock
+    AGateway gateway;
     @Mock
     AllInboundSMS allInboundSMS;
     @Mock
@@ -48,8 +48,8 @@ public class InboundMessageNotificationTest {
 
     @Test
     public void shouldNotRespondToNonInboundMessages() {
-	    int dontCare = 0;
-	    InboundMessage message = new InboundMessage(new DateTime(2011, 11, 23, 10, 20, 0, 0).toDate(), "sender", "yoohoo", dontCare, null);
+        int dontCare = 0;
+        InboundMessage message = new InboundMessage(new DateTime(2011, 11, 23, 10, 20, 0, 0).toDate(), "sender", "yoohoo", dontCare, null);
         inboundMessageNotification.process(gateway, UNKNOWN, message);
 
         verify(eventRelay, times(0)).sendEventMessage(Matchers.<MotechEvent>any());
@@ -57,8 +57,8 @@ public class InboundMessageNotificationTest {
 
     @Test
     public void shouldRaiseEventWhenAnInboundSmsIsReceived() {
-	    int dontCare = 0;
-	    InboundMessage message = new InboundMessage(new DateTime(2011, 11, 23, 10, 20, 0, 0).toDate(), "sender", "yoohoo", dontCare, null);
+        int dontCare = 0;
+        InboundMessage message = new InboundMessage(new DateTime(2011, 11, 23, 10, 20, 0, 0).toDate(), "sender", "yoohoo", dontCare, null);
         inboundMessageNotification.process(gateway, INBOUND, message);
 
         ArgumentCaptor<MotechEvent> eventCaptor = ArgumentCaptor.forClass(MotechEvent.class);

@@ -27,28 +27,28 @@ import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ManagedSmslibServiceTest {
-	@Mock
-	private Service smslibService;
-	@Mock
-	private OutboundEventGateway outboundEventGateway;
+    @Mock
+    private Service smslibService;
+    @Mock
+    private OutboundEventGateway outboundEventGateway;
 
-	private Properties smppProperties;
-	private Properties smsProperties;
+    private Properties smppProperties;
+    private Properties smsProperties;
 
-	@Before
-	public void setup() throws Exception {
-		initMocks(this);
+    @Before
+    public void setup() throws Exception {
+        initMocks(this);
         mockServiceSettings();
         smppProperties = new Properties() {{
-			setProperty(SmppProperties.HOST, "smppserver.com");
-			setProperty(SmppProperties.PASSWORD, "wpsd");
-			setProperty(SmppProperties.PORT, "8876");
-			setProperty(SmppProperties.SYSTEM_ID, "pavel");
-			setProperty(SmppProperties.DELIVERY_REPORTS, "true");
-			setProperty(SmppProperties.BINDTYPE, "TRANSMITTER");
-		}};
-		smsProperties = new Properties();
-	}
+            setProperty(SmppProperties.HOST, "smppserver.com");
+            setProperty(SmppProperties.PASSWORD, "wpsd");
+            setProperty(SmppProperties.PORT, "8876");
+            setProperty(SmppProperties.SYSTEM_ID, "pavel");
+            setProperty(SmppProperties.DELIVERY_REPORTS, "true");
+            setProperty(SmppProperties.BINDTYPE, "TRANSMITTER");
+        }};
+        smsProperties = new Properties();
+    }
 
     private void mockServiceSettings() throws Exception {
         Constructor constructor = Settings.class.getDeclaredConstructors()[0];
@@ -57,16 +57,16 @@ public class ManagedSmslibServiceTest {
     }
 
     @Test
-	public void shouldConnectOnApplicationStartup() throws NoSuchMethodException {
-		Method connect = ManagedSmslibService.class.getDeclaredMethod("connect", new Class[]{});
-		assertTrue("PostConstruct annotation missing", connect.isAnnotationPresent(PostConstruct.class));
-	}
+    public void shouldConnectOnApplicationStartup() throws NoSuchMethodException {
+        Method connect = ManagedSmslibService.class.getDeclaredMethod("connect", new Class[]{});
+        assertTrue("PostConstruct annotation missing", connect.isAnnotationPresent(PostConstruct.class));
+    }
 
-	@Test
-	public void shouldDisconnectOnApplicationShutdown() throws NoSuchMethodException {
-		Method disconnect = ManagedSmslibService.class.getDeclaredMethod("disconnect", new Class[]{});
-		assertTrue("PreDestroy annotation missing", disconnect.isAnnotationPresent(PreDestroy.class));
-	}
+    @Test
+    public void shouldDisconnectOnApplicationShutdown() throws NoSuchMethodException {
+        Method disconnect = ManagedSmslibService.class.getDeclaredMethod("disconnect", new Class[]{});
+        assertTrue("PreDestroy annotation missing", disconnect.isAnnotationPresent(PreDestroy.class));
+    }
 
     @Test
     public void shouldRegisterOutboundNotificationListener() {
@@ -82,74 +82,74 @@ public class ManagedSmslibServiceTest {
         verify(smslibService).setInboundMessageNotification(inboundMessageNotification);
     }
 
-	@Test
-	public void shouldAddConfiguredJsmppGatewayDuringInitialization() throws GatewayException {
-		new ManagedSmslibService(smslibService, smsProperties, smppProperties, null, null);
+    @Test
+    public void shouldAddConfiguredJsmppGatewayDuringInitialization() throws GatewayException {
+        new ManagedSmslibService(smslibService, smsProperties, smppProperties, null, null);
 
-		ArgumentCaptor<JSMPPGateway> jsmppGatewayCaptor = ArgumentCaptor.forClass(JSMPPGateway.class);
-		verify(smslibService).addGateway(jsmppGatewayCaptor.capture());
+        ArgumentCaptor<JSMPPGateway> jsmppGatewayCaptor = ArgumentCaptor.forClass(JSMPPGateway.class);
+        verify(smslibService).addGateway(jsmppGatewayCaptor.capture());
 
-		JSMPPGateway gateway = jsmppGatewayCaptor.getValue();
-		assertEquals("smppserver.com", gateway.getHost());
-		assertEquals(8876, gateway.getPort());
-		assertEquals("pavel", gateway.getBindAttributes().getSystemId());
-		assertEquals("wpsd", gateway.getBindAttributes().getPassword());
-	}
+        JSMPPGateway gateway = jsmppGatewayCaptor.getValue();
+        assertEquals("smppserver.com", gateway.getHost());
+        assertEquals(8876, gateway.getPort());
+        assertEquals("pavel", gateway.getBindAttributes().getSystemId());
+        assertEquals("wpsd", gateway.getBindAttributes().getPassword());
+    }
 
-	@Test
-	public void shouldConfigureRetryCountOnSmsLib() {
-		Service actualSmslibService = Service.getInstance();
-		Properties smsProperties = new Properties() {{
-			setProperty(SmsProperties.MAX_RETRIES, "5");
-		}};
-		new ManagedSmslibService(actualSmslibService, smsProperties, smppProperties, null, null);
-		assertEquals(5, actualSmslibService.getSettings().QUEUE_RETRIES);
-	}
-
-	@Test
-	public void shouldConfigurePersistenceFilePathOnSmsLib() {
+    @Test
+    public void shouldConfigureRetryCountOnSmsLib() {
         Service actualSmslibService = Service.getInstance();
-		new ManagedSmslibService(actualSmslibService, smsProperties, smppProperties, null, null);
-		assertEquals(".", actualSmslibService.getSettings().QUEUE_DIRECTORY);
-	}
+        Properties smsProperties = new Properties() {{
+            setProperty(SmsProperties.MAX_RETRIES, "5");
+        }};
+        new ManagedSmslibService(actualSmslibService, smsProperties, smppProperties, null, null);
+        assertEquals(5, actualSmslibService.getSettings().QUEUE_RETRIES);
+    }
 
-	@Test
-	public void shouldEstablishSmppConnection() throws SMSLibException, IOException, InterruptedException {
-		ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, smsProperties, smppProperties, null, null);
-		managedSmslibService.connect();
-		verify(smslibService).startService();
-	}
+    @Test
+    public void shouldConfigurePersistenceFilePathOnSmsLib() {
+        Service actualSmslibService = Service.getInstance();
+        new ManagedSmslibService(actualSmslibService, smsProperties, smppProperties, null, null);
+        assertEquals(".", actualSmslibService.getSettings().QUEUE_DIRECTORY);
+    }
 
-	@Test
-	public void shouldTerminateSmppConnection() throws IOException, SMSLibException, InterruptedException {
-		ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, smsProperties, smppProperties, null, null);
-		managedSmslibService.disconnect();
-		verify(smslibService).stopService();
-	}
+    @Test
+    public void shouldEstablishSmppConnection() throws SMSLibException, IOException, InterruptedException {
+        ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, smsProperties, smppProperties, null, null);
+        managedSmslibService.connect();
+        verify(smslibService).startService();
+    }
 
-	@Test
-	public void shouldScheduledSmsForDelivery() throws GatewayException, IOException, TimeoutException, InterruptedException {
-		ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, smsProperties, smppProperties, null, null);
+    @Test
+    public void shouldTerminateSmppConnection() throws IOException, SMSLibException, InterruptedException {
+        ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, smsProperties, smppProperties, null, null);
+        managedSmslibService.disconnect();
+        verify(smslibService).stopService();
+    }
+
+    @Test
+    public void shouldScheduledSmsForDelivery() throws GatewayException, IOException, TimeoutException, InterruptedException {
+        ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, smsProperties, smppProperties, null, null);
         List<String> recipients = Arrays.asList("recipient1", "recipient2");
         managedSmslibService.queueMessageAt(recipients, "message", new DateTime(2011, 11, 21, 13, 12, 0, 0));
 
-		ArgumentCaptor<OutboundMessage> outboundMessageCaptor = ArgumentCaptor.forClass(OutboundMessage.class);
-		ArgumentCaptor<Date> dateCaptor = ArgumentCaptor.forClass(Date.class);
-		verify(smslibService, times(recipients.size())).queueMessageAt(outboundMessageCaptor.capture(), dateCaptor.capture());
+        ArgumentCaptor<OutboundMessage> outboundMessageCaptor = ArgumentCaptor.forClass(OutboundMessage.class);
+        ArgumentCaptor<Date> dateCaptor = ArgumentCaptor.forClass(Date.class);
+        verify(smslibService, times(recipients.size())).queueMessageAt(outboundMessageCaptor.capture(), dateCaptor.capture());
 
-		assertEquals("message", outboundMessageCaptor.getValue().getText());
-		assertEquals(new DateTime(2011, 11, 21, 13, 12, 0, 0).toDate(), dateCaptor.getValue());
-	}
+        assertEquals("message", outboundMessageCaptor.getValue().getText());
+        assertEquals(new DateTime(2011, 11, 21, 13, 12, 0, 0).toDate(), dateCaptor.getValue());
+    }
 
-	@Test
-	public void shouldNotScheduleSms() throws GatewayException, IOException, TimeoutException, InterruptedException {
-		ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, smsProperties, smppProperties, null, null);
+    @Test
+    public void shouldNotScheduleSms() throws GatewayException, IOException, TimeoutException, InterruptedException {
+        ManagedSmslibService managedSmslibService = new ManagedSmslibService(smslibService, smsProperties, smppProperties, null, null);
         List<String> recipients = Arrays.asList("recipient1", "recipient2");
         managedSmslibService.queueMessage(recipients, "message");
 
-		ArgumentCaptor<OutboundMessage> outboundMessageCaptor = ArgumentCaptor.forClass(OutboundMessage.class);
-		verify(smslibService, times(recipients.size())).queueMessage(outboundMessageCaptor.capture());
+        ArgumentCaptor<OutboundMessage> outboundMessageCaptor = ArgumentCaptor.forClass(OutboundMessage.class);
+        verify(smslibService, times(recipients.size())).queueMessage(outboundMessageCaptor.capture());
 
-		assertEquals("message", outboundMessageCaptor.getValue().getText());
-	}
+        assertEquals("message", outboundMessageCaptor.getValue().getText());
+    }
 }

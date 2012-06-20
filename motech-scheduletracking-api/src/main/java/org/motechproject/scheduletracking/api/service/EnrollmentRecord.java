@@ -12,8 +12,8 @@ import org.motechproject.model.Time;
 public class EnrollmentRecord {
     private String externalId;
     private String scheduleName;
-	private Time preferredAlertTime;
-	private DateTime referenceDateTime;
+    private Time preferredAlertTime;
+    private DateTime referenceDateTime;
     private DateTime enrollmentDateTime;
     private DateTime earliestStart;
     private DateTime dueStart;

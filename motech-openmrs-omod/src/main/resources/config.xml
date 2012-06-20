@@ -11,8 +11,8 @@
     <require_version>1.8.2</require_version>
 
     <require_modules>
-		<require_module version="2.1">org.openmrs.module.idgen</require_module>
-	</require_modules>
+        <require_module version="2.1">org.openmrs.module.idgen</require_module>
+    </require_modules>
 
     <advice>
         <point>org.openmrs.api.ObsService</point>

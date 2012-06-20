@@ -1,34 +1,3 @@
-/*
- * MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
- *
- * Copyright (c) 2011 Grameen Foundation USA.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * 3. Neither the name of Grameen Foundation USA, nor its respective contributors
- * may be used to endorse or promote products derived from this software without
- * specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY GRAMEEN FOUNDATION USA AND ITS CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL GRAMEEN FOUNDATION USA OR ITS CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
- * OF SUCH DAMAGE.
- */
 package org.motechproject.scheduler.domain;
 
 import java.io.Serializable;
@@ -41,7 +10,6 @@ import java.util.Map;
  * Instance of this class with event specific data will be send by Motech Scheduler when a scheduled event is fired
  * <p></p>
  * This class is immutable
- *
  */
 public final class MotechEvent implements Serializable {
     public static final String EVENT_TYPE_KEY_NAME = "eventType";
@@ -53,6 +21,7 @@ public final class MotechEvent implements Serializable {
 
     /**
      * Constructor with subject only (parameters can be added interactively)
+     *
      * @param subject - event destination
      * @throws IllegalArgumentException
      */
@@ -74,6 +43,7 @@ public final class MotechEvent implements Serializable {
 
     /**
      * Constructor
+     *
      * @param subject    - event type: Pill Reminder, Appointment Reminder ...
      * @param parameters - a Map<String, Object> of additional parameters
      * @throws IllegalArgumentException
@@ -89,6 +59,7 @@ public final class MotechEvent implements Serializable {
 
     /**
      * Sets empty HashMap if parameters=null
+     *
      * @return
      */
     public Map<String, Object> getParameters() {

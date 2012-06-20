@@ -7,12 +7,12 @@
 package tests.exceptions;
 
 public class BindReceiverException extends Exception {
-	public BindReceiverException() {
-		super();
-	}
+    public BindReceiverException() {
+        super();
+    }
 
-	public BindReceiverException(String message) {
-		super(message); 
-	}
+    public BindReceiverException(String message) {
+        super(message);
+    }
 
 }

@@ -37,8 +37,8 @@ import com.seleniumsoftware.SMPPSim.*;
 
 public class DataSMResp extends Response implements Marshaller, Demarshaller {
 
-	private Smsc smsc = Smsc.getInstance();
-	String message_id;
+    private Smsc smsc = Smsc.getInstance();
+    String message_id;
   
   // Optional PDU attributes
   private HashMap<Short, Tlv> optionalsByTag = new HashMap<Short, Tlv>();
@@ -46,23 +46,23 @@ public class DataSMResp extends Response implements Marshaller, Demarshaller {
   public DataSMResp() {
   }
   
-	public DataSMResp(DataSM requestMsg) {
-		// message header fields except message length
-		setCmd_id(PduConstants.DATA_SM_RESP);
-		setCmd_status(PduConstants.ESME_ROK);
-		setSeq_no(requestMsg.getSeq_no());
-		// Set message length to zero since actual length will not be known until the object is
-		// converted back to a message complete with null terminated strings
-		setCmd_len(0);
+    public DataSMResp(DataSM requestMsg) {
+        // message header fields except message length
+        setCmd_id(PduConstants.DATA_SM_RESP);
+        setCmd_status(PduConstants.ESME_ROK);
+        setSeq_no(requestMsg.getSeq_no());
+        // Set message length to zero since actual length will not be known until the object is
+        // converted back to a message complete with null terminated strings
+        setCmd_len(0);
 
-		// message body
-		message_id = smsc.getMessageID();		
-	}
+        // message body
+        message_id = smsc.getMessageID();
+    }
 
-	public byte[] marshall() throws Exception {
-		out.reset();
-		super.prepareHeaderForMarshalling();
-		out.write(PduUtilities.stringToNullTerminatedByteArray(message_id));
+    public byte[] marshall() throws Exception {
+        out.reset();
+        super.prepareHeaderForMarshalling();
+        out.write(PduUtilities.stringToNullTerminatedByteArray(message_id));
     
     for (Iterator<Tlv> it = optionalsByTag.values().iterator(); it.hasNext(); ) {
       Tlv opt = it.next();
@@ -71,11 +71,11 @@ public class DataSMResp extends Response implements Marshaller, Demarshaller {
       out.write(opt.getValue());
     }
     
-		byte[] response = out.toByteArray();
-		int l = response.length;
-		response = PduUtilities.setPduLength(response, l);
-		return response;
-	}
+        byte[] response = out.toByteArray();
+        int l = response.length;
+        response = PduUtilities.setPduLength(response, l);
+        return response;
+    }
   
 
   public void demarshall(byte[] request) throws Exception {
@@ -95,12 +95,12 @@ public class DataSMResp extends Response implements Marshaller, Demarshaller {
     message_id = PduUtilities.getStringValueNullTerminated(request, inx, 65, PduConstants.C_OCTET_STRING_TYPE);
   }
   
-	/**
-	 * @return
-	 */
-	public String getMessage_id() {
-		return message_id;
-	}
+    /**
+     * @return
+     */
+    public String getMessage_id() {
+        return message_id;
+    }
   
   public boolean hasOptionnal(short aTag) {
     return optionalsByTag.containsKey(new Short(aTag));
@@ -114,20 +114,20 @@ public class DataSMResp extends Response implements Marshaller, Demarshaller {
     return new ArrayList<Short>(optionalsByTag.keySet());
   }
 
-	/**
-	 * @param string
-	 */
-	public void setMessage_id(String string) {
-		message_id = string;
-	}
+    /**
+     * @param string
+     */
+    public void setMessage_id(String string) {
+        message_id = string;
+    }
   
   public void setOptionnal(Tlv opt) {
     optionalsByTag.put(new Short(opt.getTag()), opt);
   }
-	
-	public String toString() {
+
+    public String toString() {
     StringBuffer sb = new StringBuffer();
-		sb.append(super.toString()).
+        sb.append(super.toString()).
        append(",message_id=").append(message_id);
     
     if (optionalsByTag.size() > 0) {
@@ -136,6 +136,6 @@ public class DataSMResp extends Response implements Marshaller, Demarshaller {
       }
     }
     return sb.toString();
-	}
+    }
 
 }

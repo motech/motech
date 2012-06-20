@@ -28,62 +28,62 @@
 package com.seleniumsoftware.SMPPSim.pdu;
 
 public class DestAddressSME extends DestAddress {
-	private int sme_ton;
-	private int sme_npi;
-	private String sme_address;
+    private int sme_ton;
+    private int sme_npi;
+    private String sme_address;
 
-	/**
-	 * @return
-	 */
-	public String getSme_address() {
-		return sme_address;
-	}
+    /**
+     * @return
+     */
+    public String getSme_address() {
+        return sme_address;
+    }
 
-	/**
-	 * @return
-	 */
-	public int getSme_npi() {
-		return sme_npi;
-	}
+    /**
+     * @return
+     */
+    public int getSme_npi() {
+        return sme_npi;
+    }
 
-	/**
-	 * @return
-	 */
-	public int getSme_ton() {
-		return sme_ton;
-	}
+    /**
+     * @return
+     */
+    public int getSme_ton() {
+        return sme_ton;
+    }
 
-	/**
-	 * @param string
-	 */
-	public void setSme_address(String string) {
-		sme_address = string;
-	}
+    /**
+     * @param string
+     */
+    public void setSme_address(String string) {
+        sme_address = string;
+    }
 
-	/**
-	 * @param i
-	 */
-	public void setSme_npi(int i) {
-		sme_npi = i;
-	}
+    /**
+     * @param i
+     */
+    public void setSme_npi(int i) {
+        sme_npi = i;
+    }
 
-	/**
-	 * @param i
-	 */
-	public void setSme_ton(int i) {
-		sme_ton = i;
-	}
+    /**
+     * @param i
+     */
+    public void setSme_ton(int i) {
+        sme_ton = i;
+    }
 
-	public String toString() {
-		return super.toString()
-			+ ","
-			+ "sme_ton="
-			+ sme_ton
-			+ ","
-			+ "sme_npi="
-			+ sme_npi
-			+ ","
-			+ "sme_address="
-			+ sme_address;
-	}
+    public String toString() {
+        return super.toString()
+            + ","
+            + "sme_ton="
+            + sme_ton
+            + ","
+            + "sme_npi="
+            + sme_npi
+            + ","
+            + "sme_address="
+            + sme_address;
+    }
 }

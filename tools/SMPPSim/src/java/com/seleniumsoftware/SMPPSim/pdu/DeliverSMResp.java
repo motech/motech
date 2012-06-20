@@ -31,37 +31,37 @@ import com.seleniumsoftware.SMPPSim.pdu.util.*;
 public class DeliverSMResp extends Request implements Demarshaller {
 
 
-	// PDU attributes
+    // PDU attributes
 
-	private String message_id;
+    private String message_id;
 
-	public void demarshall(byte[] request) throws Exception {
+    public void demarshall(byte[] request) throws Exception {
 
-		// demarshall the header
-		super.demarshall(request);
-		// now set atributes of this specific PDU type
-		int inx = 16;
-		try {
-			message_id = PduUtilities.getStringValueFixedLength(request, inx, 1);
-		} catch (Exception e) {
-			logger.severe("DELIVER_SM_RESP PDU is malformed. message_id is incorrect");
-			throw (e);
-		}
+        // demarshall the header
+        super.demarshall(request);
+        // now set atributes of this specific PDU type
+        int inx = 16;
+        try {
+            message_id = PduUtilities.getStringValueFixedLength(request, inx, 1);
+        } catch (Exception e) {
+            logger.severe("DELIVER_SM_RESP PDU is malformed. message_id is incorrect");
+            throw (e);
+        }
 
-	}
+    }
 
-	/**
-	 * @return
-	 */
-	public String getMessage_id() {
-		return message_id;
-	}
-	/**
-	 * *returns String representation of PDU
-	 */
-	public String toString() {
-		return 	super.toString()+","+
-				"system_id="+message_id;
-	}
+    /**
+     * @return
+     */
+    public String getMessage_id() {
+        return message_id;
+    }
+    /**
+     * *returns String representation of PDU
+     */
+    public String toString() {
+        return     super.toString()+","+
+                "system_id="+message_id;
+    }
 
 }

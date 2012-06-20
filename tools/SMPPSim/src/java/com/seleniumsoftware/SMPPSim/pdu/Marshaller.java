@@ -32,6 +32,6 @@ public interface Marshaller {
  * a properly formatted byte array corresponding to their attribute values and the
  * SMPP format for that PDU
  */
-	public byte [] marshall() throws Exception;
+    public byte [] marshall() throws Exception;
 
 }

@@ -7,8 +7,8 @@
 package tests.exceptions;
 
 public class EnquireLinkFailedException extends Exception {
-	public EnquireLinkFailedException() {
-		super();
-	}
+    public EnquireLinkFailedException() {
+        super();
+    }
 
 }

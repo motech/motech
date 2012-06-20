@@ -35,338 +35,338 @@ import java.util.*;
 
 public class InboundQueue implements Runnable {
 
-	private static Logger logger = Logger
-			.getLogger("com.seleniumsoftware.smppsim");
+    private static Logger logger = Logger
+            .getLogger("com.seleniumsoftware.smppsim");
 
-	private Smsc smsc = Smsc.getInstance();
-	
-	private static InboundQueue iqueue;
-	
-	private static DelayedInboundQueue diqueue;
+    private Smsc smsc = Smsc.getInstance();
 
-	ArrayList<Pdu> inbound_queue;
+    private static InboundQueue iqueue;
 
-	// we're waiting for a DELIVER_SM_RESP for each PDU in this queue. Depending on the command_status we then
-	// either put the message into the delayed_inbound_queue or we simply delete it.
-	ArrayList<Pdu> response_queue;
+    private static DelayedInboundQueue diqueue;
 
-	// If no receiver session, message goes in the pending queue
-	ArrayList<Pdu> pending_queue = new ArrayList<Pdu>();
+    ArrayList<Pdu> inbound_queue;
 
-	public static InboundQueue getInstance() {
-		if (iqueue == null)
-			iqueue = new InboundQueue(SMPPSim.getInbound_queue_capacity());
-		return iqueue;
-	}
-	
-	private InboundQueue(int maxsize) {
-		inbound_queue = new ArrayList<Pdu>(maxsize);		
-		response_queue = new ArrayList<Pdu>(maxsize);		
-	}
+    // we're waiting for a DELIVER_SM_RESP for each PDU in this queue. Depending on the command_status we then
+    // either put the message into the delayed_inbound_queue or we simply delete it.
+    ArrayList<Pdu> response_queue;
 
-	public void addMessage(Pdu message) throws InboundQueueFullException {
-		synchronized (inbound_queue) {
-			if (inbound_queue.size() >= smsc.getInbound_queue_capacity())
-				throw new InboundQueueFullException();
-			logger.finest("InboundQueue: adding object to queue<"
-					+ message.toString() + ">");
-			inbound_queue.add(message);
-			logger.finest("InboundQueue: now contains " + inbound_queue.size()
-					+ " object(s)");
-			inbound_queue.notifyAll();
-		}
-	}
+    // If no receiver session, message goes in the pending queue
+    ArrayList<Pdu> pending_queue = new ArrayList<Pdu>();
 
-	public void deliveryResult(int seqno, int command_status) {
-		logger.finest("MO message delivery attempted: seqno="+seqno+",status="+command_status+",responses pending="+response_queue.size());
-		synchronized (response_queue) {
-			for (int i=0;i<response_queue.size();i++) {
-				Pdu pdu = response_queue.get(i);
-				if (pdu.getSeq_no() == seqno) {
-					if (command_status == PduConstants.ESME_RMSGQFUL) {
-						logger.info("MO message "+seqno+" was rejected with queue full so putting in delayed inbound queue for retry");
-						diqueue.retryLater(pdu);
-					} else {
-						diqueue.deliveredOK(pdu);
-					}
-					response_queue.remove(i);
-					break;
-				}
-			}
-		}
-		logger.finest("Awaiting " + response_queue.size()+" responses");
-	}
+    public static InboundQueue getInstance() {
+        if (iqueue == null)
+            iqueue = new InboundQueue(SMPPSim.getInbound_queue_capacity());
+        return iqueue;
+    }
 
-	public void removeMessage(Pdu m) {
-		removeMessage(m, inbound_queue);
-	}
+    private InboundQueue(int maxsize) {
+        inbound_queue = new ArrayList<Pdu>(maxsize);
+        response_queue = new ArrayList<Pdu>(maxsize);
+    }
 
-	public void removeMessage(Pdu m, ArrayList<Pdu> queue) {
-		logger.finest("Removing PDU from queue. Queue currently contains:"+queue.size());
-		for (int i=0;i<queue.size();i++) {
-			logger.finest(((Pdu) queue.get(i)).toString());
-		}
-		synchronized (queue) {
-			int i = queue.indexOf(m);
-			if (i > -1) {
-				queue.remove(i);
-			} else {
-				logger
-						.warning("Attempt to remove non-existent object from InboundQueue: "
-								+ m.toString());
-			}
-		}
-		logger.finest("Queue now contains:"+queue.size());
-	}
+    public void addMessage(Pdu message) throws InboundQueueFullException {
+        synchronized (inbound_queue) {
+            if (inbound_queue.size() >= smsc.getInbound_queue_capacity())
+                throw new InboundQueueFullException();
+            logger.finest("InboundQueue: adding object to queue<"
+                    + message.toString() + ">");
+            inbound_queue.add(message);
+            logger.finest("InboundQueue: now contains " + inbound_queue.size()
+                    + " object(s)");
+            inbound_queue.notifyAll();
+        }
+    }
 
-	private Object[] getAllMessages() {
-		synchronized (inbound_queue) {
-			Object[] o = inbound_queue.toArray();
-			return o;
-		}
-	}
+    public void deliveryResult(int seqno, int command_status) {
+        logger.finest("MO message delivery attempted: seqno="+seqno+",status="+command_status+",responses pending="+response_queue.size());
+        synchronized (response_queue) {
+            for (int i=0;i<response_queue.size();i++) {
+                Pdu pdu = response_queue.get(i);
+                if (pdu.getSeq_no() == seqno) {
+                    if (command_status == PduConstants.ESME_RMSGQFUL) {
+                        logger.info("MO message "+seqno+" was rejected with queue full so putting in delayed inbound queue for retry");
+                        diqueue.retryLater(pdu);
+                    } else {
+                        diqueue.deliveredOK(pdu);
+                    }
+                    response_queue.remove(i);
+                    break;
+                }
+            }
+        }
+        logger.finest("Awaiting " + response_queue.size()+" responses");
+    }
 
-	private boolean isEmpty() {
-		return inbound_queue.isEmpty();
-	}
+    public void removeMessage(Pdu m) {
+        removeMessage(m, inbound_queue);
+    }
 
-	public int size() {
-		return inbound_queue.size();
-	}
+    public void removeMessage(Pdu m, ArrayList<Pdu> queue) {
+        logger.finest("Removing PDU from queue. Queue currently contains:"+queue.size());
+        for (int i=0;i<queue.size();i++) {
+            logger.finest(((Pdu) queue.get(i)).toString());
+        }
+        synchronized (queue) {
+            int i = queue.indexOf(m);
+            if (i > -1) {
+                queue.remove(i);
+            } else {
+                logger
+                        .warning("Attempt to remove non-existent object from InboundQueue: "
+                                + m.toString());
+            }
+        }
+        logger.finest("Queue now contains:"+queue.size());
+    }
 
-	public int pending_size() {
-		return pending_queue.size();
-	}
+    private Object[] getAllMessages() {
+        synchronized (inbound_queue) {
+            Object[] o = inbound_queue.toArray();
+            return o;
+        }
+    }
 
-	public void notifyReceiverBound() {
-		synchronized (inbound_queue) {
-			logger
-					.finest("A receiver bound - will notify InboundQueue service");
-			inbound_queue.notifyAll();
-		}
-	}
+    private boolean isEmpty() {
+        return inbound_queue.isEmpty();
+    }
 
-	public void run() {
-		// this code processes the contents of the InboundQueue
-		// Each object in the queue is either a delivery receipt or
-		// a MO message created by the MO Service or via the loopback
-		// mechanism. Either way, they're all DELIVER_SM PDUs
+    public int size() {
+        return inbound_queue.size();
+    }
 
-		// The InboundQueue gets processed as follows:
-		//
-		//	Wait until
-		//		there is at least one receiver session
-		//		and at least one message in the queue
-		//	Then
-		//		get all messages from the queue
-		//		for each message
-		//			see if there is a receiver whose address_range matches the message and if so, attempt to deliver it and
-		//			move it from the inbound queue to the response queue.
-		//			Later we get informed of the result of the delivery attempt; If the delivery attempt failed
-		//			with ESME_RMSGQFUL then we move the message to the delayed_inbound_queue and try to deliver it
-		//			again later.
+    public int pending_size() {
+        return pending_queue.size();
+    }
 
-		logger.info("Starting InboundQueue service....");
+    public void notifyReceiverBound() {
+        synchronized (inbound_queue) {
+            logger
+                    .finest("A receiver bound - will notify InboundQueue service");
+            inbound_queue.notifyAll();
+        }
+    }
 
-		diqueue = DelayedInboundQueue.getInstance();
-		Thread t = new Thread(diqueue);
-		t.start();
+    public void run() {
+        // this code processes the contents of the InboundQueue
+        // Each object in the queue is either a delivery receipt or
+        // a MO message created by the MO Service or via the loopback
+        // mechanism. Either way, they're all DELIVER_SM PDUs
 
-		do // process queue forever
-		{
-			processQueue();
-		} while (true);
-	}
-	
-	private void addPendingQueue(Pdu mo) {
-		pending_queue.add(mo);	
-		if (SMPPSim.isOutbind_enabled() && !smsc.isOutbind_sent()) {
-			smsc.outbind();
-			// should reset the outbind_sent flag now ready for the next time
-		}
-	}
+        // The InboundQueue gets processed as follows:
+        //
+        //    Wait until
+        //        there is at least one receiver session
+        //        and at least one message in the queue
+        //    Then
+        //        get all messages from the queue
+        //        for each message
+        //            see if there is a receiver whose address_range matches the message and if so, attempt to deliver it and
+        //            move it from the inbound queue to the response queue.
+        //            Later we get informed of the result of the delivery attempt; If the delivery attempt failed
+        //            with ESME_RMSGQFUL then we move the message to the delayed_inbound_queue and try to deliver it
+        //            again later.
 
-	private void processQueue() {
-		StandardConnectionHandler receiver = null;
-		Object[] pdus;
-		DeliverSM pdu;
-		byte[] message;
-		byte[] response;
-		String pduName;
-		int pduCount;
+        logger.info("Starting InboundQueue service....");
 
-		synchronized (inbound_queue) {
-			while (isEmpty() || (smsc.getReceiverBoundCount() == 0)) {
-				try {
-					if (isEmpty()) {
-						logger.info("InboundQueue: empty  - waiting");
-					} else {
-						logger
-								.info("InboundQueue: no available receiver sessions - moving message(s) to pending queue");
-						int pc = 0;
-						synchronized (pending_queue) {
-							Object [] active_pdus = inbound_queue.toArray();
-							for (int i=0;i<active_pdus.length;i++) {
-								Pdu mo = (Pdu) active_pdus[i];
-								addPendingQueue(mo);
-								removeMessage(mo);
-								pc++;
-							}
-						}
-						logger.info("Moved " + pc
-								+ " MO messages to the pending queue");
+        diqueue = DelayedInboundQueue.getInstance();
+        Thread t = new Thread(diqueue);
+        t.start();
 
-					}
-					inbound_queue.wait();
-				} catch (InterruptedException e) {
-					logger.log(Level.WARNING, "Exception in InboundQueue: "
-							+ e.getMessage(), e);
-				}
-			}
-		}
-		if (smsc.getReceiverBoundCount() != 0) {
-			pdus = getAllMessages();
-			pduCount = pdus.length;
-			logger.finest("Attempting to deliver " + pduCount
-					+ " messages from InboundQueue");
+        do // process queue forever
+        {
+            processQueue();
+        } while (true);
+    }
 
-			int i = 0;
-			boolean continuing = true;
-			while (i < pduCount && continuing) {
-				if (pdus[i] instanceof DeliverSM) {
-					continuing = processDeliverSM((DeliverSM) pdus[i], receiver,inbound_queue);
-				} else {
-					continuing = processDataSM((DataSM) pdus[i], receiver);
-				}
-				i++;
-			}
-		}
-	}
+    private void addPendingQueue(Pdu mo) {
+        pending_queue.add(mo);
+        if (SMPPSim.isOutbind_enabled() && !smsc.isOutbind_sent()) {
+            smsc.outbind();
+            // should reset the outbind_sent flag now ready for the next time
+        }
+    }
+
+    private void processQueue() {
+        StandardConnectionHandler receiver = null;
+        Object[] pdus;
+        DeliverSM pdu;
+        byte[] message;
+        byte[] response;
+        String pduName;
+        int pduCount;
+
+        synchronized (inbound_queue) {
+            while (isEmpty() || (smsc.getReceiverBoundCount() == 0)) {
+                try {
+                    if (isEmpty()) {
+                        logger.info("InboundQueue: empty  - waiting");
+                    } else {
+                        logger
+                                .info("InboundQueue: no available receiver sessions - moving message(s) to pending queue");
+                        int pc = 0;
+                        synchronized (pending_queue) {
+                            Object [] active_pdus = inbound_queue.toArray();
+                            for (int i=0;i<active_pdus.length;i++) {
+                                Pdu mo = (Pdu) active_pdus[i];
+                                addPendingQueue(mo);
+                                removeMessage(mo);
+                                pc++;
+                            }
+                        }
+                        logger.info("Moved " + pc
+                                + " MO messages to the pending queue");
+
+                    }
+                    inbound_queue.wait();
+                } catch (InterruptedException e) {
+                    logger.log(Level.WARNING, "Exception in InboundQueue: "
+                            + e.getMessage(), e);
+                }
+            }
+        }
+        if (smsc.getReceiverBoundCount() != 0) {
+            pdus = getAllMessages();
+            pduCount = pdus.length;
+            logger.finest("Attempting to deliver " + pduCount
+                    + " messages from InboundQueue");
+
+            int i = 0;
+            boolean continuing = true;
+            while (i < pduCount && continuing) {
+                if (pdus[i] instanceof DeliverSM) {
+                    continuing = processDeliverSM((DeliverSM) pdus[i], receiver,inbound_queue);
+                } else {
+                    continuing = processDataSM((DataSM) pdus[i], receiver);
+                }
+                i++;
+            }
+        }
+    }
 
 
-	protected boolean processDeliverSM(DeliverSM pdu, StandardConnectionHandler receiver, ArrayList <Pdu> from_queue) {
-		String pduName;
-		byte[] message;
+    protected boolean processDeliverSM(DeliverSM pdu, StandardConnectionHandler receiver, ArrayList <Pdu> from_queue) {
+        String pduName;
+        byte[] message;
 
-		if (pdu instanceof DeliveryReceipt)
-			pduName = "DELIVER_SM (receipt):";
-		else
-			pduName = "DELIVER_SM:";
+        if (pdu instanceof DeliveryReceipt)
+            pduName = "DELIVER_SM (receipt):";
+        else
+            pduName = "DELIVER_SM:";
 
-		try {
-			message = pdu.marshall();
-			LoggingUtilities.hexDump(pduName, message, message.length);
-			if (smsc.isDecodePdus())
-				LoggingUtilities.logDecodedPdu(pdu);
-			logger.info(" ");
-			receiver = smsc.selectReceiver(pdu.getDestination_addr());
-			if (receiver == null) {
-				logger
-						.warning("InboundQueue: no active receiver object to deliver message. Application must issue BIND_RECEIVER with approriate address_range. Message has been moved to the pending queue");
-				removeMessage(pdu, from_queue);
-				addPendingQueue(pdu);
-				if (smsc.getReceiverBoundCount() == 0) {
-					logger
-							.info("No receiver sessions bound - suspending InboundQueue processing");
-					return false;
-				}
-			} else {
-				try {
-					smsc.writeDecodedSmppsim(pdu.toString());
-					receiver.writeResponse(message);
-					/**
-					 * Should only remove from the queue if we didn't get a response of ESME_RMSGQFUL
-					 * Right now we don't know what the response was in this code... so removal needs to be
-					 * triggered asynchronously by receipt of a DELIVER_SM_RESP in the protocol handler
-					 * 
-					 * Sequence number matching required of course.
-					 * 
-					 */
-					synchronized (response_queue) {
-						response_queue.add(pdu);
-						logger.finest("Added message "+pdu.getSeq_no()+" to response queue");
-					}
-					removeMessage(pdu, from_queue);
-				} catch (Exception e) {
-					logger.log(Level.WARNING, "Exception in InboundQueue: "
-							+ e.getMessage(), e);
-				}
-			}
-		} catch (Exception ex) {
-			logger
-					.log(
-							Level.WARNING,
-							"Exception whilst marshalling PDU from InboundQueue. Message discarded",
-							ex);
-		}
+        try {
+            message = pdu.marshall();
+            LoggingUtilities.hexDump(pduName, message, message.length);
+            if (smsc.isDecodePdus())
+                LoggingUtilities.logDecodedPdu(pdu);
+            logger.info(" ");
+            receiver = smsc.selectReceiver(pdu.getDestination_addr());
+            if (receiver == null) {
+                logger
+                        .warning("InboundQueue: no active receiver object to deliver message. Application must issue BIND_RECEIVER with approriate address_range. Message has been moved to the pending queue");
+                removeMessage(pdu, from_queue);
+                addPendingQueue(pdu);
+                if (smsc.getReceiverBoundCount() == 0) {
+                    logger
+                            .info("No receiver sessions bound - suspending InboundQueue processing");
+                    return false;
+                }
+            } else {
+                try {
+                    smsc.writeDecodedSmppsim(pdu.toString());
+                    receiver.writeResponse(message);
+                    /**
+                     * Should only remove from the queue if we didn't get a response of ESME_RMSGQFUL
+                     * Right now we don't know what the response was in this code... so removal needs to be
+                     * triggered asynchronously by receipt of a DELIVER_SM_RESP in the protocol handler
+                     *
+                     * Sequence number matching required of course.
+                     *
+                     */
+                    synchronized (response_queue) {
+                        response_queue.add(pdu);
+                        logger.finest("Added message "+pdu.getSeq_no()+" to response queue");
+                    }
+                    removeMessage(pdu, from_queue);
+                } catch (Exception e) {
+                    logger.log(Level.WARNING, "Exception in InboundQueue: "
+                            + e.getMessage(), e);
+                }
+            }
+        } catch (Exception ex) {
+            logger
+                    .log(
+                            Level.WARNING,
+                            "Exception whilst marshalling PDU from InboundQueue. Message discarded",
+                            ex);
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	protected boolean processDataSM(DataSM pdu,
-			StandardConnectionHandler receiver) {
-		byte[] message;
+    protected boolean processDataSM(DataSM pdu,
+            StandardConnectionHandler receiver) {
+        byte[] message;
 
-		try {
-			message = pdu.marshall();
-			LoggingUtilities.hexDump("DATA_SM:", message, message.length);
-			if (smsc.isDecodePdus())
-				LoggingUtilities.logDecodedPdu(pdu);
-			logger.info(" ");
-			receiver = smsc.selectReceiver(pdu.getDestination_addr());
-			if (receiver == null) {
-				logger
-						.warning("InboundQueue: no active receiver object to deliver message. Application must issue BIND_RECEIVER with approriate address_range. Message deleted from the inbound queue.");
-				removeMessage(pdu);
-				if (smsc.getReceiverBoundCount() == 0) {
-					logger
-							.info("No receiver sessions bound - suspending InboundQueue processing");
-					return false;
-				}
-			} else {
-				try {
-					smsc.writeDecodedSmppsim(pdu.toString());
-					receiver.writeResponse(message);
-					removeMessage(pdu);
-					smsc.incDataSmOK();
-				} catch (Exception e) {
-					logger.log(Level.WARNING, "Exception in InboundQueue: "
-							+ e.getMessage(), e);
-					smsc.incDataSmERR();
-				}
-			}
-		} catch (Exception ex) {
-			logger
-					.log(
-							Level.WARNING,
-							"Exception whilst marshalling PDU from InboundQueue. Message discarded",
-							ex);
-		}
+        try {
+            message = pdu.marshall();
+            LoggingUtilities.hexDump("DATA_SM:", message, message.length);
+            if (smsc.isDecodePdus())
+                LoggingUtilities.logDecodedPdu(pdu);
+            logger.info(" ");
+            receiver = smsc.selectReceiver(pdu.getDestination_addr());
+            if (receiver == null) {
+                logger
+                        .warning("InboundQueue: no active receiver object to deliver message. Application must issue BIND_RECEIVER with approriate address_range. Message deleted from the inbound queue.");
+                removeMessage(pdu);
+                if (smsc.getReceiverBoundCount() == 0) {
+                    logger
+                            .info("No receiver sessions bound - suspending InboundQueue processing");
+                    return false;
+                }
+            } else {
+                try {
+                    smsc.writeDecodedSmppsim(pdu.toString());
+                    receiver.writeResponse(message);
+                    removeMessage(pdu);
+                    smsc.incDataSmOK();
+                } catch (Exception e) {
+                    logger.log(Level.WARNING, "Exception in InboundQueue: "
+                            + e.getMessage(), e);
+                    smsc.incDataSmERR();
+                }
+            }
+        } catch (Exception ex) {
+            logger
+                    .log(
+                            Level.WARNING,
+                            "Exception whilst marshalling PDU from InboundQueue. Message discarded",
+                            ex);
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 * Called when a receiver or transceiver session is established. Results in any MO messages for which a session
-	 * was not available originally and which were set to one side in the pending queue, being delivered if the new session
-	 * is suitable.
-	 *
-	 */
-	public void deliverPendingMoMessages() {
-		Object[] messages = null;
-		synchronized (pending_queue) {
-			messages = pending_queue.toArray();
-		}
-		int l = messages.length;
+    /**
+     * Called when a receiver or transceiver session is established. Results in any MO messages for which a session
+     * was not available originally and which were set to one side in the pending queue, being delivered if the new session
+     * is suitable.
+     *
+     */
+    public void deliverPendingMoMessages() {
+        Object[] messages = null;
+        synchronized (pending_queue) {
+            messages = pending_queue.toArray();
+        }
+        int l = messages.length;
 
-		for (int i = 0; i < l; i++) {
-			boolean ok = processDeliverSM((DeliverSM) messages[i], null, pending_queue);
-			if (!ok)
-				break;
-		}
+        for (int i = 0; i < l; i++) {
+            boolean ok = processDeliverSM((DeliverSM) messages[i], null, pending_queue);
+            if (!ok)
+                break;
+        }
 
-		// reset the outbind flag ready for the next time
-		smsc.setOutbind_sent(false);
+        // reset the outbind flag ready for the next time
+        smsc.setOutbind_sent(false);
 
-	}
+    }
 }

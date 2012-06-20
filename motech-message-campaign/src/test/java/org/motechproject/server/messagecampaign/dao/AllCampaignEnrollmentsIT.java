@@ -106,7 +106,7 @@ public class AllCampaignEnrollmentsIT {
     }
 
     @After
-	public void tearDown() {
-		allCampaignEnrollments.removeAll();
-	}
+    public void tearDown() {
+        allCampaignEnrollments.removeAll();
+    }
 }

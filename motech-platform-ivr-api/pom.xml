@@ -10,7 +10,7 @@
     <name>MoTeCH Platform Server IVR API</name>
     <version>0.11-SNAPSHOT</version>
     <dependencies>
-	    <dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-common-api</artifactId>
             <version>${project.version}</version>
@@ -65,7 +65,7 @@
             <version>2.6</version>
             <scope>provided</scope>
         </dependency>
-	</dependencies>
+    </dependencies>
     <build>
         <plugins>
             <plugin>

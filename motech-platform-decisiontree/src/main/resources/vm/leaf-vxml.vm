@@ -15,10 +15,10 @@
             </prompt>
         </block>
         #if ($treeName)
-			#set ($url = "$contentPath/decisiontree/node?pId=$patientId&ln=$language&tNm=$treeName")
+            #set ($url = "$contentPath/decisiontree/node?pId=$patientId&ln=$language&tNm=$treeName")
             <goto next="$escape.escapeXml($url)"/>
         #else
-	        <exit/>
+            <exit/>
         #end
     </form>
 </vxml>

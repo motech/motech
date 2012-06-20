@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  */
 public class EventKeys
 {
-	private final static Logger log = LoggerFactory.getLogger("org.motechproject.server.demo");
+    private final static Logger log = LoggerFactory.getLogger("org.motechproject.server.demo");
 
     public final static String PHONE_KEY = "PhoneNumber";
 

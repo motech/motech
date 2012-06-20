@@ -18,9 +18,9 @@ import static org.motechproject.util.DateUtil.newDateTime;
 public class EnrollmentRequest {
     private String externalId;
     private String scheduleName;
-	private Time preferredAlertTime;
-	private LocalDate referenceDate;
-	private Time referenceTime;
+    private Time preferredAlertTime;
+    private LocalDate referenceDate;
+    private Time referenceTime;
     private LocalDate enrollmentDate;
     private Time enrollmentTime;
     private String startingMilestoneName;
@@ -96,16 +96,16 @@ public class EnrollmentRequest {
      * @return String
      */
     public LocalDate getReferenceDate() {
-		return referenceDate;
-	}
+        return referenceDate;
+    }
 
     /**
      * This returns the reference time of an Enrollment
      * @return String
      */
     public Time getReferenceTime() {
-		return referenceTime != null ? referenceTime : new Time(0,0);
-	}
+        return referenceTime != null ? referenceTime : new Time(0,0);
+    }
 
     /**
      * This returns whether the starting milestone has been specified for the Enrollment

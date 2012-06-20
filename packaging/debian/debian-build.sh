@@ -12,7 +12,7 @@ set -e
 # Set motech directory
 MOTECH_BASE=../..
 if [ $# -gt 0 ]; then
-	MOTECH_BASE=$1
+    MOTECH_BASE=$1
 fi
 
 cd $MOTECH_BASE
@@ -23,8 +23,8 @@ WAR_PATCHDIR=$PACKAGING_DIR/warpatch
 MOTECH_WAR=$MOTECH_BASE/motech-platform-server/target/$WARNAME
 
 if [ ! -f $MOTECH_WAR ]; then
-	echo $MOTECH_WAR does not exist
-	exit 1
+    echo $MOTECH_WAR does not exist
+    exit 1
 fi
 
 echo "Patching $WARNAME"
@@ -39,7 +39,7 @@ rm $WARNAME
 # apply patches
 for PATCH in $WAR_PATCHDIR/*
 do
-	patch -p0 -i $PATCH
+    patch -p0 -i $PATCH
 done
 
 # zip .war
@@ -63,7 +63,7 @@ echo "Building package"
 fakeroot dpkg-deb --build motech-base
 
 if [ ! -d $PACKAGING_DIR/target ]; then
-	mkdir $PACKAGING_DIR/target
+    mkdir $PACKAGING_DIR/target
 fi
 
 mv motech-base.deb $PACKAGING_DIR/target/$MOTECH_PACKAGENAME

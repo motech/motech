@@ -151,14 +151,14 @@ CALLBACK_PORT=3333
 # USSD support (primitive at this stage)
 # 
 # Relates to the ussd_service_op optional parameter whose values include
-#	0 = PSSD indication
-#	1 = PSSR indication
-#	2 = USSR request
-#	3 = USSN request
-#	16 = PSSD response
-#	17 = PSSR response
-#	18 = USSR confirm
-#	19 = USSN confirm
+#    0 = PSSD indication
+#    1 = PSSR indication
+#    2 = USSR request
+#    3 = USSN request
+#    16 = PSSD response
+#    17 = PSSR response
+#    18 = USSR confirm
+#    19 = USSN confirm
 
 # set to true for DELIVER_SM's carrying delivery receipts to include the ussd_service_op optional
 # parameter if the corresponding SUBMIT_SM had this parameter. Value will be set according to the value

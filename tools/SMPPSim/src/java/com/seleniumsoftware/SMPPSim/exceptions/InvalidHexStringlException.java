@@ -29,12 +29,12 @@ package com.seleniumsoftware.SMPPSim.exceptions;
 
 public class InvalidHexStringlException extends Exception
 {
-	public InvalidHexStringlException() {
-		super();
-	}
+    public InvalidHexStringlException() {
+        super();
+    }
 
-	public InvalidHexStringlException(String message) {
-		super(message);
-	}
+    public InvalidHexStringlException(String message) {
+        super(message);
+    }
 
 }

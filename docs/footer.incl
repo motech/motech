@@ -1,24 +1,24 @@
 </div> <!-- end of main div -->
 </div> <!-- end of wrap div -->
 <footer id="footer">
-			<div class="inner-wrap">
-			
-				<nav>
-					<ul id="footer-nav" class="clearfix">
-						<li><a href="index.html">Home</a></li>
-						<li><a href="http://www.grameenfoundation.org/">Grameen Foundation</a></li>
-						<li><a href="http://motech.googlecode.com/git/LICENSE.txt">License</a></li>
-						<li><a href="contribute.html">Contribute</a></li>
-						<li><a href="contact.html">Contact</a></li>
-					</ul>
-				</nav>
-				<a href="index.html"></a>
-				
-				<smallwhite>&copy;2012&nbsp;&nbsp;&middot;&nbsp;&nbsp;Grameen Foundation USA</smallwhie> | 
-				<smallwhite>Some icons from <a href="http://thenounproject.com/">The Noun Project</a></smallwhite>
-			
-			</div>
+            <div class="inner-wrap">
+
+                <nav>
+                    <ul id="footer-nav" class="clearfix">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="http://www.grameenfoundation.org/">Grameen Foundation</a></li>
+                        <li><a href="http://motech.googlecode.com/git/LICENSE.txt">License</a></li>
+                        <li><a href="contribute.html">Contribute</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </nav>
+                <a href="index.html"></a>
+
+                <smallwhite>&copy;2012&nbsp;&nbsp;&middot;&nbsp;&nbsp;Grameen Foundation USA</smallwhie> |
+                <smallwhite>Some icons from <a href="http://thenounproject.com/">The Noun Project</a></smallwhite>
+
+            </div>
 </footer>
-		</body>
+        </body>
 </html>
 

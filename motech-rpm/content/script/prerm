@@ -8,8 +8,8 @@ chkconfig --del motech
 
 # Delete the motech user, if he exists
 if [ ! `grep -c motech: /etc/passwd` -eq 0 ]; then
-	skill -KILL -u motech
-	userdel motech
+    skill -KILL -u motech
+    userdel motech
 fi
 
 #Remove symlinks

@@ -7,8 +7,8 @@
 package tests.exceptions;
 
 public class SubmitMultiFailedException extends Exception {
-	public SubmitMultiFailedException() {
-		super();
-	}
+    public SubmitMultiFailedException() {
+        super();
+    }
 
 }

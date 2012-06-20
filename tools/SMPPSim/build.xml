@@ -20,10 +20,10 @@
         description="Compile the project" >
       <!-- Compile the java code from ${src} into ${build} -->
       <javac srcdir="${src}" destdir="${classes}" classpath="${classpath}">
-  			<compilerarg value="-Xlint:unchecked"/>
-	  </javac>
+              <compilerarg value="-Xlint:unchecked"/>
+      </javac>
   </target>
-	
+
   <target name="jar" depends="compile">
   <jar destfile="smppsim.jar" manifest="${src}/java/manifest.txt" basedir="${classes}">
     <manifest>
@@ -31,7 +31,7 @@
     </manifest>
   </jar>
   </target>
-	
+
   <target name="javadoc">
       <javadoc packagenames="com.seleniumsoftware.SMPPSim.*,tests.*"
                sourcepath="${src}/java"
@@ -46,7 +46,7 @@
         <bottom><![CDATA[<i>Copyright &#169; 2005 Selenium Software Ltd. All Rights Reserved.</i>]]></bottom>
       </javadoc>
   </target>
-	
+
 
   <target name="clean"
         description="clean up" >

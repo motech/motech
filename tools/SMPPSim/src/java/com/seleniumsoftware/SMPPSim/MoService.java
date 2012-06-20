@@ -35,79 +35,79 @@ import java.util.logging.*;
 
 public class MoService implements Runnable {
 
-	private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
+    private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
 
-	private Smsc smsc = Smsc.getInstance();
+    private Smsc smsc = Smsc.getInstance();
 
-	private int messagesPerMin;
+    private int messagesPerMin;
 
-	boolean moServiceRunning = false;
+    boolean moServiceRunning = false;
 
-	String deliveryFile;
+    String deliveryFile;
 
-	MoMessagePool messages;
+    MoMessagePool messages;
 
-	public MoService(String filename, int deliverMessagesPerMin) {
-		deliveryFile = filename;
-		messagesPerMin = deliverMessagesPerMin;
-	}
+    public MoService(String filename, int deliverMessagesPerMin) {
+        deliveryFile = filename;
+        messagesPerMin = deliverMessagesPerMin;
+    }
 
-	public void run() {
-		logger.info("Starting MO Service....");
-		try {
-			messages = new MoMessagePool(deliveryFile);
-		} catch (Exception e) {
-			logger.warning("Exception creating MoMessagePool. "
-					+ e.getMessage());
-			e.printStackTrace();
-		}
+    public void run() {
+        logger.info("Starting MO Service....");
+        try {
+            messages = new MoMessagePool(deliveryFile);
+        } catch (Exception e) {
+            logger.warning("Exception creating MoMessagePool. "
+                    + e.getMessage());
+            e.printStackTrace();
+        }
 
-		try {
-			runMoService();
-		} catch (Exception e) {
-			logger.warning("MO Service threw an Exception:" + e.getMessage()
-					+ ". It's game over");
-		}
-	}
+        try {
+            runMoService();
+        } catch (Exception e) {
+            logger.warning("MO Service threw an Exception:" + e.getMessage()
+                    + ". It's game over");
+        }
+    }
 
-	private void runMoService() throws Exception {
-		long timer = 0;
-		long actualTime = 0;
-		int sleepMS;
-		sleepMS = (int) (60000 / messagesPerMin);
-		int count = 0;
-		int minCount = 0;
-		DeliverSM newMessage;
+    private void runMoService() throws Exception {
+        long timer = 0;
+        long actualTime = 0;
+        int sleepMS;
+        sleepMS = (int) (60000 / messagesPerMin);
+        int count = 0;
+        int minCount = 0;
+        DeliverSM newMessage;
 
-		timer = System.currentTimeMillis();
+        timer = System.currentTimeMillis();
 
-		while (moServiceRunning) {
-			newMessage = messages.getMessage();
-			newMessage.setSm_length(newMessage.getShort_message().length);
-			newMessage.setSeq_no(smsc.getNextSequence_No());
-			logger.finest("MoService: DeliverSM object:"
-					+ newMessage.toString());
-			smsc.getIq().addMessage(newMessage);
-			count++;
-			minCount++;
-			if (minCount == messagesPerMin) {
-				actualTime = System.currentTimeMillis() - timer;
-				logger.info(count + " MO messages inserted in InboundQueue. "
-						+ minCount + " per minute target, actual time "
-						+ actualTime + " ms");
-				logger.info("drift = " + (actualTime - 60000));
-				timer = System.currentTimeMillis();
-				minCount = 0;
-			}
-			try {
-				logger.finest("MO Service is sleeping for " + sleepMS
-						+ " milliseconds");
-				Thread.sleep(sleepMS);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+        while (moServiceRunning) {
+            newMessage = messages.getMessage();
+            newMessage.setSm_length(newMessage.getShort_message().length);
+            newMessage.setSeq_no(smsc.getNextSequence_No());
+            logger.finest("MoService: DeliverSM object:"
+                    + newMessage.toString());
+            smsc.getIq().addMessage(newMessage);
+            count++;
+            minCount++;
+            if (minCount == messagesPerMin) {
+                actualTime = System.currentTimeMillis() - timer;
+                logger.info(count + " MO messages inserted in InboundQueue. "
+                        + minCount + " per minute target, actual time "
+                        + actualTime + " ms");
+                logger.info("drift = " + (actualTime - 60000));
+                timer = System.currentTimeMillis();
+                minCount = 0;
+            }
+            try {
+                logger.finest("MO Service is sleeping for " + sleepMS
+                        + " milliseconds");
+                Thread.sleep(sleepMS);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-		} // while loop
-	}
+        } // while loop
+    }
 
 }

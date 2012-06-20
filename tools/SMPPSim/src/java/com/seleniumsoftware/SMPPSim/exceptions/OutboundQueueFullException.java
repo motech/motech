@@ -29,12 +29,12 @@ package com.seleniumsoftware.SMPPSim.exceptions;
 
 public class OutboundQueueFullException extends Exception
 {
-	public OutboundQueueFullException() {
-		super();
-	}
+    public OutboundQueueFullException() {
+        super();
+    }
 
-	public OutboundQueueFullException(String message) {
-		super(message);
-	}
+    public OutboundQueueFullException(String message) {
+        super(message);
+    }
 
 }

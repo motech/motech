@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <vxml version="2.1" xmlns="http://www.w3.org/2001/vxml">
     #set( $messageContext = "message" )
-	<form>
- 		<block>
+    <form>
+         <block>
              <prompt>
                 <audio src="$contextPath/../audio/$language/hello.wav"/>
              </prompt>
@@ -12,6 +12,6 @@
             </prompt>
              #set ($url = "$contextPath/outbox/vxml/messageMenu?mId=$message.id&ln=$language")
             <goto next="$escape.escapeXml($url)"/>
-		</block>
-	</form>
+        </block>
+    </form>
 </vxml>

@@ -43,9 +43,9 @@ public class FormParser extends DeserializationListenerAdapter {
     }
 
     @Override
-	public void processingStudy(StudyData studyData) {
-		studies.add(new Study());
-	}
+    public void processingStudy(StudyData studyData) {
+        studies.add(new Study());
+    }
 
     @Override
     public void formProcessed(StudyData studyData, FormData formData, String formXml) {

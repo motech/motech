@@ -1,34 +1,3 @@
-/*
- * MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
- *
- * Copyright (c) 2011 Grameen Foundation USA.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * 3. Neither the name of Grameen Foundation USA, nor its respective contributors
- * may be used to endorse or promote products derived from this software without
- * specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY GRAMEEN FOUNDATION USA AND ITS CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL GRAMEEN FOUNDATION USA OR ITS CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
- * OF SUCH DAMAGE.
- */
 package org.motechproject.server.asterisk;
 
 import org.apache.commons.codec.EncoderException;
@@ -43,14 +12,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Asterisk specific implementation of the IVR Service interface
- *
- * Date: 07/03/11
- *
  */
-public class IVRServiceAsteriskImpl implements IVRService
-{
-	public static final String VXML_URL = "vxml.url";
-	public static final String VXML_TIMEOUT = "vxml.timeout";
+public class IVRServiceAsteriskImpl implements IVRService {
+    public static final String VXML_URL = "vxml.url";
+    public static final String VXML_TIMEOUT = "vxml.timeout";
 
     private final String asteriskApplication = "Agi";
 
@@ -72,8 +37,7 @@ public class IVRServiceAsteriskImpl implements IVRService
     }
 
     @Override
-    public void initiateCall(CallRequest callRequest)
-    {
+    public void initiateCall(CallRequest callRequest) {
 
         if (callRequest == null) {
             throw new IllegalArgumentException("CallRequest can not be null");
@@ -98,7 +62,7 @@ public class IVRServiceAsteriskImpl implements IVRService
             log.info("Initiating call to: " + destinationPhone + " VXML URL: " + data);
 
             asteriskServer.originateToApplicationAsync(destinationPhone, asteriskApplication,
-                                                       data, getTimeOut(), asteriskCallBack);
+                    data, getTimeOut(), asteriskCallBack);
         } catch (ManagerCommunicationException e) {
             String errorMessage = "Can not initiate call: " + e.getMessage();
             throw new CallInitiationException(errorMessage, e);
@@ -109,22 +73,22 @@ public class IVRServiceAsteriskImpl implements IVRService
     }
 
     private String getVxmlUrl() {
-    	//TODO: construct the vxml url.
-    	return vxmlBaseURL;
-	}
+        //TODO: construct the vxml url.
+        return vxmlBaseURL;
+    }
 
-	private long getTimeOut() {
-    	return timeout;
-	}
+    private long getTimeOut() {
+        return timeout;
+    }
 
-	public void setAgiUrl(String agiUrl) {
+    public void setAgiUrl(String agiUrl) {
         this.agiUrl = agiUrl;
     }
 
     /**
      * This method is for Unit Test support only
      */
-     void setAsteriskServer(AsteriskServer asteriskServer) {
+    void setAsteriskServer(AsteriskServer asteriskServer) {
         this.asteriskServer = asteriskServer;
     }
 
@@ -132,11 +96,11 @@ public class IVRServiceAsteriskImpl implements IVRService
         return asteriskServer;
     }
 
-	public void setTimeout(long timeout) {
-		this.timeout = timeout;
-	}
+    public void setTimeout(long timeout) {
+        this.timeout = timeout;
+    }
 
-	public void setVxmlBaseURL(String vxmlBaseURL) {
-		this.vxmlBaseURL = vxmlBaseURL;
-	}
+    public void setVxmlBaseURL(String vxmlBaseURL) {
+        this.vxmlBaseURL = vxmlBaseURL;
+    }
 }

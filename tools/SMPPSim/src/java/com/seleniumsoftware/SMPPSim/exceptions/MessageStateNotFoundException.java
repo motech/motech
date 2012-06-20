@@ -29,12 +29,12 @@ package com.seleniumsoftware.SMPPSim.exceptions;
 
 public class MessageStateNotFoundException extends Exception
 {
-	public MessageStateNotFoundException() {
-		super();
-	}
+    public MessageStateNotFoundException() {
+        super();
+    }
 
-	public MessageStateNotFoundException(String message) {
-		super(message);
-	}
+    public MessageStateNotFoundException(String message) {
+        super(message);
+    }
 
 }

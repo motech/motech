@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<parent>
-		<groupId>org.motechproject</groupId>
-		<artifactId>motech</artifactId>
-		<version>0.11-SNAPSHOT</version>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.motechproject</groupId>
+        <artifactId>motech</artifactId>
+        <version>0.11-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
     <groupId>org.motechproject</groupId>
-	<artifactId>motech-sms-http</artifactId>
-	<name>MoTeCH SMS HTTP</name>
+    <artifactId>motech-sms-http</artifactId>
+    <name>MoTeCH SMS HTTP</name>
     <packaging>bundle</packaging>
-	<dependencies>
+    <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
@@ -30,23 +30,23 @@
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
-		<dependency>
-			<groupId>org.motechproject</groupId>
-			<artifactId>motech-platform-server-api</artifactId>
-			<version>${project.version}</version>
-		</dependency>
         <dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>motech-sms-api</artifactId>
-			<version>${project.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>${spring.version}</version>
-			<scope>test</scope>
-		</dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-server-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-sms-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
@@ -63,7 +63,7 @@
             <artifactId>jetty</artifactId>
             <version>6.1.2</version>
         </dependency>
-	</dependencies>
+    </dependencies>
     <build>
         <plugins>
             <plugin>

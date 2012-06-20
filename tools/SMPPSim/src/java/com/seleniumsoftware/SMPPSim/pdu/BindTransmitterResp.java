@@ -29,46 +29,46 @@ package com.seleniumsoftware.SMPPSim.pdu;
 import com.seleniumsoftware.SMPPSim.pdu.util.PduUtilities;
 
 public class BindTransmitterResp
-	extends Response
-	implements Marshaller {
+    extends Response
+    implements Marshaller {
 
-	String system_id;
+    String system_id;
 
-	public BindTransmitterResp() {
-	}
+    public BindTransmitterResp() {
+    }
 
-	public BindTransmitterResp(
-		BindTransmitter requestMsg,
-		String sysid) {
-		// message header fields except message length
-		setCmd_id(PduConstants.BIND_TRANSMITTER_RESP);
-		setCmd_status(PduConstants.ESME_ROK);
-		setSeq_no(requestMsg.getSeq_no());
-		// Set message length to zero since actual length will not be known until the object is
-		// converted back to a message complete with null terminated strings
-		setCmd_len(0);
+    public BindTransmitterResp(
+        BindTransmitter requestMsg,
+        String sysid) {
+        // message header fields except message length
+        setCmd_id(PduConstants.BIND_TRANSMITTER_RESP);
+        setCmd_status(PduConstants.ESME_ROK);
+        setSeq_no(requestMsg.getSeq_no());
+        // Set message length to zero since actual length will not be known until the object is
+        // converted back to a message complete with null terminated strings
+        setCmd_len(0);
 
-		// message body
-		system_id = sysid;
-	}
+        // message body
+        system_id = sysid;
+    }
 
-	public byte [] marshall() throws Exception {
-		out.reset();
-		super.prepareHeaderForMarshalling();
-		out.write(PduUtilities.stringToNullTerminatedByteArray(system_id)); 
-		byte [] response = out.toByteArray();
-		int l = response.length;
-		response = PduUtilities.setPduLength(response,l);
-		return response;
-	}
-	
-	/**
-	 * *returns String representation of PDU
-	 */
-	public String toString() {
-		return 	super.toString()+","+
-				"system_id="+system_id;
-	}
+    public byte [] marshall() throws Exception {
+        out.reset();
+        super.prepareHeaderForMarshalling();
+        out.write(PduUtilities.stringToNullTerminatedByteArray(system_id));
+        byte [] response = out.toByteArray();
+        int l = response.length;
+        response = PduUtilities.setPduLength(response,l);
+        return response;
+    }
+
+    /**
+     * *returns String representation of PDU
+     */
+    public String toString() {
+        return     super.toString()+","+
+                "system_id="+system_id;
+    }
 
 
 }

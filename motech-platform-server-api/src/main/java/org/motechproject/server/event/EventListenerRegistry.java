@@ -1,34 +1,3 @@
-/*
- * MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
- *
- * Copyright (c) 2011 Grameen Foundation USA.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * 3. Neither the name of Grameen Foundation USA, nor its respective contributors
- * may be used to endorse or promote products derived from this software without
- * specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY GRAMEEN FOUNDATION USA AND ITS CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL GRAMEEN FOUNDATION USA OR ITS CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
- * OF SUCH DAMAGE.
- */
 package org.motechproject.server.event;
 
 import org.motechproject.metrics.MetricsAgent;
@@ -64,7 +33,7 @@ public class EventListenerRegistry {
      * @param listener the listener instance
      * @param subjects the event types that a listener is interested in
      */
-    public void registerListener(org.motechproject.server.event.EventListener listener, List<String> subjects) {
+    public void registerListener(EventListener listener, List<String> subjects) {
 
         if (listener == null) {
             String errorMessage = "Invalid attempt to register a null EventListener";
@@ -84,7 +53,7 @@ public class EventListenerRegistry {
         }
     }
 
-    public void registerListener(org.motechproject.server.event.EventListener listener, String subject) {
+    public void registerListener(EventListener listener, String subject) {
         if (listener == null) {
             String errorMessage = "Invalid attempt to register a null EventListener";
             log.error(errorMessage);
@@ -105,12 +74,13 @@ public class EventListenerRegistry {
     /**
      * Retrieve a list of event listeners for a given event type. If there are no listeners, an empty list is
      * returned.
+     *
      * @param subject The event type that you are seeking listeners for
      * @return A list of scheduled event listeners that are interested in that event
      */
-    public Set<org.motechproject.server.event.EventListener> getListeners(String subject) {
+    public Set<EventListener> getListeners(String subject) {
         final long startTime = metricsAgent.startTimer();
-        Set<org.motechproject.server.event.EventListener> ret = listenerTree.getListeners(subject);
+        Set<EventListener> ret = listenerTree.getListeners(subject);
         metricsAgent.stopTimer("motech.listener-registry.getListeners", startTime);
 
         return ret;
@@ -118,6 +88,7 @@ public class EventListenerRegistry {
 
     /**
      * See if a particular subject has any listeners
+     *
      * @param subject
      * @return
      */
@@ -132,6 +103,7 @@ public class EventListenerRegistry {
 
     /**
      * Get the count of listeners for a particular subject
+     *
      * @param subject
      * @return
      */

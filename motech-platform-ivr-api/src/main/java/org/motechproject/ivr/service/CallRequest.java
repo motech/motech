@@ -1,34 +1,3 @@
-/*
- * MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
- *
- * Copyright (c) 2011 Grameen Foundation USA.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * 3. Neither the name of Grameen Foundation USA, nor its respective contributors
- * may be used to endorse or promote products derived from this software without
- * specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY GRAMEEN FOUNDATION USA AND ITS CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL GRAMEEN FOUNDATION USA OR ITS CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
- * OF SUCH DAMAGE.
- */
 package org.motechproject.ivr.service;
 
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -40,11 +9,11 @@ import java.util.Map;
 
 /**
  * This class is used to request a call from the IVR system
- *
+ * <p/>
  * To receive events related to this call provide this class with the events to raise when the following
  * events within the IVR system happen.  The supplied event will be augmented with {@link org.motechproject.ivr.model.CallDetailRecord}
  * if one is available
- *
+ * <p/>
  * onSuccessEvent - Following the successful completion of the call
  * onBusyEvent - If the IVR system is unable to place the call because the line is busy
  * onNoAnswerEvent - If the IVR system is unable to complete the call because of no answer
@@ -52,25 +21,25 @@ import java.util.Map;
  */
 public class CallRequest implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@JsonProperty
+    @JsonProperty
     private String phone;
-	@JsonProperty
+    @JsonProperty
     private int timeOut;
-	@JsonProperty
+    @JsonProperty
     private String callBackUrl;
-    
-	@JsonProperty
+
+    @JsonProperty
     private Map<String, String> payload = new HashMap<String, String>();
 
-	@JsonProperty
+    @JsonProperty
     private MotechEvent onSuccessEvent;
-	@JsonProperty
+    @JsonProperty
     private MotechEvent onBusyEvent;
-	@JsonProperty
+    @JsonProperty
     private MotechEvent onNoAnswerEvent;
-	@JsonProperty
+    @JsonProperty
     private MotechEvent onFailureEvent;
 
     /**
@@ -85,7 +54,7 @@ public class CallRequest implements Serializable {
         }
 
         if (callBackUrl == null) {
-        	throw new IllegalArgumentException("callBackUrl can not be null");
+            throw new IllegalArgumentException("callBackUrl can not be null");
         }
 
         this.phone = phone;
@@ -95,8 +64,9 @@ public class CallRequest implements Serializable {
 
     /**
      * Creates call request with name value pair additional config
-     * @param phone     dialing number / sip id
-     * @param params    custom data for additional parameters
+     *
+     * @param phone       dialing number / sip id
+     * @param params      custom data for additional parameters
      * @param callBackUrl application endpoint to process callbacks
      */
     public CallRequest(String phone, Map<String, String> params, String callBackUrl) {
@@ -104,83 +74,74 @@ public class CallRequest implements Serializable {
             throw new IllegalArgumentException("phone can not be null");
         }
         if (callBackUrl == null) {
-        	throw new IllegalArgumentException("callBackUrl can not be null");
+            throw new IllegalArgumentException("callBackUrl can not be null");
         }
 
         this.phone = phone;
         this.timeOut = 0;
 
         if (params != null)
-        	this.payload.putAll(params);
+            this.payload.putAll(params);
 
         this.callBackUrl = callBackUrl;
     }
 
-    public CallRequest() {}
+    public CallRequest() {
+    }
 
     public String getPhone() {
         return phone;
     }
 
-    public MotechEvent getOnSuccessEvent()
-    {
+    public MotechEvent getOnSuccessEvent() {
         return onSuccessEvent;
     }
 
-    public void setOnSuccessEvent(MotechEvent onSuccessEvent)
-    {
+    public void setOnSuccessEvent(MotechEvent onSuccessEvent) {
         this.onSuccessEvent = onSuccessEvent;
     }
 
-    public MotechEvent getOnBusyEvent()
-    {
+    public MotechEvent getOnBusyEvent() {
         return onBusyEvent;
     }
 
-    public void setOnBusyEvent(MotechEvent onBusyEvent)
-    {
+    public void setOnBusyEvent(MotechEvent onBusyEvent) {
         this.onBusyEvent = onBusyEvent;
     }
 
-    public MotechEvent getOnNoAnswerEvent()
-    {
+    public MotechEvent getOnNoAnswerEvent() {
         return onNoAnswerEvent;
     }
 
-    public void setOnNoAnswerEvent(MotechEvent onNoAnswerEvent)
-    {
+    public void setOnNoAnswerEvent(MotechEvent onNoAnswerEvent) {
         this.onNoAnswerEvent = onNoAnswerEvent;
     }
 
-    public MotechEvent getOnFailureEvent()
-    {
+    public MotechEvent getOnFailureEvent() {
         return onFailureEvent;
     }
 
-    public void setOnFailureEvent(MotechEvent onFailureEvent)
-    {
+    public void setOnFailureEvent(MotechEvent onFailureEvent) {
         this.onFailureEvent = onFailureEvent;
     }
 
-	public Map<String, String> getPayload() {
-		return payload;
-	}
+    public Map<String, String> getPayload() {
+        return payload;
+    }
 
-	public void setPayload(Map<String, String> payload) {
-		this.payload = payload;
-	}
+    public void setPayload(Map<String, String> payload) {
+        this.payload = payload;
+    }
 
     public String getCallBackUrl() {
-		return callBackUrl;
-	}
+        return callBackUrl;
+    }
 
-    public int getTimeOut()
-    {
+    public int getTimeOut() {
         return timeOut;
     }
 
-    public void setTimeOut(int timeOut)
-    {
+    public void setTimeOut(int timeOut) {
         this.timeOut = timeOut;
     }
 }

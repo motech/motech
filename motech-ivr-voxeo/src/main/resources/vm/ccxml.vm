@@ -50,7 +50,7 @@
 
   <eventprocessor statevariable="app_state">
     <!-- This transition detects if this is an outgoing or incoming call and sets the
-	 state appropiatly.  For an outgoing call it also creates the call -->
+     state appropiatly.  For an outgoing call it also creates the call -->
     <transition event="ccxml.loaded">
       <log expr="'*** CCXML.LOADED ***'"/>
 
@@ -58,9 +58,9 @@
       <send name="'TIMEOUT_REACHED'" target="session.id" delay="timeout"/>
 
       <if cond="typeof vxml !== 'undefined'">
-	    <log expr="vxml"/>
-	    <log expr="phonenum"/>
-	    <log expr="cid"/>
+        <log expr="vxml"/>
+        <log expr="phonenum"/>
+        <log expr="cid"/>
 
         <assign name="app_state" expr="'outgoing'"/>
         <log expr="'*** PLACING CALL ***'"/>

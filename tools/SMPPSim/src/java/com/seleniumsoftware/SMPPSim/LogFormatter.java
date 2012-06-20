@@ -33,24 +33,24 @@ import java.util.*;
 
 public class LogFormatter extends java.util.logging.Formatter {
 
-	private SimpleDateFormat df = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss S");
+    private SimpleDateFormat df = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss S");
 
-	public LogFormatter() {
-	}
+    public LogFormatter() {
+    }
 
-	public String format(LogRecord rec) {
-		StringBuffer buf = new StringBuffer();
-		long logTime = rec.getMillis();
-		Date logDate = new Date(logTime);
-		String dateTime = (df.format(logDate)+"  ").substring(0,23);
-		buf.append(dateTime);
-		buf.append(" ");
-		buf.append((rec.getLevel().getName()+"      ").substring(0,7));
-		buf.append(" ");
-		buf.append(rec.getThreadID());
-		buf.append(" ");
-		buf.append(formatMessage(rec));
-		buf.append('\n');
-		return buf.toString();
-	}
+    public String format(LogRecord rec) {
+        StringBuffer buf = new StringBuffer();
+        long logTime = rec.getMillis();
+        Date logDate = new Date(logTime);
+        String dateTime = (df.format(logDate)+"  ").substring(0,23);
+        buf.append(dateTime);
+        buf.append(" ");
+        buf.append((rec.getLevel().getName()+"      ").substring(0,7));
+        buf.append(" ");
+        buf.append(rec.getThreadID());
+        buf.append(" ");
+        buf.append(formatMessage(rec));
+        buf.append('\n');
+        return buf.toString();
+    }
 }

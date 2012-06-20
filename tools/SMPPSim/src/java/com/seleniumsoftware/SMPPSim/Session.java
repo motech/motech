@@ -28,52 +28,52 @@
 package com.seleniumsoftware.SMPPSim;
 
 public class Session {
-	boolean isBound = false;
-	boolean isReceiver = false;
-	boolean isTransmitter = false;
+    boolean isBound = false;
+    boolean isReceiver = false;
+    boolean isTransmitter = false;
 
-	public Session() {
-	}
-	/**
-	 * @return
-	 */
-	public boolean isBound() {
-		return isBound;
-	}
+    public Session() {
+    }
+    /**
+     * @return
+     */
+    public boolean isBound() {
+        return isBound;
+    }
 
-	/**
-	 * @return
-	 */
-	public boolean isReceiver() {
-		return isReceiver;
-	}
+    /**
+     * @return
+     */
+    public boolean isReceiver() {
+        return isReceiver;
+    }
 
-	/**
-	 * @return
-	 */
-	public boolean isTransmitter() {
-		return isTransmitter;
-	}
+    /**
+     * @return
+     */
+    public boolean isTransmitter() {
+        return isTransmitter;
+    }
 
-	/**
-	 * @param b
-	 */
-	public void setBound(boolean b) {
-		isBound = b;
-	}
+    /**
+     * @param b
+     */
+    public void setBound(boolean b) {
+        isBound = b;
+    }
 
-	/**
-	 * @param b
-	 */
-	public void setReceiver(boolean b) {
-		isReceiver = b;
-	}
+    /**
+     * @param b
+     */
+    public void setReceiver(boolean b) {
+        isReceiver = b;
+    }
 
-	/**
-	 * @param b
-	 */
-	public void setTransmitter(boolean b) {
-		isTransmitter = b;
-	}
+    /**
+     * @param b
+     */
+    public void setTransmitter(boolean b) {
+        isTransmitter = b;
+    }
 
 }

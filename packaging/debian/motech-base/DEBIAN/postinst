@@ -11,7 +11,7 @@ groupadd -f motech
 
 # Create the motech user, if he doesn't exist
 if [ `grep -c motech: /etc/passwd` -eq 0 ]; then
-	useradd -r -c "Motech user" -d /usr/share/motech -g motech motech
+    useradd -r -c "Motech user" -d /usr/share/motech -g motech motech
 fi
 
 # Make motech the owner of relevant directories

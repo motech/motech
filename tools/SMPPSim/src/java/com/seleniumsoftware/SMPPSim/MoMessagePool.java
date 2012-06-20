@@ -37,118 +37,118 @@ import java.io.*;
 
 public class MoMessagePool {
 
-	private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
+    private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
 
-	private Vector<DeliverSM> messages;
+    private Vector<DeliverSM> messages;
 
-	private BufferedReader messagesReader;
+    private BufferedReader messagesReader;
 
-	private String source_addr;
+    private String source_addr;
 
-	private String destination_addr;
+    private String destination_addr;
 
-	private byte[] short_message;
+    private byte[] short_message;
 
-	private int data_coding = 0;
+    private int data_coding = 0;
 
-	private int recno = 0;
+    private int recno = 0;
 
-	public MoMessagePool() {
-	}
+    public MoMessagePool() {
+    }
 
-	public MoMessagePool(String filename) {
-		String record = null;
-		DeliverSM msg;
-		messages = new Vector<DeliverSM>();
-		try {
-			messagesReader = new BufferedReader(new FileReader(filename));
-		} catch (FileNotFoundException fnfe) {
-			logger.warning("MoMessagePool: file not found: " + filename);
-			fnfe.printStackTrace();
-		}
+    public MoMessagePool(String filename) {
+        String record = null;
+        DeliverSM msg;
+        messages = new Vector<DeliverSM>();
+        try {
+            messagesReader = new BufferedReader(new FileReader(filename));
+        } catch (FileNotFoundException fnfe) {
+            logger.warning("MoMessagePool: file not found: " + filename);
+            fnfe.printStackTrace();
+        }
 
-		do {
-			try {
-				record = messagesReader.readLine();
-				String therecord;
-				if (record == null)
-					therecord = "null";
-				else
-					therecord = record;
-				logger.finest("Read from file:<" + therecord + ">");
-				if (record != null) {
-					msg = new DeliverSM();
-					try {
-						getMessageAttributes(record);
-					} catch (Exception e) {
-						logger
-								.warning("Error processing delivery_messages file, record number"
-										+ (recno + 1));
-						logger.warning(e.getMessage());
-						e.printStackTrace();
-						continue;
-					}
-					msg.setSource_addr(source_addr);
-					msg.setDestination_addr(destination_addr);
-					msg.setShort_message(short_message);
-					msg.setData_coding(data_coding);
-					messages.add(msg);
-					recno++;
-					logger.finest("Added delivery_message: " + source_addr
-							+ "," + destination_addr + "," + short_message);
-				}
-			} catch (Exception e) {
-				logger.warning("Error processing delivery_messages file");
-				logger.info(e.getMessage());
-				e.printStackTrace();
-			}
-		} while (record != null);
-		logger.finest("loaded " + recno + " delivery messages");
-	}
+        do {
+            try {
+                record = messagesReader.readLine();
+                String therecord;
+                if (record == null)
+                    therecord = "null";
+                else
+                    therecord = record;
+                logger.finest("Read from file:<" + therecord + ">");
+                if (record != null) {
+                    msg = new DeliverSM();
+                    try {
+                        getMessageAttributes(record);
+                    } catch (Exception e) {
+                        logger
+                                .warning("Error processing delivery_messages file, record number"
+                                        + (recno + 1));
+                        logger.warning(e.getMessage());
+                        e.printStackTrace();
+                        continue;
+                    }
+                    msg.setSource_addr(source_addr);
+                    msg.setDestination_addr(destination_addr);
+                    msg.setShort_message(short_message);
+                    msg.setData_coding(data_coding);
+                    messages.add(msg);
+                    recno++;
+                    logger.finest("Added delivery_message: " + source_addr
+                            + "," + destination_addr + "," + short_message);
+                }
+            } catch (Exception e) {
+                logger.warning("Error processing delivery_messages file");
+                logger.info(e.getMessage());
+                e.printStackTrace();
+            }
+        } while (record != null);
+        logger.finest("loaded " + recno + " delivery messages");
+    }
 
-	private void getMessageAttributes(String rec) throws Exception {
-		int commaIX1;
-		int commaIX2;
-		String msg = "";
-		commaIX1 = rec.indexOf(",");
-		if (commaIX1 != -1) {
-			source_addr = rec.substring(0, commaIX1);
-			commaIX2 = rec.indexOf(",", commaIX1 + 1);
-			if (commaIX2 != -1) {
-				destination_addr = rec.substring(commaIX1 + 1, commaIX2);
-				msg = rec.substring(commaIX2 + 1, rec.length());
-				data_coding = 0;
-				if (!msg.startsWith("0x")) 
-					short_message = msg.getBytes();
-				else {
-					try {
-						short_message = Utilities.makeBinaryMessage(msg.substring(2));
-						data_coding = 4; // binary
-					} catch (InvalidHexStringlException e) {
-						logger.warning("Invalid hex string in MO service input file: <"+msg+">. Used as plain text instead.");
-						short_message = msg.getBytes();
-					}
-				}
-			} else {
-				throw new Exception(
-						"Invalid delivery message file format: record "
-								+ (recno + 1));
-			}
-		} else {
-			throw new Exception("Invalid delivery message file format: record "
-					+ recno);
-		}
+    private void getMessageAttributes(String rec) throws Exception {
+        int commaIX1;
+        int commaIX2;
+        String msg = "";
+        commaIX1 = rec.indexOf(",");
+        if (commaIX1 != -1) {
+            source_addr = rec.substring(0, commaIX1);
+            commaIX2 = rec.indexOf(",", commaIX1 + 1);
+            if (commaIX2 != -1) {
+                destination_addr = rec.substring(commaIX1 + 1, commaIX2);
+                msg = rec.substring(commaIX2 + 1, rec.length());
+                data_coding = 0;
+                if (!msg.startsWith("0x"))
+                    short_message = msg.getBytes();
+                else {
+                    try {
+                        short_message = Utilities.makeBinaryMessage(msg.substring(2));
+                        data_coding = 4; // binary
+                    } catch (InvalidHexStringlException e) {
+                        logger.warning("Invalid hex string in MO service input file: <"+msg+">. Used as plain text instead.");
+                        short_message = msg.getBytes();
+                    }
+                }
+            } else {
+                throw new Exception(
+                        "Invalid delivery message file format: record "
+                                + (recno + 1));
+            }
+        } else {
+            throw new Exception("Invalid delivery message file format: record "
+                    + recno);
+        }
 
-	}
+    }
 
-	protected DeliverSM getMessage() {
-		int messageIX = (int) (Math.random() * recno);
-		logger.finest("Selected delivery_message #" + messageIX);
-		DeliverSM dsm = new DeliverSM();
-		DeliverSM selected = messages.elementAt(messageIX);
-		;
-		dsm = (DeliverSM) selected.clone();
-		return dsm;
-	}
+    protected DeliverSM getMessage() {
+        int messageIX = (int) (Math.random() * recno);
+        logger.finest("Selected delivery_message #" + messageIX);
+        DeliverSM dsm = new DeliverSM();
+        DeliverSM selected = messages.elementAt(messageIX);
+        ;
+        dsm = (DeliverSM) selected.clone();
+        return dsm;
+    }
 
 }

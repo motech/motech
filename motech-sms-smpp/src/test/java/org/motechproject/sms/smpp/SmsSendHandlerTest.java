@@ -22,31 +22,31 @@ public class SmsSendHandlerTest {
 
     private SmsSendHandler handler;
 
-	@Mock
-	private ManagedSmslibService managedSmslibService;
+    @Mock
+    private ManagedSmslibService managedSmslibService;
 
-	@Before
-	public void setup() {
-		initMocks(this);
-		handler = new SmsSendHandler(managedSmslibService);
-	}
+    @Before
+    public void setup() {
+        initMocks(this);
+        handler = new SmsSendHandler(managedSmslibService);
+    }
 
-	@Test
-	public void shouldListenToSmsSendEvent() throws NoSuchMethodException {
-		Method handleMethod = SmsSendHandler.class.getDeclaredMethod("handle", new Class[]{MotechEvent.class});
-		assertTrue("MotechListener annotation missing", handleMethod.isAnnotationPresent(MotechListener.class));
-		MotechListener annotation = handleMethod.getAnnotation(MotechListener.class);
-		assertArrayEquals(new String[]{EventSubjects.SEND_SMS}, annotation.subjects());
-	}
+    @Test
+    public void shouldListenToSmsSendEvent() throws NoSuchMethodException {
+        Method handleMethod = SmsSendHandler.class.getDeclaredMethod("handle", new Class[]{MotechEvent.class});
+        assertTrue("MotechListener annotation missing", handleMethod.isAnnotationPresent(MotechListener.class));
+        MotechListener annotation = handleMethod.getAnnotation(MotechListener.class);
+        assertArrayEquals(new String[]{EventSubjects.SEND_SMS}, annotation.subjects());
+    }
 
-	@Test
-	public void shouldSendMessageUsingSmpp() throws Exception {
-		handler.handle(new MotechEvent(EventSubjects.SEND_SMS, new HashMap<String, Object>() {{
-			put(EventDataKeys.RECIPIENTS, Arrays.asList("0987654321"));
-			put(EventDataKeys.MESSAGE, "foo bar");
-		}}));
-		verify(managedSmslibService).queueMessage(Arrays.asList("0987654321"), "foo bar");
-	}
+    @Test
+    public void shouldSendMessageUsingSmpp() throws Exception {
+        handler.handle(new MotechEvent(EventSubjects.SEND_SMS, new HashMap<String, Object>() {{
+            put(EventDataKeys.RECIPIENTS, Arrays.asList("0987654321"));
+            put(EventDataKeys.MESSAGE, "foo bar");
+        }}));
+        verify(managedSmslibService).queueMessage(Arrays.asList("0987654321"), "foo bar");
+    }
 
     @Test
     public void shouldScheduleMessageIfDeliveryTimeIsSpecified() throws Exception {

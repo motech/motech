@@ -33,216 +33,216 @@ import java.util.logging.*;
 import com.seleniumsoftware.SMPPSim.util.LoggingUtilities;
 
 public class StandardConnectionHandler implements Runnable {
-	private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
-	private Smsc smsc = Smsc.getInstance();
-	private StandardProtocolHandler handler;
-	boolean isConnected = false;
-	byte[] response;
-	byte[] packetLen = new byte[4];
-	byte[] message;
-	private ServerSocket ss;
-	// reference to relevant server socket set up in SMPPSim
-	InputStream is = null;
-	OutputStream os = null;
-	Socket socket = null;
+    private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
+    private Smsc smsc = Smsc.getInstance();
+    private StandardProtocolHandler handler;
+    boolean isConnected = false;
+    byte[] response;
+    byte[] packetLen = new byte[4];
+    byte[] message;
+    private ServerSocket ss;
+    // reference to relevant server socket set up in SMPPSim
+    InputStream is = null;
+    OutputStream os = null;
+    Socket socket = null;
 
-	public StandardConnectionHandler() {
-		// default constructor only included so that configurable StandardConnectionHandler selection is possible
-	}
+    public StandardConnectionHandler() {
+        // default constructor only included so that configurable StandardConnectionHandler selection is possible
+    }
 
-	public StandardConnectionHandler(ServerSocket useThisServerSocket) {
-		ss = useThisServerSocket;
-	}
+    public StandardConnectionHandler(ServerSocket useThisServerSocket) {
+        ss = useThisServerSocket;
+    }
 
-	public void run() {
-		runThread();
-	}
+    public void run() {
+        runThread();
+    }
 
-	private void runThread() {
+    private void runThread() {
 
-		do // process connections forever
-			{
-			do // {accept connection, create protocol handler, {read PDU,handle it}, close connection}
-				{
-				try {
-					logger.info(
-						"StandardConnectionHandler waiting for connection");
-					socket = ss.accept();
-					logger.info(
-						"StandardConnectionHandler accepted a connection");
-					isConnected = true;
-					is = socket.getInputStream();
-					os = socket.getOutputStream();
-					Class c =
-						Class.forName(SMPPSim.getProtocolHandlerClassName());
-					handler = (StandardProtocolHandler) c.newInstance();
-					handler.setConnection(this);
-					logger.info(
-						"Protocol handler is of type " + handler.getName());
-				} catch (Exception exception) {
-					logger.warning(
-						"Exception processing connection: "
-							+ exception.getMessage());
-					logger.warning(
-						"Exception is of type: "
-							+ exception.getClass().getName());
-					exception.printStackTrace();
-					try {
-						socket.close();
-					} catch (Exception e) {
-						logger.warning(
-							"Could not close socket following exception");
-						e.printStackTrace();
-					}
-				}
-			} while (!isConnected);
+        do // process connections forever
+            {
+            do // {accept connection, create protocol handler, {read PDU,handle it}, close connection}
+                {
+                try {
+                    logger.info(
+                        "StandardConnectionHandler waiting for connection");
+                    socket = ss.accept();
+                    logger.info(
+                        "StandardConnectionHandler accepted a connection");
+                    isConnected = true;
+                    is = socket.getInputStream();
+                    os = socket.getOutputStream();
+                    Class c =
+                        Class.forName(SMPPSim.getProtocolHandlerClassName());
+                    handler = (StandardProtocolHandler) c.newInstance();
+                    handler.setConnection(this);
+                    logger.info(
+                        "Protocol handler is of type " + handler.getName());
+                } catch (Exception exception) {
+                    logger.warning(
+                        "Exception processing connection: "
+                            + exception.getMessage());
+                    logger.warning(
+                        "Exception is of type: "
+                            + exception.getClass().getName());
+                    exception.printStackTrace();
+                    try {
+                        socket.close();
+                    } catch (Exception e) {
+                        logger.warning(
+                            "Could not close socket following exception");
+                        e.printStackTrace();
+                    }
+                }
+            } while (!isConnected);
 
-			do // until UNBIND or state violation
-				{
-				try {
-					logger.finest("at start of main loop");
-					readPacketInto(is);
-					smsc.writeBinarySme(message);
-					if(SMPPSim.isCallback() && smsc.isCallback_server_online()) {
-					   smsc.sent(response);
-					} 
-					logger.finest("read packet");
-					handler.processMessage(message);
-				} catch (SocketException se) {
-					logger.info(
-						"Socket exception: probably connection closed by client without UNBIND");
-					se.printStackTrace();
-					handler.getSession().setBound(false);
-					if (handler.getSession().isReceiver())
-						smsc.receiverUnbound();
-					isConnected = false;
-				} catch (Exception exception) {
-					logger.info(exception.getMessage());
-					exception.printStackTrace();
-					try {
-						socket.close();
-					} catch (Exception e) {
-						logger.warning(
-							"Could not close socket following exception");
-						e.printStackTrace();
-					}
-					handler.getSession().setBound(false);
-					isConnected = false;
-				}
-			} while (isConnected);
-			logger.finest("leaving connection handler main loop");
-		}
-		while (true);
-	}
+            do // until UNBIND or state violation
+                {
+                try {
+                    logger.finest("at start of main loop");
+                    readPacketInto(is);
+                    smsc.writeBinarySme(message);
+                    if(SMPPSim.isCallback() && smsc.isCallback_server_online()) {
+                       smsc.sent(response);
+                    }
+                    logger.finest("read packet");
+                    handler.processMessage(message);
+                } catch (SocketException se) {
+                    logger.info(
+                        "Socket exception: probably connection closed by client without UNBIND");
+                    se.printStackTrace();
+                    handler.getSession().setBound(false);
+                    if (handler.getSession().isReceiver())
+                        smsc.receiverUnbound();
+                    isConnected = false;
+                } catch (Exception exception) {
+                    logger.info(exception.getMessage());
+                    exception.printStackTrace();
+                    try {
+                        socket.close();
+                    } catch (Exception e) {
+                        logger.warning(
+                            "Could not close socket following exception");
+                        e.printStackTrace();
+                    }
+                    handler.getSession().setBound(false);
+                    isConnected = false;
+                }
+            } while (isConnected);
+            logger.finest("leaving connection handler main loop");
+        }
+        while (true);
+    }
 
-	protected boolean isBound() {
-		// we only have a ProtocolHandler if this StandardConnectionHandler is connected
-		if (isConnected) {
-			return handler.getSession().isBound();
-		} else {
-			return false;
-		}
-	}
+    protected boolean isBound() {
+        // we only have a ProtocolHandler if this StandardConnectionHandler is connected
+        if (isConnected) {
+            return handler.getSession().isBound();
+        } else {
+            return false;
+        }
+    }
 
-	protected boolean isReceiver() {
-		return handler.getSession().isReceiver();
-	}
+    protected boolean isReceiver() {
+        return handler.getSession().isReceiver();
+    }
 
 //TODO Review why addressIsServicedByReceiver is in the StandardConnectionHandler class?!
-	protected boolean addressIsServicedByReceiver(String address) {
-		if (isConnected) {
-			return handler.addressIsServicedByReceiver(address);
-		} else {
-			return false;
-		}
-	}
+    protected boolean addressIsServicedByReceiver(String address) {
+        if (isConnected) {
+            return handler.addressIsServicedByReceiver(address);
+        } else {
+            return false;
+        }
+    }
 
-	private static final int getBytesAsInt(byte i_byte) {
-		return i_byte & 0xff;
-	}
+    private static final int getBytesAsInt(byte i_byte) {
+        return i_byte & 0xff;
+    }
 
-	private int readPacketInto(InputStream is) throws IOException {
-		logger.finest("starting readPacketInto");
-		// Read the length of the incoming packet...
-		int len;
+    private int readPacketInto(InputStream is) throws IOException {
+        logger.finest("starting readPacketInto");
+        // Read the length of the incoming packet...
+        int len;
 
-		logger.finest("reading cmd_len");
-		packetLen[0] = (byte) is.read();
-		packetLen[1] = (byte) is.read();
-		packetLen[2] = (byte) is.read();
-		packetLen[3] = (byte) is.read();
-		logger.finest("Got cmd_len");
+        logger.finest("reading cmd_len");
+        packetLen[0] = (byte) is.read();
+        packetLen[1] = (byte) is.read();
+        packetLen[2] = (byte) is.read();
+        packetLen[3] = (byte) is.read();
+        logger.finest("Got cmd_len");
 
-		//put that into the packet header
-		len =
-			(getBytesAsInt(packetLen[0]) << 24)
-				| (getBytesAsInt(packetLen[1]) << 16)
-				| (getBytesAsInt(packetLen[2]) << 8)
-				| (getBytesAsInt(packetLen[3]));
+        //put that into the packet header
+        len =
+            (getBytesAsInt(packetLen[0]) << 24)
+                | (getBytesAsInt(packetLen[1]) << 16)
+                | (getBytesAsInt(packetLen[2]) << 8)
+                | (getBytesAsInt(packetLen[3]));
 
-		if (packetLen[3] == -1) {
-			logger.warning("packetLen[3] == -1, throwing EOFException");
-			throw new EOFException();
-		}
+        if (packetLen[3] == -1) {
+            logger.warning("packetLen[3] == -1, throwing EOFException");
+            throw new EOFException();
+        }
 
-		logger.finest("Reading " + len + " bytes");
+        logger.finest("Reading " + len + " bytes");
 
-		message = new byte[len];
-		message[0] = packetLen[0];
-		message[1] = packetLen[1];
-		message[2] = packetLen[2];
-		message[3] = packetLen[3];
-		for (int i = 4; i < len; i++)
-			message[i] = (byte) is.read();
-		logger.finest("exiting readPacketInto");
-		return len;
-	}
+        message = new byte[len];
+        message[0] = packetLen[0];
+        message[1] = packetLen[1];
+        message[2] = packetLen[2];
+        message[3] = packetLen[3];
+        for (int i = 4; i < len; i++)
+            message[i] = (byte) is.read();
+        logger.finest("exiting readPacketInto");
+        return len;
+    }
 
-	protected void writeResponse(byte[] response) throws IOException {
-		os.write(response);
-		os.flush();
-		smsc.writeBinarySmppsim(response);
-	}
-	
-	public void closeConnection()
-		throws IOException {
-		os.flush();
-		os.close();
-		socket.close();
-		isConnected = false;
-	}
-	/**
-	 * @return
-	 */
-	public StandardProtocolHandler getHandler() {
-		return handler;
-	}
+    protected void writeResponse(byte[] response) throws IOException {
+        os.write(response);
+        os.flush();
+        smsc.writeBinarySmppsim(response);
+    }
 
-	/**
-	 * @param handler
-	 */
-	public void setHandler(StandardProtocolHandler handler) {
-		this.handler = handler;
-	}
+    public void closeConnection()
+        throws IOException {
+        os.flush();
+        os.close();
+        socket.close();
+        isConnected = false;
+    }
+    /**
+     * @return
+     */
+    public StandardProtocolHandler getHandler() {
+        return handler;
+    }
 
-	/**
-	 * @param socket
-	 */
-	public void setSs(ServerSocket socket) {
-		ss = socket;
-	}
-	/**
-	 * @return
-	 */
-	public boolean isConnected() {
-		return isConnected;
-	}
+    /**
+     * @param handler
+     */
+    public void setHandler(StandardProtocolHandler handler) {
+        this.handler = handler;
+    }
 
-	/**
-	 * @param b
-	 */
-	public void setConnected(boolean b) {
-		isConnected = b;
-	}
+    /**
+     * @param socket
+     */
+    public void setSs(ServerSocket socket) {
+        ss = socket;
+    }
+    /**
+     * @return
+     */
+    public boolean isConnected() {
+        return isConnected;
+    }
+
+    /**
+     * @param b
+     */
+    public void setConnected(boolean b) {
+        isConnected = b;
+    }
 
 }

@@ -10,14 +10,14 @@ public class OutboxContext
     private VoiceOutboxService voiceOutboxService;
 
     public VoiceOutboxService getVoiceOutboxService() {
-		return voiceOutboxService;
-	}
+        return voiceOutboxService;
+    }
 
     public static OutboxContext getInstance(){
-		return instance;
-	}
+        return instance;
+    }
 
-	private static OutboxContext instance = new OutboxContext();
+    private static OutboxContext instance = new OutboxContext();
 
-	private OutboxContext(){}
+    private OutboxContext(){}
 }

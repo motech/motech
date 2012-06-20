@@ -76,7 +76,7 @@ public class PillReminderServiceIT {
         dosageContracts.add(new DosageRequest(9, 5, medicineRequests));
 
         String externalId = "123456789";
-		pillReminderService.createNew(new DailyPillRegimenRequest(externalId, 2, 15, 5, dosageContracts));
+        pillReminderService.createNew(new DailyPillRegimenRequest(externalId, 2, 15, 5, dosageContracts));
 
         ArrayList<DosageRequest> newDosageContracts = new ArrayList<DosageRequest>();
         newDosageContracts.add(new DosageRequest(9, 5, Arrays.asList(new MedicineRequest("m1", DateUtil.today(), DateUtil.today().plusDays(100)))));

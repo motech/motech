@@ -16,7 +16,7 @@ import java.util.List;
 @Repository
 public class AllStringContents extends BaseContentRepository<StringContent> {
     @Autowired
-	protected AllStringContents(@Qualifier("cmsLiteDatabase") CouchDbConnector db) {
+    protected AllStringContents(@Qualifier("cmsLiteDatabase") CouchDbConnector db) {
         super(StringContent.class, db);
     }
 

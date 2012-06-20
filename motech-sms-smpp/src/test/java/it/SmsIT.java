@@ -31,6 +31,6 @@ public class SmsIT {
         data.put(EventDataKeys.DELIVERY_TIME, DateTime.now().plusMinutes(1));
 
         eventRelay.sendEventMessage(new MotechEvent(EventSubjects.SEND_SMS, data));
-	    Thread.sleep(100000000);
+        Thread.sleep(100000000);
     }
 }
