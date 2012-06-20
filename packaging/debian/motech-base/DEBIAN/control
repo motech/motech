@@ -5,7 +5,7 @@ Priority: optional
 Architecture: all
 Depends: sysv-rc, curl, tomcat7-common
 Maintainer: Paweł Gesek <pgesek@soldevelo.com>
-Description: Linux system information
+Description: Mobile Technology for Community Health
  MOTECH is a software system from Grameen Foundation that harnesses the 
- ubiquity of mobile phones to deliver and receive information from patients 
- and caregivers. 
+ ubiquity of mobile phones to deliver and receive information from patients
+ and caregivers.

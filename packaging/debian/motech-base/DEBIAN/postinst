@@ -3,9 +3,6 @@
 # Exit on non-zero exit code
 set -e
 
-# Register motech service with udpate-rc.d
-update-rc.d motech defaults 1>/dev/null
-
 # Create the motech user group
 groupadd -f motech
 
@@ -18,3 +15,7 @@ fi
 chown -R motech:motech /var/log/motech
 chown -R motech:motech /var/cache/motech
 chown -R motech:motech /var/lib/motech
+chown -R motech:motech /usr/share/motech/.motech
+
+# Register motech service with udpate-rc.d
+update-rc.d motech defaults 1>/dev/null
