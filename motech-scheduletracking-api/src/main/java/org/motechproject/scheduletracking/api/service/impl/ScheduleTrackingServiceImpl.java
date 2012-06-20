@@ -12,7 +12,6 @@ import org.motechproject.scheduletracking.api.service.*;
 import org.motechproject.scheduletracking.api.service.contract.UpdateCriteria;
 import org.motechproject.scheduletracking.api.service.contract.UpdateCriterion;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +20,6 @@ import java.util.Map;
 import static java.text.MessageFormat.format;
 import static org.motechproject.util.DateUtil.newDateTime;
 
-@Service
 public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
     private AllSchedules allSchedules;
     private AllEnrollments allEnrollments;
