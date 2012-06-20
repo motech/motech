@@ -258,8 +258,8 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         Date jobEndDate = repeatingSchedulableJob.getEndTime();
         assertArgumentNotNull("Job start date", jobStartDate);
 
-        long jobRepeatInterval = repeatingSchedulableJob.getRepeatInterval();
-        if (jobRepeatInterval == 0) {
+        long repeatIntervalInMilliSeconds = repeatingSchedulableJob.getRepeatIntervalInMilliSeconds();
+        if (repeatIntervalInMilliSeconds == 0) {
             String errorMessage = "Invalid RepeatingSchedulableJob. The job repeat interval can not be 0";
             logError(errorMessage);
             throw new IllegalArgumentException(errorMessage);
@@ -278,7 +278,7 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
         SimpleScheduleBuilder simpleSchedule = simpleSchedule()
-                .withIntervalInSeconds((int) jobRepeatInterval)
+                .withIntervalInMilliseconds((int) repeatIntervalInMilliSeconds)
                 .withRepeatCount(jobRepeatCount);
 
         simpleSchedule = setMisfirePolicyForSimpleTrigger(simpleSchedule, repeatingTriggerMisfirePolicy);

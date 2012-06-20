@@ -164,7 +164,7 @@ public class EnrollmentAlertServiceTest {
         RepeatingSchedulableJob job = expectAndCaptureRepeatingJob();
         assertEquals(newDateTime(daysAfter(2).toLocalDate(), new Time(8, 20)).toDate(), job.getStartTime());
 
-        assertRepeatIntervalValue(MILLIS_PER_DAY * 3, job.getRepeatInterval());
+        assertRepeatIntervalValue(MILLIS_PER_DAY * 3, job.getRepeatIntervalInMilliSeconds());
         assertEquals(0, job.getRepeatCount().intValue());
     }
 
@@ -476,7 +476,7 @@ public class EnrollmentAlertServiceTest {
         RepeatingSchedulableJob job = expectAndCaptureRepeatingJob();
         assertEquals(String.format("%s.1", enrollment.getId()), job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
         assertEquals(newDateTime(weeksAgo(0).toLocalDate(), new Time(8, 20)).toDate(), job.getStartTime());
-        assertRepeatIntervalValue(MILLIS_PER_DAY, job.getRepeatInterval());
+        assertRepeatIntervalValue(MILLIS_PER_DAY, job.getRepeatIntervalInMilliSeconds());
         assertEquals(1, job.getRepeatCount().intValue());
     }
 
@@ -497,7 +497,7 @@ public class EnrollmentAlertServiceTest {
         assertEquals(jobIdKey, job.getMotechEvent().getParameters().get(MotechSchedulerService.JOB_ID_KEY));
         assertEquals(startTime, job.getStartTime());
         assertEquals(repeatCount, job.getRepeatCount().intValue());
-        assertRepeatIntervalValue(repeatInterval, job.getRepeatInterval());
+        assertRepeatIntervalValue(repeatInterval, job.getRepeatIntervalInMilliSeconds());
     }
 
     private void assertEventDetails(MilestoneEvent event, String externalId, String scheduleName, MilestoneAlert milestoneAlert, String windowName) {

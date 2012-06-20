@@ -62,11 +62,11 @@ public class RepeatingSchedulableJob implements Serializable {
         this.repeatCount = repeatCount;
     }
 
-    public long getRepeatInterval() {
+    public long getRepeatIntervalInMilliSeconds() {
         return repeatIntervalInMilliSeconds;
     }
 
-    public void setRepeatInterval(long repeatIntervalInMilliSeconds) {
+    public void setRepeatIntervalInMilliSeconds(long repeatIntervalInMilliSeconds) {
         this.repeatIntervalInMilliSeconds = repeatIntervalInMilliSeconds;
     }
 

@@ -371,13 +371,13 @@ public class RepeatingProgramSchedulerTest {
         assertDate(jobStartDate.toDate(), jobs.get(0).getStartTime());
         assertDate(jobEndDate, jobs.get(0).getEndTime());
         assertEquals(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, jobs.get(0).getMotechEvent().getSubject());
-        assertEquals(1L * 60L * 60L * 1000L, jobs.get(0).getRepeatInterval());
+        assertEquals(1L * 60L * 60L * 1000L, jobs.get(0).getRepeatIntervalInMilliSeconds());
         assertMotechEvent(jobs.get(0).getMotechEvent(), "MessageJob.testCampaign.12345.child-info-hour-{Offset}-1", "child-info-hour-{Offset}-1");
 
         assertDate(jobStartDate.toDate(), jobs.get(1).getStartTime());
         assertDate(jobEndDate, jobs.get(1).getEndTime());
         assertEquals(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, jobs.get(1).getMotechEvent().getSubject());
-        assertEquals(12L * 60L * 60L * 1000L, jobs.get(1).getRepeatInterval());
+        assertEquals(12L * 60L * 60L * 1000L, jobs.get(1).getRepeatIntervalInMilliSeconds());
         assertMotechEvent(jobs.get(1).getMotechEvent(), "MessageJob.testCampaign.12345.child-info-hour-{Offset}-2", "child-info-hour-{Offset}-2");
     }
 
@@ -402,13 +402,13 @@ public class RepeatingProgramSchedulerTest {
         assertDate(jobStartDate.toDate(), jobs.get(0).getStartTime());
         assertDate(jobEndDate, jobs.get(0).getEndTime());
         assertEquals(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, jobs.get(0).getMotechEvent().getSubject());
-        assertEquals(1L * 60L * 60L * 1000L, jobs.get(0).getRepeatInterval());
+        assertEquals(1L * 60L * 60L * 1000L, jobs.get(0).getRepeatIntervalInMilliSeconds());
         assertMotechEvent(jobs.get(0).getMotechEvent(), "MessageJob.testCampaign.12345.child-info-hour-{Offset}-1", "child-info-hour-{Offset}-1");
 
         assertDate(jobStartDate.toDate(), jobs.get(1).getStartTime());
         assertDate(jobEndDate, jobs.get(1).getEndTime());
         assertEquals(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, jobs.get(1).getMotechEvent().getSubject());
-        assertEquals(12L * 60L * 60L * 1000L, jobs.get(1).getRepeatInterval());
+        assertEquals(12L * 60L * 60L * 1000L, jobs.get(1).getRepeatIntervalInMilliSeconds());
         assertMotechEvent(jobs.get(1).getMotechEvent(), "MessageJob.testCampaign.12345.child-info-hour-{Offset}-2", "child-info-hour-{Offset}-2");
     }
 
@@ -433,13 +433,13 @@ public class RepeatingProgramSchedulerTest {
         assertDate(jobStartDate.toDate(), jobs.get(0).getStartTime());
         assertDate(jobEndDate, jobs.get(0).getEndTime());
         assertEquals(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, jobs.get(0).getMotechEvent().getSubject());
-        assertEquals(15L * 60L * 1000L, jobs.get(0).getRepeatInterval());
+        assertEquals(15L * 60L * 1000L, jobs.get(0).getRepeatIntervalInMilliSeconds());
         assertMotechEvent(jobs.get(0).getMotechEvent(), "MessageJob.testCampaign.12345.child-info-minute-{Offset}-1", "child-info-minute-{Offset}-1");
 
         assertDate(jobStartDate.toDate(), jobs.get(1).getStartTime());
         assertDate(jobEndDate, jobs.get(1).getEndTime());
         assertEquals(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, jobs.get(1).getMotechEvent().getSubject());
-        assertEquals(20L * 60L * 1000L, jobs.get(1).getRepeatInterval());
+        assertEquals(20L * 60L * 1000L, jobs.get(1).getRepeatIntervalInMilliSeconds());
         assertMotechEvent(jobs.get(1).getMotechEvent(), "MessageJob.testCampaign.12345.child-info-minute-{Offset}-2", "child-info-minute-{Offset}-2");
     }
 
@@ -464,13 +464,13 @@ public class RepeatingProgramSchedulerTest {
         assertDate(jobStartDate.toDate(), jobs.get(0).getStartTime());
         assertDate(jobEndDate, jobs.get(0).getEndTime());
         assertEquals(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, jobs.get(0).getMotechEvent().getSubject());
-        assertEquals(15L * 60L * 1000L, jobs.get(0).getRepeatInterval());
+        assertEquals(15L * 60L * 1000L, jobs.get(0).getRepeatIntervalInMilliSeconds());
         assertMotechEvent(jobs.get(0).getMotechEvent(), "MessageJob.testCampaign.12345.child-info-minute-{Offset}-1", "child-info-minute-{Offset}-1");
 
         assertDate(jobStartDate.toDate(), jobs.get(1).getStartTime());
         assertDate(jobEndDate, jobs.get(1).getEndTime());
         assertEquals(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, jobs.get(1).getMotechEvent().getSubject());
-        assertEquals(20L * 60L * 1000L, jobs.get(1).getRepeatInterval());
+        assertEquals(20L * 60L * 1000L, jobs.get(1).getRepeatIntervalInMilliSeconds());
         assertMotechEvent(jobs.get(1).getMotechEvent(), "MessageJob.testCampaign.12345.child-info-minute-{Offset}-2", "child-info-minute-{Offset}-2");
     }
 
@@ -495,13 +495,13 @@ public class RepeatingProgramSchedulerTest {
         assertDate(jobStartDate.toDate(), jobs.get(0).getStartTime());
         assertDate(jobEndDate, jobs.get(0).getEndTime());
         assertEquals(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, jobs.get(0).getMotechEvent().getSubject());
-        assertEquals(15L * 60L * 1000L, jobs.get(0).getRepeatInterval());
+        assertEquals(15L * 60L * 1000L, jobs.get(0).getRepeatIntervalInMilliSeconds());
         assertMotechEvent(jobs.get(0).getMotechEvent(), "MessageJob.testCampaign.12345.child-info-minute-{Offset}-1", "child-info-minute-{Offset}-1");
 
         assertDate(jobStartDate.toDate(), jobs.get(1).getStartTime());
         assertDate(jobEndDate, jobs.get(1).getEndTime());
         assertEquals(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, jobs.get(1).getMotechEvent().getSubject());
-        assertEquals(20L * 60L * 1000L, jobs.get(1).getRepeatInterval());
+        assertEquals(20L * 60L * 1000L, jobs.get(1).getRepeatIntervalInMilliSeconds());
         assertMotechEvent(jobs.get(1).getMotechEvent(), "MessageJob.testCampaign.12345.child-info-minute-{Offset}-2", "child-info-minute-{Offset}-2");
     }
 

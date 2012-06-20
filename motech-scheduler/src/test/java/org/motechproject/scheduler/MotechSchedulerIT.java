@@ -1,23 +1,18 @@
 package org.motechproject.scheduler;
 
+import ch.lambdaj.Lambda;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.scheduler.domain.*;
 import org.motechproject.scheduler.exception.MotechSchedulerException;
-import org.motechproject.scheduler.domain.CronSchedulableJob;
-import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
-import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.server.event.EventListenerRegistry;
 import org.motechproject.server.event.annotations.MotechListenerEventProxy;
 import org.motechproject.util.DateUtil;
-import org.quartz.CronTrigger;
-import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
-import org.quartz.TriggerKey;
+import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
@@ -27,6 +22,7 @@ import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.Calendar;
 
 import static junit.framework.Assert.assertEquals;
 import static org.quartz.JobKey.jobKey;
@@ -297,6 +293,8 @@ public class MotechSchedulerIT {
 
         GroupMatcher<TriggerKey> bar = GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME);
         Set<TriggerKey> foo = schedulerFactoryBean.getScheduler().getTriggerKeys(bar);
+        final List<? extends Trigger> triggersOfJob = schedulerFactoryBean.getScheduler().getTriggersOfJob(JobKey.jobKey(new JobId(motechEvent).repeatingId(), "default"));
+        assertEquals(new Date(start.getTime() + 5 * 5000), triggersOfJob.get(0).getFinalFireTime());
         assertEquals(scheduledJobsNum + 1, foo.size());
     }
 
@@ -308,7 +306,6 @@ public class MotechSchedulerIT {
         params.put("JobID", uuidStr);
         MotechEvent motechEvent = new MotechEvent("TestEvent", params);
         RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(motechEvent, null, new Date(), 5, 5000);
-
         schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME));
         motechScheduler.scheduleRepeatingJob(schedulableJob);
     }
