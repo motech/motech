@@ -102,6 +102,10 @@ lintian -i $PACKAGING_DIR/target/$MOTECH_PACKAGENAME
 
 echo "Done! Created $MOTECH_PACKAGENAME"
 
-#clean up 
+# clean up
 cd $CURRENT_DIR
 rm -r $TMP_DIR
+
+# build modules
+export MOTECH_BASE
+$PACKAGING_DIR/modules/build-modules.sh
