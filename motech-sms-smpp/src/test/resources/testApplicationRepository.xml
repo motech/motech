@@ -9,7 +9,7 @@
     <import resource="classpath:applicationPlatformServerAPI.xml"/>
 
     <context:annotation-config/>
-    <context:component-scan base-package="org.motechproject.sms.repository"/>
+    <context:component-scan base-package="org.motechproject.sms.smpp.repository"/>
 
     <bean id="smppDBConnector" class="org.ektorp.impl.StdCouchDbConnector">
         <constructor-arg value="motech-sms-audit-test"/>

@@ -1,4 +1,4 @@
-package it;
+package org.motechproject.sms.smpp.it;
 
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;

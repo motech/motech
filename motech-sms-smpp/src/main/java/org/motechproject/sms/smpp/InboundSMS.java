@@ -1,4 +1,4 @@
-package org.motechproject.sms;
+package org.motechproject.sms.smpp;
 
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
