@@ -1,12 +1,12 @@
-package org.motechproject.sms.repository;
+package org.motechproject.sms.smpp.repository;
 
 import ch.lambdaj.Lambda;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.sms.OutboundSMS;
 import org.motechproject.sms.api.DeliveryStatus;
+import org.motechproject.sms.smpp.OutboundSMS;
 import org.motechproject.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -21,7 +21,10 @@ import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
-import static org.motechproject.sms.api.DeliveryStatus.*;
+import static org.motechproject.sms.api.DeliveryStatus.ABORTED;
+import static org.motechproject.sms.api.DeliveryStatus.DELIVERED;
+import static org.motechproject.sms.api.DeliveryStatus.INPROGRESS;
+import static org.motechproject.sms.api.DeliveryStatus.KEEPTRYING;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:testApplicationRepository.xml"})
@@ -33,7 +36,7 @@ public class AllOutboundSMSIT {
     public void shouldCreateOutboundSMS() {
         DeliveryStatus deliveryStatus = INPROGRESS;
         String refNo = "refNo";
-        String recipient =  "9123456780";
+        String recipient = "9123456780";
         String messageContent = "Dummy Message";
         DateTime sentDate = DateUtil.now();
 
@@ -47,7 +50,7 @@ public class AllOutboundSMSIT {
     @Test
     public void shouldFindLatestOutboundSMSForDuplicateRecords() {
         String refNo = "refNo";
-        String recipient =  "9123456780";
+        String recipient = "9123456780";
         String messageContent = "Dummy Message";
         DateTime sentDate = DateUtil.now();
 
@@ -71,7 +74,7 @@ public class AllOutboundSMSIT {
     public void shouldCreateMessagesIdempotently() {
         DeliveryStatus deliveryStatus = INPROGRESS;
         String refNo = "refNo";
-        String recipient =  "9123456780";
+        String recipient = "9123456780";
         String messageContent = "Dummy Message";
         DateTime sentDate = DateUtil.now();
 
@@ -87,11 +90,11 @@ public class AllOutboundSMSIT {
     @Test
     public void shouldFetchMessagesSentBetweenATimeRange() {
         String refNo = "refNo";
-        String recipient =  "9123456780";
+        String recipient = "9123456780";
         DateTime sentDate = DateUtil.now();
         allOutboundSMS.createOrReplace(new OutboundSMS(recipient, refNo, "Dummy Message", sentDate, INPROGRESS));
-        allOutboundSMS.createOrReplace(new OutboundSMS("1234567890", refNo, "Dummy Message 1234",  sentDate.minusMinutes(10), DELIVERED));
-        allOutboundSMS.createOrReplace(new OutboundSMS("0986432112", refNo, "Dummy Message 5678",  sentDate.minusHours(2), KEEPTRYING));
+        allOutboundSMS.createOrReplace(new OutboundSMS("1234567890", refNo, "Dummy Message 1234", sentDate.minusMinutes(10), DELIVERED));
+        allOutboundSMS.createOrReplace(new OutboundSMS("0986432112", refNo, "Dummy Message 5678", sentDate.minusHours(2), KEEPTRYING));
 
         List<OutboundSMS> outboundSMSes = allOutboundSMS.messagesSentBetween(sentDate.withTime(sentDate.getHourOfDay(), sentDate.getMinuteOfHour(), 0, 0), sentDate);
         assertThat(outboundSMSes.get(0).getPhoneNumber(), is(recipient));
@@ -108,11 +111,11 @@ public class AllOutboundSMSIT {
     @Test
     public void shouldFetchMessagesSentBetweenATimeRangeForAPhone() {
         String refNo = "refNo";
-        String recipient =  "9123456780";
+        String recipient = "9123456780";
         DateTime sentDate = DateUtil.now();
         allOutboundSMS.createOrReplace(new OutboundSMS(recipient, refNo, "Dummy Message", sentDate, INPROGRESS));
-        allOutboundSMS.createOrReplace(new OutboundSMS(recipient, refNo, "Dummy Message 1234",  sentDate.minusMinutes(10), DELIVERED));
-        allOutboundSMS.createOrReplace(new OutboundSMS("0986432112", refNo, "Dummy Message 5678",  sentDate.minusHours(2), KEEPTRYING));
+        allOutboundSMS.createOrReplace(new OutboundSMS(recipient, refNo, "Dummy Message 1234", sentDate.minusMinutes(10), DELIVERED));
+        allOutboundSMS.createOrReplace(new OutboundSMS("0986432112", refNo, "Dummy Message 5678", sentDate.minusHours(2), KEEPTRYING));
 
         List<OutboundSMS> outboundSMSes = allOutboundSMS.messagesSentBetween(recipient, sentDate.withTime(sentDate.getHourOfDay(), sentDate.getMinuteOfHour(), 0, 0), sentDate);
         assertThat(outboundSMSes.get(0).getPhoneNumber(), is(recipient));
@@ -129,7 +132,7 @@ public class AllOutboundSMSIT {
     @Test
     public void shouldUpdateTheDeliveryStatusForLatestRecordForMatchingRefNoForASubscriber() {
         String refNo = "refNo";
-        String recipient =  "9123456780";
+        String recipient = "9123456780";
         DateTime sentDate = DateUtil.now();
 
         final OutboundSMS latestMessage = new OutboundSMS(recipient, refNo, "LatestMessage", sentDate, INPROGRESS);

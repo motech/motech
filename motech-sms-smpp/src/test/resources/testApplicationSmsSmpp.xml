@@ -7,6 +7,6 @@
     <import resource="classpath:applicationPlatformServerAPI.xml"/>
     <import resource="classpath:applicationSmsSmpp.xml"/>
 
-    <bean class="it.ReceiveSmsIT"/>
+    <bean class="org.motechproject.sms.smpp.it.ReceiveSmsIT"/>
 
 </beans>

@@ -1,11 +1,11 @@
-package org.motechproject.sms.repository;
+package org.motechproject.sms.smpp.repository;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.View;
 import org.joda.time.DateTime;
 import org.motechproject.dao.MotechBaseRepository;
-import org.motechproject.sms.OutboundSMS;
 import org.motechproject.sms.api.DeliveryStatus;
+import org.motechproject.sms.smpp.OutboundSMS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;

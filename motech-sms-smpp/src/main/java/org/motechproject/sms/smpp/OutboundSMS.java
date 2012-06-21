@@ -1,4 +1,4 @@
-package org.motechproject.sms;
+package org.motechproject.sms.smpp;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;

@@ -29,6 +29,6 @@ public class EventDataKeys {
     public static final String STATUS_MESSAGE = "status_message";
     /**
      * the timestamp when the sender sent out the message
-\     */
+     */
     public static final String TIMESTAMP = "timestamp";
 }

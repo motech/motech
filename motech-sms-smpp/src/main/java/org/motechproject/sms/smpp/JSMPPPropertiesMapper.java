@@ -5,7 +5,17 @@ import org.smslib.smpp.BindAttributes;
 
 import java.util.Properties;
 
-import static org.motechproject.sms.smpp.constants.SmppProperties.*;
+import static org.motechproject.sms.smpp.constants.SmppProperties.BINDTYPE;
+import static org.motechproject.sms.smpp.constants.SmppProperties.BIND_NPI;
+import static org.motechproject.sms.smpp.constants.SmppProperties.BIND_TON;
+import static org.motechproject.sms.smpp.constants.SmppProperties.DESTINATION_NPI;
+import static org.motechproject.sms.smpp.constants.SmppProperties.DESTINATION_TON;
+import static org.motechproject.sms.smpp.constants.SmppProperties.HOST;
+import static org.motechproject.sms.smpp.constants.SmppProperties.PASSWORD;
+import static org.motechproject.sms.smpp.constants.SmppProperties.PORT;
+import static org.motechproject.sms.smpp.constants.SmppProperties.SOURCE_NPI;
+import static org.motechproject.sms.smpp.constants.SmppProperties.SOURCE_TON;
+import static org.motechproject.sms.smpp.constants.SmppProperties.SYSTEM_ID;
 
 public class JSMPPPropertiesMapper {
 
