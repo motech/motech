@@ -69,7 +69,8 @@ public class VerboiceIVRControllerDecisionTreeIT extends SpringIntegrationTest {
         HashMap<String, ITransition> transitions = new HashMap<String, ITransition>();
         final Node textToSpeechNode = new Node().addPrompts(new TextToSpeechPrompt().setMessage("Say this"));
         transitions.put("1", new Transition().setDestinationNode(textToSpeechNode));
-        transitions.put("*", new CustomTransition());
+        transitions.put("*", new Transition().setDestinationNode(new Node().setPrompts(new AudioPrompt().setAudioFileUrl("you pressed star"))));
+        transitions.put("?", new CustomTransition());
 
         tree.setRootNode(new Node().addPrompts(
                 new TextToSpeechPrompt().setMessage("Hello Welcome to motech")
@@ -83,7 +84,13 @@ public class VerboiceIVRControllerDecisionTreeIT extends SpringIntegrationTest {
     @Test
     public void shouldTestVerboiceXMLResponse() throws Exception {
         XMLUnit.setIgnoreWhitespace(true);
-        String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Say>Hello Welcome to motech</Say><Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"50\"></Gather><Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"50\"></Gather></Response>";
+        String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<Response>\n" +
+                "                        <Say>Hello Welcome to motech</Say>\n" +
+                "                                    <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"50\"></Gather>\n" +
+                "                    <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"50\"></Gather>\n" +
+                "                    <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"50\"></Gather>\n" +
+                "             </Response>";
         HttpClient client = new DefaultHttpClient();
         String rootUrl = SERVER_URL + "?tree=someTree&trP=Lw&ln=en";
         String response = client.execute(new HttpGet(rootUrl), new BasicResponseHandler());
@@ -93,10 +100,17 @@ public class VerboiceIVRControllerDecisionTreeIT extends SpringIntegrationTest {
         String response2 = client.execute(new HttpGet(transitionUrl), new BasicResponseHandler());
         assertTrue("got " + response2, response2.contains("<Say>Say this</Say>"));
 
-        String transitionUrl2 = SERVER_URL + "?tree=someTree&trP=Lw&ln=en&Digits=" + USER_INPUT;
+        String transitionUrl2 = SERVER_URL + "?tree=someTree&trP=Lw&ln=en&Digits=*";
         String response3 = client.execute(new HttpGet(transitionUrl2), new BasicResponseHandler());
-        assertTrue("got " + response3, response3.contains("<Say>custom transition " + USER_INPUT + "</Say>"));
-        assertTrue("got " + response3, response3.contains("<Play>custom.wav</Play>"));
+        assertTrue("got " + response3, response3.contains("<Play>you pressed star</Play>"));
+
+
+        String transitionUrl3 = SERVER_URL + "?tree=someTree&trP=Lw&ln=en&Digits=" + USER_INPUT;
+        String response4 = client.execute(new HttpGet(transitionUrl3), new BasicResponseHandler());
+
+        assertTrue("got " + response4, response4.contains("trP=Lz8"));   //verify proceeding in tree Lz8 == /?
+        assertTrue("got " + response4, response4.contains("<Say>custom transition " + USER_INPUT + "</Say>"));
+        assertTrue("got " + response4, response4.contains("<Play>custom.wav</Play>"));
     }
 
     @Test
@@ -120,8 +134,12 @@ public class VerboiceIVRControllerDecisionTreeIT extends SpringIntegrationTest {
     public static class CustomTransition implements ITransition {
         @Override
         public Node getDestinationNode(String input) {
+            final HashMap<String, ITransition> transitions = new HashMap<String, ITransition>();
+            transitions.put("1", new Transition().setDestinationNode(new Node().setPrompts(new AudioPrompt().setAudioFileUrl("option1_after_custom_transition.wav"))));
+            transitions.put("?", this);
             return new Node().setPrompts(new TextToSpeechPrompt().setMessage("custom transition " + input),
-                    new AudioPrompt().setAudioFileUrl("custom.wav"));
+                    new AudioPrompt().setAudioFileUrl("custom.wav"))
+                    .setTransitions(transitions);
         }
     }
 

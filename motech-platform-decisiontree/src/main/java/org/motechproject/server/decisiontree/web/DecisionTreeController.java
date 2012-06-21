@@ -13,7 +13,6 @@ import org.motechproject.server.decisiontree.service.TreeEventProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -119,7 +118,6 @@ public class DecisionTreeController extends MultiActionController {
             }
 
 
-
             return getModelViewForNextNode(request, transitionPath, params, language, treeNameString, encodedParentTransitionPath, transitionKey, type);
 
 
@@ -142,7 +140,7 @@ public class DecisionTreeController extends MultiActionController {
         params.put(TREE_NAME_PARAM, currentTree);
 
         Node node;
-        if (transitionKey == null){
+        if (transitionKey == null) {
             node = decisionTreeService.getNode(currentTree, TreeNodeLocator.PATH_DELIMITER);
             return constructModelViewForNode(request, node, transitionPath, language, treeNameString, type, treeNames, params);
         } else {
@@ -152,7 +150,7 @@ public class DecisionTreeController extends MultiActionController {
             ITransition transition = sendTreeEventActions(params, transitionKey, parentTransitionPath, parentNode);
             node = transition.getDestinationNode(transitionKey);
 
-            if (node == null ||  (node.getPrompts().isEmpty() && node.getActionsAfter().isEmpty()
+            if (node == null || (node.getPrompts().isEmpty() && node.getActionsAfter().isEmpty()
                     && node.getActionsBefore().isEmpty() && node.getTransitions().isEmpty())) {
                 if (treeNames.length > 1) {
                     //reduce the current tree and redirect to the next tree
@@ -164,10 +162,14 @@ public class DecisionTreeController extends MultiActionController {
             } else {
                 transitionPath = parentTransitionPath +
                         (TreeNodeLocator.PATH_DELIMITER.equals(parentTransitionPath) ? "" : TreeNodeLocator.PATH_DELIMITER)
-                        + transitionKey;
+                        + toPath(parentNode, transitionKey);
                 return constructModelViewForNode(request, node, transitionPath, language, treeNameString, type, treeNames, params);
             }
         }
+    }
+
+    private String toPath(Node parentNode, String userInput) {
+        return isDynamicTransition(parentNode, userInput)?anyKey():userInput;
     }
 
     private ModelAndView constructModelViewForNode(HttpServletRequest request, Node node, String transitionPath, String language, String treeNameString, String type, String[] treeNames, Map<String, Object> params) {
@@ -202,6 +204,7 @@ public class DecisionTreeController extends MultiActionController {
 
             final String key = transitionEntry.getKey();
             if (anyInput(key)) return;
+            if (dtmfKey(key)) return;
             try {
                 Integer.parseInt(key);
             } catch (NumberFormatException e) {
@@ -210,10 +213,14 @@ public class DecisionTreeController extends MultiActionController {
             }
 
             ITransition transition = transitionEntry.getValue();
-            if (transition instanceof Transition && ((Transition)transition).getDestinationNode() == null) {
+            if (transition instanceof Transition && ((Transition) transition).getDestinationNode() == null) {
                 throw new DecisionTreeException(Errors.NULL_DESTINATION_NODE, "Invalid node: " + node + "\n Null Destination Node in the Transition: " + transition);
             }
         }
+    }
+
+    private boolean dtmfKey(String key) {
+        return "*#".contains(key);
     }
 
     private boolean anyInput(String key) {
@@ -221,23 +228,36 @@ public class DecisionTreeController extends MultiActionController {
     }
 
     private ITransition sendTreeEventActions(Map<String, Object> params, String transitionKey, String parentTransitionPath, Node parentNode) {
-        ITransition transition = parentNode.getTransitions().get(transitionKey);
-        if (transition == null) transition = parentNode.getTransitions().get(anyKey());
-
-        if (transition == null) {
-            throw new DecisionTreeException(Errors.INVALID_TRANSITION_KEY,
-                    "Invalid Transition Key. There is no transition with key: " + transitionKey + " in the Node: " + parentNode);
-        }
+        ITransition transition = getTransitionForUserInput(transitionKey, parentNode);
 
         treeEventProcessor.sendActionsAfter(parentNode, parentTransitionPath, params);
 
         if (transition instanceof Transition)
-            treeEventProcessor.sendTransitionActions((Transition)transition, params);
+            treeEventProcessor.sendTransitionActions((Transition) transition, params);
         return transition;
     }
 
+    private ITransition getTransitionForUserInput(String userInput, Node parentNode) {
+        ITransition transition = getPreConfiguredTransition(parentNode, userInput);
+        if (transition == null) transition = parentNode.getTransitions().get(anyKey());
+
+        if (transition == null) {
+            throw new DecisionTreeException(Errors.INVALID_TRANSITION_KEY,
+                    "Invalid Transition Key. There is no transition with key: " + userInput + " in the Node: " + parentNode);
+        }
+        return transition;
+    }
+
+    private boolean isDynamicTransition(Node parentNode, String userInput){
+        return getPreConfiguredTransition(parentNode, userInput) == null;
+    }
+
+    private ITransition getPreConfiguredTransition(Node parentNode, String userInput) {
+        return parentNode.getTransitions().get(userInput);
+    }
+
     private String anyKey() {
-        return "*";
+        return "?";
     }
 
     private String getParentTransitionPath(String encodedParentTransitionPath) {
