@@ -10,18 +10,16 @@ import org.motechproject.scheduler.domain.CronSchedulableJob;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
 import org.motechproject.server.messagecampaign.Constants;
+import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.RepeatingCampaign;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
+import org.motechproject.server.messagecampaign.domain.message.RepeatingMessageMode;
 import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
 import org.motechproject.valueobjects.WallTime;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.lang.String.format;
 import static org.motechproject.util.DateUtil.endOfDay;
@@ -54,11 +52,29 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
         HashMap<String, Object> params = jobParams(message.messageKey());
         params.put(Constants.REPEATING_PROGRAM_24HRS_MESSAGE_DISPATCH_STRATEGY, dispatchMessagesEvery24Hours);
 
+        // Bug 0058
+        if (RepeatingMessageMode.REPEAT_INTERVAL.name().equals(message.mode().name()) && !dispatchMessagesEvery24Hours) {
+            Integer offsetInDays = campaignRequest.startOffset();
+            if (offsetInDays == null)
+                offsetInDays = new Integer(0);
+            scheduleRepeatingJob(message, params, newDateTime(startDate.plusDays(offsetInDays), message.deliverTime()).toDate(), endDate);
+            return;
+        }
+
         if (repeatIntervalLessThanDay) {
             scheduleRepeatingJob(startDate, getDeliveryTime(message), endDate, params, getRepeatIntervalInMilliSeconds(message));
         } else {
             scheduleRepeatingJob(startDate, getDeliveryTime(message), endDate, params, getCronExpression(message));
         }
+    }
+
+    private void scheduleRepeatingJob(RepeatingCampaignMessage message, Map<String, Object> params, Date startDate, Date endDate) {
+        long MILLIS_IN_A_DAY = 24 * 60 * 60 * 1000;
+        MotechEvent motechEvent = new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, params);
+        long repeatInterval = message.repeatIntervalForSchedule() * MILLIS_IN_A_DAY;
+        if (message.repeatIntervalIsLessThanDay())
+            repeatInterval = getRepeatIntervalInMilliSeconds(message).intValue();
+        schedulerService.safeScheduleRepeatingJob(new RepeatingSchedulableJob(motechEvent, startDate, endDate, repeatInterval));
     }
 
     @Override
