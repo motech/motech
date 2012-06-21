@@ -10,7 +10,7 @@ import java.util.Properties;
 
 public class TestUtilities {
 
-    public static <T> List<T[]> slice(T[] array, int index){
+    public static <T> List<T[]> slice(T[] array, int index) {
         List<T[]> arrayList = new ArrayList<T[]>();
         T[] slice1 = Arrays.copyOfRange(array, 0, index);
         T[] slice2 = Arrays.copyOfRange(array, index, array.length);
@@ -19,17 +19,17 @@ public class TestUtilities {
         return arrayList;
     }
 
-    public static Byte[] toObjectByteArray(byte[] bytes){
+    public static Byte[] toObjectByteArray(byte[] bytes) {
         Byte[] bytesAsObjects = new Byte[bytes.length];
-        for(int i=0; i<bytes.length; i++){
+        for (int i = 0; i < bytes.length; i++) {
             bytesAsObjects[i] = bytes[i];
         }
         return bytesAsObjects;
     }
 
-    public static byte[] toPrimitive(Byte[] bytes){
+    public static byte[] toPrimitive(Byte[] bytes) {
         byte[] bytesAsPrimitives = new byte[bytes.length];
-        for(int i=0; i<bytes.length; i++){
+        for (int i = 0; i < bytes.length; i++) {
             bytesAsPrimitives[i] = bytes[i];
         }
         return bytesAsPrimitives;

@@ -7,9 +7,9 @@ public class FormDownloadTest {
     private FormDownloadServlet formDownloadServlet;
 
     @Before
-   public void setUp(){
+    public void setUp() {
         formDownloadServlet = new FormDownloadServlet();
-   }
+    }
 
 
 }

@@ -2,7 +2,7 @@ package org.motechproject.mobileforms.api.domain;
 
 import java.util.Date;
 
-public class RegisterClientBean extends FormBean{
+public class RegisterClientBean extends FormBean {
     private String registrationMode;
     private String motechId;
     private String motherMotechId;

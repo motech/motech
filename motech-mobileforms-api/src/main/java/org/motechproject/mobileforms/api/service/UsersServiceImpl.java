@@ -22,15 +22,15 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    public List<Object[]> getUsers(){
+    public List<Object[]> getUsers() {
         String[] userAccounts = properties.getProperty(FORMS_USER_ACCOUNTS).split(",");
         List<Object[]> users = new ArrayList<Object[]>();
-        for (int i=0; i < userAccounts.length; i++) {
+        for (int i = 0; i < userAccounts.length; i++) {
             String[] userDetails = userAccounts[i].split("\\|");
             String userName = userDetails[0];
             String password = userDetails[1];
             String salt = userDetails[2];
-            users.add(new Object[]{i+1, userName, encoder.sha(password, salt), salt});
+            users.add(new Object[]{i + 1, userName, encoder.sha(password, salt), salt});
         }
         return users;
     }

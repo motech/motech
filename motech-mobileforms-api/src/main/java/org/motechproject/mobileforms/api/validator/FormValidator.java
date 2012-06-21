@@ -16,7 +16,7 @@ import java.util.List;
 
 import static org.motechproject.mobileforms.api.utils.CollectionUtils.addIfNotNull;
 
-public abstract class FormValidator <V extends FormBean>{
+public abstract class FormValidator<V extends FormBean> {
     private static Logger log = Logger.getLogger(FormValidator.class);
 
     public List<FormError> validate(final V formBean, FormBeanGroup formGroup, List<FormBean> allForms) {
@@ -54,10 +54,10 @@ public abstract class FormValidator <V extends FormBean>{
     }
 
     public static List<Field> getInheritedFields(Class<?> type) {
-       List<Field> fields = new ArrayList<Field>();
-       for (Class<?> c = type; c != null && !c.equals(FormBean.class); c = c.getSuperclass()) {
-           fields.addAll(Arrays.asList(c.getDeclaredFields()));
-       }
-       return fields;
-   }
+        List<Field> fields = new ArrayList<Field>();
+        for (Class<?> c = type; c != null && !c.equals(FormBean.class); c = c.getSuperclass()) {
+            fields.addAll(Arrays.asList(c.getDeclaredFields()));
+        }
+        return fields;
+    }
 }

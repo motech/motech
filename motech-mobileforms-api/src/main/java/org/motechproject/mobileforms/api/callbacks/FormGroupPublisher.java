@@ -17,7 +17,7 @@ public class FormGroupPublisher {
     private final Logger log = LoggerFactory.getLogger(FormGroupPublisher.class);
 
     public static final String FORM_BEAN_GROUP = "formBeanGroup";
-    public static final String FORM_VALID_FROMS= "handle.valid.xforms.group";
+    public static final String FORM_VALID_FROMS = "handle.valid.xforms.group";
 
     private EventRelay eventRelay;
 

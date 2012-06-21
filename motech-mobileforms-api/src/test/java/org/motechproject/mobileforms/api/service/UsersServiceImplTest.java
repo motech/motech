@@ -41,15 +41,15 @@ public class UsersServiceImplTest {
         List<Object[]> users = usersService.getUsers();
 
         assertThat(users.size(), is(equalTo(2)));
-        assertThat((Integer)users.get(0)[0], is(equalTo(1)));
-        assertThat((String)users.get(0)[1], is(equalTo("motech")));
-        assertThat((String)users.get(0)[2], is(equalTo(encodedPasswordForMotech)));
-        assertThat((String)users.get(0)[3], is(equalTo(saltForMotech)));
+        assertThat((Integer) users.get(0)[0], is(equalTo(1)));
+        assertThat((String) users.get(0)[1], is(equalTo("motech")));
+        assertThat((String) users.get(0)[2], is(equalTo(encodedPasswordForMotech)));
+        assertThat((String) users.get(0)[3], is(equalTo(saltForMotech)));
 
-        assertThat((Integer)users.get(1)[0], is(equalTo(2)));
-        assertThat((String)users.get(1)[1], is(equalTo("guyzb")));
-        assertThat((String)users.get(1)[2], is(equalTo(encodedPasswordForguyzb)));
-        assertThat((String)users.get(1)[3], is(equalTo(saltForGuyZb)));
+        assertThat((Integer) users.get(1)[0], is(equalTo(2)));
+        assertThat((String) users.get(1)[1], is(equalTo("guyzb")));
+        assertThat((String) users.get(1)[2], is(equalTo(encodedPasswordForguyzb)));
+        assertThat((String) users.get(1)[3], is(equalTo(saltForGuyZb)));
 
     }
 }

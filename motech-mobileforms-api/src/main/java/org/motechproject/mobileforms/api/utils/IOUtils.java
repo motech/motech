@@ -2,7 +2,6 @@ package org.motechproject.mobileforms.api.utils;
 
 import org.apache.commons.io.FileUtils;
 import org.motechproject.MotechException;
-import org.springframework.stereotype.Component;
 
 import java.io.File;
 

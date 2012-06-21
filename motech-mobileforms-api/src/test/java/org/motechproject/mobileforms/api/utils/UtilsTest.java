@@ -9,7 +9,7 @@ import static org.hamcrest.Matchers.is;
 public class UtilsTest {
 
     @Test
-    public void shouldGetTheContentsOfAXFormFileGivenFileNameAndGroupName(){
+    public void shouldGetTheContentsOfAXFormFileGivenFileNameAndGroupName() {
         String newLine = System.getProperty("line.separator");
         String expectedFileContent = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" + newLine +
                 "<xf:xforms xmlns:xf=\"http://www.w3.org/2002/xforms\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" id=\"7\">" + newLine +
@@ -27,7 +27,7 @@ public class UtilsTest {
     }
 
     @Test
-    public void shouldReturnSha1HashedStringGivenAPasswordAndSalt(){
+    public void shouldReturnSha1HashedStringGivenAPasswordAndSalt() {
         // retaining the hashing with bug (leading zero missing for single digit hex) to be consistent with the mobile client code
         assertThat(new Encoder().sha("ghs", "7357658437bd298b4a48b7357489357"), is(equalTo("6f6347e4b28216556ec7dfa14d7dfadb873a15")));
     }

@@ -72,10 +72,10 @@ public class MobileFormsServiceImplTest {
 
     @Test
     public void shouldReturnFormDefinitionMap() {
-        Form form1 = makeTestForm(1,"f1_content");
-        Form form2 = makeTestForm(2,"f2_content");
-        Form form3 = makeTestForm(3,"f3_content");
-        Form form4 = makeTestForm(4,"f4_content");
+        Form form1 = makeTestForm(1, "f1_content");
+        Form form2 = makeTestForm(2, "f2_content");
+        Form form3 = makeTestForm(3, "f3_content");
+        Form form4 = makeTestForm(4, "f4_content");
         FormGroup group1 = new FormGroup("g1", Arrays.asList(form1, form2));
         FormGroup group2 = new FormGroup("g2", Arrays.asList(form3, form4));
         when(allMobileForms.getAllFormGroups()).thenReturn(Arrays.asList(group1, group2));

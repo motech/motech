@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static ch.lambdaj.Lambda.*;
+import static ch.lambdaj.Lambda.index;
+import static ch.lambdaj.Lambda.join;
+import static ch.lambdaj.Lambda.on;
 
 public class FormGroupValidator {
     private final Logger log = LoggerFactory.getLogger(FormGroupValidator.class);
@@ -41,7 +43,7 @@ public class FormGroupValidator {
         List<String> failedForms = new ArrayList<String>();
         if (formBean.getDepends() != null && !formBean.getDepends().isEmpty()) {
             for (String name : formBean.getDepends()) {
-                if (formBeansIndexedByName.get(name)!=null && formBeansIndexedByName.get(name).hasErrors()) {
+                if (formBeansIndexedByName.get(name) != null && formBeansIndexedByName.get(name).hasErrors()) {
                     failedForms.add(name);
                 }
             }

@@ -37,26 +37,26 @@ public class AllMobileFormsTest {
 
         allMobileForms.initialize();
         formsOfGroupOne = Arrays.asList(new Form("MForm-I", "ClientDeath-1.xml", "<form>DummyForm1</form>", "org.motechproject.mobileforms.api.domain.ClientDeathFormBean", "org.motechproject.mobileforms.api.validator.TestClientDeathFormValidator", "GroupNameI", null),
-                                        new Form("MForm-II", "ANCVisit-1.xml", "<form>DummyForm2</form>", "org.motechproject.mobileforms.api.domain.ANCVisitFormBean", "org.motechproject.mobileforms.api.validator.TestANCVisitFormValidator", "GroupNameI", Arrays.asList("MForm-I")));
+                new Form("MForm-II", "ANCVisit-1.xml", "<form>DummyForm2</form>", "org.motechproject.mobileforms.api.domain.ANCVisitFormBean", "org.motechproject.mobileforms.api.validator.TestANCVisitFormValidator", "GroupNameI", Arrays.asList("MForm-I")));
         formsOfGroupTwo = Arrays.asList(new Form("MForm-III", "ClientDeath-2.xml", "<form>DummyForm3</form>", "org.motechproject.mobileforms.api.domain.ClientDeathFormBean", "org.motechproject.mobileforms.api.validator.TestClientDeathFormValidator", "GroupNameII", null));
         formGroupOne = new FormGroup("GroupNameI", formsOfGroupOne);
         formGroupTwo = new FormGroup("GroupNameII", formsOfGroupTwo);
     }
 
     @Test
-    public void shouldValidateForCyclicDependency(){
+    public void shouldValidateForCyclicDependency() {
         allMobileForms = new AllMobileForms(TestUtilities.setupProperties("forms.config.file", "/forms-config-with-cyclic-dependency.json"), new MotechJsonReader(), ioUtils);
         allMobileForms.initialize();
     }
 
     @Test
-    public void shouldInitializeByLoadingAllFormsFromFileSystem(){
+    public void shouldInitializeByLoadingAllFormsFromFileSystem() {
         List<FormGroup> expectedFormGroups = Arrays.asList(formGroupOne, formGroupTwo);
         assertThat(allMobileForms.getAllFormGroups(), is(equalTo(expectedFormGroups)));
     }
 
     @Test
-    public void shouldReturnTheGroupGivenTheIndexOfListOfFormGroups(){
+    public void shouldReturnTheGroupGivenTheIndexOfListOfFormGroups() {
         assertThat(allMobileForms.getFormGroup(0), is(equalTo(formGroupOne)));
         assertThat(allMobileForms.getFormGroup(1), is(equalTo(formGroupTwo)));
     }

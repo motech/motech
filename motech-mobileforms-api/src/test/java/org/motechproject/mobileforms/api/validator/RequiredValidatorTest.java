@@ -9,17 +9,17 @@ import static org.hamcrest.Matchers.is;
 
 public class RequiredValidatorTest {
     @Test
-    public void shouldReturnNullIfFieldHasANonNullValue(){
+    public void shouldReturnNullIfFieldHasANonNullValue() {
         assertThat(new RequiredValidator().validate("some value", "name", String.class, null), is(equalTo(null)));
     }
 
     @Test
-    public void shouldReturnFieldErrorIfANullValueIsPassed(){
+    public void shouldReturnFieldErrorIfANullValueIsPassed() {
         assertThat(new RequiredValidator().validate(null, "name", String.class, null), is(equalTo(new FormError("name", "is mandatory"))));
     }
 
     @Test
-    public void shouldReturnFieldErrorIfAEmptyStringIsPassed(){
+    public void shouldReturnFieldErrorIfAEmptyStringIsPassed() {
         assertThat(new RequiredValidator().validate("", "name", String.class, null), is(equalTo(new FormError("name", "is mandatory"))));
     }
 }

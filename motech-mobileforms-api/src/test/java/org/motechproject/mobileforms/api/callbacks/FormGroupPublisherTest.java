@@ -40,7 +40,7 @@ public class FormGroupPublisherTest {
     }
 
     @Test
-    public void shouldPublishFormGroup(){
+    public void shouldPublishFormGroup() {
         final FormBeanGroup formBeanGroup = mock(FormBeanGroup.class);
         publisher.publish(formBeanGroup);
         ArgumentCaptor<MotechEvent> eventCaptor = ArgumentCaptor.forClass(MotechEvent.class);
@@ -53,9 +53,9 @@ public class FormGroupPublisherTest {
         }};
         assertThat(actualEvent.getParameters(), is(equalTo(expectedParameters)));
     }
-    
+
     @Test
-    public void shouldAddErrorMessageToAllFormsInTheGroupOnEncounteringRuntimeException(){
+    public void shouldAddErrorMessageToAllFormsInTheGroupOnEncounteringRuntimeException() {
         doThrow(new RuntimeException()).when(eventRelay).sendEventMessage(Matchers.<MotechEvent>any());
         final TestFormBean formBeanOne = new TestFormBean(null, "form1", null, null, null, null, null, null);
         final TestFormBean formBeanTwo = new TestFormBean(null, "form2", null, null, null, null, null, null);

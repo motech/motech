@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class Encoder {
-    public String sha(String pass, String salt){
+    public String sha(String pass, String salt) {
         return rawToHex(DigestUtils.sha(pass + salt));
     }
 

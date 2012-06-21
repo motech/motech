@@ -39,8 +39,10 @@ public class AllMobileForms {
     //TODO: Why postconstruct and not called directly from constructor
     @PostConstruct
     public void initialize() {
-        List<FormGroup> formGroupsFromConfigFile = (List<FormGroup>) motechJsonReader.readFromFile(configFile(), new TypeToken<List<FormGroup>>() {
-        }.getType());
+        List<FormGroup> formGroupsFromConfigFile = (List<FormGroup>) motechJsonReader.readFromStream(
+                getClass().getResourceAsStream(configFile()),
+                new TypeToken<List<FormGroup>>() {
+                }.getType());
 
         validateFormDependency(formGroupsFromConfigFile);
 

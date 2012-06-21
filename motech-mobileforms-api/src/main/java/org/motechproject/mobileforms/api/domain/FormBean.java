@@ -6,7 +6,7 @@ import java.util.List;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 
-public abstract class FormBean implements Serializable{
+public abstract class FormBean implements Serializable {
     private String studyName;
     private String formname;
     private String xmlContent;
@@ -37,11 +37,11 @@ public abstract class FormBean implements Serializable{
         this.xmlContent = xmlContent;
     }
 
-    public void setValidator(String validator){
+    public void setValidator(String validator) {
         this.validator = validator;
     }
 
-    public void setFormname(String formname){
+    public void setFormname(String formname) {
         this.formname = formname;
     }
 
@@ -81,7 +81,7 @@ public abstract class FormBean implements Serializable{
         return formErrors;
     }
 
-    public void addFormErrors(List<FormError> formErrors){
+    public void addFormErrors(List<FormError> formErrors) {
         this.formErrors.addAll(formErrors);
     }
 
@@ -89,7 +89,7 @@ public abstract class FormBean implements Serializable{
         formErrors.add(formError);
     }
 
-    public Boolean hasErrors(){
+    public Boolean hasErrors() {
         return !isEmpty(formErrors);
     }
 
