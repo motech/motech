@@ -3,8 +3,8 @@ package org.motechproject.sms.smpp;
 import org.joda.time.DateTime;
 import org.motechproject.sms.api.SMSRecord;
 import org.motechproject.sms.api.service.SmsAuditService;
-import org.motechproject.sms.repository.AllInboundSMS;
-import org.motechproject.sms.repository.AllOutboundSMS;
+import org.motechproject.sms.smpp.repository.AllInboundSMS;
+import org.motechproject.sms.smpp.repository.AllOutboundSMS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

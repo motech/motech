@@ -2,12 +2,12 @@ package org.motechproject.sms.smpp;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.motechproject.scheduler.context.EventContext;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduler.event.EventRelay;
-import org.motechproject.sms.InboundSMS;
-import org.motechproject.sms.repository.AllInboundSMS;
-import org.motechproject.sms.repository.AllOutboundSMS;
 import org.motechproject.sms.smpp.constants.EventSubjects;
+import org.motechproject.sms.smpp.repository.AllInboundSMS;
+import org.motechproject.sms.smpp.repository.AllOutboundSMS;
 import org.smslib.AGateway;
 import org.smslib.IInboundMessageNotification;
 import org.smslib.InboundMessage;
@@ -27,11 +27,16 @@ import static org.motechproject.util.DateUtil.newDateTime;
 @Component
 public class InboundMessageNotification implements IInboundMessageNotification {
     private static final Logger log = Logger.getLogger(InboundMessageNotification.class);
-    private EventRelay eventRelay;
+    private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
     private AllInboundSMS allInboundSMS;
     private AllOutboundSMS allOutboundSMS;
 
     @Autowired
+    public InboundMessageNotification(AllInboundSMS allInboundSMS, AllOutboundSMS allOutboundSMS) {
+        this.allInboundSMS = allInboundSMS;
+        this.allOutboundSMS = allOutboundSMS;
+    }
+
     public InboundMessageNotification(EventRelay eventRelay, AllInboundSMS allInboundSMS, AllOutboundSMS allOutboundSMS) {
         this.eventRelay = eventRelay;
         this.allInboundSMS = allInboundSMS;

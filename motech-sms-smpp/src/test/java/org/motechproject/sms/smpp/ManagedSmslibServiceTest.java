@@ -8,7 +8,12 @@ import org.mockito.Mock;
 import org.motechproject.scheduler.gateway.OutboundEventGateway;
 import org.motechproject.sms.smpp.constants.SmppProperties;
 import org.motechproject.sms.smpp.constants.SmsProperties;
-import org.smslib.*;
+import org.smslib.GatewayException;
+import org.smslib.OutboundMessage;
+import org.smslib.SMSLibException;
+import org.smslib.Service;
+import org.smslib.Settings;
+import org.smslib.TimeoutException;
 import org.smslib.smpp.jsmpp.JSMPPGateway;
 
 import javax.annotation.PostConstruct;
@@ -23,7 +28,10 @@ import java.util.Properties;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ManagedSmslibServiceTest {

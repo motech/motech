@@ -1,7 +1,5 @@
 package org.motechproject.sms.smpp;
 
-import org.motechproject.sms.InboundSMS;
-import org.motechproject.sms.OutboundSMS;
 import org.motechproject.sms.api.SMSRecord;
 import org.motechproject.sms.api.SMSType;
 

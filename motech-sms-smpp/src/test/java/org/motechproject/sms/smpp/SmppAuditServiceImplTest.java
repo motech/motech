@@ -4,8 +4,8 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.sms.repository.AllInboundSMS;
-import org.motechproject.sms.repository.AllOutboundSMS;
+import org.motechproject.sms.smpp.repository.AllInboundSMS;
+import org.motechproject.sms.smpp.repository.AllOutboundSMS;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;

@@ -1,14 +1,14 @@
-package it;
+package org.motechproject.sms.smpp.it;
 
 import org.joda.time.DateTime;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.scheduler.context.EventContext;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduler.event.EventRelay;
 import org.motechproject.sms.api.constants.EventDataKeys;
 import org.motechproject.sms.api.constants.EventSubjects;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -19,8 +19,7 @@ import java.util.HashMap;
 @ContextConfiguration(locations = {"classpath:testApplicationSmsSmpp.xml"})
 public class SmsIT {
 
-    @Autowired
-    private EventRelay eventRelay;
+    private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
 
     @Test
     @Ignore("run with smpp simulator; config in smpp.properties")

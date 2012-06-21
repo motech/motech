@@ -1,4 +1,4 @@
-package org.motechproject.sms.repository;
+package org.motechproject.sms.smpp.repository;
 
 
 import ch.lambdaj.Lambda;
@@ -6,7 +6,7 @@ import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.sms.InboundSMS;
+import org.motechproject.sms.smpp.InboundSMS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
