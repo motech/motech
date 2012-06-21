@@ -4,7 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.mobileforms.api.domain.FormError;
 import org.motechproject.mobileforms.api.validator.annotations.Required;
 
-public class RequiredValidator implements FieldValidator<Required>{
+public class RequiredValidator implements FieldValidator<Required> {
 
     @Override
     public FormError validate(Object fieldValue, String fieldName, Class fieldType, Required annotation) {

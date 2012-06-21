@@ -6,7 +6,8 @@ import org.motechproject.mobileforms.api.vo.Study;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static ch.lambdaj.Lambda.convert;
 import static ch.lambdaj.Lambda.join;
@@ -14,7 +15,7 @@ import static ch.lambdaj.Lambda.join;
 public class FormOutput {
     private List<Study> studies = new ArrayList<Study>();
 
-    public void addStudy(Study study){
+    public void addStudy(Study study) {
         studies.add(study);
     }
 

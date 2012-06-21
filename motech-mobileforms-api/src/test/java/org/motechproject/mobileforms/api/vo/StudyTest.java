@@ -16,7 +16,7 @@ import static org.hamcrest.Matchers.is;
 public class StudyTest {
 
     @Test
-    public void shouldGroupFormsBasedOnTheGroupIdentifier(){
+    public void shouldGroupFormsBasedOnTheGroupIdentifier() {
         final TestFormBean formBeanOne = new TestFormBean("study", "form1", "<xml>xml</xml>", "validator1", "formType", Collections.<String>emptyList(), "group1", "lName1");
         final TestFormBean formBeanTwo = new TestFormBean("study", "form2", "<xml>xml</xml>", "validator2", "formType", Collections.<String>emptyList(), "group2", "lName2");
         final TestFormBean formBeanThree = new TestFormBean("study", "form3", "<xml>xml</xml>", "validator3", "formType", Collections.<String>emptyList(), "group1", "lName3");

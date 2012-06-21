@@ -32,7 +32,7 @@ public class MaxLengthValidatorTest {
     }
 
     @Test
-    public void shouldNotReturnErrorIfFieldValueIsNull(){
+    public void shouldNotReturnErrorIfFieldValueIsNull() {
         assertNull(lengthValidator.validate(null, "FirstName", String.class, lengthAnnotation));
     }
 
@@ -51,7 +51,7 @@ public class MaxLengthValidatorTest {
     }
 
     @Test
-    public void shouldReturnErrorIfLengthValidatorIsAnnotatedOnNonStringOrOnNumericField(){
+    public void shouldReturnErrorIfLengthValidatorIsAnnotatedOnNonStringOrOnNumericField() {
         MatcherAssert.assertThat(lengthValidator.validate(new ArrayList(), "name", List.class, lengthAnnotation), Matchers.is(equalTo(new FormError("name", "Length validation cannot be applied to name as it is not a string or a number"))));
     }
 

@@ -39,7 +39,7 @@ public class FormUploadServlet extends BaseFormServlet {
             readParameters(dataInput);
             readActionByte(dataInput);
             List<Study> studies = extractBeans(dataInput);
-            final Map<String,FormValidator> formValidators = getFormValidators();
+            final Map<String, FormValidator> formValidators = getFormValidators();
             List<FormBean> allForms = flatten(collect(studies, on(Study.class).forms()));
             for (Study study : studies) {
                 for (FormBeanGroup group : study.groupedForms()) {

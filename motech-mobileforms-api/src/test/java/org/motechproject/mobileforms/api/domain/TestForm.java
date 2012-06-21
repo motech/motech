@@ -2,7 +2,7 @@ package org.motechproject.mobileforms.api.domain;
 
 import java.util.Date;
 
-public class TestForm extends FormBean{
+public class TestForm extends FormBean {
     private Integer patientid;
     private String country;
     private String district;

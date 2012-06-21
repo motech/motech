@@ -26,7 +26,7 @@ public class RegExValidatorTest {
     }
 
     @Test
-    public void shouldNotReturnErrorIfFieldValueIsNull(){
+    public void shouldNotReturnErrorIfFieldValueIsNull() {
         assertNull(new RegExValidator().validate(null, "FirstName", String.class, regEx));
     }
 
@@ -37,12 +37,12 @@ public class RegExValidatorTest {
     }
 
     @Test
-    public void shouldReturnErrorIfFieldValueDoesNotMatchRegularExpression(){
+    public void shouldReturnErrorIfFieldValueDoesNotMatchRegularExpression() {
         assertThat(new RegExValidator().validate("SOME OTHER VALUE", "name", String.class, regEx), is(equalTo(new FormError("name", "wrong format"))));
     }
 
     @Test
-    public void shouldReturnErrorIfRegularExpressionValidatorIsAnnotatedOnNonStringField(){
+    public void shouldReturnErrorIfRegularExpressionValidatorIsAnnotatedOnNonStringField() {
         assertThat(new RegExValidator().validate(100, "name", Integer.class, regEx), is(equalTo(new FormError("name", "Pattern match validation cannot be applied to name as it is not a string"))));
     }
 

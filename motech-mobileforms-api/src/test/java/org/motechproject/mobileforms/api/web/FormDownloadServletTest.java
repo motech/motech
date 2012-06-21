@@ -18,7 +18,13 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +35,14 @@ import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class FormDownloadServletTest {
@@ -128,7 +141,7 @@ public class FormDownloadServletTest {
                     ((ByteArrayOutputStream) invocationOnMock.getArguments()[0]).write(dataExpectedToBeReturned.getBytes());
                     assertThat((List<String>) invocationOnMock.getArguments()[1], is(equalTo(formXmlContents)));
                     assertThat((Integer) invocationOnMock.getArguments()[2], is(equalTo(groupIndex)));
-                    assertThat((String)invocationOnMock.getArguments()[3], is(equalTo(groupName)));
+                    assertThat((String) invocationOnMock.getArguments()[3], is(equalTo(groupName)));
                     return null;
                 }
             }).when(epihandySerializer).serializeForms(any(OutputStream.class), Matchers.anyObject(), anyInt(), anyString());

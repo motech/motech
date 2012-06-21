@@ -1,8 +1,8 @@
 package org.motechproject.mobileforms.api.web;
 
 import org.fcitmuk.epihandy.EpihandyXformSerializer;
-import org.motechproject.mobileforms.api.callbacks.FormParser;
 import org.motechproject.mobileforms.api.callbacks.FormGroupPublisher;
+import org.motechproject.mobileforms.api.callbacks.FormParser;
 import org.motechproject.mobileforms.api.domain.FormBean;
 import org.motechproject.mobileforms.api.domain.FormGroupValidator;
 import org.motechproject.mobileforms.api.domain.FormOutput;
@@ -44,7 +44,7 @@ public abstract class BaseFormServlet extends HttpServlet {
 
 
     protected BaseFormServlet() {
-        context =  new ClassPathXmlApplicationContext("applicationMobileFormsAPI.xml");
+        context = new ClassPathXmlApplicationContext("applicationMobileFormsAPI.xml");
         mobileFormsService = context.getBean("mobileFormsServiceImpl", MobileFormsService.class);
         usersService = context.getBean("usersServiceImpl", UsersService.class);
         formGroupPublisher = context.getBean("formGroupPublisher", FormGroupPublisher.class);
@@ -67,14 +67,14 @@ public abstract class BaseFormServlet extends HttpServlet {
     @Override
     protected abstract void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
 
-    protected Map<String, FormValidator> getFormValidators(){
+    protected Map<String, FormValidator> getFormValidators() {
         Map<String, FormValidator> validators = new HashMap<String, FormValidator>();
         final Enumeration attributeNames = getServletContext().getAttributeNames();
-        while (attributeNames.hasMoreElements()){
+        while (attributeNames.hasMoreElements()) {
             final String attributeName = (String) attributeNames.nextElement();
             final Object attributeValue = getServletContext().getAttribute(attributeName);
-            if(attributeValue instanceof FormValidator){
-                validators.put(attributeName, (FormValidator)attributeValue);
+            if (attributeValue instanceof FormValidator) {
+                validators.put(attributeName, (FormValidator) attributeValue);
             }
         }
         return validators;

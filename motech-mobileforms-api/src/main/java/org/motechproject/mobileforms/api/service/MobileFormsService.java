@@ -7,6 +7,8 @@ import java.util.Map;
 
 public interface MobileFormsService {
     List<Object[]> getAllFormGroups();
+
     FormGroup getForms(Integer formGroupIndex);
-    Map<Integer,String> getFormIdMap();
+
+    Map<Integer, String> getFormIdMap();
 }

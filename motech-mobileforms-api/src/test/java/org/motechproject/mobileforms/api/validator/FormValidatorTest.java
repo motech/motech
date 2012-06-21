@@ -8,7 +8,9 @@ import org.motechproject.mobileforms.api.domain.FormError;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class FormValidatorTest {

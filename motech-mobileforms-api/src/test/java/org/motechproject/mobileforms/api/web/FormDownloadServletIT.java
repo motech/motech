@@ -9,7 +9,11 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,7 +22,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.mobileforms.api.utils.TestUtilities.*;
+import static org.motechproject.mobileforms.api.utils.TestUtilities.readFully;
+import static org.motechproject.mobileforms.api.utils.TestUtilities.slice;
+import static org.motechproject.mobileforms.api.utils.TestUtilities.toObjectByteArray;
+import static org.motechproject.mobileforms.api.utils.TestUtilities.toPrimitive;
 
 public class FormDownloadServletIT {
 
@@ -63,11 +70,11 @@ public class FormDownloadServletIT {
     }
 
     @Test
-    public void shouldReturnListOfUserAccountsTogetherWithTheListOfFormsOfTheGroup_GivenTheIndexOfTheGroup(){
+    public void shouldReturnListOfUserAccountsTogetherWithTheListOfFormsOfTheGroup_GivenTheIndexOfTheGroup() {
         String motechUserSalt = "7357658437bd298b4a48b7357489357";
         String guyzbUserSalt = "135df6eacf3e3f21866ecff10378035edbf7";
         List<Object[]> expectedUserAccounts = Arrays.asList(new Object[]{1, "motech", "6f6347e4b28216556ec7dfa14d7dfadb873a15", motechUserSalt},
-                                                            new Object[]{2, "guyzb", "730c0e85d51b5c293b6ec8f22579ec7b67c5d8", guyzbUserSalt});
+                new Object[]{2, "guyzb", "730c0e85d51b5c293b6ec8f22579ec7b67c5d8", guyzbUserSalt});
         String newLine = System.getProperty("line.separator");
         String expectedFormContent = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" + newLine +
                 "<xf:xforms xmlns:xf=\"http://www.w3.org/2002/xforms\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" id=\"7\">" + newLine +

@@ -142,7 +142,7 @@ public class FormProcessorTest {
     }
 
     @Test
-    public void shouldInitializeEmptyListToStudiesWhileBeforeParsingTheXml(){
+    public void shouldInitializeEmptyListToStudiesWhileBeforeParsingTheXml() {
         assertThat(formParser.getStudies(), is(equalTo(null)));
         formParser.start();
         assertThat(formParser.getStudies(), is(equalTo(Collections.<Study>emptyList())));

@@ -55,7 +55,7 @@ public class FormBeanGroupTest {
     }
 
     @Test
-    public void shouldReturnAllFormBeansWithNoErrors(){
+    public void shouldReturnAllFormBeansWithNoErrors() {
         TestFormBean formBean1 = new TestFormBean();
         TestFormBean formBean2 = new TestFormBean();
         formBean1.addFormError(new FormError("", ""));

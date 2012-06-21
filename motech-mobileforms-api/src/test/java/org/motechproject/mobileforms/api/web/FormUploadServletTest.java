@@ -26,12 +26,24 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class FormUploadServletTest {
@@ -122,7 +134,7 @@ public class FormUploadServletTest {
 
     }
 
-    private void mockServletContextToReturnValidators(Map<String, FormValidator> validators){
+    private void mockServletContextToReturnValidators(Map<String, FormValidator> validators) {
         reset(mockServletContext);
         when(mockServletContext.getAttributeNames()).thenReturn(Collections.enumeration(validators.keySet()));
         for (Map.Entry<String, FormValidator> entry : validators.entrySet()) {
@@ -143,7 +155,7 @@ public class FormUploadServletTest {
     }
 
     @Test
-    public void shouldReturnListOfValidatorInServletContext(){
+    public void shouldReturnListOfValidatorInServletContext() {
         when(mockServletContext.getAttributeNames()).thenReturn(Collections.enumeration(Arrays.asList("validator1", "validator2", "some_attribute_name")));
         final FormValidator formValidator1 = mock(FormValidator.class);
         final FormValidator formValidator2 = mock(FormValidator.class);
@@ -152,10 +164,10 @@ public class FormUploadServletTest {
         when(mockServletContext.getAttribute("validator2")).thenReturn(formValidator2);
 
         final Map<String, FormValidator> formValidators = formUploadServlet.getFormValidators();
-        Map<String, FormValidator> expected=new HashMap<String, FormValidator>(){{
-            put("validator1",formValidator1);
-            put("validator2",formValidator2);
+        Map<String, FormValidator> expected = new HashMap<String, FormValidator>() {{
+            put("validator1", formValidator1);
+            put("validator2", formValidator2);
         }};
-        assertThat(formValidators,is(equalTo(expected)));
+        assertThat(formValidators, is(equalTo(expected)));
     }
 }
