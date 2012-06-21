@@ -1,11 +1,10 @@
-package org.motechproject.server.osgi;
+package org.motechproject.rules;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.motechproject.rules.service.KnowledgeBaseManager;
+import org.osgi.framework.Bundle;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,11 +14,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.motechproject.server.ruleengine.KnowledgeBaseManager;
-import org.osgi.framework.Bundle;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
 
 public class RuleBundleLoaderTest {
