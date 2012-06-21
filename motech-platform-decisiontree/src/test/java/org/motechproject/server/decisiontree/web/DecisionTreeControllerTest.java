@@ -12,6 +12,8 @@ import org.motechproject.decisiontree.model.*;
 import org.motechproject.server.decisiontree.TreeNodeLocator;
 import org.motechproject.server.decisiontree.service.DecisionTreeService;
 import org.motechproject.server.decisiontree.service.TreeEventProcessor;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,10 +52,17 @@ public class DecisionTreeControllerTest {
     @Mock
     HttpServletResponse response;
 
+    @Mock
+    ApplicationContext applicationContext;
+    @Mock
+    AutowireCapableBeanFactory autoWireCapableFactory;
+
     @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
         params.put(TREE_NAME_PARAM, treeName);
+        doNothing().when(autoWireCapableFactory).autowireBean(anyObject());
+        when(applicationContext.getAutowireCapableBeanFactory()).thenReturn(autoWireCapableFactory);
     }
 
     @Test
@@ -67,6 +76,7 @@ public class DecisionTreeControllerTest {
         Transition transition = new Transition();
         transition.setDestinationNode(childNode);
         node.addTransition("1", transition);
+
 
         when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
         when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");

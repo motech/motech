@@ -16,6 +16,7 @@ import org.motechproject.decisiontree.repository.AllTrees;
 import org.motechproject.testing.utils.SpringIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -110,7 +111,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends SpringIntegrationTest {
 
         assertTrue("got " + response4, response4.contains("trP=Lz8"));   //verify proceeding in tree Lz8 == /?
         assertTrue("got " + response4, response4.contains("<Say>custom transition " + USER_INPUT + "</Say>"));
-        assertTrue("got " + response4, response4.contains("<Play>custom.wav</Play>"));
+        assertTrue("got " + response4, response4.contains("   <Play>custom_1345234_Hello_from_org.motechproject.server.verboice.it.VerboiceIVRControllerDecisionTreeIT$TestComponent.wav</Play>"));
     }
 
     @Test
@@ -131,14 +132,31 @@ public class VerboiceIVRControllerDecisionTreeIT extends SpringIntegrationTest {
         return connector;
     }
 
+    @Component
+    public static class TestComponent {
+        String message = "Hello_from_" + this.getClass().getName()+ ".wav";
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+    }
+
     public static class CustomTransition implements ITransition {
+
+        @Autowired
+        TestComponent testComponent;
+
         @Override
         public Node getDestinationNode(String input) {
             final HashMap<String, ITransition> transitions = new HashMap<String, ITransition>();
             transitions.put("1", new Transition().setDestinationNode(new Node().setPrompts(new AudioPrompt().setAudioFileUrl("option1_after_custom_transition.wav"))));
             transitions.put("?", this);
             return new Node().setPrompts(new TextToSpeechPrompt().setMessage("custom transition " + input),
-                    new AudioPrompt().setAudioFileUrl("custom.wav"))
+                    new AudioPrompt().setAudioFileUrl("custom_" + input + "_" + testComponent.getMessage()))
                     .setTransitions(transitions);
         }
     }
