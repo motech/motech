@@ -278,7 +278,7 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
         SimpleScheduleBuilder simpleSchedule = simpleSchedule()
-                .withIntervalInMilliseconds((int) repeatIntervalInMilliSeconds)
+                .withIntervalInMilliseconds(repeatIntervalInMilliSeconds)
                 .withRepeatCount(jobRepeatCount);
 
         simpleSchedule = setMisfirePolicyForSimpleTrigger(simpleSchedule, repeatingTriggerMisfirePolicy);
