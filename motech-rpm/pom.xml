@@ -35,6 +35,11 @@
             <version>${project.version}</version>
             <type>war</type>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-scheduler</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <profiles>
@@ -48,20 +53,21 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
+                        <version>2.4</version>
                         <executions>
                             <execution>
-                                <id>copy-war</id>
-                                <phase>package</phase>
+                                <id>copy-artifacts</id>
+                                <phase>compile</phase>
                                 <goals>
                                     <goal>copy-dependencies</goal>
                                 </goals>
                                 <configuration>
                                     <includeArtifactIds>
-                                        motech-platform-server
+                                        motech-platform-server, motech-scheduler
                                     </includeArtifactIds>
                                     <stripVersion>true</stripVersion>
                                     <outputDirectory>
-                                        content/artifacts
+                                        ${project.basedir}/content/artifacts
                                     </outputDirectory>
                                 </configuration>
                             </execution>
@@ -107,14 +113,19 @@
                                     <groupname>motech</groupname>
                                     <sources>
                                         <source>
-                                            <location>content/artifacts</location>
+                                            <location>content/artifacts/motech-platform-server.war</location>
                                         </source>
                                     </sources>
                                 </mapping>
                                 <mapping>
-                                    <directory>/var/lib/motech/data</directory>
+                                    <directory>/var/lib/motech/data/bundles</directory>
                                     <username>motech</username>
                                     <groupname>motech</groupname>
+                                    <sources>
+                                        <source>
+                                            <location>content/artifacts/motech-scheduler.jar</location>
+                                        </source>
+                                    </sources>
                                 </mapping>
                                 <mapping>
                                     <directory>/var/cache/motech/temp</directory>

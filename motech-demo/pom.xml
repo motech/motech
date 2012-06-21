@@ -179,4 +179,62 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>RPM</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>rpm-maven-plugin</artifactId>
+                        <version>2.0</version>
+                        <inherited>false</inherited>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>attached-rpm</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+
+                        <configuration>
+                            <copyright>2012, Grameen Foundation</copyright>
+                            <distribution>Motech distribution</distribution>
+                            <group>Applications/Internet</group>
+                            <prefix>/usr/share</prefix>
+
+                            <defineStatements>
+                                <defineStatement>_unpackaged_files_terminate_build 0</defineStatement>
+                            </defineStatements>
+
+                            <requires>
+                                <require>motech &gt;= ${project.version}</require>
+                            </requires>
+
+                            <mappings>
+                                <mapping>
+                                    <directory>/var/lib/motech/data/bundles</directory>
+                                    <username>motech</username>
+                                    <groupname>motech</groupname>
+                                    <sources>
+                                        <source>
+                                            <location>${project.build.directory}/${project.artifactId}-${project.version}.jar</location>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                            </mappings>
+                            <postinstallScriptlet>
+                                <scriptFile>../packaging/rpm/modules/postinst</scriptFile>
+                                <fileEncoding>utf-8</fileEncoding>
+                            </postinstallScriptlet>
+                            <postremoveScriptlet>
+                                <scriptFile>../packaging/rpm/modules/postrm</scriptFile>
+                                <fileEncoding>utf-8</fileEncoding>
+                            </postremoveScriptlet>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

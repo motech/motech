@@ -12,3 +12,8 @@ fi
 if [ -d /var/log/motech ]; then
     rm -r /var/log/motech
 fi
+
+# Remove the webapps folder, if it still exists
+if [ -d /var/lib/motech/webapps ]; then
+    rm -r /var/lib/motech/webapps
+fi

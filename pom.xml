@@ -7,6 +7,11 @@
     <packaging>pom</packaging>
     <name>MoTeCH</name>
 
+    <description>
+        MoTeCH is a software system from Grameen Foundation that harnesses the ubiquity
+        of mobile phones to deliver and receive information from patient and caregivers.
+    </description>
+
     <properties>
         <db.server>localhost</db.server>
         <db.port>5984</db.port>
@@ -224,6 +229,61 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>RPM</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>rpm-maven-plugin</artifactId>
+                        <version>2.0</version>
+                        <inherited>false</inherited>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>attached-rpm</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+
+                        <configuration>
+                            <copyright>2012, Grameen Foundation</copyright>
+                            <distribution>Motech distribution</distribution>
+                            <group>Applications/Internet</group>
+                            <prefix>/usr/share</prefix>
+
+                            <defineStatements>
+                                <defineStatement>_unpackaged_files_terminate_build 0</defineStatement>
+                            </defineStatements>
+
+                            <requires>
+                                <require>motech-base &gt;= ${project.version}</require>
+                                <require>mysql-server</require>
+                                <require>couchdb</require>
+                                <require>curl</require>
+                            </requires>
+
+                            <mappings>
+                                <mapping>
+                                    <directory>/usr/share/doc/motech</directory>
+                                    <documentation>true</documentation>
+                                    <username>root</username>
+                                    <groupname>root</groupname>
+                                    <sources>
+                                        <source>
+                                            <location>LICENSE.txt</location>
+                                        </source>
+                                        <source>
+                                            <location>README</location>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                            </mappings>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <reporting>
@@ -292,6 +352,11 @@
             <url>license.txt</url>
         </license>
     </licenses>
+
+    <organization>
+        <name>Grameen Foundation</name>
+        <url>http://grameenfoundation.org/</url>
+    </organization>
 
     <ciManagement>
         <system>hudson</system>
