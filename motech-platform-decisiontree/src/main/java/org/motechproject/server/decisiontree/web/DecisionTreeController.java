@@ -13,6 +13,7 @@ import org.motechproject.server.decisiontree.service.TreeEventProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,6 +56,9 @@ public class DecisionTreeController extends MultiActionController {
 
     @Autowired
     TreeEventProcessor treeEventProcessor;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     enum Errors {
         NULL_PATIENTID_LANGUAGE_OR_TREENAME_PARAM,
@@ -148,6 +152,9 @@ public class DecisionTreeController extends MultiActionController {
             parentTransitionPath = getParentTransitionPath(encodedParentTransitionPath);
             Node parentNode = decisionTreeService.getNode(currentTree, parentTransitionPath);
             ITransition transition = sendTreeEventActions(params, transitionKey, parentTransitionPath, parentNode);
+            applicationContext.getAutowireCapableBeanFactory().autowireBean(transition);
+            applicationContext.getDisplayName();
+
             node = transition.getDestinationNode(transitionKey);
 
             if (node == null || (node.getPrompts().isEmpty() && node.getActionsAfter().isEmpty()
