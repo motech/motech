@@ -1,4 +1,14 @@
-package org.motechproject.server.ruleengine;
+package org.motechproject.rules.service;
+
+import org.drools.KnowledgeBase;
+import org.drools.runtime.StatelessKnowledgeSession;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.motechproject.rules.domain.Rule;
+import org.motechproject.rules.repository.AllRules;
+
+import java.io.File;
+import java.net.URLDecoder;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -6,21 +16,9 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import java.io.File;
-import java.net.URLDecoder;
-
-import org.drools.KnowledgeBase;
-import org.drools.runtime.StatelessKnowledgeSession;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.motechproject.dao.AllRules;
-import org.motechproject.model.Rule;
-
 
 public class KnowledgeBaseManagerTest {
 
-    @Test
-    @Ignore
     public void addOrUpdateRuleTest() throws Exception {
         String ruleFolder = "/rules";
         String ruleFile = "test.drl";
@@ -30,7 +28,6 @@ public class KnowledgeBaseManagerTest {
         kbm.setAllRules(repo);
 
         File file = new File(URLDecoder.decode(getClass().getResource(ruleFolder + "/" + ruleFile).getFile(), "UTF-8"));
-
         kbm.addOrUpdateRule(file);
 
         verify(repo).contains(ruleFile);

@@ -145,6 +145,8 @@
         <module>motech-platform-common</module>
         <module>motech-scheduler</module>
         <module>motech-rpm</module>
+        <module>motech-rules-api</module>
+        <module>motech-rules</module>
     </modules>
 
     <build>
