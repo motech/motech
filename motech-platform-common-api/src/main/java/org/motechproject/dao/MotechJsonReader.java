@@ -46,6 +46,10 @@ public class MotechJsonReader {
         return from(text, ofType, standardTypeAdapters);
     }
 
+    public Object readFromString(String text, Type ofType, Map<Type, Object> typeAdapters) {
+        return from(text, ofType, typeAdapters);
+    }
+
     private Object from(String text, Type ofType, Map<Type, Object> typeAdapters) {
         GsonBuilder gsonBuilder = new GsonBuilder();
         for (Map.Entry<Type, Object> entry : typeAdapters.entrySet()) {
