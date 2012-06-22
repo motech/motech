@@ -143,6 +143,7 @@
         <module>motech-mrs-api</module>
         <module>motech-openmrs-api</module>
         <module>motech-openmrs-omod</module>
+        <module>motech-openmrs-ws</module>
         <module>motech-sms-api</module>
         <module>motech-sms-http</module>
         <module>motech-sms-smpp</module>
