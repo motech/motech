@@ -1,6 +1,7 @@
 package org.motechproject.scheduler.gateway;
 
 import org.motechproject.scheduler.domain.CronSchedulableJob;
+import org.motechproject.scheduler.domain.JobId;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 
@@ -44,10 +45,10 @@ public interface MotechSchedulerGateway {
     public void scheduleRunOnceJob(RunOnceSchedulableJob schedulableJob);
 
     /**
-     * Sends a message with the given jobID (String) payload. The message directed to the channel specified in the
+     * Sends a message with the given JobId payload. The message directed to the channel specified in the
      * a Spring Integration configuration file.
      *
-     * @param jobId
+     * @param job
      */
-    public void unscheduleJob(String jobId);
+    public void unscheduleJob(JobId job);
 }

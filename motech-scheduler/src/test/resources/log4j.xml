@@ -5,17 +5,17 @@
 
     <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d %-5p [%c] %m%n" />
+            <param name="ConversionPattern" value="%d %-5p [%c] %m%n"/>
         </layout>
     </appender>
 
     <logger name="org.motechproject">
-        <level value="WARN" />
+        <level value="WARN"/>
     </logger>
 
     <root>
-        <priority value="WARN" />
-        <appender-ref ref="CONSOLE" />
+        <priority value="WARN"/>
+        <appender-ref ref="CONSOLE"/>
     </root>
 
 </log4j:configuration>

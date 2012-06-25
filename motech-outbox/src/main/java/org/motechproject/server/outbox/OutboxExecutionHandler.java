@@ -1,6 +1,7 @@
 package org.motechproject.server.outbox;
 
 import org.motechproject.context.Context;
+import org.motechproject.scheduler.domain.JobId;
 import org.motechproject.scheduler.gateway.MotechSchedulerGateway;
 import org.motechproject.ivr.model.CallInitiationException;
 import org.motechproject.ivr.service.CallRequest;
@@ -119,14 +120,13 @@ public class OutboxExecutionHandler {
 
     @MotechListener(subjects = {EventKeys.UNSCHEDULE_EXECUTION_SUBJECT})
     public void unschedule(MotechEvent event) {
+        if (EventKeys.getScheduleJobIdKey(event) == null) {
+            logger.error(String.format("Can not handle Event: %s. The event is invalid - missing the %s parameter",
+                    event.getSubject(), EventKeys.SCHEDULE_JOB_ID_KEY));
 
-        String jobId = EventKeys.getScheduleJobIdKey(event);
-        if (jobId == null) {
-            logger.error("Can not handle Event: " + event.getSubject() +
-                    ". The event is invalid - missing the " + EventKeys.SCHEDULE_JOB_ID_KEY + " parameter");
             return;
         }
 
-        schedulerGateway.unscheduleJob(jobId);
+        schedulerGateway.unscheduleJob(new JobId(event));
     }
 }

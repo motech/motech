@@ -99,7 +99,6 @@
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
-            <scope>provided</scope>
         </dependency>
         <!--Please don't delete this! This dependency is required when using MySql as the job store for Quartz.-->
         <!--<dependency>-->

@@ -5,6 +5,7 @@ package org.motechproject.scheduler;
  */
 
 import org.motechproject.scheduler.domain.CronSchedulableJob;
+import org.motechproject.scheduler.domain.JobId;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
@@ -84,6 +85,8 @@ public interface MotechSchedulerService {
      * @param externalId  : domain specific id as String.
      */
     public void unscheduleJob(String subject, String externalId);
+
+    public void unscheduleJob(JobId job);
 
     /**
      * Same as unscheduleJob except that it would not throw an exception if the job doesn't exist
