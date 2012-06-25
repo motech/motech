@@ -14,7 +14,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.InputStream;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/applicationCmsLiteApi.xml")
@@ -75,13 +78,13 @@ public class AllStreamContentsIT {
     }
 
     @Test
-    public void shouldReturnTrueIfStreamContentAvailable(){
+    public void shouldReturnTrueIfStreamContentAvailable() {
         createStreamContent();
         assertTrue(allStreamContents.isContentAvailable(englishContent.getLanguage(), englishContent.getName()));
     }
 
     @Test
-    public void shouldReturnFalseIfStreamContentNotAvailable(){
+    public void shouldReturnFalseIfStreamContentNotAvailable() {
         assertFalse(allStreamContents.isContentAvailable("en", "unknownContent"));
     }
 

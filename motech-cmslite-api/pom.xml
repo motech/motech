@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
         <version>0.11-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>org.motechproject</groupId>
     <artifactId>motech-cmslite-api</artifactId>
-
     <name>MoTeCH CMS lite API</name>
     <version>0.11-SNAPSHOT</version>
+    <packaging>bundle</packaging>
     <dependencies>
         <dependency>
             <groupId>org.motechproject</groupId>
-            <artifactId>motech-platform-common-api</artifactId>
+            <artifactId>motech-platform-server-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -27,6 +27,12 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
             <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -47,33 +53,99 @@
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
         </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <version>4.2.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.2.0</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
             <plugin>
-                    <artifactId>maven-antrun-plugin</artifactId>
-                    <version>1.6</version>
-                    <executions>
-                        <execution>
-                            <id>drop DB =&gt; motech-cmslite</id>
-                            <phase>pre-integration-test</phase>
-                            <configuration>
-                                <target>
-                                    <exec executable="curl">
-                                        <arg value="-s" />
-                                        <arg value="-S" />
-                                        <arg value="-X" />
-                                        <arg value="DELETE" />
-                                        <arg value="http://${db.server}:${db.port}/motech-cmslite" />
-                                    </exec>
-                                </target>
-                            </configuration>
-                            <goals>
-                                <goal>run</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.4</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Export-Package>
+                            org.motechproject.cmslite.api.model,
+                            org.motechproject.cmslite.api.repository,
+                            org.motechproject.cmslite.api.service,
+                            org.motechproject.cmslite.api.web
+                        </Export-Package>
+                        <Bundle-Activator>
+                            org.motechproject.cmslite.api.osgi.Activator
+                        </Bundle-Activator>
+                        <Import-Package>
+                            org.ektorp.impl,
+                            org.ektorp.spring,
+                            org.springframework.beans.factory.xml,
+                            org.springframework.context.config,
+                            org.springframework.osgi.config,
+                            *
+                        </Import-Package>
+                        <Embed-Dependency>!*</Embed-Dependency>
+                        <Embed-Transitive>true</Embed-Transitive>
+                    </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
+                <executions>
+                    <execution>
+                        <id>copy-bundles</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${user.home}/.motech/bundles</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>target</directory>
+                                    <includes>
+                                        <include>*.jar</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>drop DB =&gt; motech-cmslite</id>
+                        <phase>pre-integration-test</phase>
+                        <configuration>
+                            <target>
+                                <exec executable="curl">
+                                    <arg value="-s"/>
+                                    <arg value="-S"/>
+                                    <arg value="-X"/>
+                                    <arg value="DELETE"/>
+                                    <arg value="http://${db.server}:${db.port}/motech-cmslite"/>
+                                </exec>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
