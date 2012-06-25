@@ -3,12 +3,12 @@ package org.motechproject.cmslite.api.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.cmslite.api.repository.AllStreamContents;
-import org.motechproject.cmslite.api.repository.AllStringContents;
 import org.motechproject.cmslite.api.model.CMSLiteException;
 import org.motechproject.cmslite.api.model.ContentNotFoundException;
 import org.motechproject.cmslite.api.model.StreamContent;
 import org.motechproject.cmslite.api.model.StringContent;
+import org.motechproject.cmslite.api.repository.AllStreamContents;
+import org.motechproject.cmslite.api.repository.AllStringContents;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +17,10 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class CMSLiteServiceImplTest {
@@ -167,13 +170,13 @@ public class CMSLiteServiceImplTest {
     }
 
     @Test
-    public void shouldReturnTrueIfStringContentAvailable(){
+    public void shouldReturnTrueIfStringContentAvailable() {
         when(allStringContents.isContentAvailable("language", "name")).thenReturn(true);
         assertTrue(cmsLiteService.isStringContentAvailable("language", "name"));
     }
 
     @Test
-    public void shouldReturnFalseIfStringContentNotAvailable(){
+    public void shouldReturnFalseIfStringContentNotAvailable() {
         when(allStringContents.isContentAvailable("language", "name")).thenReturn(false);
         assertFalse(cmsLiteService.isStringContentAvailable("language", "name"));
     }

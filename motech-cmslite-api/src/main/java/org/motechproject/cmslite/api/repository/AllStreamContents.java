@@ -1,6 +1,9 @@
 package org.motechproject.cmslite.api.repository;
 
-import org.ektorp.*;
+import org.ektorp.AttachmentInputStream;
+import org.ektorp.ComplexKey;
+import org.ektorp.CouchDbConnector;
+import org.ektorp.ViewQuery;
 import org.ektorp.support.View;
 import org.motechproject.cmslite.api.model.CMSLiteException;
 import org.motechproject.cmslite.api.model.StreamContent;
@@ -73,11 +76,10 @@ public class AllStreamContents extends BaseContentRepository<StreamContent> {
     }
 
     private void createOrUpdateContent(StreamContent streamContent, StreamContent streamContentFromDB, boolean resourceDoesNotExist) {
-        if (resourceDoesNotExist){
+        if (resourceDoesNotExist) {
             db.create(streamContent);
             createAttachment(streamContent);
-        }
-        else {
+        } else {
             streamContentFromDB.setChecksum(streamContent.getChecksum());
             streamContentFromDB.setContentType(streamContent.getContentType());
             db.update(streamContentFromDB);

@@ -1,10 +1,14 @@
 package org.motechproject.cmslite.api.service;
 
 
+import org.motechproject.cmslite.api.model.CMSLiteException;
+import org.motechproject.cmslite.api.model.Content;
+import org.motechproject.cmslite.api.model.ContentNotFoundException;
+import org.motechproject.cmslite.api.model.StreamContent;
+import org.motechproject.cmslite.api.model.StringContent;
 import org.motechproject.cmslite.api.repository.AllStreamContents;
 import org.motechproject.cmslite.api.repository.AllStringContents;
 import org.motechproject.cmslite.api.repository.BaseContentRepository;
-import org.motechproject.cmslite.api.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class CMSLiteServiceImpl implements CMSLiteService {
@@ -48,7 +52,8 @@ public class CMSLiteServiceImpl implements CMSLiteService {
 
     @Override
     public void addContent(Content content) throws CMSLiteException {
-        if (content == null || content.getLanguage() == null || content.getName() == null) throw new IllegalArgumentException("Content or language or name should not be null");
+        if (content == null || content.getLanguage() == null || content.getName() == null)
+            throw new IllegalArgumentException("Content or language or name should not be null");
 
         if (content instanceof StreamContent)
             allStreamContents.addContent((StreamContent) content);

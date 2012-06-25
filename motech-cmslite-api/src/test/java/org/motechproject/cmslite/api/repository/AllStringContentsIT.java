@@ -14,7 +14,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.HashMap;
 import java.util.Map;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/applicationCmsLiteApi.xml")
@@ -54,8 +57,8 @@ public class AllStringContentsIT {
 
         StringContent fetchedContent = couchDbConnector.get(StringContent.class, stringContent.getId());
         assertNotNull(fetchedContent);
-        Map<String,String> savedMetaData = stringContent.getMetadata();
-        assertEquals(savedMetaData.size(),1 );
+        Map<String, String> savedMetaData = stringContent.getMetadata();
+        assertEquals(savedMetaData.size(), 1);
         assertEquals(savedMetaData.get("duration"), "100");
 
         couchDbConnector.delete(fetchedContent);

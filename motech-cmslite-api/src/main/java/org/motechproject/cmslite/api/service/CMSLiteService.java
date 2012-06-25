@@ -4,7 +4,11 @@ package org.motechproject.cmslite.api.service;
  * CMS Lite is lightweight content management supports multiple languages.
  */
 
-import org.motechproject.cmslite.api.model.*;
+import org.motechproject.cmslite.api.model.CMSLiteException;
+import org.motechproject.cmslite.api.model.Content;
+import org.motechproject.cmslite.api.model.ContentNotFoundException;
+import org.motechproject.cmslite.api.model.StreamContent;
+import org.motechproject.cmslite.api.model.StringContent;
 import org.springframework.stereotype.Component;
 
 /**
@@ -17,6 +21,7 @@ import org.springframework.stereotype.Component;
 public interface CMSLiteService {
     /**
      * Get Stream content for given language.
+     *
      * @param language
      * @param name
      * @return StreamContent with checksum and data type
@@ -26,6 +31,7 @@ public interface CMSLiteService {
 
     /**
      * Get Text Content for given tag and language.
+     *
      * @param language
      * @param name
      * @return
@@ -35,6 +41,7 @@ public interface CMSLiteService {
 
     /**
      * Add content to CMS data-store
+     *
      * @param content
      * @throws CMSLiteException
      * @see org.motechproject.cmslite.api.model.StreamContent
@@ -44,6 +51,7 @@ public interface CMSLiteService {
 
     /**
      * Check if content available in stream format
+     *
      * @param language
      * @param name
      * @return
@@ -52,6 +60,7 @@ public interface CMSLiteService {
 
     /**
      * Check if content available in text format.
+     *
      * @param language
      * @param name
      * @return
