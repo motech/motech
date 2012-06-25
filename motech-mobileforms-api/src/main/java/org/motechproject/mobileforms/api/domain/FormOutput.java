@@ -12,6 +12,7 @@ import java.util.List;
 import static ch.lambdaj.Lambda.convert;
 import static ch.lambdaj.Lambda.join;
 
+/** Consolidates form upload results and writes back in response */
 public class FormOutput {
     private List<Study> studies = new ArrayList<Study>();
 
