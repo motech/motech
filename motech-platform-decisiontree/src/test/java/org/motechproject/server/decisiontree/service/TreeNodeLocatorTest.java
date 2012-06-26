@@ -2,24 +2,42 @@ package org.motechproject.server.decisiontree.service;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.motechproject.decisiontree.model.AudioPrompt;
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.decisiontree.model.Tree;
 import org.motechproject.server.decisiontree.TreeNodeLocator;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.ApplicationContext;
 
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 public class TreeNodeLocatorTest {
 
     Tree tree;
 
-    TreeNodeLocator locator;
+    @InjectMocks
+    TreeNodeLocator locator = new TreeNodeLocator();
+
+    @Mock
+    ApplicationContext applicationContext;
+    @Mock
+    AutowireCapableBeanFactory autowireCapableBeanFactory;
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        when(applicationContext.getAutowireCapableBeanFactory()).thenReturn(autowireCapableBeanFactory);
+        doNothing().when(autowireCapableBeanFactory).autowireBean(any());
         tree = new Tree().setName("tree1").setRootNode(
                 new Node().setTransitions(new Object[][]{
                         {"1", new Transition().setName("t1").setDestinationNode(new Node().setTransitions(new Object[][]{
@@ -29,7 +47,7 @@ public class TreeNodeLocatorTest {
                         }))},
                         {"2", new Transition().setName("ill").setDestinationNode(new Node())}
                 }));
-        locator = new TreeNodeLocator();
+
     }
 
     @Test

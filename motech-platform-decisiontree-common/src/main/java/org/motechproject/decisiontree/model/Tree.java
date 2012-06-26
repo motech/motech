@@ -74,16 +74,6 @@ public class Tree extends MotechBaseDataObject {
         return result;
     }
 
-    public NodeInfo currentNodeInfo(String currentPosition) {
-        currentPosition = currentPosition == null ? "" : currentPosition;
-        Node node = new TreeNodeLocator().findNode(this, currentPosition);
-        return new NodeInfo(currentPosition, node);
-    }
-
-    public Node nextNode(String currentPosition, String transitionInput) {
-        return nextNodeInfo(currentPosition, transitionInput).node();
-    }
-
     public NodeInfo nextNodeInfo(String currentPosition, String transitionInput) {
         currentPosition = currentPosition == null ? "" : currentPosition;
         transitionInput = transitionInput == null ? "" : transitionInput;

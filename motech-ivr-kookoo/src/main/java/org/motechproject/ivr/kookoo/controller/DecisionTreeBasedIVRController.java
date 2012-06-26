@@ -2,6 +2,7 @@ package org.motechproject.ivr.kookoo.controller;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.decisiontree.model.ITreeCommand;
+import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.NodeInfo;
 import org.motechproject.decisiontree.model.Tree;
 import org.motechproject.ivr.kookoo.KooKooIVRContext;
@@ -11,6 +12,7 @@ import org.motechproject.ivr.kookoo.extensions.CallFlowController;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
 import org.motechproject.ivr.domain.IVRMessage;
 import org.motechproject.ivr.service.IVRSessionManagementService;
+import org.motechproject.server.decisiontree.TreeNodeLocator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +23,9 @@ import java.util.List;
 @RequestMapping(AllIVRURLs.DECISION_TREE_URL)
 public class DecisionTreeBasedIVRController extends SafeIVRController {
     private CallFlowController callFlowController;
+
+    @Autowired
+    TreeNodeLocator treeNodeLocator;
 
     @Autowired
     public DecisionTreeBasedIVRController(CallFlowController callFlowController, IVRMessage ivrMessage, KookooCallDetailRecordsService callDetailRecordsService, StandardResponseController standardResponseController, IVRSessionManagementService ivrSessionManagementService) {
@@ -35,10 +40,10 @@ public class DecisionTreeBasedIVRController extends SafeIVRController {
         String currentPosition = kooKooIVRContext.currentDecisionTreePath();
         Tree tree = callFlowController.getTree(currentTreeName, kooKooIVRContext);
 
-        NodeInfo nodeInfo = tree.nextNodeInfo(currentPosition, userInput);
+        NodeInfo nodeInfo = nextNodeInfo(tree, currentPosition, userInput);
         boolean retryOnIncorrectUserAction = StringUtils.isNotEmpty(currentPosition) && StringUtils.isEmpty(userInput);
         if (nodeInfo.node() == null) {
-            nodeInfo = tree.currentNodeInfo(currentPosition);
+            nodeInfo = currentPosition(currentPosition, tree);
             retryOnIncorrectUserAction = true;
         }
         if (!retryOnIncorrectUserAction) {
@@ -56,5 +61,23 @@ public class DecisionTreeBasedIVRController extends SafeIVRController {
             callFlowController.treeComplete(currentTreeName, kooKooIVRContext);
         }
         return ivrResponseBuilder.withSid(kooKooIVRContext.callId()).language(kooKooIVRContext.preferredLanguage());
+    }
+
+    private NodeInfo nextNodeInfo(Tree tree, String currentPosition, String userInput) {
+        String transitionInput = (userInput == null ? "" : userInput);
+        final String currentPositionPath = currentPosition == null ? "" : currentPosition;
+        String path = String.format("%s/%s", currentPositionPath, transitionInput);
+        Node node = treeNodeLocator.findNode(tree, path);
+        return new NodeInfo(path, node);
+    }
+
+    private NodeInfo currentPosition(String currentPosition, Tree tree) {
+        final String path = currentPosition == null ? "" : currentPosition;
+        Node node = treeNodeLocator.findNode(tree, path);
+        return new NodeInfo(path, node);
+    }
+
+    void setTreeNodeLocator(TreeNodeLocator treeNodeLocator) {
+        this.treeNodeLocator = treeNodeLocator;
     }
 }
