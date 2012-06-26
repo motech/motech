@@ -2,8 +2,6 @@ package org.motechproject.rules.service;
 
 import org.drools.KnowledgeBase;
 import org.drools.runtime.StatelessKnowledgeSession;
-import org.junit.Ignore;
-import org.junit.Test;
 import org.motechproject.rules.domain.Rule;
 import org.motechproject.rules.repository.AllRules;
 

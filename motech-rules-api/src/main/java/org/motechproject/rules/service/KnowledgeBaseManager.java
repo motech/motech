@@ -15,11 +15,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class KnowledgeBaseManager implements KnowledgeBaseManagerInterface{
+public class KnowledgeBaseManager implements KnowledgeBaseManagerInterface {
 
     private static Logger logger = LoggerFactory.getLogger(KnowledgeBaseManager.class);
 
@@ -29,7 +33,6 @@ public class KnowledgeBaseManager implements KnowledgeBaseManagerInterface{
     private AllRules allRules;
 
     /**
-     *
      * @param ruleFile
      * @throws java.io.IOException
      */
@@ -51,7 +54,6 @@ public class KnowledgeBaseManager implements KnowledgeBaseManagerInterface{
     /**
      * Add or update a rule in the repository and update the in-memory knowledgeBaseLookup
      * <p/>
-     *
      * TODO: this might need re-work if we want to support changing rules on the fly.
      *
      * @param ruleId

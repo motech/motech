@@ -3,6 +3,7 @@ package org.motechproject.rules.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -23,36 +24,36 @@ public class FilesystemRuleLoader {
 
     private String externalRuleFolder;
 
-	@Autowired
+    @Autowired
     private KnowledgeBaseManagerInterface knowledgeBaseManager;
-    
+
     /**
      * Load rule files from the internal and external rule folders
      *
      * @throws Exception
      */
-	public void load() throws Exception {
+    public void load() throws Exception {
         List<File> ruleFiles = new ArrayList<File>();
-    	if (internalRuleFolder != null) {
-    		File[] internalRuleFiles = new File(URLDecoder.decode(getClass().getResource(internalRuleFolder).getFile(), "UTF-8")).listFiles();
-    		ruleFiles.addAll(Arrays.asList(internalRuleFiles));
-		}
+        if (internalRuleFolder != null) {
+            File[] internalRuleFiles = new File(URLDecoder.decode(getClass().getResource(internalRuleFolder).getFile(), "UTF-8")).listFiles();
+            ruleFiles.addAll(Arrays.asList(internalRuleFiles));
+        }
 
         if (externalRuleFolder != null) {
-        	File folder  = new File(externalRuleFolder);
-			if (!folder.exists()) {
-				folder.mkdirs();
-			} else {
-				File[] externalRuleFiles = folder.listFiles();
-	        	ruleFiles.addAll(Arrays.asList(externalRuleFiles));
-			}
-		}
-        
-//        Map<String, ClassLoader> bundleClassLoaderLookup = osgiFrameworkService.getBundleClassLoaderLookup();
+            File folder = new File(externalRuleFolder);
+            if (!folder.exists()) {
+                folder.mkdirs();
+            } else {
+                File[] externalRuleFiles = folder.listFiles();
+                ruleFiles.addAll(Arrays.asList(externalRuleFiles));
+            }
+        }
+
+        // Map<String, ClassLoader> bundleClassLoaderLookup = osgiFrameworkService.getBundleClassLoaderLookup();
         List<ClassLoader> classLoaders = new ArrayList<ClassLoader>();
         classLoaders.add(Thread.currentThread().getContextClassLoader());
-    //    classLoaders.addAll(bundleClassLoaderLookup.values());
-        
+        // classLoaders.addAll(bundleClassLoaderLookup.values());
+
         for (File file : ruleFiles) {
             if (file.getName().toLowerCase().endsWith(".drl")) {
                 try {
@@ -77,7 +78,7 @@ public class FilesystemRuleLoader {
         this.knowledgeBaseManager = knowledgeBaseManager;
     }
 
-   /* public void setOsgiFrameworkService(OsgiFrameworkService osgiFrameworkService) {
-    	this.osgiFrameworkService = osgiFrameworkService;
+    /* public void setOsgiFrameworkService(OsgiFrameworkService osgiFrameworkService) {
+        this.osgiFrameworkService = osgiFrameworkService;
     }*/
 }
