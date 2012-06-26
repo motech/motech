@@ -11,8 +11,9 @@
 
     <context:annotation-config/>
 
-    <context:component-scan base-package="org.motechproject.server.decisiontree.*"/>
+    <context:component-scan base-package="org.motechproject.server.decisiontree*"/>
     <mvc:annotation-driven />
+
 
     <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
 
@@ -26,9 +27,6 @@
         <constructor-arg value="trees"/>
         <constructor-arg ref="couchDbInstance"/>
     </bean>
-
-
-    <bean id="decisionTreeService" class="org.motechproject.server.decisiontree.service.DecisionTreeServiceImpl"/>
 
     <bean id="velocityConfig"
         class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
@@ -45,8 +43,6 @@
         <property name="exposeSpringMacroHelpers" value="true" />
     </bean>
 
-    <bean id="treeNodeLocator" class="org.motechproject.server.decisiontree.TreeNodeLocator">
-    </bean>
     <bean id="treeDao" class="org.motechproject.decisiontree.repository.AllTrees">
         <constructor-arg ref="treesDatabase"/>
     </bean>
