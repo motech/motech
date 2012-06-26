@@ -2,15 +2,23 @@ package org.motechproject.ivr.kookoo.controller;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.motechproject.decisiontree.model.*;
 import org.motechproject.ivr.kookoo.KooKooIVRContextForTest;
 import org.motechproject.ivr.kookoo.extensions.CallFlowController;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
 import org.motechproject.ivr.domain.IVRMessage;
 import org.motechproject.ivr.service.IVRSessionManagementService;
+import org.motechproject.server.decisiontree.TreeNodeLocator;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.ApplicationContext;
 
+import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -26,6 +34,12 @@ public class DecisionTreeBasedIVRControllerTest {
     private StandardResponseController standardResponseController;
     @Mock
     private IVRSessionManagementService ivrSessionManagementService;
+    @Mock
+    ApplicationContext applicationContext;
+    @InjectMocks
+    TreeNodeLocator treeNodeLocator = new TreeNodeLocator();
+    @Mock
+    AutowireCapableBeanFactory autowireCapableBeanFactory;
 
     KooKooIVRContextForTest ivrContext;
     private DecisionTreeBasedIVRController controller;
@@ -44,6 +58,9 @@ public class DecisionTreeBasedIVRControllerTest {
         when(callFlowController.getTree(treeName, ivrContext)).thenReturn(new TestTreeForTamaIvrActionTest().getTree());
         controller = new DecisionTreeBasedIVRController(callFlowController, ivrMessage, callDetailRecordsService,
                 standardResponseController, ivrSessionManagementService);
+        controller.setTreeNodeLocator(treeNodeLocator);
+        when(applicationContext.getAutowireCapableBeanFactory()).thenReturn(autowireCapableBeanFactory);
+        doNothing().when(autowireCapableBeanFactory).autowireBean(anyObject());
     }
 
     @Test
@@ -141,4 +158,20 @@ public class DecisionTreeBasedIVRControllerTest {
             this.called = called;
         }
     }
+
+    /*@Test
+    public void nextNodeAtTheTop() {
+        Tree tree = new Tree().setName("tree1").setRootNode(
+                new Node().setTransitions(new Object[][]{
+                        {"1", new Transition().setName("t1").setDestinationNode(new Node().setTransitions(new Object[][]{
+                                {"1", new Transition().setName("sick1").setDestinationNode(new Node())},
+                                {"2", new Transition().setName("sick2").setDestinationNode(new Node())},
+                                {"3", new Transition().setName("sick3").setDestinationNode(new Node())},
+                        }))},
+                        {"2", new Transition().setName("ill").setDestinationNode(new Node())}
+                }));
+        controller.
+        Node node = tree.nextNodeInfo("", "").node();
+        assertEquals(tree.getRootNode(), node);
+    }*/
 }
