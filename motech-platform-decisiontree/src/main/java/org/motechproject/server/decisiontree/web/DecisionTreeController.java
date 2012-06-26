@@ -153,7 +153,6 @@ public class DecisionTreeController extends MultiActionController {
             Node parentNode = decisionTreeService.getNode(currentTree, parentTransitionPath);
             ITransition transition = sendTreeEventActions(params, transitionKey, parentTransitionPath, parentNode);
             applicationContext.getAutowireCapableBeanFactory().autowireBean(transition);
-            applicationContext.getDisplayName();
 
             node = transition.getDestinationNode(transitionKey);
 

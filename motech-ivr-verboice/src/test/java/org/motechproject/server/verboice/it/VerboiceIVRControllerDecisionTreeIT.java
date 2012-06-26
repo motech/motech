@@ -112,6 +112,11 @@ public class VerboiceIVRControllerDecisionTreeIT extends SpringIntegrationTest {
         assertTrue("got " + response4, response4.contains("trP=Lz8"));   //verify proceeding in tree Lz8 == /?
         assertTrue("got " + response4, response4.contains("<Say>custom transition " + USER_INPUT + "</Say>"));
         assertTrue("got " + response4, response4.contains("   <Play>custom_1345234_Hello_from_org.motechproject.server.verboice.it.VerboiceIVRControllerDecisionTreeIT$TestComponent.wav</Play>"));
+
+        String transitionUrl4 = SERVER_URL + "?tree=someTree&trP=Lz8&ln=en&Digits=1";
+        String response5 = client.execute(new HttpGet(transitionUrl4), new BasicResponseHandler());
+        assertTrue("got " + response5, response5.contains(" <Play>option1_after_custom_transition.wav</Play>"));
+
     }
 
     @Test
