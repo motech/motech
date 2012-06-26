@@ -15,6 +15,7 @@
 
     <properties>
         <packaging.type>pom</packaging.type>
+        <modules.root.dir>${basedir}/..</modules.root.dir>
     </properties>
 
     <name>MoTeCH Base RPM package</name>

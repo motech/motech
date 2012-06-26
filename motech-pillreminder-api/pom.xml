@@ -7,6 +7,9 @@
     </parent>
     <artifactId>motech-pillreminder-api</artifactId>
     <name>MoTeCH Pill Reminder API</name>
+    <properties>
+        <modules.root.dir>${basedir}/..</modules.root.dir>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>

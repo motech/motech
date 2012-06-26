@@ -5,14 +5,12 @@
         <groupId>org.motechproject</groupId>
         <version>0.11-SNAPSHOT</version>
     </parent>
-
     <artifactId>motech-platform-common-api</artifactId>
     <name>MoTeCH Platform Common API</name>
-
     <properties>
         <powermock.version>1.4.11</powermock.version>
+        <modules.root.dir>${basedir}/..</modules.root.dir>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.google.code.gson</groupId>
