@@ -1,14 +1,15 @@
-package org.motechproject.server.osgi;
+package org.motechproject.rules;
+
+import org.apache.commons.io.FilenameUtils;
+import org.motechproject.rules.service.KnowledgeBaseManager;
+import org.motechproject.server.osgi.BundleLoader;
+import org.osgi.framework.Bundle;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Enumeration;
-
-import org.apache.commons.io.FilenameUtils;
-import org.motechproject.server.ruleengine.KnowledgeBaseManager;
-import org.osgi.framework.Bundle;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Custom log4j configuration loader

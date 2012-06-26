@@ -42,5 +42,5 @@
 
     <context:component-scan base-package="org.motechproject.server.event"/>
     <context:component-scan base-package="org.motechproject.server.osgi"/>
-    <context:component-scan base-package="org.motechproject.server.ruleengine"/>
+  <!--  <context:component-scan base-package="org.motechproject.server.ruleengine"/>-->
 </beans>

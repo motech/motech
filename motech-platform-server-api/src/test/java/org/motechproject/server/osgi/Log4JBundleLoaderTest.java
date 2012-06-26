@@ -1,12 +1,12 @@
 package org.motechproject.server.osgi;
 
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import org.apache.log4j.LogManager;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
+
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class Log4JBundleLoaderTest {
 

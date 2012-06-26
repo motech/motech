@@ -1,17 +1,14 @@
-package org.motechproject.server.ruleengine;
+package org.motechproject.rules.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-
-import org.motechproject.server.osgi.OsgiFrameworkService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Load rule files from the file system
@@ -26,39 +23,36 @@ public class FilesystemRuleLoader {
 
     private String externalRuleFolder;
 
-    @Autowired
-    private KnowledgeBaseManager knowledgeBaseManager;
-
-    @Autowired
-    private OsgiFrameworkService osgiFrameworkService;
-
+	@Autowired
+    private KnowledgeBaseManagerInterface knowledgeBaseManager;
+    
     /**
      * Load rule files from the internal and external rule folders
      *
      * @throws Exception
      */
-    public void load() throws Exception {
+	public void load() throws Exception {
         List<File> ruleFiles = new ArrayList<File>();
-        if (internalRuleFolder != null) {
-            File[] internalRuleFiles = new File(URLDecoder.decode(getClass().getResource(internalRuleFolder).getFile(), "UTF-8")).listFiles();
-            ruleFiles.addAll(Arrays.asList(internalRuleFiles));
-        }
+    	if (internalRuleFolder != null) {
+    		File[] internalRuleFiles = new File(URLDecoder.decode(getClass().getResource(internalRuleFolder).getFile(), "UTF-8")).listFiles();
+    		ruleFiles.addAll(Arrays.asList(internalRuleFiles));
+		}
 
         if (externalRuleFolder != null) {
-            File folder = new File(externalRuleFolder);
-            if (!folder.exists()) {
-                folder.mkdirs();
-            } else {
-                File[] externalRuleFiles = folder.listFiles();
-                ruleFiles.addAll(Arrays.asList(externalRuleFiles));
-            }
-        }
-
-        Map<String, ClassLoader> bundleClassLoaderLookup = osgiFrameworkService.getBundleClassLoaderLookup();
+        	File folder  = new File(externalRuleFolder);
+			if (!folder.exists()) {
+				folder.mkdirs();
+			} else {
+				File[] externalRuleFiles = folder.listFiles();
+	        	ruleFiles.addAll(Arrays.asList(externalRuleFiles));
+			}
+		}
+        
+//        Map<String, ClassLoader> bundleClassLoaderLookup = osgiFrameworkService.getBundleClassLoaderLookup();
         List<ClassLoader> classLoaders = new ArrayList<ClassLoader>();
         classLoaders.add(Thread.currentThread().getContextClassLoader());
-        classLoaders.addAll(bundleClassLoaderLookup.values());
-
+    //    classLoaders.addAll(bundleClassLoaderLookup.values());
+        
         for (File file : ruleFiles) {
             if (file.getName().toLowerCase().endsWith(".drl")) {
                 try {
@@ -79,11 +73,11 @@ public class FilesystemRuleLoader {
         this.externalRuleFolder = externalRuleFolder;
     }
 
-    public void setKnowledgeBaseManager(KnowledgeBaseManager knowledgeBaseManager) {
+    public void setKnowledgeBaseManager(KnowledgeBaseManagerInterface knowledgeBaseManager) {
         this.knowledgeBaseManager = knowledgeBaseManager;
     }
 
-    public void setOsgiFrameworkService(OsgiFrameworkService osgiFrameworkService) {
-        this.osgiFrameworkService = osgiFrameworkService;
-    }
+   /* public void setOsgiFrameworkService(OsgiFrameworkService osgiFrameworkService) {
+    	this.osgiFrameworkService = osgiFrameworkService;
+    }*/
 }

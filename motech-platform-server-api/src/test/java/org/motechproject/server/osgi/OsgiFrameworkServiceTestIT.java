@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/testPlatformServerApplicationContext.xml"})
-public class OsgiFrameworkServiceTest {
+public class OsgiFrameworkServiceTestIT {
 
     @Autowired
     private OsgiFrameworkService service;
