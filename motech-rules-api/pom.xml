@@ -11,18 +11,11 @@
 
     <artifactId>motech-rules-api</artifactId>
 
-    <properties>
-        <spring.version>3.0.5.RELEASE</spring.version>
-        <build.dir>build</build.dir>
-        <motech.version>0.11-SNAPSHOT</motech.version>
-    </properties>
-
-
     <dependencies>
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-server-api</artifactId>
-            <version>${motech.version}</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -48,42 +41,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.ektorp</groupId>
-            <artifactId>org.ektorp</artifactId>
-            <version>1.1.1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-codec</groupId>
-                    <artifactId>commons-codec</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.ektorp</groupId>
-            <artifactId>org.ektorp.spring</artifactId>
-            <version>1.1.1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-context</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-beans</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-api</artifactId>
             <version>5.1.1</version>
         </dependency>
 
     </dependencies>
-
-
 </project>
