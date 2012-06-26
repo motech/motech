@@ -2,8 +2,11 @@ package org.motechproject.scheduler.domain;
 
 import org.motechproject.scheduler.MotechSchedulerService;
 
-public class JobId {
+import java.io.Serializable;
+
+public class JobId implements Serializable {
     public static final String REPEAT_JOB_SUFFIX = "-repeat";
+    private static final long serialVersionUID = 1L;
 
     private String subject;
     private String id;

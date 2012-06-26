@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans:beans xmlns="http://www.springframework.org/schema/integration"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:beans="http://www.springframework.org/schema/beans"
-    xmlns:jms="http://www.springframework.org/schema/integration/jms"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-            http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
-            http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd">
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:jms="http://www.springframework.org/schema/integration/jms"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+             http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+             http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd">
 
     <jms:message-driven-channel-adapter id="jmsin" destination="schedulerQueue" channel="jmsinToSchedulerChannel"/>
 
@@ -15,17 +15,17 @@
         <mapping type="org.motechproject.scheduler.domain.CronSchedulableJob" channel="scheduleChannel"/>
         <mapping type="org.motechproject.scheduler.domain.RunOnceSchedulableJob" channel="scheduleRunOnceChannel"/>
         <mapping type="org.motechproject.scheduler.domain.RepeatingSchedulableJob" channel="scheduleRepeatingChannel"/>
-        <!--<mapping type="java.lang.String" channel="unscheduleChannel"/>-->
+        <mapping type="org.motechproject.scheduler.domain.JobId" channel="unscheduleChannel"/>
     </payload-type-router>
 
     <channel id="scheduleChannel"/>
     <channel id="scheduleRunOnceChannel"/>
     <channel id="scheduleRepeatingChannel"/>
-    <!--<channel id="unscheduleChannel"/>-->
+    <channel id="unscheduleChannel"/>
 
     <outbound-channel-adapter channel="scheduleChannel" ref="schedulerService" method="scheduleJob"/>
     <outbound-channel-adapter channel="scheduleRunOnceChannel" ref="schedulerService" method="scheduleRunOnceJob"/>
     <outbound-channel-adapter channel="scheduleRepeatingChannel" ref="schedulerService" method="scheduleRepeatingJob"/>
-    <!--<outbound-channel-adapter channel="unscheduleChannel" ref="schedulerService" method="unscheduleJob"/>-->
+    <outbound-channel-adapter channel="unscheduleChannel" ref="schedulerService" method="unscheduleJob"/>
 
 </beans:beans>

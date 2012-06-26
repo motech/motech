@@ -3,21 +3,24 @@ package org.motechproject.server.outbox;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.context.Context;
-import org.motechproject.scheduler.gateway.MotechSchedulerGateway;
-import org.motechproject.scheduler.domain.CronSchedulableJob;
-import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.outbox.api.EventKeys;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
+import org.motechproject.outbox.api.EventKeys;
+import org.motechproject.scheduler.domain.CronSchedulableJob;
+import org.motechproject.scheduler.domain.JobId;
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.scheduler.gateway.MotechSchedulerGateway;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OutboxExecutionHandlerTest {
@@ -180,7 +183,9 @@ public class OutboxExecutionHandlerTest {
 
         outboxExecutionHandler.unschedule(event);
 
-        verify(motechSchedulerGateway).unscheduleJob("JobId");
+        ArgumentCaptor<JobId> captor = ArgumentCaptor.forClass(JobId.class);
+
+        verify(motechSchedulerGateway).unscheduleJob(captor.capture());
     }
 
     @Test
@@ -191,6 +196,6 @@ public class OutboxExecutionHandlerTest {
 
         outboxExecutionHandler.unschedule(event);
 
-        verify(motechSchedulerGateway, times(0)).unscheduleJob(anyString());
+        verify(motechSchedulerGateway, times(0)).unscheduleJob(any(JobId.class));
     }
 }

@@ -34,14 +34,23 @@ package org.motechproject.scheduler;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.MotechObject;
-import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.motechproject.scheduler.domain.CronSchedulableJob;
+import org.motechproject.scheduler.domain.JobId;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
-import org.motechproject.scheduler.domain.JobId;
+import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.motechproject.util.DateUtil;
-import org.quartz.*;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.CronTrigger;
+import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SimpleScheduleBuilder;
+import org.quartz.SimpleTrigger;
+import org.quartz.Trigger;
+import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -231,12 +240,12 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         }
 
         CronTrigger newTrigger = newTrigger()
-                    .withIdentity(trigger.getKey())
-                    .forJob(job)
-                    .withSchedule(newCronSchedule)
-                    .startAt(trigger.getStartTime())
-                    .endAt(trigger.getEndTime())
-                    .build();
+                .withIdentity(trigger.getKey())
+                .forJob(job)
+                .withSchedule(newCronSchedule)
+                .startAt(trigger.getStartTime())
+                .endAt(trigger.getEndTime())
+                .build();
 
         try {
             scheduler.rescheduleJob(triggerKey(jobId.value(), JOB_GROUP_NAME), newTrigger);
@@ -404,9 +413,13 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
 
     @Override
     public void unscheduleJob(String subject, String externalId) {
-        JobId jobId = new JobId(subject, externalId);
-        logInfo("Unscheduling the Job: %s", jobId);
-        unscheduleJob(jobId.value());
+        unscheduleJob(new JobId(subject, externalId));
+    }
+
+    @Override
+    public void unscheduleJob(JobId job) {
+        logInfo("Unscheduling the Job: %s", job);
+        unscheduleJob(job.value());
     }
 
     @Override
