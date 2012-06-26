@@ -12,6 +12,9 @@
     <name>MoTeCH CMS lite API</name>
     <version>0.11-SNAPSHOT</version>
     <packaging>bundle</packaging>
+    <properties>
+        <modules.root.dir>${basedir}/..</modules.root.dir>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.motechproject</groupId>

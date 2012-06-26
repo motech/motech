@@ -11,6 +11,9 @@
     <name>MoTeCH Appointments</name>
     <packaging>bundle</packaging>
     <description>Motech Appointments</description>
+    <properties>
+        <modules.root.dir>${basedir}/..</modules.root.dir>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>

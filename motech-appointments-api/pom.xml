@@ -7,6 +7,9 @@
     </parent>
     <artifactId>motech-appointments-api</artifactId>
     <name>MoTeCH Appointments API</name>
+    <properties>
+        <modules.root.dir>${basedir}/..</modules.root.dir>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.motechproject</groupId>

@@ -15,6 +15,7 @@
         <spring.version>3.0.5.RELEASE</spring.version>
         <build.dir>build</build.dir>
         <motech.version>0.11-SNAPSHOT</motech.version>
+        <modules.root.dir>${basedir}/..</modules.root.dir>
     </properties>
 
 

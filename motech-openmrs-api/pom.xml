@@ -9,6 +9,9 @@
     <artifactId>motech-openmrs-api</artifactId>
     <name>MoTeCH OpenMRS API</name>
     <description>Motech interface to OpenMRS</description>
+    <properties>
+        <modules.root.dir>${basedir}/..</modules.root.dir>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
