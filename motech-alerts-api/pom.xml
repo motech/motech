@@ -6,9 +6,12 @@
         <version>0.11-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
+    <groupId>org.motechproject</groupId>
     <artifactId>motech-alerts-api</artifactId>
     <name>MoTeCH Alerts API</name>
     <description>Motech Alerts API</description>
+    <version>0.11-SNAPSHOT</version>
+    <packaging>bundle</packaging>
     <properties>
         <roo.version>1.1.4.RELEASE</roo.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
