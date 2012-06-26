@@ -11,18 +11,11 @@
 
     <artifactId>motech-rules-api</artifactId>
 
-    <properties>
-        <spring.version>3.0.5.RELEASE</spring.version>
-        <build.dir>build</build.dir>
-        <motech.version>0.11-SNAPSHOT</motech.version>
-    </properties>
-
-
     <dependencies>
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-platform-server-api</artifactId>
-            <version>${motech.version}</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -84,6 +77,4 @@
         </dependency>
 
     </dependencies>
-
-
 </project>
