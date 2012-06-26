@@ -7,7 +7,9 @@
     </parent>
     <artifactId>motech-platform-server-api</artifactId>
     <name>MoTeCH Platform Server API</name>
-
+    <properties>
+        <modules.root.dir>${basedir}/..</modules.root.dir>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>

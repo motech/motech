@@ -16,6 +16,7 @@
         <corePackage>org.motechproject.openmrs.omod</corePackage>
         <modulePackage>${corePackage}</modulePackage>
         <springVersion>${spring.version}</springVersion>
+        <modules.root.dir>${basedir}/..</modules.root.dir>
     </properties>
 
     <dependencies>

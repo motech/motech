@@ -11,6 +11,9 @@
     <name>MoTeCH IVR Verboice</name>
     <packaging>bundle</packaging>
     <description>IVR over Nuntium's Verboice</description>
+    <properties>
+        <modules.root.dir>${basedir}/..</modules.root.dir>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>

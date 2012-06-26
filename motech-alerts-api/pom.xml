@@ -15,6 +15,7 @@
     <properties>
         <roo.version>1.1.4.RELEASE</roo.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <modules.root.dir>${basedir}/..</modules.root.dir>
     </properties>
     <dependencies>
         <dependency>

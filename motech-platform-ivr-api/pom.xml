@@ -5,10 +5,12 @@
         <groupId>org.motechproject</groupId>
         <version>0.11-SNAPSHOT</version>
     </parent>
-
     <artifactId>motech-platform-ivr-api</artifactId>
     <name>MoTeCH Platform Server IVR API</name>
     <version>0.11-SNAPSHOT</version>
+    <properties>
+        <modules.root.dir>${basedir}/..</modules.root.dir>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>

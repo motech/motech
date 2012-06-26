@@ -11,6 +11,9 @@
     <name>MoTeCH IVR Voxeo</name>
     <packaging>bundle</packaging>
     <description>Voxeo IVR Provider</description>
+    <properties>
+        <modules.root.dir>${basedir}/..</modules.root.dir>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>

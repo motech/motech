@@ -9,7 +9,9 @@
     <artifactId>motech-platform-server</artifactId>
     <packaging>war</packaging>
     <name>MoTeCH Platform Server</name>
-
+    <properties>
+        <modules.root.dir>${basedir}/..</modules.root.dir>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
