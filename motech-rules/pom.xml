@@ -12,14 +12,6 @@
     <artifactId>motech-rules</artifactId>
     <packaging>bundle</packaging>
 
-
-    <properties>
-        <spring.version>3.0.5.RELEASE</spring.version>
-        <build.dir>build</build.dir>
-        <motech.version>0.10</motech.version>
-    </properties>
-
-
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -181,11 +173,6 @@
             <artifactId>drools-api</artifactId>
             <version>5.1.1</version>
         </dependency>
-
-
-
-
-
     </dependencies>
 
     <build>
@@ -215,21 +202,6 @@
 
 
                         </Private-Package>
-                        <!-- <Private-Package>
-                            &lt;!&ndash;com.sun.codemodel,&ndash;&gt;
-                            &lt;!&ndash;com.sun.codemodel.util,&ndash;&gt;
-                            &lt;!&ndash;com.sun.codemodel.writer,&ndash;&gt;
-                            &lt;!&ndash;com.sun.tools.xjc,&ndash;&gt;
-                            &lt;!&ndash;com.sun.istack,&ndash;&gt;
-                            org.ektorp.spring,
-                            org.ektorp.impl,
-                            org.drools,
-                            org.springframework.context.config,
-                            org.springframework.osgi.config,
-                            org.motechproject.rules.domain,
-                            org.motechproject.rules.repository,
-                            org.motechproject
-                        </Private-Package>-->
                         <Embed-Dependency>motech-rules-api,!*</Embed-Dependency>
                         <Embed-Transitive>false</Embed-Transitive>
 
