@@ -8,9 +8,10 @@
         <version>0.11-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <groupId>org.motechproject</groupId>
     <artifactId>motech-rules-api</artifactId>
-
+    <version>0.11-SNAPSHOT</version>
+    <name>MoTeCH Rules API</name>
     <dependencies>
         <dependency>
             <groupId>org.motechproject</groupId>
@@ -45,6 +46,5 @@
             <artifactId>drools-api</artifactId>
             <version>5.1.1</version>
         </dependency>
-
     </dependencies>
 </project>

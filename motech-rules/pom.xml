@@ -8,10 +8,11 @@
         <version>0.11-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <groupId>org.motechproject</groupId>
     <artifactId>motech-rules</artifactId>
+    <version>0.11-SNAPSHOT</version>
+    <name>MoTeCH Rules</name>
     <packaging>bundle</packaging>
-
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -26,14 +27,8 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-server-api</artifactId>
-            <version>0.11-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.framework</artifactId>
-            <version>3.0.8</version>
-        </dependency>
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
@@ -50,34 +45,6 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
             <version>${spring.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.osgi</groupId>
-            <artifactId>spring-osgi-web</artifactId>
-            <version>1.2.1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>org.springframework.aop</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>org.springframework.beans</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>org.springframework.context</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>org.springframework.core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>com.springsource.javax.servlet</artifactId>
-                </exclusion>
-            </exclusions>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -98,7 +65,6 @@
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
@@ -151,7 +117,6 @@
             <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
@@ -167,14 +132,12 @@
             <artifactId>spring-tx</artifactId>
             <version>${spring.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-api</artifactId>
             <version>5.1.1</version>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -184,27 +147,26 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Export-Package>
+                            org.motechproject.rules,
+                            org.motechproject.rules.service
+                        </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.rules.Activator
                         </Bundle-Activator>
-                        <Import-Package>!com.sun.*,!org.eclipse.jdt.*,!org.mvel2.*,org.springframework.beans.factory.xml,org.springframework.context.config,org.ektorp.spring, org.ektorp.impl,*</Import-Package>
-
-                        <Export-Package>
-                         org.drools.*,org.motechproject.rules,org.motechproject.rules.service
-
-                        </Export-Package>
-
-                        <Export-Service>org.motechproject.rules.service.KnowledgeBaseManagerInterface</Export-Service>
-
-                        <Private-Package>
-                            org.motechproject.rules.domain,
-                            org.motechproject.rules.repository
-
-
-                        </Private-Package>
-                        <Embed-Dependency>motech-rules-api,!*</Embed-Dependency>
+                        <Import-Package>
+                            !com.sun.*,
+                            !org.eclipse.jdt.*,
+                            !org.mvel2.*,
+                            org.springframework.beans.factory.xml,
+                            org.springframework.context.config,
+                            org.springframework.osgi.config,
+                            org.ektorp.spring,
+                            org.ektorp.impl,
+                            *
+                        </Import-Package>
+                        <Embed-Dependency>motech-rules-api, drools-api</Embed-Dependency>
                         <Embed-Transitive>false</Embed-Transitive>
-
                     </instructions>
                 </configuration>
             </plugin>
@@ -234,7 +196,4 @@
             </plugin>
         </plugins>
     </build>
-
-
-
 </project>

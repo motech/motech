@@ -7,10 +7,10 @@
 
     <context:property-placeholder location="classpath:activemq.properties"/>
 
-    <context:annotation-config />
+    <context:annotation-config/>
 
-    <import resource="classpath:applicationPlatformCommonAPI.xml" />
-	<import resource="classpath:applicationPlatformServerAPI.xml" />
+    <import resource="classpath:applicationPlatformCommonAPI.xml"/>
+    <import resource="classpath:applicationPlatformServerAPI.xml"/>
 
 
     <!-- <bean id="ivrService" class="org.motechproject.ivr.asterisk.IVRServiceAsteriskImpl" > -->
