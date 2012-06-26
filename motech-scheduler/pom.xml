@@ -12,6 +12,9 @@
     <packaging>bundle</packaging>
     <version>0.11-SNAPSHOT</version>
     <name>MoTeCH Scheduler</name>
+    <properties>
+        <modules.root.dir>${basedir}/..</modules.root.dir>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>

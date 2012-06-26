@@ -13,7 +13,9 @@
     <name>MoTeCH SMS API</name>
     <packaging>bundle</packaging>
     <description>Motech SMS API</description>
-
+    <properties>
+        <modules.root.dir>${basedir}/..</modules.root.dir>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>
