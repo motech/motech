@@ -2,6 +2,7 @@ package org.motechproject.decisiontree.model;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 import java.util.*;
 
@@ -12,8 +13,11 @@ public class Node {
 
     private List<Action> actionsBefore;
     private List<Action> actionsAfter;
+    @JsonProperty
     private List<Prompt> prompts = new ArrayList<Prompt>();
+    @JsonProperty
     private Map<String, ITransition> transitions;
+    @JsonProperty
     private List<ITreeCommand> treeCommands = new ArrayList<ITreeCommand>();
 
     public List<Action> getActionsBefore() {

@@ -133,6 +133,10 @@ public class AllAppointmentCalendarsIT {
         allAppointmentCalendars.add(new AppointmentCalendar().externalId("foo2").addVisit(visit3).addVisit(visit4));
 
         List<VisitResponse> result = allAppointmentCalendars.findByMetadataProperty("key1", "val1");
-        assertEquals(asList(new String[]{"visit1", "visit2"}), extract(result, on(VisitResponse.class).getName()));
+        assertEquals(2, result.size());
+
+        final List<String> vistNamelList = extract(result, on(VisitResponse.class).getName());
+        Collections.sort(vistNamelList);
+        assertEquals(asList(new String[]{"visit1", "visit2"}), vistNamelList);
     }
 }
