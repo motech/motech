@@ -5,6 +5,7 @@ import com.ozonetel.kookoo.Dial;
 import com.ozonetel.kookoo.Response;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.ivr.domain.IVRMessage;
+import org.motechproject.settings.MotechPlatformSettings;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,11 +21,13 @@ public class KookooIVRResponseBuilder {
     private String language;
     private String phoneNumber;
 
+    private final MotechPlatformSettings platformSettings = MotechPlatformSettings.getInstance();
+
     public KookooIVRResponseBuilder() {
     }
 
     public KookooIVRResponseBuilder withDefaultLanguage() {
-        return language("en");
+        return language(platformSettings.getDefaultLanguage());
     }
 
     public KookooIVRResponseBuilder language(String code) {

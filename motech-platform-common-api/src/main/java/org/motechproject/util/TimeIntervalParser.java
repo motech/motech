@@ -36,13 +36,17 @@ public class TimeIntervalParser {
      *                       currently compound units like 1 year and 2 months are not supported
      * @return
      */
-    public Period parse(String intervalString) {
+    public Period parse(String intervalString, Locale locale) {
         if (isBlank(intervalString))
             return new Period(0);
         ReadWritablePeriod period = new MutablePeriod();
-        if (parser.parseInto(period, intervalString, 0, Locale.getDefault()) > 0) {
+        if (parser.parseInto(period, intervalString, 0, locale) > 0) {
             return period.toPeriod();
         }
         throw new ParseException(String.format("Could not parse %s into time interval.", intervalString));
+    }
+
+    public Period parse(String intervalString) {
+        return parse(intervalString, Locale.getDefault());
     }
 }

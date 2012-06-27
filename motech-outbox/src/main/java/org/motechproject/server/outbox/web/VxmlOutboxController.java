@@ -5,6 +5,7 @@ import org.motechproject.outbox.api.service.VoiceOutboxService;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.domain.VoiceMessageType;
+import org.motechproject.settings.MotechPlatformSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 public class VxmlOutboxController extends MultiActionController {
 
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
+
+    private final MotechPlatformSettings platformSettings = MotechPlatformSettings.getInstance();
 
     public static final String NO_MESSAGE_TEMPLATE_NAME = "nomsg";
     public static final String NO_SAVED_MESSAGE_TEMPLATE_NAME = "noSavedMsg";
@@ -69,7 +72,7 @@ public class VxmlOutboxController extends MultiActionController {
         String language = request.getParameter(LANGUAGE_PARAM);
 
         if (language == null) {
-            language = "en";
+            language = platformSettings.getDefaultLanguage();
         }
 
         String contextPath = request.getContextPath();
