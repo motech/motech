@@ -4,13 +4,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.motechproject.decisiontree.model.*;
 import org.motechproject.ivr.kookoo.KooKooIVRContextForTest;
 import org.motechproject.ivr.kookoo.extensions.CallFlowController;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
 import org.motechproject.ivr.domain.IVRMessage;
-import org.motechproject.ivr.service.IVRSessionManagementService;
+import org.motechproject.decisiontree.service.FlowSessionService;
 import org.motechproject.server.decisiontree.TreeNodeLocator;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -33,7 +32,7 @@ public class DecisionTreeBasedIVRControllerTest {
     @Mock
     private StandardResponseController standardResponseController;
     @Mock
-    private IVRSessionManagementService ivrSessionManagementService;
+    private FlowSessionService flowSessionService;
     @Mock
     ApplicationContext applicationContext;
     @InjectMocks
@@ -57,7 +56,7 @@ public class DecisionTreeBasedIVRControllerTest {
 
         when(callFlowController.getTree(treeName, ivrContext)).thenReturn(new TestTreeForTamaIvrActionTest().getTree());
         controller = new DecisionTreeBasedIVRController(callFlowController, ivrMessage, callDetailRecordsService,
-                standardResponseController, ivrSessionManagementService);
+                standardResponseController, flowSessionService);
         controller.setTreeNodeLocator(treeNodeLocator);
         when(applicationContext.getAutowireCapableBeanFactory()).thenReturn(autowireCapableBeanFactory);
         doNothing().when(autowireCapableBeanFactory).autowireBean(anyObject());
@@ -103,7 +102,7 @@ public class DecisionTreeBasedIVRControllerTest {
     public void shouldClearSessionAfterHangingUp() {
         controller.hangup(ivrContext);
 
-        verify(ivrSessionManagementService).removeCallSession(CALL_ID);
+        verify(flowSessionService).removeCallSession(CALL_ID);
     }
 
     class TestTreeForTamaIvrActionTest {

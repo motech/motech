@@ -2,7 +2,6 @@ package org.motechproject.decisiontree.model;
 
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechBaseDataObject;
-import org.motechproject.server.decisiontree.TreeNodeLocator;
 
 /**
  * Represents a decision tree.
@@ -74,12 +73,4 @@ public class Tree extends MotechBaseDataObject {
         return result;
     }
 
-    public NodeInfo nextNodeInfo(String currentPosition, String transitionInput) {
-        currentPosition = currentPosition == null ? "" : currentPosition;
-        transitionInput = transitionInput == null ? "" : transitionInput;
-
-        String path = String.format("%s/%s", currentPosition, transitionInput);
-        Node node = new TreeNodeLocator().findNode(this, path);
-        return new NodeInfo(path, node);
-    }
 }

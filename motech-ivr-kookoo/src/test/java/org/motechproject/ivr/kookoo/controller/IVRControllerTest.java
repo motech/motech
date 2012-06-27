@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.ivr.domain.CallSessionRecord;
+import org.motechproject.decisiontree.domain.FlowSessionRecord;
 import org.motechproject.ivr.event.CallEvent;
 import org.motechproject.ivr.event.IVREvent;
 import org.motechproject.ivr.kookoo.KooKooIVRContextForTest;
@@ -14,8 +14,9 @@ import org.motechproject.ivr.kookoo.extensions.CallFlowController;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
 import org.motechproject.ivr.model.CallDetailRecord;
 import org.motechproject.ivr.model.CallDirection;
+import org.motechproject.decisiontree.FlowSession;
 import org.motechproject.ivr.service.IVRService;
-import org.motechproject.ivr.service.IVRSessionManagementService;
+import org.motechproject.decisiontree.service.FlowSessionService;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -23,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -36,12 +36,12 @@ public class IVRControllerTest {
     private IVRController ivrController;
     private KooKooIVRContextForTest ivrContextForTest;
     @Mock
-    private IVRSessionManagementService ivrSessionManagementService;
+    private FlowSessionService flowSessionService;
 
     @Before
     public void setUp() {
         initMocks(this);
-        ivrController = new IVRController(callFlowController, callDetailRecordsService, ivrSessionManagementService);
+        ivrController = new IVRController(callFlowController, callDetailRecordsService, flowSessionService);
     }
 
     @Test
@@ -74,12 +74,12 @@ public class IVRControllerTest {
         when(request.getCookies()).thenReturn(new Cookie[]{});
         when(request.getSession()).thenReturn(session);
 
-        when(ivrSessionManagementService.getCallSession("sid")).thenReturn(new CallSessionRecord("sid"));
+        when(flowSessionService.getSession("sid")).thenReturn(new FlowSessionRecord("sid"));
         doNothing().when(callDetailRecordsService).appendToLastCallEvent(anyString(), anyMap());
 
         ivrController.reply(kookooRequest, request, mock(HttpServletResponse.class));
-        verify(ivrSessionManagementService, times(1)).getCallSession("sid");
-        verify(ivrSessionManagementService, times(1)).updateCallSession(any(CallSessionRecord.class));
+        verify(flowSessionService, times(1)).getSession("sid");
+        verify(flowSessionService, times(1)).updateSession(any(FlowSession.class));
     }
 
     @Test
@@ -111,11 +111,11 @@ public class IVRControllerTest {
         String callDetailRecordId = "4324234";
         ivrContextForTest = new KooKooIVRContextForTest().externalId(externalId).ivrEvent(IVREvent.Disconnect);
         ivrContextForTest.callDetailRecordId(callDetailRecordId);
-        when(ivrSessionManagementService.isValidSession(ivrContextForTest.callId())).thenReturn(true);
+        when(flowSessionService.isValidSession(ivrContextForTest.callId())).thenReturn(true);
 
         ivrController.reply(ivrContextForTest);
 
-        verify(ivrSessionManagementService).removeCallSession(ivrContextForTest.callId());
+        verify(flowSessionService).removeCallSession(ivrContextForTest.callId());
 
         ArgumentCaptor<CallEvent> callEventArgumentCaptor = ArgumentCaptor.forClass(CallEvent.class);
         verify(callDetailRecordsService).close(eq(callDetailRecordId), eq(externalId), callEventArgumentCaptor.capture());
@@ -128,9 +128,9 @@ public class IVRControllerTest {
         String callDetailRecordId = "4324234";
         ivrContextForTest = new KooKooIVRContextForTest().externalId(externalId).ivrEvent(IVREvent.Disconnect);
         ivrContextForTest.callDetailRecordId(callDetailRecordId);
-        when(ivrSessionManagementService.isValidSession(ivrContextForTest.callId())).thenReturn(false);
+        when(flowSessionService.isValidSession(ivrContextForTest.callId())).thenReturn(false);
         ivrController.reply(ivrContextForTest);
-        verify(ivrSessionManagementService, times(0)).removeCallSession(ivrContextForTest.callId());
+        verify(flowSessionService, times(0)).removeCallSession(ivrContextForTest.callId());
         verify(callDetailRecordsService, times(0)).close(callDetailRecordId, externalId, new CallEvent(IVREvent.Disconnect.toString()));
     }
 
