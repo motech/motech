@@ -1,6 +1,5 @@
 package org.motechproject.server.decisiontree;
 
-import org.motechproject.context.Context;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -64,12 +63,6 @@ public class Activator implements BundleActivator {
             } finally {
                 Thread.currentThread().setContextClassLoader(old);
             }
-
-            // I need to access Context so maven-bundle-plugin lists it in my manifest.
-            // If I don't actually need to reference it then this access should be removed and we should
-            // explicitly list the dependency in the bundle plugin config
-            Context context = Context.getInstance();
-            logger.info("Using Context: " + context.toString());
 
         } catch (Exception e) {
             throw new RuntimeException(e);

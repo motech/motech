@@ -8,33 +8,32 @@
             http://www.springframework.org/schema/context
             http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
-    <context:annotation-config />
+    <context:annotation-config/>
 
     <import resource="classpath:integrationCommonAPI.xml"/>
     <import resource="inboundEventChannelAdapter.xml"/>
     <import resource="outboundScheduleJobChannelAdapter.xml"/>
     <import resource="classpath:applicationPlatformCommonAPI.xml"/>
 
-    <bean id="eventRelay" class="org.motechproject.server.event.ServerEventRelay" />
+    <bean id="eventRelay" class="org.motechproject.server.event.ServerEventRelay"/>
 
     <bean id="eventListenerRegistry" class="org.motechproject.server.event.EventListenerRegistry"/>
 
-    <bean id="motechContext" class="org.motechproject.context.Context" factory-method="getInstance"/>
-    <bean id="eventContext"  class="org.motechproject.scheduler.context.EventContext" factory-method="getInstance"/>
+    <bean id="eventContext" class="org.motechproject.scheduler.context.EventContext" factory-method="getInstance"/>
 
-    <util:properties id="osgiConfig" location="classpath:osgi.properties" />
-    
+    <util:properties id="osgiConfig" location="classpath:osgi.properties"/>
+
     <bean id="osgiFramework" class="org.apache.felix.framework.Felix">
-        <constructor-arg ref="osgiConfig" />
+        <constructor-arg ref="osgiConfig"/>
     </bean>
 
     <bean id="osgiFrameworkService" class="org.motechproject.server.osgi.OsgiFrameworkService">
-        <property name="internalBundleFolder" value="/WEB-INF/bundles" />
-        <property name="externalBundleFolder" value="#{systemProperties['user.home']}/.motech/bundles" />
+        <property name="internalBundleFolder" value="/WEB-INF/bundles"/>
+        <property name="externalBundleFolder" value="#{systemProperties['user.home']}/.motech/bundles"/>
         <property name="bundleLoaders">
             <list>
-                <bean id="log4jBundleLoader" class="org.motechproject.server.osgi.Log4JBundleLoader" />
-                <bean id="jspBundleLoader" class="org.motechproject.server.osgi.JspBundleLoader" />
+                <bean id="log4jBundleLoader" class="org.motechproject.server.osgi.Log4JBundleLoader"/>
+                <bean id="jspBundleLoader" class="org.motechproject.server.osgi.JspBundleLoader"/>
                 <!-- <bean id="ruleBundleLoader" class="org.motechproject.server.osgi.RuleBundleLoader" /> -->
             </list>
         </property>
@@ -42,5 +41,5 @@
 
     <context:component-scan base-package="org.motechproject.server.event"/>
     <context:component-scan base-package="org.motechproject.server.osgi"/>
-  <!--  <context:component-scan base-package="org.motechproject.server.ruleengine"/>-->
+    <!--  <context:component-scan base-package="org.motechproject.server.ruleengine"/>-->
 </beans>
