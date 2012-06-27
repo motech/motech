@@ -8,6 +8,7 @@ import org.motechproject.scheduletracking.api.domain.json.AlertRecord;
 import org.motechproject.scheduletracking.api.domain.json.MilestoneRecord;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleWindowsRecord;
+import org.motechproject.settings.MotechPlatformSettings;
 import org.motechproject.util.TimeIntervalParser;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,8 @@ import java.util.*;
 @Component
 public class ScheduleFactory {
     public static final Period EMPTY_PERIOD = Period.ZERO;
+
+    private final MotechPlatformSettings platformSettings = MotechPlatformSettings.getInstance();
 
     public ScheduleFactory() {
     }
@@ -79,7 +82,7 @@ public class ScheduleFactory {
         ReadWritablePeriod period = new MutablePeriod();
         final TimeIntervalParser timeIntervalParser = new TimeIntervalParser();
         for (String s : readableValues) {
-            period.add(timeIntervalParser.parse(s));
+            period.add(timeIntervalParser.parse(s, platformSettings.getDefaultLocale()));
         }
         return period.toPeriod();
     }

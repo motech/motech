@@ -28,6 +28,10 @@
         <constructor-arg ref="osgiConfig" />
     </bean>
 
+    <util:properties id="motechSettings" location="classpath:settings.properties" />
+
+    <bean id="platformSettings" class="org.motechproject.settings.MotechPlatformSettings" factory-method="getInstance" />
+
     <bean id="osgiFrameworkService" class="org.motechproject.server.osgi.OsgiFrameworkService">
         <property name="internalBundleFolder" value="/WEB-INF/bundles" />
         <property name="externalBundleFolder" value="#{systemProperties['user.home']}/.motech/bundles" />
