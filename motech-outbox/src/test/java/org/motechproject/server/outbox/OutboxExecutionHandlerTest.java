@@ -8,7 +8,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.context.Context;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
 import org.motechproject.outbox.api.EventKeys;
@@ -20,15 +19,11 @@ import org.motechproject.scheduler.gateway.MotechSchedulerGateway;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OutboxExecutionHandlerTest {
     @InjectMocks
     private OutboxExecutionHandler outboxExecutionHandler = new OutboxExecutionHandler();
-
-    @Mock
-    private Context context;
 
     @Mock
     IVRService ivrServiceMock;
@@ -81,8 +76,6 @@ public class OutboxExecutionHandlerTest {
         event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
         event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
 
-        when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
-
         outboxExecutionHandler.schedule(event);
 
         verify(motechSchedulerGateway).scheduleJob(any(CronSchedulableJob.class));
@@ -94,8 +87,6 @@ public class OutboxExecutionHandlerTest {
         event.getParameters().put(EventKeys.CALL_HOUR_KEY, 12);
         event.getParameters().put(EventKeys.CALL_MINUTE_KEY, 0);
         event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
-
-        when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
 
         outboxExecutionHandler.schedule(event);
 
@@ -109,8 +100,6 @@ public class OutboxExecutionHandlerTest {
         event.getParameters().put(EventKeys.CALL_MINUTE_KEY, 0);
         event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
 
-        when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
-
         outboxExecutionHandler.schedule(event);
 
         verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
@@ -122,8 +111,6 @@ public class OutboxExecutionHandlerTest {
         event.getParameters().put(EventKeys.CALL_MINUTE_KEY, 0);
         event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
         event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
-
-        when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
 
         outboxExecutionHandler.schedule(event);
 
@@ -138,8 +125,6 @@ public class OutboxExecutionHandlerTest {
         event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
         event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
 
-        when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
-
         outboxExecutionHandler.schedule(event);
 
         verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
@@ -151,8 +136,6 @@ public class OutboxExecutionHandlerTest {
         event.getParameters().put(EventKeys.CALL_HOUR_KEY, 12);
         event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
         event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
-
-        when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
 
         outboxExecutionHandler.schedule(event);
 
@@ -167,8 +150,6 @@ public class OutboxExecutionHandlerTest {
         event.getParameters().put(EventKeys.PHONE_NUMBER_KEY, "SIP/1000");
         event.getParameters().put(EventKeys.EXTERNAL_ID_KEY, "pID");
 
-        when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
-
         outboxExecutionHandler.schedule(event);
 
         verify(motechSchedulerGateway, times(0)).scheduleJob(any(CronSchedulableJob.class));
@@ -178,8 +159,6 @@ public class OutboxExecutionHandlerTest {
     public void testUnschedule() {
         MotechEvent event = new MotechEvent("", null);
         event.getParameters().put(EventKeys.SCHEDULE_JOB_ID_KEY, "JobId");
-
-        when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
 
         outboxExecutionHandler.unschedule(event);
 
@@ -191,8 +170,6 @@ public class OutboxExecutionHandlerTest {
     @Test
     public void testUnschedule_NoPhone() {
         MotechEvent event = new MotechEvent("", null);
-
-        when(context.getMotechSchedulerGateway()).thenReturn(motechSchedulerGateway);
 
         outboxExecutionHandler.unschedule(event);
 
