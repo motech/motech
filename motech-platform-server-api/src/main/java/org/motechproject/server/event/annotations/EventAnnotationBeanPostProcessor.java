@@ -1,11 +1,11 @@
 package org.motechproject.server.event.annotations;
 
-import org.motechproject.context.Context;
 import org.motechproject.server.event.EventListenerRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
@@ -23,6 +23,9 @@ import java.util.Map;
 @Component
 public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPostProcessor {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired(required = false)
+    private EventListenerRegistry eventListenerRegistry;
 
     /* (non-Javadoc)
      * @see org.springframework.beans.factory.config.BeanPostProcessor#postProcessBeforeInitialization(java.lang.Object, java.lang.String)
@@ -47,26 +50,26 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
             @Override
             public void doWith(Method method) throws IllegalArgumentException, IllegalAccessException {
                 Method methodOfOriginalClassIfProxied = ReflectionUtils.findMethod(AopUtils.getTargetClass(bean), method.getName(), method.getParameterTypes());
-                MotechListener annotation;
+                MotechListener annotation = methodOfOriginalClassIfProxied.getAnnotation(MotechListener.class);
 
-                if (methodOfOriginalClassIfProxied != null && (annotation = methodOfOriginalClassIfProxied.getAnnotation(MotechListener.class)) != null) {
+                if (methodOfOriginalClassIfProxied != null && annotation != null) {
                     final List<String> subjects = Arrays.asList(annotation.subjects());
                     MotechListenerAbstractProxy proxy = null;
 
                     switch (annotation.type()) {
-                    case ORDERED_PARAMETERS:
-                        proxy = new MotechListenerOrderedParametersProxy(beanName, bean, method);
-                        break;
-                    case MOTECH_EVENT:
-                        proxy = new MotechListenerEventProxy(beanName, bean, method);
-                        break;
-                    case NAMED_PARAMETERS:
-                        proxy = new MotechListenerNamedParametersProxy(beanName, bean, method);
-                        break;
+                        case ORDERED_PARAMETERS:
+                            proxy = new MotechListenerOrderedParametersProxy(beanName, bean, method);
+                            break;
+                        case MOTECH_EVENT:
+                            proxy = new MotechListenerEventProxy(beanName, bean, method);
+                            break;
+                        case NAMED_PARAMETERS:
+                            proxy = new MotechListenerNamedParametersProxy(beanName, bean, method);
+                            break;
                     }
 
-                    logger.info(String.format("Registering listener type(%20s) bean: %s , method: %s, for subjects: %s", annotation.type().toString(), beanName, method.toGenericString(), subjects));
-                    EventListenerRegistry eventListenerRegistry = Context.getInstance().getEventListenerRegistry();
+                    logger.info(String.format("Registering listener type(%20s) bean: %s , method: %s, for subjects: %s",
+                            annotation.type().toString(), beanName, method.toGenericString(), subjects));
 
                     if (eventListenerRegistry != null) {
                         eventListenerRegistry.registerListener(proxy, subjects);
@@ -89,8 +92,6 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
     @Override
     public void postProcessBeforeDestruction(Object bean, String beanName)
             throws BeansException {
-
-        EventListenerRegistry eventListenerRegistry = Context.getInstance().getEventListenerRegistry();
 
         if (eventListenerRegistry != null) {
             eventListenerRegistry.clearListenersForBean(beanName);

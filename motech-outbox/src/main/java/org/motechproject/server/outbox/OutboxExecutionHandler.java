@@ -1,14 +1,13 @@
 package org.motechproject.server.outbox;
 
-import org.motechproject.context.Context;
-import org.motechproject.scheduler.domain.JobId;
-import org.motechproject.scheduler.gateway.MotechSchedulerGateway;
 import org.motechproject.ivr.model.CallInitiationException;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
-import org.motechproject.scheduler.domain.CronSchedulableJob;
-import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.outbox.api.EventKeys;
+import org.motechproject.scheduler.domain.CronSchedulableJob;
+import org.motechproject.scheduler.domain.JobId;
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.scheduler.gateway.MotechSchedulerGateway;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +21,9 @@ import java.util.Map;
  */
 public class OutboxExecutionHandler {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private MotechSchedulerGateway schedulerGateway = Context.getInstance().getMotechSchedulerGateway();
+
+    @Autowired
+    private MotechSchedulerGateway schedulerGateway;
 
     @Autowired
     IVRService ivrService;
