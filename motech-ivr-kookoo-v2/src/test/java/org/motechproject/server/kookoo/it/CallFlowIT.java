@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
+import org.motechproject.decisiontree.FlowSession;
 import org.motechproject.decisiontree.model.*;
 import org.motechproject.decisiontree.repository.AllTrees;
 import org.motechproject.testing.utils.SpringIntegrationTest;
@@ -196,10 +197,12 @@ public class CallFlowIT extends SpringIntegrationTest {
     public static class CustomTransition implements ITransition {
 
         @Override
-        public Node getDestinationNode(String input) {
+        public Node getDestinationNode(String input, FlowSession session) {
             return new Node()
                 .addPrompts(new TextToSpeechPrompt().setMessage(format("you entered %s", input)))
-                .addTransition("*", new Transition());
+                .addTransition("*", new Transition().setDestinationNode(new Node().setPrompts(new AudioPrompt().setAudioFileUrl("You Pressed Star.wav"))));
         }
+
+        //TODO need end-to-end tests with session.
     }
 }

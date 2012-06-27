@@ -1,5 +1,6 @@
 package org.motechproject.server.decisiontree.service;
 
+import org.motechproject.decisiontree.FlowSession;
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.Tree;
 import org.motechproject.decisiontree.repository.AllTrees;
@@ -23,12 +24,12 @@ public class DecisionTreeServiceImpl implements DecisionTreeService {
     }
 
     @Override
-    public Node getNode(String treeName, String path) {
+    public Node getNode(String treeName, String path, FlowSession session) {
         Node node = null;
         Tree tree = allTrees.findByName(treeName);
         logger.info("Looking for tree by name: " + treeName + ", found: " + tree);
-        node = treeNodeLocator.findNode(tree, path);
-        logger.info("Looking for node by path: " + path + ", found: " + node);
+        node = treeNodeLocator.findNode(tree, path, session);
+        logger.info("Looking for node by path: " + path + ", found: " + node.getPrompts());
 
         return node;
     }

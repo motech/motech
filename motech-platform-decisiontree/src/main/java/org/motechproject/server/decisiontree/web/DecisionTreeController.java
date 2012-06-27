@@ -4,10 +4,12 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.decisiontree.FlowSession;
 import org.motechproject.decisiontree.model.DialStatus;
 import org.motechproject.decisiontree.model.ITransition;
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.Transition;
+import org.motechproject.decisiontree.service.FlowSessionService;
 import org.motechproject.server.decisiontree.TreeNodeLocator;
 import org.motechproject.server.decisiontree.service.DecisionTreeService;
 import org.motechproject.server.decisiontree.service.TreeEventProcessor;
@@ -26,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Spring MVC controller implementation provides method to handle HTTP requests and generate
@@ -36,6 +39,7 @@ import java.util.Set;
 public class DecisionTreeController extends MultiActionController {
 
     public static final String TEMPLATE_BASE_PATH = "/vm/";
+    public static final String FLOW_SESSION_ID_PARAM = "flowSessionId";
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
 
     public static final String TREE_NAME_PARAM = "tree";
@@ -61,7 +65,7 @@ public class DecisionTreeController extends MultiActionController {
     private ApplicationContext applicationContext;
 
     @Autowired
-    private TreeNodeLocator treeNodeLocator;
+    private FlowSessionService flowSessionService;
 
     enum Errors {
         NULL_PATIENTID_LANGUAGE_OR_TREENAME_PARAM,
@@ -91,7 +95,7 @@ public class DecisionTreeController extends MultiActionController {
      * The HTTP request should contain the Tree ID, Node ID, Patient ID and Selected Transition Key (optional) parameters
      */
     @RequestMapping("/node")
-        public ModelAndView node(HttpServletRequest request, HttpServletResponse response) {
+    public ModelAndView node(HttpServletRequest request, HttpServletResponse response) {
         logger.info(request.getParameterMap().toString());
         logger.info("Generating decision tree node xml");
 
@@ -133,35 +137,45 @@ public class DecisionTreeController extends MultiActionController {
         String currentTree = treeNames[0];
         // put only one tree name in params
         params.put(TREE_NAME_PARAM, currentTree);
-
+        String sessionId = request.getParameter(FLOW_SESSION_ID_PARAM);
+        if (StringUtils.isBlank(sessionId)) {
+            sessionId = UUID.randomUUID().toString();
+        }
+        FlowSession session = flowSessionService.getSession(sessionId);
         Node node;
-        if (transitionKey == null) {
-            node = decisionTreeService.getNode(currentTree, TreeNodeLocator.PATH_DELIMITER);
-            return constructModelViewForNode(request, node, transitionPath, language, treeNameString, type, treeNames, params);
-        } else {
-            String parentTransitionPath;
-            parentTransitionPath = getParentTransitionPath(encodedParentTransitionPath);
-            Node parentNode = decisionTreeService.getNode(currentTree, parentTransitionPath);
-            ITransition transition = sendTreeEventActions(params, transitionKey, parentTransitionPath, parentNode);
-            applicationContext.getAutowireCapableBeanFactory().autowireBean(transition);
-
-            node = transition.getDestinationNode(transitionKey);
-
-            if (node == null || (node.getPrompts().isEmpty() && node.getActionsAfter().isEmpty()
-                    && node.getActionsBefore().isEmpty() && node.getTransitions().isEmpty())) {
-                if (treeNames.length > 1) {
-                    //reduce the current tree and redirect to the next tree
-                    treeNames = (String[]) ArrayUtils.remove(treeNames, 0);
-                    String view = String.format("redirect:/decisiontree/node?" + TREE_NAME_PARAM + "=%s&" + LANGUAGE_PARAM + "=%s", StringUtils.join(treeNames, TREE_NAME_SEPARATOR), language);
-                    return new ModelAndView(view);
-                } else  //TODO: Add support for return url
-                    return new ModelAndView(EXIT_TEMPLATE_NAME);
+        try {
+            if (transitionKey == null) {
+                node = decisionTreeService.getNode(currentTree, TreeNodeLocator.PATH_DELIMITER, session);
+                return constructModelViewForNode(request, node, transitionPath, language, treeNameString, type, treeNames, params);
             } else {
-                String modifiedTransitionPath = parentTransitionPath +
-                        (TreeNodeLocator.PATH_DELIMITER.equals(parentTransitionPath) ? "" : TreeNodeLocator.PATH_DELIMITER)
-                        + transitionKey;
-                return constructModelViewForNode(request, node, modifiedTransitionPath, language, treeNameString, type, treeNames, params);
+                String parentTransitionPath;
+                parentTransitionPath = getParentTransitionPath(encodedParentTransitionPath);
+                Node parentNode = decisionTreeService.getNode(currentTree, parentTransitionPath, session);
+                ITransition transition = sendTreeEventActions(params, transitionKey, parentTransitionPath, parentNode);
+                applicationContext.getAutowireCapableBeanFactory().autowireBean(transition);
+
+                node = transition.getDestinationNode(transitionKey, session);
+
+                if (node == null || (node.getPrompts().isEmpty() && node.getActionsAfter().isEmpty()
+                        && node.getActionsBefore().isEmpty() && node.getTransitions().isEmpty())) {
+                    if (treeNames.length > 1) {
+                        //reduce the current tree and redirect to the next tree
+                        treeNames = (String[]) ArrayUtils.remove(treeNames, 0);
+                        String view = String.format("redirect:/decisiontree/node?" + TREE_NAME_PARAM + "=%s&" + LANGUAGE_PARAM + "=%s", StringUtils.join(treeNames, TREE_NAME_SEPARATOR), language);
+                        return new ModelAndView(view);
+                    } else  //TODO: Add support for return url
+                    {
+                        return new ModelAndView(EXIT_TEMPLATE_NAME);
+                    }
+                } else {
+                    String modifiedTransitionPath = parentTransitionPath +
+                            (TreeNodeLocator.PATH_DELIMITER.equals(parentTransitionPath) ? "" : TreeNodeLocator.PATH_DELIMITER)
+                            + transitionKey;
+                    return constructModelViewForNode(request, node, modifiedTransitionPath, language, treeNameString, type, treeNames, params);
+                }
             }
+        } finally {
+            flowSessionService.updateSession(session);
         }
     }
 
@@ -195,9 +209,15 @@ public class DecisionTreeController extends MultiActionController {
         for (Map.Entry<String, ITransition> transitionEntry : node.getTransitions().entrySet()) {
 
             final String key = transitionEntry.getKey();
-            if (anyInput(key)) return;
-            if (dtmfKey(key)) return;
-            if (DialStatus.isValid(key)) return;
+            if (anyInput(key)) {
+                return;
+            }
+            if (dtmfKey(key)) {
+                return;
+            }
+            if (DialStatus.isValid(key)) {
+                return;
+            }
             try {
                 Integer.parseInt(key);
             } catch (NumberFormatException e) {
@@ -225,24 +245,23 @@ public class DecisionTreeController extends MultiActionController {
 
         treeEventProcessor.sendActionsAfter(parentNode, parentTransitionPath, params);
 
-        if (transition instanceof Transition)
+        if (transition instanceof Transition) {
             treeEventProcessor.sendTransitionActions((Transition) transition, params);
+        }
         return transition;
     }
 
     private ITransition getTransitionForUserInput(String userInput, Node parentNode) {
         ITransition transition = getPreConfiguredTransition(parentNode, userInput);
-        if (transition == null) transition = parentNode.getTransitions().get(TreeNodeLocator.ANY_KEY);
+        if (transition == null) {
+            transition = parentNode.getTransitions().get(TreeNodeLocator.ANY_KEY);
+        }
 
         if (transition == null) {
             throw new DecisionTreeException(Errors.INVALID_TRANSITION_KEY,
                     "Invalid Transition Key. There is no transition with key: " + userInput + " in the Node: " + parentNode);
         }
         return transition;
-    }
-
-    private boolean isDynamicTransition(Node parentNode, String userInput){
-        return getPreConfiguredTransition(parentNode, userInput) == null;
     }
 
     private ITransition getPreConfiguredTransition(Node parentNode, String userInput) {
@@ -260,8 +279,12 @@ public class DecisionTreeController extends MultiActionController {
     private String maxDigits(Map<String, ITransition> transitions) {
         int maxDigits = 1;
         for (String key : transitions.keySet()) {
-            if (anyInput(key)) return "" + MAX_INPUT_DIGITS;
-            if (maxDigits < key.length()) maxDigits = key.length();
+            if (anyInput(key)) {
+                return "" + MAX_INPUT_DIGITS;
+            }
+            if (maxDigits < key.length()) {
+                maxDigits = key.length();
+            }
         }
         return Integer.toString(maxDigits);
     }
