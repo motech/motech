@@ -123,5 +123,20 @@
                 "cron" : "0 11 11 11 11 ?"
             }
         ]
+    },
+    {
+        "name" : "Simple Repeating Campaign",
+        "type" : "REPEATING",
+        "maxDuration" : "60 weeks",
+        "messages" : [
+            {
+                "name" : "Pregnancy Message",
+                "formats" : ["IVR"],
+                "languages" : ["en"],
+                "messageKey": "PREGNANCY-cw{Offset}",
+                "deliverTime" : "13:00",
+                "repeatInterval" : "1 week"
+            }
+        ]
     }
 ]

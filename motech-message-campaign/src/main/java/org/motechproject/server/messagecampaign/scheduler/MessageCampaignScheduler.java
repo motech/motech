@@ -2,11 +2,11 @@ package org.motechproject.server.messagecampaign.scheduler;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.motechproject.model.Time;
+import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.CronSchedulableJob;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
-import org.motechproject.model.Time;
-import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.builder.SchedulerPayloadBuilder;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
@@ -19,6 +19,7 @@ import org.motechproject.util.DateUtil;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.motechproject.server.messagecampaign.EventKeys.BASE_SUBJECT;
@@ -68,6 +69,19 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage, E exte
         }
         campaignEnrollmentService.unregister(campaignRequest.externalId(), campaignRequest.campaignName());
         schedulerService.safeUnscheduleJob(EventKeys.MESSAGE_CAMPAIGN_COMPLETED_EVENT_SUBJECT, jobIdFactory.getCampaignCompletedJobIdFor(campaign.name(), campaignRequest.externalId()));
+    }
+
+    public Map<String, List<Date>> getCampaignTimings(Date startDate, Date endDate) {
+        Map<String, List<Date>> messageTimingsMap = new HashMap<>();
+
+        for (T message : campaign.messages()) {
+            messageTimingsMap.put(message.name(),
+                    schedulerService.getScheduledJobTimingsWithPrefix(
+                            CampaignTypeHandlersRegistery.subjectFor(campaign),
+                            getMessageJobId(message.messageKey()), startDate, endDate));
+        }
+
+        return messageTimingsMap;
     }
 
     protected abstract void scheduleJobFor(T message);
