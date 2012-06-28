@@ -1,5 +1,6 @@
 package org.motechproject.server.messagecampaign.service;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -11,6 +12,7 @@ import org.motechproject.server.messagecampaign.domain.campaign.AbsoluteCampaign
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
 import org.motechproject.server.messagecampaign.scheduler.MessageCampaignScheduler;
 
+import java.util.Date;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -94,5 +96,20 @@ public class MessageCampaignServiceImplTest {
         when(mockCampaignEnrollmentRecordMapper.map(enrollment2)).thenReturn(record2);
 
         assertEquals(asList(new CampaignEnrollmentRecord[]{record1, record2}), messageCampaignService.search(enrollmentQuery));
+    }
+
+    @Test
+    public void shouldGetCampaignTimings() {
+        Date startDate = DateTime.now().plusDays(1).toDate();
+        Date endDate = DateTime.now().plusDays(1).plusDays(5).toDate();
+        AbsoluteCampaign campaign = mock(AbsoluteCampaign.class);
+
+        String campaignName = "campaign";
+        when(allMessageCampaigns.get(campaignName)).thenReturn(campaign);
+        when(campaign.getScheduler(eq(schedulerService), eq(mockCampaignEnrollmentService), any(CampaignRequest.class))).thenReturn(scheduler);
+
+        messageCampaignService.getCampaignTimings("externalId", campaignName, startDate, endDate);
+
+        verify(scheduler).getCampaignTimings(startDate, endDate);
     }
 }

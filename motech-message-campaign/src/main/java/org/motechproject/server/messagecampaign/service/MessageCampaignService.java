@@ -2,7 +2,9 @@ package org.motechproject.server.messagecampaign.service;
 
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * \ingroup MessageCampaign
@@ -24,4 +26,5 @@ public interface MessageCampaignService {
      */
     List<CampaignEnrollmentRecord> search(CampaignEnrollmentsQuery query);
 
+    Map<String, List<Date>> getCampaignTimings(String externalId, String campaignName, Date startDate, Date endDate);
 }
