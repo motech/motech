@@ -10,6 +10,7 @@
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
     </bean>
 
+    <import resource="schedulerFiredEventChannelAdapter.xml"/>
     <import resource="classpath:applicationPlatformServerAPI.xml"/>
 
     <util:properties id="quartzProperties" location="classpath:quartz.properties"/>
