@@ -3,6 +3,7 @@ package org.motechproject.server.messagecampaign.scheduler;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.AbsoluteCampaign;
 import org.motechproject.server.messagecampaign.domain.message.AbsoluteCampaignMessage;
@@ -33,5 +34,8 @@ public class AbsoluteProgramScheduler extends MessageCampaignScheduler<AbsoluteC
         return newDateTime(maxDate, campaignRequest.reminderTime());
     }
 
-
+    @Override
+    protected String getCampaignMessageSubject(AbsoluteCampaignMessage absoluteCampaignMessage) {
+        return EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT;
+    }
 }

@@ -53,7 +53,7 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
         params.put(Constants.REPEATING_PROGRAM_24HRS_MESSAGE_DISPATCH_STRATEGY, dispatchMessagesEvery24Hours);
 
         // Bug 0058
-        if (RepeatingMessageMode.REPEAT_INTERVAL.name().equals(message.mode().name()) && !dispatchMessagesEvery24Hours) {
+        if (badFunctionConditionToBeRefactored(message)) {
             Integer offsetInDays = campaignRequest.startOffset();
             if (offsetInDays == null)
                 offsetInDays = new Integer(0);
@@ -66,6 +66,16 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
         } else {
             scheduleRepeatingJob(startDate, getDeliveryTime(message), endDate, params, getCronExpression(message));
         }
+    }
+
+    private boolean badFunctionConditionToBeRefactored(RepeatingCampaignMessage message) {
+        return RepeatingMessageMode.REPEAT_INTERVAL.name().equals(message.mode().name()) && !dispatchMessagesEvery24Hours;
+    }
+
+    @Override
+    protected String getCampaignMessageSubject(RepeatingCampaignMessage repeatingCampaignMessage) {
+        if (badFunctionConditionToBeRefactored(repeatingCampaignMessage)) return EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT;
+        return INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT;
     }
 
     private void scheduleRepeatingJob(RepeatingCampaignMessage message, Map<String, Object> params, Date startDate, Date endDate) {

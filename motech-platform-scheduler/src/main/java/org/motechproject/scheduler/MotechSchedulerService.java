@@ -1,14 +1,17 @@
 package org.motechproject.scheduler;
 
-/**
- * \defgroup scheduler Scheduler
- */
-
 import org.motechproject.scheduler.domain.CronSchedulableJob;
 import org.motechproject.scheduler.domain.JobId;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
+
+import java.util.Date;
+import java.util.List;
+
+/**
+ * \defgroup scheduler Scheduler
+ */
 
 /**
  * \ingroup scheduler
@@ -107,4 +110,8 @@ public interface MotechSchedulerService {
      * @param externalId
      */
     public void safeUnscheduleRepeatingJob(String subject, String externalId);
+
+    List<Date> getScheduledJobTimings(String subject, String externalJobId, Date startDate, Date endDate);
+
+    List<Date> getScheduledJobTimingsWithPrefix(String subject, String externalJobIdPrefix, Date startDate, Date endDate);
 }

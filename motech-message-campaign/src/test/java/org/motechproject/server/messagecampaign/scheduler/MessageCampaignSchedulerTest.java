@@ -6,9 +6,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.builder.EnrollRequestBuilder;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
@@ -63,6 +63,11 @@ class StubMessageCampaignScheduler extends MessageCampaignScheduler<StubCampaign
     @Override
     protected DateTime getCampaignEnd() {
         return newDateTime(today().plusDays(7));
+    }
+
+    @Override
+    protected String getCampaignMessageSubject(StubCampaignMessage stubCampaignMessage) {
+        return EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT;
     }
 }
 

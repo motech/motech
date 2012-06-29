@@ -1,5 +1,6 @@
 package org.motechproject.server.messagecampaign.service;
 
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +15,12 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/testMessageCampaignApplicationContext.xml"})
@@ -72,6 +78,21 @@ public class MessageCampaignServiceIT{
         enrollRequest.setReferenceDate(DateUtil.today());
         messageCampaignService.startFor(enrollRequest);
         assertEquals(scheduledJobsNum + 2, schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size());
+    }
+
+    @Test
+    public void testGetMessageTimingsForRepeatingMessageCampaign() throws Exception {
+        String campaignName = "Simple Repeating Campaign";
+        CampaignRequest enrollRequest = new CampaignRequest("patiend_Id3", campaignName, null,
+                DateTime.now().plusDays(1).toLocalDate(), 2);
+        messageCampaignService.startFor(enrollRequest);
+
+        Map<String, List<Date>> messageTimings = messageCampaignService.getCampaignTimings(
+                enrollRequest.externalId(), enrollRequest.campaignName(),
+                DateTime.now().toDate(), DateTime.now().plusDays(1).plusWeeks(60).toDate());
+
+        assertNotNull(messageTimings);
+        assertEquals(60, messageTimings.get("Pregnancy Message").size());
     }
 
     @After

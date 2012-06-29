@@ -251,8 +251,10 @@ public class RepeatingProgramSchedulerTest {
         RepeatingCampaign campaign = new CampaignBuilder().defaultRepeatingCampaign("2 Weeks");
         CampaignRequest request = defaultBuilder().withReferenceDate(new LocalDate(2011, 11, 28)).withStartOffset(1).build();
         RepeatingProgramScheduler repeatingProgramScheduler = new RepeatingProgramScheduler(mockSchedulerService, request, campaign, mockCampaignEnrollmentService, false);
+
         repeatingProgramScheduler.stop();
-        verify(mockSchedulerService, times(5)).safeUnscheduleJob(Matchers.<String>any(), Matchers.<String>any());
+
+        verify(mockSchedulerService, times(7)).safeUnscheduleJob(Matchers.<String>any(), Matchers.<String>any());
         verify(mockSchedulerService, never()).safeScheduleRepeatingJob(Matchers.<RepeatingSchedulableJob>any());
     }
 

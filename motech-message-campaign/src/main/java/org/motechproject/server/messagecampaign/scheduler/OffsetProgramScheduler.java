@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.campaign.OffsetCampaign;
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
@@ -43,6 +44,11 @@ public class OffsetProgramScheduler extends MessageCampaignScheduler<OffsetCampa
 
         LocalDate campaignEndDate = campaignRequest.referenceDate().plusDays(max(timeOffsets));
         return newDateTime(campaignEndDate, campaignRequest.reminderTime());
+    }
+
+    @Override
+    protected String getCampaignMessageSubject(OffsetCampaignMessage offsetCampaignMessage) {
+        return EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT;
     }
 
     private boolean isInFuture(LocalDate date, Time time) {

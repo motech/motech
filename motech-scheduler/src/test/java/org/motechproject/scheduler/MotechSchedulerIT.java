@@ -384,6 +384,30 @@ public class MotechSchedulerIT {
         assertEquals(numOfScheduledJobs - 3, schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size());
     }
 
+    @Test
+    public void shouldGetJobTimingsForJobId() {
+        String jobId = "testJob";
+        CronSchedulableJob job = getJob(jobId);
+        motechScheduler.scheduleJob(job);
+
+        List<Date> dateList = motechScheduler.getScheduledJobTimings(job.getMotechEvent().getSubject(),
+                jobId, DateTime.now().toDate(), DateTime.now().plusDays(10).toDate());
+
+        assertEquals(10, dateList.size());
+    }
+
+    @Test
+    public void shouldGetJobTimingsForJobIdPrefix() {
+        String jobId = "testJob-repeat";
+        CronSchedulableJob job = getJob(jobId);
+        motechScheduler.scheduleJob(job);
+
+        List<Date> dateList = motechScheduler.getScheduledJobTimingsWithPrefix(job.getMotechEvent().getSubject(),
+                jobId, DateTime.now().toDate(), DateTime.now().plusDays(10).toDate());
+
+        assertEquals(10, dateList.size());
+    }
+
     private CronSchedulableJob getJob(String jobId) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("JobID", jobId);
