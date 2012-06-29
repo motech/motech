@@ -22,6 +22,8 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang.StringUtils.replace;
+import static org.motechproject.server.messagecampaign.EventKeys.MESSAGE_KEY;
 import static org.motechproject.util.DateUtil.endOfDay;
 import static org.motechproject.util.DateUtil.newDateTime;
 
@@ -57,6 +59,7 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
             Integer offsetInDays = campaignRequest.startOffset();
             if (offsetInDays == null)
                 offsetInDays = new Integer(0);
+            params.put(EventKeys.GENERATED_MESSAGE_KEY, generateMsgKey(params.get(MESSAGE_KEY).toString(), offsetInDays.toString()));
             scheduleRepeatingJob(message, params, newDateTime(startDate.plusDays(offsetInDays), message.deliverTime()).toDate(), endDate);
             return;
         }
@@ -75,6 +78,10 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
         if (message.repeatIntervalIsLessThanDay())
             repeatInterval = getRepeatIntervalInMilliSeconds(message).intValue();
         schedulerService.safeScheduleRepeatingJob(new RepeatingSchedulableJob(motechEvent, startDate, endDate, repeatInterval));
+    }
+
+    private String generateMsgKey(String originalMessageKey, String offset) {
+        return replace(originalMessageKey, "{Offset}", offset);
     }
 
     @Override
