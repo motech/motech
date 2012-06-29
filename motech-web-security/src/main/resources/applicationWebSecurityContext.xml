@@ -7,7 +7,7 @@
 
     <import resource="classpath:applicationPlatformCommonAPI.xml"/>
 
-        <context:property-placeholder location="classpath*:motech-web-security.properties"/>
+    <context:property-placeholder location="classpath*:motech-web-security.properties"/>
 
     <bean id="webSecurityDbConnector" class="org.ektorp.impl.StdCouchDbConnector">
         <constructor-arg value="motech-web-security"/>
