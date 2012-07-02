@@ -1,15 +1,16 @@
 package org.motechproject.mrs.model;
 
-import org.apache.commons.collections.CollectionUtils;
+import static ch.lambdaj.Lambda.having;
+import static ch.lambdaj.Lambda.on;
+import static ch.lambdaj.Lambda.select;
+import static org.hamcrest.Matchers.equalTo;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static ch.lambdaj.Lambda.having;
-import static ch.lambdaj.Lambda.on;
-import static ch.lambdaj.Lambda.select;
-import static org.hamcrest.Matchers.equalTo;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ObjectUtils;
 
 /**
  * Domain to hold personal details of a Person (MRSUser and MRSPatient)
@@ -159,5 +160,63 @@ public class MRSPerson {
 
     public Integer getAge() {
         return age;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+
+        if (!(o instanceof MRSPerson))
+            return false;
+
+        MRSPerson other = (MRSPerson) o;
+        if (!ObjectUtils.equals(id, other.id))
+            return false;
+        if (!ObjectUtils.equals(firstName, other.firstName))
+            return false;
+        if (!ObjectUtils.equals(middleName, other.middleName))
+            return false;
+        if (!ObjectUtils.equals(lastName, other.lastName))
+            return false;
+        if (!ObjectUtils.equals(preferredName, other.preferredName))
+            return false;
+        if (!ObjectUtils.equals(address, other.address))
+            return false;
+        if (!ObjectUtils.equals(dateOfBirth, other.dateOfBirth))
+            return false;
+        if (!ObjectUtils.equals(birthDateEstimated, other.birthDateEstimated))
+            return false;
+        if (!ObjectUtils.equals(age, other.age))
+            return false;
+        if (!ObjectUtils.equals(gender, other.gender))
+            return false;
+        if (!ObjectUtils.equals(attributes, other.attributes))
+            return false;
+        if (!ObjectUtils.equals(deathDate, other.deathDate))
+            return false;
+        if (dead != other.dead)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 1;
+        hash = hash * 31 + ObjectUtils.hashCode(id);
+        hash = hash * 31 + ObjectUtils.hashCode(firstName);
+        hash = hash * 31 + ObjectUtils.hashCode(middleName);
+        hash = hash * 31 + ObjectUtils.hashCode(lastName);
+        hash = hash * 31 + ObjectUtils.hashCode(preferredName);
+        hash = hash * 31 + ObjectUtils.hashCode(address);
+        hash = hash * 31 + ObjectUtils.hashCode(dateOfBirth);
+        hash = hash * 31 + ObjectUtils.hashCode(birthDateEstimated);
+        hash = hash * 31 + ObjectUtils.hashCode(age);
+        hash = hash * 31 + ObjectUtils.hashCode(gender);
+        hash = hash * 31 + Boolean.valueOf(dead).hashCode();
+        hash = hash * 31 + ObjectUtils.hashCode(attributes);
+        hash = hash * 31 + ObjectUtils.hashCode(deathDate);
+        return hash;
     }
 }

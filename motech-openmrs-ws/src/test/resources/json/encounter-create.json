@@ -1,0 +1,14 @@
+{
+  "location":"LLL",
+  "encounterType":"ADULTINITIAL",
+  "encounterDatetime":"",
+  "patient":"PPP",
+  "provider":"PPR",
+  "obs":[
+    {
+      "concept":"CCC",
+      "value":"Test Value",
+      "obsDatetime":""
+    }
+  ]
+}

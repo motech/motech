@@ -1,0 +1,5 @@
+{
+  "username": "theUsername",
+  "password": "",
+  "roles": ["roleUuid"]
+}
