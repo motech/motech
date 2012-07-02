@@ -24,8 +24,14 @@ public class StatsdAgentBackendImpl implements MetricsAgentBackend {
 
     private InetAddress serverAddr;
     private String hostName;
+    private DatagramSocket socket;
 
     public StatsdAgentBackendImpl() {
+        try {
+            socket = new DatagramSocket();
+        } catch (SocketException e) {
+            log.error(e.getMessage(), e);
+        }
         try {
             hostName = InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {
@@ -82,18 +88,10 @@ public class StatsdAgentBackendImpl implements MetricsAgentBackend {
     }
 
     private boolean send(ArrayList<String> stats) {
-        DatagramSocket sock;
-
-        try {
-            sock = new DatagramSocket();
-        } catch (SocketException e) {
-            log.error(e.getMessage());
-            return false;
-        }
-
+        if (socket == null) return false;
         boolean retval = false; // didn't send anything
         for (String stat : stats) {
-            if (doSend(sock, stat)) {
+            if (doSend(socket, stat)) {
                 retval = true;
             }
         }
