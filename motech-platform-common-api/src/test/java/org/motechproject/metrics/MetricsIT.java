@@ -4,11 +4,22 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.metrics.impl.LoggingAgentBackendImpl;
+import org.motechproject.metrics.impl.MultipleMetricsAgentImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.concurrent.*;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by IntelliJ IDEA.
@@ -40,5 +51,13 @@ public class MetricsIT {
         metricsAgent.logEvent("test.event", params);
         metricsAgent.logEvent("test.event2");
         metricsAgent.stopTimer("timed.event", startTime);
+    }
+
+    @Test
+    public void shouldEnableLogginAgentOnlyByDefault() throws Exception {
+        MultipleMetricsAgentImpl impl = (MultipleMetricsAgentImpl) metricsAgent;
+
+        assertEquals(1, impl.getMetricsAgents().size());
+        assertEquals(LoggingAgentBackendImpl.class, impl.getMetricsAgents().get(0).getClass());
     }
 }
