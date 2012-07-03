@@ -136,7 +136,7 @@ public class Node {
      * @param transition transition object See {@link Transition}
      * @return the current node instance
      */
-    public Node addTransition(String transitionKey, Transition transition) {
+    public Node addTransition(String transitionKey, ITransition transition) {
         if (transitions == null) {
             transitions = new HashMap<String, ITransition>();
         }
