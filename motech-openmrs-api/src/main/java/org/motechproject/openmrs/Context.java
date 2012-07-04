@@ -7,7 +7,6 @@ import org.openmrs.module.ModuleFactory;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.InputRequiredException;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Properties;
 
