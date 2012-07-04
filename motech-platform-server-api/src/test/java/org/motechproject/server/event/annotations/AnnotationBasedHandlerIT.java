@@ -3,7 +3,6 @@ package org.motechproject.server.event.annotations;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.MotechException;
-import org.motechproject.context.Context;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.server.event.EventListenerRegistry;
 import org.motechproject.server.event.ServerEventRelay;
@@ -16,7 +15,8 @@ import org.springframework.util.Assert;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/testPlatformServerApplicationContext.xml"})
@@ -26,6 +26,9 @@ public class AnnotationBasedHandlerIT {
 
     @Autowired
     ServerEventRelay eventRelay;
+
+    @Autowired
+    private EventListenerRegistry eventListenerRegistry;
 
     private void send(String dest, Object... objects) {
         Map<String, Object> params = new HashMap<String, Object>();
@@ -73,10 +76,9 @@ public class AnnotationBasedHandlerIT {
 
     @Test
     public void testRegistry() {
-        EventListenerRegistry registry = Context.getInstance().getEventListenerRegistry();
-        assertEquals(2, registry.getListenerCount("sub_a"));
-        assertEquals(1,registry.getListenerCount("sub_b"));
-        assertEquals(1,registry.getListenerCount("sub_c"));
+        assertEquals(2, eventListenerRegistry.getListenerCount("sub_a"));
+        assertEquals(1,eventListenerRegistry.getListenerCount("sub_b"));
+        assertEquals(1,eventListenerRegistry.getListenerCount("sub_c"));
     }
 
     @Test
