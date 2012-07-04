@@ -9,13 +9,21 @@
 
     <util:properties id="messageCampaignProperties" location="classpath:messageCampaign.properties"/>
 
-    <import resource="classpath:applicationPlatformCommonAPI.xml"/>
-
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.server.messagecampaign"/>
+
+    <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean" />
+
+    <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
+        <constructor-arg ref="httpClient" />
+    </bean>
 
     <bean id="messageCampaignDBConnector" class="org.ektorp.impl.StdCouchDbConnector">
         <constructor-arg value="motech-message-campaign"/>
         <constructor-arg ref="couchDbInstance"/>
     </bean>
+
+    <bean id="messageCampaignService" class="org.motechproject.server.messagecampaign.service.MessageCampaignServiceImpl" />
+
+    <bean class="org.motechproject.server.messagecampaign.dao.AllMessageCampaigns" />
 </beans>
