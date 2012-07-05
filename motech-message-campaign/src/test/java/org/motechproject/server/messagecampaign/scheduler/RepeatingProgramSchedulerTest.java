@@ -38,7 +38,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.server.messagecampaign.scheduler.RepeatingProgramScheduler.INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT;
 import static org.motechproject.util.DateUtil.newDateTime;
 
 public class RepeatingProgramSchedulerTest {
@@ -71,7 +70,7 @@ public class RepeatingProgramSchedulerTest {
         assertEquals(7 * 24 * 60 * 60 * 1000L, job.getRepeatIntervalInMilliSeconds().longValue());
         assertEquals(null, job.getRepeatCount());
         assertEquals(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, job.getMotechEvent().getSubject());
-        assertMotechEvent(job.getMotechEvent(), "MessageJob.testCampaign.12345.child-info-week-{Offset}-1", "child-info-week-{Offset}-1");
+        assertMotechEvent(job.getMotechEvent(), "MessageJob.testCampaign.12345.child-info-week-{Offset}-1", "child-info-week-{Offset}-1", start);
     }
 
     @Test
@@ -97,17 +96,16 @@ public class RepeatingProgramSchedulerTest {
         List<CronSchedulableJob> jobs = capture.getAllValues();
 
         assertJob(jobs.get(0), startJobDate, jobEndDateForRepeatInterval1);
-        assertMotechEvent(jobs.get(0).getMotechEvent(), "MessageJob.testCampaign.12345.child-info-week-{Offset}-1", "child-info-week-{Offset}-1");
+        assertMotechEvent(jobs.get(0).getMotechEvent(), "MessageJob.testCampaign.12345.child-info-week-{Offset}-1", "child-info-week-{Offset}-1", startDate);
 
         assertJob(jobs.get(1), startJobDate, jobEndDateForRepeatInterval2);
-        assertMotechEvent(jobs.get(1).getMotechEvent(), "MessageJob.testCampaign.12345.child-info-week-{Offset}-2", "child-info-week-{Offset}-2");
+        assertMotechEvent(jobs.get(1).getMotechEvent(), "MessageJob.testCampaign.12345.child-info-week-{Offset}-2", "child-info-week-{Offset}-2", startDate);
 
         assertJob(jobs.get(2), startJobDate, jobEndDateForWeekSchedule);
-        assertMotechEvent(jobs.get(2).getMotechEvent(), "MessageJob.testCampaign.12345.child-info-week-{Offset}-{WeekDay}", "child-info-week-{Offset}-{WeekDay}");
+        assertMotechEvent(jobs.get(2).getMotechEvent(), "MessageJob.testCampaign.12345.child-info-week-{Offset}-{WeekDay}", "child-info-week-{Offset}-{WeekDay}", startDate);
 
         assertJob(jobs.get(3), startJobDate, jobEndDateForCalWeekSchedule);
-        assertMotechEvent(jobs.get(3).getMotechEvent(), "MessageJob.testCampaign.12345.child-info-week-{Offset}-{WeekDay}", "child-info-week-{Offset}-{WeekDay}");
-
+        assertMotechEvent(jobs.get(3).getMotechEvent(), "MessageJob.testCampaign.12345.child-info-week-{Offset}-{WeekDay}", "child-info-week-{Offset}-{WeekDay}", startDate);
 
         verify(mockSchedulerService, times(4)).safeScheduleJob(Matchers.<CronSchedulableJob>any());
         verify(mockSchedulerService, never()).safeScheduleRepeatingJob(Matchers.<RepeatingSchedulableJob>any());
@@ -285,7 +283,7 @@ public class RepeatingProgramSchedulerTest {
 
         assertDate(jobStartDate, actualJob.getStartTime());
         assertDate(jobEndDate, actualJob.getEndTime());
-        assertEquals(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, actualJob.getMotechEvent().getSubject());
+        assertEquals(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, actualJob.getMotechEvent().getSubject());
         assertEquals("0 30 10 ? * MON,WED,FRI *", actualJob.getCronExpression());
         assertEquals("MessageJob.PREGNANCY.12345.PREGNANCY-cw{Offset}-{WeekDay}", actualJob.getMotechEvent().getParameters().get("JobID"));
         assertEquals("PREGNANCY", actualJob.getMotechEvent().getParameters().get("CampaignName"));
@@ -321,7 +319,7 @@ public class RepeatingProgramSchedulerTest {
         assertDate(jobEndDate, actualJob.getEndTime());
         assertDate(expectedJobStartDate, actualJob.getStartTime());
         assertDate(jobEndDate, actualJob.getEndTime());
-        assertEquals(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, actualJob.getMotechEvent().getSubject());
+        assertEquals(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, actualJob.getMotechEvent().getSubject());
         assertEquals("0 30 12 ? * SUN *", actualJob.getCronExpression());
         assertEquals("MessageJob.PREGNANCY.12345.PREGNANCY-cw{Offset}-{WeekDay}", actualJob.getMotechEvent().getParameters().get("JobID"));
         assertEquals("PREGNANCY", actualJob.getMotechEvent().getParameters().get("CampaignName"));
@@ -373,7 +371,7 @@ public class RepeatingProgramSchedulerTest {
         assertDate(jobEndDate, job.getEndTime());
         assertEquals(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, job.getMotechEvent().getSubject());
         assertEquals(15 * 60 * 1000L, job.getRepeatIntervalInMilliSeconds().longValue());
-        assertMotechEvent(job.getMotechEvent(), "MessageJob.testCampaign.12345.child-info-minute-{Offset}-1", "child-info-minute-{Offset}-1");
+        assertMotechEvent(job.getMotechEvent(), "MessageJob.testCampaign.12345.child-info-minute-{Offset}-1", "child-info-minute-{Offset}-1", startDate);
     }
 
     @Test
@@ -397,7 +395,7 @@ public class RepeatingProgramSchedulerTest {
         assertDate(jobEndDate, job.getEndTime());
         assertEquals(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, job.getMotechEvent().getSubject());
         assertEquals(15L * 60L * 1000L, job.getRepeatIntervalInMilliSeconds().longValue());
-        assertMotechEvent(job.getMotechEvent(), "MessageJob.testCampaign.12345.child-info-minute-{Offset}-1", "child-info-minute-{Offset}-1");
+        assertMotechEvent(job.getMotechEvent(), "MessageJob.testCampaign.12345.child-info-minute-{Offset}-1", "child-info-minute-{Offset}-1", startDate);
     }
 
     @Test
@@ -420,13 +418,13 @@ public class RepeatingProgramSchedulerTest {
         assertDate(jobEndDate, job.getEndTime());
         assertEquals(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, job.getMotechEvent().getSubject());
         assertEquals(15L * 60L * 1000L, job.getRepeatIntervalInMilliSeconds().longValue());
-        assertMotechEvent(job.getMotechEvent(), "MessageJob.testCampaign.12345.child-info-minute-{Offset}-1", "child-info-minute-{Offset}-1");
+        assertMotechEvent(job.getMotechEvent(), "MessageJob.testCampaign.12345.child-info-minute-{Offset}-1", "child-info-minute-{Offset}-1", startDate);
     }
 
     private void assertJob(CronSchedulableJob actualJob, Date jobStartDate, Date jobEndDate) {
         assertDate(jobStartDate, actualJob.getStartTime());
         assertDate(jobEndDate, actualJob.getEndTime());
-        assertEquals(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, actualJob.getMotechEvent().getSubject());
+        assertEquals(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, actualJob.getMotechEvent().getSubject());
         assertEquals(buildCronExpression(jobStartDate), actualJob.getCronExpression());
     }
 
@@ -445,10 +443,11 @@ public class RepeatingProgramSchedulerTest {
         assertEquals(expectedDateTime, actualDateTime);
     }
 
-    private void assertMotechEvent(MotechEvent motechEvent, String expectedJobId, Object messageKey) {
+    private void assertMotechEvent(MotechEvent motechEvent, String expectedJobId, Object messageKey, LocalDate jobStartDate) {
         assertEquals(expectedJobId, motechEvent.getParameters().get("JobID"));
         assertEquals("testCampaign", motechEvent.getParameters().get("CampaignName"));
         assertEquals("12345", motechEvent.getParameters().get("ExternalID"));
+        assertEquals(jobStartDate, motechEvent.getParameters().get("CampaignStartDate"));
         assertEquals(messageKey, motechEvent.getParameters().get("MessageKey"));
     }
 

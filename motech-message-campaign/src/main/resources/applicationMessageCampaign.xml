@@ -23,7 +23,7 @@
         <constructor-arg ref="couchDbInstance"/>
     </bean>
 
-    <bean id="messageCampaignService" class="org.motechproject.server.messagecampaign.service.MessageCampaignServiceImpl" />
+    <!--<bean id="messageCampaignService" class="org.motechproject.server.messagecampaign.service.MessageCampaignServiceImpl" />-->
 
-    <bean class="org.motechproject.server.messagecampaign.dao.AllMessageCampaigns" />
+    <!--<bean class="org.motechproject.server.messagecampaign.dao.AllMessageCampaigns" />-->
 </beans>

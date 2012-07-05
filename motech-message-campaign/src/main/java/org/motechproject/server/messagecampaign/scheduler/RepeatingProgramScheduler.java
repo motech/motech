@@ -16,6 +16,7 @@ import org.motechproject.server.messagecampaign.domain.campaign.RepeatingCampaig
 import org.motechproject.server.messagecampaign.domain.message.RepeatingCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.RepeatingMessageMode;
 import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
+import org.motechproject.util.DateUtil;
 import org.motechproject.valueobjects.WallTime;
 import org.springframework.util.CollectionUtils;
 
@@ -51,13 +52,16 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
 
         HashMap<String, Object> params = jobParams(message.messageKey());
         params.put(Constants.REPEATING_PROGRAM_24HRS_MESSAGE_DISPATCH_STRATEGY, dispatchMessagesEvery24Hours);
+        params.put(EventKeys.CAMPAIGN_START_DATE, startDate);
 
         // Bug 0058
         if (badFunctionConditionToBeRefactored(message)) {
             Integer offsetInDays = campaignRequest.startOffset();
             if (offsetInDays == null)
                 offsetInDays = new Integer(0);
-            scheduleRepeatingJob(message, params, newDateTime(startDate.plusDays(offsetInDays), message.deliverTime()).toDate(), endDate);
+
+            params.put(EventKeys.CAMPAIGN_REPEAT_INTERVAL, message.repeatInterval());
+            scheduleRepeatingJob(message, params, newDateTime(startDate.plusDays(offsetInDays), getDeliveryTime(message)).toDate(), endDate);
             return;
         }
 
@@ -120,7 +124,7 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
     }
 
     private void scheduleRepeatingJob(LocalDate startDate, Time deliverTime, Date endDate, Map<String, Object> params, String cronExpression) {
-        MotechEvent motechEvent = new MotechEvent(INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT, params);
+        MotechEvent motechEvent = new MotechEvent(EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT, params);
         Date startDateAsDate = (startDate == null) ? null : newDateTime(startDate, deliverTime).withMillisOfSecond(0).toDate();
 
         schedulerService.safeScheduleJob(new CronSchedulableJob(motechEvent, cronExpression, startDateAsDate, endDate));

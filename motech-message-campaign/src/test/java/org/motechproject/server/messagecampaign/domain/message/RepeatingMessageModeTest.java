@@ -31,11 +31,11 @@ public class RepeatingMessageModeTest extends BaseUnitTest {
 
         int startIntervalOffset = 1;
         mockCurrentDate(date(2011, 11, 3));
-        assertEquals(valueOf(startIntervalOffset), CALENDAR_WEEK_SCHEDULE.currentOffset(calendarStartAsTuesday, cycleStartDate, startIntervalOffset));
+        assertEquals(valueOf(1), CALENDAR_WEEK_SCHEDULE.currentOffset(calendarStartAsTuesday, cycleStartDate, startIntervalOffset));
 
         mockCurrentDate(date(2011, 11, 7));
         startIntervalOffset = 5;
-        assertEquals(valueOf(startIntervalOffset), CALENDAR_WEEK_SCHEDULE.currentOffset(calendarStartAsTuesday, cycleStartDate, startIntervalOffset));
+        assertEquals(valueOf(5), CALENDAR_WEEK_SCHEDULE.currentOffset(calendarStartAsTuesday, cycleStartDate, startIntervalOffset));
 
         mockCurrentDate(date(2011, 11, 8));
         startIntervalOffset = 8;

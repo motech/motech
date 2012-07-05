@@ -15,10 +15,12 @@ public class EventKeys {
     public static final String MESSAGE_KEY = "MessageKey";    
     public static final String GENERATED_MESSAGE_KEY = "GenMsgKey";
     public static final String ENROLLMENT_KEY = "Enrollment";
+    public static final String CAMPAIGN_START_DATE = "CampaignStartDate";
+    public static final String CAMPAIGN_REPEAT_INTERVAL = "CampaignRepeatInterval";
 
     public final static String BASE_SUBJECT = "org.motechproject.server.messagecampaign.";
     public final static String MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT = BASE_SUBJECT + "send-campaign-message";
     public final static String MESSAGE_CAMPAIGN_FIRED_EVENT_SUBJECT = BASE_SUBJECT + "fired-campaign-message";
-    public final static String MESSAGE_CAMPAIGN_COMPLETED_EVENT_SUBJECT = BASE_SUBJECT + "campaign-completed";
 
+    public final static String MESSAGE_CAMPAIGN_COMPLETED_EVENT_SUBJECT = BASE_SUBJECT + "campaign-completed";
 }
