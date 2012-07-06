@@ -1,10 +1,6 @@
 package org.motechproject.scheduler;
 
-import org.motechproject.scheduler.domain.CronSchedulableJob;
-import org.motechproject.scheduler.domain.JobId;
-import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
-import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
+import org.motechproject.scheduler.domain.*;
 
 import java.util.Date;
 import java.util.List;
@@ -65,11 +61,25 @@ public interface MotechSchedulerService {
      * If a job with the same job ID as the given exists, this job will be unscheduled and the given schedulable job will be scheduled
      *
      * @param repeatingSchedulableJob
+     * @param intervening will not raise events for the past if set, default true
+     */
+    public void scheduleRepeatingJob(RepeatingSchedulableJob repeatingSchedulableJob, boolean intervening);
+
+    /**
+     * Same as scheduleRepeatingJob with intervening = true
+     * @param repeatingSchedulableJob
      */
     public void scheduleRepeatingJob(RepeatingSchedulableJob repeatingSchedulableJob);
 
     /**
      * Same as scheduleRepeatingJob, except that it would update existing job if one exists instead of creating a new one
+     * @param repeatingSchedulableJob
+     * @param intervening
+     */
+    public void safeScheduleRepeatingJob(RepeatingSchedulableJob repeatingSchedulableJob, boolean intervening);
+
+    /**
+     * Same as safeScheduleRepeatingJob with intervening = true
      * @param repeatingSchedulableJob
      */
     public void safeScheduleRepeatingJob(RepeatingSchedulableJob repeatingSchedulableJob);
@@ -81,6 +91,23 @@ public interface MotechSchedulerService {
      * @param schedulableJob
      */
     public void safeScheduleRunOnceJob(RunOnceSchedulableJob schedulableJob);
+
+    /**
+     * Schedules the given schedulable job. The Job ID by which the job will be referencing in the future should be provided
+     * in an Instance of MotechEvent in SchedulableJob (see MotechEvent.jobId)
+     *
+     * If a job with the same job ID as the given exists, this job will be unscheduled and the given schedulable job will be scheduled
+     *
+     * @param dayOfWeekSchedulableJob
+     * @param intervening will not raise events for the past if set, default true
+     */
+    public void scheduleDayOfWeekJob(DayOfWeekSchedulableJob dayOfWeekSchedulableJob, boolean intervening);
+
+    /**
+     * Same as safeScheduleDayOfWeekJob with intervening = true
+     * @param dayOfWeekSchedulableJob
+     */
+    public void scheduleDayOfWeekJob(DayOfWeekSchedulableJob dayOfWeekSchedulableJob);
 
     /**
      * Unschedules a job with the given job ID

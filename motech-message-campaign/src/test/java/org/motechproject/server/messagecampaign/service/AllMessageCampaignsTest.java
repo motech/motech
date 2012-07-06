@@ -3,20 +3,15 @@ package org.motechproject.server.messagecampaign.service;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.model.DayOfWeek;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.campaign.AbsoluteCampaign;
 import org.motechproject.server.messagecampaign.domain.campaign.CronBasedCampaign;
 import org.motechproject.server.messagecampaign.domain.campaign.OffsetCampaign;
-import org.motechproject.server.messagecampaign.domain.campaign.RepeatingCampaign;
 import org.motechproject.server.messagecampaign.domain.message.*;
-import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
-import static java.util.Arrays.asList;
 import static junit.framework.Assert.*;
-import static org.apache.commons.lang.builder.EqualsBuilder.reflectionEquals;
 
 public class AllMessageCampaignsTest {
 
@@ -35,8 +30,8 @@ public class AllMessageCampaignsTest {
 
         AbsoluteCampaign campaign = (AbsoluteCampaign) allMessageCampaigns.get(campaignName);
         assertNotNull(campaign);
-        assertEquals(campaignName, campaign.name());
-        List<AbsoluteCampaignMessage> messages = campaign.messages();
+        assertEquals(campaignName, campaign.getName());
+        List<AbsoluteCampaignMessage> messages = campaign.getMessages();
         assertEquals(2, messages.size());
         DateTime firstDate = new DateTime(2013, 6, 15, 0, 0, 0, 0);
         DateTime secondDate = new DateTime(2013, 6, 22, 0, 0, 0, 0);
@@ -50,29 +45,12 @@ public class AllMessageCampaignsTest {
 
         OffsetCampaign campaign = (OffsetCampaign) allMessageCampaigns.get(campaignName);
         assertNotNull(campaign);
-        assertEquals(campaignName, campaign.name());
-        List<OffsetCampaignMessage> messages = campaign.messages();
+        assertEquals(campaignName, campaign.getName());
+        List<OffsetCampaignMessage> messages = campaign.getMessages();
         assertEquals(3, messages.size());
         assertMessageWithRelativeSchedule(messages.get(0), "Week 1", new String[]{"IVR"}, "child-info-week-1", "1 Week");
         assertMessageWithRelativeSchedule(messages.get(1), "Week 1A", new String[]{"SMS"}, "child-info-week-1a", "1 Week");
         assertMessageWithRelativeSchedule(messages.get(2), "Week 1B", new String[]{"SMS"}, "child-info-week-1b", "9 Days");
-    }
-
-    @Test
-    public void shouldTestRepeatingCampaignParameterizedIntervalOffsetAndWeekDay() {
-        String campaignName = "Relative Parameterized Dates Message Program";
-
-        RepeatingCampaign campaign = (RepeatingCampaign) allMessageCampaigns.get(campaignName);
-        assertNotNull(campaign);
-        assertEquals(campaignName, campaign.name());
-        assertEquals("5 weeks", campaign.maxDuration());
-        List<RepeatingCampaignMessage> messages = campaign.messages();
-        assertEquals(5, messages.size());
-        assertMessageWithParameterizedRelativeSchedule(messages.get(0), "Weekly Message #1", new String[]{"IVR", "SMS"}, "child-info-week-{Offset}-1", 7);
-        assertMessageWithParameterizedRelativeSchedule(messages.get(1), "Weekly Message #2", new String[]{"SMS"}, "child-info-week-{Offset}-2", 9);
-        assertMessageWithParameterizedRelativeSchedule(messages.get(2), "Weekly Message #3", new String[]{"SMS"}, "child-info-week-{Offset}-3", 12);
-        assertMessageWithParameterizedRelativeSchedule(messages.get(3), "Weekly Message #4", new String[]{"SMS"}, "child-info-week-{Offset}-{WeekDay}", 7);
-        assertMessageWithParameterizedRelativeSchedule(messages.get(4), "Weekly Message #5", new String[]{"SMS"}, "child-info-calendar-week-{Offset}-{WeekDay}", 7);
     }
 
     @Test
@@ -81,9 +59,9 @@ public class AllMessageCampaignsTest {
 
         CronBasedCampaign campaign = (CronBasedCampaign) allMessageCampaigns.get(campaignName);
         assertNotNull(campaign);
-        assertEquals(campaignName, campaign.name());
+        assertEquals(campaignName, campaign.getName());
         assertEquals("5 weeks", campaign.maxDuration());
-        List<CronBasedCampaignMessage> messages = campaign.messages();
+        List<CronBasedCampaignMessage> messages = campaign.getMessages();
         assertEquals(1, messages.size());
         assertMessageWithCronSchedule(messages.get(0), "First", new String[]{"IVR", "SMS"}, "cron-message", "0 11 11 11 11 ?");
     }
@@ -111,21 +89,6 @@ public class AllMessageCampaignsTest {
         assertNull(campaignMessage);
     }
 
-    @Test
-    public void shouldReturnApplicableDaysForMessageInACampaign() {
-        String campaignName = "Relative Parameterized Dates Message Program";
-
-        List<DayOfWeek> daysApplicable = allMessageCampaigns.getApplicableDaysForRepeatingCampaign(campaignName, "Weekly Message #4");
-        assertFalse("Expected DaysApplicable not to be empty", CollectionUtils.isEmpty(daysApplicable));
-        reflectionEquals(asList("Monday", "Wednesday", "Friday"), daysApplicable);
-
-        daysApplicable = allMessageCampaigns.getApplicableDaysForRepeatingCampaign(campaignName, "Weekly Message #1");
-        assertTrue("Expected DaysApplicable to be empty", CollectionUtils.isEmpty(daysApplicable));
-
-        daysApplicable = allMessageCampaigns.getApplicableDaysForRepeatingCampaign("Invalid Campaign Name", "Weekly Message #1");
-        assertTrue("Expected DaysApplicable to be empty", CollectionUtils.isEmpty(daysApplicable));
-    }
-
     private void assertMessageWithAbsoluteSchedule(AbsoluteCampaignMessage message, String name, String[] formats, Object messageKey, Date date) {
         assertMessage(message, name, formats, messageKey);
         assertEquals(date, message.date().toDate());
@@ -134,11 +97,6 @@ public class AllMessageCampaignsTest {
     private void assertMessageWithRelativeSchedule(OffsetCampaignMessage message, String name, String[] formats, Object messageKey, String timeOffset) {
         assertMessage(message, name, formats, messageKey);
         assertEquals(timeOffset, message.timeOffset());
-    }
-
-    private void assertMessageWithParameterizedRelativeSchedule(RepeatingCampaignMessage message, String name, String[] formats, Object messageKey, int repeatInterval) {
-        assertMessage(message, name, formats, messageKey);
-        assertEquals(repeatInterval, message.repeatIntervalForOffset());
     }
 
     private void assertMessageWithCronSchedule(CronBasedCampaignMessage message, String name, String[] formats, Object messageKey, String cron) {

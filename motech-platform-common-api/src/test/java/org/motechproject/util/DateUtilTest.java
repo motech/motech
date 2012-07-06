@@ -24,7 +24,7 @@ import static org.motechproject.util.DateUtil.*;
 public class DateUtilTest {
     @After
     public void tearDown() {
-        DateTimeSourceUtil.SourceInstance = new DefaultDateTimeSource();
+        DateTimeSourceUtil.sourceinstance = new DefaultDateTimeSource();
     }
 
     @Test
@@ -141,7 +141,7 @@ public class DateUtilTest {
     }
 
     private void mockCurrentDate(final DateTime currentDate) {
-        DateTimeSourceUtil.SourceInstance = new DateTimeSource() {
+        DateTimeSourceUtil.sourceinstance = new DateTimeSource() {
 
             @Override
             public DateTimeZone timeZone() {

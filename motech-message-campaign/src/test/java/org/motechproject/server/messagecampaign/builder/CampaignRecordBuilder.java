@@ -21,12 +21,6 @@ public class CampaignRecordBuilder {
         return new CampaignRecord().name(name).type(CampaignType.OFFSET).maxDuration("2 Weeks").messages(campaignMessageRecords);
     }
 
-    public static CampaignRecord repeatingCampaignRecord(String name, CampaignMessageRecord repeatingCampaignMessageRecord) {
-        List<CampaignMessageRecord> campaignMessageRecords = new ArrayList<CampaignMessageRecord>();
-        campaignMessageRecords.add(repeatingCampaignMessageRecord);
-        return new CampaignRecord().name(name).type(CampaignType.REPEATING).maxDuration("2 Weeks").messages(campaignMessageRecords);
-    }
-
     public static CampaignRecord cronBasedCampaignRecord(String name, CampaignMessageRecord cronBasedMessageRecord) {
         List<CampaignMessageRecord> campaignMessageRecords = new ArrayList<CampaignMessageRecord>();
         campaignMessageRecords.add(cronBasedMessageRecord);
