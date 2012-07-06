@@ -30,14 +30,14 @@ public class VerboiceIVRController {
             }
             String treePath = request.getParameter("trP");
             String language = request.getParameter("ln");
-            return redirectToDecisionTree(treeName, digits, treePath, language);
+            return redirectToDecisionTree(treeName, digits, treePath, language, request.getServletPath());
         }
         return verboiceIVRService.getHandler().handle(request.getParameterMap());
     }
 
-    private String redirectToDecisionTree(String treeName, String digits, String treePath, String language) {
+    private String redirectToDecisionTree(String treeName, String digits, String treePath, String language, String servletPath) {
         final String transitionKey = digits == null ? "" : "&trK=" + digits;
-        return String.format("forward:%s?type=verboice&tree=%s&trP=%s&ln=%s%s", DECISIONTREE_URL, treeName, treePath, language, transitionKey)
+        return String.format("forward:%s%s?type=verboice&tree=%s&trP=%s&ln=%s%s", servletPath, DECISIONTREE_URL, treeName, treePath, language, transitionKey)
                 .replaceAll("//", "/");
     }
 
