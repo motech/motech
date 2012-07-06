@@ -128,6 +128,6 @@ public class OutboxExecutionHandler {
             return;
         }
 
-        schedulerGateway.unscheduleJob(new JobId(event));
+        schedulerGateway.unscheduleJob(new JobId(event, false));
     }
 }

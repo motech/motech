@@ -10,14 +10,16 @@ public class JobId implements Serializable {
 
     private String subject;
     private String id;
+    private boolean repeatingJob;
 
-    public JobId(String subject, String id) {
+    public JobId(String subject, String id, boolean repeatingJob) {
         this.subject = subject;
         this.id = id;
+        this.repeatingJob = repeatingJob;
     }
 
-    public JobId(MotechEvent motechEvent) {
-        this(motechEvent.getSubject(), (String) motechEvent.getParameters().get(MotechSchedulerService.JOB_ID_KEY));
+    public JobId(MotechEvent motechEvent, boolean repeatingJob) {
+        this(motechEvent.getSubject(), (String) motechEvent.getParameters().get(MotechSchedulerService.JOB_ID_KEY), repeatingJob);
     }
 
     public String value() {
@@ -31,5 +33,9 @@ public class JobId implements Serializable {
 
     public String repeatingId() {
         return value() + REPEAT_JOB_SUFFIX;
+    }
+
+    public boolean isRepeatingJob() {
+        return repeatingJob;
     }
 }
