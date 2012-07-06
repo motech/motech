@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class CampaignMessageRecordBuilder {
+public class CampaignMessageRecordTestBuilder {
     private static ArrayList<String> formats = new ArrayList<String>() {{
         add("SMS");
         add("IVR");
@@ -30,27 +30,27 @@ public class CampaignMessageRecordBuilder {
     }
 
     private static CampaignMessageRecord createCampaignMessageRecord(String name, String messageKey) {
-        return new CampaignMessageRecord().name(name).formats(formats).languages(languages).messageKey(messageKey);
+        return new CampaignMessageRecord().name(name).formats(formats).languages(languages).messageKey(messageKey).startTime("10:30");
     }
 
     private static CampaignMessageRecord createCampaignMessageRecord(String name, String messageKey, String repeatInterval) {
-        return new CampaignMessageRecord().name(name).formats(formats).languages(languages).messageKey(messageKey).repeatInterval(repeatInterval).deliverTime("10:30");
+        return new CampaignMessageRecord().name(name).formats(formats).languages(languages).messageKey(messageKey).repeatEvery(repeatInterval).startTime("10:30");
     }
 
     public static CampaignMessageRecord createRepeatingMessageRecordWithInterval(String name, String messageKey, String repeatInterval) {
-        return createCampaignMessageRecord(name, messageKey, repeatInterval);
+        return createCampaignMessageRecord(name, messageKey, repeatInterval).startTime("10:30");
     }
 
     public static CampaignMessageRecord createRepeatingMessageRecordWithWeekApplicableDays(String name, String messageKey, List<String> applicableWeekDays) {
-        return createCampaignMessageRecord(name, messageKey, null).weekDaysApplicable(applicableWeekDays);
+        return createCampaignMessageRecord(name, messageKey, null).repeatOn(applicableWeekDays).startTime("10:30");
     }
 
     public static CampaignMessageRecord createRepeatingMessageRecordWithCalendarWeek(String name, String messageKey, String calendarStartOfWeek, List<String> applicableWeekDays) {
-        return createRepeatingMessageRecordWithWeekApplicableDays(name, messageKey, applicableWeekDays).calendarStartOfWeek(calendarStartOfWeek);
+        return createRepeatingMessageRecordWithWeekApplicableDays(name, messageKey, applicableWeekDays).startTime("10:30");
     }
 
     public static CampaignMessageRecord createCronBasedCampaignMessageRecord(String name, String messageKey) {
-        CampaignMessageRecord campaignMessageRecord = createCampaignMessageRecord(name, messageKey);
+        CampaignMessageRecord campaignMessageRecord = createCampaignMessageRecord(name, messageKey).startTime("10:30");
         campaignMessageRecord.cron("0 11 11 11 11 ?");
         return campaignMessageRecord;
     }

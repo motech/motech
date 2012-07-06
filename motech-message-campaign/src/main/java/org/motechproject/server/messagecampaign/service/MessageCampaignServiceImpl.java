@@ -1,15 +1,11 @@
 package org.motechproject.server.messagecampaign.service;
 
-import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
-import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
-import org.motechproject.server.messagecampaign.domain.MessageCampaignException;
-import org.motechproject.server.messagecampaign.domain.campaign.Campaign;
+import org.motechproject.server.messagecampaign.dao.AllCampaignEnrollments;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
-import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
-import org.motechproject.server.messagecampaign.scheduler.MessageCampaignScheduler;
+import org.motechproject.server.messagecampaign.scheduler.CampaignSchedulerFactory;
+import org.motechproject.server.messagecampaign.scheduler.CampaignSchedulerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,35 +13,34 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@Service(value = "messageCampaignService")
+@Service("messageCampaignService")
 public class MessageCampaignServiceImpl implements MessageCampaignService {
-    private MotechSchedulerService schedulerService;
-    private AllMessageCampaigns allMessageCampaigns;
+
     private CampaignEnrollmentService campaignEnrollmentService;
     private CampaignEnrollmentRecordMapper campaignEnrollmentRecordMapper;
+    private AllCampaignEnrollments allCampaignEnrollments;
+    private CampaignSchedulerFactory campaignSchedulerFactory;
 
     @Autowired
-    public MessageCampaignServiceImpl(AllMessageCampaigns allMessageCampaigns, MotechSchedulerService schedulerService,
-                                      CampaignEnrollmentService campaignEnrollmentService, CampaignEnrollmentRecordMapper campaignEnrollmentRecordMapper) {
-        this.allMessageCampaigns = allMessageCampaigns;
-        this.schedulerService = schedulerService;
+    public MessageCampaignServiceImpl(CampaignEnrollmentService campaignEnrollmentService, CampaignEnrollmentRecordMapper campaignEnrollmentRecordMapper, AllCampaignEnrollments allCampaignEnrollments, CampaignSchedulerFactory campaignSchedulerFactory) {
         this.campaignEnrollmentService = campaignEnrollmentService;
         this.campaignEnrollmentRecordMapper = campaignEnrollmentRecordMapper;
+        this.allCampaignEnrollments = allCampaignEnrollments;
+        this.campaignSchedulerFactory = campaignSchedulerFactory;
     }
 
     public void startFor(CampaignRequest request) {
-        getScheduler(request).start();
-    }
-
-    //TODO should remove this method
-    public void stopFor(CampaignRequest request, String message) {
-        getScheduler(request).stop(message);
+        CampaignEnrollment enrollment = new CampaignEnrollment(request.externalId(), request.campaignName()).setReferenceDate(request.referenceDate()).setDeliverTime(request.deliverTime());
+        campaignEnrollmentService.register(enrollment);
+        CampaignSchedulerService campaignScheduler = campaignSchedulerFactory.getCampaignScheduler(request.campaignName());
+        campaignScheduler.start(enrollment);
     }
 
     @Override
-    public void stopAll(CampaignRequest enrollRequest) {
-        MessageCampaignScheduler scheduler = getScheduler(enrollRequest);
-        scheduler.stop();
+    public void stopAll(CampaignRequest request) {
+        campaignEnrollmentService.unregister(request.externalId(), request.campaignName());
+        CampaignEnrollment enrollment = allCampaignEnrollments.findByExternalIdAndCampaignName(request.externalId(), request.campaignName());
+        campaignSchedulerFactory.getCampaignScheduler(request.campaignName()).stop(enrollment);
     }
 
     @Override
@@ -58,16 +53,7 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
 
     @Override
     public Map<String, List<Date>> getCampaignTimings(String externalId, String campaignName, Date startDate, Date endDate) {
-        MessageCampaignScheduler messageCampaignScheduler =
-                getScheduler(new CampaignRequest(externalId, campaignName, null, null));
-
-        return messageCampaignScheduler.getCampaignTimings(startDate, endDate);
-    }
-
-    private MessageCampaignScheduler getScheduler(CampaignRequest enrollRequest) {
-        Campaign<CampaignMessage> campaign = allMessageCampaigns.get(enrollRequest.campaignName());
-        if (campaign == null)
-            throw new MessageCampaignException("No campaign by name : " + enrollRequest.campaignName());
-        return campaign.getScheduler(schedulerService, campaignEnrollmentService, enrollRequest);
+        CampaignEnrollment enrollment = allCampaignEnrollments.findByExternalIdAndCampaignName(externalId, campaignName);
+        return campaignSchedulerFactory.getCampaignScheduler(campaignName).getCampaignTimings(startDate, endDate, enrollment);
     }
 }
