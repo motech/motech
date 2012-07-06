@@ -8,13 +8,15 @@
                 "formats" : ["IVR", "SMS"],
                 "languages" : ["en"],
                 "messageKey": "random-1",
-                "date" : "2013-06-15"
+                "date" : "2013-06-15",
+                "startTime" : "10:30"
             },
             {
                 "name" : "Second",
                 "formats" : ["IVR"],
                 "languages" : ["en"],
                 "messageKey": "random-2",
+                "startTime" : "10:30",
                 "date" : "2013-06-22"
             }
         ]
@@ -28,27 +30,30 @@
                 "formats" : ["IVR"],
                 "languages" : ["en"],
                 "messageKey": "child-info-week-1",
-                "timeOffset" : "1 Week"
+                "timeOffset" : "1 Week",
+                "startTime" : "10:30"
             },
             {
                 "name" : "Week 1A",
                 "formats" : ["SMS"],
                 "languages" : ["en"],
                 "messageKey": "child-info-week-1a",
-                "timeOffset" : "1 Week"
+                "timeOffset" : "1 Week",
+                "startTime" : "10:30"
             },
             {
                 "name" : "Week 1B",
                 "formats" : ["SMS"],
                 "languages" : ["en"],
                 "messageKey": "child-info-week-1b",
-                "timeOffset" : "9 Days"
+                "timeOffset" : "9 Days",
+                "startTime" : "10:30"
             }
         ]
     },
     {
         "name" : "PREGNANCY",
-        "type" : "REPEATING",
+        "type" : "DAY_OF_WEEK",
         "maxDuration" : "40 Weeks",
         "messages" : [
             {
@@ -56,15 +61,14 @@
                 "formats" : ["SMS"],
                 "languages" : ["en"],
                 "messageKey": "PREGNANCY-cw{Offset}-{WeekDay}",
-                "calendarStartOfWeek" : "Sunday",
-                "weekDaysApplicable" : ["Monday", "Wednesday", "Friday"],
-                "deliverTime" : "10:30"
+                "repeatOn" : ["Monday", "Wednesday", "Friday"],
+                "startTime" : "10:30"
             }
         ]
     },
     {
         "name" : "Relative Parameterized Dates Message Program",
-        "type" : "REPEATING",
+        "type" : "REPEAT_INTERVAL",
         "maxDuration" : "5 weeks",
         "messages" : [
             {
@@ -72,41 +76,24 @@
                 "formats" : ["IVR", "SMS"],
                 "languages" : ["en"],
                 "messageKey": "child-info-week-{Offset}-1",
-                "repeatInterval" : "1 Week",
-                "deliverTime" : "10:30"
+                "repeatEvery" : "1 Week",
+                "startTime" : "10:30"
             },
             {
                 "name" : "Weekly Message #2",
                 "formats" : ["SMS"],
                 "languages" : ["en"],
                 "messageKey": "child-info-week-{Offset}-2",
-                "repeatInterval" : "9 Days",
-                "deliverTime" : "10:30"
+                "repeatEvery" : "9 Days",
+                "startTime" : "10:30"
             },
             {
                 "name" : "Weekly Message #3",
                 "formats" : ["SMS"],
                 "languages" : ["en"],
                 "messageKey": "child-info-week-{Offset}-3",
-                "repeatInterval" : "12 Days",
-                "deliverTime" : "10:30"
-            },
-            {
-                "name" : "Weekly Message #4",
-                "formats" : ["SMS"],
-                "languages" : ["en"],
-                "messageKey": "child-info-week-{Offset}-{WeekDay}",
-                "weekDaysApplicable" : ["Monday", "Wednesday", "Friday"],
-                "deliverTime" : "10:30"
-            },
-            {
-                "name" : "Weekly Message #5",
-                "formats" : ["SMS"],
-                "languages" : ["en"],
-                "messageKey": "child-info-calendar-week-{Offset}-{WeekDay}",
-                "calendarStartOfWeek" : "Sunday", 
-                "weekDaysApplicable" : ["Monday", "Wednesday", "Friday"],
-                "deliverTime" : "10:30"
+                "repeatEvery" : "12 Days",
+                "startTime" : "10:30"
             }
         ]
     },
@@ -120,13 +107,14 @@
                 "formats" : ["IVR", "SMS"],
                 "languages" : ["en"],
                 "messageKey": "cron-message",
+                "startTime" : "10:30", // cron shouldn't have start time
                 "cron" : "0 11 11 11 11 ?"
             }
         ]
     },
     {
         "name" : "Simple Repeating Campaign",
-        "type" : "REPEATING",
+        "type" : "REPEAT_INTERVAL",
         "maxDuration" : "60 weeks",
         "messages" : [
             {
@@ -134,8 +122,8 @@
                 "formats" : ["IVR"],
                 "languages" : ["en"],
                 "messageKey": "PREGNANCY-cw{Offset}",
-                "deliverTime" : "13:00",
-                "repeatInterval" : "1 week"
+                "startTime" : "13:00",
+                "repeatEvery" : "1 week"
             }
         ]
     }

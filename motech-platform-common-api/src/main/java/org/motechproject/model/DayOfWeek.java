@@ -28,6 +28,10 @@ public enum DayOfWeek {
         return value;
     }
 
+    public int getCronValue() {
+        return value % 7 + 1;
+    }
+
     public static List<DayOfWeek> daysStarting(DayOfWeek day, int numberOfDays) {
         List<DayOfWeek> days = new ArrayList<DayOfWeek>();
         for (int i = 0; i <= numberOfDays; i++) {
@@ -56,5 +60,14 @@ public enum DayOfWeek {
 
     public static DayOfWeek getDayOfWeek(DateTime.Property property) {
         return DayOfWeek.getDayOfWeek(property.get());
+    }
+
+    public static DayOfWeek parse(String text) {
+        for (DayOfWeek dayOfWeek : DayOfWeek.values()) {
+            if (dayOfWeek.name().equalsIgnoreCase(text) || dayOfWeek.getShortName().equalsIgnoreCase(text)) {
+                return dayOfWeek;
+            }
+        }
+        return null;
     }
 }

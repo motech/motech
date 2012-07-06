@@ -8,6 +8,6 @@ public class CampaignEnrollmentRecordMapper {
     public CampaignEnrollmentRecord map(CampaignEnrollment enrollment) {
         if (enrollment == null)
             return null;
-        return new CampaignEnrollmentRecord(enrollment.getExternalId(), enrollment.getCampaignName(), enrollment.getStartDate(), enrollment.getStatus());
+        return new CampaignEnrollmentRecord(enrollment.getExternalId(), enrollment.getCampaignName(), enrollment.getReferenceDate(), enrollment.getStatus());
     }
 }

@@ -1,22 +1,17 @@
 package org.motechproject.scheduler;
 
 import org.joda.time.DateTime;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.joda.time.LocalDate;
+import org.junit.*;
 import org.junit.runner.RunWith;
+import org.motechproject.model.DayOfWeek;
+import org.motechproject.model.Time;
 import org.motechproject.scheduler.domain.*;
 import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.motechproject.server.event.EventListenerRegistry;
 import org.motechproject.server.event.annotations.MotechListenerEventProxy;
 import org.motechproject.util.DateUtil;
-import org.quartz.CronTrigger;
-import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
-import org.quartz.Trigger;
-import org.quartz.TriggerKey;
+import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
@@ -26,6 +21,7 @@ import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
 import java.util.Calendar;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +29,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
+import static org.motechproject.testing.utils.TimeFaker.fakeNow;
+import static org.motechproject.testing.utils.TimeFaker.fakeToday;
+import static org.motechproject.testing.utils.TimeFaker.stopFakingTime;
+import static org.motechproject.util.DateUtil.newDate;
+import static org.motechproject.util.DateUtil.newDateTime;
 import static org.quartz.JobKey.jobKey;
 import static org.quartz.TriggerKey.triggerKey;
 
@@ -58,7 +60,6 @@ public class MotechSchedulerIT {
     private long scheduledSecond;
 
     private boolean executed;
-
 
     @Before
     public void setUp() {
@@ -294,7 +295,7 @@ public class MotechSchedulerIT {
         cal.add(Calendar.DATE, 1);
         Date end = cal.getTime();
 
-        RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(motechEvent, start, end, 5, 5000L);
+        RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(motechEvent, start, end, 5, 5000L, false);
 
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size();
 
@@ -307,6 +308,31 @@ public class MotechSchedulerIT {
         assertEquals(scheduledJobsNum + 1, foo.size());
     }
 
+    @Test
+    public void testScheduleInterveningRepeatingJob() throws Exception {
+        try {
+            fakeNow(newDateTime(2020, 7, 15, 10, 10, 30));
+            String uuidStr = UUID.randomUUID().toString();
+
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("JobID", uuidStr);
+            MotechEvent motechEvent = new MotechEvent("TestEvent", params);
+
+            Date start = newDateTime(2020, 7, 15, 10, 10, 22).toDate();
+            Date end = newDateTime(2020, 7, 15, 10, 11, 0).toDate();
+            RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(motechEvent, start, end, 3, 5000L, true);
+
+            motechScheduler.scheduleRepeatingJob(schedulableJob);
+
+            Trigger trigger = schedulerFactoryBean.getScheduler().getTrigger(triggerKey(new RepeatingJobId(motechEvent).value(), "default"));
+            assertEquals(newDateTime(2020, 7, 15, 10, 10, 32).toDate(), trigger.getNextFireTime());
+            assertEquals(newDateTime(2020, 7, 15, 10, 10, 37).toDate(), trigger.getFireTimeAfter(newDateTime(2020, 7, 15, 10, 10, 32).toDate()));
+            assertEquals(null, trigger.getFireTimeAfter(newDateTime(2020, 7, 15, 10, 10, 37).toDate()));
+        } finally {
+            stopFakingTime();
+        }
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testScheduleRepeatingJobTest_NoStartDate() throws Exception {
         String uuidStr = UUID.randomUUID().toString();
@@ -314,7 +340,7 @@ public class MotechSchedulerIT {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("JobID", uuidStr);
         MotechEvent motechEvent = new MotechEvent("TestEvent", params);
-        RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(motechEvent, null, new Date(), 5, 5000L);
+        RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(motechEvent, null, new Date(), 5, 5000L, false);
         schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME));
         motechScheduler.scheduleRepeatingJob(schedulableJob);
     }
@@ -326,7 +352,7 @@ public class MotechSchedulerIT {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("JobID", uuidStr);
         MotechEvent motechEvent = new MotechEvent("TestEvent", params);
-        RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(motechEvent, new Date(), null, 5, 5000L);
+        RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(motechEvent, new Date(), null, 5, 5000L, false);
 
         schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME));
 
@@ -343,11 +369,51 @@ public class MotechSchedulerIT {
     @Test(expected = IllegalArgumentException.class)
     public void testScheduleRepeatingJobTest_NullEvent() throws Exception {
         MotechEvent motechEvent = null;
-        RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(motechEvent, new Date(), new Date(), 5, 5000L);
+        RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(motechEvent, new Date(), new Date(), 5, 5000L, false);
 
         schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME));
 
         motechScheduler.scheduleRepeatingJob(schedulableJob);
+    }
+
+    @Test
+    public void testScheduleDayOfWeekJob() throws Exception {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("JobID", UUID.randomUUID().toString());
+        MotechEvent motechEvent = new MotechEvent("TestEvent", params);
+
+        LocalDate start = newDate(2020, 7, 10); // friday
+        LocalDate end = start.plusDays(10);
+        DayOfWeekSchedulableJob schedulableJob = new DayOfWeekSchedulableJob(motechEvent, start, end, asList(DayOfWeek.Monday, DayOfWeek.Thursday), new Time(10, 10), executed);
+
+        motechScheduler.scheduleDayOfWeekJob(schedulableJob);
+
+        Trigger trigger = schedulerFactoryBean.getScheduler().getTrigger(triggerKey(new CronJobId(motechEvent).value(), "default"));
+        assertEquals(newDateTime(2020, 7, 13, 10, 10, 0).toDate(), trigger.getNextFireTime());
+        assertEquals(newDateTime(2020, 7, 16, 10, 10, 0).toDate(), trigger.getFireTimeAfter(newDateTime(2020, 7, 13, 10, 10, 0).toDate()));
+        assertEquals(null, trigger.getFireTimeAfter(newDateTime(2020, 7, 16, 10, 10, 0).toDate()));
+    }
+
+    @Test
+    public void testScheduleInterveningDayOfWeekJob() throws Exception {
+        try {
+            fakeToday(new LocalDate(2020, 7, 15));
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("JobID", UUID.randomUUID().toString());
+            MotechEvent motechEvent = new MotechEvent("TestEvent", params);
+
+            LocalDate start = newDate(2020, 7, 10); // friday
+            LocalDate end = start.plusDays(10);
+            DayOfWeekSchedulableJob schedulableJob = new DayOfWeekSchedulableJob(motechEvent, start, end, asList(DayOfWeek.Monday, DayOfWeek.Thursday), new Time(10, 10), true);
+
+            motechScheduler.scheduleDayOfWeekJob(schedulableJob);
+
+            Trigger trigger = schedulerFactoryBean.getScheduler().getTrigger(triggerKey(new CronJobId(motechEvent).value(), "default"));
+            assertEquals(newDateTime(2020, 7, 16, 10, 10, 0).toDate(), trigger.getNextFireTime());
+            assertEquals(null, trigger.getFireTimeAfter(newDateTime(2020, 7, 16, 10, 10, 0).toDate()));
+        } finally {
+            stopFakingTime();
+        }
     }
 
     @Test
