@@ -57,7 +57,7 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
             Integer offsetInDays = campaignRequest.startOffset();
             if (offsetInDays == null)
                 offsetInDays = new Integer(0);
-            scheduleRepeatingJob(message, params, newDateTime(startDate.plusDays(offsetInDays), message.deliverTime()).toDate(), endDate);
+            scheduleRepeatingJob(message, params, newDateTime(startDate.plusDays(offsetInDays), getDeliveryTime(message)).toDate(), endDate);
             return;
         }
 
