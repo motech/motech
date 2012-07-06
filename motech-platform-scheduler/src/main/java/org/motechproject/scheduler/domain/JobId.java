@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 public class JobId implements Serializable {
     public static final String REPEAT_JOB_SUFFIX = "-repeat";
+    public static final String DAY_OF_WEEK_JOB_SUFFIX = "-dayOfWeek";
     private static final long serialVersionUID = 1L;
 
     private String subject;
@@ -37,5 +38,9 @@ public class JobId implements Serializable {
 
     public boolean isRepeatingJob() {
         return repeatingJob;
+    }
+
+    public String dayOfWeekJobId() {
+        return value() + DAY_OF_WEEK_JOB_SUFFIX;
     }
 }

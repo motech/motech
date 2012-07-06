@@ -1,34 +1,10 @@
 package org.motechproject.server.messagecampaign.domain.campaign;
 
-import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
-import org.motechproject.server.messagecampaign.scheduler.MessageCampaignScheduler;
-import org.motechproject.server.messagecampaign.scheduler.OffsetProgramScheduler;
-import org.motechproject.server.messagecampaign.service.CampaignEnrollmentService;
-
-import java.util.List;
 
 public class OffsetCampaign extends Campaign<OffsetCampaignMessage> {
 
-    private List<OffsetCampaignMessage> messages;
-
     protected String maxDuration;
-
-    @Override
-    public List<OffsetCampaignMessage> messages() {
-        return this.messages;
-    }
-
-    @Override
-    public MessageCampaignScheduler getScheduler(MotechSchedulerService schedulerService, CampaignEnrollmentService campaignEnrollmentService, CampaignRequest enrollRequest) {
-        return new OffsetProgramScheduler(schedulerService, enrollRequest, this,campaignEnrollmentService);
-    }
-
-    @Override
-    public void setMessages(List<OffsetCampaignMessage> messages) {
-        this.messages = messages;
-    }
 
     public String maxDuration() {
         return maxDuration;

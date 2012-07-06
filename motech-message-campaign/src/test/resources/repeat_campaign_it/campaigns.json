@@ -1,0 +1,41 @@
+[
+    {
+        "name" : "WeeklyCampaign",
+        "type" : "REPEAT_INTERVAL",
+        "maxDuration" : "3 weeks",
+        "messages" : [
+            {
+                "name" : "message1",
+                "formats" : ["IVR", "SMS"],
+                "languages" : ["en"],
+                "messageKey": "message_key_1",
+                "repeatEvery" : "1 Week",
+                "startTime" : "10:30"
+            },
+            {
+                "name" : "message2",
+                "formats" : ["IVR", "SMS"],
+                "languages" : ["en"],
+                "messageKey": "message_key_2",
+                "repeatEvery" : "10 days",
+                "startTime" : "8:30"
+            }
+        ]
+    },
+
+    {
+        "name" : "HourlyCampaign",
+        "type" : "REPEAT_INTERVAL",
+        "maxDuration" : "2 days",
+        "messages" : [
+            {
+                "name" : "message1",
+                "formats" : ["IVR", "SMS"],
+                "languages" : ["en"],
+                "messageKey": "message_key_1",
+                "repeatEvery" : "12 hours",
+                "startTime" : "10:30"
+            }
+        ]
+    }
+]

@@ -27,21 +27,21 @@ public class DateUtil {
     }
 
     public static LocalDate newDate(int year, int month, int day) {
-        return new LocalDate(DateTimeSourceUtil.SourceInstance.timeZone()).withYear(year).withMonthOfYear(month).withDayOfMonth(day);
+        return new LocalDate(DateTimeSourceUtil.sourceinstance.timeZone()).withYear(year).withMonthOfYear(month).withDayOfMonth(day);
     }
 
     public static DateTime newDateTime(LocalDate localDate, int hour, int minute, int second) {
-        return new DateTime(DateTimeSourceUtil.SourceInstance.timeZone()).
+        return new DateTime(DateTimeSourceUtil.sourceinstance.timeZone()).
                 withYear(localDate.getYear()).withMonthOfYear(localDate.getMonthOfYear()).withDayOfMonth(localDate.getDayOfMonth())
                 .withHourOfDay(hour).withMinuteOfHour(minute).withSecondOfMinute(second).withMillisOfSecond(0);
     }
 
     public static DateTime setTimeZone(DateTime dateTime) {
-        return dateTime == null ? dateTime : dateTime.toDateTime(DateTimeSourceUtil.SourceInstance.timeZone());
+        return dateTime == null ? dateTime : dateTime.toDateTime(DateTimeSourceUtil.sourceinstance.timeZone());
     }
 
     public static DateTime newDateTime(Date date) {
-        return new DateTime(date.getTime(), DateTimeSourceUtil.SourceInstance.timeZone()).withMillisOfSecond(0);
+        return new DateTime(date.getTime(), DateTimeSourceUtil.sourceinstance.timeZone()).withMillisOfSecond(0);
     }
 
     public static DateTime newDateTime(LocalDate date) {
@@ -54,7 +54,7 @@ public class DateUtil {
 
     public static LocalDate newDate(Date date) {
         if (date == null) return null;
-        return new LocalDate(date.getTime(), DateTimeSourceUtil.SourceInstance.timeZone());
+        return new LocalDate(date.getTime(), DateTimeSourceUtil.sourceinstance.timeZone());
     }
 
     public static LocalDate newDate(DateTime dateTime) {

@@ -443,7 +443,8 @@ public class EnrollmentAlertServiceTest {
         Enrollment enrollment = new Enrollment("entity_1", schedule, "milestone", weeksAgo(0), weeksAgo(0), new Time(8, 20), EnrollmentStatus.ACTIVE, null);
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
-        verify(schedulerService, times(0)).safeScheduleRepeatingJob(Matchers.<RepeatingSchedulableJob>any());
+        verify(schedulerService, times(0)).
+            safeScheduleRepeatingJob(Matchers.<RepeatingSchedulableJob>any());
     }
 
     @Test

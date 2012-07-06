@@ -9,7 +9,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.motechproject.util.DateUtil.newDateTime;
 
 public class CampaignEnrollmentRecordMapperTest {
@@ -24,7 +23,7 @@ public class CampaignEnrollmentRecordMapperTest {
     @Test
     public void shouldMapEnrollmentToEnrollmentResponse(){
         CampaignEnrollment enrollment = new CampaignEnrollment("externalId", "campaign1");
-        enrollment.setStartDate(new LocalDate(2012, 12, 24));
+        enrollment.setReferenceDate(new LocalDate(2012, 12, 24));
         CampaignEnrollmentRecord record = campaignEnrollmentRecordMapper.map(enrollment);
 
         assertRecordMatchesEnrollment(record, enrollment);
@@ -35,7 +34,7 @@ public class CampaignEnrollmentRecordMapperTest {
     private void assertRecordMatchesEnrollment(CampaignEnrollmentRecord actualRecord, CampaignEnrollment expectedEnrollment) {
         assertThat(actualRecord.getExternalId(), is(equalTo(expectedEnrollment.getExternalId())));
         assertThat(actualRecord.getCampaignName(), is(equalTo(expectedEnrollment.getCampaignName())));
-        assertThat(actualRecord.getStartDate(), is(equalTo(expectedEnrollment.getStartDate())));
+        assertThat(actualRecord.getReferenceDate(), is(equalTo(expectedEnrollment.getReferenceDate())));
         assertThat(actualRecord.getStatus(), is(equalTo(expectedEnrollment.getStatus())));
     }
 }
