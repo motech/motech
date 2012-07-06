@@ -7,6 +7,7 @@ import org.motechproject.scheduletracking.api.domain.ScheduleFactory;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.repository.AllSchedules;
 import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReader;
+import org.motechproject.server.startup.service.PlatformSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
@@ -27,12 +28,14 @@ public class AllSchedulesIT {
     @Autowired
     @Qualifier("scheduleTrackingDbConnector")
     CouchDbConnector db;
+    @Autowired
+    PlatformSettingsService platformSettingsService;
 
     @Test
     public void shouldSaveScheduleDefinitionsOnInit() {
         List<ScheduleRecord> records = trackedSchedulesJsonReader.records();
 
-        AllSchedules allSchedules = new AllSchedules(db, trackedSchedulesJsonReader, scheduleFactory);
+        AllSchedules allSchedules = new AllSchedules(db, trackedSchedulesJsonReader, scheduleFactory, platformSettingsService);
 
         List<ScheduleRecord> result = allSchedules.getAll();
         assertArrayEquals(records.toArray(), result.toArray());
@@ -42,8 +45,8 @@ public class AllSchedulesIT {
     public void shouldDeleteExistingSchedulesOnInit() {
         List<ScheduleRecord> records = trackedSchedulesJsonReader.records();
 
-        new AllSchedules(db, trackedSchedulesJsonReader, scheduleFactory);
-        AllSchedules allSchedules = new AllSchedules(db, trackedSchedulesJsonReader, scheduleFactory);
+        new AllSchedules(db, trackedSchedulesJsonReader, scheduleFactory, platformSettingsService);
+        AllSchedules allSchedules = new AllSchedules(db, trackedSchedulesJsonReader, scheduleFactory, platformSettingsService);
 
         List<ScheduleRecord> result = allSchedules.getAll();
         assertArrayEquals(records.toArray(), result.toArray());
@@ -51,7 +54,7 @@ public class AllSchedulesIT {
 
     @Test
     public void findScheduleByName() {
-        AllSchedules allSchedules = new AllSchedules(db, trackedSchedulesJsonReader, scheduleFactory);
+        AllSchedules allSchedules = new AllSchedules(db, trackedSchedulesJsonReader, scheduleFactory, platformSettingsService);
         ScheduleRecord scheduleRecord = trackedSchedulesJsonReader.records().get(0);
 
         assertEquals(new ScheduleFactory().build(scheduleRecord), allSchedules.getByName(scheduleRecord.name()));
@@ -59,7 +62,7 @@ public class AllSchedulesIT {
 
     @Test
     public void returnNullIfScheduleNameDoesNotExist() {
-        AllSchedules allSchedules = new AllSchedules(db, trackedSchedulesJsonReader, scheduleFactory);
+        AllSchedules allSchedules = new AllSchedules(db, trackedSchedulesJsonReader, scheduleFactory, platformSettingsService);
         assertEquals(null, allSchedules.getByName("INVALID_NAME"));
     }
 }

@@ -162,6 +162,7 @@
         <module>motech-rpm</module>
         <module>motech-rules-api</module>
         <module>motech-rules</module>
+        <module>motech-platform-server-startup</module>
     </modules>
 
     <build>
