@@ -29,7 +29,7 @@ public class SchedulerGatewayIT {
     private MotechSchedulerGateway motechSchedulerGateway;
 
     @Test
-    public void testMotechScheduler() {
+    public void testMotechScheduler() throws Exception {
         Map<String, Object> cronParams = new HashMap<>();
         cronParams.put("JobID", "test_cron");
 
@@ -45,9 +45,10 @@ public class SchedulerGatewayIT {
 
         CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(cronEvent, "0/2 * * * * ?");
         RunOnceSchedulableJob runOnceSchedulableJob = new RunOnceSchedulableJob(runOnceEvent, new Date((new Date().getTime() + 5000)));
-        RepeatingSchedulableJob repeatingSchedulableJob = new RepeatingSchedulableJob(repeatingEvent, new Date(), null, 4, 4 * 1000L);
+        RepeatingSchedulableJob repeatingSchedulableJob = new RepeatingSchedulableJob(repeatingEvent, new Date(), null, null, 4 * 1000L);
 
-        JobId cronJob = new JobId(cronEvent);
+        JobId cronJob = new JobId(cronEvent, false);
+        JobId repeatingJob = new JobId(repeatingEvent, true);
 
         motechSchedulerGateway.scheduleJob(cronSchedulableJob);
 
@@ -55,6 +56,10 @@ public class SchedulerGatewayIT {
 
         motechSchedulerGateway.scheduleRepeatingJob(repeatingSchedulableJob);
 
+        Thread.sleep(8 * 1000L);
+
         motechSchedulerGateway.unscheduleJob(cronJob);
+
+        motechSchedulerGateway.unscheduleJob(repeatingJob);
     }
 }

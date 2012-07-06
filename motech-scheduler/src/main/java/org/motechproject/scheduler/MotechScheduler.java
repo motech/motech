@@ -74,7 +74,7 @@ public class MotechScheduler {
     private void unscheduleTestEvent() {
         try {
             log.info("Unscheduling the test job: " + TEST_EVENT_NAME);
-            schedulerService.unscheduleJob(new JobId(SUBJECT, TEST_EVENT_NAME));
+            schedulerService.unscheduleJob(new JobId(SUBJECT, TEST_EVENT_NAME, false));
         } catch (Exception e) {
             log.warn("Can not unschedule the test job: " + TEST_EVENT_NAME + " " + e.getMessage());
         }

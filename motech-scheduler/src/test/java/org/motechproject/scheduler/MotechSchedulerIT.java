@@ -306,7 +306,7 @@ public class MotechSchedulerIT {
 
         GroupMatcher<TriggerKey> bar = GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME);
         Set<TriggerKey> foo = schedulerFactoryBean.getScheduler().getTriggerKeys(bar);
-        final List<? extends Trigger> triggersOfJob = schedulerFactoryBean.getScheduler().getTriggersOfJob(JobKey.jobKey(new JobId(motechEvent).repeatingId(), "default"));
+        final List<? extends Trigger> triggersOfJob = schedulerFactoryBean.getScheduler().getTriggersOfJob(JobKey.jobKey(new JobId(motechEvent, true).repeatingId(), "default"));
         assertEquals(new Date(start.getTime() + 5 * 5000), triggersOfJob.get(0).getFinalFireTime());
         assertEquals(scheduledJobsNum + 1, foo.size());
     }
