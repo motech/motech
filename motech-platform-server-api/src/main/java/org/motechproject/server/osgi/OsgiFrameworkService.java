@@ -1,6 +1,7 @@
 package org.motechproject.server.osgi;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.server.startup.service.PlatformSettingsService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.launch.Framework;
@@ -32,6 +33,9 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     @Autowired
     private Framework osgiFramework;
+
+    @Autowired
+    private PlatformSettingsService platformSettingsService;
 
     private List<BundleLoader> bundleLoaders;
 
@@ -77,6 +81,8 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
             osgiFramework.start();
             logger.info("OSGi framework started");
+
+            registerPlatformServices(bundleContext);
         } catch (Throwable e) {
             logger.error("Failed to start OSGi framework", e);
             throw new RuntimeException(e);
@@ -115,6 +121,10 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     public Map<String, ClassLoader> getBundleClassLoaderLookup() {
         return bundleClassLoaderLookup;
+    }
+
+    private void registerPlatformServices(BundleContext bundleContext) {
+        bundleContext.registerService(PlatformSettingsService.class.getName(), platformSettingsService, null);
     }
 
     private void storeClassCloader(Bundle bundle) throws Exception {

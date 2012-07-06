@@ -6,6 +6,7 @@ import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.domain.ScheduleFactory;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
+import org.motechproject.server.startup.service.PlatformSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -17,12 +18,15 @@ public class AllSchedules extends MotechBaseRepository<ScheduleRecord> {
 
     private TrackedSchedulesJsonReader trackedSchedulesJsonReader;
     private ScheduleFactory scheduleFactory;
+    private PlatformSettingsService platformSettingsService;
 
     @Autowired
-    public AllSchedules(@Qualifier("scheduleTrackingDbConnector") CouchDbConnector db, TrackedSchedulesJsonReader trackedSchedulesJsonReader, ScheduleFactory scheduleFactory) {
+    public AllSchedules(@Qualifier("scheduleTrackingDbConnector") CouchDbConnector db, TrackedSchedulesJsonReader trackedSchedulesJsonReader, ScheduleFactory scheduleFactory,
+                        PlatformSettingsService platformSettingsService) {
         super(ScheduleRecord.class, db);
         this.trackedSchedulesJsonReader = trackedSchedulesJsonReader;
         this.scheduleFactory = scheduleFactory;
+        this.platformSettingsService = platformSettingsService;
         removeAll();
         List<ScheduleRecord> records = trackedSchedulesJsonReader.records();
         for (ScheduleRecord record : records) //TODO move adding to db to post bean creation stage.
@@ -34,6 +38,6 @@ public class AllSchedules extends MotechBaseRepository<ScheduleRecord> {
         List<ScheduleRecord> records = queryView("by_name", name);
         if (records.isEmpty())
             return null;
-        return scheduleFactory.build(records.get(0));
+        return scheduleFactory.build(records.get(0), platformSettingsService.getPlatformLocale());
     }
 }

@@ -10,6 +10,7 @@ import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.domain.VoiceMessageType;
 import org.motechproject.outbox.api.service.VoiceOutboxService;
+import org.motechproject.server.startup.service.PlatformSettingsService;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +37,9 @@ public class VxmlOutboxControllerTest {
 
     @Mock
     HttpServletResponse response;
+
+    @Mock
+    private PlatformSettingsService platformSettingsService;
 
     @Before
     public void initMocks() {
