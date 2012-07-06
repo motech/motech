@@ -14,6 +14,7 @@ import java.util.List;
 
 @Repository
 public class AllCampaignEnrollments extends MotechBaseRepository<CampaignEnrollment> {
+
     @Autowired
     protected AllCampaignEnrollments(@Qualifier("messageCampaignDBConnector") CouchDbConnector db) {
         super(CampaignEnrollment.class, db);

@@ -1,6 +1,6 @@
 package org.motechproject.scheduler.domain;
 
-public class CronJobId extends JobId{
+public class CronJobId extends JobId {
 
     private static final String SUFFIX_CRONJOBID = "";
 
