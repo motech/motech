@@ -12,7 +12,7 @@
         #end
     #end
     #if ($node.transitions.size() > 0 && !$dial)
-            #set ($url = "$scheme://$host$contentPath/verboice/ivr?type=$type&ln=$language&tree=$treeName&trP=$transitionPath")
+            #set ($url = "$scheme://$host$contextPath$servletPath/verboice/ivr?type=$type&ln=$language&tree=$treeName&trP=$transitionPath")
             <Gather method="POST" action="$escape.escapeXml($url)" numDigits="$maxDigits"></Gather>
      #else
     #end
