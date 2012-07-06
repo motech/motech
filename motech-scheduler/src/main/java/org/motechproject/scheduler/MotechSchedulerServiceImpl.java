@@ -33,27 +33,17 @@
 package org.motechproject.scheduler;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.motechproject.MotechObject;
-import org.motechproject.scheduler.domain.CronSchedulableJob;
-import org.motechproject.scheduler.domain.JobId;
-import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
-import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
+import org.motechproject.model.Time;
+import org.motechproject.scheduler.domain.*;
 import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.motechproject.util.DateUtil;
-import org.quartz.CronScheduleBuilder;
-import org.quartz.CronTrigger;
-import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.SimpleScheduleBuilder;
-import org.quartz.SimpleTrigger;
-import org.quartz.Trigger;
-import org.quartz.TriggerKey;
 import org.quartz.*;
 import org.quartz.impl.calendar.BaseCalendar;
 import org.quartz.impl.matchers.GroupMatcher;
+import org.quartz.impl.triggers.CronTriggerImpl;
 import org.quartz.spi.OperableTrigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -65,6 +55,8 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.motechproject.util.DateUtil.newDateTime;
+import static org.motechproject.util.DateUtil.now;
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.JobKey.jobKey;
@@ -303,26 +295,36 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
                 .endAt(jobEndDate)
                 .build();
 
+        if (repeatingSchedulableJob.isIntervening()) {
+            List<Date> triggers = TriggerUtils.computeFireTimes((OperableTrigger) trigger, null, Integer.MAX_VALUE);
+            int nextTrigger = getFirstTriggerNotInPast(triggers);
+            if (nextTrigger != -1) {
+                simpleSchedule = simpleSchedule()
+                    .withIntervalInMilliseconds(repeatIntervalInMilliSeconds)
+                    .withRepeatCount(triggers.size() - nextTrigger - 1);
+                simpleSchedule = setMisfirePolicyForSimpleTrigger(simpleSchedule, repeatingTriggerMisfirePolicy);
+
+                trigger = newTrigger()
+                    .withIdentity(triggerKey(jobId.repeatingId(), JOB_GROUP_NAME))
+                    .forJob(jobDetail)
+                    .withSchedule(simpleSchedule)
+                    .startAt(triggers.get(nextTrigger))
+                    .endAt(jobEndDate)
+                    .build();
+            }
+        }
+
         scheduleJob(jobDetail, trigger);
     }
 
-    private SimpleScheduleBuilder setMisfirePolicyForSimpleTrigger(SimpleScheduleBuilder simpleSchedule, String newMisfirePolicy) {
-        String misfirePolicy = newMisfirePolicy;
-        if (isEmpty(misfirePolicy))
-            misfirePolicy = String.valueOf(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT);
-        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_FIRE_NOW))
-            return simpleSchedule.withMisfireHandlingInstructionFireNow();
-        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY))
-            return simpleSchedule.withMisfireHandlingInstructionIgnoreMisfires();
-        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT))
-            return simpleSchedule.withMisfireHandlingInstructionNextWithExistingCount();
-        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_REMAINING_COUNT))
-            return simpleSchedule.withMisfireHandlingInstructionNextWithRemainingCount();
-        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT))
-            return simpleSchedule.withMisfireHandlingInstructionNowWithExistingCount();
-        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT))
-            return simpleSchedule.withMisfireHandlingInstructionNowWithRemainingCount();
-        return simpleSchedule;
+    private int getFirstTriggerNotInPast(List<Date> dates) {
+        DateTime now = DateUtil.now();
+        for (int i = 0; i < dates.size(); i++) {
+            Date date = dates.get(i);
+            if (newDateTime(date).isAfter(now))
+                return i;
+        }
+        return -1;
     }
 
     @Override
@@ -373,6 +375,24 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         scheduleJob(jobDetail, trigger);
     }
 
+    private SimpleScheduleBuilder setMisfirePolicyForSimpleTrigger(SimpleScheduleBuilder simpleSchedule, String misfirePolicy) {
+        if (isEmpty(misfirePolicy))
+            misfirePolicy = String.valueOf(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT);
+        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_FIRE_NOW))
+            return simpleSchedule.withMisfireHandlingInstructionFireNow();
+        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY))
+            return simpleSchedule.withMisfireHandlingInstructionIgnoreMisfires();
+        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT))
+            return simpleSchedule.withMisfireHandlingInstructionNextWithExistingCount();
+        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_REMAINING_COUNT))
+            return simpleSchedule.withMisfireHandlingInstructionNextWithRemainingCount();
+        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT))
+            return simpleSchedule.withMisfireHandlingInstructionNowWithExistingCount();
+        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT))
+            return simpleSchedule.withMisfireHandlingInstructionNowWithRemainingCount();
+        return simpleSchedule;
+    }
+
     private MotechEvent assertArgumentNotNull(RepeatingSchedulableJob repeatingSchedulableJob) {
         assertArgumentNotNull("SchedulableJob", repeatingSchedulableJob);
         logInfo("Scheduling the Job: %s", repeatingSchedulableJob);
@@ -398,6 +418,23 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         } catch (MotechSchedulerException ignored) {
         }
         scheduleRunOnceJob(schedulableJob);
+    }
+
+    @Override
+    public void scheduleDayOfWeekJob(DayOfWeekSchedulableJob dayOfWeekSchedulableJob) {
+        MotechEvent motechEvent = dayOfWeekSchedulableJob.getMotechEvent();
+        LocalDate start = dayOfWeekSchedulableJob.getStartDate();
+        LocalDate end = dayOfWeekSchedulableJob.getEndDate();
+        Time time = dayOfWeekSchedulableJob.getTime();
+        DateTime now = now();
+        if (dayOfWeekSchedulableJob.isIntervening() && newDateTime(start, time).isBefore(now))
+            start = now.toLocalDate();
+
+        CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.atHourAndMinuteOnGivenDaysOfWeek(time.getHour(), time.getMinute(), dayOfWeekSchedulableJob.getCronDays().toArray(new Integer[0]));
+        CronTriggerImpl cronTrigger = (CronTriggerImpl) cronScheduleBuilder.build();
+        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, cronTrigger.getCronExpression(), start.toDate(), end.toDate());
+
+        scheduleJob(cronSchedulableJob);
     }
 
     @Override

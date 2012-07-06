@@ -14,19 +14,19 @@ public class RepeatingSchedulableJob implements Serializable {
     private Date endTime;
     private Integer repeatCount;
     private Long repeatIntervalInMilliSeconds;
+    private boolean intervening;
 
-    public RepeatingSchedulableJob(final MotechEvent motechEvent, final Date startTime, final Date endTime,
-                                   final Integer repeatCount, final Long repeatIntervalInMilliSeconds) {
+    public RepeatingSchedulableJob(final MotechEvent motechEvent, final Date startTime, final Date endTime, final Integer repeatCount, final Long repeatIntervalInMilliSeconds, boolean intervening) {
         this.motechEvent = motechEvent;
         this.startTime = startTime;
         this.endTime = endTime;
         this.repeatCount = repeatCount;
         this.repeatIntervalInMilliSeconds = repeatIntervalInMilliSeconds;
+        this.intervening = intervening;
     }
 
-    public RepeatingSchedulableJob(final MotechEvent motechEvent, final Date startTime, final Date endTime,
-                                   final Long repeatIntervalInMilliSeconds) {
-        this(motechEvent, startTime, endTime, null, repeatIntervalInMilliSeconds);
+    public RepeatingSchedulableJob(final MotechEvent motechEvent, final Date startTime, final Date endTime, final Long repeatIntervalInMilliSeconds, boolean intervening) {
+        this(motechEvent, startTime, endTime, null, repeatIntervalInMilliSeconds, intervening);
     }
 
     public MotechEvent getMotechEvent() {
@@ -67,6 +67,14 @@ public class RepeatingSchedulableJob implements Serializable {
 
     public void setRepeatIntervalInMilliSeconds(final Long repeatIntervalInMilliSeconds) {
         this.repeatIntervalInMilliSeconds = repeatIntervalInMilliSeconds;
+    }
+
+    public boolean isIntervening() {
+        return intervening;
+    }
+
+    public void setIntervening(boolean intervening) {
+        this.intervening = intervening;
     }
 
     @Override

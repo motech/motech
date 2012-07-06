@@ -12,10 +12,15 @@ public enum CampaignType {
         public Campaign instance() {
             return new OffsetCampaign();
         }
-    }, REPEATING {
+    }, REPEAT_INTERVAL {
         @Override
         public Campaign instance() {
-            return new RepeatingCampaign();
+            return new RepeatIntervalCampaign();
+        }
+    }, DAY_OF_WEEK {
+        @Override
+        public Campaign instance() {
+            return new DayOfWeekCampaign();
         }
     }, CRON {
         @Override
