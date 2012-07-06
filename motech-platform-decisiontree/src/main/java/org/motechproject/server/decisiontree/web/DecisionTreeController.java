@@ -92,7 +92,7 @@ public class DecisionTreeController extends MultiActionController {
      * The HTTP request should contain the Tree ID, Node ID, Patient ID and Selected Transition Key (optional) parameters
      */
     @RequestMapping("/node")
-    public ModelAndView node(HttpServletRequest request, HttpServletResponse response) {
+        public ModelAndView node(HttpServletRequest request, HttpServletResponse response) {
         logger.info(request.getParameterMap().toString());
         logger.info("Generating decision tree node xml");
 
@@ -194,7 +194,8 @@ public class DecisionTreeController extends MultiActionController {
             mav.setViewName(templateNameFor(type, LEAF_TEMPLATE_NAME));
             mav.addObject("treeName", StringUtils.join(reducedTreeNames, TREE_NAME_SEPARATOR));
         }
-        mav.addObject("contentPath", request.getContextPath());
+        mav.addObject("contextPath", request.getContextPath());
+        mav.addObject("servletPath", request.getServletPath());
         mav.addObject("node", node);
         mav.addObject("language", language);
         mav.addObject("type", type);
