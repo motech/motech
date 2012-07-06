@@ -269,6 +269,8 @@
                     <configLocation>${modules.root.dir}/checkstyle.xml</configLocation>
                     <includeTestSourceDirectory>false</includeTestSourceDirectory>
                     <enableFilesSummary>true</enableFilesSummary>
+                    <failsOnError>true</failsOnError>
+                    <consoleOutput>true</consoleOutput>
                     <skip>${maven.test.skip}</skip>
                 </configuration>
                 <executions>
