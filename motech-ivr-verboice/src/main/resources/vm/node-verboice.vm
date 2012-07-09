@@ -3,15 +3,17 @@
     #foreach( $prompt in $node.prompts )
         #if($prompt.class.simpleName == "AudioPrompt")
             <Play>$prompt.audioFileUrl</Play>
-        #else
+        #elseif ($prompt.class.simpleName == "TextToSpeechPrompt")
             <Say>$prompt.message</Say>
+        #elseif ($prompt.class.simpleName == "DialPrompt")
+            #set ($url = "$scheme://$host$contentPath/verboice/ivr?type=$type&ln=$language&tree=$treeName&trP=$transitionPath")
+            #set ($dial = true)
+            <Dial action="$escape.escapeXml($url)">$prompt.phoneNumber</Dial>
         #end
     #end
-    #if ($node.transitions.size() > 0)
-        #foreach( $mapEntry in $node.transitions.entrySet() )
+    #if ($node.transitions.size() > 0 && !$dial)
             #set ($url = "$scheme://$host$contentPath/verboice/ivr?type=$type&ln=$language&tree=$treeName&trP=$transitionPath")
             <Gather method="POST" action="$escape.escapeXml($url)" numDigits="$maxDigits"></Gather>
-        #end
      #else
     #end
 </Response>
