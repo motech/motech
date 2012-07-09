@@ -163,6 +163,7 @@
         <module>motech-rules-api</module>
         <module>motech-rules</module>
         <module>motech-platform-server-startup</module>
+        <module>motech-web-security</module>
     </modules>
 
     <build>
