@@ -5,11 +5,12 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-web-security</artifactId>
     <packaging>jar</packaging>
-    <name>motech-web-security</name>
+    <name>MoTeCH Web Security</name>
     <version>0.12-SNAPSHOT</version>
 
     <properties>
         <spring-security.version>3.1.0.RELEASE</spring-security.version>
+        <modules.root.dir>${basedir}/..</modules.root.dir>
     </properties>
 
     <parent>

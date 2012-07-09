@@ -23,7 +23,7 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath*:/applicationWebSecurityContext.xml")
-public class MotechUserServiceTest extends SpringIntegrationTest {
+public class MotechUserServiceTestIT extends SpringIntegrationTest {
 
     @Autowired
     MotechUserService motechUserService;
