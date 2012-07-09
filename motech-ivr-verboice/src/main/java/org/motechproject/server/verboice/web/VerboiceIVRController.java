@@ -1,7 +1,7 @@
 package org.motechproject.server.verboice.web;
 
-import org.motechproject.server.verboice.VerboiceIVRService;
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.server.verboice.VerboiceIVRService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +24,10 @@ public class VerboiceIVRController {
     public String handleRequest(HttpServletRequest request) {
         final String treeName = request.getParameter("tree");
         if (StringUtils.isNotBlank(treeName)) {
-            String digits = request.getParameter("Digits");
+            String digits = request.getParameter("DialCallStatus");
+            if (StringUtils.isBlank(digits)) {
+                digits = request.getParameter("Digits");
+            }
             String treePath = request.getParameter("trP");
             String language = request.getParameter("ln");
             return redirectToDecisionTree(treeName, digits, treePath, language);
