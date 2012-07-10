@@ -58,7 +58,7 @@ public class SmsServiceImplTest {
         when(smsApiProperties.getProperty("sms.multi.recipient.supported")).thenReturn("true");
 
         messageSplitter = new MessageSplitter();
-        smsService = new SmsServiceImpl(motechSchedulerService, messageSplitter, smsApiProperties);
+        smsService = new SmsServiceImpl(motechSchedulerService, messageSplitter, smsApiProperties, eventRelay);
     }
 
     @Test

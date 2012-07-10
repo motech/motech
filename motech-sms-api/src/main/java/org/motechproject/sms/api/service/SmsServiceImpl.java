@@ -1,4 +1,4 @@
-package org.motechproject.sms.api.service;
+    package org.motechproject.sms.api.service;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -36,11 +36,11 @@ public class SmsServiceImpl implements SmsService {
     public static final String SMS_SCHEDULE_FUTURE_SMS = "sms.schedule.future.sms";
 
     @Autowired
-    public SmsServiceImpl(MotechSchedulerService motechSchedulerService, MessageSplitter messageSplitter, Properties smsApiProperties) {
+    public SmsServiceImpl(MotechSchedulerService motechSchedulerService, MessageSplitter messageSplitter, Properties smsApiProperties, EventRelay eventRelay) {
         this.motechSchedulerService = motechSchedulerService;
         this.messageSplitter = messageSplitter;
         this.smsApiProperties = smsApiProperties;
-        this.eventRelay = EventContext.getInstance().getEventRelay();
+        this.eventRelay = eventRelay;
     }
 
     @Override
