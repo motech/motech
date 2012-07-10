@@ -28,7 +28,7 @@ public class AllMotechUsersCouchdbImpl extends MotechBaseRepository<MotechUserCo
         if (userName == null) { return null; }
 
         String lowerUserName = userName.toLowerCase();
-        ViewQuery viewQuery = createQuery("by_userName").key(userName).includeDocs(true);
+        ViewQuery viewQuery = createQuery("by_userName").key(lowerUserName).includeDocs(true);
         return singleResult(db.queryView(viewQuery, MotechUserCouchdbImpl.class));
     }
 
