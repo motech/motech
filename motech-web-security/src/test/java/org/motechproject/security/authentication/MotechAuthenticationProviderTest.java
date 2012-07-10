@@ -37,12 +37,12 @@ public class MotechAuthenticationProviderTest {
         MotechUser motechUser = new MotechUserCouchdbImpl("bob", "encodedPassword", "entity_1", asList("some_role"));
         when(allMotechUsers.findByUserName("bob")).thenReturn(motechUser);
 
-        MotechAuthenticationProvider authenticationProvider = new MotechAuthenticationProvider(allMotechUsers, passwordEncoder);
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("bob", "password");
         UserDetails userDetails = authenticationProvider.retrieveUser("bob", authentication);
 
         assertEquals("encodedPassword", userDetails.getPassword());
         assertEquals(motechUser.getUserName(), ((MotechUserProfile) authentication.getDetails()).getUserName());
+        assertEquals(motechUser.getUserName(), userDetails.getUsername());
     }
 
     @Test(expected = AuthenticationException.class)
