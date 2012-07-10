@@ -1,12 +1,23 @@
 package org.motechproject.mobileforms.api.domain;
 
+/**
+ * \ingroup MobileForms
+ */
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 
-public abstract class FormBean implements Serializable {
+
+/**
+ * Implementer should extend this class to add required fields, field values will be mapped by
+ * standard bean injection, i.e., matching field name and xml tag name. Implementation class/bean can be
+ * used in json configuration of {@link Form}.
+ */
+
+public abstract class FormBean implements Serializable{
     private String studyName;
     private String formname;
     private String xmlContent;

@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Represents Form definition, typically read from json configuration file. bean is class that extends {@link FormBean} to handle xml data.
+ */
 public class Form {
     private Integer id;
     private String name;

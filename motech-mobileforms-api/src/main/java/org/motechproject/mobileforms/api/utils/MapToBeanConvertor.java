@@ -15,6 +15,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
+/**
+ * Injects values read from form upload to implementaion FormBean ({@link FormBean}
+ */
 public class MapToBeanConvertor {
     public static final String DATE_PATTERN = "yyyy-MM-dd";
     public static final String TIME_PATTERN_12_HOURS = "hh:mm:ss a";

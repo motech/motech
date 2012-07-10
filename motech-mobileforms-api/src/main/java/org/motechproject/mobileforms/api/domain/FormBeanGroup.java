@@ -12,6 +12,9 @@ import static ch.lambdaj.Lambda.filter;
 import static ch.lambdaj.Lambda.having;
 import static ch.lambdaj.Lambda.on;
 
+/**
+ * Represents set of forms, also supports sorting based on dependency.
+ */
 public class FormBeanGroup implements Serializable {
 
     private List<FormBean> formBeans;

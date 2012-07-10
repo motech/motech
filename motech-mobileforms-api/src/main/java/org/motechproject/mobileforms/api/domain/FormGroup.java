@@ -2,6 +2,7 @@ package org.motechproject.mobileforms.api.domain;
 
 import java.util.List;
 
+/** Represents set of form definitions provided in json config file. */
 public class FormGroup {
     private String name;
     private List<Form> forms;
