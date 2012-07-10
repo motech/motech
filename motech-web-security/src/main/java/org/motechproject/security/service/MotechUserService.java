@@ -29,7 +29,7 @@ public class MotechUserService {
             throw new IllegalArgumentException("Username or password cannot be empty");
         }
 
-        String encodePassword = passwordEncoder.encodePassword(password)
+        String encodePassword = passwordEncoder.encodePassword(password);
         MotechUserCouchdbImpl user = new MotechUserCouchdbImpl(username, encodePassword, externalId, roles);
         user.setActive(isActive);
         allMotechUsers.add(user);
