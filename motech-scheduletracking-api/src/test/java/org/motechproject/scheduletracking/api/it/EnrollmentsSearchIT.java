@@ -2,14 +2,17 @@ package org.motechproject.scheduletracking.api.it;
 
 import org.joda.time.DateTime;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.WindowName;
+import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllSchedules;
+import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReaderImpl;
 import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
 import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
@@ -41,10 +44,18 @@ public class EnrollmentsSearchIT {
     @Autowired
     private AllSchedules allSchedules;
 
+    @Before
+    public void setUp(){
+        List<ScheduleRecord> scheduleRecords = new TrackedSchedulesJsonReaderImpl().getAllSchedules("/schedules");
+        for (ScheduleRecord scheduleRecord : scheduleRecords) {
+            allSchedules.add(scheduleRecord);
+        }
+    }
+
     @After
     public void tearDown() {
-        for (Enrollment enrollment : allEnrollments.getAll())
-            allEnrollments.remove(enrollment);
+        allSchedules.removeAll();
+        allEnrollments.removeAll();
     }
 
     @Test

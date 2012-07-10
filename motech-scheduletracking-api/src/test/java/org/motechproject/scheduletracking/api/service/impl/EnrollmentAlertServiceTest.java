@@ -2,22 +2,21 @@ package org.motechproject.scheduletracking.api.service.impl;
 
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
 import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.events.MilestoneEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
 import org.motechproject.scheduletracking.api.service.MilestoneAlerts;
 import org.motechproject.util.DateUtil;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Date;
 import java.util.List;
@@ -27,17 +26,13 @@ import static org.joda.time.DateTimeConstants.MILLIS_PER_DAY;
 import static org.joda.time.DateTimeConstants.MILLIS_PER_HOUR;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.*;
 import static org.motechproject.scheduletracking.api.utility.PeriodUtil.*;
 import static org.motechproject.util.DateUtil.newDateTime;
 import static org.motechproject.util.DateUtil.now;
-import static org.powermock.api.mockito.PowerMockito.spy;
 
-@PrepareForTest(DateUtil.class)
-@RunWith(PowerMockRunner.class)
 public class EnrollmentAlertServiceTest {
 
     private EnrollmentAlertService enrollmentAlertService;
@@ -50,11 +45,14 @@ public class EnrollmentAlertServiceTest {
         initMocks(this);
 
         DateTime now = new DateTime(2012, 3, 16, 8, 15, 0, 0);
-        spy(DateUtil.class);
-        given(DateUtil.now()).willReturn(now);
-        given(DateUtil.today()).willReturn(now.toLocalDate());
+        DateTimeUtils.setCurrentMillisFixed(now.getMillis());
 
         enrollmentAlertService = new EnrollmentAlertService(schedulerService);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        DateTimeUtils.setCurrentMillisSystem();
     }
 
     @Test

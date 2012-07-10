@@ -1,5 +1,6 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
+import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Before;
@@ -11,6 +12,7 @@ import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.domain.exception.InvalidEnrollmentException;
 import org.motechproject.scheduletracking.api.domain.exception.ScheduleTrackingException;
+import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllSchedules;
 import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
@@ -20,7 +22,13 @@ import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
 import org.motechproject.scheduletracking.api.service.contract.UpdateCriteria;
 import org.motechproject.util.DateUtil;
 
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
@@ -436,5 +444,19 @@ public class ScheduleTrackingServiceImplTest {
         when(allSchedules.getByName(scheduleName)).thenReturn(null);
 
         scheduleTrackingService.getAlertTimings(new EnrollmentRequest(null, scheduleName, null, null, null, null, null, null, null));
+    }
+
+    @Test
+    public void shouldSaveGivenSchedulesInDb() throws IOException, URISyntaxException {
+        File file = new File(getClass().getResource("/schedules/simple-schedule.json").toURI());
+        String scheduleJson = FileUtils.readFileToString(file);
+
+        scheduleTrackingService.add(scheduleJson);
+
+        ArgumentCaptor<ScheduleRecord> scheduleRecordArgumentCaptor = ArgumentCaptor.forClass(ScheduleRecord.class);
+        verify(allSchedules).add(scheduleRecordArgumentCaptor.capture());
+
+        ScheduleRecord scheduleRecord = scheduleRecordArgumentCaptor.getValue();
+        assertEquals("IPTI Schedule", scheduleRecord.name());
     }
 }

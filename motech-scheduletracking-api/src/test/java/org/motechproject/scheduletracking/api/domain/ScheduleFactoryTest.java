@@ -241,8 +241,8 @@ public class ScheduleFactoryTest {
     }
 
     private Schedule loadSchedule(String scheduleName, String directoryWithSchedules) {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl(directoryWithSchedules);
-        ScheduleRecord scheduleRecord = findRecord(scheduleName, jsonReader.records());
+        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl();
+        ScheduleRecord scheduleRecord = findRecord(scheduleName, jsonReader.getAllSchedules(directoryWithSchedules));
         return new ScheduleFactory().build(scheduleRecord);
     }
 

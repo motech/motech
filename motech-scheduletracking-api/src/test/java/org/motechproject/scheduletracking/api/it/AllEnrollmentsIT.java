@@ -11,8 +11,11 @@ import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.Schedule;
+import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllSchedules;
+import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReader;
+import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReaderImpl;
 import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
 import org.motechproject.scheduletracking.api.service.impl.EnrollmentService;
@@ -44,11 +47,17 @@ public class AllEnrollmentsIT {
 
     @Before
     public void setUp() {
+        TrackedSchedulesJsonReader schedulesJsonReader = new TrackedSchedulesJsonReaderImpl();
+        for (ScheduleRecord scheduleRecord : schedulesJsonReader.getAllSchedules("/schedules")) {
+            allSchedules.add(scheduleRecord);
+        }
+
         allEnrollments.removeAll();
     }
 
     @After
     public void tearDown() {
+        allSchedules.removeAll();
         allEnrollments.removeAll();
     }
 

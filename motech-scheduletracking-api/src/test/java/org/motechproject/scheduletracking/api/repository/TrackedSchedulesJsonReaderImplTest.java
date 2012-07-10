@@ -12,8 +12,7 @@ import static org.junit.Assert.assertNotNull;
 public class TrackedSchedulesJsonReaderImplTest {
     @Test
     public void shouldReadTheScheduleJsonFileCorrectly() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules");
-        List<ScheduleRecord> records = jsonReader.records();
+        List<ScheduleRecord> records = new TrackedSchedulesJsonReaderImpl().getAllSchedules("/schedules");
         assertEquals(10, records.size());
 
         ScheduleRecord iptScheduleRecord = findRecord("IPTI Schedule", records);
@@ -31,8 +30,7 @@ public class TrackedSchedulesJsonReaderImplTest {
 
     @Test
     public void shouldReadEmptyValues() {
-        TrackedSchedulesJsonReader jsonReader = new TrackedSchedulesJsonReaderImpl("/schedules");
-        List<ScheduleRecord> records = jsonReader.records();
+        List<ScheduleRecord> records = new TrackedSchedulesJsonReaderImpl().getAllSchedules("/schedules");
         ScheduleRecord scheduleRecord = findRecord("IPTI Schedule", records);
         MilestoneRecord secondMilestone = scheduleRecord.milestoneRecords().get(1);
         assertEquals("", secondMilestone.scheduleWindowsRecord().max().get(0));
@@ -40,7 +38,7 @@ public class TrackedSchedulesJsonReaderImplTest {
 
     @Test
     public void shouldBeAbleReadJsonFilesFromADirectory() {
-        assertNotNull(new TrackedSchedulesJsonReaderImpl("/schedules").records());
+        assertNotNull(new TrackedSchedulesJsonReaderImpl().getAllSchedules("/schedules"));
     }
 
     private ScheduleRecord findRecord(String name, List<ScheduleRecord> records) {

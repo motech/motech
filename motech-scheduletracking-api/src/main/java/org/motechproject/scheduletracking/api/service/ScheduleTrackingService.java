@@ -82,4 +82,11 @@ public interface ScheduleTrackingService {
      * @return MilestoneAlerts : contains the alert timings for all the windows of the milestone
      */
     MilestoneAlerts getAlertTimings(EnrollmentRequest enrollmentRequest);
+
+    /**
+     * Saves the given schedule in database.
+     *
+     * @param scheduleJson : in JSON format
+     */
+    void add(String scheduleJson);
 }

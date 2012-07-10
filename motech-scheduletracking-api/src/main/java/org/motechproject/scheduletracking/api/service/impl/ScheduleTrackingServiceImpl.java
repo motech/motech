@@ -6,8 +6,11 @@ import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.domain.exception.InvalidEnrollmentException;
 import org.motechproject.scheduletracking.api.domain.exception.ScheduleTrackingException;
+import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllSchedules;
+import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReader;
+import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReaderImpl;
 import org.motechproject.scheduletracking.api.service.*;
 import org.motechproject.scheduletracking.api.service.contract.UpdateCriteria;
 import org.motechproject.scheduletracking.api.service.contract.UpdateCriterion;
@@ -26,6 +29,7 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
     private EnrollmentService enrollmentService;
     private EnrollmentsQueryService enrollmentsQueryService;
     private EnrollmentRecordMapper enrollmentRecordMapper;
+    private TrackedSchedulesJsonReader schedulesJsonReader;
 
     @Autowired
     public ScheduleTrackingServiceImpl(AllSchedules allSchedules, AllEnrollments allEnrollments, EnrollmentService enrollmentService, EnrollmentsQueryService enrollmentsQueryService, EnrollmentRecordMapper enrollmentRecordMapper) {
@@ -34,6 +38,7 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
         this.enrollmentService = enrollmentService;
         this.enrollmentsQueryService = enrollmentsQueryService;
         this.enrollmentRecordMapper = enrollmentRecordMapper;
+        this.schedulesJsonReader = new TrackedSchedulesJsonReaderImpl();
     }
 
     @Override
@@ -87,6 +92,13 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
             startingMilestoneName = schedule.getFirstMilestone().getName();
 
         return enrollmentService.getAlertTimings(enrollmentRequest.getExternalId(), enrollmentRequest.getScheduleName(), startingMilestoneName, enrollmentRequest.getReferenceDateTime(), enrollmentRequest.getEnrollmentDateTime(), enrollmentRequest.getPreferredAlertTime());
+    }
+
+    @Override
+    public void add(String scheduleJson) {
+        ScheduleRecord schedule = schedulesJsonReader.getSchedule(scheduleJson);
+
+        allSchedules.add(schedule);
     }
 
     @Override
