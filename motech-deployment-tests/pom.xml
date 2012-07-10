@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>motech</artifactId>
+        <groupId>org.motechproject</groupId>
+        <version>0.12-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.motechproject</groupId>
+    <artifactId>motech-deployment-tests</artifactId>
+    <version>0.12-SNAPSHOT</version>
+    <name>MoTeCH Deployment Tests</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.9</version>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <modules.root.dir>${basedir}/..</modules.root.dir>
+        <tomcat.port>9090</tomcat.port>
+        <tomcat.port.shutdown>9005</tomcat.port.shutdown>
+    </properties>
+
+    <build>
+        <defaultGoal>integration-test</defaultGoal>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.9</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <failIfNoTests>false</failIfNoTests>
+                    <!-- TODO: remove after fix bundles -->
+                    <testFailureIgnore>true</testFailureIgnore>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>verify</id>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.googlecode.t7mp</groupId>
+                <artifactId>maven-t7-plugin</artifactId>
+                <version>0.9.10.M5</version>
+                <configuration>
+                    <tomcatHttpPort>${tomcat.port}</tomcatHttpPort>
+                    <tomcatShutdownPort>${tomcat.port.shutdown}</tomcatShutdownPort>
+                    <tomcatShutdownCommand>SHUTDOWN</tomcatShutdownCommand>
+                    <tomcatSetAwait>false</tomcatSetAwait>
+                    <tomcatVersion>7.0.27</tomcatVersion>
+                    <lookInside>false</lookInside>
+                    <webapps>
+                        <webappArtifact>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>motech-platform-server</artifactId>
+                            <version>${project.version}</version>
+                            <contextPath>motech-platform-server</contextPath>
+                        </webappArtifact>
+                    </webapps>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>tomcat-start</id>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <phase>pre-integration-test</phase>
+                    </execution>
+                    <execution>
+                        <id>tomcat-stop</id>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                        <phase>post-integration-test</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

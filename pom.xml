@@ -164,6 +164,8 @@
         <module>motech-rules</module>
         <module>motech-platform-server-startup</module>
         <module>motech-web-security</module>
+        <!-- Keep this module in last, the module checks if everything is alright after deploy motech on tomcat server -->
+        <module>motech-deployment-tests</module>
     </modules>
 
     <build>
