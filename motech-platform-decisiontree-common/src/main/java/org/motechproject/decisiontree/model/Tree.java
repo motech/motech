@@ -75,10 +75,10 @@ public class Tree extends MotechBaseDataObject {
     }
 
     public NodeInfo nextNodeInfo(String currentPosition, String transitionInput) {
-        currentPosition = currentPosition == null ? "" : currentPosition;
-        transitionInput = transitionInput == null ? "" : transitionInput;
+        String currentPositionNotNull = currentPosition == null ? "" : currentPosition;
+        String transitionInputNotNull = transitionInput == null ? "" : transitionInput;
 
-        String path = String.format("%s/%s", currentPosition, transitionInput);
+        String path = String.format("%s/%s", currentPositionNotNull, transitionInputNotNull);
         Node node = new TreeNodeLocator().findNode(this, path);
         return new NodeInfo(path, node);
     }

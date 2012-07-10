@@ -169,10 +169,10 @@ public class DecisionTreeController extends MultiActionController {
                 } else  //TODO: Add support for return url
                     return new ModelAndView(EXIT_TEMPLATE_NAME);
             } else {
-                transitionPath = parentTransitionPath +
+                String modifiedTransitionPath = parentTransitionPath +
                         (TreeNodeLocator.PATH_DELIMITER.equals(parentTransitionPath) ? "" : TreeNodeLocator.PATH_DELIMITER)
                         + transitionKey;
-                return constructModelViewForNode(request, node, transitionPath, language, treeNameString, type, treeNames, params);
+                return constructModelViewForNode(request, node, modifiedTransitionPath, language, treeNameString, type, treeNames, params);
             }
         }
     }
@@ -189,9 +189,9 @@ public class DecisionTreeController extends MultiActionController {
             mav.addObject("treeName", treeNameString);
         } else { // leaf
             //reduce the current tree and redirect to the next tree
-            treeNames = (String[]) ArrayUtils.remove(treeNames, 0);
+            String[] reducedTreeNames = (String[]) ArrayUtils.remove(treeNames, 0);
             mav.setViewName(templateNameFor(type, LEAF_TEMPLATE_NAME));
-            mav.addObject("treeName", StringUtils.join(treeNames, TREE_NAME_SEPARATOR));
+            mav.addObject("treeName", StringUtils.join(reducedTreeNames, TREE_NAME_SEPARATOR));
         }
         mav.addObject("contentPath", request.getContextPath());
         mav.addObject("node", node);

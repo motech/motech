@@ -62,8 +62,9 @@ public class DateUtil {
         return newDate(dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth());
     }
 
-    public static int daysPast(LocalDate date, DayOfWeek dayOfWeek) {
+    public static int daysPast(LocalDate localDate, DayOfWeek dayOfWeek) {
         int count = 0;
+        LocalDate date = localDate;
         while (date.getDayOfWeek() != dayOfWeek.getValue()) {
             date = date.minusDays(1);
             count++;
@@ -127,7 +128,8 @@ public class DateUtil {
         int dayOfWeek = fromDate.getDayOfWeek();
         int noOfDaysToNearestCycleDate = 0;
         int WEEK_MAX_DAY = DayOfWeek.Sunday.getValue();
-        for (int currentDayOfWeek = dayOfWeek, dayCount = 0; dayCount <= WEEK_MAX_DAY; dayCount++) {
+        int currentDayOfWeek = dayOfWeek;
+        for (int dayCount = 0; dayCount <= WEEK_MAX_DAY; dayCount++) {
             if (applicableDays.contains(getDayOfWeek(currentDayOfWeek))) {
                 noOfDaysToNearestCycleDate = dayCount;
                 break;

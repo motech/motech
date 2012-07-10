@@ -17,7 +17,7 @@ public class JarInformation {
     private String filename;
     private String implementationVendorID;
     private String implementationTitle;
-    private String implementationVersion = null;
+    private String implementationVersion;
 
     public JarInformation(File file) throws IOException {
         readManifestInformation(file);

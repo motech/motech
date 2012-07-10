@@ -306,7 +306,8 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         scheduleJob(jobDetail, trigger);
     }
 
-    private SimpleScheduleBuilder setMisfirePolicyForSimpleTrigger(SimpleScheduleBuilder simpleSchedule, String misfirePolicy) {
+    private SimpleScheduleBuilder setMisfirePolicyForSimpleTrigger(SimpleScheduleBuilder simpleSchedule, String newMisfirePolicy) {
+        String misfirePolicy = newMisfirePolicy;
         if (isEmpty(misfirePolicy))
             misfirePolicy = String.valueOf(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT);
         if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_FIRE_NOW))

@@ -9,7 +9,7 @@ public class MotechUserProfile {
     private MotechUser user;
 
     public MotechUserProfile(MotechUser motechUser) {
-        this.user = user;
+        this.user = motechUser;
     }
 
     public String getExternalId() {

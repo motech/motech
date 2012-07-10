@@ -59,6 +59,7 @@ public class ScheduleFactory {
     }
 
     private void addAlertsToMilestone(Milestone milestone, List<AlertRecord> alerts, Map<WindowName, Period> windowStarts, boolean isAbsoluteAlert, int alertIndex, Locale locale) {
+        int localAlertIndex = alertIndex;
         for (AlertRecord alertRecord : alerts) {
             Period offset = getPeriodFromValue(alertRecord.offset(), locale);
             if (isAbsoluteAlert) {
@@ -66,7 +67,7 @@ public class ScheduleFactory {
                 if (alertRecord.isFloating())
                     throw new InvalidScheduleDefinitionException("cannot define floating alerts for absoulte schedules.");
             }
-            milestone.addAlert(WindowName.valueOf(alertRecord.window()), new Alert(offset, getPeriodFromValue(alertRecord.interval(), locale), Integer.parseInt(alertRecord.count()), alertIndex++, alertRecord.isFloating()));
+            milestone.addAlert(WindowName.valueOf(alertRecord.window()), new Alert(offset, getPeriodFromValue(alertRecord.interval(), locale), Integer.parseInt(alertRecord.count()), localAlertIndex++, alertRecord.isFloating()));
         }
     }
 

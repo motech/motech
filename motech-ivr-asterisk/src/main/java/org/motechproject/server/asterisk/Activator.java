@@ -22,7 +22,7 @@ public class Activator implements BundleActivator {
     private ServiceTracker tracker;
     private ServiceReference httpService;
 
-    private static BundleContext bundleContext = null;
+    private static BundleContext bundleContext;
 
     @Override
     public void start(BundleContext context) throws Exception {

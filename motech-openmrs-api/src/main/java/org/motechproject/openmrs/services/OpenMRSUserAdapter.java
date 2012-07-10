@@ -130,7 +130,7 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
     }
 
     private boolean isSystemAdmin(String systemId) {
-        return systemId.equals("admin") || systemId.equals("daemon");
+        return "admin".equals(systemId) || "daemon".equals(systemId);
     }
 
     public String getRoleFromOpenMRSUser(Set<Role> roles) {
