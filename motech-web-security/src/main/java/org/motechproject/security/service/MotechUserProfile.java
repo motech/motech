@@ -8,7 +8,7 @@ public class MotechUserProfile {
 
     private MotechUser user;
 
-    public MotechUserProfile(MotechUser user) {
+    public MotechUserProfile(MotechUser motechUser) {
         this.user = user;
     }
 

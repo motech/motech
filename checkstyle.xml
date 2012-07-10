@@ -22,10 +22,11 @@
         <module name="HiddenField">
             <property name="severity" value="warning"/> <!-- TODO: change to error -->
             <property name="tokens" value="PARAMETER_DEF,VARIABLE_DEF"/>
-            <property name="ignoreConstructorParameter" value="false"/>
-            <property name="ignoreSetter" value="false"/>
+            <property name="ignoreConstructorParameter" value="true"/>
+            <property name="ignoreSetter" value="true"/>
             <property name="ignoreAbstractMethods" value="false"/>
         </module>
+        <module name="ParameterAssignment"/>
         <module name="DoubleCheckedLocking">
             <property name="severity" value="error"/>
         </module>
@@ -77,9 +78,6 @@
             <property name="severity" value="error"/>
             <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
         </module>
-        <module name="JavadocVariable">
-            <property name="severity" value="warning"/>
-        </module>
         <module name="TypeName">
             <property name="severity" value="error"/>
             <property name="applyToPublic" value="true"/>
@@ -99,10 +97,6 @@
         <module name="NeedBraces">
             <property name="severity" value="info"/>
             <property name="tokens" value="LITERAL_DO,LITERAL_ELSE,LITERAL_IF,LITERAL_FOR,LITERAL_WHILE"/>
-        </module>
-        <module name="FinalParameters">
-            <property name="severity" value="info"/>
-            <property name="tokens" value="METHOD_DEF,CTOR_DEF"/>
         </module>
         <module name="VisibilityModifier">
             <property name="severity" value="warning"/>
@@ -130,12 +124,11 @@
             <property name="severity" value="warning"/>
             <property name="allowInSwitchCase" value="false"/>
         </module>
-        <module name="DesignForExtension">
-            <property name="severity" value="info"/>
-        </module>
         <module name="HideUtilityClassConstructor">
             <property name="severity" value="warning"/>
         </module>
+        <module name="MultipleVariableDeclarations"/>
+        <module name="ExplicitInitialization"/>
         <module name="JavadocStyle">
             <property name="severity" value="warning"/>
             <property name="checkFirstSentence" value="true"/>
@@ -153,15 +146,11 @@
             <property name="severity" value="warning"/>
             <property name="tokens" value="ASSIGN,BAND_ASSIGN,BOR_ASSIGN,BSR_ASSIGN,BXOR_ASSIGN,DIV_ASSIGN,MINUS_ASSIGN,MOD_ASSIGN,PLUS_ASSIGN,SL_ASSIGN,SR_ASSIGN,STAR_ASSIGN"/>
         </module>
+        <module name="ModifiedControlVariable"/>
         <module name="MagicNumber">
             <property name="severity" value="info"/>
             <property name="tokens" value="NUM_DOUBLE,NUM_FLOAT,NUM_INT,NUM_LONG"/>
             <property name="ignoreNumbers" value="-1,0,1,2"/>
-        </module>
-        <module name="JavadocType">
-            <property name="severity" value="warning"/>
-            <property name="allowMissingParamTags" value="false"/>
-            <property name="tokens" value="INTERFACE_DEF,CLASS_DEF"/>
         </module>
         <module name="IllegalInstantiation">
             <property name="severity" value="warning"/>
@@ -181,11 +170,6 @@
             <property name="allowClassName" value="false"/>
             <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
         </module>
-        <module name="LineLength">
-            <property name="severity" value="warning"/>
-            <property name="ignorePattern" value="^$"/>
-            <property name="max" value="80"/>
-        </module>
         <module name="AvoidStarImport">
             <property name="severity" value="info"/>
         </module>
@@ -201,18 +185,17 @@
             <property name="severity" value="warning"/>
             <property name="tokens" value="LITERAL_CATCH,LITERAL_DO,LITERAL_ELSE,LITERAL_FINALLY,LITERAL_IF,LITERAL_FOR,LITERAL_TRY,LITERAL_WHILE,INSTANCE_INIT,STATIC_INIT"/>
         </module>
+        <module name="EqualsAvoidNull"/>
         <module name="MethodLength">
             <property name="severity" value="warning"/>
             <property name="max" value="150"/>
             <property name="countEmpty" value="true"/>
             <property name="tokens" value="METHOD_DEF,CTOR_DEF"/>
         </module>
-        <module name="AvoidInlineConditionals">
-            <property name="severity" value="info"/>
-        </module>
         <module name="EqualsHashCode">
             <property name="severity" value="error"/>
         </module>
+        <module name="StringLiteralEquality"/>
         <module name="MethodParamPad">
             <property name="severity" value="warning"/>
             <property name="allowLineBreaks" value="false"/>
@@ -251,17 +234,6 @@
         </module>
         <module name="ModifierOrder">
             <property name="severity" value="info"/>
-        </module>
-        <module name="JavadocMethod">
-            <property name="severity" value="warning"/>
-            <property name="allowUndeclaredRTE" value="false"/>
-            <property name="allowThrowsTagsForSubclasses" value="false"/>
-            <property name="allowMissingParamTags" value="false"/>
-            <property name="allowMissingThrowsTags" value="false"/>
-            <property name="allowMissingReturnTag" value="false"/>
-            <property name="allowMissingJavadoc" value="false"/>
-            <property name="allowMissingPropertyJavadoc" value="false"/>
-            <property name="tokens" value="METHOD_DEF,CTOR_DEF"/>
         </module>
         <module name="NoWhitespaceAfter">
             <property name="severity" value="info"/>

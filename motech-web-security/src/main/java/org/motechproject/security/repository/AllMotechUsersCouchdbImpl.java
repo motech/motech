@@ -2,7 +2,6 @@ package org.motechproject.security.repository;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
-import org.ektorp.support.GenerateView;
 import org.ektorp.support.View;
 import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.security.domain.MotechUser;
@@ -26,9 +25,9 @@ public class AllMotechUsersCouchdbImpl extends MotechBaseRepository<MotechUserCo
     @Override
     @View(name = "by_userName", map = "function(doc) { if (doc.type ==='MotechUser') { emit(doc.userName, doc._id); }}")
     public MotechUser findByUserName(String userName) {
-        if (userName == null)
-            return null;
-        userName = userName.toLowerCase();
+        if (userName == null) { return null; }
+
+        String lowerUserName = userName.toLowerCase();
         ViewQuery viewQuery = createQuery("by_userName").key(userName).includeDocs(true);
         return singleResult(db.queryView(viewQuery, MotechUserCouchdbImpl.class));
     }
@@ -36,16 +35,16 @@ public class AllMotechUsersCouchdbImpl extends MotechBaseRepository<MotechUserCo
     @Override
     @View(name = "find_by_role", map = "function(doc) {if (doc.type ==='MotechUser') {for(i in doc.roles) {emit(doc.roles[i], [doc._id]);}}}")
     public List<? extends MotechUser> findByRole(String role) {
-        if (role == null)
-            return null;
+        if (role == null) { return null; }
+
         ViewQuery viewQuery = createQuery("find_by_role").key(role).includeDocs(true);
         return db.queryView(viewQuery, MotechUserCouchdbImpl.class);
     }
 
     @Override
     public void add(MotechUser user) {
-        if (findByUserName(user.getUserName()) != null)
-            return;
+        if (findByUserName(user.getUserName()) != null) { return; }
+
         super.add((MotechUserCouchdbImpl) user);
     }
 

@@ -6,19 +6,19 @@ import java.util.List;
 
 public interface MotechUser {
 
-    public String getExternalId();
+    String getExternalId();
 
-    public String getUserName();
+    String getUserName();
 
-    public String getPassword();
+    String getPassword();
 
-    public List<String> getRoles();
+    List<String> getRoles();
 
-    public List<GrantedAuthority> getAuthorities();
+    List<GrantedAuthority> getAuthorities();
 
-    public boolean isActive();
+    boolean isActive();
 
-    public void setActive(boolean active);
+    void setActive(boolean active);
 
-    public void setPassword(String password);
+    void setPassword(String password);
 }

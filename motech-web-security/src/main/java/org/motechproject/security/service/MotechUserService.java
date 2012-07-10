@@ -25,10 +25,12 @@ public class MotechUserService {
     }
 
     public void register(String username, String password, String externalId, List<String> roles, boolean isActive) {
-        if (isBlank(username) || isBlank(password))
+        if (isBlank(username) || isBlank(password)) {
             throw new IllegalArgumentException("Username or password cannot be empty");
-        password = passwordEncoder.encodePassword(password);
-        MotechUserCouchdbImpl user = new MotechUserCouchdbImpl(username, password, externalId, roles);
+        }
+
+        String encodePassword = passwordEncoder.encodePassword(password)
+        MotechUserCouchdbImpl user = new MotechUserCouchdbImpl(username, encodePassword, externalId, roles);
         user.setActive(isActive);
         allMotechUsers.add(user);
     }
@@ -61,8 +63,9 @@ public class MotechUserService {
 
     public void remove(String username) {
         MotechUser motechUser = allMotechUsers.findByUserName(username);
-        if (motechUser != null)
+        if (motechUser != null) {
             allMotechUsers.remove(motechUser);
+        }
     }
 
     public boolean hasUser(String username) {

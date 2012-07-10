@@ -83,12 +83,12 @@ public class MotechUserCouchdbImpl extends MotechBaseDataObject implements Motec
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) { return true; }
+        if (o == null || getClass() != o.getClass()) { return false; }
 
         MotechUserCouchdbImpl that = (MotechUserCouchdbImpl) o;
 
-        if (!userName.equals(that.userName)) return false;
+        if (!userName.equals(that.userName)) { return false; }
 
         return true;
     }

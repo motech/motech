@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -24,13 +23,13 @@ public class MotechAuthenticationProvider extends AbstractUserDetailsAuthenticat
     private MotechPasswordEncoder passwordEncoder;
 
     @Autowired
-    public MotechAuthenticationProvider(AllMotechUsers allMotechUsers, MotechPasswordEncoder passwordEncoder) {
+    public MotechAuthenticationProvider(AllMotechUsers allMotechUsers, MotechPasswordEncoder motechPasswordEncoder) {
         this.allMotechUsersCouchdbImpl = allMotechUsers;
-        this.passwordEncoder = passwordEncoder;
+        this.passwordEncoder = motechPasswordEncoder;
     }
 
     @Override
-    protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+    protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) {
         String password = (String) authentication.getCredentials();
         if (StringUtils.isEmpty(password)) {
             throw new BadCredentialsException(PLEASE_ENTER_PASSWORD);
@@ -41,7 +40,7 @@ public class MotechAuthenticationProvider extends AbstractUserDetailsAuthenticat
     }
 
     @Override
-    protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+    protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) {
         MotechUser user = allMotechUsersCouchdbImpl.findByUserName(username);
         if (user == null) {
             throw new BadCredentialsException(USER_NOT_FOUND);
