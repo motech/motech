@@ -16,7 +16,7 @@
         </prompt>
         #if ($node.transitions.size() > 0)
             #foreach( $mapEntry in $node.transitions.entrySet() )
-                #set ($url = "$contentPath/decisiontree/node?pId=$patientId&ln=$language&tNm=$treeName&trP=$transitionPath&trK=$mapEntry.key")
+                #set ($url = "$scheme://$host$contextPath$servletPath/decisiontree/node?pId=$patientId&ln=$language&tNm=$treeName&trP=$transitionPath&trK=$mapEntry.key")
                 <choice dtmf="$mapEntry.key"
                         next="$escape.escapeXml($url)"/>
             #end
