@@ -1,10 +1,10 @@
 package org.motechproject.server.verboice.domain;
 
 public class Play implements VerboiceVerb {
-    int loop;
+    private int loop;
     private String fileUrl;
 
-    public Play(String url){
+    public Play(String url) {
         this(url, 1);
     }
     
