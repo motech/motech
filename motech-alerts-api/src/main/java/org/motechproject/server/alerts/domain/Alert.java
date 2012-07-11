@@ -119,7 +119,7 @@ public class Alert extends MotechBaseDataObject implements Comparable<Alert> {
 
     @Override
     public boolean equals(Object that) {
-        if (that == null || that.getClass() != this.getClass()) return false;
+        if (that == null || that.getClass() != this.getClass()) { return false; }
         return this.getId().equals(((Alert) that).getId());
     }
 

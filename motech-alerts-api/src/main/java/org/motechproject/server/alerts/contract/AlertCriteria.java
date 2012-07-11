@@ -44,8 +44,8 @@ public class AlertCriteria {
      * @param externalId external id of the alert to be searched for
      * @return Instance with the current criterion added to it.
      */
-    public AlertCriteria byExternalId(String externalId) {
-        this.externalId = externalId;
+    public AlertCriteria byExternalId(String id) {
+        this.externalId = id;
         this.orderedFilters.add(Criterion.externalId);
         return this;
     }
@@ -60,8 +60,8 @@ public class AlertCriteria {
      * @param alertStatus status of the alert to be searched for
      * @return Instance with the current criterion added to it.
      */
-    public AlertCriteria byStatus(AlertStatus alertStatus) {
-        this.alertStatus = alertStatus;
+    public AlertCriteria byStatus(AlertStatus status) {
+        this.alertStatus = status;
         this.orderedFilters.add(Criterion.alertStatus);
         return this;
     }
@@ -76,8 +76,8 @@ public class AlertCriteria {
      * @param alertType type of the alert to be searched for
      * @return Instance with the current criterion added to it.
      */
-    public AlertCriteria byType(AlertType alertType) {
-        this.alertType = alertType;
+    public AlertCriteria byType(AlertType type) {
+        this.alertType = type;
         this.orderedFilters.add(Criterion.alertType);
         return this;
     }
@@ -92,8 +92,8 @@ public class AlertCriteria {
      * @param alertPriority priority of the alert to be searched for
      * @return Instance with the current criterion added to it.
      */
-    public AlertCriteria byPriority(int alertPriority) {
-        this.alertPriority = alertPriority;
+    public AlertCriteria byPriority(int priority) {
+        this.alertPriority = priority;
         this.orderedFilters.add(Criterion.alertPriority);
         return this;
     }
@@ -109,9 +109,9 @@ public class AlertCriteria {
      * @param toDate   End date of the alerts to be searched for
      * @return Instance with the current criterion added to it.
      */
-    public AlertCriteria byDateRange(DateTime fromDate, DateTime toDate) {
-        this.fromDate = fromDate;
-        this.toDate = toDate;
+    public AlertCriteria byDateRange(DateTime from, DateTime to) {
+        this.fromDate = from;
+        this.toDate = to;
         this.orderedFilters.add(Criterion.dateRange);
         return this;
     }

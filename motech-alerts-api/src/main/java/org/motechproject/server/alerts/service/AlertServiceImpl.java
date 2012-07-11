@@ -4,7 +4,11 @@ import org.ektorp.DocumentNotFoundException;
 import org.motechproject.server.alerts.contract.AlertCriteria;
 import org.motechproject.server.alerts.contract.AlertService;
 import org.motechproject.server.alerts.contract.UpdateCriteria;
-import org.motechproject.server.alerts.domain.*;
+import org.motechproject.server.alerts.domain.Alert;
+import org.motechproject.server.alerts.domain.AlertStatus;
+import org.motechproject.server.alerts.domain.AlertType;
+import org.motechproject.server.alerts.domain.AlertUpdater;
+import org.motechproject.server.alerts.domain.UpdateCriterion;
 import org.motechproject.server.alerts.repository.AllAlerts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +30,7 @@ public class AlertServiceImpl implements AlertService {
     private AllAlerts allAlerts;
     private AlertFilter alertFilter;
 
-    final Logger logger = LoggerFactory.getLogger(AlertServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(AlertServiceImpl.class);
 
     @Autowired
     public AlertServiceImpl(AllAlerts allAlerts, AlertFilter alertFilter) {

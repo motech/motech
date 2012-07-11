@@ -3,7 +3,6 @@ package org.motechproject.server.alerts.contract;
 import org.motechproject.server.alerts.domain.Alert;
 import org.motechproject.server.alerts.domain.AlertStatus;
 import org.motechproject.server.alerts.domain.AlertType;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
@@ -53,5 +52,4 @@ public interface AlertService {
      * @param updateCriteria criteria which specifies the fields to be updated and their new values
      */
     void update(String alertId, UpdateCriteria updateCriteria);
-
 }
