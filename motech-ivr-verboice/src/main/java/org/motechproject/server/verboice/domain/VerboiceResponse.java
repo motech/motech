@@ -4,14 +4,13 @@ import org.apache.commons.lang.StringUtils;
 
 public class VerboiceResponse extends AggregatedVerboiceAction {
 
-    String callbackUrl;
+    private String callbackUrl;
 
     public VerboiceResponse(String callbackUrl) {
         this.callbackUrl = callbackUrl;
     }
 
-    public VerboiceResponse() {
-    }
+    public VerboiceResponse() { }
 
     @Override
     public String toXMLString() {

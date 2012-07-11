@@ -5,7 +5,7 @@ import java.util.List;
 
 public abstract class AggregatedVerboiceAction implements VerboiceVerb {
 
-    List<VerboiceVerb> verboiceVerbs = new LinkedList<VerboiceVerb>();
+    private List<VerboiceVerb> verboiceVerbs = new LinkedList<VerboiceVerb>();
     
     @Override
     public String toXMLString() {
@@ -25,22 +25,22 @@ public abstract class AggregatedVerboiceAction implements VerboiceVerb {
         verboiceVerbs.add(new Play(url, loopCount));
     }
 
-    public void say(String text){
+    public void say(String text) {
         verboiceVerbs.add(new Say(text));
     }
 
-    public void say(String text,String voice, int loop){
-        verboiceVerbs.add(new Say(text,voice,loop));
+    public void say(String text, String voice, int loop) {
+        verboiceVerbs.add(new Say(text, voice, loop));
     }
 
-    public void gather(String action, int numDigits, char finishOnKey, int timeout){
+    public void gather(String action, int numDigits, char finishOnKey, int timeout) {
         verboiceVerbs.add(new Gather(action, numDigits, finishOnKey, timeout));
     }
 
     public void redirect(String url) {
         verboiceVerbs.add(new Redirect(url));
     }
-    public void hangup(){
+    public void hangup() {
         verboiceVerbs.add(new Hangup());
     }
 }
