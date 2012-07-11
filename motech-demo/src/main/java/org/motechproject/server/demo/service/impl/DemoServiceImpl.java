@@ -13,8 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DemoServiceImpl implements DemoService
-{
+public class DemoServiceImpl implements DemoService {
     @Autowired
     private MotechSchedulerGateway schedulerGateway;
 

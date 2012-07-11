@@ -14,10 +14,11 @@ import org.slf4j.LoggerFactory;
  */
 public class DemoEventHandler {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final int TIMEOUT = 30;
 
     private IVRService ivrService;
 
-    @MotechListener(subjects = {EventKeys.CALL_EVENT_SUBJECT})
+    @MotechListener(subjects = { EventKeys.CALL_EVENT_SUBJECT })
     public void call(MotechEvent event) {
         if (ivrService == null) {
             logger.error("IVR service is not available!");
@@ -34,7 +35,7 @@ public class DemoEventHandler {
         }
 
         try {
-            CallRequest callRequest = new CallRequest(phoneNumber, 30, "vxml.url");
+            CallRequest callRequest = new CallRequest(phoneNumber, TIMEOUT, "vxml.url");
 
             ivrService.initiateCall(callRequest);
         } catch (CallInitiationException e) {
