@@ -28,7 +28,7 @@ public class AllStreamContents extends BaseContentRepository<StreamContent> {
         ViewQuery query = createQuery("by_language_and_name").key(ComplexKey.of(language, name));
         List<StreamContent> result = db.queryView(query, StreamContent.class);
 
-        if (result == null || result.isEmpty()) return null;
+        if (result == null || result.isEmpty()) { return null; }
 
         StreamContent fetchedContent = result.get(0);
         AttachmentInputStream attachmentInputStream = db.getAttachment(fetchedContent.getId(), fetchedContent.getId());
@@ -50,7 +50,7 @@ public class AllStreamContents extends BaseContentRepository<StreamContent> {
             streamContentFromDB = getContent(content.getLanguage(), content.getName());
 
             boolean create = streamContentFromDB == null;
-            if (!create && isSameAttachment(content, streamContentFromDB)) return;
+            if (!create && isSameAttachment(content, streamContentFromDB)) { return; }
 
             createOrUpdateContent(content, streamContentFromDB, create);
         } catch (Exception e) {

@@ -42,23 +42,26 @@ public class CMSLiteServiceImpl implements CMSLiteService {
     }
 
     private Content getContent(String language, String name, BaseContentRepository contentRepository) throws ContentNotFoundException {
-        if (language == null || name == null)
+        if (language == null || name == null) {
             throw new IllegalArgumentException("Language and Name should not be null");
+        }
+
         Content content = contentRepository.getContent(language, name);
-        if (content != null) return content;
+        if (content != null) { return content; }
 
         throw new ContentNotFoundException();
     }
 
     @Override
     public void addContent(Content content) throws CMSLiteException {
-        if (content == null || content.getLanguage() == null || content.getName() == null)
+        if (content == null || content.getLanguage() == null || content.getName() == null) {
             throw new IllegalArgumentException("Content or language or name should not be null");
+        }
 
-        if (content instanceof StreamContent)
+        if (content instanceof StreamContent) {
             allStreamContents.addContent((StreamContent) content);
-        else if (content instanceof StringContent)
+        } else if (content instanceof StringContent) {
             allStringContents.addContent((StringContent) content);
+        }
     }
-
 }
