@@ -30,14 +30,14 @@ public class AppointmentCalendar extends MotechBaseDataObject {
         return null;
     }
 
-    public AppointmentCalendar externalId(String externalId) {
-        this.externalId = externalId;
+    public AppointmentCalendar externalId(String id) {
+        this.externalId = id;
         return this;
     }
 
     public AppointmentCalendar addVisit(Visit newVisit) {
         for (Visit visit : visits) {
-            if (visit.isSame(newVisit)) return this;
+            if (visit.isSame(newVisit)) { return this; }
         }
         visits.add(newVisit);
         return this;

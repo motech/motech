@@ -21,7 +21,7 @@
         </module>
         <module name="HiddenField">
             <property name="severity" value="warning"/> <!-- TODO: change to error -->
-            <property name="tokens" value="PARAMETER_DEF,VARIABLE_DEF"/>
+            <property name="tokens" value="VARIABLE_DEF"/>
             <property name="ignoreConstructorParameter" value="true"/>
             <property name="ignoreSetter" value="true"/>
             <property name="ignoreAbstractMethods" value="false"/>
@@ -158,7 +158,7 @@
         <module name="MagicNumber">
             <property name="severity" value="info"/>
             <property name="tokens" value="NUM_DOUBLE,NUM_FLOAT,NUM_INT,NUM_LONG"/>
-            <property name="ignoreNumbers" value="-1,0,1,2"/>
+            <property name="ignoreNumbers" value="-1,0,1,2,60,24,7,31,32"/> <!-- 60,24 & 7 are used when calculating dates.  31 in hash. 32 is Magic Johnson's number so it gets a free pass -->
         </module>
         <module name="IllegalInstantiation">
             <property name="severity" value="warning"/>
@@ -184,11 +184,6 @@
         </module>
         <module name="EmptyForIteratorPad">
             <property name="severity" value="info"/>
-        </module>
-        <module name="OperatorWrap">
-            <property name="severity" value="info"/>
-            <property name="option" value="nl"/>
-            <property name="tokens" value="BAND,BOR,BSR,BXOR,COLON,DIV,EQUAL,GE,GT,LAND,LE,LITERAL_INSTANCEOF,LOR,LT,MINUS,MOD,NOT_EQUAL,PLUS,QUESTION,SL,SR,STAR"/>
         </module>
         <module name="EmptyBlock">
             <property name="severity" value="warning"/>

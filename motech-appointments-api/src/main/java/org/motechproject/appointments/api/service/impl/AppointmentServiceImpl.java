@@ -1,7 +1,12 @@
 package org.motechproject.appointments.api.service.impl;
 
 import org.joda.time.DateTime;
-import org.motechproject.appointments.api.service.contract.*;
+import org.motechproject.appointments.api.service.contract.AppointmentCalendarRequest;
+import org.motechproject.appointments.api.service.contract.ConfirmAppointmentRequest;
+import org.motechproject.appointments.api.service.contract.CreateVisitRequest;
+import org.motechproject.appointments.api.service.contract.RescheduleAppointmentRequest;
+import org.motechproject.appointments.api.service.contract.VisitResponse;
+import org.motechproject.appointments.api.service.contract.VisitsQuery;
 import org.motechproject.appointments.api.mapper.ReminderMapper;
 import org.motechproject.appointments.api.mapper.RescheduleAppointmentMapper;
 import org.motechproject.appointments.api.mapper.VisitMapper;
@@ -64,7 +69,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Deprecated
     public List<VisitResponse> getAllVisits(String externalId) {
         AppointmentCalendar appointmentCalendar = getAppointmentCalendar(externalId);
-        if (appointmentCalendar == null) return new ArrayList<VisitResponse>();
+        if (appointmentCalendar == null) { return new ArrayList<VisitResponse>(); }
+
         List<VisitResponse> visitResponses = new ArrayList<VisitResponse>();
         for (Visit visit : appointmentCalendar.visits()) {
             visitResponses.add(new VisitResponseMapper().map(visit));
@@ -100,7 +106,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     public void visited(String externalId, String visitName, DateTime visitedDate) {
         AppointmentCalendar appointmentCalendar = getAppointmentCalendar(externalId);
-        if (appointmentCalendar == null) return;
+        if (appointmentCalendar == null) { return; }
         Visit visit = appointmentCalendar.getVisit(visitName);
         visit.visitDate(visitedDate);
         allReminderJobs.removeAll(externalId);

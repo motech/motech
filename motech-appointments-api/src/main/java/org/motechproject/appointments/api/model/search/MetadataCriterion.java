@@ -24,8 +24,9 @@ public class MetadataCriterion implements Criterion {
     public List<VisitResponse> filter(List<VisitResponse> visits) {
         List<VisitResponse> filteredVisits = new ArrayList<VisitResponse>();
         for (VisitResponse visit : visits) {
-            if (visit.hasMetadata(property, value))
+            if (visit.hasMetadata(property, value)) {
                 filteredVisits.add(visit);
+            }
         }
         return filteredVisits;
     }

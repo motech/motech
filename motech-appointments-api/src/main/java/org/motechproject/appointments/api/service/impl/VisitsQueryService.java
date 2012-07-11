@@ -13,19 +13,21 @@ import java.util.List;
 @Service
 public class VisitsQueryService {
     @Autowired
-    AllAppointmentCalendars allAppointmentCalendars;
+    private AllAppointmentCalendars allAppointmentCalendars;
 
     public List<VisitResponse> search(VisitsQuery query) {
         List<Criterion> criteria = query.getCriteria();
-        if (criteria.isEmpty())
+        if (criteria.isEmpty()) {
             return new ArrayList<VisitResponse>();
+        }
 
         Criterion primaryCriterion = criteria.get(0);
         List<VisitResponse> visitResponses = primaryCriterion.fetch(allAppointmentCalendars);
         criteria.remove(primaryCriterion);
 
-        for (Criterion criterion : query.getCriteria())
+        for (Criterion criterion : query.getCriteria()) {
             visitResponses = criterion.filter(visitResponses);
+        }
 
         return visitResponses;
     }

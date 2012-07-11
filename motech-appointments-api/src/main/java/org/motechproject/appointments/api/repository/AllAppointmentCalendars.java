@@ -21,7 +21,7 @@ import java.util.List;
 @Repository
 public class AllAppointmentCalendars extends MotechBaseRepository<AppointmentCalendar> {
     @Autowired
-    public VisitResponseMapper visitResponseMapper;
+    private VisitResponseMapper visitResponseMapper;
 
     @Autowired
     public AllAppointmentCalendars(@Qualifier("appointmentsDatabase") CouchDbConnector db) {
