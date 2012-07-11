@@ -23,8 +23,9 @@ import java.util.Arrays;
 public class ResourceServlet extends HttpServlet {
     private static ApplicationContext context;
     private Logger logger = Logger.getLogger(this.getClass());
+    private static final int BUFFER_SIZE = 1024 * 4;
 
-    synchronized static public ApplicationContext getContext() {
+    public static synchronized ApplicationContext getContext() {
         if (context == null) {
             context = new ClassPathXmlApplicationContext("applicationCmsLiteApi.xml");
         }
@@ -80,7 +81,7 @@ public class ResourceServlet extends HttpServlet {
             response.setContentLength((int) contentLength);
 
             fo = response.getOutputStream();
-            byte[] buffer = new byte[1024 * 4];
+            byte[] buffer = new byte[BUFFER_SIZE];
             int read;
             while ((read = contentStream.read(buffer)) >= 0) {
                 if (read > 0) {
@@ -88,7 +89,7 @@ public class ResourceServlet extends HttpServlet {
                 }
             }
         } finally {
-            if (contentStream != null) contentStream.close();
+            if (contentStream != null) { contentStream.close(); }
             if (fo != null) {
                 fo.flush();
                 fo.close();
