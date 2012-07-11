@@ -21,12 +21,16 @@ public class AlertFilter {
 
     public List<Alert> search(AlertCriteria alertCriteria) {
         List<Criterion> filters = alertCriteria.getFilters();
-        if (CollectionUtils.isEmpty(filters))
+        if (CollectionUtils.isEmpty(filters)) {
             return allAlerts.getAll();
+        }
+
         Criterion primaryCriterion = filters.get(0);
         List<Alert> filtered = primaryCriterion.fetch(allAlerts, alertCriteria);
-        for (Criterion secondaryCriterion : filters.subList(1, filters.size()))
+        for (Criterion secondaryCriterion : filters.subList(1, filters.size())) {
             filtered = secondaryCriterion.filter(filtered, alertCriteria);
+        }
+        
         return filtered;
     }
 }
