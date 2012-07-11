@@ -35,7 +35,10 @@ public class VerboiceIVRController {
             flowSessionService.updateSessionId(flowSession.getSessionId(), verboiceCallId);
         }
         if (StringUtils.isNotBlank(treeName)) {
-            String digits = request.getParameter("Digits");
+            String digits = request.getParameter("DialCallStatus");
+            if (StringUtils.isBlank(digits)) {
+                digits = request.getParameter("Digits");
+            }            
             String treePath = request.getParameter("trP");
             String language = request.getParameter("ln");
             return redirectToDecisionTree(treeName, digits, treePath, language, verboiceCallId);

@@ -6,6 +6,7 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.ektorp.CouchDbConnector;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,11 +44,6 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
     @Qualifier("treesDatabase")
     private CouchDbConnector connector;
 
-    @Before
-    public void setup() {
-        createTree();
-    }
-
     private void createTree() {
         Tree tree = new Tree();
         tree.setName("someTree");
@@ -67,19 +63,17 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
 
     @Test
     public void shouldTestVerboiceXMLResponse() throws Exception {
+        createTree();
 
         Map<String, String> params = new HashMap<String, String>();
         params.put("userId", "user123");
         CallRequest callRequest = new CallRequest("phonenumber", params, "someCallBackChannel");
-        //verboiceIVRService.initiateCall(callRequest);
 
         XMLUnit.setIgnoreWhitespace(true);
         String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<Response>\n" +
                 "                        <Say>Hello Welcome to motech</Say>\n" +
                 "                                    <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"50\"></Gather>\n" +
-                "                    <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"50\"></Gather>\n" +
-                "                    <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"50\"></Gather>\n" +
                 "             </Response>";
         HttpClient client = new DefaultHttpClient();
         String rootUrl = SERVER_URL + "?tree=someTree&motech_call_id="+ callRequest.getCallId() + "&trP=Lw&ln=en";
@@ -111,6 +105,43 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         String transitionUrl5 = SERVER_URL + "?tree=someTree&CallSid="+ sessionId + "&trP=LzEzNDUyMzQ&ln=en&Digits=1";
         String response6 = client.execute(new HttpGet(transitionUrl5), new BasicResponseHandler());
         assertTrue("got " + response6, response6.contains(" <Play>option1_after_custom_transition.wav</Play>"));
+    }
+
+    @Test
+    public void shouldDialAndTestForDialStatus() throws Exception {
+        createTreeWithDialPrompt();
+
+        XMLUnit.setIgnoreWhitespace(true);
+        String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<Response>\n" +
+                "                        <Dial callerId=\"callerId\" action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=treeWithDial&amp;trP=Lw\">othernumber</Dial>\n" +
+                "     </Response>";
+        HttpClient client = new DefaultHttpClient();
+        String rootUrl = SERVER_URL + "?tree=treeWithDial&trP=Lw&ln=en";
+        String response = client.execute(new HttpGet(rootUrl), new BasicResponseHandler());
+        assertXMLEqual(expectedResponse, response);
+
+        String transitionUrl = SERVER_URL + "?tree=treeWithDial&trP=Lw&ln=en&DialCallStatus=completed";
+        String response2 = client.execute(new HttpGet(transitionUrl), new BasicResponseHandler());
+        assertTrue("got " + response2, response2.contains("<Say>Successful Dial</Say>"));
+
+
+    }
+
+    private void createTreeWithDialPrompt() {
+        Tree tree = new Tree();
+        tree.setName("treeWithDial");
+        HashMap<String, ITransition> transitions = new HashMap<String, ITransition>();
+        final Node successTextNode = new Node().addPrompts(new TextToSpeechPrompt().setMessage("Successful Dial"));
+        final Node failureTextNode = new Node().addPrompts(new TextToSpeechPrompt().setMessage("Dial Failure"));
+        transitions.put("completed", new Transition().setDestinationNode(successTextNode));
+        transitions.put("failed", new Transition().setDestinationNode(failureTextNode));
+
+        DialPrompt dialPrompt = new DialPrompt("othernumber");
+        dialPrompt.setCallerId("callerId");
+        tree.setRootNode(new Node().addPrompts(dialPrompt).setTransitions(transitions));
+        allTrees.addOrReplace(tree);
+        markForDeletion(tree);
     }
 
     @Test
