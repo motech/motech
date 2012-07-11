@@ -35,9 +35,9 @@ public class Appointment extends ExtensibleDataObject<Appointment> {
         return DateUtil.setTimeZone(dueDate);
     }
 
-    public Appointment dueDate(DateTime dueDate) {
-        this.dueDate = dueDate;
-        this.originalDueDate = dueDate;
+    public Appointment dueDate(DateTime due) {
+        this.dueDate = due;
+        this.originalDueDate = due;
         return this;
     }
 
@@ -55,8 +55,8 @@ public class Appointment extends ExtensibleDataObject<Appointment> {
         return DateUtil.setTimeZone(confirmedDate);
     }
 
-    public Appointment confirmedDate(DateTime confirmedDate) {
-        this.confirmedDate = confirmedDate;
+    public Appointment confirmedDate(DateTime confirmed) {
+        this.confirmedDate = confirmed;
         return this;
     }
 

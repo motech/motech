@@ -1,7 +1,12 @@
 package org.motechproject.appointments.api.service;
 
 import org.joda.time.DateTime;
-import org.motechproject.appointments.api.service.contract.*;
+import org.motechproject.appointments.api.service.contract.AppointmentCalendarRequest;
+import org.motechproject.appointments.api.service.contract.ConfirmAppointmentRequest;
+import org.motechproject.appointments.api.service.contract.CreateVisitRequest;
+import org.motechproject.appointments.api.service.contract.RescheduleAppointmentRequest;
+import org.motechproject.appointments.api.service.contract.VisitsQuery;
+import org.motechproject.appointments.api.service.contract.VisitResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -23,14 +28,14 @@ public interface AppointmentService {
      *
      * @param appointmentCalendarRequest
      */
-    public void addCalendar(AppointmentCalendarRequest appointmentCalendarRequest);
+    void addCalendar(AppointmentCalendarRequest appointmentCalendarRequest);
 
     /**
      * Removes all appointments and reminders for given user (identified by externalId)
      *
      * @param externalId
      */
-    public void removeCalendar(String externalId);
+    void removeCalendar(String externalId);
 
     /**
      * Adds a visit as per given {@link org.motechproject.appointments.api.service.contract.CreateVisitRequest CreateVisitRequest}
@@ -39,7 +44,7 @@ public interface AppointmentService {
      * @param createVisitRequest
      * @return
      */
-    public VisitResponse addVisit(String externalId, CreateVisitRequest createVisitRequest);
+    VisitResponse addVisit(String externalId, CreateVisitRequest createVisitRequest);
 
     /**
      * Find visit for given user identifier (external id) and visit name
@@ -48,7 +53,7 @@ public interface AppointmentService {
      * @param visitName
      * @return
      */
-    public VisitResponse findVisit(String externalId, String visitName);
+    VisitResponse findVisit(String externalId, String visitName);
 
     /**
      * Gets all scheduled visits for a given user identifier (external id)
@@ -56,7 +61,7 @@ public interface AppointmentService {
      * @param externalId
      * @return
      */
-    public List<VisitResponse> getAllVisits(String externalId);
+    List<VisitResponse> getAllVisits(String externalId);
 
     /**
      * Appends the given custom data to the existing data of a visit identified by the given visit name and user identifier (external id)
@@ -65,7 +70,7 @@ public interface AppointmentService {
      * @param visitName
      * @param data
      */
-    public void addCustomDataToVisit(String externalId, String visitName, Map<String, Object> data);
+    void addCustomDataToVisit(String externalId, String visitName, Map<String, Object> data);
 
     /**
      * Change the due date and reminder configuration for given appointment/visit
@@ -73,7 +78,7 @@ public interface AppointmentService {
      * @param rescheduleAppointmentRequest specifies reschedule due date and reminder configuration.
      * @see org.motechproject.appointments.api.service.contract.RescheduleAppointmentRequest
      */
-    public void rescheduleAppointment(RescheduleAppointmentRequest rescheduleAppointmentRequest);
+    void rescheduleAppointment(RescheduleAppointmentRequest rescheduleAppointmentRequest);
 
     /**
      * Sets confirmed visit/appointment date
@@ -81,7 +86,7 @@ public interface AppointmentService {
      * @param confirmAppointmentRequest specifies visit/appointment and confirmed date.
      * @see org.motechproject.appointments.api.service.contract.ConfirmAppointmentRequest
      */
-    public void confirmAppointment(ConfirmAppointmentRequest confirmAppointmentRequest);
+    void confirmAppointment(ConfirmAppointmentRequest confirmAppointmentRequest);
 
     /**
      * Mark visit/appointment as Visited along with setting visit date and time
@@ -90,7 +95,7 @@ public interface AppointmentService {
      * @param visitName   unique visit id for the user
      * @param visitedDate visited date
      */
-    public void visited(String externalId, String visitName, DateTime visitedDate);
+    void visited(String externalId, String visitName, DateTime visitedDate);
 
     /**
      * Mark the visit/appointment as missed.
@@ -98,7 +103,7 @@ public interface AppointmentService {
      * @param externalId identifies user
      * @param visitName  unique visit id for the user
      */
-    public void markVisitAsMissed(String externalId, String visitName);
+    void markVisitAsMissed(String externalId, String visitName);
 
     /**
      * Returns visits filtered by the query passed in
@@ -106,5 +111,5 @@ public interface AppointmentService {
      * @param query Query by which you want to filter visits
      * @return List of matched visits
      */
-    public List<VisitResponse> search(VisitsQuery query);
+    List<VisitResponse> search(VisitsQuery query);
 }

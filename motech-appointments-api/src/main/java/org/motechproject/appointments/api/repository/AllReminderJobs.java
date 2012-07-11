@@ -29,7 +29,7 @@ public class AllReminderJobs {
     }
 
     public void addVisitJob(String externalId, Visit visit) {
-        if (visit.reminder() == null) return;
+        if (visit.reminder() == null) { return; }
         VisitReminderJob visitReminderJob = new VisitReminderJob(externalId, visit);
         schedulerService.safeScheduleJob(visitReminderJob);
     }

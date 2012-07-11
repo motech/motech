@@ -23,8 +23,9 @@ public class DueDateInCriterion implements Criterion {
         List<VisitResponse> filteredVisits = new ArrayList<VisitResponse>();
         for (VisitResponse visitResponse : visitResponses) {
             DateTime dueDate = visitResponse.getAppointmentDueDate();
-            if (inRange(dueDate, start, end))
+            if (inRange(dueDate, start, end)) {
                 filteredVisits.add(visitResponse);
+            }
         }
         return filteredVisits;
     }

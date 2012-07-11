@@ -1,7 +1,11 @@
 package org.motechproject.appointments.api.service.contract;
 
 import org.joda.time.DateTime;
-import org.motechproject.appointments.api.model.search.*;
+import org.motechproject.appointments.api.model.search.Criterion;
+import org.motechproject.appointments.api.model.search.DueDateInCriterion;
+import org.motechproject.appointments.api.model.search.ExternalIdCriterion;
+import org.motechproject.appointments.api.model.search.MetadataCriterion;
+import org.motechproject.appointments.api.model.search.UnvisitedCriterion;
 
 import java.util.ArrayList;
 import java.util.List;
