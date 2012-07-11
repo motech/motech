@@ -4,6 +4,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.decisiontree.model.DialStatus;
 import org.motechproject.decisiontree.model.ITransition;
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.Transition;
@@ -212,6 +213,7 @@ public class DecisionTreeController extends MultiActionController {
             final String key = transitionEntry.getKey();
             if (anyInput(key)) return;
             if (dtmfKey(key)) return;
+            if (DialStatus.isValid(key)) return;
             try {
                 Integer.parseInt(key);
             } catch (NumberFormatException e) {
