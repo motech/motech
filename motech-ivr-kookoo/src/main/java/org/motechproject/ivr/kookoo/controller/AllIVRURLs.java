@@ -1,6 +1,8 @@
 package org.motechproject.ivr.kookoo.controller;
 
-public class AllIVRURLs {
+public final class AllIVRURLs {
+    private AllIVRURLs() { }
+
     public static final String STANDARD_RESPONSE_CONTROLLER = "/ivr/standardresponse";
     public static final String DECISION_TREE_URL = "/ivr/decisiontree";
 

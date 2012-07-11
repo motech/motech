@@ -138,8 +138,7 @@ public class KooKooIVRContext implements IvrContext {
 
     @Override
     public void addToListOfCompletedTrees(String lastCompletedTreeName) {
-        List<String> listOfCompletedTreesSoFar = callSessionRecord.<ArrayList<String>>valueFor
-                (LIST_OF_COMPLETED_TREES);
+        List<String> listOfCompletedTreesSoFar = callSessionRecord.<ArrayList<String>>valueFor(LIST_OF_COMPLETED_TREES);
         ArrayList<String> listOfCompletedTrees = listOfCompletedTreesSoFar == null ? new ArrayList<String>() : (ArrayList<String>) listOfCompletedTreesSoFar;
         listOfCompletedTrees.add(lastCompletedTreeName);
         callSessionRecord.add(LIST_OF_COMPLETED_TREES, listOfCompletedTrees);
