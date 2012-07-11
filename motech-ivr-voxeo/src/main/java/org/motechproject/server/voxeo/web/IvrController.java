@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * IVR Event handler for Voxeo handles flash and incoming call events and records it in  {@link org.motechproject.server.voxeo.domain.PhoneCall PhoneCall}
