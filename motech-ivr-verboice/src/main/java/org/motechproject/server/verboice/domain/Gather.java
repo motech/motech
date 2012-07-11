@@ -1,13 +1,15 @@
 package org.motechproject.server.verboice.domain;
 
 public class Gather extends AggregatedVerboiceAction {
-    String action;
-    final String method = "POST"; //verboice doesnt pass digits pressed in GET call
-    int timeout = 5;  // default 5 seconds
-    char finishOnKey = '#'; // default '#'
-    int numDigits;
+    private static final int DEFAULT_TIMEOUT = 5; // default 5 seconds
+    private static final String METHOD = "POST"; //verboice doesnt pass digits pressed in GET call
 
-    public Gather(String action, int numDigits){
+    private String action;
+    private int timeout = DEFAULT_TIMEOUT;
+    private char finishOnKey = '#'; // default '#'
+    private int numDigits;
+
+    public Gather(String action, int numDigits) {
         this.action = action;
         this.numDigits = numDigits;
     }
@@ -23,7 +25,7 @@ public class Gather extends AggregatedVerboiceAction {
         final StringBuffer buffer = new StringBuffer();
         buffer.append(String.format(
                 "<Gather action=\"%s\" numDigits=\"%d\" finishOnKey=\"%c\" timeout=\"%d\" method=\"%s\">"
-                , action, numDigits, finishOnKey, timeout, method));
+                , action, numDigits, finishOnKey, timeout, METHOD));
         buffer.append(super.toXMLString());
         buffer.append("</Gather>");
         return buffer.toString();
