@@ -2,7 +2,7 @@ package org.motechproject.server.verboice.domain;
 
 import java.util.Map;
 
-public class GatherAction extends VerboiceAction{
+public class GatherAction extends VerboiceAction {
 
     private String digits;
 
