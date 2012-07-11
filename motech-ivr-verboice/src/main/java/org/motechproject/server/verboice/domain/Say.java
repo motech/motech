@@ -1,11 +1,11 @@
 package org.motechproject.server.verboice.domain;
 
 public class Say implements VerboiceVerb {
-    int loop;
-    String voice;
+    private int loop;
+    private String voice;
     private String text;
 
-    public Say(String text){
+    public Say(String text) {
         this(text, "man", 1);
     }
 
