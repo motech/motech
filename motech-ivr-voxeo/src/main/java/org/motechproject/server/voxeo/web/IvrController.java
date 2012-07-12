@@ -25,12 +25,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * IVR Event handler for Voxeo handles flash and incoming call events and records it in  {@link org.motechproject.server.voxeo.domain.PhoneCall PhoneCall}
  */
 @Controller
 public class IvrController extends MultiActionController {
+    private static final int DEFAULT_FLASH_SLEEP = 5000;
     private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
 
     private AllPhoneCalls allPhoneCalls;
@@ -55,7 +57,7 @@ public class IvrController extends MultiActionController {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put(VoxeoIVRService.APPLICATION_NAME, applicationName);
 
-        sleep(5000);    // TODO: configurable param
+        sleep(DEFAULT_FLASH_SLEEP);    // TODO: configurable param
         voxeoIVRService.initiateCall(new CallRequest(phoneNumber, params, ""));
     }
 
@@ -93,7 +95,6 @@ public class IvrController extends MultiActionController {
 
             try {
                 allPhoneCalls.add(phoneCall);
-                System.out.println("Added new one...session id SHOULD BE THERE");
             } catch (UpdateConflictException e) {
                 // I eat this exception since it means there was a race condition and the document has already been created.
                 // I can continue with the new version
@@ -183,7 +184,7 @@ public class IvrController extends MultiActionController {
     private void updateState(PhoneCall phoneCall, PhoneCallEvent event) {
         MotechEvent motechEvent = null;
 
-        System.out.println("Updating event status: " + event.getStatus());
+        logger.info("Updating event status: " + event.getStatus());
         switch (event.getStatus()) {
             case ALERTING:
                 phoneCall.setStartDate(new Date(event.getTimestamp()));
@@ -218,6 +219,10 @@ public class IvrController extends MultiActionController {
                         phoneCall.setDisposition(CallDetailRecord.Disposition.FAILED);
                         motechEvent = phoneCall.getCallRequest().getOnFailureEvent();
                 }
+                break;
+
+            default:
+                logger.error("Unknown event: " + event.getStatus());
                 break;
         }
 
