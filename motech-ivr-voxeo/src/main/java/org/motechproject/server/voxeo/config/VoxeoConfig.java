@@ -6,9 +6,9 @@ import java.util.Map;
  * Configuration parameters for Voxeo IVR system.
  */
 public class VoxeoConfig {
-    String serverUrl;
+    private String serverUrl;
 
-    Map<String, String> applications;
+    private Map<String, String> applications;
 
     /**
      * Voxeo server end point.
