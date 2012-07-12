@@ -23,7 +23,6 @@ public class ConfigReader {
             throw new MotechException("File not found in classpath: " + filename);
         }
 
-        return (VoxeoConfig) new MotechJsonReader().readFromStream(stream, new TypeToken<VoxeoConfig>() {
-        }.getType());
+        return (VoxeoConfig) new MotechJsonReader().readFromStream(stream, new TypeToken<VoxeoConfig>() { }.getType());
     }
 }

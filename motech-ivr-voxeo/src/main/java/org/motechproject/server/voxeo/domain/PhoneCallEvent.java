@@ -5,8 +5,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 /**
  * Phone/IVR Event in IVR system, represents context of call such as caller id, call status etc.
 */
-public class PhoneCallEvent
-{
+public class PhoneCallEvent {
     /**
      * Call status
      */
@@ -51,74 +50,59 @@ public class PhoneCallEvent
     @JsonProperty
     private Long timestamp;
 
-    public Status getStatus()
-    {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(Status status)
-    {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
-    public Reason getReason()
-    {
+    public Reason getReason() {
         return reason;
     }
 
-    public void setReason(Reason reason)
-    {
+    public void setReason(Reason reason) {
         this.reason = reason;
     }
 
-    public String getCallerId()
-    {
+    public String getCallerId() {
         return callerId;
     }
 
-    public void setCallerId(String callerId)
-    {
+    public void setCallerId(String callerId) {
         this.callerId = callerId;
     }
 
-    public Long getTimestamp()
-    {
+    public Long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Long timestamp)
-    {
+    public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (this == o)
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass())
-        {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
 
         PhoneCallEvent phoneCallEvent = (PhoneCallEvent) o;
 
-        if (callerId != null ? !callerId.equals(phoneCallEvent.callerId) : phoneCallEvent.callerId != null)
-        {
+        if (callerId != null ? !callerId.equals(phoneCallEvent.callerId) : phoneCallEvent.callerId != null) {
             return false;
         }
-        if (reason != null ? !reason.equals(phoneCallEvent.reason) : phoneCallEvent.reason != null)
-        {
+        if (reason != null ? !reason.equals(phoneCallEvent.reason) : phoneCallEvent.reason != null) {
             return false;
         }
-        if (status != null ? !status.equals(phoneCallEvent.status) : phoneCallEvent.status != null)
-        {
+        if (status != null ? !status.equals(phoneCallEvent.status) : phoneCallEvent.status != null) {
             return false;
         }
-        if (timestamp != null ? !timestamp.equals(phoneCallEvent.timestamp) : phoneCallEvent.timestamp != null)
-        {
+        if (timestamp != null ? !timestamp.equals(phoneCallEvent.timestamp) : phoneCallEvent.timestamp != null) {
             return false;
         }
 
@@ -126,8 +110,7 @@ public class PhoneCallEvent
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int result = status != null ? status.hashCode() : 0;
         result = 31 * result + (reason != null ? reason.hashCode() : 0);
         result = 31 * result + (callerId != null ? callerId.hashCode() : 0);
