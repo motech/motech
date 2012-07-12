@@ -138,9 +138,9 @@
         </dependency>
 
         <dependency>
-            <groupId>xstream</groupId>
+            <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
-            <version>1.1.2</version>
+            <version>1.4.2</version>
         </dependency>
     </dependencies>
     <build>
