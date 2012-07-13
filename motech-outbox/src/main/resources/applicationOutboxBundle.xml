@@ -30,6 +30,10 @@
         <property name="numDaysKeepSavedMessages" value="10"/>
         <property name="maxNumberOfPendingMessages" value="15"/>
     </bean>
+    <osgi:service id="voiceOutboxServiceOsgi"
+        interface="org.motechproject.outbox.api.service.VoiceOutboxService"
+        auto-export="interfaces" ref="voiceOutboxService">
+    </osgi:service>
 
     <bean id="outboundVoiceMessageDao" class="org.motechproject.outbox.api.repository.AllOutboundVoiceMessages">
         <constructor-arg ref="outboxDatabase"/>
