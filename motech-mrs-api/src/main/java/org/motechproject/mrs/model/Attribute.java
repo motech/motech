@@ -4,6 +4,8 @@
  */
 package org.motechproject.mrs.model;
 
+import org.apache.commons.lang.ObjectUtils;
+
 /**
  * Used for storing user attributes in property => value format
  */
@@ -28,5 +30,28 @@ public class Attribute {
 
     public String value() {
         return value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof Attribute))
+            return false;
+        Attribute a = (Attribute) o;
+        if (!ObjectUtils.equals(name, a.name))
+            return false;
+        if (!ObjectUtils.equals(value, a.value))
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 1;
+        hash = hash * 31 + ObjectUtils.hashCode(name);
+        hash = hash * 31 + ObjectUtils.hashCode(value);
+        return hash;
     }
 }
