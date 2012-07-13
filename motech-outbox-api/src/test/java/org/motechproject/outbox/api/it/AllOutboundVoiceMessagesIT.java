@@ -47,33 +47,28 @@ public class AllOutboundVoiceMessagesIT {
         type2.setTemplateName("appointmentReminder");
 
         // create messages
-        createMessages(OutboundVoiceMessageStatus.PENDING);
-        createMessages(OutboundVoiceMessageStatus.SAVED);
+        createSetOfMessages(OutboundVoiceMessageStatus.PENDING);
+        createSetOfMessages(OutboundVoiceMessageStatus.SAVED);
     }
 
-    /*
-        ExternalId1 - Type1 - Valid -  1
-        ExternalId1 - Type1 - Invalid -  1
-        ExternalId2 - Type2 - Valid - 2
-        ExternalId2 - Type2 - Invalid - 1
-     */
-    private void createMessages(OutboundVoiceMessageStatus messageStatus) {
+    private void createSetOfMessages(OutboundVoiceMessageStatus messageStatus) {
         DateTime now = DateUtil.now();
-        for (int i = 0; i < 5; i++) {
-            OutboundVoiceMessage msg = new OutboundVoiceMessage();
-            msg.setCreationTime(now.minusDays(5).toDate());
-            msg.setStatus(messageStatus);
-            msg.setExpirationDate(i < 2 ? now.minusDays(1).toDate() : now.plusDays(2).toDate());
+        Date creationDate = now.minusDays(5).toDate();
+        Date alreadyExpiredDate = now.minusDays(1).toDate();
+        Date yetToBeExpiredDate = now.plusDays(2).toDate();
 
-            if ((i % 2) != 0) {
-                msg.setExternalId(externalId1);
-                msg.setVoiceMessageType(type1);
-            } else {
-                msg.setExternalId(externalId2);
-                msg.setVoiceMessageType(type2);
-            }
-            outboundVoiceMessageDao.add(msg);
-        }
+        createMessage(externalId1, creationDate, alreadyExpiredDate, messageStatus, type1);
+        createMessage(externalId1, creationDate, yetToBeExpiredDate, messageStatus, type1);
+
+        createMessage(externalId2, creationDate, alreadyExpiredDate, messageStatus, type2);
+        createMessage(externalId2, creationDate, yetToBeExpiredDate, messageStatus, type2);
+        createMessage(externalId2, creationDate, yetToBeExpiredDate, messageStatus, type2);
+    }
+
+    private OutboundVoiceMessage createMessage(String externalId, Date creationDate, Date expirationDate, OutboundVoiceMessageStatus status, VoiceMessageType type){
+        OutboundVoiceMessage msg = new OutboundVoiceMessage(externalId, type, status, creationDate, expirationDate);
+        outboundVoiceMessageDao.add(msg);
+        return msg;
     }
 
     @After

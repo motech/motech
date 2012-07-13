@@ -26,6 +26,17 @@ public class OutboundVoiceMessage extends MotechBaseDataObject {
     private Date expirationDate;
     private long sequenceNumber;
 
+    public OutboundVoiceMessage() {
+    }
+
+    public OutboundVoiceMessage(String externalId, VoiceMessageType voiceMessageType, OutboundVoiceMessageStatus status, Date creationTime, Date expirationDate) {
+        this.externalId = externalId;
+        this.voiceMessageType = voiceMessageType;
+        this.status = status;
+        this.creationTime = creationTime;
+        this.expirationDate = expirationDate;
+    }
+
     public String getExternalId() {
         return externalId;
     }
