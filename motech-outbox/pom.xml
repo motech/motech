@@ -100,8 +100,9 @@
                     <instructions>
                         <Export-Package>
                             org.motechproject.outbox.api,
-                            org.motechproject.outbox.api.model,
-                            org.motechproject.outbox.api.context
+                            org.motechproject.outbox.api.domain,
+                            org.motechproject.outbox.api.context,
+                            org.motechproject.outbox.api.service
                         </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.server.outbox.Activator
