@@ -14,6 +14,16 @@ import java.util.Map;
 public interface MRSUserAdapter {
 
     /**
+     * Key to obtain {@link MRSUser} from {@link #saveUser(MRSUser)} and {@link #updateUser(MRSUser)}
+     */
+    String USER_KEY = "mrsUser";
+
+    /**
+     * Key to obtain password from {@link #saveUser(MRSUser)} and {@link #updateUser(MRSUser)}
+     */
+    String PASSWORD_KEY = "password";
+
+    /**
      * Changes the password of the user.
      *
      * @param currentPassword Old password
@@ -61,5 +71,5 @@ public interface MRSUserAdapter {
      * @param mrsUser MRS User object
      * @return A Map containing saved user's data
      */
-    Map updateUser(MRSUser mrsUser);
+    Map<String, Object> updateUser(MRSUser mrsUser);
 }

@@ -1,0 +1,14 @@
+{
+  "results":[
+    {
+      "uuid":"8bb05db3-6c7b-474a-9f79-6f5dd3ad5002",
+      "display":"Test Concept",
+      "links":[
+        {
+          "uri":"http://localhost:8080/openmrs/ws/rest/v1/concept/8bb05db3-6c7b-474a-9f79-6f5dd3ad5002",
+          "rel":"self"
+        }
+      ]
+    }
+  ]
+}

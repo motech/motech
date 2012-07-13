@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:context="http://www.springframework.org/schema/context" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <context:annotation-config />
+    <context:component-scan base-package="org.motechproject.openmrs" />
+
+    <context:property-placeholder system-properties-mode="NEVER"
+        location="classpath:openmrs.properties,classpath:openmrs-urls.properties" />
+
+    <bean id="openMrshttpClient" class="org.motechproject.openmrs.rest.HttpClientFactoryBean">
+        <constructor-arg value="${openmrs.user}" />
+        <constructor-arg value="${openmrs.password}" />
+    </bean>
+
+    <bean id="requestFactory" class="org.springframework.http.client.CommonsClientHttpRequestFactory">
+        <constructor-arg ref="openMrshttpClient" />
+    </bean>
+
+    <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+        <constructor-arg ref="requestFactory" />
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.StringHttpMessageConverter" />
+            </list>
+        </property>
+    </bean>
+</beans>

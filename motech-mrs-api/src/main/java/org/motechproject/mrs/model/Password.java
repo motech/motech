@@ -1,10 +1,12 @@
-package org.motechproject.openmrs.model;
+package org.motechproject.mrs.model;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Password {
     private final Logger logger = LoggerFactory.getLogger(Password.class);
+
+    private static final int NUMBER_OF_NUMERIC_CHARS_TO_APPEND = 3;
     private Integer length;
 
     private static final char[] PASSWORD_CHARS = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
@@ -28,7 +30,7 @@ public class Password {
 
     public String create() {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < length - 3; i++) {
+        for (int i = 0; i < length - NUMBER_OF_NUMERIC_CHARS_TO_APPEND; i++) {
             sb.append(PASSWORD_CHARS[((int) (Math.random() * PASSWORD_CHARS.length))]);
         }
         sb.append(PASSWORD_NUMBER_CHARS[((int) (Math.random() * PASSWORD_NUMBER_CHARS.length))]);
