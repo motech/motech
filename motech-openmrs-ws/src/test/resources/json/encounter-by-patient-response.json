@@ -1,0 +1,51 @@
+{
+  "results":[
+    {
+      "uuid":"446d0bec-5e65-4f25-aacd-ee7da78ec616",
+      "encounterDatetime":"2012-06-03T00:00:00.000Z",
+      "patient":{
+        "uuid":"71ba40ce-b638-494f-b284-556f0f77955f"
+      },
+      "location":{
+        "uuid":"8d6c993e-c2cc-11de-8d13-0010c6dffd0f",
+        "display":"Unknown Location - ",
+        "name":"Unknown Location",
+        "description":null,
+        "address1":"",
+        "address2":"",
+        "cityVillage":"",
+        "stateProvince":"",
+        "country":"",
+        "postalCode":"",
+        "latitude":null,
+        "longitude":null,
+        "countyDistrict":null,
+        "address3":null,
+        "address4":null,
+        "address5":null,
+        "address6":null
+      },
+      "form":null,
+      "encounterType":{
+        "name":"ADULTINITIAL"
+      },
+      "provider":{
+        "uuid":"9c60b6dc-4d07-11e1-a4ea-00ff26c46bb6"
+      },
+      "obs":[
+        {
+          "uuid":"9995daee-0d33-41db-8100-39ecb3b109b2",
+          "display":"HEPATITIS C TEST - QUALITATIVE = POSITIVE",
+          "concept":{
+            "display":"HEPATITIS C TEST - QUALITATIVE"
+          },
+          "value":{
+            "display":"POSITIVE"
+          },
+          "obsDatetime":"2012-06-03T00:00:00.000Z",
+          "groupMembers":null,
+        }
+      ]
+    }
+  ]
+}

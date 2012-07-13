@@ -5,8 +5,8 @@ import org.motechproject.mrs.exception.UserAlreadyExistsException;
 import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.MRSPerson;
 import org.motechproject.mrs.model.MRSUser;
+import org.motechproject.mrs.model.Password;
 import org.motechproject.mrs.services.MRSUserAdapter;
-import org.motechproject.openmrs.model.Password;
 import org.openmrs.*;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PersonService;
@@ -26,8 +26,6 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
 
     private UserService userService;
     private PersonService personService;
-    public static final String USER_KEY = "mrsUser";
-    public static final String PASSWORD_USER_KEY = "password";
     private OpenMRSPersonAdapter openMRSPersonAdapter;
 
     @Autowired
@@ -145,7 +143,7 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
         final org.openmrs.User savedUser = userService.saveUser(openMRSUser, password);
 
         userMap.put(USER_KEY, openMrsToMrsUser(savedUser));
-        userMap.put(PASSWORD_USER_KEY, password);
+        userMap.put(PASSWORD_KEY, password);
         return userMap;
     }
 

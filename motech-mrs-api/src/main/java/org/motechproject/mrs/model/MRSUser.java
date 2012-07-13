@@ -1,5 +1,7 @@
 package org.motechproject.mrs.model;
 
+import org.apache.commons.lang.ObjectUtils;
+
 /**
  * Holds the information of MRS Staff
  */
@@ -60,4 +62,38 @@ public class MRSUser {
         return this;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+
+        if (!(o instanceof MRSUser))
+            return false;
+
+        MRSUser other = (MRSUser) o;
+        if (!ObjectUtils.equals(id, other.id))
+            return false;
+        if (!ObjectUtils.equals(systemId, other.systemId))
+            return false;
+        if (!ObjectUtils.equals(securityRole, other.securityRole))
+            return false;
+        if (!ObjectUtils.equals(userName, other.userName))
+            return false;
+        if (!ObjectUtils.equals(person, other.person))
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 1;
+        hash = hash * 31 + ObjectUtils.hashCode(id);
+        hash = hash * 31 + ObjectUtils.hashCode(systemId);
+        hash = hash * 31 + ObjectUtils.hashCode(securityRole);
+        hash = hash * 31 + ObjectUtils.hashCode(userName);
+        hash = hash * 31 + ObjectUtils.hashCode(person);
+
+        return hash;
+    }
 }
