@@ -1,7 +1,7 @@
-package org.motechproject.server.startup;
+package org.motechproject.server.config;
 
 import org.junit.Test;
-import org.motechproject.server.startup.settings.ConfigFileSettings;
+import org.motechproject.server.config.settings.ConfigFileSettings;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 

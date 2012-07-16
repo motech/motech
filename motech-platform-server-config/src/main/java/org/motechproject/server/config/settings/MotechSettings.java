@@ -1,4 +1,4 @@
-package org.motechproject.server.startup.settings;
+package org.motechproject.server.config.settings;
 
 public interface MotechSettings {
     String getLanguage();
