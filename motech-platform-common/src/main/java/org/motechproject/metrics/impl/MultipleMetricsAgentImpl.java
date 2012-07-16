@@ -3,12 +3,14 @@ package org.motechproject.metrics.impl;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.metrics.MetricsAgentBackend;
 import org.motechproject.util.DateUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class MultipleMetricsAgentImpl implements MetricsAgent {
+    @Autowired
     List<MetricsAgentBackend> metricsAgents;
 
 
