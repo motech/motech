@@ -156,7 +156,7 @@ public class MessageCampaignSchedulerTest {
 
         messageCampaignScheduler.stop();
 
-        verify(mockSchedulerService).safeUnscheduleJob(EventKeys.MESSAGE_CAMPAIGN_COMPLETED_EVENT_SUBJECT, "CampaignCompletedJob.campaign_name.foo");
+        verify(mockSchedulerService).safeDeleteJob(EventKeys.MESSAGE_CAMPAIGN_COMPLETED_EVENT_SUBJECT, "CampaignCompletedJob.campaign_name.foo");
 
     }
 }

@@ -61,7 +61,7 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage, E exte
     public void stop(String messageKey) {
         for (T message : campaign.messages()) {
             if (message.messageKey().equals(messageKey)) {
-                schedulerService.safeUnscheduleJob(getCampaignMessageSubject(message), getMessageJobId(messageKey));
+                schedulerService.safeDeleteJob(getCampaignMessageSubject(message), getMessageJobId(messageKey));
             }
         }
     }
@@ -71,7 +71,7 @@ public abstract class MessageCampaignScheduler<T extends CampaignMessage, E exte
             stop(message.messageKey());
         }
         campaignEnrollmentService.unregister(campaignRequest.externalId(), campaignRequest.campaignName());
-        schedulerService.safeUnscheduleJob(EventKeys.MESSAGE_CAMPAIGN_COMPLETED_EVENT_SUBJECT, jobIdFactory.getCampaignCompletedJobIdFor(campaign.name(), campaignRequest.externalId()));
+        schedulerService.safeDeleteJob(EventKeys.MESSAGE_CAMPAIGN_COMPLETED_EVENT_SUBJECT, jobIdFactory.getCampaignCompletedJobIdFor(campaign.name(), campaignRequest.externalId()));
     }
 
     public Map<String, List<Date>> getCampaignTimings(Date startDate, Date endDate) {

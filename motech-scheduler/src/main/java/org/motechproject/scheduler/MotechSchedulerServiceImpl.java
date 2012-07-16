@@ -430,6 +430,37 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         }
     }
 
+    private void deleteJob(String subject, String externalId) {
+        deleteJob(new JobId(subject, externalId, false));
+    }
+
+    private void deleteJob(JobId job) {
+        logInfo("Unscheduling the Job: %s", job);
+
+        if (job.isRepeatingJob()) {
+            deleteJob(job.repeatingId());
+        } else {
+            deleteJob(job.value());
+        }
+    }
+
+    @Override
+    public void safeDeleteJob(String subject, String externalId) {
+        try {
+            deleteJob(subject, externalId);
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void deleteJob(String jobId) {
+        try {
+            assertArgumentNotNull("delete JobID", jobId);
+            scheduler.deleteJob(jobKey(jobId, JOB_GROUP_NAME));
+        } catch (SchedulerException e) {
+            handleException(String.format("Can not delete the job: %s %s", jobId, e.getMessage()), e);
+        }
+    }
+
     @Override
     public void safeUnscheduleJob(String subject, String externalId) {
         try {

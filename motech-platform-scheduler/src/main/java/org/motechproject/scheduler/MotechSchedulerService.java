@@ -114,4 +114,6 @@ public interface MotechSchedulerService {
     List<Date> getScheduledJobTimings(String subject, String externalJobId, Date startDate, Date endDate);
 
     List<Date> getScheduledJobTimingsWithPrefix(String subject, String externalJobIdPrefix, Date startDate, Date endDate);
+
+    void safeDeleteJob(String subject, String externalId);
 }
