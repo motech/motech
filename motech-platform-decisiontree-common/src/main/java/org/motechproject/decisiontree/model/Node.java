@@ -19,6 +19,8 @@ public class Node {
     private Map<String, ITransition> transitions;
     @JsonProperty
     private List<ITreeCommand> treeCommands = new ArrayList<ITreeCommand>();
+    @JsonProperty
+    private List<Prompt> transitionPrompts = new ArrayList<Prompt>();
 
     public List<Action> getActionsBefore() {
         return actionsBefore == null ? Collections.<Action>emptyList() : actionsBefore;
@@ -35,6 +37,21 @@ public class Node {
 
     public Node setActionsAfter(List<Action> actionsAfter) {
         this.actionsAfter = actionsAfter;
+        return this;
+    }
+
+    public List<Prompt> getTransitionPrompts() {
+        return transitionPrompts;
+    }
+
+    @JsonIgnore
+    public void setTransitionPrompts(List<Prompt> transitionPrompts) {
+        this.transitionPrompts = transitionPrompts;
+    }
+
+    @JsonIgnore
+    public Node addTransitionPrompts(Prompt... prompts){
+        this.transitionPrompts.addAll(Arrays.asList(prompts));
         return this;
     }
 

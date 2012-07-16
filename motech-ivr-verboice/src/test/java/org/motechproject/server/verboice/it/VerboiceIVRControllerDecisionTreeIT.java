@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -108,6 +109,29 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
     }
 
     @Test
+    public void shouldPerformTimeoutTransitionOnTimeout() throws Exception {
+        createTreeWithTimeoutTransition();
+
+        XMLUnit.setIgnoreWhitespace(true);
+        String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<Response>\n" +
+                "                        <Say>Hello Welcome to motech</Say>\n" +
+                "                            <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=treeWithTransitionTimeout&amp;trP=Lw\" numDigits=\"7\">\n" +
+                "                                                        <Say>Transition prompt</Say>\n" +
+                "                                            </Gather>\n" +
+                "                                                                            <Redirect method=\"POST\">http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=treeWithTransitionTimeout&amp;trP=Lw&amp;Digits=timeout</Redirect>\n" +
+                "                                 </Response>";
+        HttpClient client = new DefaultHttpClient();
+        String rootUrl = SERVER_URL + "?tree=treeWithTransitionTimeout&trP=Lw&ln=en";
+        String response = client.execute(new HttpGet(rootUrl), new BasicResponseHandler());
+        assertXMLEqual(expectedResponse, response);
+
+        String transitionUrl = SERVER_URL + "?tree=treeWithTransitionTimeout&trP=Lw&ln=en&Digits=timeout";
+        String response2 = client.execute(new HttpGet(transitionUrl), new BasicResponseHandler());
+        assertTrue("got " + response2, response2.contains("<Say>Clip on timeout</Say>"));
+    }
+
+    @Test
     public void shouldDialAndTestForDialStatus() throws Exception {
         createTreeWithDialPrompt();
 
@@ -126,6 +150,24 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         assertTrue("got " + response2, response2.contains("<Say>Successful Dial</Say>"));
 
 
+    }
+
+    private void createTreeWithTimeoutTransition() {
+        Tree tree = new Tree();
+        tree.setName("treeWithTransitionTimeout");
+        HashMap<String, ITransition> transitions = new HashMap<String, ITransition>();
+        final Node clipOnSuccessfulTransition = new Node().addPrompts(new TextToSpeechPrompt().setMessage("Clip on successful transition"));
+        final Node clipOnTimeout = new Node().addPrompts(new TextToSpeechPrompt().setMessage("Clip on timeout"));
+
+        transitions.put("1", new Transition().setDestinationNode(clipOnSuccessfulTransition));
+        transitions.put("timeout", new Transition().setDestinationNode(clipOnTimeout));
+
+        tree.setRootNode(new Node().addPrompts(
+                new TextToSpeechPrompt().setMessage("Hello Welcome to motech")
+        ).setTransitions(transitions).addTransitionPrompts(new TextToSpeechPrompt().setMessage("Transition prompt")));
+
+        allTrees.addOrReplace(tree);
+        markForDeletion(tree);
     }
 
     private void createTreeWithDialPrompt() {

@@ -4,6 +4,7 @@ public enum DialStatus {
     completed,
     failed,
     busy,
+    timeout,
     noAnswer("no-answer");
     private String title;
 
