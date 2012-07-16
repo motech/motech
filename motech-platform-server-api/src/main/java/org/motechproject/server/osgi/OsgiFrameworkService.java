@@ -1,9 +1,10 @@
 package org.motechproject.server.osgi;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.server.startup.service.PlatformSettingsService;
+import org.motechproject.server.config.service.PlatformSettingsService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.launch.Framework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,11 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.servlet.ServletContext;
 import java.io.File;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Ricky Wang
@@ -39,6 +44,8 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     private List<BundleLoader> bundleLoaders;
 
+    private List<Bundle> bundles = new ArrayList<>();
+
     private Map<String, ClassLoader> bundleClassLoaderLookup = new HashMap<String, ClassLoader>();
 
     private Map<String, String> bundleLocationMapping = new HashMap<String, String>();
@@ -46,7 +53,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     public static final String BUNDLE_ACTIVATOR_HEADER = "Bundle-Activator";
 
     /**
-     * Initialize and start the OSGi framework
+     * Initialize, install bundles and start the OSGi framework
      */
     public void start() {
         try {
@@ -59,13 +66,29 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             // This is mandatory for Felix http servlet bridge
             servletContext.setAttribute(BundleContext.class.getName(), bundleContext);
 
-            // install bundles
-            ArrayList<Bundle> bundles = new ArrayList<Bundle>();
             for (URL url : findBundles(servletContext)) {
                 logger.debug("Installing bundle [" + url + "]");
                 Bundle bundle = bundleContext.installBundle(url.toExternalForm());
                 bundles.add(bundle);
             }
+
+            osgiFramework.start();
+            logger.info("OSGi framework started");
+        } catch (Throwable e) {
+            logger.error("Failed to start OSGi framework", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Launch internal and external bundles
+     */
+    public void launchBundles() {
+        try {
+            ServletContext servletContext = ((WebApplicationContext) applicationContext).getServletContext();
+            BundleContext bundleContext = (BundleContext) servletContext.getAttribute(BundleContext.class.getName());
+
+            bundleContext.registerService(PlatformSettingsService.class.getName(), platformSettingsService, null);
 
             for (Bundle bundle : bundles) {
                 logger.debug("Starting bundle [" + bundle + "]");
@@ -76,17 +99,52 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                         loader.loadBundle(bundle);
                     }
                 }
-                bundle.start();
+
+                try {
+                    bundle.start();
+                } catch (BundleException e) {
+                    logger.error(String.format("Failed to start %s bundle", bundle.getSymbolicName()), e);
+                }
             }
-
-            osgiFramework.start();
-            logger.info("OSGi framework started");
-
-            registerPlatformServices(bundleContext);
-        } catch (Throwable e) {
-            logger.error("Failed to start OSGi framework", e);
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            logger.error("Failed to install Bundles", e);
         }
+    }
+
+    /**
+     * Find first bundle with given name and launch it
+     *
+     * @param bundleName bundle name which you want to launch
+     * @return true if bundle was found and launched, otherwise false
+     */
+    public boolean launchBundle(final String bundleName) {
+        boolean found = false;
+
+        try {
+            for (Bundle bundle : bundles) {
+                if (bundle.getSymbolicName().contains(bundleName)) {
+                    if (bundleLoaders != null) {
+                        for (BundleLoader loader : bundleLoaders) {
+                            loader.loadBundle(bundle);
+                        }
+                    }
+
+                    try {
+                        bundle.start();
+                    } catch (BundleException e) {
+                        logger.error(String.format("Failed to start %s bundle", bundle.getSymbolicName()), e);
+                    }
+
+                    found = true;
+
+                    break; // found bundle
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Failed to install Bundles", e);
+        }
+
+        return found;
     }
 
     /**
@@ -121,10 +179,6 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     public Map<String, ClassLoader> getBundleClassLoaderLookup() {
         return bundleClassLoaderLookup;
-    }
-
-    private void registerPlatformServices(BundleContext bundleContext) {
-        bundleContext.registerService(PlatformSettingsService.class.getName(), platformSettingsService, null);
     }
 
     private void storeClassCloader(Bundle bundle) throws Exception {
@@ -240,10 +294,14 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     }
 
     public List<BundleInformation> getExternalBundles() {
-        List<BundleInformation> bundles = new ArrayList<BundleInformation>();
-        for (Bundle bundle : osgiFramework.getBundleContext().getBundles()) {
-            bundles.add(new BundleInformation(bundle));
+        List<BundleInformation> bundles = new ArrayList<>();
+
+        if (osgiFramework.getBundleContext() != null) {
+            for (Bundle bundle : osgiFramework.getBundleContext().getBundles()) {
+                bundles.add(new BundleInformation(bundle));
+            }
         }
+
         return bundles;
     }
 }

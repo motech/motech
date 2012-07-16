@@ -1,10 +1,10 @@
-package org.motechproject.server.startup.domain;
+package org.motechproject.server.config.domain;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.model.MotechBaseDataObject;
-import org.motechproject.server.startup.settings.MotechSettings;
+import org.motechproject.server.config.settings.MotechSettings;
 
 @TypeDiscriminator("doc.type === 'SettingsRecord'")
 @JsonIgnoreProperties(ignoreUnknown = true)

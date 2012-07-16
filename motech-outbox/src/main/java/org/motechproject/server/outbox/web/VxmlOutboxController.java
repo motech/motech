@@ -1,11 +1,11 @@
 package org.motechproject.server.outbox.web;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.motechproject.outbox.api.service.VoiceOutboxService;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.domain.VoiceMessageType;
-import org.motechproject.server.startup.service.PlatformSettingsService;
+import org.motechproject.outbox.api.service.VoiceOutboxService;
+import org.motechproject.server.config.service.PlatformSettingsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
