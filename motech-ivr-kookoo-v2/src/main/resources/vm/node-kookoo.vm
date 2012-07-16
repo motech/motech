@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<response>
+    #foreach( $prompt in $node.prompts )
+        #if($prompt.class.simpleName == "AudioPrompt")
+            <playaudio>$prompt.audioFileUrl</playaudio>
+        #else
+            <playtext>$prompt.message</playtext>
+        #end
+    #end
+    #if ($node.transitions.size() > 0)
+        #set ($url = "$scheme://$host$contextPath$servletPath/kookoo/ivr?type=$type&ln=$language&tree=$treeName&trP=$transitionPath")
+        <collectdtmf l="$maxDigits" t="#"></collectdtmf>
+        <gotourl>$escape.escapeXml($url)</gotourl>
+    #else
+        #set ($url = "$scheme://$host$contextPath$servletPath/kookoo/ivr?type=$type&ln=$language")
+        <gotourl>$escape.escapeXml($url)</gotourl>
+        <hangup></hangup>
+    #end
+</response>

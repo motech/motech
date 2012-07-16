@@ -150,6 +150,7 @@
         <module>motech-ivr-kookoo</module>
         <module>motech-ivr-voxeo</module>
         <module>motech-ivr-verboice</module>
+        <module>motech-ivr-kookoo-v2</module>
         <module>motech-demo</module>
         <module>motech-mrs-api</module>
         <module>motech-openmrs-api</module>
