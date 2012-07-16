@@ -1,4 +1,4 @@
-package org.motechproject.server.startup.db;
+package org.motechproject.server.config.db;
 
 public class DbConnectionException extends Exception {
 

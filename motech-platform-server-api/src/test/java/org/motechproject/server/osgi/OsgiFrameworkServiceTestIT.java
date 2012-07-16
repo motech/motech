@@ -31,6 +31,8 @@ public class OsgiFrameworkServiceTestIT {
     @Autowired
     private ApplicationContext applicationContext;
 
+    private List<String> expectedBundles = Arrays.asList("org.apache.felix.framework", "org.apache.felix.http.bridge");
+
     @Test
     public void startStopTest() throws Exception {
         service.setApplicationContext(getWebApplicationContext());
@@ -40,20 +42,28 @@ public class OsgiFrameworkServiceTestIT {
         service.start();
         assertEquals(Bundle.ACTIVE, framework.getState());
 
-        List<String> expectedBundles = Arrays.asList("org.apache.felix.framework", "org.apache.felix.http.bridge");
-
         Bundle[] bundles = framework.getBundleContext().getBundles();
         assertEquals(expectedBundles.size(), bundles.length);
-        for (Bundle bundle : bundles) {
-            assertTrue("Bundle '" + bundle.getSymbolicName() + "' was not expected to be found!",
-                    expectedBundles.contains(bundle.getSymbolicName()));
-            assertEquals(Bundle.ACTIVE, bundle.getState());
-        }
+        checkBundleState(bundles[0], Bundle.ACTIVE);
+        checkBundleState(bundles[1], Bundle.INSTALLED);
+
+        service.launchBundles();
+        assertEquals(Bundle.ACTIVE, framework.getState());
+
+        bundles = framework.getBundleContext().getBundles();
+        assertEquals(expectedBundles.size(), bundles.length);
+        checkBundleState(bundles[0], Bundle.ACTIVE);
+        checkBundleState(bundles[1], Bundle.ACTIVE);
 
         assertNotNull(service.getClassLoaderBySymbolicName("org.apache.felix.http.bridge"));
 
         service.stop();
         assertEquals(Bundle.STOPPING, framework.getState());
+    }
+
+    private void checkBundleState(final Bundle bundle, final int expectedState) {
+        assertTrue(String.format("Bundle '%s' was not expected to be found!", bundle.getSymbolicName()), expectedBundles.contains(bundle.getSymbolicName()));
+        assertEquals(expectedState, bundle.getState());
     }
 
     private WebApplicationContext getWebApplicationContext() {
