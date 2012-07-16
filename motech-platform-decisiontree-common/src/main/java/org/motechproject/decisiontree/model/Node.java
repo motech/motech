@@ -21,6 +21,28 @@ public class Node {
     private List<ITreeCommand> treeCommands = new ArrayList<ITreeCommand>();
     @JsonProperty
     private List<Prompt> transitionPrompts = new ArrayList<Prompt>();
+    @JsonProperty
+    private String transitionTimeout;
+    @JsonProperty
+    private String transitionFinishOnKey;
+
+    public String getTransitionTimeout() {
+        return transitionTimeout;
+    }
+
+    @JsonIgnore
+    public void setTransitionTimeout(String transitionTimeout) {
+        this.transitionTimeout = transitionTimeout;
+    }
+
+    public String getTransitionFinishOnKey() {
+        return transitionFinishOnKey;
+    }
+
+    @JsonIgnore
+    public void setTransitionFinishOnKey(String transitionFinishOnKey) {
+        this.transitionFinishOnKey = transitionFinishOnKey;
+    }
 
     public List<Action> getActionsBefore() {
         return actionsBefore == null ? Collections.<Action>emptyList() : actionsBefore;
