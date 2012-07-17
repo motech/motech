@@ -1,0 +1,44 @@
+{
+  "uuid":"PPP",
+  "identifiers":[
+    {
+      "identifier":"588",
+      "identifierType":{
+        "uuid":"III"
+      },
+      "location":{
+        "uuid":"LLL"
+      }
+    }
+  ],
+  "person":{
+    "uuid":"PPP",
+    "display":"John Doe",
+    "gender":"M",
+    "age":62,
+    "birthdate":"1950-01-01T00:00:00.000-0500",
+    "birthdateEstimated":true,
+    "dead":false,
+    "deathDate":null,
+    "causeOfDeath":null,
+    "preferredName":{
+      "display":"John Doe",
+      "givenName":"John",
+      "middleName":"E",
+      "familyName":"Doe"
+    },
+    "preferredAddress":{
+      "address1":"Addr 1"
+    },
+    "attributes":[
+      {
+        "display":"Civil Status = 5555",
+        "uuid":"387bc039-6d1a-401a-ad22-6ef8fc598ed9",
+        "value":"5555",
+        "attributeType":{
+          "uuid":"8d871f2a-c2cc-11de-8d13-0010c6dffd0f"
+        }
+      }
+    ]
+  }
+}

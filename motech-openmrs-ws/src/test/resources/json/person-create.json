@@ -1,0 +1,17 @@
+{
+  "gender": "M",
+  "birthdateEstimated": false,
+  "dead": false,
+  "names": [
+    {
+      "givenName": "John",
+      "middleName": "E",
+      "familyName": "Doe"
+    }
+  ],
+  "addresses": [
+    {
+      "address1": "5 Main St"
+    }
+  ]
+}

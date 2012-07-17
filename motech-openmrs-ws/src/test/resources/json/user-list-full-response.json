@@ -1,0 +1,77 @@
+{
+  "results":[
+    {
+      "uuid":"b187e426-4d07-11e1-a4ea-00ff26c46bb6",
+      "username":"",
+      "systemId":"admin",
+      "person":{
+        "uuid":"9c60b6dc-4d07-11e1-a4ea-00ff26c46bb6",
+        "gender":"",
+        "age":null,
+        "birthdate":null,
+        "birthdateEstimated":false,
+        "dead":false,
+        "deathDate":null,
+        "causeOfDeath":null,
+        "preferredName":{
+          "uuid":"9c670b8e-4d07-11e1-a4ea-00ff26c46bb6",
+          "display":"Super User"
+        },
+        "preferredAddress":null,
+        "attributes":[
+
+        ]
+      },
+      "roles":[
+        {
+          "uuid":"8d94f852-c2cc-11de-8d13-0010c6dffd0f",
+          "name":"System Developer"
+        },
+        {
+          "uuid":"8d94f280-c2cc-11de-8d13-0010c6dffd0f",
+          "name":"Provider"
+        }
+      ]
+    },
+    {
+      "uuid":"A4F30A1B-5EB9-11DF-A648-37A07F9C90FB",
+      "username":"daemon",
+      "systemId":"daemon",
+      "person":null,
+      "roles":[
+
+      ]
+    },
+    {
+      "uuid":"1752391c-1e30-4682-b699-e3dcab79d4d3",
+      "username":"john",
+      "systemId":"3-4",
+      "person":{
+        "uuid":"c1187424-959e-47bf-962c-771029391a26",
+        "display":"John Doe",
+        "gender":"M",
+        "age":null,
+        "birthdate":null,
+        "birthdateEstimated":false,
+        "dead":false,
+        "deathDate":null,
+        "causeOfDeath":null,
+        "preferredName":{
+          "uuid":"f241a54c-3213-4073-aa7f-64a8aab38793"
+        },
+        "preferredAddress": {
+
+        },
+        "attributes":[
+
+        ]
+      },
+      "roles":[
+        {
+          "uuid":"8d94f280-c2cc-11de-8d13-0010c6dffd0f",
+          "name":"Provider"
+        }
+      ]
+    }
+  ]
+}
