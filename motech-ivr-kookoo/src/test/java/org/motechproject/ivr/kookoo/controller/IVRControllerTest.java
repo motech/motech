@@ -159,10 +159,10 @@ public class IVRControllerTest {
         ivrContextForTest.callDetailRecordId(call_detail_record_id);
         KookooCallbackRequest kookooCallbackRequest = new KookooCallbackRequest();
         kookooCallbackRequest.setStatus("ring");
-        kookooCallbackRequest.setPhone_no("phone_no");
-        kookooCallbackRequest.setCall_type("outbox");
-        kookooCallbackRequest.setExternal_id("external_id");
-        kookooCallbackRequest.setCall_detail_record_id(call_detail_record_id);
+        kookooCallbackRequest.setPhoneNumber("phone_no");
+        kookooCallbackRequest.setCallType("outbox");
+        kookooCallbackRequest.setExternalId("external_id");
+        kookooCallbackRequest.setCallDetailRecordId(call_detail_record_id);
 
         ivrController.callback(kookooCallbackRequest);
         verify(callDetailRecordsService).setCallRecordAsNotAnswered(call_detail_record_id);

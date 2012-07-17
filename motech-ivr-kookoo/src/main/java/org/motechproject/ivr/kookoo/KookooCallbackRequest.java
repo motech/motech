@@ -6,14 +6,14 @@ public class KookooCallbackRequest {
     private static final String NOT_ANSWERED = "ring";
 
     private String sid;
-    private String status_details;
-    private String caller_id;
+    private String statusDetails;
+    private String callerId;
     private String status;
-    private String phone_no;
-    private String start_time;
-    private String external_id;
-    private String call_type;
-    private String call_detail_record_id;
+    private String phoneNumber;
+    private String startTime;
+    private String externalId;
+    private String callType;
+    private String callDetailRecordId;
 
     public String getSid() {
         return sid;
@@ -23,20 +23,20 @@ public class KookooCallbackRequest {
         this.sid = sid;
     }
 
-    public String getStatus_details() {
-        return status_details;
+    public String getStatusDetails() {
+        return statusDetails;
     }
 
-    public void setStatus_details(String status_details) {
-        this.status_details = status_details;
+    public void setStatusDetails(String statusDetails) {
+        this.statusDetails = statusDetails;
     }
 
-    public String getCaller_id() {
-        return caller_id;
+    public String getCallerId() {
+        return callerId;
     }
 
-    public void setCaller_id(String caller_id) {
-        this.caller_id = caller_id;
+    public void setCallerId(String callerId) {
+        this.callerId = callerId;
     }
 
     public String getStatus() {
@@ -47,47 +47,47 @@ public class KookooCallbackRequest {
         this.status = status;
     }
 
-    public String getPhone_no() {
-        return phone_no;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setPhone_no(String phone_no) {
-        this.phone_no = phone_no;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
-    public String getStart_time() {
-        return start_time;
+    public String getStartTime() {
+        return startTime;
     }
 
-    public void setStart_time(String start_time) {
-        this.start_time = start_time;
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
     }
 
-    public String getExternal_id() {
-        return external_id;
+    public String getExternalId() {
+        return externalId;
     }
 
-    public void setExternal_id(String external_id) {
-        this.external_id = external_id;
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 
-    public String getCall_type() {
-        return call_type;
+    public String getCallType() {
+        return callType;
     }
 
-    public void setCall_type(String call_type) {
-        this.call_type = call_type;
+    public void setCallType(String callType) {
+        this.callType = callType;
     }
 
     public boolean notAnswered() {
         return !ANSWERED.equals(status);
     }
 
-    public String getCall_detail_record_id() {
-        return call_detail_record_id;
+    public String getCallDetailRecordId() {
+        return callDetailRecordId;
     }
 
-    public void setCall_detail_record_id(String call_detail_record_id) {
-        this.call_detail_record_id = call_detail_record_id;
+    public void setCallDetailRecordId(String callDetailRecordId) {
+        this.callDetailRecordId = callDetailRecordId;
     }
 }
