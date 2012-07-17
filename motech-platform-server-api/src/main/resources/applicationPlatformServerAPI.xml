@@ -18,8 +18,6 @@
 
     <bean id="eventRelay" class="org.motechproject.server.event.ServerEventRelay"/>
 
-    <bean id="eventListenerRegistry" class="org.motechproject.server.event.EventListenerRegistry"/>
-
     <bean id="eventContext" class="org.motechproject.scheduler.context.EventContext" factory-method="getInstance"/>
 
     <util:properties id="osgiConfig" location="classpath:osgi.properties"/>
