@@ -78,8 +78,7 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
 
     @Override
     protected String getCampaignMessageSubject(RepeatingCampaignMessage repeatingCampaignMessage) {
-        if (badFunctionConditionToBeRefactored(repeatingCampaignMessage)) return EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT;
-        return INTERNAL_REPEATING_MESSAGE_CAMPAIGN_SUBJECT;
+        return EventKeys.MESSAGE_CAMPAIGN_SEND_EVENT_SUBJECT;
     }
 
     private void scheduleRepeatingJob(RepeatingCampaignMessage message, Map<String, Object> params, Date startDate, Date endDate) {
