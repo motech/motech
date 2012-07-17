@@ -1,6 +1,6 @@
 package org.motechproject.server.event.annotations;
 
-import org.motechproject.server.event.EventListenerRegistry;
+import org.motechproject.server.event.EventListenerRegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
@@ -25,7 +25,7 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired(required = false)
-    private EventListenerRegistry eventListenerRegistry;
+    private EventListenerRegistryService eventListenerRegistry;
 
     /* (non-Javadoc)
      * @see org.springframework.beans.factory.config.BeanPostProcessor#postProcessBeforeInitialization(java.lang.Object, java.lang.String)
