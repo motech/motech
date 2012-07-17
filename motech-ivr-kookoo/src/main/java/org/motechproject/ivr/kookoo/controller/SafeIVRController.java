@@ -28,8 +28,8 @@ public abstract class SafeIVRController {
     static final String HANGUP_URL_ACTION = "/hangup";
     static final String DISCONNECT_URL_ACTION = "/disconnect";
 
-    protected Logger logger = Logger.getLogger(this.getClass());
-    protected IVRMessage ivrMessage;
+    private Logger logger = Logger.getLogger(this.getClass());
+    private IVRMessage ivrMessage;
     private StandardResponseController standardResponseController;
     private KookooCallDetailRecordsService callDetailRecordsService;
 
@@ -109,7 +109,7 @@ public abstract class SafeIVRController {
             HashMap<String, String> map = new HashMap<String, String>();
             map.put(CallEventConstants.CUSTOM_DATA_LIST, responseXML);
             callDetailRecordsService.appendToLastCallEvent(ivrContext.callDetailRecordId(), map);
-            if (kookooIVRResponseBuilder.isHangUp()) standardResponseController.prepareForHangup(ivrContext);
+            if (kookooIVRResponseBuilder.isHangUp()) { standardResponseController.prepareForHangup(ivrContext); }
             logger.info(String.format(" XML returned: %s", responseXML));
             return responseXML;
         } catch (Exception e) {

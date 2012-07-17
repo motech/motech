@@ -49,7 +49,7 @@ public class KookooCallServiceImpl implements IVRService {
 
     @Override
     public void initiateCall(CallRequest callRequest) {
-        if (callRequest == null) throw new IllegalArgumentException("Missing call request");
+        if (callRequest == null) { throw new IllegalArgumentException("Missing call request"); }
 
         try {
             String kooKooCallDetailRecordId = kookooCallDetailRecordsService.createOutgoing(callRequest.getPhone(), CallDetailRecord.Disposition.UNKNOWN);

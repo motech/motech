@@ -58,22 +58,32 @@ public class KookooIVRResponseBuilder {
     }
 
     public String create(IVRMessage ivrMessage) {
-        if (StringUtils.isEmpty(language)) withDefaultLanguage();
+        if (StringUtils.isEmpty(language)) { withDefaultLanguage(); }
         Response response = new Response();
-        if (StringUtils.isNotBlank(sid)) response.setSid(sid);
+        if (StringUtils.isNotBlank(sid)) { response.setSid(sid); }
 
         if (isCollectDTMF()) {
             CollectDtmf collectDtmf = KookooCollectDtmfFactory.create();
-            if (dtmfLength > 0) collectDtmf.setMaxDigits(dtmfLength);
-            for (String playText : playTexts) collectDtmf.addPlayText(ivrMessage.getText(playText));
-            for (String playAudio : playAudios) collectDtmf.addPlayAudio(ivrMessage.getWav(playAudio, language));
+            if (dtmfLength > 0) { collectDtmf.setMaxDigits(dtmfLength); }
+
+            for (String playText : playTexts) {
+                collectDtmf.addPlayText(ivrMessage.getText(playText));
+            }
+
+            for (String playAudio : playAudios) {
+                collectDtmf.addPlayAudio(ivrMessage.getWav(playAudio, language));
+            }
 
             response.addCollectDtmf(collectDtmf);
         } else {
-            for (String playText : playTexts)
+            for (String playText : playTexts) {
                 response.addPlayText(ivrMessage.getText(playText));
-            for (String playAudio : playAudios)
+            }
+
+            for (String playAudio : playAudios) {
                 response.addPlayAudio(ivrMessage.getWav(playAudio, language));
+            }
+
             if (StringUtils.isNotEmpty(phoneNumber)) {
                 Dial dial = new Dial();
                 dial.setNumber(phoneNumber);
@@ -83,7 +93,7 @@ public class KookooIVRResponseBuilder {
             }
         }
 
-        if (isHangUp) response.addHangup();
+        if (isHangUp) { response.addHangup(); }
         return response.getXML();
     }
 
