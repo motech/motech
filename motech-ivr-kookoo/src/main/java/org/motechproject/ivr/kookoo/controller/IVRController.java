@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class IVRController {
-    Logger logger = Logger.getLogger(this.getClass());
+    private Logger logger = Logger.getLogger(this.getClass());
     private CallFlowController callFlowController;
     private KookooCallDetailRecordsService kookooCallDetailRecordsService;
     private FlowSessionService flowSessionService;
@@ -45,11 +45,11 @@ public class IVRController {
     @ResponseBody
     public String callback(KookooCallbackRequest kookooCallbackRequest) {
         if (kookooCallbackRequest.notAnswered()) {
-            String callDetailRecordId = kookooCallbackRequest.getCall_detail_record_id();
+            String callDetailRecordId = kookooCallbackRequest.getCallDetailRecordId();
             kookooCallDetailRecordsService.setCallRecordAsNotAnswered(callDetailRecordId);
             final CallEvent callEvent = new CallEvent(IVREvent.Missed.toString());
-            callEvent.appendData(IVRService.CALL_TYPE, kookooCallbackRequest.getCall_type());
-            kookooCallDetailRecordsService.close(callDetailRecordId, kookooCallbackRequest.getExternal_id(), callEvent);
+            callEvent.appendData(IVRService.CALL_TYPE, kookooCallbackRequest.getCallType());
+            kookooCallDetailRecordsService.close(callDetailRecordId, kookooCallbackRequest.getExternalId(), callEvent);
         }
         return "";
     }
@@ -61,7 +61,7 @@ public class IVRController {
             switch (ivrEvent) {
                 case NewCall:
                     ivrContext.initialize();
-                    if(ivrContext.callDetailRecordId() == null) {
+                    if (ivrContext.callDetailRecordId() == null) {
                         String kooKooCallDetailRecordId = kookooCallDetailRecordsService.createAnsweredRecord(ivrContext.callId(), ivrContext.callerId(), ivrContext.callDirection());
                         ivrContext.callDetailRecordId(kooKooCallDetailRecordId);
                     } else {
@@ -73,7 +73,7 @@ public class IVRController {
                 case Hangup:
                     if (flowSessionService.isValidSession(ivrContext.callId())) {
                         kookooCallDetailRecordsService.close(ivrContext.callDetailRecordId(), ivrContext.externalId(), new CallEvent(ivrEvent.toString()));
-                        if (ivrContext.isAnswered()) break;
+                        if (ivrContext.isAnswered()) { break; }
                         flowSessionService.removeCallSession(ivrContext.callId());
                     }
                     String url = AllIVRURLs.springTransferUrlToEmptyResponse();

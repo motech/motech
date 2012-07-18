@@ -18,7 +18,7 @@ public interface KookooCallDetailRecordsService {
      * @param callDetailRecordId
      * @return KookooCallDetailRecord
      */
-    public KookooCallDetailRecord get(String callDetailRecordId);
+    KookooCallDetailRecord get(String callDetailRecordId);
 
     /**
      * Adds an answered call details to call log.
@@ -27,7 +27,7 @@ public interface KookooCallDetailRecordsService {
      * @param callDirection
      * @return callDetailRecordId
      */
-    public String createAnsweredRecord(String vendorCallId, String callerId, CallDirection callDirection);
+    String createAnsweredRecord(String vendorCallId, String callerId, CallDirection callDirection);
 
     /**
      * Adds an outgoing call details to call log.
@@ -35,7 +35,7 @@ public interface KookooCallDetailRecordsService {
      * @param disposition
      * @return callDetail
      */
-    public String createOutgoing(String callerId, CallDetailRecord.Disposition disposition);
+    String createOutgoing(String callerId, CallDetailRecord.Disposition disposition);
 
     /**
      * Adds given call event to current call detail record.
@@ -44,7 +44,7 @@ public interface KookooCallDetailRecordsService {
      * @param userInput: DTMF digit pressed.
      * @see org.motechproject.ivr.event.IVREvent
      */
-    public void appendEvent(String callDetailRecordId, IVREvent callEvent, String userInput);
+    void appendEvent(String callDetailRecordId, IVREvent callEvent, String userInput);
 
     /**
      * Marks the end of call either on Hangup event or Disconnect event.
@@ -52,7 +52,7 @@ public interface KookooCallDetailRecordsService {
      * @param externalId: unique Id representing caller.
      * @param callEvent: IVR event such as Newcall, Record, Dial
      */
-    public void close(String callDetailRecordId, String externalId, CallEvent callEvent);
+    void close(String callDetailRecordId, String externalId, CallEvent callEvent);
 
     /**
      * Adds additional data to call log.
