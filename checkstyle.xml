@@ -13,6 +13,10 @@
         <property name="severity" value="warning"/>
         <property name="max" value="2000"/>
     </module>
+    <module name="RegexpSingleline">
+        <property name="severity" value="warning"/> <!-- TODO: change to error -->
+        <property name="format" value="System.out.println"/>
+    </module>
     <module name="TreeWalker">
         <module name="FileContentsHolder"/>
         <module name="InterfaceIsType">
