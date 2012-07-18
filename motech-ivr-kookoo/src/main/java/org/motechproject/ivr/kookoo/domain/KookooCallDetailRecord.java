@@ -17,8 +17,7 @@ public class KookooCallDetailRecord extends MotechBaseDataObject {
 
     private CallDetailRecord callDetailRecord;
 
-    private KookooCallDetailRecord(){
-    }
+    private KookooCallDetailRecord() { }
 
     /**
      * Construct KookooCallDetailRecord given call detail record and vendor side call id.

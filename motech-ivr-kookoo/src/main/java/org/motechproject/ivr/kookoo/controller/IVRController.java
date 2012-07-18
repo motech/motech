@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class IVRController {
-    Logger logger = Logger.getLogger(this.getClass());
+    private Logger logger = Logger.getLogger(this.getClass());
     private CallFlowController callFlowController;
     private KookooCallDetailRecordsService kookooCallDetailRecordsService;
     private FlowSessionService flowSessionService;
