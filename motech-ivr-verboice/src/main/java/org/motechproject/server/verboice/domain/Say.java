@@ -1,5 +1,6 @@
 package org.motechproject.server.verboice.domain;
 
+@Deprecated
 public class Say implements VerboiceVerb {
     int loop;
     String voice;

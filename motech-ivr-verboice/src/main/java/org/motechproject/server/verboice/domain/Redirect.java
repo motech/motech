@@ -1,5 +1,6 @@
 package org.motechproject.server.verboice.domain;
 
+@Deprecated
 public class Redirect implements VerboiceVerb {
     private String url;
 

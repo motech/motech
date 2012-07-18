@@ -1,5 +1,6 @@
 package org.motechproject.server.verboice.domain;
 
+@Deprecated
 public class Gather extends AggregatedVerboiceAction {
     String action;
     final String method = "POST"; //verboice doesnt pass digits pressed in GET call
