@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.decisiontree.model.AudioPrompt;
 import org.motechproject.decisiontree.model.Node;
@@ -52,23 +51,23 @@ public class TreeNodeLocatorTest {
 
     @Test
     public void testFindNode() {
-        assertNotNull(locator.findNode(tree, "/"));
-        assertNotNull(locator.findNode(tree, "/1/2"));
-        assertNotNull(locator.findNode(tree, "/1/2/"));
-        assertNotNull(locator.findNode(tree, "//1/2"));
-        assertNotNull(locator.findNode(tree, "//1/2/"));
-        assertNull(locator.findNode(tree, "/2/1/2/"));
-        assertNull(locator.findNode(tree, "3"));
+        assertNotNull(locator.findNode(tree, "/", null));
+        assertNotNull(locator.findNode(tree, "/1/2", null));
+        assertNotNull(locator.findNode(tree, "/1/2/", null));
+        assertNotNull(locator.findNode(tree, "//1/2", null));
+        assertNotNull(locator.findNode(tree, "//1/2/", null));
+        assertNull(locator.findNode(tree, "/2/1/2/", null));
+        assertNull(locator.findNode(tree, "3", null));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testTreeNull() {
-        locator.findNode(null, "");
+        locator.findNode(null, "", null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testPathNull() {
-        locator.findNode(tree, null);
+        locator.findNode(tree, null, null);
     }
 
     @Test

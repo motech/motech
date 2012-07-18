@@ -6,6 +6,7 @@ import org.motechproject.scheduler.domain.MotechEvent;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * This class is used to request a call from the IVR system
@@ -28,7 +29,7 @@ public class CallRequest implements Serializable {
     @JsonProperty
     private int timeOut;
     @JsonProperty
-    private String callBackUrl;
+    private String callBackUrl;     // this is really the channel!
 
     @JsonProperty
     private Map<String, String> payload = new HashMap<String, String>();
@@ -41,6 +42,8 @@ public class CallRequest implements Serializable {
     private MotechEvent onNoAnswerEvent;
     @JsonProperty
     private MotechEvent onFailureEvent;
+
+    private String callId;
 
     /**
      * Generate a call request for the IVR system
@@ -56,7 +59,7 @@ public class CallRequest implements Serializable {
         if (callBackUrl == null) {
             throw new IllegalArgumentException("callBackUrl can not be null");
         }
-
+        this.callId = UUID.randomUUID().toString();
         this.phone = phone;
         this.timeOut = timeOut;
         this.callBackUrl = callBackUrl;
@@ -76,7 +79,7 @@ public class CallRequest implements Serializable {
         if (callBackUrl == null) {
             throw new IllegalArgumentException("callBackUrl can not be null");
         }
-
+        this.callId = UUID.randomUUID().toString();
         this.phone = phone;
         this.timeOut = 0;
 
@@ -87,6 +90,7 @@ public class CallRequest implements Serializable {
     }
 
     public CallRequest() {
+        this.callId = UUID.randomUUID().toString();
     }
 
     public String getPhone() {
@@ -143,5 +147,9 @@ public class CallRequest implements Serializable {
 
     public void setTimeOut(int timeOut) {
         this.timeOut = timeOut;
+    }
+
+    public String getCallId() {
+        return callId;
     }
 }

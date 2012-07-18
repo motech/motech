@@ -1,19 +1,18 @@
-package org.motechproject.ivr.domain;
+package org.motechproject.decisiontree.domain;
 
-import com.google.gson.JsonSerializer;
-import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
+import org.motechproject.decisiontree.FlowSession;
 import org.motechproject.model.MotechBaseDataObject;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-@TypeDiscriminator("doc.type === 'CallSessionRecord'")
-public class CallSessionRecord extends MotechBaseDataObject {
+@TypeDiscriminator("doc.type === 'FlowSessionRecord'")
+public class FlowSessionRecord extends MotechBaseDataObject implements FlowSession {
 
     @JsonProperty
     private Map<String, Object> data;
@@ -21,10 +20,10 @@ public class CallSessionRecord extends MotechBaseDataObject {
     @JsonProperty
     private String sessionId;
 
-    CallSessionRecord() {
+    FlowSessionRecord() {
     }
 
-    public CallSessionRecord(String sessionId) {
+    public FlowSessionRecord(String sessionId) {
         this.sessionId = sessionId;
         data = new HashMap<String, Object>();
     }
@@ -34,7 +33,7 @@ public class CallSessionRecord extends MotechBaseDataObject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        CallSessionRecord that = (CallSessionRecord) o;
+        FlowSessionRecord that = (FlowSessionRecord) o;
 
         return new EqualsBuilder().append(this.sessionId, that.sessionId).isEquals();
     }
@@ -44,11 +43,19 @@ public class CallSessionRecord extends MotechBaseDataObject {
         return new HashCodeBuilder().append(sessionId).toHashCode();
     }
 
-    public <T extends Serializable> void add(String key, T value) {
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public <T extends Serializable> void set(String key, T value) {
         data.put(key, value);
     }
 
-    public <T extends Serializable> T valueFor(String key) {
+    public <T extends Serializable> T get(String key) {
         return (T) data.get(key);
     }
 }

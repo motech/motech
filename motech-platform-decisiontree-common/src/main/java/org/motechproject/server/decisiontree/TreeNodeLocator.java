@@ -1,8 +1,8 @@
 package org.motechproject.server.decisiontree;
 
+import org.motechproject.decisiontree.FlowSession;
 import org.motechproject.decisiontree.model.ITransition;
 import org.motechproject.decisiontree.model.Node;
-import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.decisiontree.model.Tree;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -22,11 +22,7 @@ public class TreeNodeLocator {
     public TreeNodeLocator() {
     }
 
-    public TreeNodeLocator(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
-
-    public Node findNode(Tree tree, String path) {
+    public Node findNode(Tree tree, String path, FlowSession session) {
         if (tree == null || path == null) {
             throw new IllegalArgumentException(String.format("tree: %s path: %s", tree, path));
         }
@@ -39,7 +35,7 @@ public class TreeNodeLocator {
                 if (transition == null) transition = node.getTransitions().get(ANY_KEY);
                 if (transition == null) return null;
                 applicationContext.getAutowireCapableBeanFactory().autowireBean(transition); //TODO : autowiring in 2 places, see - DecistionTreeController
-                node = transition.getDestinationNode(key);
+                node = transition.getDestinationNode(key, session);
                 if (node == null) return null;
             }
         }

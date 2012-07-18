@@ -1,7 +1,7 @@
 package org.motechproject.ivr.kookoo.controller;
 
 import org.apache.log4j.Logger;
-import org.motechproject.ivr.domain.CallSessionRecord;
+import org.motechproject.decisiontree.domain.FlowSessionRecord;
 import org.motechproject.ivr.event.CallEvent;
 import org.motechproject.ivr.event.IVREvent;
 import org.motechproject.ivr.kookoo.KooKooIVRContext;
@@ -10,7 +10,7 @@ import org.motechproject.ivr.kookoo.KookooRequest;
 import org.motechproject.ivr.kookoo.extensions.CallFlowController;
 import org.motechproject.ivr.kookoo.service.KookooCallDetailRecordsService;
 import org.motechproject.ivr.service.IVRService;
-import org.motechproject.ivr.service.IVRSessionManagementService;
+import org.motechproject.decisiontree.service.FlowSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,19 +25,19 @@ public class IVRController {
     Logger logger = Logger.getLogger(this.getClass());
     private CallFlowController callFlowController;
     private KookooCallDetailRecordsService kookooCallDetailRecordsService;
-    private IVRSessionManagementService ivrSessionManagementService;
+    private FlowSessionService flowSessionService;
 
     @Autowired
-    public IVRController(CallFlowController callFlowController, KookooCallDetailRecordsService kookooCallDetailRecordsService, IVRSessionManagementService ivrSessionManagementService) {
+    public IVRController(CallFlowController callFlowController, KookooCallDetailRecordsService kookooCallDetailRecordsService, FlowSessionService flowSessionService) {
         this.callFlowController = callFlowController;
         this.kookooCallDetailRecordsService = kookooCallDetailRecordsService;
-        this.ivrSessionManagementService = ivrSessionManagementService;
+        this.flowSessionService = flowSessionService;
     }
 
     @RequestMapping(value = "/ivr/reply", method = RequestMethod.GET)
     public String reply(KookooRequest kookooRequest, HttpServletRequest request, HttpServletResponse response) {
-        CallSessionRecord callSessionRecord = ivrSessionManagementService.getCallSession(kookooRequest.getSid());
-        KooKooIVRContext kooKooIVRContext = new KooKooIVRContext(kookooRequest, request, response, callSessionRecord);
+        FlowSessionRecord flowSessionRecord = (FlowSessionRecord) flowSessionService.getSession(kookooRequest.getSid());
+        KooKooIVRContext kooKooIVRContext = new KooKooIVRContext(kookooRequest, request, response, flowSessionRecord);
         return reply(kooKooIVRContext);
     }
 
@@ -71,10 +71,10 @@ public class IVRController {
                     break;
                 case Disconnect:
                 case Hangup:
-                    if (ivrSessionManagementService.isValidSession(ivrContext.callId())) {
+                    if (flowSessionService.isValidSession(ivrContext.callId())) {
                         kookooCallDetailRecordsService.close(ivrContext.callDetailRecordId(), ivrContext.externalId(), new CallEvent(ivrEvent.toString()));
                         if (ivrContext.isAnswered()) break;
-                        ivrSessionManagementService.removeCallSession(ivrContext.callId());
+                        flowSessionService.removeCallSession(ivrContext.callId());
                     }
                     String url = AllIVRURLs.springTransferUrlToEmptyResponse();
                     logger.info(String.format("Transferring to %s", url));
@@ -87,7 +87,7 @@ public class IVRController {
                 String treeName = callFlowController.decisionTreeName(ivrContext);
                 ivrContext.treeName(treeName);
             }
-            ivrSessionManagementService.updateCallSession(ivrContext.getCallSessionRecord());
+            flowSessionService.updateSession(ivrContext.getFlowSessionRecord());
             kookooCallDetailRecordsService.appendToLastCallEvent(ivrContext.callDetailRecordId(), ivrContext.dataToLog());
             String transferURL = AllIVRURLs.springTransferUrl(url, ivrContext.ivrEvent().toLowerCase());
             logger.info(String.format("Transferring to %s", transferURL));

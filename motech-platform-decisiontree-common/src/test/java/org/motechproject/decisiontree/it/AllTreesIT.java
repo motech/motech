@@ -43,7 +43,7 @@ public class AllTreesIT extends SpringIntegrationTest {
         assertNotNull(rootNodeFromDb);
         assertEquals(AudioPrompt.class.getName(), rootNodeFromDb.getPrompts().get(0).getClass().getName());
 
-        final Node nextNode = rootNodeFromDb.getTransitions().get("1").getDestinationNode("1");
+        final Node nextNode = rootNodeFromDb.getTransitions().get("1").getDestinationNode("1", null);
         assertEquals(TextToSpeechPrompt.class.getName(), nextNode.getPrompts().get(0).getClass().getName());
 
     }

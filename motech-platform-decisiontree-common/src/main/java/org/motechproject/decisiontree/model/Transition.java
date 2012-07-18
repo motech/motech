@@ -1,7 +1,7 @@
 package org.motechproject.decisiontree.model;
 
 
-import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.motechproject.decisiontree.FlowSession;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -82,7 +82,7 @@ public class Transition implements ITransition {
     }
 
     @Override
-    public Node getDestinationNode(String input) {
+    public Node getDestinationNode(String input, FlowSession session) {
         return getDestinationNode();
     }
 }

@@ -54,15 +54,15 @@ public class DecisionTreeServiceTest {
 
     @Test
     public void shouldFetchCommandForRootNode() {
-        when(treeNodeLocator.findNode(pillReminderTree, "")).thenReturn(rootNode);
-        Node nextNode = decisionTreeService.getNode(pillReminderTree.getName(), "");
+        when(treeNodeLocator.findNode(pillReminderTree, "", null)).thenReturn(rootNode);
+        Node nextNode = decisionTreeService.getNode(pillReminderTree.getName(), "", null);
         assertEquals(RootNodeCommand.class, nextNode.getTreeCommands().get(0).getClass());
     }
 
     @Test
     public void shouldFetchNextCommand() {
-        when(treeNodeLocator.findNode(pillReminderTree, "/1")).thenReturn(nextNode);
-        Node nextNode = decisionTreeService.getNode(pillReminderTree.getName(), "/1");
+        when(treeNodeLocator.findNode(pillReminderTree, "/1", null)).thenReturn(nextNode);
+        Node nextNode = decisionTreeService.getNode(pillReminderTree.getName(), "/1", null);
         assertEquals(NextCommand.class, nextNode.getTreeCommands().get(0).getClass());
     }
 
