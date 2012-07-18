@@ -15,7 +15,7 @@ import java.net.URLEncoder;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-@Service
+@Service("ivrServiceKookoo")
 public class KookooCallServiceImpl implements IVRService {
     public static final String OUTBOUND_URL = "kookoo.outbound.url";
     public static final String API_KEY = "kookoo.api.key";

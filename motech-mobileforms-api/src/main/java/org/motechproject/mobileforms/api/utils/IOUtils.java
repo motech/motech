@@ -1,6 +1,5 @@
 package org.motechproject.mobileforms.api.utils;
 
-import org.apache.commons.io.FileUtils;
 import org.motechproject.MotechException;
 
 import java.io.File;
@@ -14,7 +13,7 @@ public class IOUtils {
     public String getFileContent(String fileName, String formGroupName) {
         String xformFilePath = join(asList(XFORMS_FOLDER, formGroupName, fileName), File.separator);
         try {
-            return FileUtils.readFileToString(new File(getClass().getClassLoader().getResource(xformFilePath).toURI().getPath()));
+            return org.apache.commons.io.IOUtils.toString(getClass().getClassLoader().getResourceAsStream(xformFilePath));
         } catch (Exception e) {
             throw new MotechException("Encountered error while loading openxdata forms", e);
         }
