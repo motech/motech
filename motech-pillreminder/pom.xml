@@ -3,12 +3,12 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.11-SNAPSHOT</version>
+        <version>0.11</version>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-pillreminder</artifactId>
     <name>MoTeCH Pill Reminder</name>
-    <version>0.11-SNAPSHOT</version>
+    <version>0.11</version>
     <packaging>bundle</packaging>
     <description>Motech Pill Reminder</description>
     <properties>
