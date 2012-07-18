@@ -74,7 +74,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<Response>\n" +
                 "                        <Say>Hello Welcome to motech</Say>\n" +
-                "                                    <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"50\"></Gather>\n" +
+                "                                    <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\"></Gather>\n" +
                 "             </Response>";
         HttpClient client = new DefaultHttpClient();
         String rootUrl = SERVER_URL + "?tree=someTree&motech_call_id="+ callRequest.getCallId() + "&trP=Lw&ln=en";
@@ -116,7 +116,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<Response>\n" +
                 "                        <Say>Hello Welcome to motech</Say>\n" +
-                "                            <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=treeWithTransitionTimeout&amp;trP=Lw\" numDigits=\"7\">\n" +
+                "                            <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=treeWithTransitionTimeout&amp;trP=Lw\">\n" +
                 "                                                        <Say>Transition prompt</Say>\n" +
                 "                                            </Gather>\n" +
                 "                                                                            <Redirect method=\"POST\">http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=treeWithTransitionTimeout&amp;trP=Lw&amp;Digits=timeout</Redirect>\n" +
