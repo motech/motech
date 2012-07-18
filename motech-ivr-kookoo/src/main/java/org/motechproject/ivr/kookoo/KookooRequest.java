@@ -96,13 +96,13 @@ public class KookooRequest {
     }
 
     public String externalId() {
-        return dataMap == null ? null : dataMap.get(IVRService.EXTERNAL_ID) ;
+        return dataMap == null ? null : dataMap.get(IVRService.EXTERNAL_ID);
     }
 
     public void setDataMap(String jsonDataMap) {
         try {
             JSONObject jsonObject = new JSONObject(jsonDataMap);
-            for (Iterator<String> i = jsonObject.keys(); i.hasNext(); ) {
+            for (Iterator<String> i = jsonObject.keys(); i.hasNext();) {
                 String key = i.next();
                 dataMap.put(key, jsonObject.getString(key));
             }

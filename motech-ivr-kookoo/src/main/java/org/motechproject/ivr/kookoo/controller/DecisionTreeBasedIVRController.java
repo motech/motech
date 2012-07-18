@@ -25,7 +25,7 @@ public class DecisionTreeBasedIVRController extends SafeIVRController {
     private CallFlowController callFlowController;
 
     @Autowired
-    TreeNodeLocator treeNodeLocator;
+    private TreeNodeLocator treeNodeLocator;
 
     @Autowired
     public DecisionTreeBasedIVRController(CallFlowController callFlowController, IVRMessage ivrMessage, KookooCallDetailRecordsService callDetailRecordsService, StandardResponseController standardResponseController, FlowSessionService flowSessionService) {
@@ -56,7 +56,7 @@ public class DecisionTreeBasedIVRController extends SafeIVRController {
 
         DecisionTreeBasedResponseBuilder decisionTreeBasedResponseBuilder = new DecisionTreeBasedResponseBuilder();
         KookooIVRResponseBuilder ivrResponseBuilder = decisionTreeBasedResponseBuilder.ivrResponse(nodeInfo.node(), kooKooIVRContext, new KookooIVRResponseBuilder(), retryOnIncorrectUserAction);
-        if (!ivrResponseBuilder.isCollectDTMF()){
+        if (!ivrResponseBuilder.isCollectDTMF()) {
             kooKooIVRContext.currentDecisionTreePath("");
             callFlowController.treeComplete(currentTreeName, kooKooIVRContext);
         }

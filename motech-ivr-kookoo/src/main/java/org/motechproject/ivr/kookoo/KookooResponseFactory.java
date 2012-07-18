@@ -1,6 +1,8 @@
 package org.motechproject.ivr.kookoo;
 
-public class KookooResponseFactory {
+public final class KookooResponseFactory {
+    private KookooResponseFactory() { }
+
     public static KookooIVRResponseBuilder hangUpResponseWith(String callId) {
         return new KookooIVRResponseBuilder().withHangUp().withSid(callId);
     }
