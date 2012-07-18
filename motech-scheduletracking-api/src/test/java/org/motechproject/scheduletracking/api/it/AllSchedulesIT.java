@@ -9,7 +9,7 @@ import org.motechproject.scheduletracking.api.domain.ScheduleFactory;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.repository.AllSchedules;
 import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReaderImpl;
-import org.motechproject.server.startup.service.PlatformSettingsService;
+import org.motechproject.server.config.service.PlatformSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:testApplicationSchedulerTrackingAPI.xml")
-public class AllSchedulesIT{
+public class AllSchedulesIT {
     @Autowired
     ScheduleFactory scheduleFactory;
     @Autowired
@@ -33,12 +33,12 @@ public class AllSchedulesIT{
     private AllSchedules allSchedules;
 
     @After
-    public void tearDown(){
+    public void tearDown() {
         allSchedules.removeAll();
     }
 
     @Before
-    public void setUp(){
+    public void setUp() {
         allSchedules = new AllSchedules(db, scheduleFactory, platformSettingsService);
         List<ScheduleRecord> scheduleRecords = new TrackedSchedulesJsonReaderImpl().getAllSchedules("/schedules");
         for (ScheduleRecord scheduleRecord : scheduleRecords) {

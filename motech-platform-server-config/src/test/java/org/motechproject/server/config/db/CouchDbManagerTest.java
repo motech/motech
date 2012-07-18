@@ -1,4 +1,4 @@
-package org.motechproject.server.startup.db;
+package org.motechproject.server.config.db;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;

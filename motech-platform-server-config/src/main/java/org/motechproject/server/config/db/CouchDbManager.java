@@ -1,4 +1,4 @@
-package org.motechproject.server.startup.db;
+package org.motechproject.server.config.db;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
@@ -15,7 +15,7 @@ import java.util.Properties;
 public class CouchDbManager {
 
     @Autowired
-    HttpClientFactoryBean httpClientFactoryBean;
+    private HttpClientFactoryBean httpClientFactoryBean;
 
     private CouchDbInstance couchDbInstance;
     private Map<String, CouchDbConnector> couchDbConnectors = new HashMap<>();
@@ -39,12 +39,12 @@ public class CouchDbManager {
     public CouchDbConnector getConnector(String dbName, boolean createIfNotExists) {
         if (!couchDbConnectors.containsKey(dbName)) {
             CouchDbConnector connector = couchDbInstance.createConnector(dbName, createIfNotExists);
-            couchDbConnectors.put(dbName, connector) ;
+            couchDbConnectors.put(dbName, connector);
         }
         return couchDbConnectors.get(dbName);
     }
 
-    public void configureDb(Properties couchDbProperties) throws DbConnectionException  {
+    public void configureDb(Properties couchDbProperties) throws DbConnectionException {
         httpClientFactoryBean.setProperties(couchDbProperties);
         httpClientFactoryBean.setTestConnectionAtStartup(true);
 
