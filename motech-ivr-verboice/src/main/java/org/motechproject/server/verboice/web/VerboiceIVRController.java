@@ -49,7 +49,7 @@ public class VerboiceIVRController {
 
     private String redirectToDecisionTree(String treeName, String digits, String treePath, String language, String flowSessionId, String servletPath) {
         final String transitionKey = digits == null ? "" : "&trK=" + digits;
-        final String flowSessionParam = flowSessionId == null? "" :"&flowSessionId="+ flowSessionId;
+        final String flowSessionParam = flowSessionId == null ? "" : "&flowSessionId=" + flowSessionId;
         return String.format("forward:%s%s?type=verboice&tree=%s&trP=%s&ln=%s%s%s", servletPath, DECISIONTREE_URL, treeName, treePath, language, flowSessionParam, transitionKey)
                 .replaceAll("//", "/");
     }

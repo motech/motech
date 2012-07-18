@@ -3,6 +3,7 @@ package org.motechproject.server.verboice.domain;
 import java.util.LinkedList;
 import java.util.List;
 
+@Deprecated
 public abstract class AggregatedVerboiceAction implements VerboiceVerb {
 
     private List<VerboiceVerb> verboiceVerbs = new LinkedList<VerboiceVerb>();
