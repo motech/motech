@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Contract for an IVR Context needed for driving an IVR call flow.

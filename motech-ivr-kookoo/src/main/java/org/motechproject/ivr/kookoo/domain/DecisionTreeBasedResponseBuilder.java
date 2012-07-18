@@ -1,6 +1,11 @@
 package org.motechproject.ivr.kookoo.domain;
 
-import org.motechproject.decisiontree.model.*;
+import org.motechproject.decisiontree.model.AudioPrompt;
+import org.motechproject.decisiontree.model.ITreeCommand;
+import org.motechproject.decisiontree.model.Node;
+import org.motechproject.decisiontree.model.Prompt;
+import org.motechproject.decisiontree.model.TextToSpeechPrompt;
+
 import org.motechproject.ivr.kookoo.KookooIVRResponseBuilder;
 
 import java.util.List;
@@ -11,7 +16,7 @@ public class DecisionTreeBasedResponseBuilder {
         for (Prompt prompt : prompts) {
             boolean isAudioPrompt = prompt.getClass().equals(AudioPrompt.class);
             boolean shouldNotBuildPrompt = retryOnIncorrectUserAction && isAudioPrompt;
-            if (shouldNotBuildPrompt) continue;
+            if (shouldNotBuildPrompt) { continue; }
             ITreeCommand command = prompt.getCommand();
             boolean isAudioPromptOrMenuAudioPrompt = prompt instanceof AudioPrompt;
             boolean isDialPrompt = prompt instanceof TextToSpeechPrompt;
@@ -26,13 +31,16 @@ public class DecisionTreeBasedResponseBuilder {
     private int maxLenOfTransitionOptions(Node node) {
         int maxLen = 0;
         for (String key : node.getTransitions().keySet()) {
-            if (maxLen < key.length()) maxLen = key.length();
+            if (maxLen < key.length()) { maxLen = key.length(); }
         }
         return maxLen;
     }
 
     private void buildPrompts(KookooIVRResponseBuilder ivrResponseBuilder, boolean isAudioPrompt, boolean isTextToSpeechPrompt, String... promptNames) {
-        if (isAudioPrompt) ivrResponseBuilder.withPlayAudios(promptNames);
-        else if(isTextToSpeechPrompt) ivrResponseBuilder.withPlayTexts(promptNames);
+        if (isAudioPrompt) {
+            ivrResponseBuilder.withPlayAudios(promptNames);
+        } else if (isTextToSpeechPrompt) {
+            ivrResponseBuilder.withPlayTexts(promptNames);
+        }
     }
 }

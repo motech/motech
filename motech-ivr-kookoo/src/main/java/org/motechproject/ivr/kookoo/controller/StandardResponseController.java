@@ -23,7 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 @RequestMapping(AllIVRURLs.STANDARD_RESPONSE_CONTROLLER)
 public class StandardResponseController {
-    Logger logger = Logger.getLogger(this.getClass());
+    private Logger logger = Logger.getLogger(this.getClass());
+
     private KookooCallDetailRecordsService kookooCallDetailRecordsService;
     private FlowSessionService flowSessionService;
 
