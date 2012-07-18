@@ -1,0 +1,10 @@
+{
+  "results":[{
+    "uuid": "AAABBBCCC",
+    "name": "Location Name",
+    "country": "Facility Country",
+    "address6": "Region",
+    "countyDistrict": "Facility District",
+    "stateProvince": "Facility State"
+  } ]
+}
