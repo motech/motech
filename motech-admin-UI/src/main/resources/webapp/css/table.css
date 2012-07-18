@@ -1,0 +1,78 @@
+table {
+		border-collapse:collapse;
+		background:#EFF4FB url(../img/teaser.gif) repeat-x;
+		border-left:1px solid #686868;
+		border-right:1px solid #686868;
+		font:0.8em/145% 'Trebuchet MS',helvetica,arial,verdana;
+		color: #333;
+		width: 100%;
+		text-align: center;
+}
+
+td, th {
+		padding:5px;
+}
+
+caption {
+		padding: 0 0 .5em 0;
+		text-align: left;
+		font-size: 1.4em;
+		font-weight: bold;
+		text-transform: uppercase;
+		color: #333;
+		background: transparent;
+}
+
+/* =links
+----------------------------------------------- */
+
+table a {
+		color:#950000;
+		text-decoration:none;
+}
+
+table a:link {}
+
+table a:visited {
+		font-weight:normal;
+		color:#666;
+		text-decoration: line-through;
+}
+
+table a:hover {
+		border-bottom: 1px dashed #bbb;
+}
+
+/* =head =foot
+----------------------------------------------- */
+
+thead th, tfoot th, tfoot td {
+		background:#333 url(../img/llsh.gif) repeat-x;
+		color:#fff
+}
+
+tfoot td {
+		text-align:right
+}
+
+/* =body
+----------------------------------------------- */
+
+tbody th, tbody td {
+		border-bottom: dotted 1px #333;
+		padding-left: 10px;
+}
+
+tbody th {
+		white-space: nowrap;
+}
+
+tbody th a {
+		color:#333;
+}
+
+.odd {}
+
+tbody tr:hover {
+		background:#fafafa
+}

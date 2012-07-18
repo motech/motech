@@ -12,12 +12,17 @@ public class JarInformation {
     public static final String IMPLEMENTATION_VERSION = "Implementation-Version";
     public static final String IMPLEMENTATION_TITLE = "Implementation-Title";
     public static final String IMPLEMENTATION_VENDOR_ID = "Implementation-Vendor-Id";
+    public static final String BUNDLE_SYMBOLIC_NAME = "Bundle-SymbolicName";
+    public static final String BUNDLE_VERSION = "Bundle-Version";
+
 
     private String path;
     private String filename;
     private String implementationVendorID;
     private String implementationTitle;
     private String implementationVersion;
+    private String bundleSymbolicName;
+    private String bundleVersion;
 
     public JarInformation(File file) throws IOException {
         readManifestInformation(file);
@@ -56,6 +61,8 @@ public class JarInformation {
             implementationVersion = attributes.getValue(IMPLEMENTATION_VERSION);
             implementationTitle = attributes.getValue(IMPLEMENTATION_TITLE);
             implementationVendorID = attributes.getValue(IMPLEMENTATION_VENDOR_ID);
+            bundleSymbolicName = attributes.getValue(BUNDLE_SYMBOLIC_NAME);
+            bundleVersion = attributes.getValue(BUNDLE_VERSION);
         }
     }
 
@@ -79,4 +86,11 @@ public class JarInformation {
         return filename;
     }
 
+    public String getBundleSymbolicName() {
+        return bundleSymbolicName;
+    }
+
+    public String getBundleVersion() {
+        return bundleVersion;
+    }
 }

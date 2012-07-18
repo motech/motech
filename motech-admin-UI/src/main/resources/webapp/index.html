@@ -1,0 +1,48 @@
+<!doctype html>
+<html ng-app="motech-admin">
+    <head>
+        <meta charset="utf-8" />
+        <title>MoTeCH Admin</title>
+
+        <link rel="stylesheet" type="text/css" href="css/table.css" />
+        <link rel="stylesheet" type="text/css" href="css/admin.css" />
+        <link rel="stylesheet" type="text/css" href="css/jquery.alerts.css" />
+
+        <script src="lib/angular/angular.min.js" type="text/javascript"></script>
+        <script src="lib/angular/angular-resource.min.js" type="text/javascript"></script>
+
+        <script src="lib/jquery/jquery-1.7.2.min.js" type="text/javascript"></script>
+        <script src="lib/jquery/jquery.form.js" type="text/javascript"></script>
+        <script src="lib/jquery/jquery-ui.min.js" type="text/javascript"></script>
+        <script src="lib/jquery/jquery.alerts.js" type="text/javascript"></script>
+        <script src="lib/jquery/jquery.i18n.properties-min-1.0.9.js" type="text/javascript"></script>
+
+        <script src="js/util.js" type="text/javascript"></script>
+        <script src="js/common.js" type="text/javascript"></script>
+        <script src="js/app.js" type="text/javascript"></script>
+        <script src="js/services.js" type="text/javascript"></script>
+        <script src="js/controllers.js" type="text/javascript"></script>
+        <script src="js/localization.js" type="text/javascript"></script>
+    </head>
+
+    <body ng-controller="BundleListCtrl">
+        <div id="content">
+            <h1>{{msg('title')}}</h1>
+
+            <div id="left-half">
+                <div ng-view></div>
+            </div>
+
+            <div id="right-half">
+                <div class="box-header">{{msg('messages.title')}}</div>
+                <div class="box-content" ng-controller="StatusMsgCtrl">
+                    <span ng-show="messages.length < 1"><p>{{msg('messages.empty')}}</p></span>
+                    <div ng-repeat="message in messages" ng-class="getCssClass(message)">
+                        <span class="msg-date">{{message.getDate() | date:'medium'}}</span> <span class="msg-level">
+                        [{{message.level}}]</span>: {{message.text}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,56 @@
+<div>
+    <div class="box-header">{{msg('bundles.upload')}}</div>
+    <div class="box-content">
+        <form id="bundleUploadForm"  action="api/bundles/upload" enctype="multipart/form-data" method="POST">
+            <input type="file" id="bundleFile" name="bundleFile" placeholder="{{msg('bundles.file')}}"/>
+            <input type="button" value="{{msg('bundles.installOrUpdate')}}" ng-click="submitBundle()" />
+        </form>
+    </div>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>{{msg('bundles.id')}}</th>
+        <th>{{msg('bundles.icon')}}</th>
+        <th>{{msg('bundles.symbolicName')}}</th>
+        <th>{{msg('bundles.state')}}</th>
+        <th>{{msg('bundles.actions')}}</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="bundle in bundles">
+        <td>{{bundle.bundleId}}</td>
+        <td>
+            <div ng-class="getIconClass(bundle)">
+                <img ng-src="api/bundles/{{bundle.bundleId}}/icon" class="icon" />
+            </div>
+        </td>
+        <td>{{bundle.symbolicName}}</td>
+        <td><span ng-show="bundleStable(bundle)">{{bundle.state}}</span></td>
+        <td>
+            <div id="commandLinks" ng-show="bundleStable(bundle)">
+                <span ng-hide="bundle.isActive()">
+                    <a ng-click="startBundle(bundle)" >
+                        <img src="img/start.png" alt="{{msg('bundles.start')}}" class="icon" />
+                    </a>
+                </span>
+                <span ng-show="bundle.isActive()">
+                    <a ng-click="stopBundle(bundle)">
+                        <img src="img/stop.png" alt="{{msg('bundles.stop')}}" class="icon" />
+                    </a>
+                    <a ng-click="restartBundle(bundle)">
+                        <img src="img/restart.png" alt="{{msg('bundles.restart')}}" class="icon" />
+                    </a>
+                </span>
+                <a ng-click="uninstallBundle(bundle)">
+                    <img src="img/remove.gif" alt="{{msg('bundles.uninstall')}}" class="icon" />
+                </a>
+            </div>
+            <div class="loader.wrapper" ng-hide="bundleStable(bundle)">
+                <img class="icon" src="img/load.gif" alt="loading" />
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>

@@ -1,0 +1,54 @@
+'use strict';
+
+/* Message controller tests */
+
+describe("Status Message Controller", function() {
+
+    var scope, ctrl, $httpBackend;
+
+    var infoMsg, errorMsg, response;
+
+    beforeEach(function(){
+        this.addMatchers({
+            toEqualData: function(expected) {
+                return angular.equals(this.actual, expected);
+            }
+        });
+
+        this.httpCall = function() {
+            expect(scope.messages).toEqual([]);
+            $httpBackend.flush();
+        }
+    });
+
+    beforeEach(module('messageServices'));
+    beforeEach(module('localization'));
+
+    beforeEach(inject(function(_$httpBackend_, $rootScope, $controller) {
+
+        infoMsg = { level: 'INFO', text: 'First' };
+        errorMsg = { level: 'ERROR', text: 'First' };
+        response = [ infoMsg, errorMsg ];
+
+        $httpBackend = _$httpBackend_;
+        $httpBackend.expectGET('api/messages').
+        respond(response);
+
+        scope = $rootScope.$new();
+        ctrl = $controller(StatusMsgCtrl, {$scope: scope});
+    }));
+
+
+    it("Should fetch 2 messages", function() {
+        this.httpCall();
+
+        expect(scope.messages).toEqualData(response);
+    });
+
+    it("Should return error class for ERROR messages", function() {
+        this.httpCall();
+
+        expect(scope.getCssClass(scope.messages[0])).toEqual("msg");
+        expect(scope.getCssClass(scope.messages[1])).toEqual("msg error");
+    });
+});

@@ -120,6 +120,11 @@
             <version>3.1</version>
         </dependency>
         <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.2.2</version>
+        </dependency>
+        <dependency>
             <groupId>findbugs</groupId>
             <artifactId>annotations</artifactId>
             <version>1.0.0</version>
@@ -167,6 +172,8 @@
         <module>motech-platform-server-config</module>
         <module>motech-platform-server-startup</module>
         <module>motech-web-security</module>
+        <module>motech-admin</module>
+        <module>motech-admin-UI</module>
         <!-- Keep this module in last, the module checks if everything is alright after deploy motech on tomcat server -->
         <module>motech-deployment-tests</module>
     </modules>
