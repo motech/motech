@@ -123,7 +123,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-Activator>
-                            org.motechproject.server.verboice.Activator
+                            org.motechproject.server.kookoo.Activator
                         </Bundle-Activator>
                         <Import-Package>
                             *,
