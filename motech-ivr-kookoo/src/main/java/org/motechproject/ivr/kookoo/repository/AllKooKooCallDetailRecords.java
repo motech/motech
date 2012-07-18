@@ -12,7 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -47,11 +51,13 @@ public class AllKooKooCallDetailRecords extends MotechBaseRepository<KookooCallD
         DateTime endKey = end.toDateTime(DateTimeZone.UTC);
         while (true) {
             List<KookooCallDetailRecord> records = findByStartDate(startKey, endKey, batchSize);
-            if (records.size() == 0)
-                break;
+            if (records.size() == 0) { break; }
+
             List<BulkDeleteDocument> deleteDocuments = new ArrayList<BulkDeleteDocument>();
-            for (KookooCallDetailRecord record : records)
+            for (KookooCallDetailRecord record : records) {
                 deleteDocuments.add(BulkDeleteDocument.of(record));
+            }
+
             db.executeBulk(deleteDocuments);
         }
     }
@@ -65,11 +71,13 @@ public class AllKooKooCallDetailRecords extends MotechBaseRepository<KookooCallD
         DateTime endKey = end.toDateTime(DateTimeZone.UTC);
         while (true) {
             List<KookooCallDetailRecord> records = findByStartDate(startKey, endKey, batchSize);
-            if (records.size() == 0)
-                break;
+            if (records.size() == 0) { break; }
+
             Map<String, List<String>> purgeRequest = new HashMap<String, List<String>>();
-            for (KookooCallDetailRecord record : records)
-                purgeRequest.put(record.getId(), asList(new String[]{ record.getRevision() }));
+            for (KookooCallDetailRecord record : records) {
+                purgeRequest.put(record.getId(), asList(new String[] {record.getRevision() }));
+            }
+
             db.purge(purgeRequest);
             log.info(format("purged kookoo %d call logs between %s and %s", records.size(), records.get(0).getCallDetailRecord().getStartDate(), records.get(records.size() - 1).getCallDetailRecord().getStartDate()));
         }

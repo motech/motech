@@ -15,14 +15,14 @@ public interface CallFlowController {
      * @param kooKooIVRContext context information.
      * @return
      */
-    public String urlFor(KooKooIVRContext kooKooIVRContext);
+    String urlFor(KooKooIVRContext kooKooIVRContext);
 
     /**
      * Get Next decision tree to serve base on current call status.
      * @param kooKooIVRContext
      * @return
      */
-    public String decisionTreeName(KooKooIVRContext kooKooIVRContext);
+    String decisionTreeName(KooKooIVRContext kooKooIVRContext);
 
     /**
      * Lookup tree for given tree name. Generally from a registry.
