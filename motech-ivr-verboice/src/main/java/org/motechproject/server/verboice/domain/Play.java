@@ -1,5 +1,6 @@
 package org.motechproject.server.verboice.domain;
 
+@Deprecated
 public class Play implements VerboiceVerb {
     private int loop;
     private String fileUrl;

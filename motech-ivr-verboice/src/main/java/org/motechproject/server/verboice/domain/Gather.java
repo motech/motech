@@ -1,5 +1,6 @@
 package org.motechproject.server.verboice.domain;
 
+@Deprecated
 public class Gather extends AggregatedVerboiceAction {
     private static final int DEFAULT_TIMEOUT = 5; // default 5 seconds
     private static final String METHOD = "POST"; //verboice doesnt pass digits pressed in GET call
