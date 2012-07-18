@@ -7,7 +7,7 @@
              http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
              http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd">
 
-    <jms:message-driven-channel-adapter id="jmsin" destination="schedulerQueue" channel="jmsinToSchedulerChannel"/>
+    <jms:message-driven-channel-adapter id="schedulerAdapter" destination="schedulerQueue" channel="jmsinToSchedulerChannel"/>
 
     <channel id="jmsinToSchedulerChannel"/>
 
