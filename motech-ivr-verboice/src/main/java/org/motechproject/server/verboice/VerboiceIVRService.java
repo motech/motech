@@ -1,5 +1,6 @@
 package org.motechproject.server.verboice;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
@@ -40,8 +41,6 @@ public class VerboiceIVRService implements IVRService {
         this.verboiceProperties = verboiceProperties;
         this.commonsHttpClient = commonsHttpClient;
         this.flowSessionService = flowSessionService;
-        this.commonsHttpClient.getParams().setAuthenticationPreemptive(true);
-        this.commonsHttpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(verboiceProperties.getProperty("username"), verboiceProperties.getProperty("password")));
     }
 
     public void setHandler(VerboiceHandler handler) {
@@ -53,6 +52,7 @@ public class VerboiceIVRService implements IVRService {
         initSession(callRequest);
         try {
             GetMethod getMethod = new GetMethod(outgoingCallUri(callRequest));
+            getMethod.addRequestHeader("Authorization", "Basic " + new String(Base64.encodeBase64((verboiceProperties.getProperty("username") + ":" + verboiceProperties.getProperty("password")).getBytes())));
             int status = commonsHttpClient.executeMethod(getMethod);
             log.info(String.format("[%d]\n%s", status, getMethod.getResponseBodyAsString()));
         } catch (IOException e) {
