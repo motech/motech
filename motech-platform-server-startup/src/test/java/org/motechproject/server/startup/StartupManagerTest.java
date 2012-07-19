@@ -15,12 +15,14 @@ import org.motechproject.server.config.settings.ConfigFileSettings;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.server.startup.MotechPlatformState.NEED_CONFIG;
 
 public class StartupManagerTest {
 
@@ -54,9 +56,10 @@ public class StartupManagerTest {
 
         startupManager.startup();
 
-        assertEquals(MotechPlatformState.NEED_CONFIG, startupManager.getPlatformState());
+        assertEquals(NEED_CONFIG, startupManager.getPlatformState());
+        assertFalse(startupManager.canLaunchBundles());
         assertNull(platformSettingsService.getPlatformSettings());
-        verify(configLoader, times(2)).loadConfig();
+        verify(configLoader, times(3)).loadConfig();
     }
 
     @Test
@@ -69,7 +72,8 @@ public class StartupManagerTest {
 
         assertEquals(startupManager.getPlatformState(), MotechPlatformState.NO_DB);
         assertEquals(platformSettingsService.getPlatformSettings(), configFileSettings);
-        verify(configLoader, times(2)).loadConfig();
-        verify(couchDbManager).configureDb(couchDbProperties);
+        assertFalse(startupManager.canLaunchBundles());
+        verify(configLoader, times(3)).loadConfig();
+        verify(couchDbManager, times(2)).configureDb(couchDbProperties);
     }
 }

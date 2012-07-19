@@ -1,6 +1,8 @@
 package org.motechproject.server.startup;
 
-import org.ektorp.CouchDbConnector;
+import org.apache.commons.vfs.FileSystemException;
+import org.apache.commons.vfs.VFS;
+import org.apache.commons.vfs.impl.DefaultFileMonitor;
 import org.joda.time.DateTime;
 import org.motechproject.server.config.ConfigLoader;
 import org.motechproject.server.config.db.CouchDbManager;
@@ -9,7 +11,6 @@ import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.service.AllSettings;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.ConfigFileSettings;
-import org.motechproject.server.config.settings.MotechSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +24,10 @@ public final class StartupManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StartupManager.class);
 
-    private AllSettings allSettings;
-
-    private ConfigFileSettings configFileSettings;
-    private SettingsRecord dbSettings;
     private MotechPlatformState platformState = MotechPlatformState.STARTUP;
+    private DefaultFileMonitor fileMonitor;
+    private ConfigFileSettings configFileSettings;
+    private ConfigFileListener configFileListener;
 
     @Autowired
     private CouchDbManager couchDbManager;
@@ -50,13 +50,32 @@ public final class StartupManager {
         return instance;
     }
 
+    public void startMonitor() throws FileSystemException {
+        if (fileMonitor == null) {
+            fileMonitor = new DefaultFileMonitor(configFileListener);
+            fileMonitor.addFile(VFS.getManager().resolveFile(configFileSettings.getPath()));
+            fileMonitor.setDelay(5 * 1000L);
+
+            fileMonitor.start();
+        } else {
+            stopMonitor();
+            startMonitor();
+        }
+    }
+
+    public void stopMonitor() {
+        if (fileMonitor != null) {
+            fileMonitor.stop();
+            fileMonitor = null;
+        }
+    }
+
     public MotechPlatformState getPlatformState() {
         return platformState;
     }
 
     public void startup() {
-        MotechSettings settings = platformSettingsService.getPlatformSettings();
-        configFileSettings = settings instanceof ConfigFileSettings ? (ConfigFileSettings) settings : null;
+        configFileSettings = configLoader.loadConfig();
 
         // check if settings were loaded from config locations
         if (configFileSettings == null) {
@@ -75,6 +94,10 @@ public final class StartupManager {
         return platformState == MotechPlatformState.FIRST_RUN || platformState == MotechPlatformState.NORMAL_RUN;
     }
 
+    public void setConfigFileListener(final ConfigFileListener configFileListener) {
+        this.configFileListener = configFileListener;
+    }
+
     private void syncSettingsWithDb() {
         // test Database
         try {
@@ -87,8 +110,8 @@ public final class StartupManager {
         // load db settings
         if (platformState != MotechPlatformState.NO_DB) {
             try {
-                initSettingsRepository();
-                dbSettings = allSettings.getSettings();
+                AllSettings allSettings = new AllSettings(couchDbManager.getConnector(SETTINGS_DB, true));
+                SettingsRecord dbSettings = allSettings.getSettings();
 
                 if (dbSettings.getLastRun() == null) {
                     platformState = MotechPlatformState.FIRST_RUN;
@@ -102,7 +125,10 @@ public final class StartupManager {
                     dbSettings.updateSettings(configFileSettings);
                 }
 
-                saveDbSettings();
+                dbSettings.setLastRun(DateTime.now());
+                dbSettings.setConfigFileChecksum(configFileSettings.getMd5checkSum());
+
+                allSettings.addOrUpdateSettings(dbSettings);
             } catch (Exception e) {
                 LOGGER.error(e.getMessage(), e);
                 platformState = MotechPlatformState.DB_ERROR;
@@ -110,15 +136,4 @@ public final class StartupManager {
         }
     }
 
-    private void saveDbSettings() throws Exception {
-        dbSettings.setLastRun(DateTime.now());
-        dbSettings.setConfigFileChecksum(configFileSettings.getMd5checkSum());
-
-        allSettings.addOrUpdateSettings(dbSettings);
-    }
-
-    private void initSettingsRepository() throws Exception {
-        CouchDbConnector couchDbConnector = couchDbManager.getConnector(SETTINGS_DB, true);
-        allSettings = new AllSettings(couchDbConnector);
-    }
 }

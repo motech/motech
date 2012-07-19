@@ -90,24 +90,6 @@ public class ConfigLoader {
         FileUtils.write(configLocationsFile, sb.toString());
     }
 
-    public void load() throws IOException {
-        if (configLocations == null) {
-            configLocations = new ArrayList<>();
-        }
-
-        try (Scanner scanner = new Scanner(configLocationsFile)) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-
-                if (line.startsWith("file:")) {
-                    this.configLocations.add(new UrlResource(line));
-                } else {
-                    this.configLocations.add(resourceLoader.getResource(line));
-                }
-            }
-        }
-    }
-
     public static ConfigFileSettings loadSettingsFromStream(InputStream is) throws IOException {
         try {
             MessageDigest digest = MessageDigest.getInstance("MD5");
@@ -125,6 +107,24 @@ public class ConfigLoader {
         } catch (NoSuchAlgorithmException e) {
             LOGGER.error("MD5 algorithm not available", e);
             throw new RuntimeException(e);
+        }
+    }
+
+    private void load() throws IOException {
+        if (configLocations == null) {
+            configLocations = new ArrayList<>();
+        }
+
+        try (Scanner scanner = new Scanner(configLocationsFile)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+
+                if (line.startsWith("file:")) {
+                    this.configLocations.add(new UrlResource(line));
+                } else {
+                    this.configLocations.add(resourceLoader.getResource(line));
+                }
+            }
         }
     }
 }
