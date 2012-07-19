@@ -2,6 +2,7 @@ package org.motechproject.admin.web.controller;
 
 import org.motechproject.admin.bundles.BundleIcon;
 import org.motechproject.admin.service.ModuleAdminService;
+import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.server.osgi.BundleInformation;
 import org.osgi.framework.BundleException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ public class BundleAdminController {
 
     @Autowired
     private ModuleAdminService moduleAdminService;
+
+    @Autowired
+    private StatusMessageService statusMessageService;
 
     @RequestMapping(value = "/bundles", method = RequestMethod.GET)
     public @ResponseBody List<BundleInformation> getBundles() {
@@ -65,5 +69,11 @@ public class BundleAdminController {
         response.setContentType(bundleIcon.getMime());
 
         response.getOutputStream().write(bundleIcon.getIcon());
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(BundleException.class)
+    public void handleBundleException(BundleException ex) {
+        statusMessageService.error(ex.getMessage());
     }
 }

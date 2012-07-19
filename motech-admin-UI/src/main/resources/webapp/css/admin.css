@@ -53,3 +53,7 @@ body {
 .error {
     color: red;
 }
+
+.status-message {
+    border-bottom: thin dotted;
+}

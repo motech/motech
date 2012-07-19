@@ -26,8 +26,8 @@ describe("Status Message Controller", function() {
 
     beforeEach(inject(function(_$httpBackend_, $rootScope, $controller) {
 
-        infoMsg = { level: 'INFO', text: 'First' };
-        errorMsg = { level: 'ERROR', text: 'First' };
+        infoMsg = { level: 'INFO', text: 'First', _id: 1 };
+        errorMsg = { level: 'ERROR', text: 'First', _id: 2 };
         response = [ infoMsg, errorMsg ];
 
         $httpBackend = _$httpBackend_;
@@ -50,5 +50,16 @@ describe("Status Message Controller", function() {
 
         expect(scope.getCssClass(scope.messages[0])).toEqual("msg");
         expect(scope.getCssClass(scope.messages[1])).toEqual("msg error");
+    });
+
+    it("should add message to ignored after remove", function() {
+        this.httpCall();
+
+        scope.remove(scope.messages[1]);
+
+        expect(scope.messages.length).toEqual(1);
+        expect(scope.messages[0]).toEqualData(infoMsg);
+        expect(scope.ignoredMessages.length).toEqual(1);
+        expect(scope.ignoredMessages[0]).toEqual(errorMsg._id);
     });
 });

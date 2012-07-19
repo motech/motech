@@ -31,9 +31,12 @@ public class BundleInformation {
         }
     }
 
+    private static final String BUNDLE_NAME="Bundle-Name";
+
     private long bundleId;
     private Version version;
     private String symbolicName;
+    private String name;
     private String location;
     private State state;
 
@@ -43,6 +46,7 @@ public class BundleInformation {
         this.symbolicName = bundle.getSymbolicName();
         this.location = bundle.getLocation();
         this.state = State.fromInt(bundle.getState());
+        this.name = (String) bundle.getHeaders().get(BUNDLE_NAME);
     }
 
     public long getBundleId() {
@@ -65,6 +69,10 @@ public class BundleInformation {
         return state;
     }
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public boolean equals(Object arg0) {
         boolean equal = false;
@@ -72,13 +80,13 @@ public class BundleInformation {
             BundleInformation other = (BundleInformation) arg0;
             equal = Objects.equals(state, other.getState()) && Objects.equals(bundleId, other.getBundleId()) &&
                     Objects.equals(version, other.version) && Objects.equals(symbolicName, other.getSymbolicName()) &&
-                    Objects.equals(location, other.getLocation());
+                    Objects.equals(location, other.getLocation()) && Objects.equals(name, other.getName());
         }
         return equal;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(state, version, symbolicName, location, bundleId);
+        return Objects.hash(state, version, symbolicName, location, bundleId, name);
     }
 }

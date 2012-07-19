@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.admin.bundles.BundleIcon;
 import org.motechproject.admin.service.ModuleAdminService;
+import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.admin.web.controller.BundleAdminController;
 import org.motechproject.server.osgi.BundleInformation;
 import org.osgi.framework.BundleException;
@@ -48,6 +49,12 @@ public class BundleAdminControllerTest {
 
     @Mock
     MultipartFile bundleFile;
+
+    @Mock
+    BundleException bundleException;
+
+    @Mock
+    StatusMessageService statusMessageService;
 
     @Before
     public void setUp() {
@@ -139,5 +146,14 @@ public class BundleAdminControllerTest {
         verify(response).setContentLength(icon.length);
         verify(outputStream).write(icon);
         verify(response).setStatus(HttpServletResponse.SC_OK);
+    }
+
+    @Test
+    public void testBundleException() {
+        String msg = "error message";
+        when(bundleException.getMessage()).thenReturn(msg);
+
+        controller.handleBundleException(bundleException);
+        verify(statusMessageService).error(msg);
     }
 }

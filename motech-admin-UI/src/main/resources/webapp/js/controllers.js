@@ -4,7 +4,7 @@
 
 function BundleListCtrl($scope, Bundle, i18nService) {
 
-    const LOADING_STATE = 'LOADING';
+    var LOADING_STATE = 'LOADING';
 
     $scope.bundles = Bundle.query();
 
@@ -67,17 +67,23 @@ function BundleListCtrl($scope, Bundle, i18nService) {
         });
     }
 
-    $scope.msg = function(key) {
-        return i18nService.getMessage(key);
-    }
-
     Bundle.prototype.isActive = function() {
         return this.state == 'ACTIVE';
     }
 }
 
-function StatusMsgCtrl($scope, StatusMessage) {
-    $scope.messages = StatusMessage.query();
+function StatusMsgCtrl($scope, $timeout, StatusMessage) {
+    var UPDATE_INTERVAL = 1000 * 30;
+
+    $scope.ignoredMessages = [];
+    $scope.messages = [];
+
+    StatusMessage.query(function(data) {
+        var mgs = jQuery.grep(data, function(message, index) {
+            return jQuery.inArray(message._id, $scope.ignoredMessages) == -1; // not in ignored list
+        });
+        $scope.messages = mgs;
+    });
 
     $scope.getCssClass = function(msg) {
         var cssClass = 'msg';
@@ -89,5 +95,47 @@ function StatusMsgCtrl($scope, StatusMessage) {
 
     StatusMessage.prototype.getDate = function() {
         return new Date(this.date);
+    }
+
+    var update = function() {
+        StatusMessage.query(function (newMessages) {
+            if (!messagesEqual(newMessages, $scope.messages)) {
+                messageFilter(newMessages);
+            }
+
+            $timeout(update, UPDATE_INTERVAL);
+
+            function messagesEqual(arg1, arg2) {
+                if(arg1.length !== arg2.length) {
+                    return false;
+                }
+
+                for(var i = arg1.length; i--;) {
+                    if(arg1[i]._id != arg2[i]._id)
+                        return false;
+                }
+
+                return true;
+            }
+        });
+    }
+
+    $scope.remove = function(message) {
+        $scope.messages.remove(message);
+        $scope.ignoredMessages.push(message._id);
+    }
+
+    $timeout(update, UPDATE_INTERVAL);
+
+    var messageFilter = function(data) {
+        return jQuery.grep(data, function(message, index) {
+            return jQuery.inArray(message._id, $scope.ignoredMessages) == -1; // not in ignored list
+        });
+    }
+}
+
+function MasterCtrl($scope, i18nService) {
+    $scope.msg = function(key) {
+        return i18nService.getMessage(key);
     }
 }

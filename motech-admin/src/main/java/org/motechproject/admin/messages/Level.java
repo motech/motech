@@ -15,4 +15,17 @@ public enum Level {
     private Level(String value) {
         this.value = value;
     }
+
+    public static Level fromString(String string) {
+        Level result = null;
+        if (string != null) {
+            for (Level level : Level.values()) {
+                if (level.getValue().equals(string.toUpperCase())) {
+                    result = level;
+                    break;
+                }
+            }
+        }
+        return result;
+    }
 }

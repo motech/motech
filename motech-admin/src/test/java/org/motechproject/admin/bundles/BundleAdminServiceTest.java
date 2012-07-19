@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -40,6 +41,9 @@ public class BundleAdminServiceTest {
     Bundle bundle;
 
     @Mock
+    Dictionary<Object, Object> headers;
+
+    @Mock
     BundleDirectoryManager bundleDirectoryManager;
 
     @Mock
@@ -48,6 +52,7 @@ public class BundleAdminServiceTest {
     @Before
     public void setUp() {
         initMocks(this);
+        when(bundle.getHeaders()).thenReturn(headers);
     }
 
     @Test

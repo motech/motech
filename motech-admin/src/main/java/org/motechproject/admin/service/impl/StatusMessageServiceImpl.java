@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service("statusMessageService")
@@ -25,6 +27,14 @@ public class StatusMessageServiceImpl implements StatusMessageService {
                 result.add(message);
             }
         }
+
+        Collections.sort(result, new Comparator<StatusMessage>() {
+            @Override
+            public int compare(StatusMessage o1, StatusMessage o2) {
+            return o2.getDate().compareTo(o1.getDate()); // order by date, descending
+            }
+        });
+
         return result;
     }
 
