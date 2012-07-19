@@ -25,11 +25,11 @@ public class KookooIvrController {
             digits = request.getParameter("data");
         String treePath = request.getParameter("trP");
         String language = request.getParameter("ln");
-        return redirectToDecisionTree(treeName, digits, treePath, language);
+        return redirectToDecisionTree(treeName, digits, treePath, language, request.getServletPath());
     }
 
-    private String redirectToDecisionTree(String treeName, String digits, String treePath, String language) {
+    private String redirectToDecisionTree(String treeName, String digits, String treePath, String language, String servletPath) {
         final String transitionKey = digits == null ? "" : "&trK=" + digits;
-        return format("forward:%s?type=kookoo&tree=%s&trP=%s&ln=%s%s", DECISIONTREE_URL, treeName, treePath, language, transitionKey).replaceAll("//", "/");
+        return format("forward:%s%s?type=kookoo&tree=%s&trP=%s&ln=%s%s", servletPath, DECISIONTREE_URL, treeName, treePath, language, transitionKey).replaceAll("//", "/");
     }
 }
