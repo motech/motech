@@ -176,7 +176,7 @@
         <module>motech-admin</module>
         <module>motech-admin-UI</module>
         <!-- Keep this module in last, the module checks if everything is alright after deploy motech on tomcat server -->
-        <!-- <module>motech-deployment-tests</module> -->
+        <module>motech-deployment-tests</module>
     </modules>
 
     <build>
