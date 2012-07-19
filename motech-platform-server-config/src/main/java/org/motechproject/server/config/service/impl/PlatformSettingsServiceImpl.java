@@ -1,7 +1,12 @@
 package org.motechproject.server.config.service.impl;
 
 import org.motechproject.server.config.ConfigLoader;
+import org.motechproject.server.config.db.CouchDbManager;
+import org.motechproject.server.config.db.DbConnectionException;
+import org.motechproject.server.config.domain.SettingsRecord;
+import org.motechproject.server.config.service.AllSettings;
 import org.motechproject.server.config.service.PlatformSettingsService;
+import org.motechproject.server.config.settings.ConfigFileSettings;
 import org.motechproject.server.config.settings.MotechSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,23 +14,78 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
 @Service
 public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformSettingsServiceImpl.class);
-    public static final String BUNDLE_CONFIG_FOLDER_FORMAT = "%s/.motech/config/%d/%s";
 
     @Autowired
     private ConfigLoader configLoader;
 
+    @Autowired
+    private CouchDbManager couchDbManager;
+
     @Override
     public MotechSettings getPlatformSettings() {
-        return configLoader.loadConfig();
+        MotechSettings settings = configLoader.loadConfig();
+        SettingsRecord record;
+
+        try {
+            record = getDBSettings();
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            record = null;
+        }
+
+        if (record != null) {
+            settings = record;
+        }
+
+        return settings;
+    }
+
+    @Override
+    public void setPlatformSetting(final String key, final String value) {
+        ConfigFileSettings configFileSettings = configLoader.loadConfig();
+        File configFile = new File(configFileSettings.getPath());
+
+        try {
+            // save property to config file
+            if (configFile.canWrite()) {
+                if (configFileSettings.containsKey(key)) {
+                    configFileSettings.put(key, value);
+                    configFileSettings.store(new FileOutputStream(configFile), null);
+                }
+            }
+
+            // save property to db
+            SettingsRecord dbSettings = getDBSettings();
+
+            if (MotechSettings.LANGUAGE.equals(key)) {
+                dbSettings.setLanguage(value);
+            } else {
+                for (Properties p : Arrays.asList(dbSettings.getActivemqProperties(), dbSettings.getQuartzProperties())) {
+                    if (p.containsKey(key)) {
+                        p.put(key, value);
+
+                        break;
+                    }
+                }
+            }
+
+            saveDBSettings(dbSettings);
+        } catch (Exception e) {
+            LOGGER.error("Error: ", e);
+        }
     }
 
     @Override
@@ -48,6 +108,33 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     }
 
     @Override
+    public Properties exportPlatformSettings() {
+        ConfigFileSettings configFileSettings = configLoader.loadConfig();
+        SettingsRecord dbSettings;
+
+        try {
+            dbSettings = getDBSettings();
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            dbSettings = null;
+        }
+
+        Properties export = new Properties();
+
+        if (configFileSettings != null) {
+            export.putAll(configFileSettings);
+        }
+
+        if (dbSettings != null) {
+            export.putAll(dbSettings.getActivemqProperties());
+            export.putAll(dbSettings.getQuartzProperties());
+            export.put(MotechSettings.LANGUAGE, dbSettings.getLanguage());
+        }
+
+        return export;
+    }
+
+    @Override
     public void addConfigLocation(final String location, final boolean save) throws IOException {
         if (location.startsWith("/")) {
             configLoader.addConfigLocation(String.format("file:%s", location));
@@ -62,32 +149,71 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
     @Override
     public void saveBundleProperties(final Long bundleId, final String fileName, final Properties properties) throws IOException {
-        File file = new File(String.format(BUNDLE_CONFIG_FOLDER_FORMAT, System.getProperty("user.home"), bundleId, fileName));
+        File file = new File(String.format("%s/.motech/config/%d/%s", System.getProperty("user.home"), bundleId, fileName));
 
-        try {
-            properties.store(new FileOutputStream(file), null);
-        } catch (IOException e) {
-            LOGGER.error("Error", e);
-            throw e;
-        }
+        properties.store(new FileOutputStream(file), null);
     }
 
     @Override
     public Properties getBundleProperties(final Long bundleId, final String fileName) throws IOException {
-        File file = new File(String.format(BUNDLE_CONFIG_FOLDER_FORMAT, System.getProperty("user.home"), bundleId, fileName));
+        File file = new File(String.format("%s/.motech/config/%d/%s", System.getProperty("user.home"), bundleId, fileName));
 
         if (!file.exists()) {
             return null;
         }
 
-        try {
-            Properties properties = new Properties();
-            properties.load(new FileInputStream(file));
+        Properties properties = new Properties();
+        properties.load(new FileInputStream(file));
 
-            return properties;
-        } catch (IOException e) {
-            LOGGER.error("Error", e);
-            throw e;
+        return properties;
+    }
+
+    @Override
+    public List<Properties> getAllProperties(final Long bundleId) throws IOException {
+        File dir = new File(String.format("%s/.motech/config/%d/", System.getProperty("user.home"), bundleId));
+        List<Properties> list = null;
+
+        if (dir.exists()) {
+            File[] files = dir.listFiles(new FileFilter() {
+                @Override
+                public boolean accept(File pathname) {
+                    return pathname.isFile() && pathname.getName().endsWith(".properties");
+                }
+            });
+
+            list = new ArrayList<>(files.length);
+
+            for (File file : files) {
+                list.add(getBundleProperties(bundleId, file.getName()));
+            }
+        }
+
+        return list;
+    }
+
+    private SettingsRecord getDBSettings() throws DbConnectionException {
+        ConfigFileSettings configFileSettings = configLoader.loadConfig();
+        SettingsRecord record = null;
+
+        if (configFileSettings != null) {
+            couchDbManager.configureDb(configFileSettings.getCouchProperties());
+            AllSettings allSettings = new AllSettings(couchDbManager.getConnector(SETTINGS_DB, true));
+
+            record = allSettings.getSettings();
+        }
+
+        return record;
+    }
+
+    private void saveDBSettings(final SettingsRecord settingsRecord) throws DbConnectionException {
+        ConfigFileSettings configFileSettings = configLoader.loadConfig();
+
+        if (configFileSettings != null) {
+            couchDbManager.configureDb(configFileSettings.getCouchProperties());
+            AllSettings allSettings = new AllSettings(couchDbManager.getConnector(SETTINGS_DB, true));
+
+            allSettings.addOrUpdateSettings(settingsRecord);
         }
     }
+
 }

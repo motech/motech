@@ -10,8 +10,14 @@
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.server.startup"/>
 
-    <bean id="startupManager" class="org.motechproject.server.startup.StartupManager" factory-method="getInstance"/>
-
     <import resource="classpath:applicationPlatformConfig.xml"/>
+
+    <bean id="configFileListener" class="org.motechproject.server.startup.ConfigFileListener"/>
+
+    <bean id="startupManager" class="org.motechproject.server.startup.StartupManager" factory-method="getInstance">
+        <property name="configFileListener" ref="configFileListener"/>
+    </bean>
+
+
 
 </beans>

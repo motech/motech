@@ -9,9 +9,13 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import java.io.IOException;
 
 public class OsgiListener implements ServletContextListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgiListener.class);
+    public static final String ADMIN_BUNDLE = "motech-admin-UI";
+
+    private static StartupManager startupManager = StartupManager.getInstance();
 
     private static OsgiFrameworkService service;
 
@@ -20,25 +24,14 @@ public class OsgiListener implements ServletContextListener {
         LOGGER.debug("Starting OSGi framework...");
         getOsgiService(servletContextEvent).start();
 
-        StartupManager manager = findStartupManager(servletContextEvent);
-        LOGGER.debug("Starting MoTeCH...");
-        manager.startup();
-
-        if (manager.canLaunchBundles()) {
-            LOGGER.info("Launching bundles...");
-            getOsgiService(servletContextEvent).launchBundles();
-        } else {
-            LOGGER.warn("Problems with MoTeCH launch. Finding and launching Admin UI bundle to repair errors by user...");
-
-            if (!getOsgiService(servletContextEvent).launchBundle("admin-UI")) {
-                LOGGER.error("Admin UI bundle not found...");
-            }
-        }
+        startSystem();
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
         getOsgiService(servletContextEvent).stop();
+
+        startupManager.stopMonitor();
     }
 
     private OsgiFrameworkService getOsgiService(ServletContextEvent servletContextEvent) {
@@ -51,14 +44,32 @@ public class OsgiListener implements ServletContextListener {
         return service;
     }
 
-    private StartupManager findStartupManager(ServletContextEvent servletContextEvent) {
-        LOGGER.debug("Finding StartupManager instance in context...");
-        ServletContext servletContext = servletContextEvent.getServletContext();
-        ApplicationContext applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
-        return applicationContext.getBean("startupManager", StartupManager.class);
-    }
-
     public static OsgiFrameworkService getOsgiService() {
         return service;
     }
+
+    public static void startSystem() {
+        try {
+            LOGGER.debug("Starting MoTeCH...");
+            startupManager.startup();
+
+            if (startupManager.canLaunchBundles()) {
+                LOGGER.info("Monitoring config file...");
+                startupManager.startMonitor();
+
+                LOGGER.info("Launching bundles...");
+                getOsgiService().startExternalBundles();
+            } else {
+                LOGGER.warn("Problems with MoTeCH launch. Finding and launching Admin UI bundle to repair errors by user...");
+
+                if (!getOsgiService().startBundle(ADMIN_BUNDLE)) {
+                    LOGGER.error("Admin UI bundle not found...");
+                    getOsgiService().stop();
+                }
+            }
+        } catch (IOException e) {
+            LOGGER.error("Error: ", e);
+        }
+    }
+
 }
