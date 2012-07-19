@@ -128,7 +128,8 @@
                     <instructions>
                         <Export-Package>
                             org.motechproject.decisiontree.model,
-                            org.motechproject.decisiontree.repository
+                            org.motechproject.decisiontree.repository,
+                            org.motechproject.decisiontree.service
                         </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.server.decisiontree.Activator
@@ -137,7 +138,16 @@
                             *,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
-                            org.springframework.web.servlet.config
+                            org.springframework.context.support,
+                            org.springframework.osgi.config,
+                            org.springframework.web.context.support,
+                            org.springframework.web.servlet.config,
+                            org.springframework.web.servlet.mvc,
+                            org.springframework.web.servlet.support,
+                            org.springframework.web.servlet.view.velocity,
+                            org.ektorp.impl,
+                            org.ektorp.spring,
+                            org.ektorp.support
                         </Import-Package>
                         <Embed-Dependency>!*</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>

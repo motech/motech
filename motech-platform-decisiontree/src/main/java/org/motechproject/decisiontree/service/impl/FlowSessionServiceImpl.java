@@ -4,9 +4,9 @@ import org.motechproject.decisiontree.FlowSession;
 import org.motechproject.decisiontree.domain.FlowSessionRecord;
 import org.motechproject.decisiontree.service.FlowSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service("flowSessionService")
 public class FlowSessionServiceImpl implements FlowSessionService {
 
     private AllFlowSessionRecords allFlowSessionRecords;

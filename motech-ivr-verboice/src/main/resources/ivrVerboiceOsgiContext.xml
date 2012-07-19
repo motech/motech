@@ -19,4 +19,6 @@
         </osgi:service-properties>
     </osgi:service>
 
+    <osgi:reference id="flowSessionServiceOsgi" cardinality="0..1" interface="org.motechproject.decisiontree.service.FlowSessionService" />
+
 </beans>
