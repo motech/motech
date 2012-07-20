@@ -56,6 +56,7 @@ public class SmsServiceImplTest {
         when(eventContext.getEventRelay()).thenReturn(eventRelay);
         when(smsApiProperties.getProperty("sms.schedule.future.sms")).thenReturn("true");
         when(smsApiProperties.getProperty("sms.multi.recipient.supported")).thenReturn("true");
+        when(smsApiProperties.getProperty("sms.max.message.size")).thenReturn("160");
 
         messageSplitter = new MessageSplitter();
         smsService = new SmsServiceImpl(motechSchedulerService, messageSplitter, smsApiProperties);
@@ -157,6 +158,21 @@ public class SmsServiceImplTest {
     }
 
     @Test
+    public void shouldNotSplitMessagesIfMaxMessageSizePropertyIsNotDefined() {
+        when(smsApiProperties.getProperty("sms.max.message.size")).thenReturn(null);
+
+        DateTime deliveryTime = new DateTime(2011, 12, 23, 13, 50, 0, 0);
+        String text = "This is a 160+ characters long message. All documentation is kept in javadocs because it guarantees consistency between what is on the web and what is in the source code.";
+        smsService.sendSMS("123", text, deliveryTime);
+
+        ArgumentCaptor<RunOnceSchedulableJob> scheduledJobCaptor = ArgumentCaptor.forClass(RunOnceSchedulableJob.class);
+        verify(motechSchedulerService).safeScheduleRunOnceJob(scheduledJobCaptor.capture());
+
+        RunOnceSchedulableJob schedulableJob = scheduledJobCaptor.getValue();
+        assertEquals(text, schedulableJob.getMotechEvent().getParameters().get(EventDataKeys.MESSAGE));
+    }
+
+    @Test
     public void shouldRaiseMultipleSendSmsEvents_WhenMultiRecipientNotSupported() {
         when(smsApiProperties.getProperty("sms.multi.recipient.supported")).thenReturn("false");
         String message = "This is a test message";
@@ -176,6 +192,4 @@ public class SmsServiceImplTest {
         assertEquals(Arrays.asList("300"), events.get(2).getParameters().get(EventDataKeys.RECIPIENTS));
         assertEquals(message, events.get(2).getParameters().get(EventDataKeys.MESSAGE));
     }
-
-
 }
