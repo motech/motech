@@ -26,7 +26,7 @@ class EventListenerTree
     private Set<EventListener> wildcardListeners;
 
     public EventListenerTree() {
-        this.pathElement = null;
+        this.pathElement = "*";
         this.parent = null;
     }
 
@@ -85,6 +85,11 @@ class EventListenerTree
             throw new IllegalArgumentException("Wildcard can not be mixed with characters");
         }
 
+        if (subject.equals("*")) {
+            addListener(listener);
+            return;
+        }
+
         EventListenerTree child = getChild(path[0]);
         if (child == null) {
             child = new EventListenerTree(path[0], this);
@@ -126,12 +131,21 @@ class EventListenerTree
         // Split the subject into it's path components
         String[] path = subject.split(SPLIT_REGEX);
 
+        Set<EventListener> allListeners = new HashSet<>();
+        if (isRootNode() && listeners != null)
+            allListeners.addAll(listeners);
+
         EventListenerTree child = getChild(path[0]);
         if (child == null) {
-            return Collections.emptySet();
+            return allListeners;
         }
 
-        return child.getListeners(path, 0);
+        allListeners.addAll(child.getListeners(path, 0));
+        return allListeners;
+    }
+
+    private boolean isRootNode() {
+        return pathElement.equals("*");
     }
 
     private Set<EventListener> getListeners(String[] path, int pathLevel) {
@@ -152,9 +166,12 @@ class EventListenerTree
         return ret;
     }
 
-    public boolean  hasListener(String subject) {
+    public boolean hasListener(String subject) {
         // Split the subject into it's path components
         String[] path = subject.split(SPLIT_REGEX);
+
+        if (isRootNode() && listeners != null && !listeners.isEmpty())
+            return true;
 
         EventListenerTree child = getChild(path[0]);
         return child != null && child.hasListener(path, 0);
