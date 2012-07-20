@@ -9,19 +9,25 @@ import org.motechproject.server.config.settings.MotechSettings;
 import java.util.Properties;
 
 @TypeDiscriminator("doc.type === 'SettingsRecord'")
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties(ignoreUnknown = true, value = { "couchDbProperties" })
 public class SettingsRecord extends MotechBaseDataObject implements MotechSettings {
 
     private String language;
     private boolean cluster;
     private DateTime lastRun;
     private byte[] configFileChecksum;
+    private Properties couchDbProperties;
     private Properties activemqProperties;
     private Properties quartzProperties;
 
     @Override
     public String getLanguage() {
         return language;
+    }
+
+    @Override
+    public Properties getCouchDBProperties() {
+        return couchDbProperties;
     }
 
     @Override
@@ -32,6 +38,10 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     @Override
     public Properties getQuartzProperties() {
         return quartzProperties;
+    }
+
+    public void setCouchDbProperties(final Properties couchDbProperties) {
+        this.couchDbProperties = couchDbProperties;
     }
 
     public void setActivemqProperties(final Properties activemqProperties) {

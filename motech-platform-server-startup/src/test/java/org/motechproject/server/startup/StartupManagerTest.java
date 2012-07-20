@@ -65,7 +65,7 @@ public class StartupManagerTest {
     @Test
     public void testNoDb() throws DbConnectionException {
         when(configLoader.loadConfig()).thenReturn(configFileSettings);
-        when(configFileSettings.getCouchProperties()).thenReturn(couchDbProperties);
+        when(configFileSettings.getCouchDBProperties()).thenReturn(couchDbProperties);
         doThrow(new DbConnectionException("Failure")).when(couchDbManager).configureDb(couchDbProperties);
 
         startupManager.startup();

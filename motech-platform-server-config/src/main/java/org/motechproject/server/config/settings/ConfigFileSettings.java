@@ -36,7 +36,8 @@ public class ConfigFileSettings extends Properties implements MotechSettings {
         md5checkSum = inStream.getMessageDigest().digest();
     }
 
-    public Properties getCouchProperties() {
+    @Override
+    public Properties getCouchDBProperties() {
         Properties couchProperties = new Properties();
 
         putPropertyIfNotNull(couchProperties, "host", getProperty(DB_HOST));

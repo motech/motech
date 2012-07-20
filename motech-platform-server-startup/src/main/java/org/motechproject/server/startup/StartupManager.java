@@ -101,7 +101,7 @@ public final class StartupManager {
     private void syncSettingsWithDb() {
         // test Database
         try {
-            couchDbManager.configureDb(configFileSettings.getCouchProperties());
+            couchDbManager.configureDb(configFileSettings.getCouchDBProperties());
         } catch (DbConnectionException e) {
             LOGGER.error(e.getMessage(), e);
             platformState = MotechPlatformState.NO_DB;

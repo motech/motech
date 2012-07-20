@@ -18,10 +18,10 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 
 @Service
@@ -47,6 +47,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         }
 
         if (record != null) {
+            record.setCouchDbProperties(settings.getCouchDBProperties());
             settings = record;
         }
 
@@ -148,15 +149,15 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     }
 
     @Override
-    public void saveBundleProperties(final Long bundleId, final String fileName, final Properties properties) throws IOException {
-        File file = new File(String.format("%s/.motech/config/%d/%s", System.getProperty("user.home"), bundleId, fileName));
+    public void saveBundleProperties(final String bundleSymbolicName, final String fileName, final Properties properties) throws IOException {
+        File file = new File(String.format("%s/.motech/config/%s/%s", System.getProperty("user.home"), bundleSymbolicName, fileName));
 
         properties.store(new FileOutputStream(file), null);
     }
 
     @Override
-    public Properties getBundleProperties(final Long bundleId, final String fileName) throws IOException {
-        File file = new File(String.format("%s/.motech/config/%d/%s", System.getProperty("user.home"), bundleId, fileName));
+    public Properties getBundleProperties(final String bundleSymbolicName, final String fileName) throws IOException {
+        File file = new File(String.format("%s/.motech/config/%s/%s", System.getProperty("user.home"), bundleSymbolicName, fileName));
 
         if (!file.exists()) {
             return null;
@@ -169,9 +170,9 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     }
 
     @Override
-    public List<Properties> getAllProperties(final Long bundleId) throws IOException {
-        File dir = new File(String.format("%s/.motech/config/%d/", System.getProperty("user.home"), bundleId));
-        List<Properties> list = null;
+    public Map<String, Properties> getAllProperties(final String bundleSymbolicName) throws IOException {
+        File dir = new File(String.format("%s/.motech/config/%s/", System.getProperty("user.home"), bundleSymbolicName));
+        Map<String, Properties> propertiesMap = null;
 
         if (dir.exists()) {
             File[] files = dir.listFiles(new FileFilter() {
@@ -181,14 +182,14 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
                 }
             });
 
-            list = new ArrayList<>(files.length);
+            propertiesMap = new HashMap<>(files.length);
 
             for (File file : files) {
-                list.add(getBundleProperties(bundleId, file.getName()));
+                propertiesMap.put(file.getName(), getBundleProperties(bundleSymbolicName, file.getName()));
             }
         }
 
-        return list;
+        return propertiesMap;
     }
 
     private SettingsRecord getDBSettings() throws DbConnectionException {
@@ -196,7 +197,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         SettingsRecord record = null;
 
         if (configFileSettings != null) {
-            couchDbManager.configureDb(configFileSettings.getCouchProperties());
+            couchDbManager.configureDb(configFileSettings.getCouchDBProperties());
             AllSettings allSettings = new AllSettings(couchDbManager.getConnector(SETTINGS_DB, true));
 
             record = allSettings.getSettings();
@@ -209,7 +210,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         ConfigFileSettings configFileSettings = configLoader.loadConfig();
 
         if (configFileSettings != null) {
-            couchDbManager.configureDb(configFileSettings.getCouchProperties());
+            couchDbManager.configureDb(configFileSettings.getCouchDBProperties());
             AllSettings allSettings = new AllSettings(couchDbManager.getConnector(SETTINGS_DB, true));
 
             allSettings.addOrUpdateSettings(settingsRecord);
