@@ -137,11 +137,7 @@ public class DecisionTreeController extends MultiActionController {
         String currentTree = treeNames[0];
         // put only one tree name in params
         params.put(TREE_NAME_PARAM, currentTree);
-        String sessionId = request.getParameter(FLOW_SESSION_ID_PARAM);
-        if (StringUtils.isBlank(sessionId)) {
-            sessionId = UUID.randomUUID().toString();
-        }
-        FlowSession session = flowSessionService.getSession(sessionId);
+        FlowSession session = flowSessionService.getSession(request);
         Node node;
         try {
             if (transitionKey == null) {
