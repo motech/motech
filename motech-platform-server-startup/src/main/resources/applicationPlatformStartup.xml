@@ -10,7 +10,7 @@
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.server.startup"/>
 
-    <import resource="classpath:applicationPlatformConfig.xml"/>
+    <import resource="classpath*:applicationPlatformConfig.xml"/>
 
     <bean id="configFileListener" class="org.motechproject.server.startup.ConfigFileListener"/>
 
