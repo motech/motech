@@ -44,26 +44,16 @@ public class OsgiFrameworkServiceTestIT {
 
         Bundle[] bundles = framework.getBundleContext().getBundles();
         assertEquals(expectedBundles.size(), bundles.length);
-        checkBundleState(bundles[0], Bundle.ACTIVE);
-        checkBundleState(bundles[1], Bundle.INSTALLED);
+        for (Bundle bundle : bundles) {
+            assertTrue("Bundle '" + bundle.getSymbolicName() + "' was not expected to be found!",
+                    expectedBundles.contains(bundle.getSymbolicName()));
+            assertEquals(Bundle.ACTIVE, bundle.getState());
+        }
 
-        service.launchBundles();
-        assertEquals(Bundle.ACTIVE, framework.getState());
-
-        bundles = framework.getBundleContext().getBundles();
-        assertEquals(expectedBundles.size(), bundles.length);
-        checkBundleState(bundles[0], Bundle.ACTIVE);
-        checkBundleState(bundles[1], Bundle.ACTIVE);
-
-        assertNotNull(service.getClassLoaderBySymbolicName("org.apache.felix.http.bridge"));
+        assertNotNull(service.getClassLoaderBySymbolicName(expectedBundles.get(1)));
 
         service.stop();
         assertEquals(Bundle.STOPPING, framework.getState());
-    }
-
-    private void checkBundleState(final Bundle bundle, final int expectedState) {
-        assertTrue(String.format("Bundle '%s' was not expected to be found!", bundle.getSymbolicName()), expectedBundles.contains(bundle.getSymbolicName()));
-        assertEquals(expectedState, bundle.getState());
     }
 
     private WebApplicationContext getWebApplicationContext() {

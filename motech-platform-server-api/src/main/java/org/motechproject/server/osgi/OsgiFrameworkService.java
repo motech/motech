@@ -6,6 +6,7 @@ import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.event.EventListenerRegistryService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.launch.Framework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +61,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     public static final String BUNDLE_ACTIVATOR_HEADER = "Bundle-Activator";
 
     /**
-     * Initialize, install bundles and start the OSGi framework
+     * Initialize, install bundles and start internal bundles and the OSGi framework
      */
     public void start() {
         try {
@@ -77,6 +78,10 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                 logger.debug("Installing bundle [" + url + "]");
                 Bundle bundle = bundleContext.installBundle(url.toExternalForm());
                 bundles.add(bundle);
+
+                if (!bundle.getLocation().contains(".motech")) {
+                    startBundle(bundle.getSymbolicName());
+                }
             }
 
             osgiFramework.start();
@@ -88,9 +93,9 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     }
 
     /**
-     * Launch internal and external bundles
+     * Start external bundles
      */
-    public void launchBundles() {
+    public void startExternalBundles() {
         try {
             ServletContext servletContext = ((WebApplicationContext) applicationContext).getServletContext();
             BundleContext bundleContext = (BundleContext) servletContext.getAttribute(BundleContext.class.getName());
@@ -98,34 +103,40 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             registerPlatformServices(bundleContext);
 
             for (Bundle bundle : bundles) {
-                logger.debug("Starting bundle [" + bundle + "]");
-                storeClassCloader(bundle);
-                // custom bundle loaders
-                if (bundleLoaders != null) {
-                    for (BundleLoader loader : bundleLoaders) {
-                        loader.loadBundle(bundle);
-                    }
-                }
-
-                bundle.start();
+                startBundle(bundle.getSymbolicName());
             }
         } catch (Exception e) {
-            logger.error("Failed to install Bundles", e);
+            logger.error("Failed to start Bundles", e);
+        }
+    }
+
+    public void stopExternalBundles() {
+        for (Bundle bundle : bundles) {
+            try {
+                if (bundle.getLocation().startsWith("file:")) {
+                    bundle.stop();
+                }
+            } catch (BundleException e) {
+                logger.error(String.format("Failed to stop %s bundle", bundle.getSymbolicName()), e);
+            }
         }
     }
 
     /**
-     * Find first bundle with given name and launch it
+     * Find first bundle with given name and start it
      *
      * @param bundleName bundle name which you want to launch
      * @return true if bundle was found and launched, otherwise false
      */
-    public boolean launchBundle(final String bundleName) {
+    public boolean startBundle(final String bundleName) {
         boolean found = false;
 
         try {
             for (Bundle bundle : bundles) {
                 if (bundle.getSymbolicName().contains(bundleName)) {
+                    logger.debug("Starting bundle [" + bundle + "]");
+                    storeClassCloader(bundle);
+                    // custom bundle loaders
                     if (bundleLoaders != null) {
                         for (BundleLoader loader : bundleLoaders) {
                             loader.loadBundle(bundle);
@@ -138,7 +149,8 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                 }
             }
         } catch (Exception e) {
-            logger.error("Failed to install Bundles", e);
+            logger.error("Failed to start Bundle", e);
+            found = false;
         }
 
         return found;
