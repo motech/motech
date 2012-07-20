@@ -14,3 +14,11 @@ angular.module('bundleServices', ['ngResource']).factory('Bundle', function($res
 angular.module('messageServices', ['ngResource']).factory('StatusMessage', function($resource) {
     return $resource('api/messages');
 });
+
+angular.module('platformSettingsServices', ['ngResource']).factory('PlatformSettings', function($resource) {
+    return $resource('api/settings/platform');
+});
+
+angular.module('moduleSettingsServices', ['ngResource']).factory('ModuleSettings', function($resource) {
+    return $resource('api/settings/:bundleId', { bundleId: '@bundleId' });
+});

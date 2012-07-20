@@ -57,3 +57,15 @@ body {
 .status-message {
     border-bottom: thin dotted;
 }
+
+settings-input {
+    padding: 5px;
+    margin: 5px;
+}
+
+.settings-input label {
+    display: block;
+    float: left;
+    width: 30%;
+    padding-left: 15px;
+}

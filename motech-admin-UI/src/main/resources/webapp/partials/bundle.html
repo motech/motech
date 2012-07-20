@@ -1,0 +1,27 @@
+<div class="box-header">
+    {{module.name}}
+</div>
+
+<div class="box-content">
+    <h1>{{module.name}}</h1>
+    <img ng-src="api/bundles/{{module.bundleId}}/icon" class="icon" />
+    <div>{{msg('bundles.symbolicName')}} - {{module.symbolicName}}</div>
+    <div>{{msg('bundles.state')}} - {{module.state}}</div>
+</div>
+
+<div ng-show="showSettings()">
+    <div class="box-header">
+        {{msg('settings')}}
+    </div>
+    <div class="box-content">
+        <form id="settingsForm" action="api/settings/{{module.bundleId}}" method="post">
+            <div ng-repeat="setting in settings" class="settings-input">
+                <label for="{{setting.key}}">{{setting.key}}</label>
+                <input type="text" id="{{setting.key}}" name="{{setting.key}}" ng-model="setting.value" />
+            </div>
+            <input type="button" ng-click="saveSettings()" value="{{msg('submit')}}"/>
+        </form>
+    </div>
+</div>
+
+

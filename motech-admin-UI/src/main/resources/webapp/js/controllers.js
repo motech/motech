@@ -2,11 +2,15 @@
 
 /* Controllers */
 
-function BundleListCtrl($scope, Bundle, i18nService) {
+function BundleListCtrl($scope, Bundle, i18nService, $routeParams) {
 
     var LOADING_STATE = 'LOADING';
 
     $scope.bundles = Bundle.query();
+
+    if ($routeParams.bundleId != undefined) {
+        $scope.bundle = Bundle.get({ bundleId: $routeParams.bundleId });
+    }
 
     $scope.stopBundle = function(bundle) {
         bundle.$stop(dummyHandler, angularErrorHandler);
@@ -137,5 +141,83 @@ function StatusMsgCtrl($scope, $timeout, StatusMessage) {
 function MasterCtrl($scope, i18nService) {
     $scope.msg = function(key) {
         return i18nService.getMessage(key);
+    }
+}
+
+function SettingsCtrl($scope, PlatformSettings, i18nService) {
+    var LOADING_STATE = 1, ERROR_STATE = 2;
+
+    $scope.platformSettings = PlatformSettings.query();
+
+    $scope.label = function(key) {
+        return i18nService.getMessage('settings.' + key);
+    }
+
+    $scope.getImg = function(settings) {
+        switch(settings.state) {
+        case LOADING_STATE:
+            return 'img/load.gif';
+        case ERROR_STATE:
+            return 'img/delete.png';
+        default:
+            return 'img/start.png';
+        }
+    }
+
+    $scope.save = function(settings) {
+        captureTyping(function() {
+            settings.state = LOADING_STATE;
+
+            settings.$save(function() {
+                // success
+                if (this.state != undefined) {
+                    delete settings.state;
+                }
+            },
+            function() {
+               // failure
+               settings.state = ERROR_STATE;
+            });
+        });
+    }
+
+    $scope.saveSettings = function() {
+        $('#platformSettingsForm').ajaxSubmit({
+            success : function(data) {
+                $('#settingsMsg').text(i18nService.getMsg('platformSettings.saved'));
+            },
+            error : jFormErrorHandler
+        });
+    }
+}
+
+function ModuleCtrl($scope, ModuleSettings, Bundle, i18nService, $routeParams) {
+    $scope.moduleSettings = ModuleSettings.query({ bundleId : $routeParams.bundleId }, function(data) {
+        $scope.settings = [];
+        var i,j;
+        for (i = 0;  i < data.length; i++) {
+            for (j = 0;  j < data[i].settings.length; j++) {
+                $scope.settings.push(data[i].settings[j]);
+            }
+        }
+    });
+
+    $scope.module = Bundle.get({ bundleId: $routeParams.bundleId });
+
+    $scope.label = function(key) {
+        return i18nService.getMessage('settings.' + key);
+    }
+
+    $scope.saveSettings = function() {
+        $('#settingsForm').ajaxSubmit({
+            success : function(data) {
+                $('#settingsMsg').text(i18nService.getMsg('settings.saved'));
+            },
+            error : jFormErrorHandler
+        });
+    }
+
+    $scope.showSettings = function() {
+        return $scope.settings != undefined && $scope.settings.length > 0;
     }
 }

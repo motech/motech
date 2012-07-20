@@ -1,0 +1,11 @@
+<div class="box-header">{{msg('settings.platform')}}</div>
+<div class="box-content">
+    <p id="settingsMsg"></p>
+    <form id="platformSettingsForm" action="api/settings/platform" method="post">
+        <div ng-repeat="settings in platformSettings" class="settings-input">
+            <label for="{{settings.key}}">{{label(settings.key)}}</label>
+            <input type="text" id="{{settings.key}}" name="{{settings.key}}" ng-model="settings.value" />
+        </div>
+        <input type="button" ng-click="saveSettings()" value="{{msg('submit')}}"/>
+    </form>
+</div>

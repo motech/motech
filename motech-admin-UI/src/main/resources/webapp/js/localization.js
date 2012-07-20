@@ -29,7 +29,7 @@ localizationModule.factory("i18nService", function() {
             jQuery.i18n.properties({
                 name:'messages',
                 path:'bundles/',
-                mode:'both',
+                mode:'map',
                 callback: function() {
                     self.ready = true;
                     self.loading = false;

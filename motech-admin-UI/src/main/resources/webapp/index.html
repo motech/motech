@@ -16,6 +16,7 @@
         <script src="lib/jquery/jquery-ui.min.js" type="text/javascript"></script>
         <script src="lib/jquery/jquery.alerts.js" type="text/javascript"></script>
         <script src="lib/jquery/jquery.i18n.properties-min-1.0.9.js" type="text/javascript"></script>
+        <script src="lib/jquery/jquery.tools.min.js" type="text/javascript"></script>
 
         <script src="js/util.js" type="text/javascript"></script>
         <script src="js/common.js" type="text/javascript"></script>
@@ -23,11 +24,17 @@
         <script src="js/services.js" type="text/javascript"></script>
         <script src="js/controllers.js" type="text/javascript"></script>
         <script src="js/localization.js" type="text/javascript"></script>
+        <script src="js/directives.js" type="text/javascript"></script>
     </head>
 
     <body ng-controller="MasterCtrl">
         <div id="content">
             <h1>{{msg('title')}}</h1>
+
+            <div>
+                <a href="#/bundles">{{msg('bundles')}}</a>
+                <a href="#/settings">{{msg('platform.settings')}}</a>
+            </div>
 
             <div id="left-half">
                 <div ng-view></div>

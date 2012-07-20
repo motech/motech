@@ -26,20 +26,20 @@
                 <img ng-src="api/bundles/{{bundle.bundleId}}/icon" class="icon" />
             </div>
         </td>
-        <td>{{bundle.name}} - {{bundle.symbolicName}}</td>
+        <td><a ng-href="#/bundle/{{bundle.bundleId}}">{{bundle.name}} - {{bundle.symbolicName}}</a></td>
         <td><span ng-show="bundleStable(bundle)">{{bundle.state}}</span></td>
         <td>
             <div id="commandLinks" ng-show="bundleStable(bundle)">
                 <span ng-hide="bundle.isActive()">
                     <a ng-click="startBundle(bundle)" >
-                        <img src="img/start.png" alt="{{msg('bundles.start')}}"  title="{{msg('bundles.start')}}"
-                             class="icon" />
+                        <img src="img/start.png" alt="{{msg('bundles.start')}}"  class="icon" />
+                        <div>{{msg(bundles.start)}}</div>
                     </a>
                 </span>
                 <span ng-show="bundle.isActive()">
                     <a ng-click="stopBundle(bundle)">
                         <img src="img/stop.png" alt="{{msg('bundles.stop')}}" title="{{msg('bundles.stop')}}"
-                             class="icon" />
+                             class="icon" tool-tip />
                     </a>
                     <a ng-click="restartBundle(bundle)">
                         <img src="img/restart.png" alt="{{msg('bundles.restart')}}" title="{{msg('bundles.restart')}}" class="icon" />
