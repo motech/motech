@@ -28,6 +28,8 @@ public interface MotechSettings {
 
     String getLanguage();
 
+    Properties getCouchDBProperties();
+
     Properties getActivemqProperties();
 
     Properties getQuartzProperties();

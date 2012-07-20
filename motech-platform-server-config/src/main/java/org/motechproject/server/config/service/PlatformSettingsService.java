@@ -3,8 +3,8 @@ package org.motechproject.server.config.service;
 import org.motechproject.server.config.settings.MotechSettings;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 
 public interface PlatformSettingsService {
@@ -31,9 +31,9 @@ public interface PlatformSettingsService {
      */
     void addConfigLocation(final String location, final boolean save) throws IOException;
 
-    void saveBundleProperties(final Long bundleId, final String fileName, final Properties properties) throws IOException;
+    void saveBundleProperties(final String bundleSymbolicName, final String fileName, final Properties properties) throws IOException;
 
-    Properties getBundleProperties(final Long bundleId, final String fileName) throws IOException;
+    Properties getBundleProperties(final String bundleSymbolicName, final String fileName) throws IOException;
 
-    List<Properties> getAllProperties(final Long bundleId) throws IOException;
+    Map<String, Properties> getAllProperties(final String bundleSymbolicName) throws IOException;
 }
