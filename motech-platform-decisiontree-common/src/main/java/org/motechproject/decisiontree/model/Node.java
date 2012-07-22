@@ -25,6 +25,17 @@ public class Node {
     private String transitionTimeout;
     @JsonProperty
     private String transitionFinishOnKey;
+    @JsonProperty
+    private String transitionNumDigits;
+
+    public String getTransitionNumDigits() {
+        return transitionNumDigits;
+    }
+
+    @JsonIgnore
+    public void setTransitionNumDigits(String transitionNumDigits) {
+        this.transitionNumDigits = transitionNumDigits;
+    }
 
     public String getTransitionTimeout() {
         return transitionTimeout;

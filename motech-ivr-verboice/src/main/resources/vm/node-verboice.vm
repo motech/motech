@@ -13,7 +13,7 @@
     #end
     #if ($node.transitions.size() > 0 && !$dial)
             #set ($url = "$scheme://$host$contentPath/verboice/ivr?type=$type&ln=$language&tree=$treeName&trP=$transitionPath")
-            <Gather method="POST" action="$escape.escapeXml($url)" #if($!{node.transitionTimeout})timeout="$node.transitionTimeout"#end #if($!{node.transitionFinishOnKey})finishOnKey="$node.transitionFinishOnKey"#end>
+            <Gather method="POST" action="$escape.escapeXml($url)" #if($!{node.transitionNumDigits})numDigits="$node.transitionNumDigits"#end #if($!{node.transitionTimeout})timeout="$node.transitionTimeout"#end #if($!{node.transitionFinishOnKey})finishOnKey="$node.transitionFinishOnKey"#end>
             #foreach( $prompt in $node.transitionPrompts )
                     #if($prompt.class.simpleName == "AudioPrompt")
                         <Play>$prompt.audioFileUrl</Play>
