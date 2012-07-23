@@ -26,9 +26,11 @@ import static org.motechproject.util.DateUtil.newDateTime;
 
 @Component
 public class OutboundMessageNotification implements IOutboundMessageNotification {
-    private static final Logger log = Logger.getLogger(OutboundMessageNotification.class);
+
+    private final Logger log = Logger.getLogger(OutboundMessageNotification.class);
     private OutboundEventGateway outboundEventGateway;
     private final Integer maxRetries;
+
     @Autowired
     private AllOutboundSMS allOutboundSMS;
 

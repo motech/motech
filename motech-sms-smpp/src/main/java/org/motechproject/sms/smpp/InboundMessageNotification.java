@@ -18,15 +18,15 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
-import static org.motechproject.sms.smpp.constants.EventDataKeys.INBOUND_MESSAGE;
-import static org.motechproject.sms.smpp.constants.EventDataKeys.SENDER;
+import static org.motechproject.sms.api.constants.EventDataKeys.SENDER;
+import static org.motechproject.sms.api.constants.EventDataKeys.INBOUND_MESSAGE;
+import static org.motechproject.sms.api.constants.EventDataKeys.TIMESTAMP;
 import static org.motechproject.sms.smpp.constants.EventDataKeys.STATUS_MESSAGE;
-import static org.motechproject.sms.smpp.constants.EventDataKeys.TIMESTAMP;
 import static org.motechproject.util.DateUtil.newDateTime;
 
 @Component
 public class InboundMessageNotification implements IInboundMessageNotification {
-    private static final Logger log = Logger.getLogger(InboundMessageNotification.class);
+    private final Logger log = Logger.getLogger(InboundMessageNotification.class);
     private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
     private AllInboundSMS allInboundSMS;
     private AllOutboundSMS allOutboundSMS;
