@@ -11,8 +11,8 @@ public class DailyPillRegimenRequest {
     private int pillWindowInHours;
     private String externalId;
     private List<DosageRequest> dosageRequests;
-    protected int reminderRepeatIntervalInMinutes;
-    protected int bufferOverDosageTimeInMinutes;
+    private int reminderRepeatIntervalInMinutes;
+    private int bufferOverDosageTimeInMinutes;
 
     /** Creates Daily Pill prescription for given subscriber id and reminder configuration
      *

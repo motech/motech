@@ -20,10 +20,16 @@ public class Medicine {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Medicine medicine = (Medicine) o;
-        if (!name.equals(medicine.name)) return false;
+        if (!name.equals(medicine.name)) {
+            return false;
+        }
         return true;
     }
 
@@ -57,7 +63,8 @@ public class Medicine {
     }
 
     public void validate() {
-        if (getEndDate() != null && getStartDate().isAfter(getEndDate()))
+        if (getEndDate() != null && getStartDate().isAfter(getEndDate())) {
              throw(new ValidationException(MEDICINE_END_DATE_CANNOT_BE_BEFORE_START_DATE));
+        }
     }
 }
