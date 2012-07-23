@@ -34,7 +34,9 @@ public class Request {
     }
 
     public void setQueryParameters(Map<String, String> queryParameters) {
-        if (queryParameters != null) this.queryParameters = queryParameters;
+        if (queryParameters != null) {
+            this.queryParameters = queryParameters;
+        }
     }
 
     public HttpMethodType getType() {

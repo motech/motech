@@ -5,7 +5,7 @@ public class Authentication {
     private String username;
     private String password;
 
-    public Authentication(){
+    public Authentication() {
     }
 
     public Authentication(String username, String password) {
