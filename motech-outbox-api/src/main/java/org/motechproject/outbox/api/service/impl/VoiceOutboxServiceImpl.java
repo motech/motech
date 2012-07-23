@@ -25,7 +25,7 @@ import java.util.List;
 //TODO: The API of VoiceOutboxService is anemic (exposes the domain model, just a wrapper over the dao)
 public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxService {
 
-    final Logger log = LoggerFactory.getLogger(VoiceOutboxServiceImpl.class);
+    private final Logger log = LoggerFactory.getLogger(VoiceOutboxServiceImpl.class);
     private int numDaysKeepSavedMessages;
 
     /**
@@ -156,8 +156,9 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
 
     @Override
     public OutboundVoiceMessage nextMessage(String lastMessageId, String externalId) {
-        if (StringUtils.isNotEmpty(lastMessageId))
+        if (StringUtils.isNotEmpty(lastMessageId)) {
             setMessageStatus(lastMessageId, OutboundVoiceMessageStatus.PLAYED);
+        }
         return getNextMessage(externalId, OutboundVoiceMessageStatus.PENDING);
     }
 }

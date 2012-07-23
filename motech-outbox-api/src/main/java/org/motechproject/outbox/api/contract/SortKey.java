@@ -1,6 +1,5 @@
 package org.motechproject.outbox.api.contract;
 
-import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 
 /**
  * \ingroup outbox
