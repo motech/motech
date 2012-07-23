@@ -23,6 +23,7 @@ describe("Status Message Controller", function() {
 
     beforeEach(module('messageServices'));
     beforeEach(module('localization'));
+    beforeEach(module('ngCookies'));
 
     beforeEach(inject(function(_$httpBackend_, $rootScope, $controller) {
 

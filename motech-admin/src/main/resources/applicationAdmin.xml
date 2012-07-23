@@ -14,21 +14,6 @@
 
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
 
-    <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
-
-    <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean" >
-        <property name="properties" ref="couchdbProperties"/>
-    </bean>
-
-    <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
-        <constructor-arg ref="httpClient"/>
-    </bean>
-
-    <bean id="adminDatabase" class="org.ektorp.impl.StdCouchDbConnector">
-        <constructor-arg value="motech-admin"/>
-        <constructor-arg ref="couchDbInstance"/>
-    </bean>
-
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="maxUploadSize" value="1000000"/>
     </bean>
@@ -36,6 +21,10 @@
     <bean id="bundleDirectoryManager" class="org.motechproject.admin.bundles.BundleDirectoryManager">
         <property name="bundleDir" value="${user.home}/.motech/bundles" />
     </bean>
+
+    <util:list id="bundleLoaders" value-type="org.motechproject.server.osgi.BundleLoader">
+        <bean id="log4jBundleLoader" class="org.motechproject.server.osgi.Log4JBundleLoader"/>
+    </util:list>
 
     <mvc:annotation-driven/>
 </beans>

@@ -31,7 +31,7 @@ public class BundleInformation {
         }
     }
 
-    private static final String BUNDLE_NAME="Bundle-Name";
+    protected static final String BUNDLE_NAME="Bundle-Name";
 
     private long bundleId;
     private Version version;

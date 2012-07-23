@@ -41,7 +41,7 @@ public class ConfigFileSettings extends Properties implements MotechSettings {
         Properties couchProperties = new Properties();
 
         putPropertyIfNotNull(couchProperties, "host", getProperty(DB_HOST));
-        putPropertyIfNotNull(couchProperties, "port", (getProperty(DB_PORT)));
+        putPropertyIfNotNull(couchProperties, "port", getProperty(DB_PORT));
         putPropertyIfNotNull(couchProperties, "username", getProperty(DB_USERNAME));
         putPropertyIfNotNull(couchProperties, "password", getProperty(DB_PASSWORD));
         putPropertyIfNotNull(couchProperties, "maxConnections", getProperty(DB_MAX_CONNECTIONS));

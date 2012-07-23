@@ -3,8 +3,20 @@
     <div class="box-content">
         <form id="bundleUploadForm"  action="api/bundles/upload" enctype="multipart/form-data" method="POST">
             <input type="file" id="bundleFile" name="bundleFile" placeholder="{{msg('bundles.file')}}"/>
+            <label for="startBundle">{{msg('bundles.startOnInstall')}}</label>
+            <input type="checkbox" id="startBundle" name="startBundle" />
             <input type="button" value="{{msg('bundles.installOrUpdate')}}" ng-click="submitBundle()" />
         </form>
+    </div>
+</div>
+
+<div>
+    <div class="box-header">{{msg('bundles.statistics')}}</div>
+    <div class="box-content">
+        <span><b>{{msg('bundles.statistics.total')}}:</b> {{bundles.length}}.</span>
+        <span><b>{{msg('bundles.statistics.active')}}:</b> {{activeBundlesCount()}}.</span>
+        <span><b>{{msg('bundles.statistics.installed')}}:</b> {{installedBundlesCount()}}.</span>
+        <span><b>{{msg('bundles.statistics.resolved')}}:</b> {{resolvedBundlesCount()}}.</span>
     </div>
 </div>
 
@@ -14,6 +26,7 @@
         <th>{{msg('bundles.id')}}</th>
         <th>{{msg('bundles.icon')}}</th>
         <th>{{msg('bundles.symbolicName')}}</th>
+        <th>{{msg('bundles.version')}}</th>
         <th>{{msg('bundles.state')}}</th>
         <th>{{msg('bundles.actions')}}</th>
     </tr>
@@ -27,13 +40,13 @@
             </div>
         </td>
         <td><a ng-href="#/bundle/{{bundle.bundleId}}">{{bundle.name}} - {{bundle.symbolicName}}</a></td>
+        <td><span ng-show="bundleStable(bundle)">{{bundle.printVersion()}}</span></td>
         <td><span ng-show="bundleStable(bundle)">{{bundle.state}}</span></td>
         <td>
             <div id="commandLinks" ng-show="bundleStable(bundle)">
                 <span ng-hide="bundle.isActive()">
                     <a ng-click="startBundle(bundle)" >
                         <img src="img/start.png" alt="{{msg('bundles.start')}}"  class="icon" />
-                        <div>{{msg(bundles.start)}}</div>
                     </a>
                 </span>
                 <span ng-show="bundle.isActive()">

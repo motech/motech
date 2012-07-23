@@ -7,7 +7,8 @@ angular.module('bundleServices', ['ngResource']).factory('Bundle', function($res
         start: {method:'POST', params: {action: 'start'}},
         stop: {method:'POST', params: {action: 'stop'}},
         restart: {method:'POST', params: {action: 'restart'}},
-        uninstall: {method: 'POST', params: {action: 'uninstall'}}
+        uninstall: {method: 'POST', params: {action: 'uninstall'}},
+        details: {method: 'GET', params: {action: 'detail'}}
     });
 });
 

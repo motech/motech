@@ -3,7 +3,7 @@ package org.motechproject.admin.messages;
 import org.codehaus.jackson.annotate.JsonValue;
 
 public enum Level {
-    INFO("INFO"), ERROR("ERROR"), WARN("WARN"), DEBUG("DEBUG");
+    INFO("INFO"), ERROR("ERROR"), WARN("WARN"), DEBUG("DEBUG"), OK("OK");
 
     private final String value;
 

@@ -1,5 +1,6 @@
 package org.motechproject.server.config.service.impl;
 
+import org.ektorp.CouchDbConnector;
 import org.motechproject.server.config.ConfigLoader;
 import org.motechproject.server.config.db.CouchDbManager;
 import org.motechproject.server.config.db.DbConnectionException;
@@ -28,6 +29,8 @@ import java.util.Properties;
 public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformSettingsServiceImpl.class);
 
+    private static final String SETTINGS_FILE = "motech-settings.conf";
+
     @Autowired
     private ConfigLoader configLoader;
 
@@ -52,6 +55,17 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         }
 
         return settings;
+    }
+
+    @Override
+    public void savePlatformSettings(Properties settings) {
+        File file = new File(String.format("%s/.motech/config/%s", System.getProperty("user.home"), SETTINGS_FILE));
+
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            settings.store(fos, null);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -190,6 +204,11 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         }
 
         return propertiesMap;
+    }
+
+    @Override
+    public CouchDbConnector getCouchConnector(String dbName) {
+        return couchDbManager.getConnector(dbName, true);
     }
 
     private SettingsRecord getDBSettings() throws DbConnectionException {

@@ -1,6 +1,8 @@
 package org.motechproject.admin.web.controller;
 
+import org.apache.commons.lang.StringUtils;
 import org.motechproject.admin.bundles.BundleIcon;
+import org.motechproject.admin.bundles.ExtendedBundleInformation;
 import org.motechproject.admin.service.ModuleAdminService;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.server.osgi.BundleInformation;
@@ -34,6 +36,11 @@ public class BundleAdminController {
         return moduleAdminService.getBundleInfo(bundleId);
     }
 
+    @RequestMapping(value = "/bundles/{bundleId}/detail")
+    public @ResponseBody ExtendedBundleInformation getBundleDetails(@PathVariable long bundleId) {
+        return moduleAdminService.getBundleDetails(bundleId);
+    }
+
     @RequestMapping(value = "/bundles/{bundleId}/start", method = RequestMethod.POST)
     public @ResponseBody BundleInformation startBundle(@PathVariable long bundleId) throws BundleException {
         return moduleAdminService.startBundle(bundleId);
@@ -56,8 +63,11 @@ public class BundleAdminController {
     }
 
     @RequestMapping(value = "/bundles/upload", method = RequestMethod.POST)
-    public @ResponseBody BundleInformation uploadBundle(@RequestParam MultipartFile bundleFile) {
-        return moduleAdminService.installBundle(bundleFile);
+    public @ResponseBody
+    BundleInformation uploadBundle(@RequestParam MultipartFile bundleFile,
+                                   @RequestParam(required = false) String startBundle) {
+        boolean start = (StringUtils.isBlank(startBundle) ?  false : startBundle.equals("on"));
+        return moduleAdminService.installBundle(bundleFile, start);
     }
 
     @RequestMapping(value = "/bundles/{bundleId}/icon", method = RequestMethod.GET)
@@ -74,6 +84,7 @@ public class BundleAdminController {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(BundleException.class)
     public void handleBundleException(BundleException ex) {
-        statusMessageService.error(ex.getMessage());
+        Throwable rootEx = (ex.getCause() == null ? ex : ex.getCause());
+        statusMessageService.error(rootEx.getMessage());
     }
 }

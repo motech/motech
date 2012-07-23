@@ -1,5 +1,9 @@
 body {
-    font:0.8em/145% 'Trebuchet MS',helvetica,arial,verdana;
+    font:1em/145% 'Trebuchet MS',helvetica,arial,verdana;
+}
+
+.header h1 {
+    display: inline;
 }
 
 .dullImage {
@@ -12,6 +16,13 @@ body {
     height: 20px;
 }
 
+.big-icon {
+    width: 80px;
+    height: 80px;
+    padding: 5px;
+    border: 1px solid #aaa;
+}
+
 .loader.wrapper {
     text-align: center;
 }
@@ -22,6 +33,7 @@ body {
 
     font-weight: bold;
     padding: 5px;
+    margin-top: 5px;
 }
 
 .box-content {
@@ -54,6 +66,10 @@ body {
     color: red;
 }
 
+.ok {
+    color: green;
+}
+
 .status-message {
     border-bottom: thin dotted;
 }
@@ -68,4 +84,24 @@ settings-input {
     float: left;
     width: 30%;
     padding-left: 15px;
+}
+
+.bundle-dtLabel {
+    float: left;
+    width: 33%;
+}
+
+.bundle-dtValue {
+    min-height: 1em;
+    margin-left: 33%;
+    width: 65%;
+}
+
+h1 {
+    display: inline;
+}
+
+.bundle-prop {
+    padding: 5px;
+    border-bottom: 1px dotted;
 }

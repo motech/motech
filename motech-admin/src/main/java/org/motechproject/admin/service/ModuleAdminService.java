@@ -1,6 +1,7 @@
 package org.motechproject.admin.service;
 
 import org.motechproject.admin.bundles.BundleIcon;
+import org.motechproject.admin.bundles.ExtendedBundleInformation;
 import org.motechproject.server.osgi.BundleInformation;
 import org.osgi.framework.BundleException;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,4 +25,8 @@ public interface ModuleAdminService {
     BundleIcon getBundleIcon(long bundleId);
 
     BundleInformation installBundle(MultipartFile bundleFile);
+
+    ExtendedBundleInformation getBundleDetails(long bundleId);
+
+    BundleInformation installBundle(MultipartFile bundleFile, boolean startBundle);
 }

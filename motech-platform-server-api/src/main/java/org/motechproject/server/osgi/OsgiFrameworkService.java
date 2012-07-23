@@ -84,6 +84,8 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                 }
             }
 
+            registerPlatformServices(bundleContext);
+
             osgiFramework.start();
             logger.info("OSGi framework started");
         } catch (Throwable e) {
@@ -99,8 +101,6 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         try {
             ServletContext servletContext = ((WebApplicationContext) applicationContext).getServletContext();
             BundleContext bundleContext = (BundleContext) servletContext.getAttribute(BundleContext.class.getName());
-
-            registerPlatformServices(bundleContext);
 
             for (Bundle bundle : bundles) {
                 startBundle(bundle.getSymbolicName());

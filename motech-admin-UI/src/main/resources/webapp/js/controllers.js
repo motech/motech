@@ -12,6 +12,33 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams) {
         $scope.bundle = Bundle.get({ bundleId: $routeParams.bundleId });
     }
 
+    $scope.activeBundlesCount = function() {
+        var count = 0;
+        angular.forEach($scope.bundles, function(bundle) {
+            count += bundle.isActive() ? 1 : 0;
+        });
+
+        return count;
+    }
+
+    $scope.installedBundlesCount = function() {
+        var count = 0;
+        angular.forEach($scope.bundles, function(bundle) {
+            count += bundle.isInstalled() ? 1 : 0;
+        });
+
+        return count;
+    }
+
+    $scope.resolvedBundlesCount = function() {
+        var count = 0;
+        angular.forEach($scope.bundles, function(bundle) {
+            count += bundle.isResolved() ? 1 : 0;
+        });
+
+        return count;
+    }
+
     $scope.stopBundle = function(bundle) {
         bundle.$stop(dummyHandler, angularErrorHandler);
     }
@@ -74,12 +101,31 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams) {
     Bundle.prototype.isActive = function() {
         return this.state == 'ACTIVE';
     }
+
+    Bundle.prototype.printVersion = function() {
+        var separator = '.'
+        var ver = this.version.major + separator + this.version.minor + separator + this.version.micro;
+        if (this.version.qualifier) {
+            ver += (separator + this.version.qualifier);
+        }
+        return ver;
+    }
+
+
+    Bundle.prototype.isInstalled = function() {
+        return this.state == 'INSTALLED';
+    }
+
+    Bundle.prototype.isResolved = function() {
+        return this.state == 'RESOLVED';
+    }
 }
 
-function StatusMsgCtrl($scope, $timeout, StatusMessage) {
+function StatusMsgCtrl($scope, $timeout, StatusMessage, i18nService, $cookieStore) {
     var UPDATE_INTERVAL = 1000 * 30;
+    var IGNORED_MSGS = 'ignoredMsgs';
 
-    $scope.ignoredMessages = [];
+    $scope.ignoredMessages = $cookieStore.get(IGNORED_MSGS);
     $scope.messages = [];
 
     StatusMessage.query(function(data) {
@@ -93,8 +139,18 @@ function StatusMsgCtrl($scope, $timeout, StatusMessage) {
         var cssClass = 'msg';
         if (msg.level == 'ERROR') {
             cssClass += ' error';
+        } else if (msg.level == 'OK') {
+            cssClass += ' ok';
         }
         return cssClass;
+    }
+
+    $scope.printText = function(text) {
+        var result = text;
+        if (text.match(/^\{.*\}$/)) {
+            result = i18nService.getMessage(text.replace(/[\{\}]/g, ""));
+        }
+        return result;
     }
 
     StatusMessage.prototype.getDate = function() {
@@ -126,7 +182,11 @@ function StatusMsgCtrl($scope, $timeout, StatusMessage) {
 
     $scope.remove = function(message) {
         $scope.messages.remove(message);
+        if ($scope.ignoredMessages == undefined) {
+            $scope.ignoredMessages = [];
+        }
         $scope.ignoredMessages.push(message._id);
+        $cookieStore.put(IGNORED_MSGS, $scope.ignoredMessages);
     }
 
     $timeout(update, UPDATE_INTERVAL);
@@ -142,9 +202,17 @@ function MasterCtrl($scope, i18nService) {
     $scope.msg = function(key) {
         return i18nService.getMessage(key);
     }
+
+    $scope.printDate = function(milis) {
+        var date = "";
+        if (milis) {
+            var date = new Date(milis);
+        }
+        return date;
+    }
 }
 
-function SettingsCtrl($scope, PlatformSettings, i18nService) {
+function SettingsCtrl($scope, PlatformSettings, i18nService, $http) {
     var LOADING_STATE = 1, ERROR_STATE = 2;
 
     $scope.platformSettings = PlatformSettings.query();
@@ -189,6 +257,25 @@ function SettingsCtrl($scope, PlatformSettings, i18nService) {
             error : jFormErrorHandler
         });
     }
+
+    $scope.uploadSettings = function() {
+        $("#settingsFileForm").ajaxSubmit({
+            success : function(data) {
+                $('#settingsMsg').text(i18nService.getMsg('platformSettings.saved'));
+            },
+            error : jFormErrorHandler
+        });
+    }
+
+    $scope.uploadFileLocation = function() {
+        $http({method: 'POST', url: 'api/settings/platform/location', params: {location: this.location}}).
+            success(function() {
+                $('#settingsMsg').text(i18nService.getMessage('platformSettings.saved'));
+            }).
+            error(function(data, status, headers, config) {
+                $('#settingsMsg').text(i18nService.getMessage('platformSettings.locationsaved'));
+            });
+    }
 }
 
 function ModuleCtrl($scope, ModuleSettings, Bundle, i18nService, $routeParams) {
@@ -202,7 +289,7 @@ function ModuleCtrl($scope, ModuleSettings, Bundle, i18nService, $routeParams) {
         }
     });
 
-    $scope.module = Bundle.get({ bundleId: $routeParams.bundleId });
+    $scope.module = Bundle.details({ bundleId: $routeParams.bundleId });
 
     $scope.label = function(key) {
         return i18nService.getMessage('settings.' + key);

@@ -1,13 +1,18 @@
 package org.motechproject.admin.service.impl;
 
+import org.ektorp.CouchDbConnector;
 import org.joda.time.DateTime;
 import org.motechproject.admin.domain.StatusMessage;
 import org.motechproject.admin.messages.Level;
 import org.motechproject.admin.repository.AllStatusMessages;
 import org.motechproject.admin.service.StatusMessageService;
+import org.motechproject.server.config.service.PlatformSettingsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,8 +21,12 @@ import java.util.List;
 @Service("statusMessageService")
 public class StatusMessageServiceImpl implements StatusMessageService {
 
-    @Autowired
+    private static final Logger LOG = LoggerFactory.getLogger(StatusMessageServiceImpl.class);
+
     AllStatusMessages allStatusMessages;
+
+    @Autowired
+    PlatformSettingsService platformSettingsService;
 
     @Override
     public List<StatusMessage> getActiveMessages() {
@@ -40,13 +49,23 @@ public class StatusMessageServiceImpl implements StatusMessageService {
 
     @Override
     public List<StatusMessage> getAllMessages() {
-        return allStatusMessages.getAll();
+        List<StatusMessage> statusMessages = new ArrayList<>();
+        if (getAllStatusMessages() == null) {
+            StatusMessage noDbMessage = new StatusMessage("{noDB}", Level.ERROR);
+            statusMessages.add(noDbMessage);
+        } else {
+            statusMessages = allStatusMessages.getAll();
+        }
+
+        return statusMessages;
     }
 
     @Override
     public void postMessage(StatusMessage message) {
         validateMessage(message);
-        allStatusMessages.add(message);
+        if (getAllStatusMessages() != null) {
+            allStatusMessages.add(message);
+        }
     }
 
     @Override
@@ -99,6 +118,28 @@ public class StatusMessageServiceImpl implements StatusMessageService {
     @Override
     public void warn(String text, DateTime timeout) {
         postMessage(text, Level.WARN, timeout);
+    }
+
+    @Override
+    public void ok(String text) {
+        postMessage(text, Level.OK);
+    }
+
+    @Override
+    public void ok(String text, DateTime timeout) {
+        postMessage(text, Level.OK, timeout);
+    }
+
+    private AllStatusMessages getAllStatusMessages() {
+        if (allStatusMessages == null) {
+            try {
+                CouchDbConnector connector = platformSettingsService.getCouchConnector("motech-admin");
+                allStatusMessages = new AllStatusMessages(connector);
+            } catch (RuntimeException e) {
+                LOG.error("No db connection");
+            }
+        }
+        return allStatusMessages;
     }
 
     private void validateMessage(StatusMessage message) {

@@ -5,9 +5,11 @@ import org.apache.commons.io.IOUtils;
 import org.motechproject.MotechException;
 import org.motechproject.admin.bundles.BundleDirectoryManager;
 import org.motechproject.admin.bundles.BundleIcon;
+import org.motechproject.admin.bundles.ExtendedBundleInformation;
 import org.motechproject.admin.ex.BundleNotFoundException;
 import org.motechproject.admin.service.ModuleAdminService;
 import org.motechproject.server.osgi.BundleInformation;
+import org.motechproject.server.osgi.BundleLoader;
 import org.motechproject.server.osgi.JarInformation;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,6 +42,9 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
     @Autowired
     private BundleDirectoryManager bundleDirectoryManager;
+
+    @Resource(name = "bundleLoaders")
+    List<BundleLoader> bundleLoaders;
 
     @Override
     public List<BundleInformation> getBundles() {
@@ -106,6 +112,11 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
     @Override
     public BundleInformation installBundle(MultipartFile bundleFile) {
+        return installBundle(bundleFile, true);
+    }
+
+    @Override
+    public BundleInformation installBundle(MultipartFile bundleFile, boolean startBundle) {
         File savedBundleFile = null;
         InputStream bundleInputStream = null;
         try {
@@ -121,6 +132,12 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
                 bundle.update(bundleInputStream);
             }
 
+            runBundleLoaders(bundle);
+
+            if (!startBundle) {
+                bundle.stop();
+            }
+
             return new BundleInformation(bundle);
         }  catch (Exception e) {
             if (savedBundleFile != null) {
@@ -131,6 +148,12 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
         } finally {
             IOUtils.closeQuietly(bundleInputStream);
         }
+    }
+
+    @Override
+    public ExtendedBundleInformation getBundleDetails(long bundleId) {
+        Bundle bundle = getBundle(bundleId);
+        return new ExtendedBundleInformation(bundle);
     }
 
     private BundleIcon loadBundleIcon(URL iconURL) {
@@ -156,6 +179,12 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
             throw new BundleNotFoundException("Bundle with id [" + bundleId + "] not found");
         }
         return bundle;
+    }
+
+    private void runBundleLoaders(Bundle bundle) throws Exception {
+        for (BundleLoader loader : bundleLoaders) {
+            loader.loadBundle(bundle);
+        }
     }
 
     private Bundle findMatchingBundle(JarInformation jarInformation) {

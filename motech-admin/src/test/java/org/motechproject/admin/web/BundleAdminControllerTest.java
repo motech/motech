@@ -113,12 +113,18 @@ public class BundleAdminControllerTest {
 
     @Test
     public void testUploadBundle() throws BundleException {
-        when(moduleAdminService.installBundle(bundleFile)).thenReturn(bundleInformation);
+        when(moduleAdminService.installBundle(bundleFile, true)).thenReturn(bundleInformation);
+        when(moduleAdminService.installBundle(bundleFile, false)).thenReturn(bundleInformation);
 
-        BundleInformation result = controller.uploadBundle(bundleFile);
+        BundleInformation result = controller.uploadBundle(bundleFile, "on");
 
         assertEquals(bundleInformation, result);
-        verify(moduleAdminService).installBundle(bundleFile);
+        verify(moduleAdminService).installBundle(bundleFile, true);
+
+        result = controller.uploadBundle(bundleFile, null);
+
+        assertEquals(bundleInformation, result);
+        verify(moduleAdminService).installBundle(bundleFile, false);
     }
 
     @Test

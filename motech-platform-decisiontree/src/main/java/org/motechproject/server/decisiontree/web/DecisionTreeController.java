@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Spring MVC controller implementation provides method to handle HTTP requests and generate

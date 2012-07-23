@@ -33,4 +33,8 @@ public interface StatusMessageService {
     void warn(String text);
 
     void warn(String text, DateTime timeout);
+
+    void ok(String text);
+
+    void ok(String text, DateTime timeout);
 }

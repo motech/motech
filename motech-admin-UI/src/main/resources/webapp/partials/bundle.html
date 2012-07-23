@@ -3,10 +3,83 @@
 </div>
 
 <div class="box-content">
-    <h1>{{module.name}}</h1>
-    <img ng-src="api/bundles/{{module.bundleId}}/icon" class="icon" />
-    <div>{{msg('bundles.symbolicName')}} - {{module.symbolicName}}</div>
-    <div>{{msg('bundles.state')}} - {{module.state}}</div>
+    <div>
+        <h1>{{module.name}}</h1>
+        <img ng-src="api/bundles/{{module.bundleId}}/icon" alt="module-logo" class="big-icon" align="right"/>
+        <div style="clear:both;"></div>
+    </div>
+    <div class="bundle-prop">
+        <div class="bundle-dtLabel">{{msg('bundles.symbolicName')}}</div>
+        <div class="bundle-dtValue">{{module.symbolicName}}</div>
+    </div>
+    <div class="bundle-prop">
+        <div class="bundle-dtLabel">{{msg('bundles.version')}}</div>
+        <div class="bundle-dtValue">{{module.printVersion()}}</div>
+    </div>
+    <div class="bundle-prop">
+        <div class="bundle-dtLabel">{{msg('bundles.state')}}</div>
+        <div class="bundle-dtValue">{{module.state}}</div>
+    </div>
+    <div class="bundle-prop">
+        <div class="bundle-dtLabel">{{msg('bundles.location')}}</div>
+        <div class="bundle-dtValue">{{module.location}}</div>
+    </div>
+    <div class="bundle-prop">
+        <div class="bundle-dtLabel">{{msg('bundles.builtBy')}}</div>
+        <div class="bundle-dtValue">{{module.builtBy}}</div>
+    </div>
+    <div class="bundle-prop">
+        <div class="bundle-dtLabel">{{msg('bundles.tool')}}</div>
+        <div class="bundle-dtValue">{{module.tool}}</div>
+    </div>
+    <div class="bundle-prop">
+        <div class="bundle-dtLabel">{{msg('bundles.createdBy')}}</div>
+        <div class="bundle-dtValue">{{module.createdBy}}</div>
+    </div>
+    <div class="bundle-prop">
+        <div class="bundle-dtLabel">{{msg('bundles.vendor')}}</div>
+        <div class="bundle-dtValue">{{module.vendor}}</div>
+    </div>
+    <div class="bundle-prop">
+        <div class="bundle-dtLabel">{{msg('bundles.buildJDK')}}</div>
+        <div class="bundle-dtValue">{{module.buildJDK}}</div>
+    </div>
+    <div class="bundle-prop">
+        <div class="bundle-dtLabel">{{msg('bundles.lastModified')}}</div>
+        <div class="bundle-dtValue">{{printDate(module.lastModified) | date:'medium'}}</div>
+    </div>
+    <div class="bundle-prop">
+        <div class="bundle-dtLabel">{{msg('bundles.bundleActivator')}}</div>
+        <div class="bundle-dtValue">{{module.bundleActivator}}</div>
+    </div>
+    <div class="bundle-prop">
+        <div class="bundle-dtLabel">{{msg('bundles.description')}}</div>
+        <div class="bundle-dtValue">{{module.description}}</div>
+    </div>
+    <div class="bundle-prop">
+        <div class="bundle-dtLabel">{{msg('bundles.docURL')}}</div>
+        <div class="bundle-dtValue"><a ng-href="{{module.docURL}}">{{module.docURL}}</a>&nbsp;</div>
+    </div >
+    <div class="bundle-prop">
+        <div class="bundle-dtLabel">{{msg('bundles.importPackage')}}</div>
+        <div class="bundle-dtValue"><p>{{module.importPackage}}</p></div>
+    </div>
+    <div class="bundle-prop">
+        <div class="bundle-dtLabel">{{msg('bundles.exportPackage')}}</div>
+        <div class="bundle-dtValue"><p>{{module.exportPackage}}</p></div>
+    </div>
+    <div class="bundle-prop">
+        <div class="bundle-dtLabel">{{msg('bundles.registeredServices')}}</div>
+        <div class="bundle-dtValue">
+            <div ng-repeat="service in module.registeredServices">{{service}}</div>
+        </div>
+    </div>
+    <div class="bundle-prop">
+        <div class="bundle-dtLabel">{{msg('bundles.servicesInUse')}}</div>
+        <div class="bundle-dtValue">
+            <div ng-repeat="service in module.servicesInUse">{{service}}</div>
+        </div>
+    </div>
 </div>
 
 <div ng-show="showSettings()">

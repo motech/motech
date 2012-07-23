@@ -1,5 +1,6 @@
 package org.motechproject.server.config.service;
 
+import org.ektorp.CouchDbConnector;
 import org.motechproject.server.config.settings.MotechSettings;
 
 import java.io.IOException;
@@ -11,6 +12,8 @@ public interface PlatformSettingsService {
     public static final String SETTINGS_DB = "motech-platform-startup";
 
     MotechSettings getPlatformSettings();
+
+    void savePlatformSettings(Properties settings);
 
     void setPlatformSetting(final String key, final String value);
 
@@ -36,4 +39,6 @@ public interface PlatformSettingsService {
     Properties getBundleProperties(final String bundleSymbolicName, final String fileName) throws IOException;
 
     Map<String, Properties> getAllProperties(final String bundleSymbolicName) throws IOException;
+
+    CouchDbConnector getCouchConnector(String dbName);
 }

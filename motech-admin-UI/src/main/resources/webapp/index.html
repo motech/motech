@@ -7,9 +7,11 @@
         <link rel="stylesheet" type="text/css" href="css/table.css" />
         <link rel="stylesheet" type="text/css" href="css/admin.css" />
         <link rel="stylesheet" type="text/css" href="css/jquery.alerts.css" />
+        <link rel="stylesheet" type="text/css" href="css/nav.css" />
 
         <script src="lib/angular/angular.min.js" type="text/javascript"></script>
         <script src="lib/angular/angular-resource.min.js" type="text/javascript"></script>
+        <script src="lib/angular/angular-cookies.min.js" type="text/javascript"></script>
 
         <script src="lib/jquery/jquery-1.7.2.min.js" type="text/javascript"></script>
         <script src="lib/jquery/jquery.form.js" type="text/javascript"></script>
@@ -28,14 +30,24 @@
     </head>
 
     <body ng-controller="MasterCtrl">
+       <div id="header">
+           <a href="#/bundles"><img src="img/logo.png" alt="logo" /></a>
+           <h1>{{msg('title')}}</h1>
+        </div>
+       <div id="nav-panel">
+            <ul id="nav">
+                <li>
+                    <a href="#/bundles">{{msg('bundles')}}</a>
+                </li>
+                <li>
+                    <a href="#/settings">{{msg('platform.settings')}}</a>
+                </li>
+            </ul>
+       </div>
+
+       <hr id="splitter"/>
+
         <div id="content">
-            <h1>{{msg('title')}}</h1>
-
-            <div>
-                <a href="#/bundles">{{msg('bundles')}}</a>
-                <a href="#/settings">{{msg('platform.settings')}}</a>
-            </div>
-
             <div id="left-half">
                 <div ng-view></div>
             </div>
@@ -47,8 +59,8 @@
                     <div ng-repeat="message in messages" ng-class="getCssClass(message)">
                         <div class="status-message">
                             <a ng-click="remove(message)"><img alt="{{msg('delete')}}" title="{{msg('remove')}}" src="img/delete.png" /></a>
-                            <span class="msg-date">{{message.getDate() | date:'medium'}}</span> <span class="msg-level">
-                            [{{message.level}}]</span>: {{message.text}}
+                            <span class="msg-date">{{printDate(message.date) | date:'medium'}}</span> <span class="msg-level">
+                            [{{message.level}}]</span>: {{printText(message.text)}}
                         </div>
                     </div>
                 </div>

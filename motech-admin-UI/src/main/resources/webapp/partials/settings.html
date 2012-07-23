@@ -1,9 +1,30 @@
+<div class="box-header">
+    {{msg('settings.upload')}}
+</div>
+<div class="box-content">
+    <form id="settingsFileForm" action="api/settings/platform/upload" method="post" enctype="multipart/form-data">
+        <input type="file" id="settingsFile" name="settingsFile">
+        <input type="button" value="{{msg('submit')}}" ng-click="uploadSettings()" />
+    </form>
+</div>
+
+<div class="box-header">
+    {{msg('settings.location')}}
+</div>
+<div class="box-content">
+    <form id="settingsLocationForm" method="post" ng-submit="uploadFileLocation()">
+        <input type="text" id="settingsLocation" name="settingsLocation" ng-model="location">
+        <input type="submit" value="{{msg('submit')}}" />
+    </form>
+</div>
+
 <div class="box-header">{{msg('settings.platform')}}</div>
 <div class="box-content">
     <p id="settingsMsg"></p>
+
     <form id="platformSettingsForm" action="api/settings/platform" method="post">
         <div ng-repeat="settings in platformSettings" class="settings-input">
-            <label for="{{settings.key}}">{{label(settings.key)}}</label>
+            <label for="{{settings.key}}">{{settings.key}}</label>
             <input type="text" id="{{settings.key}}" name="{{settings.key}}" ng-model="settings.value" />
         </div>
         <input type="button" ng-click="saveSettings()" value="{{msg('submit')}}"/>

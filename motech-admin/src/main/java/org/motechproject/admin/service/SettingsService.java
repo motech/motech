@@ -2,13 +2,14 @@ package org.motechproject.admin.service;
 
 import org.motechproject.admin.settings.BundleSettings;
 import org.motechproject.admin.settings.SettingsOption;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 public interface SettingsService {
-    public List<SettingsOption> getSettings();
+
+    List<SettingsOption> getSettings();
 
     List<BundleSettings> getBundleSettings(long bundleId) throws IOException;
 
@@ -17,4 +18,8 @@ public interface SettingsService {
     void savePlatformSettings(List<SettingsOption> settingsOptions);
 
     void saveSetting(SettingsOption option);
+
+    void saveSettingsFile(MultipartFile configFile);
+
+    void addSettingsPath(String path);
 }

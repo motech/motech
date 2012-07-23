@@ -1,5 +1,6 @@
 package org.motechproject.admin.service.impl;
 
+import org.motechproject.MotechException;
 import org.motechproject.admin.service.SettingsService;
 import org.motechproject.admin.settings.BundleSettings;
 import org.motechproject.admin.settings.SettingsOption;
@@ -9,8 +10,10 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 @Service
@@ -27,10 +30,12 @@ public class SettingsServiceImpl implements SettingsService {
         MotechSettings motechSettings = platformSettingsService.getPlatformSettings();
         Properties activemqProperties = motechSettings.getActivemqProperties();
         Properties quartzProperties = motechSettings.getQuartzProperties();
+        Properties couchDbProperties = motechSettings.getCouchDBProperties();
 
         List<SettingsOption> settingsList = new ArrayList<>();
         settingsList.addAll(parseProperties(activemqProperties));
         settingsList.addAll(parseProperties(quartzProperties));
+        settingsList.addAll(parseProperties(couchDbProperties));
         settingsList.add(parseParam(MotechSettings.LANGUAGE, motechSettings.getLanguage()));
 
         return settingsList;
@@ -82,6 +87,31 @@ public class SettingsServiceImpl implements SettingsService {
     @Override
     public void saveSetting(SettingsOption option) {
         platformSettingsService.setPlatformSetting(option.getKey(), String.valueOf(option.getValue()));
+    }
+
+    @Override
+    public void saveSettingsFile(MultipartFile configFile) {
+        if (configFile == null) {
+            throw new IllegalArgumentException("Config file cannot be null");
+        }
+
+        try (InputStream is = configFile.getInputStream()) {
+            Properties settings = new Properties();
+            settings.load(is);
+
+            platformSettingsService.savePlatformSettings(settings);
+        } catch (IOException e) {
+            throw new MotechException("Error reading config file" ,e);
+        }
+    }
+
+    @Override
+    public void addSettingsPath(String path) {
+        try {
+            platformSettingsService.addConfigLocation(path, true);
+        } catch (IOException e) {
+            throw new MotechException("Error adding config location", e);
+        }
     }
 
     private String getSymbolicName(long bundleId) {
