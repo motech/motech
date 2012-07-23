@@ -14,9 +14,9 @@ import java.lang.reflect.Method;
  */
 public abstract class MotechListenerAbstractProxy implements EventListener {
 
-    protected final String name;
-    protected final Object bean;
-    protected final Method method;
+    private final String name;
+    private final Object bean;
+    private final Method method;
 
     /**
      * @param name
@@ -58,4 +58,11 @@ public abstract class MotechListenerAbstractProxy implements EventListener {
         return this.name;
     }
 
+    public Object getBean() {
+        return bean;
+    }
+
+    public Method getMethod() {
+        return method;
+    }
 }

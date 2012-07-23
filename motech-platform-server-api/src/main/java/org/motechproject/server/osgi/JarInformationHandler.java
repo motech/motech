@@ -43,7 +43,7 @@ public class JarInformationHandler {
             try {
                 getJarList().add(new JarInformation(file));
             } catch (IOException e) {
-                // TODO DO NOTHING
+                e.printStackTrace();
             }
         }
     }

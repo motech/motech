@@ -1,9 +1,9 @@
 package org.motechproject.server.event.annotations;
 
-import java.lang.reflect.Method;
-
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Method;
 
 /**
  * Responsible for dispatching to {@code void doSomething(MotechEvent event) {} } type of handlers
@@ -26,7 +26,7 @@ public class MotechListenerEventProxy extends MotechListenerAbstractProxy {
       */
     @Override
     public void callHandler(MotechEvent event) {
-        ReflectionUtils.invokeMethod(method, bean, event);
+        ReflectionUtils.invokeMethod(getMethod(), getBean(), event);
     }
 
 }

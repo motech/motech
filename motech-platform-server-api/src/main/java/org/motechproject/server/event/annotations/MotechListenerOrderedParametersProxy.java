@@ -1,14 +1,14 @@
 package org.motechproject.server.event.annotations;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Dispatches ordered parameters MotechEvent {"0":Obj0, "1":Obj1, .... "n":ObjN} to appropriate method signature at runtime
@@ -31,7 +31,7 @@ public class MotechListenerOrderedParametersProxy extends MotechListenerAbstract
         Map<String, Object> params = event.getParameters();
         List<Object> args = new ArrayList<Object>();
         int i = 0;
-        for (Class<?> t : method.getParameterTypes()) {
+        for (Class<?> t : getMethod().getParameterTypes()) {
             Object param = params.get(Integer.toString(i));
             if (param != null && t.isAssignableFrom(param.getClass())) {
                 args.add(param);
@@ -40,10 +40,10 @@ public class MotechListenerOrderedParametersProxy extends MotechListenerAbstract
                 args.add(param);
                 i++;
             } else {
-                logger.warn(String.format("Method: %s parameter: #%d of type: %s is not available in the event: %s. Handler skiped...", method.toGenericString(), i, t.getName(), event));
+                logger.warn(String.format("Method: %s parameter: #%d of type: %s is not available in the event: %s. Handler skiped...", getMethod().toGenericString(), i, t.getName(), event));
                 return;
             }
         }
-        ReflectionUtils.invokeMethod(method, bean, args.toArray());
+        ReflectionUtils.invokeMethod(getMethod(), getBean(), args.toArray());
     }
 }
