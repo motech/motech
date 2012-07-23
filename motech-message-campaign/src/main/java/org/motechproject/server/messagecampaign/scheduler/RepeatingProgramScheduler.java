@@ -19,7 +19,11 @@ import org.motechproject.server.messagecampaign.service.CampaignEnrollmentServic
 import org.motechproject.valueobjects.WallTime;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 import static org.motechproject.util.DateUtil.endOfDay;
@@ -35,6 +39,14 @@ public class RepeatingProgramScheduler extends MessageCampaignScheduler<Repeatin
         this.dispatchMessagesEvery24Hours = dispatchMessagesEvery24Hours;
     }
 
+    @Override
+    public void stop(String messageKey) {
+        for (RepeatingCampaignMessage message : campaign.messages()) {
+            if (message.messageKey().equals(messageKey)) {
+                schedulerService.safeUnscheduleRepeatingJob(getCampaignMessageSubject(message), getMessageJobId(messageKey));
+            }
+        }
+    }
 
     @Override
     protected void scheduleJobFor(RepeatingCampaignMessage message) {
