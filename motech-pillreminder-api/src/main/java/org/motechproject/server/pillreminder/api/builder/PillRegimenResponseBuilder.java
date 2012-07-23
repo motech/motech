@@ -15,8 +15,9 @@ public class PillRegimenResponseBuilder {
 
     public PillRegimenResponse createFrom(PillRegimen pillRegimen) {
         List<DosageResponse> dosages = new ArrayList<DosageResponse>();
-        for (Dosage dosage : pillRegimen.getDosages())
+        for (Dosage dosage : pillRegimen.getDosages()) {
             dosages.add(dosageResponseBuilder.createFrom(dosage));
+        }
         DailyScheduleDetails scheduleDetails = pillRegimen.getScheduleDetails();
         return new PillRegimenResponse(pillRegimen.getId(), pillRegimen.getExternalId(), scheduleDetails.getPillWindowInHours(), scheduleDetails.getRepeatIntervalInMinutes(), scheduleDetails.getBufferOverDosageTimeInMinutes(), dosages);
     }

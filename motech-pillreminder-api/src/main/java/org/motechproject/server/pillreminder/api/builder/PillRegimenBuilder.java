@@ -23,8 +23,9 @@ public class PillRegimenBuilder {
 
     private Set<Dosage> getDosages(DailyPillRegimenRequest pillRegimenRequest) {
         Set<Dosage> dosages = new HashSet<Dosage>();
-        for (DosageRequest dosageRequest : pillRegimenRequest.getDosageRequests())
+        for (DosageRequest dosageRequest : pillRegimenRequest.getDosageRequests()) {
             dosages.add(dosageBuilder.createFrom(dosageRequest));
+        }
         return dosages;
     }
 }

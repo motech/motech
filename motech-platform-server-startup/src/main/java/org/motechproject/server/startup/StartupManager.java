@@ -52,11 +52,12 @@ public final class StartupManager {
 
     public void startMonitor() throws FileSystemException {
         if (fileMonitor == null) {
+            final long delay = 5000;
             fileMonitor = new DefaultFileMonitor(configFileListener);
             fileMonitor.addFile(VFS.getManager().resolveFile(configFileSettings.getPath()));
-            fileMonitor.setDelay(5 * 1000L);
-
+            fileMonitor.setDelay(delay);
             fileMonitor.start();
+
         } else {
             stopMonitor();
             startMonitor();

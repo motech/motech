@@ -7,7 +7,14 @@ import org.joda.time.LocalTime;
 import org.motechproject.model.Time;
 import org.motechproject.util.DateUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
 
 public class Dosage {
     private String id;
@@ -67,8 +74,12 @@ public class Dosage {
         LocalDate today = DateUtil.today();
         LocalDate yesterday = today.minusDays(1);
         LocalTime localNow = DateUtil.now().toLocalTime();
-        if (responseLastCapturedDate == null) return false;
-        if (responseLastCapturedDate.equals(today)) return true;
+        if (responseLastCapturedDate == null) {
+            return false;
+        }
+        if (responseLastCapturedDate.equals(today)) {
+            return true;
+        }
         return responseLastCapturedDate.equals(yesterday) && new Time(localNow.getHourOfDay(), localNow.getMinuteOfHour()).isBefore(dosageTime);
     }
 
@@ -87,7 +98,9 @@ public class Dosage {
     @JsonIgnore
     public LocalDate getEndDate() {
         Set<Medicine> medicinesWithNonNullEndDate = getMedicinesWithNonNullEndDate();
-        if (medicinesWithNonNullEndDate.isEmpty()) return null;
+        if (medicinesWithNonNullEndDate.isEmpty()) {
+            return null;
+        }
 
         List<Medicine> sortedList = new ArrayList<Medicine>(medicinesWithNonNullEndDate);
         Collections.sort(sortedList, new Comparator<Medicine>() {
@@ -102,15 +115,17 @@ public class Dosage {
     private Set<Medicine> getMedicinesWithNonNullEndDate() {
         Set<Medicine> medicinesWithNonNullEndDate = new HashSet<Medicine>();
         for (Medicine medicine : medicines) {
-            if (medicine.getEndDate() != null)
+            if (medicine.getEndDate() != null) {
                 medicinesWithNonNullEndDate.add(medicine);
+            }
         }
         return medicinesWithNonNullEndDate;
     }
 
     public void validate() {
-        for (Medicine medicine : getMedicines())
+        for (Medicine medicine : getMedicines()) {
             medicine.validate();
+        }
     }
 
     public DateTime todaysDosageTime() {

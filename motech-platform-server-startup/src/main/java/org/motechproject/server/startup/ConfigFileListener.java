@@ -49,7 +49,8 @@ public class ConfigFileListener implements FileListener {
     private void scheduleJob(final String subject, final FileChangeEvent fileChangeEvent) {
         try {
             MotechEvent motechEvent = createMotechEvent(subject, fileChangeEvent);
-            RunOnceSchedulableJob runOnceSchedulableJob = new RunOnceSchedulableJob(motechEvent, DateTime.now().plusSeconds(5).toDate());
+            final int seconds = 5;
+            RunOnceSchedulableJob runOnceSchedulableJob = new RunOnceSchedulableJob(motechEvent, DateTime.now().plusSeconds(seconds).toDate());
             schedulerGateway.scheduleRunOnceJob(runOnceSchedulableJob);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);

@@ -54,8 +54,11 @@ public class PillRegimen extends MotechBaseDataObject {
     }
 
     public Dosage getDosage(String dosageId) {
-        for (Dosage dosage : dosages)
-            if (dosage.getId().equals(dosageId)) return dosage;
+        for (Dosage dosage : dosages) {
+            if (dosage.getId().equals(dosageId)) {
+                return dosage;
+            }
+        }
         return null;
     }
 
@@ -65,19 +68,21 @@ public class PillRegimen extends MotechBaseDataObject {
 
     private int getOffsetOfCurrentTimeFromDosageStartTime(Time dosageStartTime, DateTime now) {
         int hourDiff = now.getHourOfDay() - dosageStartTime.getHour();
-        if (hourDiff < 0) hourDiff += 24;
+        if (hourDiff < 0) {
+            hourDiff += 24;
+        }
         return hourDiff * 60 + now.getMinuteOfHour() - dosageStartTime.getMinute();
     }
 
     public int numberOfTimesPillRemindersSentFor(Dosage dosage) {
-        DailyScheduleDetails scheduleDetails = getScheduleDetails();
+        DailyScheduleDetails details = getScheduleDetails();
         Time dosageStartTime = dosage.getDosageTime();
-        int minsSinceDosage = Math.min(getOffsetOfCurrentTimeFromDosageStartTime(dosageStartTime, DateUtil.now()), scheduleDetails.getPillWindowInHours() * 60);
-        return (minsSinceDosage / scheduleDetails.getRepeatIntervalInMinutes());
+        int minsSinceDosage = Math.min(getOffsetOfCurrentTimeFromDosageStartTime(dosageStartTime, DateUtil.now()), details.getPillWindowInHours() * 60);
+        return (minsSinceDosage / details.getRepeatIntervalInMinutes());
     }
 
     public int timesPillRemainderWillBeSent() {
-        DailyScheduleDetails scheduleDetails = getScheduleDetails();
-        return (scheduleDetails.getPillWindowInHours() * 60) / scheduleDetails.getRepeatIntervalInMinutes();
+        DailyScheduleDetails details = getScheduleDetails();
+        return (details.getPillWindowInHours() * 60) / details.getRepeatIntervalInMinutes();
     }
 }
