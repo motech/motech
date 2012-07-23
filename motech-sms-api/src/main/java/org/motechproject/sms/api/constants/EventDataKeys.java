@@ -7,7 +7,7 @@
  */
 package org.motechproject.sms.api.constants;
 
-public class EventDataKeys {
+public final class EventDataKeys {
     /**
      * SendSMS event payload key indicating the recipients of the message
      */
@@ -33,4 +33,6 @@ public class EventDataKeys {
      */
     public static final String TIMESTAMP = "timestamp";
 
+    private EventDataKeys() {
+    }
 }
