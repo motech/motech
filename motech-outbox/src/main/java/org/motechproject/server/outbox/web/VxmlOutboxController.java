@@ -41,10 +41,10 @@ public class VxmlOutboxController extends MultiActionController {
     public static final String LANGUAGE_PARAM = "ln";
 
     @Autowired
-    VoiceOutboxService voiceOutboxService;
+    private VoiceOutboxService voiceOutboxService;
 
     @Autowired
-    PlatformSettingsService platformSettingsService;
+    private PlatformSettingsService platformSettingsService;
 
     /**
      * Handles Appointment Reminder HTTP requests and generates a VXML document based on a Velocity template.

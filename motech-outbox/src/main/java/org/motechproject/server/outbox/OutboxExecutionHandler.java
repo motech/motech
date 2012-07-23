@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  *
@@ -26,15 +27,12 @@ public class OutboxExecutionHandler {
     private MotechSchedulerGateway schedulerGateway;
 
     @Autowired
-    IVRService ivrService;
+    private IVRService ivrService;
 
-    //TODO: move this out to config somewhere
-    private static final String HOST_IP = "10.0.1.6";
-    private static final String OUTBOX_VXML_BASE_URL = "http://" + HOST_IP + "/motech-platform-server/module/outbox/vxml/outboxMessage";
+    @Autowired
+    private Properties outboxProperties;
 
-    int timeOut = 20000;
-
-    @MotechListener(subjects = {EventKeys.EXECUTE_OUTBOX_SUBJECT})
+    @MotechListener(subjects = {EventKeys.EXECUTE_OUTBOX_SUBJECT })
     public void execute(MotechEvent event) {
 
         String externalID = EventKeys.getExternalID(event);
@@ -59,7 +57,9 @@ public class OutboxExecutionHandler {
         }
 
         try {
-            String vxmlUrl = OUTBOX_VXML_BASE_URL + "?pId=" + externalID + "&ln=" + language;
+            final int timeOut = 20000;
+            String vxmlUrl = "http://" + outboxProperties.getProperty("outbox.host.ip")
+                    + "/motech-platform-server/module/outbox/vxml/outboxMessage?pId=" + externalID + "&ln=" + language;
             CallRequest callRequest = new CallRequest(phoneNumber, timeOut, vxmlUrl);
 
             Map<String, Object> messageParameters = new HashMap<String, Object>();
@@ -82,7 +82,7 @@ public class OutboxExecutionHandler {
         }
     }
 
-    @MotechListener(subjects = {EventKeys.SCHEDULE_EXECUTION_SUBJECT})
+    @MotechListener(subjects = {EventKeys.SCHEDULE_EXECUTION_SUBJECT })
     public void schedule(MotechEvent event) {
 
         Integer callHour = EventKeys.getCallHourKey(event);
@@ -119,7 +119,7 @@ public class OutboxExecutionHandler {
         schedulerGateway.scheduleJob(cronSchedulableJob);
     }
 
-    @MotechListener(subjects = {EventKeys.UNSCHEDULE_EXECUTION_SUBJECT})
+    @MotechListener(subjects = {EventKeys.UNSCHEDULE_EXECUTION_SUBJECT })
     public void unschedule(MotechEvent event) {
         if (EventKeys.getScheduleJobIdKey(event) == null) {
             logger.error(String.format("Can not handle Event: %s. The event is invalid - missing the %s parameter",

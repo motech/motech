@@ -16,6 +16,8 @@ import org.motechproject.scheduler.domain.JobId;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduler.gateway.MotechSchedulerGateway;
 
+import java.util.Properties;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -27,6 +29,9 @@ public class OutboxExecutionHandlerTest {
 
     @Mock
     IVRService ivrServiceMock;
+
+    @Mock
+    Properties outboxProperties;
 
     @Mock
     private MotechSchedulerGateway motechSchedulerGateway;

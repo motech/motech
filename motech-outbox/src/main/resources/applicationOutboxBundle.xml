@@ -11,6 +11,7 @@
                 http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
     <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
+    <util:properties id="outboxProperties" location="classpath:outbox.properties"/>
 
     <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean"/>
 
