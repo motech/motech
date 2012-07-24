@@ -11,7 +11,10 @@ import org.motechproject.scheduletracking.api.domain.json.ScheduleWindowsRecord;
 import org.motechproject.util.TimeIntervalParser;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @Component
 public class ScheduleFactory {
@@ -38,15 +41,16 @@ public class ScheduleFactory {
             for (WindowName windowName : WindowName.values()) {
                 Period currentWindowEnd = getPeriodFromValue(values.get(windowName), locale);
                 windowStarts.put(windowName, previousWindowEnd);
-                if (currentWindowEnd.equals(EMPTY_PERIOD))
+                if (currentWindowEnd.equals(EMPTY_PERIOD)) {
                     windowDurations.put(windowName, EMPTY_PERIOD);
-                else {
+                } else {
                     windowDurations.put(windowName, currentWindowEnd.minus(previousWindowEnd));
                     previousWindowEnd = currentWindowEnd;
                 }
             }
-            if (!scheduleRecord.isAbsoluteSchedule())
+            if (!scheduleRecord.isAbsoluteSchedule()) {
                 previousWindowEnd = EMPTY_PERIOD;
+            }
 
             Milestone milestone = new Milestone(milestoneRecord.name(), windowDurations.get(WindowName.earliest), windowDurations.get(WindowName.due), windowDurations.get(WindowName.late), windowDurations.get(WindowName.max));
             milestone.setData(milestoneRecord.data());
@@ -64,8 +68,9 @@ public class ScheduleFactory {
             Period offset = getPeriodFromValue(alertRecord.offset(), locale);
             if (isAbsoluteAlert) {
                 offset = offset.minus(windowStarts.get(WindowName.valueOf(alertRecord.window())));
-                if (alertRecord.isFloating())
+                if (alertRecord.isFloating()) {
                     throw new InvalidScheduleDefinitionException("cannot define floating alerts for absoulte schedules.");
+                }
             }
             milestone.addAlert(WindowName.valueOf(alertRecord.window()), new Alert(offset, getPeriodFromValue(alertRecord.interval(), locale), Integer.parseInt(alertRecord.count()), localAlertIndex++, alertRecord.isFloating()));
         }

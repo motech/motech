@@ -54,8 +54,8 @@ public class EnrollmentsSearchIT {
 
     @After
     public void tearDown() {
-        allSchedules.removeAll();
         allEnrollments.removeAll();
+        allSchedules.removeAll();
     }
 
     @Test
@@ -156,7 +156,7 @@ public class EnrollmentsSearchIT {
     }
 
     private Enrollment createEnrollment(String externalId, String scheduleName, String currentMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime, EnrollmentStatus enrollmentStatus, Map<String,String> metadata) {
-        Enrollment enrollment = new Enrollment(externalId, allSchedules.getByName(scheduleName), currentMilestoneName, referenceDateTime, enrollmentDateTime, preferredAlertTime, enrollmentStatus, metadata);
+        Enrollment enrollment = new Enrollment().setExternalId(externalId).setSchedule(allSchedules.getByName(scheduleName)).setCurrentMilestoneName(currentMilestoneName).setStartOfSchedule(referenceDateTime).setEnrolledOn(enrollmentDateTime).setPreferredAlertTime(preferredAlertTime).setStatus(enrollmentStatus).setMetadata(metadata);
         allEnrollments.add(enrollment);
         return enrollment;
     }

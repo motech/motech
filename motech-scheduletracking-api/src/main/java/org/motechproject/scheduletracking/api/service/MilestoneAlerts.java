@@ -11,7 +11,7 @@ import java.util.Map;
  * This contains the alert timings of all the windows of a milestone
  */
 public class MilestoneAlerts {
-    private Map<String,List<DateTime>> alertTimings;
+    private Map<String, List<DateTime>> alertTimings;
 
     /**
      * Constructor to create MilestoneAlerts

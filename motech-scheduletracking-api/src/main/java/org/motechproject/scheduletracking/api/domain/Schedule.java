@@ -37,16 +37,19 @@ public class Schedule implements Serializable {
     }
 
     public Milestone getMilestone(String milestoneName) {
-        for (Milestone milestone : milestones)
-            if (milestone.getName().equals(milestoneName))
+        for (Milestone milestone : milestones) {
+            if (milestone.getName().equals(milestoneName)) {
                 return milestone;
+            }
+        }
         return null;
     }
 
     public String getNextMilestoneName(String currentMilestoneName) {
         int currentIndex = milestones.indexOf(getMilestone(currentMilestoneName));
-        if (currentIndex < milestones.size() - 1)
+        if (currentIndex < milestones.size() - 1) {
             return milestones.get(currentIndex + 1).getName();
+        }
         return null;
     }
 
@@ -65,12 +68,18 @@ public class Schedule implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Schedule schedule = (Schedule) o;
 
-        if (name != null ? !name.equals(schedule.name) : schedule.name != null) return false;
+        if (name != null ? !name.equals(schedule.name) : schedule.name != null) {
+            return false;
+        }
 
         return true;
     }

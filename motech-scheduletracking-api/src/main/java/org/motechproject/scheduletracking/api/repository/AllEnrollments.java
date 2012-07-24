@@ -73,14 +73,16 @@ public class AllEnrollments extends MotechBaseRepository<Enrollment> {
     @Override
     public List<Enrollment> getAll() {
         List<Enrollment> enrollments = super.getAll();
-        for (Enrollment enrollment : enrollments)
+        for (Enrollment enrollment : enrollments) {
             populateSchedule(enrollment);
+        }
         return enrollments;
     }
 
     private List<Enrollment> populateWithSchedule(List<Enrollment> enrollments) {
-        for (Enrollment enrollment : enrollments)
+        for (Enrollment enrollment : enrollments) {
             populateSchedule(enrollment);
+        }
         return enrollments;
     }
 

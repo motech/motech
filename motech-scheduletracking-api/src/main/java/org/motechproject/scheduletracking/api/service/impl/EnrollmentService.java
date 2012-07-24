@@ -3,7 +3,12 @@ package org.motechproject.scheduletracking.api.service.impl;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.motechproject.model.Time;
-import org.motechproject.scheduletracking.api.domain.*;
+import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
+import org.motechproject.scheduletracking.api.domain.Milestone;
+import org.motechproject.scheduletracking.api.domain.MilestoneWindow;
+import org.motechproject.scheduletracking.api.domain.Schedule;
+import org.motechproject.scheduletracking.api.domain.WindowName;
 import org.motechproject.scheduletracking.api.domain.exception.NoMoreMilestonesToFulfillException;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllSchedules;
@@ -35,16 +40,16 @@ public class EnrollmentService {
 
     public String enroll(String externalId, String scheduleName, String startingMilestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime, Map<String, String> metadata) {
         Schedule schedule = allSchedules.getByName(scheduleName);
-        Enrollment enrollment = new Enrollment(externalId, schedule, startingMilestoneName, referenceDateTime, enrollmentDateTime, preferredAlertTime, EnrollmentStatus.ACTIVE, metadata);
+        Enrollment enrollment = new Enrollment().setExternalId(externalId).setSchedule(schedule).setCurrentMilestoneName(startingMilestoneName).setStartOfSchedule(referenceDateTime).setEnrolledOn(enrollmentDateTime).setPreferredAlertTime(preferredAlertTime).setStatus(EnrollmentStatus.ACTIVE).setMetadata(metadata);
 
         if (schedule.hasExpiredSince(enrollment.getCurrentMilestoneStartDate(), startingMilestoneName)) {
             enrollment.setStatus(EnrollmentStatus.DEFAULTED);
         }
 
         Enrollment activeEnrollment = allEnrollments.getActiveEnrollment(externalId, scheduleName);
-        if (activeEnrollment == null)
+        if (activeEnrollment == null) {
             allEnrollments.add(enrollment);
-        else {
+        } else {
             unscheduleJobs(activeEnrollment);
             enrollment = activeEnrollment.copyFrom(enrollment);
             allEnrollments.update(enrollment);
@@ -56,18 +61,20 @@ public class EnrollmentService {
 
     public void fulfillCurrentMilestone(Enrollment enrollment, DateTime fulfillmentDateTime) {
         Schedule schedule = allSchedules.getByName(enrollment.getScheduleName());
-        if (isNullOrEmpty(enrollment.getCurrentMilestoneName()))
+        if (isNullOrEmpty(enrollment.getCurrentMilestoneName())) {
             throw new NoMoreMilestonesToFulfillException();
+        }
 
         unscheduleJobs(enrollment);
 
         enrollment.fulfillCurrentMilestone(fulfillmentDateTime);
         String nextMilestoneName = schedule.getNextMilestoneName(enrollment.getCurrentMilestoneName());
         enrollment.setCurrentMilestoneName(nextMilestoneName);
-        if (nextMilestoneName == null)
+        if (nextMilestoneName == null) {
             enrollment.setStatus(COMPLETED);
-        else
+        } else {
             scheduleJobs(enrollment);
+        }
 
         allEnrollments.update(enrollment);
     }
@@ -87,8 +94,9 @@ public class EnrollmentService {
             Period windowEnd = milestone.getWindowEnd(window.getName());
             DateTime windowStartDateTime = milestoneStart.plus(windowStart);
             DateTime windowEndDateTime = milestoneStart.plus(windowEnd);
-            if (inRange(asOf, windowStartDateTime, windowEndDateTime))
+            if (inRange(asOf, windowStartDateTime, windowEndDateTime)) {
                 return window.getName();
+            }
         }
         return null;
     }
@@ -116,6 +124,6 @@ public class EnrollmentService {
 
     public MilestoneAlerts getAlertTimings(String externalId, String scheduleName, String milestoneName, DateTime referenceDateTime, DateTime enrollmentDateTime, Time preferredAlertTime) {
         Schedule schedule = allSchedules.getByName(scheduleName);
-        return enrollmentAlertService.getAlertTimings(new Enrollment(externalId, schedule, milestoneName, referenceDateTime, enrollmentDateTime, preferredAlertTime, EnrollmentStatus.ACTIVE, null));
+        return enrollmentAlertService.getAlertTimings(new Enrollment().setExternalId(externalId).setSchedule(schedule).setCurrentMilestoneName(milestoneName).setStartOfSchedule(referenceDateTime).setEnrolledOn(enrollmentDateTime).setPreferredAlertTime(preferredAlertTime).setStatus(EnrollmentStatus.ACTIVE).setMetadata(null));
     }
 }

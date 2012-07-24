@@ -5,7 +5,7 @@ import org.joda.time.DateTime;
 
 import java.io.Serializable;
 
-public class MilestoneAlert implements Serializable {
+public final class MilestoneAlert implements Serializable {
     private String milestoneName;
 
     private DateTime earliestDateTime;
@@ -13,7 +13,7 @@ public class MilestoneAlert implements Serializable {
     private DateTime lateDateTime;
     private DateTime defaultmentDateTime;
 
-    public static MilestoneAlert fromMilestone(Milestone milestone, DateTime startOfMilestone){
+    public static MilestoneAlert fromMilestone(Milestone milestone, DateTime startOfMilestone) {
         return new MilestoneAlert(milestone.getName(),
                 getWindowStartDate(milestone, startOfMilestone, WindowName.earliest),
                 getWindowStartDate(milestone, startOfMilestone, WindowName.due),
@@ -58,19 +58,30 @@ public class MilestoneAlert implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof MilestoneAlert)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof MilestoneAlert)) {
+            return false;
+        }
 
         MilestoneAlert that = (MilestoneAlert) o;
 
-        if (defaultmentDateTime != null ? !defaultmentDateTime.equals(that.defaultmentDateTime) : that.defaultmentDateTime != null)
+        if (defaultmentDateTime != null ? !defaultmentDateTime.equals(that.defaultmentDateTime) : that.defaultmentDateTime != null) {
             return false;
-        if (dueDateTime != null ? !dueDateTime.equals(that.dueDateTime) : that.dueDateTime != null) return false;
-        if (earliestDateTime != null ? !earliestDateTime.equals(that.earliestDateTime) : that.earliestDateTime != null) return false;
-        if (lateDateTime != null ? !lateDateTime.equals(that.lateDateTime) : that.lateDateTime != null) return false;
-        if (milestoneName != null ? !milestoneName.equals(that.milestoneName) : that.milestoneName != null)
+        }
+        if (dueDateTime != null ? !dueDateTime.equals(that.dueDateTime) : that.dueDateTime != null) {
             return false;
-
+        }
+        if (earliestDateTime != null ? !earliestDateTime.equals(that.earliestDateTime) : that.earliestDateTime != null) {
+            return false;
+        }
+        if (lateDateTime != null ? !lateDateTime.equals(that.lateDateTime) : that.lateDateTime != null) {
+            return false;
+        }
+        if (milestoneName != null ? !milestoneName.equals(that.milestoneName) : that.milestoneName != null) {
+            return false;
+        }
         return true;
     }
 

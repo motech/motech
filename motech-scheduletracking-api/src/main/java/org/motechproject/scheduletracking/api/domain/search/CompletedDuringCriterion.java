@@ -28,8 +28,9 @@ public class CompletedDuringCriterion implements Criterion {
     public List<Enrollment> filter(List<Enrollment> enrollments, EnrollmentService enrollmentService) {
         List<Enrollment> filteredEnrollments = new ArrayList<Enrollment>();
         for (Enrollment enrollment : enrollments) {
-            if (enrollment.isCompleted() && inRange(enrollment.getLastFulfilledDate(), start, end))
+            if (enrollment.isCompleted() && inRange(enrollment.getLastFulfilledDate(), start, end)) {
                 filteredEnrollments.add(enrollment);
+            }
         }
         return filteredEnrollments;
     }

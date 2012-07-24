@@ -24,6 +24,7 @@ import java.util.List;
 @Component
 public class EnrollmentAlertService {
 
+    public static final int MILLIS_IN_A_SEC = 1000;
     private MotechSchedulerService schedulerService;
 
     @Autowired
@@ -34,13 +35,15 @@ public class EnrollmentAlertService {
     public void scheduleAlertsForCurrentMilestone(Enrollment enrollment) {
         Schedule schedule = enrollment.getSchedule();
         Milestone currentMilestone = schedule.getMilestone(enrollment.getCurrentMilestoneName());
-        if (currentMilestone == null)
+        if (currentMilestone == null) {
             return;
+        }
 
         DateTime currentMilestoneStartDate = enrollment.getCurrentMilestoneStartDate();
         for (MilestoneWindow milestoneWindow : currentMilestone.getMilestoneWindows()) {
-            if (currentMilestone.windowElapsed(milestoneWindow.getName(), currentMilestoneStartDate))
+            if (currentMilestone.windowElapsed(milestoneWindow.getName(), currentMilestoneStartDate)) {
                 continue;
+            }
 
             MilestoneAlert milestoneAlert = MilestoneAlert.fromMilestone(currentMilestone, currentMilestoneStartDate);
             for (Alert alert : milestoneWindow.getAlerts()) {
@@ -53,8 +56,9 @@ public class EnrollmentAlertService {
         Schedule schedule = enrollment.getSchedule();
         Milestone currentMilestone = schedule.getMilestone(enrollment.getCurrentMilestoneName());
         MilestoneAlerts milestoneAlerts = new MilestoneAlerts();
-        if (currentMilestone == null)
+        if (currentMilestone == null) {
             return milestoneAlerts;
+        }
 
         for (MilestoneWindow milestoneWindow : currentMilestone.getMilestoneWindows()) {
             List<DateTime> alertTimingsForWindow = new ArrayList<DateTime>();
@@ -70,11 +74,12 @@ public class EnrollmentAlertService {
     private void scheduleAlertJob(Alert alert, Enrollment enrollment, Milestone currentMilestone, MilestoneWindow milestoneWindow, MilestoneAlert milestoneAlert, DateTime reference) {
         MotechEvent event = new MilestoneEvent(enrollment, milestoneAlert, milestoneWindow).toMotechEvent();
         event.getParameters().put(MotechSchedulerService.JOB_ID_KEY, String.format("%s.%d", enrollment.getId(), alert.getIndex()));
-        long repeatIntervalInMillis = (long) alert.getInterval().toStandardSeconds().getSeconds() * 1000;
+        long repeatIntervalInMillis = (long) alert.getInterval().toStandardSeconds().getSeconds() * MILLIS_IN_A_SEC;
 
         AlertWindow alertWindow = createAlertWindowFor(alert, enrollment, currentMilestone, milestoneWindow);
-        if(alertWindow.numberOfAlertsToSchedule() > 0)
+        if (alertWindow.numberOfAlertsToSchedule() > 0) {
             schedulerService.safeScheduleRepeatingJob(new RepeatingSchedulableJob(event, alertWindow.scheduledAlertStartDate(), null, alertWindow.numberOfAlertsToSchedule() - 1, repeatIntervalInMillis));
+        }
     }
 
     private AlertWindow createAlertWindowFor(Alert alert, Enrollment enrollment, Milestone currentMilestone, MilestoneWindow milestoneWindow) {

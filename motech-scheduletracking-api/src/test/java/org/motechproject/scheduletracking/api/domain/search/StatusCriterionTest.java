@@ -22,10 +22,10 @@ public class StatusCriterionTest {
     public void shouldFilterByExternalId() {
         Schedule schedule = new Schedule("some_schedule");
         List<Enrollment> allEnrollments = new ArrayList<Enrollment>();
-        allEnrollments.add(new Enrollment(null, schedule, null, null, null, null, EnrollmentStatus.COMPLETED, null));
-        allEnrollments.add(new Enrollment(null, schedule, null, null, null, null, EnrollmentStatus.ACTIVE, null));
-        allEnrollments.add(new Enrollment(null, schedule, null, null, null, null, EnrollmentStatus.DEFAULTED, null));
-        allEnrollments.add(new Enrollment(null, schedule, null, null, null, null, EnrollmentStatus.ACTIVE, null));
+        allEnrollments.add(new Enrollment().setExternalId(null).setSchedule(schedule).setCurrentMilestoneName(null).setStartOfSchedule(null).setEnrolledOn(null).setPreferredAlertTime(null).setStatus(EnrollmentStatus.COMPLETED).setMetadata(null));
+        allEnrollments.add(new Enrollment().setExternalId(null).setSchedule(schedule).setCurrentMilestoneName(null).setStartOfSchedule(null).setEnrolledOn(null).setPreferredAlertTime(null).setStatus(EnrollmentStatus.ACTIVE).setMetadata(null));
+        allEnrollments.add(new Enrollment().setExternalId(null).setSchedule(schedule).setCurrentMilestoneName(null).setStartOfSchedule(null).setEnrolledOn(null).setPreferredAlertTime(null).setStatus(EnrollmentStatus.DEFAULTED).setMetadata(null));
+        allEnrollments.add(new Enrollment().setExternalId(null).setSchedule(schedule).setCurrentMilestoneName(null).setStartOfSchedule(null).setEnrolledOn(null).setPreferredAlertTime(null).setStatus(EnrollmentStatus.ACTIVE).setMetadata(null));
 
         List<Enrollment> filteredEnrollments = new StatusCriterion(EnrollmentStatus.ACTIVE).filter(allEnrollments, null);
         assertEquals(asList(new EnrollmentStatus[]{ EnrollmentStatus.ACTIVE, EnrollmentStatus.ACTIVE}), extract(filteredEnrollments, on(Enrollment.class).getStatus()));

@@ -5,6 +5,6 @@ import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import java.util.List;
 
 public interface TrackedSchedulesJsonReader {
-    public ScheduleRecord getSchedule(String schduleJson);
-    public List<ScheduleRecord> getAllSchedules(String definitionsDirectoryName);
+    ScheduleRecord getSchedule(String schduleJson);
+    List<ScheduleRecord> getAllSchedules(String definitionsDirectoryName);
 }

@@ -15,7 +15,7 @@ import static ch.lambdaj.Lambda.on;
 
 public class TrackedSchedulesJsonReaderImpl implements TrackedSchedulesJsonReader {
     private MotechJsonReader motechJsonReader;
-    private final String json_extension = ".json";
+    private String jsonExtension = ".json";
 
     public TrackedSchedulesJsonReaderImpl() {
         this.motechJsonReader = new MotechJsonReader();
@@ -24,7 +24,7 @@ public class TrackedSchedulesJsonReaderImpl implements TrackedSchedulesJsonReade
     @Override
     public List<ScheduleRecord> getAllSchedules(String definitionsDirectoryName) {
         List<ScheduleRecord> scheduleRecords = new ArrayList<ScheduleRecord>();
-        Type type = new TypeToken<ScheduleRecord>() {}.getType();
+        Type type = new TypeToken<ScheduleRecord>() { } .getType();
 
         for (String filename : getAllFileNames(definitionsDirectoryName)) {
             scheduleRecords.add((ScheduleRecord) motechJsonReader.readFromFile(definitionsDirectoryName + "/" + filename, type));
@@ -34,7 +34,7 @@ public class TrackedSchedulesJsonReaderImpl implements TrackedSchedulesJsonReade
 
     @Override
     public ScheduleRecord getSchedule(String schduleJson) {
-        Type type = new TypeToken<ScheduleRecord>() {}.getType();
+        Type type = new TypeToken<ScheduleRecord>() { } .getType();
         return (ScheduleRecord) motechJsonReader.readFromString(schduleJson, type);
     }
 
@@ -43,7 +43,7 @@ public class TrackedSchedulesJsonReaderImpl implements TrackedSchedulesJsonReade
         File[] files = new File(schedulesDirectoryPath).listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File file, String filename) {
-                return filename.endsWith(json_extension);
+                return filename.endsWith(jsonExtension);
             }
         });
 
