@@ -24,7 +24,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 import java.util.HashMap;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:applicationDecisionTree.xml"})
+@ContextConfiguration(locations = {"classpath:testApplicationDecisionTree.xml"})
 public class DecisionTreeControllerIT extends SpringIntegrationTest {
 
     public static final String AUDIO_FILE_URL = "https://tamaproject.in/tama/wav/stream/en/signature_music.wav";
@@ -44,7 +44,7 @@ public class DecisionTreeControllerIT extends SpringIntegrationTest {
         Context context = new Context(server, CONTEXT_PATH);
 
         DispatcherServlet dispatcherServlet = new DispatcherServlet();
-        dispatcherServlet.setContextConfigLocation("classpath:applicationDecisionTree.xml");
+        dispatcherServlet.setContextConfigLocation("classpath:testApplicationDecisionTree.xml");
 
         ServletHolder servletHolder = new ServletHolder(dispatcherServlet);
         context.addServlet(servletHolder, "/*");

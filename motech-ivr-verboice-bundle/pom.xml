@@ -64,6 +64,7 @@
                             org.springframework.osgi.config,
                             org.springframework.web.servlet.config,
                             org.springframework.web.servlet.mvc,
+                            org.motechproject.scheduler.gateway,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-ivr-verboice</Embed-Dependency>

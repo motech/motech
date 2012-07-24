@@ -123,7 +123,6 @@ public class DecisionTreeController extends MultiActionController {
                         + ", " + LANGUAGE_PARAM + " and " + TREE_NAME_PARAM + " are mandatory");
                 return getErrorModelAndView(Errors.NULL_PATIENTID_LANGUAGE_OR_TREENAME_PARAM, language);
             }
-
             return getModelViewForNextNode(request, parentTransitionPath, params);
         } catch (DecisionTreeException exception) {
             logger.error(exception.getMessage());
@@ -135,8 +134,11 @@ public class DecisionTreeController extends MultiActionController {
     }
 
     private ModelAndView getModelViewForNextNode(HttpServletRequest request, String parentTransitionPath, Map<String, Object> params) {
+        String language = request.getParameter(LANGUAGE_PARAM);
         String treeNameString = request.getParameter(TREE_NAME_PARAM);
         String transitionKey = request.getParameter(TRANSITION_KEY_PARAM);
+        String type = request.getParameter(TYPE_PARAM);
+
         String[] treeNames = treeNameString.split(TREE_NAME_SEPARATOR);
         String currentTree = treeNames[0];
 
@@ -161,8 +163,9 @@ public class DecisionTreeController extends MultiActionController {
                     if (treeNames.length > 1) {
                         //reduce the current tree and redirect to the next tree
                         treeNames = (String[]) ArrayUtils.remove(treeNames, 0);
-                        return new ModelAndView(String.format("redirect:/decisiontree/node?%s=%s&%s=%s", TREE_NAME_PARAM, LANGUAGE_PARAM, StringUtils.join(treeNames, TREE_NAME_SEPARATOR), request.getParameter(LANGUAGE_PARAM)));
+                        return new ModelAndView(String.format("redirect:/decisiontree/node?%s=%s&%s=%s", TREE_NAME_PARAM, StringUtils.join(treeNames, TREE_NAME_SEPARATOR), LANGUAGE_PARAM, language));
                     } else {
+                        //TODO: Add support for return url
                         return new ModelAndView(EXIT_TEMPLATE_NAME);
                     }
                 } else {

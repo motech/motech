@@ -12,7 +12,7 @@
     <import resource="classpath:applicationMessageCampaign.xml"/>
 
     <import resource="classpath:applicationMessageCampaign.xml"/>
-    <import resource="classpath*:integrationCommonAPI.xml"/>
+    <import resource="classpath:integrationCommonAPI.xml"/>
     <import resource="classpath:applicationScheduler.xml"/>
 
     <bean id="messageCampaignDBConnector" class="org.ektorp.impl.StdCouchDbConnector">

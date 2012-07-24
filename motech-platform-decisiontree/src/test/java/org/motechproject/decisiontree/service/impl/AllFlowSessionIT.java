@@ -17,7 +17,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:applicationDecisionTree.xml")
+@ContextConfiguration(locations = "classpath:testApplicationDecisionTree.xml")
 public class AllFlowSessionIT {
 
     @Autowired

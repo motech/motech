@@ -10,4 +10,6 @@
     <osgi:service id="flowSessionServiceOsgi" auto-export="interfaces" ref="flowSessionService"
                   interface="org.motechproject.decisiontree.service.FlowSessionService" />
 
+    <osgi:reference id="outboundEventGatewayOsgi" cardinality="0..1"
+                    interface="org.motechproject.scheduler.gateway.OutboundEventGateway" />
 </beans>

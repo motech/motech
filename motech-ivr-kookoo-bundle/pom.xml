@@ -29,6 +29,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-scheduler</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
@@ -69,6 +74,7 @@
                             org.springframework.osgi.config,
                             org.springframework.web.servlet.config,
                             org.springframework.web.servlet.mvc,
+                            org.motechproject.scheduler.gateway,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-ivr-kookoo</Embed-Dependency>

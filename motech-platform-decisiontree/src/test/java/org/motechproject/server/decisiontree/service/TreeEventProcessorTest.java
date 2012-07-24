@@ -14,6 +14,7 @@ import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.scheduler.context.EventContext;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduler.event.EventRelay;
+import org.motechproject.scheduler.gateway.OutboundEventGateway;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -47,38 +48,34 @@ public class TreeEventProcessorTest {
                     )}
             });
 
+    @Mock
+    private OutboundEventGateway outboundEventGateway;
+
     @InjectMocks
-    TreeEventProcessor treeEventProcessor = new TreeEventProcessor();
-
-    @Mock
-    EventContext context;
-
-    @Mock
-    EventRelay eventRelay;
+    TreeEventProcessor treeEventProcessor = new TreeEventProcessor(outboundEventGateway);
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         params.put("patientId", "001");
-        when(context.getEventRelay()).thenReturn(eventRelay);
     }
 
     @Test
     public void testNodeActionsBefore() {
         treeEventProcessor.sendActionsBefore(node, "/", params);
-        verify(eventRelay, times(3)).sendEventMessage(any(MotechEvent.class));
+        verify(outboundEventGateway, times(3)).sendEventMessage(any(MotechEvent.class));
     }
 
     @Test
     public void testNodeActionsAfter() {
         treeEventProcessor.sendActionsAfter(node, "/", params);
-        verify(eventRelay, times(2)).sendEventMessage(any(MotechEvent.class));
+        verify(outboundEventGateway, times(2)).sendEventMessage(any(MotechEvent.class));
     }
 
     @Test
     public void testTransitionActions() {
         treeEventProcessor.sendTransitionActions((Transition) node.getTransitions().get("1"), params);
-        verify(eventRelay, times(1)).sendEventMessage(any(MotechEvent.class));
+        verify(outboundEventGateway, times(1)).sendEventMessage(any(MotechEvent.class));
     }
 
     @Test(expected = IllegalArgumentException.class)

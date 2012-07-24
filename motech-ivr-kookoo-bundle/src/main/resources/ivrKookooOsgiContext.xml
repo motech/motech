@@ -15,4 +15,6 @@
         </osgi:service-properties>
     </osgi:service>
 
+    <osgi:reference id="outboundEventGatewayOsgi" cardinality="0..1"
+                    interface="org.motechproject.scheduler.gateway.OutboundEventGateway" />
 </beans>
