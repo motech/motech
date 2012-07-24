@@ -36,10 +36,12 @@ public class FormDownloadServlet extends BaseFormServlet {
             byte action = readActionByte(dataInput);
             ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 
-            if (action == ACTION_DOWNLOAD_STUDY_LIST)
+            if (action == ACTION_DOWNLOAD_STUDY_LIST) {
                 handleDownloadStudies(byteStream);
-            else if (action == ACTION_DOWNLOAD_USERS_AND_FORMS)
+
+            } else if (action == ACTION_DOWNLOAD_USERS_AND_FORMS) {
                 handleDownloadUsersAndForms(byteStream, dataInput);
+            }
 
             dataOutput.writeByte(RESPONSE_SUCCESS);
             dataOutput.write(byteStream.toByteArray());
@@ -58,14 +60,14 @@ public class FormDownloadServlet extends BaseFormServlet {
 
     private void handleDownloadStudies(ByteArrayOutputStream byteStream) throws Exception {
         EpihandyXformSerializer serializer = serializer();
-        serializer.serializeStudies(byteStream, mobileFormsService.getAllFormGroups());
+        serializer.serializeStudies(byteStream, getMobileFormsService().getAllFormGroups());
     }
 
     private void handleDownloadUsersAndForms(ByteArrayOutputStream byteStream, DataInputStream dataInput) throws Exception {
         EpihandyXformSerializer epiSerializer = serializer();
-        epiSerializer.serializeUsers(byteStream, usersService.getUsers());
+        epiSerializer.serializeUsers(byteStream, getUsersService().getUsers());
         int studyIndex = dataInput.readInt();
-        FormGroup groupNameAndForms = mobileFormsService.getForms(studyIndex);
+        FormGroup groupNameAndForms = getMobileFormsService().getForms(studyIndex);
         List<String> formsXmlContent = collect(groupNameAndForms.getForms(), on(Form.class).content());
         epiSerializer.serializeForms(byteStream, formsXmlContent, studyIndex, groupNameAndForms.getName());
     }

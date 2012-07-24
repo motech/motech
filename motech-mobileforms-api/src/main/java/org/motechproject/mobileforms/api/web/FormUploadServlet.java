@@ -43,8 +43,8 @@ public class FormUploadServlet extends BaseFormServlet {
             List<FormBean> allForms = flatten(collect(studies, on(Study.class).forms()));
             for (Study study : studies) {
                 for (FormBeanGroup group : study.groupedForms()) {
-                    formGroupValidator.validate(group, formValidators, allForms);
-                    formGroupPublisher.publish(new FormBeanGroup(new FormBeanGroup(group.validForms()).sortByDependency()));
+                    getFormGroupValidator().validate(group, formValidators, allForms);
+                    getFormGroupPublisher().publish(new FormBeanGroup(new FormBeanGroup(group.validForms()).sortByDependency()));
                 }
                 formOutput.addStudy(study);
             }
@@ -66,7 +66,7 @@ public class FormUploadServlet extends BaseFormServlet {
         EpihandyXformSerializer serializer = serializer();
         FormParser formParser = createFormProcessor();
         serializer.addDeserializationListener(formParser);
-        serializer.deserializeStudiesWithEvents(dataInput, mobileFormsService.getFormIdMap());
+        serializer.deserializeStudiesWithEvents(dataInput, getMobileFormsService().getFormIdMap());
         return formParser.getStudies();
     }
 

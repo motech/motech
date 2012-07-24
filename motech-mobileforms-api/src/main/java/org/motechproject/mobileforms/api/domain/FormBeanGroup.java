@@ -90,13 +90,17 @@ public class FormBeanGroup implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof FormBeanGroup)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof FormBeanGroup)) {
+            return false;
+        }
 
         FormBeanGroup that = (FormBeanGroup) o;
-
-        if (formBeans != null ? !formBeans.equals(that.formBeans) : that.formBeans != null) return false;
-
+        if (formBeans != null ? !formBeans.equals(that.formBeans) : that.formBeans != null) {
+            return false;
+        }
         return true;
     }
 

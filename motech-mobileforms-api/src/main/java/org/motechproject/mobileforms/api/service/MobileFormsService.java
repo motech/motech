@@ -37,5 +37,5 @@ public interface MobileFormsService {
      * Get All forms' content as map of id, content. Id defined in xform file as an attribute to xforms tag.
      * @return
      */
-    Map<Integer,String> getFormIdMap();
+    Map<Integer, String> getFormIdMap();
 }
