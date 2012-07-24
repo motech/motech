@@ -8,7 +8,7 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@type")
 public abstract class Prompt {
 
-    protected ITreeCommand command;
+    private ITreeCommand command;
     private String name;
 
     public String getName() {
@@ -43,12 +43,18 @@ public abstract class Prompt {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Prompt prompt = (Prompt) o;
 
-        if (name != null ? !name.equals(prompt.name) : prompt.name != null) return false;
+        if (name != null ? !name.equals(prompt.name) : prompt.name != null) {
+            return false;
+        }
 
         return true;
     }

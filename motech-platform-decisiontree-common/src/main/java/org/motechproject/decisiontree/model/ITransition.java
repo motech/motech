@@ -8,5 +8,5 @@ import org.motechproject.decisiontree.FlowSession;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@type")
 public interface ITransition {
-    public Node getDestinationNode(String input, FlowSession session);
+    Node getDestinationNode(String input, FlowSession session);
 }
