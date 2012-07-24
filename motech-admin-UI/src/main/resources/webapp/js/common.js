@@ -1,24 +1,34 @@
 /* Common functions */
 
 var jFormErrorHandler = function(response) {
+    unblockUI();
     jAlert(response.status + ": " + response.statusText);
 }
 
 var angularErrorHandler = function(response) {
     // TODO : better error handling
+    unblockUI();
     motechAlert("error");
 }
 
 var alertHandler = function(msg) {
     return function() {
+        unblockUI();
         motechAlert(msg);
+    }
+}
+
+var allertHandlerWithCallback = function(msg, callback) {
+    return function() {
+        unblockUI();
+        motechAlert(msg, "", callback);
     }
 }
 
 var dummyHandler = function() {}
 
 function motechAlert(msg) {
-    jAlert(jQuery.i18n.prop(msg));
+    jAlert(jQuery.i18n.prop(msg), "");
 }
 
 function motechAlert(msg, title) {
@@ -36,5 +46,13 @@ var doneTypingInterval = 5 * 1000;
 function captureTyping(callback) {
     clearTimeout(typingTimer);
     typingTimer = setTimeout(callback, doneTypingInterval);
+}
+
+function blockUI() {
+    $.blockUI({message : '<h1><img src="img/bigloader.gif" alt="loading" /></h1>'});
+}
+
+function unblockUI() {
+    $.unblockUI();
 }
 

@@ -19,6 +19,8 @@ import java.util.Map;
 @Controller
 public class SettingsController {
 
+    private static final String PLATFORM_SETTINGS_SAVED = "{settings.saved}";
+
     @Autowired
     private SettingsService settingsService;
 
@@ -43,7 +45,7 @@ public class SettingsController {
     public void savePlatformSettings(HttpServletRequest request) throws IOException {
         List<SettingsOption> options = constructSettingsOptions(request);
         settingsService.savePlatformSettings(options);
-        statusMessageService.ok("{settings.saved}");
+        statusMessageService.ok(PLATFORM_SETTINGS_SAVED);
     }
 
     @RequestMapping(value = "/settings/platform", method = RequestMethod.GET)
@@ -55,12 +57,20 @@ public class SettingsController {
     @RequestMapping(value = "/settings/platform/upload", method = RequestMethod.POST)
     public void uploadSettingsFile(@RequestParam(required = true) MultipartFile settingsFile) {
         settingsService.saveSettingsFile(settingsFile);
+        statusMessageService.ok(PLATFORM_SETTINGS_SAVED);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings/platform/location", method = RequestMethod.POST)
     public void uploadSettingsLocation(@RequestParam(required = true) String location) {
         settingsService.addSettingsPath(location);
+        statusMessageService.ok("{settings.saved.location}");
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(value = Exception.class)
+    public void handleException(Exception e) {
+        statusMessageService.error(e.getMessage());
     }
 
     private static List<SettingsOption> constructSettingsOptions(HttpServletRequest request) {

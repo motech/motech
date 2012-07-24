@@ -60,6 +60,7 @@ public class BundleAdminController {
     @RequestMapping(value = "/bundles/{bundleId}/uninstall", method = RequestMethod.POST)
     public void uninstallBundle(@PathVariable long bundleId) throws BundleException {
         moduleAdminService.uninstallBundle(bundleId);
+        statusMessageService.ok("{bundles.uninstall.success}");
     }
 
     @RequestMapping(value = "/bundles/upload", method = RequestMethod.POST)

@@ -134,7 +134,9 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
             runBundleLoaders(bundle);
 
-            if (!startBundle) {
+            if (startBundle) {
+                bundle.start();
+            } else {
                 bundle.stop();
             }
 

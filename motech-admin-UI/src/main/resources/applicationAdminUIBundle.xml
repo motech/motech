@@ -10,7 +10,9 @@
     <osgi:service id="statusMessageServiceOsgi" auto-export="interfaces"
                   ref="statusMessageService" interface="org.motechproject.admin.service.StatusMessageService" />
 
+    <osgi:service id="adminMappingServiceOsgi" auto-export="interfaces"
+                  ref="adminMappingService" interface="org.motechproject.admin.service.AdminMappingService" />
+
     <osgi:reference id="platformSettingsServiceOsgi" cardinality="0..1"
                     interface="org.motechproject.server.config.service.PlatformSettingsService" />
-
 </beans>

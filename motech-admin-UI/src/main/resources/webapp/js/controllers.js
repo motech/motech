@@ -90,9 +90,11 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams) {
     }
 
     $scope.submitBundle = function() {
+        blockUI();
         $('#bundleUploadForm').ajaxSubmit({
             success : function(data) {
-                $scope.bundles.push(data);
+                $scope.bundles = Bundle.query();
+                unblockUI();
             },
             error : jFormErrorHandler
         });
@@ -129,10 +131,7 @@ function StatusMsgCtrl($scope, $timeout, StatusMessage, i18nService, $cookieStor
     $scope.messages = [];
 
     StatusMessage.query(function(data) {
-        var mgs = jQuery.grep(data, function(message, index) {
-            return jQuery.inArray(message._id, $scope.ignoredMessages) == -1; // not in ignored list
-        });
-        $scope.messages = mgs;
+        messageFilter(data);
     });
 
     $scope.getCssClass = function(msg) {
@@ -151,6 +150,12 @@ function StatusMsgCtrl($scope, $timeout, StatusMessage, i18nService, $cookieStor
             result = i18nService.getMessage(text.replace(/[\{\}]/g, ""));
         }
         return result;
+    }
+
+    $scope.refresh = function() {
+        StatusMessage.query(function(data) {
+            messageFilter(data);
+        });
     }
 
     StatusMessage.prototype.getDate = function() {
@@ -192,13 +197,14 @@ function StatusMsgCtrl($scope, $timeout, StatusMessage, i18nService, $cookieStor
     $timeout(update, UPDATE_INTERVAL);
 
     var messageFilter = function(data) {
-        return jQuery.grep(data, function(message, index) {
+        var msgs = jQuery.grep(data, function(message, index) {
             return jQuery.inArray(message._id, $scope.ignoredMessages) == -1; // not in ignored list
         });
+        $scope.messages = msgs;
     }
 }
 
-function MasterCtrl($scope, i18nService) {
+function MasterCtrl($scope, i18nService, $http) {
     $scope.msg = function(key) {
         return i18nService.getMessage(key);
     }
@@ -210,6 +216,11 @@ function MasterCtrl($scope, i18nService) {
         }
         return date;
     }
+
+    $http({method: 'GET', url: 'api/mappings'}).
+          success(function(data) {
+              $scope.mappings = data;
+          });
 }
 
 function SettingsCtrl($scope, PlatformSettings, i18nService, $http) {
@@ -250,31 +261,24 @@ function SettingsCtrl($scope, PlatformSettings, i18nService, $http) {
     }
 
     $scope.saveSettings = function() {
+        blockUI();
         $('#platformSettingsForm').ajaxSubmit({
-            success : function(data) {
-                $('#settingsMsg').text(i18nService.getMsg('platformSettings.saved'));
-            },
+            success : alertHandler('settings.saved'),
             error : jFormErrorHandler
         });
     }
 
     $scope.uploadSettings = function() {
         $("#settingsFileForm").ajaxSubmit({
-            success : function(data) {
-                $('#settingsMsg').text(i18nService.getMsg('platformSettings.saved'));
-            },
+            success : alertHandler('settings.saved'),
             error : jFormErrorHandler
         });
     }
 
     $scope.uploadFileLocation = function() {
         $http({method: 'POST', url: 'api/settings/platform/location', params: {location: this.location}}).
-            success(function() {
-                $('#settingsMsg').text(i18nService.getMessage('platformSettings.saved'));
-            }).
-            error(function(data, status, headers, config) {
-                $('#settingsMsg').text(i18nService.getMessage('platformSettings.locationsaved'));
-            });
+            success(alertHandler('settings.saved')).
+            error(alertHandler('settings.error.location'));
     }
 }
 
@@ -296,10 +300,9 @@ function ModuleCtrl($scope, ModuleSettings, Bundle, i18nService, $routeParams) {
     }
 
     $scope.saveSettings = function() {
+        blockUI();
         $('#settingsForm').ajaxSubmit({
-            success : function(data) {
-                $('#settingsMsg').text(i18nService.getMsg('settings.saved'));
-            },
+            success : alertHandler('settings.saved'),
             error : jFormErrorHandler
         });
     }
