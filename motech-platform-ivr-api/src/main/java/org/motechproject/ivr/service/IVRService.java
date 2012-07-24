@@ -7,16 +7,14 @@ package org.motechproject.ivr.service;
  */
 public interface IVRService {
 
-    public static final String EXTERNAL_ID = "external_id";
-    public static final String CALL_TYPE = "call_type";
+    String EXTERNAL_ID = "external_id";
+    String CALL_TYPE = "call_type";
 
     /**
      * Sends an initiate call command to IVR. The call should be made to the phone specified in the given CallRequest
      *
      * @param callRequest - data required by IVR phone system to start outbound call
-     * @throws org.motechproject.ivr.domain.CallInitiationException
-     *          if the call can not be initiated
      */
-    public void initiateCall(CallRequest callRequest);
+    void initiateCall(CallRequest callRequest);
 
 }

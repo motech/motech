@@ -12,7 +12,7 @@ public class CallEvent {
     private DateTime timeStamp;
     private CallEventCustomData callEventCustomData = new CallEventCustomData();
 
-    private CallEvent(){
+    private CallEvent() {
     }
 
     public CallEvent(String name) {

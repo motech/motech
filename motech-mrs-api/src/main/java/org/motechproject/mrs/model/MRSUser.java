@@ -64,24 +64,28 @@ public class MRSUser {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-
-        if (!(o instanceof MRSUser))
+        }
+        if (!(o instanceof MRSUser)) {
             return false;
-
+        }
         MRSUser other = (MRSUser) o;
-        if (!ObjectUtils.equals(id, other.id))
+        if (!ObjectUtils.equals(id, other.id)) {
             return false;
-        if (!ObjectUtils.equals(systemId, other.systemId))
+        }
+        if (!ObjectUtils.equals(systemId, other.systemId)) {
             return false;
-        if (!ObjectUtils.equals(securityRole, other.securityRole))
+        }
+        if (!ObjectUtils.equals(securityRole, other.securityRole)) {
             return false;
-        if (!ObjectUtils.equals(userName, other.userName))
+        }
+        if (!ObjectUtils.equals(userName, other.userName)) {
             return false;
-        if (!ObjectUtils.equals(person, other.person))
+        }
+        if (!ObjectUtils.equals(person, other.person)) {
             return false;
-
+        }
         return true;
     }
 

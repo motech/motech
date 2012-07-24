@@ -34,16 +34,19 @@ public class Attribute {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (!(o instanceof Attribute))
+        }
+        if (!(o instanceof Attribute)) {
             return false;
+        }
         Attribute a = (Attribute) o;
-        if (!ObjectUtils.equals(name, a.name))
+        if (!ObjectUtils.equals(name, a.name)) {
             return false;
-        if (!ObjectUtils.equals(value, a.value))
+        }
+        if (!ObjectUtils.equals(value, a.value)) {
             return false;
-
+        }
         return true;
     }
 

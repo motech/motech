@@ -81,25 +81,36 @@ public class MRSObservation<T> {
         }
         //to remove duplicate observation
         List<MRSObservation> existingObservationList = Lambda.filter(having(on(MRSObservation.class).getConceptName(), is(equalTo(mrsObservation.getConceptName()))), dependantObservations);
-        if(!existingObservationList.isEmpty())
+        if (!existingObservationList.isEmpty()) {
             dependantObservations.remove(existingObservationList.get(0));
+        }
         dependantObservations.add(mrsObservation);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof MRSObservation)) return false;
-
-        MRSObservation that = (MRSObservation) o;
-
-        if (conceptName != null ? !conceptName.equals(that.conceptName) : that.conceptName != null) return false;
-        if (date != null ? !date.equals(that.date) : that.date != null) return false;
-        if (dependantObservations != null ? !dependantObservations.equals(that.dependantObservations) : that.dependantObservations != null)
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof MRSObservation)) {
             return false;
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
-        if (value != null ? !value.equals(that.value) : that.value != null) return false;
-
+        }
+        MRSObservation that = (MRSObservation) o;
+        if (conceptName != null ? !conceptName.equals(that.conceptName) : that.conceptName != null) {
+            return false;
+        }
+        if (date != null ? !date.equals(that.date) : that.date != null) {
+            return false;
+        }
+        if (dependantObservations != null ? !dependantObservations.equals(that.dependantObservations) : that.dependantObservations != null) {
+            return false;
+        }
+        if (id != null ? !id.equals(that.id) : that.id != null) {
+            return false;
+        }
+        if (value != null ? !value.equals(that.value) : that.value != null) {
+            return false;
+        }
         return true;
     }
 

@@ -80,20 +80,32 @@ public class MRSFacility {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof MRSFacility)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof MRSFacility)) {
+            return false;
+        }
 
         MRSFacility facility = (MRSFacility) o;
-
-        if (country != null ? !country.equals(facility.country) : facility.country != null) return false;
-        if (countyDistrict != null ? !countyDistrict.equals(facility.countyDistrict) : facility.countyDistrict != null)
+        if (country != null ? !country.equals(facility.country) : facility.country != null) {
             return false;
-        if (id != null ? !id.equals(facility.id) : facility.id != null) return false;
-        if (name != null ? !name.equals(facility.name) : facility.name != null) return false;
-        if (region != null ? !region.equals(facility.region) : facility.region != null) return false;
-        if (stateProvince != null ? !stateProvince.equals(facility.stateProvince) : facility.stateProvince != null)
+        }
+        if (countyDistrict != null ? !countyDistrict.equals(facility.countyDistrict) : facility.countyDistrict != null) {
             return false;
-
+        }
+        if (id != null ? !id.equals(facility.id) : facility.id != null) {
+            return false;
+        }
+        if (name != null ? !name.equals(facility.name) : facility.name != null) {
+            return false;
+        }
+        if (region != null ? !region.equals(facility.region) : facility.region != null) {
+            return false;
+        }
+        if (stateProvince != null ? !stateProvince.equals(facility.stateProvince) : facility.stateProvince != null) {
+            return false;
+        }
         return true;
     }
 
