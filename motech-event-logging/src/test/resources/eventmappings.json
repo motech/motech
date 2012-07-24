@@ -1,0 +1,70 @@
+[
+  {
+    "subjects": [
+      "org.sms",
+      "org.ivr"
+    ],
+    "mappings": [
+      {
+        "status": "ok",
+        "result": "success"
+      },
+      {
+        "status": "error",
+        "result": "failure"
+      }
+    ],
+    "excludes": [
+      "exclude1",
+      "exclude2"
+    ],
+    "includes": [
+      "include1",
+      "include2"
+    ],
+    "flags": [
+      {
+        "keyValuePairsPresent": {
+          "requiredParameter1": "test",
+          "requiredParameter2": "test2"
+        }
+      },
+      {
+        "keyValuePairsPresent": {
+          "secondTest": "value"
+        }
+      }
+    ]
+  },
+  {
+    "subjects": [
+      "org.sms2"
+    ]
+  },
+  {
+    "subjects": [
+      "org.sms3",
+      "org.ivr3"
+    ],
+    "mappings": [
+      {
+        "status": "ok",
+        "result": "success"
+      }
+    ]
+  },
+  {
+    "subjects": [
+      "org.sms4",
+      "org.ivr4"
+    ],
+    "excludes": [
+      "test",
+      "test2"
+    ],
+    "includes": [
+      "blah",
+      "bleh"
+    ]
+  }
+]
