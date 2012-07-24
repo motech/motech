@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 public class DecisionTreeServiceImpl implements DecisionTreeService {
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
 
-    AllTrees allTrees;
-    TreeNodeLocator treeNodeLocator;
+    private AllTrees allTrees;
+    private TreeNodeLocator treeNodeLocator;
 
     @Autowired
     public DecisionTreeServiceImpl(AllTrees allTrees, TreeNodeLocator treeNodeLocator) {

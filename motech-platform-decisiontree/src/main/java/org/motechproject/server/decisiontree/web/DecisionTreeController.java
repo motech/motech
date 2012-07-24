@@ -5,7 +5,11 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.decisiontree.FlowSession;
-import org.motechproject.decisiontree.model.*;
+import org.motechproject.decisiontree.model.DialStatus;
+import org.motechproject.decisiontree.model.INodeOperation;
+import org.motechproject.decisiontree.model.ITransition;
+import org.motechproject.decisiontree.model.Node;
+import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.decisiontree.service.FlowSessionService;
 import org.motechproject.server.decisiontree.TreeNodeLocator;
 import org.motechproject.server.decisiontree.service.DecisionTreeService;
@@ -52,10 +56,10 @@ public class DecisionTreeController extends MultiActionController {
     public static final int MAX_INPUT_DIGITS = 50;
 
     @Autowired
-    DecisionTreeService decisionTreeService;
+    private DecisionTreeService decisionTreeService;
 
     @Autowired
-    TreeEventProcessor treeEventProcessor;
+    private TreeEventProcessor treeEventProcessor;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -98,7 +102,6 @@ public class DecisionTreeController extends MultiActionController {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
 
-        String transitionPath = TreeNodeLocator.PATH_DELIMITER;
         Map<String, Object> params = convertParams(request.getParameterMap());
 
         String language = request.getParameter(LANGUAGE_PARAM);
@@ -118,7 +121,7 @@ public class DecisionTreeController extends MultiActionController {
                         + ", " + LANGUAGE_PARAM + " and " + TREE_NAME_PARAM + " are mandatory");
                 return getErrorModelAndView(Errors.NULL_PATIENTID_LANGUAGE_OR_TREENAME_PARAM, language);
             }
-            return getModelViewForNextNode(request, transitionPath, params, language, treeNameString, encodedParentTransitionPath, transitionKey, type);
+            return getModelViewForNextNode(request, params, TreeNodeLocator.PATH_DELIMITER);
         } catch (DecisionTreeException exception) {
             logger.error(exception.getMessage());
             return getErrorModelAndView(exception.subject, language);
@@ -128,17 +131,24 @@ public class DecisionTreeController extends MultiActionController {
         return getErrorModelAndView(Errors.GET_NODE_ERROR, language);
     }
 
-    private ModelAndView getModelViewForNextNode(HttpServletRequest request, String transitionPath, Map<String, Object> params, String language, String treeNameString, String encodedParentTransitionPath, String transitionKey, String type) {
+    private ModelAndView getModelViewForNextNode(HttpServletRequest request, Map<String, Object> params, String transitionPath) {
+        String language = request.getParameter(LANGUAGE_PARAM);
+        String treeNameString = request.getParameter(TREE_NAME_PARAM);
+        String encodedParentTransitionPath = request.getParameter(TRANSITION_PATH_PARAM);
+        String transitionKey = request.getParameter(TRANSITION_KEY_PARAM);
+        String type = request.getParameter(TYPE_PARAM);
+
         String[] treeNames = treeNameString.split(TREE_NAME_SEPARATOR);
         String currentTree = treeNames[0];
         // put only one tree name in params
         params.put(TREE_NAME_PARAM, currentTree);
+
         FlowSession session = flowSessionService.getSession(request);
         Node node;
         try {
             if (transitionKey == null) {
                 node = decisionTreeService.getNode(currentTree, TreeNodeLocator.PATH_DELIMITER, session);
-                return constructModelViewForNode(request, node, transitionPath, language, treeNameString, type, treeNames, params, session);
+                return constructModelViewForNode(node, request, params, transitionPath, treeNameString, treeNames, session);
             } else {
                 String parentTransitionPath;
                 parentTransitionPath = getParentTransitionPath(encodedParentTransitionPath);
@@ -156,8 +166,7 @@ public class DecisionTreeController extends MultiActionController {
                         treeNames = (String[]) ArrayUtils.remove(treeNames, 0);
                         String view = String.format("redirect:/decisiontree/node?" + TREE_NAME_PARAM + "=%s&" + LANGUAGE_PARAM + "=%s", StringUtils.join(treeNames, TREE_NAME_SEPARATOR), language);
                         return new ModelAndView(view);
-                    } else  //TODO: Add support for return url
-                    {
+                    } else { //TODO: Add support for return url
                         return new ModelAndView(EXIT_TEMPLATE_NAME);
                     }
                 } else {
@@ -167,7 +176,7 @@ public class DecisionTreeController extends MultiActionController {
                     String modifiedTransitionPath = parentTransitionPath +
                             (TreeNodeLocator.PATH_DELIMITER.equals(parentTransitionPath) ? "" : TreeNodeLocator.PATH_DELIMITER)
                             + transitionKey;
-                    return constructModelViewForNode(request, node, modifiedTransitionPath, language, treeNameString, type, treeNames, params, session);
+                    return constructModelViewForNode(node, request, params, modifiedTransitionPath, treeNameString, treeNames, session);
                 }
             }
         } finally {
@@ -175,17 +184,18 @@ public class DecisionTreeController extends MultiActionController {
         }
     }
 
-    private ModelAndView constructModelViewForNode(HttpServletRequest request, Node node, String transitionPath, String language, String treeNameString, String type, String[] treeNames, Map<String, Object> params, FlowSession session) {
+    private ModelAndView constructModelViewForNode(Node node, HttpServletRequest request, Map<String, Object> params, String transitionPath, String treeNameString, String[] treeNames, FlowSession session) {
         validateNode(node);
         treeEventProcessor.sendActionsBefore(node, transitionPath, params);
+
+        String type = request.getParameter(TYPE_PARAM);
 
         ModelAndView mav = new ModelAndView();
         if (node.getTransitions().size() > 0) {
             mav.addObject("treeName", treeNameString);
         } else { // leaf
             //reduce the current tree and redirect to the next tree
-            treeNames = (String[]) ArrayUtils.remove(treeNames, 0);
-            mav.addObject("treeName", StringUtils.join(treeNames, TREE_NAME_SEPARATOR));
+            mav.addObject("treeName", StringUtils.join(ArrayUtils.remove(treeNames, 0), TREE_NAME_SEPARATOR));
         }
         mav.setViewName(templateNameFor(type, NODE_TEMPLATE_NAME));
         mav.addObject("contextPath", request.getContextPath());

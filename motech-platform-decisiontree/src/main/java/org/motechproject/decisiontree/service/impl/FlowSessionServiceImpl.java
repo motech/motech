@@ -34,8 +34,9 @@ public class FlowSessionServiceImpl implements FlowSessionService {
     @Override
     public void removeCallSession(String sessionId) {
         FlowSessionRecord flowSessionRecord = allFlowSessionRecords.findBySessionId(sessionId);
-        if (flowSessionRecord != null)
+        if (flowSessionRecord != null) {
             allFlowSessionRecords.remove(flowSessionRecord);
+        }
     }
 
     @Override

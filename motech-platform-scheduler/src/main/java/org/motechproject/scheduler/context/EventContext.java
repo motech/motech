@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class EventContext {
+public final class EventContext {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired

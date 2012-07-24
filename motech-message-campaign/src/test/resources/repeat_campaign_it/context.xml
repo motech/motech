@@ -7,7 +7,7 @@
 
     <import resource="classpath:applicationMessageCampaign.xml"/>
 
-    <import resource="classpath*:integrationCommonAPI.xml"/>
+    <import resource="classpath:integrationCommonAPI.xml"/>
     <import resource="classpath:applicationScheduler.xml"/>
 
     <util:properties id="messageCampaignProperties" location="classpath:repeat_campaign_it/messageCampaign.properties"/>
