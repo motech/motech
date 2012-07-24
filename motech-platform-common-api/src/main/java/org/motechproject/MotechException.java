@@ -5,7 +5,7 @@ public class MotechException extends RuntimeException {
         super(s, throwable);
     }
 
-    public MotechException(String message){
+    public MotechException(String message) {
         super(message);
     }
 }

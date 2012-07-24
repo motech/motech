@@ -1,6 +1,12 @@
 package org.motechproject.dao;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonPrimitive;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.MotechException;
 
@@ -60,14 +66,14 @@ public class MotechJsonReader {
     }
 
     private static class DateDeserializer implements JsonDeserializer<Date> {
-        public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) {
             JsonPrimitive asJsonPrimitive = json.getAsJsonPrimitive();
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             Date date = null;
             try {
                 date = format.parse(asJsonPrimitive.getAsString());
             } catch (ParseException e) {
-                // TODO
+                e.printStackTrace();
             }
             return date;
         }

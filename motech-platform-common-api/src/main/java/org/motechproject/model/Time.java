@@ -68,23 +68,30 @@ public class Time implements Comparable<Time>, Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Time other = (Time) obj;
         if (hour == null) {
-            if (other.hour != null)
+            if (other.hour != null) {
                 return false;
-        } else if (!hour.equals(other.hour))
+            }
+        } else if (!hour.equals(other.hour)) {
             return false;
+        }
         if (minute == null) {
-            if (other.minute != null)
+            if (other.minute != null) {
                 return false;
-        } else if (!minute.equals(other.minute))
+            }
+        } else if (!minute.equals(other.minute)) {
             return false;
+        }
         return true;
     }
 
@@ -95,13 +102,17 @@ public class Time implements Comparable<Time>, Serializable {
 
     public static Time parseTime(String time, String separator) {
         String[] strings = StringUtils.split(time, separator);
-        if (strings.length != 2) throw new IllegalArgumentException();
+        if (strings.length != 2) {
+            throw new IllegalArgumentException();
+        }
         return new Time(Integer.parseInt(strings[0]), Integer.parseInt(strings[1]));
     }
 
     @Override
     public int compareTo(Time otherTime) {
-        if (otherTime.getHour().equals(this.getHour())) return this.getMinute().compareTo(otherTime.getMinute());
+        if (otherTime.getHour().equals(this.getHour())) {
+            return this.getMinute().compareTo(otherTime.getMinute());
+        }
         return this.getHour().compareTo(otherTime.getHour());
     }
 
