@@ -16,7 +16,7 @@ public class AdminMappingController {
     private AdminMappingService adminMappingService;
 
     @RequestMapping(value = "/mappings", method = RequestMethod.GET)
-    public @ResponseBody Map<String, String> getMappings() {
+    @ResponseBody public Map<String, String> getMappings() {
         return adminMappingService.getAllMappings();
     }
 }

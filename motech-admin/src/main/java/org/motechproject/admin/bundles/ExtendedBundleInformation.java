@@ -13,32 +13,32 @@ import java.util.List;
 
 public class ExtendedBundleInformation extends BundleInformation {
 
-    protected final static String BUILT_BY = "Built-By";
-    protected final static String TOOL = "Tool";
-    protected final static String CREATED_BY = "Created-By";
-    protected final static String VENDOR = "Bundle-Vendor";
-    protected final static String BUILD_JDK = "Build-Jdk";
-    protected final static String LAST_MODIFIED = "Bnd-LastModified";
-    protected final static String BUNDLE_ACTIVATOR = "Bundle-Activator";
-    protected final static String DESCRIPTION = "Bundle-Description";
-    protected final static String DOC_URL = "Bundle-DocURL";
-    protected final static String IMPORT_PACKAGE = "Import-Package";
-    protected final static String EXPORT_PACKAGE = "Export-Package";
+    private static final String BUILT_BY = "Built-By";
+    private static final String TOOL = "Tool";
+    private static final String CREATED_BY = "Created-By";
+    private static final String VENDOR = "Bundle-Vendor";
+    private static final String BUILD_JDK = "Build-Jdk";
+    private static final String LAST_MODIFIED = "Bnd-LastModified";
+    private static final String BUNDLE_ACTIVATOR = "Bundle-Activator";
+    private static final String DESCRIPTION = "Bundle-Description";
+    private static final String DOC_URL = "Bundle-DocURL";
+    private static final String IMPORT_PACKAGE = "Import-Package";
+    private static final String EXPORT_PACKAGE = "Export-Package";
 
-    protected String builtBy;
-    protected String tool;
-    protected String createdBy;
-    protected String vendor;
-    protected String buildJDK;
-    protected String location;
-    protected DateTime lastModified;
-    protected String bundleActivator;
-    protected String description;
-    protected String docURL;
-    protected String importPackage;
-    protected String exportPackage;
-    protected List<String> registeredServices = new ArrayList<>();
-    protected List<String> servicesInUse = new ArrayList<>();
+    private String builtBy;
+    private String tool;
+    private String createdBy;
+    private String vendor;
+    private String buildJDK;
+    private String location;
+    private DateTime lastModified;
+    private String bundleActivator;
+    private String description;
+    private String docURL;
+    private String importPackage;
+    private String exportPackage;
+    private List<String> registeredServices = new ArrayList<>();
+    private List<String> servicesInUse = new ArrayList<>();
 
 
     public ExtendedBundleInformation(Bundle bundle) {
@@ -48,7 +48,7 @@ public class ExtendedBundleInformation extends BundleInformation {
         formatOutput();
     }
 
-    protected void readServices(Bundle bundle) {
+    private void readServices(Bundle bundle) {
         BundleContext context = bundle.getBundleContext();
 
         for (ServiceReference ref : bundle.getRegisteredServices()) {
@@ -62,7 +62,7 @@ public class ExtendedBundleInformation extends BundleInformation {
         }
     }
 
-    protected void readManifest(Bundle bundle) {
+    private void readManifest(Bundle bundle) {
         Dictionary<String, String> headers = bundle.getHeaders();
 
         builtBy = headers.get(BUILT_BY);
@@ -82,13 +82,13 @@ public class ExtendedBundleInformation extends BundleInformation {
                 long lastModMilis = Long.parseLong(lastModHeader);
                 lastModified = new DateTime(lastModMilis);
             } catch (NumberFormatException e) {
-                // leave the lastModified field empty
+                lastModified = null;
             }
 
         }
     }
 
-    protected void formatOutput() {
+    private void formatOutput() {
         if (importPackage != null) {
             importPackage = addSpaces(importPackage);
         }
@@ -97,7 +97,7 @@ public class ExtendedBundleInformation extends BundleInformation {
         }
     }
 
-    protected String addSpaces(String str) {
+    private String addSpaces(String str) {
         return str.replace(",", ", ");
     }
 

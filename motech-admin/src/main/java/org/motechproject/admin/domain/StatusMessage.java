@@ -10,10 +10,10 @@ public class StatusMessage extends MotechBaseDataObject {
 
     private static final int DEFAULT_TIMEOUT_MINS = 60;
 
-    protected String text;
-    protected DateTime date = DateTime.now();
-    protected DateTime timeout = DateTime.now().plusMinutes(DEFAULT_TIMEOUT_MINS);
-    protected Level level = Level.INFO;
+    private String text;
+    private DateTime date = DateTime.now();
+    private DateTime timeout = DateTime.now().plusMinutes(DEFAULT_TIMEOUT_MINS);
+    private Level level = Level.INFO;
 
     public String getText() {
         return text;

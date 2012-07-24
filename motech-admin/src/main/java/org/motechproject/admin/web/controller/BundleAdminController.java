@@ -10,7 +10,13 @@ import org.osgi.framework.BundleException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -27,32 +33,32 @@ public class BundleAdminController {
     private StatusMessageService statusMessageService;
 
     @RequestMapping(value = "/bundles", method = RequestMethod.GET)
-    public @ResponseBody List<BundleInformation> getBundles() {
+    @ResponseBody public List<BundleInformation> getBundles() {
         return moduleAdminService.getBundles();
     }
 
     @RequestMapping(value = "/bundles/{bundleId}", method = RequestMethod.GET)
-    public @ResponseBody BundleInformation getBundle(@PathVariable long bundleId) {
+    @ResponseBody public BundleInformation getBundle(@PathVariable long bundleId) {
         return moduleAdminService.getBundleInfo(bundleId);
     }
 
     @RequestMapping(value = "/bundles/{bundleId}/detail")
-    public @ResponseBody ExtendedBundleInformation getBundleDetails(@PathVariable long bundleId) {
+    @ResponseBody public ExtendedBundleInformation getBundleDetails(@PathVariable long bundleId) {
         return moduleAdminService.getBundleDetails(bundleId);
     }
 
     @RequestMapping(value = "/bundles/{bundleId}/start", method = RequestMethod.POST)
-    public @ResponseBody BundleInformation startBundle(@PathVariable long bundleId) throws BundleException {
+    @ResponseBody public BundleInformation startBundle(@PathVariable long bundleId) throws BundleException {
         return moduleAdminService.startBundle(bundleId);
     }
 
     @RequestMapping(value = "/bundles/{bundleId}/stop", method = RequestMethod.POST)
-    public @ResponseBody BundleInformation stopBundle(@PathVariable long bundleId) throws BundleException {
+    @ResponseBody public BundleInformation stopBundle(@PathVariable long bundleId) throws BundleException {
         return moduleAdminService.stopBundle(bundleId);
     }
 
     @RequestMapping(value = "/bundles/{bundleId}/restart", method = RequestMethod.POST)
-    public @ResponseBody BundleInformation restartBundle(@PathVariable long bundleId) throws BundleException {
+    @ResponseBody public BundleInformation restartBundle(@PathVariable long bundleId) throws BundleException {
         return moduleAdminService.restartBundle(bundleId);
     }
 
@@ -64,10 +70,9 @@ public class BundleAdminController {
     }
 
     @RequestMapping(value = "/bundles/upload", method = RequestMethod.POST)
-    public @ResponseBody
-    BundleInformation uploadBundle(@RequestParam MultipartFile bundleFile,
-                                   @RequestParam(required = false) String startBundle) {
-        boolean start = (StringUtils.isBlank(startBundle) ?  false : startBundle.equals("on"));
+    @ResponseBody public BundleInformation uploadBundle(@RequestParam MultipartFile bundleFile,
+                                                        @RequestParam(required = false) String startBundle) {
+        boolean start = (StringUtils.isBlank(startBundle) ?  false : "on".equals(startBundle));
         return moduleAdminService.installBundle(bundleFile, start);
     }
 

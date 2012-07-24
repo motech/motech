@@ -1,5 +1,6 @@
 package org.motechproject.admin.service.impl;
 
+import org.apache.commons.io.IOUtils;
 import org.motechproject.MotechException;
 import org.motechproject.admin.service.SettingsService;
 import org.motechproject.admin.settings.BundleSettings;
@@ -14,7 +15,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 @Service
 public class SettingsServiceImpl implements SettingsService {
@@ -95,13 +100,17 @@ public class SettingsServiceImpl implements SettingsService {
             throw new IllegalArgumentException("Config file cannot be null");
         }
 
-        try (InputStream is = configFile.getInputStream()) {
+        InputStream is = null;
+        try {
+            is = configFile.getInputStream();
             Properties settings = new Properties();
             settings.load(is);
 
             platformSettingsService.savePlatformSettings(settings);
         } catch (IOException e) {
-            throw new MotechException("Error reading config file" ,e);
+            throw new MotechException("Error reading config file", e);
+        } finally {
+            IOUtils.closeQuietly(is);
         }
     }
 

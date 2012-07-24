@@ -1,7 +1,5 @@
 package org.motechproject.admin.settings;
 
-import org.motechproject.server.config.settings.MotechSettings;
-
 import java.util.Map;
 
 /**

@@ -34,7 +34,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModuleAdminServiceImpl.class);
 
-    private static final String[] ICON_LOCATIONS = new String[] { "icon.gif", "icon.jpg", "icon.png" };
+    private static final String[] ICON_LOCATIONS = new String[] {"icon.gif", "icon.jpg", "icon.png"};
     private static final String DEFAULT_ICON = "/bundle_icon.png";
 
     @Autowired
@@ -44,7 +44,7 @@ public class ModuleAdminServiceImpl implements ModuleAdminService {
     private BundleDirectoryManager bundleDirectoryManager;
 
     @Resource(name = "bundleLoaders")
-    List<BundleLoader> bundleLoaders;
+    private List<BundleLoader> bundleLoaders;
 
     @Override
     public List<BundleInformation> getBundles() {

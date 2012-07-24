@@ -9,7 +9,7 @@ import java.net.URL;
 
 public class UiHttpContext implements HttpContext {
 
-    HttpContext context;
+    private HttpContext context;
 
     public UiHttpContext(HttpContext context) {
         this.context = context;
@@ -32,7 +32,7 @@ public class UiHttpContext implements HttpContext {
 
     private String resolveName(String name) {
         String resolvedName = name;
-        if (name.equals("webapp/")) {
+        if ("webapp/".equals(name)) {
             resolvedName = "webapp/index.html";
         }
         return resolvedName;

@@ -7,7 +7,13 @@ import org.motechproject.admin.settings.SettingsOption;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +34,7 @@ public class SettingsController {
     private StatusMessageService statusMessageService;
 
     @RequestMapping(value = "/settings/{bundleId}", method = RequestMethod.GET)
-    public @ResponseBody List<BundleSettings> getBundleSettings(@PathVariable long bundleId) throws IOException {
+    @ResponseBody public List<BundleSettings> getBundleSettings(@PathVariable long bundleId) throws IOException {
         return settingsService.getBundleSettings(bundleId);
     }
 
@@ -49,7 +55,7 @@ public class SettingsController {
     }
 
     @RequestMapping(value = "/settings/platform", method = RequestMethod.GET)
-    public @ResponseBody List<SettingsOption> getPlatformSettings() {
+    @ResponseBody public List<SettingsOption> getPlatformSettings() {
         return settingsService.getSettings();
     }
 
@@ -82,7 +88,7 @@ public class SettingsController {
 
             String[] value = (String[]) param.getValue();
             option.setValue(value[0]);
-            option.setKey((String)param.getKey());
+            option.setKey((String) param.getKey());
 
             settingsOptions.add(option);
         }
