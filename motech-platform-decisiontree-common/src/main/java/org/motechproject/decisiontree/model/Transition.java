@@ -60,15 +60,24 @@ public class Transition implements ITransition {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Transition that = (Transition) o;
 
-        if (actions != null ? !actions.equals(that.actions) : that.actions != null) return false;
-        if (destinationNode != null ? !destinationNode.equals(that.destinationNode) : that.destinationNode != null)
+        if (actions != null ? !actions.equals(that.actions) : that.actions != null) {
             return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        }
+        if (destinationNode != null ? !destinationNode.equals(that.destinationNode) : that.destinationNode != null) {
+            return false;
+        }
+        if (name != null ? !name.equals(that.name) : that.name != null) {
+            return false;
+        }
 
         return true;
     }

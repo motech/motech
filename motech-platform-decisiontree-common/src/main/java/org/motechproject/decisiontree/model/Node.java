@@ -4,7 +4,13 @@ import org.apache.commons.lang.ArrayUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 /**
  * Represents a node in the decision tree.
@@ -165,16 +171,27 @@ public class Node {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Node node = (Node) o;
 
-        if (actionsAfter != null ? !actionsAfter.equals(node.actionsAfter) : node.actionsAfter != null) return false;
-        if (actionsBefore != null ? !actionsBefore.equals(node.actionsBefore) : node.actionsBefore != null)
+        if (actionsAfter != null ? !actionsAfter.equals(node.actionsAfter) : node.actionsAfter != null) {
             return false;
-        if (prompts != null ? !prompts.equals(node.prompts) : node.prompts != null) return false;
-        if (transitions != null ? !transitions.equals(node.transitions) : node.transitions != null) return false;
+        }
+        if (actionsBefore != null ? !actionsBefore.equals(node.actionsBefore) : node.actionsBefore != null) {
+            return false;
+        }
+        if (prompts != null ? !prompts.equals(node.prompts) : node.prompts != null) {
+            return false;
+        }
+        if (transitions != null ? !transitions.equals(node.transitions) : node.transitions != null) {
+            return false;
+        }
 
         return true;
     }
