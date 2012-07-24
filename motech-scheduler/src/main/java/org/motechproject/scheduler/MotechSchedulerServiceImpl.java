@@ -1,40 +1,15 @@
-/*
- * MOTECH PLATFORM OPENSOURCE LICENSE AGREEMENT
- *
- * Copyright (c) 2012 Grameen Foundation USA.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * 3. Neither the name of Grameen Foundation USA, nor its respective contributors
- * may be used to endorse or promote products derived from this software without
- * specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY GRAMEEN FOUNDATION USA AND ITS CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL GRAMEEN FOUNDATION USA OR ITS CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
- * OF SUCH DAMAGE.
- */
-
 package org.motechproject.scheduler;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.MotechObject;
-import org.motechproject.scheduler.domain.*;
+import org.motechproject.scheduler.domain.CronJobId;
+import org.motechproject.scheduler.domain.CronSchedulableJob;
+import org.motechproject.scheduler.domain.JobId;
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.scheduler.domain.RepeatingJobId;
+import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
+import org.motechproject.scheduler.domain.RunOnceJobId;
+import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.motechproject.util.DateUtil;
 import org.quartz.CronScheduleBuilder;
@@ -47,7 +22,7 @@ import org.quartz.SimpleScheduleBuilder;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
-import org.quartz.*;
+import org.quartz.TriggerUtils;
 import org.quartz.impl.calendar.BaseCalendar;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.OperableTrigger;
@@ -75,7 +50,7 @@ import static org.quartz.TriggerKey.triggerKey;
  */
 public class MotechSchedulerServiceImpl extends MotechObject implements MotechSchedulerService {
     public static final String JOB_GROUP_NAME = "default";
-    final int MAX_REPEAT_COUNT = 999999;
+    private static final int MAX_REPEAT_COUNT = 999999;
     private SchedulerFactoryBean schedulerFactoryBean;
 
     @Value("#{quartzProperties['org.quartz.scheduler.cron.trigger.misfire.policy']}")
@@ -133,8 +108,9 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
             logError(errorMessage, e);
             throw new MotechSchedulerException(errorMessage);
         }
-        if (existingTrigger != null)
+        if (existingTrigger != null) {
             unscheduleJob(jobId.value());
+        }
 
         scheduleJob(jobDetail, trigger);
     }
@@ -149,14 +125,18 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
     }
 
     private CronScheduleBuilder setMisfirePolicyForCronTrigger(CronScheduleBuilder cronSchedule, String misfirePolicy) {
-        if (isEmpty(misfirePolicy))
+        if (isEmpty(misfirePolicy)) {
             return cronSchedule;
-        if (misfirePolicy.equals(CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING))
+        }
+        if (misfirePolicy.equals(CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING)) {
             return cronSchedule.withMisfireHandlingInstructionDoNothing();
-        if (misfirePolicy.equals(CronTrigger.MISFIRE_INSTRUCTION_FIRE_ONCE_NOW))
+        }
+        if (misfirePolicy.equals(CronTrigger.MISFIRE_INSTRUCTION_FIRE_ONCE_NOW)) {
             return cronSchedule.withMisfireHandlingInstructionFireAndProceed();
-        if (misfirePolicy.equals(CronTrigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY))
+        }
+        if (misfirePolicy.equals(CronTrigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY)) {
             return cronSchedule.withMisfireHandlingInstructionIgnoreMisfires();
+        }
         return cronSchedule;
     }
 
@@ -166,7 +146,8 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         JobId jobId = new CronJobId(cronSchedulableJob.getMotechEvent());
         try {
             unscheduleJob(jobId.value());
-        } catch (MotechSchedulerException ignored) {
+        } catch (MotechSchedulerException e) {
+            logError(e.getMessage());
         }
         scheduleJob(cronSchedulableJob);
     }
@@ -304,20 +285,27 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
 
     private SimpleScheduleBuilder setMisfirePolicyForSimpleTrigger(SimpleScheduleBuilder simpleSchedule, String newMisfirePolicy) {
         String misfirePolicy = newMisfirePolicy;
-        if (isEmpty(misfirePolicy))
+        if (isEmpty(misfirePolicy)) {
             misfirePolicy = String.valueOf(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT);
-        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_FIRE_NOW))
+        }
+        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_FIRE_NOW)) {
             return simpleSchedule.withMisfireHandlingInstructionFireNow();
-        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY))
+        }
+        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY)) {
             return simpleSchedule.withMisfireHandlingInstructionIgnoreMisfires();
-        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT))
+        }
+        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT)) {
             return simpleSchedule.withMisfireHandlingInstructionNextWithExistingCount();
-        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_REMAINING_COUNT))
+        }
+        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_REMAINING_COUNT)) {
             return simpleSchedule.withMisfireHandlingInstructionNextWithRemainingCount();
-        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT))
+        }
+        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT)) {
             return simpleSchedule.withMisfireHandlingInstructionNowWithExistingCount();
-        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT))
+        }
+        if (misfirePolicy.equals(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT)) {
             return simpleSchedule.withMisfireHandlingInstructionNowWithRemainingCount();
+        }
         return simpleSchedule;
     }
 
@@ -326,7 +314,8 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         assertArgumentNotNull(repeatingSchedulableJob);
         try {
             unscheduleJob(new RepeatingJobId(repeatingSchedulableJob.getMotechEvent()).value());
-        } catch (MotechSchedulerException ignored) {
+        } catch (MotechSchedulerException e) {
+            logError(e.getMessage());
         }
         scheduleRepeatingJob(repeatingSchedulableJob);
     }
@@ -390,7 +379,8 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         JobId jobId = new RunOnceJobId(schedulableJob.getMotechEvent());
         try {
             unscheduleJob(jobId.value());
-        } catch (MotechSchedulerException ignored) {
+        } catch (MotechSchedulerException e) {
+            logError(e.getMessage());
         }
         scheduleRunOnceJob(schedulableJob);
     }
@@ -406,7 +396,8 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
     public void safeUnscheduleRepeatingJob(String subject, String externalId) {
         try {
             unscheduleRepeatingJob(subject, externalId);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            logError(e.getMessage());
         }
     }
 
@@ -425,7 +416,8 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
     public void safeUnscheduleJob(String subject, String externalId) {
         try {
             unscheduleJob(subject, externalId);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            logError(e.getMessage());
         }
     }
 
@@ -442,7 +434,8 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         try {
             assertArgumentNotNull("ScheduledJobID", jobId);
             scheduler.unscheduleJob(triggerKey(jobId, JOB_GROUP_NAME));
-        } catch (SchedulerException ignored) {
+        } catch (SchedulerException e) {
+            logError(e.getMessage());
         }
     }
 
@@ -457,7 +450,8 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
                     safeUnscheduleJob(triggerName);
                 }
             }
-        } catch (SchedulerException ignored) {
+        } catch (SchedulerException e) {
+            logError(e.getMessage());
         }
     }
 
@@ -480,14 +474,12 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
      */
     @Override
     public List<Date> getScheduledJobTimings(String subject, String externalJobId, Date startDate, Date endDate) {
-        Scheduler scheduler = schedulerFactoryBean.getScheduler();
-
+        Scheduler localScheduler = schedulerFactoryBean.getScheduler();
         JobId jobId = new CronJobId(subject, externalJobId);
         Trigger trigger;
         List<Date> messageTimings = null;
         try {
-
-            trigger = scheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME));
+            trigger = localScheduler.getTrigger(triggerKey(jobId.value(), JOB_GROUP_NAME));
             messageTimings = TriggerUtils.computeFireTimesBetween(
                     (OperableTrigger) trigger, new BaseCalendar(), startDate, endDate);
 
@@ -496,7 +488,6 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
                     "Can not get scheduled job timings given subject and externalJobId for dates : %s %s %s %s %s",
                     subject, externalJobId, startDate.toString(), endDate.toString(), e.getMessage()), e);
         }
-
         return messageTimings;
     }
 
@@ -561,8 +552,9 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
 
     private List<String> extractTriggerNames(List<TriggerKey> triggerKeys) {
         List<String> names = new ArrayList<String>();
-        for (TriggerKey key : triggerKeys)
+        for (TriggerKey key : triggerKeys) {
             names.add(key.getName());
+        }
         return names;
     }
 }
