@@ -1,8 +1,18 @@
 package org.motechproject.openmrs.services;
 
-import org.motechproject.mrs.model.*;
+import org.motechproject.mrs.model.MRSEncounter;
+import org.motechproject.mrs.model.MRSFacility;
+import org.motechproject.mrs.model.MRSObservation;
+import org.motechproject.mrs.model.MRSPatient;
+import org.motechproject.mrs.model.MRSPerson;
+import org.motechproject.mrs.model.MRSUser;
 import org.motechproject.mrs.services.MRSEncounterAdapter;
-import org.openmrs.*;
+import org.openmrs.Encounter;
+import org.openmrs.EncounterType;
+import org.openmrs.Location;
+import org.openmrs.Patient;
+import org.openmrs.Person;
+import org.openmrs.User;
 import org.openmrs.api.EncounterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;

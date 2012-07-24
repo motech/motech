@@ -16,7 +16,7 @@ import java.util.List;
 public class OpenMRSRelationshipAdapter {
 
     @Autowired
-    PersonService personService;
+    private PersonService personService;
     static final String PARENT_CHILD_RELATIONSHIP = "Parent/Child";
     static final String REASON = "Removed in web or mobile form";
 

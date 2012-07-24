@@ -13,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.Set;
 
-import static ch.lambdaj.Lambda.*;
+import static ch.lambdaj.Lambda.filter;
+import static ch.lambdaj.Lambda.having;
+import static ch.lambdaj.Lambda.on;
+import static ch.lambdaj.Lambda.project;
 import static org.hamcrest.Matchers.is;
 
 public class OpenMRSPersonAdapter {
@@ -59,8 +62,9 @@ public class OpenMRSPersonAdapter {
 
     PersonName getFirstName(Set<PersonName> names) {
         List<PersonName> personNames = filter(having(on(PersonName.class).isPreferred(), is(false)), names);
-        if(CollectionUtils.isEmpty(personNames))
+        if (CollectionUtils.isEmpty(personNames)) {
             personNames = filter(having(on(PersonName.class).isPreferred(), is(true)), names);
+        }
         return personNames.get(0);
     }
 }

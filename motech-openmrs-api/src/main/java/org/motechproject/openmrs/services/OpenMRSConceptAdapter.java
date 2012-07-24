@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class OpenMRSConceptAdapter {
 
     @Autowired
-    ConceptService conceptService;
+    private ConceptService conceptService;
 
     /**
      * Fetches the Concept object of openMRS

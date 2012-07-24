@@ -4,13 +4,23 @@ import org.apache.commons.collections.CollectionUtils;
 import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.MRSPatient;
 import org.motechproject.mrs.model.MRSPerson;
-import org.openmrs.*;
+import org.openmrs.Location;
+import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
+import org.openmrs.Person;
+import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
+import org.openmrs.PersonName;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static ch.lambdaj.Lambda.*;
+import static ch.lambdaj.Lambda.having;
+import static ch.lambdaj.Lambda.on;
+import static ch.lambdaj.Lambda.selectUnique;
 import static org.hamcrest.Matchers.equalTo;
 
 @Component
@@ -57,7 +67,7 @@ public class PatientHelper {
     private void setPersonAttributes(MRSPatient patient, Patient openMRSPatient,
                                      List<PersonAttributeType> allPersonAttributeTypes) {
         MRSPerson mrsPerson = patient.getPerson();
-        if(CollectionUtils.isNotEmpty(mrsPerson.getAttributes())){
+        if (CollectionUtils.isNotEmpty(mrsPerson.getAttributes())) {
             for (Attribute attribute : mrsPerson.getAttributes()) {
                 PersonAttributeType attributeType = (PersonAttributeType) selectUnique(allPersonAttributeTypes,
                         having(on(PersonAttributeType.class).getName(), equalTo(attribute.name())));

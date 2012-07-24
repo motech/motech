@@ -4,27 +4,37 @@ import org.motechproject.mrs.exception.ObservationNotFoundException;
 import org.motechproject.mrs.model.MRSConcept;
 import org.motechproject.mrs.model.MRSObservation;
 import org.motechproject.mrs.services.MRSObservationAdapter;
-import org.openmrs.*;
+import org.openmrs.Concept;
+import org.openmrs.ConceptDatatype;
+import org.openmrs.Encounter;
+import org.openmrs.Location;
+import org.openmrs.Obs;
+import org.openmrs.Patient;
+import org.openmrs.User;
 import org.openmrs.api.ObsService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.apache.commons.lang.math.NumberUtils.isNumber;
 
 public class OpenMRSObservationAdapter implements MRSObservationAdapter {
 
     @Autowired
-    OpenMRSConceptAdapter openMRSConceptAdapter;
+    private OpenMRSConceptAdapter openMRSConceptAdapter;
 
     @Autowired
-    ObsService obsService;
+    private ObsService obsService;
 
     @Autowired
-    OpenMRSUserAdapter openMRSUserAdapter;
+    private OpenMRSUserAdapter openMRSUserAdapter;
 
     @Autowired
-    OpenMRSPatientAdapter openMRSPatientAdapter;
+    private OpenMRSPatientAdapter openMRSPatientAdapter;
 
     /**
      * Voids an observation for the `MOTECH user, with the given reason
@@ -125,20 +135,21 @@ public class OpenMRSObservationAdapter implements MRSObservationAdapter {
 
     MRSObservation convertOpenMRSToMRSObservation(Obs obs) {
         ConceptDatatype datatype = obs.getConcept().getDatatype();
-        if (datatype.isAnswerOnly())
+        if (datatype.isAnswerOnly()) {
             return createMRSObservation(obs, null);
-        else if (datatype.isBoolean())
+        } else if (datatype.isBoolean()) {
             return createMRSObservation(obs, obs.getValueAsBoolean());
-        else if (datatype.isDateTime())
+        } else if (datatype.isDateTime()) {
             return createMRSObservation(obs, obs.getValueDatetime());
-        else if (datatype.isNumeric())
+        } else if (datatype.isNumeric()) {
             return createMRSObservation(obs, obs.getValueNumeric());
-        else if (datatype.isText())
+        } else if (datatype.isText()) {
             return createMRSObservation(obs, obs.getValueText());
-        else if (datatype.isCoded())
+        } else if (datatype.isCoded()) {
             return createMRSObservation(obs, new MRSConcept(obs.getValueCoded().getName().getName()));
-        else
+        } else {
             throw new IllegalArgumentException("Invalid value of the createMRSObservation from DB-" + obs);
+        }
     }
 
     private MRSObservation createMRSObservation(Obs obs, Object value) {
