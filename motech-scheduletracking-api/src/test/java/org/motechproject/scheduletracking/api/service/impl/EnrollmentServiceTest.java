@@ -62,7 +62,7 @@ public class EnrollmentServiceTest extends BaseUnitTest {
         when(allSchedules.getByName(scheduleName)).thenReturn(schedule);
         when(allEnrollments.getActiveEnrollment(externalId, scheduleName)).thenReturn(null);
 
-        Enrollment dummyEnrollment = new Enrollment(externalId, schedule, milestone.getName(), referenceDate, enrollmentDate, preferredAlertTime, ACTIVE, null);
+        Enrollment dummyEnrollment = new Enrollment().setExternalId(externalId).setSchedule(schedule).setCurrentMilestoneName(milestone.getName()).setStartOfSchedule(referenceDate).setEnrolledOn(enrollmentDate).setPreferredAlertTime(preferredAlertTime).setStatus(ACTIVE).setMetadata(null);
         dummyEnrollment.setId("enrollmentId");
 
         Map<String, String> metadata = new HashMap<String, String>();
@@ -98,8 +98,8 @@ public class EnrollmentServiceTest extends BaseUnitTest {
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone);
         when(allSchedules.getByName(scheduleName)).thenReturn(schedule);
-        Enrollment dummyEnrollment = new Enrollment(externalId, schedule, milestone.getName(), referenceDate, enrollmentDate, preferredAlertTime, ACTIVE, null);
-        Enrollment oldEnrollment = new Enrollment(externalId, schedule, "milestone", null, null, null, EnrollmentStatus.ACTIVE, null);
+        Enrollment dummyEnrollment = new Enrollment().setExternalId(externalId).setSchedule(schedule).setCurrentMilestoneName(milestone.getName()).setStartOfSchedule(referenceDate).setEnrolledOn(enrollmentDate).setPreferredAlertTime(preferredAlertTime).setStatus(ACTIVE).setMetadata(null);
+        Enrollment oldEnrollment = new Enrollment().setExternalId(externalId).setSchedule(schedule).setCurrentMilestoneName("milestone").setStartOfSchedule(null).setEnrolledOn(null).setPreferredAlertTime(null).setStatus(EnrollmentStatus.ACTIVE).setMetadata(null);
         when(allEnrollments.getActiveEnrollment(externalId, scheduleName)).thenReturn(oldEnrollment);
 
         dummyEnrollment.setId("enrollmentId");
@@ -144,7 +144,7 @@ public class EnrollmentServiceTest extends BaseUnitTest {
         Schedule schedule = new Schedule(scheduleName);
         schedule.addMilestones(milestone, milestone2);
         when(allSchedules.getByName(scheduleName)).thenReturn(schedule);
-        Enrollment dummyEnrollment = new Enrollment(externalId, schedule, milestone.getName(), referenceDateTime, enrollmentDateTime, preferredAlertTime, EnrollmentStatus.ACTIVE, null);
+        Enrollment dummyEnrollment = new Enrollment().setExternalId(externalId).setSchedule(schedule).setCurrentMilestoneName(milestone.getName()).setStartOfSchedule(referenceDateTime).setEnrolledOn(enrollmentDateTime).setPreferredAlertTime(preferredAlertTime).setStatus(EnrollmentStatus.ACTIVE).setMetadata(null);
         dummyEnrollment.setId("enrollmentId");
         when(allEnrollments.getActiveEnrollment(externalId, scheduleName)).thenReturn(null);
 
@@ -181,7 +181,7 @@ public class EnrollmentServiceTest extends BaseUnitTest {
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
 
-        Enrollment enrollment = new Enrollment("ID-074285", schedule, "First Shot", weeksAgo(4), weeksAgo(4), new Time(8, 20), ACTIVE, null);
+        Enrollment enrollment = new Enrollment().setExternalId("ID-074285").setSchedule(schedule).setCurrentMilestoneName("First Shot").setStartOfSchedule(weeksAgo(4)).setEnrolledOn(weeksAgo(4)).setPreferredAlertTime(new Time(8, 20)).setStatus(ACTIVE).setMetadata(null);
         DateTime now = now();
         enrollmentService.fulfillCurrentMilestone(enrollment, now);
 
@@ -200,7 +200,7 @@ public class EnrollmentServiceTest extends BaseUnitTest {
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
 
-        Enrollment enrollment = new Enrollment("ID-074285", schedule, "First Shot", weeksAgo(4), weeksAgo(4), new Time(8, 20), ACTIVE, null);
+        Enrollment enrollment = new Enrollment().setExternalId("ID-074285").setSchedule(schedule).setCurrentMilestoneName("First Shot").setStartOfSchedule(weeksAgo(4)).setEnrolledOn(weeksAgo(4)).setPreferredAlertTime(new Time(8, 20)).setStatus(ACTIVE).setMetadata(null);
         enrollment.setId("enrollment_1");
         enrollmentService.fulfillCurrentMilestone(enrollment, null);
 
@@ -225,7 +225,7 @@ public class EnrollmentServiceTest extends BaseUnitTest {
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
 
-        Enrollment enrollment = new Enrollment("ID-074285", schedule, "First Shot", weeksAgo(4), weeksAgo(4), new Time(8, 20), ACTIVE, null);
+        Enrollment enrollment = new Enrollment().setExternalId("ID-074285").setSchedule(schedule).setCurrentMilestoneName("First Shot").setStartOfSchedule(weeksAgo(4)).setEnrolledOn(weeksAgo(4)).setPreferredAlertTime(new Time(8, 20)).setStatus(ACTIVE).setMetadata(null);
         enrollmentService.fulfillCurrentMilestone(enrollment, null);
         enrollmentService.fulfillCurrentMilestone(enrollment, null);
         enrollmentService.fulfillCurrentMilestone(enrollment, null);
@@ -242,7 +242,7 @@ public class EnrollmentServiceTest extends BaseUnitTest {
         schedule.addMilestones(firstMilestone, secondMilestone);
         when(allSchedules.getByName(scheduleName)).thenReturn(schedule);
 
-        Enrollment enrollment = new Enrollment("ID-074285", schedule, "First Shot", weeksAgo(4), weeksAgo(4), new Time(8, 20), ACTIVE, null);
+        Enrollment enrollment = new Enrollment().setExternalId("ID-074285").setSchedule(schedule).setCurrentMilestoneName("First Shot").setStartOfSchedule(weeksAgo(4)).setEnrolledOn(weeksAgo(4)).setPreferredAlertTime(new Time(8, 20)).setStatus(ACTIVE).setMetadata(null);
         enrollmentService.fulfillCurrentMilestone(enrollment, null);
         enrollmentService.fulfillCurrentMilestone(enrollment, null);
 
@@ -257,7 +257,7 @@ public class EnrollmentServiceTest extends BaseUnitTest {
         schedule.addMilestones(firstMilestone);
         when(allSchedules.getByName("Yellow Fever Vaccination")).thenReturn(schedule);
 
-        Enrollment enrollment = new Enrollment("ID-074285", schedule, "First Shot", weeksAgo(4), weeksAgo(4), new Time(8, 20), ACTIVE, null);
+        Enrollment enrollment = new Enrollment().setExternalId("ID-074285").setSchedule(schedule).setCurrentMilestoneName("First Shot").setStartOfSchedule(weeksAgo(4)).setEnrolledOn(weeksAgo(4)).setPreferredAlertTime(new Time(8, 20)).setStatus(ACTIVE).setMetadata(null);
         enrollmentService.fulfillCurrentMilestone(enrollment, null);
 
         verify(enrollmentAlertService).unscheduleAllAlerts(enrollment);
@@ -275,7 +275,7 @@ public class EnrollmentServiceTest extends BaseUnitTest {
         schedule.addMilestones(milestone);
         when(allSchedules.getByName(scheduleName)).thenReturn(schedule);
 
-        Enrollment enrollment = new Enrollment("entity_1", schedule, "milestone", weeksAgo(4), weeksAgo(4), new Time(8, 10), ACTIVE, null);
+        Enrollment enrollment = new Enrollment().setExternalId("entity_1").setSchedule(schedule).setCurrentMilestoneName("milestone").setStartOfSchedule(weeksAgo(4)).setEnrolledOn(weeksAgo(4)).setPreferredAlertTime(new Time(8, 10)).setStatus(ACTIVE).setMetadata(null);
         enrollment.setId("enrollment_1");
         enrollmentService.unenroll(enrollment);
 
@@ -300,7 +300,7 @@ public class EnrollmentServiceTest extends BaseUnitTest {
 
         DateTime startOfSchedule = weeksAgo(5);
         DateTime enrolledOn = weeksAgo(3);
-        Enrollment enrollment = new Enrollment("ID-074285", schedule, "milestone", startOfSchedule, enrolledOn, new Time(8, 20), EnrollmentStatus.ACTIVE, null);
+        Enrollment enrollment = new Enrollment().setExternalId("ID-074285").setSchedule(schedule).setCurrentMilestoneName("milestone").setStartOfSchedule(startOfSchedule).setEnrolledOn(enrolledOn).setPreferredAlertTime(new Time(8, 20)).setStatus(EnrollmentStatus.ACTIVE).setMetadata(null);
         assertEquals(startOfSchedule, enrollment.getCurrentMilestoneStartDate());
     }
 
@@ -313,7 +313,7 @@ public class EnrollmentServiceTest extends BaseUnitTest {
         when(allSchedules.getByName("my_schedule")).thenReturn(schedule);
 
         DateTime expected = weeksAgo(3);
-        Enrollment enrollment = new Enrollment("ID-074285", schedule, "second_milestone", weeksAgo(5), expected, null, EnrollmentStatus.ACTIVE, null);
+        Enrollment enrollment = new Enrollment().setExternalId("ID-074285").setSchedule(schedule).setCurrentMilestoneName("second_milestone").setStartOfSchedule(weeksAgo(5)).setEnrolledOn(expected).setPreferredAlertTime(null).setStatus(EnrollmentStatus.ACTIVE).setMetadata(null);
         assertEquals(expected, enrollment.getCurrentMilestoneStartDate());
     }
 
@@ -325,7 +325,7 @@ public class EnrollmentServiceTest extends BaseUnitTest {
         when(allSchedules.getByName("my_schedule")).thenReturn(schedule);
 
         DateTime referenceDate = newDateTime(2012, 12, 4, 8, 30, 0);
-        Enrollment enrollment = new Enrollment("ID-074285", schedule, "first_milestone", referenceDate, referenceDate, null, EnrollmentStatus.ACTIVE, null);
+        Enrollment enrollment = new Enrollment().setExternalId("ID-074285").setSchedule(schedule).setCurrentMilestoneName("first_milestone").setStartOfSchedule(referenceDate).setEnrolledOn(referenceDate).setPreferredAlertTime(null).setStatus(EnrollmentStatus.ACTIVE).setMetadata(null);
 
         assertEquals(WindowName.earliest, enrollmentService.getCurrentWindowAsOf(enrollment, newDateTime(2012, 12, 4, 8, 30, 0)));
         assertEquals(WindowName.earliest, enrollmentService.getCurrentWindowAsOf(enrollment, newDateTime(2012, 12, 4, 8, 30, 1)));
@@ -344,7 +344,7 @@ public class EnrollmentServiceTest extends BaseUnitTest {
         when(allSchedules.getByName("my_schedule")).thenReturn(schedule);
 
         DateTime referenceDate = newDateTime(2012, 12, 4, 8, 30, 0);
-        Enrollment enrollment = new Enrollment("ID-074285", schedule, "first_milestone", referenceDate, referenceDate, null, EnrollmentStatus.ACTIVE, null);
+        Enrollment enrollment = new Enrollment().setExternalId("ID-074285").setSchedule(schedule).setCurrentMilestoneName("first_milestone").setStartOfSchedule(referenceDate).setEnrolledOn(referenceDate).setPreferredAlertTime(null).setStatus(EnrollmentStatus.ACTIVE).setMetadata(null);
 
         assertEquals(referenceDate.plusWeeks(1), enrollmentService.getEndOfWindowForCurrentMilestone(enrollment, WindowName.earliest));
         assertEquals(referenceDate.plusWeeks(2), enrollmentService.getEndOfWindowForCurrentMilestone(enrollment, WindowName.due));

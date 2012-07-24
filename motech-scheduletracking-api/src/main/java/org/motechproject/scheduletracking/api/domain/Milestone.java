@@ -34,9 +34,11 @@ public class Milestone implements Serializable {
     }
 
     public MilestoneWindow getMilestoneWindow(WindowName windowName) {
-        for (MilestoneWindow window : windows)
-            if (window.getName().equals(windowName))
+        for (MilestoneWindow window : windows) {
+            if (window.getName().equals(windowName)) {
                 return window;
+            }
+        }
         return null;
     }
 
@@ -58,8 +60,9 @@ public class Milestone implements Serializable {
 
     public List<Alert> getAlerts() {
         List<Alert> alerts = new ArrayList<Alert>();
-        for (MilestoneWindow window : windows)
+        for (MilestoneWindow window : windows) {
             alerts.addAll(window.getAlerts());
+        }
         return alerts;
     }
 
@@ -70,8 +73,9 @@ public class Milestone implements Serializable {
     public Period getWindowStart(WindowName windowName) {
         MutablePeriod period = new MutablePeriod();
         for (MilestoneWindow window : windows) {
-            if (window.getName().equals(windowName))
+            if (window.getName().equals(windowName)) {
                 break;
+            }
             period.add(window.getPeriod());
         }
         return period.toPeriod();
@@ -81,8 +85,9 @@ public class Milestone implements Serializable {
         MutablePeriod period = new MutablePeriod();
         for (MilestoneWindow window : windows) {
             period.add(window.getPeriod());
-            if (window.getName().equals(windowName))
+            if (window.getName().equals(windowName)) {
                 break;
+            }
         }
         return period.toPeriod();
     }

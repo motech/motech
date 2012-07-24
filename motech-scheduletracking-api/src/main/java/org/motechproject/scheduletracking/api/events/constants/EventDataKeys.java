@@ -3,7 +3,7 @@ package org.motechproject.scheduletracking.api.events.constants;
 /**
  * Keys for accessing the Event Payload
  */
-public class EventDataKeys {
+public final class EventDataKeys {
 
     // MilestoneEvent
     public static final String WINDOW_NAME = "window_name";

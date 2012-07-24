@@ -59,7 +59,7 @@ public class ScheduleTrackingServiceIT {
 
         Time originalPreferredAlertTime = new Time(8, 10);
         DateTime now = now();
-        String enrollmentId = scheduleTrackingService.enroll(new EnrollmentRequest("externalId", "IPTI Schedule", originalPreferredAlertTime, now.toLocalDate(), null, null, null, null, null));
+        String enrollmentId = scheduleTrackingService.enroll(new EnrollmentRequest().setExternalId("externalId").setScheduleName("IPTI Schedule").setPreferredAlertTime(originalPreferredAlertTime).setReferenceDate(now.toLocalDate()).setReferenceTime(null).setEnrollmentDate(null).setEnrollmentTime(null).setStartingMilestoneName(null).setMetadata(null));
         assertNotNull("EnrollmentId is null", enrollmentId);
 
         activeEnrollment = allEnrollments.get(enrollmentId);
@@ -69,7 +69,7 @@ public class ScheduleTrackingServiceIT {
 
         Time updatedPreferredAlertTime = new Time(2, 5);
         DateTime updatedReferenceDate = now.minusDays(1);
-        String updatedEnrollmentId = scheduleTrackingService.enroll(new EnrollmentRequest("externalId", "IPTI Schedule", updatedPreferredAlertTime, updatedReferenceDate.toLocalDate(), null, null, null, null, null));
+        String updatedEnrollmentId = scheduleTrackingService.enroll(new EnrollmentRequest().setExternalId("externalId").setScheduleName("IPTI Schedule").setPreferredAlertTime(updatedPreferredAlertTime).setReferenceDate(updatedReferenceDate.toLocalDate()).setReferenceTime(null).setEnrollmentDate(null).setEnrollmentTime(null).setStartingMilestoneName(null).setMetadata(null));
         assertEquals(enrollmentId, updatedEnrollmentId);
 
         activeEnrollment = allEnrollments.get(updatedEnrollmentId);
@@ -80,7 +80,7 @@ public class ScheduleTrackingServiceIT {
 
     @Test
     public void fulfillMilestoneShouldBeIdempotent() {
-        scheduleTrackingService.enroll(new EnrollmentRequest("entity_1", "IPTI Schedule", null, newDate(2012, 2, 10), null, newDate(2012, 2, 10), null, null, null));
+        scheduleTrackingService.enroll(new EnrollmentRequest().setExternalId("entity_1").setScheduleName("IPTI Schedule").setPreferredAlertTime(null).setReferenceDate(newDate(2012, 2, 10)).setReferenceTime(null).setEnrollmentDate(newDate(2012, 2, 10)).setEnrollmentTime(null).setStartingMilestoneName(null).setMetadata(null));
         scheduleTrackingService.fulfillCurrentMilestone("entity_1", "IPTI Schedule", newDate(2012, 2, 20), new Time(8, 20));
         scheduleTrackingService.fulfillCurrentMilestone("entity_1", "IPTI Schedule", newDate(2012, 2, 20), new Time(8, 20));
 

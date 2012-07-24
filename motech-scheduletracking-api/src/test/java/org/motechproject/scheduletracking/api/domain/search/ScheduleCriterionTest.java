@@ -42,11 +42,11 @@ public class ScheduleCriterionTest {
         Schedule schedule2 = new Schedule("schedule_2");
         Schedule schedule3 = new Schedule("schedule_3");
         List<Enrollment> allEnrollments = new ArrayList<Enrollment>();
-        allEnrollments.add(new Enrollment(null, schedule, null, null, null, null, null, null));
-        allEnrollments.add(new Enrollment(null, schedule, null, null, null, null, null, null));
-        allEnrollments.add(new Enrollment(null, schedule2, null, null, null, null, null, null));
-        allEnrollments.add(new Enrollment(null, schedule2, null, null, null, null, null, null));
-        allEnrollments.add(new Enrollment(null, schedule3, null, null, null, null, null, null));
+        allEnrollments.add(new Enrollment().setExternalId(null).setSchedule(schedule).setCurrentMilestoneName(null).setStartOfSchedule(null).setEnrolledOn(null).setPreferredAlertTime(null).setStatus(null).setMetadata(null));
+        allEnrollments.add(new Enrollment().setExternalId(null).setSchedule(schedule).setCurrentMilestoneName(null).setStartOfSchedule(null).setEnrolledOn(null).setPreferredAlertTime(null).setStatus(null).setMetadata(null));
+        allEnrollments.add(new Enrollment().setExternalId(null).setSchedule(schedule2).setCurrentMilestoneName(null).setStartOfSchedule(null).setEnrolledOn(null).setPreferredAlertTime(null).setStatus(null).setMetadata(null));
+        allEnrollments.add(new Enrollment().setExternalId(null).setSchedule(schedule2).setCurrentMilestoneName(null).setStartOfSchedule(null).setEnrolledOn(null).setPreferredAlertTime(null).setStatus(null).setMetadata(null));
+        allEnrollments.add(new Enrollment().setExternalId(null).setSchedule(schedule3).setCurrentMilestoneName(null).setStartOfSchedule(null).setEnrolledOn(null).setPreferredAlertTime(null).setStatus(null).setMetadata(null));
 
         List<Enrollment> filteredEnrollments = new ScheduleCriterion("schedule_1", "schedule_3").filter(allEnrollments, null);
         assertEquals(asList(new String[]{"schedule_1", "schedule_1", "schedule_3"}), extract(filteredEnrollments, on(Enrollment.class).getScheduleName()));

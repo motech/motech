@@ -31,8 +31,9 @@ public class EndOfWindowCriterion implements Criterion {
         List<Enrollment> filteredEnrollments = new ArrayList<Enrollment>();
         for (Enrollment enrollment : enrollments) {
             DateTime endOfWindowForCurrentMilestone = enrollmentService.getEndOfWindowForCurrentMilestone(enrollment, windowName);
-            if (DateUtil.inRange(endOfWindowForCurrentMilestone, start, end))
+            if (DateUtil.inRange(endOfWindowForCurrentMilestone, start, end)) {
                 filteredEnrollments.add(enrollment);
+            }
         }
         return filteredEnrollments;
     }

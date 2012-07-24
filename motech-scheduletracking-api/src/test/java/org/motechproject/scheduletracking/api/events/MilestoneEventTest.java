@@ -50,7 +50,7 @@ public class MilestoneEventTest {
         MilestoneAlert milestoneAlert =  MilestoneAlert.fromMilestone(milestone, referenceDateTime);
 
         MilestoneWindow milestoneWindow = new MilestoneWindow(WindowName.due, weeks(1));
-        MilestoneEvent milestoneEvent = new  MilestoneEvent(new Enrollment(externalId, schedule, milestone.getName(), referenceDateTime, enrollmentDateTime, new Time(8, 10), EnrollmentStatus.ACTIVE, null), milestoneAlert, milestoneWindow);
+        MilestoneEvent milestoneEvent = new  MilestoneEvent(new Enrollment().setExternalId(externalId).setSchedule(schedule).setCurrentMilestoneName(milestone.getName()).setStartOfSchedule(referenceDateTime).setEnrolledOn(enrollmentDateTime).setPreferredAlertTime(new Time(8, 10)).setStatus(EnrollmentStatus.ACTIVE).setMetadata(null), milestoneAlert, milestoneWindow);
         MotechEvent motechEvent = milestoneEvent.toMotechEvent();
 
         assertEquals(EventSubjects.MILESTONE_ALERT, motechEvent.getSubject());

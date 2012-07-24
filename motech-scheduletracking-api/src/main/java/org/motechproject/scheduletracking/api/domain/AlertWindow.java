@@ -10,7 +10,10 @@ import java.util.Date;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.filter;
-import static org.motechproject.util.DateUtil.*;
+import static org.motechproject.util.DateUtil.greaterThanOrEqualTo;
+import static org.motechproject.util.DateUtil.lessThan;
+import static org.motechproject.util.DateUtil.newDateTime;
+import static org.motechproject.util.DateUtil.now;
 
 public class AlertWindow {
     private DateTime enrolledOn;
@@ -37,7 +40,9 @@ public class AlertWindow {
     }
 
     public Date scheduledAlertStartDate() {
-        if (schedulableAlertTimings.size() == 0) return null;
+        if (schedulableAlertTimings.size() == 0) {
+            return null;
+        }
         return schedulableAlertTimings.get(0).toDate();
     }
 
@@ -49,7 +54,9 @@ public class AlertWindow {
     private List<DateTime> computeAllAlertTimings() {
         List<DateTime> alertTimings = new ArrayList<DateTime>();
 
-        if(alert.getCount() > 0)  alertTimings.add(alertWindowStart);
+        if (alert.getCount() > 0) {
+            alertTimings.add(alertWindowStart);
+        }
         for (int alertIndex = 1; alertIndex < alert.getCount(); alertIndex++) {
             DateTime previousAlertTime = alertTimings.get(alertIndex - 1);
             alertTimings.add(previousAlertTime.plus(alert.getInterval()));
@@ -69,12 +76,13 @@ public class AlertWindow {
         Period periodToBeFloatedWith = new Period(alertWindowStart, preferredAlertStartDateTime);
         alertWindowStart = alertWindowStart.plus(periodToBeFloatedWith);
 
-        if(alertWindowStart.isBefore(DateUtil.now())) {
+        if (alertWindowStart.isBefore(DateUtil.now())) {
             periodToBeFloatedWith = periodToBeFloatedWith.plusDays(1);
         }
 
-        for (DateTime alertTime : alertTimings)
+        for (DateTime alertTime : alertTimings) {
             floatedAlertTimings.add(alertTime.plus(periodToBeFloatedWith));
+        }
 
         return floatedAlertTimings;
     }
@@ -93,11 +101,14 @@ public class AlertWindow {
     }
 
     private DateTime toPreferredTime(DateTime alertTime, Time preferredTime) {
-        if (preferredTime == null) return alertTime;
+        if (preferredTime == null) {
+            return alertTime;
+        }
         return newDateTime(alertTime.toLocalDate(), preferredTime.getHour(), preferredTime.getMinute(), 0);
     }
 
     private DateTime alertStartDateTime() {
-        return now().isBefore(enrolledOn) ? enrolledOn : now();
+        DateTime now = now();
+        return now.isBefore(enrolledOn) ? enrolledOn : now;
     }
 }

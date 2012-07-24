@@ -25,10 +25,12 @@ public class EnrollmentsQueryService {
     public List<Enrollment> search(EnrollmentsQuery query) {
         List<Enrollment> enrollments = new ArrayList<Enrollment>();
         Criterion primaryCriterion = query.getPrimaryCriterion();
-        if (primaryCriterion != null)
+        if (primaryCriterion != null) {
             enrollments = primaryCriterion.fetch(allEnrollments, enrollmentService);
-        for (Criterion criterion : query.getSecondaryCriteria())
+        }
+        for (Criterion criterion : query.getSecondaryCriteria()) {
             enrollments = criterion.filter(enrollments, enrollmentService);
+        }
         return enrollments;
     }
 }

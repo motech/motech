@@ -24,10 +24,11 @@ public class MetadataCriterion implements Criterion {
     @Override
     public List<Enrollment> filter(List<Enrollment> enrollments, EnrollmentService enrollmentService) {
         List<Enrollment> filteredEnrollments = new ArrayList<Enrollment>();
-        for (Enrollment enrollment : enrollments)
-            if (enrollment.getMetadata() != null && value.equals(enrollment.getMetadata().get(key)))
+        for (Enrollment enrollment : enrollments) {
+            if (enrollment.getMetadata() != null && value.equals(enrollment.getMetadata().get(key))) {
                 filteredEnrollments.add(enrollment);
-
+            }
+        }
         return filteredEnrollments;
     }
 

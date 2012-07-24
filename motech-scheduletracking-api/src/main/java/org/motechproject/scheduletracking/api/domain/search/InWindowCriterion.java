@@ -26,8 +26,9 @@ public class InWindowCriterion implements Criterion {
         List<Enrollment> filteredEnrollments = new ArrayList<Enrollment>();
         DateTime now = DateTime.now();
         for (Enrollment enrollment : enrollments) {
-            if (windowNames.contains(enrollmentService.getCurrentWindowAsOf(enrollment, now)))
+            if (windowNames.contains(enrollmentService.getCurrentWindowAsOf(enrollment, now))) {
                 filteredEnrollments.add(enrollment);
+            }
         }
         return filteredEnrollments;
     }

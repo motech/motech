@@ -3,12 +3,12 @@ package org.motechproject.scheduletracking.api.service;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
-import org.motechproject.util.DateUtil;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.motechproject.util.DateUtil.newDateTime;
+import static org.motechproject.util.DateUtil.today;
 
 /**
  * \ingroup sts
@@ -26,41 +26,16 @@ public class EnrollmentRequest {
     private String startingMilestoneName;
     private Map<String, String> metadata;
 
-    /**
-     * This is the constructor which takes in required parameters to create an enrollment
-     * @param externalId
-     * @param scheduleName
-     * @param preferredAlertTime
-     * @param referenceDate - This is the start date of the schedule based on which all the window duration calculations are made.
-     *                      In case of enrollment into milestones other than first milestone, this date is not used.
-     *                      Default value is today
-     * @param referenceTime - This is the start time of the schedule based on which all the window duration calculations are made.
-     *                      In case of enrollment into milestones other than first milestone, this time is not used.
-     *                      Default value is midnight
-     * @param enrollmentDate - The date of enrollment. In case of enrollment into milestones other than first milestone, this becomes the start date of that milestone.
-     *                       Default value is today
-     * @param enrollmentTime - The time of enrollment. In case of enrollment into milestones other than first milestone, this becomes the start time of that milestone.
-     *                       Default value is midnight
-     * @param startingMilestoneName - Name of the milestone to enroll against
-     *                              Default value is first milestone name from the schedule
-     * @param metadata - This is list of string key value pairs associated with an enrollment, which can be used to store some additional information about the enrollment.
-     *                 Default value is empty list
-     *
-     */
-    public EnrollmentRequest(String externalId, String scheduleName, Time preferredAlertTime, LocalDate referenceDate, Time referenceTime, LocalDate enrollmentDate, Time enrollmentTime, String startingMilestoneName, Map<String, String> metadata) {
-        this.externalId = externalId;
-        this.scheduleName = scheduleName;
-        this.preferredAlertTime = preferredAlertTime;
-        this.referenceDate = referenceDate;
-        this.referenceTime = referenceTime;
-        this.enrollmentDate = enrollmentDate;
-        this.enrollmentTime = enrollmentTime;
-        this.startingMilestoneName = startingMilestoneName;
-        this.metadata = (metadata != null)? metadata : new HashMap<String, String>();
+    public EnrollmentRequest() {
+        this.referenceDate = today();
+        this.referenceTime = new Time(0, 0);
+        this.enrollmentDate = today();
+        this.enrollmentTime = new Time(0, 0);
+        this.metadata = new HashMap<>();
     }
 
     /**
-     * This returns the External Id of an Enrollment
+     * This returns the External Id of the Enrollment
      * @return String
      */
     public String getExternalId() {
@@ -68,7 +43,7 @@ public class EnrollmentRequest {
     }
 
     /**
-     * This returns the Schedule Name of an Enrollment
+     * This returns the Schedule Name of the Enrollment
      * @return String
      */
     public String getScheduleName() {
@@ -76,7 +51,7 @@ public class EnrollmentRequest {
     }
 
     /**
-     * This returns the starting milestone name of an Enrollment
+     * This returns the starting milestone name of the Enrollment
      * @return String
      */
     public String getStartingMilestoneName() {
@@ -84,7 +59,7 @@ public class EnrollmentRequest {
     }
 
     /**
-     * This returns the preferred alert time of an Enrollment
+     * This returns the preferred alert time of the Enrollment
      * @return String
      */
     public Time getPreferredAlertTime() {
@@ -92,7 +67,7 @@ public class EnrollmentRequest {
     }
 
     /**
-     * This returns the reference date of an Enrollment
+     * This returns the reference date of the Enrollment
      * @return String
      */
     public LocalDate getReferenceDate() {
@@ -100,11 +75,11 @@ public class EnrollmentRequest {
     }
 
     /**
-     * This returns the reference time of an Enrollment
+     * This returns the reference time of the Enrollment
      * @return String
      */
     public Time getReferenceTime() {
-        return referenceTime != null ? referenceTime : new Time(0,0);
+        return referenceTime != null ? referenceTime : new Time(0, 0);
     }
 
     /**
@@ -120,8 +95,6 @@ public class EnrollmentRequest {
      * @return DateTime
      */
     public DateTime getEnrollmentDateTime() {
-        LocalDate enrollmentDate = this.enrollmentDate != null ? this.enrollmentDate : DateUtil.today();
-        Time enrollmentTime = this.enrollmentTime != null ? this.enrollmentTime : new Time(0, 0);
         return newDateTime(enrollmentDate, enrollmentTime);
     }
 
@@ -130,13 +103,11 @@ public class EnrollmentRequest {
      * @return DateTime
      */
     public DateTime getReferenceDateTime() {
-        LocalDate referenceDate = this.referenceDate != null ? this.referenceDate : DateUtil.today();
-        Time referenceTime = this.referenceTime != null ? this.referenceTime : new Time(0, 0);
         return newDateTime(referenceDate, referenceTime);
     }
 
     /**
-     * This returns the Metadata key value map of an Enrollment
+     * This returns the Metadata key value map of the Enrollment
      * @return String
      */
     public Map<String, String> getMetadata() {
@@ -144,9 +115,82 @@ public class EnrollmentRequest {
     }
 
     /**
-     * This sets the Metadata key value map of an Enrollment
+     * This sets the Metadata key value map of the Enrollment. This is list of string key value pairs associated with an enrollment, which can be used to store some additional information about the enrollment.
+     * Default value is empty list
      */
-    public void setMetadata(Map<String, String> metadata) {
+    public EnrollmentRequest setMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
+        return this;
+    }
+
+    /**
+     * This sets the external id of the Enrollment
+     */
+    public EnrollmentRequest setExternalId(String externalId) {
+        this.externalId = externalId;
+        return this;
+    }
+
+    /**
+     * This sets the schedule of the Enrollment
+     */
+    public EnrollmentRequest setScheduleName(String scheduleName) {
+        this.scheduleName = scheduleName;
+        return this;
+    }
+
+    /**
+     * This sets the preferred alert time of the Enrollment
+     */
+    public EnrollmentRequest setPreferredAlertTime(Time preferredAlertTime) {
+        this.preferredAlertTime = preferredAlertTime;
+        return this;
+    }
+
+    /**
+     * This sets the reference date of the Enrollment. This is the start date of the schedule based on which all the window duration calculations are made.
+     * In case of enrollment into milestones other than first milestone, this date is not used.
+     * Default value is today
+     */
+    public EnrollmentRequest setReferenceDate(LocalDate referenceDate) {
+        this.referenceDate = referenceDate == null ? today() : referenceDate;
+        return this;
+    }
+
+    /**
+     * This sets the reference time of the Enrollment. This is the start time of the schedule based on which all the window duration calculations are made.
+     * In case of enrollment into milestones other than first milestone, this time is not used.
+     * Default value is midnight
+     */
+    public EnrollmentRequest setReferenceTime(Time referenceTime) {
+        this.referenceTime = referenceTime == null ? new Time(0, 0) : referenceTime;
+        return this;
+    }
+
+    /**
+     * This sets the enrollment date of the Enrollment. The date of enrollment. In case of enrollment into milestones other than first milestone, this becomes the start date of that milestone.
+     * Default value is today
+     */
+    public EnrollmentRequest setEnrollmentDate(LocalDate enrollmentDate) {
+        this.enrollmentDate = enrollmentDate == null ? today() : enrollmentDate;
+        return this;
+    }
+
+    /**
+     * This sets the enrollment time of the Enrollment. The time of enrollment. In case of enrollment into milestones other than first milestone, this becomes the start time of that milestone.
+     * Default value is midnight
+     */
+    public EnrollmentRequest setEnrollmentTime(Time enrollmentTime) {
+        this.enrollmentTime = enrollmentTime == null ? new Time(0, 0) : enrollmentTime;
+        return this;
+    }
+
+    /**
+     * This sets the starting milestone of the Enrollment. Name of the milestone to enroll against
+     * Default value is first milestone name from the schedule
+     */
+    public EnrollmentRequest setStartingMilestoneName(String startingMilestoneName) {
+        this.startingMilestoneName = startingMilestoneName;
+        return this;
     }
 }

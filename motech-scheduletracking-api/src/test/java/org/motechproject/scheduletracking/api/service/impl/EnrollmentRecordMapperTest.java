@@ -34,7 +34,7 @@ public class EnrollmentRecordMapperTest {
     @Test
     public void shouldMapEnrollmentToEnrollmentResponse(){
         Schedule schedule = new Schedule("some_schedule");
-        final Enrollment enrollment = new Enrollment("externalId", schedule, "milestoneX", DateUtil.newDateTime(2000, 2, 1, 0, 0, 0), DateUtil.newDateTime(2000, 2, 10, 0, 0, 0), new Time(10, 10), null, null);
+        final Enrollment enrollment = new Enrollment().setExternalId("externalId").setSchedule(schedule).setCurrentMilestoneName("milestoneX").setStartOfSchedule(DateUtil.newDateTime(2000, 2, 1, 0, 0, 0)).setEnrolledOn(DateUtil.newDateTime(2000, 2, 10, 0, 0, 0)).setPreferredAlertTime(new Time(10, 10)).setStatus(null).setMetadata(null);
         final EnrollmentRecord record = enrollmentRecordMapper.map(enrollment);
 
         assertRecordMatchesEnrollment(record, enrollment);
