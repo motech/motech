@@ -36,10 +36,11 @@ public enum DayOfWeek {
         return days;
     }
 
-    public static DayOfWeek getDayOfWeek(int dayOfWeek) throws IllegalArgumentException {
+    public static DayOfWeek getDayOfWeek(int dayOfWeek) {
         for (DayOfWeek day : DayOfWeek.values()) {
-            if (day.getValue() == dayOfWeek)
+            if (day.getValue() == dayOfWeek) {
                 return day;
+            }
         }
 
         throw new IllegalArgumentException("Not a valid day");

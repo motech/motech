@@ -31,7 +31,7 @@ public class MotechUserCouchdbImpl extends MotechBaseDataObject implements Motec
 
     public MotechUserCouchdbImpl() {
         super();
-        this.type = DOC_TYPE;
+        this.setType(DOC_TYPE);
     }
 
     public MotechUserCouchdbImpl(String userName, String password, String externalId, List<String> roles) {
@@ -41,7 +41,7 @@ public class MotechUserCouchdbImpl extends MotechBaseDataObject implements Motec
         this.externalId = externalId;
         this.roles = roles;
         this.active = true;
-        this.type = DOC_TYPE;
+        this.setType(DOC_TYPE);
     }
 
     public String getExternalId() {

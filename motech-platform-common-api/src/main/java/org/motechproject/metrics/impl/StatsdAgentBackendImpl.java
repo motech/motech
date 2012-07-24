@@ -3,10 +3,13 @@ package org.motechproject.metrics.impl;
 import org.motechproject.metrics.MetricsAgentBackend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -88,7 +91,9 @@ public class StatsdAgentBackendImpl implements MetricsAgentBackend {
     }
 
     private boolean send(ArrayList<String> stats) {
-        if (socket == null) return false;
+        if (socket == null) {
+            return false;
+        }
         boolean retval = false; // didn't send anything
         for (String stat : stats) {
             if (doSend(socket, stat)) {

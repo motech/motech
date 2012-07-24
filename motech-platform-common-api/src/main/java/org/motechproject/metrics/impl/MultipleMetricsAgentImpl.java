@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class MultipleMetricsAgentImpl implements MetricsAgent {
     @Autowired
-    List<MetricsAgentBackend> metricsAgents;
+    private List<MetricsAgentBackend> metricsAgents;
 
 
     public MultipleMetricsAgentImpl() {

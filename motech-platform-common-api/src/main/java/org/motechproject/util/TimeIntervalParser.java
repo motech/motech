@@ -12,7 +12,7 @@ import java.util.Locale;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 public class TimeIntervalParser {
-    PeriodParser parser;
+    private PeriodParser parser;
 
     public TimeIntervalParser() {
 
@@ -37,8 +37,9 @@ public class TimeIntervalParser {
      * @return
      */
     public Period parse(String intervalString, Locale locale) {
-        if (isBlank(intervalString))
+        if (isBlank(intervalString)) {
             return new Period(0);
+        }
         ReadWritablePeriod period = new MutablePeriod();
         if (parser.parseInto(period, intervalString, 0, locale) > 0) {
             return period.toPeriod();

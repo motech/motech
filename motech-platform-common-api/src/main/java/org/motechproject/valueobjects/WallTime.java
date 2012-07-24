@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 public class WallTime implements Serializable {
 
-    Period period;
+    private Period period;
 
     public WallTime(String userReadableForm) {
         period = new TimeIntervalParser().parse(userReadableForm);
@@ -15,9 +15,12 @@ public class WallTime implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         return period.equals(((WallTime) o).asPeriod());
     }
 
@@ -43,7 +46,8 @@ public class WallTime implements Serializable {
     }
 
     public long inMillis() {
-        return period.toStandardSeconds().getSeconds() * 1000;
+        final int millisInSecond = 1000;
+        return period.toStandardSeconds().getSeconds() * millisInSecond;
     }
 
     public Period asPeriod() {

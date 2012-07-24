@@ -11,7 +11,9 @@ public class MotechObject {
     private Logger logger;
 
     protected Logger logger() {
-        if (logger == null) logger = LoggerFactory.getLogger(this.getClass());
+        if (logger == null) {
+            logger = LoggerFactory.getLogger(this.getClass());
+        }
         return logger;
     }
 

@@ -25,9 +25,9 @@ public enum WallTimeUnit {
         }
     };
 
-    public int days;
-    public int hours;
-    public int minutes;
+    private int days;
+    private int hours;
+    private int minutes;
 
     WallTimeUnit(int days) {
         this.days = days;

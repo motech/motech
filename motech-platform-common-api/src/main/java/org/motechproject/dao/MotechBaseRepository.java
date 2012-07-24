@@ -8,7 +8,6 @@ import org.ektorp.support.GenerateView;
 import org.motechproject.model.MotechBaseDataObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public abstract class MotechBaseRepository<T extends MotechBaseDataObject> extends CouchDbRepositorySupport<T> {
@@ -22,14 +21,16 @@ public abstract class MotechBaseRepository<T extends MotechBaseDataObject> exten
 
     protected void addOrReplace(T entity, String businessFieldName, String businessId) {
         List<T> entities = entities(businessFieldName, businessId);
-        if (entities.size() == 0) add(entity);
-        else if (entities.size() == 1) {
+        if (entities.size() == 0) {
+            add(entity);
+        } else if (entities.size() == 1) {
             T entityInDb = entities.get(0);
             entity.setId(entityInDb.getId());
             entity.setRevision(entityInDb.getRevision());
             update(entity);
+        } else {
+            throw new BusinessIdNotUniqueException(businessFieldName, businessId);
         }
-        else throw new BusinessIdNotUniqueException(businessFieldName, businessId);
     }
 
     private List<T> entities(String businessFieldName, String businessId) {
@@ -56,8 +57,9 @@ public abstract class MotechBaseRepository<T extends MotechBaseDataObject> exten
     }
 
     public void safeRemove(T entity) {
-        if (contains(entity.getId()))
+        if (contains(entity.getId())) {
             remove(entity);
+        }
     }
 
     @Override

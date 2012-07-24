@@ -3,38 +3,36 @@ package org.motechproject.metrics;
 import java.util.Map;
 
 /**
- *  Interface into the metrics system
+ * Interface into the metrics system
  */
-public interface MetricsAgent
-{
+public interface MetricsAgent {
     /**
      * Reports an occurrence of metric, incrementing it's count.  Not all implementations
      * may make use of parameters
      *
-     * @param metric The metric being recorded
+     * @param metric     The metric being recorded
      * @param parameters Optional parameters related to the event
      */
-    public void logEvent(String metric, Map<String, String> parameters);
+    void logEvent(String metric, Map<String, String> parameters);
 
     /**
      * Reports an occurrence of metric, incrementing it's count.
      *
      * @param metric The metric being recorded
      */
-    public void logEvent(String metric);
+    void logEvent(String metric);
 
     /**
      * Starts a timer for metric.  Later calls to startTimer without a corresponding call to endTimer for the same
      * metric are ignored
-     *
      */
-    public long startTimer();
+    long startTimer();
 
     /**
      * Ends the timer for metric and records it.  No action is taken if a start timer was not recorded for metric
      *
-     * @param metric The metric being timed
+     * @param metric     The metric being timed
      * @param timerValue
      */
-    public void stopTimer(String metric, long timerValue);
+    void stopTimer(String metric, long timerValue);
 }

@@ -11,14 +11,14 @@ public interface MetricsAgentBackend {
      * @param metric     The metric being recorded
      * @param parameters Optional parameters related to the event
      */
-    public void logEvent(String metric, Map<String, String> parameters);
+    void logEvent(String metric, Map<String, String> parameters);
 
     /**
      * Reports an occurrence of metric, incrementing it's count.
      *
      * @param metric The metric being recorded
      */
-    public void logEvent(String metric);
+    void logEvent(String metric);
 
     /**
      * Reports an occurance of metric in milliseconds
@@ -26,5 +26,5 @@ public interface MetricsAgentBackend {
      * @param metric The metric being recorded
      * @param time   The execution time of this event in milliseconds
      */
-    public void logTimedEvent(String metric, long time);
+    void logTimedEvent(String metric, long time);
 }
