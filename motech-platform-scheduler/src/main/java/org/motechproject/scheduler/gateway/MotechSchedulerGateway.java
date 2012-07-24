@@ -26,7 +26,7 @@ public interface MotechSchedulerGateway {
      *
      * @param cronSchedulableJob
      */
-    public void scheduleJob(CronSchedulableJob cronSchedulableJob);
+    void scheduleJob(CronSchedulableJob cronSchedulableJob);
 
     /**
      * Sends a message with the given SchedulableJob payload. The message directed to the channel specified in the
@@ -34,7 +34,7 @@ public interface MotechSchedulerGateway {
      *
      * @param schedulableJob
      */
-    public void scheduleRepeatingJob(RepeatingSchedulableJob schedulableJob);
+    void scheduleRepeatingJob(RepeatingSchedulableJob schedulableJob);
 
     /**
      * Sends a message with the given RunOnceSchedulableJob payload. The message directed to the channel specified in the
@@ -42,7 +42,7 @@ public interface MotechSchedulerGateway {
      *
      * @param schedulableJob
      */
-    public void scheduleRunOnceJob(RunOnceSchedulableJob schedulableJob);
+    void scheduleRunOnceJob(RunOnceSchedulableJob schedulableJob);
 
     /**
      * Sends a message with the given JobId payload. The message directed to the channel specified in the
@@ -50,5 +50,5 @@ public interface MotechSchedulerGateway {
      *
      * @param job
      */
-    public void unscheduleJob(JobId job);
+    void unscheduleJob(JobId job);
 }

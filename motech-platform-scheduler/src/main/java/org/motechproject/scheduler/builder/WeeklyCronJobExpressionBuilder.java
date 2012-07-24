@@ -24,8 +24,7 @@ public class WeeklyCronJobExpressionBuilder {
     }
 
     public String build() {
-        String CRON_JOB_EXPR = "0 %d %d ? * %d";
-
-        return String.format(CRON_JOB_EXPR, minute, hour, quartzDayOfWeek);
+        final String cronExpression = "0 %d %d ? * %d";
+        return String.format(cronExpression, minute, hour, quartzDayOfWeek);
     }
 }
