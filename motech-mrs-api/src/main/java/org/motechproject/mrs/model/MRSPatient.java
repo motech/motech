@@ -63,16 +63,25 @@ public class MRSPatient {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof MRSPatient)) return false;
-
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof MRSPatient)) {
+            return false;
+        }
         MRSPatient that = (MRSPatient) o;
-
-        if (facility != null ? !facility.equals(that.facility) : that.facility != null) return false;
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
-        if (motechId != null ? !motechId.equals(that.motechId) : that.motechId != null) return false;
-        if (person != null ? !person.equals(that.person) : that.person != null) return false;
-
+        if (facility != null ? !facility.equals(that.facility) : that.facility != null) {
+            return false;
+        }
+        if (id != null ? !id.equals(that.id) : that.id != null) {
+            return false;
+        }
+        if (motechId != null ? !motechId.equals(that.motechId) : that.motechId != null) {
+            return false;
+        }
+        if (person != null ? !person.equals(that.person) : that.person != null) {
+            return false;
+        }
         return true;
     }
 

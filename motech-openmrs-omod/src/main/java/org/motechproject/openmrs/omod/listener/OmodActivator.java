@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 public class OmodActivator implements ModuleActivator {
 
-    private static final Logger log = LoggerFactory.getLogger(OmodActivator.class);
+    private static Logger log = LoggerFactory.getLogger(OmodActivator.class);
 
     @Override
     public void willRefreshContext() {

@@ -83,8 +83,9 @@ public class CallRequest implements Serializable {
         this.phone = phone;
         this.timeOut = 0;
 
-        if (params != null)
+        if (params != null) {
             this.payload.putAll(params);
+        }
 
         this.callBackUrl = callBackUrl;
     }

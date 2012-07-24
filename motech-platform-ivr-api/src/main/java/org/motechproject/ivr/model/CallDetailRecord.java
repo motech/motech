@@ -69,7 +69,7 @@ public class CallDetailRecord {
      * @param disposition: Call status (busy, failed etc)
      * @return
      */
-    public static CallDetailRecord create(String phoneNumber, CallDirection callDirection, Disposition disposition){
+    public static CallDetailRecord create(String phoneNumber, CallDirection callDirection, Disposition disposition) {
         CallDetailRecord callDetailRecord = new CallDetailRecord();
         callDetailRecord.startDate = DateUtil.now().toDate();
         callDetailRecord.disposition = disposition;
@@ -80,15 +80,15 @@ public class CallDetailRecord {
     }
 
     public Date getStartDate() {
-        return startDate != null? setTimeZone(newDateTime(startDate)).toDate() : startDate;
+        return startDate != null ? setTimeZone(newDateTime(startDate)).toDate() : startDate;
     }
 
     public Date getEndDate() {
-        return endDate != null? setTimeZone(newDateTime(endDate)).toDate() : endDate;
+        return endDate != null ? setTimeZone(newDateTime(endDate)).toDate() : endDate;
     }
 
     public Date getAnswerDate() {
-        return answerDate != null? setTimeZone(newDateTime(answerDate)).toDate() : answerDate;
+        return answerDate != null ? setTimeZone(newDateTime(answerDate)).toDate() : answerDate;
     }
 
     public Disposition getDisposition() {

@@ -12,7 +12,9 @@ public class CallEventCustomData {
     private Map<String, List<String>> data = new HashMap<String, List<String>>();
 
     public void add(String key, String value) {
-        if (data.get(key) == null) data.put(key, new ArrayList<String>());
+        if (data.get(key) == null) {
+            data.put(key, new ArrayList<String>());
+        }
         updateList(key, value);
     }
 
