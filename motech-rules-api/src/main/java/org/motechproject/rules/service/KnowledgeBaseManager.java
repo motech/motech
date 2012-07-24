@@ -54,7 +54,7 @@ public class KnowledgeBaseManager implements KnowledgeBaseManagerInterface {
     /**
      * Add or update a rule in the repository and update the in-memory knowledgeBaseLookup
      * <p/>
-     * TODO: this might need re-work if we want to support changing rules on the fly.
+     * This does't support changing rules on the fly.
      *
      * @param ruleId
      * @param bundleSymbolicName
