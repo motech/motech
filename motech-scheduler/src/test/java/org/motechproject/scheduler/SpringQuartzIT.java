@@ -2,6 +2,7 @@ package org.motechproject.scheduler;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.scheduler.impl.MotechScheduledJob;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;

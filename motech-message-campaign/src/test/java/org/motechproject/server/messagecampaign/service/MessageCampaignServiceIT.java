@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.model.Time;
-import org.motechproject.scheduler.MotechSchedulerServiceImpl;
+import org.motechproject.scheduler.impl.MotechSchedulerServiceImpl;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.util.DateUtil;
 import org.quartz.impl.matchers.GroupMatcher;
