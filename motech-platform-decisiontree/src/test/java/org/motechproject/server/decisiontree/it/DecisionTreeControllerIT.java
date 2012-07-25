@@ -60,10 +60,10 @@ public class DecisionTreeControllerIT extends SpringIntegrationTest {
         transitions.put("1", new Transition().setDestinationNode(textToSpeechNode));
         transitions.put("11", new Transition().setDestinationNode(textToSpeechNode));
 
-        tree.setRootNode(new Node().addPrompts(
+        tree.setRootTransition(new Transition().setDestinationNode(new Node().addPrompts(
             new TextToSpeechPrompt().setMessage("Hello Welcome to motech")
             ,new AudioPrompt().setAudioFileUrl(AUDIO_FILE_URL).setName("audioFile")
-        ).setTransitions(transitions));
+        ).setTransitions(transitions)));
         allTrees.addOrReplace(tree);
         markForDeletion(tree);
     }
