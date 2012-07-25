@@ -12,6 +12,7 @@ import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.scheduler.exception.MotechSchedulerException;
+import org.motechproject.scheduler.impl.MotechSchedulerServiceImpl;
 import org.motechproject.server.event.EventListenerRegistry;
 import org.motechproject.server.event.annotations.MotechListenerEventProxy;
 import org.motechproject.util.DateUtil;

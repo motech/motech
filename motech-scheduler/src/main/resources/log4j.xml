@@ -17,7 +17,7 @@
         <level value="INFO"/>
     </logger>
 
-    <logger name="org.motechproject.scheduler.MotechSchedulerServiceImpl">
+    <logger name="org.motechproject.scheduler.impl.MotechSchedulerServiceImpl">
         <level value="INFO"/>
     </logger>
 

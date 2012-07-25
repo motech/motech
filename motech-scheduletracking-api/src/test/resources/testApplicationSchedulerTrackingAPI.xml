@@ -42,5 +42,5 @@
     <bean id="scheduleTrackingService"
           class="org.motechproject.scheduletracking.api.service.impl.ScheduleTrackingServiceImpl"/>
 
-    <bean id="schedulerService" class="org.motechproject.scheduler.MotechSchedulerServiceImpl"/>
+    <bean id="schedulerService" class="org.motechproject.scheduler.impl.MotechSchedulerServiceImpl"/>
 </beans>
