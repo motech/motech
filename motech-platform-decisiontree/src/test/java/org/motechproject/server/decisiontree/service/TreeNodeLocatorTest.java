@@ -4,7 +4,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.motechproject.decisiontree.FlowSession;
 import org.motechproject.decisiontree.model.AudioPrompt;
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.Transition;
@@ -37,7 +39,7 @@ public class TreeNodeLocatorTest {
         MockitoAnnotations.initMocks(this);
         when(applicationContext.getAutowireCapableBeanFactory()).thenReturn(autowireCapableBeanFactory);
         doNothing().when(autowireCapableBeanFactory).autowireBean(any());
-        tree = new Tree().setName("tree1").setRootNode(
+        tree = new Tree().setName("tree1").setRootTransition(new Transition().setDestinationNode(
                 new Node().setTransitions(new Object[][]{
                         {"1", new Transition().setName("t1").setDestinationNode(new Node().setTransitions(new Object[][]{
                                 {"1", new Transition().setName("sick1").setDestinationNode(new Node())},
@@ -45,7 +47,7 @@ public class TreeNodeLocatorTest {
                                 {"3", new Transition().setName("sick3").setDestinationNode(new Node())},
                         }))},
                         {"2", new Transition().setName("ill").setDestinationNode(new Node())}
-                }));
+                })));
 
     }
 
@@ -72,7 +74,7 @@ public class TreeNodeLocatorTest {
 
     @Test
     public void addPrompts() {
-        final Node rootNode = tree.getRootNode();
+        final Node rootNode = tree.getRootTransition().getDestinationNode(null, Mockito.mock(FlowSession.class));
         rootNode.setPrompts(new AudioPrompt());
         rootNode.addPrompts(new AudioPrompt());
 
@@ -81,7 +83,7 @@ public class TreeNodeLocatorTest {
 
     @Test
     public void addPromptToBeginning() {
-        final Node rootNode = tree.getRootNode();
+        final Node rootNode = tree.getRootTransition().getDestinationNode(null, Mockito.mock(FlowSession.class));
         AudioPrompt audioPrompt_1 = new AudioPrompt();
         audioPrompt_1.setName("1");
         AudioPrompt audioPrompt_2 = new AudioPrompt();

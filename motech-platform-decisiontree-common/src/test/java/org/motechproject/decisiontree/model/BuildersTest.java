@@ -1,6 +1,8 @@
 package org.motechproject.decisiontree.model;
 
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.motechproject.decisiontree.FlowSession;
 
 import java.util.Arrays;
 
@@ -22,7 +24,7 @@ public class BuildersTest {
         Tree t = new Tree()
                 .setName("tree1")
                 .setDescription("desc")
-                .setRootNode(new Node()
+                .setRootTransition(new Transition().setDestinationNode(new Node()
                         .setActionsBefore(Arrays.asList(Action.newBuilder()
                                 .setEventId("event_x")
                                 .build()))
@@ -34,14 +36,14 @@ public class BuildersTest {
                                 {"2", new Transition()
                                         .setName("healthy")}
                         })
-                );
+                ));
 //        System.out.print(t);
         assertNotNull(t);
         assertEquals("tree1", t.getName());
         assertEquals("desc", t.getDescription());
-        assertNotNull(t.getRootNode());
-        assertNotNull(t.getRootNode().getTransitions());
-        assertEquals(2, t.getRootNode().getTransitions().size());
+        assertNotNull(t.getRootTransition().getDestinationNode(null, Mockito.mock(FlowSession.class)).getTransitions());
+        assertNotNull(t.getRootTransition().getDestinationNode(null, Mockito.mock(FlowSession.class)));
+        assertEquals(2, t.getRootTransition().getDestinationNode(null, Mockito.mock(FlowSession.class)).getTransitions().size());
     }
 
 }

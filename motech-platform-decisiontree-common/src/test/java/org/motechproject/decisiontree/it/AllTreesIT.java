@@ -3,6 +3,8 @@ package org.motechproject.decisiontree.it;
 import org.ektorp.CouchDbConnector;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.motechproject.decisiontree.FlowSession;
 import org.motechproject.decisiontree.model.*;
 import org.motechproject.decisiontree.repository.AllTrees;
 import org.motechproject.testing.utils.SpringIntegrationTest;
@@ -32,14 +34,14 @@ public class AllTreesIT extends SpringIntegrationTest {
         final Node textToSpeechNode = new Node().addPrompts(new TextToSpeechPrompt().setName("Say this"));
         transitions.put("1", new Transition().setDestinationNode(textToSpeechNode));
         final Node audioPromptNode = new Node().addPrompts(new AudioPrompt().setName("abc")).setTransitions(transitions);
-        tree.setName("tree").setRootNode(audioPromptNode);
+        tree.setName("tree").setRootTransition(new Transition().setDestinationNode(audioPromptNode));
 
         allTrees.addOrReplace(tree);
         markForDeletion(tree);
 
         Tree fromDb = allTrees.get(tree.getId());
         assertNotNull(fromDb);
-        final Node rootNodeFromDb = fromDb.getRootNode();
+        final Node rootNodeFromDb = fromDb.getRootTransition().getDestinationNode(null, Mockito.mock(FlowSession.class));
         assertNotNull(rootNodeFromDb);
         assertEquals(AudioPrompt.class.getName(), rootNodeFromDb.getPrompts().get(0).getClass().getName());
 
@@ -51,13 +53,15 @@ public class AllTreesIT extends SpringIntegrationTest {
     @Test
     public void shouldStoreTreeWithCommands() throws Exception {
         Tree tree = new Tree();
-        tree.setName("tree").setRootNode(new Node().addPrompts(new AudioPrompt().setCommand(new TestCommand())));
+        tree.setName("tree").setRootTransition(new Transition().setDestinationNode(
+                new Node().addPrompts(new AudioPrompt().setCommand(new TestCommand()))
+        ));
         allTrees.addOrReplace(tree);
         markForDeletion(tree);
 
         Tree fromDb = allTrees.get(tree.getId());
         assertNotNull(fromDb);
-        final ITreeCommand command = fromDb.getRootNode().getPrompts().get(0).getCommand();
+        final ITreeCommand command = fromDb.getRootTransition().getDestinationNode(null, Mockito.mock(FlowSession.class)).getPrompts().get(0).getCommand();
         assertEquals(TestCommand.class.getName(), command.getClass().getName());
         final String[] result = command.execute(null);
         assertEquals("ok", result[0]);
@@ -68,30 +72,32 @@ public class AllTreesIT extends SpringIntegrationTest {
     public void shouldFindTreeByName() throws Exception {
         Tree tree = new Tree();
         tree.setName("someTree");
-        tree.setRootNode(new Node().addPrompts(new AudioPrompt().setName("audioFile")));
+        tree.setRootTransition(new Transition().setDestinationNode(new Node().addPrompts(new AudioPrompt().setName("audioFile"))));
         allTrees.addOrReplace(tree);
         markForDeletion(tree);
 
         final Tree fromDb = allTrees.findByName("someTree");
         assertNotNull(fromDb);
-        assertEquals("audioFile", fromDb.getRootNode().getPrompts().get(0).getName());
+        assertEquals("audioFile", fromDb.getRootTransition().getDestinationNode(null, Mockito.mock(FlowSession.class)).getPrompts().get(0).getName());
     }
 
     @Test
     public void shouldAddOrReplaceTree() throws Exception {
         Tree tree = new Tree();
         tree.setName("someTree");
-        tree.setRootNode(new Node().addPrompts(new AudioPrompt().setName("audioFile1")));
+        tree.setRootTransition(new Transition().setDestinationNode(
+                new Node().addPrompts(new AudioPrompt().setName("audioFile1"))
+        ));
         allTrees.addOrReplace(tree);
         markForDeletion(tree);
 
         tree = new Tree();
         tree.setName("someTree");
-        tree.setRootNode(new Node().addPrompts(new AudioPrompt().setName("audioFile2")));
+        tree.setRootTransition(new Transition().setDestinationNode(new Node().addPrompts(new AudioPrompt().setName("audioFile2"))));
         allTrees.addOrReplace(tree);
 
         final Tree someTree = allTrees.findByName("someTree");
-        assertEquals("audioFile2", someTree.getRootNode().getPrompts().get(0).getName());
+        assertEquals("audioFile2", someTree.getRootTransition().getDestinationNode(null, Mockito.mock(FlowSession.class)).getPrompts().get(0).getName());
     }
 
     @Override

@@ -81,13 +81,13 @@ public class CallFlowIT extends SpringIntegrationTest {
     public void shouldPlayPromptsAndRequestDtmfIfNodeHasTransitions() throws Exception {
         Tree tree = new Tree();
         tree.setName("someTree");
-        tree.setRootNode(
+        tree.setRootTransition(new Transition().setDestinationNode(
             new Node()
                 .addPrompts(
                     new TextToSpeechPrompt().setMessage("hello"))
                 .addTransition(
                     "*", new Transition().setDestinationNode(new Node()))
-        );
+        ));
         allTrees.addOrReplace(tree);
 
         String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&trP=Lw&ln=en", SERVER_URL)), new BasicResponseHandler());
@@ -105,7 +105,7 @@ public class CallFlowIT extends SpringIntegrationTest {
     public void shouldTransitionToNextNodeOnDtmfInput() throws Exception {
         Tree tree = new Tree();
         tree.setName("someTree");
-        tree.setRootNode(
+        tree.setRootTransition(new Transition().setDestinationNode(
             new Node()
                 .addTransition(
                     "1", new Transition().setDestinationNode(new Node()
@@ -117,7 +117,7 @@ public class CallFlowIT extends SpringIntegrationTest {
                             new TextToSpeechPrompt().setMessage("pressed two"))
                         .addTransition(
                             "*", new Transition())))
-        );
+        ));
         allTrees.addOrReplace(tree);
 
         String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&trP=Lw&ln=en&event=GotDTMF&data=2", SERVER_URL)), new BasicResponseHandler());
@@ -135,10 +135,10 @@ public class CallFlowIT extends SpringIntegrationTest {
     public void shouldHangupIfNodeHasNoTransitions() throws Exception {
         Tree tree = new Tree();
         tree.setName("someTree");
-        tree.setRootNode(
+        tree.setRootTransition(new Transition().setDestinationNode(
             new Node().addPrompts(
                 new AudioPrompt().setAudioFileUrl("music.wav"))
-        );
+        ));
         allTrees.addOrReplace(tree);
 
         String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&trP=Lw&ln=en", SERVER_URL)), new BasicResponseHandler());
@@ -156,11 +156,11 @@ public class CallFlowIT extends SpringIntegrationTest {
     public void shouldRequestMaxLengthDtmfForArbitraryInput() throws Exception {
         Tree tree = new Tree();
         tree.setName("someTree");
-        tree.setRootNode(
+        tree.setRootTransition(new Transition().setDestinationNode(
             new Node()
                 .addTransition(
                     "?", new Transition())
-        );
+        ));
         allTrees.addOrReplace(tree);
 
         String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&trP=Lw&ln=en", SERVER_URL)), new BasicResponseHandler());
@@ -177,11 +177,11 @@ public class CallFlowIT extends SpringIntegrationTest {
     public void shouldTransitionToNextNodeOnArbitraryInput() throws Exception {
         Tree tree = new Tree();
         tree.setName("someTree");
-        tree.setRootNode(
+        tree.setRootTransition(new Transition().setDestinationNode(
             new Node()
                 .addTransition(
                     "?", new CustomTransition())
-        );
+        ));
         allTrees.addOrReplace(tree);
 
         String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&trP=Lw&ln=en&event=GotDTMF&data=31415", SERVER_URL)), new BasicResponseHandler());

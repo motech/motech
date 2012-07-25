@@ -44,7 +44,7 @@ public class DecisionTreeServiceTest {
 
         pillReminderTree = new Tree()
                 .setName("PillReminderTree")
-                .setRootNode(rootNode);
+                .setRootTransition(new Transition().setDestinationNode(rootNode));
 
         when(allTrees.findByName(pillReminderTree.getName())).thenReturn(pillReminderTree);
         decisionTreeService = new DecisionTreeServiceImpl(allTrees, treeNodeLocator);
