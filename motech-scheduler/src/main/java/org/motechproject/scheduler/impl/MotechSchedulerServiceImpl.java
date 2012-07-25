@@ -30,10 +30,11 @@
  * OF SUCH DAMAGE.
  */
 
-package org.motechproject.scheduler;
+package org.motechproject.scheduler.impl;
 
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.MotechObject;
+import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.CronSchedulableJob;
 import org.motechproject.scheduler.domain.JobId;
 import org.motechproject.scheduler.domain.MotechEvent;
