@@ -1,5 +1,6 @@
 package org.motechproject.decisiontree.model;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechBaseDataObject;
 
@@ -13,7 +14,7 @@ public class Tree extends MotechBaseDataObject {
     @TypeDiscriminator
     private String name;
     private String description;
-    private Node rootNode;
+    private ITransition rootTransition;
 
     public String getName() {
         return name;
@@ -33,13 +34,46 @@ public class Tree extends MotechBaseDataObject {
         return this;
     }
 
+    /**
+     * @deprecated will be removed in 0.13 see {@link #getRootNode()}
+     * @return
+     */
+    @Deprecated
+    @JsonIgnore
     public Node getRootNode() {
-        return rootNode;
+        return rootTransition.getDestinationNode(null, null);
     }
 
+    /**
+     * @deprecated will be removed in 0.13 see {@link #setRootTransition(ITransition)}
+     * @param rootNode
+     * @return
+     */
+    @Deprecated
+    @JsonIgnore
     public Tree setRootNode(Node rootNode) {
-        this.rootNode = rootNode;
+        this.rootTransition = new Transition().setDestinationNode(rootNode);
         return this;
+    }
+
+    /**
+     * Set Transition or custom transition implementation.
+     * @param transition
+     * @since 0.12
+     * @return
+     */
+    public Tree setRootTransition(ITransition transition) {
+        this.rootTransition = transition;
+        return this;
+    }
+
+    /**
+     * get root transition of tree that determines root node of tree.
+     * @return
+     * @since 0.12
+     */
+    public ITransition getRootTransition() {
+        return rootTransition;
     }
 
     @Override
@@ -47,7 +81,7 @@ public class Tree extends MotechBaseDataObject {
         return "Tree{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", rootNode=" + rootNode +
+                ", rootTransition=" + rootTransition +
                 '}';
     }
 
@@ -68,7 +102,7 @@ public class Tree extends MotechBaseDataObject {
         if (name != null ? !name.equals(tree.name) : tree.name != null) {
             return false;
         }
-        if (rootNode != null ? !rootNode.equals(tree.rootNode) : tree.rootNode != null) {
+        if (rootTransition != null ? !rootTransition.equals(tree.rootTransition) : tree.rootTransition != null) {
             return false;
         }
 
@@ -79,7 +113,7 @@ public class Tree extends MotechBaseDataObject {
     public int hashCode() {
         int result = name != null ? name.hashCode() : 0;
         result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (rootNode != null ? rootNode.hashCode() : 0);
+        result = 31 * result + (rootTransition != null ? rootTransition.hashCode() : 0);
         return result;
     }
 }

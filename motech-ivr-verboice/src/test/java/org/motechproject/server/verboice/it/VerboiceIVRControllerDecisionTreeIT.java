@@ -55,9 +55,9 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         transitions.put("*", new Transition().setDestinationNode(new Node().setPrompts(new AudioPrompt().setAudioFileUrl("you pressed star"))));
         transitions.put("?", new CustomTransition());
 
-        tree.setRootNode(new Node().addPrompts(
+        tree.setRootTransition(new Transition().setDestinationNode(new Node().addPrompts(
                 new TextToSpeechPrompt().setMessage("Hello Welcome to motech")
-        ).setTransitions(transitions));
+        ).setTransitions(transitions)));
         allTrees.addOrReplace(tree);
         markForDeletion(tree);
     }
@@ -137,7 +137,9 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         transitions.put("completed", new Transition().setDestinationNode(successTextNode));
         transitions.put("failed", new Transition().setDestinationNode(failureTextNode));
 
-        tree.setRootNode(new Node().addPrompts(new DialPrompt("othernumber")).setTransitions(transitions));
+        tree.setRootTransition(new Transition().setDestinationNode(
+                new Node().addPrompts(new DialPrompt("othernumber")).setTransitions(transitions)
+        ));
         allTrees.addOrReplace(tree);
         markForDeletion(tree);
     }

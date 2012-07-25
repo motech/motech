@@ -26,7 +26,7 @@ public class TreeNodeLocator {
         if (tree == null || path == null) {
             throw new IllegalArgumentException(String.format("tree: %s path: %s", tree, path));
         }
-        Node node = tree.getRootNode();
+        Node node = tree.getRootTransition().getDestinationNode(null, session);
         if (node != null) {
             String[] keys = path.split(PATH_DELIMITER);
             for (String key : keys) {
