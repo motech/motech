@@ -6,9 +6,8 @@
         #elseif ($prompt.class.simpleName == "TextToSpeechPrompt")
             <Say>$prompt.message</Say>
         #elseif ($prompt.class.simpleName == "DialPrompt")
-            #set ($url = "$scheme://$host$contentPath/verboice/ivr?type=$type&ln=$language&tree=$treeName&trP=$transitionPath")
             #set ($dial = true)
-            <Dial #if($!{prompt.callerId})callerId="$!{prompt.callerId}"#end action="$escape.escapeXml($url)">$prompt.phoneNumber</Dial>
+            <Dial #if($!{prompt.callerId})callerId="$!{prompt.callerId}"#end #if($!{prompt.action})action="$!{prompt.action}"#end>$prompt.phoneNumber</Dial>
         #end
     #end
 
