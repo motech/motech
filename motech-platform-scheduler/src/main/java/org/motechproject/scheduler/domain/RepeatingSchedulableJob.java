@@ -3,6 +3,8 @@ package org.motechproject.scheduler.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.apache.commons.lang.ObjectUtils;
+
 /**
  * Schedulable Job - a data carrier class for a scheduled job that can be fired set number of times
  */
@@ -75,6 +77,40 @@ public class RepeatingSchedulableJob implements Serializable {
                 + ", startTime=" + startTime + ", endTime=" + endTime
                 + ", repeatCount=" + repeatCount + ", repeatIntervalInMilliSeconds="
                 + repeatIntervalInMilliSeconds + "]";
+    }
+
+    @Override
+    public boolean equals(Object arg0) {
+        if (!(arg0 instanceof RepeatingSchedulableJob)) {
+            return false;
+        }
+        
+        RepeatingSchedulableJob job = (RepeatingSchedulableJob)arg0;
+        if (!ObjectUtils.equals(motechEvent, job.motechEvent)) {
+            return false;
+        } else if (!ObjectUtils.equals(startTime, job.startTime)) {
+            return false;
+        } else if (!ObjectUtils.equals(endTime, job.endTime)) {
+            return false;
+        } else if (!ObjectUtils.equals(repeatCount, job.repeatCount)) {
+            return false;
+        } else if (!ObjectUtils.equals(repeatIntervalInMilliSeconds, job.repeatIntervalInMilliSeconds)) {
+            return false;
+        }
+        
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 1;
+        hash = hash * 31 + ObjectUtils.hashCode(motechEvent);
+        hash = hash * 31 + ObjectUtils.hashCode(startTime);
+        hash = hash * 31 + ObjectUtils.hashCode(endTime);
+        hash = hash * 31 + ObjectUtils.hashCode(repeatCount);
+        hash = hash * 31 + ObjectUtils.hashCode(repeatIntervalInMilliSeconds);
+        
+        return hash;
     }
 
 }
