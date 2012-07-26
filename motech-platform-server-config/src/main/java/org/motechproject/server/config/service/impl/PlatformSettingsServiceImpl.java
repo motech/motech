@@ -19,8 +19,10 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -164,9 +166,36 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
     @Override
     public void saveBundleProperties(final String bundleSymbolicName, final String fileName, final Properties properties) throws IOException {
-        File file = new File(String.format("%s/.motech/config/%s/%s", System.getProperty("user.home"), bundleSymbolicName, fileName));
+        String configDirPath = String.format(String.format("%s/.motech/config/%s", System.getProperty("user.home"), bundleSymbolicName));
+
+        File configDir = new File(configDirPath);
+        if (!configDir.exists()) {
+            configDir.mkdirs();
+        }
+
+        File file = new File(String.format("%s/%s", configDirPath, fileName));
 
         properties.store(new FileOutputStream(file), null);
+    }
+
+    @Override
+    public List<String> retrieveRegisteredBundleNames() {
+        File configDir = new File(String.format(String.format("%s/.motech/config", System.getProperty("user.home"))));
+        File[] dirs = configDir.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.isDirectory();
+            }
+        });
+
+        List<String> bundleNames = new ArrayList<>();
+        if (dirs != null) {
+            for (File dir : dirs) {
+                bundleNames.add(dir.getName());
+            }
+        }
+
+        return bundleNames;
     }
 
     @Override
@@ -186,7 +215,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     @Override
     public Map<String, Properties> getAllProperties(final String bundleSymbolicName) throws IOException {
         File dir = new File(String.format("%s/.motech/config/%s/", System.getProperty("user.home"), bundleSymbolicName));
-        Map<String, Properties> propertiesMap = null;
+        Map<String, Properties> propertiesMap = new HashMap<>();
 
         if (dir.exists()) {
             File[] files = dir.listFiles(new FileFilter() {
@@ -195,8 +224,6 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
                     return pathname.isFile() && pathname.getName().endsWith(".properties");
                 }
             });
-
-            propertiesMap = new HashMap<>(files.length);
 
             for (File file : files) {
                 propertiesMap.put(file.getName(), getBundleProperties(bundleSymbolicName, file.getName()));

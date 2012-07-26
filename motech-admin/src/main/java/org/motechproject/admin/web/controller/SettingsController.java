@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,9 +41,8 @@ public class SettingsController {
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings/{bundleId}", method = RequestMethod.POST)
-    public void saveBundleSettings(@PathVariable long bundleId, HttpServletRequest request) throws IOException {
-        List<SettingsOption> options = constructSettingsOptions(request);
-        settingsService.saveBundleSettings(options, bundleId);
+    public void saveBundleSettings(@PathVariable long bundleId, @RequestBody BundleSettings bundleSettings) throws IOException {
+        settingsService.saveBundleSettings(bundleSettings, bundleId);
         statusMessageService.ok("{settings.saved.bundle}");
     }
 
@@ -71,6 +71,12 @@ public class SettingsController {
     public void uploadSettingsLocation(@RequestParam(required = true) String location) {
         settingsService.addSettingsPath(location);
         statusMessageService.ok("{settings.saved.location}");
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/settings/bundles/list", method = RequestMethod.GET)
+    @ResponseBody public List<String> getBundlesWithSettings() {
+        return settingsService.retrieveRegisteredBundleNames();
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

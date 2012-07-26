@@ -43,6 +43,9 @@ public class SettingsControllerTest {
     @Mock
     HttpServletRequest httpServletRequest;
 
+    @Mock
+    BundleSettings bundleSettings;
+
     @InjectMocks
     SettingsController controller = new SettingsController();
 
@@ -65,9 +68,9 @@ public class SettingsControllerTest {
     public void testSaveBundleSettings() throws IOException {
         when(httpServletRequest.getParameterMap()).thenReturn(paramMap);
 
-        controller.saveBundleSettings(BUNDLE_ID, httpServletRequest);
+        controller.saveBundleSettings(BUNDLE_ID, bundleSettings);
 
-        verify(settingsService).saveBundleSettings(anyListOf(SettingsOption.class), eq(BUNDLE_ID));
+        verify(settingsService).saveBundleSettings(bundleSettings, BUNDLE_ID);
     }
 
     @Test

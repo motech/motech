@@ -1,6 +1,7 @@
 package org.motechproject.sms.smpp;
 
 import org.joda.time.DateTime;
+import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.smpp.constants.SmsProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,10 +28,7 @@ public class ManagedSmslibService {
     private static final String GATEWAY_ID = "smpp_gateway";
     private static final String QUEUE_PERSISTENCE_PATH = ".";
 
-    @Qualifier("smsProperties")
-    private Properties smsProperties;
-    @Qualifier("smppProperties")
-    private Properties smppProperties;
+    private SettingsFacade settings;
 
     private Service smslibService;
     private OutboundMessageNotification outboundMessageNotification;
@@ -38,13 +36,13 @@ public class ManagedSmslibService {
     private JSMPPPropertiesMapper jsmppMapper;
 
     @Autowired
-    public ManagedSmslibService(Service smslibService, Properties smsProperties, Properties smppProperties, OutboundMessageNotification outboundMessageNotification, InboundMessageNotification inboundMessageNotification) {
+    public ManagedSmslibService(Service smslibService, OutboundMessageNotification outboundMessageNotification,
+                                InboundMessageNotification inboundMessageNotification, SettingsFacade settings) {
         this.smslibService = smslibService;
-        this.smsProperties = smsProperties;
-        this.smppProperties = smppProperties;
         this.outboundMessageNotification = outboundMessageNotification;
         this.inboundMessageNotification = inboundMessageNotification;
-        this.jsmppMapper = new JSMPPPropertiesMapper(smppProperties);
+        this.jsmppMapper = new JSMPPPropertiesMapper(settings.getProperties("smpp.properties"));
+        this.settings = settings;
 
         configureSmsLib();
         registerGateway();
@@ -61,7 +59,7 @@ public class ManagedSmslibService {
     private void configureSmsLib() {
         log.info("Configure SMS Lib Service");
 
-        String maxRetriesProperty = smsProperties.getProperty(SmsProperties.MAX_RETRIES);
+        String maxRetriesProperty = settings.getProperty(SmsProperties.MAX_RETRIES);
 
         if (maxRetriesProperty != null) {
             smslibService.getSettings().QUEUE_RETRIES = Integer.parseInt(maxRetriesProperty);
@@ -124,7 +122,7 @@ public class ManagedSmslibService {
     private OutboundMessage getOutboundMessage(String message, String recipient) {
         OutboundMessage outboundMessage = new OutboundMessage();
         outboundMessage.setRecipient(recipient);
-        outboundMessage.setStatusReport(Boolean.valueOf(smppProperties.getProperty(DELIVERY_REPORTS)));
+        outboundMessage.setStatusReport(Boolean.valueOf(settings.getProperty(DELIVERY_REPORTS)));
         outboundMessage.setText(message);
         outboundMessage.setGatewayId(GATEWAY_ID);
         return outboundMessage;

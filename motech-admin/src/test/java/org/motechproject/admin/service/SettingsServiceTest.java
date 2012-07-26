@@ -107,7 +107,8 @@ public class SettingsServiceTest {
     public void testSaveBundleSettings() throws IOException {
         SettingsOption option = new SettingsOption(new AbstractMap.SimpleEntry<Object, Object>(OPTION_KEY, OPTION_VALUE));
 
-        settingsService.saveBundleSettings(Arrays.asList(option), BUNDLE_ID);
+        BundleSettings settings = new BundleSettings(BUNDLE_FILENAME, Arrays.asList(option));
+        settingsService.saveBundleSettings(settings, BUNDLE_ID);
 
         verify(platformSettingsService).saveBundleProperties(BUNDLE_SYMBOLIC_NAME, BUNDLE_FILENAME, bundleProperty);
     }

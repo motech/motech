@@ -9,6 +9,8 @@ import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.MotechSettings;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,13 +18,14 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 @Service
 public class SettingsServiceImpl implements SettingsService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SettingsServiceImpl.class);
 
     @Autowired
     private PlatformSettingsService platformSettingsService;
@@ -66,19 +69,15 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     @Override
-    public void saveBundleSettings(List<SettingsOption> options, long bundleId) throws IOException {
+    public void saveBundleSettings(BundleSettings settings, long bundleId) {
         String symbolicName = getSymbolicName(bundleId);
-        Map<String, Properties> propMap = new HashMap<>();
-        for (SettingsOption option : options) {
-            String filename = findFilenameForProperty(option.getKey(), symbolicName);
-            if (!propMap.containsKey(filename)) {
-                propMap.put(filename, new Properties());
-            }
-            propMap.get(filename).put(option.getKey(), option.getValue());
-        }
+        Properties props = constructProperties(settings);
 
-        for (Map.Entry<String, Properties> entry : propMap.entrySet()) {
-            platformSettingsService.saveBundleProperties(symbolicName, entry.getKey(), entry.getValue());
+        try {
+            platformSettingsService.saveBundleProperties(symbolicName, settings.getFilename(), props);
+        } catch (IOException e) {
+            LOG.error("Error while saving bundle settings", e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -87,11 +86,6 @@ public class SettingsServiceImpl implements SettingsService {
         for (SettingsOption option : settingsOptions) {
             platformSettingsService.setPlatformSetting(option.getKey(), String.valueOf(option.getValue()));
         }
-    }
-
-    @Override
-    public void saveSetting(SettingsOption option) {
-        platformSettingsService.setPlatformSetting(option.getKey(), String.valueOf(option.getValue()));
     }
 
     @Override
@@ -121,6 +115,11 @@ public class SettingsServiceImpl implements SettingsService {
         } catch (IOException e) {
             throw new MotechException("Error adding config location", e);
         }
+    }
+
+    @Override
+    public List<String> retrieveRegisteredBundleNames() {
+        return platformSettingsService.retrieveRegisteredBundleNames();
     }
 
     private String getSymbolicName(long bundleId) {
@@ -158,15 +157,11 @@ public class SettingsServiceImpl implements SettingsService {
         return settingsOption;
     }
 
-    private String findFilenameForProperty(String key, String symbolicName) throws IOException {
-        String filename = null;
-        Map<String, Properties> map = platformSettingsService.getAllProperties(symbolicName);
-        for (Map.Entry<String, Properties> entry : map.entrySet()) {
-            if (entry.getValue().containsKey(key)) {
-                filename = entry.getKey();
-                break;
-            }
+    private static Properties constructProperties(BundleSettings bundleSettings) {
+        Properties props = new Properties();
+        for (SettingsOption option : bundleSettings.getSettings()) {
+            props.put(option.getKey(), option.getValue());
         }
-        return filename;
+        return props;
     }
 }
