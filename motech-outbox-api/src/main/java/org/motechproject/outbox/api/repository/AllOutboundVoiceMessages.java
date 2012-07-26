@@ -13,7 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 
 @Repository
 @Views({
@@ -22,10 +27,12 @@ import java.util.*;
 })
 public class AllOutboundVoiceMessages extends MotechBaseRepository<OutboundVoiceMessage> {
 
-    private Map<SortKey, Comparator<OutboundVoiceMessage>> comparators = new HashMap<SortKey, Comparator<OutboundVoiceMessage>>() {{
-        put(SortKey.CreationTime, new TimeBasedOutboundVoiceMessageComparator());
-        put(SortKey.SequenceNumber, new SequenceBasedOutboundVoiceMessageComparator());
-    }};
+    private Map<SortKey, Comparator<OutboundVoiceMessage>> comparators = new java.util.HashMap<org.motechproject.outbox.api.contract.SortKey, java.util.Comparator<org.motechproject.outbox.api.domain.OutboundVoiceMessage>>() {
+        {
+            put(SortKey.CreationTime, new TimeBasedOutboundVoiceMessageComparator());
+            put(SortKey.SequenceNumber, new SequenceBasedOutboundVoiceMessageComparator());
+        }
+    };
 
 
     @Autowired

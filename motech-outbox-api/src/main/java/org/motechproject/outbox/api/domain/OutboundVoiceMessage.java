@@ -190,8 +190,13 @@ public class OutboundVoiceMessage extends MotechBaseDataObject {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof OutboundVoiceMessage)) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof OutboundVoiceMessage)) {
+            return false;
+        }
 
         OutboundVoiceMessage that = (OutboundVoiceMessage) o;
 
