@@ -5,10 +5,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.decisiontree.FlowSession;
-import org.motechproject.decisiontree.model.DialStatus;
-import org.motechproject.decisiontree.model.ITransition;
-import org.motechproject.decisiontree.model.Node;
-import org.motechproject.decisiontree.model.Transition;
+import org.motechproject.decisiontree.model.*;
 import org.motechproject.decisiontree.service.FlowSessionService;
 import org.motechproject.server.decisiontree.TreeNodeLocator;
 import org.motechproject.server.decisiontree.service.DecisionTreeService;
@@ -151,8 +148,9 @@ public class DecisionTreeController extends MultiActionController {
 
                 node = transition.getDestinationNode(transitionKey, session);
 
-                if (node == null || (node.getPrompts().isEmpty() && node.getActionsAfter().isEmpty()
-                        && node.getActionsBefore().isEmpty() && node.getTransitions().isEmpty())) {
+                final boolean emptyNode = node == null || (node.getPrompts().isEmpty() && node.getActionsAfter().isEmpty()
+                        && node.getActionsBefore().isEmpty() && node.getTransitions().isEmpty());
+                if (emptyNode) {
                     if (treeNames.length > 1) {
                         //reduce the current tree and redirect to the next tree
                         treeNames = (String[]) ArrayUtils.remove(treeNames, 0);
@@ -163,6 +161,9 @@ public class DecisionTreeController extends MultiActionController {
                         return new ModelAndView(EXIT_TEMPLATE_NAME);
                     }
                 } else {
+                    for (INodeOperation operation : node.getOperations()) {
+                        operation.perform(transitionKey, session);
+                    }
                     String modifiedTransitionPath = parentTransitionPath +
                             (TreeNodeLocator.PATH_DELIMITER.equals(parentTransitionPath) ? "" : TreeNodeLocator.PATH_DELIMITER)
                             + transitionKey;

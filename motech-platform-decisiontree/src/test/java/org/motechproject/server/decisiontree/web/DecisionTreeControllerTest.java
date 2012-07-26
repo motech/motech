@@ -28,6 +28,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.motechproject.server.decisiontree.web.DecisionTreeController.*;
@@ -77,6 +78,8 @@ public class DecisionTreeControllerTest {
     public void nodeTest() {
         Node childNode = new Node();
         Transition childTransition = new Transition();
+        final  MyINodeOperation iNodeOperation = new MyINodeOperation();
+        childNode.addOperations(iNodeOperation);
         childTransition.setDestinationNode(new Node());
         childNode.addTransition("1", childTransition);
 
@@ -99,6 +102,7 @@ public class DecisionTreeControllerTest {
         assertNotNull(modelAndView);
         verify(decisionTreeService).getNode(eq(treeName), eq(transitionPath), any(FlowSession.class));
         assertEquals(NODE_TEMPLATE_NAME + "-" + "verboice", modelAndView.getViewName());
+        assertTrue(iNodeOperation.isCalled());
     }
 
     @Test
@@ -413,6 +417,19 @@ public class DecisionTreeControllerTest {
         @Override
         public <T extends Serializable> T get(String key) {
             return null;
+        }
+    }
+
+    private static class MyINodeOperation implements INodeOperation {
+        boolean called;
+
+        @Override
+        public void perform(String userInput, FlowSession session) {
+            called = true;
+        }
+
+        public boolean isCalled() {
+            return called;
         }
     }
 }
