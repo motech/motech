@@ -26,13 +26,22 @@ public class FormError {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof FormError)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof FormError)) {
+            return false;
+        }
 
         FormError formError = (FormError) o;
 
-        if (error != null ? !error.equals(formError.error) : formError.error != null) return false;
-        if (parameter != null ? !parameter.equals(formError.parameter) : formError.parameter != null) return false;
+        if (error != null ? !error.equals(formError.error) : formError.error != null) {
+            return false;
+        }
+
+        if (parameter != null ? !parameter.equals(formError.parameter) : formError.parameter != null) {
+            return false;
+        }
 
         return true;
     }

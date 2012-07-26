@@ -22,11 +22,21 @@ public class FormGroup {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof FormGroup)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof FormGroup)) {
+            return false;
+        }
         FormGroup formGroup = (FormGroup) o;
-        if (forms != null ? !forms.equals(formGroup.forms) : formGroup.forms != null) return false;
-        if (name != null ? !name.equals(formGroup.name) : formGroup.name != null) return false;
+        if (forms != null ? !forms.equals(formGroup.forms) : formGroup.forms != null) {
+            return false;
+        }
+
+        if (name != null ? !name.equals(formGroup.name) : formGroup.name != null) {
+            return false;
+        }
+
         return true;
     }
 

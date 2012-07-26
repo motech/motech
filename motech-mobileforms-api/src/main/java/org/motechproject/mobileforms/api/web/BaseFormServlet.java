@@ -34,13 +34,13 @@ public abstract class BaseFormServlet extends HttpServlet {
     public static final String FAILED_TO_SERIALIZE_DATA = "failed to serialize data";
     public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
 
-    protected UsersService usersService;
-    protected ApplicationContext context;
-    protected FormGroupPublisher formGroupPublisher;
-    protected MobileFormsService mobileFormsService;
-    protected AllMobileForms allMobileForms;
-    protected String marker;
-    protected FormGroupValidator formGroupValidator;
+    private UsersService usersService;
+    private ApplicationContext context;
+    private FormGroupPublisher formGroupPublisher;
+    private MobileFormsService mobileFormsService;
+    private AllMobileForms allMobileForms;
+    private String marker;
+    private FormGroupValidator formGroupValidator;
 
 
     protected BaseFormServlet() {
@@ -94,5 +94,21 @@ public abstract class BaseFormServlet extends HttpServlet {
 
     protected FormParser createFormProcessor() {
         return new FormParser(new FormDataParser(), new MapToBeanConvertor(), allMobileForms, marker);
+    }
+
+    public UsersService getUsersService() {
+        return usersService;
+    }
+
+    public MobileFormsService getMobileFormsService() {
+        return mobileFormsService;
+    }
+
+    public FormGroupValidator getFormGroupValidator() {
+        return formGroupValidator;
+    }
+
+    public FormGroupPublisher getFormGroupPublisher() {
+        return formGroupPublisher;
     }
 }
