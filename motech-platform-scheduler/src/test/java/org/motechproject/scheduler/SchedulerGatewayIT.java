@@ -2,11 +2,7 @@ package org.motechproject.scheduler;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.scheduler.domain.CronSchedulableJob;
-import org.motechproject.scheduler.domain.JobId;
-import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
-import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
+import org.motechproject.scheduler.domain.*;
 import org.motechproject.scheduler.gateway.MotechSchedulerGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -47,8 +43,9 @@ public class SchedulerGatewayIT {
         RunOnceSchedulableJob runOnceSchedulableJob = new RunOnceSchedulableJob(runOnceEvent, new Date((new Date().getTime() + 5000)));
         RepeatingSchedulableJob repeatingSchedulableJob = new RepeatingSchedulableJob(repeatingEvent, new Date(), null, null, 4 * 1000L);
 
-        JobId cronJob = new JobId(cronEvent, false);
-        JobId repeatingJob = new JobId(repeatingEvent, true);
+        JobId cronJob = new CronJobId(cronEvent);
+        JobId repeatingJob = new RepeatingJobId(repeatingEvent);
+        JobId runonceJob = new RunOnceJobId(runOnceEvent);
 
         motechSchedulerGateway.scheduleJob(cronSchedulableJob);
 
