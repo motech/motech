@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduler.gateway.OutboundEventGateway;
+import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.smpp.constants.EventSubjects;
 import org.motechproject.sms.smpp.constants.SmsProperties;
 import org.motechproject.sms.smpp.repository.AllOutboundSMS;
@@ -34,10 +35,13 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
     @Autowired
     private AllOutboundSMS allOutboundSMS;
 
+    private SettingsFacade settings;
+
     @Autowired
-    public OutboundMessageNotification(OutboundEventGateway outboundEventGateway, @Qualifier("smsProperties") Properties smsProperties) {
+    public OutboundMessageNotification(OutboundEventGateway outboundEventGateway, SettingsFacade settings) {
+        this.settings = settings;
         this.outboundEventGateway = outboundEventGateway;
-        this.maxRetries = Integer.parseInt(smsProperties.getProperty(SmsProperties.MAX_RETRIES));
+        this.maxRetries = Integer.parseInt(settings.getProperty(SmsProperties.MAX_RETRIES));
     }
 
     @Override

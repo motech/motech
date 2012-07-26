@@ -13,13 +13,13 @@ public interface SettingsService {
 
     List<BundleSettings> getBundleSettings(long bundleId) throws IOException;
 
-    void saveBundleSettings(List<SettingsOption> options, long bundleId) throws IOException;
+    void saveBundleSettings(BundleSettings settings, long bundleId);
 
     void savePlatformSettings(List<SettingsOption> settingsOptions);
-
-    void saveSetting(SettingsOption option);
 
     void saveSettingsFile(MultipartFile configFile);
 
     void addSettingsPath(String path);
+
+    List<String> retrieveRegisteredBundleNames();
 }

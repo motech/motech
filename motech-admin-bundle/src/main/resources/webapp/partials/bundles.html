@@ -58,6 +58,9 @@
                         <img src="img/restart.png" alt="{{msg('bundles.restart')}}" title="{{msg('bundles.restart')}}" class="icon" />
                     </a>
                 </span>
+                <a ng-show="showSettings(bundle)" ng-href="#/bundleSettings/{{bundle.bundleId}}">
+                    <img src="img/settings.png" alt="{{msg('settings')}}" title="{{msg('settings')}}" class="icon" />
+                </a>
                 <a ng-click="uninstallBundle(bundle)">
                     <img src="img/remove.gif" alt="{{msg('bundles.uninstall')}}" title="{{msg('bundles.uninstall')}}" class="icon" />
                 </a>

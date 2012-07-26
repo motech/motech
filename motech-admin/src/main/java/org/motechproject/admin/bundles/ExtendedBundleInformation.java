@@ -51,14 +51,20 @@ public class ExtendedBundleInformation extends BundleInformation {
     private void readServices(Bundle bundle) {
         BundleContext context = bundle.getBundleContext();
 
-        for (ServiceReference ref : bundle.getRegisteredServices()) {
-            Object service = context.getService(ref);
-            registeredServices.add(service.getClass().getName());
+        ServiceReference[] serviceRefs = bundle.getRegisteredServices();
+        if (serviceRefs != null) {
+            for (ServiceReference ref : serviceRefs) {
+                Object service = context.getService(ref);
+                registeredServices.add(service.getClass().getName());
+            }
         }
 
-        for (ServiceReference ref : bundle.getServicesInUse()) {
-            Object service = context.getService(ref);
-            servicesInUse.add(service.getClass().getName());
+        serviceRefs = bundle.getServicesInUse();
+        if (serviceRefs != null) {
+            for (ServiceReference ref : serviceRefs) {
+                Object service = context.getService(ref);
+                servicesInUse.add(service.getClass().getName());
+            }
         }
     }
 

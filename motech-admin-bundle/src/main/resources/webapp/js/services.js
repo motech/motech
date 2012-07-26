@@ -21,5 +21,5 @@ angular.module('platformSettingsServices', ['ngResource']).factory('PlatformSett
 });
 
 angular.module('moduleSettingsServices', ['ngResource']).factory('ModuleSettings', function($resource) {
-    return $resource('api/settings/:bundleId', { bundleId: '@bundleId' });
+    return $resource('api/settings/:bundleId');
 });
