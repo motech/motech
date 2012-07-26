@@ -69,13 +69,23 @@ public class Study {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Study)) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof Study)) {
+            return false;
+        }
 
         Study study = (Study) o;
 
-        if (forms != null ? !forms.equals(study.forms) : study.forms != null) return false;
-        if (name != null ? !name.equals(study.name) : study.name != null) return false;
+        if (forms != null ? !forms.equals(study.forms) : study.forms != null) {
+            return false;
+        }
+
+        if (name != null ? !name.equals(study.name) : study.name != null) {
+            return false;
+        }
 
         return true;
     }

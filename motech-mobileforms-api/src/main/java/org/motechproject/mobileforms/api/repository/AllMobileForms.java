@@ -42,9 +42,7 @@ public class AllMobileForms {
         List<FormGroup> formGroupsFromConfigFile = (List<FormGroup>) motechJsonReader.readFromStream(
                 getClass().getResourceAsStream(configFile()),
                 new TypeToken<List<FormGroup>>() {
-                }.getType());
-
-        validateFormDependency(formGroupsFromConfigFile);
+                } .getType());
 
         this.formGroups = convert(formGroupsFromConfigFile, new Converter<FormGroup, FormGroup>() {
             @Override
@@ -68,12 +66,6 @@ public class AllMobileForms {
         });
     }
 
-    private void validateFormDependency(List<FormGroup> formGroups) {
-        for (FormGroup formGroup : formGroups) {
-
-        }
-    }
-
     public List<FormGroup> getAllFormGroups() {
         return formGroups;
     }
@@ -87,9 +79,13 @@ public class AllMobileForms {
     }
 
     public Form getFormByName(String formName) {
-        for (FormGroup formGroup : formGroups)
-            for (Form form : formGroup.getForms())
-                if (form.name().equalsIgnoreCase(formName)) return form;
+        for (FormGroup formGroup : formGroups) {
+            for (Form form : formGroup.getForms()) {
+                if (form.name().equalsIgnoreCase(formName)) {
+                    return form;
+                }
+            }
+        }
         return null;
     }
 }

@@ -37,17 +37,20 @@ public class MobileFormsServiceImpl implements MobileFormsService {
     @Override
     public Map<Integer, String> getFormIdMap() {
         Map<Integer, String> formIdMap = new HashMap<Integer, String>();
-        for (FormGroup formGroup : allMobileForms.getAllFormGroups())
-            for (Form form : formGroup.getForms())
+        for (FormGroup formGroup : allMobileForms.getAllFormGroups()) {
+            for (Form form : formGroup.getForms()) {
                 formIdMap.put(form.id(), form.content());
+            }
+        }
         return formIdMap;
     }
 
     private List<Object[]> extractStudyNamesWithIndex(List<FormGroup> allFormGroups) {
         List<String> studyNames = extract(allFormGroups, on(FormGroup.class).getName());
         List<Object[]> studyNamesWithIndex = new ArrayList<Object[]>();
-        for (int i = 0; i < studyNames.size(); i++)
+        for (int i = 0; i < studyNames.size(); i++) {
             studyNamesWithIndex.add(new Object[]{i, studyNames.get(i)});
+        }
         return studyNamesWithIndex;
     }
 
