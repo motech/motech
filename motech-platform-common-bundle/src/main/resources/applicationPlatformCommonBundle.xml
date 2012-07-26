@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+
+    <import resource="classpath:applicationPlatformCommon.xml"/>
+
+    <osgi:service id="outboundEventGatewayOsgi" ref="outboundEventGateway"
+                  interface="org.motechproject.scheduler.gateway.OutboundEventGateway"/>
+
+    <osgi:service id="eventGatewayToEventJmsoutChannelOsgi" ref="eventGatewayToEventJmsoutChannel"
+                  interface="org.springframework.integration.core.SubscribableChannel"/>
+
+</beans>

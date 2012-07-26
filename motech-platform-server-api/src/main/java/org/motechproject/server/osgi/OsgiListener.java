@@ -13,7 +13,7 @@ import java.io.IOException;
 
 public class OsgiListener implements ServletContextListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgiListener.class);
-    public static final String ADMIN_BUNDLE = "motech-admin-UI";
+    public static final String ADMIN_BUNDLE = "motech-admin";
 
     private static StartupManager startupManager = StartupManager.getInstance();
 
