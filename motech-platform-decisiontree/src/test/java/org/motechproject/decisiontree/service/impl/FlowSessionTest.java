@@ -9,7 +9,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-public class CallSessionRecordTest {
+public class FlowSessionTest {
 
     @Test
     public void shouldBeEqualIfSessionIdsAreSame() {

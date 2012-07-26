@@ -19,6 +19,8 @@ public class FlowSessionRecord extends MotechBaseDataObject implements FlowSessi
 
     @JsonProperty
     private String sessionId;
+    @JsonProperty
+    private String language;
 
     FlowSessionRecord() {
     }
@@ -45,6 +47,16 @@ public class FlowSessionRecord extends MotechBaseDataObject implements FlowSessi
 
     public String getSessionId() {
         return sessionId;
+    }
+
+    @Override
+    public String getLanguage() {
+        return this.language;
+    }
+
+    @Override
+    public void setLanguage(String language) {
+        this.language = language;
     }
 
     public void setSessionId(String sessionId) {
