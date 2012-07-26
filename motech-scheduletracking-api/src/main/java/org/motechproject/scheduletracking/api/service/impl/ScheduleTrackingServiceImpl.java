@@ -11,7 +11,12 @@ import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllSchedules;
 import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReader;
 import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReaderImpl;
-import org.motechproject.scheduletracking.api.service.*;
+import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
+import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
+import org.motechproject.scheduletracking.api.service.EnrollmentUpdater;
+import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
+import org.motechproject.scheduletracking.api.service.MilestoneAlerts;
+import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
 import org.motechproject.scheduletracking.api.service.contract.UpdateCriteria;
 import org.motechproject.scheduletracking.api.service.contract.UpdateCriterion;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,30 +71,34 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
     @Override
     public List<EnrollmentRecord> search(EnrollmentsQuery query) {
         List<EnrollmentRecord> enrollmentRecords = new ArrayList<EnrollmentRecord>();
-        for (Enrollment enrollment : enrollmentsQueryService.search(query))
+        for (Enrollment enrollment : enrollmentsQueryService.search(query)) {
             enrollmentRecords.add(enrollmentRecordMapper.map(enrollment));
+        }
         return enrollmentRecords;
     }
 
     @Override
     public List<EnrollmentRecord> searchWithWindowDates(EnrollmentsQuery query) {
         List<EnrollmentRecord> enrollmentRecords = new ArrayList<EnrollmentRecord>();
-        for (Enrollment enrollment : enrollmentsQueryService.search(query))
+        for (Enrollment enrollment : enrollmentsQueryService.search(query)) {
             enrollmentRecords.add(enrollmentRecordMapper.mapWithDates(enrollment));
+        }
         return enrollmentRecords;
     }
 
     @Override
     public MilestoneAlerts getAlertTimings(EnrollmentRequest enrollmentRequest) {
         Schedule schedule = allSchedules.getByName(enrollmentRequest.getScheduleName());
-        if (schedule == null)
+        if (schedule == null) {
             throw new ScheduleTrackingException("No schedule with name: %s", enrollmentRequest.getScheduleName());
+        }
 
         String startingMilestoneName;
-        if (enrollmentRequest.isStartingMilestoneSpecified())
+        if (enrollmentRequest.isStartingMilestoneSpecified()) {
             startingMilestoneName = enrollmentRequest.getStartingMilestoneName();
-        else
+        } else {
             startingMilestoneName = schedule.getFirstMilestone().getName();
+        }
 
         return enrollmentService.getAlertTimings(enrollmentRequest.getExternalId(), enrollmentRequest.getScheduleName(), startingMilestoneName, enrollmentRequest.getReferenceDateTime(), enrollmentRequest.getEnrollmentDateTime(), enrollmentRequest.getPreferredAlertTime());
     }
@@ -104,14 +113,16 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
     @Override
     public String enroll(EnrollmentRequest enrollmentRequest) {
         Schedule schedule = allSchedules.getByName(enrollmentRequest.getScheduleName());
-        if (schedule == null)
+        if (schedule == null) {
             throw new ScheduleTrackingException("No schedule with name: %s", enrollmentRequest.getScheduleName());
+        }
 
         String startingMilestoneName;
-        if (enrollmentRequest.isStartingMilestoneSpecified())
+        if (enrollmentRequest.isStartingMilestoneSpecified()) {
             startingMilestoneName = enrollmentRequest.getStartingMilestoneName();
-        else
+        } else {
             startingMilestoneName = schedule.getFirstMilestone().getName();
+        }
 
         return enrollmentService.enroll(enrollmentRequest.getExternalId(), enrollmentRequest.getScheduleName(), startingMilestoneName, enrollmentRequest.getReferenceDateTime(), enrollmentRequest.getEnrollmentDateTime(), enrollmentRequest.getPreferredAlertTime(), enrollmentRequest.getMetadata());
     }
@@ -119,10 +130,12 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
     @Override
     public void fulfillCurrentMilestone(String externalId, String scheduleName, LocalDate fulfillmentDate, Time fulfillmentTime) {
         Enrollment activeEnrollment = allEnrollments.getActiveEnrollment(externalId, scheduleName);
-        if (activeEnrollment == null)
+        if (activeEnrollment == null) {
             throw new InvalidEnrollmentException(format("Can fulfill only active enrollments. This enrollment has: External ID: {0}, Schedule name: {1}", externalId, scheduleName));
-        if (isDuplicateFulfillment(activeEnrollment, fulfillmentDate, fulfillmentTime))
+        }
+        if (isDuplicateFulfillment(activeEnrollment, fulfillmentDate, fulfillmentTime)) {
             return;
+        }
         enrollmentService.fulfillCurrentMilestone(activeEnrollment, newDateTime(fulfillmentDate, fulfillmentTime));
     }
 
@@ -139,8 +152,9 @@ public class ScheduleTrackingServiceImpl implements ScheduleTrackingService {
     public void unenroll(String externalId, List<String> scheduleNames) {
         for (String scheduleName : scheduleNames) {
             Enrollment activeEnrollment = allEnrollments.getActiveEnrollment(externalId, scheduleName);
-            if (activeEnrollment != null)
+            if (activeEnrollment != null) {
                 enrollmentService.unenroll(activeEnrollment);
+            }
         }
     }
 }

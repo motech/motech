@@ -52,10 +52,10 @@ public class MilestoneCriterionTest {
         schedule2.addMilestones(new Milestone("s2_milestone-3", Period.ZERO, Period.ZERO, Period.ZERO, Period.ZERO));
 
         List<Enrollment> allEnrollments = new ArrayList<Enrollment>();
-        allEnrollments.add(new Enrollment(null, schedule, "s1_milestone-1", null, null, null, null, null));
-        allEnrollments.add(new Enrollment(null, schedule, "s1_milestone-1", null, null, null, null, null));
-        allEnrollments.add(new Enrollment(null, schedule2, "s2_milestone-2", null, null, null, null, null));
-        allEnrollments.add(new Enrollment(null, schedule2, "s2_milestone-3", null, null, null, null, null));
+        allEnrollments.add(new Enrollment().setExternalId(null).setSchedule(schedule).setCurrentMilestoneName("s1_milestone-1").setStartOfSchedule(null).setEnrolledOn(null).setPreferredAlertTime(null).setStatus(null).setMetadata(null));
+        allEnrollments.add(new Enrollment().setExternalId(null).setSchedule(schedule).setCurrentMilestoneName("s1_milestone-1").setStartOfSchedule(null).setEnrolledOn(null).setPreferredAlertTime(null).setStatus(null).setMetadata(null));
+        allEnrollments.add(new Enrollment().setExternalId(null).setSchedule(schedule2).setCurrentMilestoneName("s2_milestone-2").setStartOfSchedule(null).setEnrolledOn(null).setPreferredAlertTime(null).setStatus(null).setMetadata(null));
+        allEnrollments.add(new Enrollment().setExternalId(null).setSchedule(schedule2).setCurrentMilestoneName("s2_milestone-3").setStartOfSchedule(null).setEnrolledOn(null).setPreferredAlertTime(null).setStatus(null).setMetadata(null));
 
         List<Enrollment> filteredEnrollments = new MilestoneCriterion("s2_milestone-1").filter(allEnrollments, null);
         assertEquals(Collections.emptyList(), extract(filteredEnrollments, on(Enrollment.class).getScheduleName()));

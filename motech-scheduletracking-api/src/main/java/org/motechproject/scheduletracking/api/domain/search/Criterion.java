@@ -7,8 +7,8 @@ import org.motechproject.scheduletracking.api.service.impl.EnrollmentService;
 import java.util.List;
 
 public interface Criterion  {
-    public abstract List<Enrollment> fetch(AllEnrollments allEnrollments, EnrollmentService enrollmentService);
-    public abstract List<Enrollment> filter(List<Enrollment> enrollments, EnrollmentService enrollmentService);
+    List<Enrollment> fetch(AllEnrollments allEnrollments, EnrollmentService enrollmentService);
+    List<Enrollment> filter(List<Enrollment> enrollments, EnrollmentService enrollmentService);
 }
 
 

@@ -34,20 +34,20 @@ public class MetadataCriterionTest {
 
         metadata1.put("foo","bar");
         metadata1.put("fuu", "bar");
-        enrollments.add(new Enrollment("entity1", schedule, null, null, null, null, null, metadata1));
+        enrollments.add(new Enrollment().setExternalId("entity1").setSchedule(schedule).setCurrentMilestoneName(null).setStartOfSchedule(null).setEnrolledOn(null).setPreferredAlertTime(null).setStatus(null).setMetadata(metadata1));
 
         metadata2.put("foo", "baz");
         metadata2.put("fuu", "biz");
-        enrollments.add(new Enrollment("entity2", schedule, null, null, null, null, null, metadata2));
+        enrollments.add(new Enrollment().setExternalId("entity2").setSchedule(schedule).setCurrentMilestoneName(null).setStartOfSchedule(null).setEnrolledOn(null).setPreferredAlertTime(null).setStatus(null).setMetadata(metadata2));
 
         metadata3.put("foo","bar");
-        enrollments.add(new Enrollment("entity3", schedule, null, null, null, null, null, metadata3));
+        enrollments.add(new Enrollment().setExternalId("entity3").setSchedule(schedule).setCurrentMilestoneName(null).setStartOfSchedule(null).setEnrolledOn(null).setPreferredAlertTime(null).setStatus(null).setMetadata(metadata3));
 
         metadata4.put("foo", "boz");
         metadata4.put("fuu", "ber");
-        enrollments.add(new Enrollment("entity4", schedule, null, null, null, null, null, metadata4));
+        enrollments.add(new Enrollment().setExternalId("entity4").setSchedule(schedule).setCurrentMilestoneName(null).setStartOfSchedule(null).setEnrolledOn(null).setPreferredAlertTime(null).setStatus(null).setMetadata(metadata4));
 
-        enrollments.add(new Enrollment("entity5", schedule, null, null, null, null, null, null));
+        enrollments.add(new Enrollment().setExternalId("entity5").setSchedule(schedule).setCurrentMilestoneName(null).setStartOfSchedule(null).setEnrolledOn(null).setPreferredAlertTime(null).setStatus(null).setMetadata(null));
 
         List<Enrollment> filtered = new MetadataCriterion("foo", "bar").filter(enrollments, null);
         assertEquals(asList(new String[]{ "entity1", "entity3" }), extract(filtered, on(Enrollment.class).getExternalId()));

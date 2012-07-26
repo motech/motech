@@ -26,14 +26,16 @@ public class EnrollmentDefaultmentService {
     public void scheduleJobToCaptureDefaultment(Enrollment enrollment) {
         Schedule schedule = enrollment.getSchedule();
         Milestone currentMilestone = schedule.getMilestone(enrollment.getCurrentMilestoneName());
-        if (currentMilestone == null)
+        if (currentMilestone == null) {
             return;
+        }
 
         DateTime currentMilestoneStartDate = enrollment.getCurrentMilestoneStartDate();
         DateTime milestoneEndDateTime = currentMilestoneStartDate.plus(currentMilestone.getMaximumDuration());
 
-        if (milestoneEndDateTime.isBefore(now()))
+        if (milestoneEndDateTime.isBefore(now())) {
             return;
+        }
 
         MotechEvent event = new DefaultmentCaptureEvent(enrollment.getId(), enrollment.getId(), enrollment.getExternalId()).toMotechEvent();
         schedulerService.safeScheduleRunOnceJob(new RunOnceSchedulableJob(event, milestoneEndDateTime.toDate()));

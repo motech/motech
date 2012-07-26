@@ -6,7 +6,6 @@ import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.model.MotechBaseDataObject;
 import org.motechproject.model.Time;
-import org.motechproject.util.DateUtil;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -38,84 +37,78 @@ public class Enrollment extends MotechBaseDataObject {
     private Schedule schedule;
     private List<MilestoneFulfillment> fulfillments = new LinkedList<MilestoneFulfillment>();
 
-    // For ektorp
-    private Enrollment() {
-    }
-
-    public Enrollment(String externalId, Schedule schedule, String currentMilestoneName, DateTime startOfSchedule, DateTime enrolledOn, Time preferredAlertTime, EnrollmentStatus enrollmentStatus, Map<String, String> metadata) {
-        this.externalId = externalId;
-        this.scheduleName = schedule.getName();
-        this.schedule = schedule;
-        this.currentMilestoneName = currentMilestoneName;
-        this.startOfSchedule = startOfSchedule;
-        this.enrolledOn = enrolledOn;
-        this.preferredAlertTime = preferredAlertTime;
-        this.status = enrollmentStatus;
-        this.metadata = metadata;
+    public Enrollment() {
     }
 
     public Map<String, String> getMetadata() {
         return metadata;
     }
 
-    public void setMetadata(Map<String, String> metadata) {
+    public Enrollment setMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
+        return this;
     }
 
     public String getScheduleName() {
         return scheduleName;
     }
 
+    public Enrollment setScheduleName(String scheduleName) {
+        this.scheduleName = scheduleName;
+        return this;
+    }
+
     public String getExternalId() {
         return externalId;
+    }
+
+    public Enrollment setExternalId(String externalId) {
+        this.externalId = externalId;
+        return this;
     }
 
     public DateTime getStartOfSchedule() {
         return setTimeZone(startOfSchedule);
     }
 
+    public Enrollment setStartOfSchedule(DateTime startOfSchedule) {
+        this.startOfSchedule = startOfSchedule;
+        return this;
+    }
+
     public DateTime getEnrolledOn() {
         return setTimeZone(enrolledOn);
+    }
+
+    public Enrollment setEnrolledOn(DateTime enrolledOn) {
+        this.enrolledOn = enrolledOn;
+        return this;
     }
 
     public Time getPreferredAlertTime() {
         return preferredAlertTime;
     }
 
-    public String getCurrentMilestoneName() {
-        return currentMilestoneName;
+    public Enrollment setPreferredAlertTime(Time preferredAlertTime) {
+        this.preferredAlertTime = preferredAlertTime;
+        return this;
     }
 
     public List<MilestoneFulfillment> getFulfillments() {
         return fulfillments;
     }
 
+    public Enrollment setFulfillments(List<MilestoneFulfillment> fulfillments) {
+        this.fulfillments = fulfillments;
+        return this;
+    }
+
     @JsonIgnore
     public DateTime getLastFulfilledDate() {
-        if (fulfillments.isEmpty())
+        if (fulfillments.isEmpty()) {
             return null;
-        return fulfillments.get(fulfillments.size() - 1).getFulfillmentDateTime();
-    }
-
-    public void fulfillCurrentMilestone(DateTime fulfillmentDateTime) {
-        fulfillments.add(new MilestoneFulfillment(currentMilestoneName, fulfillmentDateTime));
-    }
-
-    @JsonIgnore
-    public DateTime getCurrentMilestoneStartDate() {
-        if (schedule.isBasedOnAbsoluteWindows()) {
-            DateTime startOfMilestone = getStartOfSchedule();
-            List<Milestone> milestones = schedule.getMilestones();
-            for (Milestone milestone : milestones) {
-                if (milestone.getName().equals(currentMilestoneName))
-                    break;
-                startOfMilestone = startOfMilestone.plus(milestone.getMaximumDuration());
-            }
-            return startOfMilestone;
         }
-        if (currentMilestoneName.equals(schedule.getFirstMilestone().getName()))
-            return getStartOfSchedule();
-        return (fulfillments.isEmpty()) ? getEnrolledOn() : getLastFulfilledDate();
+        return fulfillments.get(fulfillments.size() - 1).getFulfillmentDateTime();
     }
 
     @JsonIgnore
@@ -133,20 +126,58 @@ public class Enrollment extends MotechBaseDataObject {
         return schedule;
     }
 
-    public void setSchedule(Schedule schedule) {
+    public Enrollment setSchedule(Schedule schedule) {
         this.schedule = schedule;
+        this.scheduleName = schedule.getName();
+        return this;
     }
 
-    public void setCurrentMilestoneName(String currentMilestoneName) {
+    public String getCurrentMilestoneName() {
+        return currentMilestoneName;
+    }
+
+    public Enrollment setCurrentMilestoneName(String currentMilestoneName) {
         this.currentMilestoneName = currentMilestoneName;
+        return this;
     }
 
     public EnrollmentStatus getStatus() {
         return status;
     }
 
-    public void setStatus(EnrollmentStatus status) {
+    public Enrollment setStatus(EnrollmentStatus status) {
         this.status = status;
+        return this;
+    }
+
+    public void fulfillCurrentMilestone(DateTime fulfillmentDateTime) {
+        fulfillments.add(new MilestoneFulfillment(currentMilestoneName, fulfillmentDateTime));
+    }
+
+    @JsonIgnore
+    public DateTime getStartOfWindowForCurrentMilestone(WindowName windowName) {
+        DateTime currentMilestoneStartDate = getCurrentMilestoneStartDate();
+        Milestone currentMilestone = schedule.getMilestone(currentMilestoneName);
+        return currentMilestoneStartDate.plus(currentMilestone.getWindowStart(windowName));
+    }
+
+    @JsonIgnore
+    public DateTime getCurrentMilestoneStartDate() {
+        if (schedule.isBasedOnAbsoluteWindows()) {
+            DateTime startOfMilestone = getStartOfSchedule();
+            List<Milestone> milestones = schedule.getMilestones();
+            for (Milestone milestone : milestones) {
+                if (milestone.getName().equals(currentMilestoneName)) {
+                    break;
+                }
+                startOfMilestone = startOfMilestone.plus(milestone.getMaximumDuration());
+            }
+            return startOfMilestone;
+        }
+        if (currentMilestoneName.equals(schedule.getFirstMilestone().getName())) {
+            return getStartOfSchedule();
+        }
+        return (fulfillments.isEmpty()) ? getEnrolledOn() : getLastFulfilledDate();
     }
 
     public Enrollment copyFrom(Enrollment enrollment) {
@@ -155,11 +186,5 @@ public class Enrollment extends MotechBaseDataObject {
         startOfSchedule = enrollment.getStartOfSchedule();
         preferredAlertTime = enrollment.getPreferredAlertTime();
         return this;
-    }
-
-    public DateTime getStartOfWindowForCurrentMilestone(WindowName windowName) {
-        DateTime currentMilestoneStartDate = getCurrentMilestoneStartDate();
-        Milestone currentMilestone = schedule.getMilestone(currentMilestoneName);
-        return currentMilestoneStartDate.plus(currentMilestone.getWindowStart(windowName));
     }
 }

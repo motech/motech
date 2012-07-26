@@ -30,8 +30,9 @@ public class AllSchedules extends MotechBaseRepository<ScheduleRecord> {
     @View(name = "by_name", map = "function(doc) { if(doc.type === 'ScheduleRecord') emit(doc.name); }")
     public Schedule getByName(String name) {
         List<ScheduleRecord> records = queryView("by_name", name);
-        if (records.isEmpty())
+        if (records.isEmpty()) {
             return null;
+        }
         return scheduleFactory.build(records.get(0), platformSettingsService.getPlatformLocale());
     }
 }

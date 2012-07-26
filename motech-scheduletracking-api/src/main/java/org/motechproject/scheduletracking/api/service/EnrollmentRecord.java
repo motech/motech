@@ -21,30 +21,7 @@ public class EnrollmentRecord {
     private DateTime maxStart;
     private String currentMilestoneName;
 
-    /**
-     * This is the constructor which is used to create an EnrollmentRecord
-     * @param externalId
-     * @param scheduleName
-     * @param currentMilestoneName
-     * @param preferredAlertTime
-     * @param referenceDateTime
-     * @param enrollmentDateTime
-     * @param earliestStart
-     * @param dueStart
-     * @param lateStart
-     * @param maxStart
-     */
-    public EnrollmentRecord(String externalId, String scheduleName, String currentMilestoneName, Time preferredAlertTime, DateTime referenceDateTime, DateTime enrollmentDateTime, DateTime earliestStart, DateTime dueStart, DateTime lateStart, DateTime maxStart) {
-        this.externalId = externalId;
-        this.scheduleName = scheduleName;
-        this.currentMilestoneName = currentMilestoneName;
-        this.preferredAlertTime = preferredAlertTime;
-        this.referenceDateTime = referenceDateTime;
-        this.enrollmentDateTime = enrollmentDateTime;
-        this.earliestStart = earliestStart;
-        this.dueStart = dueStart;
-        this.lateStart = lateStart;
-        this.maxStart = maxStart;
+    public EnrollmentRecord() {
     }
 
     /**
@@ -55,6 +32,7 @@ public class EnrollmentRecord {
         return externalId;
     }
 
+    
     /**
      * This returns the Schedule Name of an EnrollmentRecord
      * @return String
@@ -119,12 +97,61 @@ public class EnrollmentRecord {
         return maxStart;
     }
 
-
     /**
      * This returns the current milestone name of an EnrollmentRecord
      * @return String
      */
     public String getCurrentMilestoneName() {
         return currentMilestoneName;
+    }
+
+    public EnrollmentRecord setExternalId(String externalId) {
+        this.externalId = externalId;
+        return this;
+    }
+
+    public EnrollmentRecord setScheduleName(String scheduleName) {
+        this.scheduleName = scheduleName;
+        return this;
+    }
+
+    public EnrollmentRecord setPreferredAlertTime(Time preferredAlertTime) {
+        this.preferredAlertTime = preferredAlertTime;
+        return this;
+    }
+
+    public EnrollmentRecord setReferenceDateTime(DateTime referenceDateTime) {
+        this.referenceDateTime = referenceDateTime;
+        return this;
+    }
+
+    public EnrollmentRecord setEnrollmentDateTime(DateTime enrollmentDateTime) {
+        this.enrollmentDateTime = enrollmentDateTime;
+        return this;
+    }
+
+    public EnrollmentRecord setEarliestStart(DateTime earliestStart) {
+        this.earliestStart = earliestStart;
+        return this;
+    }
+
+    public EnrollmentRecord setDueStart(DateTime dueStart) {
+        this.dueStart = dueStart;
+        return this;
+    }
+
+    public EnrollmentRecord setLateStart(DateTime lateStart) {
+        this.lateStart = lateStart;
+        return this;
+    }
+
+    public EnrollmentRecord setMaxStart(DateTime maxStart) {
+        this.maxStart = maxStart;
+        return this;
+    }
+
+    public EnrollmentRecord setCurrentMilestoneName(String currentMilestoneName) {
+        this.currentMilestoneName = currentMilestoneName;
+        return this;
     }
 }
