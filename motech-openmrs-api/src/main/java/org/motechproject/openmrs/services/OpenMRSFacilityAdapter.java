@@ -108,7 +108,9 @@ public class OpenMRSFacilityAdapter implements MRSFacilityAdapter {
      */
     @Override
     public MRSFacility getFacility(String facilityId) {
-        if (StringUtils.isEmpty(facilityId)) return null;
+        if (StringUtils.isEmpty(facilityId)) {
+            return null;
+        }
         final Location location = getLocation(facilityId);
         return (location != null) ? convertLocationToFacility(location) : null;
     }

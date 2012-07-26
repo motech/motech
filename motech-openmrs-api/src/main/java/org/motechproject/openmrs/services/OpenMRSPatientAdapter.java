@@ -11,12 +11,25 @@ import org.motechproject.mrs.model.MRSPerson;
 import org.motechproject.mrs.services.MRSPatientAdapter;
 import org.motechproject.openmrs.IdentifierType;
 import org.motechproject.openmrs.helper.PatientHelper;
-import org.openmrs.*;
+import org.openmrs.Concept;
+import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
+import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
+import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 import static ch.lambdaj.Lambda.convert;
 
@@ -26,22 +39,22 @@ import static ch.lambdaj.Lambda.convert;
 public class OpenMRSPatientAdapter implements MRSPatientAdapter {
 
     @Autowired
-    PatientService patientService;
+    private PatientService patientService;
 
     @Autowired
-    PersonService personService;
+    private PersonService personService;
 
     @Autowired
-    OpenMRSFacilityAdapter facilityAdapter;
+    private OpenMRSFacilityAdapter facilityAdapter;
 
     @Autowired
-    OpenMRSPersonAdapter personAdapter;
+    private OpenMRSPersonAdapter personAdapter;
 
     @Autowired
-    PatientHelper patientHelper;
+    private PatientHelper patientHelper;
 
     @Autowired
-    OpenMRSConceptAdapter openMrsConceptAdapter;
+    private OpenMRSConceptAdapter openMrsConceptAdapter;
 
     /**
      * Finds a patient by patient id

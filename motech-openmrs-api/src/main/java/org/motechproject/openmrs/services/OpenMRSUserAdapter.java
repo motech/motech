@@ -7,7 +7,12 @@ import org.motechproject.mrs.model.MRSPerson;
 import org.motechproject.mrs.model.MRSUser;
 import org.motechproject.mrs.model.Password;
 import org.motechproject.mrs.services.MRSUserAdapter;
-import org.openmrs.*;
+import org.openmrs.Person;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
+import org.openmrs.PersonName;
+import org.openmrs.Role;
+import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
@@ -16,7 +21,11 @@ import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
@@ -43,7 +52,7 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
      * @throws MRSException Thrown when change password fails
      */
     @Override
-    public void changeCurrentUserPassword(String currentPassword, String newPassword) throws MRSException {
+    public void changeCurrentUserPassword(String currentPassword, String newPassword) {
         try {
             userService.changePassword(currentPassword, newPassword);
         } catch (APIException e) {
@@ -87,7 +96,9 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
     @Override
     public MRSUser getUserByUserName(String userId) {
         org.openmrs.User openMrsUser = getOpenMrsUserByUserName(userId);
-        if (openMrsUser == null) return null;
+        if (openMrsUser == null) {
+            return null;
+        }
         return (!isSystemAdmin(openMrsUser.getSystemId())) ? openMrsToMrsUser(openMrsUser)
                 : new MRSUser().systemId(openMrsUser.getSystemId()).id(Integer.toString(openMrsUser.getId()))
                 .person(new MRSPerson().id(Integer.toString(openMrsUser.getPerson().getId())));
@@ -111,7 +122,9 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
         List<MRSUser> mrsUsers = new ArrayList<MRSUser>();
         List<org.openmrs.User> openMRSUsers = userService.getAllUsers();
         for (org.openmrs.User openMRSUser : openMRSUsers) {
-            if (isSystemAdmin(openMRSUser.getSystemId())) continue;
+            if (isSystemAdmin(openMRSUser.getSystemId())) {
+                continue;
+            }
             mrsUsers.add(openMrsToMrsUser(openMRSUser));
         }
         return mrsUsers;
@@ -178,9 +191,15 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
 
     private void clearAttributes(User user) {
         Person person = user.getPerson();
-        if (person.getNames() != null) person.getNames().clear();
-        if (person.getAttributes() != null) person.getAttributes().clear();
-        if (user.getRoles() != null) user.getRoles().clear();
+        if (person.getNames() != null) {
+            person.getNames().clear();
+        }
+        if (person.getAttributes() != null) {
+            person.getAttributes().clear();
+        }
+        if (user.getRoles() != null) {
+            user.getRoles().clear();
+        }
     }
 
     private org.openmrs.User getOrCreateUser(String dbId) {
@@ -195,7 +214,7 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
      * @throws UsernameNotFoundException If the user is not found.
      */
     @Override
-    public String setNewPasswordForUser(String userId) throws UsernameNotFoundException {
+    public String setNewPasswordForUser(String userId) {
         org.openmrs.User userByUsername;
         try {
             userByUsername = userService.getUserByUsername(userId);

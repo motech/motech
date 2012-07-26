@@ -2,7 +2,15 @@ package org.motechproject.openmrs;
 
 
 import org.apache.log4j.Logger;
-import org.openmrs.api.*;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.ConceptService;
+import org.openmrs.api.EncounterService;
+import org.openmrs.api.LocationService;
+import org.openmrs.api.ObsService;
+import org.openmrs.api.OpenmrsService;
+import org.openmrs.api.PatientService;
+import org.openmrs.api.PersonService;
+import org.openmrs.api.UserService;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.InputRequiredException;
@@ -16,7 +24,7 @@ import static org.openmrs.util.OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTI
 import static org.openmrs.util.OpenmrsConstants.AUTO_UPDATE_DATABASE_RUNTIME_PROPERTY;
 
 public class Context {
-    Logger logger = Logger.getLogger(Context.class);
+    private static Logger logger = Logger.getLogger(Context.class);
     private String url;
     private String user;
     private String password;
