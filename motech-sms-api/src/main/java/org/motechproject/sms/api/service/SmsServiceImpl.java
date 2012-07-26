@@ -26,7 +26,7 @@ public class SmsServiceImpl implements SmsService {
     private MessageSplitter messageSplitter;
     private Properties smsApiProperties;
 
-    private static final Logger log = Logger.getLogger(SmsServiceImpl.class);
+    private final Logger log = Logger.getLogger(SmsServiceImpl.class);
 
     private static final int PART_MESSAGE_SIZE = 160;
     private static final String PART_MESSAGE_HEADER_TEMPLATE = "Msg %d of %d: ";
@@ -80,10 +80,11 @@ public class SmsServiceImpl implements SmsService {
 
     private void generateOneSendSmsEvent(List<String> recipients, List<String> partMessages, DateTime deliveryTime) {
         for (String partMessage : partMessages) {
-            if (getBooleanPropertyValue(SMS_SCHEDULE_FUTURE_SMS) && deliveryTime != null)
+            if (getBooleanPropertyValue(SMS_SCHEDULE_FUTURE_SMS) && deliveryTime != null) {
                 scheduleSendSmsEvent(recipients, partMessage, deliveryTime);
-            else
+            } else {
                 raiseSendSmsEvent(recipients, partMessage, deliveryTime);
+            }
         }
     }
 

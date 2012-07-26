@@ -19,8 +19,9 @@ public class MessageSplitter {
             StringBuilder sb = new StringBuilder();
             sb.append(String.format(headerTemplate, i + 1, numberOfParts));
             sb.append(getPart(message, i, unitTextLength));
-            if (i < numberOfParts - 1)
+            if (i < numberOfParts - 1) {
                 sb.append(footer);
+            }
             parts.add(sb.toString());
         }
         return parts;

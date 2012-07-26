@@ -1,6 +1,6 @@
 package org.motechproject.sms.api.constants;
 
-public class EventSubjects {
+public final class EventSubjects {
     /**
      * Event key specifying an sms message is to be delivered. A listener can receive this event and handle message delivery.
      * Payload:
@@ -17,4 +17,7 @@ public class EventSubjects {
      * timestamp - String specifying the timestamp when the recipient received the message
      */
     public static final String INBOUND_SMS = "inbound_sms";
+
+    private EventSubjects() {
+    }
 }

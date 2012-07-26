@@ -9,7 +9,7 @@ import static junit.framework.Assert.assertEquals;
 
 public class MessageSplitterTest {
 
-    MessageSplitter messageSplitter;
+    private MessageSplitter messageSplitter;
 
     @Before
     public void setup() {
