@@ -43,6 +43,7 @@ public class FormUploadServlet extends BaseFormServlet {
             List<FormBean> allForms = flatten(collect(studies, on(Study.class).forms()));
             for (Study study : studies) {
                 for (FormBeanGroup group : study.groupedForms()) {
+                    formGroupPublisher.publishFormsForLogging(group);
                     formGroupValidator.validate(group, formValidators, allForms);
                     formGroupPublisher.publish(new FormBeanGroup(new FormBeanGroup(group.validForms()).sortByDependency()));
                 }
