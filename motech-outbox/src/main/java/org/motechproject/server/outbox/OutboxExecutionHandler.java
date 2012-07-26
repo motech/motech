@@ -4,6 +4,7 @@ import org.motechproject.ivr.model.CallInitiationException;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
 import org.motechproject.outbox.api.EventKeys;
+import org.motechproject.scheduler.domain.CronJobId;
 import org.motechproject.scheduler.domain.CronSchedulableJob;
 import org.motechproject.scheduler.domain.JobId;
 import org.motechproject.scheduler.domain.MotechEvent;
@@ -128,6 +129,6 @@ public class OutboxExecutionHandler {
             return;
         }
 
-        schedulerGateway.unscheduleJob(new JobId(event, false));
+        schedulerGateway.unscheduleJob(new CronJobId(event));
     }
 }
