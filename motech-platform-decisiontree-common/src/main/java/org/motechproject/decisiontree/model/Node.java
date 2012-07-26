@@ -18,7 +18,7 @@ public class Node {
     @JsonProperty
     private Map<String, ITransition> transitions;
     @JsonProperty
-    private List<ITreeCommand> treeCommands = new ArrayList<ITreeCommand>();
+    private List<INodeOperation> operations = new ArrayList<>();
 
     public List<Action> getActionsBefore() {
         return actionsBefore == null ? Collections.<Action>emptyList() : actionsBefore;
@@ -116,17 +116,17 @@ public class Node {
     }
 
     /**
-     * Gets the tree commands for this node
-     * @return tree commands of the node
-     * @see ITreeCommand
+     * Gets the tree operations for this node
+     * @return tree operations of the node
+     * @see INodeOperation
      */
     @JsonIgnore
-    public List<ITreeCommand> getTreeCommands() {
-        return treeCommands;
+    public List<INodeOperation> getOperations() {
+        return this.operations;
     }
 
-    public Node setTreeCommands(ITreeCommand... treeCommands) {
-        Collections.addAll(this.treeCommands, treeCommands);
+    public Node addOperations(INodeOperation ... operations) {
+        Collections.addAll(this.operations, operations);
         return this;
     }
 

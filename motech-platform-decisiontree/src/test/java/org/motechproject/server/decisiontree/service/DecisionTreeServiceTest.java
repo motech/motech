@@ -4,10 +4,8 @@ package org.motechproject.server.decisiontree.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.decisiontree.model.ITreeCommand;
-import org.motechproject.decisiontree.model.Node;
-import org.motechproject.decisiontree.model.Transition;
-import org.motechproject.decisiontree.model.Tree;
+import org.motechproject.decisiontree.FlowSession;
+import org.motechproject.decisiontree.model.*;
 import org.motechproject.decisiontree.repository.AllTrees;
 import org.motechproject.server.decisiontree.TreeNodeLocator;
 
@@ -33,9 +31,9 @@ public class DecisionTreeServiceTest {
     public void SetUp() {
         initMocks(this);
         nextNode = new Node()
-                .setTreeCommands(new NextCommand());
+                .addOperations(new NextOperation());
         rootNode = new Node()
-                .setTreeCommands(new RootNodeCommand())
+                .addOperations(new RootNodeOpteration())
                 .setTransitions(new Object[][]{
                         {"1", new Transition()
                                 .setName("pillTakenOnTime")
@@ -56,25 +54,27 @@ public class DecisionTreeServiceTest {
     public void shouldFetchCommandForRootNode() {
         when(treeNodeLocator.findNode(pillReminderTree, "", null)).thenReturn(rootNode);
         Node nextNode = decisionTreeService.getNode(pillReminderTree.getName(), "", null);
-        assertEquals(RootNodeCommand.class, nextNode.getTreeCommands().get(0).getClass());
+        assertEquals(RootNodeOpteration.class, nextNode.getOperations().get(0).getClass());
     }
 
     @Test
     public void shouldFetchNextCommand() {
         when(treeNodeLocator.findNode(pillReminderTree, "/1", null)).thenReturn(nextNode);
         Node nextNode = decisionTreeService.getNode(pillReminderTree.getName(), "/1", null);
-        assertEquals(NextCommand.class, nextNode.getTreeCommands().get(0).getClass());
+        assertEquals(NextOperation.class, nextNode.getOperations().get(0).getClass());
     }
 
-    private class RootNodeCommand implements ITreeCommand {
-        public String[] execute(Object obj) {
-            return null;
+    private class RootNodeOpteration implements INodeOperation {
+        @Override
+        public void perform(String userInput, FlowSession session) {
+
         }
     }
 
-    private class NextCommand implements ITreeCommand {
-        public String[] execute(Object obj) {
-            return null;
+    private class NextOperation implements INodeOperation {
+        @Override
+        public void perform(String userInput, FlowSession session) {
+
         }
     }
 }
