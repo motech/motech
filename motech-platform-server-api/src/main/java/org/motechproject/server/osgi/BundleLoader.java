@@ -13,6 +13,6 @@ public interface BundleLoader {
      * @param bundle
      * @throws Exception
      */
-    public void loadBundle(Bundle bundle) throws Exception;
+    void loadBundle(Bundle bundle) throws Exception;
 
 }

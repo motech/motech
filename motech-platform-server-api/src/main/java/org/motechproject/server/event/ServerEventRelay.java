@@ -15,8 +15,7 @@ import java.util.Set;
 /**
  * This class handled incoming scheduled events and relays those events to the appropriate event listeners
  */
-public class ServerEventRelay implements EventRelay
-{
+public class ServerEventRelay implements EventRelay {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
@@ -44,7 +43,7 @@ public class ServerEventRelay implements EventRelay
     public void sendEventMessage(MotechEvent event) {
         log.info("Sending event: " + event.getSubject());
 
-        Set<EventListener> listeners = eventListenerRegistry.getListeners( event.getSubject() );
+        Set<EventListener> listeners = eventListenerRegistry.getListeners(event.getSubject());
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("subject", event.getSubject());
         parameters.put("listeners", String.format("%d", listeners.size()));
@@ -77,7 +76,7 @@ public class ServerEventRelay implements EventRelay
             throw new IllegalArgumentException(errorMessage);
         }
 
-        Set<EventListener> listeners = eventListenerRegistry.getListeners( event.getSubject() );
+        Set<EventListener> listeners = eventListenerRegistry.getListeners(event.getSubject());
 
         // Is this message destine for a specific listener?
         if (event.getParameters().containsKey(MESSAGE_DESTINATION)) {
@@ -86,12 +85,12 @@ public class ServerEventRelay implements EventRelay
 
             for (EventListener listener : listeners) {
                 if (listener.getIdentifier().equals(messageDestination)) {
-                      MotechEvent _event = event.copy(event.getSubject(),
-                                                         (Map<String, Object>)event.getParameters().get(ORIGINAL_PARAMETERS));
+                      MotechEvent e = event.copy(event.getSubject(),
+                                                         (Map<String, Object>) event.getParameters().get(ORIGINAL_PARAMETERS));
 
                     final long startTime = metricsAgent.startTimer();
-                    metricsAgent.logEvent(_event.getSubject());
-                    listener.handle(_event);
+                    metricsAgent.logEvent(e.getSubject());
+                    listener.handle(e);
                     metricsAgent.stopTimer(listener.getIdentifier() + ".handler." + event.getSubject(), startTime);
 
                     break;
@@ -134,7 +133,7 @@ public class ServerEventRelay implements EventRelay
         MotechEvent enrichedEventMessage;
         Map<String, Object> parameters;
 
-        for( EventListener listener : listeners) {
+        for (EventListener listener : listeners) {
             parameters = new HashMap<String, Object>();
             parameters.put(MESSAGE_DESTINATION, listener.getIdentifier());
             parameters.put(ORIGINAL_PARAMETERS, event.getParameters());

@@ -9,7 +9,7 @@ public interface EventListener {
      *
      * @param event
      */
-    public void handle(MotechEvent event);
+    void handle(MotechEvent event);
 
     /**
      * Retrieve a unique identifier/key for the given listener class. This identifier is used
@@ -17,5 +17,5 @@ public interface EventListener {
      *
      * @return Unique listener identifier/key
      */
-    public String getIdentifier();
+    String getIdentifier();
 }

@@ -6,7 +6,11 @@ import org.motechproject.server.osgi.OsgiListener;
 import java.io.IOException;
 import java.net.URL;
 
-public class FileLocator {
+public final class FileLocator {
+
+    private FileLocator() {
+
+    }
 
     public static URL resolve(URL url) throws IOException {
         if ("bundle".equals(url.getProtocol())) {

@@ -3,20 +3,16 @@ package org.motechproject.server.event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
-/**
- * Created by IntelliJ IDEA.
- * User: rob
- * Date: 4/9/11
- * Time: 10:02 PM
- * To change this template use File | Settings | File Templates.
- */
-class EventListenerTree
-{
+class EventListenerTree {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private final String SPLIT_REGEX = "\\.";
+    private static final String SPLIT_REGEX = "\\.";
 
     private List<EventListenerTree> children = new ArrayList<EventListenerTree>();
     private EventListenerTree parent;
@@ -63,14 +59,13 @@ class EventListenerTree
      * @param listener
      * @param subject
      */
-    public void addListener(EventListener listener, String subject)
-    {
+    public void addListener(EventListener listener, String subject) {
         if (subject == null) {
             throw new IllegalArgumentException("Cannot add listener for null subject");
         }
 
         int asteriskLocation = subject.indexOf("*");
-        if (asteriskLocation != -1 && (asteriskLocation  + 1)!= subject.length()) {
+        if (asteriskLocation != -1 && (asteriskLocation + 1) != subject.length()) {
             throw new IllegalArgumentException("Wildcard must be last element of subject: " + subject);
         }
 
@@ -85,7 +80,7 @@ class EventListenerTree
             throw new IllegalArgumentException("Wildcard can not be mixed with characters");
         }
 
-        if (subject.equals("*")) {
+        if ("*".equals(subject)) {
             addListener(listener);
             return;
         }
@@ -132,9 +127,9 @@ class EventListenerTree
         String[] path = subject.split(SPLIT_REGEX);
 
         Set<EventListener> allListeners = new HashSet<>();
-        if (isRootNode() && listeners != null)
+        if (isRootNode() && listeners != null) {
             allListeners.addAll(listeners);
-
+        }
         EventListenerTree child = getChild(path[0]);
         if (child == null) {
             return allListeners;
@@ -145,7 +140,7 @@ class EventListenerTree
     }
 
     private boolean isRootNode() {
-        return pathElement.equals("*");
+        return "*".equals(pathElement);
     }
 
     private Set<EventListener> getListeners(String[] path, int pathLevel) {
@@ -170,9 +165,9 @@ class EventListenerTree
         // Split the subject into it's path components
         String[] path = subject.split(SPLIT_REGEX);
 
-        if (isRootNode() && listeners != null && !listeners.isEmpty())
+        if (isRootNode() && listeners != null && !listeners.isEmpty()) {
             return true;
-
+        }
         EventListenerTree child = getChild(path[0]);
         return child != null && child.hasListener(path, 0);
 
@@ -319,26 +314,22 @@ class EventListenerTree
 
     public void removeAllListeners(String beanName) {
 
-        for (Iterator<EventListenerTree> listenerIterator = children.iterator(); listenerIterator.hasNext(); ) {
+        for (Iterator<EventListenerTree> listenerIterator = children.iterator(); listenerIterator.hasNext();) {
             EventListenerTree child = listenerIterator.next();
-            if (child.containsListenersForBeanName(beanName) && child.AllListenersEmpty()) {
+            if (child.containsListenersForBeanName(beanName) && child.allListenersEmpty()) {
                 listenerIterator.remove();
             }
         }
     }
 
-    private boolean AllListenersEmpty() {
+    private boolean allListenersEmpty() {
 
         if (children.size() == 0) {
-            if (this.getAllListeners().size() == 0) {
-                return true;
-            } else {
-                return false;
-            }
+            return this.getAllListeners().size() == 0;
         } else {
-            for (Iterator<EventListenerTree> listenerIterator = children.iterator(); listenerIterator.hasNext(); ) {
+            for (Iterator<EventListenerTree> listenerIterator = children.iterator(); listenerIterator.hasNext();) {
                 EventListenerTree child = listenerIterator.next();
-                if (!child.AllListenersEmpty()) {
+                if (!child.allListenersEmpty()) {
                     return false;
                 } else {
                     listenerIterator.remove();
@@ -352,7 +343,7 @@ class EventListenerTree
         boolean removed = false;
 
         if (listeners != null) {
-            for (Iterator<EventListener> listenerIterator = listeners.iterator(); listenerIterator.hasNext(); ) {
+            for (Iterator<EventListener> listenerIterator = listeners.iterator(); listenerIterator.hasNext();) {
                 EventListener nextListener = listenerIterator.next();
                 if (nextListener.getIdentifier().equals(beanName)) {
                     listenerIterator.remove();
@@ -362,7 +353,7 @@ class EventListenerTree
         }
 
         if (wildcardListeners != null) {
-            for (Iterator<EventListener> listenerIterator = wildcardListeners.iterator(); listenerIterator.hasNext(); ) {
+            for (Iterator<EventListener> listenerIterator = wildcardListeners.iterator(); listenerIterator.hasNext();) {
                 EventListener nextListener = listenerIterator.next();
                 if (nextListener.getIdentifier().equals(beanName)) {
                     listenerIterator.remove();
