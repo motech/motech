@@ -23,7 +23,7 @@ import static org.motechproject.sms.smpp.constants.SmppProperties.DELIVERY_REPOR
 
 @Component
 public class ManagedSmslibService {
-    private final static Logger log = LoggerFactory.getLogger(ManagedSmslibService.class);
+    private final Logger log = LoggerFactory.getLogger(ManagedSmslibService.class);
     private static final String GATEWAY_ID = "smpp_gateway";
     private static final String QUEUE_PERSISTENCE_PATH = ".";
 

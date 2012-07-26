@@ -23,8 +23,9 @@ public class SmsHttpTemplate {
         if (HttpMethodType.POST.equals(outgoing.getRequest().getType())) {
             httpMethod = new PostMethod(outgoing.getRequest().getUrlPath());
             addBodyParameters((PostMethod) httpMethod, recipients, message);
-        } else
+        } else {
             httpMethod = new GetMethod(outgoing.getRequest().getUrlPath());
+        }
 
         httpMethod.setQueryString(addQueryParameters(recipients, message));
         return httpMethod;
@@ -41,18 +42,20 @@ public class SmsHttpTemplate {
     }
 
     private void addBodyParameters(PostMethod postMethod, List<String> recipients, String message) {
-        Map<String,String> bodyParameters = outgoing.getRequest().getBodyParameters();
-        for(String key : bodyParameters.keySet()) {
+        Map<String, String> bodyParameters = outgoing.getRequest().getBodyParameters();
+        for (String key : bodyParameters.keySet()) {
             String value = placeHolderOrLiteral(bodyParameters.get(key), recipients, message);
             postMethod.setParameter(key, value);
         }
     }
 
     private String placeHolderOrLiteral(String value, List<String> recipients, String message) {
-        if (value.equals(MESSAGE_PLACEHOLDER))
+        if (value.equals(MESSAGE_PLACEHOLDER)) {
             return message;
-        if (value.equals(RECIPIENTS_PLACEHOLDER))
+        }
+        if (value.equals(RECIPIENTS_PLACEHOLDER)) {
             return StringUtils.join(recipients.iterator(), outgoing.getRequest().getRecipientsSeparator());
+        }
         return value;
     }
 

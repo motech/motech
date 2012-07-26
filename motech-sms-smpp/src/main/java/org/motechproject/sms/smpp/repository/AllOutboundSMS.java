@@ -63,10 +63,11 @@ public class AllOutboundSMS extends MotechBaseRepository<OutboundSMS> {
 
     public void createOrReplace(OutboundSMS outboundSMS) {
         OutboundSMS sms = findBy(outboundSMS.getMessageTime(), outboundSMS.getRefNo(), outboundSMS.getPhoneNumber());
-        if (null == sms)
+        if (null == sms) {
             add(outboundSMS);
-        else
+        } else {
             update(copyDocumentIdInfo(sms, outboundSMS));
+        }
     }
 
     private OutboundSMS copyDocumentIdInfo(OutboundSMS source, OutboundSMS target) {

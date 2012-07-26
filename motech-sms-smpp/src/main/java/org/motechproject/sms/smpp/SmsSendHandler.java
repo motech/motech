@@ -27,9 +27,10 @@ public class SmsSendHandler implements SmsEventHandler {
         String text = (String) event.getParameters().get(EventDataKeys.MESSAGE);
         DateTime deliveryTime = (DateTime) event.getParameters().get(EventDataKeys.DELIVERY_TIME);
 
-        if (deliveryTime == null)
+        if (deliveryTime == null) {
             service.queueMessage(recipients, text);
-        else
+        } else {
             service.queueMessageAt(recipients, text, deliveryTime);
+        }
     }
 }

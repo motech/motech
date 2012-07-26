@@ -3,7 +3,7 @@ package org.motechproject.sms.smpp.constants;
 /**
  * properties related to the SMPP connection between the SMSC and the ESME
  */
-public class SmppProperties {
+public final class SmppProperties {
     /**
      * the hostname of the SMSC
      */
@@ -52,4 +52,7 @@ public class SmppProperties {
      * Destination Numbering plan indicator
      */
     public static final String DESTINATION_NPI = "dest_npi";
+
+    private SmppProperties() {
+    }
 }

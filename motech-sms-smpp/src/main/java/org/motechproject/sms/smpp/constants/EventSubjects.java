@@ -3,7 +3,7 @@ package org.motechproject.sms.smpp.constants;
 /**
  * describes all the events emitted by the module
  */
-public class EventSubjects {
+public final class EventSubjects {
     /**
      * This event is raised when an sms remains undelivered after the delivery has been retried max_retries number of times.
      * Payload:
@@ -27,4 +27,7 @@ public class EventSubjects {
      * TIMESTAMP - the time at which the SMS
      */
     public static final String SMS_DELIVERY_REPORT = "sms_delivery_report";
+
+    private EventSubjects() {
+    }
 }
