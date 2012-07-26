@@ -82,6 +82,7 @@
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.osgi.config,
+                            org.motechproject.server.config.service,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-sms-smpp, smslib-patched, jsmpp-for-smslib</Embed-Dependency>

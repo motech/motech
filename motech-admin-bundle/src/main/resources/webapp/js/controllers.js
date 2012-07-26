@@ -205,6 +205,24 @@ function StatusMsgCtrl($scope, $timeout, StatusMessage, i18nService, $cookieStor
 }
 
 function MasterCtrl($scope, i18nService, $http) {
+
+    $scope.bundlesWithSettings = [];
+    $http({method: 'GET', url: 'api/settings/bundles/list'}).
+        success(function(data) {
+            $scope.bundlesWithSettings = data;
+        });
+
+
+    $scope.mappings = [];
+    $http({method: 'GET', url: 'api/mappings'}).
+          success(function(data) {
+              $scope.mappings = data;
+          });
+
+    $scope.showSettings = function(bundle) {
+        return $.inArray(bundle.symbolicName, $scope.bundlesWithSettings) >= 0;
+    }
+
     $scope.msg = function(key) {
         return i18nService.getMessage(key);
     }
@@ -217,10 +235,6 @@ function MasterCtrl($scope, i18nService, $http) {
         return date;
     }
 
-    $http({method: 'GET', url: 'api/mappings'}).
-          success(function(data) {
-              $scope.mappings = data;
-          });
 }
 
 function SettingsCtrl($scope, PlatformSettings, i18nService, $http) {
@@ -283,6 +297,10 @@ function SettingsCtrl($scope, PlatformSettings, i18nService, $http) {
 }
 
 function ModuleCtrl($scope, ModuleSettings, Bundle, i18nService, $routeParams) {
+    $scope.module = Bundle.details({ bundleId: $routeParams.bundleId });
+}
+
+function BundleSettingsCtrl($scope, Bundle, ModuleSettings, $routeParams) {
     $scope.moduleSettings = ModuleSettings.query({ bundleId : $routeParams.bundleId }, function(data) {
         $scope.settings = [];
         var i,j;
@@ -293,21 +311,10 @@ function ModuleCtrl($scope, ModuleSettings, Bundle, i18nService, $routeParams) {
         }
     });
 
-    $scope.module = Bundle.details({ bundleId: $routeParams.bundleId });
+    $scope.module = Bundle.get({ bundleId: $routeParams.bundleId });
 
-    $scope.label = function(key) {
-        return i18nService.getMessage('settings.' + key);
-    }
-
-    $scope.saveSettings = function() {
+    $scope.saveSettings = function(mSettings) {
         blockUI();
-        $('#settingsForm').ajaxSubmit({
-            success : alertHandler('settings.saved'),
-            error : jFormErrorHandler
-        });
-    }
-
-    $scope.showSettings = function() {
-        return $scope.settings != undefined && $scope.settings.length > 0;
+        mSettings.$save({bundleId: $scope.module.bundleId}, alertHandler('settings.saved'), angularErrorHandler);
     }
 }

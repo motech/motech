@@ -4,6 +4,7 @@ import org.ektorp.CouchDbConnector;
 import org.motechproject.server.config.settings.MotechSettings;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -35,6 +36,8 @@ public interface PlatformSettingsService {
     void addConfigLocation(final String location, final boolean save) throws IOException;
 
     void saveBundleProperties(final String bundleSymbolicName, final String fileName, final Properties properties) throws IOException;
+
+    List<String> retrieveRegisteredBundleNames();
 
     Properties getBundleProperties(final String bundleSymbolicName, final String fileName) throws IOException;
 

@@ -6,6 +6,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduler.gateway.OutboundEventGateway;
+import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.api.DeliveryStatus;
 import org.motechproject.sms.smpp.constants.SmsProperties;
 import org.motechproject.sms.smpp.repository.AllOutboundSMS;
@@ -36,10 +37,14 @@ public class OutboundMessageNotificationTest {
     @Before
     public void setUp() {
         initMocks(this);
+
         Properties smsProperties = new Properties() {{
             setProperty(SmsProperties.MAX_RETRIES, "4");
         }};
-        outboundMessageNotification = new OutboundMessageNotification(outboundEventGateway, smsProperties);
+        SettingsFacade settings = new SettingsFacade();
+        settings.addConfigProperties("sms.properties", smsProperties);
+
+        outboundMessageNotification = new OutboundMessageNotification(outboundEventGateway, settings);
         ReflectionTestUtils.setField(outboundMessageNotification, "allOutboundSMS", mockAllOutboundSMS);
     }
 

@@ -8,5 +8,6 @@ angular.module('motech-admin', ['bundleServices', 'messageServices', 'platformSe
           when('/bundles', {templateUrl: 'partials/bundles.html', controller: BundleListCtrl}).
           when('/settings', {templateUrl: 'partials/settings.html', controller: SettingsCtrl}).
           when('/bundle/:bundleId', {templateUrl: 'partials/bundle.html', controller: ModuleCtrl}).
+          when('/bundleSettings/:bundleId', {templateUrl: 'partials/bundleSettings.html', controller: BundleSettingsCtrl}).
           otherwise({redirectTo: '/bundles'});
 }]);

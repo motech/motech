@@ -10,9 +10,16 @@
     <context:component-scan base-package="org.motechproject.sms.smpp"/>
     <context:annotation-config/>
 
-    <util:properties id="smppProperties" location="classpath:smpp.properties"/>
-    <util:properties id="smsProperties" location="classpath:sms.properties"/>
     <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
+
+    <bean id="settings" class="org.motechproject.server.config.SettingsFacade">
+        <constructor-arg>
+            <list>
+                <value>classpath:sms.properties</value>
+                <value>classpath:smpp.properties</value>
+            </list>
+        </constructor-arg>
+    </bean>
 
     <bean id="smslibService" class="org.smslib.Service" factory-method="getInstance"/>
 
