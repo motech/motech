@@ -1,5 +1,6 @@
 package org.motechproject.scheduler;
 
+import org.motechproject.scheduler.domain.CronJobId;
 import org.motechproject.scheduler.domain.CronSchedulableJob;
 import org.motechproject.scheduler.domain.JobId;
 import org.motechproject.scheduler.domain.MotechEvent;
@@ -74,7 +75,7 @@ public class MotechScheduler {
     private void unscheduleTestEvent() {
         try {
             log.info("Unscheduling the test job: " + TEST_EVENT_NAME);
-            schedulerService.unscheduleJob(new JobId(SUBJECT, TEST_EVENT_NAME, false));
+            schedulerService.unscheduleJob(new CronJobId(SUBJECT, TEST_EVENT_NAME));
         } catch (Exception e) {
             log.warn("Can not unschedule the test job: " + TEST_EVENT_NAME + " " + e.getMessage());
         }
