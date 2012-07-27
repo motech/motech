@@ -132,6 +132,7 @@
     </dependencies>
 
     <modules>
+        <!-- Non-OSGI modules -->
         <module>motech-platform-common-api</module>
         <module>motech-platform-server</module>
         <module>motech-platform-scheduler</module>
@@ -139,12 +140,10 @@
         <module>motech-platform-server-api</module>
         <module>motech-outbox</module>
         <module>motech-outbox-api</module>
-        <module>motech-appointments</module>
         <module>motech-appointments-api</module>
         <module>motech-commcare-api</module>
         <module>motech-platform-decisiontree</module>
         <module>motech-platform-decisiontree-common</module>
-        <module>motech-pillreminder</module>
         <module>motech-pillreminder-api</module>
         <module>motech-cmslite-api</module>
         <module>motech-scheduletracking-api</module>
@@ -168,12 +167,35 @@
         <module>motech-scheduler</module>
         <module>motech-rpm</module>
         <module>motech-rules-api</module>
-        <module>motech-rules</module>
         <module>motech-platform-server-config</module>
         <module>motech-platform-server-startup</module>
         <module>motech-web-security</module>
         <module>motech-admin</module>
-        <module>motech-admin-UI</module>
+        <!-- OSGI modules -->
+        <module>motech-admin-bundle</module>
+        <module>motech-alerts-api-bundle</module>
+        <module>motech-appointments-api-bundle</module>
+        <module>motech-cmslite-api-bundle</module>
+        <module>motech-commcare-api-bundle</module>
+        <module>motech-demo-bundle</module>
+        <module>motech-ivr-asterisk-bundle</module>
+        <module>motech-ivr-kookoo-v2-bundle</module>
+        <module>motech-ivr-verboice-bundle</module>
+        <module>motech-ivr-voxeo-bundle</module>
+        <module>motech-message-campaign-bundle</module>
+        <module>motech-mobileforms-api-bundle</module>
+        <module>motech-mrs-api-bundle</module>
+        <module>motech-openmrs-ws-bundle</module>
+        <module>motech-outbox-bundle</module>
+        <module>motech-pillreminder-api-bundle</module>
+        <module>motech-platform-common-bundle</module>
+        <module>motech-platform-decisiontree-bundle</module>
+        <module>motech-rules-api-bundle</module>
+        <module>motech-scheduler-bundle</module>
+        <module>motech-scheduletracking-api-bundle</module>
+        <module>motech-sms-api-bundle</module>
+        <module>motech-sms-http-bundle</module>
+        <module>motech-sms-smpp-bundle</module>
         <!-- Keep this module in last, the module checks if everything is alright after deploy motech on tomcat server -->
         <module>motech-deployment-tests</module>
     </modules>

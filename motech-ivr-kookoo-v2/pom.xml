@@ -9,7 +9,6 @@
     <artifactId>motech-ivr-kookoo-v2</artifactId>
     <version>0.12-SNAPSHOT</version>
     <name>MoTeCH IVR Kookoo V2</name>
-    <packaging>bundle</packaging>
     <description>new kookoo module based on vm templates to return responses</description>
     <properties>
         <modules.root.dir>${basedir}/..</modules.root.dir>
@@ -25,19 +24,6 @@
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <version>4.2.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <version>4.2.0</version>
-            <type>jar</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -113,58 +99,4 @@
             <version>20080701</version>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.4</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-Activator>
-                            org.motechproject.server.kookoo.Activator
-                        </Bundle-Activator>
-                        <Import-Package>
-                            *,
-                            org.springframework.beans.factory.xml,
-                            org.springframework.context.config,
-                            org.springframework.context.support,
-                            org.springframework.osgi.config,
-                            org.springframework.web.servlet.config,
-                            org.springframework.web.servlet.mvc,
-                            org.ektorp.spring,
-                            org.ektorp.impl
-                        </Import-Package>
-                        <Embed-Dependency>!*</Embed-Dependency>
-                        <Embed-Transitive>true</Embed-Transitive>
-                    </instructions>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.5</version>
-                <executions>
-                    <execution>
-                        <id>copy-bundles</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${user.home}/.motech/bundles</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>target</directory>
-                                    <includes>
-                                        <include>*.jar</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>

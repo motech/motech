@@ -1,6 +1,5 @@
 package org.motechproject.deployment;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -11,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 
 public class DeploymentTestIT {
     @Test
-    @Ignore
     public void shouldNotFoundExceptionsDuringStartup() throws Exception {
         for(File log : getFileLogs()) {
             assertTrue(String.format("File not found: %s.", log.getAbsolutePath()), log.exists());

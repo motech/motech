@@ -11,13 +11,10 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.sms.http.SmsDeliveryFailureException;
 import org.motechproject.sms.http.TemplateReader;
-import org.motechproject.sms.http.service.SmsHttpService;
 import org.motechproject.sms.http.template.Authentication;
-import org.motechproject.sms.http.template.Outgoing;
 import org.motechproject.sms.http.template.SmsHttpTemplate;
 
 import java.io.IOException;
@@ -28,8 +25,6 @@ import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-
-import org.motechproject.sms.http.template.Response;
 
 public class SmsHttpServiceTest {
     @Mock
