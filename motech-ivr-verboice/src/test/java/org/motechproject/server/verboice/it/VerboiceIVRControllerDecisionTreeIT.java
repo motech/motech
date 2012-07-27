@@ -49,7 +49,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
     private void createTree() {
         Tree tree = new Tree();
         tree.setName("someTree");
-        HashMap<String, ITransition> transitions = new HashMap<String, ITransition>();
+        HashMap<String, BaseTransition> transitions = new HashMap<String, BaseTransition>();
         final Node textToSpeechNode = new Node().addPrompts(new TextToSpeechPrompt().setMessage("Say this"));
         transitions.put("1", new Transition().setDestinationNode(textToSpeechNode));
         transitions.put("*", new Transition().setDestinationNode(new Node().setPrompts(new AudioPrompt().setAudioFileUrl("you pressed star"))));
@@ -131,7 +131,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
     private void createTreeWithDialPrompt() {
         Tree tree = new Tree();
         tree.setName("treeWithDial");
-        HashMap<String, ITransition> transitions = new HashMap<String, ITransition>();
+        HashMap<String, BaseTransition> transitions = new HashMap<String, BaseTransition>();
         final Node successTextNode = new Node().addPrompts(new TextToSpeechPrompt().setMessage("Successful Dial"));
         final Node failureTextNode = new Node().addPrompts(new TextToSpeechPrompt().setMessage("Dial Failure"));
         transitions.put("completed", new Transition().setDestinationNode(successTextNode));
@@ -160,14 +160,14 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         }
     }
 
-    public static class CustomTransition implements ITransition {
+    public static class CustomTransition extends BaseTransition {
 
         @Autowired
         TestComponent testComponent;
 
         @Override
         public Node getDestinationNode(String input, FlowSession session) {
-            final HashMap<String, ITransition> transitions = new HashMap<String, ITransition>();
+            final HashMap<String, BaseTransition> transitions = new HashMap<String, BaseTransition>();
             Integer counter = session.get("counter");
             if (counter == null) counter = 0;
             counter = counter+1;
@@ -178,5 +178,6 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
                     new AudioPrompt().setAudioFileUrl("custom_" + input + "_" + testComponent.getMessage()))
                     .setTransitions(transitions);
         }
+
     }
 }

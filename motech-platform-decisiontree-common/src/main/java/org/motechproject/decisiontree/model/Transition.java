@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class Transition implements ITransition {
+public class Transition extends BaseTransition {
 
     private String name;
     private Node destinationNode;
@@ -85,4 +85,7 @@ public class Transition implements ITransition {
     public Node getDestinationNode(String input, FlowSession session) {
         return getDestinationNode();
     }
+
+
+
 }

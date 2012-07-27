@@ -194,7 +194,7 @@ public class CallFlowIT extends SpringIntegrationTest {
         assertXMLEqual(expectedResponse, response);
     }
 
-    public static class CustomTransition implements ITransition {
+    public static class CustomTransition extends BaseTransition {
 
         @Override
         public Node getDestinationNode(String input, FlowSession session) {

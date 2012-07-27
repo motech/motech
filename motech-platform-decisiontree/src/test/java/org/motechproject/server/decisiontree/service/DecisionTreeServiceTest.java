@@ -26,18 +26,24 @@ public class DecisionTreeServiceTest {
     private Tree pillReminderTree;
     private Node rootNode;
     private Node nextNode;
+    private BaseTransition rootTransition;
+    private BaseTransition transition;
 
     @Before
     public void SetUp() {
         initMocks(this);
-        nextNode = new Node()
-                .addOperations(new NextOperation());
+        rootTransition = new Transition()
+                .setName("pillTakenOnTime")
+                .setDestinationNode(nextNode).addOperations(new RootNodeOpteration());
+        transition = new Transition().addOperations(new NextOperation());
+
+        nextNode = new Node().setTransitions(new Object[][]{
+                {"1", transition
+                }
+        });
         rootNode = new Node()
-                .addOperations(new RootNodeOpteration())
                 .setTransitions(new Object[][]{
-                        {"1", new Transition()
-                                .setName("pillTakenOnTime")
-                                .setDestinationNode(nextNode)
+                        {"1", rootTransition
 
                         }
                 });
@@ -54,14 +60,14 @@ public class DecisionTreeServiceTest {
     public void shouldFetchCommandForRootNode() {
         when(treeNodeLocator.findNode(pillReminderTree, "", null)).thenReturn(rootNode);
         Node nextNode = decisionTreeService.getNode(pillReminderTree.getName(), "", null);
-        assertEquals(RootNodeOpteration.class, nextNode.getOperations().get(0).getClass());
+        assertEquals(RootNodeOpteration.class,nextNode.getTransitions().get("1").getOperations().get(0).getClass());
     }
 
     @Test
     public void shouldFetchNextCommand() {
         when(treeNodeLocator.findNode(pillReminderTree, "/1", null)).thenReturn(nextNode);
         Node nextNode = decisionTreeService.getNode(pillReminderTree.getName(), "/1", null);
-        assertEquals(NextOperation.class, nextNode.getOperations().get(0).getClass());
+        assertEquals(NextOperation.class, nextNode.getTransitions().get("1").getOperations().get(0).getClass());
     }
 
     private class RootNodeOpteration implements INodeOperation {

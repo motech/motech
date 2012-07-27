@@ -16,7 +16,7 @@ public class Node {
     @JsonProperty
     private List<Prompt> prompts = new ArrayList<Prompt>();
     @JsonProperty
-    private Map<String, ITransition> transitions;
+    private Map<String, BaseTransition> transitions;
     @JsonProperty
     private List<INodeOperation> operations = new ArrayList<>();
 
@@ -95,8 +95,8 @@ public class Node {
      * Gets the transition from the current node.
      * @return a map of userInput => transition pairs
      */
-    public Map<String, ITransition> getTransitions() {
-        return transitions == null ? Collections.<String, ITransition>emptyMap() : transitions;
+    public Map<String, BaseTransition> getTransitions() {
+        return transitions == null ? Collections.<String, BaseTransition>emptyMap() : transitions;
     }
 
     /**
@@ -110,14 +110,13 @@ public class Node {
         return this;
     }
 
-    public Node setTransitions(Map<String, ? extends ITransition> transitions) {
-        this.transitions = (Map<String, ITransition>) transitions;
+    public Node setTransitions(Map<String, ? extends BaseTransition> transitions) {
+        this.transitions = (Map<String, BaseTransition>) transitions;
         return this;
     }
 
     /**
-     * Gets the tree operations for this node
-     * @return tree operations of the node
+     * @deprecated :Operations moved to transition
      * @see INodeOperation
      */
     @JsonIgnore
@@ -125,8 +124,12 @@ public class Node {
         return this.operations;
     }
 
+
+    /**
+     * @deprecated :Operations moved to transition
+     * @see INodeOperation
+     */
     public Node addOperations(INodeOperation ... operations) {
-        Collections.addAll(this.operations, operations);
         return this;
     }
 
@@ -136,9 +139,9 @@ public class Node {
      * @param transition transition object See {@link Transition}
      * @return the current node instance
      */
-    public Node addTransition(String transitionKey, ITransition transition) {
+    public Node addTransition(String transitionKey, BaseTransition transition) {
         if (transitions == null) {
-            transitions = new HashMap<String, ITransition>();
+            transitions = new HashMap<String, BaseTransition>();
         }
         transitions.put(transitionKey, transition);
         return this;

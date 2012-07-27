@@ -55,7 +55,7 @@ public class DecisionTreeControllerIT extends SpringIntegrationTest {
     private void createTree() {
         Tree tree = new Tree();
         tree.setName("someTree");
-        HashMap<String, ITransition> transitions = new HashMap<String, ITransition>();
+        HashMap<String, BaseTransition> transitions = new HashMap<String, BaseTransition>();
         final Node textToSpeechNode = new Node().addPrompts(new TextToSpeechPrompt().setName("Say this"));
         transitions.put("1", new Transition().setDestinationNode(textToSpeechNode));
         transitions.put("11", new Transition().setDestinationNode(textToSpeechNode));

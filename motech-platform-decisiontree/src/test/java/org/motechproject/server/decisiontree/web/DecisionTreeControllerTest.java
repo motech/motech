@@ -79,13 +79,15 @@ public class DecisionTreeControllerTest {
         Node childNode = new Node();
         Transition childTransition = new Transition();
         final  MyINodeOperation iNodeOperation = new MyINodeOperation();
-        childNode.addOperations(iNodeOperation);
+
         childTransition.setDestinationNode(new Node());
         childNode.addTransition("1", childTransition);
 
         Node node = new Node();
         Transition transition = new Transition();
         transition.setDestinationNode(childNode);
+        transition.addOperations(iNodeOperation);
+
         node.addTransition("1", transition);
 
         when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
@@ -432,4 +434,7 @@ public class DecisionTreeControllerTest {
             return called;
         }
     }
+
+
+
 }

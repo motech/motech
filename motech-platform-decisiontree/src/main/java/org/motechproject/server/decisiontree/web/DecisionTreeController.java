@@ -143,8 +143,13 @@ public class DecisionTreeController extends MultiActionController {
                 String parentTransitionPath;
                 parentTransitionPath = getParentTransitionPath(encodedParentTransitionPath);
                 Node parentNode = decisionTreeService.getNode(currentTree, parentTransitionPath, session);
-                ITransition transition = sendTreeEventActions(params, transitionKey, parentTransitionPath, parentNode);
+
+                BaseTransition transition = sendTreeEventActions(params, transitionKey, parentTransitionPath, parentNode);
                 applicationContext.getAutowireCapableBeanFactory().autowireBean(transition);
+
+                for (INodeOperation operation : transition.getOperations()) {
+                    operation.perform(transitionKey, session);
+                }
 
                 node = transition.getDestinationNode(transitionKey, session);
 
@@ -161,9 +166,6 @@ public class DecisionTreeController extends MultiActionController {
                         return new ModelAndView(EXIT_TEMPLATE_NAME);
                     }
                 } else {
-                    for (INodeOperation operation : node.getOperations()) {
-                        operation.perform(transitionKey, session);
-                    }
                     String modifiedTransitionPath = parentTransitionPath +
                             (TreeNodeLocator.PATH_DELIMITER.equals(parentTransitionPath) ? "" : TreeNodeLocator.PATH_DELIMITER)
                             + transitionKey;
@@ -202,7 +204,7 @@ public class DecisionTreeController extends MultiActionController {
     }
 
     private void validateNode(Node node) {
-        for (Map.Entry<String, ITransition> transitionEntry : node.getTransitions().entrySet()) {
+        for (Map.Entry<String, BaseTransition> transitionEntry : node.getTransitions().entrySet()) {
 
             final String key = transitionEntry.getKey();
             if (anyInput(key)) {
@@ -236,8 +238,8 @@ public class DecisionTreeController extends MultiActionController {
         return TreeNodeLocator.ANY_KEY.equals(key);
     }
 
-    private ITransition sendTreeEventActions(Map<String, Object> params, String transitionKey, String parentTransitionPath, Node parentNode) {
-        ITransition transition = getTransitionForUserInput(transitionKey, parentNode);
+    private BaseTransition sendTreeEventActions(Map<String, Object> params, String transitionKey, String parentTransitionPath, Node parentNode) {
+        BaseTransition transition = getTransitionForUserInput(transitionKey, parentNode);
 
         treeEventProcessor.sendActionsAfter(parentNode, parentTransitionPath, params);
 
@@ -247,8 +249,8 @@ public class DecisionTreeController extends MultiActionController {
         return transition;
     }
 
-    private ITransition getTransitionForUserInput(String userInput, Node parentNode) {
-        ITransition transition = getPreConfiguredTransition(parentNode, userInput);
+    private BaseTransition getTransitionForUserInput(String userInput, Node parentNode) {
+        BaseTransition transition = getPreConfiguredTransition(parentNode, userInput);
         if (transition == null) {
             transition = parentNode.getTransitions().get(TreeNodeLocator.ANY_KEY);
         }
@@ -260,7 +262,7 @@ public class DecisionTreeController extends MultiActionController {
         return transition;
     }
 
-    private ITransition getPreConfiguredTransition(Node parentNode, String userInput) {
+    private BaseTransition getPreConfiguredTransition(Node parentNode, String userInput) {
         return parentNode.getTransitions().get(userInput);
     }
 
@@ -272,7 +274,7 @@ public class DecisionTreeController extends MultiActionController {
         return new String(Base64.decodeBase64(encodedParentTransitionPath));
     }
 
-    private String maxDigits(Map<String, ITransition> transitions) {
+    private String maxDigits(Map<String, BaseTransition> transitions) {
         int maxDigits = 1;
         for (String key : transitions.keySet()) {
             if (anyInput(key)) {
