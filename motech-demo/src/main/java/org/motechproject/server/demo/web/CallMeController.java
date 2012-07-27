@@ -31,7 +31,7 @@ public class CallMeController {
 
     private List<IVRService> ivrServices;
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = {"/", "/demo"}, method = RequestMethod.GET)
     public void home(HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("text/html");
         response.setCharacterEncoding("UTF-8");
@@ -75,7 +75,7 @@ public class CallMeController {
         return mav;
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.POST)
+    @RequestMapping(value = {"/", "/demo"}, method = RequestMethod.POST)
     public void homeSubmitForm(HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("text/html");
         response.setCharacterEncoding("UTF-8");
