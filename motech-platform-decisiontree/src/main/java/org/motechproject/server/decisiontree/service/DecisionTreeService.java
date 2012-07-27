@@ -21,5 +21,5 @@ public interface DecisionTreeService {
      * @param session
      * @return Node, if found. Otherwise, null.
      */
-    public Node getNode(String treeName, String transitionPath, FlowSession session);
+    Node getNode(String treeName, String transitionPath, FlowSession session);
 }
