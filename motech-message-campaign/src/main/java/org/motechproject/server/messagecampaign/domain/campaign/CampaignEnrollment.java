@@ -67,6 +67,7 @@ public class CampaignEnrollment extends MotechBaseDataObject {
     public CampaignEnrollment copyFrom(CampaignEnrollment enrollment) {
         this.startDate = enrollment.getStartDate();
         this.startOffset = enrollment.startOffset;
+        this.status = enrollment.getStatus();
         return this;
     }
 
