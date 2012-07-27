@@ -4,7 +4,6 @@ import org.motechproject.server.event.EventListenerRegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor;
 import org.springframework.stereotype.Component;
@@ -31,7 +30,7 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
      * @see org.springframework.beans.factory.config.BeanPostProcessor#postProcessBeforeInitialization(java.lang.Object, java.lang.String)
      */
     @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+    public Object postProcessBeforeInitialization(Object bean, String beanName) {
         return bean;
     }
 
@@ -39,7 +38,7 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
      * @see org.springframework.beans.factory.config.BeanPostProcessor#postProcessAfterInitialization(java.lang.Object, java.lang.String)
      */
     @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    public Object postProcessAfterInitialization(Object bean, String beanName) {
         processAnnotations(bean, beanName);
         return bean;
     }
@@ -48,24 +47,25 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
         ReflectionUtils.doWithMethods(bean.getClass(), new ReflectionUtils.MethodCallback() {
 
             @Override
-            public void doWith(Method method) throws IllegalArgumentException, IllegalAccessException {
+            public void doWith(Method method) throws IllegalAccessException {
                 Method methodOfOriginalClassIfProxied = ReflectionUtils.findMethod(AopUtils.getTargetClass(bean), method.getName(), method.getParameterTypes());
-                MotechListener annotation;
+                MotechListener annotation = methodOfOriginalClassIfProxied.getAnnotation(MotechListener.class);
 
-                if (methodOfOriginalClassIfProxied != null && (annotation = methodOfOriginalClassIfProxied.getAnnotation(MotechListener.class)) != null) {
+                if (methodOfOriginalClassIfProxied != null && annotation != null) {
                     final List<String> subjects = Arrays.asList(annotation.subjects());
                     MotechListenerAbstractProxy proxy = null;
 
                     switch (annotation.type()) {
-                    case ORDERED_PARAMETERS:
-                        proxy = new MotechListenerOrderedParametersProxy(beanName, bean, method);
-                        break;
-                    case MOTECH_EVENT:
-                        proxy = new MotechListenerEventProxy(beanName, bean, method);
-                        break;
-                    case NAMED_PARAMETERS:
-                        proxy = new MotechListenerNamedParametersProxy(beanName, bean, method);
-                        break;
+                        case ORDERED_PARAMETERS:
+                            proxy = new MotechListenerOrderedParametersProxy(beanName, bean, method);
+                            break;
+                        case MOTECH_EVENT:
+                            proxy = new MotechListenerEventProxy(beanName, bean, method);
+                            break;
+                        case NAMED_PARAMETERS:
+                            proxy = new MotechListenerNamedParametersProxy(beanName, bean, method);
+                            break;
+                        default:
                     }
 
                     logger.info(String.format("Registering listener type(%20s) bean: %s , method: %s, for subjects: %s", annotation.type().toString(), beanName, method.toGenericString(), subjects));
@@ -89,9 +89,7 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
     }
 
     @Override
-    public void postProcessBeforeDestruction(Object bean, String beanName)
-            throws BeansException {
-
+    public void postProcessBeforeDestruction(Object bean, String beanName) {
         if (eventListenerRegistry != null) {
             eventListenerRegistry.clearListenersForBean(beanName);
         }

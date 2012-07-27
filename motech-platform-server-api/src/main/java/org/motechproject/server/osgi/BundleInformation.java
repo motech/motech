@@ -15,7 +15,7 @@ public class BundleInformation {
         ACTIVE(32),
         UNKNOWN(0);
 
-        int stateId;
+        private int stateId;
 
         State(int stateId) {
             this.stateId = stateId;
@@ -31,7 +31,7 @@ public class BundleInformation {
         }
     }
 
-    protected static final String BUNDLE_NAME="Bundle-Name";
+    protected static final String BUNDLE_NAME = "Bundle-Name";
 
     private long bundleId;
     private Version version;

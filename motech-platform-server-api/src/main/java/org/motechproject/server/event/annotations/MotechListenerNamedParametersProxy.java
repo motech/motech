@@ -1,13 +1,13 @@
 package org.motechproject.server.event.annotations;
 
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.motechproject.scheduler.domain.MotechEvent;
-import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * @author yyonkov
@@ -29,8 +29,8 @@ public class MotechListenerNamedParametersProxy extends MotechListenerAbstractPr
     @Override
     public void callHandler(MotechEvent event) {
         List<Object> args = new ArrayList<Object>();
-        Class<?>[] paramTypes = method.getParameterTypes();
-        Annotation[][] paramAnnotations = method.getParameterAnnotations();
+        Class<?>[] paramTypes = getMethod().getParameterTypes();
+        Annotation[][] paramAnnotations = getMethod().getParameterAnnotations();
         Assert.isTrue(paramTypes.length == paramAnnotations.length);
         for (int i = 0; i < paramTypes.length; i++) {
             Class<?> t = paramTypes[i];
@@ -43,7 +43,7 @@ public class MotechListenerNamedParametersProxy extends MotechListenerAbstractPr
             Assert.isAssignable(t, arg.getClass(), String.format("Parameter #%d expected subtypes of %s passed %s.", i, t.getName(), arg.getClass().getName()));
             args.add(arg);
         }
-        ReflectionUtils.invokeMethod(method, bean, args.toArray());
+        ReflectionUtils.invokeMethod(getMethod(), getBean(), args.toArray());
 
     }
 }

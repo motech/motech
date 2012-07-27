@@ -10,7 +10,6 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.launch.Framework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -273,7 +272,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext ctx) throws BeansException {
+    public void setApplicationContext(ApplicationContext ctx) {
         applicationContext = ctx;
     }
 
@@ -309,14 +308,14 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     }
 
     public List<BundleInformation> getExternalBundles() {
-        List<BundleInformation> bundles = new ArrayList<>();
+        List<BundleInformation> bundleInformationList = new ArrayList<>();
 
         if (osgiFramework.getBundleContext() != null) {
             for (Bundle bundle : osgiFramework.getBundleContext().getBundles()) {
-                bundles.add(new BundleInformation(bundle));
+                bundleInformationList.add(new BundleInformation(bundle));
             }
         }
 
-        return bundles;
+        return bundleInformationList;
     }
 }
