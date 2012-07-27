@@ -49,29 +49,31 @@ public class EventAnnotationBeanPostProcessor implements DestructionAwareBeanPos
             @Override
             public void doWith(Method method) throws IllegalAccessException {
                 Method methodOfOriginalClassIfProxied = ReflectionUtils.findMethod(AopUtils.getTargetClass(bean), method.getName(), method.getParameterTypes());
-                MotechListener annotation = methodOfOriginalClassIfProxied.getAnnotation(MotechListener.class);
 
-                if (methodOfOriginalClassIfProxied != null && annotation != null) {
-                    final List<String> subjects = Arrays.asList(annotation.subjects());
-                    MotechListenerAbstractProxy proxy = null;
+                if (methodOfOriginalClassIfProxied != null) {
+                    MotechListener annotation = methodOfOriginalClassIfProxied.getAnnotation(MotechListener.class);
+                    if (annotation != null) {
+                        final List<String> subjects = Arrays.asList(annotation.subjects());
+                        MotechListenerAbstractProxy proxy = null;
 
-                    switch (annotation.type()) {
-                        case ORDERED_PARAMETERS:
-                            proxy = new MotechListenerOrderedParametersProxy(beanName, bean, method);
-                            break;
-                        case MOTECH_EVENT:
-                            proxy = new MotechListenerEventProxy(beanName, bean, method);
-                            break;
-                        case NAMED_PARAMETERS:
-                            proxy = new MotechListenerNamedParametersProxy(beanName, bean, method);
-                            break;
-                        default:
-                    }
+                        switch (annotation.type()) {
+                            case ORDERED_PARAMETERS:
+                                proxy = new MotechListenerOrderedParametersProxy(beanName, bean, method);
+                                break;
+                            case MOTECH_EVENT:
+                                proxy = new MotechListenerEventProxy(beanName, bean, method);
+                                break;
+                            case NAMED_PARAMETERS:
+                                proxy = new MotechListenerNamedParametersProxy(beanName, bean, method);
+                                break;
+                            default:
+                        }
 
-                    logger.info(String.format("Registering listener type(%20s) bean: %s , method: %s, for subjects: %s", annotation.type().toString(), beanName, method.toGenericString(), subjects));
+                        logger.info(String.format("Registering listener type(%20s) bean: %s , method: %s, for subjects: %s", annotation.type().toString(), beanName, method.toGenericString(), subjects));
 
-                    if (eventListenerRegistry != null) {
-                        eventListenerRegistry.registerListener(proxy, subjects);
+                        if (eventListenerRegistry != null) {
+                            eventListenerRegistry.registerListener(proxy, subjects);
+                        }
                     }
                 }
             }
