@@ -252,7 +252,8 @@ public class RepeatingProgramSchedulerTest {
 
         repeatingProgramScheduler.stop();
 
-        verify(mockSchedulerService, times(7)).safeDeleteJob(Matchers.<String>any(), Matchers.<String>any());
+        verify(mockSchedulerService, times(7)).safeUnscheduleJob(Matchers.<String>any(), Matchers.<String>any());
+        verify(mockSchedulerService, times(7)).safeUnscheduleRepeatingJob(Matchers.<String>any(), Matchers.<String>any());
         verify(mockSchedulerService, never()).safeScheduleRepeatingJob(Matchers.<RepeatingSchedulableJob>any());
     }
 
