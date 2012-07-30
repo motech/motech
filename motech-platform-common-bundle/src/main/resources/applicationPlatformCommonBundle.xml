@@ -5,7 +5,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
-    <import resource="classpath:applicationPlatformCommon.xml"/>
+    <import resource="classpath*:applicationPlatformCommon.xml"/>
 
     <osgi:service id="outboundEventGatewayOsgi" ref="outboundEventGateway"
                   interface="org.motechproject.scheduler.gateway.OutboundEventGateway"/>

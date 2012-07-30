@@ -5,7 +5,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
             http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
-    <import resource="classpath:applicationAdmin.xml" />
+    <import resource="classpath*:applicationAdmin.xml" />
 
     <osgi:service id="statusMessageServiceOsgi" auto-export="interfaces"
                   ref="statusMessageService" interface="org.motechproject.admin.service.StatusMessageService" />
