@@ -5,6 +5,7 @@ import org.joda.time.Period;
 import org.motechproject.model.MotechEvent;
 import org.motechproject.model.RepeatingSchedulableJob;
 import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.scheduler.SchedulerFireEventGateway;
 import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.events.MilestoneEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
@@ -15,14 +16,19 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.motechproject.util.DateUtil.now;
+
 @Component
 public class EnrollmentAlertService {
 
     private MotechSchedulerService schedulerService;
 
+    private SchedulerFireEventGateway schedulerFireEventGateway;
+
     @Autowired
-    public EnrollmentAlertService(MotechSchedulerService schedulerService) {
+    public EnrollmentAlertService(MotechSchedulerService schedulerService, SchedulerFireEventGateway schedulerFireEventGateway) {
         this.schedulerService = schedulerService;
+        this.schedulerFireEventGateway = schedulerFireEventGateway;
     }
 
     public void scheduleAlertsForCurrentMilestone(Enrollment enrollment) {
@@ -67,8 +73,18 @@ public class EnrollmentAlertService {
         long repeatIntervalInMillis = (long) alert.getInterval().toStandardSeconds().getSeconds() * 1000;
 
         AlertWindow alertWindow = createAlertWindowFor(alert, enrollment, currentMilestone, milestoneWindow);
-        if(alertWindow.numberOfAlertsToSchedule() > 0)
-            schedulerService.safeScheduleRepeatingJob(new RepeatingSchedulableJob(event, alertWindow.scheduledAlertStartDate(), null, alertWindow.numberOfAlertsToSchedule() - 1, repeatIntervalInMillis));
+        if (alertWindow.numberOfAlertsToSchedule() > 0) {
+            int numberOfAlertsToFire = alertWindow.numberOfAlertsToSchedule() - 1;
+            DateTime alertsStartTime = alertWindow.scheduledAlertStartDate();
+
+            if (alertsStartTime.isBefore(now())) {
+                alertsStartTime = alertsStartTime.plus(repeatIntervalInMillis);
+                numberOfAlertsToFire = numberOfAlertsToFire - 1;
+
+                schedulerFireEventGateway.sendEventMessage(event);
+            }
+            schedulerService.safeScheduleRepeatingJob(new RepeatingSchedulableJob(event, alertsStartTime.toDate(), null, numberOfAlertsToFire, repeatIntervalInMillis));
+        }
     }
 
     private AlertWindow createAlertWindowFor(Alert alert, Enrollment enrollment, Milestone currentMilestone, MilestoneWindow milestoneWindow) {

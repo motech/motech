@@ -300,4 +300,65 @@ class EventListenerTree
         children.add(child);
     }
 
+    public void removeAllListeners(String beanName) {
+
+        for (Iterator<EventListenerTree> listenerIterator = children.iterator(); listenerIterator.hasNext(); ) {
+            EventListenerTree child = listenerIterator.next();
+            if (child.containsListenersForBeanName(beanName) && child.AllListenersEmpty()) {
+                listenerIterator.remove();
+            }
+        }
+    }
+
+    private boolean AllListenersEmpty() {
+
+        if (children.size() == 0) {
+            if (this.getAllListeners().size() == 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            for (Iterator<EventListenerTree> listenerIterator = children.iterator(); listenerIterator.hasNext(); ) {
+                EventListenerTree child = listenerIterator.next();
+                if (!child.AllListenersEmpty()) {
+                    return false;
+                } else {
+                    listenerIterator.remove();
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean containsListenersForBeanName(String beanName) {
+        boolean removed = false;
+
+        if (listeners != null) {
+            for (Iterator<EventListener> listenerIterator = listeners.iterator(); listenerIterator.hasNext(); ) {
+                EventListener nextListener = listenerIterator.next();
+                if (nextListener.getIdentifier().equals(beanName)) {
+                    listenerIterator.remove();
+                    removed = true;
+                }
+            }
+        }
+
+        if (wildcardListeners != null) {
+            for (Iterator<EventListener> listenerIterator = wildcardListeners.iterator(); listenerIterator.hasNext(); ) {
+                EventListener nextListener = listenerIterator.next();
+                if (nextListener.getIdentifier().equals(beanName)) {
+                    listenerIterator.remove();
+                    removed = true;
+                }
+            }
+        }
+        for (EventListenerTree childTree : children) {
+            if (childTree.containsListenersForBeanName(beanName)) {
+                removed = true;
+            }
+        }
+        return removed;
+    }
+
 }
