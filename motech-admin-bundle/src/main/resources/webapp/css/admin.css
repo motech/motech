@@ -48,13 +48,13 @@ body {
 
 #left-half {
     float: left;
-    width: 66%;
+    width: 70%;
     margin: 5px;
 }
 
 #right-half {
     float: right;
-    width: 32%;
+    width: 28%;
     margin: 5px;
 }
 

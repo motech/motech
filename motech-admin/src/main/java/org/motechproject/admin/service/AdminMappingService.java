@@ -9,4 +9,8 @@ public interface AdminMappingService {
     void unregisterMapping(String bundleName);
 
     Map<String, String> getAllMappings();
+
+    void registerGraphiteUrl(String url);
+
+    String getGraphiteUrl();
 }
