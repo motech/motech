@@ -10,7 +10,6 @@
     <import resource="classpath:applicationPlatformServerAPI.xml" />
     <import resource="classpath:schedulerFiredEventChannelAdapter.xml"/>
 
-    <util:properties id="schedule_tracking" location="classpath:schedulingIT/schedule_tracking.properties"/>
     <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
     <util:properties id="quartzProperties" location="classpath:quartz.properties"/>
 
@@ -39,4 +38,6 @@
     </bean>
 
     <import resource="classpath:applicationSchedulerTrackingAPI.xml"/>
+
+    <util:properties id="schedule_tracking" location="classpath:schedulingIT/schedule_tracking.properties"/>
 </beans>

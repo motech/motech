@@ -65,7 +65,6 @@ public class SchedulingWithPreferredTimeIT {
     public void teardown() {
         schedulerService.unscheduleAllJobs("org.motechproject.scheduletracking");
         allEnrollments.removeAll();
-        allSchedules.removeAll();
     }
 
     @Test

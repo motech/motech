@@ -66,7 +66,6 @@ public class SchedulingFloatingAlertsWithPreferredTimeIT {
     public void teardown() {
         schedulerService.unscheduleAllJobs("org.motechproject.scheduletracking");
         allEnrollments.removeAll();
-        allSchedules.removeAll();
     }
 
     @Test
