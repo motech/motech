@@ -19,6 +19,7 @@ import java.util.Map;
 public class AdminMappingServiceImpl implements AdminMappingService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AdminMappingServiceImpl.class);
+    private static final String GRAPHITE = "graphite";
 
     @Autowired
     private PlatformSettingsService platformSettingsService;
@@ -67,6 +68,16 @@ public class AdminMappingServiceImpl implements AdminMappingService {
             LOG.error("Can't retrieve mappings because of no DB connection");
         }
         return result;
+    }
+
+    @Override
+    public void registerGraphiteUrl(String url) {
+        registerMapping(GRAPHITE, url);
+    }
+
+    @Override
+    public String getGraphiteUrl() {
+        return getAllMappings().get(GRAPHITE);
     }
 
     private AllAdminMappings getAllAdminMappings() {

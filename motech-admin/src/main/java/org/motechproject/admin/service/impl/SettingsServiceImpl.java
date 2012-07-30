@@ -4,6 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.motechproject.MotechException;
 import org.motechproject.admin.service.SettingsService;
 import org.motechproject.admin.settings.BundleSettings;
+import org.motechproject.admin.settings.NameConversionUtil;
 import org.motechproject.admin.settings.SettingsOption;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.MotechSettings;
@@ -36,15 +37,18 @@ public class SettingsServiceImpl implements SettingsService {
     @Override
     public List<SettingsOption> getSettings() {
         MotechSettings motechSettings = platformSettingsService.getPlatformSettings();
-        Properties activemqProperties = motechSettings.getActivemqProperties();
-        Properties quartzProperties = motechSettings.getQuartzProperties();
-        Properties couchDbProperties = motechSettings.getCouchDBProperties();
-
         List<SettingsOption> settingsList = new ArrayList<>();
-        settingsList.addAll(parseProperties(activemqProperties));
-        settingsList.addAll(parseProperties(quartzProperties));
-        settingsList.addAll(parseProperties(couchDbProperties));
-        settingsList.add(parseParam(MotechSettings.LANGUAGE, motechSettings.getLanguage()));
+
+        if (motechSettings != null) {
+            Properties activemqProperties = motechSettings.getActivemqProperties();
+            Properties quartzProperties = motechSettings.getQuartzProperties();
+            Properties couchDbProperties = motechSettings.getCouchDBProperties();
+
+            settingsList.addAll(parseProperties(activemqProperties));
+            settingsList.addAll(parseProperties(quartzProperties));
+            settingsList.addAll(parseProperties(couchDbProperties));
+            settingsList.add(parseParam(MotechSettings.LANGUAGE, motechSettings.getLanguage()));
+        }
 
         return settingsList;
     }
@@ -102,7 +106,8 @@ public class SettingsServiceImpl implements SettingsService {
 
             platformSettingsService.savePlatformSettings(settings);
         } catch (IOException e) {
-            throw new MotechException("Error reading config file", e);
+            LOG.error("Unable to save config file", e);
+            throw new MotechException("Error saving config file", e);
         } finally {
             IOUtils.closeQuietly(is);
         }
@@ -113,6 +118,7 @@ public class SettingsServiceImpl implements SettingsService {
         try {
             platformSettingsService.addConfigLocation(path, true);
         } catch (IOException e) {
+            LOG.error("Unable to add config location", e);
             throw new MotechException("Error adding config location", e);
         }
     }
@@ -131,7 +137,7 @@ public class SettingsServiceImpl implements SettingsService {
         SettingsOption settingsOption = new SettingsOption();
 
         settingsOption.setValue(entry.getValue());
-        settingsOption.setKey(String.valueOf(entry.getKey()));
+        settingsOption.setKey(NameConversionUtil.convertName(String.valueOf(entry.getKey())));
         settingsOption.setType(entry.getValue().getClass().getSimpleName());
 
         return settingsOption;

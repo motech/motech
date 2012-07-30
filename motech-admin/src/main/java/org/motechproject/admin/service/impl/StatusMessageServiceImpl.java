@@ -135,7 +135,7 @@ public class StatusMessageServiceImpl implements StatusMessageService {
                 CouchDbConnector connector = platformSettingsService.getCouchConnector("motech-admin");
                 allStatusMessages = new AllStatusMessages(connector);
             } catch (RuntimeException e) {
-                LOG.error("No db connection");
+                LOG.warn("No db connection");
             }
         }
         return allStatusMessages;
