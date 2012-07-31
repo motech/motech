@@ -6,7 +6,6 @@ import org.motechproject.ivr.service.IVRService;
 import org.motechproject.outbox.api.EventKeys;
 import org.motechproject.scheduler.domain.CronJobId;
 import org.motechproject.scheduler.domain.CronSchedulableJob;
-import org.motechproject.scheduler.domain.JobId;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduler.gateway.MotechSchedulerGateway;
 import org.motechproject.server.event.annotations.MotechListener;
