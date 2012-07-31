@@ -16,20 +16,20 @@ import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollme
 public class CampaignEnrollmentRecord {
     private String externalId;
     private String campaignName;
-    private LocalDate startDate;
+    private LocalDate referenceDate;
     private CampaignEnrollmentStatus status;
 
     /**
      * This is the constructor which is used to create an CampaignEnrollmentRecord
      * @param externalId
      * @param campaignName
-     * @param startDate
+     * @param referenceDate
      * @param status
      */
-    public CampaignEnrollmentRecord(String externalId, String campaignName, LocalDate startDate, CampaignEnrollmentStatus status) {
+    public CampaignEnrollmentRecord(String externalId, String campaignName, LocalDate referenceDate, CampaignEnrollmentStatus status) {
         this.externalId = externalId;
         this.campaignName = campaignName;
-        this.startDate = startDate;
+        this.referenceDate = referenceDate;
         this.status = status;
     }
 
@@ -53,8 +53,8 @@ public class CampaignEnrollmentRecord {
      * This returns the Start Date of a CampaignEnrollmentRecord
      * @return LocalDate
      */
-    public LocalDate getStartDate() {
-        return startDate;
+    public LocalDate getReferenceDate() {
+        return referenceDate;
     }
 
     /**

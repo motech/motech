@@ -58,4 +58,22 @@ public class DayOfWeekTest {
         assertEquals(1, days.size());
         assertTrue(days.contains(DayOfWeek.Saturday));
     }
+
+    @Test
+    public void shouldParseDayOfWeek() {
+        assertEquals(DayOfWeek.Sunday, DayOfWeek.parse("sun"));
+        assertEquals(DayOfWeek.Sunday, DayOfWeek.parse("Sun"));
+        assertEquals(DayOfWeek.Sunday, DayOfWeek.parse("Sunday"));
+    }
+
+    @Test
+    public void shouldVerifyCronDayOfWeek() {
+        assertEquals(1, DayOfWeek.Sunday.getCronValue());
+        assertEquals(2, DayOfWeek.Monday.getCronValue());
+        assertEquals(3, DayOfWeek.Tuesday.getCronValue());
+        assertEquals(4, DayOfWeek.Wednesday.getCronValue());
+        assertEquals(5, DayOfWeek.Thursday.getCronValue());
+        assertEquals(6, DayOfWeek.Friday.getCronValue());
+        assertEquals(7, DayOfWeek.Saturday.getCronValue());
+    }
 }

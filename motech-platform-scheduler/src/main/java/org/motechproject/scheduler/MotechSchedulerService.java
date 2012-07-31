@@ -1,10 +1,6 @@
 package org.motechproject.scheduler;
 
-import org.motechproject.scheduler.domain.CronSchedulableJob;
-import org.motechproject.scheduler.domain.JobId;
-import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
-import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
+import org.motechproject.scheduler.domain.*;
 
 import java.util.Date;
 import java.util.List;
@@ -69,7 +65,7 @@ public interface MotechSchedulerService {
     public void scheduleRepeatingJob(RepeatingSchedulableJob repeatingSchedulableJob);
 
     /**
-     * Same as scheduleRepeatingJob, except that it would update existing job if one exists instead of creating a new one
+     * Same as safeScheduleRepeatingJob with intervening = true
      * @param repeatingSchedulableJob
      */
     public void safeScheduleRepeatingJob(RepeatingSchedulableJob repeatingSchedulableJob);
@@ -81,6 +77,12 @@ public interface MotechSchedulerService {
      * @param schedulableJob
      */
     public void safeScheduleRunOnceJob(RunOnceSchedulableJob schedulableJob);
+
+    /**
+     * Same as safeScheduleDayOfWeekJob with intervening = true
+     * @param dayOfWeekSchedulableJob
+     */
+    public void scheduleDayOfWeekJob(DayOfWeekSchedulableJob dayOfWeekSchedulableJob);
 
     /**
      * Unschedules a job with the given job ID

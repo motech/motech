@@ -5,6 +5,7 @@ import org.motechproject.server.messagecampaign.EventKeys;
 import java.util.HashMap;
 
 public class SchedulerPayloadBuilder {
+
     private HashMap<String, Object> params = new HashMap<String, Object>();
 
     public HashMap<String, Object> payload() {
