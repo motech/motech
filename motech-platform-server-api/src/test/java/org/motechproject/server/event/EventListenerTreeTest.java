@@ -150,6 +150,21 @@ public class EventListenerTreeTest {
         assertEquals(0, tree.getListenerCount(SUBJECT_2));
     }
 
+    @Test
+    public void testRemoveAllNonWildcardListeners() {
+        tree.addListener(new FooEventListener(), SUBJECT_1);
+        tree.addListener(new FooEventListener(), SUBJECT_2);
+        tree.addListener(new BarEventListener(), WILDCARD_SUBJECT);
+
+        assertEquals(2, tree.getListenerCount(SUBJECT_1));
+        assertEquals(2, tree.getListenerCount(SUBJECT_2));
+
+        tree.removeAllListeners("FooEventListener");
+
+        assertEquals(1, tree.getListenerCount(SUBJECT_1));
+        assertEquals(1, tree.getListenerCount(SUBJECT_2));
+    }
+
     class FooEventListener implements EventListener {
 
         @Override
@@ -159,6 +174,18 @@ public class EventListenerTreeTest {
         @Override
         public String getIdentifier() {
             return "FooEventListener";
+        }
+    }
+
+    class BarEventListener implements EventListener {
+
+        @Override
+        public void handle(MotechEvent event) {
+        }
+
+        @Override
+        public String getIdentifier() {
+            return "BarEventListener";
         }
     }
 }

@@ -329,7 +329,7 @@ class EventListenerTree {
         } else {
             for (Iterator<EventListenerTree> listenerIterator = children.iterator(); listenerIterator.hasNext();) {
                 EventListenerTree child = listenerIterator.next();
-                if (!child.allListenersEmpty()) {
+                if (!child.allListenersEmpty() || wildcardListeners.size() == 0) {
                     return false;
                 } else {
                     listenerIterator.remove();
