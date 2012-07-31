@@ -22,7 +22,6 @@ import java.util.Properties;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -36,7 +35,7 @@ public class PlatformSettingsServiceImplTest {
     ResourceLoader resourceLoader;
 
     @Mock
-    private CouchDbManager couchDbManager;
+    CouchDbManager couchDbManager;
 
     @InjectMocks
     @Spy
@@ -115,6 +114,6 @@ public class PlatformSettingsServiceImplTest {
 
         assertTrue(p.containsKey(MotechSettings.LANGUAGE));
         assertEquals("en", p.getProperty(MotechSettings.LANGUAGE));
-        verify(configLoader, times(2)).loadConfig();
+        verify(configLoader).loadConfig();
     }
 }

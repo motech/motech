@@ -12,8 +12,10 @@ import org.motechproject.server.config.settings.MotechSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -31,7 +33,7 @@ import java.util.Properties;
 public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformSettingsServiceImpl.class);
 
-    private static final String SETTINGS_FILE = "motech-settings.conf";
+    private AllSettings allSettings;
 
     @Autowired
     private ConfigLoader configLoader;
@@ -39,13 +41,24 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     @Autowired
     private CouchDbManager couchDbManager;
 
+    @PostConstruct
+    public void configureCouchDBManager() throws DbConnectionException {
+        ConfigFileSettings configFileSettings = configLoader.loadConfig();
+
+        if (configFileSettings != null && !configFileSettings.getCouchDBProperties().isEmpty()) {
+            couchDbManager.configureDb(configFileSettings.getCouchDBProperties());
+            allSettings = new AllSettings(getCouchConnector(SETTINGS_DB));
+        }
+    }
+
     @Override
+    @Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName")
     public MotechSettings getPlatformSettings() {
         MotechSettings settings = configLoader.loadConfig();
         SettingsRecord record;
 
         try {
-            record = getDBSettings();
+            record = allSettings.getSettings();
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             record = null;
@@ -63,10 +76,11 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     public void savePlatformSettings(Properties settings) {
         createConfigDir();
 
-        File file = new File(String.format("%s/.motech/config/%s", System.getProperty("user.home"), SETTINGS_FILE));
+        File file = new File(String.format("%s/.motech/config/%s", System.getProperty("user.home"), SETTINGS_FILE_NAME));
 
         try (FileOutputStream fos = new FileOutputStream(file)) {
             settings.store(fos, null);
+            configureCouchDBManager();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -78,9 +92,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
         if (configFileSettings == null) {
             // init settings
-            Properties props = new Properties();
-            savePlatformSettings(props);
-
+            savePlatformSettings(new Properties());
             configFileSettings = configLoader.loadConfig();
         }
 
@@ -89,12 +101,18 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         try {
             // save property to config file
             if (configFile.canWrite()) {
+                Properties couchDb = configFileSettings.getCouchDBProperties();
+
                 configFileSettings.put(key, value);
                 configFileSettings.store(new FileOutputStream(configFile), null);
+
+                if (!configFileSettings.getCouchDBProperties().equals(couchDb)) {
+                    configureCouchDBManager();
+                }
             }
 
             // save property to db
-            SettingsRecord dbSettings = getDBSettings();
+            SettingsRecord dbSettings = allSettings.getSettings();
 
             if (MotechSettings.LANGUAGE.equals(key)) {
                 dbSettings.setLanguage(value);
@@ -108,7 +126,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
                 }
             }
 
-            saveDBSettings(dbSettings);
+            allSettings.addOrUpdateSettings(dbSettings);
         } catch (Exception e) {
             LOGGER.error("Error: ", e);
         }
@@ -124,12 +142,14 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     @Override
     public String getPlatformLanguage(final String defaultValue) {
         String language = getPlatformLanguage();
+
         return (language == null ? defaultValue : language);
     }
 
     @Override
     public Locale getPlatformLocale() {
         String language = getPlatformLanguage();
+
         return (language == null ? Locale.getDefault() : new Locale(language));
     }
 
@@ -139,7 +159,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         SettingsRecord dbSettings;
 
         try {
-            dbSettings = getDBSettings();
+            dbSettings = allSettings.getSettings();
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             dbSettings = null;
@@ -245,31 +265,6 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     @Override
     public CouchDbConnector getCouchConnector(String dbName) {
         return couchDbManager.getConnector(dbName, true);
-    }
-
-    private SettingsRecord getDBSettings() throws DbConnectionException {
-        ConfigFileSettings configFileSettings = configLoader.loadConfig();
-        SettingsRecord record = null;
-
-        if (configFileSettings != null) {
-            couchDbManager.configureDb(configFileSettings.getCouchDBProperties());
-            AllSettings allSettings = new AllSettings(couchDbManager.getConnector(SETTINGS_DB, true));
-
-            record = allSettings.getSettings();
-        }
-
-        return record;
-    }
-
-    private void saveDBSettings(final SettingsRecord settingsRecord) throws DbConnectionException {
-        ConfigFileSettings configFileSettings = configLoader.loadConfig();
-
-        if (configFileSettings != null) {
-            couchDbManager.configureDb(configFileSettings.getCouchDBProperties());
-            AllSettings allSettings = new AllSettings(couchDbManager.getConnector(SETTINGS_DB, true));
-
-            allSettings.addOrUpdateSettings(settingsRecord);
-        }
     }
 
     private String getConfigDir(String bundleSymbolicName) {

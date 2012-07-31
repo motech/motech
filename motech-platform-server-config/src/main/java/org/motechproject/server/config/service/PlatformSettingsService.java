@@ -10,7 +10,9 @@ import java.util.Map;
 import java.util.Properties;
 
 public interface PlatformSettingsService {
-    public static final String SETTINGS_DB = "motech-platform-startup";
+    String SETTINGS_DB = "motech-platform-startup";
+    String SETTINGS_CACHE_NAME = "MotechSettings";
+    String SETTINGS_FILE_NAME = "motech-settings.conf";
 
     MotechSettings getPlatformSettings();
 
