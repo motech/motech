@@ -5,7 +5,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
-    <import resource="classpath:applicationOpenMrsWS.xml"/>
+    <import resource="classpath*:applicationOpenMrsWS.xml"/>
 
     <osgi:service ref="encounterAdapter" interface="org.motechproject.mrs.services.MRSEncounterAdapter"/>
     <osgi:service ref="facilityAdapter" interface="org.motechproject.mrs.services.MRSFacilityAdapter"/>
