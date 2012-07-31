@@ -22,18 +22,18 @@ import org.motechproject.commcare.request.converter.CreateElementConverter;
 import org.motechproject.commcare.request.converter.IndexElementConverter;
 import org.motechproject.commcare.request.converter.UpdateElementConverter;
 import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.scheduler.gateway.OutboundEventGateway;
+import org.motechproject.scheduler.event.EventRelay;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CaseTaskXmlConverter {
 
-    private OutboundEventGateway outboundEventGateway;
+    private EventRelay eventRelay;
 
     @Autowired
-    public CaseTaskXmlConverter(OutboundEventGateway outboundEventGateway) {
-        this.outboundEventGateway = outboundEventGateway;
+    public CaseTaskXmlConverter(EventRelay eventRelay) {
+        this.eventRelay = eventRelay;
     }
 
     public String convertToCaseXml(CaseTask task) {
@@ -151,7 +151,7 @@ public class CaseTaskXmlConverter {
                     EventSubjects.MALFORMED_CASE_EXCEPTION);
             motechEvent.getParameters().put(EventDataKeys.MESSAGE,
                     e.getMessage());
-            outboundEventGateway.sendEventMessage(motechEvent);
+            eventRelay.sendEventMessage(motechEvent);
         }
 
         return null;

@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.scheduler.gateway.OutboundEventGateway;
+import org.motechproject.scheduler.event.EventRelay;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.smpp.constants.SmppProperties;
 import org.motechproject.sms.smpp.constants.SmsProperties;
@@ -16,7 +16,6 @@ import org.smslib.Service;
 import org.smslib.Settings;
 import org.smslib.TimeoutException;
 import org.smslib.smpp.jsmpp.JSMPPGateway;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
@@ -39,7 +38,7 @@ public class ManagedSmslibServiceTest {
     @Mock
     private Service smslibService;
     @Mock
-    private OutboundEventGateway outboundEventGateway;
+    private EventRelay eventRelay;
 
     private Properties smppProperties;
     private Properties smsProperties;

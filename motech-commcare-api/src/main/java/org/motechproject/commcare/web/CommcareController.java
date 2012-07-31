@@ -11,7 +11,7 @@ import org.motechproject.commcare.events.CaseEvent;
 import org.motechproject.commcare.exception.CaseParserException;
 import org.motechproject.commcare.parser.CaseParser;
 import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.scheduler.gateway.OutboundEventGateway;
+import org.motechproject.scheduler.event.EventRelay;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -30,7 +30,7 @@ public class CommcareController {
     private static final String PARTIAL_DATA_EVENT = "partial";
 
     @Autowired
-    private OutboundEventGateway outboundEventGateway;
+    private EventRelay eventRelay;
 
     private String getRequestBodyAsString(HttpServletRequest request)
             throws IOException {
@@ -71,7 +71,7 @@ public class CommcareController {
                     EventSubjects.MALFORMED_CASE_EXCEPTION);
             motechEvent.getParameters().put(EventDataKeys.MESSAGE,
                     "Incoming case xml did not parse correctly");
-            outboundEventGateway.sendEventMessage(motechEvent);
+            eventRelay.sendEventMessage(motechEvent);
         }
 
         if (caseInstance != null) {
@@ -79,26 +79,26 @@ public class CommcareController {
 
             MotechEvent motechCaseEvent = null;
 
-            if (this.caseEventStrategy.equals(FULL_DATA_EVENT)) {
+            if (caseEventStrategy.equals(FULL_DATA_EVENT)) {
                 caseEvent = caseEvent.eventFromCase(caseInstance);
                 motechCaseEvent = caseEvent.toMotechEventWithData();
                 motechCaseEvent.getParameters().put("fieldValues",
                         caseEvent.getFieldValues());
             }
-            if (this.caseEventStrategy.equals(PARTIAL_DATA_EVENT)) {
+            if (caseEventStrategy.equals(PARTIAL_DATA_EVENT)) {
                 motechCaseEvent = caseEvent.toMotechEventWithData();
             } else {
                 motechCaseEvent = caseEvent.toMotechEventWithoutData();
             }
 
-            this.outboundEventGateway.sendEventMessage(motechCaseEvent);
+            eventRelay.sendEventMessage(motechCaseEvent);
         }
 
         return null;
     }
 
-    public void setOutboundEventGateway(
-            OutboundEventGateway outboundEventGateway) {
-        this.outboundEventGateway = outboundEventGateway;
+    public void setEventRelay(
+            EventRelay eventRelay) {
+        this.eventRelay = eventRelay;
     }
 }
