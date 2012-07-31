@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class BaseUnitTest {
-    static final DateTimeSource dateTimeSource = new DefaultDateTimeSource();
+    static final DateTimeSource DATE_TIME_SOURCE = new DefaultDateTimeSource();
 
     protected void mockCurrentDate(DateTime currentDateTime) {
         DateTimeSourceUtil.setSourceInstance(new MockDateTimeSource(currentDateTime));
@@ -45,7 +45,7 @@ public class BaseUnitTest {
     }
 
     protected void resetDateTimeSource() {
-        DateTimeSourceUtil.setSourceInstance(dateTimeSource);
+        DateTimeSourceUtil.setSourceInstance(DATE_TIME_SOURCE);
     }
 
     @After

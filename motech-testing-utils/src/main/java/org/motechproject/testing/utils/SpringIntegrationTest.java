@@ -12,11 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-public abstract class SpringIntegrationTest extends BaseUnitTest{
+public abstract class SpringIntegrationTest extends BaseUnitTest {
 
     private CouchDbConnector dbConnector;
 
-    protected ArrayList<BulkDeleteDocument> toDelete;
+    private ArrayList<BulkDeleteDocument> toDelete;
 
     @Before
     public void before() {
@@ -29,17 +29,19 @@ public abstract class SpringIntegrationTest extends BaseUnitTest{
         deleteAll();
     }
 
-    public abstract CouchDbConnector getDBConnector() ;
+    public abstract CouchDbConnector getDBConnector();
 
     protected void deleteAll() {
-        if (toDelete.size() > 0)
+        if (toDelete.size() > 0) {
             dbConnector.executeBulk(toDelete);
+        }
         toDelete.clear();
     }
 
     protected void markForDeletion(Object... documents) {
-        for (Object document : documents)
+        for (Object document : documents) {
             markForDeletion(document);
+        }
     }
 
     protected void markForDeletion(List documents) {
