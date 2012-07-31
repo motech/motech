@@ -2,6 +2,7 @@ package org.motechproject.server.messagecampaign.userspecified;
 
 import org.motechproject.server.messagecampaign.domain.campaign.*;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
+import org.motechproject.util.TimeIntervalParser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,14 +22,16 @@ public class CampaignRecord {
         Campaign campaign = type.instance();
         campaign.setMessages(buildCampaignMessages());
         campaign.setName(this.name());
-        campaign.setType(this.type);
-        if (type == CampaignType.OFFSET && campaign instanceof  OffsetCampaign) {
+        if (campaign instanceof  OffsetCampaign) {
             ((OffsetCampaign) campaign).maxDuration(maxDuration);
         }
-        if (type == CampaignType.REPEATING && campaign instanceof RepeatingCampaign) {
-            ((RepeatingCampaign) campaign).maxDuration(maxDuration);
+        else if (campaign instanceof RepeatIntervalCampaign) {
+            ((RepeatIntervalCampaign) campaign).maxDuration(new TimeIntervalParser().parse(maxDuration));
         }
-        if (type == CampaignType.CRON && campaign instanceof  CronBasedCampaign) {
+        else if (campaign instanceof DayOfWeekCampaign) {
+            ((DayOfWeekCampaign) campaign).maxDuration(new TimeIntervalParser().parse(maxDuration));
+        }
+        else if (campaign instanceof  CronBasedCampaign) {
             ((CronBasedCampaign) campaign).maxDuration(maxDuration);
         }
         return campaign;

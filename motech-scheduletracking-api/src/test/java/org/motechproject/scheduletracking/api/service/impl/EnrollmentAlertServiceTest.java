@@ -443,7 +443,8 @@ public class EnrollmentAlertServiceTest {
         Enrollment enrollment = new Enrollment().setExternalId("entity_1").setSchedule(schedule).setCurrentMilestoneName("milestone").setStartOfSchedule(weeksAgo(0)).setEnrolledOn(weeksAgo(0)).setPreferredAlertTime(new Time(8, 20)).setStatus(EnrollmentStatus.ACTIVE).setMetadata(null);
         enrollmentAlertService.scheduleAlertsForCurrentMilestone(enrollment);
 
-        verify(schedulerService, times(0)).safeScheduleRepeatingJob(Matchers.<RepeatingSchedulableJob>any());
+        verify(schedulerService, times(0)).
+            safeScheduleRepeatingJob(Matchers.<RepeatingSchedulableJob>any());
     }
 
     @Test

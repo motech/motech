@@ -82,6 +82,7 @@
                             org.springframework.scheduling.concurrent,
                             org.springframework.osgi.config,
                             org.quartz.simpl,
+                            org.quartz.impl.triggers,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-scheduler</Embed-Dependency>

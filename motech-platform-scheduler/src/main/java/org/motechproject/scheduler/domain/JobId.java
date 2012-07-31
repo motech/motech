@@ -10,7 +10,6 @@ public abstract class JobId implements Serializable {
     private String subject;
     private String id;
     private String suffix;
-    private boolean repeatingJob;
 
     public JobId(String subject, String id, String suffix) {
         this.subject = subject;

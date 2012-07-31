@@ -1,0 +1,17 @@
+[
+    {
+        "name" : "DayOfWeekCampaign",
+        "type" : "DAY_OF_WEEK",
+        "maxDuration" : "2 weeks",
+        "messages" : [
+            {
+                "name" : "message1",
+                "formats" : ["IVR", "SMS"],
+                "languages" : ["en"],
+                "messageKey": "message_key_1",
+                "repeatOn" : ["Monday", "Friday"],
+                "startTime" : "10:30"
+            }
+        ]
+    }
+]

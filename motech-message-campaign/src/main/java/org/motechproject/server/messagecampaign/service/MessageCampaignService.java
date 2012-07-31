@@ -15,7 +15,10 @@ public interface MessageCampaignService {
      * @param enrollRequest
      */
     void startFor(CampaignRequest enrollRequest);
-    void stopFor(CampaignRequest enrollRequest, String message);
+    /** Unenrolls an external from the campaign as specified in the request. The entity will no longer receive events from the campaign.
+     *
+     * @param enrollRequest
+     */
     void stopAll(CampaignRequest enrollRequest);
 
     /** Searches and returns the Campaign Enrollment Records as per the criteria in the given CampaignEnrollmentsQuery
@@ -26,5 +29,6 @@ public interface MessageCampaignService {
      */
     List<CampaignEnrollmentRecord> search(CampaignEnrollmentsQuery query);
 
+    // TODO: use DateTime
     Map<String, List<Date>> getCampaignTimings(String externalId, String campaignName, Date startDate, Date endDate);
 }

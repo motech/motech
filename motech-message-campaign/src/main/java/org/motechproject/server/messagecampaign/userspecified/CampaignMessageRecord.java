@@ -1,46 +1,75 @@
 package org.motechproject.server.messagecampaign.userspecified;
 
+import org.motechproject.model.DayOfWeek;
+import org.motechproject.model.Time;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignType;
 import org.motechproject.server.messagecampaign.domain.message.*;
 import org.motechproject.util.DateUtil;
-import org.springframework.util.CollectionUtils;
+import org.motechproject.util.TimeIntervalParser;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-import static org.motechproject.server.messagecampaign.domain.message.RepeatingMessageMode.*;
+import static org.motechproject.model.Time.parseTime;
 
 public class CampaignMessageRecord {
 
     private String name;
     private List<String> formats;
     private List<String> languages;
-    private List<String> weekDaysApplicable;
-    private String calendarStartOfWeek;
+    private List<String> repeatOn;
     private String messageKey;
     private Date date;
     private String timeOffset;
-    private String repeatInterval;
+    private String repeatEvery;
     private String cron;
-    private String deliverTime;
-
+    private String startTime;
 
     public CampaignMessage build(CampaignType type) {
-
         if (type == CampaignType.ABSOLUTE) {
             return buildAbsolute();
         }
         if (type == CampaignType.OFFSET) {
             return buildOffset();
         }
-        if (type == CampaignType.REPEATING) {
-            return buildRepeating();
+        if (type == CampaignType.REPEAT_INTERVAL) {
+            return buildRepeatIntervalCampaignMessage();
+        }
+        if (type == CampaignType.DAY_OF_WEEK) {
+            return buildDayOfWeekCampaignMessage();
         }
         if (type == CampaignType.CRON) {
             return buildCron();
         }
         throw new RuntimeException("Unknown campaign type");
+    }
+
+    private CampaignMessage buildDayOfWeekCampaignMessage() {
+        DayOfWeekCampaignMessage message = new DayOfWeekCampaignMessage(getDaysOfWeek(repeatOn));
+        message.name(name())
+            .formats(formats())
+            .languages(languages())
+            .messageKey(messageKey())
+            .setStartTime(parseTime(startTime, ":"));
+        return message;
+    }
+
+    private List<DayOfWeek> getDaysOfWeek(List<String> days) {
+        List<DayOfWeek> daysOfWeek = new ArrayList<>();
+        for (String day : days)
+            daysOfWeek.add(DayOfWeek.parse(day));
+        return daysOfWeek;
+    }
+
+    private CampaignMessage buildRepeatIntervalCampaignMessage() {
+        RepeatIntervalCampaignMessage message = new RepeatIntervalCampaignMessage(new TimeIntervalParser().parse(repeatInterval()));
+        message.name(name())
+            .formats(formats())
+            .languages(languages())
+            .messageKey(messageKey())
+            .setStartTime(parseTime(startTime, ":"));
+        return message;
     }
 
     private CampaignMessage buildCron() {
@@ -50,44 +79,7 @@ public class CampaignMessageRecord {
         message.languages(languages);
         message.messageKey(messageKey);
         message.cron(cron);
-        return message;
-    }
-
-    private CampaignMessage buildRepeating() {
-        return createRepeatingCampaignMessageFromRecord();
-    }
-
-    private RepeatingMessageMode findMode() {
-        if (validate()) {
-            if (!isEmpty(repeatInterval())) return REPEAT_INTERVAL;
-            else if (!isEmpty(calendarStartOfWeek())) return CALENDAR_WEEK_SCHEDULE;
-            else if (!CollectionUtils.isEmpty(weekDaysApplicable())) return WEEK_DAYS_SCHEDULE;
-        }
-        throw new IllegalArgumentException("expected repeatInterval or (calendarStartOfWeek, weekDaysApplicable) only");
-    }
-
-    public boolean validate() {
-        return !isEmpty(repeatInterval()) ? (weekDaysApplicable() == null && calendarStartOfWeek() == null)
-                : (weekDaysApplicable() != null || calendarStartOfWeek() != null);
-    }
-
-    public RepeatingCampaignMessage createRepeatingCampaignMessageFromRecord() {
-        RepeatingMessageMode messageMode = this.findMode();
-        if (messageMode.equals(REPEAT_INTERVAL)) {
-            return buildDefaultValues(new RepeatingCampaignMessage(repeatInterval(), deliverTime));
-        } else if (messageMode.equals(WEEK_DAYS_SCHEDULE)) {
-            return buildDefaultValues(new RepeatingCampaignMessage(weekDaysApplicable(), deliverTime));
-        } else if (messageMode.equals(CALENDAR_WEEK_SCHEDULE)) {
-            return buildDefaultValues(new RepeatingCampaignMessage(calendarStartOfWeek(), weekDaysApplicable(), deliverTime));
-        }
-        return null;
-    }
-
-    public RepeatingCampaignMessage buildDefaultValues(RepeatingCampaignMessage message) {
-        message.name(name())
-                .formats(formats())
-                .languages(languages())
-                .messageKey(messageKey());
+        message.setStartTime(parseTime(startTime, ":"));
         return message;
     }
 
@@ -98,6 +90,7 @@ public class CampaignMessageRecord {
         message.languages(languages);
         message.messageKey(messageKey);
         message.date(DateUtil.newDate(date));
+        message.setStartTime(parseTime(startTime, ":"));
         return message;
     }
 
@@ -108,6 +101,7 @@ public class CampaignMessageRecord {
         message.languages(languages);
         message.messageKey(messageKey);
         message.timeOffset(timeOffset);
+        message.setStartTime(Time.parseTime(startTime, ":"));
         return message;
     }
 
@@ -160,8 +154,8 @@ public class CampaignMessageRecord {
         return timeOffset;
     }
 
-    public CampaignMessageRecord repeatInterval(String repeatInterval) {
-        this.repeatInterval = repeatInterval;
+    public CampaignMessageRecord repeatEvery(String repeatEvery) {
+        this.repeatEvery = repeatEvery;
         return this;
     }
 
@@ -170,38 +164,25 @@ public class CampaignMessageRecord {
         return this;
     }
 
-    public CampaignMessageRecord weekDaysApplicable(List<String> weekDaysApplicable) {
-        this.weekDaysApplicable = weekDaysApplicable;
-        return this;
-    }
-
-    public CampaignMessageRecord calendarStartOfWeek(String calendarStartOfWeek) {
-        this.calendarStartOfWeek = calendarStartOfWeek;
+    public CampaignMessageRecord repeatOn(List<String> repeatOn) {
+        this.repeatOn = repeatOn;
         return this;
     }
 
     public String repeatInterval() {
-        return this.repeatInterval;
+        return this.repeatEvery;
     }
 
     public void cron(String cron) {
         this.cron = cron;
     }
 
-    public CampaignMessageRecord deliverTime(String deliverTime) {
-        this.deliverTime = deliverTime;
+    public CampaignMessageRecord startTime(String startTime) {
+        this.startTime = startTime;
         return this;
     }
 
     public String cron() {
         return cron;
-    }
-
-    public List<String> weekDaysApplicable() {
-        return weekDaysApplicable;
-    }
-
-    public String calendarStartOfWeek() {
-        return calendarStartOfWeek;
     }
 }
