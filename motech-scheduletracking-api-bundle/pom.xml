@@ -57,7 +57,9 @@
                         <Export-Package>
                             org.motechproject.scheduletracking.api.service,
                             org.motechproject.scheduletracking.api.service.impl,
-                            org.motechproject.scheduletracking.api.events.constants
+                            org.motechproject.scheduletracking.api.events,
+                            org.motechproject.scheduletracking.api.events.constants,
+                            org.motechproject.scheduletracking.api.domain
                         </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.scheduletracking.api.osgi.Activator
@@ -72,6 +74,11 @@
                             org.springframework.scheduling.quartz,
                             org.springframework.osgi.config,
                             org.quartz.simpl,
+                            net.sf.cglib.asm,
+                            net.sf.cglib.asm.util,
+                            net.sf.cglib.core,
+                            net.sf.cglib.proxy,
+                            net.sf.cglib.transform.impl,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-scheduletracking-api</Embed-Dependency>
