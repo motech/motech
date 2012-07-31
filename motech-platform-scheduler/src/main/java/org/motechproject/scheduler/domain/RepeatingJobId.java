@@ -1,6 +1,6 @@
 package org.motechproject.scheduler.domain;
 
-public class RepeatingJobId extends JobId{
+public class RepeatingJobId extends JobId {
 
     public static final String SUFFIX_REPEATJOBID = "-repeat";
 

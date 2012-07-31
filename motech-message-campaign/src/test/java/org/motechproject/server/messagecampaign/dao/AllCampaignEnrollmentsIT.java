@@ -39,24 +39,24 @@ public class AllCampaignEnrollmentsIT {
 
     @Test
     public void shouldFindByExternalIdAndCampaignName() {
-        CampaignEnrollment enrollment = new CampaignEnrollment(externalId, campaignName).setStartDate(DateUtil.newDate(2011, 11, 1)).setStartOffset(1);
+        CampaignEnrollment enrollment = new CampaignEnrollment(externalId, campaignName).setReferenceDate(DateUtil.newDate(2011, 11, 1));
         allCampaignEnrollments.add(enrollment);
 
         CampaignEnrollment actualEnrollment = allCampaignEnrollments.findByExternalIdAndCampaignName(externalId, campaignName);
         assertThat(enrollment.getId(), is(actualEnrollment.getId()));
-        assertThat(enrollment.getStartDate(), is(actualEnrollment.getStartDate()));
+        assertThat(enrollment.getReferenceDate(), is(actualEnrollment.getReferenceDate()));
     }
     
     @Test
     public void shouldCreateNewEnrollmentIfSavedForFirstTime() {
         allCampaignEnrollments = spy(allCampaignEnrollments);
 
-        CampaignEnrollment enrollment = new CampaignEnrollment(externalId, campaignName).setStartDate(DateUtil.newDate(2011, 11, 1)).setStartOffset(1);
+        CampaignEnrollment enrollment = new CampaignEnrollment(externalId, campaignName).setReferenceDate(DateUtil.newDate(2011, 11, 1));
         allCampaignEnrollments.saveOrUpdate(enrollment);
         verify(allCampaignEnrollments).add(any(CampaignEnrollment.class));
 
         enrollment = allCampaignEnrollments.findByExternalIdAndCampaignName(externalId, campaignName);
-        allCampaignEnrollments.saveOrUpdate(new CampaignEnrollment(externalId, campaignName).setStartDate(DateUtil.newDate(2011, 11, 1)).setStartOffset(1));
+        allCampaignEnrollments.saveOrUpdate(new CampaignEnrollment(externalId, campaignName).setReferenceDate(DateUtil.newDate(2011, 11, 1)));
         verify(allCampaignEnrollments).update(any(CampaignEnrollment.class));
 
         assertEquals(1, allCampaignEnrollments.getAll().size());
