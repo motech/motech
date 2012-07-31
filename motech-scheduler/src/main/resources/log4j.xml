@@ -9,15 +9,15 @@
         </layout>
     </appender>
 
-    <logger name="org.motechproject.scheduler.MotechScheduler">
+    <logger name="org.motechproject.scheduler.impl.MotechScheduler">
         <level value="INFO"/>
     </logger>
 
-    <logger name="org.motechproject.scheduler.MotechScheduledJob">
+    <logger name="org.motechproject.scheduler.impl.MotechScheduledJob">
         <level value="INFO"/>
     </logger>
 
-    <logger name="org.motechproject.scheduler.MotechSchedulerServiceImpl">
+    <logger name="org.motechproject.scheduler.impl.MotechSchedulerServiceImpl">
         <level value="INFO"/>
     </logger>
 

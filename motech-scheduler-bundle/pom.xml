@@ -55,7 +55,7 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.scheduler
+                            !*
                         </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.scheduler.osgi.Activator

@@ -1,10 +1,11 @@
-package org.motechproject.scheduler;
+package org.motechproject.scheduler.impl;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.motechproject.MotechObject;
 import org.motechproject.model.Time;
+import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.*;
 import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.motechproject.util.DateUtil;

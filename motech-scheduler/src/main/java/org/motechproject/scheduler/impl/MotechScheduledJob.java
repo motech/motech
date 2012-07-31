@@ -1,4 +1,4 @@
-package org.motechproject.scheduler;
+package org.motechproject.scheduler.impl;
 
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduler.gateway.SchedulerFireEventGateway;

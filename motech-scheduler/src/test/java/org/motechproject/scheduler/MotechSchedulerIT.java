@@ -8,6 +8,7 @@ import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.domain.*;
 import org.motechproject.scheduler.exception.MotechSchedulerException;
+import org.motechproject.scheduler.impl.MotechSchedulerServiceImpl;
 import org.motechproject.server.event.EventListenerRegistry;
 import org.motechproject.server.event.annotations.MotechListenerEventProxy;
 import org.motechproject.util.DateUtil;

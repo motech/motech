@@ -1,5 +1,6 @@
-package org.motechproject.scheduler;
+package org.motechproject.scheduler.impl;
 
+import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.CronJobId;
 import org.motechproject.scheduler.domain.CronSchedulableJob;
 import org.motechproject.scheduler.domain.MotechEvent;
