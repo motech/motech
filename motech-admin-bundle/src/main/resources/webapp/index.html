@@ -45,16 +45,19 @@
            <a href="#/bundles"><img src="img/logo.png" alt="logo" /></a>
            <h1>{{msg('title')}}</h1>
         </div>
-       <div id="nav-panel">
+        <div id="nav-panel">
             <ul id="nav">
                 <li>
-                    <a href="#/bundles">{{msg('bundles')}}</a>
+                    <a href="#/bundles">{{msg('manageModules')}}</a>
                 </li>
                 <li>
-                    <a href="#/settings">{{msg('platform.settings')}}</a>
+                    <a href="#/settings">{{msg('settings')}}</a>
                 </li>
-                <li ng-show="mappings.length > 0">
-                    <a href="#">{{msg('modules')}}</a>
+                <li>
+                    <a href="#/operations">{{msg('operations')}}</a>
+                </li>
+                <li>
+                    <a href="#/modulePanels">{{msg('modules')}}</a>
                     <ul>
                         <li ng-repeat="(key, value) in mappings">
                             <a ng-href="../{{value}}">{{key}}</a>
@@ -62,7 +65,7 @@
                     </ul>
                 </li>
             </ul>
-       </div>
+        </div>
 
         <div id="content">
             <div id="left-half">

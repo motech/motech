@@ -61,6 +61,8 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
     @Override
     public void savePlatformSettings(Properties settings) {
+        createConfigDir();
+
         File file = new File(String.format("%s/.motech/config/%s", System.getProperty("user.home"), SETTINGS_FILE));
 
         try (FileOutputStream fos = new FileOutputStream(file)) {
@@ -73,15 +75,22 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     @Override
     public void setPlatformSetting(final String key, final String value) {
         ConfigFileSettings configFileSettings = configLoader.loadConfig();
+
+        if (configFileSettings == null) {
+            // init settings
+            Properties props = new Properties();
+            savePlatformSettings(props);
+
+            configFileSettings = configLoader.loadConfig();
+        }
+
         File configFile = new File(configFileSettings.getPath());
 
         try {
             // save property to config file
             if (configFile.canWrite()) {
-                if (configFileSettings.containsKey(key)) {
-                    configFileSettings.put(key, value);
-                    configFileSettings.store(new FileOutputStream(configFile), null);
-                }
+                configFileSettings.put(key, value);
+                configFileSettings.store(new FileOutputStream(configFile), null);
             }
 
             // save property to db
@@ -166,7 +175,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
     @Override
     public void saveBundleProperties(final String bundleSymbolicName, final String fileName, final Properties properties) throws IOException {
-        String configDirPath = String.format(String.format("%s/.motech/config/%s", System.getProperty("user.home"), bundleSymbolicName));
+        String configDirPath = getConfigDir(bundleSymbolicName);
 
         File configDir = new File(configDirPath);
         if (!configDir.exists()) {
@@ -214,7 +223,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
     @Override
     public Map<String, Properties> getAllProperties(final String bundleSymbolicName) throws IOException {
-        File dir = new File(String.format("%s/.motech/config/%s/", System.getProperty("user.home"), bundleSymbolicName));
+        File dir = new File(getConfigDir(bundleSymbolicName));
         Map<String, Properties> propertiesMap = new HashMap<>();
 
         if (dir.exists()) {
@@ -263,4 +272,14 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         }
     }
 
+    private String getConfigDir(String bundleSymbolicName) {
+        return String.format("%s/.motech/config/%s/", System.getProperty("user.home"), bundleSymbolicName);
+    }
+
+    private void createConfigDir() {
+        File dir = new File(String.format("%s/.motech/config", System.getProperty("user.home")));
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+    }
 }

@@ -1,0 +1,7 @@
+<div class="box-header">
+    {{msg('operations')}}
+</div>
+<div class="box-content">
+    <iframe ng-show="mappings['graphite']" ng-src="{{mappings['graphite']}}" height="100%" width="100%"></iframe>
+    <p ng-hide="mappings['graphite']">{{msg('operations.notReg')}}</p>
+</div>

@@ -277,14 +277,28 @@ function SettingsCtrl($scope, PlatformSettings, i18nService, $http) {
     $scope.saveSettings = function() {
         blockUI();
         $('#platformSettingsForm').ajaxSubmit({
-            success : alertHandler('settings.saved'),
+            success : alertHandlerWithCallback('settings.saved', function () {
+                $scope.platformSettings = PlatformSettings.query();
+            }),
+            error : jFormErrorHandler
+        });
+    }
+
+    $scope.saveNewSettings = function() {
+        blockUI();
+        $('#noSettingsForm').ajaxSubmit({
+            success : alertHandlerWithCallback('settings.saved', function () {
+                $scope.platformSettings = PlatformSettings.query();
+            }),
             error : jFormErrorHandler
         });
     }
 
     $scope.uploadSettings = function() {
         $("#settingsFileForm").ajaxSubmit({
-            success : alertHandler('settings.saved'),
+            success : alertHandlerWithCallback('settings.saved', function () {
+                $scope.platformSettings = PlatformSettings.query();
+            }),
             error : jFormErrorHandler
         });
     }

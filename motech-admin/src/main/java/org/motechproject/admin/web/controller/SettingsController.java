@@ -4,6 +4,8 @@ import org.motechproject.admin.service.SettingsService;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.admin.settings.BundleSettings;
 import org.motechproject.admin.settings.SettingsOption;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -25,6 +27,8 @@ import java.util.Map;
 
 @Controller
 public class SettingsController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SettingsController.class);
 
     private static final String PLATFORM_SETTINGS_SAVED = "{settings.saved}";
 
@@ -82,7 +86,8 @@ public class SettingsController {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = Exception.class)
     public void handleException(Exception e) {
-        statusMessageService.error(e.getMessage());
+        LOG.error(e.getMessage(), e);
+        statusMessageService.error("Error: " + e.getMessage());
     }
 
     private static List<SettingsOption> constructSettingsOptions(HttpServletRequest request) {
