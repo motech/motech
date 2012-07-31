@@ -3,7 +3,7 @@ package org.motechproject.sms.smpp;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.scheduler.gateway.OutboundEventGateway;
+import org.motechproject.scheduler.event.EventRelay;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.smpp.constants.EventSubjects;
 import org.motechproject.sms.smpp.constants.SmsProperties;
@@ -29,7 +29,7 @@ import static org.motechproject.util.DateUtil.newDateTime;
 public class OutboundMessageNotification implements IOutboundMessageNotification {
 
     private final Logger log = Logger.getLogger(OutboundMessageNotification.class);
-    private OutboundEventGateway outboundEventGateway;
+    private EventRelay eventRelay;
     private final Integer maxRetries;
 
     @Autowired
@@ -38,9 +38,9 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
     private SettingsFacade settings;
 
     @Autowired
-    public OutboundMessageNotification(OutboundEventGateway outboundEventGateway, SettingsFacade settings) {
+    public OutboundMessageNotification(EventRelay eventRelay, SettingsFacade settings) {
         this.settings = settings;
-        this.outboundEventGateway = outboundEventGateway;
+        this.eventRelay = eventRelay;
         this.maxRetries = Integer.parseInt(settings.getProperty(SmsProperties.MAX_RETRIES));
     }
 
@@ -64,7 +64,7 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
         HashMap<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(RECIPIENT, msg.getRecipient());
         parameters.put(MESSAGE, msg.getText());
-        outboundEventGateway.sendEventMessage(new MotechEvent(EventSubjects.SMS_FAILURE_NOTIFICATION, parameters));
+        eventRelay.sendEventMessage(new MotechEvent(EventSubjects.SMS_FAILURE_NOTIFICATION, parameters));
         allOutboundSMS.createOrReplace(new OutboundSMS(msg.getRecipient(), msg.getRefNo(), msg.getText(), sentTime, ABORTED));
     }
 

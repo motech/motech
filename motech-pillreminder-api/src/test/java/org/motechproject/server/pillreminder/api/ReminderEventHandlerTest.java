@@ -11,7 +11,7 @@ import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
-import org.motechproject.scheduler.gateway.OutboundEventGateway;
+import org.motechproject.scheduler.event.EventRelay;
 import org.motechproject.server.pillreminder.api.builder.SchedulerPayloadBuilder;
 import org.motechproject.server.pillreminder.api.builder.testbuilder.DosageBuilder;
 import org.motechproject.server.pillreminder.api.builder.testbuilder.PillRegimenBuilder;
@@ -36,7 +36,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ReminderEventHandlerTest extends BaseUnitTest {
     @Mock
-    OutboundEventGateway outboundEventGateway;
+    EventRelay eventRelay;
     @Mock
     AllPillRegimens allPillRegimens;
     @Mock
@@ -52,7 +52,7 @@ public class ReminderEventHandlerTest extends BaseUnitTest {
     @Before
     public void setUp() {
         initMocks(this);
-        pillReminderEventHandler = new ReminderEventHandler(outboundEventGateway, allPillRegimens, schedulerService);
+        pillReminderEventHandler = new ReminderEventHandler(eventRelay, allPillRegimens, schedulerService);
     }
 
     @Test
@@ -72,7 +72,7 @@ public class ReminderEventHandlerTest extends BaseUnitTest {
         pillReminderEventHandler.handleEvent(motechEvent);
 
         verify(allPillRegimens, atLeastOnce()).findByExternalId(externalId);
-        verify(outboundEventGateway, only()).sendEventMessage(Matchers.<MotechEvent>any());
+        verify(eventRelay, only()).sendEventMessage(Matchers.<MotechEvent>any());
     }
 
     @Test
@@ -90,7 +90,7 @@ public class ReminderEventHandlerTest extends BaseUnitTest {
         pillReminderEventHandler.handleEvent(motechEvent);
 
         verify(allPillRegimens, atLeastOnce()).findByExternalId(externalId);
-        verify(outboundEventGateway, times(1)).sendEventMessage(event.capture());
+        verify(eventRelay, times(1)).sendEventMessage(event.capture());
 
         assertNotNull(event.getValue().getParameters());
         assertEquals(2, event.getValue().getParameters().get(EventKeys.PILLREMINDER_TIMES_SENT));
@@ -112,7 +112,7 @@ public class ReminderEventHandlerTest extends BaseUnitTest {
         pillReminderEventHandler.handleEvent(motechEvent);
 
         verify(allPillRegimens, atLeastOnce()).findByExternalId(externalId);
-        verify(outboundEventGateway, times(1)).sendEventMessage(event.capture());
+        verify(eventRelay, times(1)).sendEventMessage(event.capture());
 
         assertNotNull(event.getValue().getParameters());
         assertEquals(6, event.getValue().getParameters().get(EventKeys.PILLREMINDER_TOTAL_TIMES_TO_SEND));
@@ -135,7 +135,7 @@ public class ReminderEventHandlerTest extends BaseUnitTest {
         pillReminderEventHandler.handleEvent(motechEvent);
 
         verify(allPillRegimens, atLeastOnce()).findByExternalId(externalId);
-        verify(outboundEventGateway, times(1)).sendEventMessage(event.capture());
+        verify(eventRelay, times(1)).sendEventMessage(event.capture());
 
         assertNotNull(event.getValue().getParameters());
         assertEquals(retryInterval, event.getValue().getParameters().get(EventKeys.PILLREMINDER_RETRY_INTERVAL));
@@ -158,7 +158,7 @@ public class ReminderEventHandlerTest extends BaseUnitTest {
         pillReminderEventHandler.handleEvent(motechEvent);
 
         verify(allPillRegimens, atLeastOnce()).findByExternalId(externalId);
-        verify(outboundEventGateway, never()).sendEventMessage(Matchers.<MotechEvent>any());
+        verify(eventRelay, never()).sendEventMessage(Matchers.<MotechEvent>any());
     }
 
     @Test
