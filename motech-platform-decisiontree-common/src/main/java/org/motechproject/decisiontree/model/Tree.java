@@ -53,14 +53,24 @@ public class Tree extends MotechBaseDataObject {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Tree tree = (Tree) o;
 
-        if (description != null ? !description.equals(tree.description) : tree.description != null) return false;
-        if (name != null ? !name.equals(tree.name) : tree.name != null) return false;
-        if (rootNode != null ? !rootNode.equals(tree.rootNode) : tree.rootNode != null) return false;
+        if (description != null ? !description.equals(tree.description) : tree.description != null) {
+            return false;
+        }
+        if (name != null ? !name.equals(tree.name) : tree.name != null) {
+            return false;
+        }
+        if (rootNode != null ? !rootNode.equals(tree.rootNode) : tree.rootNode != null) {
+            return false;
+        }
 
         return true;
     }
