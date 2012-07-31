@@ -37,7 +37,7 @@ import static org.motechproject.util.DateUtil.newDateTime;
 import static org.motechproject.util.DateUtil.now;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:schedulingIT/testApplicationSchedulerTrackingAPI.xml")
+@ContextConfiguration(locations = "classpath:testApplicationSchedulerTrackingAPI.xml")
 public class SchedulingFloatingAlertsWithPreferredTimeIT {
 
     @Autowired
@@ -48,9 +48,6 @@ public class SchedulingFloatingAlertsWithPreferredTimeIT {
 
     @Autowired
     private SchedulerFactoryBean schedulerFactoryBean;
-
-    @Autowired
-    private AllSchedules allSchedules;
 
     @Autowired
     private AllEnrollments allEnrollments;
