@@ -59,7 +59,7 @@ public class StartupManagerTest {
         assertEquals(NEED_CONFIG, startupManager.getPlatformState());
         assertFalse(startupManager.canLaunchBundles());
         assertNull(platformSettingsService.getPlatformSettings());
-        verify(configLoader, times(3)).loadConfig();
+        verify(configLoader, times(2)).loadConfig();
     }
 
     @Test
@@ -73,7 +73,7 @@ public class StartupManagerTest {
         assertEquals(startupManager.getPlatformState(), MotechPlatformState.NO_DB);
         assertEquals(platformSettingsService.getPlatformSettings(), configFileSettings);
         assertFalse(startupManager.canLaunchBundles());
-        verify(configLoader, times(3)).loadConfig();
-        verify(couchDbManager, times(2)).configureDb(couchDbProperties);
+        verify(configLoader, times(2)).loadConfig();
+        verify(couchDbManager).configureDb(couchDbProperties);
     }
 }
