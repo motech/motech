@@ -14,7 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import static ch.lambdaj.Lambda.*;
+import static ch.lambdaj.Lambda.select;
+import static ch.lambdaj.Lambda.having;
+import static ch.lambdaj.Lambda.on;
 import static org.hamcrest.Matchers.equalTo;
 
 @Component
@@ -24,7 +26,7 @@ public class AllMessageCampaigns {
 
     private Properties properties;
     private MotechJsonReader motechJsonReader;
-    public static List<Campaign> campaigns = new ArrayList<Campaign>();
+    private static List<Campaign> campaigns = new ArrayList<Campaign>();
 
     public AllMessageCampaigns(Properties properties, MotechJsonReader motechJsonReader) {
         this.properties = properties;
@@ -45,13 +47,12 @@ public class AllMessageCampaigns {
         if (CollectionUtils.isEmpty(campaigns)) {
             List<CampaignRecord> campaignRecords = (List<CampaignRecord>) motechJsonReader.readFromFile(definitionFile(),
                     new TypeToken<List<CampaignRecord>>() {
-                    }.getType());
+                    } .getType());
 
             for (CampaignRecord campaignRecord : campaignRecords) {
                 campaigns.add(campaignRecord.build());
             }
         }
-
         return campaigns;
     }
 
@@ -71,5 +72,4 @@ public class AllMessageCampaigns {
     private String definitionFile() {
         return this.properties.getProperty(MESSAGECAMPAIGN_DEFINITION_FILE);
     }
-
 }

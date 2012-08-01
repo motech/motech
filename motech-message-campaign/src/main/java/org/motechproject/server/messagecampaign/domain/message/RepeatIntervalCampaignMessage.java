@@ -11,6 +11,7 @@ public class RepeatIntervalCampaignMessage extends CampaignMessage {
     }
 
     public long getRepeatIntervalInMillis() {
-        return repeatInterval.toStandardSeconds().getSeconds() * 1000;
+        final int millisInASec = 1000;
+        return repeatInterval.toStandardSeconds().getSeconds() * millisInASec;
     }
 }

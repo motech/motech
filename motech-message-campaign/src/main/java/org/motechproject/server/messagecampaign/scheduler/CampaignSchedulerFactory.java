@@ -2,7 +2,11 @@ package org.motechproject.server.messagecampaign.scheduler;
 
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.CampaignNotFoundException;
-import org.motechproject.server.messagecampaign.domain.campaign.*;
+import org.motechproject.server.messagecampaign.domain.campaign.AbsoluteCampaign;
+import org.motechproject.server.messagecampaign.domain.campaign.CronBasedCampaign;
+import org.motechproject.server.messagecampaign.domain.campaign.DayOfWeekCampaign;
+import org.motechproject.server.messagecampaign.domain.campaign.OffsetCampaign;
+import org.motechproject.server.messagecampaign.domain.campaign.RepeatIntervalCampaign;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,8 +33,9 @@ public class CampaignSchedulerFactory {
         map.put(DayOfWeekCampaign.class, dayOfWeekCampaignSchedulerService);
 
         CampaignSchedulerService schedulerService = map.get(allMessageCampaigns.get(campaigName).getClass());
-        if (schedulerService == null)
+        if (schedulerService == null) {
             throw new CampaignNotFoundException(format("Campaign (%s) not found.", campaigName));
+        }
         return schedulerService;
     }
 }

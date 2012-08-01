@@ -1,6 +1,11 @@
 package org.motechproject.server.messagecampaign.userspecified;
 
-import org.motechproject.server.messagecampaign.domain.campaign.*;
+import org.motechproject.server.messagecampaign.domain.campaign.Campaign;
+import org.motechproject.server.messagecampaign.domain.campaign.CampaignType;
+import org.motechproject.server.messagecampaign.domain.campaign.CronBasedCampaign;
+import org.motechproject.server.messagecampaign.domain.campaign.DayOfWeekCampaign;
+import org.motechproject.server.messagecampaign.domain.campaign.OffsetCampaign;
+import org.motechproject.server.messagecampaign.domain.campaign.RepeatIntervalCampaign;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.util.TimeIntervalParser;
 
@@ -22,16 +27,13 @@ public class CampaignRecord {
         Campaign campaign = type.instance();
         campaign.setMessages(buildCampaignMessages());
         campaign.setName(this.name());
-        if (campaign instanceof  OffsetCampaign) {
+        if (campaign instanceof OffsetCampaign) {
             ((OffsetCampaign) campaign).maxDuration(maxDuration);
-        }
-        else if (campaign instanceof RepeatIntervalCampaign) {
+        } else if (campaign instanceof RepeatIntervalCampaign) {
             ((RepeatIntervalCampaign) campaign).maxDuration(new TimeIntervalParser().parse(maxDuration));
-        }
-        else if (campaign instanceof DayOfWeekCampaign) {
+        } else if (campaign instanceof DayOfWeekCampaign) {
             ((DayOfWeekCampaign) campaign).maxDuration(new TimeIntervalParser().parse(maxDuration));
-        }
-        else if (campaign instanceof  CronBasedCampaign) {
+        } else if (campaign instanceof CronBasedCampaign) {
             ((CronBasedCampaign) campaign).maxDuration(maxDuration);
         }
         return campaign;

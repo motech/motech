@@ -48,6 +48,8 @@ public class CampaignEnrollment extends MotechBaseDataObject {
 
     public CampaignEnrollment copyFrom(CampaignEnrollment enrollment) {
         this.referenceDate = enrollment.getReferenceDate();
+        this.status = enrollment.getStatus();
+        this.deliverTime = enrollment.getDeliverTime();
         return this;
     }
 

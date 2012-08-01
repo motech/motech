@@ -11,6 +11,7 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import java.util.Map;
 
 import static org.quartz.TriggerKey.triggerKey;
 
+@Component
 public class EndOfCampaignNotifier {
 
     private Scheduler scheduler;
@@ -26,11 +28,11 @@ public class EndOfCampaignNotifier {
     private AllCampaignEnrollments allCampaignEnrollments;
 
     @Autowired
-    public EndOfCampaignNotifier(SchedulerFactoryBean schedulerFactoryBean, JobIdFactory jobIdFactory, EventRelay eventRelay, AllCampaignEnrollments allCampaignEnrollments) {
-        this.jobIdFactory = jobIdFactory;
-        this.eventRelay = eventRelay;
+    public EndOfCampaignNotifier(SchedulerFactoryBean schedulerFactoryBean, AllCampaignEnrollments allCampaignEnrollments, JobIdFactory jobIdFactory, EventRelay eventRelay) {
         this.allCampaignEnrollments = allCampaignEnrollments;
         this.scheduler = schedulerFactoryBean.getScheduler();
+        this.jobIdFactory = jobIdFactory;
+        this.eventRelay = eventRelay;
     }
 
     @MotechListener(subjects = EventKeys.SEND_MESSAGE)
