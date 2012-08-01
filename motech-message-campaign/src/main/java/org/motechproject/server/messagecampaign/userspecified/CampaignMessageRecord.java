@@ -3,7 +3,12 @@ package org.motechproject.server.messagecampaign.userspecified;
 import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.Time;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignType;
-import org.motechproject.server.messagecampaign.domain.message.*;
+import org.motechproject.server.messagecampaign.domain.message.AbsoluteCampaignMessage;
+import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
+import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
+import org.motechproject.server.messagecampaign.domain.message.DayOfWeekCampaignMessage;
+import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
+import org.motechproject.server.messagecampaign.domain.message.RepeatIntervalCampaignMessage;
 import org.motechproject.util.DateUtil;
 import org.motechproject.util.TimeIntervalParser;
 
@@ -57,8 +62,9 @@ public class CampaignMessageRecord {
 
     private List<DayOfWeek> getDaysOfWeek(List<String> days) {
         List<DayOfWeek> daysOfWeek = new ArrayList<>();
-        for (String day : days)
+        for (String day : days) {
             daysOfWeek.add(DayOfWeek.parse(day));
+        }
         return daysOfWeek;
     }
 

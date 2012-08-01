@@ -44,7 +44,7 @@ public class EndOfCampaignNotifierTest {
     public void setup() {
         initMocks(this);
         when(schedulerFactoryBean.getScheduler()).thenReturn(scheduler);
-        endOfCampaignNotifier = new EndOfCampaignNotifier(schedulerFactoryBean, jobIdFactory, eventRelay, allCampaignEnrollments);
+        endOfCampaignNotifier = new EndOfCampaignNotifier(schedulerFactoryBean, allCampaignEnrollments, jobIdFactory, eventRelay);
     }
 
     @Test
