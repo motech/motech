@@ -6,6 +6,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduler.event.EventRelay;
+import org.motechproject.scheduler.gateway.OutboundEventGateway;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.dao.AllCampaignEnrollments;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
@@ -30,7 +31,7 @@ public class EndOfCampaignNotifierTest {
     EndOfCampaignNotifier endOfCampaignNotifier;
 
     @Mock
-    private EventRelay eventRelay;
+    private OutboundEventGateway outboundEventGateway;
     @Mock
     private JobIdFactory jobIdFactory;
     @Mock
@@ -44,7 +45,7 @@ public class EndOfCampaignNotifierTest {
     public void setup() {
         initMocks(this);
         when(schedulerFactoryBean.getScheduler()).thenReturn(scheduler);
-        endOfCampaignNotifier = new EndOfCampaignNotifier(schedulerFactoryBean, jobIdFactory, eventRelay, allCampaignEnrollments);
+        endOfCampaignNotifier = new EndOfCampaignNotifier(schedulerFactoryBean, allCampaignEnrollments, jobIdFactory, outboundEventGateway);
     }
 
     @Test
@@ -65,7 +66,7 @@ public class EndOfCampaignNotifierTest {
         endOfCampaignNotifier.handle(event);
 
         ArgumentCaptor<MotechEvent> eventCaptor = ArgumentCaptor.forClass(MotechEvent.class);
-        verify(eventRelay).sendEventMessage(eventCaptor.capture());
+        verify(outboundEventGateway).sendEventMessage(eventCaptor.capture());
         MotechEvent raisedEvent = eventCaptor.getValue();
 
         assertEquals(EventKeys.CAMPAIGN_COMPLETED, raisedEvent.getSubject());
@@ -113,6 +114,6 @@ public class EndOfCampaignNotifierTest {
         MotechEvent event = new MotechEvent(EventKeys.SEND_MESSAGE, params);
         endOfCampaignNotifier.handle(event);
 
-        verify(eventRelay, never()).sendEventMessage(any(MotechEvent.class));
+        verify(outboundEventGateway, never()).sendEventMessage(any(MotechEvent.class));
     }
 }

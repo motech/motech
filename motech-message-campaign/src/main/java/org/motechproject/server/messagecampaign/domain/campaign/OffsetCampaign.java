@@ -4,7 +4,7 @@ import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMes
 
 public class OffsetCampaign extends Campaign<OffsetCampaignMessage> {
 
-    protected String maxDuration;
+    private String maxDuration;
 
     public String maxDuration() {
         return maxDuration;

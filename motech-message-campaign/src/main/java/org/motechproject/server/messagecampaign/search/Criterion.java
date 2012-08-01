@@ -6,8 +6,8 @@ import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollme
 import java.util.List;
 
 public interface Criterion  {
-    public abstract List<CampaignEnrollment> fetch(AllCampaignEnrollments allCampaignEnrollments);
-    public abstract List<CampaignEnrollment> filter(List<CampaignEnrollment> campaignEnrollments);
+    List<CampaignEnrollment> fetch(AllCampaignEnrollments allCampaignEnrollments);
+    List<CampaignEnrollment> filter(List<CampaignEnrollment> campaignEnrollments);
 }
 
 

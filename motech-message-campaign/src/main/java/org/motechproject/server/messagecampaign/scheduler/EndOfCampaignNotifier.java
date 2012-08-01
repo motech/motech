@@ -2,6 +2,7 @@ package org.motechproject.server.messagecampaign.scheduler;
 
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduler.event.EventRelay;
+import org.motechproject.scheduler.gateway.OutboundEventGateway;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.dao.AllCampaignEnrollments;
@@ -11,6 +12,7 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -18,19 +20,20 @@ import java.util.Map;
 
 import static org.quartz.TriggerKey.triggerKey;
 
+@Component
 public class EndOfCampaignNotifier {
 
     private Scheduler scheduler;
     private JobIdFactory jobIdFactory;
-    private EventRelay eventRelay;
     private AllCampaignEnrollments allCampaignEnrollments;
+    private OutboundEventGateway outboundEventGateway;
 
     @Autowired
-    public EndOfCampaignNotifier(SchedulerFactoryBean schedulerFactoryBean, JobIdFactory jobIdFactory, EventRelay eventRelay, AllCampaignEnrollments allCampaignEnrollments) {
-        this.jobIdFactory = jobIdFactory;
-        this.eventRelay = eventRelay;
+    public EndOfCampaignNotifier(SchedulerFactoryBean schedulerFactoryBean, AllCampaignEnrollments allCampaignEnrollments, JobIdFactory jobIdFactory, OutboundEventGateway outboundEventGateway) {
         this.allCampaignEnrollments = allCampaignEnrollments;
+        this.outboundEventGateway = outboundEventGateway;
         this.scheduler = schedulerFactoryBean.getScheduler();
+        this.jobIdFactory = jobIdFactory;
     }
 
     @MotechListener(subjects = EventKeys.SEND_MESSAGE)
@@ -47,7 +50,7 @@ public class EndOfCampaignNotifier {
             params.put(EventKeys.EXTERNAL_ID_KEY, externalId);
             params.put(EventKeys.CAMPAIGN_NAME_KEY, campaignName);
             MotechEvent endOfCampaignEvent = new MotechEvent(EventKeys.CAMPAIGN_COMPLETED, params);
-            eventRelay.sendEventMessage(endOfCampaignEvent);
+            outboundEventGateway.sendEventMessage(endOfCampaignEvent);
         }
     }
 

@@ -32,7 +32,7 @@ public class AbsoluteProgramSchedulerService extends CampaignSchedulerService<Ab
     protected void scheduleMessageJob(CampaignEnrollment enrollment, CampaignMessage campaignMessage) {
         HashMap<String, Object> params = jobParams(campaignMessage.messageKey(), enrollment);
         MotechEvent motechEvent = new MotechEvent(EventKeys.SEND_MESSAGE, params);
-        LocalDate startDate = ((AbsoluteCampaignMessage)campaignMessage).date();
+        LocalDate startDate = ((AbsoluteCampaignMessage) campaignMessage).date();
         RunOnceSchedulableJob runOnceSchedulableJob = new RunOnceSchedulableJob(motechEvent, newDateTime(startDate, deliverTimeFor(enrollment, campaignMessage)).toDate());
         schedulerService.scheduleRunOnceJob(runOnceSchedulableJob);
     }
