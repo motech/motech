@@ -60,7 +60,7 @@
                 "name" : "Pregnancy Message",
                 "formats" : ["SMS"],
                 "languages" : ["en"],
-                "messageKey": "PREGNANCY-cw{Offset}-{WeekDay}",
+                "messageKey": "PREGNANCY",
                 "repeatOn" : ["Monday", "Wednesday", "Friday"],
                 "startTime" : "10:30"
             }

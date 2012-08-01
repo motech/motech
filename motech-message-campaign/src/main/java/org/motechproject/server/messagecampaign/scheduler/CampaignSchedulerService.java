@@ -36,9 +36,7 @@ public abstract class CampaignSchedulerService<MESSAGE extends CampaignMessage, 
     public void stop(CampaignEnrollment enrollment) {
         CAMPAIGN campaign = (CAMPAIGN) allMessageCampaigns.get(enrollment.getCampaignName());
         for (MESSAGE message : campaign.getMessages()) {
-            schedulerService.safeUnscheduleJob(
-                EventKeys.SEND_MESSAGE,
-                messageJobIdFor(message.messageKey(), enrollment.getExternalId(), enrollment.getCampaignName()));
+            schedulerService.safeUnscheduleJob(EventKeys.SEND_MESSAGE, messageJobIdFor(message.messageKey(), enrollment.getExternalId(), enrollment.getCampaignName()));
         }
     }
 
@@ -47,9 +45,7 @@ public abstract class CampaignSchedulerService<MESSAGE extends CampaignMessage, 
         CAMPAIGN campaign = (CAMPAIGN) allMessageCampaigns.get(enrollment.getCampaignName());
         for (MESSAGE message : campaign.getMessages()) {
             messageTimingsMap.put(message.name(),
-                schedulerService.getScheduledJobTimingsWithPrefix(
-                    EventKeys.SEND_MESSAGE,
-                    messageJobIdFor(message.messageKey(), enrollment.getExternalId(), enrollment.getCampaignName()), startDate, endDate));
+            schedulerService.getScheduledJobTimingsWithPrefix(EventKeys.SEND_MESSAGE, messageJobIdFor(message.messageKey(), enrollment.getExternalId(), enrollment.getCampaignName()), startDate, endDate));
         }
         return messageTimingsMap;
     }

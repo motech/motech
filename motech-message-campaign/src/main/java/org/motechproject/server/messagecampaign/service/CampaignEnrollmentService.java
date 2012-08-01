@@ -14,7 +14,7 @@ import java.util.List;
 public class CampaignEnrollmentService {
 
     @Autowired
-    AllCampaignEnrollments allCampaignEnrollments;
+    private AllCampaignEnrollments allCampaignEnrollments;
 
     public void register(CampaignEnrollment enrollment) {
         allCampaignEnrollments.saveOrUpdate(enrollment);   
@@ -34,10 +34,12 @@ public class CampaignEnrollmentService {
     public List<CampaignEnrollment> search(CampaignEnrollmentsQuery query) {
         List<CampaignEnrollment> enrollments = new ArrayList<CampaignEnrollment>();
         Criterion primaryCriterion = query.getPrimaryCriterion();
-        if (primaryCriterion != null)
+        if (primaryCriterion != null) {
             enrollments = primaryCriterion.fetch(allCampaignEnrollments);
-        for (Criterion criterion : query.getSecondaryCriteria())
+        }
+        for (Criterion criterion : query.getSecondaryCriteria()) {
             enrollments = criterion.filter(enrollments);
+        }
         return enrollments;
     }
 }

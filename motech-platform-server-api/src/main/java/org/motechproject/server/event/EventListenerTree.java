@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import static org.springframework.util.CollectionUtils.isEmpty;
+
 class EventListenerTree {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -329,7 +331,7 @@ class EventListenerTree {
         } else {
             for (Iterator<EventListenerTree> listenerIterator = children.iterator(); listenerIterator.hasNext();) {
                 EventListenerTree child = listenerIterator.next();
-                if (!child.allListenersEmpty() || wildcardListeners.size() == 0) {
+                if (!child.allListenersEmpty() || isEmpty(wildcardListeners)) {
                     return false;
                 } else {
                     listenerIterator.remove();

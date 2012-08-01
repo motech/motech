@@ -4,8 +4,6 @@ import org.motechproject.model.DayOfWeek;
 
 import java.util.List;
 
-import static org.motechproject.model.Time.parseTime;
-
 public class DayOfWeekCampaignMessage extends CampaignMessage {
 
     private List<DayOfWeek> daysOfWeek;
