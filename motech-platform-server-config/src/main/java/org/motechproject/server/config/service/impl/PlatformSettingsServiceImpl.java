@@ -1,10 +1,10 @@
 package org.motechproject.server.config.service.impl;
 
 import org.ektorp.CouchDbConnector;
-import org.motechproject.server.config.ConfigLoader;
 import org.motechproject.server.config.db.CouchDbManager;
 import org.motechproject.server.config.db.DbConnectionException;
 import org.motechproject.server.config.domain.SettingsRecord;
+import org.motechproject.server.config.monitor.ConfigFileMonitor;
 import org.motechproject.server.config.service.AllSettings;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.ConfigFileSettings;
@@ -37,14 +37,14 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     private AllSettings allSettings;
 
     @Autowired
-    private ConfigLoader configLoader;
+    private CouchDbManager couchDbManager;
 
     @Autowired
-    private CouchDbManager couchDbManager;
+    private ConfigFileMonitor configFileMonitor;
 
     @PostConstruct
     public void configureCouchDBManager() throws DbConnectionException {
-        ConfigFileSettings configFileSettings = configLoader.loadConfig();
+        ConfigFileSettings configFileSettings = configFileMonitor.getCurrentSettings();
 
         if (configFileSettings != null && !configFileSettings.getCouchDBProperties().isEmpty()) {
             couchDbManager.configureDb(configFileSettings.getCouchDBProperties());
@@ -55,19 +55,15 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     @Override
     @Cacheable(value = SETTINGS_CACHE_NAME, key = "#root.methodName")
     public MotechSettings getPlatformSettings() {
-        MotechSettings settings = configLoader.loadConfig();
-        SettingsRecord record;
+        MotechSettings settings = configFileMonitor.getCurrentSettings();
 
-        try {
-            record = allSettings.getSettings();
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            record = null;
-        }
+        if (settings != null) {
+            SettingsRecord record = getDBSettings();
 
-        if (record != null) {
-            record.setCouchDbProperties(settings.getCouchDBProperties());
-            settings = record;
+            if (record != null) {
+                record.setCouchDbProperties(settings.getCouchDBProperties());
+                settings = record;
+            }
         }
 
         return settings;
@@ -82,7 +78,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
         try (FileOutputStream fos = new FileOutputStream(file)) {
             settings.store(fos, null);
-            configureCouchDBManager();
+            configFileMonitor.monitor();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -91,12 +87,12 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     @Override
     @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
     public void setPlatformSetting(final String key, final String value) {
-        ConfigFileSettings configFileSettings = configLoader.loadConfig();
+        ConfigFileSettings configFileSettings = configFileMonitor.getCurrentSettings();
 
         if (configFileSettings == null) {
             // init settings
             savePlatformSettings(new Properties());
-            configFileSettings = configLoader.loadConfig();
+            configFileSettings = configFileMonitor.getCurrentSettings();
         }
 
         File configFile = new File(configFileSettings.getPath());
@@ -115,21 +111,23 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
             }
 
             // save property to db
-            SettingsRecord dbSettings = allSettings.getSettings();
+            SettingsRecord dbSettings = getDBSettings();
 
-            if (MotechSettings.LANGUAGE.equals(key)) {
-                dbSettings.setLanguage(value);
-            } else {
-                for (Properties p : Arrays.asList(dbSettings.getActivemqProperties(), dbSettings.getQuartzProperties())) {
-                    if (p.containsKey(key)) {
-                        p.put(key, value);
+            if (dbSettings != null) {
+                if (MotechSettings.LANGUAGE.equals(key)) {
+                    dbSettings.setLanguage(value);
+                } else {
+                    for (Properties p : Arrays.asList(dbSettings.getActivemqProperties(), dbSettings.getQuartzProperties())) {
+                        if (p.containsKey(key)) {
+                            p.put(key, value);
 
-                        break;
+                            break;
+                        }
                     }
                 }
-            }
 
-            allSettings.addOrUpdateSettings(dbSettings);
+                allSettings.addOrUpdateSettings(dbSettings);
+            }
         } catch (Exception e) {
             LOGGER.error("Error: ", e);
         }
@@ -158,15 +156,8 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
     @Override
     public Properties exportPlatformSettings() {
-        ConfigFileSettings configFileSettings = configLoader.loadConfig();
-        SettingsRecord dbSettings;
-
-        try {
-            dbSettings = allSettings.getSettings();
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            dbSettings = null;
-        }
+        ConfigFileSettings configFileSettings = configFileMonitor.getCurrentSettings();
+        SettingsRecord dbSettings = getDBSettings();
 
         Properties export = new Properties();
 
@@ -184,16 +175,9 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     }
 
     @Override
-    public void addConfigLocation(final String location, final boolean save) throws IOException {
-        if (location.startsWith("/")) {
-            configLoader.addConfigLocation(String.format("file:%s", location));
-        } else {
-            configLoader.addConfigLocation(location);
-        }
-
-        if (save) {
-            configLoader.save();
-        }
+    @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
+    public void addConfigLocation(final String location, final boolean save) {
+        configFileMonitor.changeConfigFileLocation(location, save);
     }
 
     @Override
@@ -270,6 +254,13 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         return couchDbManager.getConnector(dbName, true);
     }
 
+    @Override
+    @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
+    public void evictMotechSettingsCache() {
+        // Left blank.
+        // Annotation will automatically remove all cached motech settings
+    }
+
     private String getConfigDir(String bundleSymbolicName) {
         return String.format("%s/.motech/config/%s/", System.getProperty("user.home"), bundleSymbolicName);
     }
@@ -279,5 +270,17 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         if (!dir.exists()) {
             dir.mkdirs();
         }
+    }
+
+    private SettingsRecord getDBSettings() {
+        if (allSettings == null) {
+            try {
+                configureCouchDBManager();
+            } catch (DbConnectionException e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+        }
+
+        return allSettings == null ? null : allSettings.getSettings();
     }
 }

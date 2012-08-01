@@ -8,6 +8,7 @@ import org.mockito.Spy;
 import org.motechproject.server.config.ConfigLoader;
 import org.motechproject.server.config.db.CouchDbManager;
 import org.motechproject.server.config.db.DbConnectionException;
+import org.motechproject.server.config.monitor.ConfigFileMonitor;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.service.impl.PlatformSettingsServiceImpl;
 import org.motechproject.server.config.settings.ConfigFileSettings;
@@ -38,6 +39,9 @@ public class StartupManagerTest {
     @Mock
     Properties couchDbProperties;
 
+    @Mock
+    ConfigFileMonitor configFileMonitor;
+
     @InjectMocks
     @Spy
     PlatformSettingsService platformSettingsService = new PlatformSettingsServiceImpl();
@@ -53,27 +57,33 @@ public class StartupManagerTest {
     @Test
     public void testNoSettings() {
         when(configLoader.loadConfig()).thenReturn(null);
+        when(configFileMonitor.getCurrentSettings()).thenReturn(null);
 
         startupManager.startup();
 
         assertEquals(NEED_CONFIG, startupManager.getPlatformState());
         assertFalse(startupManager.canLaunchBundles());
         assertNull(platformSettingsService.getPlatformSettings());
-        verify(configLoader, times(2)).loadConfig();
+        verify(configLoader).loadConfig();
+        verify(configFileMonitor).getCurrentSettings();
     }
 
     @Test
     public void testNoDb() throws DbConnectionException {
         when(configLoader.loadConfig()).thenReturn(configFileSettings);
+        when(configFileMonitor.getCurrentSettings()).thenReturn(configFileSettings);
         when(configFileSettings.getCouchDBProperties()).thenReturn(couchDbProperties);
         doThrow(new DbConnectionException("Failure")).when(couchDbManager).configureDb(couchDbProperties);
 
         startupManager.startup();
 
+        verify(configLoader).loadConfig();
+        verify(couchDbManager).configureDb(couchDbProperties);
+
         assertEquals(startupManager.getPlatformState(), MotechPlatformState.NO_DB);
         assertEquals(platformSettingsService.getPlatformSettings(), configFileSettings);
         assertFalse(startupManager.canLaunchBundles());
-        verify(configLoader, times(2)).loadConfig();
-        verify(couchDbManager).configureDb(couchDbProperties);
+
+        verify(configFileMonitor, times(2)).getCurrentSettings();
     }
 }

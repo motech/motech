@@ -55,6 +55,8 @@ public class SchedulerGatewayIT {
 
         Thread.sleep(8 * 1000L);
 
+        motechSchedulerGateway.unscheduleJob(runonceJob);
+
         motechSchedulerGateway.unscheduleJob(cronJob);
 
         motechSchedulerGateway.unscheduleJob(repeatingJob);

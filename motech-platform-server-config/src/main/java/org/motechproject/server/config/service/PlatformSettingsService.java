@@ -29,13 +29,12 @@ public interface PlatformSettingsService {
     Properties exportPlatformSettings();
 
     /**
-     * Add location from which {@link org.motechproject.server.config.ConfigLoader} will attempt to load config file
+     * Add new location for config file.
      *
      * @param location file location
-     * @param save     true if you want to {@link org.motechproject.server.config.ConfigLoader} always load the config file from given location, otherwise false
-     * @throws IOException
+     * @param save     true if you always want to load the config file from given location, otherwise false
      */
-    void addConfigLocation(final String location, final boolean save) throws IOException;
+    void addConfigLocation(final String location, final boolean save);
 
     void saveBundleProperties(final String bundleSymbolicName, final String fileName, final Properties properties) throws IOException;
 
@@ -46,4 +45,6 @@ public interface PlatformSettingsService {
     Map<String, Properties> getAllProperties(final String bundleSymbolicName) throws IOException;
 
     CouchDbConnector getCouchConnector(String dbName);
+
+    void evictMotechSettingsCache();
 }

@@ -1,15 +1,11 @@
 package org.motechproject.server.startup;
 
-import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.VFS;
-import org.apache.commons.vfs.impl.DefaultFileMonitor;
 import org.joda.time.DateTime;
 import org.motechproject.server.config.ConfigLoader;
 import org.motechproject.server.config.db.CouchDbManager;
 import org.motechproject.server.config.db.DbConnectionException;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.service.AllSettings;
-import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.ConfigFileSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,18 +21,13 @@ public final class StartupManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(StartupManager.class);
 
     private MotechPlatformState platformState = MotechPlatformState.STARTUP;
-    private DefaultFileMonitor fileMonitor;
     private ConfigFileSettings configFileSettings;
-    private ConfigFileListener configFileListener;
 
     @Autowired
     private CouchDbManager couchDbManager;
 
     @Autowired
     private ConfigLoader configLoader;
-
-    @Autowired
-    private PlatformSettingsService platformSettingsService;
 
     private StartupManager() {
 
@@ -48,27 +39,6 @@ public final class StartupManager {
         }
 
         return instance;
-    }
-
-    public void startMonitor() throws FileSystemException {
-        if (fileMonitor == null) {
-            final long delay = 5000;
-            fileMonitor = new DefaultFileMonitor(configFileListener);
-            fileMonitor.addFile(VFS.getManager().resolveFile(configFileSettings.getPath()));
-            fileMonitor.setDelay(delay);
-            fileMonitor.start();
-
-        } else {
-            stopMonitor();
-            startMonitor();
-        }
-    }
-
-    public void stopMonitor() {
-        if (fileMonitor != null) {
-            fileMonitor.stop();
-            fileMonitor = null;
-        }
     }
 
     public MotechPlatformState getPlatformState() {
@@ -93,10 +63,6 @@ public final class StartupManager {
 
     public boolean canLaunchBundles() {
         return platformState == MotechPlatformState.FIRST_RUN || platformState == MotechPlatformState.NORMAL_RUN;
-    }
-
-    public void setConfigFileListener(final ConfigFileListener configFileListener) {
-        this.configFileListener = configFileListener;
     }
 
     private void syncSettingsWithDb() {

@@ -4,25 +4,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
-import org.motechproject.server.config.ConfigLoader;
 import org.motechproject.server.config.db.CouchDbManager;
+import org.motechproject.server.config.monitor.ConfigFileMonitor;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.ConfigFileSettings;
 import org.motechproject.server.config.settings.MotechSettings;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -32,14 +26,10 @@ public class PlatformSettingsServiceImplTest {
     ConfigFileSettings motechSettings;
 
     @Mock
-    ResourceLoader resourceLoader;
-
-    @Mock
     CouchDbManager couchDbManager;
 
-    @InjectMocks
-    @Spy
-    ConfigLoader configLoader = new ConfigLoader(new ArrayList<Resource>());
+    @Mock
+    ConfigFileMonitor configFileMonitor;
 
     @InjectMocks
     PlatformSettingsService platformSettingsService = new PlatformSettingsServiceImpl();
@@ -47,11 +37,14 @@ public class PlatformSettingsServiceImplTest {
     @Before
     public void setUp() {
         initMocks(this);
+
+        platformSettingsService.evictMotechSettingsCache();
     }
 
     @Test
     public void testGetLanguage() {
         // no settings
+        when(motechSettings.getCouchDBProperties()).thenReturn(new Properties());
         when(platformSettingsService.getPlatformSettings()).thenReturn(null);
 
         assertNull(platformSettingsService.getPlatformLanguage());
@@ -74,6 +67,7 @@ public class PlatformSettingsServiceImplTest {
     @Test
     public void testGetLocale() {
         // no settings
+        when(motechSettings.getCouchDBProperties()).thenReturn(new Properties());
         when(platformSettingsService.getPlatformSettings()).thenReturn(null);
 
         assertEquals(platformSettingsService.getPlatformLocale(), Locale.getDefault());
@@ -91,29 +85,14 @@ public class PlatformSettingsServiceImplTest {
     }
 
     @Test
-    public void testAddConfigLocation() throws IOException {
-        String path = "settings.properties";
-        ClassPathResource resource = new ClassPathResource(path);
-        when(resourceLoader.getResource(path)).thenReturn(resource);
-
-        platformSettingsService.addConfigLocation(path, false);
-        ConfigFileSettings configFileSettings = configLoader.loadConfig();
-
-        assertEquals(resource.getURL().getPath(), configFileSettings.getPath());
-    }
-
-    @Test
     public void testExport() throws IOException {
-        String path = "settings.properties";
-        ClassPathResource resource = new ClassPathResource(path);
-        when(resourceLoader.getResource(path)).thenReturn(resource);
-
-        platformSettingsService.addConfigLocation(path, false);
+        ConfigFileSettings configFileSettings = new ConfigFileSettings();
+        configFileSettings.put(MotechSettings.LANGUAGE, "en");
+        when(configFileMonitor.getCurrentSettings()).thenReturn(configFileSettings);
 
         Properties p = platformSettingsService.exportPlatformSettings();
 
         assertTrue(p.containsKey(MotechSettings.LANGUAGE));
-        assertEquals("en", p.getProperty(MotechSettings.LANGUAGE));
-        verify(configLoader).loadConfig();
+        assertEquals(configFileSettings.getLanguage(), p.getProperty(MotechSettings.LANGUAGE));
     }
 }

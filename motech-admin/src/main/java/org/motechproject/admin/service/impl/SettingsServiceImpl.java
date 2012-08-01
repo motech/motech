@@ -115,12 +115,7 @@ public class SettingsServiceImpl implements SettingsService {
 
     @Override
     public void addSettingsPath(String path) {
-        try {
-            platformSettingsService.addConfigLocation(path, true);
-        } catch (IOException e) {
-            LOG.error("Unable to add config location", e);
-            throw new MotechException("Error adding config location", e);
-        }
+        platformSettingsService.addConfigLocation(path, true);
     }
 
     @Override
