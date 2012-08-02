@@ -12,8 +12,6 @@
         <collectdtmf l="$maxDigits" t="#"></collectdtmf>
         <gotourl>$escape.escapeXml($url)</gotourl>
     #else
-        #set ($url = "$scheme://$host$contextPath$servletPath/kookoo/ivr?type=$type&ln=$language")
-        <gotourl>$escape.escapeXml($url)</gotourl>
         <hangup></hangup>
     #end
 </response>

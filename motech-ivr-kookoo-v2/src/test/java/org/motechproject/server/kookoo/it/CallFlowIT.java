@@ -146,9 +146,9 @@ public class CallFlowIT extends SpringIntegrationTest {
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                 "<response>" +
                 "   <playaudio>music.wav</playaudio>" +
-                "   <gotourl>http://localhost:7080/motech/kookoo/ivr?type=kookoo&amp;ln=en</gotourl>" +
                 "   <hangup></hangup>" +
                 "</response>";
+        System.out.println(response);
         assertXMLEqual(expectedResponse, response);
     }
 
