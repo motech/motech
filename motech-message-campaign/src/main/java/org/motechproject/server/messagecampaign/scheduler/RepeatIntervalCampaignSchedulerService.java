@@ -35,9 +35,9 @@ public class RepeatIntervalCampaignSchedulerService extends CampaignSchedulerSer
 
     @Override
     public void stop(CampaignEnrollment enrollment) {
-        RepeatIntervalCampaign campaign = (RepeatIntervalCampaign) allMessageCampaigns.get(enrollment.getCampaignName());
+        RepeatIntervalCampaign campaign = (RepeatIntervalCampaign) getAllMessageCampaigns().get(enrollment.getCampaignName());
         for (RepeatIntervalCampaignMessage message : campaign.getMessages()) {
-            schedulerService.safeUnscheduleRepeatingJob(EventKeys.SEND_MESSAGE, messageJobIdFor(message.messageKey(), enrollment.getExternalId(), enrollment.getCampaignName()));
+            getSchedulerService().safeUnscheduleRepeatingJob(EventKeys.SEND_MESSAGE, messageJobIdFor(message.messageKey(), enrollment.getExternalId(), enrollment.getCampaignName()));
         }
     }
 }

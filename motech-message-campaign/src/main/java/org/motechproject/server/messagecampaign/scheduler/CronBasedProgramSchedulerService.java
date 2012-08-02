@@ -32,9 +32,9 @@ public class CronBasedProgramSchedulerService extends CampaignSchedulerService<C
 
     @Override
     public void stop(CampaignEnrollment enrollment) {
-        CronBasedCampaign campaign = (CronBasedCampaign) allMessageCampaigns.get(enrollment.getCampaignName());
+        CronBasedCampaign campaign = (CronBasedCampaign) getAllMessageCampaigns().get(enrollment.getCampaignName());
         for (CronBasedCampaignMessage message : campaign.getMessages()) {
-            schedulerService.safeUnscheduleJob(EventKeys.SEND_MESSAGE, messageJobIdFor(message.messageKey(), enrollment.getExternalId(), enrollment.getCampaignName()));
+            getSchedulerService().safeUnscheduleJob(EventKeys.SEND_MESSAGE, messageJobIdFor(message.messageKey(), enrollment.getExternalId(), enrollment.getCampaignName()));
         }
     }
 }
