@@ -71,6 +71,7 @@
                             org.motechproject.server.messagecampaign.osgi.Activator
                         </Bundle-Activator>
                         <Import-Package>
+                            org.quartz.simpl,
                             org.ektorp.impl,
                             org.ektorp.spring,
                             org.springframework.context.config,
