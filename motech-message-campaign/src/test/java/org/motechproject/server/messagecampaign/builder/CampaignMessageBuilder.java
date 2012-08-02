@@ -5,6 +5,7 @@ import org.motechproject.model.Time;
 import org.motechproject.server.messagecampaign.domain.message.AbsoluteCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
+import org.motechproject.util.TimeIntervalParser;
 
 import java.util.Arrays;
 
@@ -32,7 +33,7 @@ public class CampaignMessageBuilder {
     public OffsetCampaignMessage offsetCampaignMessage(String name, String timeOffset, String messageKey, Time startTime) {
         OffsetCampaignMessage offsetCampaignMessage = new OffsetCampaignMessage();
         offsetCampaignMessage.name(name);
-        offsetCampaignMessage.timeOffset(timeOffset);
+        offsetCampaignMessage.timeOffset(new TimeIntervalParser().parse(timeOffset));
         offsetCampaignMessage.messageKey(messageKey);
         offsetCampaignMessage.setStartTime(startTime);
         return offsetCampaignMessage;

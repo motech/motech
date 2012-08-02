@@ -8,6 +8,7 @@ import org.motechproject.server.messagecampaign.domain.campaign.AbsoluteCampaign
 import org.motechproject.server.messagecampaign.domain.campaign.CronBasedCampaign;
 import org.motechproject.server.messagecampaign.domain.campaign.OffsetCampaign;
 import org.motechproject.server.messagecampaign.domain.message.*;
+import org.motechproject.util.TimeIntervalParser;
 
 import java.util.*;
 
@@ -96,7 +97,7 @@ public class AllMessageCampaignsTest {
 
     private void assertMessageWithRelativeSchedule(OffsetCampaignMessage message, String name, String[] formats, Object messageKey, String timeOffset) {
         assertMessage(message, name, formats, messageKey);
-        assertEquals(timeOffset, message.timeOffset());
+        assertEquals(new TimeIntervalParser().parse(timeOffset), message.timeOffset());
     }
 
     private void assertMessageWithCronSchedule(CronBasedCampaignMessage message, String name, String[] formats, Object messageKey, String cron) {

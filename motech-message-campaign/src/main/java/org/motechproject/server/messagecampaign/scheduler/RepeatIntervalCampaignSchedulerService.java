@@ -25,11 +25,11 @@ public class RepeatIntervalCampaignSchedulerService extends CampaignSchedulerSer
 
     @Override
     protected void scheduleMessageJob(CampaignEnrollment enrollment, CampaignMessage m) {
-        RepeatIntervalCampaign campaign = (RepeatIntervalCampaign) allMessageCampaigns.get(enrollment.getCampaignName());
+        RepeatIntervalCampaign campaign = (RepeatIntervalCampaign) getAllMessageCampaigns().get(enrollment.getCampaignName());
         RepeatIntervalCampaignMessage message = (RepeatIntervalCampaignMessage) m;
         MotechEvent motechEvent = new MotechEvent(EventKeys.SEND_MESSAGE, jobParams(message.messageKey(), enrollment));
         DateTime start = newDateTime(enrollment.getReferenceDate(), deliverTimeFor(enrollment, message));
         DateTime end = start.plus(campaign.maxDuration());
-        schedulerService.safeScheduleRepeatingJob(new RepeatingSchedulableJob(motechEvent, start.toDate(), end.toDate(), message.getRepeatIntervalInMillis(), true));
+        getSchedulerService().safeScheduleRepeatingJob(new RepeatingSchedulableJob(motechEvent, start.toDate(), end.toDate(), message.getRepeatIntervalInMillis(), true));
     }
 }

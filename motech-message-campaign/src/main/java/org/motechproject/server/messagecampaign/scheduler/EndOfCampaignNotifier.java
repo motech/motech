@@ -1,7 +1,6 @@
 package org.motechproject.server.messagecampaign.scheduler;
 
 import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.scheduler.event.EventRelay;
 import org.motechproject.scheduler.gateway.OutboundEventGateway;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.server.messagecampaign.EventKeys;

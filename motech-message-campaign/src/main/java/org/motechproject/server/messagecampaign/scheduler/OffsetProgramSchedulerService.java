@@ -12,7 +12,6 @@ import org.motechproject.server.messagecampaign.domain.campaign.OffsetCampaign;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
 import org.motechproject.util.DateUtil;
-import org.motechproject.valueobjects.WallTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,24 +31,19 @@ public class OffsetProgramSchedulerService extends CampaignSchedulerService<Offs
     protected void scheduleMessageJob(CampaignEnrollment enrollment, CampaignMessage message) {
         Time reminderTime = deliverTimeFor(enrollment, message);
         OffsetCampaignMessage offsetMessage = (OffsetCampaignMessage) message;
-        int interval = offsetInDays(offsetMessage.timeOffset());
+        int interval = offsetMessage.timeOffset().toStandardDays().getDays();
 
         LocalDate jobDate = enrollment.getReferenceDate().plusDays(interval);
         if (isInFuture(jobDate, reminderTime)) {
             MotechEvent motechEvent = new MotechEvent(EventKeys.SEND_MESSAGE, jobParams(message.messageKey(), enrollment));
             Date startDateTime = newDateTime(jobDate, reminderTime).toDate();
             RunOnceSchedulableJob runOnceSchedulableJob = new RunOnceSchedulableJob(motechEvent, startDateTime);
-            schedulerService.scheduleRunOnceJob(runOnceSchedulableJob);
+            getSchedulerService().scheduleRunOnceJob(runOnceSchedulableJob);
         }
     }
 
     private boolean isInFuture(LocalDate date, Time time) {
         return DateUtil.newDateTime(date, time).isAfter(DateUtil.now());
     }
-
-    // TODO: get rid of walltime
-    private int offsetInDays(String timeOffset) {
-        WallTime wallTime = new WallTime(timeOffset);
-        return wallTime.inDays();
-    }
 }
+

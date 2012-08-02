@@ -16,8 +16,8 @@ import java.util.Map;
 
 public abstract class CampaignSchedulerService<MESSAGE extends CampaignMessage, CAMPAIGN extends Campaign<MESSAGE>> {
 
-    protected MotechSchedulerService schedulerService;
-    protected AllMessageCampaigns allMessageCampaigns;
+    private MotechSchedulerService schedulerService;
+    private AllMessageCampaigns allMessageCampaigns;
     private JobIdFactory jobIdFactory;
 
     protected CampaignSchedulerService(MotechSchedulerService schedulerService, AllMessageCampaigns allMessageCampaigns) {
@@ -68,6 +68,14 @@ public abstract class CampaignSchedulerService<MESSAGE extends CampaignMessage, 
 
     protected String messageJobIdFor(String messageKey, String externalId, String campaignName) {
         return jobIdFactory.getMessageJobIdFor(campaignName, externalId, messageKey);
+    }
+
+    public MotechSchedulerService getSchedulerService() {
+        return schedulerService;
+    }
+
+    public AllMessageCampaigns getAllMessageCampaigns() {
+        return allMessageCampaigns;
     }
 }
 

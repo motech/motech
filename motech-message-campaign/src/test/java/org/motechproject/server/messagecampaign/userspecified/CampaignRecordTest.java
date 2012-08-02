@@ -8,6 +8,7 @@ import org.motechproject.server.messagecampaign.domain.message.AbsoluteCampaignM
 import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
 import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
 import org.motechproject.util.DateUtil;
+import org.motechproject.util.TimeIntervalParser;
 
 import java.util.List;
 
@@ -57,7 +58,7 @@ public class CampaignRecordTest {
         assertEquals(messageRecord.formats(), message.formats());
         assertEquals(messageRecord.languages(), message.languages());
         assertEquals(messageRecord.messageKey(), message.messageKey());
-        assertEquals(messageRecord.timeOffset(), message.timeOffset());
+        assertEquals(new TimeIntervalParser().parse(messageRecord.timeOffset()), message.timeOffset());
 
     }
 
