@@ -72,6 +72,7 @@
                         </Bundle-Activator>
                         <Import-Package>
                             org.quartz.simpl,
+                            org.springframework.scheduling.quartz,
                             org.ektorp.impl,
                             org.ektorp.spring,
                             org.springframework.context.config,

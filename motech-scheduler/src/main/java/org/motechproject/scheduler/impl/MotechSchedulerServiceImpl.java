@@ -436,6 +436,22 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
     }
 
     @Override
+    public void unscheduleRunOnceJob(String subject, String externalId) {
+        JobId jobId = new RunOnceJobId(subject, externalId);
+        logInfo("Unscheduling run once Job: %s", jobId);
+        unscheduleJob(jobId.value());
+    }
+
+    @Override
+    public void safeUnscheduleRunOnceJob(String subject, String externalId) {
+        try {
+            unscheduleRunOnceJob(subject, externalId);
+        } catch (Exception e) {
+            logError(e.getMessage());
+        }
+    }
+
+    @Override
     public void unscheduleJob(String subject, String externalId) {
         unscheduleJob(new CronJobId(subject, externalId));
     }

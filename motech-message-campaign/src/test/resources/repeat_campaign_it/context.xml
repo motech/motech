@@ -12,4 +12,8 @@
 
     <util:properties id="messageCampaignProperties" location="classpath:repeat_campaign_it/messageCampaign.properties"/>
 
+    <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="configLocation" value="classpath:quartz.properties"/>
+        <property name="applicationContextSchedulerContextKey" value="applicationContext"/>
+    </bean>
 </beans>
