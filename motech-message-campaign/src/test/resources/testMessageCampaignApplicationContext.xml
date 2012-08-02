@@ -19,4 +19,9 @@
         <constructor-arg value="test-motech-message-campaign"/>
         <constructor-arg ref="couchDbInstance"/>
     </bean>
+
+    <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="configLocation" value="classpath:quartz.properties"/>
+        <property name="applicationContextSchedulerContextKey" value="applicationContext"/>
+    </bean>
 </beans>

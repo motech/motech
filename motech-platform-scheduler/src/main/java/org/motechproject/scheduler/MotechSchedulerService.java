@@ -113,6 +113,20 @@ public interface MotechSchedulerService {
      */
     public void safeUnscheduleRepeatingJob(String subject, String externalId);
 
+    /**
+     * Unschedules a run once job with the given job ID
+     *  @param subject : String representing domain operation eg. "pill-reminder", "outbox-call" or motechEvent.getSubject()
+     * @param externalId  : domain specific id as String.
+     */
+    void unscheduleRunOnceJob(String subject, String externalId);
+
+    /**
+     * Same as unscheduleRunOnceJob except that it would not throw an exception if the job doesn't exist
+     * @param subject
+     * @param externalId
+     */
+    public void safeUnscheduleRunOnceJob(String subject, String externalId);
+
     List<Date> getScheduledJobTimings(String subject, String externalJobId, Date startDate, Date endDate);
 
     List<Date> getScheduledJobTimingsWithPrefix(String subject, String externalJobIdPrefix, Date startDate, Date endDate);

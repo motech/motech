@@ -32,4 +32,12 @@ public class RepeatIntervalCampaignSchedulerService extends CampaignSchedulerSer
         DateTime end = start.plus(campaign.maxDuration());
         getSchedulerService().safeScheduleRepeatingJob(new RepeatingSchedulableJob(motechEvent, start.toDate(), end.toDate(), message.getRepeatIntervalInMillis(), true));
     }
+
+    @Override
+    public void stop(CampaignEnrollment enrollment) {
+        RepeatIntervalCampaign campaign = (RepeatIntervalCampaign) allMessageCampaigns.get(enrollment.getCampaignName());
+        for (RepeatIntervalCampaignMessage message : campaign.getMessages()) {
+            schedulerService.safeUnscheduleRepeatingJob(EventKeys.SEND_MESSAGE, messageJobIdFor(message.messageKey(), enrollment.getExternalId(), enrollment.getCampaignName()));
+        }
+    }
 }

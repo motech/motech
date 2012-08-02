@@ -30,4 +30,12 @@ public class DayOfWeekCampaignSchedulerService extends CampaignSchedulerService<
         DayOfWeekCampaignMessage dayOfWeekMessage = (DayOfWeekCampaignMessage) message;
         getSchedulerService().scheduleDayOfWeekJob(new DayOfWeekSchedulableJob(motechEvent, start, end, dayOfWeekMessage.getDaysOfWeek(), deliverTimeFor(enrollment, message), true));
     }
+
+    @Override
+    public void stop(CampaignEnrollment enrollment) {
+        DayOfWeekCampaign campaign = (DayOfWeekCampaign) allMessageCampaigns.get(enrollment.getCampaignName());
+        for (DayOfWeekCampaignMessage message : campaign.getMessages()) {
+            schedulerService.safeUnscheduleJob(EventKeys.SEND_MESSAGE, messageJobIdFor(message.messageKey(), enrollment.getExternalId(), enrollment.getCampaignName()));
+        }
+    }
 }
