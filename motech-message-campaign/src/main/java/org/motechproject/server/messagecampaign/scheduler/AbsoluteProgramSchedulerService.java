@@ -36,4 +36,12 @@ public class AbsoluteProgramSchedulerService extends CampaignSchedulerService<Ab
         RunOnceSchedulableJob runOnceSchedulableJob = new RunOnceSchedulableJob(motechEvent, newDateTime(startDate, deliverTimeFor(enrollment, campaignMessage)).toDate());
         getSchedulerService().scheduleRunOnceJob(runOnceSchedulableJob);
     }
+
+    @Override
+    public void stop(CampaignEnrollment enrollment) {
+        AbsoluteCampaign campaign = (AbsoluteCampaign) getAllMessageCampaigns().get(enrollment.getCampaignName());
+        for (AbsoluteCampaignMessage message : campaign.getMessages()) {
+            getSchedulerService().safeUnscheduleRunOnceJob(EventKeys.SEND_MESSAGE, messageJobIdFor(message.messageKey(), enrollment.getExternalId(), enrollment.getCampaignName()));
+        }
+    }
 }

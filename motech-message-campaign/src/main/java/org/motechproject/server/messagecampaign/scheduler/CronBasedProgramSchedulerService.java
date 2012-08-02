@@ -29,4 +29,12 @@ public class CronBasedProgramSchedulerService extends CampaignSchedulerService<C
         CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronMessage.cron(), startDate.toDate(), null);
         getSchedulerService().scheduleJob(schedulableJob);
     }
+
+    @Override
+    public void stop(CampaignEnrollment enrollment) {
+        CronBasedCampaign campaign = (CronBasedCampaign) getAllMessageCampaigns().get(enrollment.getCampaignName());
+        for (CronBasedCampaignMessage message : campaign.getMessages()) {
+            getSchedulerService().safeUnscheduleJob(EventKeys.SEND_MESSAGE, messageJobIdFor(message.messageKey(), enrollment.getExternalId(), enrollment.getCampaignName()));
+        }
+    }
 }

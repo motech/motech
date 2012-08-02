@@ -33,12 +33,7 @@ public abstract class CampaignSchedulerService<MESSAGE extends CampaignMessage, 
         }
     }
 
-    public void stop(CampaignEnrollment enrollment) {
-        CAMPAIGN campaign = (CAMPAIGN) allMessageCampaigns.get(enrollment.getCampaignName());
-        for (MESSAGE message : campaign.getMessages()) {
-            schedulerService.safeUnscheduleJob(EventKeys.SEND_MESSAGE, messageJobIdFor(message.messageKey(), enrollment.getExternalId(), enrollment.getCampaignName()));
-        }
-    }
+    public abstract void stop(CampaignEnrollment enrollment);
 
     public Map<String, List<Date>> getCampaignTimings(Date startDate, Date endDate, CampaignEnrollment enrollment) {
         Map<String, List<Date>> messageTimingsMap = new HashMap<>();
