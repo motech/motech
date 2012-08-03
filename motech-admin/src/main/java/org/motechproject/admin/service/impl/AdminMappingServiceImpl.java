@@ -6,6 +6,7 @@ import org.motechproject.admin.ex.NoDbException;
 import org.motechproject.admin.repository.AllAdminMappings;
 import org.motechproject.admin.service.AdminMappingService;
 import org.motechproject.server.config.service.PlatformSettingsService;
+import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ public class AdminMappingServiceImpl implements AdminMappingService {
 
     @Autowired
     private PlatformSettingsService platformSettingsService;
+
+    @Autowired
+    BundleContext bundleContext;
 
     @Autowired(required = false)
     private AllAdminMappings allAdminMappings;
@@ -61,6 +65,8 @@ public class AdminMappingServiceImpl implements AdminMappingService {
         Map<String, String> result = new HashMap<>();
         if (getAllAdminMappings() != null) {
             List<AdminMapping> mappings = allAdminMappings.getAll();
+            List<String> bundlesWithSettings = platformSettingsService.retrieveRegisteredBundleNames();
+
             for (AdminMapping mapping : mappings) {
                 result.put(mapping.getBundleName(), mapping.getDestination());
             }

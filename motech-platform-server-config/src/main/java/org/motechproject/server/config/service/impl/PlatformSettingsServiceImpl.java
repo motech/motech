@@ -1,5 +1,6 @@
 package org.motechproject.server.config.service.impl;
 
+import org.apache.commons.io.IOUtils;
 import org.ektorp.CouchDbConnector;
 import org.motechproject.server.config.db.CouchDbManager;
 import org.motechproject.server.config.db.DbConnectionException;
@@ -22,6 +23,7 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -116,6 +118,8 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
             if (dbSettings != null) {
                 if (MotechSettings.LANGUAGE.equals(key)) {
                     dbSettings.setLanguage(value);
+                } else if (MotechSettings.STATUS_MSG_TIMEOUT.equals(key)) {
+                    dbSettings.setStatusMsgTimeout(value);
                 } else {
                     for (Properties p : Arrays.asList(dbSettings.getActivemqProperties(), dbSettings.getQuartzProperties())) {
                         if (p.containsKey(key)) {
@@ -182,14 +186,8 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
     @Override
     public void saveBundleProperties(final String bundleSymbolicName, final String fileName, final Properties properties) throws IOException {
-        String configDirPath = getConfigDir(bundleSymbolicName);
-
-        File configDir = new File(configDirPath);
-        if (!configDir.exists()) {
-            configDir.mkdirs();
-        }
-
-        File file = new File(String.format("%s/%s", configDirPath, fileName));
+        File file = new File(String.format("%s/%s", getConfigDir(bundleSymbolicName), fileName));
+        setUpDirsForFile(file);
 
         properties.store(new FileOutputStream(file), null);
     }
@@ -250,6 +248,55 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     }
 
     @Override
+    public void saveRawConfig(String bundleSymbolicName, String filename, InputStream rawData) throws  IOException {
+        File file = new File(String.format("%s/raw/%s", getConfigDir(bundleSymbolicName), filename));
+        setUpDirsForFile(file);
+
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            IOUtils.copy(rawData, fos);
+        }
+    }
+
+    @Override
+    public InputStream getRawConfig(String bundleSymbolicName, String filename) throws IOException {
+        File file = new File(String.format("%s/raw/%s", getConfigDir(bundleSymbolicName), filename));
+
+        InputStream is = null;
+        if (file.exists()) {
+            is = new FileInputStream(file);
+        }
+
+        return is;
+    }
+
+    @Override
+    public boolean rawConfigExists(String bundleSymbolicName, String filename) {
+        File file = new File(String.format("%s/raw/%s", getConfigDir(bundleSymbolicName), filename));
+        return file.exists();
+    }
+
+    @Override
+    public List<String> listRawConfigNames(String bundleSymbolicName) {
+        File configDir = new File(getConfigDir(bundleSymbolicName) + "/raw");
+
+        File[] files = configDir.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return !pathname.isDirectory();
+            }
+        });
+
+        List<String> result = new ArrayList<>();
+        if (files != null) {
+            for (File file : files) {
+                result.add(file.getName());
+            }
+        }
+
+        return result;
+    }
+
+    @Override
     public CouchDbConnector getCouchConnector(String dbName) {
         return couchDbManager.getConnector(dbName, true);
     }
@@ -270,6 +317,10 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         if (!dir.exists()) {
             dir.mkdirs();
         }
+    }
+
+    private static void setUpDirsForFile(File file) {
+        file.getParentFile().mkdirs();
     }
 
     private SettingsRecord getDBSettings() {

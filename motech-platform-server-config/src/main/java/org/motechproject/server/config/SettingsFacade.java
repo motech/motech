@@ -18,37 +18,52 @@ public class SettingsFacade {
 
     private PlatformSettingsService platformSettingsService;
 
+    private boolean rawConfigRegistered;
+    private boolean propsRegistered;
+
     @Autowired(required = false)
     private BundleContext bundleContext;
 
     private Map<String, Properties> config = new HashMap<>();
+    private Map<String, Resource> rawConfig = new HashMap<>();
 
     @Autowired(required = false)
     public void setPlatformSettingsService(PlatformSettingsService platformSettingsService) {
         this.platformSettingsService = platformSettingsService;
-        registerAllProperties();
+        if (!propsRegistered) {
+            registerAllProperties();
+        }
+        if (!rawConfigRegistered) {
+            registerAllRawConfig();
+        }
     }
 
-    public SettingsFacade() { }
-
-    public SettingsFacade(List<Resource> configFiles) {
-        for (Resource configFile : configFiles) {
+    public void setConfigFiles(List<Resource> resources) {
+        for (Resource configFile : resources) {
             InputStream is = null;
             try {
-                String filename = getResourceFileName(configFile);
                 is = configFile.getInputStream();
 
                 Properties props = new Properties();
                 props.load(is);
 
-                config.put(filename, props);
+                config.put(getResourceFileName(configFile), props);
             } catch (IOException e) {
                 throw new MotechException("Cant load config file " + configFile.getFilename(), e);
             } finally {
                 IOUtils.closeQuietly(is);
             }
         }
+        registerAllProperties();
     }
+
+    public void setRawConfigFiles(List<Resource> resources) {
+        for (Resource resource : resources) {
+            rawConfig.put(getResourceFileName(resource), resource);
+        }
+        registerAllRawConfig();
+    }
+
 
     public String getProperty(String key) {
         String result = null;
@@ -64,7 +79,7 @@ public class SettingsFacade {
     public String getProperty(String key, String filename) {
         String result = null;
         try {
-            if (platformSettingsService != null) {
+            if (propsRegistered) {
                 Properties props = platformSettingsService.getBundleProperties(getSymbolicName(), filename);
                 config.put(filename, props);
             }
@@ -81,7 +96,7 @@ public class SettingsFacade {
     }
 
     public Properties getProperties(String filename) {
-        if (platformSettingsService != null) {
+        if (propsRegistered) {
             try {
                 Properties props = platformSettingsService.getBundleProperties(getSymbolicName(), filename);
                 config.put(filename, props);
@@ -103,7 +118,7 @@ public class SettingsFacade {
 
         props.put(key, value);
 
-        if (platformSettingsService != null) {
+        if (propsRegistered) {
             try {
                 platformSettingsService.saveBundleProperties(getSymbolicName(), filename, props);
             } catch (IOException e) {
@@ -122,15 +137,27 @@ public class SettingsFacade {
         setProperty(filename, key, value);
     }
 
-    public void addConfigProperties(String filename, Properties properties) {
+    public void saveConfigProperties(String filename, Properties properties) {
         config.put(filename, properties);
 
-        if (platformSettingsService != null) {
+        if (propsRegistered) {
             try {
                 platformSettingsService.saveBundleProperties(getSymbolicName(), filename, properties);
             } catch (IOException e) {
                 throw new RuntimeException("Can't save settings " + filename, e);
             }
+        }
+    }
+
+    public void saveRawConfig(String filename, Resource resource) {
+        rawConfig.put(filename, resource);
+
+        try (InputStream is = resource.getInputStream()) {
+            if (platformSettingsService != null) {
+                platformSettingsService.saveRawConfig(getSymbolicName(), filename, is);
+            }
+        } catch (IOException e) {
+            throw new MotechException("Error saving file " + filename, e);
         }
     }
 
@@ -152,6 +179,31 @@ public class SettingsFacade {
         }
     }
 
+    public InputStream getRawConfig(String filename) {
+        InputStream is = null;
+
+        if (rawConfigRegistered) {
+            // read from platform
+            try {
+                is = platformSettingsService.getRawConfig(getSymbolicName(), filename);
+            } catch (IOException e) {
+                throw new MotechException("Error loading file " + filename, e);
+            }
+        } else {
+            // read resource
+            Resource resource = rawConfig.get(filename);
+            if (resource != null) {
+                try {
+                    is = resource.getInputStream();
+                } catch (IOException e) {
+                    throw new MotechException("Error reading raw config", e);
+                }
+            }
+        }
+
+        return is;
+    }
+
     protected void registerAllProperties() {
         if (platformSettingsService != null) {
             for (Map.Entry<String, Properties> entry : config.entrySet()) {
@@ -160,6 +212,7 @@ public class SettingsFacade {
 
                 registerProperties(filename, props);
             }
+            propsRegistered = true;
         }
     }
 
@@ -176,6 +229,25 @@ public class SettingsFacade {
             }
         } catch (IOException e) {
             throw new MotechException("Cant register settings", e);
+        }
+    }
+
+    protected void registerAllRawConfig() {
+        if (platformSettingsService != null) {
+            for (Map.Entry<String, Resource> entry : rawConfig.entrySet()) {
+                String filename = entry.getKey();
+                Resource resource = entry.getValue();
+
+                if (!platformSettingsService.rawConfigExists(getSymbolicName(), filename)) {
+                    // register new config with the platform
+                    try (InputStream is = resource.getInputStream()) {
+                        platformSettingsService.saveRawConfig(getSymbolicName(), filename, is);
+                    } catch (IOException e) {
+                        throw new MotechException("Can't save raw config " + filename, e);
+                    }
+                }
+            }
+            rawConfigRegistered = true;
         }
     }
 
@@ -198,6 +270,13 @@ public class SettingsFacade {
     }
 
     protected static String getResourceFileName(Resource resource) {
-        return resource.getFilename().replace("classpath:", "");
+        String name = resource.getFilename();
+        int colonIndex = name.indexOf(':');
+
+        if (colonIndex >= 0) {
+            name = name.substring(colonIndex + 1);
+        }
+
+        return name;
     }
 }

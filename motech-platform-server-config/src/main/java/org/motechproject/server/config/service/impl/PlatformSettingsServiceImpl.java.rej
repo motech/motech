@@ -1,0 +1,17 @@
+diff a/motech-platform-server-config/src/main/java/org/motechproject/server/config/service/impl/PlatformSettingsServiceImpl.java b/motech-platform-server-config/src/main/java/org/motechproject/server/config/service/impl/PlatformSettingsServiceImpl.java	(rejected hunks)
+@@ -1,5 +1,6 @@
+ package org.motechproject.server.config.service.impl;
+ 
++import org.apache.commons.io.IOUtils;
+ import org.ektorp.CouchDbConnector;
+ import org.motechproject.server.config.ConfigLoader;
+ import org.motechproject.server.config.db.CouchDbManager;
+@@ -282,4 +327,8 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
+             dir.mkdirs();
+         }
+     }
++
++    private static void setUpDirsForFile(File file) {
++        file.getParentFile().mkdirs();
++    }
+ }

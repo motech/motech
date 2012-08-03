@@ -2,7 +2,7 @@ package org.motechproject.admin.web.controller;
 
 import org.motechproject.admin.service.SettingsService;
 import org.motechproject.admin.service.StatusMessageService;
-import org.motechproject.admin.settings.BundleSettings;
+import org.motechproject.admin.settings.Settings;
 import org.motechproject.admin.settings.SettingsOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -39,27 +40,33 @@ public class SettingsController {
     private StatusMessageService statusMessageService;
 
     @RequestMapping(value = "/settings/{bundleId}", method = RequestMethod.GET)
-    @ResponseBody public List<BundleSettings> getBundleSettings(@PathVariable long bundleId) throws IOException {
+    @ResponseBody public List<Settings> getBundleSettings(@PathVariable long bundleId) throws IOException {
         return settingsService.getBundleSettings(bundleId);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/settings/{bundleId}", method = RequestMethod.POST)
-    public void saveBundleSettings(@PathVariable long bundleId, @RequestBody BundleSettings bundleSettings) throws IOException {
+    public void saveBundleSettings(@PathVariable long bundleId, @RequestBody Settings bundleSettings) throws IOException {
         settingsService.saveBundleSettings(bundleSettings, bundleId);
+        statusMessageService.ok("{settings.saved.bundle}");
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/settings/platform/list", method = RequestMethod.POST)
+    public void savePlatformSettings(@RequestBody Settings[] platformSettings) {
+        settingsService.savePlatformSettings(Arrays.asList(platformSettings));
         statusMessageService.ok("{settings.saved.bundle}");
     }
 
     @RequestMapping(value = "/settings/platform", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public void savePlatformSettings(HttpServletRequest request) throws IOException {
-        List<SettingsOption> options = constructSettingsOptions(request);
-        settingsService.savePlatformSettings(options);
+    public void savePlatformSettings(@RequestBody Settings platformSettings) throws IOException {
+        settingsService.savePlatformSettings(platformSettings);
         statusMessageService.ok(PLATFORM_SETTINGS_SAVED);
     }
 
     @RequestMapping(value = "/settings/platform", method = RequestMethod.GET)
-    @ResponseBody public List<SettingsOption> getPlatformSettings() {
+    @ResponseBody public List<Settings> getPlatformSettings() {
         return settingsService.getSettings();
     }
 
@@ -81,6 +88,19 @@ public class SettingsController {
     @RequestMapping(value = "/settings/bundles/list", method = RequestMethod.GET)
     @ResponseBody public List<String> getBundlesWithSettings() {
         return settingsService.retrieveRegisteredBundleNames();
+    }
+
+    @RequestMapping(value = "/settings/{bundleId}/raw", method = RequestMethod.GET)
+    @ResponseBody public List<String> getRawFilenames(@PathVariable long bundleId) {
+        return settingsService.getRawFilenames(bundleId);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/settings/{bundleId}/raw", method = RequestMethod.POST)
+    void uploadRawFile(@PathVariable long bundleId, @RequestParam(required = true) String filename,
+                       @RequestParam(required = true) MultipartFile file) {
+        settingsService.saveRawFile(file, filename, bundleId);
+        statusMessageService.ok("{settings.saved.file}");
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -60,8 +60,8 @@ public class ManagedSmslibServiceTest {
         smsProperties = new Properties();
 
         settings = new SettingsFacade();
-        settings.addConfigProperties("smpp.properties", smppProperties);
-        settings.addConfigProperties("sms.properties", smsProperties);
+        settings.saveConfigProperties("smpp.properties", smppProperties);
+        settings.saveConfigProperties("sms.properties", smsProperties);
     }
 
     private void mockServiceSettings() throws Exception {
