@@ -222,6 +222,17 @@
                     <source>${jdk.version}</source>
                     <target>${jdk.version}</target>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <phase>test-compile</phase>
+                        <configuration>
+                            <testExcludes>
+                                <exclude>**/ft/*.java</exclude>
+                            </testExcludes>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -230,6 +241,7 @@
                 <configuration>
                     <excludes>
                         <exclude>**/**/*ForTest.java</exclude>
+                        <exclude>**/ft/*.java</exclude>
                     </excludes>
                     <argLine>-XX:-UseSplitVerifier</argLine>      <!-- bug in powermock on java7 -->
                     <forkMode>once</forkMode>   <!-- bug in surefire; won't pass argline for never -->
@@ -279,26 +291,26 @@
                 </executions>
             </plugin>
             <!--<plugin>-->
-                <!--<groupId>org.codehaus.mojo</groupId>-->
-                <!--<artifactId>findbugs-maven-plugin</artifactId>-->
-                <!--<version>2.3.2</version>-->
-                <!--<configuration>-->
-                    <!--<failOnError>true</failOnError>-->
-                    <!--<effort>Max</effort>-->
-                    <!--<threshold>Low</threshold>-->
-                    <!--<excludeFilterFile>${modules.root.dir}/findbugs-exclude.xml</excludeFilterFile>-->
-                    <!--<includeFilterFile>${modules.root.dir}/findbugs-include.xml</includeFilterFile>-->
-                    <!--<skip>${maven.test.skip}</skip>-->
-                    <!--<includeTests>false</includeTests>-->
-                <!--</configuration>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<phase>verify</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>check</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
+            <!--<groupId>org.codehaus.mojo</groupId>-->
+            <!--<artifactId>findbugs-maven-plugin</artifactId>-->
+            <!--<version>2.3.2</version>-->
+            <!--<configuration>-->
+            <!--<failOnError>true</failOnError>-->
+            <!--<effort>Max</effort>-->
+            <!--<threshold>Low</threshold>-->
+            <!--<excludeFilterFile>${modules.root.dir}/findbugs-exclude.xml</excludeFilterFile>-->
+            <!--<includeFilterFile>${modules.root.dir}/findbugs-include.xml</includeFilterFile>-->
+            <!--<skip>${maven.test.skip}</skip>-->
+            <!--<includeTests>false</includeTests>-->
+            <!--</configuration>-->
+            <!--<executions>-->
+            <!--<execution>-->
+            <!--<phase>verify</phase>-->
+            <!--<goals>-->
+            <!--<goal>check</goal>-->
+            <!--</goals>-->
+            <!--</execution>-->
+            <!--</executions>-->
             <!--</plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -374,6 +386,54 @@
                 </plugins>
             </build>
         </profile>
+
+        <profile>
+            <id>FT</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>2.5.1</version>
+                        <executions>
+                            <execution>
+                                <id>default-testCompile</id>
+                                <phase>test-compile</phase>
+                                <configuration>
+                                    <fork>true</fork>
+                                    <compilerArgument>-Xbootclasspath/p:${modules.root.dir}/tools/jvmfaketime/jvmfaketime.jar</compilerArgument>
+                                    <testExcludes>
+                                        <exclude>NONE</exclude>
+                                    </testExcludes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.12</version>
+                        <configuration>
+                            <excludes>
+                                <exclude>NONE</exclude>
+                            </excludes>
+                            <includes>
+                                <include>**/ft/*.java</include>
+                            </includes>
+                            <argLine>-XX:-UseSplitVerifier</argLine>      <!-- bug in powermock on java7 -->
+                            <forkMode>always</forkMode>   <!-- bug in surefire; won't pass argline for never -->
+                            <argLine>-Xbootclasspath/p:${modules.root.dir}/tools/jvmfaketime/jvmfaketime.jar</argLine>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.9</version>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
         <profile>
             <id>RPM</id>
             <build>
@@ -522,6 +582,6 @@
         <connection>${scm.connection}</connection>
         <developerConnection>${scm.developerConnection}</developerConnection>
         <url>${scm.url}</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 </project>

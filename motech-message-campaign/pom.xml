@@ -65,7 +65,6 @@
             <groupId>org.motechproject</groupId>
             <artifactId>motech-testing-utils</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

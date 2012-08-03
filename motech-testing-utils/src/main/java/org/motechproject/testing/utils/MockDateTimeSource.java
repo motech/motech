@@ -6,14 +6,14 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.motechproject.util.datetime.DateTimeSource;
 
-public class FakeDateTimeSource implements DateTimeSource {
+public class MockDateTimeSource implements DateTimeSource {
     private DateTime dateTime;
 
-    public FakeDateTimeSource(LocalDate localDate) {
+    public MockDateTimeSource(LocalDate localDate) {
         this(localDate.toDateTime(LocalTime.MIDNIGHT));
     }
 
-    public FakeDateTimeSource(DateTime dateTime) {
+    public MockDateTimeSource(DateTime dateTime) {
         this.dateTime = dateTime;
     }
 
