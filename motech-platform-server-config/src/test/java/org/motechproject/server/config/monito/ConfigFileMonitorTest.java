@@ -48,7 +48,7 @@ public class ConfigFileMonitorTest {
 
     @InjectMocks
     @Spy
-    ConfigFileMonitor configFileMonitor = ConfigFileMonitor.getInstance();
+    ConfigFileMonitor configFileMonitor = new ConfigFileMonitor();
 
     @Before
     public void setUp() throws Exception {

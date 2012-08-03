@@ -94,7 +94,9 @@ public class ConfigLoader {
         try {
             MessageDigest digest = MessageDigest.getInstance("MD5");
 
-            try (DigestInputStream dis = new DigestInputStream(is, digest)) {
+            try {
+                DigestInputStream dis = new DigestInputStream(is, digest);
+
                 //load configFileSettings and calculate MD5 hash
                 ConfigFileSettings configFileSettings = new ConfigFileSettings();
                 configFileSettings.load(dis);
@@ -115,7 +117,8 @@ public class ConfigLoader {
             configLocations = new ArrayList<>();
         }
 
-        try (Scanner scanner = new Scanner(configLocationsFile)) {
+        try {
+            Scanner scanner = new Scanner(configLocationsFile);
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
 
@@ -125,6 +128,8 @@ public class ConfigLoader {
                     this.configLocations.add(resourceLoader.getResource(line));
                 }
             }
+        } catch (IOException e) {
+            LOGGER.error("Error loading configuration locations file", e);
         }
     }
 }
