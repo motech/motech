@@ -15,10 +15,7 @@ import org.motechproject.scheduletracking.api.domain.exception.ScheduleTrackingE
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllSchedules;
-import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
-import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
-import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
-import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
+import org.motechproject.scheduletracking.api.service.*;
 import org.motechproject.scheduletracking.api.service.contract.UpdateCriteria;
 import org.motechproject.util.DateUtil;
 

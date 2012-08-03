@@ -39,11 +39,11 @@ public class AlertWindow {
         return schedulableAlertTimings.size();
     }
 
-    public Date scheduledAlertStartDate() {
+    public DateTime scheduledAlertStartDate() {
         if (schedulableAlertTimings.size() == 0) {
             return null;
         }
-        return schedulableAlertTimings.get(0).toDate();
+        return schedulableAlertTimings.get(0);
     }
 
     public List<DateTime> allPossibleAlerts() {
@@ -52,7 +52,7 @@ public class AlertWindow {
     }
 
     private List<DateTime> computeAllAlertTimings() {
-        List<DateTime> alertTimings = new ArrayList<DateTime>();
+        List<DateTime> alertTimings = new ArrayList<>();
 
         if (alert.getCount() > 0) {
             alertTimings.add(alertWindowStart);
@@ -62,7 +62,8 @@ public class AlertWindow {
             alertTimings.add(previousAlertTime.plus(alert.getInterval()));
         }
 
-        if (alert.isFloating() && alertStartDateTime().isAfter(alertWindowStart)) {
+        boolean isDelayed = earliestValidAlertDateTime().isAfter(alertWindowStart);
+        if (alert.isFloating() && isDelayed) {
             return floatWindowAndAlertTimings(alertTimings);
         }
 
@@ -70,13 +71,15 @@ public class AlertWindow {
     }
 
     private List<DateTime> floatWindowAndAlertTimings(List<DateTime> alertTimings) {
-        List<DateTime> floatedAlertTimings = new ArrayList<DateTime>();
+        List<DateTime> floatedAlertTimings = new ArrayList<>();
 
-        DateTime preferredAlertStartDateTime = toPreferredTime(alertStartDateTime(), preferredAlertTime);
-        Period periodToBeFloatedWith = new Period(alertWindowStart, preferredAlertStartDateTime);
+        DateTime floatingAlertsStartDateTime = newDateTime(earliestValidAlertDateTime().toLocalDate(), new Time(alertWindowStart.getHourOfDay(), alertWindowStart.getMinuteOfHour()));
+
+        Period periodToBeFloatedWith = new Period(alertWindowStart, floatingAlertsStartDateTime);
         alertWindowStart = alertWindowStart.plus(periodToBeFloatedWith);
 
-        if (alertWindowStart.isBefore(DateUtil.now())) {
+        // Schedule floating alerts from tomorrow, if today's alert time has already passed
+        if (preferredAlertTime != null && alertWindowStart.isBefore(DateUtil.now())) {
             periodToBeFloatedWith = periodToBeFloatedWith.plusDays(1);
         }
 
@@ -93,7 +96,13 @@ public class AlertWindow {
     }
 
     private List<DateTime> filterElapsedAlerts(List<DateTime> alertsWithInEndDate) {
-        return filter(greaterThanOrEqualTo(alertStartDateTime()), alertsWithInEndDate);
+        DateTime start = earliestValidAlertDateTime();
+
+        // In case of floating alerts with no preferred alert time, don't filter out today's alerts.
+        if (alert.isFloating() && preferredAlertTime == null)
+            start = newDateTime(start.toLocalDate(), new Time(0, 0));
+
+        return filter(greaterThanOrEqualTo(start), alertsWithInEndDate);
     }
 
     private List<DateTime> filterAlertsBeyondEndDate(List<DateTime> alertTimings) {
@@ -107,8 +116,8 @@ public class AlertWindow {
         return newDateTime(alertTime.toLocalDate(), preferredTime.getHour(), preferredTime.getMinute(), 0);
     }
 
-    private DateTime alertStartDateTime() {
+    private DateTime earliestValidAlertDateTime() {
         DateTime now = now();
-        return now.isBefore(enrolledOn) ? enrolledOn : now;
+        return !enrolledOn.isAfter(now) ? now : enrolledOn;
     }
 }

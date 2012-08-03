@@ -1,0 +1,41 @@
+{
+    "name":"schedule_with_floating_alerts",
+    "milestones":[
+        {
+            "name":"milestone1",
+            "scheduleWindows":{
+                "earliest":["1 week"],
+                "due":["2 weeks"],
+                "late":["3 weeks"],
+                "max":["4 weeks"]
+            },
+            "alerts":[
+                {
+                    "window":"due",
+                    "offset":["0 days"],
+                    "interval":["1 Day"],
+                    "count":"4",
+                    "floating":"true"
+                }
+            ]
+        },
+        {
+            "name":"milestone2",
+            "scheduleWindows":{
+                "earliest":["1 Weeks"],
+                "due":["2 Weeks"],
+                "late":["3 Weeks"],
+                "max":["4 weeks"]
+            },
+            "alerts":[
+                {
+                    "window":"earliest",
+                    "offset":["0 days"],
+                    "interval":["1 Day"],
+                    "count":"3",
+                    "floating":"true"
+                }
+            ]
+        }
+    ]
+}

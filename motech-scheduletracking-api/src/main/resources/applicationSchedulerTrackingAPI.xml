@@ -10,6 +10,8 @@
     <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
     <util:properties id="quartzProperties" location="classpath:quartz.properties"/>
 
+    <import resource="classpath:schedulerFiredEventChannelAdapter.xml"/>
+
     <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean"/>
 
     <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
