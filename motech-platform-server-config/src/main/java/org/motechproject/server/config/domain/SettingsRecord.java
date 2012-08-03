@@ -13,16 +13,25 @@ import java.util.Properties;
 public class SettingsRecord extends MotechBaseDataObject implements MotechSettings {
 
     private String language;
+    private String statusMsgTimeout;
+
     private boolean cluster;
     private DateTime lastRun;
     private byte[] configFileChecksum;
+
     private Properties couchDbProperties;
     private Properties activemqProperties;
     private Properties quartzProperties;
+    private Properties systemProperties;
 
     @Override
     public String getLanguage() {
         return language;
+    }
+
+    @Override
+    public String getStatusMsgTimeout() {
+        return statusMsgTimeout;
     }
 
     @Override
@@ -56,6 +65,10 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
         this.language = language;
     }
 
+    public void setStatusMsgTimeout(final String statusMsgTimeout) {
+        this.statusMsgTimeout = statusMsgTimeout;
+    }
+
     public boolean isCluster() {
         return cluster;
     }
@@ -82,6 +95,7 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
 
     public void updateSettings(final MotechSettings settings) {
         setLanguage(settings.getLanguage());
+        setStatusMsgTimeout(settings.getStatusMsgTimeout());
         setActivemqProperties(settings.getActivemqProperties());
         setQuartzProperties(settings.getQuartzProperties());
     }

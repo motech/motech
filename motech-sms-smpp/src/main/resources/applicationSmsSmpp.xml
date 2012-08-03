@@ -12,13 +12,13 @@
 
     <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
 
-    <bean id="settings" class="org.motechproject.server.config.SettingsFacade">
-        <constructor-arg>
+    <bean id="smsSmppSettings" class="org.motechproject.server.config.SettingsFacade">
+        <property name="configFiles">
             <list>
                 <value>classpath:sms.properties</value>
                 <value>classpath:smpp.properties</value>
             </list>
-        </constructor-arg>
+        </property>
     </bean>
 
     <bean id="smslibService" class="org.smslib.Service" factory-method="getInstance"/>
