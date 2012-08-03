@@ -6,6 +6,8 @@ import org.motechproject.admin.ex.NoDbException;
 import org.motechproject.admin.repository.AllAdminMappings;
 import org.motechproject.admin.service.AdminMappingService;
 import org.motechproject.server.config.service.PlatformSettingsService;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,9 @@ public class AdminMappingServiceImpl implements AdminMappingService {
 
     @Autowired(required = false)
     private AllAdminMappings allAdminMappings;
+
+    @Autowired
+    BundleContext bundleContext;
 
     @Override
     public void registerMapping(String bundleName, String url) {
@@ -60,6 +65,11 @@ public class AdminMappingServiceImpl implements AdminMappingService {
     public Map<String, String> getAllMappings() {
         Map<String, String> result = new HashMap<>();
         if (getAllAdminMappings() != null) {
+            List<String> bundlesWithSettings = platformSettingsService.retrieveRegisteredBundleNames();
+            for (String bundleName : bundlesWithSettings) {
+                result.put(bundleName, String.format("#/bundleSettings/%s", getBundleId(bundleName)));
+            }
+
             List<AdminMapping> mappings = allAdminMappings.getAll();
             for (AdminMapping mapping : mappings) {
                 result.put(mapping.getBundleName(), mapping.getDestination());
@@ -90,5 +100,14 @@ public class AdminMappingServiceImpl implements AdminMappingService {
             }
         }
         return allAdminMappings;
+    }
+
+    private long getBundleId(String symbolicName) {
+        for (Bundle bundle : bundleContext.getBundles()) {
+            if (bundle.getSymbolicName().equals(symbolicName)) {
+                return bundle.getBundleId();
+            }
+        }
+        throw new IllegalArgumentException("Invalid symbolic name");
     }
 }

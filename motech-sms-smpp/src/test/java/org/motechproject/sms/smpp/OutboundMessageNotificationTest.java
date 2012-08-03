@@ -42,7 +42,7 @@ public class OutboundMessageNotificationTest {
             setProperty(SmsProperties.MAX_RETRIES, "4");
         }};
         SettingsFacade settings = new SettingsFacade();
-        settings.addConfigProperties("sms.properties", smsProperties);
+        settings.saveConfigProperties("sms.properties", smsProperties);
 
         outboundMessageNotification = new OutboundMessageNotification(outboundEventGateway, settings);
         ReflectionTestUtils.setField(outboundMessageNotification, "allOutboundSMS", mockAllOutboundSMS);

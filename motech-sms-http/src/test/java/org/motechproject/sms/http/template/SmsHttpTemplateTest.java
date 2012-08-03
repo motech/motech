@@ -7,14 +7,19 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.http.TemplateReader;
 import org.motechproject.sms.http.domain.HttpMethodType;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import sun.misc.BASE64Encoder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
@@ -69,7 +74,7 @@ public class SmsHttpTemplateTest {
 
     @Test
     public void shouldCreateCorrectRequestTypeBasedOnConfiguration_POST() {
-        TemplateReader templateReader = new TemplateReader("/templates/sms-http-post-template.json");
+        TemplateReader templateReader = createTemplateReader("templates/sms-http-post-template.json");
         SmsHttpTemplate smsHttpPOSTTemplate = templateReader.getTemplate();
         assertEquals(PostMethod.class, smsHttpPOSTTemplate.generateRequestFor(Arrays.asList("123", "456", "789"),
                 "Hello World").getClass());
@@ -77,13 +82,13 @@ public class SmsHttpTemplateTest {
 
     @Test
     public void shouldCreateCorrectRequestTypeBasedOnConfiguration_GET() {
-        TemplateReader templateReader = new TemplateReader("/templates/sms-http-get-template.json");
+        TemplateReader templateReader = createTemplateReader("templates/sms-http-get-template.json");
         SmsHttpTemplate smsHttpGETTemplate = templateReader.getTemplate();
         assertEquals(GetMethod.class, smsHttpGETTemplate.generateRequestFor(Arrays.asList("123", "456", "789"),
                 "Hello World").getClass());
     }
 
-        @Test
+    @Test
     public void shouldSetBodyParametersForPOSTRequestType() {
         Map<String, String> params = new HashMap<String, String>();
         params.put("key1", "value1");
@@ -112,5 +117,20 @@ public class SmsHttpTemplateTest {
         outgoing.setRequest(request);
         smsHttpTemplate.setOutgoing(outgoing);
         return smsHttpTemplate;
+    }
+
+    private TemplateReader createTemplateReader(String filename) {
+        List<Resource> resources = new ArrayList<>();
+
+        resources.add(new ClassPathResource("templates/sms-http-get-template.json"));
+        resources.add(new ClassPathResource("templates/sms-http-post-template.json"));
+
+        SettingsFacade settings = new SettingsFacade();
+        settings.setRawConfigFiles(resources);
+
+        TemplateReader reader = new TemplateReader(filename);
+        reader.setSettings(settings);
+
+        return reader;
     }
 }
