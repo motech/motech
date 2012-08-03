@@ -1,11 +1,17 @@
 package org.motechproject.sms.http;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.http.template.Incoming;
 import org.motechproject.sms.http.template.Request;
 import org.motechproject.sms.http.template.Response;
 import org.motechproject.sms.http.template.SmsHttpTemplate;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
@@ -15,7 +21,16 @@ public class TemplateReaderTest {
 
     @Test
     public void shouldReadFromTemplate() {
-        TemplateReader templateReader = new TemplateReader("/templates/sample-template.json");
+        SettingsFacade settings = new SettingsFacade();
+
+        List<Resource> configFiles = new ArrayList<>();
+        configFiles.add(new ClassPathResource("/templates/sample-template.json"));
+
+        settings.setRawConfigFiles(configFiles);
+
+        TemplateReader templateReader = new TemplateReader("templates/sample-template.json");
+        templateReader.setSettings(settings);
+
         SmsHttpTemplate smsHttpTemplate = templateReader.getTemplate();
 
         Request request = smsHttpTemplate.getOutgoing().getRequest();

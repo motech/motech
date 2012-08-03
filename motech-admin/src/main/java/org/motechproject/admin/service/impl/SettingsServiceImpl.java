@@ -3,8 +3,8 @@ package org.motechproject.admin.service.impl;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.MotechException;
 import org.motechproject.admin.service.SettingsService;
-import org.motechproject.admin.settings.BundleSettings;
-import org.motechproject.admin.settings.NameConversionUtil;
+import org.motechproject.admin.settings.ParamParser;
+import org.motechproject.admin.settings.Settings;
 import org.motechproject.admin.settings.SettingsOption;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.MotechSettings;
@@ -34,51 +34,62 @@ public class SettingsServiceImpl implements SettingsService {
     @Autowired
     private BundleContext bundleContext;
 
+
     @Override
-    public List<SettingsOption> getSettings() {
+    public List<Settings> getSettings() {
         MotechSettings motechSettings = platformSettingsService.getPlatformSettings();
-        List<SettingsOption> settingsList = new ArrayList<>();
+        List<Settings> settingsList = new ArrayList<>();
 
         if (motechSettings != null) {
-            Properties activemqProperties = motechSettings.getActivemqProperties();
-            Properties quartzProperties = motechSettings.getQuartzProperties();
             Properties couchDbProperties = motechSettings.getCouchDBProperties();
+            Settings couchSettings = new Settings("couchdb", ParamParser.parseProperties(couchDbProperties));
+            ParamParser.convertNames(couchSettings.getSettings());
+            settingsList.add(couchSettings);
 
-            settingsList.addAll(parseProperties(activemqProperties));
-            settingsList.addAll(parseProperties(quartzProperties));
-            settingsList.addAll(parseProperties(couchDbProperties));
-            settingsList.add(parseParam(MotechSettings.LANGUAGE, motechSettings.getLanguage()));
+            Properties activemqProperties = motechSettings.getActivemqProperties();
+            Settings activemqSettings = new Settings("activemq", ParamParser.parseProperties(activemqProperties));
+            settingsList.add(activemqSettings);
+
+            Properties quartzProperties = motechSettings.getQuartzProperties();
+            Settings quartzSettings = new Settings("quartz", ParamParser.parseProperties(quartzProperties));
+            settingsList.add(quartzSettings);
+
+            List<SettingsOption> miscOptions = new ArrayList<>();
+
+            SettingsOption languageOption = ParamParser.parseParam(MotechSettings.LANGUAGE, motechSettings.getLanguage());
+            miscOptions.add(languageOption);
+            SettingsOption msgOption = ParamParser.parseParam(MotechSettings.STATUS_MSG_TIMEOUT, motechSettings.getStatusMsgTimeout());
+            miscOptions.add(msgOption);
+
+            Settings miscSettings = new Settings("other", miscOptions);
+            settingsList.add(miscSettings);
+
+
         }
 
         return settingsList;
     }
 
     @Override
-    public List<BundleSettings> getBundleSettings(long bundleId) throws IOException {
-        List<BundleSettings> bundleSettings = new ArrayList<>();
+    public List<Settings> getBundleSettings(long bundleId) throws IOException {
+        List<Settings> bundleSettings = new ArrayList<>();
         String symbolicName = getSymbolicName(bundleId);
 
         for (Map.Entry<String, Properties> entry : platformSettingsService.getAllProperties(symbolicName).entrySet()) {
-            List<SettingsOption> settingsList = new ArrayList<>();
-            String filename = entry.getKey();
-            Properties props = entry.getValue();
-            for (Map.Entry<Object, Object> propEntry : props.entrySet()) {
-                SettingsOption option = constructSettingsOption(propEntry);
-                settingsList.add(option);
-            }
-            bundleSettings.add(new BundleSettings(filename, settingsList));
+            List<SettingsOption> settingsList = ParamParser.parseProperties(entry.getValue());
+            bundleSettings.add(new Settings(entry.getKey(), settingsList));
         }
 
         return bundleSettings;
     }
 
     @Override
-    public void saveBundleSettings(BundleSettings settings, long bundleId) {
+    public void saveBundleSettings(Settings settings, long bundleId) {
         String symbolicName = getSymbolicName(bundleId);
-        Properties props = constructProperties(settings);
+        Properties props = ParamParser.constructProperties(settings);
 
         try {
-            platformSettingsService.saveBundleProperties(symbolicName, settings.getFilename(), props);
+            platformSettingsService.saveBundleProperties(symbolicName, settings.getSection(), props);
         } catch (IOException e) {
             LOG.error("Error while saving bundle settings", e);
             throw new RuntimeException(e);
@@ -86,9 +97,16 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     @Override
-    public void savePlatformSettings(List<SettingsOption> settingsOptions) {
-        for (SettingsOption option : settingsOptions) {
+    public void savePlatformSettings(Settings settings) {
+        for (SettingsOption option : settings.getSettings()) {
             platformSettingsService.setPlatformSetting(option.getKey(), String.valueOf(option.getValue()));
+        }
+    }
+
+    @Override
+    public void savePlatformSettings(List<Settings> settings) {
+        for (Settings s : settings) {
+            savePlatformSettings(s);
         }
     }
 
@@ -123,46 +141,28 @@ public class SettingsServiceImpl implements SettingsService {
         return platformSettingsService.retrieveRegisteredBundleNames();
     }
 
+    @Override
+    public List<String> getRawFilenames(long bundleId) {
+        return platformSettingsService.listRawConfigNames(getSymbolicName(bundleId));
+    }
+
+    @Override
+    public void saveRawFile(MultipartFile file, String filename, long bundleId) {
+        InputStream is = null;
+        String symbolicName = getSymbolicName(bundleId);
+        try {
+            is = file.getInputStream();
+            platformSettingsService.saveRawConfig(symbolicName, filename, is);
+        } catch (IOException e) {
+            LOG.error("Error reading uploaded file", e);
+            throw new MotechException(e.getMessage(), e);
+        } finally {
+            IOUtils.closeQuietly(is);
+        }
+    }
+
     private String getSymbolicName(long bundleId) {
         Bundle bundle = bundleContext.getBundle(bundleId);
         return bundle.getSymbolicName();
-    }
-
-    private static SettingsOption constructSettingsOption(Map.Entry<Object, Object> entry) {
-        SettingsOption settingsOption = new SettingsOption();
-
-        settingsOption.setValue(entry.getValue());
-        settingsOption.setKey(NameConversionUtil.convertName(String.valueOf(entry.getKey())));
-        settingsOption.setType(entry.getValue().getClass().getSimpleName());
-
-        return settingsOption;
-    }
-
-    private static List<SettingsOption> parseProperties(Properties props) {
-        List<SettingsOption> settingsList = new ArrayList<>();
-
-        for (Map.Entry<Object, Object> entry : props.entrySet()) {
-            SettingsOption option = constructSettingsOption(entry);
-            settingsList.add(option);
-        }
-        return settingsList;
-    }
-
-    private static SettingsOption parseParam(String key, String value) {
-        SettingsOption settingsOption = new SettingsOption();
-
-        settingsOption.setValue(value);
-        settingsOption.setKey(key);
-        settingsOption.setType(String.class.getSimpleName());
-
-        return settingsOption;
-    }
-
-    private static Properties constructProperties(BundleSettings bundleSettings) {
-        Properties props = new Properties();
-        for (SettingsOption option : bundleSettings.getSettings()) {
-            props.put(option.getKey(), option.getValue());
-        }
-        return props;
     }
 }

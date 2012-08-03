@@ -25,8 +25,11 @@ public interface MotechSettings {
     public static final String QUARTZ_JOB_STORE_CLASS = "org.quartz.jobStore.class";
 
     public static final String LANGUAGE = "system.language";
+    public static final String STATUS_MSG_TIMEOUT = "statusmsg.timeout";
 
     String getLanguage();
+
+    String getStatusMsgTimeout();
 
     Properties getCouchDBProperties();
 

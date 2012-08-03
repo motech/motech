@@ -17,22 +17,26 @@
         <span><b>{{msg('bundles.statistics.active')}}:</b> {{activeBundlesCount()}}.</span>
         <span><b>{{msg('bundles.statistics.installed')}}:</b> {{installedBundlesCount()}}.</span>
         <span><b>{{msg('bundles.statistics.resolved')}}:</b> {{resolvedBundlesCount()}}.</span>
+        <form class="float-right">
+            <label for="filter">{{msg('filter')}}</label>
+            <input id="filter" type="text" ng-model="filterProp"/>
+        </form>
     </div>
 </div>
 
 <table>
     <thead>
     <tr>
-        <th>{{msg('bundles.id')}}</th>
+        <th ng-click="setOrder('bundleId')">{{msg('bundles.id')}}</th>
         <th>{{msg('bundles.icon')}}</th>
-        <th>{{msg('bundles.symbolicName')}}</th>
-        <th>{{msg('bundles.version')}}</th>
-        <th>{{msg('bundles.state')}}</th>
+        <th ng-click="setOrder('symbolicName')">{{msg('bundles.symbolicName')}}</th>
+        <th ng-click="setOrder('version')">{{msg('bundles.version')}}</th>
+        <th ng-click="setOrder('state')">{{msg('bundles.state')}}</th>
         <th>{{msg('bundles.actions')}}</th>
     </tr>
     </thead>
     <tbody>
-    <tr ng-repeat="bundle in bundles">
+    <tr ng-repeat="bundle in bundles | orderBy:orderProp:invert | filter:filterProp">
         <td>{{bundle.bundleId}}</td>
         <td>
             <div ng-class="getIconClass(bundle)">
