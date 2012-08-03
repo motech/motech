@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
  * See implementation module for more configuration information.
  */
 public interface FlowSessionService {
+    public static final String FLOW_SESSION_ID_PARAM = "flowSessionId";
 
     public FlowSession getSession(String sessionId);
 

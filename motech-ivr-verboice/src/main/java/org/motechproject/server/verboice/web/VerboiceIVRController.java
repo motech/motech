@@ -29,11 +29,7 @@ public class VerboiceIVRController {
         final String treeName = request.getParameter("tree");
         String callId = request.getParameter("motech_call_id");
         String verboiceCallId = request.getParameter("CallSid");
-        FlowSession flowSession;
-        if (callId != null) {
-            flowSession = flowSessionService.getSession(callId);
-            flowSessionService.updateSessionId(flowSession.getSessionId(), verboiceCallId);
-        }
+        updateOutgoingCallSessionIdWithVerboiceSid(callId, verboiceCallId);
         if (StringUtils.isNotBlank(treeName)) {
             String digits = request.getParameter("DialCallStatus");
             if (StringUtils.isBlank(digits)) {
@@ -47,9 +43,16 @@ public class VerboiceIVRController {
         return verboiceIVRService.getHandler().handle(request.getParameterMap());
     }
 
+    private void updateOutgoingCallSessionIdWithVerboiceSid(String callId, String verboiceCallId) {
+        if (callId != null) {
+            FlowSession flowSession = flowSessionService.getSession(callId);
+            flowSessionService.updateSessionId(flowSession.getSessionId(), verboiceCallId);
+        }
+    }
+
     private String redirectToDecisionTree(String treeName, String digits, String treePath, String language, String flowSessionId, String servletPath) {
         final String transitionKey = digits == null ? "" : "&trK=" + digits;
-        final String flowSessionParam = flowSessionId == null? "" :"&flowSessionId="+ flowSessionId;
+        final String flowSessionParam = flowSessionId == null? "" :"&"+ FlowSessionService.FLOW_SESSION_ID_PARAM +"="+ flowSessionId;
         return String.format("forward:%s%s?type=verboice&tree=%s&trP=%s&ln=%s%s%s", servletPath, DECISIONTREE_URL, treeName, treePath, language, flowSessionParam, transitionKey)
                 .replaceAll("//", "/");
     }

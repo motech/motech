@@ -14,8 +14,6 @@ import java.util.UUID;
 @Service("flowSessionService")
 public class FlowSessionServiceImpl implements FlowSessionService {
 
-    public static final String FLOW_SESSION_ID_PARAM = "flowSessionId";
-
     private AllFlowSessionRecords allFlowSessionRecords;
 
     @Autowired
