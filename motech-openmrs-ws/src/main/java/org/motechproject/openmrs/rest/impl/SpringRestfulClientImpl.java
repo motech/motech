@@ -79,7 +79,7 @@ public class SpringRestfulClientImpl implements RestClient {
         try {
             return command.execute();
         } catch (HttpClientErrorException e) {
-            System.out.println(e.getResponseBodyAsString());
+            LOGGER.debug("RESPONSE: " + e.getResponseBodyAsString());
             LOGGER.warn("Request failed with client error: " + e.getMessage());
             throw new HttpException(e.getMessage());
         } catch (HttpServerErrorException e) {
