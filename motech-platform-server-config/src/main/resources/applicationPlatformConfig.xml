@@ -22,6 +22,6 @@
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.server.config"/>
 
-    <bean id="configFileMonitor" class="org.motechproject.server.config.monitor.ConfigFileMonitor" factory-method="getInstance"/>
+    <bean id="configFileMonitor" class="org.motechproject.server.config.monitor.ConfigFileMonitor"/>
 
 </beans>

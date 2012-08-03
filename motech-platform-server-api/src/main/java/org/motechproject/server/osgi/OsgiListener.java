@@ -18,7 +18,7 @@ public class OsgiListener implements ServletContextListener {
     private static OsgiFrameworkService service;
 
     private StartupManager startupManager = StartupManager.getInstance();
-    private ConfigFileMonitor configFileMonitor = ConfigFileMonitor.getInstance();
+    private ConfigFileMonitor configFileMonitor;
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
@@ -30,7 +30,7 @@ public class OsgiListener implements ServletContextListener {
 
         if (startupManager.canLaunchBundles()) {
             LOGGER.info("Monitoring config file...");
-            configFileMonitor.monitor();
+            getConfigFileMonitor(servletContextEvent).monitor();
 
             LOGGER.info("Launching bundles...");
             getOsgiService().startExternalBundles();
@@ -57,6 +57,16 @@ public class OsgiListener implements ServletContextListener {
             service = applicationContext.getBean(OsgiFrameworkService.class);
         }
         return service;
+    }
+
+    private ConfigFileMonitor getConfigFileMonitor(ServletContextEvent servletContextEvent) {
+        if (configFileMonitor == null) {
+            LOGGER.debug("Finding ConfigFileMonitor instance in context...");
+            ServletContext servletContext = servletContextEvent.getServletContext();
+            ApplicationContext applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
+            configFileMonitor = applicationContext.getBean(ConfigFileMonitor.class);
+        }
+        return configFileMonitor;
     }
 
     public static OsgiFrameworkService getOsgiService() {
