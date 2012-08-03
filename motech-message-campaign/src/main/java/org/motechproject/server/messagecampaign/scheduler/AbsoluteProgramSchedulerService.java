@@ -34,6 +34,6 @@ public class AbsoluteProgramSchedulerService extends CampaignSchedulerService<Ab
         MotechEvent motechEvent = new MotechEvent(EventKeys.SEND_MESSAGE, params);
         LocalDate startDate = ((AbsoluteCampaignMessage) campaignMessage).date();
         RunOnceSchedulableJob runOnceSchedulableJob = new RunOnceSchedulableJob(motechEvent, newDateTime(startDate, deliverTimeFor(enrollment, campaignMessage)).toDate());
-        schedulerService.scheduleRunOnceJob(runOnceSchedulableJob);
+        getSchedulerService().scheduleRunOnceJob(runOnceSchedulableJob);
     }
 }

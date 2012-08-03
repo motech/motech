@@ -106,7 +106,7 @@ public class CampaignMessageRecord {
         message.formats(formats);
         message.languages(languages);
         message.messageKey(messageKey);
-        message.timeOffset(timeOffset);
+        message.timeOffset(new TimeIntervalParser().parse(timeOffset));
         message.setStartTime(Time.parseTime(startTime, ":"));
         return message;
     }

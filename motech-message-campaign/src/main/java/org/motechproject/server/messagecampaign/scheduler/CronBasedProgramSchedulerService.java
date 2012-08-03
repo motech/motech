@@ -27,6 +27,6 @@ public class CronBasedProgramSchedulerService extends CampaignSchedulerService<C
         MotechEvent motechEvent = new MotechEvent(EventKeys.SEND_MESSAGE, jobParams(message.messageKey(), enrollment));
         LocalDate startDate = enrollment.getReferenceDate();
         CronSchedulableJob schedulableJob = new CronSchedulableJob(motechEvent, cronMessage.cron(), startDate.toDate(), null);
-        schedulerService.scheduleJob(schedulableJob);
+        getSchedulerService().scheduleJob(schedulableJob);
     }
 }
