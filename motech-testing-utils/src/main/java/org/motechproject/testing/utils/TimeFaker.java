@@ -8,11 +8,11 @@ import org.motechproject.util.datetime.DefaultDateTimeSource;
 public class TimeFaker {
 
     public static void fakeNow(DateTime now) {
-        DateTimeSourceUtil.setSourceInstance(new FakeDateTimeSource(now));
+        DateTimeSourceUtil.setSourceInstance(new MockDateTimeSource(now));
     }
 
     public static void fakeToday(LocalDate today) {
-        DateTimeSourceUtil.setSourceInstance(new FakeDateTimeSource(today));
+        DateTimeSourceUtil.setSourceInstance(new MockDateTimeSource(today));
     }
 
     public static void stopFakingTime() {

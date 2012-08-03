@@ -16,11 +16,11 @@ public class BaseUnitTest {
     static final DateTimeSource DATE_TIME_SOURCE = new DefaultDateTimeSource();
 
     protected void mockCurrentDate(DateTime currentDateTime) {
-        DateTimeSourceUtil.setSourceInstance(new FakeDateTimeSource(currentDateTime));
+        DateTimeSourceUtil.setSourceInstance(new MockDateTimeSource(currentDateTime));
     }
 
     protected void mockCurrentDate(LocalDate currentDate) {
-        DateTimeSourceUtil.setSourceInstance(new FakeDateTimeSource(currentDate));
+        DateTimeSourceUtil.setSourceInstance(new MockDateTimeSource(currentDate));
     }
 
     protected DateTime date(int year, int monthOfYear, int dayOfMonth) {
