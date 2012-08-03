@@ -20,4 +20,12 @@
     </bean>
 
     <bean id="smsAuditService" class="org.motechproject.sms.http.service.SmsAuditServiceImpl"/>
+
+    <bean id="settings" class="org.motechproject.server.config.SettingsFacade">
+        <property name="rawConfigFiles">
+            <list>
+                <value>classpath:sms-http-template.json</value>
+            </list>
+        </property>
+    </bean>
 </beans>

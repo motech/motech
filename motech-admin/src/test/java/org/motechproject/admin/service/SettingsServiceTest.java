@@ -5,7 +5,8 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.admin.service.impl.SettingsServiceImpl;
-import org.motechproject.admin.settings.BundleSettings;
+import org.motechproject.admin.settings.ParamParser;
+import org.motechproject.admin.settings.Settings;
 import org.motechproject.admin.settings.SettingsOption;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.MotechSettings;
@@ -68,33 +69,38 @@ public class SettingsServiceTest {
 
     @Test
     public void testGetSettings() {
-        List<SettingsOption> settingsOptionList = settingsService.getSettings();
+        List<Settings> platformSettingsList = settingsService.getSettings();
+        List<SettingsOption> settingsOptionList = platformSettingsList.get(0).getSettings();
 
-        assertEquals(4, settingsOptionList.size());
+        assertEquals(4, platformSettingsList.size());
 
-        assertEquals(AMQ_REDELIVERY_DELAY_IN_MILLIS, settingsOptionList.get(0).getKey());
-        assertEquals(AMQ_REDELIVERY_DELAY_IN_MILLIS_VALUE, settingsOptionList.get(0).getValue());
+        SettingsOption option = platformSettingsList.get(0).getSettings().get(0);
+        assertEquals(DB_HOST, option.getKey());
+        assertEquals(DB_HOST_VALUE, option.getValue());
 
-        assertEquals(QUARTZ_SCHEDULER_NAME, settingsOptionList.get(1).getKey());
-        assertEquals(QUARTZ_SCHEDULER_NAME_VALUE, settingsOptionList.get(1).getValue());
+        option = platformSettingsList.get(1).getSettings().get(0);
+        assertEquals(AMQ_REDELIVERY_DELAY_IN_MILLIS, option.getKey());
+        assertEquals(AMQ_REDELIVERY_DELAY_IN_MILLIS_VALUE, option.getValue());
 
-        assertEquals(DB_HOST, settingsOptionList.get(2).getKey());
-        assertEquals(DB_HOST_VALUE, settingsOptionList.get(2).getValue());
+        option = platformSettingsList.get(2).getSettings().get(0);
+        assertEquals(QUARTZ_SCHEDULER_NAME, option.getKey());
+        assertEquals(QUARTZ_SCHEDULER_NAME_VALUE, option.getValue());
 
-        assertEquals(LANGUAGE, settingsOptionList.get(3).getKey());
-        assertEquals(LANGUAGE_VALUE, settingsOptionList.get(3).getValue());
+        option = platformSettingsList.get(3).getSettings().get(0);
+        assertEquals(LANGUAGE, option.getKey());
+        assertEquals(LANGUAGE_VALUE, option.getValue());
 
         verify(platformSettingsService).getPlatformSettings();
     }
 
     @Test
     public void testGetBundleSettings() throws IOException {
-        List<BundleSettings> bundleSettingsList = settingsService.getBundleSettings(BUNDLE_ID);
+        List<Settings> bundleSettingsList = settingsService.getBundleSettings(BUNDLE_ID);
 
         assertEquals(1, bundleSettingsList.size());
 
-        BundleSettings bundleSettings = bundleSettingsList.get(0);
-        assertEquals(BUNDLE_FILENAME, bundleSettings.getFilename());
+        Settings bundleSettings = bundleSettingsList.get(0);
+        assertEquals(BUNDLE_FILENAME, bundleSettings.getSection());
 
         List<SettingsOption> settingsOptions = bundleSettings.getSettings();
 
@@ -107,7 +113,7 @@ public class SettingsServiceTest {
     public void testSaveBundleSettings() throws IOException {
         SettingsOption option = new SettingsOption(new AbstractMap.SimpleEntry<Object, Object>(OPTION_KEY, OPTION_VALUE));
 
-        BundleSettings settings = new BundleSettings(BUNDLE_FILENAME, Arrays.asList(option));
+        Settings settings = new Settings(BUNDLE_FILENAME, Arrays.asList(option));
         settingsService.saveBundleSettings(settings, BUNDLE_ID);
 
         verify(platformSettingsService).saveBundleProperties(BUNDLE_SYMBOLIC_NAME, BUNDLE_FILENAME, bundleProperty);
