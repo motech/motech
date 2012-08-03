@@ -7,6 +7,8 @@ import org.mockito.Mock;
 import org.motechproject.admin.domain.AdminMapping;
 import org.motechproject.admin.repository.AllAdminMappings;
 import org.motechproject.admin.service.impl.AdminMappingServiceImpl;
+import org.motechproject.server.config.service.PlatformSettingsService;
+import org.osgi.framework.BundleContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +26,12 @@ public class AdminMappingServiceTest {
 
     @Mock
     AllAdminMappings allAdminMappings;
+
+    @Mock
+    BundleContext bundleContext;
+
+    @Mock
+    PlatformSettingsService platformSettingsService;
 
     List<AdminMapping> mappings = new ArrayList<>();
 

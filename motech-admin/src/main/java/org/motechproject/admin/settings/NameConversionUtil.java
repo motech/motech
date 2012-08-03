@@ -1,5 +1,7 @@
 package org.motechproject.admin.settings;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +24,7 @@ public final class NameConversionUtil {
     }
 
     public static String convertName(String name) {
-        String result = mappings.get(name);
+        String result = (StringUtils.isNotBlank(name) ? mappings.get(name) : null);
         return (result == null ? name : result);
     }
 }

@@ -69,7 +69,7 @@ public class StatusMessageServiceImpl implements StatusMessageService {
 
     @Override
     public void postMessage(String text, Level level) {
-        StatusMessage message = new StatusMessage(text, level);
+        StatusMessage message = new StatusMessage(text, level, defaultTimeout());
         postMessage(message);
     }
 
@@ -81,7 +81,7 @@ public class StatusMessageServiceImpl implements StatusMessageService {
 
     @Override
     public void info(String text) {
-        postMessage(text, Level.INFO);
+        postMessage(text, Level.INFO, defaultTimeout());
     }
 
     @Override
@@ -151,5 +151,16 @@ public class StatusMessageServiceImpl implements StatusMessageService {
         }
     }
 
-
+    private DateTime defaultTimeout() {
+        DateTime timeout;
+        String timeoutStr = platformSettingsService.getPlatformSettings().getStatusMsgTimeout();
+        try {
+            Integer timeoutSecs = Integer.parseInt(timeoutStr);
+            timeout = DateTime.now().plusSeconds(timeoutSecs);
+        } catch (RuntimeException e) {
+            LOG.error("Invalid timeout setting - " + timeoutStr);
+            timeout = DateTime.now().plusMinutes(1);
+        }
+        return timeout;
+    }
 }

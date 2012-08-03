@@ -4,10 +4,7 @@
        xmlns:util="http://www.springframework.org/schema/util"
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
-        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
-
-    <util:properties id="smsHttpProperties" location="classpath:sms-http.properties"/>
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.sms.http"/>
@@ -20,4 +17,12 @@
     </bean>
 
     <bean id="smsAuditService" class="org.motechproject.sms.http.service.SmsAuditServiceImpl"/>
+
+    <bean id="smsHttpSettings" class="org.motechproject.server.config.SettingsFacade">
+        <property name="rawConfigFiles">
+            <list>
+                <value>classpath:sms-http-template.json</value>
+            </list>
+        </property>
+    </bean>
 </beans>

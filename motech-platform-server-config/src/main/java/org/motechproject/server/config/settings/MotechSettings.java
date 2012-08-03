@@ -26,7 +26,11 @@ public interface MotechSettings {
 
     String LANGUAGE = "system.language";
 
+    String STATUS_MSG_TIMEOUT = "statusmsg.timeout";
+
     String getLanguage();
+
+    String getStatusMsgTimeout();
 
     Properties getCouchDBProperties();
 
