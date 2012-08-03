@@ -76,7 +76,8 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
         File file = new File(String.format("%s/.motech/config/%s", System.getProperty("user.home"), SETTINGS_FILE_NAME));
 
-        try (FileOutputStream fos = new FileOutputStream(file)) {
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
             settings.store(fos, null);
             configFileMonitor.monitor();
         } catch (Exception e) {
