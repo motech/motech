@@ -41,7 +41,7 @@
             <property name="tokens" value="TYPECAST,RPAREN"/>
         </module>
         <module name="LocalVariableName">
-            <property name="severity" value="warning"/> <!-- TODO: change to error -->
+            <property name="severity" value="error"/>
             <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
         </module>
         <module name="NoWhitespaceBefore">

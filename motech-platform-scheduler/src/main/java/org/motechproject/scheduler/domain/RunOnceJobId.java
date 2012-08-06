@@ -1,10 +1,6 @@
 package org.motechproject.scheduler.domain;
 
-import org.motechproject.scheduler.MotechSchedulerService;
-
-import java.io.Serializable;
-
-public class RunOnceJobId extends JobId{
+public class RunOnceJobId extends JobId {
 
     private static final String SUFFIX_RUNONCEJOBID = "-runonce";
 
