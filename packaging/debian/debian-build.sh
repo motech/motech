@@ -50,9 +50,6 @@ mkdir -p motech-base/usr/share/motech/.motech/rules
 cp -r $PACKAGING_DIR/motech-base .
 mv $WARNAME ./motech-base/var/lib/motech/webapps/
 
-# Copy motech-scheduler
-cp $MOTECH_BASE/motech-scheduler/target/motech-scheduler-*.jar ./motech-base/usr/share/motech/.motech/bundles/
-
 # set up permissions
 find ./motech-base -type d | xargs chmod 755  # for directories
 find ./motech-base -type f | xargs chmod 644  # for files
