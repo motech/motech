@@ -3,7 +3,6 @@
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.scheduler.context.EventContext;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.scheduler.event.EventRelay;
@@ -13,11 +12,7 @@ import org.motechproject.sms.api.constants.EventSubjects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 @Service
 public class SmsServiceImpl implements SmsService {
@@ -34,6 +29,7 @@ public class SmsServiceImpl implements SmsService {
 
     public static final String SMS_MULTI_RECIPIENT_SUPPORTED = "sms.multi.recipient.supported";
     public static final String SMS_SCHEDULE_FUTURE_SMS = "sms.schedule.future.sms";
+    public static final String SMS_SPLIT_MESSAGES = "sms.split.messages";
 
     @Autowired
     public SmsServiceImpl(MotechSchedulerService motechSchedulerService, MessageSplitter messageSplitter, Properties smsApiProperties, EventRelay eventRelay) {
@@ -64,12 +60,22 @@ public class SmsServiceImpl implements SmsService {
     }
 
     private void scheduleOrRaiseSendSmsEvent(final List<String> recipients, final String message, final DateTime deliveryTime) {
-        List<String> partMessages = messageSplitter.split(message, PART_MESSAGE_SIZE, PART_MESSAGE_HEADER_TEMPLATE, PART_MESSAGE_FOOTER);
+        List<String> messages = splitMessage(message);
+
         if (getBooleanPropertyValue(SMS_MULTI_RECIPIENT_SUPPORTED)) {
-            generateOneSendSmsEvent(recipients, partMessages, deliveryTime);
+            generateOneSendSmsEvent(recipients, messages, deliveryTime);
         } else {
-            generateSendSmsEventsForEachRecipient(recipients, partMessages, deliveryTime);
+            generateSendSmsEventsForEachRecipient(recipients, messages, deliveryTime);
         }
+    }
+
+    private List<String> splitMessage(String message) {
+        List<String> messages = new ArrayList<String>();
+        if (getBooleanPropertyValue(SMS_SPLIT_MESSAGES))
+            messages = messageSplitter.split(message, PART_MESSAGE_SIZE, PART_MESSAGE_HEADER_TEMPLATE, PART_MESSAGE_FOOTER);
+        else
+            messages.add(message);
+        return messages;
     }
 
     private void generateSendSmsEventsForEachRecipient(List<String> recipients, List<String> partMessages, DateTime deliveryTime) {

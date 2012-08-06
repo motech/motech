@@ -56,6 +56,7 @@ public class SmsServiceImplTest {
         when(eventContext.getEventRelay()).thenReturn(eventRelay);
         when(smsApiProperties.getProperty("sms.schedule.future.sms")).thenReturn("true");
         when(smsApiProperties.getProperty("sms.multi.recipient.supported")).thenReturn("true");
+        when(smsApiProperties.getProperty("sms.split.messages")).thenReturn("true");
 
         messageSplitter = new MessageSplitter();
         smsService = new SmsServiceImpl(motechSchedulerService, messageSplitter, smsApiProperties, eventRelay);
@@ -112,6 +113,19 @@ public class SmsServiceImplTest {
         List<MotechEvent> events = motechEventArgumentCaptor.getAllValues();
         assertEquals("Msg 1 of 2: This is a 160+ characters long message. All documentation is kept in javadocs because it guarantees consistency between what is on the web and wh...", events.get(0).getParameters().get(EventDataKeys.MESSAGE));
         assertEquals("Msg 2 of 2: at is in the source code.", events.get(1).getParameters().get(EventDataKeys.MESSAGE));
+    }
+
+    @Test
+    public void shouldNotRaiseTwoEventsIfMessageLengthIs170WhenSplitFlagIsOff() {
+        when(smsApiProperties.getProperty("sms.split.messages")).thenReturn("false");
+
+        smsService.sendSMS("123", "This is a 160+ characters long message. All documentation is kept in javadocs because it guarantees consistency between what is on the web and what is in the source code.");
+
+        ArgumentCaptor<MotechEvent> motechEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
+        verify(eventRelay, times(1)).sendEventMessage(motechEventArgumentCaptor.capture());
+
+        List<MotechEvent> events = motechEventArgumentCaptor.getAllValues();
+        assertEquals("This is a 160+ characters long message. All documentation is kept in javadocs because it guarantees consistency between what is on the web and what is in the source code.", events.get(0).getParameters().get(EventDataKeys.MESSAGE));
     }
 
     @Test
