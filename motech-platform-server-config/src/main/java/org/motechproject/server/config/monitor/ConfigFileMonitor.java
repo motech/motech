@@ -35,8 +35,6 @@ public class ConfigFileMonitor implements FileListener, InitializingBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigFileMonitor.class);
     private static final Long DELAY = 2500L;
 
-    private static ConfigFileMonitor instance;
-
     private MotechSchedulerGateway schedulerGateway;
     private ConfigLoader configLoader;
     private PlatformSettingsService platformSettingsService;
@@ -45,19 +43,7 @@ public class ConfigFileMonitor implements FileListener, InitializingBean {
     private DefaultFileMonitor fileMonitor;
     private ConfigFileSettings currentSettings;
 
-    private boolean monitorStart = false;
-
-    private ConfigFileMonitor() {
-    }
-
-    public static ConfigFileMonitor getInstance() {
-        if (instance == null) {
-            LOGGER.debug("Creating new instance of ConfigFileMonitor");
-            instance = new ConfigFileMonitor();
-        }
-
-        return instance;
-    }
+    private boolean monitorStart;
 
     @Override
     protected void finalize() throws Throwable {
