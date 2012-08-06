@@ -132,20 +132,30 @@ public class CaseTaskXmlConverterTest {
 
         CaseTask task = new CaseTask();
 
+        task.setCaseId("CASE_ID");
+        task.setUserId("USER_ID");
+        task.setXmlns("XMLNS");
+        task.setDateModified("DATE_MODIFIED");
+
         CreateTask createTask = new CreateTask();
 
         createTask.setCaseName("CASE_NAME");
-
         createTask.setCaseType("CASE_TYPE");
+        createTask.setOwnerId("OWNER_ID");
 
         task.setCreateTask(createTask);
 
         String xml = caseConverter.convertToCaseXml(task);
 
+        Assert.assertTrue(xml.contains("xmlns=\"XMLNS\""));
+        Assert.assertTrue(xml.contains("case_id=\"CASE_ID\""));
+        Assert.assertTrue(xml.contains("date_modified=\"DATE_MODIFIED\""));
+        Assert.assertTrue(xml.contains("user_id=\"USER_ID\""));
         Assert.assertTrue(xml.contains("<create>"));
         Assert.assertTrue(xml.contains("</create>"));
         Assert.assertTrue(xml.contains("<case_type>CASE_TYPE</case_type>"));
         Assert.assertTrue(xml.contains("<case_name>CASE_NAME</case_name>"));
+        Assert.assertTrue(xml.contains("<owner_id>OWNER_ID</owner_id>"));
     }
 
     @Test
@@ -177,6 +187,10 @@ public class CaseTaskXmlConverterTest {
 
         String xml = caseConverter.convertToCaseXml(task);
 
+        Assert.assertTrue(xml.contains("xmlns=\"XMLNS\""));
+        Assert.assertTrue(xml.contains("case_id=\"CASE_ID\""));
+        Assert.assertTrue(xml.contains("date_modified=\"DATE_MODIFIED\""));
+        Assert.assertTrue(xml.contains("user_id=\"USER_ID\""));
         Assert.assertTrue(xml.contains("<update>"));
         Assert.assertTrue(xml.contains("</update>"));
         Assert.assertTrue(xml.contains("<case_type>CASE_TYPE</case_type>"));
