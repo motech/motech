@@ -44,9 +44,9 @@ public class OffsetProgramSchedulerService extends CampaignSchedulerService<Offs
 
     @Override
     public void stop(CampaignEnrollment enrollment) {
-        OffsetCampaign campaign = (OffsetCampaign) allMessageCampaigns.get(enrollment.getCampaignName());
+        OffsetCampaign campaign = (OffsetCampaign) getAllMessageCampaigns().get(enrollment.getCampaignName());
         for (OffsetCampaignMessage message : campaign.getMessages()) {
-            schedulerService.safeUnscheduleRunOnceJob(EventKeys.SEND_MESSAGE, messageJobIdFor(message.messageKey(), enrollment.getExternalId(), enrollment.getCampaignName()));
+            getSchedulerService().safeUnscheduleRunOnceJob(EventKeys.SEND_MESSAGE, messageJobIdFor(message.messageKey(), enrollment.getExternalId(), enrollment.getCampaignName()));
         }
     }
 

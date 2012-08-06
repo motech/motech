@@ -33,9 +33,9 @@ public class DayOfWeekCampaignSchedulerService extends CampaignSchedulerService<
 
     @Override
     public void stop(CampaignEnrollment enrollment) {
-        DayOfWeekCampaign campaign = (DayOfWeekCampaign) allMessageCampaigns.get(enrollment.getCampaignName());
+        DayOfWeekCampaign campaign = (DayOfWeekCampaign) getAllMessageCampaigns().get(enrollment.getCampaignName());
         for (DayOfWeekCampaignMessage message : campaign.getMessages()) {
-            schedulerService.safeUnscheduleJob(EventKeys.SEND_MESSAGE, messageJobIdFor(message.messageKey(), enrollment.getExternalId(), enrollment.getCampaignName()));
+            getSchedulerService().safeUnscheduleJob(EventKeys.SEND_MESSAGE, messageJobIdFor(message.messageKey(), enrollment.getExternalId(), enrollment.getCampaignName()));
         }
     }
 }
