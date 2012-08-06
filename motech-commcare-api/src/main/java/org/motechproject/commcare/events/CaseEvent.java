@@ -131,15 +131,15 @@ public class CaseEvent {
     }
 
     public CaseEvent eventFromCase(CaseXml caseInstance) {
-        setCaseId(caseInstance.getCase_id());
-        setUserId(caseInstance.getUser_id());
+        setCaseId(caseInstance.getCaseId());
+        setUserId(caseInstance.getUserId());
         setAction(caseInstance.getAction());
-        setApiKey(caseInstance.getApi_key());
-        setCaseName(caseInstance.getCase_name());
-        setCaseType(caseInstance.getCase_type());
-        setDateModified(caseInstance.getDate_modified());
+        setApiKey(caseInstance.getApiKey());
+        setCaseName(caseInstance.getCaseName());
+        setCaseType(caseInstance.getCaseType());
+        setDateModified(caseInstance.getDateModified());
         setFieldValues(caseInstance.getFieldValues());
-        setOwnerId(caseInstance.getOwner_id());
+        setOwnerId(caseInstance.getOwnerId());
 
         return this;
     }

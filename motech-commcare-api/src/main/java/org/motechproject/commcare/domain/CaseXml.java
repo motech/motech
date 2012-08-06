@@ -4,38 +4,38 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CaseXml {
-    private String case_id;
-    private String user_id;
-    private String api_key;
-    private String date_modified;
+    private String caseId;
+    private String userId;
+    private String apiKey;
+    private String dateModified;
     private String action;
     private Map<String, String> fieldValues;
-    private String case_type;
-    private String case_name;
-    private String owner_id;
+    private String caseType;
+    private String caseName;
+    private String ownerId;
 
-    public String getOwner_id() {
-        return this.owner_id;
+    public String getOwnerId() {
+        return this.ownerId;
     }
 
-    public void setOwner_id(String owner_id) {
-        this.owner_id = owner_id;
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
     }
 
-    public String getUser_id() {
-        return this.user_id;
+    public String getUserId() {
+        return this.userId;
     }
 
     public CaseXml() {
         this.fieldValues = new HashMap<String, String>();
     }
 
-    public void setCase_id(String case_id) {
-        this.case_id = case_id;
+    public void setCaseId(String caseId) {
+        this.caseId = caseId;
     }
 
-    public void setDate_modified(String date_modified) {
-        this.date_modified = date_modified;
+    public void setDateModified(String dateModified) {
+        this.dateModified = dateModified;
     }
 
     public String getAction() {
@@ -46,32 +46,32 @@ public class CaseXml {
         this.action = action;
     }
 
-    public void setCase_type(String case_type) {
-        this.case_type = case_type;
+    public void setCaseType(String caseType) {
+        this.caseType = caseType;
     }
 
-    public void setCase_name(String case_name) {
-        this.case_name = case_name;
+    public void setCaseName(String caseName) {
+        this.caseName = caseName;
     }
 
-    public void AddFieldValue(String nodeName, String nodeValue) {
+    public void addFieldValue(String nodeName, String nodeValue) {
         this.fieldValues.put(nodeName, nodeValue);
     }
 
-    public String getCase_id() {
-        return this.case_id;
+    public String getCaseId() {
+        return this.caseId;
     }
 
-    public String getDate_modified() {
-        return this.date_modified;
+    public String getDateModified() {
+        return this.dateModified;
     }
 
-    public String getCase_type() {
-        return this.case_type;
+    public String getCaseType() {
+        return this.caseType;
     }
 
-    public String getCase_name() {
-        return this.case_name;
+    public String getCaseName() {
+        return this.caseName;
     }
 
     public Map<String, String> getFieldValues() {
@@ -82,15 +82,15 @@ public class CaseXml {
         this.fieldValues = fieldValues;
     }
 
-    public void setUser_id(String userId) {
-        this.user_id = userId;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public String getApi_key() {
-        return this.api_key;
+    public String getApiKey() {
+        return this.apiKey;
     }
 
-    public void setApi_key(String api_key) {
-        this.api_key = api_key;
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 }
