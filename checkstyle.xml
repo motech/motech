@@ -24,7 +24,7 @@
             <property name="allowMarkerInterfaces" value="true"/>
         </module>
         <module name="HiddenField">
-            <property name="severity" value="warning"/> <!-- TODO: change to error -->
+            <property name="severity" value="error"/>
             <property name="tokens" value="VARIABLE_DEF"/>
             <property name="ignoreConstructorParameter" value="true"/>
             <property name="ignoreSetter" value="true"/>
