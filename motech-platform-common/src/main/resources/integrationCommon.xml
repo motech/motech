@@ -16,8 +16,8 @@
                 <property name="redeliveryPolicy.redeliveryDelay" value="${redeliveryDelayInMillis}"/>
             </bean>
         </property>
-        <property name="sessionCacheSize" value="10"/>
-        <property name="cacheProducers" value="false"/>
+        <property name="sessionCacheSize" value="${jms.session.cache.size:10}"/>
+        <property name="cacheProducers" value="${jms.cache.producers:false}"/>
     </bean>
 
     <bean id="schedulerQueue" class="org.apache.activemq.command.ActiveMQQueue">
