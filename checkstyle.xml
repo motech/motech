@@ -50,7 +50,7 @@
             <property name="tokens" value="SEMI,POST_DEC,POST_INC"/>
         </module>
         <module name="StaticVariableName">
-            <property name="severity" value="warning"/> <!-- TODO: change to error -->
+            <property name="severity" value="error"/>
             <property name="applyToPublic" value="true"/>
             <property name="applyToProtected" value="true"/>
             <property name="applyToPackage" value="true"/>
@@ -115,7 +115,7 @@
             <property name="format" value="^[a-z]+(\.[a-zA-Z_][a-zA-Z0-9_]*)*$"/>
         </module>
         <module name="IllegalImport">
-            <property name="severity" value="warning"/> <!-- TODO: change to error -->
+            <property name="severity" value="error"/>
         </module>
         <module name="RedundantThrows">
             <property name="severity" value="info"/>
@@ -224,7 +224,7 @@
             <property name="tokens" value="LITERAL_TRY,LITERAL_CATCH,LITERAL_FINALLY,LITERAL_IF,LITERAL_ELSE"/>
         </module>
         <module name="ConstantName">
-            <property name="severity" value="warning"/> <!-- TODO: change to error -->
+            <property name="severity" value="error"/>
             <property name="applyToPublic" value="true"/>
             <property name="applyToProtected" value="true"/>
             <property name="applyToPackage" value="true"/>
