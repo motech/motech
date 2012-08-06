@@ -46,6 +46,7 @@ public class DecisionTreeController extends MultiActionController {
 
     public static final String NODE_TEMPLATE_NAME = TEMPLATE_BASE_PATH + "node";
     public static final String ERROR_MESSAGE_TEMPLATE_NAME = TEMPLATE_BASE_PATH + "node-error";
+    public static final String EMPTY_INPUT_TEMPLATE_NAME = TEMPLATE_BASE_PATH + "node-null";
     public static final String EXIT_TEMPLATE_NAME = TEMPLATE_BASE_PATH + "exit";
 
     public static final String TREE_NAME_SEPARATOR = ",";
@@ -205,6 +206,9 @@ public class DecisionTreeController extends MultiActionController {
         for (Map.Entry<String, ITransition> transitionEntry : node.getTransitions().entrySet()) {
 
             final String key = transitionEntry.getKey();
+            if(noInput(key)){
+                return;
+            }
             if (anyInput(key)) {
                 return;
             }
@@ -226,6 +230,10 @@ public class DecisionTreeController extends MultiActionController {
                 throw new DecisionTreeException(Errors.NULL_DESTINATION_NODE, "Invalid node: " + node + "\n Null Destination Node in the Transition: " + transition);
             }
         }
+    }
+
+    private boolean noInput(String key) {
+        return TreeNodeLocator.NO_INPUT.equals(key);
     }
 
     private boolean dtmfKey(String key) {
