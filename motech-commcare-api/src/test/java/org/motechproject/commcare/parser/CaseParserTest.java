@@ -5,7 +5,6 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import org.motechproject.commcare.domain.CaseXml;
 import org.motechproject.commcare.exception.CaseParserException;
-import org.motechproject.commcare.parser.CaseParser;
 
 import java.io.FileNotFoundException;
 
@@ -18,12 +17,12 @@ public class CaseParserTest extends TestCase {
                 caseXml());
         CaseXml aCase = parser.parseCase();
         Assert.assertEquals("3F2504E04F8911D39A0C0305E82C3301",
-                aCase.getCase_id());
-        Assert.assertEquals("2011-12-08T13:34:30", aCase.getDate_modified());
+                aCase.getCaseId());
+        Assert.assertEquals("2011-12-08T13:34:30", aCase.getDateModified());
         Assert.assertEquals("F0183EDA012765103CB106821BBA51A0",
-                aCase.getUser_id());
+                aCase.getUserId());
         Assert.assertEquals("2Z2504E04F8911D39A0C0305E82C3000",
-                aCase.getOwner_id());
+                aCase.getOwnerId());
     }
 
     @Test
@@ -32,8 +31,8 @@ public class CaseParserTest extends TestCase {
         CaseParser<CaseXml> parser = new CaseParser<CaseXml>(CaseXml.class,
                 caseXml());
         CaseXml aCase = parser.parseCase();
-        Assert.assertEquals("houshold_rollout_ONICAF", aCase.getCase_type());
-        Assert.assertEquals("Smith", aCase.getCase_name());
+        Assert.assertEquals("houshold_rollout_ONICAF", aCase.getCaseType());
+        Assert.assertEquals("Smith", aCase.getCaseName());
     }
 
     @Test
@@ -42,7 +41,7 @@ public class CaseParserTest extends TestCase {
         CaseParser<CaseXml> parser = new CaseParser<CaseXml>(CaseXml.class,
                 caseXml());
         CaseXml aCase = parser.parseCase();
-        Assert.assertEquals("API_KEY", aCase.getApi_key());
+        Assert.assertEquals("API_KEY", aCase.getApiKey());
     }
 
     @Test
@@ -52,7 +51,7 @@ public class CaseParserTest extends TestCase {
                 caseXmlForClose());
         CaseXml aCase = parser.parseCase();
         assertEquals("CLOSE", parser.getCaseAction());
-        assertEquals("3F2504E04F8911D39A0C0305E82C3301", aCase.getCase_id());
+        assertEquals("3F2504E04F8911D39A0C0305E82C3301", aCase.getCaseId());
     }
 
     private String caseXmlForClose() {
@@ -77,12 +76,12 @@ public class CaseParserTest extends TestCase {
                 childXml());
         CaseXml aCase = parser.parseCase();
         Assert.assertEquals("45134cf7-90f8-4284-8ca1-16392fc0ce57",
-                aCase.getCase_id());
-        Assert.assertEquals("2012-04-03", aCase.getDate_modified());
+                aCase.getCaseId());
+        Assert.assertEquals("2012-04-03", aCase.getDateModified());
         Assert.assertEquals("d823ea3d392a06f8b991e9e4933348bd",
-                aCase.getUser_id());
+                aCase.getUserId());
         Assert.assertEquals("d823ea3d392a06f8b991e9e49394ce45",
-                aCase.getOwner_id());
+                aCase.getOwnerId());
         Assert.assertEquals("motherCaseId",
                 aCase.getFieldValues().get("mother_id"));
     }
