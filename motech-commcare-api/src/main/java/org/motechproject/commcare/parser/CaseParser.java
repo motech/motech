@@ -55,10 +55,10 @@ public class CaseParser<T> {
     private CaseXml createCase(Element item) {
         CaseXml ccCase = new CaseXml();
 
-        ccCase.setCase_id(item.getAttribute("case_id"));
-        ccCase.setApi_key(item.getAttribute("api_key"));
-        ccCase.setDate_modified(item.getAttribute("date_modified"));
-        ccCase.setUser_id(item.getAttribute("user_id"));
+        ccCase.setCaseId(item.getAttribute("case_id"));
+        ccCase.setApiKey(item.getAttribute("api_key"));
+        ccCase.setDateModified(item.getAttribute("date_modified"));
+        ccCase.setUserId(item.getAttribute("user_id"));
         return ccCase;
     }
 
@@ -90,9 +90,9 @@ public class CaseParser<T> {
     }
 
     private void populateValuesForCreation(CaseXml ccCase, Element item) {
-        ccCase.setCase_type(getTextValue(item, "case_type"));
-        ccCase.setCase_name(getTextValue(item, "case_name"));
-        ccCase.setOwner_id(getTextValue(item, "owner_id"));
+        ccCase.setCaseType(getTextValue(item, "case_type"));
+        ccCase.setCaseName(getTextValue(item, "case_name"));
+        ccCase.setOwnerId(getTextValue(item, "owner_id"));
     }
 
     private void populateValuesFor(CaseXml ccCase, Element item, String tagName) {
@@ -102,7 +102,7 @@ public class CaseParser<T> {
         for (int i = 0; i < childNodes.getLength(); i++) {
             Node childNode = childNodes.item(i);
             if (!childNode.getNodeName().contains("text")) {
-                ccCase.AddFieldValue(childNode.getNodeName(),
+                ccCase.addFieldValue(childNode.getNodeName(),
                         childNode.getTextContent());
             }
         }
