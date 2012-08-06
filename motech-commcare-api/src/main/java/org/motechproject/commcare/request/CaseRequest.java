@@ -9,17 +9,17 @@ public class CaseRequest {
     private UpdateTask updateElement;
     private CloseElement closeElement;
     private IndexTask indexElement;
-    private String user_id;
+    private String userId;
     private String xmlns;
     private String dataXmlns;
-    private String date_modified;
-    private String case_id;
+    private String dateModified;
+    private String caseId;
 
     public CaseRequest(String caseId, String userId, String dateModified,
             String dataXmlns) {
-        this.case_id = caseId;
-        this.user_id = userId;
-        this.date_modified = dateModified;
+        this.caseId = caseId;
+        this.userId = userId;
+        this.dateModified = dateModified;
         this.xmlns = "http://commcarehq.org/case/transaction/v2";
         this.dataXmlns = dataXmlns;
     }
@@ -36,8 +36,8 @@ public class CaseRequest {
         this.indexElement = indexElement;
     }
 
-    public void setDate_modified(String date_modified) {
-        this.date_modified = date_modified;
+    public void setDateModified(String dateModified) {
+        this.dateModified = dateModified;
     }
 
     public String getXmlns() {
@@ -52,16 +52,16 @@ public class CaseRequest {
         this.xmlns = "http://commcarehq.org/case/transaction/v2";
     }
 
-    public String getDate_modified() {
-        return this.date_modified;
+    public String getDateModified() {
+        return this.dateModified;
     }
 
-    public String getCase_id() {
-        return this.case_id;
+    public String getCaseId() {
+        return this.caseId;
     }
 
-    public void setCase_id(String case_id) {
-        this.case_id = case_id;
+    public void setCaseId(String caseId) {
+        this.caseId = caseId;
     }
 
     public CreateElement getCreateElement() {
@@ -84,12 +84,12 @@ public class CaseRequest {
         return this.indexElement;
     }
 
-    public void setUser_id(String userId) {
-        this.user_id = userId;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public String getUser_id() {
-        return this.user_id;
+    public String getUserId() {
+        return this.userId;
     }
 
     public CloseElement getCloseElement() {

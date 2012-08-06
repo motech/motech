@@ -166,10 +166,10 @@ public class CaseTaskXmlConverter {
 
         xstream.alias("meta", MetaElement.class);
         xstream.useAttributeFor(MetaElement.class, "xmlns");
-        xstream.useAttributeFor(CaseRequest.class, "case_id");
-        xstream.useAttributeFor(CaseRequest.class, "user_id");
+        xstream.useAttributeFor(CaseRequest.class, "caseId");
+        xstream.useAttributeFor(CaseRequest.class, "userId");
         xstream.useAttributeFor(CaseRequest.class, "xmlns");
-        xstream.useAttributeFor(CaseRequest.class, "date_modified");
+        xstream.useAttributeFor(CaseRequest.class, "dateModified");
 
         return xstream;
     }
@@ -178,8 +178,8 @@ public class CaseTaskXmlConverter {
             CaseRequest caseRequest) {
         MetaElement metaElement = new MetaElement(
                 "http://openrosa.org/jr/xforms", UUID.randomUUID().toString(),
-                caseRequest.getDate_modified(), caseRequest.getDate_modified(),
-                caseRequest.getUser_id());
+                caseRequest.getDateModified(), caseRequest.getDateModified(),
+                caseRequest.getUserId());
         return new CommcareRequestData(caseRequest.getDataXmlns(), metaElement,
                 caseRequest);
     }
