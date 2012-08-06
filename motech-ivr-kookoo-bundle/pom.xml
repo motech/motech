@@ -9,9 +9,9 @@
         <version>0.12-SNAPSHOT</version>
     </parent>
     <groupId>org.motechproject</groupId>
-    <artifactId>motech-ivr-kookoo-v2-bundle</artifactId>
+    <artifactId>motech-ivr-kookoo-bundle</artifactId>
     <version>0.12-SNAPSHOT</version>
-    <name>MoTeCH IVR Kookoo V2 Bundle</name>
+    <name>MoTeCH IVR Kookoo Bundle</name>
     <packaging>bundle</packaging>
     <description>new kookoo module based on vm templates to return responses</description>
     <properties>
@@ -20,7 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-ivr-kookoo-v2</artifactId>
+            <artifactId>motech-ivr-kookoo</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -71,7 +71,7 @@
                             org.springframework.web.servlet.mvc,
                             *
                         </Import-Package>
-                        <Embed-Dependency>motech-ivr-kookoo-v2</Embed-Dependency>
+                        <Embed-Dependency>motech-ivr-kookoo</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>

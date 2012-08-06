@@ -151,7 +151,7 @@
         <module>motech-mobileforms-api</module>
         <module>motech-alerts-api</module>
         <module>motech-ivr-asterisk</module>
-        <module>motech-ivr-kookoo-v2</module>
+        <module>motech-ivr-kookoo</module>
         <module>motech-ivr-voxeo</module>
         <module>motech-ivr-verboice</module>
         <module>motech-demo</module>
@@ -180,7 +180,7 @@
         <module>motech-commcare-api-bundle</module>
         <module>motech-demo-bundle</module>
         <module>motech-ivr-asterisk-bundle</module>
-        <module>motech-ivr-kookoo-v2-bundle</module>
+        <module>motech-ivr-kookoo-bundle</module>
         <module>motech-ivr-verboice-bundle</module>
         <module>motech-ivr-voxeo-bundle</module>
         <module>motech-message-campaign-bundle</module>
