@@ -26,8 +26,9 @@ public final class DayOfWeekSchedulableJob implements Serializable {
 
     public DayOfWeekSchedulableJob(MotechEvent motechEvent, LocalDate start, LocalDate end, List<DayOfWeek> days, Time time, boolean intervening) {
         this.intervening = intervening;
-        if (motechEvent == null || start == null || end == null || days == null || isEmpty(days))
+        if (motechEvent == null || start == null || end == null || days == null || isEmpty(days)) {
             throw new IllegalArgumentException("null/empty arguments");
+        }
         this.motechEvent = motechEvent;
         this.start = start;
         this.end = end;

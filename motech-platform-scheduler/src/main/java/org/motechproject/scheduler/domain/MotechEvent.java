@@ -63,7 +63,10 @@ public final class MotechEvent implements Serializable {
      * @return
      */
     public Map<String, Object> getParameters() {
-        return parameters != null ? parameters : (parameters = new HashMap<String, Object>());
+        if (parameters == null) {
+            parameters = new HashMap<String, Object>();
+        }
+        return parameters;
     }
 
     public Date getEndTime() {
@@ -97,13 +100,21 @@ public final class MotechEvent implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         MotechEvent that = (MotechEvent) o;
 
-        if (!subject.equals(that.subject)) return false;
-        if (parameters != null ? !parameters.equals(that.parameters) : that.parameters != null) return false;
+        if (!subject.equals(that.subject)) {
+            return false;
+        }
+        if (parameters != null ? !parameters.equals(that.parameters) : that.parameters != null) {
+            return false;
+        }
 
         return true;
     }

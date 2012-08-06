@@ -21,7 +21,8 @@ public class CronJobExpressionBuilder {
     }
 
     private int getEndHour() {
+        final int maxEndHour = 23;
         int currentEndHour = startTime.getHour() + repeatWindowInHours;
-        return (currentEndHour > 23) ? 23 : currentEndHour;
+        return (currentEndHour > maxEndHour) ? maxEndHour : currentEndHour;
     }
 }
