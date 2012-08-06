@@ -12,7 +12,9 @@
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.rules"/>
 
-    <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean"/>
+    <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean">
+        <property name="properties" ref="couchdbProperties"/>
+    </bean>
 
     <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
         <constructor-arg ref="httpClient"/>
