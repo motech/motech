@@ -277,18 +277,19 @@ public class DecisionTreeControllerTest {
     }
 
     @Test
-    public void nodeTestMissingTransitionPathsParameter() {
+    public void nodeTestMissingTransitionPathsParameterReturnsRootNode() {
+        Node rootNode = new Node();
+
         when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
         when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
-        when(request.getParameter(DecisionTreeController.TRANSITION_KEY_PARAM)).thenReturn("1");
-
+        when(request.getParameter(TYPE_PARAM)).thenReturn("vxml");
+        when(decisionTreeService.getNode(eq(treeName), eq("/"), any(FlowSession.class))).thenReturn(rootNode);
 
         ModelAndView modelAndView = decisionTreeController.node(request, response);
 
         assertNotNull(modelAndView);
-        verify(decisionTreeService, times(0)).getNode(anyString(), anyString(), any(FlowSession.class));
-        assertEquals(DecisionTreeController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
-        assertEquals(DecisionTreeController.Errors.NULL_TRANSITION_PATH_PARAM, modelAndView.getModel().get(errorCodeKey));
+        verify(decisionTreeService, times(1)).getNode(anyString(), anyString(), any(FlowSession.class));
+        assertEquals(NODE_TEMPLATE_NAME + "-" + "vxml", modelAndView.getViewName());
     }
 
     @Test
