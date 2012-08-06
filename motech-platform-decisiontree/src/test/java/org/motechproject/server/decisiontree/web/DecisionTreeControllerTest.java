@@ -187,6 +187,36 @@ public class DecisionTreeControllerTest {
     }
 
     @Test
+    public void nodeTestNoInputGoesToBlankTransition() {
+        Node childNode = new Node();
+        Transition childTransition = new Transition();
+        final  MyINodeOperation iNodeOperation = new MyINodeOperation();
+        childNode.addOperations(iNodeOperation);
+        childTransition.setDestinationNode(new Node());
+        childNode.addTransition("", childTransition);
+
+        Node node = new Node();
+        Transition transition = new Transition();
+        transition.setDestinationNode(childNode);
+        node.addTransition("", transition);
+
+        when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
+        when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
+        when(request.getParameter(TYPE_PARAM)).thenReturn("verboice");
+        when(request.getParameter(TRANSITION_KEY_PARAM)).thenReturn("");
+        when(request.getParameter(TRANSITION_PATH_PARAM)).thenReturn(Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
+        when(request.getParameter(DecisionTreeController.FLOW_SESSION_ID_PARAM)).thenReturn("1234");
+
+        when(decisionTreeService.getNode(eq(treeName), eq(transitionPath), any(FlowSession.class))).thenReturn(node);
+
+        ModelAndView modelAndView = decisionTreeController.node(request, response);
+
+        assertNotNull(modelAndView);
+        verify(decisionTreeService).getNode(eq(treeName), eq(transitionPath), any(FlowSession.class));
+        assertEquals(NODE_TEMPLATE_NAME + "-" + "verboice", modelAndView.getViewName());
+    }
+
+    @Test
     public void nodeTestNoTree() {
         when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
         when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
