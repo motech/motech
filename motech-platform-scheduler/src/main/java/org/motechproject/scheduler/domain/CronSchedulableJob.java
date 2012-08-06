@@ -72,33 +72,45 @@ public class CronSchedulableJob implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
+
         CronSchedulableJob other = (CronSchedulableJob) obj;
         if (cronExpression == null) {
-            if (other.cronExpression != null)
+            if (other.cronExpression != null) {
                 return false;
-        } else if (!cronExpression.equals(other.cronExpression))
+            }
+        } else if (!cronExpression.equals(other.cronExpression)) {
             return false;
+        }
         if (endTime == null) {
-            if (other.endTime != null)
+            if (other.endTime != null) {
                 return false;
-        } else if (!endTime.equals(other.endTime))
+            }
+        } else if (!endTime.equals(other.endTime)) {
             return false;
+        }
         if (motechEvent == null) {
-            if (other.motechEvent != null)
+            if (other.motechEvent != null) {
                 return false;
-        } else if (!motechEvent.equals(other.motechEvent))
+            }
+        } else if (!motechEvent.equals(other.motechEvent)) {
             return false;
+        }
         if (startTime == null) {
-            if (other.startTime != null)
+            if (other.startTime != null) {
                 return false;
-        } else if (!startTime.equals(other.startTime))
+            }
+        } else if (!startTime.equals(other.startTime)) {
             return false;
+        }
         return true;
     }
 

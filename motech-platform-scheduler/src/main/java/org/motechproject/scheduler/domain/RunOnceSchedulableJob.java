@@ -50,13 +50,21 @@ public final class RunOnceSchedulableJob implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         RunOnceSchedulableJob that = (RunOnceSchedulableJob) o;
 
-        if (!motechEvent.equals(that.motechEvent)) return false;
-        if (!startDate.equals(that.startDate)) return false;
+        if (!motechEvent.equals(that.motechEvent)) {
+            return false;
+        }
+        if (!startDate.equals(that.startDate)) {
+            return false;
+        }
 
         return true;
     }

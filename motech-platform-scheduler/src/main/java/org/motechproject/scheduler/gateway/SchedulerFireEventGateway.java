@@ -20,5 +20,5 @@ public interface SchedulerFireEventGateway {
      *
      * @param motechEvent
      */
-    public void sendEventMessage(MotechEvent motechEvent);
+    void sendEventMessage(MotechEvent motechEvent);
 }
