@@ -124,82 +124,85 @@
             <artifactId>commons-fileupload</artifactId>
             <version>1.2.2</version>
         </dependency>
-        <dependency>
-            <groupId>findbugs</groupId>
-            <artifactId>annotations</artifactId>
-            <version>1.0.0</version>
-        </dependency>
+        <!-- Uncomment with findbugs-maven-plugin -->
+        <!--<dependency>-->
+            <!--<groupId>findbugs</groupId>-->
+            <!--<artifactId>annotations</artifactId>-->
+            <!--<version>1.0.0</version>-->
+        <!--</dependency>-->
     </dependencies>
 
     <modules>
         <!-- Non-OSGI modules -->
-        <module>motech-platform-common-api</module>
-        <module>motech-platform-server</module>
-        <module>motech-platform-scheduler</module>
-        <module>motech-platform-ivr-api</module>
-        <module>motech-platform-server-api</module>
-        <module>motech-outbox</module>
-        <module>motech-outbox-api</module>
-        <module>motech-appointments-api</module>
-        <module>motech-commcare-api</module>
-        <module>motech-platform-decisiontree</module>
-        <module>motech-platform-decisiontree-common</module>
-        <module>motech-pillreminder-api</module>
-        <module>motech-cmslite-api</module>
-        <module>motech-scheduletracking-api</module>
-        <module>motech-message-campaign</module>
-        <module>motech-mobileforms-api</module>
-        <module>motech-alerts-api</module>
-        <module>motech-ivr-asterisk</module>
-        <module>motech-ivr-kookoo</module>
-        <module>motech-ivr-voxeo</module>
-        <module>motech-ivr-verboice</module>
-        <module>motech-demo</module>
-        <module>motech-mrs-api</module>
-        <module>motech-openmrs-api</module>
-        <module>motech-openmrs-omod</module>
-        <module>motech-openmrs-ws</module>
-        <module>motech-sms-api</module>
-        <module>motech-sms-http</module>
-        <module>motech-sms-smpp</module>
-        <module>motech-testing-utils</module>
-        <module>motech-platform-common</module>
-        <module>motech-scheduler</module>
-        <module>motech-rpm</module>
-        <module>motech-rules-api</module>
-        <module>motech-platform-server-config</module>
-        <module>motech-platform-server-startup</module>
-        <module>motech-web-security</module>
-        <module>motech-admin</module>
-        <module>motech-event-logging</module>
+        <module>platform/platform-common-api</module>
+        <module>platform/platform-common</module>
+        <module>platform/platform-decisiontree-common</module>
+        <module>platform/platform-decisiontree</module>
+        <module>platform/platform-scheduler</module>
+        <module>platform/platform-server-api</module>
+        <module>platform/platform-server-config</module>
+        <module>platform/platform-server-startup</module>
+        <module>platform/platform-server</module>
+        <module>modules/admin/admin</module>
+        <module>modules/alerts/alerts-api</module>
+        <module>modules/appointments/appointments-api</module>
+        <module>modules/cmslite/cmslite-api</module>
+        <module>modules/commcare/commcare-api</module>
+        <module>modules/demo/demo</module>
+        <module>modules/event-logging/event-logging</module>
+        <module>modules/ivr/ivr-api</module>
+        <module>modules/ivr/ivr-asterisk</module>
+        <module>modules/ivr/ivr-kookoo</module>
+        <module>modules/ivr/ivr-verboice</module>
+        <module>modules/ivr/ivr-voxeo</module>
+        <module>modules/message-campaign/message-campaign</module>
+        <module>modules/mobileforms/mobileforms-api</module>
+        <module>modules/mrs/mrs-api</module>
+        <module>modules/openmrs/openmrs-api</module>
+        <module>modules/openmrs/openmrs-omod</module>
+        <module>modules/openmrs/openmrs-ws</module>
+        <module>modules/outbox/outbox-api</module>
+        <module>modules/outbox/outbox</module>
+        <module>modules/pillreminder/pillreminder-api</module>
+        <module>modules/rpm/rpm</module>
+        <module>modules/rules/rules-api</module>
+        <module>modules/scheduler/scheduler</module>
+        <module>modules/scheduletracking/scheduletracking-api</module>
+        <module>modules/sms/sms-api</module>
+        <module>modules/sms/sms-http</module>
+        <module>modules/sms/sms-smpp</module>
+        <module>modules/testing-utils/testing-utils</module>
+        <module>modules/web-security/web-security</module>
+
         <!-- OSGI modules -->
-        <module>motech-admin-bundle</module>
-        <module>motech-alerts-api-bundle</module>
-        <module>motech-appointments-api-bundle</module>
-        <module>motech-cmslite-api-bundle</module>
-        <module>motech-commcare-api-bundle</module>
-        <module>motech-demo-bundle</module>
-        <module>motech-ivr-asterisk-bundle</module>
-        <module>motech-ivr-kookoo-bundle</module>
-        <module>motech-ivr-verboice-bundle</module>
-        <module>motech-ivr-voxeo-bundle</module>
-        <module>motech-message-campaign-bundle</module>
-        <module>motech-mobileforms-api-bundle</module>
-        <module>motech-mrs-api-bundle</module>
-        <module>motech-openmrs-ws-bundle</module>
-        <module>motech-outbox-bundle</module>
-        <module>motech-pillreminder-api-bundle</module>
-        <module>motech-platform-common-bundle</module>
-        <module>motech-platform-decisiontree-bundle</module>
-        <module>motech-rules-api-bundle</module>
-        <module>motech-scheduler-bundle</module>
-        <module>motech-scheduletracking-api-bundle</module>
-        <module>motech-sms-api-bundle</module>
-        <module>motech-sms-http-bundle</module>
-        <module>motech-sms-smpp-bundle</module>
-        <module>motech-event-logging-bundle</module>
+        <module>platform/platform-common-bundle</module>
+        <module>platform/platform-decisiontree-bundle</module>
+        <module>modules/admin/admin-bundle</module>
+        <module>modules/alerts/alerts-api-bundle</module>
+        <module>modules/appointments/appointments-api-bundle</module>
+        <module>modules/cmslite/cmslite-api-bundle</module>
+        <module>modules/commcare/commcare-api-bundle</module>
+        <module>modules/demo/demo-bundle</module>
+        <module>modules/event-logging/event-logging-bundle</module>
+        <module>modules/ivr/ivr-asterisk-bundle</module>
+        <module>modules/ivr/ivr-kookoo-bundle</module>
+        <module>modules/ivr/ivr-verboice-bundle</module>
+        <module>modules/ivr/ivr-voxeo-bundle</module>
+        <module>modules/message-campaign/message-campaign-bundle</module>
+        <module>modules/mobileforms/mobileforms-api-bundle</module>
+        <module>modules/mrs/mrs-api-bundle</module>
+        <module>modules/openmrs/openmrs-ws-bundle</module>
+        <module>modules/outbox/outbox-bundle</module>
+        <module>modules/pillreminder/pillreminder-api-bundle</module>
+        <module>modules/rules/rules-api-bundle</module>
+        <module>modules/scheduler/scheduler-bundle</module>
+        <module>modules/scheduletracking/scheduletracking-api-bundle</module>
+        <module>modules/sms/sms-api-bundle</module>
+        <module>modules/sms/sms-http-bundle</module>
+        <module>modules/sms/sms-smpp-bundle</module>
+
         <!-- Keep this module in last, the module checks if everything is alright after deploy motech on tomcat server -->
-        <module>motech-deployment-tests</module>
+        <module>deployment-tests</module>
     </modules>
 
     <build>
