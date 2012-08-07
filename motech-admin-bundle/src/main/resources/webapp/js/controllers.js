@@ -6,6 +6,17 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams) {
 
     var LOADING_STATE = 'LOADING';
 
+    $scope.orderProp = 'name';
+    $scope.invert = false;
+
+    $scope.setOrder = function(prop) {
+        if (prop == $scope.orderProp) {
+            $scope.invert = !$scope.invert;
+        } else {
+            $scope.orderProp = prop;
+        }
+    }
+
     $scope.bundles = Bundle.query();
 
     if ($routeParams.bundleId != undefined) {
@@ -238,7 +249,6 @@ function MasterCtrl($scope, i18nService, $http) {
 }
 
 function SettingsCtrl($scope, PlatformSettings, i18nService, $http) {
-    var LOADING_STATE = 1, ERROR_STATE = 2;
 
     $scope.platformSettings = PlatformSettings.query();
 
@@ -246,42 +256,11 @@ function SettingsCtrl($scope, PlatformSettings, i18nService, $http) {
         return i18nService.getMessage('settings.' + key);
     }
 
-    $scope.getImg = function(settings) {
-        switch(settings.state) {
-        case LOADING_STATE:
-            return 'img/load.gif';
-        case ERROR_STATE:
-            return 'img/delete.png';
-        default:
-            return 'img/start.png';
-        }
-    }
-
-    $scope.save = function(settings) {
-        captureTyping(function() {
-            settings.state = LOADING_STATE;
-
-            settings.$save(function() {
-                // success
-                if (this.state != undefined) {
-                    delete settings.state;
-                }
-            },
-            function() {
-               // failure
-               settings.state = ERROR_STATE;
-            });
-        });
-    }
-
-    $scope.saveSettings = function() {
+    $scope.saveSettings = function(settings) {
         blockUI();
-        $('#platformSettingsForm').ajaxSubmit({
-            success : alertHandlerWithCallback('settings.saved', function () {
-                $scope.platformSettings = PlatformSettings.query();
-            }),
-            error : jFormErrorHandler
-        });
+        settings.$save(alertHandlerWithCallback('settings.saved', function () {
+            $scope.platformSettings = PlatformSettings.query();
+        }), jFormErrorHandler);
     }
 
     $scope.saveNewSettings = function() {
@@ -308,27 +287,38 @@ function SettingsCtrl($scope, PlatformSettings, i18nService, $http) {
             success(alertHandler('settings.saved')).
             error(alertHandler('settings.error.location'));
     }
+
+    $scope.saveAll = function() {
+        blockUI();
+        $http.post('api/settings/platform/list', $scope.platformSettings).
+            success(alertHandler('settings.saved')).
+            error(alertHandler('settings.error.location'));
+    }
 }
 
 function ModuleCtrl($scope, ModuleSettings, Bundle, i18nService, $routeParams) {
     $scope.module = Bundle.details({ bundleId: $routeParams.bundleId });
 }
 
-function BundleSettingsCtrl($scope, Bundle, ModuleSettings, $routeParams) {
-    $scope.moduleSettings = ModuleSettings.query({ bundleId : $routeParams.bundleId }, function(data) {
-        $scope.settings = [];
-        var i,j;
-        for (i = 0;  i < data.length; i++) {
-            for (j = 0;  j < data[i].settings.length; j++) {
-                $scope.settings.push(data[i].settings[j]);
-            }
-        }
-    });
+function BundleSettingsCtrl($scope, Bundle, ModuleSettings, $routeParams, $http) {
+    $scope.moduleSettings = ModuleSettings.query({ bundleId : $routeParams.bundleId });
+
+    $http.get('api/settings/' + $routeParams.bundleId + '/raw').success(function(data) {
+        $scope.rawFiles = data;
+    })
 
     $scope.module = Bundle.get({ bundleId: $routeParams.bundleId });
 
     $scope.saveSettings = function(mSettings) {
         blockUI();
         mSettings.$save({bundleId: $scope.module.bundleId}, alertHandler('settings.saved'), angularErrorHandler);
+    }
+
+    $scope.uploadRaw = function(filename) {
+        var id = '#_raw_' + filename.replace('.', '\\.');
+        $(id).ajaxSubmit({
+          success : alertHandler('settings.saved'),
+          error : jFormErrorHandler
+        });
     }
 }

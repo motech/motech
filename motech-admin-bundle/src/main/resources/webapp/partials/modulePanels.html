@@ -2,11 +2,11 @@
     {{msg('modules.registered')}}
 </div>
 <div class="box-content">
-    <ul ng-show="mappings.length > 0">
+    <ul>
         <li ng-repeat="(key, value) in mappings">
-            <a ng-href="../{{value}}">{{key}}</a>
+            <a ng-href="{{value}}">{{key}}</a>
         </li>
     </ul>
 
-    <span ng-hide="mappings.length > 0">{{msg('noModulesReg')}}</span>
+    <span ng-hide="mappings">{{msg('noModulesReg')}}</span>
 </div>

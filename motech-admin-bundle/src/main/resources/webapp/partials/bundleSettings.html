@@ -2,27 +2,33 @@
     <div class="box-header">
         {{module.name}} - {{msg('settings')}}
     </div>
-<!--    <div class="box-content">
-        <form id="settingsForm" action="api/settings/{{module.bundleId}}" method="post">
-            <div ng-repeat="setting in settings" class="settings-input">
-                <label for="{{setting.key}}">{{setting.key}}</label>
-                <input type="text" id="{{setting.key}}" name="{{setting.key}}" ng-model="setting.value" />
-            </div>
-            <input type="button" ng-click="saveSettings()" value="{{msg('submit')}}"/>
-        </form>
-    </div>-->
+
     <div ng-repeat="mSettings in moduleSettings">
         <div class="box-header">
-            {{mSettings.filename}}
+            {{mSettings.section}}
         </div>
         <div class="box-content">
             <form id="settingsForm" action="api/settings/{{module.bundleId}}" method="post">
-                <div ng-repeat="setting in mSettings.settings" class="settings-input">
+                <div ng-repeat="setting in mSettings.settings | orderBy:'key'" class="settings-input">
                     <label for="{{setting.key}}">{{setting.key}}</label>
                     <input type="text" id="{{setting.key}}" name="{{setting.key}}" ng-model="setting.value" />
                 </div>
-                <input type="hidden" name="filename" value="{{mSettings.filename}}" />
+                <input type="hidden" name="section" value="{{mSettings.section}}" />
                 <input type="button" ng-click="saveSettings(mSettings)" value="{{msg('submit')}}"/>
+            </form>
+        </div>
+    </div>
+
+    <div ng-repeat="rawFile in rawFiles">
+        <div class="box-header">
+            {{rawFile}}
+        </div>
+        <div class="box-content">
+            <form id="_raw_{{rawFile}}" action="api/settings/{{module.bundleId}}/raw" method="post"
+                  enctype="multipart/form-data">
+                {{rawFile}}: <input type="file" name="file" />
+                <input type="hidden" value="{{rawFile}}" name="filename" />
+                <input type="button"  ng-click="uploadRaw(rawFile)" value="{{msg('submit')}}"/>
             </form>
         </div>
     </div>

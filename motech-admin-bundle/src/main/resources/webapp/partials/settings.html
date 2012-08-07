@@ -23,12 +23,20 @@
     <div class="box-content">
         <p id="settingsMsg"></p>
 
-        <form id="platformSettingsForm" action="api/settings/platform" method="post">
-            <div ng-repeat="settings in platformSettings" class="settings-input">
-                <label for="{{settings.key}}">{{settings.key}}</label>
-                <input type="text" id="{{settings.key}}" name="{{settings.key}}" ng-model="settings.value" />
-            </div>
-            <input type="button" ng-click="saveSettings()" value="{{msg('submit')}}"/>
+        <div ng-repeat="pSettings in platformSettings">
+            <h1 class="settings-section">{{msg(pSettings.section)}}</h1>
+            <br />
+            <form id="platformSettingsForm" action="api/settings/platform" method="post">
+                <div ng-repeat="option in pSettings.settings | orderBy:'key'" class="settings-input">
+                    <label for="{{option.key}}">{{option.key}}</label>
+                    <input type="text" id="{{option.key}}" name="{{option.key}}" ng-model="option.value" />
+                </div>
+                <input type="button" ng-click="saveSettings(pSettings)" value="{{msg('save')}}"/>
+            </form>
+            <br />
+        </div>
+        <form>
+            <input type="button" ng-click="saveAll()" value="{{msg('saveAll')}}"/>
         </form>
     </div>
 </div>

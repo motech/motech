@@ -1,5 +1,7 @@
 package org.motechproject.server.config.settings;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.io.IOException;
 import java.net.URL;
 import java.security.DigestInputStream;
@@ -13,6 +15,11 @@ public class ConfigFileSettings extends Properties implements MotechSettings {
     @Override
     public String getLanguage() {
         return getProperty(LANGUAGE);
+    }
+
+    @Override
+    public String getStatusMsgTimeout() {
+        return getProperty(STATUS_MSG_TIMEOUT);
     }
 
     public byte[] getMd5checkSum() {
