@@ -8,11 +8,14 @@
             http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
     <util:properties id="messageCampaignProperties" location="classpath:messageCampaign.properties"/>
+    <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
 
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.server.messagecampaign"/>
 
-    <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean" />
+    <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean">
+        <property name="properties" ref="couchdbProperties"/>
+    </bean>
 
     <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
         <constructor-arg ref="httpClient" />

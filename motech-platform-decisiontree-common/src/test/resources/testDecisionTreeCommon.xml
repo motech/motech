@@ -14,7 +14,9 @@
         <constructor-arg>
             <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
                 <constructor-arg>
-                    <bean class="org.ektorp.spring.HttpClientFactoryBean" />
+                    <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean">
+                        <property name="properties" ref="couchdbProperties"/>
+                    </bean>
                 </constructor-arg>
             </bean>
         </constructor-arg>
