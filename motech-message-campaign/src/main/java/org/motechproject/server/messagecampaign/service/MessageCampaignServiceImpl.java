@@ -45,7 +45,7 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
 
     @Override
     public List<CampaignEnrollmentRecord> search(CampaignEnrollmentsQuery query) {
-        List<CampaignEnrollmentRecord> campaignEnrollmentRecords = new ArrayList<CampaignEnrollmentRecord>();
+        List<CampaignEnrollmentRecord> campaignEnrollmentRecords = new ArrayList<>();
         for (CampaignEnrollment campaignEnrollment : campaignEnrollmentService.search(query)) {
             campaignEnrollmentRecords.add(campaignEnrollmentRecordMapper.map(campaignEnrollment));
         }
