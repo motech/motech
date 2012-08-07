@@ -21,6 +21,7 @@ import java.util.Properties;
 
 @Service
 public class SmsServiceImpl implements SmsService {
+
     private EventRelay eventRelay;
     private MotechSchedulerService motechSchedulerService;
     private MessageSplitter messageSplitter;
@@ -28,12 +29,12 @@ public class SmsServiceImpl implements SmsService {
 
     private final Logger log = Logger.getLogger(SmsServiceImpl.class);
 
-    private static final int PART_MESSAGE_SIZE = 160;
     private static final String PART_MESSAGE_HEADER_TEMPLATE = "Msg %d of %d: ";
     private static final String PART_MESSAGE_FOOTER = "...";
 
     public static final String SMS_MULTI_RECIPIENT_SUPPORTED = "sms.multi.recipient.supported";
     public static final String SMS_SCHEDULE_FUTURE_SMS = "sms.schedule.future.sms";
+    public static final String SMS_MAX_MESSAGE_SIZE = "sms.max.message.size";
 
     @Autowired
     public SmsServiceImpl(MotechSchedulerService motechSchedulerService, MessageSplitter messageSplitter, Properties smsApiProperties) {
@@ -64,8 +65,11 @@ public class SmsServiceImpl implements SmsService {
     }
 
     private void scheduleOrRaiseSendSmsEvent(final List<String> recipients, final String message, final DateTime deliveryTime) {
-        List<String> partMessages = messageSplitter.split(message, PART_MESSAGE_SIZE, PART_MESSAGE_HEADER_TEMPLATE, PART_MESSAGE_FOOTER);
-        if (getBooleanPropertyValue(SMS_MULTI_RECIPIENT_SUPPORTED)) {
+        int partMessageSize = getIntegerPropertyValue(SMS_MAX_MESSAGE_SIZE);
+        boolean isMultiRecipientSupported = getBooleanPropertyValue(SMS_MULTI_RECIPIENT_SUPPORTED);
+
+        List<String> partMessages = messageSplitter.split(message, partMessageSize, PART_MESSAGE_HEADER_TEMPLATE, PART_MESSAGE_FOOTER);
+        if (isMultiRecipientSupported) {
             generateOneSendSmsEvent(recipients, partMessages, deliveryTime);
         } else {
             generateSendSmsEventsForEachRecipient(recipients, partMessages, deliveryTime);
@@ -79,8 +83,9 @@ public class SmsServiceImpl implements SmsService {
     }
 
     private void generateOneSendSmsEvent(List<String> recipients, List<String> partMessages, DateTime deliveryTime) {
+        boolean shouldScheduleFutureSms = getBooleanPropertyValue(SMS_SCHEDULE_FUTURE_SMS);
         for (String partMessage : partMessages) {
-            if (getBooleanPropertyValue(SMS_SCHEDULE_FUTURE_SMS) && deliveryTime != null) {
+            if (shouldScheduleFutureSms && deliveryTime != null) {
                 scheduleSendSmsEvent(recipients, partMessage, deliveryTime);
             } else {
                 raiseSendSmsEvent(recipients, partMessage, deliveryTime);
@@ -90,6 +95,11 @@ public class SmsServiceImpl implements SmsService {
 
     private boolean getBooleanPropertyValue(String property) {
         return Boolean.valueOf(smsApiProperties.getProperty(property));
+    }
+
+    private int getIntegerPropertyValue(String property) {
+        String value = smsApiProperties.getProperty(property);
+        return value == null ? 0 : Integer.parseInt(value);
     }
 
     private void raiseSendSmsEvent(List<String> recipients, String message, DateTime deliveryTime) {
