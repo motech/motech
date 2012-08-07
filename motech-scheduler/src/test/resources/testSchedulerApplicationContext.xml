@@ -10,8 +10,8 @@
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
     </bean>
 
-    <import resource="schedulerFiredEventChannelAdapter.xml"/>
-    <import resource="classpath:applicationPlatformServerAPI.xml"/>
+    <import resource="classpath*:applicationPlatformServerAPI.xml"/>
+    <import resource="classpath*:schedulerFiredEventChannelAdapter.xml"/>
 
     <util:properties id="quartzProperties" location="classpath:quartz.properties"/>
 
@@ -21,4 +21,5 @@
     </bean>
 
     <bean id="schedulerService" class="org.motechproject.scheduler.impl.MotechSchedulerServiceImpl"/>
+    <bean id="testJobHandler" class="org.motechproject.scheduler.TestJobHandler" />
 </beans>

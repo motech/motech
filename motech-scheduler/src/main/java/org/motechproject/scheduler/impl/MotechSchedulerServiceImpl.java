@@ -254,33 +254,44 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
 
         putMotechEventDataToJobDataMap(jobDetail.getJobDataMap(), motechEvent);
 
-        SimpleScheduleBuilder simpleSchedule = simpleSchedule()
+        ScheduleBuilder scheduleBuilder;
+        if (!repeatingSchedulableJob.isUseOriginalFireTimeAfterMisfire()) {
+            SimpleScheduleBuilder simpleSchedule= simpleSchedule()
                 .withIntervalInMilliseconds(repeatIntervalInMilliSeconds)
                 .withRepeatCount(jobRepeatCount);
-
-        simpleSchedule = setMisfirePolicyForSimpleTrigger(simpleSchedule, repeatingTriggerMisfirePolicy);
+            simpleSchedule = setMisfirePolicyForSimpleTrigger(simpleSchedule, repeatingTriggerMisfirePolicy);
+            scheduleBuilder = simpleSchedule;
+        }else {
+            if (repeatingSchedulableJob.getRepeatCount() != null) {
+                jobEndDate = new Date((long) (repeatingSchedulableJob.getStartTime().getTime() + repeatIntervalInMilliSeconds * (repeatingSchedulableJob.getRepeatCount() + 0.5)));
+            }
+            scheduleBuilder = CalendarIntervalScheduleBuilder.calendarIntervalSchedule()
+                .withIntervalInSeconds((int) (repeatIntervalInMilliSeconds / 1000))
+                .withMisfireHandlingInstructionFireAndProceed();
+        }
 
         Trigger trigger = newTrigger()
                 .withIdentity(triggerKey(jobId.value(), JOB_GROUP_NAME))
                 .forJob(jobDetail)
-                .withSchedule(simpleSchedule)
+                .withSchedule(scheduleBuilder)
                 .startAt(jobStartDate)
                 .endAt(jobEndDate)
                 .build();
 
-        if (repeatingSchedulableJob.isIntervening()) {
+        if (repeatingSchedulableJob.isIgnorePastFiresAtStart()) {
             List<Date> triggers = TriggerUtils.computeFireTimes((OperableTrigger) trigger, null, Integer.MAX_VALUE);
             int nextTrigger = getFirstTriggerNotInPast(triggers);
             if (nextTrigger != -1) {
-                simpleSchedule = simpleSchedule()
-                    .withIntervalInMilliseconds(repeatIntervalInMilliSeconds)
-                    .withRepeatCount(triggers.size() - nextTrigger - 1);
-                simpleSchedule = setMisfirePolicyForSimpleTrigger(simpleSchedule, repeatingTriggerMisfirePolicy);
 
+                if (scheduleBuilder instanceof SimpleScheduleBuilder){
+                    ((SimpleScheduleBuilder) scheduleBuilder).withRepeatCount(triggers.size() - nextTrigger - 1);
+                }
+
+                ((OperableTrigger) trigger).setStartTime(triggers.get(nextTrigger));
                 trigger = newTrigger()
                     .withIdentity(triggerKey(jobId.value(), JOB_GROUP_NAME))
                     .forJob(jobDetail)
-                    .withSchedule(simpleSchedule)
+                    .withSchedule(scheduleBuilder)
                     .startAt(triggers.get(nextTrigger))
                     .endAt(jobEndDate)
                     .build();
@@ -289,6 +300,8 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
 
         scheduleJob(jobDetail, trigger);
     }
+
+
 
     private SimpleScheduleBuilder setMisfirePolicyForSimpleTrigger(SimpleScheduleBuilder simpleSchedule, String newMisfirePolicy) {
         Integer misfirePolicy = SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT;
