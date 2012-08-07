@@ -1,5 +1,5 @@
 Package: motech
-Version: 0.11-SNAPSHOT
+Version: ${version}
 Section: web
 Priority: optional
 Architecture: all

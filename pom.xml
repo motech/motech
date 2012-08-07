@@ -198,6 +198,7 @@
         <module>motech-sms-http-bundle</module>
         <module>motech-sms-smpp-bundle</module>
         <module>motech-event-logging-bundle</module>
+        <module>motech-deb</module>
         <!-- Keep this module in last, the module checks if everything is alright after deploy motech on tomcat server -->
         <module>motech-deployment-tests</module>
     </modules>
