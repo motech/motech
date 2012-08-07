@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -34,5 +35,16 @@ public class AllSchedules extends MotechBaseRepository<ScheduleRecord> {
             return null;
         }
         return scheduleFactory.build(records.get(0), platformSettingsService.getPlatformLocale());
+    }
+
+    public List<Schedule> getAllSchedules() {
+        List<ScheduleRecord> records = getAll();
+        List<Schedule> schedules = new ArrayList<Schedule>();
+
+        for (ScheduleRecord record : records) {
+            schedules.add(scheduleFactory.build(record, platformSettingsService.getPlatformLocale()));
+        }
+
+        return schedules;
     }
 }
