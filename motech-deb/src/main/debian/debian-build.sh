@@ -1,26 +1,46 @@
 #!/bin/bash
 
-MOTECH_VERSION=0.11_1
+# Usage debian_build.sh [-v version] [-b motech_trunk_directory] [-d destination_directory]
+
+MOTECH_VERSION=0.12-SNAPSHOT
 TMP_DIR=/tmp/motech-debian-build-$$
 WARNAME=motech-platform-server.war
-MOTECH_PACKAGENAME="motech_$MOTECH_VERSION.deb"
-MOTECH_BASE_PACKAGENAME="motech-base_$MOTECH_VERSION.deb"
 CURRENT_DIR=`pwd`
 
 # exit on non-zero exit code
 set -e
 
 # Set motech directory
-MOTECH_BASE=../..
-if [ $# -gt 0 ]; then
-    MOTECH_BASE=$1
+MOTECH_BASE=.
+
+while getopts "v:b:d:" opt; do
+	case $opt in
+	v)
+		MOTECH_VERSION=$OPTARG
+	;;
+	b)
+		MOTECH_BASE=$OPTARG
+	;;
+	d)
+	    DEST_DIR=$OPTARG
+	;;
+	esac
+done
+
+if [ -z $DEST_DIR ]; then
+    DEST_DIR=$MOTECH_BASE/motech-deb/target
 fi
+
+mkdir -p $DEST_DIR
+
+CONTENT_DIR=$MOTECH_BASE/motech-deb/src/main/debian
+
+MOTECH_PACKAGENAME="motech_$MOTECH_VERSION.deb"
+MOTECH_BASE_PACKAGENAME="motech-base_$MOTECH_VERSION.deb"
 
 cd $MOTECH_BASE
 MOTECH_BASE=`pwd`
 
-PACKAGING_DIR=$MOTECH_BASE/packaging/debian
-WAR_PATCHDIR=$PACKAGING_DIR/warpatch
 MOTECH_WAR=$MOTECH_BASE/motech-platform-server/target/$WARNAME
 
 echo "====================="
@@ -47,11 +67,14 @@ mkdir -p motech-base/usr/share/motech/.motech/bundles
 mkdir -p motech-base/usr/share/motech/.motech/rules
 
 # copy motech-base
-cp -r $PACKAGING_DIR/motech-base .
-mv $WARNAME ./motech-base/var/lib/motech/webapps/
+cp -r $CONTENT_DIR/motech-base .
+mv $WARNAME ./motech-base/var/lib/motech/webapps/ROOT.war
 
-# Copy motech-scheduler
-cp $MOTECH_BASE/motech-scheduler/target/motech-scheduler-*.jar ./motech-base/usr/share/motech/.motech/bundles/
+# Update version
+perl -p -i -e "s/\\$\\{version\\}/$MOTECH_VERSION/g" ./motech-base/DEBIAN/control
+
+#Copy config
+cp -r $MOTECH_BASE/motech-platform-server-config/src/main/config ./motech-base/usr/share/motech/.motech
 
 # set up permissions
 find ./motech-base -type d | xargs chmod 755  # for directories
@@ -67,15 +90,11 @@ chmod 755 ./motech-base/etc/init.d/motech
 echo "Building package"
 fakeroot dpkg-deb --build motech-base
 
-if [ ! -d $PACKAGING_DIR/target ]; then
-    mkdir $PACKAGING_DIR/target
-fi
-
-mv motech-base.deb $PACKAGING_DIR/target/$MOTECH_BASE_PACKAGENAME
+mv motech-base.deb $DEST_DIR/$MOTECH_BASE_PACKAGENAME
 
 # Check package for problems
 echo "Checking package with lintian"
-lintian -i $PACKAGING_DIR/target/$MOTECH_BASE_PACKAGENAME
+lintian -i $DEST_DIR/$MOTECH_BASE_PACKAGENAME
 
 echo "Done! Created $MOTECH_PACKAGENAME"
 
@@ -87,7 +106,9 @@ echo "Building motech"
 echo "====================="
 
 # copy files
-cp -r $PACKAGING_DIR/motech .
+cp -r $CONTENT_DIR/motech .
+# Update version
+perl -p -i -e "s/\\$\\{version\\}/$MOTECH_VERSION/g" ./motech/DEBIAN/control
 
 # set up permissions
 find ./motech -type d | xargs chmod 755  # for directories
@@ -98,10 +119,10 @@ chmod 755 ./motech/DEBIAN/control
 echo "Building package"
 
 fakeroot dpkg-deb --build motech
-mv motech.deb $PACKAGING_DIR/target/$MOTECH_PACKAGENAME
+mv motech.deb $DEST_DIR/$MOTECH_PACKAGENAME
 
 echo "Checking package with lintian"
-lintian -i $PACKAGING_DIR/target/$MOTECH_PACKAGENAME
+lintian -i $DEST_DIR/$MOTECH_PACKAGENAME
 
 echo "Done! Created $MOTECH_PACKAGENAME"
 
@@ -111,4 +132,8 @@ rm -r $TMP_DIR
 
 # build modules
 export MOTECH_BASE
-$PACKAGING_DIR/modules/build-modules.sh
+export MOTECH_VERSION
+export DEST_DIR
+export CONTENT_DIR
+
+$CONTENT_DIR/modules/build-modules.sh
