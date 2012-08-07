@@ -2,8 +2,8 @@ package org.motechproject.scheduletracking.api.service;
 
 import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
+import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.service.contract.UpdateCriteria;
-
 import java.util.List;
 
 /**
@@ -89,4 +89,8 @@ public interface ScheduleTrackingService {
      * @param scheduleJson : in JSON format
      */
     void add(String scheduleJson);
+
+    Schedule getScheduleByName(String scheduleName);
+
+    List<Schedule> getAllSchedules();
 }
