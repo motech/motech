@@ -142,7 +142,6 @@ public class DateUtilTest {
 
     private void mockCurrentDate(final DateTime currentDate) {
         DateTimeSourceUtil.setSourceInstance(new DateTimeSource() {
-
             @Override
             public DateTimeZone timeZone() {
                 return currentDate.getZone();

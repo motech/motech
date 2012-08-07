@@ -11,10 +11,7 @@ import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllSchedules;
 import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReaderImpl;
-import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
-import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
-import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
-import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
+import org.motechproject.scheduletracking.api.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -35,8 +32,6 @@ public class ScheduleTrackingServiceIT {
     @Autowired
     private AllEnrollments allEnrollments;
 
-    private Enrollment activeEnrollment;
-
     @Before
     public void setUp(){
         List<ScheduleRecord> scheduleRecords = new TrackedSchedulesJsonReaderImpl().getAllSchedules("/schedules");
@@ -47,14 +42,13 @@ public class ScheduleTrackingServiceIT {
 
     @After
     public void tearDown() {
+        allEnrollments.removeAll();
         allSchedules.removeAll();
-        if (activeEnrollment != null)
-            allEnrollments.remove(activeEnrollment);
     }
 
     @Test
     public void shouldUpdateEnrollmentIfAnActiveEnrollmentAlreadyExists() {
-        activeEnrollment = allEnrollments.getActiveEnrollment("externalId", "IPTI Schedule");
+        Enrollment activeEnrollment = allEnrollments.getActiveEnrollment("externalId", "IPTI Schedule");
         assertNull("Active enrollment present", activeEnrollment);
 
         Time originalPreferredAlertTime = new Time(8, 10);

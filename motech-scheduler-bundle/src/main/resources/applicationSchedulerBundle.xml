@@ -10,4 +10,8 @@
     <osgi:service id="schedulerServiceOsgi" auto-export="interfaces" ref="schedulerService"
                   interface="org.motechproject.scheduler.MotechSchedulerService"/>
 
+
+    <osgi:service id="schedulerFireEventGatewayOsgi" ref="schedulerFireEventGateway"
+                  interface="org.motechproject.scheduler.gateway.SchedulerFireEventGateway"/>
+
 </beans>
