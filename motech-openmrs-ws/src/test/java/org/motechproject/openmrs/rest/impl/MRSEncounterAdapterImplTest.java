@@ -19,11 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.mrs.model.MRSEncounter;
-import org.motechproject.mrs.model.MRSFacility;
-import org.motechproject.mrs.model.MRSObservation;
-import org.motechproject.mrs.model.MRSPerson;
-import org.motechproject.mrs.model.MRSUser;
+import org.motechproject.mrs.model.*;
 import org.motechproject.mrs.services.MRSPatientAdapter;
 import org.motechproject.openmrs.rest.HttpException;
 import org.motechproject.openmrs.rest.RestClient;
@@ -69,38 +65,37 @@ public class MRSEncounterAdapterImplTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionOnNullPatient() {
-        MRSEncounter encounter = new MRSEncounter(null, new MRSPerson(), new MRSUser(), new MRSFacility(""),
-                new Date(), null, null, "ADULTINITIAL");
+        MRSEncounter encounter = new MRSEncounter.MRSEncounterBuilder().withId(null).withProvider(new MRSPerson()).withCreator(new MRSUser()).withFacility(new MRSFacility("")).withDate(new Date()).withPatient(null).withObservations(null).withEncounterType("ADULTINITIAL").build();
         impl.createEncounter(encounter);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionOnNullPatientId() {
-        MRSEncounter encounter = new MRSEncounter("A", "A", "A", new Date(), null, null, "ADULTINITIAL");
+        MRSEncounter encounter = new MRSEncounter.MRSEncounterBuilder().withProviderId("A").withCreatorId("A").withFacilityId("A").withDate(new Date()).withPatientId(null).withObservations(null).withEncounterType("ADULTINITIAL").build();
         impl.createEncounter(encounter);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionOnEmptyPatientId() {
-        MRSEncounter encounter = new MRSEncounter("A", "A", "A", new Date(), null, null, "ADULTINITIAL");
+        MRSEncounter encounter = new MRSEncounter.MRSEncounterBuilder().withProviderId("A").withCreatorId("A").withFacilityId("A").withDate(new Date()).withPatientId(null).withObservations(null).withEncounterType("ADULTINITIAL").build();
         impl.createEncounter(encounter);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionOnNullDateTime() {
-        MRSEncounter encounter = new MRSEncounter("A", "A", "A", null, "A", null, "ADULTINITIAL");
+        MRSEncounter encounter = new MRSEncounter.MRSEncounterBuilder().withProviderId("A").withCreatorId("A").withFacilityId("A").withDate(null).withPatientId("A").withObservations(null).withEncounterType("ADULTINITIAL").build();
         impl.createEncounter(encounter);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionOnNullEncounterType() {
-        MRSEncounter encounter = new MRSEncounter("A", "A", "A", new Date(), "A", null, null);
+        MRSEncounter encounter = new MRSEncounter.MRSEncounterBuilder().withProviderId("A").withCreatorId("A").withFacilityId("A").withDate(new Date()).withPatientId("A").withObservations(null).withEncounterType(null).build();
         impl.createEncounter(encounter);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionOnEmptyEncounterType() {
-        MRSEncounter encounter = new MRSEncounter("A", "A", "A", new Date(), "A", null, "");
+        MRSEncounter encounter = new MRSEncounter.MRSEncounterBuilder().withProviderId("A").withCreatorId("A").withFacilityId("A").withDate(new Date()).withPatientId("A").withObservations(null).withEncounterType("").build();
         impl.createEncounter(encounter);
     }
 
@@ -112,7 +107,7 @@ public class MRSEncounterAdapterImplTest {
         Set<MRSObservation> obs = new HashSet<MRSObservation>();
         obs.add(ob);
 
-        MRSEncounter encounter = new MRSEncounter("PPR", null, "LLL", dateTime.toDate(), "PPP", obs, "ADULTINITIAL");
+        MRSEncounter encounter = new MRSEncounter.MRSEncounterBuilder().withProviderId("PPR").withCreatorId(null).withFacilityId("LLL").withDate(dateTime.toDate()).withPatientId("PPP").withObservations(obs).withEncounterType("ADULTINITIAL").build();
 
         when(conceptAdapter.resolveConceptUuidFromConceptName("Test Concept")).thenReturn("CCC");
         when(restfulClient.postForJson(any(URI.class), any(String.class))).thenReturn("{}");

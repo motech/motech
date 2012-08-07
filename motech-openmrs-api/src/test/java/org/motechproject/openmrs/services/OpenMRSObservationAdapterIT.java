@@ -52,7 +52,7 @@ public class OpenMRSObservationAdapterIT extends OpenMRSIntegrationTestBase {
         Set<MRSObservation> observations = new HashSet<MRSObservation>();
         observations.add(new MRSObservation<Double>(new Date(), "GRAVIDA", Double.valueOf("100.0")));
         final String encounterType = "PEDSRETURN";
-        MRSEncounter expectedEncounter = new MRSEncounter(provider.getId(), userCreator.getId(), facility.getId(), new Date(), patientAlan.getId(), observations, encounterType);
+        MRSEncounter expectedEncounter = new MRSEncounter.MRSEncounterBuilder().withProviderId(provider.getId()).withCreatorId(userCreator.getId()).withFacilityId(facility.getId()).withDate(new Date()).withPatientId(patientAlan.getId()).withObservations(observations).withEncounterType(encounterType).build();
         mrsEncounterAdapter.createEncounter(expectedEncounter);
 
         final MRSObservation mrsObservation = openMrsObservationAdapter.findObservation(patientAlan.getMotechId(), "GRAVIDA");

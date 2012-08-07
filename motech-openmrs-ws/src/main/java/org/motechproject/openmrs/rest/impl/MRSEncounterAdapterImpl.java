@@ -15,6 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.motechproject.mrs.exception.MRSException;
 import org.motechproject.mrs.model.MRSEncounter;
+import org.motechproject.mrs.model.MRSEncounter.MRSEncounterBuilder;
 import org.motechproject.mrs.model.MRSObservation;
 import org.motechproject.mrs.model.MRSPatient;
 import org.motechproject.mrs.model.MRSPerson;
@@ -77,9 +78,10 @@ public class MRSEncounterAdapterImpl implements MRSEncounterAdapter {
         // than just a concept name. Attempt to map all concept names to concept
         // uuid's for each of the observations
         Set<MRSObservation> updatedObs = resolveConceptUuidForConceptNames(encounter.getObservations());
-        MRSEncounter encounterCopy = new MRSEncounter(encounter.getId(), encounter.getProvider(), encounter.getCreator(),
-                encounter.getFacility(), encounter.getDate(), encounter.getPatient(), updatedObs,
-                encounter.getEncounterType());
+        MRSEncounter encounterCopy = new MRSEncounterBuilder().withId(encounter.getId()).withProvider(encounter.getProvider())
+                .withCreator(encounter.getCreator()).withFacility(encounter.getFacility()).withDate(encounter.getDate())
+                .withPatient(encounter.getPatient()).withObservations(updatedObs).withEncounterType(encounter.getEncounterType())
+                .build();
 
         Encounter converted = toEncounter(encounterCopy);
 
@@ -96,9 +98,7 @@ public class MRSEncounterAdapterImpl implements MRSEncounterAdapter {
         try {
             String responseJson = restfulClient.postForJson(urlHolder.getEncounterPath(), requestJson);
             Encounter response = (Encounter) JsonUtils.readJson(responseJson, Encounter.class);
-            return new MRSEncounter(response.getUuid(), encounter.getProvider(), encounter.getCreator(),
-                    encounter.getFacility(), encounter.getDate(), encounter.getPatient(), encounter.getObservations(),
-                    encounter.getEncounterType());
+            return new MRSEncounterBuilder().withId(response.getUuid()).withProvider(encounter.getProvider()).withCreator(encounter.getCreator()).withFacility(encounter.getFacility()).withDate(encounter.getDate()).withPatient(encounter.getPatient()).withObservations(encounter.getObservations()).withEncounterType(encounter.getEncounterType()).build();
         } catch (HttpException e) {
             LOGGER.error("Could not create encounter: " + e.getMessage());
             throw new MRSException(e);
@@ -262,9 +262,11 @@ public class MRSEncounterAdapterImpl implements MRSEncounterAdapter {
     }
 
     private MRSEncounter convertToMrsEncounter(Encounter encounter, MRSPerson mrsPerson, MRSPatient patient) {
-        MRSEncounter updated = new MRSEncounter(encounter.getUuid(), mrsPerson, null,
-                ConverterUtils.convertLocationToMrsLocation(encounter.getLocation()), encounter.getEncounterDatetime(),
-                patient, convertToMrsObservation(encounter.getObs()), encounter.getEncounterType().getDisplay());
+        MRSEncounter updated = new MRSEncounterBuilder().withId(encounter.getUuid()).withProvider(mrsPerson)
+                .withFacility(ConverterUtils.convertLocationToMrsLocation(encounter.getLocation()))
+                .withDate(encounter.getEncounterDatetime()).withPatient(patient)
+                .withObservations(convertToMrsObservation(encounter.getObs()))
+                .withEncounterType(encounter.getEncounterType().getDisplay()).build();
 
         return updated;
     }
