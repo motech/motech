@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
+import org.motechproject.scheduler.gateway.SchedulerFireEventGateway;
 import org.motechproject.scheduletracking.api.domain.*;
 import org.motechproject.scheduletracking.api.events.MilestoneEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
@@ -39,6 +40,8 @@ public class EnrollmentAlertServiceTest {
 
     @Mock
     private MotechSchedulerService schedulerService;
+    @Mock
+    private SchedulerFireEventGateway schedulerFireEventGateway;
 
     @Before
     public void setup() {
@@ -47,7 +50,7 @@ public class EnrollmentAlertServiceTest {
         DateTime now = new DateTime(2012, 3, 16, 8, 15, 0, 0);
         DateTimeUtils.setCurrentMillisFixed(now.getMillis());
 
-        enrollmentAlertService = new EnrollmentAlertService(schedulerService);
+        enrollmentAlertService = new EnrollmentAlertService(schedulerService, null);
     }
 
     @After

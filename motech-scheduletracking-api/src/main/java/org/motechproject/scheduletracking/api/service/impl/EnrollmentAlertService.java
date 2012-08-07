@@ -5,6 +5,8 @@ import org.joda.time.Period;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
+import org.motechproject.scheduler.gateway.OutboundEventGateway;
+import org.motechproject.scheduler.gateway.SchedulerFireEventGateway;
 import org.motechproject.scheduletracking.api.domain.Alert;
 import org.motechproject.scheduletracking.api.domain.AlertWindow;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
@@ -15,11 +17,17 @@ import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.events.MilestoneEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
 import org.motechproject.scheduletracking.api.service.MilestoneAlerts;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.ContextLoader;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.motechproject.util.DateUtil.now;
 
 @Component
 public class EnrollmentAlertService {
@@ -27,9 +35,12 @@ public class EnrollmentAlertService {
     public static final int MILLIS_IN_A_SEC = 1000;
     private MotechSchedulerService schedulerService;
 
+    private SchedulerFireEventGateway schedulerFireEventGateway;
+
     @Autowired
-    public EnrollmentAlertService(MotechSchedulerService schedulerService) {
+    public EnrollmentAlertService(MotechSchedulerService schedulerService, SchedulerFireEventGateway schedulerFireEventGateway) {
         this.schedulerService = schedulerService;
+        this.schedulerFireEventGateway = schedulerFireEventGateway;
     }
 
     public void scheduleAlertsForCurrentMilestone(Enrollment enrollment) {
@@ -77,8 +88,17 @@ public class EnrollmentAlertService {
         long repeatIntervalInMillis = (long) alert.getInterval().toStandardSeconds().getSeconds() * MILLIS_IN_A_SEC;
 
         AlertWindow alertWindow = createAlertWindowFor(alert, enrollment, currentMilestone, milestoneWindow);
-        if(alertWindow.numberOfAlertsToSchedule() > 0) {
-            schedulerService.safeScheduleRepeatingJob(new RepeatingSchedulableJob(event, alertWindow.scheduledAlertStartDate(), null, alertWindow.numberOfAlertsToSchedule() - 1, repeatIntervalInMillis, false));
+        if (alertWindow.numberOfAlertsToSchedule() > 0) {
+            int numberOfAlertsToFire = alertWindow.numberOfAlertsToSchedule() - 1;
+            DateTime alertsStartTime = alertWindow.scheduledAlertStartDate();
+
+            if (alertsStartTime.isBefore(now())) {
+                alertsStartTime = alertsStartTime.plus(repeatIntervalInMillis);
+                numberOfAlertsToFire = numberOfAlertsToFire - 1;
+
+                schedulerFireEventGateway.sendEventMessage(event);
+            }
+            schedulerService.safeScheduleRepeatingJob(new RepeatingSchedulableJob(event, alertsStartTime.toDate(), null, numberOfAlertsToFire, repeatIntervalInMillis, false));
         }
     }
 
