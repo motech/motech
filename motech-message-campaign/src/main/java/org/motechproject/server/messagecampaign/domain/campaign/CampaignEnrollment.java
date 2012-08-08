@@ -69,4 +69,8 @@ public class CampaignEnrollment extends MotechBaseDataObject {
         this.deliverTime = deliverTime;
         return this;
     }
+
+    public boolean isActive() {
+        return  status.equals(CampaignEnrollmentStatus.ACTIVE);
+    }
 }

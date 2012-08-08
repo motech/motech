@@ -2,6 +2,7 @@ package org.motechproject.server.messagecampaign.service;
 
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.dao.AllCampaignEnrollments;
+import org.motechproject.server.messagecampaign.domain.CampainNotActiveException;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
 import org.motechproject.server.messagecampaign.scheduler.CampaignSchedulerFactory;
 import org.motechproject.server.messagecampaign.scheduler.CampaignSchedulerService;
@@ -55,6 +56,9 @@ public class MessageCampaignServiceImpl implements MessageCampaignService {
     @Override
     public Map<String, List<Date>> getCampaignTimings(String externalId, String campaignName, Date startDate, Date endDate) {
         CampaignEnrollment enrollment = allCampaignEnrollments.findByExternalIdAndCampaignName(externalId, campaignName);
+        if (!enrollment.isActive()) {
+            throw new CampainNotActiveException(String.format("Campaign %s is NOT active",  campaignName));
+        }
         return campaignSchedulerFactory.getCampaignScheduler(campaignName).getCampaignTimings(startDate, endDate, enrollment);
     }
 }
