@@ -12,9 +12,11 @@ import org.motechproject.server.messagecampaign.builder.EnrollRequestBuilder;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.dao.AllCampaignEnrollments;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
+import org.motechproject.server.messagecampaign.domain.CampainNotActiveException;
 import org.motechproject.server.messagecampaign.domain.campaign.AbsoluteCampaign;
 import org.motechproject.server.messagecampaign.domain.campaign.Campaign;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
+import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollmentStatus;
 import org.motechproject.server.messagecampaign.scheduler.CampaignSchedulerFactory;
 import org.motechproject.server.messagecampaign.scheduler.CampaignSchedulerService;
 
@@ -25,7 +27,10 @@ import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.util.DateUtil.now;
 
@@ -126,10 +131,6 @@ public class MessageCampaignServiceImplTest {
 
     @Test
     public void shouldGetCampaignTimings() {
-        AbsoluteCampaign campaign = mock(AbsoluteCampaign.class);
-
-        when(allMessageCampaigns.get("campaign")).thenReturn(campaign);
-
         CampaignSchedulerService campaignScheduler = mock(CampaignSchedulerService.class);
         when(campaignSchedulerFactory.getCampaignScheduler("campaign")).thenReturn(campaignScheduler);
 
@@ -142,5 +143,39 @@ public class MessageCampaignServiceImplTest {
         messageCampaignService.getCampaignTimings("entity_1", "campaign", startDate, endDate);
 
         verify(campaignScheduler).getCampaignTimings(startDate, endDate, enrollment);
+    }
+
+    @Test(expected = CampainNotActiveException.class)
+    public void shouldThrowExceptionWhenCampaignIsInActive() {
+        CampaignSchedulerService campaignScheduler = mock(CampaignSchedulerService.class);
+        when(campaignSchedulerFactory.getCampaignScheduler("campaign")).thenReturn(campaignScheduler);
+
+        CampaignEnrollment enrollment = new CampaignEnrollment("entity_1", "campaign");
+        enrollment.setStatus(CampaignEnrollmentStatus.INACTIVE);
+        when(allCampaignEnrollments.findByExternalIdAndCampaignName("entity_1", "campaign")).thenReturn(enrollment);
+
+        DateTime now = now();
+        Date startDate = now.plusDays(1).toDate();
+        Date endDate = now.plusDays(1).plusDays(5).toDate();
+        messageCampaignService.getCampaignTimings("entity_1", "campaign", startDate, endDate);
+
+        verify(campaignScheduler, never()).getCampaignTimings(startDate, endDate, enrollment);
+    }
+
+    @Test(expected = CampainNotActiveException.class)
+    public void shouldThrowExceptionWhenCampaignIsCompleted() {
+        CampaignSchedulerService campaignScheduler = mock(CampaignSchedulerService.class);
+        when(campaignSchedulerFactory.getCampaignScheduler("campaign")).thenReturn(campaignScheduler);
+
+        CampaignEnrollment enrollment = new CampaignEnrollment("entity_1", "campaign");
+        enrollment.setStatus(CampaignEnrollmentStatus.COMPLETED);
+        when(allCampaignEnrollments.findByExternalIdAndCampaignName("entity_1", "campaign")).thenReturn(enrollment);
+
+        DateTime now = now();
+        Date startDate = now.plusDays(1).toDate();
+        Date endDate = now.plusDays(1).plusDays(5).toDate();
+        messageCampaignService.getCampaignTimings("entity_1", "campaign", startDate, endDate);
+
+        verify(campaignScheduler, never()).getCampaignTimings(startDate, endDate, enrollment);
     }
 }

@@ -1,5 +1,6 @@
 package org.motechproject.server.messagecampaign.domain.campaign;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.LocalDate;
@@ -68,5 +69,10 @@ public class CampaignEnrollment extends MotechBaseDataObject {
     public CampaignEnrollment setDeliverTime(Time deliverTime) {
         this.deliverTime = deliverTime;
         return this;
+    }
+
+    @JsonIgnore
+    public boolean isActive() {
+        return  status.equals(CampaignEnrollmentStatus.ACTIVE);
     }
 }
