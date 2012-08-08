@@ -23,7 +23,7 @@
     <div class="box-content">
         <p id="settingsMsg"></p>
 
-        <div ng-repeat="pSettings in platformSettings">
+        <div ng-repeat="pSettings in platformSettings" ng-show="pSettings.settings.length > 0">
             <h1 class="settings-section">{{msg(pSettings.section)}}</h1>
             <br />
             <form id="platformSettingsForm" action="api/settings/platform" method="post">
@@ -45,10 +45,14 @@
     <div class="box-header">{{msg('settings.noSettings')}}</div>
     <div class="box-content">
         <p>{{msg('settings.noSettingsMsg')}}</p>
-        <form id="noSettingsForm" action="api/settings/platform" method="post">
+        <form id="noSettingsForm" action="api/settings/platform/new" method="post">
             <div class="settings-input">
                 <label for="new.db.host">{{msg('label.db.host')}}</label>
                 <input id="new.db.host" type="text" name="db.host" />
+            </div>
+            <div class="settings-input">
+                <label for="new.db.password">{{msg('label.db.password')}}</label>
+                <input type="text" id="new.db.password" name="db.password" />
             </div>
             <div class="settings-input">
                 <label for="new.db.port">{{msg('label.db.port')}}</label>
@@ -57,10 +61,6 @@
             <div class="settings-input">
                 <label for="new.db.user">{{msg('label.db.username')}}</label>
                 <input type="text" id="new.db.user" name="db.username" />
-            </div>
-            <div class="settings-input">
-                <label for="new.db.password">{{msg('label.db.password')}}</label>
-                <input type="text" id="new.db.password" name="db.password" />
             </div>
         </form>
         <input type="button" ng-click="saveNewSettings()" value="{{msg('submit')}}"/>

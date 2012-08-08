@@ -76,6 +76,10 @@ perl -p -i -e "s/\\$\\{version\\}/$MOTECH_VERSION/g" ./motech-base/DEBIAN/contro
 #Copy config
 cp -r $MOTECH_BASE/motech-platform-server-config/src/main/config ./motech-base/usr/share/motech/.motech
 
+mkdir -p ./motech-base/usr/share/motech/.motech/bundles
+# Include motech-admin
+cp -r $MOTECH_BASE/motech-admin-bundle/target/motech-admin-bundle*.jar ./motech-base/usr/share/motech/.motech/bundles
+
 # set up permissions
 find ./motech-base -type d | xargs chmod 755  # for directories
 find ./motech-base -type f | xargs chmod 644  # for files

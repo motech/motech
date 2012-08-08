@@ -81,6 +81,16 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
         try (FileOutputStream fos = new FileOutputStream(file)) {
             settings.store(fos, null);
             configFileMonitor.monitor();
+
+            SettingsRecord dbSettings = getDBSettings();
+            if (dbSettings == null) {
+                dbSettings = new SettingsRecord();
+                configureCouchDBManager();
+            }
+            dbSettings.updateFromProperties(settings);
+            if (allSettings != null) {
+                allSettings.addOrUpdateSettings(dbSettings);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

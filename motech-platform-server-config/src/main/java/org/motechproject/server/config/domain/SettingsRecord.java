@@ -6,6 +6,8 @@ import org.joda.time.DateTime;
 import org.motechproject.model.MotechBaseDataObject;
 import org.motechproject.server.config.settings.MotechSettings;
 
+import java.util.Arrays;
+import java.util.Map;
 import java.util.Properties;
 
 @TypeDiscriminator("doc.type === 'SettingsRecord'")
@@ -100,4 +102,51 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
         setQuartzProperties(settings.getQuartzProperties());
     }
 
+    public void updateFromProperties(final Properties props) {
+        if (activemqProperties == null || activemqProperties.isEmpty()) {
+            activemqProperties = emptyActivemqProperties();
+        }
+        if (quartzProperties == null || quartzProperties.isEmpty()) {
+            quartzProperties = emptyQuartzProperties();
+        }
+
+        for (Map.Entry<Object, Object> entry : props.entrySet()) {
+            String key = (String)entry.getKey();
+            String value = (String)entry.getValue();
+
+            if (MotechSettings.LANGUAGE.equals(key)) {
+                setLanguage(value);
+            } else if (MotechSettings.STATUS_MSG_TIMEOUT.equals(key)) {
+                setStatusMsgTimeout(value);
+            } else {
+                for (Properties p : Arrays.asList(getActivemqProperties(), getQuartzProperties())) {
+                    if (p.containsKey(key)) {
+                        p.put(key, value);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    private Properties emptyActivemqProperties() {
+        Properties props = new Properties();
+        props.put(AMQ_BROKER_URL, "");
+        props.put(AMQ_CONCURRENT_CONSUMERS, "");
+        props.put(AMQ_MAX_CONCURRENT_CONSUMERS, "");
+        props.put(AMQ_MAX_REDELIVERIES, "");
+        props.put(AMQ_QUEUE_EVENTS, "");
+        props.put(AMQ_QUEUE_SCHEDULER, "");
+        props.put(AMQ_REDELIVERY_DELAY_IN_MILLIS, "");
+        return props;
+    }
+
+    private Properties emptyQuartzProperties() {
+        Properties props = new Properties();
+        props.put(QUARTZ_JOB_STORE_CLASS, "");
+        props.put(QUARTZ_SCHEDULER_NAME, "");
+        props.put(QUARTZ_THREAD_POOL_CLASS, "");
+        props.put(QUARTZ_THREAD_POOL_THREAD_COUNT, "");
+        return props;
+    }
 }

@@ -34,6 +34,11 @@
             <version>${project.version}</version>
             <type>war</type>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-admin-bundle</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <profiles>
@@ -57,7 +62,7 @@
                                 </goals>
                                 <configuration>
                                     <includeArtifactIds>
-                                        motech-platform-server
+                                        motech-platform-server, motech-admin-bundle
                                     </includeArtifactIds>
                                     <stripVersion>true</stripVersion>
                                     <outputDirectory>
@@ -115,6 +120,11 @@
                                     <directory>/var/lib/motech/data/bundles</directory>
                                     <username>motech</username>
                                     <groupname>motech</groupname>
+                                    <sources>
+                                        <source>
+                                            <location>content/artifacts/motech-admin-bundle.jar</location>
+                                        </source>
+                                    </sources>
                                 </mapping>
                                 <mapping>
                                     <directory>/var/cache/motech/temp</directory>

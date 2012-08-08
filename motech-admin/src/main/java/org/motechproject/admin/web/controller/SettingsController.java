@@ -1,5 +1,6 @@
 package org.motechproject.admin.web.controller;
 
+import org.apache.http.HttpRequest;
 import org.motechproject.admin.service.SettingsService;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.admin.settings.Settings;
@@ -56,6 +57,14 @@ public class SettingsController {
     public void savePlatformSettings(@RequestBody Settings[] platformSettings) {
         settingsService.savePlatformSettings(Arrays.asList(platformSettings));
         statusMessageService.ok("{settings.saved.bundle}");
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/settings/platform/new", method = RequestMethod.POST)
+    public void saveNewSettings(HttpServletRequest request) {
+        List<SettingsOption> settingsOpts = constructSettingsOptions(request);
+        Settings settings = new Settings("couchdb", settingsOpts);
+        settingsService.savePlatformSettings(settings);
     }
 
     @RequestMapping(value = "/settings/platform", method = RequestMethod.POST)

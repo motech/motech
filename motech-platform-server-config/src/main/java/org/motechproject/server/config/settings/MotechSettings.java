@@ -5,7 +5,7 @@ import java.util.Properties;
 public interface MotechSettings {
     String DB_HOST = "db.host";
     String DB_PORT = "db.port";
-    String DB_USERNAME = "db.user";
+    String DB_USERNAME = "db.username";
     String DB_PASSWORD = "db.password";
     String DB_MAX_CONNECTIONS = "db.maxConnections";
     String DB_CONNECTION_TIMEOUT = "db.connectionTimeout";
