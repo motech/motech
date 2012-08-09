@@ -6,11 +6,16 @@
         http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
     <import resource="classpath*:applicationSmsAPI.xml" />
+    
+    <bean class="org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor" />
 
     <osgi:service id="smsServiceOsgi" auto-export="interfaces" ref="smsService"
                   interface="org.motechproject.sms.api.service.SmsService"/>
 
     <osgi:reference id="schedulerServiceOsgi" cardinality="0..1"
                     interface="org.motechproject.scheduler.MotechSchedulerService"/>
+                    
+    <osgi:reference id="eventListenerRegistryService" cardinality="0..1"
+                    interface="org.motechproject.server.event.EventListenerRegistryService" />
 
 </beans>

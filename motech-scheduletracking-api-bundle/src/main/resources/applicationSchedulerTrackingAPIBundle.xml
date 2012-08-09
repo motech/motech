@@ -6,6 +6,8 @@
        http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
     <import resource="classpath:applicationSchedulerTrackingAPI.xml"/>
+    
+    <bean class="org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor" />
 
     <osgi:service id="scheduleTrackingServiceOsgi" auto-export="interfaces" ref="scheduleTrackingService"
                   interface="org.motechproject.scheduletracking.api.service.ScheduleTrackingService"/>
@@ -18,5 +20,8 @@
 
     <osgi:reference id="schedulerFireEventGatewayOsgi" cardinality="0..1"
                     interface="org.motechproject.scheduler.gateway.SchedulerFireEventGateway" />
+                    
+    <osgi:reference id="eventListenerRegistryService" cardinality="0..1"
+                    interface="org.motechproject.server.event.EventListenerRegistryService" />
 
 </beans>

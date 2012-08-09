@@ -71,6 +71,7 @@
                             org.springframework.web.servlet.view,
                             org.springframework.web.servlet.support,
                             org.springframework.web.context.support,
+                            org.motechproject.server.event,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-outbox-api,motech-outbox</Embed-Dependency>

@@ -11,6 +11,9 @@
     <osgi:service id="messageCampaignServiceOsgi" auto-export="interfaces" ref="messageCampaignService"
                   interface="org.motechproject.server.messagecampaign.service.MessageCampaignService" />
 
+    <osgi:reference id="eventListenerRegistryService" cardinality="0..1"
+                    interface="org.motechproject.server.event.EventListenerRegistryService" />
+
     <osgi:reference id="schedulerServiceOsgi" cardinality="0..1"
                     interface="org.motechproject.scheduler.MotechSchedulerService" />
 
