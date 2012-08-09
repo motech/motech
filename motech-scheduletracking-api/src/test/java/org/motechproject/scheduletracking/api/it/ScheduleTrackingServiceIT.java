@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllSchedules;
@@ -80,5 +81,30 @@ public class ScheduleTrackingServiceIT {
 
         List<EnrollmentRecord> enrollment = scheduleTrackingService.search(new EnrollmentsQuery().havingExternalId("entity_1").havingSchedule("IPTI Schedule"));
         assertEquals("IPTI 2", enrollment.get(0).getCurrentMilestoneName());
+    }
+
+    @Test
+    public void shouldReturnScheduleFromDb() {
+        Schedule schedule = scheduleTrackingService.getScheduleByName("IPTI Schedule");
+
+        assertNotNull(schedule);
+        assertEquals("IPTI 1", schedule.getFirstMilestone().getName());
+        assertEquals(2, schedule.getMilestones().size());
+        assertNotNull(schedule.getMilestone("IPTI 1"));
+        assertEquals("IPTI Schedule", schedule.getName());
+        assertEquals("IPTI 2", schedule.getNextMilestoneName("IPTI 1"));
+        assertNull(schedule.getNextMilestoneName("IPTI 2"));
+    }
+
+    @Test
+    public void shouldNotReturnScheduleThatDoesNotExist() {
+        Schedule schedule = scheduleTrackingService.getScheduleByName("Fake Schedule");
+        assertNull(schedule);
+    }
+
+    @Test
+    public void shouldReturnAllSchedules() {
+        List<Schedule> schedules = scheduleTrackingService.getAllSchedules();
+        assertEquals(10, schedules.size());
     }
 }
