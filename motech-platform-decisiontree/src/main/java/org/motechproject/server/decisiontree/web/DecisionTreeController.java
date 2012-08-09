@@ -36,7 +36,8 @@ public class DecisionTreeController extends MultiActionController {
 
     public static final String TEMPLATE_BASE_PATH = "/vm/";
     public static final String FLOW_SESSION_ID_PARAM = "flowSessionId";
-    private Logger logger = LoggerFactory.getLogger((this.getClass()));
+    public static final String CURRENT_NODE = "CurrentNode";
+    private Logger logger = LoggerFactory.getLogger((getClass()));
 
     public static final String TREE_NAME_PARAM = "tree";
     public static final String TRANSITION_KEY_PARAM = "trK";
@@ -135,19 +136,23 @@ public class DecisionTreeController extends MultiActionController {
         // put only one tree name in params
         params.put(TREE_NAME_PARAM, currentTree);
         FlowSession session = flowSessionService.getSession(request);
-        Node node;
+        Node node = getCurrentNode(session);
         try {
-            if (transitionKey == null) {
-                node = decisionTreeService.getNode(currentTree, TreeNodeLocator.PATH_DELIMITER, session);
+            if (node == null) {
+                    node =  decisionTreeService.getRootNode(currentTree, session) ;
+            }
+            if (transitionKey == null){ //node = decisionTreeService.getNode(currentTree, TreeNodeLocator.PATH_DELIMITER, session);
                 return constructModelViewForNode(request, node, transitionPath, language, treeNameString, type, treeNames, params, session);
             } else {
-                String parentTransitionPath;
-                parentTransitionPath = getParentTransitionPath(encodedParentTransitionPath);
-                Node parentNode = decisionTreeService.getNode(currentTree, parentTransitionPath, session);
-                ITransition transition = sendTreeEventActions(params, transitionKey, parentTransitionPath, parentNode);
-                applicationContext.getAutowireCapableBeanFactory().autowireBean(transition);
+                String parentTransitionPath = getParentTransitionPath(encodedParentTransitionPath);
+                //Node parentNode = decisionTreeService.getNode(currentTree, parentTransitionPath, session);
+
+                ITransition transition = sendTreeEventActions(params, transitionKey, parentTransitionPath, node);
+                autowire(transition);
 
                 node = transition.getDestinationNode(transitionKey, session);
+                autowire(node);
+
 
                 final boolean emptyNode = node == null || (node.getPrompts().isEmpty() && node.getActionsAfter().isEmpty()
                         && node.getActionsBefore().isEmpty() && node.getTransitions().isEmpty());
@@ -168,12 +173,22 @@ public class DecisionTreeController extends MultiActionController {
                     String modifiedTransitionPath = parentTransitionPath +
                             (TreeNodeLocator.PATH_DELIMITER.equals(parentTransitionPath) ? "" : TreeNodeLocator.PATH_DELIMITER)
                             + transitionKey;
+                    session.setCurrentNode(node);
                     return constructModelViewForNode(request, node, modifiedTransitionPath, language, treeNameString, type, treeNames, params, session);
                 }
             }
         } finally {
             flowSessionService.updateSession(session);
         }
+    }
+
+    private void autowire(Object transition) {
+        applicationContext.getAutowireCapableBeanFactory().autowireBean(transition);
+    }
+
+    private Node getCurrentNode(FlowSession session) {
+        Node node = session.getCurrentNode();
+        return node;
     }
 
     private ModelAndView constructModelViewForNode(HttpServletRequest request, Node node, String transitionPath, String language, String treeNameString, String type, String[] treeNames, Map<String, Object> params, FlowSession session) {

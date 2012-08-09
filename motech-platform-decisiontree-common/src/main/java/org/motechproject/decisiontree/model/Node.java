@@ -3,7 +3,9 @@ package org.motechproject.decisiontree.model;
 import org.apache.commons.lang.ArrayUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,7 +17,8 @@ import java.util.Map;
 /**
  * Represents a node in the decision tree.
  */
-public class Node {
+@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
+public class Node implements Serializable {
 
     private List<Action> actionsBefore;
     private List<Action> actionsAfter;
