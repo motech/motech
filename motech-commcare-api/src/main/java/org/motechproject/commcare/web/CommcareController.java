@@ -75,7 +75,7 @@ public class CommcareController {
         }
 
         if (caseInstance != null) {
-            CaseEvent caseEvent = new CaseEvent(caseInstance.getCase_id());
+            CaseEvent caseEvent = new CaseEvent(caseInstance.getCaseId());
 
             MotechEvent motechCaseEvent = null;
 
