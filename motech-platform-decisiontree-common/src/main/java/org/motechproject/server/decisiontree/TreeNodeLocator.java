@@ -41,13 +41,38 @@ public class TreeNodeLocator {
                 if (transition == null) {
                     return null;
                 }
-                applicationContext.getAutowireCapableBeanFactory().autowireBean(transition); //TODO : autowiring in 2 places, see - DecistionTreeController
+                autowire(transition); //TODO : autowiring in 2 places, see - DecistionTreeController
+
                 node = transition.getDestinationNode(key, session);
+                autowire(node);
                 if (node == null) {
                     return null;
                 }
             }
         }
         return node;
+    }
+
+    public Node findRootNode(Tree tree, FlowSession session) {
+        if (tree == null ) {
+            throw new IllegalArgumentException(String.format("tree: %s path: %s", tree));
+        }
+        ITransition rootTransition = rootTransition(tree);
+        return rootNode(session, rootTransition);
+    }
+
+    private Node rootNode(FlowSession session, ITransition rootTransition) {
+        Node destinationNode = rootTransition.getDestinationNode(null, session);
+        return destinationNode;
+    }
+
+    private ITransition rootTransition(Tree tree) {
+        ITransition rootTransition = tree.getRootTransition();
+        autowire(rootTransition);
+        return rootTransition;
+    }
+
+    private void autowire(Object rootTransition) {
+        applicationContext.getAutowireCapableBeanFactory().autowireBean(rootTransition);
     }
 }

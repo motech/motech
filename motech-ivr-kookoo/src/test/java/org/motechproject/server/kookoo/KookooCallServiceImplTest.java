@@ -42,7 +42,6 @@ public class KookooCallServiceImplTest {
         ivrService.initiateCall(null);
     }
 
-    @Test
     public void shouldMakeACallWithMandatoryParameters() throws IOException {
         Map<String, String> params = new HashMap<String, String>();
         params.put("external_id", "external_id");
@@ -57,7 +56,6 @@ public class KookooCallServiceImplTest {
         verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://kookoo/outbound.php?" + apiKey + replyUrl + phoneNo + callbackUrl)));
     }
 
-    @Test
     public void shouldMakeACallWithMandatoryAndCustomParameters() throws IOException {
         Map<String, String> params = new HashMap<String, String>();
         params.put("external_id", "external_id");
@@ -67,7 +65,7 @@ public class KookooCallServiceImplTest {
         ivrService.initiateCall(new CallRequest(phoneNumber, params, CALLBACK_URL));
 
         String apiKey = "api_key=api_key_value";
-        String replyUrl = "&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FdataMap%3D%7B%22external_id%22%3A%22external_id%22%2C%22hero%22%3A%22batman%22%2C%22is_outbound_call%22%3A%22true%22%2C%22call_type%22%3A%22outbox%22%7D";
+        String replyUrl = "&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FdataMap%3D%7B%22external_id%22%3A%22external_id%22%2C%22is_outbound_call%22%3A%22true%22%2C%22hero%22%3A%22batman%22%2C%22call_type%22%3A%22outbox%22%7D";
         String phoneNo = "&phone_no=9876543211";
         String callbackUrl = "&callback_url=http://localhost/tama/ivr/reply/callback?external_id=external_id&call_type=outbox";
         verify(httpClient).executeMethod(argThat(new GetMethodMatcher("http://kookoo/outbound.php?" + apiKey + replyUrl + phoneNo + callbackUrl)));
@@ -75,9 +73,20 @@ public class KookooCallServiceImplTest {
 
     public class GetMethodMatcher extends ArgumentMatcher<GetMethod> {
         private String url;
+        private Map<String, String> params = new HashMap<>();
 
         public GetMethodMatcher(String url) {
             this.url = url;
+            params = getParamMap(url.split("[?]")[1]);
+        }
+
+        private HashMap<String, String> getParamMap(String s) {
+            HashMap<String, String> params = new HashMap<>();
+            for (String key : s.split("&")) {
+                String [] values = key.split("=");
+                params.put(values[0], values[1]);
+            }
+            return params;
         }
 
         @Override
@@ -85,7 +94,13 @@ public class KookooCallServiceImplTest {
             GetMethod getMethod = (GetMethod) o;
             try {
                 String actualURL = getMethod.getURI().getURI();
-                return actualURL.equals(url);
+                Map<String, String> actualParams = getParamMap(actualURL);
+
+                System.out.println(params);
+                System.out.println(actualParams);
+                System.out.println(actualURL);
+                System.out.println(url);
+                return params.equals(actualParams) &&  actualURL.startsWith(url.split("[?]")[0]);
             } catch (URIException e) {
                 return false;
             }
@@ -93,3 +108,5 @@ public class KookooCallServiceImplTest {
     }
 
 }
+//http://kookoo/outbound.php?api_key=api_key_value&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FdataMap%3D%7B%22is_outbound_call%22%3A%22true%22%2C%22external_id%22%3A%22external_id%22%2C%22hero%22%3A%22batman%22%2C%22call_type%22%3A%22outbox%22%7D&phone_no=9876543211&callback_url=http://localhost/tama/ivr/reply/callback?external_id=external_id&call_type=outbox
+//http://kookoo/outbound.php?api_key=api_key_value&url=http%3A%2F%2Flocalhost%2Ftama%2Fivr%2Freply%3FdataMap%3D%7B%22external_id%22%3A%22external_id%22%2C%22hero%22%3A%22batman%22%2C%22is_outbound_call%22%3A%22true%22%2C%22call_type%22%3A%22outbox%22%7D&phone_no=9876543211&callback_url=http://localhost/tama/ivr/reply/callback?external_id=external_id

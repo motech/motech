@@ -5,11 +5,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.decisiontree.FlowSession;
-import org.motechproject.decisiontree.model.DialStatus;
-import org.motechproject.decisiontree.model.INodeOperation;
-import org.motechproject.decisiontree.model.ITransition;
-import org.motechproject.decisiontree.model.Node;
-import org.motechproject.decisiontree.model.Transition;
+import org.motechproject.decisiontree.model.*;
 import org.motechproject.decisiontree.service.FlowSessionService;
 import org.motechproject.server.decisiontree.TreeNodeLocator;
 import org.motechproject.server.decisiontree.service.DecisionTreeService;
@@ -44,6 +40,7 @@ public class DecisionTreeController extends MultiActionController {
     public static final String FLOW_SESSION_ID_PARAM = "flowSessionId";
     private static final String TREE_ROOT_PATH = TreeNodeLocator.PATH_DELIMITER;
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
+    public static final String CURRENT_NODE = "CurrentNode";
 
     public static final String TREE_NAME_PARAM = "tree";
     public static final String TRANSITION_KEY_PARAM = "trK";
@@ -109,13 +106,13 @@ public class DecisionTreeController extends MultiActionController {
         Map<String, Object> params = convertParams(request.getParameterMap());
         String language = request.getParameter(LANGUAGE_PARAM);
         String treeNameString = request.getParameter(TREE_NAME_PARAM);
-        String parentTransitionPath = getParentTransitionPath(request);
+        String encodedTransitionPath = getParentTransitionPath(request);
         String transitionKey = request.getParameter(TRANSITION_KEY_PARAM);
 
         logger.info(" Node HTTP  request parameters: "
                 + LANGUAGE_PARAM + ": " + language + ", "
                 + TREE_NAME_PARAM + ": " + treeNameString + ", "
-                + TRANSITION_PATH_PARAM + ": " + parentTransitionPath + ", "
+                + TRANSITION_PATH_PARAM + ": " + encodedTransitionPath + ", "
                 + TRANSITION_KEY_PARAM + ": " + transitionKey);
         try {
             if (StringUtils.isBlank(language) || StringUtils.isBlank(treeNameString)) {
@@ -124,12 +121,12 @@ public class DecisionTreeController extends MultiActionController {
                 return getErrorModelAndView(Errors.NULL_PATIENTID_LANGUAGE_OR_TREENAME_PARAM, language);
             }
 
-            return getModelViewForNextNode(request, parentTransitionPath, params);
+            return getModelViewForNextNode(request, getParentTransitionPath(request), params);
         } catch (DecisionTreeException exception) {
             logger.error(exception.getMessage());
             return getErrorModelAndView(exception.subject, language);
         } catch (Exception e) {
-            logger.error(format("Can not get node by Tree ID: %s and transition path %s\n%s", treeNameString, parentTransitionPath, e));
+            logger.error(format("Can not get node by Tree ID: %s and transition path %s\n%s", treeNameString, encodedTransitionPath, e));
         }
         return getErrorModelAndView(Errors.GET_NODE_ERROR, language);
     }
@@ -144,16 +141,22 @@ public class DecisionTreeController extends MultiActionController {
         params.put(TREE_NAME_PARAM, currentTree);
 
         FlowSession session = flowSessionService.getSession(request);
-        Node node;
-        Node parentNode = decisionTreeService.getNode(currentTree, parentTransitionPath, session);
+        Node node = getCurrentNode(session);
         try {
-            if (transitionKey == null) {
-                return constructModelViewForNode(request, parentNode, parentTransitionPath, treeNames, params, session);
+            if (node == null) {
+                node = decisionTreeService.getRootNode(currentTree, session);
+            }
+            if (transitionKey == null) { //node = decisionTreeService.getNode(currentTree, TreeNodeLocator.PATH_DELIMITER, session);
+                return constructModelViewForNode(request, node, parentTransitionPath, treeNames, params, session);
             } else {
-                ITransition transition = sendTreeEventActions(params, transitionKey, parentTransitionPath, parentNode);
-                applicationContext.getAutowireCapableBeanFactory().autowireBean(transition);
+                //Node parentNode = decisionTreeService.getNode(currentTree, parentTransitionPath, session);
+
+                ITransition transition = sendTreeEventActions(params, transitionKey, parentTransitionPath, node);
+                autowire(transition);
 
                 node = transition.getDestinationNode(transitionKey, session);
+                autowire(node);
+
 
                 final boolean emptyNode = node == null || (node.getPrompts().isEmpty() && node.getActionsAfter().isEmpty()
                         && node.getActionsBefore().isEmpty() && node.getTransitions().isEmpty());
@@ -172,12 +175,23 @@ public class DecisionTreeController extends MultiActionController {
                     String modifiedTransitionPath = parentTransitionPath +
                             (TREE_ROOT_PATH.equals(parentTransitionPath) ? "" : TreeNodeLocator.PATH_DELIMITER)
                             + transitionKey;
-                    return  constructModelViewForNode(request, node, modifiedTransitionPath, treeNames, params, session);
+                    session.setCurrentNode(node);
+                    return constructModelViewForNode(request, node, modifiedTransitionPath, treeNames, params, session);
+                    //return constructModelViewForNode(request, node, modifiedTransitionPath, language, treeNameString, type, treeNames, params, session);
                 }
             }
         } finally {
             flowSessionService.updateSession(session);
         }
+    }
+
+    private void autowire(Object transition) {
+        applicationContext.getAutowireCapableBeanFactory().autowireBean(transition);
+    }
+
+    private Node getCurrentNode(FlowSession session) {
+        Node node = session.getCurrentNode();
+        return node;
     }
 
     private ModelAndView constructModelViewForNode(HttpServletRequest request, Node node, String transitionPath, String[] treeNames, Map<String, Object> params, FlowSession session) {
