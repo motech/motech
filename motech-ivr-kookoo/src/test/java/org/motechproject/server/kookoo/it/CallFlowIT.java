@@ -19,6 +19,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.servlet.DispatcherServlet;
 
+import java.util.Random;
+import java.util.UUID;
+
 import static java.lang.String.format;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.custommonkey.xmlunit.XMLUnit.setIgnoreWhitespace;
@@ -41,6 +44,7 @@ public class CallFlowIT extends SpringIntegrationTest {
     CouchDbConnector connector;
 
     DefaultHttpClient decisionTreeController;
+    Random random;
 
     @BeforeClass
     public static void startServer() throws Exception {
@@ -52,6 +56,8 @@ public class CallFlowIT extends SpringIntegrationTest {
 
         ServletHolder servletHolder = new ServletHolder(dispatcherServlet);
         context.addServlet(servletHolder, "/*");
+
+
         server.setHandler(context);
         server.start();
     }
@@ -70,6 +76,8 @@ public class CallFlowIT extends SpringIntegrationTest {
     public void setup() {
         setIgnoreWhitespace(true);
         decisionTreeController = new DefaultHttpClient();
+        random = new Random(55645474);
+
     }
 
     @After
@@ -90,7 +98,7 @@ public class CallFlowIT extends SpringIntegrationTest {
         ));
         allTrees.addOrReplace(tree);
 
-        String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&trP=Lw&ln=en", SERVER_URL)), new BasicResponseHandler());
+        String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&trP=Lw&ln=en&sid=shouldPlayPromptsAndRequestDtmfIfNodeHasTransitions", SERVER_URL)), new BasicResponseHandler());
         String expectedResponse =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                 "<response>" +
@@ -120,7 +128,7 @@ public class CallFlowIT extends SpringIntegrationTest {
         ));
         allTrees.addOrReplace(tree);
 
-        String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&trP=Lw&ln=en&event=GotDTMF&data=2", SERVER_URL)), new BasicResponseHandler());
+        String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&trP=Lw&ln=en&event=GotDTMF&data=2&sid="+UUID.randomUUID().getMostSignificantBits() , SERVER_URL)), new BasicResponseHandler());
         String expectedResponse =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                 "<response>" +
@@ -141,7 +149,7 @@ public class CallFlowIT extends SpringIntegrationTest {
         ));
         allTrees.addOrReplace(tree);
 
-        String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&trP=Lw&ln=en", SERVER_URL)), new BasicResponseHandler());
+        String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&trP=Lw&ln=en&sid=noTransition", SERVER_URL)), new BasicResponseHandler());
         String expectedResponse =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                 "<response>" +
@@ -163,7 +171,7 @@ public class CallFlowIT extends SpringIntegrationTest {
         ));
         allTrees.addOrReplace(tree);
 
-        String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&trP=Lw&ln=en", SERVER_URL)), new BasicResponseHandler());
+        String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&trP=Lw&ln=en&sid=shouldRequestMaxLengthDtmfForArbitraryInput", SERVER_URL)), new BasicResponseHandler());
         String expectedResponse =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                 "<response>" +
@@ -184,7 +192,7 @@ public class CallFlowIT extends SpringIntegrationTest {
         ));
         allTrees.addOrReplace(tree);
 
-        String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&trP=Lw&ln=en&event=GotDTMF&data=31415", SERVER_URL)), new BasicResponseHandler());
+        String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&trP=Lw&ln=en&event=GotDTMF&data=31415&sid="+ UUID.randomUUID().getMostSignificantBits() , SERVER_URL)), new BasicResponseHandler());
         String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
             "<response>" +
             "   <playtext>you entered 31415</playtext>" +

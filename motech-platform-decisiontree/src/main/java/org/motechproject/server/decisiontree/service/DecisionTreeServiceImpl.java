@@ -33,4 +33,15 @@ public class DecisionTreeServiceImpl implements DecisionTreeService {
 
         return node;
     }
+
+    @Override
+    public Node getRootNode(String treeName, FlowSession session) {
+        Node node = null;
+        Tree tree = allTrees.findByName(treeName);
+        logger.info("Looking for tree by name: " + treeName + ", found: " + tree);
+        node = treeNodeLocator.findRootNode(tree, session);
+        logger.info("Looking for node by path: " + ", found: " + node.getPrompts());
+
+        return node;
+    }
 }

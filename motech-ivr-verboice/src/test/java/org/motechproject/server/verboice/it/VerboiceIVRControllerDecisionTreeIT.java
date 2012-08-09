@@ -88,9 +88,11 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         String response2 = client.execute(new HttpGet(transitionUrl), new BasicResponseHandler());
         assertTrue("got " + response2, response2.contains("<Say>Say this</Say>"));
 
-        String transitionUrl2 = SERVER_URL + "?tree=someTree&CallSid="+ sessionId + "&trP=Lw&ln=en&Digits=*";
+        String transitionUrl2 = SERVER_URL + "?tree=someTree&CallSid="+ UUID.randomUUID().toString() + "&trP=Lw&ln=en&Digits=*";
         String response3 = client.execute(new HttpGet(transitionUrl2), new BasicResponseHandler());
         assertTrue("got " + response3, response3.contains("<Play>you pressed star</Play>"));
+
+        sessionId = UUID.randomUUID().toString();
 
         String transitionUrl3 = SERVER_URL + "?tree=someTree&CallSid="+ sessionId + "&trP=Lw&ln=en&Digits=" + USER_INPUT;
         String response4 = client.execute(new HttpGet(transitionUrl3), new BasicResponseHandler());
