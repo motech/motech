@@ -5,7 +5,6 @@ import org.joda.time.Period;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
-import org.motechproject.scheduler.gateway.OutboundEventGateway;
 import org.motechproject.scheduler.gateway.SchedulerFireEventGateway;
 import org.motechproject.scheduletracking.api.domain.Alert;
 import org.motechproject.scheduletracking.api.domain.AlertWindow;
@@ -17,12 +16,8 @@ import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.events.MilestoneEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
 import org.motechproject.scheduletracking.api.service.MilestoneAlerts;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.ContextLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,7 +93,14 @@ public class EnrollmentAlertService {
 
                 schedulerFireEventGateway.sendEventMessage(event);
             }
-            schedulerService.safeScheduleRepeatingJob(new RepeatingSchedulableJob(event, alertsStartTime.toDate(), null, numberOfAlertsToFire, repeatIntervalInMillis, false));
+            RepeatingSchedulableJob job = new RepeatingSchedulableJob()
+                .setMotechEvent(event)
+                .setStartTime(alertsStartTime.toDate())
+                .setEndTime(null)
+                .setRepeatCount(numberOfAlertsToFire)
+                .setRepeatIntervalInMilliSeconds(repeatIntervalInMillis)
+                .setIgnorePastFiresAtStart(false);
+            schedulerService.safeScheduleRepeatingJob(job);
         }
     }
 

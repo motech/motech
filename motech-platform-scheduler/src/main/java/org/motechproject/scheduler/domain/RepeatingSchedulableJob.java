@@ -15,7 +15,13 @@ public class RepeatingSchedulableJob implements Serializable {
     private Integer repeatCount;
     private Long repeatIntervalInMilliSeconds;
     private boolean ignorePastFiresAtStart;
-    private boolean useOriginalFireTimeAfterMisfire = false;
+    private boolean useOriginalFireTimeAfterMisfire;
+
+    public RepeatingSchedulableJob() {
+        endTime = null;
+        ignorePastFiresAtStart = false;
+        useOriginalFireTimeAfterMisfire = false;
+    }
 
     public RepeatingSchedulableJob(final MotechEvent motechEvent, final Date startTime, final Date endTime, final Integer repeatCount, final Long repeatIntervalInMilliSeconds, boolean ignorePastFiresAtStart) {
         this.motechEvent = motechEvent;
@@ -34,40 +40,45 @@ public class RepeatingSchedulableJob implements Serializable {
         return motechEvent;
     }
 
-    public void setMotechEvent(final MotechEvent motechEvent) {
+    public RepeatingSchedulableJob setMotechEvent(final MotechEvent motechEvent) {
         this.motechEvent = motechEvent;
+        return this;
     }
 
     public Date getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(final Date startTime) {
+    public RepeatingSchedulableJob setStartTime(final Date startTime) {
         this.startTime = startTime;
+        return this;
     }
 
     public Date getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(final Date endTime) {
+    public RepeatingSchedulableJob setEndTime(final Date endTime) {
         this.endTime = endTime;
+        return this;
     }
 
     public Integer getRepeatCount() {
         return repeatCount;
     }
 
-    public void setRepeatCount(final Integer repeatCount) {
+    public RepeatingSchedulableJob setRepeatCount(final Integer repeatCount) {
         this.repeatCount = repeatCount;
+        return this;
     }
 
     public Long getRepeatIntervalInMilliSeconds() {
         return repeatIntervalInMilliSeconds;
     }
 
-    public void setRepeatIntervalInMilliSeconds(final Long repeatIntervalInMilliSeconds) {
+    public RepeatingSchedulableJob setRepeatIntervalInMilliSeconds(final Long repeatIntervalInMilliSeconds) {
         this.repeatIntervalInMilliSeconds = repeatIntervalInMilliSeconds;
+        return this;
     }
 
     public boolean isIgnorePastFiresAtStart() {
@@ -83,16 +94,18 @@ public class RepeatingSchedulableJob implements Serializable {
      *  </pre>
      * @param ignorePastFiresAtStart
      */
-    public void setIgnorePastFiresAtStart(boolean ignorePastFiresAtStart) {
+    public RepeatingSchedulableJob setIgnorePastFiresAtStart(boolean ignorePastFiresAtStart) {
         this.ignorePastFiresAtStart = ignorePastFiresAtStart;
+        return this;
     }
 
     public boolean isUseOriginalFireTimeAfterMisfire() {
         return useOriginalFireTimeAfterMisfire;
     }
 
-    public void setUseOriginalFireTimeAfterMisfire(boolean useOriginalFireTimeAfterMisfire) {
+    public RepeatingSchedulableJob setUseOriginalFireTimeAfterMisfire(boolean useOriginalFireTimeAfterMisfire) {
         this.useOriginalFireTimeAfterMisfire = useOriginalFireTimeAfterMisfire;
+        return this;
     }
 
     @Override
@@ -102,5 +115,4 @@ public class RepeatingSchedulableJob implements Serializable {
                 + ", repeatCount=" + repeatCount + ", repeatIntervalInMilliSeconds="
                 + repeatIntervalInMilliSeconds + "]";
     }
-
 }
