@@ -25,6 +25,8 @@ public class Node {
     private Map<String, ITransition> transitions;
     @JsonProperty
     private List<INodeOperation> operations = new ArrayList<>();
+    @JsonProperty
+    private List<Prompt> transitionPrompts = new ArrayList<Prompt>();
 
     public List<Action> getActionsBefore() {
         return actionsBefore == null ? Collections.<Action>emptyList() : actionsBefore;
@@ -45,10 +47,44 @@ public class Node {
     }
 
     /**
+     * Returns the list of prompts played during transition
+     * @return
+     * @see AudioPrompt
+     * @see TextToSpeechPrompt
+     * @See DialPrompt
+     */
+    public List<Prompt> getTransitionPrompts() {
+        return transitionPrompts;
+    }
+
+    /**
+     * Sets the transitionPrompt list with the given prompts. Use this when transition input should be able to interrupt the prompts.
+     * @param prompts
+     * @return the current node instance
+     */
+    @JsonIgnore
+    public Node setTransitionPrompts(List<Prompt> prompts) {
+        this.transitionPrompts = prompts;
+        return this;
+    }
+
+    /**
+     * Adds to the transitionPrompt list with the given prompts.
+     * @param prompts
+     * @return the current node instance
+     */
+    @JsonIgnore
+    public Node addTransitionPrompts(Prompt... prompts){
+        this.transitionPrompts.addAll(Arrays.asList(prompts));
+        return this;
+    }
+
+    /**
      * Returns the list of prompts
      * @return
      * @see AudioPrompt
      * @see TextToSpeechPrompt
+     * @See DialPrompt
      */
     public List<Prompt> getPrompts() {
         return prompts;

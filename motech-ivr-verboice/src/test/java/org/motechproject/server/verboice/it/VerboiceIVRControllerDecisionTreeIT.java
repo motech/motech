@@ -6,14 +6,17 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.ektorp.CouchDbConnector;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mortbay.jetty.Server;
 import org.motechproject.decisiontree.FlowSession;
-import org.motechproject.decisiontree.model.*;
+import org.motechproject.decisiontree.model.AudioPrompt;
+import org.motechproject.decisiontree.model.DialPrompt;
+import org.motechproject.decisiontree.model.ITransition;
+import org.motechproject.decisiontree.model.Node;
+import org.motechproject.decisiontree.model.TextToSpeechPrompt;
+import org.motechproject.decisiontree.model.Transition;
+import org.motechproject.decisiontree.model.Tree;
 import org.motechproject.decisiontree.repository.AllTrees;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.server.verboice.VerboiceIVRService;
@@ -23,7 +26,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -46,20 +48,9 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
     @Qualifier("treesDatabase")
     private CouchDbConnector connector;
 
-    private void createTree() {
-        Tree tree = new Tree();
-        tree.setName("someTree");
-        HashMap<String, ITransition> transitions = new HashMap<String, ITransition>();
-        final Node textToSpeechNode = new Node().addPrompts(new TextToSpeechPrompt().setMessage("Say this"));
-        transitions.put("1", new Transition().setDestinationNode(textToSpeechNode));
-        transitions.put("*", new Transition().setDestinationNode(new Node().setPrompts(new AudioPrompt().setAudioFileUrl("you pressed star"))));
-        transitions.put("?", new CustomTransition());
-
-        tree.setRootTransition(new Transition().setDestinationNode(new Node().addPrompts(
-                new TextToSpeechPrompt().setMessage("Hello Welcome to motech")
-        ).setTransitions(transitions)));
-        allTrees.addOrReplace(tree);
-        markForDeletion(tree);
+    @Before
+    public void setUp() throws Exception {
+        XMLUnit.setIgnoreWhitespace(true);
     }
 
     @Test
@@ -74,9 +65,9 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         XMLUnit.setIgnoreWhitespace(true);
         String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<Response>\n" +
-                "                        <Say>Hello Welcome to motech</Say>\n" +
-                "                                    <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"50\"></Gather>\n" +
-                "             </Response>";
+                "  <Say>Hello Welcome to motech</Say>\n" +
+                "  <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"50\"></Gather>\n" +
+                "</Response>";
         HttpClient client = new DefaultHttpClient();
         String rootUrl = SERVER_URL + "?tree=someTree&motech_call_id="+ callRequest.getCallId() + "&trP=Lw&ln=en";
         String response = client.execute(new HttpGet(rootUrl), new BasicResponseHandler());
@@ -110,14 +101,37 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
     }
 
     @Test
+    public void shouldPerformTimeoutTransitionOnTimeout() throws Exception {
+        createTreeWithTimeoutTransition();
+
+        XMLUnit.setIgnoreWhitespace(true);
+        String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<Response>\n" +
+                "  <Say>Hello Welcome to motech</Say>\n" +
+                "  <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=treeWithTransitionTimeout&amp;trP=Lw\" numDigits=\"7\">\n" +
+                "    <Say>Transition prompt</Say>\n" +
+                "  </Gather>\n" +
+                "  <Redirect method=\"POST\">http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=treeWithTransitionTimeout&amp;trP=Lw&amp;Digits=timeout</Redirect>\n" +
+                "</Response>";
+        HttpClient client = new DefaultHttpClient();
+        String rootUrl = SERVER_URL + "?tree=treeWithTransitionTimeout&trP=Lw&ln=en";
+        String response = client.execute(new HttpGet(rootUrl), new BasicResponseHandler());
+        assertXMLEqual(expectedResponse, response);
+
+        String transitionUrl = SERVER_URL + "?tree=treeWithTransitionTimeout&trP=Lw&ln=en&Digits=timeout";
+        String response2 = client.execute(new HttpGet(transitionUrl), new BasicResponseHandler());
+        assertTrue("got " + response2, response2.contains("<Say>Clip on timeout</Say>"));
+    }
+
+    @Test
     public void shouldDialAndTestForDialStatus() throws Exception {
         createTreeWithDialPrompt();
 
         XMLUnit.setIgnoreWhitespace(true);
         String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<Response>\n" +
-                "                        <Dial action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=treeWithDial&amp;trP=Lw\">othernumber</Dial>\n" +
-                "     </Response>";
+                "  <Dial action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=treeWithDial&amp;trP=Lw\">othernumber</Dial>\n" +
+                "</Response>";
         HttpClient client = new DefaultHttpClient();
         String rootUrl = SERVER_URL + "?tree=treeWithDial&trP=Lw&ln=en";
         String response = client.execute(new HttpGet(rootUrl), new BasicResponseHandler());
@@ -126,6 +140,40 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         String transitionUrl = SERVER_URL + "?tree=treeWithDial&trP=Lw&ln=en&DialCallStatus=completed";
         String response2 = client.execute(new HttpGet(transitionUrl), new BasicResponseHandler());
         assertTrue("got " + response2, response2.contains("<Say>Successful Dial</Say>"));
+    }
+
+    private void createTree() {
+        Tree tree = new Tree();
+        tree.setName("someTree");
+        HashMap<String, ITransition> transitions = new HashMap<String, ITransition>();
+        final Node textToSpeechNode = new Node().addPrompts(new TextToSpeechPrompt().setMessage("Say this"));
+        transitions.put("1", new Transition().setDestinationNode(textToSpeechNode));
+        transitions.put("*", new Transition().setDestinationNode(new Node().setPrompts(new AudioPrompt().setAudioFileUrl("you pressed star"))));
+        transitions.put("?", new CustomTransition());
+
+        tree.setRootTransition(new Transition().setDestinationNode(new Node().addPrompts(
+                new TextToSpeechPrompt().setMessage("Hello Welcome to motech")
+        ).setTransitions(transitions)));
+        allTrees.addOrReplace(tree);
+        markForDeletion(tree);
+    }
+
+    private void createTreeWithTimeoutTransition() {
+        Tree tree = new Tree();
+        tree.setName("treeWithTransitionTimeout");
+        HashMap<String, ITransition> transitions = new HashMap<String, ITransition>();
+        final Node clipOnSuccessfulTransition = new Node().addPrompts(new TextToSpeechPrompt().setMessage("Clip on successful transition"));
+        final Node clipOnTimeout = new Node().addPrompts(new TextToSpeechPrompt().setMessage("Clip on timeout"));
+
+        transitions.put("1", new Transition().setDestinationNode(clipOnSuccessfulTransition));
+        transitions.put("timeout", new Transition().setDestinationNode(clipOnTimeout));
+
+        tree.setRootNode(new Node().addPrompts(
+                new TextToSpeechPrompt().setMessage("Hello Welcome to motech")
+        ).setTransitions(transitions).addTransitionPrompts(new TextToSpeechPrompt().setMessage("Transition prompt")));
+
+        allTrees.addOrReplace(tree);
+        markForDeletion(tree);
     }
 
     private void createTreeWithDialPrompt() {
