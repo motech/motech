@@ -3,6 +3,7 @@ package org.motechproject.server.config.service;
 import org.ektorp.CouchDbConnector;
 import org.motechproject.server.config.settings.MotechSettings;
 
+import javax.servlet.ServletContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -56,4 +57,8 @@ public interface PlatformSettingsService {
     CouchDbConnector getCouchConnector(String dbName);
 
     void evictMotechSettingsCache();
+
+    String getRealApplicationPath();
+
+    String getTemporaryDirectoryPath();
 }
