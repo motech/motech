@@ -18,6 +18,7 @@ public class TreeNodeLocator {
 
     @Autowired
     private ApplicationContext applicationContext;
+    public static final String NO_INPUT = "";
 
     public TreeNodeLocator() {
     }
