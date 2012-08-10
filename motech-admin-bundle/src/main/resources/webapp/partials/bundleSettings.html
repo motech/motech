@@ -5,8 +5,9 @@
 
     <div ng-repeat="mSettings in moduleSettings">
         <div class="box-header">
-            {{mSettings.section}}
-        </div>
+            <span class="box-header-left"></span><span class="box-header-center">
+            {{mSettings.section}}</span><span class="box-header-right"></span>
+		</div>
         <div class="box-content">
             <form id="settingsForm" action="api/settings/{{module.bundleId}}" method="post">
                 <div ng-repeat="setting in mSettings.settings | orderBy:'key'" class="settings-input">
@@ -21,7 +22,8 @@
 
     <div ng-repeat="rawFile in rawFiles">
         <div class="box-header">
-            {{rawFile}}
+            <span class="box-header-left"></span><span class="box-header-center">
+            {{rawFile}}</span><span class="box-header-right"></span>
         </div>
         <div class="box-content">
             <form id="_raw_{{rawFile}}" action="api/settings/{{module.bundleId}}/raw" method="post"

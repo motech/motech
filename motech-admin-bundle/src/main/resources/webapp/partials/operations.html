@@ -1,5 +1,6 @@
 <div class="box-header">
-    {{msg('operations')}}
+    <span class="box-header-left"></span><span class="box-header-center">
+    {{msg('operations')}}</span><span class="box-header-right"></span>
 </div>
 <div class="box-content">
     <iframe ng-show="mappings['graphite']" ng-src="{{mappings['graphite']}}" height="100%" width="100%"></iframe>

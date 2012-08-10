@@ -1,5 +1,6 @@
 <div class="box-header">
-    {{msg('settings.upload')}}
+    <span class="box-header-left"></span><span class="box-header-center">
+    {{msg('settings.upload')}}</span><span class="box-header-right"></span>
 </div>
 <div class="box-content">
     <form id="settingsFileForm" action="api/settings/platform/upload" method="post" enctype="multipart/form-data">
@@ -9,7 +10,8 @@
 </div>
 
 <div class="box-header">
-    {{msg('settings.location')}}
+    <span class="box-header-left"></span><span class="box-header-center">
+    {{msg('settings.location')}}</span><span class="box-header-right"></span>
 </div>
 <div class="box-content">
     <form id="settingsLocationForm" method="post" ng-submit="uploadFileLocation()">
@@ -19,7 +21,10 @@
 </div>
 
 <div ng-show="platformSettings.length > 0">
-    <div class="box-header">{{msg('settings.platform')}}</div>
+    <div class="box-header">
+        <span class="box-header-left"></span><span class="box-header-center">
+        {{msg('settings.platform')}}</span><span class="box-header-right"></span>
+    </div>
     <div class="box-content">
         <p id="settingsMsg"></p>
 
@@ -42,7 +47,10 @@
 </div>
 
 <div ng-show="platformSettings.length <= 0">
-    <div class="box-header">{{msg('settings.noSettings')}}</div>
+    <div class="box-header">
+        <span class="box-header-left"></span><span class="box-header-center">
+        {{msg('settings.noSettings')}}</span><span class="box-header-right"></span>
+    </div>
     <div class="box-content">
         <p>{{msg('settings.noSettingsMsg')}}</p>
         <form id="noSettingsForm" action="api/settings/platform/new" method="post">
