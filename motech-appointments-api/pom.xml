@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>motech</artifactId>
@@ -11,6 +13,7 @@
         <modules.root.dir>${basedir}/..</modules.root.dir>
     </properties>
     <dependencies>
+        <!-- MOTECH dependencies -->
         <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-scheduler</artifactId>
@@ -18,16 +21,42 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-scheduler</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- OSGI dependencies -->
+        <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
+            <artifactId>org.springframework.beans</artifactId>
             <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
+            <artifactId>org.springframework.context</artifactId>
             <version>${spring.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.context.support</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.transaction</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Non-OSGI dependencies -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -48,11 +77,11 @@
                         <configuration>
                             <target>
                                 <exec executable="curl">
-                                    <arg value="-s" />
-                                    <arg value="-S" />
-                                    <arg value="-X" />
-                                    <arg value="DELETE" />
-                                    <arg value="http://${db.server}:${db.port}/test-appointments" />
+                                    <arg value="-s"/>
+                                    <arg value="-S"/>
+                                    <arg value="-X"/>
+                                    <arg value="DELETE"/>
+                                    <arg value="http://${db.server}:${db.port}/test-appointments"/>
                                 </exec>
                             </target>
                         </configuration>
@@ -66,11 +95,11 @@
                         <configuration>
                             <target>
                                 <exec executable="curl">
-                                    <arg value="-s" />
-                                    <arg value="-S" />
-                                    <arg value="-X" />
-                                    <arg value="DELETE" />
-                                    <arg value="http://${db.server}:${db.port}/motech-appointments" />
+                                    <arg value="-s"/>
+                                    <arg value="-S"/>
+                                    <arg value="-X"/>
+                                    <arg value="DELETE"/>
+                                    <arg value="http://${db.server}:${db.port}/motech-appointments"/>
                                 </exec>
                             </target>
                         </configuration>
