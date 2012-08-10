@@ -79,6 +79,7 @@
                             org.springframework.beans.factory.xml,
                             org.springframework.osgi.config,
                             org.motechproject.scheduler.gateway,
+                            org.motechproject.server.event,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-message-campaign</Embed-Dependency>
