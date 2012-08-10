@@ -15,49 +15,55 @@
         <modules.root.dir>${basedir}/..</modules.root.dir>
     </properties>
     <dependencies>
+        <!-- MOTECH dependencies -->
         <dependency>
-            <groupId>org.motechproject</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-server-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- OSGI dependencies -->
         <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-            <version>3.2</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.collections</artifactId>
+            <version>3.2.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.4</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.lang</artifactId>
+            <version>2.6.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
+            <artifactId>org.springframework.core</artifactId>
             <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
+            <artifactId>org.springframework.beans</artifactId>
             <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
+            <artifactId>org.springframework.context</artifactId>
             <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
+            <artifactId>org.springframework.security.core</artifactId>
             <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Non-OSGI dependencies -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
