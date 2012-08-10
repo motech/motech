@@ -14,18 +14,36 @@
         <modules.root.dir>${basedir}/..</modules.root.dir>
     </properties>
     <dependencies>
+        <!-- MOTECH dependencies -->
         <dependency>
-            <groupId>org.motechproject</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-server-api</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-common-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- OSGI dependencies -->
+        <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
+            <artifactId>org.springframework.web.servlet</artifactId>
             <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.beans</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-api</artifactId>
+            <version>5.1.1</version>
+        </dependency>
+        <!-- Non-OSGI dependencies -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
@@ -33,25 +51,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-common-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <version>${spring.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-api</artifactId>
-            <version>5.1.1</version>
         </dependency>
     </dependencies>
 </project>

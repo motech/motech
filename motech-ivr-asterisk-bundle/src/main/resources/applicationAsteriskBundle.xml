@@ -15,4 +15,5 @@
             <entry key="Host" value="localhost"/>
         </osgi:service-properties>
     </osgi:service>
+
 </beans>
