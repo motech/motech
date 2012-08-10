@@ -533,7 +533,8 @@ public class MotechSchedulerIT {
     }
 
     private void assertDateEqualsIgnoreMillis(Date date1, DateTime date2) {
-        assertTrue("" + date1 + "|" + date2, Math.abs(date1.getTime() - date2.getMillis()) <1000L);
+        final double tolerance = REPEAT_INTERVAL_IN_SECONDS * 1000L / 2.0;
+        assertTrue("" + date1 + "|" + date2, Math.abs(date1.getTime() - date2.getMillis()) < tolerance);
     }
 
 
