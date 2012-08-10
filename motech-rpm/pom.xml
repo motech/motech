@@ -73,6 +73,28 @@
                         </executions>
                     </plugin>
                     <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>2.5</version>
+                        <executions>
+                            <execution>
+                                <id>copy-config</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${basedir}/content/artifacts/config</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${basedir}/../motech-platform-server-config/src/main/config</directory>
+                                            <filtering>false</filtering>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>rpm-maven-plugin</artifactId>
                         <version>2.0</version>
@@ -123,6 +145,16 @@
                                     <sources>
                                         <source>
                                             <location>content/artifacts/motech-admin-bundle.jar</location>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                                <mapping>
+                                    <directory>/var/lib/motech/data/config</directory>
+                                    <username>motech</username>
+                                    <groupname>motech</groupname>
+                                    <sources>
+                                        <source>
+                                            <location>content/artifacts/config/</location>
                                         </source>
                                     </sources>
                                 </mapping>
