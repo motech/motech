@@ -12,8 +12,21 @@
         #end
     #end
     #if ($node.transitions.size() > 0 && !$dial)
-            #set ($url = "$scheme://$host$contextPath$servletPath/verboice/ivr?type=$type&ln=$language&tree=$treeName&trP=$transitionPath")
-            <Gather method="POST" action="$escape.escapeXml($url)" numDigits="$maxDigits"></Gather>
-     #else
+        #set ($url = "$scheme://$host$contextPath$servletPath/verboice/ivr?type=$type&ln=$language&tree=$treeName&trP=$transitionPath")
+        <Gather method="POST" action="$escape.escapeXml($url)" numDigits="$maxDigits">
+            #foreach( $prompt in $node.transitionPrompts )
+                    #if($prompt.class.simpleName == "AudioPrompt")
+                        <Play>$prompt.audioFileUrl</Play>
+                    #elseif ($prompt.class.simpleName == "TextToSpeechPrompt")
+                        <Say>$prompt.message</Say>
+                    #end
+            #end
+        </Gather>
+        #foreach( $mapEntry in $node.transitions.entrySet() )
+            #if($mapEntry.key == 'timeout')
+                #set ($timeoutUrl = "$url&Digits=timeout")
+                <Redirect method="POST">$escape.escapeXml($timeoutUrl)</Redirect>
+            #end
+        #end
     #end
 </Response>
