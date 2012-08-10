@@ -10,8 +10,8 @@
     <context:annotation-config/>
     <context:property-placeholder location="classpath:activemq.properties" system-properties-mode="OVERRIDE"/>
 
-    <import resource="schedulerFiredEventChannelAdapter.xml"/>
-    <import resource="schedulerInboundChannelAdapter.xml"/>
+    <import resource="classpath:schedulerFiredEventChannelAdapter.xml"/>
+    <import resource="classpath:schedulerInboundChannelAdapter.xml"/>
 
     <util:properties id="quartzProperties" location="classpath:quartz.properties"/>
 
