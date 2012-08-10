@@ -1,5 +1,6 @@
 package org.motechproject.server.messagecampaign.scheduler;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -44,23 +45,32 @@ public class OffsetProgramSchedulerTest {
         CampaignRequest request = new EnrollRequestBuilder().withDefaults().withReferenceDate(today()).build();
         OffsetCampaign campaign = new CampaignBuilder().defaultOffsetCampaign();
 
-        OffsetProgramSchedulerService offsetProgramScheduler = new OffsetProgramSchedulerService(schedulerService, allMessageCampaigns);
+        OffsetProgramSchedulerService offsetProgramScheduler = new OffsetProgramSchedulerService(schedulerService,
+                allMessageCampaigns);
 
         when(allMessageCampaigns.get("testCampaign")).thenReturn(campaign);
 
-        CampaignEnrollment enrollment = new CampaignEnrollment("12345", "testCampaign").setReferenceDate(today()).setDeliverTime(new Time(9, 30));
+        DateTime deliverTime = DateUtil.now();
+        deliverTime = deliverTime.plusMinutes(10);
+        Time deliveryTime = new Time(deliverTime.getHourOfDay(), deliverTime.getMinuteOfHour());
+        CampaignEnrollment enrollment = new CampaignEnrollment("12345", "testCampaign").setReferenceDate(today())
+                .setDeliverTime(deliveryTime);
         offsetProgramScheduler.start(enrollment);
         ArgumentCaptor<RunOnceSchedulableJob> capture = ArgumentCaptor.forClass(RunOnceSchedulableJob.class);
         verify(schedulerService, times(2)).scheduleRunOnceJob(capture.capture());
 
         List<RunOnceSchedulableJob> allJobs = capture.getAllValues();
 
-        Date startDate1 = DateUtil.newDateTime(DateUtil.today().plusDays(7), request.deliverTime().getHour(), request.deliverTime().getMinute(), 0).toDate();
+        Date startDate1 = DateUtil.newDateTime(DateUtil.today(), request.deliverTime().getHour(),
+                request.deliverTime().getMinute(), 0).toDate();
         assertEquals(startDate1.toString(), allJobs.get(0).getStartDate().toString());
         assertEquals(MESSAGE_CAMPAIGN_EVENT_SUBJECT, allJobs.get(0).getMotechEvent().getSubject());
         assertMotechEvent(allJobs.get(0), "MessageJob.testCampaign.12345.child-info-week-1", "child-info-week-1");
 
-        Date startDate2 = DateUtil.newDateTime(DateUtil.today().plusDays(14), request.deliverTime().getHour(), request.deliverTime().getMinute(), 0).toDate();
+        Integer minute = request.deliverTime().getMinute();
+        minute = minute - 2;
+        Date startDate2 = DateUtil.newDateTime(DateUtil.today().plusDays(14), request.deliverTime().getHour(), minute,
+                0).toDate();
         assertEquals(startDate2.toString(), allJobs.get(1).getStartDate().toString());
         assertEquals(MESSAGE_CAMPAIGN_EVENT_SUBJECT, allJobs.get(1).getMotechEvent().getSubject());
         assertMotechEvent(allJobs.get(1), "MessageJob.testCampaign.12345.child-info-week-1a", "child-info-week-1a");
