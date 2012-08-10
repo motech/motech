@@ -17,8 +17,11 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContext;
 import java.io.File;
+import java.io.FileFilter;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +54,6 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     private List<BundleLoader> bundleLoaders;
 
-    private List<Bundle> bundles = new ArrayList<>();
-
     private Map<String, ClassLoader> bundleClassLoaderLookup = new HashMap<String, ClassLoader>();
 
     private Map<String, String> bundleLocationMapping = new HashMap<String, String>();
@@ -75,18 +76,22 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
             for (URL url : findBundles(servletContext)) {
                 logger.debug("Installing bundle [" + url + "]");
-                Bundle bundle = bundleContext.installBundle(url.toExternalForm());
-                bundles.add(bundle);
-
-                if (!bundle.getLocation().contains(".motech")) {
-                    startBundle(bundle.getSymbolicName());
-                }
+                bundleContext.installBundle(url.toExternalForm());
             }
 
             registerPlatformServices(bundleContext);
 
             osgiFramework.start();
             logger.info("OSGi framework started");
+
+            for (Bundle bundle : bundleContext.getBundles()) {
+                String bundleSymbolicName = bundle.getSymbolicName();
+
+                if (!bundleSymbolicName.startsWith("org.motechproject")) {
+                    startBundle(bundleSymbolicName);
+                }
+            }
+
         } catch (Throwable e) {
             logger.error("Failed to start OSGi framework", e);
             throw new RuntimeException(e);
@@ -98,11 +103,10 @@ public class OsgiFrameworkService implements ApplicationContextAware {
      */
     public void startExternalBundles() {
         try {
-            ServletContext servletContext = ((WebApplicationContext) applicationContext).getServletContext();
-            BundleContext bundleContext = (BundleContext) servletContext.getAttribute(BundleContext.class.getName());
-
-            for (Bundle bundle : bundles) {
-                startBundle(bundle.getSymbolicName());
+            for (Bundle bundle : osgiFramework.getBundleContext().getBundles()) {
+                if (bundle.getState() != Bundle.ACTIVE) {
+                    startBundle(bundle.getSymbolicName());
+                }
             }
         } catch (Exception e) {
             logger.error("Failed to start Bundles", e);
@@ -110,7 +114,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     }
 
     public void stopExternalBundles() {
-        for (Bundle bundle : bundles) {
+        for (Bundle bundle : osgiFramework.getBundleContext().getBundles()) {
             try {
                 if (bundle.getLocation().startsWith("file:")) {
                     bundle.stop();
@@ -131,7 +135,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         boolean found = false;
 
         try {
-            for (Bundle bundle : bundles) {
+            for (Bundle bundle : osgiFramework.getBundleContext().getBundles()) {
                 if (bundle.getSymbolicName().contains(bundleName)) {
                     logger.debug("Starting bundle [" + bundle + "]");
                     storeClassCloader(bundle);
@@ -142,7 +146,10 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                         }
                     }
 
-                    bundle.start();
+                    if (bundle.getState() != Bundle.ACTIVE) {
+                        bundle.start();
+                    }
+
                     found = true;
                     break; // found bundle
                 }
@@ -250,24 +257,40 @@ public class OsgiFrameworkService implements ApplicationContextAware {
      * @throws Exception
      */
     private List<URL> findExternalBundles() throws Exception {
-        List<URL> list = new ArrayList<URL>();
+        List<URL> list = new ArrayList<>();
         if (StringUtils.isNotBlank(externalBundleFolder)) {
             File folder = new File(externalBundleFolder);
+            boolean exists = folder.exists();
 
-            if (!folder.exists()) {
-                folder.mkdirs();
+            if (!exists) {
+                exists = folder.mkdirs();
             }
 
-            File[] files = folder.listFiles();
-            for (File file : files) {
-                if (file.getAbsolutePath().endsWith(".jar")) {
+            if (exists) {
+                File[] files = folder.listFiles(new FileFilter() {
+                    @Override
+                    public boolean accept(File path) {
+                        return path.isFile() && path.getAbsolutePath().endsWith(".jar");
+                    }
+                });
+
+                for (File file : files) {
                     URL url = file.toURI().toURL();
+
                     if (url != null) {
                         list.add(url);
                     }
                 }
             }
+
+            Collections.sort(list, new Comparator<URL>() {
+                @Override
+                public int compare(URL o1, URL o2) {
+                    return o1.getPath().compareToIgnoreCase(o2.getPath());
+                }
+            });
         }
+
         return list;
     }
 
