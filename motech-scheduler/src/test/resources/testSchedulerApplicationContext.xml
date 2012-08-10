@@ -22,4 +22,6 @@
 
     <bean id="schedulerService" class="org.motechproject.scheduler.impl.MotechSchedulerServiceImpl"/>
     <bean id="testJobHandler" class="org.motechproject.scheduler.TestJobHandler" />
+
+    <bean class="org.springframework.mock.web.MockServletContext"/>
 </beans>
