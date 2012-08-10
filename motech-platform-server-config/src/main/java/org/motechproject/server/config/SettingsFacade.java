@@ -1,6 +1,10 @@
 package org.motechproject.server.config;
 
 import org.apache.commons.io.IOUtils;
+import org.ektorp.CouchDbConnector;
+import org.ektorp.CouchDbInstance;
+import org.ektorp.impl.StdCouchDbInstance;
+import org.ektorp.spring.HttpClientFactoryBean;
 import org.motechproject.MotechException;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.osgi.framework.BundleContext;
@@ -8,8 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -140,6 +147,46 @@ public class SettingsFacade {
         }
 
         setProperty(filename, key, value);
+    }
+
+    public CouchDbConnector getConnector(final String dbName) throws FileNotFoundException {
+        CouchDbConnector connector = null;
+
+        if (platformSettingsService != null) {
+            connector = platformSettingsService.getCouchConnector(dbName);
+        } else {
+            URL couchDbURL = getClass().getClassLoader().getResource("couchdb.properties");
+
+            if (couchDbURL != null) {
+                InputStream couchDbStream = null;
+
+                try {
+                    URLConnection conn = couchDbURL.openConnection();
+                    couchDbStream = conn.getInputStream();
+
+                    Properties couchDb = new Properties();
+                    couchDb.load(couchDbStream);
+
+                    HttpClientFactoryBean httpClientFactoryBean = new HttpClientFactoryBean();
+                    httpClientFactoryBean.setProperties(couchDb);
+                    httpClientFactoryBean.setTestConnectionAtStartup(true);
+
+                    httpClientFactoryBean.afterPropertiesSet();
+
+                    CouchDbInstance instance = new StdCouchDbInstance(httpClientFactoryBean.getObject());
+
+                    connector = instance.createConnector(dbName, true);
+                } catch (Exception e) {
+                    throw new MotechException("Error during creation CouchDbConnector", e);
+                } finally {
+                    IOUtils.closeQuietly(couchDbStream);
+                }
+            } else {
+                throw new FileNotFoundException("Cant find file couchdb.properties");
+            }
+        }
+
+        return connector;
     }
 
     public void saveConfigProperties(String filename, Properties properties) {
