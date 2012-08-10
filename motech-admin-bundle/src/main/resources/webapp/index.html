@@ -1,5 +1,5 @@
 <!doctype html>
-<html ng-app="motech-admin">
+<html ng-app="motech-admin" xmlns="http://www.w3.org/1999/html">
     <head>
         <meta charset="utf-8" />
         <title>MoTeCH Admin</title>
@@ -42,8 +42,8 @@
     <body ng-controller="MasterCtrl">
 
         <div id="header">
-           <a href="#/bundles"><img src="img/logo.png" alt="logo" /></a>
-           <h1>{{msg('title')}}</h1>
+           <div class="logo"><a href="#/bundles"><img src="img/motechlogo.jpg" alt="logo" height="62" width="275"></a></div>
+           <div class="logo"><img src="img/platformadminlogo.jpg" alt="{{msg('title')}}" height="24" width="220"></div>
         </div>
         <div id="nav-panel">
             <ul id="nav">
@@ -58,14 +58,15 @@
                 </li>
                 <li>
                     <a href="#/modulePanels">{{msg('modules')}}</a>
-                    <ul>
+                    <!--<ul>
                         <li ng-repeat="(key, value) in mappings">
                             <a ng-href="{{value}}">{{key}}</a>
                         </li>
-                    </ul>
+                    </ul> -->
                 </li>
             </ul>
         </div>
+        <span class="strip"></span>
 
         <div id="content">
             <div id="left-half">
@@ -74,8 +75,10 @@
 
             <div id="right-half" ng-controller="StatusMsgCtrl">
                 <div class="box-header">
+                    <span class="box-header-left"></span><span class="box-header-center">
                     {{msg('messages.title')}}
                     <a ng-click="refresh()"><img src="img/refresh.png" title="{{msg('refresh')}}" alt="{{msg('refresh')}}" /></a>
+                    </span><span class="box-header-right"></span>
                 </div>
                 <div class="box-content">
                     <span ng-show="messages.length < 1"><p>{{msg('messages.empty')}}</p></span>

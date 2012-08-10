@@ -1,10 +1,11 @@
 <div class="box-header">
-    {{module.name}}
+    <span class="box-header-left"></span><span class="box-header-center">
+    {{module.name}}</span><span class="box-header-right"></span>
 </div>
 
 <div class="box-content">
     <div>
-        <h1>{{module.name}}</h1>
+        <h2>{{module.name}}</h2>
         <img ng-src="api/bundles/{{module.bundleId}}/icon" alt="module-logo" class="big-icon" align="right"/>
         <div style="clear:both;"></div>
     </div>
