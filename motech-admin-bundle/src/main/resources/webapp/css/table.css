@@ -1,12 +1,11 @@
 table {
-		border-collapse:collapse;
-		background:#EFF4FB url(../img/teaser.gif) repeat-x;
-		border-left:1px solid #686868;
-		border-right:1px solid #686868;
-		font:1em/145% 'Trebuchet MS',helvetica,arial,verdana;
-		color: #333;
-		width: 100%;
-		text-align: center;
+    font-family: 'ubuntu','trebuchet ms','arial','helvetica',sans-serif;
+    font-size: 14px;
+    line-height: 16px;
+    border-collapse:collapse;
+    color: #fff;
+    width: 100%;
+    text-align: center;
 }
 
 td, th {
@@ -27,52 +26,80 @@ caption {
 ----------------------------------------------- */
 
 table a {
-		color:#950000;
-		text-decoration:none;
+    color:#ffffff;
+    text-decoration:none;
 }
 
 table a:link {}
 
 table a:visited {
-		font-weight:normal;
-		color:#666;
-		text-decoration: line-through;
+    font-weight:normal;
+    color: #c2eafe;
+    text-decoration: line-through;
 }
 
 table a:hover {
-		border-bottom: 1px dashed #bbb;
+    text-decoration: underline;
+    color:#fdb813;
 }
 
 /* =head =foot
 ----------------------------------------------- */
 
 thead th, tfoot th, tfoot td {
-		background:#333 url(../img/llsh.gif) repeat-x;
-		color:#fff
+    background:url("../img/framebg.png") repeat-x;
+    color:#fdb813;
+    white-space: nowrap;
+}
+thead th {
+    cursor: pointer;
+}
+
+
+thead tr > th:nth-child(3){
+    text-align: left;
 }
 
 tfoot td {
-		text-align:right
+    text-align:right
 }
 
 /* =body
 ----------------------------------------------- */
 
 tbody th, tbody td {
-		border-bottom: dotted 1px #333;
-		padding-left: 10px;
+    border:1px solid rgb(120, 163, 170);
+    border-top:1px solid rgba(255,255,255,0.6);
+    -webkit-background-clip:padding-box;
+    background-clip: padding-box;
+    padding-left: 10px;
+}
+
+tbody tr > td:nth-child(3){
+    text-align:left;
+}
+
+tbody tr > td:last-child {
+    width: 100px;
+}
+
+tbody tr:nth-child(2n+1) {
+    background:#000d44;/*rgba(255,255,255,0.1); #000d44;*/
+}
+
+tbody tr:nth-child(2n) {
+    background:#022c61;/*rgba(2,25,255,0.7); #022c61;*/
 }
 
 tbody th {
-		white-space: nowrap;
+    white-space: nowrap;
 }
 
 tbody th a {
-		color:#333;
+    color:#333;
 }
 
-.odd {}
-
 tbody tr:hover {
-		background:#fafafa
+    background: rgba(25,205,255,0.4);
+    color:#fdb813;
 }
