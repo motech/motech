@@ -1,7 +1,5 @@
 package org.motechproject.server.config.settings;
 
-import org.apache.commons.lang.StringUtils;
-
 import java.io.IOException;
 import java.net.URL;
 import java.security.DigestInputStream;
