@@ -1,8 +1,10 @@
 package org.motechproject.server.messagecampaign.builder;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
+import org.motechproject.util.DateUtil;
 
 public class EnrollRequestBuilder {
 
@@ -13,7 +15,9 @@ public class EnrollRequestBuilder {
 
     public EnrollRequestBuilder withDefaults() {
         campaignName = "testCampaign";
-        deliverTime = new Time(9, 30);
+        DateTime deliveryTime = DateUtil.now();
+        deliveryTime = deliveryTime.plusMinutes(12);
+        deliverTime = new Time(deliveryTime.getHourOfDay(), deliveryTime.getMinuteOfHour());
         externalId = "12345";
         return this;
     }
