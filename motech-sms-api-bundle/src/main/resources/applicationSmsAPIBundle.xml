@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:osgi="http://www.springframework.org/schema/osgi"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:osgi="http://www.springframework.org/schema/osgi"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
         http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
     <import resource="classpath*:applicationSmsAPI.xml" />
 
+    <bean class="org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor" />
+
     <osgi:service id="smsServiceOsgi" auto-export="interfaces" ref="smsService"
-                  interface="org.motechproject.sms.api.service.SmsService"/>
+        interface="org.motechproject.sms.api.service.SmsService" />
 
     <osgi:reference id="schedulerServiceOsgi" cardinality="0..1"
-                    interface="org.motechproject.scheduler.MotechSchedulerService"/>
+        interface="org.motechproject.scheduler.MotechSchedulerService" />
+
+    <osgi:reference id="eventListenerRegistryService" cardinality="0..1"
+        interface="org.motechproject.server.event.EventListenerRegistryService" />
 
 </beans>
