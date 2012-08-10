@@ -71,6 +71,7 @@
                             org.motechproject.scheduler.domain,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
+                            org.motechproject.server.event,
                             org.motechproject.sms.api,
                             org.motechproject.sms.api.service,
                             org.springframework.beans.factory.xml,
