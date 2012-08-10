@@ -30,7 +30,14 @@ public class RepeatIntervalCampaignSchedulerService extends CampaignSchedulerSer
         MotechEvent motechEvent = new MotechEvent(EventKeys.SEND_MESSAGE, jobParams(message.messageKey(), enrollment));
         DateTime start = newDateTime(enrollment.getReferenceDate(), deliverTimeFor(enrollment, message));
         DateTime end = start.plus(campaign.maxDuration());
-        getSchedulerService().safeScheduleRepeatingJob(new RepeatingSchedulableJob(motechEvent, start.toDate(), end.toDate(), message.getRepeatIntervalInMillis(), true));
+        RepeatingSchedulableJob job = new RepeatingSchedulableJob()
+            .setMotechEvent(motechEvent)
+            .setStartTime(start.toDate())
+            .setEndTime(end.toDate())
+            .setRepeatIntervalInMilliSeconds(message.getRepeatIntervalInMillis())
+            .setIgnorePastFiresAtStart(true)
+            .setUseOriginalFireTimeAfterMisfire(true);
+        getSchedulerService().safeScheduleRepeatingJob(job);
     }
 
     @Override

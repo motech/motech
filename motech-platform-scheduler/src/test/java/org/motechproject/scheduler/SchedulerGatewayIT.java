@@ -41,7 +41,13 @@ public class SchedulerGatewayIT {
 
         CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(cronEvent, "0/2 * * * * ?");
         RunOnceSchedulableJob runOnceSchedulableJob = new RunOnceSchedulableJob(runOnceEvent, new Date((new Date().getTime() + 5000)));
-        RepeatingSchedulableJob repeatingSchedulableJob = new RepeatingSchedulableJob(repeatingEvent, new Date(), null, null, 4 * 1000L, false);
+        RepeatingSchedulableJob repeatingSchedulableJob = new RepeatingSchedulableJob()
+            .setMotechEvent(repeatingEvent)
+            .setStartTime(new Date())
+            .setEndTime(null)
+            .setRepeatCount(null)
+            .setRepeatIntervalInMilliSeconds(4 * 1000L)
+            .setIgnorePastFiresAtStart(false);
 
         JobId cronJob = new CronJobId(cronEvent);
         JobId repeatingJob = new RepeatingJobId(repeatingEvent);

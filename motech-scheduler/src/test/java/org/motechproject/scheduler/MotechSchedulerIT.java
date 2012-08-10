@@ -301,7 +301,13 @@ public class MotechSchedulerIT {
         cal.add(Calendar.DATE, 1);
         Date end = cal.getTime();
 
-        RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(motechEvent, start, end, 5, 5000L, false);
+        RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob()
+            .setMotechEvent(motechEvent)
+            .setStartTime(start)
+            .setEndTime(end)
+            .setRepeatCount(5)
+            .setRepeatIntervalInMilliSeconds(5000L)
+            .setIgnorePastFiresAtStart(false);
 
         int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size();
 
@@ -326,7 +332,13 @@ public class MotechSchedulerIT {
 
             Date start = newDateTime(2020, 7, 15, 10, 10, 22).toDate();
             Date end = newDateTime(2020, 7, 15, 10, 11, 0).toDate();
-            RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(motechEvent, start, end, 3, 5000L, true);
+            RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob()
+                .setMotechEvent(motechEvent)
+                .setStartTime(start)
+                .setEndTime(end)
+                .setRepeatCount(3)
+                .setRepeatIntervalInMilliSeconds(5000L)
+                .setIgnorePastFiresAtStart(true);
 
             motechSchedulerService.scheduleRepeatingJob(schedulableJob);
 
@@ -346,7 +358,13 @@ public class MotechSchedulerIT {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("JobID", uuidStr);
         MotechEvent motechEvent = new MotechEvent("TestEvent", params);
-        RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(motechEvent, null, new Date(), 5, 5000L, false);
+        RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob()
+            .setMotechEvent(motechEvent)
+            .setStartTime(null)
+            .setEndTime(new Date())
+            .setRepeatCount(5)
+            .setRepeatIntervalInMilliSeconds(5000L)
+            .setIgnorePastFiresAtStart(false);
         schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME));
         motechSchedulerService.scheduleRepeatingJob(schedulableJob);
     }
@@ -358,7 +376,13 @@ public class MotechSchedulerIT {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("JobID", uuidStr);
         MotechEvent motechEvent = new MotechEvent("TestEvent", params);
-        RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(motechEvent, new Date(), null, 5, 5000L, false);
+        RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob()
+            .setMotechEvent(motechEvent)
+            .setStartTime(new Date())
+            .setEndTime(null)
+            .setRepeatCount(5)
+            .setRepeatIntervalInMilliSeconds(5000L)
+            .setIgnorePastFiresAtStart(false);
 
         schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME));
 
@@ -375,7 +399,13 @@ public class MotechSchedulerIT {
     @Test(expected = IllegalArgumentException.class)
     public void testScheduleRepeatingJobTest_NullEvent() throws Exception {
         MotechEvent motechEvent = null;
-        RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob(motechEvent, new Date(), new Date(), 5, 5000L, false);
+        RepeatingSchedulableJob schedulableJob = new RepeatingSchedulableJob()
+            .setMotechEvent(motechEvent)
+            .setStartTime(new Date())
+            .setEndTime(new Date())
+            .setRepeatCount(5)
+            .setRepeatIntervalInMilliSeconds(5000L)
+            .setIgnorePastFiresAtStart(false);
 
         schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME));
 
@@ -483,8 +513,13 @@ public class MotechSchedulerIT {
         final DateTime startDate = now.minusSeconds(12);
         final Date endDate = startDate.plusDays(1).toDate();
         final MotechEvent event = new MotechEvent("TestSubject");
-        final RepeatingSchedulableJob job = new RepeatingSchedulableJob(event, startDate.toDate(), endDate, 3,
-                REPEAT_INTERVAL_IN_SECONDS * 1000L, false);
+        final RepeatingSchedulableJob job = new RepeatingSchedulableJob()
+            .setMotechEvent(event)
+            .setStartTime(startDate.toDate())
+            .setEndTime(endDate)
+            .setRepeatCount(3)
+            .setRepeatIntervalInMilliSeconds(REPEAT_INTERVAL_IN_SECONDS * 1000L)
+            .setIgnorePastFiresAtStart(false);
         job.setUseOriginalFireTimeAfterMisfire(true);
         motechSchedulerService.safeScheduleRepeatingJob(job);
 
