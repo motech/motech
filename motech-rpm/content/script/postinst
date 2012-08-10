@@ -14,5 +14,8 @@ ln -s /var/cache/motech/felix-cache /usr/share/motech/felix-cache
 ln -s /var/lib/motech/webapps /usr/share/motech/webapps
 ln -s /var/lib/motech/data /usr/share/motech/.motech
 
+# Map motech to /
+mv /var/lib/motech/data/motech-platform-server.war /var/lib/motech/data/ROOT.war
+
 # Register service
 chkconfig --add motech
