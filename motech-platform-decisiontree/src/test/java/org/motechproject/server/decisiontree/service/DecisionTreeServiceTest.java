@@ -67,7 +67,6 @@ public class DecisionTreeServiceTest {
     private class RootNodeOpteration implements INodeOperation {
         @Override
         public void perform(String userInput, FlowSession session) {
-
         }
     }
 

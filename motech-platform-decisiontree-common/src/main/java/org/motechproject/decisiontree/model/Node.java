@@ -17,7 +17,6 @@ import java.util.Map;
 /**
  * Represents a node in the decision tree.
  */
-@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
 public class Node implements Serializable {
 
     private List<Action> actionsBefore;
