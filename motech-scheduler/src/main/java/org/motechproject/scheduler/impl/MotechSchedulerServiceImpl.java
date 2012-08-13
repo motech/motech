@@ -6,10 +6,30 @@ import org.joda.time.LocalDate;
 import org.motechproject.MotechObject;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.scheduler.domain.*;
+import org.motechproject.scheduler.domain.CronJobId;
+import org.motechproject.scheduler.domain.CronSchedulableJob;
+import org.motechproject.scheduler.domain.DayOfWeekSchedulableJob;
+import org.motechproject.scheduler.domain.JobId;
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.scheduler.domain.RepeatingJobId;
+import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
+import org.motechproject.scheduler.domain.RunOnceJobId;
+import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.motechproject.util.DateUtil;
-import org.quartz.*;
+import org.quartz.CalendarIntervalScheduleBuilder;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.CronTrigger;
+import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
+import org.quartz.ScheduleBuilder;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SimpleScheduleBuilder;
+import org.quartz.SimpleTrigger;
+import org.quartz.Trigger;
+import org.quartz.TriggerKey;
+import org.quartz.TriggerUtils;
 import org.quartz.impl.calendar.BaseCalendar;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.impl.triggers.CronTriggerImpl;
@@ -18,7 +38,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang.StringUtils.isEmpty;
@@ -39,6 +61,7 @@ import static org.quartz.TriggerKey.triggerKey;
 public class MotechSchedulerServiceImpl extends MotechObject implements MotechSchedulerService {
     public static final String JOB_GROUP_NAME = "default";
     private static final int MAX_REPEAT_COUNT = 999999;
+    private static final int MILLISECOND = 1000;
     private SchedulerFactoryBean schedulerFactoryBean;
 
     @Value("#{quartzProperties['org.quartz.scheduler.cron.trigger.misfire.policy']}")
@@ -256,18 +279,19 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
 
         ScheduleBuilder scheduleBuilder;
         if (!repeatingSchedulableJob.isUseOriginalFireTimeAfterMisfire()) {
-            SimpleScheduleBuilder simpleSchedule= simpleSchedule()
-                .withIntervalInMilliseconds(repeatIntervalInMilliSeconds)
-                .withRepeatCount(jobRepeatCount);
+            SimpleScheduleBuilder simpleSchedule = simpleSchedule()
+                    .withIntervalInMilliseconds(repeatIntervalInMilliSeconds)
+                    .withRepeatCount(jobRepeatCount);
             simpleSchedule = setMisfirePolicyForSimpleTrigger(simpleSchedule, repeatingTriggerMisfirePolicy);
             scheduleBuilder = simpleSchedule;
-        }else {
+        } else {
             if (repeatingSchedulableJob.getRepeatCount() != null) {
-                jobEndDate = new Date((long) (repeatingSchedulableJob.getStartTime().getTime() + repeatIntervalInMilliSeconds * (repeatingSchedulableJob.getRepeatCount() + 0.5)));
+                final double half = 0.5;
+                jobEndDate = new Date((long) (repeatingSchedulableJob.getStartTime().getTime() + repeatIntervalInMilliSeconds * (repeatingSchedulableJob.getRepeatCount() + half)));
             }
             scheduleBuilder = CalendarIntervalScheduleBuilder.calendarIntervalSchedule()
-                .withIntervalInSeconds((int) (repeatIntervalInMilliSeconds / 1000))
-                .withMisfireHandlingInstructionFireAndProceed();
+                    .withIntervalInSeconds((int) (repeatIntervalInMilliSeconds / MILLISECOND))
+                    .withMisfireHandlingInstructionFireAndProceed();
         }
 
         Trigger trigger = newTrigger()
@@ -283,24 +307,23 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
             int nextTrigger = getFirstTriggerNotInPast(triggers);
             if (nextTrigger != -1) {
 
-                if (scheduleBuilder instanceof SimpleScheduleBuilder){
+                if (scheduleBuilder instanceof SimpleScheduleBuilder) {
                     ((SimpleScheduleBuilder) scheduleBuilder).withRepeatCount(triggers.size() - nextTrigger - 1);
                 }
 
                 ((OperableTrigger) trigger).setStartTime(triggers.get(nextTrigger));
                 trigger = newTrigger()
-                    .withIdentity(triggerKey(jobId.value(), JOB_GROUP_NAME))
-                    .forJob(jobDetail)
-                    .withSchedule(scheduleBuilder)
-                    .startAt(triggers.get(nextTrigger))
-                    .endAt(jobEndDate)
-                    .build();
+                        .withIdentity(triggerKey(jobId.value(), JOB_GROUP_NAME))
+                        .forJob(jobDetail)
+                        .withSchedule(scheduleBuilder)
+                        .startAt(triggers.get(nextTrigger))
+                        .endAt(jobEndDate)
+                        .build();
             }
         }
 
         scheduleJob(jobDetail, trigger);
     }
-
 
 
     private SimpleScheduleBuilder setMisfirePolicyForSimpleTrigger(SimpleScheduleBuilder simpleSchedule, String newMisfirePolicy) {
@@ -333,8 +356,10 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         DateTime now = DateUtil.now();
         for (int i = 0; i < dates.size(); i++) {
             Date date = dates.get(i);
-            if (newDateTime(date).isAfter(now))
+
+            if (newDateTime(date).isAfter(now)) {
                 return i;
+            }
         }
         return -1;
     }
@@ -422,8 +447,10 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         LocalDate end = dayOfWeekSchedulableJob.getEndDate();
         Time time = dayOfWeekSchedulableJob.getTime();
         DateTime now = now();
-        if (dayOfWeekSchedulableJob.isIntervening() && newDateTime(start, time).isBefore(now))
+
+        if (dayOfWeekSchedulableJob.isIntervening() && newDateTime(start, time).isBefore(now)) {
             start = now.toLocalDate();
+        }
 
         CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.atHourAndMinuteOnGivenDaysOfWeek(time.getHour(), time.getMinute(), dayOfWeekSchedulableJob.getCronDays().toArray(new Integer[0]));
         CronTriggerImpl cronTrigger = (CronTriggerImpl) cronScheduleBuilder.build();
