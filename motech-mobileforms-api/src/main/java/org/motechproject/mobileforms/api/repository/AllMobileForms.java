@@ -29,6 +29,7 @@ public class AllMobileForms {
         this.properties = properties;
         this.motechJsonReader = motechJsonReader;
         this.ioUtils = ioUtils;
+        initialize();
     }
 
     @Autowired
@@ -36,8 +37,6 @@ public class AllMobileForms {
         this(properties, new MotechJsonReader(), new IOUtils());
     }
 
-    //TODO: Why postconstruct and not called directly from constructor
-    @PostConstruct
     public void initialize() {
         List<FormGroup> formGroupsFromConfigFile = (List<FormGroup>) motechJsonReader.readFromStream(
                 getClass().getResourceAsStream(configFile()),
