@@ -145,12 +145,12 @@ public class DecisionTreeController extends MultiActionController {
         try {
             if (node == null) {
                 node = decisionTreeService.getRootNode(currentTree, session);
+                autowire(node);
+                executeOperations(transitionKey, session, node);
             }
-            if (transitionKey == null) { //node = decisionTreeService.getNode(currentTree, TreeNodeLocator.PATH_DELIMITER, session);
+            if (transitionKey == null) {
                 return constructModelViewForNode(request, node, parentTransitionPath, treeNames, params, session);
             } else {
-                //Node parentNode = decisionTreeService.getNode(currentTree, parentTransitionPath, session);
-
                 ITransition transition = sendTreeEventActions(params, transitionKey, parentTransitionPath, node);
                 autowire(transition);
 
@@ -169,19 +169,22 @@ public class DecisionTreeController extends MultiActionController {
                         return new ModelAndView(EXIT_TEMPLATE_NAME);
                     }
                 } else {
-                    for (INodeOperation operation : node.getOperations()) {
-                        operation.perform(transitionKey, session);
-                    }
+                    executeOperations(transitionKey, session, node);
                     String modifiedTransitionPath = parentTransitionPath +
                             (TREE_ROOT_PATH.equals(parentTransitionPath) ? "" : TreeNodeLocator.PATH_DELIMITER)
                             + transitionKey;
                     session.setCurrentNode(node);
                     return constructModelViewForNode(request, node, modifiedTransitionPath, treeNames, params, session);
-                    //return constructModelViewForNode(request, node, modifiedTransitionPath, language, treeNameString, type, treeNames, params, session);
                 }
             }
         } finally {
             flowSessionService.updateSession(session);
+        }
+    }
+
+    private void executeOperations(String transitionKey, FlowSession session, Node node) {
+        for (INodeOperation operation : node.getOperations()) {
+            operation.perform(transitionKey, session);
         }
     }
 
