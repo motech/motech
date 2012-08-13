@@ -6,6 +6,8 @@ import org.motechproject.server.osgi.BundleInformation;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.springframework.aop.framework.Advised;
+import org.springframework.aop.support.AopUtils;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -30,7 +32,6 @@ public class ExtendedBundleInformation extends BundleInformation {
     private String createdBy;
     private String vendor;
     private String buildJDK;
-    private String location;
     private DateTime lastModified;
     private String bundleActivator;
     private String description;
@@ -55,7 +56,7 @@ public class ExtendedBundleInformation extends BundleInformation {
         if (serviceRefs != null) {
             for (ServiceReference ref : serviceRefs) {
                 Object service = context.getService(ref);
-                registeredServices.add(service.getClass().getName());
+                registeredServices.add(getServiceClassName(service));
             }
         }
 
@@ -63,9 +64,21 @@ public class ExtendedBundleInformation extends BundleInformation {
         if (serviceRefs != null) {
             for (ServiceReference ref : serviceRefs) {
                 Object service = context.getService(ref);
-                servicesInUse.add(service.getClass().getName());
+                servicesInUse.add(getServiceClassName(service));
             }
         }
+    }
+
+    private static String getServiceClassName(Object service) {
+        String className;
+
+        if (AopUtils.isJdkDynamicProxy(service)) {
+            className = ((Advised) service).getTargetClass().getName();
+        } else {
+            className = service.getClass().getName();
+        }
+
+        return className;
     }
 
     private void readManifest(Bundle bundle) {
