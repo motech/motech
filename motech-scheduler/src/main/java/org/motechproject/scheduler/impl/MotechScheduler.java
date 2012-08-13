@@ -6,7 +6,6 @@ import org.motechproject.scheduler.domain.CronSchedulableJob;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -21,20 +20,24 @@ import java.util.Map;
  * @author Igor (iopushnyev@2paths.com)
  */
 public final class MotechScheduler {
-
     private static Logger log = LoggerFactory.getLogger(MotechSchedulerServiceImpl.class);
+
     private static final String SCHEDULE_TEST_INPUT_PARAM = "-t";
     private static final String UNSCHEDULE_TEST_INPUT_PARAM = "-c";
-    private static final String TEST_EVENT_NAME = "testEvent";
 
-    public static final String SUBJECT = "test";
+    private static final String TEST_EVENT_NAME = "testEvent";
+    private static final String TEST_SUBJECT = "test";
+    private static final String TEST_CRON_EXPRESSION = "0/5 * * * * ?";
+
+    private static MotechSchedulerService schedulerService;
 
     private MotechScheduler() {
-
+        // Utility classes should not have a public or default constructor
     }
 
     public static void main(final String[] args) {
         AbstractApplicationContext ctx = new ClassPathXmlApplicationContext("/applicationScheduler.xml");
+        schedulerService = ctx.getBean(MotechSchedulerService.class);
 
         // add a shutdown hook for the above context...
         ctx.registerShutdownHook();
@@ -43,13 +46,16 @@ public final class MotechScheduler {
 
         try {
             if (args.length > 0) {
-                MotechScheduler motechScheduler = ctx.getBean(MotechScheduler.class);
-                if (SCHEDULE_TEST_INPUT_PARAM.equals(args[0])) {
-                    motechScheduler.scheduleTestEvent();
-                } else if (UNSCHEDULE_TEST_INPUT_PARAM.equals(args[0])) {
-                    motechScheduler.unscheduleTestEvent();
-                } else {
-                    log.warn("Unknown parameter: " + args[0] + "- ignored");
+                switch (args[0]) {
+                    case SCHEDULE_TEST_INPUT_PARAM:
+                        scheduleTestEvent();
+                        break;
+                    case UNSCHEDULE_TEST_INPUT_PARAM:
+                        unscheduleTestEvent();
+                        break;
+                    default:
+                        log.warn(String.format("Unknown parameter: %s - ignored", args[0]));
+                        break;
                 }
             }
         } catch (Exception e) {
@@ -58,30 +64,26 @@ public final class MotechScheduler {
     }
 
 
-    @Autowired
-    private MotechSchedulerService schedulerService;
-
-    private void scheduleTestEvent() {
-
-        Map<String, Object> params = new HashMap<String, Object>();
+    private static void scheduleTestEvent() {
+        Map<String, Object> params = new HashMap<>();
         params.put(MotechSchedulerService.JOB_ID_KEY, TEST_EVENT_NAME);
-        MotechEvent motechEvent = new MotechEvent(SUBJECT, params);
-        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, "0/5 * * * * ?");
+        MotechEvent motechEvent = new MotechEvent(TEST_SUBJECT, params);
+        CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, TEST_CRON_EXPRESSION);
 
         try {
             log.info("Scheduling test job: " + cronSchedulableJob);
             schedulerService.scheduleJob(cronSchedulableJob);
         } catch (Exception e) {
-            log.warn("Can not schedule test job. " + e.getMessage());
+            log.warn("Can not schedule test job.", e);
         }
     }
 
-    private void unscheduleTestEvent() {
+    private static void unscheduleTestEvent() {
         try {
             log.info("Unscheduling the test job: " + TEST_EVENT_NAME);
-            schedulerService.unscheduleJob(new CronJobId(SUBJECT, TEST_EVENT_NAME));
+            schedulerService.unscheduleJob(new CronJobId(TEST_SUBJECT, TEST_EVENT_NAME));
         } catch (Exception e) {
-            log.warn("Can not unschedule the test job: " + TEST_EVENT_NAME + " " + e.getMessage());
+            log.warn(String.format("Can not unschedule the test job %s:", TEST_EVENT_NAME), e);
         }
     }
 
