@@ -3,7 +3,6 @@ package org.motechproject.decisiontree.domain;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.JsonSerializer;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.decisiontree.FlowSession;
 import org.motechproject.decisiontree.model.Node;
@@ -26,7 +25,7 @@ public class FlowSessionRecord extends MotechBaseDataObject implements FlowSessi
 
 
     @JsonProperty
-    Node currentNode;
+    private Node currentNode;
 
     FlowSessionRecord() {
     }

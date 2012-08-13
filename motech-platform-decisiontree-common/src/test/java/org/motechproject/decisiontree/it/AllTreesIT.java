@@ -95,6 +95,7 @@ public class AllTreesIT extends SpringIntegrationTest {
         tree.setName("someTree");
         tree.setRootTransition(new Transition().setDestinationNode(new Node().addPrompts(new AudioPrompt().setName("audioFile2"))));
         allTrees.addOrReplace(tree);
+        markForDeletion(tree);
 
         final Tree someTree = allTrees.findByName("someTree");
         assertEquals("audioFile2", someTree.getRootTransition().getDestinationNode(null, Mockito.mock(FlowSession.class)).getPrompts().get(0).getName());
