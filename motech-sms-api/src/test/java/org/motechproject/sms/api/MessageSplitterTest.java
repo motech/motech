@@ -42,4 +42,11 @@ public class MessageSplitterTest {
         assertEquals("(5/6):o six pa..", parts.get(4));
         assertEquals("(6/6):rts.", parts.get(5));
     }
+
+    @Test
+    public void shouldNotSplitMessageIfSplitSizeIsLessThanEqualToZero() {
+        List<String> parts = messageSplitter.split("this message should not be split into any parts.", 0, "(%d/%d):", "..");
+        assertEquals(1, parts.size());
+        assertEquals("this message should not be split into any parts.", parts.get(0));
+    }
 }
