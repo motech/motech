@@ -13,6 +13,8 @@ import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.motechproject.decisiontree.model.*;
 import org.motechproject.decisiontree.repository.AllTrees;
+import org.motechproject.decisiontree.service.FlowSessionService;
+import org.motechproject.decisiontree.service.impl.AllFlowSessionRecords;
 import org.motechproject.testing.utils.SpringIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,6 +33,9 @@ public class DecisionTreeControllerIT extends SpringIntegrationTest {
     public static final String CONTEXT_PATH = "/motech";
     @Autowired
     AllTrees allTrees;
+
+    @Autowired
+    private  AllFlowSessionRecords allFlowSessionRecords;
 
     @Autowired
     @Qualifier("treesDatabase")
@@ -77,6 +82,11 @@ public class DecisionTreeControllerIT extends SpringIntegrationTest {
     public void before() {
         super.before();
         createTree();
+    }
+
+    @After
+    public void after() {
+        allFlowSessionRecords.removeAll();
     }
 
     @Test

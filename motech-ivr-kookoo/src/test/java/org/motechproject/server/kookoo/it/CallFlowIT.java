@@ -12,6 +12,7 @@ import org.mortbay.jetty.servlet.ServletHolder;
 import org.motechproject.decisiontree.FlowSession;
 import org.motechproject.decisiontree.model.*;
 import org.motechproject.decisiontree.repository.AllTrees;
+import org.motechproject.decisiontree.service.impl.AllFlowSessionRecords;
 import org.motechproject.testing.utils.SpringIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -38,6 +39,9 @@ public class CallFlowIT extends SpringIntegrationTest {
 
     @Autowired
     AllTrees allTrees;
+
+    @Autowired
+    private AllFlowSessionRecords allFlowSessionRecords;
 
     @Autowired
     @Qualifier("treesDatabase")
@@ -83,6 +87,7 @@ public class CallFlowIT extends SpringIntegrationTest {
     @After
     public void teardown() {
         allTrees.removeAll();
+        allFlowSessionRecords.removeAll();
     }
 
     @Test

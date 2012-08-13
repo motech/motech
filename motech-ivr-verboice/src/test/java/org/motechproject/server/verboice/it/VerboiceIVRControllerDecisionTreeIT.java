@@ -6,15 +6,13 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.ektorp.CouchDbConnector;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
 import org.motechproject.decisiontree.FlowSession;
 import org.motechproject.decisiontree.model.*;
 import org.motechproject.decisiontree.repository.AllTrees;
+import org.motechproject.decisiontree.service.impl.AllFlowSessionRecords;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.server.verboice.VerboiceIVRService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +36,9 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
 
     @Autowired
     AllTrees allTrees;
+
+    @Autowired
+    private AllFlowSessionRecords allFlowSessionRecords;
 
     @Autowired
     VerboiceIVRService verboiceIVRService;
@@ -149,6 +150,11 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
     @Override
     public CouchDbConnector getDBConnector() {
         return connector;
+    }
+
+    @After
+    public void teardown() {
+        allFlowSessionRecords.removeAll();
     }
 
     @Component
