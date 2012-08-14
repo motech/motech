@@ -168,7 +168,7 @@ public class DecisionTreeController extends MultiActionController {
                         treeNames = (String[]) ArrayUtils.remove(treeNames, 0);
                         return new ModelAndView(String.format("redirect:/decisiontree/node?%s=%s&%s=%s", TREE_NAME_PARAM, LANGUAGE_PARAM, StringUtils.join(treeNames, TREE_NAME_SEPARATOR), request.getParameter(LANGUAGE_PARAM)));
                     } else {
-                        return new ModelAndView(EXIT_TEMPLATE_NAME);
+                        return new ModelAndView(templateNameFor(request.getParameter(TYPE_PARAM),EXIT_TEMPLATE_NAME));
                     }
                 } else {
                     executeOperations(transitionKey, session, node);
