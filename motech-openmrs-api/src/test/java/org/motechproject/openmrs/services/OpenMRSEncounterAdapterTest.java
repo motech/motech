@@ -56,7 +56,9 @@ public class OpenMRSEncounterAdapterTest {
 
         Date encounterDate = Calendar.getInstance().getTime();
         MRSPerson provider = new MRSPerson().id(providerId);
-        MRSEncounter mrsEncounter = new MRSEncounter(encounterId, provider, staff, facility, encounterDate, patient, observations, encounterType);
+        MRSEncounter mrsEncounter = new MRSEncounter.MRSEncounterBuilder().withId(encounterId).withProvider(provider).withCreator(staff)
+                .withFacility(facility).withDate(encounterDate).withPatient(patient).withObservations(observations)
+                .withEncounterType(encounterType).build();
 
         Location expectedLocation = mock(Location.class);
         when(mockOpenMrsFacilityAdapter.getLocation(facilityId)).thenReturn(expectedLocation);
@@ -151,7 +153,9 @@ public class OpenMRSEncounterAdapterTest {
         OpenMRSEncounterAdapter encounterAdapterSpy = spy(encounterAdapter);
         Encounter openMrsEncounter = mock(Encounter.class);
         final Date encounterDate = new Date();
-        MRSEncounter mrsEncounter = new MRSEncounter("id", null, null, null, encounterDate, new MRSPatient("motechId", null,null), null, null);
+        MRSEncounter mrsEncounter = new MRSEncounter.MRSEncounterBuilder().withId("id").withDate(encounterDate)
+                .withPatient(new MRSPatient("motechId", null, null)).withObservations(null)
+                .withEncounterType(null).build();
         Encounter savedOpenMrsEncounter = mock(Encounter.class);
         MRSEncounter savedMrsEncounter = mock(MRSEncounter.class);
         final Patient patient = mock(Patient.class);

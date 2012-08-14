@@ -76,7 +76,7 @@ public class OpenMRSEncounterAdapterIT extends OpenMRSIntegrationTestBase {
         observations.add(new MRSObservation<Date>(new Date(), "NEXT ANC DATE", new DateTime(2012, 11, 10, 1, 10).toDate()));
         observations.add(new MRSObservation<Boolean>(new Date(), "PREGNANCY STATUS", false));
         final String encounterType = "PEDSRETURN";
-        MRSEncounter expectedEncounter = new MRSEncounter(provider.getId(), userCreator.getId(), facility.getId(), new Date(), patientAlan.getId(), observations, encounterType);
+        MRSEncounter expectedEncounter = new MRSEncounter.MRSEncounterBuilder().withProviderId(provider.getId()).withCreatorId(userCreator.getId()).withFacilityId(facility.getId()).withDate(new Date()).withPatientId(patientAlan.getId()).withObservations(observations).withEncounterType(encounterType).build();
         MRSEncounter actualMRSEncounter = mrsEncounterAdapter.createEncounter(expectedEncounter);
         assertEncounter(expectedEncounter, actualMRSEncounter);
 
@@ -102,12 +102,12 @@ public class OpenMRSEncounterAdapterIT extends OpenMRSIntegrationTestBase {
         observations.add(new MRSObservation(observationDate, "NEXT ANC DATE", new DateTime(2012, 11, 10, 1, 10).toDate()));
         observations.add(new MRSObservation(observationDate, "GRAVIDA", Double.valueOf("100.0")));
         final String encounterType = "PEDSRETURN";
-        MRSEncounter expectedEncounter = new MRSEncounter(provider.getId(), userCreator.getId(), facility.getId(), encounterTime, patientAlan.getId(), observations, encounterType);
-        MRSEncounter duplicateEncounter = new MRSEncounter(provider.getId(), userCreator.getId(), facility.getId(), encounterTime, patientAlan.getId(), new HashSet<MRSObservation>() {{
+        MRSEncounter expectedEncounter = new MRSEncounter.MRSEncounterBuilder().withProviderId(provider.getId()).withCreatorId(userCreator.getId()).withFacilityId(facility.getId()).withDate(encounterTime).withPatientId(patientAlan.getId()).withObservations(observations).withEncounterType(encounterType).build();
+        MRSEncounter duplicateEncounter = new MRSEncounter.MRSEncounterBuilder().withProviderId(provider.getId()).withCreatorId(userCreator.getId()).withFacilityId(facility.getId()).withDate(encounterTime).withPatientId(patientAlan.getId()).withObservations(new HashSet<MRSObservation>() {{
             add(new MRSObservation(observationDate, "SERIAL NUMBER", "free text data serail number"));
             add(new MRSObservation(observationDate, "NEXT ANC DATE", new DateTime(2012, 11, 10, 1, 10).toDate()));
             add(new MRSObservation(observationDate, "PREGNANCY STATUS", false));
-        }}, encounterType);
+        }}).withEncounterType(encounterType).build();
 
         MRSEncounter oldEncounter = mrsEncounterAdapter.createEncounter(expectedEncounter);
         MRSEncounter newEncounter = mrsEncounterAdapter.createEncounter(duplicateEncounter);

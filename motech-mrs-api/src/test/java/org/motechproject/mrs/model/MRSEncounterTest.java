@@ -20,9 +20,11 @@ public class MRSEncounterTest {
         final MRSFacility facility = mock(MRSFacility.class);
         final MRSUser creator = mock(MRSUser.class);
         final MRSPerson provider = mock(MRSPerson.class);
-        MRSEncounter fromEncounter = new MRSEncounter("id", provider, creator, facility, date, patient, observations, encounterTpye);
+        MRSEncounter fromEncounter = new MRSEncounter.MRSEncounterBuilder().withId("id").withProvider(provider).withCreator(creator)
+                .withFacility(facility).withDate(date).withPatient(patient).withObservations(observations)
+                .withEncounterType(encounterTpye).build();
 
-        final MRSEncounter actualEncounter = new MRSEncounter("id2", null, null, null, null, null, null, null).updateWithoutObs(fromEncounter);
+        final MRSEncounter actualEncounter = new MRSEncounter.MRSEncounterBuilder().withId("id2").build().updateWithoutObs(fromEncounter);
         assertNull(actualEncounter.getObservations());
 
         assertThat(actualEncounter.getId(), is("id2"));

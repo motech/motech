@@ -1,6 +1,7 @@
 package org.motechproject.openmrs.services;
 
 import org.motechproject.mrs.model.MRSEncounter;
+import org.motechproject.mrs.model.MRSEncounter.MRSEncounterBuilder;
 import org.motechproject.mrs.model.MRSFacility;
 import org.motechproject.mrs.model.MRSObservation;
 import org.motechproject.mrs.model.MRSPatient;
@@ -107,7 +108,8 @@ public class OpenMRSEncounterAdapter implements MRSEncounterAdapter {
         Set<MRSObservation> observations = openMRSObservationAdapter.convertOpenMRSToMRSObservations(openMrsEncounter.getObs());
         MRSUser creator = new MRSUser().systemId(openMrsEncounter.getCreator().getSystemId()).id(openMrsEncounter.getCreator().getId().toString());
         MRSPerson provider = new MRSPerson().id(String.valueOf(openMrsEncounter.getProvider().getId()));
-        return new MRSEncounter(id, provider, creator, facility, date, patient, observations, encounterType);
+        return new MRSEncounterBuilder().withId(id).withProvider(provider).withCreator(creator).withFacility(facility)
+                .withDate(date).withPatient(patient).withObservations(observations).withEncounterType(encounterType).build();
     }
 
     Encounter mrsToOpenMRSEncounter(MRSEncounter mrsEncounter) {
