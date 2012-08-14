@@ -1,8 +1,8 @@
 package org.motechproject.server.messagecampaign.service;
 
+import org.joda.time.DateTime;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +29,5 @@ public interface MessageCampaignService {
      */
     List<CampaignEnrollmentRecord> search(CampaignEnrollmentsQuery query);
 
-    // TODO: use DateTime
-    Map<String, List<Date>> getCampaignTimings(String externalId, String campaignName, Date startDate, Date endDate);
+    Map<String, List<DateTime>> getCampaignTimings(String externalId, String campaignName, DateTime startDate, DateTime endDate);
 }
