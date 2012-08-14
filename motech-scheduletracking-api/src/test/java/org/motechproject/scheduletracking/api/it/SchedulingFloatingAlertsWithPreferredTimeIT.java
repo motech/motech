@@ -108,24 +108,34 @@ public class SchedulingFloatingAlertsWithPreferredTimeIT {
     public void shouldFloatTheAlertsForDelayedEnrollmentInTheGivenSpaceLeft() throws SchedulerException, URISyntaxException, IOException {
         addSchedule("/schedulingIT/schedule_with_floating_alerts.json");
 
-        DateTime now = now();
-        Time twoHoursBack = new Time(now.minusHours(2).getHourOfDay(), 0);
-        Time twoHoursLater = new Time(now.plusHours(2).getHourOfDay(), 0);
-        String enrollmentId = scheduleTrackingService.enroll(new EnrollmentRequest().setExternalId("abcde").setScheduleName("schedule_with_floating_alerts").setPreferredAlertTime(twoHoursBack).setReferenceDate(now.toLocalDate().minusDays(11)).setReferenceTime(twoHoursLater).setEnrollmentDate(now.toLocalDate().minusDays(11)).setEnrollmentTime(twoHoursLater).setStartingMilestoneName("milestone1").setMetadata(null));
+        try {
+            fakeNow(newDateTime(2050, 5, 20, 10, 0, 0));
+            String enrollmentId = scheduleTrackingService.enroll(new EnrollmentRequest()
+                .setExternalId("abcde")
+                .setScheduleName("schedule_with_floating_alerts")
+                .setPreferredAlertTime(new Time(8, 0))
+                .setReferenceDate(newDate(2050, 5, 9))
+                .setReferenceTime(new Time(12, 0))
+                .setEnrollmentDate(newDate(2050, 5, 9))
+                .setEnrollmentTime(new Time(12, 0))
+                .setStartingMilestoneName("milestone1")
+                .setMetadata(null));
 
-        List<DateTime> fireTimes = getFireTimes(format("org.motechproject.scheduletracking.api.milestone.alert-%s.0-repeat", enrollmentId)) ;
-        assertEquals(asList(
-                newDateTime(now.toLocalDate().plusDays(1), twoHoursBack),
-                newDateTime(now.toLocalDate().plusDays(2), twoHoursBack),
-                newDateTime(now.toLocalDate().plusDays(3), twoHoursBack)),
-                fireTimes);
+            List<DateTime> fireTimes = getFireTimes(format("org.motechproject.scheduletracking.api.milestone.alert-%s.0-repeat", enrollmentId)) ;
+            assertEquals(asList(
+                    newDateTime(2050, 5, 21, 8, 0, 0),
+                    newDateTime(2050, 5, 22, 8, 0, 0),
+                    newDateTime(2050, 5, 23, 8, 0, 0)),
+                    fireTimes);
+        } finally {
+            stopFakingTime();
+        }
     }
 
     @Test
     public void shouldScheduleSecondMilestoneAlertsForToday() throws IOException, URISyntaxException, SchedulerException {
         addSchedule("/schedulingIT/schedule_with_floating_alerts.json");
 
-        DateTime now = now();
         try {
             fakeNow(newDateTime(2050, 5, 20, 10, 0, 0));
             String enrollmentId = scheduleTrackingService.enroll(new EnrollmentRequest().setExternalId("abcde").setScheduleName("schedule_with_floating_alerts").setPreferredAlertTime(new Time(9, 0)).setReferenceDate(newDate(2050, 5, 9)).setReferenceTime(new Time(11, 0)).setEnrollmentDate(newDate(2050, 5, 9)).setEnrollmentTime(new Time(11, 0)).setStartingMilestoneName("milestone1").setMetadata(null));
