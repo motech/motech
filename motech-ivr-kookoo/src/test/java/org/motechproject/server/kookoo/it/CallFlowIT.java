@@ -161,7 +161,6 @@ public class CallFlowIT extends SpringIntegrationTest {
                 "   <playaudio>music.wav</playaudio>" +
                 "   <hangup></hangup>" +
                 "</response>";
-        System.out.println(response);
         assertXMLEqual(expectedResponse, response);
     }
 
