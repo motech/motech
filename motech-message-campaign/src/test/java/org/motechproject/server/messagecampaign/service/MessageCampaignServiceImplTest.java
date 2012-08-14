@@ -18,14 +18,15 @@ import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollme
 import org.motechproject.server.messagecampaign.scheduler.CampaignSchedulerFactory;
 import org.motechproject.server.messagecampaign.scheduler.CampaignSchedulerService;
 
-import java.util.Date;
 import java.util.List;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.util.DateUtil.now;
 
@@ -137,8 +138,8 @@ public class MessageCampaignServiceImplTest {
         when(allCampaignEnrollments.findByExternalIdAndCampaignName("entity_1", "campaign")).thenReturn(enrollment);
 
         DateTime now = now();
-        Date startDate = now.plusDays(1).toDate();
-        Date endDate = now.plusDays(1).plusDays(5).toDate();
+        DateTime startDate = now.plusDays(1);
+        DateTime endDate = now.plusDays(1).plusDays(5);
         messageCampaignService.getCampaignTimings("entity_1", "campaign", startDate, endDate);
 
         verify(campaignScheduler).getCampaignTimings(startDate, endDate, enrollment);
