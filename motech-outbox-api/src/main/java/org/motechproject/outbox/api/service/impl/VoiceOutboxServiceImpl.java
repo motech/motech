@@ -22,16 +22,11 @@ import org.springframework.util.Assert;
 import java.util.Calendar;
 import java.util.List;
 
-//TODO: The API of VoiceOutboxService is anemic (exposes the domain model, just a wrapper over the dao)
 public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxService {
 
     private final Logger log = LoggerFactory.getLogger(VoiceOutboxServiceImpl.class);
     private int numDaysKeepSavedMessages;
 
-    /**
-     * Should be configurable externally.
-     * if pendingMessages > maxNumberOfPendingMessages we need to emit event
-     */
     private int maxNumberOfPendingMessages = Integer.MAX_VALUE;
 
     @Autowired(required = false)
