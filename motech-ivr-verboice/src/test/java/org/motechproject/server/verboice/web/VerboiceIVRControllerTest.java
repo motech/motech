@@ -37,11 +37,16 @@ public class VerboiceIVRControllerTest {
     @Test
     public void shouldUseHandlerWhenTreeIsNotGiven(){
         Map parameterMap = mock(Map.class);
+
         VerboiceHandler verboiceHandler = mock(VerboiceHandler.class);
+        FlowSession flowSession = mock(FlowSession.class);
+
         when(verboiceHandler.handle(parameterMap)).thenReturn("verboice response xml");
         when(verboiceIVRService.getHandler()).thenReturn(verboiceHandler);
+        when(flowSessionService.getSession("foo")).thenReturn(flowSession);
 
         final HttpServletRequest mockRequest = mock(HttpServletRequest.class);
+        when(mockRequest.getParameter("motech_call_id")).thenReturn("foo");
         when(mockRequest.getParameterMap()).thenReturn(parameterMap);
 
         assertThat(verboiceIVRController.handleRequest(mockRequest), is(equalTo("verboice response xml")));
