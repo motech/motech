@@ -43,12 +43,12 @@ public class AbsoluteProgramSchedulerTest {
         CampaignRequest request = new EnrollRequestBuilder().withDefaults().build();
         AbsoluteCampaign campaign = new CampaignBuilder().defaultAbsoluteCampaign();
 
-        AbsoluteProgramSchedulerService absoluteProgramScheduler = new AbsoluteProgramSchedulerService(schedulerService, allMessageCampaigns);
+        AbsoluteCampaignSchedulerService absoluteCampaignScheduler = new AbsoluteCampaignSchedulerService(schedulerService, allMessageCampaigns);
 
         when(allMessageCampaigns.get("testCampaign")).thenReturn(campaign);
 
         CampaignEnrollment enrollment = new CampaignEnrollment("12345", "testCampaign");
-        absoluteProgramScheduler.start(enrollment);
+        absoluteCampaignScheduler.start(enrollment);
 
         ArgumentCaptor<RunOnceSchedulableJob> capture = ArgumentCaptor.forClass(RunOnceSchedulableJob.class);
         verify(schedulerService, times(2)).scheduleRunOnceJob(capture.capture());
