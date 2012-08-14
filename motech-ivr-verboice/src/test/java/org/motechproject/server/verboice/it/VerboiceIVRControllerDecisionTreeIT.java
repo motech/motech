@@ -6,9 +6,7 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.ektorp.CouchDbConnector;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.decisiontree.FlowSession;
@@ -22,7 +20,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -122,11 +119,11 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
                 "                                                                            <Redirect method=\"POST\">http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=treeWithTransitionTimeout&amp;trP=Lw&amp;Digits=timeout</Redirect>\n" +
                 "                                 </Response>";
         HttpClient client = new DefaultHttpClient();
-        String rootUrl = SERVER_URL + "?tree=treeWithTransitionTimeout&trP=Lw&ln=en";
+        String rootUrl = SERVER_URL + "?tree=treeWithTransitionTimeout&trP=Lw&ln=en&motech_call_id=1";
         String response = client.execute(new HttpGet(rootUrl), new BasicResponseHandler());
         assertXMLEqual(expectedResponse, response);
 
-        String transitionUrl = SERVER_URL + "?tree=treeWithTransitionTimeout&trP=Lw&ln=en&Digits=timeout";
+        String transitionUrl = SERVER_URL + "?tree=treeWithTransitionTimeout&trP=Lw&ln=en&Digits=timeout&motech_call_id=1";
         String response2 = client.execute(new HttpGet(transitionUrl), new BasicResponseHandler());
         assertTrue("got " + response2, response2.contains("<Say>Clip on timeout</Say>"));
     }
@@ -141,11 +138,11 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
                 "                        <Dial callerId=\"callerId\" action=\"http://url.com\">othernumber</Dial>\n" +
                 "     </Response>";
         HttpClient client = new DefaultHttpClient();
-        String rootUrl = SERVER_URL + "?tree=treeWithDial&trP=Lw&ln=en";
+        String rootUrl = SERVER_URL + "?tree=treeWithDial&trP=Lw&ln=en&motech_call_id=1";
         String response = client.execute(new HttpGet(rootUrl), new BasicResponseHandler());
         assertXMLEqual(expectedResponse, response);
 
-        String transitionUrl = SERVER_URL + "?tree=treeWithDial&trP=Lw&ln=en&DialCallStatus=completed";
+        String transitionUrl = SERVER_URL + "?tree=treeWithDial&trP=Lw&ln=en&DialCallStatus=completed&motech_call_id=1";
         String response2 = client.execute(new HttpGet(transitionUrl), new BasicResponseHandler());
         assertTrue("got " + response2, response2.contains("<Say>Successful Dial</Say>"));
 
@@ -190,7 +187,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
     @Test
     public void shouldReturnVerboiceML() throws Exception {
         HttpClient client = new DefaultHttpClient();
-        final String vmlUrl = SERVER_URL + "?tree=someTree&type=verboice&pId=asd&ln=en&tNm=someTree&trP=Lw==";
+        final String vmlUrl = SERVER_URL + "?tree=someTree&type=verboice&pId=asd&ln=en&tNm=someTree&trP=Lw==&motech_call_id=1";
         final String response = client.execute(new HttpGet(vmlUrl), new BasicResponseHandler());
         Assert.assertTrue(response.contains("<Response>"));
     }
