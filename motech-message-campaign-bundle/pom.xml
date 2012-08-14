@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>motech</artifactId>
@@ -65,7 +64,8 @@
                         <Export-Package>
                             org.motechproject.server.messagecampaign,
                             org.motechproject.server.messagecampaign.contract,
-                            org.motechproject.server.messagecampaign.service
+                            org.motechproject.server.messagecampaign.service,
+                            org.motechproject.server.messagecampaign.domain
                         </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.server.messagecampaign.osgi.Activator
@@ -79,6 +79,9 @@
                             org.springframework.beans.factory.xml,
                             org.springframework.osgi.config,
                             org.motechproject.scheduler.gateway,
+                            org.motechproject.server.event,
+                            net.sf.cglib.core,
+                            net.sf.cglib.proxy,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-message-campaign</Embed-Dependency>
