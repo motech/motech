@@ -6,17 +6,15 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.sms.http.SmsDeliveryFailureException;
+import org.motechproject.sms.http.TemplateReader;
 import org.motechproject.sms.http.template.Authentication;
 import org.motechproject.sms.http.template.SmsHttpTemplate;
-import org.motechproject.sms.http.TemplateReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -56,7 +54,7 @@ public class SmsHttpService {
         }
 
         if (response == null || !response.toLowerCase().contains(template.getResponseSuccessCode().toLowerCase())) {
-            log.error(String.format("SMS delivery failed. Retrying...; Response: %s", response));
+            log.error(String.format("SMS delivery failed. Retrying...; Response: %s, Recipients: %s; message: %s", response, recipients, message));
             throw new SmsDeliveryFailureException();
         }
 
