@@ -17,6 +17,7 @@ import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:testDecisionTreeCommon.xml"})
@@ -31,7 +32,7 @@ public class AllTreesIT extends SpringIntegrationTest {
     public void shouldStoreTree() throws Exception {
         Tree tree = new Tree();
         HashMap<String, ITransition> transitions = new HashMap<String, ITransition>();
-        final Node textToSpeechNode = new Node().addPrompts(new TextToSpeechPrompt().setName("Say this"));
+        final Node textToSpeechNode = new Node().addPrompts(new TextToSpeechPrompt().setName("Say this")).setMaxTransitionTimeout(25);
         transitions.put("1", new Transition().setDestinationNode(textToSpeechNode));
         final Node audioPromptNode = new Node().addPrompts(new AudioPrompt().setName("abc")).setTransitions(transitions);
         tree.setName("tree").setRootTransition(new Transition().setDestinationNode(audioPromptNode));
@@ -47,7 +48,8 @@ public class AllTreesIT extends SpringIntegrationTest {
 
         final Node nextNode = rootNodeFromDb.getTransitions().get("1").getDestinationNode("1", null);
         assertEquals(TextToSpeechPrompt.class.getName(), nextNode.getPrompts().get(0).getClass().getName());
-
+        assertEquals((Integer) 25, nextNode.getMaxTransitionTimeout());
+        assertNull(nextNode.getMaxTransitionInputDigit());
     }
 
     @Test

@@ -9,7 +9,7 @@
     #end
     #if ($node.transitions.size() > 0)
         #set ($url = "$scheme://$host$contextPath$servletPath/kookoo/ivr?type=$type&ln=$language&tree=$treeName&trP=$transitionPath")
-        <collectdtmf l="$maxDigits" t="#"></collectdtmf>
+        <collectdtmf l="$maxDigits" t="#" o="$maxTimeout"></collectdtmf>
         <gotourl>$escape.escapeXml($url)</gotourl>
     #else
         <hangup></hangup>

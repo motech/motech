@@ -28,6 +28,10 @@ public class Node implements Serializable {
     private Map<String, ITransition> transitions;
     @JsonProperty
     private List<INodeOperation> operations = new ArrayList<>();
+    @JsonProperty
+    private Integer maxTransitionInputDigit;
+    @JsonProperty
+    private Integer maxTransitionTimeout;
 
     public List<Action> getActionsBefore() {
         return actionsBefore == null ? Collections.<Action>emptyList() : actionsBefore;
@@ -160,6 +164,37 @@ public class Node implements Serializable {
     @JsonIgnore
     public boolean hasTransitions() {
         return transitions != null && !transitions.isEmpty();
+    }
+
+    public Integer getMaxTransitionInputDigit() {
+        return maxTransitionInputDigit;
+    }
+
+    /**
+     * Sets the Max number of input digits for transition from this node.
+     * @param maxTransitionInputDigit
+     * @return the current node instance
+     */
+    @JsonIgnore
+    public Node setMaxTransitionInputDigit(Integer maxTransitionInputDigit) {
+        this.maxTransitionInputDigit = maxTransitionInputDigit;
+        return this;
+    }
+
+
+    public Integer getMaxTransitionTimeout() {
+        return maxTransitionTimeout;
+    }
+
+    /**
+     * Sets the max timeout in milliseconds for transition from this node.
+     * @param maxTransitionTimeout
+     * @return the current node instance
+     */
+    @JsonIgnore
+    public Node setMaxTransitionTimeout(Integer maxTransitionTimeout) {
+        this.maxTransitionTimeout = maxTransitionTimeout;
+        return this;
     }
 
     @Override
