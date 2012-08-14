@@ -14,10 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CronBasedProgramSchedulerService extends CampaignSchedulerService<CronBasedCampaignMessage, CronBasedCampaign> {
+public class CronBasedCampaignSchedulerService extends CampaignSchedulerService<CronBasedCampaignMessage, CronBasedCampaign> {
 
     @Autowired
-    public CronBasedProgramSchedulerService(MotechSchedulerService schedulerService, AllMessageCampaigns allMessageCampaigns) {
+    public CronBasedCampaignSchedulerService(MotechSchedulerService schedulerService, AllMessageCampaigns allMessageCampaigns) {
         super(schedulerService, allMessageCampaigns);
     }
 

@@ -18,22 +18,31 @@ import static java.lang.String.format;
 public class CampaignSchedulerFactory {
 
     @Autowired
-    private CampaignSchedulerService repeatIntervalCampaignSchedulerService;
+    private AbsoluteCampaignSchedulerService absoluteCampaignSchedulerService;
     @Autowired
-    private CampaignSchedulerService dayOfWeekCampaignSchedulerService;
+    private OffsetCampaignSchedulerService offsetCampaignSchedulerService;
+    @Autowired
+    private CronBasedCampaignSchedulerService cronBasedCampaignSchedulerService;
+    @Autowired
+    private RepeatIntervalCampaignSchedulerService repeatIntervalCampaignSchedulerService;
+    @Autowired
+    private DayOfWeekCampaignSchedulerService dayOfWeekCampaignSchedulerService;
     @Autowired
     private AllMessageCampaigns allMessageCampaigns;
 
-    public CampaignSchedulerService getCampaignScheduler(String campaignName) {
-        //TODO: Map should not be created every time
-        HashMap<Class, CampaignSchedulerService> map = new HashMap<>();
-        map.put(AbsoluteCampaign.class, repeatIntervalCampaignSchedulerService);
-        map.put(OffsetCampaign.class, repeatIntervalCampaignSchedulerService);
-        map.put(CronBasedCampaign.class, repeatIntervalCampaignSchedulerService);
-        map.put(RepeatIntervalCampaign.class, repeatIntervalCampaignSchedulerService);
-        map.put(DayOfWeekCampaign.class, dayOfWeekCampaignSchedulerService);
+    private HashMap<Class, CampaignSchedulerService> campaignSchedulerServices;
 
-        CampaignSchedulerService schedulerService = map.get(allMessageCampaigns.get(campaignName).getClass());
+    public CampaignSchedulerFactory() {
+        campaignSchedulerServices = new HashMap<>();
+        campaignSchedulerServices.put(AbsoluteCampaign.class, absoluteCampaignSchedulerService);
+        campaignSchedulerServices.put(OffsetCampaign.class, offsetCampaignSchedulerService);
+        campaignSchedulerServices.put(CronBasedCampaign.class, cronBasedCampaignSchedulerService);
+        campaignSchedulerServices.put(RepeatIntervalCampaign.class, repeatIntervalCampaignSchedulerService);
+        campaignSchedulerServices.put(DayOfWeekCampaign.class, dayOfWeekCampaignSchedulerService);
+    }
+
+    public CampaignSchedulerService getCampaignScheduler(String campaignName) {
+        CampaignSchedulerService schedulerService = campaignSchedulerServices.get(allMessageCampaigns.get(campaignName).getClass());
         if (schedulerService == null) {
             throw new CampaignNotFoundException(format("Campaign (%s) not found.", campaignName));
         }

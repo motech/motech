@@ -42,12 +42,12 @@ public class CronBasedProgramSchedulerTest {
         CampaignRequest request = new EnrollRequestBuilder().withDefaults().withReferenceDate(today()).build();
         CronBasedCampaign campaign = new CampaignBuilder().defaultCronBasedCampaign();
 
-        CronBasedProgramSchedulerService cronBasedProgramScheduler = new CronBasedProgramSchedulerService(schedulerService, allMessageCampaigns);
+        CronBasedCampaignSchedulerService cronBasedCampaignScheduler = new CronBasedCampaignSchedulerService(schedulerService, allMessageCampaigns);
 
         when(allMessageCampaigns.get("testCampaign")).thenReturn(campaign);
 
         CampaignEnrollment enrollment = new CampaignEnrollment("12345", "testCampaign").setReferenceDate(today()).setDeliverTime(new Time(9, 30));
-        cronBasedProgramScheduler.start(enrollment);
+        cronBasedCampaignScheduler.start(enrollment);
         ArgumentCaptor<CronSchedulableJob> capture = ArgumentCaptor.forClass(CronSchedulableJob.class);
         verify(schedulerService, times(2)).scheduleJob(capture.capture());
 

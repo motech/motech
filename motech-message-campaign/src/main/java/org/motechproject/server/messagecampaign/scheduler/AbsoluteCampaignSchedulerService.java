@@ -19,12 +19,12 @@ import java.util.HashMap;
 import static org.motechproject.util.DateUtil.newDateTime;
 
 @Component
-public class AbsoluteProgramSchedulerService extends CampaignSchedulerService<AbsoluteCampaignMessage, AbsoluteCampaign> {
+public class AbsoluteCampaignSchedulerService extends CampaignSchedulerService<AbsoluteCampaignMessage, AbsoluteCampaign> {
 
     private CampaignEnrollmentService campaignEnrollmentService;
 
     @Autowired
-    public AbsoluteProgramSchedulerService(MotechSchedulerService schedulerService, AllMessageCampaigns allMessageCampaigns) {
+    public AbsoluteCampaignSchedulerService(MotechSchedulerService schedulerService, AllMessageCampaigns allMessageCampaigns) {
         super(schedulerService, allMessageCampaigns);
     }
 
