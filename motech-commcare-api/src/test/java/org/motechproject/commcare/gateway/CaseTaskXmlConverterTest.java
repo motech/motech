@@ -16,7 +16,7 @@ import org.motechproject.commcare.events.constants.EventSubjects;
 import org.motechproject.commcare.exception.CaseParserException;
 import org.motechproject.commcare.request.IndexSubElement;
 import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.scheduler.gateway.OutboundEventGateway;
+import org.motechproject.scheduler.event.EventRelay;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,12 +28,12 @@ public class CaseTaskXmlConverterTest {
     private CaseTaskXmlConverter caseConverter;
 
     @Mock
-    private OutboundEventGateway outboundEventGateway;
+    private EventRelay eventRelay;
 
     @Before
     public void setUp() {
         initMocks(this);
-        caseConverter = new CaseTaskXmlConverter(outboundEventGateway);
+        caseConverter = new CaseTaskXmlConverter(eventRelay);
     }
 
     @Test
@@ -55,7 +55,7 @@ public class CaseTaskXmlConverterTest {
 
         String xml = caseConverter.convertToCaseXml(task);
 
-        verify(outboundEventGateway).sendEventMessage(
+        verify(eventRelay).sendEventMessage(
                 motechEventCaptor.capture());
 
         MotechEvent motechEvent = motechEventCaptor.getValue();
@@ -85,7 +85,7 @@ public class CaseTaskXmlConverterTest {
 
         String xml = caseConverter.convertToCaseXml(task);
 
-        verify(outboundEventGateway).sendEventMessage(
+        verify(eventRelay).sendEventMessage(
                 motechEventCaptor.capture());
 
         MotechEvent motechEvent = motechEventCaptor.getValue();
@@ -115,7 +115,7 @@ public class CaseTaskXmlConverterTest {
 
         String xml = caseConverter.convertToCaseXml(task);
 
-        verify(outboundEventGateway).sendEventMessage(
+        verify(eventRelay).sendEventMessage(
                 motechEventCaptor.capture());
 
         MotechEvent motechEvent = motechEventCaptor.getValue();

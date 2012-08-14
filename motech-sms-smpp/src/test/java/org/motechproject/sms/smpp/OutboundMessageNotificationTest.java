@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.scheduler.gateway.OutboundEventGateway;
+import org.motechproject.scheduler.event.EventRelay;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.api.DeliveryStatus;
 import org.motechproject.sms.smpp.constants.SmsProperties;
@@ -28,7 +28,7 @@ public class OutboundMessageNotificationTest {
     @Mock
     private AGateway gateway;
     @Mock
-    private OutboundEventGateway outboundEventGateway;
+    private EventRelay eventRelay;
 
     private OutboundMessageNotification outboundMessageNotification;
     @Mock
@@ -44,7 +44,7 @@ public class OutboundMessageNotificationTest {
         SettingsFacade settings = new SettingsFacade();
         settings.saveConfigProperties("sms.properties", smsProperties);
 
-        outboundMessageNotification = new OutboundMessageNotification(outboundEventGateway, settings);
+        outboundMessageNotification = new OutboundMessageNotification(eventRelay, settings);
         ReflectionTestUtils.setField(outboundMessageNotification, "allOutboundSMS", mockAllOutboundSMS);
     }
 
@@ -62,7 +62,7 @@ public class OutboundMessageNotificationTest {
         outboundMessageNotification.process(gateway, message);
 
         ArgumentCaptor<MotechEvent> motechEventArgumentCaptor = ArgumentCaptor.forClass(MotechEvent.class);
-        verify(outboundEventGateway).sendEventMessage(motechEventArgumentCaptor.capture());
+        verify(eventRelay).sendEventMessage(motechEventArgumentCaptor.capture());
         Map<String, Object> parameters = motechEventArgumentCaptor.getValue().getParameters();
         assertEquals(recipient, parameters.get(RECIPIENT));
         assertEquals("Test Message", parameters.get(MESSAGE));
@@ -82,7 +82,7 @@ public class OutboundMessageNotificationTest {
 
         outboundMessageNotification.process(gateway, message);
 
-        verifyZeroInteractions(outboundEventGateway);
+        verifyZeroInteractions(eventRelay);
         assertAuditMessage(recipient, "refNo2222", DeliveryStatus.KEEPTRYING);
     }
 
@@ -97,7 +97,7 @@ public class OutboundMessageNotificationTest {
 
         outboundMessageNotification.process(gateway, message);
 
-        verifyZeroInteractions(outboundEventGateway);
+        verifyZeroInteractions(eventRelay);
         assertAuditMessage(recipient, "refNo", DeliveryStatus.INPROGRESS);
     }
 

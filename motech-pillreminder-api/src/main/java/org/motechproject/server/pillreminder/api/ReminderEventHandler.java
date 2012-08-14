@@ -5,7 +5,7 @@ import org.motechproject.MotechObject;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
-import org.motechproject.scheduler.gateway.OutboundEventGateway;
+import org.motechproject.scheduler.event.EventRelay;
 import org.motechproject.server.event.annotations.MotechListener;
 import org.motechproject.server.pillreminder.api.dao.AllPillRegimens;
 import org.motechproject.server.pillreminder.api.domain.DailyScheduleDetails;
@@ -19,13 +19,13 @@ import java.util.Map;
 
 @Component
 public class ReminderEventHandler extends MotechObject {
-    private OutboundEventGateway outboundEventGateway;
+    private EventRelay eventRelay;
     private AllPillRegimens allPillRegimens;
     private MotechSchedulerService schedulerService;
 
     @Autowired
-    public ReminderEventHandler(OutboundEventGateway outboundEventGateway, AllPillRegimens allPillRegimens, MotechSchedulerService schedulerService) {
-        this.outboundEventGateway = outboundEventGateway;
+    public ReminderEventHandler(EventRelay eventRelay, AllPillRegimens allPillRegimens, MotechSchedulerService schedulerService) {
+        this.eventRelay = eventRelay;
         this.allPillRegimens = allPillRegimens;
         this.schedulerService = schedulerService;
     }
@@ -39,7 +39,7 @@ public class ReminderEventHandler extends MotechObject {
             if (pillRegimen.isFirstReminderFor(dosage)) {
                 scheduleRepeatReminders(motechEvent, pillRegimen, dosage);
             }
-            outboundEventGateway.sendEventMessage(createNewMotechEvent(dosage, pillRegimen, motechEvent, EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT));
+            eventRelay.sendEventMessage(createNewMotechEvent(dosage, pillRegimen, motechEvent, EventKeys.PILLREMINDER_REMINDER_EVENT_SUBJECT));
         }
     }
 

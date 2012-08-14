@@ -111,6 +111,7 @@
                         <Import-Package>
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
+                            org.motechproject.scheduler.event,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-appointments-api</Embed-Dependency>

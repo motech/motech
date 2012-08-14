@@ -79,6 +79,7 @@
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.osgi.config,
+                            org.motechproject.scheduler.event,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-commcare-api</Embed-Dependency>
