@@ -7,7 +7,7 @@
 
     <import resource="classpath:ivrVerboiceContext.xml"/>
 
-    <osgi:service id="ivrServiceOsgi" auto-export="interfaces" ref="ivrServiceVerboice"
+    <osgi:service id="ivrServiceOsgi" auto-export="interfaces" ref="verboiceIVRService"
                   interface="org.motechproject.ivr.service.IVRService">
         <osgi:service-properties>
             <entry key="IvrProvider" value="Verboice"/>

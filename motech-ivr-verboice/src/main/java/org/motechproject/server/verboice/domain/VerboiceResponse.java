@@ -2,6 +2,7 @@ package org.motechproject.server.verboice.domain;
 
 import org.apache.commons.lang.StringUtils;
 
+@Deprecated
 public class VerboiceResponse extends AggregatedVerboiceAction {
 
     private String callbackUrl;
