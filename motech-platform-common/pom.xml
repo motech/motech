@@ -3,11 +3,11 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.13</version>
+        <version>0.14-SNAPSHOT</version>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-platform-common</artifactId>
-    <version>0.13</version>
+    <version>0.14-SNAPSHOT</version>
     <name>MoTeCH Platform Common</name>
     <properties>
         <modules.root.dir>${basedir}/..</modules.root.dir>

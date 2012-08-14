@@ -4,11 +4,11 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.13</version>
+        <version>0.14-SNAPSHOT</version>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-commcare-api-bundle</artifactId>
-    <version>0.13</version>
+    <version>0.14-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>MoTeCH CommCare API Bundle</name>
     <properties>
