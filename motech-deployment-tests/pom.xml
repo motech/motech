@@ -3,12 +3,12 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.13-SNAPSHOT</version>
+        <version>0.13</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-deployment-tests</artifactId>
-    <version>0.13-SNAPSHOT</version>
+    <version>0.13</version>
     <name>MoTeCH Deployment Tests</name>
 
     <dependencies>

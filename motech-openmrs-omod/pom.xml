@@ -2,7 +2,7 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.13-SNAPSHOT</version>
+        <version>0.13</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>motech-openmrs-omod</artifactId>
