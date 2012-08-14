@@ -1,14 +1,13 @@
 package org.motechproject.server.verboice;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.decisiontree.FlowSession;
+import org.motechproject.decisiontree.service.FlowSessionService;
+import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
 import org.motechproject.server.verboice.domain.VerboiceHandler;
-import org.motechproject.decisiontree.service.FlowSessionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +31,7 @@ public class VerboiceIVRService implements IVRService {
     private Properties verboiceProperties;
     private HttpClient commonsHttpClient;
     private FlowSessionService flowSessionService;
+
     @Autowired(required = false)
     private VerboiceHandler handler;
 
@@ -40,8 +40,6 @@ public class VerboiceIVRService implements IVRService {
         this.verboiceProperties = verboiceProperties;
         this.commonsHttpClient = commonsHttpClient;
         this.flowSessionService = flowSessionService;
-        this.commonsHttpClient.getParams().setAuthenticationPreemptive(true);
-        this.commonsHttpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(verboiceProperties.getProperty("username"), verboiceProperties.getProperty("password")));
     }
 
     public void setHandler(VerboiceHandler handler) {
@@ -53,11 +51,16 @@ public class VerboiceIVRService implements IVRService {
         initSession(callRequest);
         try {
             GetMethod getMethod = new GetMethod(outgoingCallUri(callRequest));
+            getMethod.addRequestHeader("Authorization", "Basic " + basicAuthValue());
             int status = commonsHttpClient.executeMethod(getMethod);
             log.info(String.format("[%d]\n%s", status, getMethod.getResponseBodyAsString()));
         } catch (IOException e) {
             log.error("Exception when initiating call : ", e);
         }
+    }
+
+    private String basicAuthValue() {
+        return new String(Base64.encodeBase64((verboiceProperties.getProperty("username") + ":" + verboiceProperties.getProperty("password")).getBytes()));
     }
 
     private void initSession(CallRequest callRequest) {
