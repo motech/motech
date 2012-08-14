@@ -108,7 +108,7 @@ public class CallFlowIT extends SpringIntegrationTest {
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                 "<response>" +
                 "   <playtext>hello</playtext>" +
-                "   <collectdtmf l=\"1\" t=\"#\"></collectdtmf>" +
+                "   <collectdtmf l=\"1\" t=\"#\" o=\"5000\"></collectdtmf>" +
                 "   <gotourl>http://localhost:7080/motech/kookoo/ivr?type=kookoo&amp;ln=en&amp;tree=someTree&amp;trP=Lw</gotourl>" +
                 "</response>";
         assertXMLEqual(expectedResponse, response);
@@ -138,7 +138,7 @@ public class CallFlowIT extends SpringIntegrationTest {
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                 "<response>" +
                 "   <playtext>pressed two</playtext>" +
-                "   <collectdtmf l=\"1\" t=\"#\"></collectdtmf>" +
+                "   <collectdtmf l=\"1\" t=\"#\"  o=\"5000\"></collectdtmf>" +
                 "   <gotourl>http://localhost:7080/motech/kookoo/ivr?type=kookoo&amp;ln=en&amp;tree=someTree&amp;trP=LzI</gotourl>" +
                 "</response>";
         assertXMLEqual(expectedResponse, response);
@@ -180,7 +180,7 @@ public class CallFlowIT extends SpringIntegrationTest {
         String expectedResponse =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                 "<response>" +
-                "   <collectdtmf l=\"50\" t=\"#\"></collectdtmf>" +
+                "   <collectdtmf l=\"50\" t=\"#\" o=\"5000\"></collectdtmf>" +
                 "   <gotourl>http://localhost:7080/motech/kookoo/ivr?type=kookoo&amp;ln=en&amp;tree=someTree&amp;trP=Lw</gotourl>" +
                 "</response>";
         assertXMLEqual(expectedResponse, response);
@@ -201,7 +201,7 @@ public class CallFlowIT extends SpringIntegrationTest {
         String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
             "<response>" +
             "   <playtext>you entered 31415</playtext>" +
-            "   <collectdtmf l=\"1\" t=\"#\"></collectdtmf>" +
+            "   <collectdtmf l=\"1\" t=\"#\" o=\"5000\"></collectdtmf>" +
             "   <gotourl>http://localhost:7080/motech/kookoo/ivr?type=kookoo&amp;ln=en&amp;tree=someTree&amp;trP=LzMxNDE1</gotourl>" +
             "</response>";
         assertXMLEqual(expectedResponse, response);

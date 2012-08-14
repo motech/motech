@@ -54,7 +54,9 @@ public class DecisionTreeController extends MultiActionController {
     public static final String EXIT_TEMPLATE_NAME = TEMPLATE_BASE_PATH + "exit";
 
     public static final String TREE_NAME_SEPARATOR = ",";
-    public static final int MAX_INPUT_DIGITS = 50;
+
+    public static final Integer MAX_INPUT_DIGITS = 50;
+    public static final Integer MAX_INPUT_TIMEOUT = 5000;
 
     @Autowired
     private DecisionTreeService decisionTreeService;
@@ -216,7 +218,8 @@ public class DecisionTreeController extends MultiActionController {
         mav.addObject("type", request.getParameter(TYPE_PARAM));
         mav.addObject("transitionPath", Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
         mav.addObject("escape", new StringEscapeUtils());
-        mav.addObject("maxDigits", maxDigits(node.getTransitions()));
+        mav.addObject("maxDigits", maxDigits(node));
+        mav.addObject("maxTimeout", maxTimeout(node));
         mav.addObject("host", request.getHeader("Host"));
         mav.addObject("scheme", request.getScheme());
         return mav;
@@ -300,17 +303,22 @@ public class DecisionTreeController extends MultiActionController {
         return new String(Base64.decodeBase64(encodedTransitionPath));
     }
 
-    private String maxDigits(Map<String, ITransition> transitions) {
+    private Integer maxDigits(Node node) {
+        Map<String, ITransition> transitions = node.getTransitions();
         int maxDigits = 1;
         for (String key : transitions.keySet()) {
             if (anyInput(key)) {
-                return "" + MAX_INPUT_DIGITS;
+                return (node.getMaxTransitionInputDigit() == null) ? MAX_INPUT_DIGITS : node.getMaxTransitionInputDigit();
             }
             if (maxDigits < key.length()) {
                 maxDigits = key.length();
             }
         }
-        return Integer.toString(maxDigits);
+        return maxDigits;
+    }
+
+    private Integer maxTimeout(Node node) {
+        return node.getMaxTransitionTimeout() == null ? MAX_INPUT_TIMEOUT : node.getMaxTransitionTimeout();
     }
 
     private String templateNameFor(String type, String templateName) {
