@@ -9,30 +9,12 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
         http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
-    <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
     <util:properties id="verboiceProperties" location="classpath:verboice.properties"/>
-
-    <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean">
-        <property name="properties" ref="couchdbProperties"/>
-    </bean>
-
-    <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
-        <constructor-arg ref="httpClient"/>
-    </bean>
-
-    <bean id="verboiceDbConnector" class="org.ektorp.impl.StdCouchDbConnector">
-        <constructor-arg value="motech-ivr-verboice"/>
-        <constructor-arg ref="couchDbInstance"/>
-    </bean>
 
     <bean id="commonsHttpClient" class="org.apache.commons.httpclient.HttpClient" />
 
     <context:annotation-config/>
     <mvc:annotation-driven/>
-
-    <bean id="verboiceIVRController" class="org.motechproject.server.verboice.web.VerboiceIVRController"/>
-
-    <bean id="ivrServiceVerboice" class="org.motechproject.server.verboice.VerboiceIVRService"/>
 
     <context:component-scan base-package="org.motechproject.server.verboice"/>
 </beans>

@@ -23,7 +23,6 @@ import static java.lang.String.format;
  * Verboice specific implementation of the IVR Service interface
  */
 @Component
-@Qualifier("VerboiceIVRService")
 public class VerboiceIVRService implements IVRService {
 
     private static Logger log = LoggerFactory.getLogger(VerboiceIVRService.class);
@@ -66,8 +65,9 @@ public class VerboiceIVRService implements IVRService {
     private void initSession(CallRequest callRequest) {
         FlowSession flowSession = flowSessionService.getSession(callRequest.getCallId());
         for (String key : callRequest.getPayload().keySet()) {
-            if (!key.equals("callback_url"))
+            if (!"callback_url".equals(key)) {
                 flowSession.set(key, callRequest.getPayload().get(key));
+            }
         }
         flowSessionService.updateSession(flowSession);
     }
