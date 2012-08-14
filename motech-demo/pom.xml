@@ -3,11 +3,11 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.12-SNAPSHOT</version>
+        <version>0.12</version>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-demo</artifactId>
-    <version>0.12-SNAPSHOT</version>
+    <version>0.12</version>
     <name>MoTeCH Demo App</name>
     <description>Motech Demo Application</description>
     <properties>
