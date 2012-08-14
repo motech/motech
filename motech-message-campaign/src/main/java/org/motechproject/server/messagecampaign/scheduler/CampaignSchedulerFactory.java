@@ -18,6 +18,12 @@ import static java.lang.String.format;
 public class CampaignSchedulerFactory {
 
     @Autowired
+    private CampaignSchedulerService absoluteProgramSchedulerService;
+    @Autowired
+    private CampaignSchedulerService offsetProgramSchedulerService;
+    @Autowired
+    private CampaignSchedulerService cronBasedProgramSchedulerService;
+    @Autowired
     private CampaignSchedulerService repeatIntervalCampaignSchedulerService;
     @Autowired
     private CampaignSchedulerService dayOfWeekCampaignSchedulerService;
@@ -27,9 +33,9 @@ public class CampaignSchedulerFactory {
     public CampaignSchedulerService getCampaignScheduler(String campaignName) {
         //TODO: Map should not be created every time
         HashMap<Class, CampaignSchedulerService> map = new HashMap<>();
-        map.put(AbsoluteCampaign.class, repeatIntervalCampaignSchedulerService);
-        map.put(OffsetCampaign.class, repeatIntervalCampaignSchedulerService);
-        map.put(CronBasedCampaign.class, repeatIntervalCampaignSchedulerService);
+        map.put(AbsoluteCampaign.class, absoluteProgramSchedulerService);
+        map.put(OffsetCampaign.class, offsetProgramSchedulerService);
+        map.put(CronBasedCampaign.class, cronBasedProgramSchedulerService);
         map.put(RepeatIntervalCampaign.class, repeatIntervalCampaignSchedulerService);
         map.put(DayOfWeekCampaign.class, dayOfWeekCampaignSchedulerService);
 
