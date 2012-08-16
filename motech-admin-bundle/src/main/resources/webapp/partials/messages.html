@@ -1,0 +1,19 @@
+<div class="well">
+    <div class="box-header">
+        {{msg('messages.title')}}
+        <a ng-click="refresh()"><img src="img/refresh.png" title="{{msg('refresh')}}" alt="{{msg('refresh')}}"/></a>
+    </div>
+    <div class="box-content">
+        <span ng-show="messages.length < 1"><p>{{msg('messages.empty')}}</p></span>
+
+        <div ng-repeat="message in messages" ng-class="getCssClass(message)">
+            <div class="status-message">
+                <a ng-click="remove(message)"><img alt="{{msg('delete')}}" title="{{msg('remove')}}"
+                                                   src="img/delete.png"/></a>
+                <span class="msg-date">{{printDate(message.date) | date:'medium'}}</span> <span
+                    class="msg-level">
+[{{message.level}}]</span>: {{printText(message.text)}}
+            </div>
+        </div>
+    </div>
+</div>
