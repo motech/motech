@@ -44,12 +44,12 @@ public class OffsetProgramSchedulerTest {
         CampaignRequest request = new EnrollRequestBuilder().withDefaults().withReferenceDate(today()).build();
         OffsetCampaign campaign = new CampaignBuilder().defaultOffsetCampaign();
 
-        OffsetProgramSchedulerService offsetProgramScheduler = new OffsetProgramSchedulerService(schedulerService, allMessageCampaigns);
+        OffsetCampaignSchedulerService offsetCampaignScheduler = new OffsetCampaignSchedulerService(schedulerService, allMessageCampaigns);
 
         when(allMessageCampaigns.get("testCampaign")).thenReturn(campaign);
 
         CampaignEnrollment enrollment = new CampaignEnrollment("12345", "testCampaign").setReferenceDate(today()).setDeliverTime(new Time(9, 30));
-        offsetProgramScheduler.start(enrollment);
+        offsetCampaignScheduler.start(enrollment);
         ArgumentCaptor<RunOnceSchedulableJob> capture = ArgumentCaptor.forClass(RunOnceSchedulableJob.class);
         verify(schedulerService, times(2)).scheduleRunOnceJob(capture.capture());
 

@@ -20,10 +20,10 @@ import java.util.Date;
 import static org.motechproject.util.DateUtil.newDateTime;
 
 @Component
-public class OffsetProgramSchedulerService extends CampaignSchedulerService<OffsetCampaignMessage, OffsetCampaign> {
+public class OffsetCampaignSchedulerService extends CampaignSchedulerService<OffsetCampaignMessage, OffsetCampaign> {
 
     @Autowired
-    public OffsetProgramSchedulerService(MotechSchedulerService schedulerService, AllMessageCampaigns allMessageCampaigns) {
+    public OffsetCampaignSchedulerService(MotechSchedulerService schedulerService, AllMessageCampaigns allMessageCampaigns) {
         super(schedulerService, allMessageCampaigns);
     }
 
