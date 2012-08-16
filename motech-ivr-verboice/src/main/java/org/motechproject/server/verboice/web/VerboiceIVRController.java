@@ -29,11 +29,15 @@ public class VerboiceIVRController {
         final String treeName = request.getParameter("tree");
         String callId = request.getParameter("motech_call_id");
         String verboiceCallId = request.getParameter("CallSid");
-        FlowSession flowSession;
         if (callId != null) {
-            flowSession = flowSessionService.getSession(callId);
+            FlowSession flowSession = flowSessionService.getSession(callId);
             flowSessionService.updateSessionId(flowSession.getSessionId(), verboiceCallId);
+        }else{
+            FlowSession session = flowSessionService.getSession(verboiceCallId);
+            session.set("From", request.getParameter("From"));
+            flowSessionService.updateSession(session);
         }
+
         if (StringUtils.isNotBlank(treeName)) {
             String digits = request.getParameter("DialCallStatus");
             if (StringUtils.isBlank(digits)) {
