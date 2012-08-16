@@ -3,13 +3,13 @@
     <parent>
         <groupId>org.motechproject</groupId>
         <artifactId>motech</artifactId>
-        <version>0.13</version>
+        <version>0.13-SNAPSHOT</version>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-scheduletracking-api-bundle</artifactId>
     <name>MoTeCH Schedule Tracking API Bundle</name>
     <description>Motech Schedule Tracking API</description>
-    <version>0.13</version>
+    <version>0.13-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <properties>
         <modules.root.dir>${basedir}/..</modules.root.dir>

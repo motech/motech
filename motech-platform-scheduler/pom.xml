@@ -4,11 +4,11 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.13</version>
+        <version>0.13-SNAPSHOT</version>
     </parent>
     <artifactId>motech-platform-scheduler</artifactId>
     <packaging>jar</packaging>
-    <version>0.13</version>
+    <version>0.13-SNAPSHOT</version>
     <name>MoTeCH Platform Scheduler</name>
     <properties>
         <modules.root.dir>${basedir}/..</modules.root.dir>
