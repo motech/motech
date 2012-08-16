@@ -24,7 +24,6 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     private Properties couchDbProperties;
     private Properties activemqProperties;
     private Properties quartzProperties;
-    private Properties systemProperties;
 
     @Override
     public String getLanguage() {
@@ -88,11 +87,11 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     }
 
     public byte[] getConfigFileChecksum() {
-        return configFileChecksum;
+        return Arrays.copyOf(configFileChecksum, configFileChecksum.length);
     }
 
     public void setConfigFileChecksum(final byte[] configFileChecksum) {
-        this.configFileChecksum = configFileChecksum;
+        this.configFileChecksum = Arrays.copyOf(configFileChecksum, configFileChecksum.length);
     }
 
     public void updateSettings(final MotechSettings settings) {
@@ -114,17 +113,21 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
             String key = (String)entry.getKey();
             String value = (String)entry.getValue();
 
-            if (MotechSettings.LANGUAGE.equals(key)) {
-                setLanguage(value);
-            } else if (MotechSettings.STATUS_MSG_TIMEOUT.equals(key)) {
-                setStatusMsgTimeout(value);
-            } else {
-                for (Properties p : Arrays.asList(getActivemqProperties(), getQuartzProperties())) {
-                    if (p.containsKey(key)) {
-                        p.put(key, value);
-                        break;
+            switch (key) {
+                case MotechSettings.LANGUAGE:
+                    setLanguage(value);
+                    break;
+                case MotechSettings.STATUS_MSG_TIMEOUT:
+                    setStatusMsgTimeout(value);
+                    break;
+                default:
+                    for (Properties p : Arrays.asList(getActivemqProperties(), getQuartzProperties())) {
+                        if (p.containsKey(key)) {
+                            p.put(key, value);
+                            break;
+                        }
                     }
-                }
+                    break;
             }
         }
     }

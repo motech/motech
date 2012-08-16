@@ -7,13 +7,11 @@
 
     <description>MoTeCH PMD ruleset</description>
 
-    <!-- TODO: rules to enable
     <rule ref="rulesets/sunsecure.xml/MethodReturnsInternalArray">
         <priority>2</priority>
     </rule>
     <rule ref="rulesets/sunsecure.xml/ArrayIsStoredDirectly">
         <priority>2</priority>
     </rule>
-    -->
 
 </ruleset>

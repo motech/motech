@@ -1,10 +1,9 @@
 package org.motechproject.server.config.settings;
 
-import org.apache.commons.lang.StringUtils;
-
 import java.io.IOException;
 import java.net.URL;
 import java.security.DigestInputStream;
+import java.util.Arrays;
 import java.util.Properties;
 
 public class ConfigFileSettings extends Properties implements MotechSettings {
@@ -23,7 +22,7 @@ public class ConfigFileSettings extends Properties implements MotechSettings {
     }
 
     public byte[] getMd5checkSum() {
-        return md5checkSum;
+        return Arrays.copyOf(md5checkSum, md5checkSum.length);
     }
 
     public URL getFileURL() {
