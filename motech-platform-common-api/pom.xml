@@ -3,7 +3,7 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.14-SNAPSHOT</version>
+        <version>0.13</version>
     </parent>
     <artifactId>motech-platform-common-api</artifactId>
     <name>MoTeCH Platform Common API</name>

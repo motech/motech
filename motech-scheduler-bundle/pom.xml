@@ -3,13 +3,13 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.14-SNAPSHOT</version>
+        <version>0.13</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-scheduler-bundle</artifactId>
     <packaging>bundle</packaging>
-    <version>0.14-SNAPSHOT</version>
+    <version>0.13</version>
     <name>MoTeCH Scheduler Bundle</name>
     <properties>
         <modules.root.dir>${basedir}/..</modules.root.dir>
