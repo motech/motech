@@ -46,7 +46,7 @@ import static org.quartz.TriggerKey.triggerKey;
 public class MotechSchedulerIT {
 
     public static final String SUBJECT = "testEvent";
-    private static final int REPEAT_INTERVAL_IN_SECONDS = 5;
+    private static final int REPEAT_INTERVAL_IN_SECONDS = 10;
     @Autowired
     private MotechSchedulerService motechSchedulerService;
 
@@ -510,7 +510,8 @@ public class MotechSchedulerIT {
     public void shouldScheduleRepeatingJobAndVerifyPastMisfiresTriggeredOnce() throws Exception {
         schedulerFactoryBean.getScheduler().clear();
         final DateTime now = DateUtil.now().withMillisOfSecond(0);
-        final DateTime startDate = now.minusSeconds(12);
+        final int numberOfTriggersInPast = 2;
+        final DateTime startDate = now.minusSeconds(numberOfTriggersInPast * REPEAT_INTERVAL_IN_SECONDS + 2);
         final Date endDate = startDate.plusDays(1).toDate();
         final MotechEvent event = new MotechEvent("TestSubject");
         final RepeatingSchedulableJob job = new RepeatingSchedulableJob()
@@ -525,7 +526,6 @@ public class MotechSchedulerIT {
 
         Trigger trigger = schedulerFactoryBean.getScheduler().getTrigger(triggerKey(new RepeatingJobId(event).value(), "default"));
         final org.quartz.Calendar calendar = schedulerFactoryBean.getScheduler().getCalendar(trigger.getCalendarName());
-        final List<Date> fireTimes = TriggerUtils.computeFireTimes((OperableTrigger) trigger, calendar, 10);
         Thread.sleep(6000);   //let the scheduler call test job handler.
         final List<DateTime> triggeredTime = testJobHandler.getTriggeredTime();
         assertDateEqualsIgnoreMillis(now.toDate(), triggeredTime.get(0));
