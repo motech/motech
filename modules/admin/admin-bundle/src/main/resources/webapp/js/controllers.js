@@ -309,16 +309,38 @@ function BundleSettingsCtrl($scope, Bundle, ModuleSettings, $routeParams, $http)
 
     $scope.module = Bundle.get({ bundleId: $routeParams.bundleId });
 
-    $scope.saveSettings = function(mSettings) {
+    $scope.saveSettings = function(mSettings, doRestart) {
+        var successHandler;
+        if (doRestart == true) {
+            successHandler = restartBundleHandler;
+        } else {
+            successHandler = alertHandler('settings.saved', 'success')
+        }
+
         blockUI();
-        mSettings.$save({bundleId: $scope.module.bundleId}, alertHandler('settings.saved'), angularErrorHandler);
+        mSettings.$save({bundleId: $scope.module.bundleId}, successHandler, angularErrorHandler);
     }
 
-    $scope.uploadRaw = function(filename) {
+    $scope.uploadRaw = function(filename, doRestart) {
+        var successHandler;
+        if (doRestart == true) {
+            successHandler = restartBundleHandler;
+        } else {
+            successHandler = alertHandler('settings.saved', 'success')
+        }
+
+        blockUI();
         var id = '#_raw_' + filename.replace('.', '\\.');
         $(id).ajaxSubmit({
-          success : alertHandler('settings.saved'),
+          success : successHandler,
           error : jFormErrorHandler
         });
+    }
+
+    var restartBundleHandler = function() {
+        $scope.module.$restart(function() {
+            unblockUI();
+            motechAlert('settings.saved', 'success');
+        }, alertHandler('bundles.error.restart', 'error'));
     }
 }

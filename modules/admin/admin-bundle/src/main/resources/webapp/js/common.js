@@ -11,10 +11,10 @@ var angularErrorHandler = function(response) {
     motechAlert("error");
 }
 
-var alertHandler = function(msg) {
+var alertHandler = function(msg, title) {
     return function() {
         unblockUI();
-        motechAlert(msg);
+        motechAlert(msg, title);
     }
 }
 
