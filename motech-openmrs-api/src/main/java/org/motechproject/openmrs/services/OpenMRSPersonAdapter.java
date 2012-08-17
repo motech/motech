@@ -9,6 +9,7 @@ import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.api.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
@@ -19,6 +20,7 @@ import static ch.lambdaj.Lambda.on;
 import static ch.lambdaj.Lambda.project;
 import static org.hamcrest.Matchers.is;
 
+@Service
 public class OpenMRSPersonAdapter {
 
     private PersonService personService;

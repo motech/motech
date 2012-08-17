@@ -120,6 +120,11 @@
             <version>3.1</version>
         </dependency>
         <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2</version>
+        </dependency>
+        <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
             <version>1.2.2</version>
@@ -128,6 +133,11 @@
             <groupId>findbugs</groupId>
             <artifactId>annotations</artifactId>
             <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openmrs.hibernate</groupId>
+            <artifactId>hibernate</artifactId>
+            <version>3.2.5.ga-mod</version>
         </dependency>
     </dependencies>
 
@@ -186,6 +196,7 @@
         <module>motech-message-campaign-bundle</module>
         <module>motech-mobileforms-api-bundle</module>
         <module>motech-mrs-api-bundle</module>
+        <module>motech-openmrs-api-bundle</module>
         <module>motech-openmrs-ws-bundle</module>
         <module>motech-outbox-bundle</module>
         <module>motech-pillreminder-api-bundle</module>

@@ -1,6 +1,7 @@
 package org.motechproject.openmrs;
 
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
@@ -14,14 +15,15 @@ import org.openmrs.api.UserService;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.InputRequiredException;
+import org.openmrs.util.OpenmrsConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Properties;
-
-import static java.lang.String.format;
-import static org.openmrs.api.context.Context.startup;
-import static org.openmrs.util.OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY;
-import static org.openmrs.util.OpenmrsConstants.AUTO_UPDATE_DATABASE_RUNTIME_PROPERTY;
 
 public class Context {
     private static Logger logger = Logger.getLogger(Context.class);
@@ -30,26 +32,40 @@ public class Context {
     private String password;
     private String openmrsUser;
     private String openmrsPassword;
+    private String dataDir;
     private static final String ENABLE_HIBERNATE_SECOND_LEVEL_CACHE = "hibernate.cache.use_second_level_cache";
 
-    public Context(String url, String user, String password, String openmrsUser, String openmrsPassword) {
+    @Autowired
+    private ResourceLoader resourceLoader;
+
+    public Context(String url, String user, String password, String openmrsUser, String openmrsPassword, String dataDir) {
         this.url = url;
         this.user = user;
         this.password = password;
         this.openmrsUser = openmrsUser;
         this.openmrsPassword = openmrsPassword;
+        this.dataDir = dataDir;
     }
 
-    public void initialize() throws InputRequiredException, DatabaseUpdateException, URISyntaxException {
-        logger.warn(format("connecting to openmrs instance at %s", url));
-        Properties properties = new Properties();
-        properties.setProperty(AUTO_UPDATE_DATABASE_RUNTIME_PROPERTY, String.valueOf(true));
-        String path = getClass().getClassLoader().getResource("openmrs-data").toURI().getPath();
-        logger.warn(format("openmrs data folder is  set to %s", path));
-        properties.setProperty(APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, path);
-        properties.setProperty(ENABLE_HIBERNATE_SECOND_LEVEL_CACHE, String.valueOf(false));
-        startup(url, user, password, properties);
-        logger.warn(format("loaded %d modules", ModuleFactory.getLoadedModules().size()));
+    public void initialize() throws InputRequiredException, DatabaseUpdateException, URISyntaxException, IOException {
+        Resource resource = (StringUtils.isNotBlank(dataDir)) ?
+                new FileSystemResource(dataDir) :
+                resourceLoader.getResource("openmrs-data");
+
+        if (resource != null) {
+            String path = resource.getURL().getPath();
+            logger.info(String.format("openmrs data folder is set to %s", path));
+
+            Properties properties = new Properties();
+            properties.setProperty(OpenmrsConstants.AUTO_UPDATE_DATABASE_RUNTIME_PROPERTY, String.valueOf(true));
+            properties.setProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, path);
+            properties.setProperty(ENABLE_HIBERNATE_SECOND_LEVEL_CACHE, String.valueOf(false));
+
+            logger.info(String.format("connecting to openmrs instance at %s", url));
+            org.openmrs.api.context.Context.startup(url, user, password, properties);
+
+            logger.info(String.format("loaded %d modules", ModuleFactory.getLoadedModules().size()));
+        }
     }
 
     public PatientService getPatientService() {
