@@ -8,8 +8,24 @@
     <context:annotation-config />
     <context:component-scan base-package="org.motechproject.openmrs" />
 
-    <context:property-placeholder system-properties-mode="NEVER"
-        location="classpath:openmrs.properties,classpath:openmrs-urls.properties" />
+    <bean id="openmrsWsSettings" class="org.motechproject.server.config.SettingsFacade">
+        <property name="configFiles">
+            <list>
+                <value>classpath:openmrs.properties</value>
+                <value>classpath:openmrs-urls.properties</value>
+            </list>
+        </property>
+        <property name="platformSettingsService" ref="platformSettingsServiceOsgi" />
+    </bean>
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="propertiesArray">
+            <list>
+                <bean factory-bean="openmrsWsSettings" factory-method="asProperties" />
+            </list>
+        </property>
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_NEVER" />
+    </bean>
 
     <bean id="openMrshttpClient" class="org.motechproject.openmrs.rest.HttpClientFactoryBean">
         <constructor-arg value="${openmrs.user}" />
