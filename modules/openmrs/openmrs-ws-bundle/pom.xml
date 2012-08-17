@@ -65,9 +65,12 @@
                             org.motechproject.openmrs.rest.osgi.Activator
                         </Bundle-Activator>
                         <Import-Package>
+                            org.motechproject.server.config,
+                            org.motechproject.server.config.service,
                             org.springframework.context.config,
                             org.springframework.osgi.config,
                             org.springframework.beans.factory.config,
+                            org.springframework.beans.factory.xml,
                             org.springframework.http.client,
                             org.springframework.http.converter,
                             *

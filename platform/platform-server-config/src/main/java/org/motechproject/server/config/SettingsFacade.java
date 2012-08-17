@@ -4,9 +4,11 @@ import org.apache.commons.io.IOUtils;
 import org.motechproject.MotechException;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.osgi.framework.BundleContext;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.osgi.context.BundleContextAware;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public class SettingsFacade {
+public class SettingsFacade implements BundleContextAware, InitializingBean {
 
     private PlatformSettingsService platformSettingsService;
 
@@ -30,17 +32,21 @@ public class SettingsFacade {
     @Autowired(required = false)
     public void setPlatformSettingsService(PlatformSettingsService platformSettingsService) {
         this.platformSettingsService = platformSettingsService;
+    }
+
+    @Override
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
+
+    @Override
+    public void afterPropertiesSet() {
         if (!propsRegistered) {
             registerAllProperties();
         }
         if (!rawConfigRegistered) {
             registerAllRawConfig();
         }
-    }
-
-    @Autowired(required = false)
-    public void setBundleContext(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
     }
 
     public void setConfigFiles(List<Resource> resources) {
@@ -209,8 +215,16 @@ public class SettingsFacade {
         return is;
     }
 
+    public Properties asProperties() {
+        Properties result = new Properties();
+        for (Properties p : config.values()) {
+            result.putAll(p);
+        }
+        return result;
+    }
+
     protected void registerAllProperties() {
-        if (platformSettingsService != null) {
+        if (platformSettingsService != null && bundleContext != null) {
             for (Map.Entry<String, Properties> entry : config.entrySet()) {
                 String filename = entry.getKey();
                 Properties props = entry.getValue();
@@ -238,7 +252,7 @@ public class SettingsFacade {
     }
 
     protected void registerAllRawConfig() {
-        if (platformSettingsService != null) {
+        if (platformSettingsService != null && bundleContext != null) {
             for (Map.Entry<String, Resource> entry : rawConfig.entrySet()) {
                 String filename = entry.getKey();
                 Resource resource = entry.getValue();
