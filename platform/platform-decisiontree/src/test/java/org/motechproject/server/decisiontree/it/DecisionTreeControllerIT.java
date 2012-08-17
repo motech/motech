@@ -92,7 +92,7 @@ public class DecisionTreeControllerIT extends SpringIntegrationTest {
     @Test
     public void shouldReturnVXML() throws Exception {
         HttpClient client = new DefaultHttpClient();
-        final String vmlUrl = "http://localhost:7080" + CONTEXT_PATH + "/decisiontree/node?type=vxml&pId=asd&ln=en&tree=someTree&trP=Lw==";
+        final String vmlUrl = "http://localhost:7080" + CONTEXT_PATH + "/decisiontree/node?provider=vxml&pId=asd&ln=en&tree=someTree&trP=Lw==";
         final String response = client.execute(new HttpGet(vmlUrl), new BasicResponseHandler());
         Assert.assertTrue(response.contains("<vxml version=\"2.1\" xmlns=\"http://www.w3.org/2001/vxml\">"));
         Assert.assertTrue(response.contains("<audio src=\""+ AUDIO_FILE_URL + "\">"));

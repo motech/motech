@@ -46,7 +46,7 @@ public class DecisionTreeController extends MultiActionController {
     public static final String TRANSITION_KEY_PARAM = "trK";
     public static final String TRANSITION_PATH_PARAM = "trP";
     public static final String LANGUAGE_PARAM = "ln";
-    public static final String TYPE_PARAM = "type";
+    public static final String PROVIDER_NAME_PARAM = "provider";
 
     public static final String NODE_TEMPLATE_NAME = TEMPLATE_BASE_PATH + "node";
     public static final String ERROR_MESSAGE_TEMPLATE_NAME = TEMPLATE_BASE_PATH + "node-error";
@@ -111,6 +111,10 @@ public class DecisionTreeController extends MultiActionController {
         String encodedTransitionPath = getParentTransitionPath(request);
         String transitionKey = request.getParameter(TRANSITION_KEY_PARAM);
 
+        if(transitionKey !=null && transitionKey.equals(CallStatus.hangup.toString())) {
+            return new ModelAndView(templateNameFor(request.getParameter(PROVIDER_NAME_PARAM), EXIT_TEMPLATE_NAME));
+        }
+
         logger.info(" Node HTTP  request parameters: "
                 + LANGUAGE_PARAM + ": " + language + ", "
                 + TREE_NAME_PARAM + ": " + treeNameString + ", "
@@ -168,7 +172,7 @@ public class DecisionTreeController extends MultiActionController {
                         treeNames = (String[]) ArrayUtils.remove(treeNames, 0);
                         return new ModelAndView(String.format("redirect:/decisiontree/node?%s=%s&%s=%s", TREE_NAME_PARAM, LANGUAGE_PARAM, StringUtils.join(treeNames, TREE_NAME_SEPARATOR), request.getParameter(LANGUAGE_PARAM)));
                     } else {
-                        return new ModelAndView(templateNameFor(request.getParameter(TYPE_PARAM),EXIT_TEMPLATE_NAME));
+                        return new ModelAndView(templateNameFor(request.getParameter(PROVIDER_NAME_PARAM),EXIT_TEMPLATE_NAME));
                     }
                 } else {
                     executeOperations(transitionKey, session, node);
@@ -210,12 +214,12 @@ public class DecisionTreeController extends MultiActionController {
             //reduce the current tree and redirect to the next tree
             mav.addObject("treeName", StringUtils.join(ArrayUtils.remove(treeNames, 0), TREE_NAME_SEPARATOR));
         }
-        mav.setViewName(templateNameFor(request.getParameter(TYPE_PARAM), NODE_TEMPLATE_NAME));
+        mav.setViewName(templateNameFor(request.getParameter(PROVIDER_NAME_PARAM), NODE_TEMPLATE_NAME));
         mav.addObject("contextPath", request.getContextPath());
         mav.addObject("servletPath", request.getServletPath());
         mav.addObject("node", node);
         mav.addObject("language", session.get(LANGUAGE_PARAM));
-        mav.addObject("type", request.getParameter(TYPE_PARAM));
+        mav.addObject("provider", request.getParameter(PROVIDER_NAME_PARAM));
         mav.addObject("transitionPath", Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
         mav.addObject("escape", new StringEscapeUtils());
         mav.addObject("maxDigits", maxDigits(node));
@@ -240,6 +244,9 @@ public class DecisionTreeController extends MultiActionController {
                 return;
             }
             if (DialStatus.isValid(key)) {
+                return;
+            }
+            if (CallStatus.isValid(key)) {
                 return;
             }
             try {
