@@ -15,6 +15,7 @@
                 </div>
                 <input type="hidden" name="section" value="{{mSettings.section}}" />
                 <input type="button" ng-click="saveSettings(mSettings)" value="{{msg('submit')}}"/>
+                <input type="button" ng-click="saveSettings(mSettings, true)" value="{{msg('submitAndRestart')}}"/>
             </form>
         </div>
     </div>
@@ -29,6 +30,7 @@
                 {{rawFile}}: <input type="file" name="file" />
                 <input type="hidden" value="{{rawFile}}" name="filename" />
                 <input type="button"  ng-click="uploadRaw(rawFile)" value="{{msg('submit')}}"/>
+                <input type="button"  ng-click="uploadRaw(rawFile, true)" value="{{msg('submitAndRestart')}}"/>
             </form>
         </div>
     </div>
