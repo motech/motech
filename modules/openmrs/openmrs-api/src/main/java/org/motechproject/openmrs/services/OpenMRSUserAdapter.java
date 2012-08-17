@@ -20,6 +20,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import java.util.Set;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
+@Service
 public class OpenMRSUserAdapter implements MRSUserAdapter {
     private static final Integer PASSWORD_LENGTH = 8;
     private static final String PERSON_UNKNOWN_GENDER = "?";
