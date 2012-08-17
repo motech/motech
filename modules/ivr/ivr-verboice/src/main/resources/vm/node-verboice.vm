@@ -6,13 +6,13 @@
         #elseif ($prompt.class.simpleName == "TextToSpeechPrompt")
             <Say>$prompt.message</Say>
         #elseif ($prompt.class.simpleName == "DialPrompt")
-            #set ($url = "$scheme://$host$contextPath$servletPath/verboice/ivr?type=$type&ln=$language&tree=$treeName&trP=$transitionPath")
+            #set ($url = "$scheme://$host$contextPath$servletPath/verboice/ivr?provider=$provider&ln=$language&tree=$treeName&trP=$transitionPath")
             #set ($dial = true)
             <Dial action="$escape.escapeXml($url)">$prompt.phoneNumber</Dial>
         #end
     #end
     #if ($node.transitions.size() > 0 && !$dial)
-            #set ($url = "$scheme://$host$contextPath$servletPath/verboice/ivr?type=$type&ln=$language&tree=$treeName&trP=$transitionPath")
+            #set ($url = "$scheme://$host$contextPath$servletPath/verboice/ivr?provider=$provider&ln=$language&tree=$treeName&trP=$transitionPath")
             #set ($maxTimeoutInSeconds = $maxTimeout / 1000)
             <Gather method="POST" action="$escape.escapeXml($url)" numDigits="$maxDigits" timeout="$maxTimeoutInSeconds"></Gather>
      #else
