@@ -120,16 +120,25 @@
             <version>3.1</version>
         </dependency>
         <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2</version>
+        </dependency>
+        <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
             <version>1.2.2</version>
         </dependency>
-        <!-- Uncomment with findbugs-maven-plugin -->
-        <!--<dependency>-->
-            <!--<groupId>findbugs</groupId>-->
-            <!--<artifactId>annotations</artifactId>-->
-            <!--<version>1.0.0</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>findbugs</groupId>
+            <artifactId>annotations</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openmrs.hibernate</groupId>
+            <artifactId>hibernate</artifactId>
+            <version>3.2.5.ga-mod</version>
+        </dependency>
     </dependencies>
 
     <modules>
@@ -191,6 +200,7 @@
         <module>modules/mobileforms/mobileforms-api-bundle</module>
         <module>modules/mrs/mrs-api-bundle</module>
         <module>modules/openmrs/openmrs-ws-bundle</module>
+        <module>modules/openmrs/openmrs-api-bundle</module>
         <module>modules/outbox/outbox-bundle</module>
         <module>modules/pillreminder/pillreminder-api-bundle</module>
         <module>modules/rules/rules-api-bundle</module>
