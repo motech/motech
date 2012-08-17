@@ -109,7 +109,6 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.motechproject.event,
                             org.motechproject.gateway
                         </Export-Package>
                         <Bundle-Activator>

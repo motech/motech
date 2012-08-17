@@ -76,11 +76,9 @@
                             org.springframework.context.config,
                             org.springframework.beans.factory.xml,
                             org.springframework.osgi.config,
-                            org.motechproject.scheduler.gateway,
                             *
                         </Import-Package>
-                        <Embed-Dependency>motech-message-campaign</Embed-Dependency>
-                        <Embed-Transitive>true</Embed-Transitive>
+                        <Embed-Dependency>motech-message-campaign;inline=!*Context.xml</Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>

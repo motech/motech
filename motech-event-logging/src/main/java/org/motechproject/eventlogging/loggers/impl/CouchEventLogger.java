@@ -6,7 +6,7 @@ import org.motechproject.eventlogging.domain.CouchLoggableEvent;
 import org.motechproject.eventlogging.domain.LoggableEvent;
 import org.motechproject.eventlogging.loggers.EventLogger;
 import org.motechproject.eventlogging.repository.AllCouchLogs;
-import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.event.MotechEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

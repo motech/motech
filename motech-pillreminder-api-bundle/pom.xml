@@ -122,8 +122,7 @@
                             org.springframework.osgi.config,
                             *
                         </Import-Package>
-                        <Embed-Dependency>motech-pillreminder-api</Embed-Dependency>
-                        <Embed-Transitive>true</Embed-Transitive>
+                        <Embed-Dependency>motech-pillreminder-api;inline=!*Context.xml</Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>

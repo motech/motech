@@ -8,17 +8,10 @@
             http://www.springframework.org/schema/context
             http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
-    <context:annotation-config/>
-
-    <import resource="classpath:integrationCommonAPI.xml"/>
-    <import resource="inboundEventChannelAdapter.xml"/>
-    <import resource="outboundScheduleJobChannelAdapter.xml"/>
     <import resource="classpath:applicationPlatformCommonAPI.xml"/>
     <import resource="classpath:applicationPlatformStartup.xml"/>
-
-    <bean id="eventRelay" class="org.motechproject.server.event.ServerEventRelay"/>
-
-    <bean id="eventContext" class="org.motechproject.scheduler.context.EventContext" factory-method="getInstance"/>
+    <import resource="classpath:schedulerQueuePublisher.xml"/>
+    <import resource="classpath:motechEventContext.xml"/>
 
     <util:properties id="osgiConfig" location="classpath:osgi.properties"/>
 
@@ -38,7 +31,7 @@
         </property>
     </bean>
 
-    <context:component-scan base-package="org.motechproject.server.event"/>
+    <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.server.osgi"/>
     <!--  <context:component-scan base-package="org.motechproject.server.ruleengine"/>-->
 </beans>

@@ -3,9 +3,9 @@ package org.motechproject.server.decisiontree.service;
 import org.motechproject.decisiontree.model.Action;
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.Transition;
-import org.motechproject.scheduler.context.EventContext;
-import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.scheduler.event.EventRelay;
+import org.motechproject.event.listener.EventContext;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
 import org.springframework.util.Assert;
 
 import java.util.List;

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.event.MotechEvent;
 
 public class DefaultFileToLogConverterTest {
 

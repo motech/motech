@@ -68,7 +68,6 @@
                         </Export-Package>
                         <Import-Package>
                             *,
-                            org.motechproject.server.event,
                             org.springframework.context.config,
                             org.springframework.beans.factory.xml,
                             org.springframework.osgi.config,
@@ -81,8 +80,7 @@
                             org.motechproject.eventlogging.loggers.impl,
                             org.motechproject.eventlogging.service.impl
                         </Private-Package>
-                        <Embed-Dependency>motech-event-logging</Embed-Dependency>
-                        <Embed-Transitive>true</Embed-Transitive>
+                        <Embed-Dependency>motech-event-logging;inline=true</Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>

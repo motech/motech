@@ -1,6 +1,6 @@
 package org.motechproject.cmslite.api.osgi;
 
-import org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor;
+import org.motechproject.event.listener.EventAnnotationBeanPostProcessor;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;

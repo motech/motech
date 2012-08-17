@@ -4,12 +4,12 @@ import org.asteriskjava.live.AsteriskChannel;
 import org.asteriskjava.live.Disposition;
 import org.asteriskjava.live.LiveException;
 import org.asteriskjava.live.OriginateCallback;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.ivr.event.IVREventDelegate;
 import org.motechproject.ivr.model.CallDetailRecord;
 import org.motechproject.ivr.service.CallRequest;
-import org.motechproject.scheduler.context.EventContext;
-import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.scheduler.event.EventRelay;
+import org.motechproject.event.listener.EventContext;
 
 import java.util.Map;
 

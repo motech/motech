@@ -1,8 +1,8 @@
 package org.motechproject.server.voxeo.osgi;
 
-import org.motechproject.scheduler.context.EventContext;
-import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventAnnotationBeanPostProcessor;
+import org.motechproject.event.listener.EventRelay;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -89,7 +90,7 @@ public class Activator implements BundleActivator {
             // register all annotated handlers
             EventAnnotationBeanPostProcessor.registerHandlers(BeanFactoryUtils.beansOfTypeIncludingAncestors(dispatcherServlet.getWebApplicationContext(), Object.class));
             // create tree objects in the database
-            bootStrap();
+            bootStrap(dispatcherServlet.getWebApplicationContext());
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -100,8 +101,8 @@ public class Activator implements BundleActivator {
     /**
      * responsible for emitting by initialize event (a handler will populate patient and trees in the database for testing)
      */
-    private void bootStrap() {
-        EventContext.getInstance().getEventRelay().sendEventMessage(new MotechEvent("voxeo.initialize", null));
+    private void bootStrap(WebApplicationContext webAppContext) {
+        BeanFactoryUtils.beanOfType(webAppContext, EventRelay.class).sendEventMessage(new MotechEvent("voxeo.initialize", null));
     }
 
     private void serviceRemoved(HttpService service) {

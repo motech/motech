@@ -1,6 +1,7 @@
 package org.motechproject.scheduler.domain;
 
 import org.joda.time.LocalDate;
+import org.motechproject.event.MotechEvent;
 import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.Time;
 

@@ -9,9 +9,9 @@
 
     <groupId>org.motechproject</groupId>
     <artifactId>motech-web-security-bundle</artifactId>
-    <name>MoTeCH SMS SMPP Bundle</name>
-    <description>MoTeCH SMS SMPP</description>
     <version>0.13-SNAPSHOT</version>
+    <name>MoTeCH Web Security Bundle</name>
+    <description>MoTeCH Web Security</description>
     <packaging>bundle</packaging>
 
     <properties>
@@ -22,6 +22,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-web-security</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-event</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

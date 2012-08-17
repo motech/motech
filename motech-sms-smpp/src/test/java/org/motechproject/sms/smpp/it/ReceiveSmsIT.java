@@ -1,7 +1,7 @@
 package org.motechproject.sms.smpp.it;
 
-import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.server.event.annotations.MotechListener;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.annotations.MotechListener;
 import org.motechproject.sms.smpp.constants.EventSubjects;
 
 import static org.motechproject.sms.api.constants.EventDataKeys.INBOUND_MESSAGE;

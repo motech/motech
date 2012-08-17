@@ -3,7 +3,7 @@ package org.motechproject.eventlogging.loggers;
 import java.util.ArrayList;
 import java.util.List;
 import org.motechproject.eventlogging.domain.LoggableEvent;
-import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.event.MotechEvent;
 
 /**
  * Class that represents a generic event logger. All loggers have a list of

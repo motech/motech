@@ -7,11 +7,6 @@
             http://www.springframework.org/schema/beans/spring-beans.xsd
              http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="location" value="classpath:activemq.properties"/>
-        <property name="ignoreUnresolvablePlaceholders" value="true"/>
-    </bean>
-
     <import resource="classpath:applicationPlatformServerAPI.xml"/>
 
     <!-- overwrite osgiFrameworkService definition -->
@@ -25,5 +20,4 @@
         </property>
     </bean>
 
-    <util:properties id="activeMQProperties" location="classpath:activemq.properties"/>
 </beans>

@@ -5,7 +5,8 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.motechproject.scheduler.event.EventRelay;
+import org.motechproject.event.listener.EventContext;
+import org.motechproject.event.listener.EventRelay;
 
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;

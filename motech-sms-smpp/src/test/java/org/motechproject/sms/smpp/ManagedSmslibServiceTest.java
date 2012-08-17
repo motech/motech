@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.scheduler.event.EventRelay;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.smpp.constants.SmppProperties;
 import org.motechproject.sms.smpp.constants.SmsProperties;
@@ -16,6 +16,7 @@ import org.smslib.Service;
 import org.smslib.Settings;
 import org.smslib.TimeoutException;
 import org.smslib.smpp.jsmpp.JSMPPGateway;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;

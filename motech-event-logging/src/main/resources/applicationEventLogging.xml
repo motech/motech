@@ -8,10 +8,9 @@
 
 
     <context:annotation-config />
+    <context:component-scan base-package="org.motechproject.eventlogging" />
 
     <util:properties id="couchdbProperties" location="classpath:couchdb.properties" />
-
-    <context:component-scan base-package="org.motechproject.eventlogging" />
 
     <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean">
         <property name="properties" ref="couchdbProperties"/>
@@ -25,8 +24,5 @@
         <constructor-arg value="motech-event-logging" />
         <constructor-arg ref="couchDbInstance" />
     </bean>
-
-    <bean
-        class="org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor" />
 
 </beans>

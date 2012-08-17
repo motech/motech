@@ -1,9 +1,9 @@
 package org.motechproject.server.osgi;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.scheduler.event.EventRelay;
+import org.motechproject.event.listener.EventListenerRegistry;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.service.PlatformSettingsService;
-import org.motechproject.server.event.EventListenerRegistryService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -44,7 +44,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     private PlatformSettingsService platformSettingsService;
 
     @Autowired
-    private EventListenerRegistryService eventListenerRegistryService;
+    private EventListenerRegistry eventListenerRegistry;
 
     @Autowired
     private EventRelay eventRelay;
@@ -191,7 +191,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     private void registerPlatformServices(BundleContext bundleContext) {
         bundleContext.registerService(EventRelay.class.getName(), eventRelay, null);
-        bundleContext.registerService(EventListenerRegistryService.class.getName(), eventListenerRegistryService, null);
+        bundleContext.registerService(EventListenerRegistry.class.getName(), eventListenerRegistry, null);
         bundleContext.registerService(PlatformSettingsService.class.getName(), platformSettingsService, null);
     }
 

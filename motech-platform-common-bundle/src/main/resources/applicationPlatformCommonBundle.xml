@@ -7,8 +7,8 @@
 
     <import resource="classpath*:applicationPlatformCommon.xml"/>
 
-    <osgi:service id="outboundEventGatewayOsgi" ref="outboundEventGateway"
-                  interface="org.motechproject.scheduler.gateway.OutboundEventGateway"/>
+    <osgi:service id="outboundEventGatewayOsgi" ref="eventQueueGateway"
+                  interface="org.motechproject.event.gateway.EventQueueGateway"/>
 
     <osgi:service id="eventGatewayToEventJmsoutChannelOsgi" ref="eventGatewayToEventJmsoutChannel"
                   interface="org.springframework.integration.core.SubscribableChannel"/>

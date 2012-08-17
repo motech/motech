@@ -18,7 +18,7 @@ import org.motechproject.eventlogging.loggers.impl.CouchEventLogger;
 import org.motechproject.eventlogging.repository.AllCouchLogs;
 import org.motechproject.eventlogging.repository.AllEventMappings;
 import org.motechproject.eventlogging.service.EventLoggingService;
-import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.event.MotechEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

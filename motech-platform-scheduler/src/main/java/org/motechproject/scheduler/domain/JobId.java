@@ -1,5 +1,6 @@
 package org.motechproject.scheduler.domain;
 
+import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
 
 import java.io.Serializable;

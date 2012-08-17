@@ -2,17 +2,32 @@ package org.motechproject.scheduler;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.internal.event.listener.EventListenerRegistryImpl;
 import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.Time;
-import org.motechproject.scheduler.domain.*;
+import org.motechproject.scheduler.domain.CronJobId;
+import org.motechproject.scheduler.domain.CronSchedulableJob;
+import org.motechproject.scheduler.domain.DayOfWeekSchedulableJob;
+import org.motechproject.scheduler.domain.RepeatingJobId;
+import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
+import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.motechproject.scheduler.impl.MotechSchedulerServiceImpl;
-import org.motechproject.server.event.EventListenerRegistry;
-import org.motechproject.server.event.annotations.MotechListenerEventProxy;
+import org.motechproject.event.listener.MotechListenerEventProxy;
 import org.motechproject.util.DateUtil;
-import org.quartz.*;
+import org.quartz.CronTrigger;
+import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
+import org.quartz.JobKey;
+import org.quartz.Trigger;
+import org.quartz.TriggerKey;
+import org.quartz.TriggerUtils;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.OperableTrigger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +66,7 @@ public class MotechSchedulerIT {
     private MotechSchedulerService motechSchedulerService;
 
     @Autowired
-    private EventListenerRegistry eventListenerRegistry;
+    private EventListenerRegistryImpl eventListenerRegistry;
 
     @Autowired
     private SchedulerFactoryBean schedulerFactoryBean;
@@ -528,7 +543,8 @@ public class MotechSchedulerIT {
         final List<Date> fireTimes = TriggerUtils.computeFireTimes((OperableTrigger) trigger, calendar, 10);
         Thread.sleep(6000);   //let the scheduler call test job handler.
         final List<DateTime> triggeredTime = testJobHandler.getTriggeredTime();
-        assertDateEqualsIgnoreMillis(now.toDate(), triggeredTime.get(0));
+        long firstTriggeredTimeInMillis = triggeredTime.get(0).getMillis();
+        assertTrue(firstTriggeredTimeInMillis >= now.getMillis() && firstTriggeredTimeInMillis <= triggeredTime.get(1).getMillis());
         assertDateEqualsIgnoreMillis(startDate.plusSeconds(3 * REPEAT_INTERVAL_IN_SECONDS).toDate(), triggeredTime.get(1));
     }
 

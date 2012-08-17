@@ -6,17 +6,17 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.event.annotations.MotechListener;
+import org.motechproject.event.listener.EventListener;
+import org.motechproject.internal.event.listener.EventListenerRegistryImpl;
+import org.motechproject.event.MotechEvent;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllSchedules;
 import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
 import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
-import org.motechproject.server.event.EventListener;
-import org.motechproject.server.event.EventListenerRegistry;
-import org.motechproject.server.event.annotations.MotechListener;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
@@ -62,7 +62,7 @@ public class SchedulingFloatingAlertsWithoutPreferredTimeIT {
     private AllEnrollments allEnrollments;
 
     @Autowired
-    EventListenerRegistry eventListenerRegistry;
+    EventListenerRegistryImpl eventListenerRegistry;
 
     Scheduler scheduler;
 
@@ -84,7 +84,7 @@ public class SchedulingFloatingAlertsWithoutPreferredTimeIT {
 
         String enrollmentId = scheduleTrackingService.enroll(new EnrollmentRequest().setExternalId("abcde").setScheduleName("schedule_with_floating_alerts").setPreferredAlertTime(null).setReferenceDate(newDate(2050, 5, 10)).setReferenceTime(new Time(8, 20)).setEnrollmentDate(newDate(2050, 5, 10)).setEnrollmentTime(new Time(8, 20)).setStartingMilestoneName("milestone1").setMetadata(null));
 
-        List<DateTime> fireTimes = getFireTimes(format("org.motechproject.scheduletracking.api.milestone.alert-%s.0-repeat", enrollmentId)) ;
+        List<DateTime> fireTimes = getFireTimes(format("org.motechproject.scheduletracking.api.milestone.alert-%s.0-repeat", enrollmentId));
         assertEquals(asList(
                 newDateTime(2050, 5, 17, 8, 20, 0),
                 newDateTime(2050, 5, 18, 8, 20, 0),
@@ -106,7 +106,7 @@ public class SchedulingFloatingAlertsWithoutPreferredTimeIT {
 
             assertEquals(newDateTime(2050, 5, 19, 10, 0, 0), alertListener.getTriggerTime());
 
-            List<DateTime> fireTimes = getFireTimes(format("org.motechproject.scheduletracking.api.milestone.alert-%s.0-repeat", enrollmentId)) ;
+            List<DateTime> fireTimes = getFireTimes(format("org.motechproject.scheduletracking.api.milestone.alert-%s.0-repeat", enrollmentId));
             assertEquals(asList(
                     newDateTime(2050, 5, 20, 9, 0, 0),
                     newDateTime(2050, 5, 21, 9, 0, 0),
@@ -126,7 +126,7 @@ public class SchedulingFloatingAlertsWithoutPreferredTimeIT {
             fakeNow(newDateTime(2050, 5, 19, 8, 0, 0));
             String enrollmentId = scheduleTrackingService.enroll(new EnrollmentRequest().setExternalId("abcde").setScheduleName("schedule_with_floating_alerts").setPreferredAlertTime(null).setReferenceDate(newDate(2050, 5, 10)).setReferenceTime(new Time(9, 0)).setEnrollmentDate(newDate(2050, 5, 18)).setEnrollmentTime(new Time(9, 0)).setStartingMilestoneName("milestone1").setMetadata(null));
 
-            List<DateTime> fireTimes = getFireTimes(format("org.motechproject.scheduletracking.api.milestone.alert-%s.0-repeat", enrollmentId)) ;
+            List<DateTime> fireTimes = getFireTimes(format("org.motechproject.scheduletracking.api.milestone.alert-%s.0-repeat", enrollmentId));
             assertEquals(asList(
                     newDateTime(2050, 5, 19, 9, 0, 0),
                     newDateTime(2050, 5, 20, 9, 0, 0),
@@ -150,7 +150,7 @@ public class SchedulingFloatingAlertsWithoutPreferredTimeIT {
 
             assertEquals(newDateTime(2050, 5, 22, 10, 0, 0), alertListener.getTriggerTime());
 
-            List<DateTime> fireTimes = getFireTimes(format("org.motechproject.scheduletracking.api.milestone.alert-%s.0-repeat", enrollmentId)) ;
+            List<DateTime> fireTimes = getFireTimes(format("org.motechproject.scheduletracking.api.milestone.alert-%s.0-repeat", enrollmentId));
             assertEquals(asList(
                     newDateTime(2050, 5, 23, 9, 0, 0)),
                     fireTimes);
@@ -174,7 +174,7 @@ public class SchedulingFloatingAlertsWithoutPreferredTimeIT {
 
             assertEquals(newDateTime(2050, 5, 22, 11, 0, 0), alertListener.getTriggerTime());
 
-            List<DateTime> fireTimes = getFireTimes(format("org.motechproject.scheduletracking.api.milestone.alert-%s.1-repeat", enrollmentId)) ;
+            List<DateTime> fireTimes = getFireTimes(format("org.motechproject.scheduletracking.api.milestone.alert-%s.1-repeat", enrollmentId));
             assertEquals(asList(
                     newDateTime(2050, 5, 23, 10, 0, 0),
                     newDateTime(2050, 5, 24, 10, 0, 0)),

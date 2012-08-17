@@ -11,9 +11,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.decisiontree.model.Action;
 import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.Transition;
-import org.motechproject.scheduler.context.EventContext;
-import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.scheduler.event.EventRelay;
+import org.motechproject.event.listener.EventContext;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
 
 import java.util.Arrays;
 import java.util.HashMap;

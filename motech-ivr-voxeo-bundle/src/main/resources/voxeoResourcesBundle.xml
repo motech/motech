@@ -15,4 +15,5 @@
         </osgi:service-properties>
     </osgi:service>
 
+    <osgi:reference id="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
 </beans>

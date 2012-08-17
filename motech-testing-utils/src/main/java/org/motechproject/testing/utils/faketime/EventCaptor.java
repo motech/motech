@@ -1,11 +1,11 @@
 package org.motechproject.testing.utils.faketime;
 
 import org.joda.time.DateTime;
-import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.event.listener.EventListener;
+import org.motechproject.event.MotechEvent;
 import org.quartz.Scheduler;
 import org.quartz.core.QuartzScheduler;
 import org.quartz.core.QuartzSchedulerThread;
-import org.motechproject.server.event.EventListener;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

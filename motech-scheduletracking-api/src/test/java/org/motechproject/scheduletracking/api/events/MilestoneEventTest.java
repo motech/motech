@@ -3,7 +3,7 @@ package org.motechproject.scheduletracking.api.events;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.motechproject.model.Time;
-import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.Milestone;

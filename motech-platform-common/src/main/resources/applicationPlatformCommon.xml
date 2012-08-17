@@ -27,6 +27,4 @@
         <constructor-arg ref="couchDbInstance" />
     </bean>
 
-    <import resource="integrationCommon.xml"/>
-
 </beans>

@@ -1,6 +1,6 @@
 package org.motechproject.eventlogging.converter;
 
-import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.event.MotechEvent;
 
 /**
  * Interface to implement for custom converters. The converter should return an

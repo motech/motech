@@ -1,8 +1,8 @@
 package org.motechproject.server.messagecampaign.scheduler;
 
-import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.scheduler.gateway.OutboundEventGateway;
-import org.motechproject.server.event.annotations.MotechListener;
+import org.motechproject.event.gateway.EventQueueGateway;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.annotations.MotechListener;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.dao.AllCampaignEnrollments;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
@@ -18,12 +18,12 @@ import java.util.Map;
 public class EndOfCampaignNotifier {
 
     private AllCampaignEnrollments allCampaignEnrollments;
-    private OutboundEventGateway outboundEventGateway;
+    private EventQueueGateway eventQueueGateway;
 
     @Autowired
-    public EndOfCampaignNotifier(AllCampaignEnrollments allCampaignEnrollments, OutboundEventGateway outboundEventGateway) {
+    public EndOfCampaignNotifier(AllCampaignEnrollments allCampaignEnrollments, EventQueueGateway eventQueueGateway) {
         this.allCampaignEnrollments = allCampaignEnrollments;
-        this.outboundEventGateway = outboundEventGateway;
+        this.eventQueueGateway = eventQueueGateway;
     }
 
     @MotechListener(subjects = EventKeys.SEND_MESSAGE)
@@ -38,7 +38,7 @@ public class EndOfCampaignNotifier {
             params.put(EventKeys.EXTERNAL_ID_KEY, externalId);
             params.put(EventKeys.CAMPAIGN_NAME_KEY, campaignName);
             MotechEvent endOfCampaignEvent = new MotechEvent(EventKeys.CAMPAIGN_COMPLETED, params);
-            outboundEventGateway.sendEventMessage(endOfCampaignEvent);
+            eventQueueGateway.sendEventMessage(endOfCampaignEvent);
         }
     }
 

@@ -1,6 +1,7 @@
 package org.motechproject.scheduler.domain;
 
 import org.junit.Test;
+import org.motechproject.event.MotechEvent;
 
 import java.util.Date;
 import java.util.HashMap;

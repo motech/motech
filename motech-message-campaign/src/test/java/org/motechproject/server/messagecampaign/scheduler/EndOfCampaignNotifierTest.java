@@ -4,8 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.scheduler.gateway.OutboundEventGateway;
+import org.motechproject.event.gateway.EventQueueGateway;
+import org.motechproject.event.MotechEvent;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.dao.AllCampaignEnrollments;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
@@ -30,14 +30,14 @@ public class EndOfCampaignNotifierTest {
     EndOfCampaignNotifier endOfCampaignNotifier;
 
     @Mock
-    private OutboundEventGateway outboundEventGateway;
+    private EventQueueGateway eventQueueGateway;
     @Mock
     private AllCampaignEnrollments allCampaignEnrollments;
 
     @Before
     public void setup() {
         initMocks(this);
-        endOfCampaignNotifier = new EndOfCampaignNotifier(allCampaignEnrollments, outboundEventGateway);
+        endOfCampaignNotifier = new EndOfCampaignNotifier(allCampaignEnrollments, eventQueueGateway);
     }
 
     @Test
@@ -55,7 +55,7 @@ public class EndOfCampaignNotifierTest {
         endOfCampaignNotifier.handle(event);
 
         ArgumentCaptor<MotechEvent> eventCaptor = ArgumentCaptor.forClass(MotechEvent.class);
-        verify(outboundEventGateway).sendEventMessage(eventCaptor.capture());
+        verify(eventQueueGateway).sendEventMessage(eventCaptor.capture());
         MotechEvent raisedEvent = eventCaptor.getValue();
 
         assertEquals(EventKeys.CAMPAIGN_COMPLETED, raisedEvent.getSubject());
@@ -97,6 +97,6 @@ public class EndOfCampaignNotifierTest {
         MotechEvent event = new MotechEvent(EventKeys.SEND_MESSAGE, params);
         endOfCampaignNotifier.handle(event);
 
-        verify(outboundEventGateway, never()).sendEventMessage(any(MotechEvent.class));
+        verify(eventQueueGateway, never()).sendEventMessage(any(MotechEvent.class));
     }
 }
