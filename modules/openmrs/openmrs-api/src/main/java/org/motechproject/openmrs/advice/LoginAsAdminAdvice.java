@@ -14,10 +14,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @Order(1)
 @Aspect
 public class LoginAsAdminAdvice {
-    @Value("#{openmrsProperties['openmrs.admin.username']}")
+    @Value("${openmrs.admin.username}")
     private String userName;
 
-    @Value("#{openmrsProperties['openmrs.admin.password']}")
+    @Value("${openmrs.admin.password}")
     private String password;
 
     @Pointcut("@annotation(org.motechproject.openmrs.advice.LoginAsAdmin)")
