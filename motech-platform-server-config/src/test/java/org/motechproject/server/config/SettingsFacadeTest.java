@@ -28,7 +28,9 @@ public class SettingsFacadeTest {
     private static final String FILENAME = "settings.properties";
     private static final String LANGUAGE_PROP = "system.language";
     private static final String LANGUAGE_VALUE = "en";
-
+    private static final String TEST_PROP = "test";
+    private static final String TEST_VAL = "test-val";
+    private static final String MOCK_FILENAME = "testfile";
 
     SettingsFacade settingsFacade = new SettingsFacade();
 
@@ -62,10 +64,7 @@ public class SettingsFacadeTest {
 
     @Test
     public void testGetConfigWithService() throws IOException {
-        settingsFacade.setPlatformSettingsService(platformSettingsService);
-        settingsFacade.setBundleContext(bundleContext);
-        when(bundleContext.getBundle()).thenReturn(bundle);
-        when(bundle.getSymbolicName()).thenReturn(BUNDLE_NAME);
+        setUpOsgiEnv();
         when(platformSettingsService.getBundleProperties(BUNDLE_NAME, FILENAME)).thenReturn(props);
         when(props.getProperty(LANGUAGE_PROP)).thenReturn(LANGUAGE_VALUE);
         when(props.containsKey(LANGUAGE_PROP)).thenReturn(true);
@@ -82,15 +81,13 @@ public class SettingsFacadeTest {
 
     @Test
     public void testSetConfig() throws IOException {
-        settingsFacade.setPlatformSettingsService(platformSettingsService);
-        settingsFacade.setBundleContext(bundleContext);
-        when(bundleContext.getBundle()).thenReturn(bundle);
-        when(bundle.getSymbolicName()).thenReturn(BUNDLE_NAME);
+        setUpOsgiEnv();
         when(platformSettingsService.getBundleProperties(BUNDLE_NAME, FILENAME)).thenReturn(null);
         when(props.getProperty(LANGUAGE_PROP)).thenReturn(LANGUAGE_VALUE);
         when(props.containsKey(LANGUAGE_PROP)).thenReturn(true);
-
         setUpConfig();
+
+        settingsFacade.afterPropertiesSet();
 
         verify(bundleContext, times(2)).getBundle();
         verify(bundle, times(2)).getSymbolicName();
@@ -99,9 +96,31 @@ public class SettingsFacadeTest {
         assertEquals(LANGUAGE_VALUE, argument.getValue().getProperty(LANGUAGE_PROP));
     }
 
+    @Test
+    public void testAsProperties() {
+        setUpConfig();
+        Properties otherProps = new Properties();
+        otherProps.put(TEST_PROP, TEST_VAL);
+        settingsFacade.saveConfigProperties(MOCK_FILENAME, otherProps);
+        settingsFacade.afterPropertiesSet();
+
+        Properties result = settingsFacade.asProperties();
+
+        assertEquals(2, result.size());
+        assertEquals(TEST_VAL, result.get(TEST_PROP));
+        assertEquals(LANGUAGE_VALUE, result.get(LANGUAGE_PROP));
+    }
+
     private void setUpConfig() {
         List<Resource> configFiles = new ArrayList<>();
         configFiles.add(new ClassPathResource("settings.properties"));
         settingsFacade.setConfigFiles(configFiles);
+    }
+
+    private void setUpOsgiEnv() {
+        settingsFacade.setPlatformSettingsService(platformSettingsService);
+        settingsFacade.setBundleContext(bundleContext);
+        when(bundleContext.getBundle()).thenReturn(bundle);
+        when(bundle.getSymbolicName()).thenReturn(BUNDLE_NAME);
     }
 }
