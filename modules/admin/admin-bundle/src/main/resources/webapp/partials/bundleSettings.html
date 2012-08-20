@@ -1,37 +1,34 @@
-<div id="bundle-settings">
-    <div class="box-header">
-        {{module.name}} - {{msg('settings')}}
-    </div>
-
-    <div ng-repeat="mSettings in moduleSettings">
+<div class="well2 mediumgrain-bg">
+    <div id="bundle-settings">
         <div class="box-header">
-            {{mSettings.section}}
+            {{module.name}} - {{msg('settings')}}
         </div>
-        <div class="box-content">
-            <form id="settingsForm" action="api/settings/{{module.bundleId}}" method="post">
-                <div ng-repeat="setting in mSettings.settings | orderBy:'key'" class="settings-input">
-                    <label for="{{setting.key}}">{{setting.key}}</label>
-                    <input type="text" id="{{setting.key}}" name="{{setting.key}}" ng-model="setting.value" />
-                </div>
-                <input type="hidden" name="section" value="{{mSettings.section}}" />
-                <input type="button" ng-click="saveSettings(mSettings)" value="{{msg('submit')}}"/>
-                <input type="button" ng-click="saveSettings(mSettings, true)" value="{{msg('submitAndRestart')}}"/>
-            </form>
-        </div>
-    </div>
+        <div class="box-content inside">
+            <div ng-repeat="mSettings in moduleSettings">
+            <h3>{{mSettings.section}}</h3>
+                <form id="settingsForm" action="api/settings/{{module.bundleId}}" method="post">
+                    <div ng-repeat="setting in mSettings.settings | orderBy:'key'" class="settings-input">
+                        <div class="control-group">
+                        <label for="{{setting.key}}">{{setting.key}}</label>
+                        <input type="text" id="{{setting.key}}" name="{{setting.key}}" ng-model="setting.value" />
+                        </div>
+                    </div>
+                    <input type="hidden" name="section" value="{{mSettings.section}}" />
+                    <input type="button" ng-click="saveSettings(mSettings)" value="{{msg('submit')}}"/>
+                    <input type="button" ng-click="saveSettings(mSettings, true)" value="{{msg('submitAndRestart')}}"/>
+                </form>
+            </div>
 
-    <div ng-repeat="rawFile in rawFiles">
-        <div class="box-header">
-            {{rawFile}}
-        </div>
-        <div class="box-content">
-            <form id="_raw_{{rawFile}}" action="api/settings/{{module.bundleId}}/raw" method="post"
-                  enctype="multipart/form-data">
-                {{rawFile}}: <input type="file" name="file" />
-                <input type="hidden" value="{{rawFile}}" name="filename" />
-                <input type="button"  ng-click="uploadRaw(rawFile)" value="{{msg('submit')}}"/>
-                <input type="button"  ng-click="uploadRaw(rawFile, true)" value="{{msg('submitAndRestart')}}"/>
-            </form>
+            <div ng-repeat="rawFile in rawFiles">
+                <h3>{{rawFile}}</h3>
+                <form id="_raw_{{rawFile}}" action="api/settings/{{module.bundleId}}/raw" method="post"
+                      enctype="multipart/form-data">
+                    {{rawFile}}: <input type="file" name="file" />
+                    <input type="hidden" value="{{rawFile}}" name="filename" />
+                    <input type="button"  ng-click="uploadRaw(rawFile)" value="{{msg('submit')}}"/>
+                    <input type="button"  ng-click="uploadRaw(rawFile, true)" value="{{msg('submitAndRestart')}}"/>
+                </form>
+            </div>
         </div>
     </div>
 </div>
