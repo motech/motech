@@ -175,7 +175,7 @@ public class DecisionTreeController extends MultiActionController {
                     String modifiedTransitionPath = parentTransitionPath +
                             (TREE_ROOT_PATH.equals(parentTransitionPath) ? "" : TreeNodeLocator.PATH_DELIMITER)
                             + transitionKey;
-                    session.setCurrentNode(node);
+
                     return constructModelViewForNode(request, node, modifiedTransitionPath, treeNames, params, session);
                 }
             }
@@ -222,6 +222,7 @@ public class DecisionTreeController extends MultiActionController {
         mav.addObject("maxTimeout", maxTimeout(node));
         mav.addObject("host", request.getHeader("Host"));
         mav.addObject("scheme", request.getScheme());
+        session.setCurrentNode(node);
         return mav;
     }
 
