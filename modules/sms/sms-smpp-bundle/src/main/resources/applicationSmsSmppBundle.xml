@@ -7,9 +7,14 @@
 
     <import resource="classpath*:applicationSmsSmpp.xml"/>
 
+    <bean class="org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor"/>
+
     <osgi:reference id="eventRelayOsgi" cardinality="0..1"
-                    interface="org.motechproject.scheduler.event.EventRelay" />
+        interface="org.motechproject.scheduler.event.EventRelay" />
 
     <osgi:reference id="platformSettingsServiceOsgi" cardinality="0..1"
-                    interface="org.motechproject.server.config.service.PlatformSettingsService" />
+        interface="org.motechproject.server.config.service.PlatformSettingsService" />
+
+    <osgi:reference id="eventListenerRegistryService" cardinality="0..1"
+        interface="org.motechproject.server.event.EventListenerRegistryService"/>
 </beans>

@@ -7,9 +7,15 @@
 
     <import resource="classpath*:applicationPillReminderAPI.xml"/>
 
+    <bean class="org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor" />
+
     <osgi:reference id="motechSchedulerServiceOsgi" cardinality="0..1"
                     interface="org.motechproject.scheduler.MotechSchedulerService" />
 
     <osgi:reference id="eventRelayOsgi" cardinality="0..1"
                     interface="org.motechproject.scheduler.event.EventRelay" />
+
+   <osgi:reference id="eventListenerRegistryService" cardinality="0..1"
+        interface="org.motechproject.server.event.EventListenerRegistryService" />
+
 </beans>

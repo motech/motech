@@ -120,6 +120,7 @@
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.osgi.config,
+                            org.motechproject.server.event,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-pillreminder-api</Embed-Dependency>
