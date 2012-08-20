@@ -1,11 +1,12 @@
 package org.motechproject.server.decisiontree.web;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
 import org.motechproject.decisiontree.FlowSession;
-import org.motechproject.decisiontree.model.*;
+import org.motechproject.decisiontree.model.DialStatus;
+import org.motechproject.decisiontree.model.INodeOperation;
+import org.motechproject.decisiontree.model.ITransition;
+import org.motechproject.decisiontree.model.Node;
+import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.decisiontree.service.FlowSessionService;
 import org.motechproject.server.decisiontree.TreeNodeLocator;
 import org.motechproject.server.decisiontree.service.DecisionTreeService;
@@ -27,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  * Spring MVC controller implementation provides method to handle HTTP requests and generate
@@ -36,24 +38,20 @@ import static java.lang.String.format;
 @RequestMapping("/decisiontree")
 public class DecisionTreeController extends MultiActionController {
 
+    private Logger logger = LoggerFactory.getLogger((this.getClass()));
+
     public static final String TEMPLATE_BASE_PATH = "/vm/";
     public static final String FLOW_SESSION_ID_PARAM = "flowSessionId";
-    private static final String TREE_ROOT_PATH = TreeNodeLocator.PATH_DELIMITER;
-    private Logger logger = LoggerFactory.getLogger((this.getClass()));
     public static final String CURRENT_NODE = "CurrentNode";
 
     public static final String TREE_NAME_PARAM = "tree";
     public static final String TRANSITION_KEY_PARAM = "trK";
-    public static final String TRANSITION_PATH_PARAM = "trP";
     public static final String LANGUAGE_PARAM = "ln";
     public static final String TYPE_PARAM = "type";
 
     public static final String NODE_TEMPLATE_NAME = TEMPLATE_BASE_PATH + "node";
-    public static final String ERROR_MESSAGE_TEMPLATE_NAME = TEMPLATE_BASE_PATH + "node-error";
-    public static final String EMPTY_INPUT_TEMPLATE_NAME = TEMPLATE_BASE_PATH + "node-null";
+    public static final String ERROR_MESSAGE_TEMPLATE_NAME = TEMPLATE_BASE_PATH + "error";
     public static final String EXIT_TEMPLATE_NAME = TEMPLATE_BASE_PATH + "exit";
-
-    public static final String TREE_NAME_SEPARATOR = ",";
 
     public static final Integer MAX_INPUT_DIGITS = 50;
     public static final Integer MAX_INPUT_TIMEOUT = 5000;
@@ -70,27 +68,21 @@ public class DecisionTreeController extends MultiActionController {
     @Autowired
     private FlowSessionService flowSessionService;
 
-    enum Errors {
-        NULL_PATIENTID_LANGUAGE_OR_TREENAME_PARAM,
-        NULL_TRANSITION_PATH_PARAM,
-        NULL_DESTINATION_NODE,
-        INVALID_TRANSITION_KEY,
-        INVALID_TRANSITION_KEY_TYPE,
-        GET_NODE_ERROR
-    }
+    enum Error {
+        TREE_OR_LANGUAGE_MISSING("Tree or language missing, please check IVR URL."),
+        NULL_DESTINATION_NODE("No destination node."),
+        INVALID_TRANSITION_KEY("Invalid transition key"),
+        UNEXPECTED_EXCEPTION("Unexpected exception");
+        private String message;
 
-    @SuppressWarnings("unchecked")
-    private Map<String, Object> convertParams(@SuppressWarnings("rawtypes") Map requestParams) {
-        Map<String, Object> params = new HashMap<String, Object>();
-        Assert.notNull(requestParams);
-        for (Map.Entry<String, String[]> e : (Set<Map.Entry<String, String[]>>) requestParams.entrySet()) {
-            if (e.getValue().length == 1) {
-                params.put(e.getKey(), e.getValue()[0]);
-            } else {
-                params.put(e.getKey(), e.getValue());
-            }
+        Error(String message) {
+            this.message = message;
         }
-        return params;
+
+        @Override
+        public String toString() {
+            return message;
+        }
     }
 
     /**
@@ -99,89 +91,98 @@ public class DecisionTreeController extends MultiActionController {
      */
     @RequestMapping("/node")
     public ModelAndView node(HttpServletRequest request, HttpServletResponse response) {
-        logger.info(request.getParameterMap().toString());
-        logger.info("Generating decision tree node xml");
+        logger.debug(request.getParameterMap().toString());
 
+        String language = request.getParameter(LANGUAGE_PARAM);
+        String treeName = request.getParameter(TREE_NAME_PARAM);
+        String transitionKey = request.getParameter(TRANSITION_KEY_PARAM);
+        String type = request.getParameter(TYPE_PARAM);
+
+        if (logger.isInfoEnabled()) {
+            logger.info(format("IVR Transition | tree:%s dtmf:%s ln:%s", treeName, transitionKey, language));
+        }
+
+        ModelAndView view;
+        try {
+            if (isBlank(language) || isBlank(treeName)) {
+                logger.error(format("No tree or language specified"));
+                view = getErrorModelAndView(Error.TREE_OR_LANGUAGE_MISSING, language, type);
+            } else {
+               view = getModelViewForNextNode(request, convertParams(request.getParameterMap()));
+            }
+        } catch (DecisionTreeException e) {
+            logger.error(e.getMessage(), e);
+            view = getErrorModelAndView(e.subject, language, type);
+        } catch (Exception e) {
+            logger.error(format("Unexpected exception %s", e.getMessage()),e);
+            view = getErrorModelAndView(Error.UNEXPECTED_EXCEPTION, language, type);
+        }
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
-
-        Map<String, Object> params = convertParams(request.getParameterMap());
-        String language = request.getParameter(LANGUAGE_PARAM);
-        String treeNameString = request.getParameter(TREE_NAME_PARAM);
-        String encodedTransitionPath = getParentTransitionPath(request);
-        String transitionKey = request.getParameter(TRANSITION_KEY_PARAM);
-
-        logger.info(" Node HTTP  request parameters: "
-                + LANGUAGE_PARAM + ": " + language + ", "
-                + TREE_NAME_PARAM + ": " + treeNameString + ", "
-                + TRANSITION_PATH_PARAM + ": " + encodedTransitionPath + ", "
-                + TRANSITION_KEY_PARAM + ": " + transitionKey);
-        try {
-            if (StringUtils.isBlank(language) || StringUtils.isBlank(treeNameString)) {
-                logger.error("Invalid HTTP request - the following parameters: "
-                        + ", " + LANGUAGE_PARAM + " and " + TREE_NAME_PARAM + " are mandatory");
-                return getErrorModelAndView(Errors.NULL_PATIENTID_LANGUAGE_OR_TREENAME_PARAM, language);
-            }
-
-            return getModelViewForNextNode(request, getParentTransitionPath(request), params);
-        } catch (DecisionTreeException exception) {
-            logger.error(exception.getMessage());
-            return getErrorModelAndView(exception.subject, language);
-        } catch (Exception e) {
-            logger.error(format("Can not get node by Tree ID: %s and transition path %s\n%s", treeNameString, encodedTransitionPath, e));
-        }
-        return getErrorModelAndView(Errors.GET_NODE_ERROR, language);
+        return view;
     }
 
-    private ModelAndView getModelViewForNextNode(HttpServletRequest request, String parentTransitionPath, Map<String, Object> params) {
-        String treeNameString = request.getParameter(TREE_NAME_PARAM);
+    private ModelAndView getModelViewForNextNode(HttpServletRequest request, Map<String, Object> params) {
+        String treeName = request.getParameter(TREE_NAME_PARAM);
         String transitionKey = request.getParameter(TRANSITION_KEY_PARAM);
-        String[] treeNames = treeNameString.split(TREE_NAME_SEPARATOR);
-        String currentTree = treeNames[0];
-
-        // put only one tree name in params
-        params.put(TREE_NAME_PARAM, currentTree);
 
         FlowSession session = flowSessionService.getSession(request);
         Node node = getCurrentNode(session);
         try {
             if (node == null) {
-                node = decisionTreeService.getRootNode(currentTree, session);
+                node = decisionTreeService.getRootNode(treeName, session);
                 autowire(node);
                 executeOperations(transitionKey, session, node);
             }
             if (transitionKey == null) {
-                return constructModelViewForNode(request, node, parentTransitionPath, treeNames, params, session);
+                return constructModelViewForNode(request, node, treeName, params, session);
             } else {
-                ITransition transition = sendTreeEventActions(params, transitionKey, parentTransitionPath, node);
-                autowire(transition);
+                ITransition nextTransition = getTransitionForUserInput(transitionKey, node);
+                autowire(nextTransition);
 
-                node = transition.getDestinationNode(transitionKey, session);
+                treeEventProcessor.sendActionsAfter(node, params);
+                if (nextTransition instanceof Transition) {
+                    treeEventProcessor.sendTransitionActions((Transition) nextTransition, params);
+                }
+
+                node = nextTransition.getDestinationNode(transitionKey, session);
                 autowire(node);
 
-
-                final boolean emptyNode = node == null || (node.getPrompts().isEmpty() && node.getActionsAfter().isEmpty()
-                        && node.getActionsBefore().isEmpty() && node.getTransitions().isEmpty());
-                if (emptyNode) {
-                    if (treeNames.length > 1) {
-                        //reduce the current tree and redirect to the next tree
-                        treeNames = (String[]) ArrayUtils.remove(treeNames, 0);
-                        return new ModelAndView(String.format("redirect:/decisiontree/node?%s=%s&%s=%s", TREE_NAME_PARAM, LANGUAGE_PARAM, StringUtils.join(treeNames, TREE_NAME_SEPARATOR), request.getParameter(LANGUAGE_PARAM)));
-                    } else {
-                        return new ModelAndView(templateNameFor(request.getParameter(TYPE_PARAM),EXIT_TEMPLATE_NAME));
-                    }
+                if (isEmptyNode(node)) {
+                    return new ModelAndView(templateNameFor(request.getParameter(TYPE_PARAM), EXIT_TEMPLATE_NAME));
                 } else {
                     executeOperations(transitionKey, session, node);
-                    String modifiedTransitionPath = parentTransitionPath +
-                            (TREE_ROOT_PATH.equals(parentTransitionPath) ? "" : TreeNodeLocator.PATH_DELIMITER)
-                            + transitionKey;
-
-                    return constructModelViewForNode(request, node, modifiedTransitionPath, treeNames, params, session);
+                    return constructModelViewForNode(request, node, treeName, params, session);
                 }
             }
         } finally {
             flowSessionService.updateSession(session);
         }
+    }
+
+    private ModelAndView constructModelViewForNode(HttpServletRequest request, Node node, String treeName, Map<String, Object> params, FlowSession session) {
+        validateNode(node);
+        treeEventProcessor.sendActionsBefore(node, params);
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName(templateNameFor(request.getParameter(TYPE_PARAM), NODE_TEMPLATE_NAME));
+        mav.addObject("treeName", treeName);
+        mav.addObject("contextPath", request.getContextPath());
+        mav.addObject("servletPath", request.getServletPath());
+        mav.addObject("node", node);
+        mav.addObject("language", session.get(LANGUAGE_PARAM));
+        mav.addObject("type", request.getParameter(TYPE_PARAM));
+        mav.addObject("escape", new StringEscapeUtils());
+        mav.addObject("maxDigits", maxDigits(node));
+        mav.addObject("maxTimeout", maxTimeout(node));
+        mav.addObject("host", request.getHeader("Host"));
+        mav.addObject("scheme", request.getScheme());
+        session.setCurrentNode(node);
+        return mav;
+    }
+
+    private boolean isEmptyNode(Node node) {
+        return node == null || (node.getPrompts().isEmpty() && node.getActionsAfter().isEmpty() && node.getActionsBefore().isEmpty() && node.getTransitions().isEmpty());
     }
 
     private void executeOperations(String transitionKey, FlowSession session, Node node) {
@@ -199,38 +200,10 @@ public class DecisionTreeController extends MultiActionController {
         return node;
     }
 
-    private ModelAndView constructModelViewForNode(HttpServletRequest request, Node node, String transitionPath, String[] treeNames, Map<String, Object> params, FlowSession session) {
-        validateNode(node);
-        treeEventProcessor.sendActionsBefore(node, transitionPath, params);
-
-        ModelAndView mav = new ModelAndView();
-        if (node.getTransitions().size() > 0) {
-            mav.addObject("treeName", request.getParameter(TREE_NAME_PARAM));
-        } else { // leaf
-            //reduce the current tree and redirect to the next tree
-            mav.addObject("treeName", StringUtils.join(ArrayUtils.remove(treeNames, 0), TREE_NAME_SEPARATOR));
-        }
-        mav.setViewName(templateNameFor(request.getParameter(TYPE_PARAM), NODE_TEMPLATE_NAME));
-        mav.addObject("contextPath", request.getContextPath());
-        mav.addObject("servletPath", request.getServletPath());
-        mav.addObject("node", node);
-        mav.addObject("language", session.get(LANGUAGE_PARAM));
-        mav.addObject("type", request.getParameter(TYPE_PARAM));
-        mav.addObject("transitionPath", Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
-        mav.addObject("escape", new StringEscapeUtils());
-        mav.addObject("maxDigits", maxDigits(node));
-        mav.addObject("maxTimeout", maxTimeout(node));
-        mav.addObject("host", request.getHeader("Host"));
-        mav.addObject("scheme", request.getScheme());
-        session.setCurrentNode(node);
-        return mav;
-    }
-
     private void validateNode(Node node) {
         for (Map.Entry<String, ITransition> transitionEntry : node.getTransitions().entrySet()) {
-
             final String key = transitionEntry.getKey();
-            if(noInput(key)){
+            if (noInput(key)) {
                 return;
             }
             if (anyInput(key)) {
@@ -245,13 +218,11 @@ public class DecisionTreeController extends MultiActionController {
             try {
                 Integer.parseInt(key);
             } catch (NumberFormatException e) {
-                throw new DecisionTreeException(Errors.INVALID_TRANSITION_KEY_TYPE, "Invalid node: " + node
-                        + "\n In order  to be used in VXML transition keys should be an Integer");
+                throw new DecisionTreeException(Error.INVALID_TRANSITION_KEY, format("Invalid transition key [%s] for node [%s]", key, node));
             }
-
             ITransition transition = transitionEntry.getValue();
             if (transition instanceof Transition && ((Transition) transition).getDestinationNode() == null) {
-                throw new DecisionTreeException(Errors.NULL_DESTINATION_NODE, "Invalid node: " + node + "\n Null Destination Node in the Transition: " + transition);
+                throw new DecisionTreeException(Error.NULL_DESTINATION_NODE, format("Missing destination node in the transition for key [%s] on node [%s]: ", key, node));
             }
         }
     }
@@ -268,17 +239,6 @@ public class DecisionTreeController extends MultiActionController {
         return TreeNodeLocator.ANY_KEY.equals(key);
     }
 
-    private ITransition sendTreeEventActions(Map<String, Object> params, String transitionKey, String parentTransitionPath, Node parentNode) {
-        ITransition transition = getTransitionForUserInput(transitionKey, parentNode);
-
-        treeEventProcessor.sendActionsAfter(parentNode, parentTransitionPath, params);
-
-        if (transition instanceof Transition) {
-            treeEventProcessor.sendTransitionActions((Transition) transition, params);
-        }
-        return transition;
-    }
-
     private ITransition getTransitionForUserInput(String userInput, Node parentNode) {
         ITransition transition = getPreConfiguredTransition(parentNode, userInput);
         if (transition == null) {
@@ -286,7 +246,7 @@ public class DecisionTreeController extends MultiActionController {
         }
 
         if (transition == null) {
-            throw new DecisionTreeException(Errors.INVALID_TRANSITION_KEY,
+            throw new DecisionTreeException(Error.INVALID_TRANSITION_KEY,
                     "Invalid Transition Key. There is no transition with key: " + userInput + " in the Node: " + parentNode);
         }
         return transition;
@@ -294,14 +254,6 @@ public class DecisionTreeController extends MultiActionController {
 
     private ITransition getPreConfiguredTransition(Node parentNode, String userInput) {
         return parentNode.getTransitions().get(userInput);
-    }
-
-    private String getParentTransitionPath(HttpServletRequest request) {
-        final String encodedTransitionPath = request.getParameter(TRANSITION_PATH_PARAM);
-        if (encodedTransitionPath == null) {
-            return TREE_ROOT_PATH;
-        }
-        return new String(Base64.decodeBase64(encodedTransitionPath));
     }
 
     private Integer maxDigits(Node node) {
@@ -326,20 +278,36 @@ public class DecisionTreeController extends MultiActionController {
         return templateName + "-" + type;
     }
 
-    private ModelAndView getErrorModelAndView(Errors errorCode, String language) {
+    private ModelAndView getErrorModelAndView(Error error, String language, String type) {
         ModelAndView mav = new ModelAndView();
-        mav.setViewName(ERROR_MESSAGE_TEMPLATE_NAME);
-        mav.addObject("errorCode", errorCode);
+        mav.setViewName(templateNameFor(type, ERROR_MESSAGE_TEMPLATE_NAME));
+        mav.addObject("message", error.toString());
         mav.addObject("language", language);
         return mav;
     }
 
     private class DecisionTreeException extends RuntimeException {
-        private Errors subject;
 
-        public DecisionTreeException(Errors subject, String message) {
-            super(message);
+        private Error subject;
+
+        public DecisionTreeException(Error subject, String description) {
+            super(description);
             this.subject = subject;
         }
+
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> convertParams(@SuppressWarnings("rawtypes") Map requestParams) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        Assert.notNull(requestParams);
+        for (Map.Entry<String, String[]> e : (Set<Map.Entry<String, String[]>>) requestParams.entrySet()) {
+            if (e.getValue().length == 1) {
+                params.put(e.getKey(), e.getValue()[0]);
+            } else {
+                params.put(e.getKey(), e.getValue());
+            }
+        }
+        return params;
     }
 }

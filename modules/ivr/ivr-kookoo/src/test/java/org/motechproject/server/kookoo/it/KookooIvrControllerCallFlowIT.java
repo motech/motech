@@ -29,7 +29,7 @@ import static org.custommonkey.xmlunit.XMLUnit.setIgnoreWhitespace;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/testKookooContext.xml"})
-public class CallFlowIT extends SpringIntegrationTest {
+public class KookooIvrControllerCallFlowIT extends SpringIntegrationTest {
 
     static Server server;
     static String CONTEXT_PATH = "/motech";
@@ -103,13 +103,13 @@ public class CallFlowIT extends SpringIntegrationTest {
         ));
         allTrees.addOrReplace(tree);
 
-        String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&trP=Lw&ln=en&sid=shouldPlayPromptsAndRequestDtmfIfNodeHasTransitions", SERVER_URL)), new BasicResponseHandler());
+        String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&ln=en&sid=shouldPlayPromptsAndRequestDtmfIfNodeHasTransitions", SERVER_URL)), new BasicResponseHandler());
         String expectedResponse =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                 "<response>" +
                 "   <playtext>hello</playtext>" +
                 "   <collectdtmf l=\"1\" t=\"#\" o=\"5000\"></collectdtmf>" +
-                "   <gotourl>http://localhost:7080/motech/kookoo/ivr?type=kookoo&amp;ln=en&amp;tree=someTree&amp;trP=Lw</gotourl>" +
+                "   <gotourl>http://localhost:7080/motech/kookoo/ivr?type=kookoo&amp;ln=en&amp;tree=someTree</gotourl>" +
                 "</response>";
         assertXMLEqual(expectedResponse, response);
     }
@@ -133,13 +133,13 @@ public class CallFlowIT extends SpringIntegrationTest {
         ));
         allTrees.addOrReplace(tree);
 
-        String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&trP=Lw&ln=en&event=GotDTMF&data=2&sid="+UUID.randomUUID().getMostSignificantBits() , SERVER_URL)), new BasicResponseHandler());
+        String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&ln=en&event=GotDTMF&data=2&sid="+UUID.randomUUID().getMostSignificantBits() , SERVER_URL)), new BasicResponseHandler());
         String expectedResponse =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                 "<response>" +
                 "   <playtext>pressed two</playtext>" +
                 "   <collectdtmf l=\"1\" t=\"#\"  o=\"5000\"></collectdtmf>" +
-                "   <gotourl>http://localhost:7080/motech/kookoo/ivr?type=kookoo&amp;ln=en&amp;tree=someTree&amp;trP=LzI</gotourl>" +
+                "   <gotourl>http://localhost:7080/motech/kookoo/ivr?type=kookoo&amp;ln=en&amp;tree=someTree</gotourl>" +
                 "</response>";
         assertXMLEqual(expectedResponse, response);
     }
@@ -154,7 +154,7 @@ public class CallFlowIT extends SpringIntegrationTest {
         ));
         allTrees.addOrReplace(tree);
 
-        String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&trP=Lw&ln=en&sid=noTransition", SERVER_URL)), new BasicResponseHandler());
+        String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&ln=en&sid=noTransition", SERVER_URL)), new BasicResponseHandler());
         String expectedResponse =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                 "<response>" +
@@ -175,12 +175,12 @@ public class CallFlowIT extends SpringIntegrationTest {
         ));
         allTrees.addOrReplace(tree);
 
-        String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&trP=Lw&ln=en&sid=shouldRequestMaxLengthDtmfForArbitraryInput", SERVER_URL)), new BasicResponseHandler());
+        String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&ln=en&sid=shouldRequestMaxLengthDtmfForArbitraryInput", SERVER_URL)), new BasicResponseHandler());
         String expectedResponse =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                 "<response>" +
                 "   <collectdtmf l=\"50\" t=\"#\" o=\"5000\"></collectdtmf>" +
-                "   <gotourl>http://localhost:7080/motech/kookoo/ivr?type=kookoo&amp;ln=en&amp;tree=someTree&amp;trP=Lw</gotourl>" +
+                "   <gotourl>http://localhost:7080/motech/kookoo/ivr?type=kookoo&amp;ln=en&amp;tree=someTree</gotourl>" +
                 "</response>";
         assertXMLEqual(expectedResponse, response);
     }
@@ -196,12 +196,12 @@ public class CallFlowIT extends SpringIntegrationTest {
         ));
         allTrees.addOrReplace(tree);
 
-        String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&trP=Lw&ln=en&event=GotDTMF&data=31415&sid="+ UUID.randomUUID().getMostSignificantBits() , SERVER_URL)), new BasicResponseHandler());
+        String response = decisionTreeController.execute(new HttpGet(format("%s?tree=someTree&ln=en&event=GotDTMF&data=31415&sid="+ UUID.randomUUID().getMostSignificantBits() , SERVER_URL)), new BasicResponseHandler());
         String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
             "<response>" +
             "   <playtext>you entered 31415</playtext>" +
             "   <collectdtmf l=\"1\" t=\"#\" o=\"5000\"></collectdtmf>" +
-            "   <gotourl>http://localhost:7080/motech/kookoo/ivr?type=kookoo&amp;ln=en&amp;tree=someTree&amp;trP=LzMxNDE1</gotourl>" +
+            "   <gotourl>http://localhost:7080/motech/kookoo/ivr?type=kookoo&amp;ln=en&amp;tree=someTree</gotourl>" +
             "</response>";
         assertXMLEqual(expectedResponse, response);
     }

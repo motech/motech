@@ -65,13 +65,13 @@ public class TreeEventProcessorTest {
 
     @Test
     public void testNodeActionsBefore() {
-        treeEventProcessor.sendActionsBefore(node, "/", params);
+        treeEventProcessor.sendActionsBefore(node, params);
         verify(eventRelay, times(3)).sendEventMessage(any(MotechEvent.class));
     }
 
     @Test
     public void testNodeActionsAfter() {
-        treeEventProcessor.sendActionsAfter(node, "/", params);
+        treeEventProcessor.sendActionsAfter(node, params);
         verify(eventRelay, times(2)).sendEventMessage(any(MotechEvent.class));
     }
 
@@ -93,21 +93,21 @@ public class TreeEventProcessorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testActionsEdgeCase3() {
-        treeEventProcessor.sendActionsBefore(null, "/", params);
+        treeEventProcessor.sendActionsBefore(null, params);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testActionsEdgeCase4() {
-        treeEventProcessor.sendActionsBefore(new Node(), "/", null);
+        treeEventProcessor.sendActionsBefore(new Node(), null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testActionsEdgeCase5() {
-        treeEventProcessor.sendActionsAfter(null, "/", params);
+        treeEventProcessor.sendActionsAfter(null, params);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testActionsEdgeCase6() {
-        treeEventProcessor.sendActionsAfter(new Node(), "/", null);
+        treeEventProcessor.sendActionsAfter(new Node(), null);
     }
 }

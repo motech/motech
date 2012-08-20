@@ -92,7 +92,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<Response>\n" +
                 "  <Say>Hello Welcome to motech</Say>\n" +
-                "  <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"10\" timeout=\"2\"></Gather>\n" +
+                "  <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=someTree\" numDigits=\"10\" timeout=\"2\"></Gather>\n" +
                 "</Response>";
         HttpClient client = new DefaultHttpClient();
         String rootUrl = SERVER_URL + "?tree=someTree&motech_call_id=" + callRequest.getCallId() + "&trP=Lw&ln=en";
@@ -114,7 +114,6 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         String transitionUrl3 = SERVER_URL + "?tree=someTree&CallSid=" + sessionId + "&trP=Lw&ln=en&Digits=" + USER_INPUT;
         String response4 = client.execute(new HttpGet(transitionUrl3), new BasicResponseHandler());
 
-        assertTrue("got " + response4, response4.contains("trP=LzEzNDUyMzQ"));   //verify proceeding in tree Lz8 == /?
         assertTrue("got " + response4, response4.contains("<Say>custom transition try 1 with " + USER_INPUT + "</Say>"));
         assertTrue("got " + response4, response4.contains("   <Play>custom_1345234_Hello_from_org.motechproject.server.verboice.it.VerboiceIVRControllerDecisionTreeIT$TestComponent.wav</Play>"));
 
@@ -135,7 +134,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         XMLUnit.setIgnoreWhitespace(true);
         String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<Response>\n" +
-                "  <Dial action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=treeWithDial&amp;trP=Lw\">othernumber</Dial>\n" +
+                "  <Dial action=\"http://localhost:7080/motech/verboice/ivr?type=verboice&amp;ln=en&amp;tree=treeWithDial\">othernumber</Dial>\n" +
                 "</Response>";
         HttpClient client = new DefaultHttpClient();
         String rootUrl = SERVER_URL + "?tree=treeWithDial&trP=Lw&ln=en";

@@ -1,6 +1,5 @@
 package org.motechproject.server.decisiontree.web;
 
-import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,13 +8,18 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.decisiontree.FlowSession;
-import org.motechproject.decisiontree.model.*;
+import org.motechproject.decisiontree.model.Action;
+import org.motechproject.decisiontree.model.INodeOperation;
+import org.motechproject.decisiontree.model.Node;
+import org.motechproject.decisiontree.model.Prompt;
+import org.motechproject.decisiontree.model.TextToSpeechPrompt;
+import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.decisiontree.service.FlowSessionService;
-import org.motechproject.server.decisiontree.TreeNodeLocator;
 import org.motechproject.server.decisiontree.service.DecisionTreeService;
 import org.motechproject.server.decisiontree.service.TreeEventProcessor;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,16 +34,25 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
-import static org.motechproject.server.decisiontree.web.DecisionTreeController.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyObject;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.motechproject.server.decisiontree.web.DecisionTreeController.LANGUAGE_PARAM;
+import static org.motechproject.server.decisiontree.web.DecisionTreeController.NODE_TEMPLATE_NAME;
+import static org.motechproject.server.decisiontree.web.DecisionTreeController.TRANSITION_KEY_PARAM;
+import static org.motechproject.server.decisiontree.web.DecisionTreeController.TREE_NAME_PARAM;
+import static org.motechproject.server.decisiontree.web.DecisionTreeController.TYPE_PARAM;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DecisionTreeControllerTest {
     private final String treeName = "treeName";
     private final String patientId = "001";
     private Map<String, Object> params = new HashMap<String, Object>();
-    private final String errorCodeKey = "errorCode";
-    private final String transitionPath = "/";
+    private final String message = "message";
 
     @InjectMocks
     DecisionTreeController decisionTreeController = new DecisionTreeController();
@@ -50,8 +63,7 @@ public class DecisionTreeControllerTest {
     @Mock
     private TreeEventProcessor treeEventProcessor;
 
-    @Mock
-    private HttpServletRequest request;
+    private MockHttpServletRequest request;
 
     @Mock
     HttpServletResponse response;
@@ -66,8 +78,8 @@ public class DecisionTreeControllerTest {
 
     @Before
     public void initMocks() {
+        request = new MockHttpServletRequest();
         MockitoAnnotations.initMocks(this);
-        params.put(TREE_NAME_PARAM, treeName);
         doNothing().when(autoWireCapableFactory).autowireBean(anyObject());
         when(applicationContext.getAutowireCapableBeanFactory()).thenReturn(autoWireCapableFactory);
         flowSession = new InMemoryFlowSession();
@@ -78,7 +90,7 @@ public class DecisionTreeControllerTest {
     public void nodeTest() {
         Node childNode = new Node();
         Transition childTransition = new Transition();
-        final  MyINodeOperation iNodeOperation = new MyINodeOperation();
+        final MyINodeOperation iNodeOperation = new MyINodeOperation();
         childNode.addOperations(iNodeOperation);
         childTransition.setDestinationNode(new Node());
         childNode.addTransition("1", childTransition);
@@ -88,12 +100,11 @@ public class DecisionTreeControllerTest {
         transition.setDestinationNode(childNode);
         node.addTransition("1", transition);
 
-        when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
-        when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
-        when(request.getParameter(TYPE_PARAM)).thenReturn("verboice");
-        when(request.getParameter(TRANSITION_KEY_PARAM)).thenReturn("1");
-        when(request.getParameter(TRANSITION_PATH_PARAM)).thenReturn(Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
-        when(request.getParameter(DecisionTreeController.FLOW_SESSION_ID_PARAM)).thenReturn("1234");
+        request.setParameter(TREE_NAME_PARAM, treeName);
+        request.setParameter(LANGUAGE_PARAM, "en");
+        request.setParameter(TYPE_PARAM, "verboice");
+        request.setParameter(TRANSITION_KEY_PARAM, "1");
+        request.setParameter(DecisionTreeController.FLOW_SESSION_ID_PARAM, "1234");
 
         flowSession.setCurrentNode(node);
         ModelAndView modelAndView = decisionTreeController.node(request, response);
@@ -105,7 +116,6 @@ public class DecisionTreeControllerTest {
 
     @Test
     public void leafTest() {
-
         Node node = new Node();
         Transition transition = new Transition();
         transition.setDestinationNode(new Node());
@@ -114,45 +124,38 @@ public class DecisionTreeControllerTest {
         transition.getDestinationNode().setPrompts(p);
         node.addTransition("1", transition);
 
-
-        when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
-        when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
-        when(request.getParameter(TYPE_PARAM)).thenReturn("vxml");
-        when(request.getParameter(TRANSITION_KEY_PARAM)).thenReturn("1");
-        when(request.getParameter(TRANSITION_PATH_PARAM)).thenReturn(Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
+        request.setParameter(TREE_NAME_PARAM, treeName);
+        request.setParameter(LANGUAGE_PARAM, "en");
+        request.setParameter(TYPE_PARAM, "vxml");
+        request.setParameter(TRANSITION_KEY_PARAM, "1");
 
         flowSession.setCurrentNode(node);
         ModelAndView modelAndView = decisionTreeController.node(request, response);
 
         assertNotNull(modelAndView);
-        assertEquals(NODE_TEMPLATE_NAME + "-" + "vxml", modelAndView.getViewName());
+        assertEquals("/vm/node-vxml", modelAndView.getViewName());
     }
 
 
     @Test
-    public void nodeTestNoTransitionWithGivenKey() {
-        String transitionKey = "1";
-
+    public void shouldThrowExceptionForInvalidTransition() {
         Node node = new Node();
         Transition transition = new Transition();
         transition.setDestinationNode(new Node());
-        node.addTransition("2", transition);
+        node.addTransition("1", transition);
 
-        when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
-        when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
-        when(request.getParameter(TRANSITION_KEY_PARAM)).thenReturn(transitionKey);
-        when(request.getParameter(TRANSITION_PATH_PARAM)).thenReturn(Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
+        request.setParameter(TREE_NAME_PARAM, treeName);
+        request.setParameter(LANGUAGE_PARAM, "en");
+        request.setParameter(TRANSITION_KEY_PARAM, "2");
+        request.setParameter(TYPE_PARAM, "vxml");
 
         flowSession.setCurrentNode(node);
-
-        //when(decisionTreeService.getNode(eq(treeName), eq(transitionPath), any(FlowSession.class))).thenReturn(node);
 
         ModelAndView modelAndView = decisionTreeController.node(request, response);
 
         assertNotNull(modelAndView);
-        //verify(decisionTreeService).getNode(eq(treeName), eq(transitionPath), any(FlowSession.class));
-        assertEquals(ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
-        assertEquals(Errors.INVALID_TRANSITION_KEY, modelAndView.getModel().get(errorCodeKey));
+        assertEquals("/vm/error-vxml", modelAndView.getViewName());
+        assertEquals(DecisionTreeController.Error.INVALID_TRANSITION_KEY.toString(), modelAndView.getModel().get(message));
     }
 
     @Test
@@ -169,29 +172,24 @@ public class DecisionTreeControllerTest {
         transition.setDestinationNode(destinationNode);
         node.addTransition(transitionKey, transition);
 
-        when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
-        when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
-        when(request.getParameter(TRANSITION_KEY_PARAM)).thenReturn(transitionKey);
-        when(request.getParameter(TRANSITION_PATH_PARAM)).thenReturn(Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
+        request.setParameter(TREE_NAME_PARAM, treeName);
+        request.setParameter(LANGUAGE_PARAM, "en");
+        request.setParameter(TRANSITION_KEY_PARAM, transitionKey);
+        request.setParameter(TYPE_PARAM, "vxml");
 
         flowSession.setCurrentNode(node);
-
-
-        //when(decisionTreeService.getNode(eq(treeName), eq(transitionPath), any(FlowSession.class))).thenReturn(node);
 
         ModelAndView modelAndView = decisionTreeController.node(request, response);
 
         assertNotNull(modelAndView);
-//        verify(decisionTreeService).getNode(eq(treeName), eq(transitionPath), any(FlowSession.class));
-        assertEquals(ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
-        assertEquals(Errors.INVALID_TRANSITION_KEY_TYPE, modelAndView.getModel().get(errorCodeKey));
+        assertEquals("/vm/error-vxml", modelAndView.getViewName());
     }
 
     @Test
     public void nodeTestNoInputGoesToBlankTransition() {
         Node childNode = new Node();
         Transition childTransition = new Transition();
-        final  MyINodeOperation iNodeOperation = new MyINodeOperation();
+        final MyINodeOperation iNodeOperation = new MyINodeOperation();
         childNode.addOperations(iNodeOperation);
         childTransition.setDestinationNode(new Node());
         childNode.addTransition("", childTransition);
@@ -201,12 +199,11 @@ public class DecisionTreeControllerTest {
         transition.setDestinationNode(childNode);
         node.addTransition("", transition);
 
-        when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
-        when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
-        when(request.getParameter(TYPE_PARAM)).thenReturn("verboice");
-        when(request.getParameter(TRANSITION_KEY_PARAM)).thenReturn("");
-        when(request.getParameter(TRANSITION_PATH_PARAM)).thenReturn(Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
-        when(request.getParameter(DecisionTreeController.FLOW_SESSION_ID_PARAM)).thenReturn("1234");
+        request.setParameter(TREE_NAME_PARAM, treeName);
+        request.setParameter(LANGUAGE_PARAM, "en");
+        request.setParameter(TYPE_PARAM, "verboice");
+        request.setParameter(TRANSITION_KEY_PARAM, "");
+        request.setParameter(DecisionTreeController.FLOW_SESSION_ID_PARAM, "1234");
 
 
         flowSession.setCurrentNode(node);
@@ -218,33 +215,34 @@ public class DecisionTreeControllerTest {
 
     @Test
     public void nodeTestNoTree() {
-        when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
-        when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
-        when(request.getParameter(TRANSITION_KEY_PARAM)).thenReturn("1");
-        when(request.getParameter(TRANSITION_PATH_PARAM)).thenReturn(Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
+        request.setParameter(TREE_NAME_PARAM, treeName);
+        request.setParameter(LANGUAGE_PARAM, "en");
+        request.setParameter(TRANSITION_KEY_PARAM, "1");
+        request.setParameter(TYPE_PARAM, "vxml");
 
-        flowSession.set(DecisionTreeController.CURRENT_NODE,null);
+        flowSession.set(DecisionTreeController.CURRENT_NODE, null);
 
         ModelAndView modelAndView = decisionTreeController.node(request, response);
 
         assertNotNull(modelAndView);
-        assertEquals(DecisionTreeController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
-        assertEquals(DecisionTreeController.Errors.GET_NODE_ERROR, modelAndView.getModel().get(errorCodeKey));
+        assertEquals("/vm/error-vxml", modelAndView.getViewName());
+        assertEquals(DecisionTreeController.Error.UNEXPECTED_EXCEPTION.toString(), modelAndView.getModel().get(message));
     }
 
     @Test
     public void nodeTestException() {
-        when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
-        when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
-        when(request.getParameter(DecisionTreeController.TRANSITION_KEY_PARAM)).thenReturn("1");
-        when(request.getParameter(DecisionTreeController.TRANSITION_PATH_PARAM)).thenReturn(Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
-        flowSession.set(DecisionTreeController.CURRENT_NODE,null);
+        request.setParameter(TREE_NAME_PARAM, treeName);
+        request.setParameter(LANGUAGE_PARAM, "en");
+        request.setParameter(DecisionTreeController.TRANSITION_KEY_PARAM, "1");
+        request.setParameter(TYPE_PARAM, "vxml");
+
+        flowSession.set(DecisionTreeController.CURRENT_NODE, null);
 
         ModelAndView modelAndView = decisionTreeController.node(request, response);
 
         assertNotNull(modelAndView);
-        assertEquals(DecisionTreeController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
-        assertEquals(DecisionTreeController.Errors.GET_NODE_ERROR, modelAndView.getModel().get(errorCodeKey));
+        assertEquals("/vm/error-vxml", modelAndView.getViewName());
+        assertEquals(DecisionTreeController.Error.UNEXPECTED_EXCEPTION.toString(), modelAndView.getModel().get(message));
     }
 
     @Test
@@ -254,9 +252,9 @@ public class DecisionTreeControllerTest {
         transition.setDestinationNode(new Node());
         node.addTransition("1", transition);
 
-        when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
-        when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
-        when(request.getParameter(TYPE_PARAM)).thenReturn("vxml");
+        request.setParameter(TREE_NAME_PARAM, treeName);
+        request.setParameter(LANGUAGE_PARAM, "en");
+        request.setParameter(TYPE_PARAM, "vxml");
         flowSession.setCurrentNode(node);
 
         ModelAndView modelAndView = decisionTreeController.node(request, response);
@@ -267,47 +265,51 @@ public class DecisionTreeControllerTest {
 
     @Test
     public void rootNodeTestNoNode() {
-        when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
-        when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
-        flowSession.set(DecisionTreeController.CURRENT_NODE,null);
+        request.setParameter(TREE_NAME_PARAM, treeName);
+        request.setParameter(LANGUAGE_PARAM, "en");
+        request.setParameter(TYPE_PARAM, "vxml");
+        flowSession.set(DecisionTreeController.CURRENT_NODE, null);
 
         ModelAndView modelAndView = decisionTreeController.node(request, response);
 
         assertNotNull(modelAndView);
-        assertEquals(DecisionTreeController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
-        assertEquals(DecisionTreeController.Errors.GET_NODE_ERROR, modelAndView.getModel().get(errorCodeKey));
+        assertEquals("/vm/error-vxml", modelAndView.getViewName());
+        assertEquals(DecisionTreeController.Error.UNEXPECTED_EXCEPTION.toString(), modelAndView.getModel().get(message));
     }
 
     @Test
     public void rootNodeTestException() {
-        when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
-        when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
-        flowSession.set(DecisionTreeController.CURRENT_NODE,null);
+        request.setParameter(TREE_NAME_PARAM, treeName);
+        request.setParameter(LANGUAGE_PARAM, "en");
+        request.setParameter(TYPE_PARAM, "vxml");
+        flowSession.set(DecisionTreeController.CURRENT_NODE, null);
 
         ModelAndView modelAndView = decisionTreeController.node(request, response);
 
         assertNotNull(modelAndView);
-        assertEquals(DecisionTreeController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
-        assertEquals(DecisionTreeController.Errors.GET_NODE_ERROR, modelAndView.getModel().get(errorCodeKey));
+        assertEquals("/vm/error-vxml", modelAndView.getViewName());
+        assertEquals(DecisionTreeController.Error.UNEXPECTED_EXCEPTION.toString(), modelAndView.getModel().get(message));
     }
 
     @Test
     public void nodeTestMissingParameters() {
+        request.setParameter(TYPE_PARAM, "vxml");
+
         ModelAndView modelAndView = decisionTreeController.node(request, response);
 
         assertNotNull(modelAndView);
         verify(decisionTreeService, times(0)).getNode(anyString(), anyString(), any(FlowSession.class));
-        assertEquals(DecisionTreeController.ERROR_MESSAGE_TEMPLATE_NAME, modelAndView.getViewName());
-        assertEquals(DecisionTreeController.Errors.NULL_PATIENTID_LANGUAGE_OR_TREENAME_PARAM, modelAndView.getModel().get(errorCodeKey));
+        assertEquals("/vm/error-vxml", modelAndView.getViewName());
+        assertEquals(DecisionTreeController.Error.TREE_OR_LANGUAGE_MISSING.toString(), modelAndView.getModel().get(message));
     }
 
     @Test
     public void nodeTestMissingTransitionPathsParameterReturnsRootNode() {
         Node rootNode = new Node();
 
-        when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
-        when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
-        when(request.getParameter(TYPE_PARAM)).thenReturn("vxml");
+        request.setParameter(TREE_NAME_PARAM, treeName);
+        request.setParameter(LANGUAGE_PARAM, "en");
+        request.setParameter(TYPE_PARAM, "vxml");
         when(decisionTreeService.getRootNode(eq(treeName), any(FlowSession.class))).thenReturn(rootNode);
 
         ModelAndView modelAndView = decisionTreeController.node(request, response);
@@ -331,20 +333,24 @@ public class DecisionTreeControllerTest {
         transition.setDestinationNode(node);
         parentNode.addTransition(transitionKey, transition);
 
-        when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
-        when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
-        when(request.getParameter(DecisionTreeController.TRANSITION_KEY_PARAM)).thenReturn(transitionKey);
-        when(request.getParameter(DecisionTreeController.TRANSITION_PATH_PARAM)).thenReturn(Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
+        request.setParameter(TREE_NAME_PARAM, treeName);
+        request.setParameter(LANGUAGE_PARAM, "en");
+        request.setParameter(DecisionTreeController.TRANSITION_KEY_PARAM, transitionKey);
+
 
         flowSession.setCurrentNode(parentNode);
 
-        //when(decisionTreeService.getNode(eq(treeName), eq(transitionPath), any(FlowSession.class))).thenReturn(parentNode);
+        //when(decisionTreeService.getNode(eq(treeName), eq(transitionPath), any(FlowSession.class),parentNode);
 
         ModelAndView modelAndView = decisionTreeController.node(request, response);
 
-        verify(treeEventProcessor).sendActionsBefore(node, TreeNodeLocator.PATH_DELIMITER + transitionKey, params);
-        verify(treeEventProcessor, times(0)).sendActionsBefore(parentNode, TreeNodeLocator.PATH_DELIMITER, params);
-        verify(treeEventProcessor, times(0)).sendActionsAfter(node, TreeNodeLocator.PATH_DELIMITER + transitionKey, params);
+        params.put(TREE_NAME_PARAM, treeName);
+        params.put(LANGUAGE_PARAM, "en");
+        params.put(TRANSITION_KEY_PARAM, transitionKey);
+
+        verify(treeEventProcessor).sendActionsBefore(node, params);
+        verify(treeEventProcessor, times(0)).sendActionsBefore(parentNode, params);
+        verify(treeEventProcessor, times(0)).sendActionsAfter(node, params);
     }
 
     @Test
@@ -358,19 +364,22 @@ public class DecisionTreeControllerTest {
         parentNode.addTransition(transitionKey, transition);
 
 
-        when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
-        when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
-        when(request.getParameter(DecisionTreeController.TRANSITION_KEY_PARAM)).thenReturn(transitionKey);
-        when(request.getParameter(DecisionTreeController.TRANSITION_PATH_PARAM)).thenReturn(Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
+        request.setParameter(TREE_NAME_PARAM, treeName);
+        request.setParameter(LANGUAGE_PARAM, "en");
+        request.setParameter(DecisionTreeController.TRANSITION_KEY_PARAM, transitionKey);
 
         flowSession.setCurrentNode(parentNode);
 
-        //when(decisionTreeService.getNode(eq(treeName), eq(transitionPath), any(FlowSession.class))).thenReturn(parentNode);
+        //when(decisionTreeService.getNode(eq(treeName), eq(transitionPath), any(FlowSession.class),parentNode);
 
         ModelAndView modelAndView = decisionTreeController.node(request, response);
 
-        verify(treeEventProcessor, times(0)).sendActionsBefore(parentNode, TreeNodeLocator.PATH_DELIMITER, params);
-        verify(treeEventProcessor, times(1)).sendActionsAfter(parentNode, TreeNodeLocator.PATH_DELIMITER, params);
+        params.put(TREE_NAME_PARAM, treeName);
+        params.put(LANGUAGE_PARAM, "en");
+        params.put(TRANSITION_KEY_PARAM, transitionKey);
+
+        verify(treeEventProcessor, times(0)).sendActionsBefore(parentNode, params);
+        verify(treeEventProcessor, times(1)).sendActionsAfter(parentNode, params);
     }
 
     @Test
@@ -385,17 +394,21 @@ public class DecisionTreeControllerTest {
         transition.getDestinationNode().setPrompts(p);
         node.addTransition("1", transition);
 
-        when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
-        when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
-        when(request.getParameter(TYPE_PARAM)).thenReturn("vxml");
-        when(request.getParameter(TRANSITION_KEY_PARAM)).thenReturn("1");
-        when(request.getParameter(TRANSITION_PATH_PARAM)).thenReturn(Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
+        request.setParameter(TREE_NAME_PARAM, treeName);
+        request.setParameter(LANGUAGE_PARAM, "en");
+        request.setParameter(TYPE_PARAM, "vxml");
+        request.setParameter(TRANSITION_KEY_PARAM, "1");
 
         flowSession.setCurrentNode(node);
 
-        //when(decisionTreeService.getNode(eq(treeName), eq(transitionPath), any(FlowSession.class))).thenReturn(node);
+        //when(decisionTreeService.getNode(eq(treeName), eq(transitionPath), any(FlowSession.class),node);
 
         ModelAndView modelAndView = decisionTreeController.node(request, response);
+
+        params.put(TREE_NAME_PARAM, treeName);
+        params.put(LANGUAGE_PARAM, "en");
+        params.put(TRANSITION_KEY_PARAM, "1");
+        params.put(TYPE_PARAM, "vxml");
 
         verify(treeEventProcessor).sendTransitionActions(transition, params);
         assertEquals(NODE_TEMPLATE_NAME + "-" + "vxml", modelAndView.getViewName());
@@ -406,19 +419,23 @@ public class DecisionTreeControllerTest {
         String patientId = "PATIENT_ID";
         Node node = new Node();
 
-        when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
-        when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
-        when(request.getParameter(TYPE_PARAM)).thenReturn("vxml");
+        request.setParameter(TREE_NAME_PARAM, treeName);
+        request.setParameter(LANGUAGE_PARAM, "en");
+        request.setParameter(TYPE_PARAM, "vxml");
         flowSession.setCurrentNode(node);
 
-        //when(decisionTreeService.getNode(eq(treeName), eq(TreeNodeLocator.PATH_DELIMITER), any(FlowSession.class))).thenReturn(node);
+        //when(decisionTreeService.getNode(eq(treeName), eq(TreeNodeLocator.PATH_DELIMITER), any(FlowSession.class),node);
 
         ModelAndView modelAndView = decisionTreeController.node(request, response);
 
-        verify(treeEventProcessor).sendActionsBefore(node, TreeNodeLocator.PATH_DELIMITER, params);
-        verify(treeEventProcessor, times(0)).sendActionsAfter(node, TreeNodeLocator.PATH_DELIMITER, params);
+        params.put(TREE_NAME_PARAM, treeName);
+        params.put(LANGUAGE_PARAM, "en");
+        params.put(TYPE_PARAM, "vxml");
 
-       // verify(decisionTreeService).getNode(eq(treeName), eq(TreeNodeLocator.PATH_DELIMITER), any(FlowSession.class));
+        verify(treeEventProcessor).sendActionsBefore(node, params);
+        verify(treeEventProcessor, times(0)).sendActionsAfter(node, params);
+
+        // verify(decisionTreeService).getNode(eq(treeName), eq(TreeNodeLocator.PATH_DELIMITER), any(FlowSession.class));
         assertEquals(NODE_TEMPLATE_NAME + "-" + "vxml", modelAndView.getViewName());
 
     }
@@ -426,7 +443,7 @@ public class DecisionTreeControllerTest {
     static class InMemoryFlowSession implements FlowSession {
 
         private String language;
-        Map<String, Serializable> store = new HashMap<String,Serializable>();
+        Map<String, Serializable> store = new HashMap<String, Serializable>();
         private Node currentNode;
 
         @Override
@@ -445,8 +462,8 @@ public class DecisionTreeControllerTest {
         }
 
         @Override
-        public <T extends Serializable> void set(String key,T value) {
-            store.put(key,value);
+        public <T extends Serializable> void set(String key, T value) {
+            store.put(key, value);
         }
 
         @Override

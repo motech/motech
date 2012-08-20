@@ -55,7 +55,7 @@ public class EventCaptor implements EventListener {
     public void assertEventRaisedAt(List<DateTime> expectedTimes) {
         for (DateTime time : expectedTimes) {
             int eventsRaised = eventTimes.size();
-            System.moveTimeBy(time.getMillis() - now().getMillis() - STEP_BACK);
+            //System.moveTimeBy(time.getMillis() - now().getMillis() - STEP_BACK);
             try {
                 waitForEvent(eventsRaised);
             } catch (EventTimeoutException e) {

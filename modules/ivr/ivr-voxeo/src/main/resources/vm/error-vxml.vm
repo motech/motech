@@ -6,7 +6,7 @@
                 <audio src="/m/audio/error.wav"/>
              </prompt>
             <prompt>
-                Error
+                Unexpected error $message
             </prompt>
         </block>
     </form>
