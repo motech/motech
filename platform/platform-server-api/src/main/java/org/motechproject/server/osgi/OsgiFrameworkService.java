@@ -60,7 +60,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     public static final String BUNDLE_ACTIVATOR_HEADER = "Bundle-Activator";
 
     /**
-     * Initialize, install bundles and start internal bundles and the OSGi framework
+     * Initialize, install bundles and start non-MOTECH bundles and the OSGi framework
      */
     public void start() {
         try {
@@ -77,9 +77,13 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                 logger.debug("Installing bundle [" + url + "]");
                 Bundle bundle = bundleContext.installBundle(url.toExternalForm());
                 bundles.add(bundle);
+            }
 
-                if (!bundle.getLocation().contains(".motech")) {
-                    startBundle(bundle.getSymbolicName());
+            for (Bundle bundle : bundles) {
+                String bundleSymbolicName = bundle.getSymbolicName();
+
+                if (!bundleSymbolicName.startsWith("org.motechproject")) {
+                    startBundle(bundleSymbolicName);
                 }
             }
 
@@ -94,15 +98,16 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     }
 
     /**
-     * Start external bundles
+     * Start MOTECH bundles
      */
-    public void startExternalBundles() {
+    public void startMotechBundles() {
         try {
-            ServletContext servletContext = ((WebApplicationContext) applicationContext).getServletContext();
-            BundleContext bundleContext = (BundleContext) servletContext.getAttribute(BundleContext.class.getName());
-
             for (Bundle bundle : bundles) {
-                startBundle(bundle.getSymbolicName());
+                String bundleSymbolicName = bundle.getSymbolicName();
+
+                if (bundleSymbolicName.startsWith("org.motechproject")) {
+                    startBundle(bundleSymbolicName);
+                }
             }
         } catch (Exception e) {
             logger.error("Failed to start Bundles", e);

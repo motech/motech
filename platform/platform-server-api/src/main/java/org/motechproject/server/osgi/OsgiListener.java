@@ -32,8 +32,8 @@ public class OsgiListener implements ServletContextListener {
             LOGGER.info("Monitoring config file...");
             getConfigFileMonitor(servletContextEvent).monitor();
 
-            LOGGER.info("Launching bundles...");
-            getOsgiService().startExternalBundles();
+            LOGGER.info("Launching MOTECH bundles...");
+            getOsgiService().startMotechBundles();
         } else {
             LOGGER.warn("Problems with MoTeCH launch. Finding and launching Admin UI bundle to repair errors by user...");
 
