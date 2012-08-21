@@ -4,11 +4,11 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.13-SNAPSHOT</version>
+        <version>0.12</version>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-ivr-asterisk</artifactId>
-    <version>0.13-SNAPSHOT</version>
+    <version>0.12</version>
     <name>MoTeCH IVR Asterisk</name>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
