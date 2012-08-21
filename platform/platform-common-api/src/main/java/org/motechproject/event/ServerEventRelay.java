@@ -1,12 +1,10 @@
-package org.motechproject.server.event;
+package org.motechproject.event;
 
-import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.scheduler.event.EventRelay;
-import org.motechproject.scheduler.gateway.OutboundEventGateway;
 import org.motechproject.metrics.MetricsAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +13,7 @@ import java.util.Set;
 /**
  * This class handled incoming scheduled events and relays those events to the appropriate event listeners
  */
+@Component("eventRelay")
 public class ServerEventRelay implements EventRelay {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 

@@ -8,7 +8,7 @@ import org.motechproject.eventlogging.domain.LoggableEvent;
 import org.motechproject.eventlogging.loggers.EventLogger;
 import org.motechproject.eventlogging.loggers.impl.FileEventLogger;
 import org.motechproject.eventlogging.service.EventLoggingService;
-import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.event.MotechEvent;
 
 public class FileEventLoggingService implements EventLoggingService {
 

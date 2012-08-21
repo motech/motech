@@ -1,10 +1,10 @@
 package org.motechproject.scheduletracking.api.service.impl;
 
-import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.events.DefaultmentCaptureEvent;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
-import org.motechproject.server.event.annotations.MotechListener;
+import org.motechproject.event.annotations.MotechListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

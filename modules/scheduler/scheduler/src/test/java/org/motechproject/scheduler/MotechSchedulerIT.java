@@ -4,13 +4,14 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.*;
 import org.junit.runner.RunWith;
+import org.motechproject.event.MotechEvent;
 import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.domain.*;
 import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.motechproject.scheduler.impl.MotechSchedulerServiceImpl;
-import org.motechproject.server.event.EventListenerRegistry;
-import org.motechproject.server.event.annotations.MotechListenerEventProxy;
+import org.motechproject.event.EventListenerRegistry;
+import org.motechproject.event.annotations.MotechListenerEventProxy;
 import org.motechproject.util.DateUtil;
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
@@ -529,6 +530,7 @@ public class MotechSchedulerIT {
         Thread.sleep(6000);   //let the scheduler call test job handler.
         final List<DateTime> triggeredTime = testJobHandler.getTriggeredTime();
         assertDateEqualsIgnoreMillis(now.toDate(), triggeredTime.get(0));
+        System.out.println(triggeredTime);
         assertDateEqualsIgnoreMillis(startDate.plusSeconds(3 * REPEAT_INTERVAL_IN_SECONDS).toDate(), triggeredTime.get(1));
     }
 

@@ -1,6 +1,6 @@
-package org.motechproject.server.event.annotations;
+package org.motechproject.event.annotations;
 
-import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.event.MotechEvent;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 

@@ -3,7 +3,7 @@ package org.motechproject.eventlogging.converter.impl;
 import java.util.Map;
 import org.joda.time.DateTime;
 import org.motechproject.eventlogging.converter.EventToLogConverter;
-import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.event.MotechEvent;
 import org.springframework.stereotype.Component;
 
 @Component

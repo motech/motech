@@ -1,4 +1,4 @@
-package org.motechproject.server.event;
+package org.motechproject.event;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +11,7 @@ import java.util.Set;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 
-class EventListenerTree {
+public class EventListenerTree {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private static final String SPLIT_REGEX = "\\.";

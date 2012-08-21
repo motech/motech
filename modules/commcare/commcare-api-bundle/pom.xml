@@ -77,7 +77,7 @@
                             org.ektorp.impl,
                             org.ektorp.spring,
                             org.ektorp.impl.jackson,
-                            org.motechproject.server.event.annotations,
+                            org.motechproject.event.annotations,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.osgi.config,

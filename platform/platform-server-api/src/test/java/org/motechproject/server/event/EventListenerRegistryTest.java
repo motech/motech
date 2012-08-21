@@ -4,21 +4,19 @@ import junitx.util.PrivateAccessor;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
+import org.motechproject.event.EventListener;
+import org.motechproject.event.EventListenerRegistry;
+import org.motechproject.event.EventListenerTree;
+import org.motechproject.event.MotechEvent;
 import org.motechproject.metrics.impl.MultipleMetricsAgentImpl;
-import org.motechproject.scheduler.domain.MotechEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class EventListenerRegistryTest {
     private EventListenerRegistry registry;

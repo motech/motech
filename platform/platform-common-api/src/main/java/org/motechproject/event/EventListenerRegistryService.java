@@ -1,4 +1,4 @@
-package org.motechproject.server.event;
+package org.motechproject.event;
 
 import java.util.List;
 import java.util.Set;

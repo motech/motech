@@ -2,7 +2,9 @@ package org.motechproject.server.event;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.event.EventListener;
+import org.motechproject.event.EventListenerTree;
+import org.motechproject.event.MotechEvent;
 
 import java.util.Set;
 

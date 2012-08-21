@@ -13,14 +13,14 @@
     <import resource="classpath:applicationPillReminderAPI.xml" />
     <import resource="classpath*:integrationCommonAPI.xml" />
 
-    <bean id="eventRelay" class="org.motechproject.server.event.ServerEventRelay" />
+    <bean id="eventRelay" class="org.motechproject.event.ServerEventRelay" />
 
     <bean id="metricsAgent"
         class="org.motechproject.metrics.impl.MultipleMetricsAgentImpl" />
 
     <bean id="loggingAgentBackEnd" class="org.motechproject.metrics.impl.LoggingAgentBackendImpl" />
 
-    <bean id="eventListenerRegistry" class="org.motechproject.server.event.EventListenerRegistry" />
+    <bean id="eventListenerRegistry" class="org.motechproject.event.EventListenerRegistry" />
 
     <util:properties id="quartzProperties" location="classpath:quartz.properties" />
 

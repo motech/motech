@@ -6,7 +6,7 @@
 
     <import resource="classpath*:applicationMessageCampaign.xml" />
 
-    <bean class="org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor" />
+    <bean class="org.motechproject.event.annotations.EventAnnotationBeanPostProcessor" />
 
     <osgi:service id="messageCampaignServiceOsgi" auto-export="interfaces" ref="messageCampaignService"
                   interface="org.motechproject.server.messagecampaign.service.MessageCampaignService" />
@@ -15,5 +15,5 @@
                     interface="org.motechproject.scheduler.MotechSchedulerService" />
 
     <osgi:reference id="outboundEventGatewayOsgi" cardinality="0..1"
-                    interface="org.motechproject.scheduler.gateway.OutboundEventGateway" />
+                    interface="org.motechproject.event.OutboundEventGateway" />
 </beans>

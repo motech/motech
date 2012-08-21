@@ -2,6 +2,7 @@ package org.motechproject.scheduler.domain;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.motechproject.event.MotechEvent;
 
 import java.util.HashMap;
 import java.util.Map;

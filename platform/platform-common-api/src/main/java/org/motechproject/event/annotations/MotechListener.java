@@ -1,4 +1,4 @@
-package org.motechproject.server.event.annotations;
+package org.motechproject.event.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

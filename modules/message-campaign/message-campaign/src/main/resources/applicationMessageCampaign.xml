@@ -12,6 +12,10 @@
 
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.server.messagecampaign"/>
+    <context:component-scan base-package="org.motechproject.event"/>
+
+    <bean id="metricsAgent" class="org.motechproject.metrics.impl.MultipleMetricsAgentImpl" autowire="byType"/>
+    <bean id="loggingAgent" class="org.motechproject.metrics.impl.LoggingAgentBackendImpl"/>
 
     <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean">
         <property name="properties" ref="couchdbProperties"/>

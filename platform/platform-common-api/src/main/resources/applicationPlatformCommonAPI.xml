@@ -24,9 +24,7 @@
         <constructor-arg ref="couchDbInstance"/>
     </bean>
 
-    <bean id="metricsAgent" class="org.motechproject.metrics.impl.MultipleMetricsAgentImpl" autowire="byType">
-    </bean>
-
+    <bean id="metricsAgent" class="org.motechproject.metrics.impl.MultipleMetricsAgentImpl" autowire="byType"/>
     <bean id="loggingAgent" class="org.motechproject.metrics.impl.LoggingAgentBackendImpl"/>
 
 </beans>

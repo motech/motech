@@ -13,6 +13,8 @@
     <import resource="schedulerFiredEventChannelAdapter.xml"/>
     <import resource="schedulerInboundChannelAdapter.xml"/>
 
+    <context:component-scan base-package="org.motechproject.event"/>
+
     <util:properties id="quartzProperties" location="classpath:quartz.properties"/>
 
     <bean id="connectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">

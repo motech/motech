@@ -5,7 +5,7 @@ import java.util.Map;
 import org.motechproject.commcare.domain.CaseXml;
 import org.motechproject.commcare.events.constants.EventDataKeys;
 import org.motechproject.commcare.events.constants.EventSubjects;
-import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.event.MotechEvent;
 
 /**
  * Wrapper class for convenience when a MotechEvent representing a CaseEvent is

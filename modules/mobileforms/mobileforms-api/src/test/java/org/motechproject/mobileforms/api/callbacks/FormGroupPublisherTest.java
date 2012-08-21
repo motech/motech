@@ -9,8 +9,8 @@ import org.motechproject.mobileforms.api.domain.FormBean;
 import org.motechproject.mobileforms.api.domain.FormBeanGroup;
 import org.motechproject.mobileforms.api.domain.FormError;
 import org.motechproject.mobileforms.api.validator.TestFormBean;
-import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.scheduler.event.EventRelay;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.EventRelay;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;

@@ -1,7 +1,7 @@
 package org.motechproject.scheduler.context;
 
-import org.motechproject.scheduler.event.EventRelay;
-import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.event.EventRelay;
+import org.motechproject.event.MotechEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package org.motechproject.server.event.annotations;
+package org.motechproject.event.annotations;
 
 /**
  * ENUM defining the annotation types

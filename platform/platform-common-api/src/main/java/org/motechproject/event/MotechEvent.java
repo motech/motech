@@ -1,9 +1,10 @@
-package org.motechproject.scheduler.domain;
+package org.motechproject.event;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Motech Scheduled Event data carrier class,
@@ -14,6 +15,7 @@ import java.util.Map;
 public final class MotechEvent implements Serializable {
     public static final String EVENT_TYPE_KEY_NAME = "eventType";
 
+    private UUID id;
     private String subject;
     private Map<String, Object> parameters;
     private Date endTime;
@@ -51,6 +53,14 @@ public final class MotechEvent implements Serializable {
     public MotechEvent(String subject, Map<String, Object> parameters) {
         this(subject);
         this.parameters = parameters;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getSubject() {

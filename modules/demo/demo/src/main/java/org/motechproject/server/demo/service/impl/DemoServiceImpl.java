@@ -1,9 +1,9 @@
 package org.motechproject.server.demo.service.impl;
 
 import org.motechproject.scheduler.context.EventContext;
-import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
-import org.motechproject.scheduler.event.EventRelay;
+import org.motechproject.event.EventRelay;
 import org.motechproject.scheduler.gateway.MotechSchedulerGateway;
 import org.motechproject.server.demo.EventKeys;
 import org.motechproject.server.demo.service.DemoService;

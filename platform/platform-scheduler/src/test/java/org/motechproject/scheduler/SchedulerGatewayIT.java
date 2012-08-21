@@ -2,6 +2,7 @@ package org.motechproject.scheduler;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.domain.*;
 import org.motechproject.scheduler.gateway.MotechSchedulerGateway;
 import org.springframework.beans.factory.annotation.Autowired;

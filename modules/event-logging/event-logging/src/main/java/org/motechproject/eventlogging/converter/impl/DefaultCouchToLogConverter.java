@@ -10,7 +10,7 @@ import org.motechproject.eventlogging.domain.CouchLogMappings;
 import org.motechproject.eventlogging.domain.CouchLoggableEvent;
 import org.motechproject.eventlogging.domain.KeyValue;
 import org.motechproject.eventlogging.domain.LoggableEvent;
-import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.event.MotechEvent;
 import org.springframework.stereotype.Component;
 
 @Component

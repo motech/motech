@@ -1,6 +1,6 @@
-package org.motechproject.server.event.annotations;
+package org.motechproject.event.annotations;
 
-import org.motechproject.server.event.EventListenerRegistryService;
+import org.motechproject.event.EventListenerRegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
