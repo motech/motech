@@ -5,11 +5,16 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.domain.WindowName;
 import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
 import org.motechproject.util.DateUtil;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -34,7 +39,19 @@ public class EnrollmentRecordMapperTest {
     @Test
     public void shouldMapEnrollmentToEnrollmentResponse(){
         Schedule schedule = new Schedule("some_schedule");
-        final Enrollment enrollment = new Enrollment().setExternalId("externalId").setSchedule(schedule).setCurrentMilestoneName("milestoneX").setStartOfSchedule(DateUtil.newDateTime(2000, 2, 1, 0, 0, 0)).setEnrolledOn(DateUtil.newDateTime(2000, 2, 10, 0, 0, 0)).setPreferredAlertTime(new Time(10, 10)).setStatus(null).setMetadata(null);
+
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put("foo", "bar");
+
+        final Enrollment enrollment = new Enrollment()
+            .setExternalId("externalId")
+            .setSchedule(schedule)
+            .setCurrentMilestoneName("milestoneX")
+            .setStartOfSchedule(DateUtil.newDateTime(2000, 2, 1, 0, 0, 0))
+            .setEnrolledOn(DateUtil.newDateTime(2000, 2, 10, 0, 0, 0))
+            .setPreferredAlertTime(new Time(10, 10))
+            .setStatus(EnrollmentStatus.ACTIVE)
+            .setMetadata(metadata);
         final EnrollmentRecord record = enrollmentRecordMapper.map(enrollment);
 
         assertRecordMatchesEnrollment(record, enrollment);
@@ -50,6 +67,7 @@ public class EnrollmentRecordMapperTest {
         when(enrollment.getStartOfWindowForCurrentMilestone(WindowName.due)).thenReturn(newDateTime(2011, 12, 8, 0, 0, 0));
         when(enrollment.getStartOfWindowForCurrentMilestone(WindowName.late)).thenReturn(newDateTime(2011, 12, 15, 0, 0, 0));
         when(enrollment.getStartOfWindowForCurrentMilestone(WindowName.max)).thenReturn(newDateTime(2011, 12, 22, 0, 0, 0));
+        when(enrollment.getStatus()).thenReturn(EnrollmentStatus.ACTIVE);
 
         EnrollmentRecord record = enrollmentRecordMapper.mapWithDates(enrollment);
 
@@ -68,5 +86,7 @@ public class EnrollmentRecordMapperTest {
         assertThat(actualRecord.getPreferredAlertTime(), is(equalTo(expectedEnrollment.getPreferredAlertTime())));
         assertThat(actualRecord.getEnrollmentDateTime(), is(equalTo(expectedEnrollment.getEnrolledOn())));
         assertThat(actualRecord.getCurrentMilestoneName(), is(equalTo(expectedEnrollment.getCurrentMilestoneName())));
+        assertEquals(actualRecord.getStatus(), expectedEnrollment.getStatus().toString());
+        assertEquals(actualRecord.getMetadata(), expectedEnrollment.getMetadata());
     }
 }

@@ -7,6 +7,7 @@ import org.joda.time.DateTime;
 import org.motechproject.model.MotechBaseDataObject;
 import org.motechproject.model.Time;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ public class Enrollment extends MotechBaseDataObject {
     private List<MilestoneFulfillment> fulfillments = new LinkedList<MilestoneFulfillment>();
 
     public Enrollment() {
+        metadata = new HashMap<>();
     }
 
     public Map<String, String> getMetadata() {
@@ -185,6 +187,12 @@ public class Enrollment extends MotechBaseDataObject {
         currentMilestoneName = enrollment.getCurrentMilestoneName();
         startOfSchedule = enrollment.getStartOfSchedule();
         preferredAlertTime = enrollment.getPreferredAlertTime();
+        status = enrollment.getStatus();
+        metadata = cloneHashMap((HashMap<String, String>) enrollment.getMetadata());
         return this;
+    }
+
+    private Map<String, String> cloneHashMap(HashMap<String, String> map) {
+        return (Map<String, String>) map.clone();
     }
 }

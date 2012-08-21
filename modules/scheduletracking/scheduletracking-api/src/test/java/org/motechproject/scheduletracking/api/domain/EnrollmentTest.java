@@ -7,6 +7,9 @@ import org.motechproject.model.Time;
 import org.motechproject.testing.utils.BaseUnitTest;
 import org.motechproject.util.DateUtil;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -73,8 +76,10 @@ public class EnrollmentTest extends BaseUnitTest {
     @Test
     public void shouldCopyFromTheGivenEnrollment() {
         Schedule schedule = new Schedule("some_schedule");
-        Enrollment newEnrollment = new Enrollment().setExternalId("externalId").setSchedule(schedule).setCurrentMilestoneName("newCurrentMilestoneName").setStartOfSchedule(weeksAgo(2)).setEnrolledOn(now()).setPreferredAlertTime(new Time(8, 10)).setStatus(EnrollmentStatus.ACTIVE).setMetadata(null);
-        Enrollment originalEnrollment = new Enrollment().setExternalId("externalId").setSchedule(schedule).setCurrentMilestoneName("currentMilestoneName").setStartOfSchedule(weeksAgo(3)).setEnrolledOn(weeksAgo(2)).setPreferredAlertTime(new Time(2, 5)).setStatus(EnrollmentStatus.ACTIVE).setMetadata(null);
+        Enrollment originalEnrollment = new Enrollment().setExternalId("externalId").setSchedule(schedule).setCurrentMilestoneName("currentMilestoneName").setStartOfSchedule(weeksAgo(3)).setEnrolledOn(weeksAgo(2)).setPreferredAlertTime(new Time(2, 5)).setStatus(EnrollmentStatus.ACTIVE);
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put("foo", "bar");
+        Enrollment newEnrollment = new Enrollment().setExternalId("externalId").setSchedule(schedule).setCurrentMilestoneName("newCurrentMilestoneName").setStartOfSchedule(weeksAgo(2)).setEnrolledOn(now()).setPreferredAlertTime(new Time(8, 10)).setStatus(EnrollmentStatus.ACTIVE).setMetadata(metadata);
 
         Enrollment enrollment = originalEnrollment.copyFrom(newEnrollment);
 
@@ -84,6 +89,7 @@ public class EnrollmentTest extends BaseUnitTest {
         assertEquals(newEnrollment.getStartOfSchedule(), enrollment.getStartOfSchedule());
         assertEquals(newEnrollment.getEnrolledOn(), enrollment.getEnrolledOn());
         assertEquals(newEnrollment.getPreferredAlertTime(), enrollment.getPreferredAlertTime());
+        assertEquals(newEnrollment.getMetadata(), enrollment.getMetadata());
     }
 
     @Test
