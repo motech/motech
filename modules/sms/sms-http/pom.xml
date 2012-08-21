@@ -4,6 +4,7 @@
         <groupId>org.motechproject</groupId>
         <artifactId>motech</artifactId>
         <version>0.13-SNAPSHOT</version>
+        <relativePath>../../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.motechproject</groupId>
