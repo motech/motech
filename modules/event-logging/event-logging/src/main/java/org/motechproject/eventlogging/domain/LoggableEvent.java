@@ -3,7 +3,7 @@ package org.motechproject.eventlogging.domain;
 import java.util.Collections;
 import java.util.List;
 
-import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.event.MotechEvent;
 
 public class LoggableEvent {
 

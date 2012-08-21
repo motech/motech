@@ -1,6 +1,4 @@
-package org.motechproject.scheduler.gateway;
-
-import org.motechproject.scheduler.domain.MotechEvent;
+package org.motechproject.event;
 
 public interface OutboundEventGateway {
 

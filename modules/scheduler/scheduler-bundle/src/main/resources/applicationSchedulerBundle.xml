@@ -11,7 +11,6 @@
                   interface="org.motechproject.scheduler.MotechSchedulerService"/>
 
 
-    <osgi:service id="schedulerFireEventGatewayOsgi" ref="schedulerFireEventGateway"
-                  interface="org.motechproject.scheduler.gateway.SchedulerFireEventGateway"/>
+    <osgi:service id="outboundEventGatewayOsgi" ref="outboundEventGateway" interface="org.motechproject.event.OutboundEventGateway"/>
 
 </beans>

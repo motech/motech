@@ -10,8 +10,6 @@
     </bean>
 
     <import resource="classpath:applicationMessageCampaign.xml"/>
-
-    <import resource="classpath:applicationMessageCampaign.xml"/>
     <import resource="classpath*:integrationCommonAPI.xml"/>
     <import resource="classpath:applicationScheduler.xml"/>
 

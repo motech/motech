@@ -2,10 +2,10 @@ package org.motechproject.scheduletracking.api.service.impl;
 
 import org.joda.time.DateTime;
 import org.joda.time.Period;
+import org.motechproject.event.OutboundEventGateway;
 import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
-import org.motechproject.scheduler.gateway.SchedulerFireEventGateway;
 import org.motechproject.scheduletracking.api.domain.Alert;
 import org.motechproject.scheduletracking.api.domain.AlertWindow;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
@@ -30,12 +30,12 @@ public class EnrollmentAlertService {
     public static final int MILLIS_IN_A_SEC = 1000;
     private MotechSchedulerService schedulerService;
 
-    private SchedulerFireEventGateway schedulerFireEventGateway;
+    private OutboundEventGateway outboundEventGateway;
 
     @Autowired
-    public EnrollmentAlertService(MotechSchedulerService schedulerService, SchedulerFireEventGateway schedulerFireEventGateway) {
+    public EnrollmentAlertService(MotechSchedulerService schedulerService, OutboundEventGateway outboundEventGateway) {
         this.schedulerService = schedulerService;
-        this.schedulerFireEventGateway = schedulerFireEventGateway;
+        this.outboundEventGateway = outboundEventGateway;
     }
 
     public void scheduleAlertsForCurrentMilestone(Enrollment enrollment) {
@@ -91,7 +91,7 @@ public class EnrollmentAlertService {
                 alertsStartTime = alertsStartTime.plus(repeatIntervalInMillis);
                 numberOfAlertsToFire = numberOfAlertsToFire - 1;
 
-                schedulerFireEventGateway.sendEventMessage(event);
+                outboundEventGateway.sendEventMessage(event);
             }
             RepeatingSchedulableJob job = new RepeatingSchedulableJob()
                 .setMotechEvent(event)

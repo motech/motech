@@ -1,7 +1,7 @@
 package org.motechproject.gateway;
 
-import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.scheduler.gateway.OutboundEventGateway;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.OutboundEventGateway;
 
 public class StubOutboundEventGateway implements OutboundEventGateway {
     @Override

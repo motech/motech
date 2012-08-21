@@ -11,5 +11,5 @@
                     interface="org.motechproject.scheduler.MotechSchedulerService" />
 
     <osgi:reference id="eventRelayOsgi" cardinality="0..1"
-                    interface="org.motechproject.scheduler.event.EventRelay" />
+                    interface="org.motechproject.event.EventRelay" />
 </beans>

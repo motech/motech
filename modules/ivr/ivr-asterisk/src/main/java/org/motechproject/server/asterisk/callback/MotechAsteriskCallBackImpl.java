@@ -8,8 +8,8 @@ import org.motechproject.ivr.event.IVREventDelegate;
 import org.motechproject.ivr.model.CallDetailRecord;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.scheduler.context.EventContext;
-import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.scheduler.event.EventRelay;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.EventRelay;
 
 import java.util.Map;
 

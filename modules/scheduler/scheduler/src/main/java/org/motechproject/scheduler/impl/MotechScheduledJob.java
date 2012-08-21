@@ -1,15 +1,8 @@
 package org.motechproject.scheduler.impl;
 
-import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.scheduler.gateway.SchedulerFireEventGateway;
-import org.quartz.Job;
-import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-import org.quartz.SchedulerContext;
-import org.quartz.SchedulerException;
-import org.quartz.Trigger;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.OutboundEventGateway;
+import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -56,10 +49,10 @@ public class MotechScheduledJob implements Job {
 
             ApplicationContext applicationContext = (ApplicationContext) schedulerContext.get("applicationContext");
 
-            SchedulerFireEventGateway schedulerFiredEventGateway =
-                    (SchedulerFireEventGateway) applicationContext.getBean("schedulerFireEventGateway");
+            OutboundEventGateway outboundEventGateway =
+                    (OutboundEventGateway) applicationContext.getBean("outboundEventGateway");
 
-            schedulerFiredEventGateway.sendEventMessage(motechEvent);
+            outboundEventGateway.sendEventMessage(motechEvent);
         } catch (Exception e) {
             log.error("Job execution failed.", e);
         }

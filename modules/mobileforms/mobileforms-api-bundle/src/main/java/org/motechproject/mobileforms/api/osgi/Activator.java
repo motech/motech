@@ -1,6 +1,6 @@
 package org.motechproject.mobileforms.api.osgi;
 
-import org.motechproject.server.event.annotations.EventAnnotationBeanPostProcessor;
+import org.motechproject.event.annotations.EventAnnotationBeanPostProcessor;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;

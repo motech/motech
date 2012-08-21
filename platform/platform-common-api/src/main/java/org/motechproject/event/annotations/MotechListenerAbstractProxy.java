@@ -1,8 +1,8 @@
-package org.motechproject.server.event.annotations;
+package org.motechproject.event.annotations;
 
 import org.motechproject.MotechException;
-import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.server.event.EventListener;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.EventListener;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
@@ -38,7 +38,7 @@ public abstract class MotechListenerAbstractProxy implements EventListener {
     public abstract void callHandler(MotechEvent event);
 
     /* (non-Javadoc)
-      * @see org.motechproject.server.event.EventListener#handle(org.motechproject.scheduler.model.MotechEvent)
+      * @see org.motechproject.event.EventListener#handle(org.motechproject.scheduler.model.MotechEvent)
       */
     @Override
     public void handle(MotechEvent event) {
@@ -51,7 +51,7 @@ public abstract class MotechListenerAbstractProxy implements EventListener {
     }
 
     /* (non-Javadoc)
-     * @see org.motechproject.server.event.EventListener#getIdentifier()
+     * @see org.motechproject.event.EventListener#getIdentifier()
      */
     @Override
     public String getIdentifier() {

@@ -16,7 +16,7 @@
     <import resource="classpath:applicationPlatformCommonAPI.xml"/>
     <import resource="classpath:applicationPlatformStartup.xml"/>
 
-    <bean id="eventRelay" class="org.motechproject.server.event.ServerEventRelay"/>
+    <bean id="eventRelay" class="org.motechproject.event.ServerEventRelay"/>
 
     <bean id="eventContext" class="org.motechproject.scheduler.context.EventContext" factory-method="getInstance"/>
 
@@ -38,6 +38,7 @@
         </property>
     </bean>
 
+    <context:component-scan base-package="org.motechproject.event"/>
     <context:component-scan base-package="org.motechproject.server.event"/>
     <context:component-scan base-package="org.motechproject.server.osgi"/>
     <!--  <context:component-scan base-package="org.motechproject.server.ruleengine"/>-->

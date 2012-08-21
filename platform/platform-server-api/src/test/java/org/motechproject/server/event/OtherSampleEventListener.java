@@ -1,6 +1,7 @@
 package org.motechproject.server.event;
 
-import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.event.EventListener;
+import org.motechproject.event.MotechEvent;
 
 public class OtherSampleEventListener implements EventListener {
 

@@ -8,7 +8,7 @@
     <import resource="classpath*:applicationSmsSmpp.xml"/>
 
     <osgi:reference id="eventRelayOsgi" cardinality="0..1"
-                    interface="org.motechproject.scheduler.event.EventRelay" />
+                    interface="org.motechproject.event.EventRelay" />
 
     <osgi:reference id="platformSettingsServiceOsgi" cardinality="0..1"
                     interface="org.motechproject.server.config.service.PlatformSettingsService" />

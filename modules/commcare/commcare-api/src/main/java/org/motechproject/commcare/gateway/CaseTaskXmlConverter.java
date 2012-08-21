@@ -3,8 +3,6 @@ package org.motechproject.commcare.gateway;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.naming.NoNameCoder;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-import java.util.List;
-import java.util.UUID;
 import org.joda.time.DateTime;
 import org.motechproject.commcare.domain.CaseTask;
 import org.motechproject.commcare.domain.IndexTask;
@@ -21,10 +19,13 @@ import org.motechproject.commcare.request.converter.CloseElementConverter;
 import org.motechproject.commcare.request.converter.CreateElementConverter;
 import org.motechproject.commcare.request.converter.IndexElementConverter;
 import org.motechproject.commcare.request.converter.UpdateElementConverter;
-import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.scheduler.event.EventRelay;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.EventRelay;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.UUID;
 
 @Component
 public class CaseTaskXmlConverter {

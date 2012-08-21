@@ -3,7 +3,7 @@ package org.motechproject.appointments.api.model.jobs;
 import org.motechproject.appointments.api.EventKeys;
 import org.motechproject.appointments.api.model.Visit;
 import org.motechproject.scheduler.domain.CronSchedulableJob;
-import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
 
 import java.util.HashMap;
