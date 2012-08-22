@@ -13,7 +13,19 @@ body {
 #side-nav {
     font-size: 15px;
 }
+/* -- dropdown menu -- */
 
+.dropdown ul li a {
+    font-size: 15px
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.navbar .dropdown-menu, .nav-pills .dropdown-menu {
+    margin-top: 0;
+}
 .navbar-inner-bg {
     background: url("../img/navbar.jpg") repeat-x;
 }
@@ -24,6 +36,7 @@ body {
 .navbar .nav > li > a {
     color: #c2eafe;
 }
+
 
 .well2 {
     margin-bottom: 20px;
