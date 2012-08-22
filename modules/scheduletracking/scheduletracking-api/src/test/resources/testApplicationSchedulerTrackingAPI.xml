@@ -46,4 +46,6 @@
           class="org.motechproject.scheduletracking.api.service.impl.ScheduleTrackingServiceImpl"/>
 
     <bean id="schedulerService" class="org.motechproject.scheduler.impl.MotechSchedulerServiceImpl"/>
+
+    <bean class="org.springframework.mock.web.MockServletContext"/>
 </beans>
