@@ -134,71 +134,71 @@
 
     <modules>
         <!-- Non-OSGI modules -->
-        <module>platform/platform-common-api</module>
-        <module>platform/platform-common</module>
-        <module>platform/platform-decisiontree-common</module>
-        <module>platform/platform-decisiontree</module>
-        <module>platform/platform-scheduler</module>
-        <module>platform/platform-server-api</module>
-        <module>platform/platform-server-config</module>
-        <module>platform/platform-server-startup</module>
-        <module>platform/platform-server</module>
+        <module>platform/common-api</module>
+        <module>platform/common</module>
+        <module>platform/decisiontree-common</module>
+        <module>platform/decisiontree</module>
+        <module>platform/scheduler</module>
+        <module>platform/server-api</module>
+        <module>platform/server-config</module>
+        <module>platform/server-startup</module>
+        <module>platform/server</module>
         <module>modules/admin/admin</module>
-        <module>modules/alerts/alerts-api</module>
-        <module>modules/appointments/appointments-api</module>
-        <module>modules/cmslite/cmslite-api</module>
-        <module>modules/commcare/commcare-api</module>
+        <module>modules/alerts/api</module>
+        <module>modules/appointments/api</module>
+        <module>modules/cmslite/api</module>
+        <module>modules/commcare/api</module>
         <module>modules/demo/demo</module>
         <module>modules/event-logging/event-logging</module>
-        <module>modules/ivr/ivr-api</module>
-        <module>modules/ivr/ivr-asterisk</module>
-        <module>modules/ivr/ivr-kookoo</module>
-        <module>modules/ivr/ivr-verboice</module>
-        <module>modules/ivr/ivr-voxeo</module>
+        <module>modules/ivr/api</module>
+        <module>modules/ivr/asterisk</module>
+        <module>modules/ivr/kookoo</module>
+        <module>modules/ivr/verboice</module>
+        <module>modules/ivr/voxeo</module>
         <module>modules/message-campaign/message-campaign</module>
-        <module>modules/mobileforms/mobileforms-api</module>
-        <module>modules/mrs/mrs-api</module>
-        <module>modules/openmrs/openmrs-api</module>
-        <module>modules/openmrs/openmrs-omod</module>
-        <module>modules/openmrs/openmrs-ws</module>
-        <module>modules/outbox/outbox-api</module>
+        <module>modules/mobileforms/api</module>
+        <module>modules/mrs/api</module>
+        <module>modules/openmrs/api</module>
+        <module>modules/openmrs/omod</module>
+        <module>modules/openmrs/ws</module>
+        <module>modules/outbox/api</module>
         <module>modules/outbox/outbox</module>
-        <module>modules/pillreminder/pillreminder-api</module>
-        <module>modules/rules/rules-api</module>
+        <module>modules/pillreminder/api</module>
+        <module>modules/rules/api</module>
         <module>modules/scheduler/scheduler</module>
-        <module>modules/scheduletracking/scheduletracking-api</module>
-        <module>modules/sms/sms-api</module>
-        <module>modules/sms/sms-http</module>
-        <module>modules/sms/sms-smpp</module>
+        <module>modules/scheduletracking/api</module>
+        <module>modules/sms/api</module>
+        <module>modules/sms/http</module>
+        <module>modules/sms/smpp</module>
         <module>modules/testing-utils/testing-utils</module>
         <module>modules/web-security/web-security</module>
 
         <!-- OSGI modules -->
-        <module>platform/platform-common-bundle</module>
-        <module>platform/platform-decisiontree-bundle</module>
+        <module>platform/common-bundle</module>
+        <module>platform/decisiontree-bundle</module>
         <module>modules/admin/admin-bundle</module>
-        <module>modules/alerts/alerts-api-bundle</module>
-        <module>modules/appointments/appointments-api-bundle</module>
-        <module>modules/cmslite/cmslite-api-bundle</module>
-        <module>modules/commcare/commcare-api-bundle</module>
+        <module>modules/alerts/api-bundle</module>
+        <module>modules/appointments/api-bundle</module>
+        <module>modules/cmslite/api-bundle</module>
+        <module>modules/commcare/api-bundle</module>
         <module>modules/demo/demo-bundle</module>
         <module>modules/event-logging/event-logging-bundle</module>
-        <module>modules/ivr/ivr-asterisk-bundle</module>
-        <module>modules/ivr/ivr-kookoo-bundle</module>
-        <module>modules/ivr/ivr-verboice-bundle</module>
-        <module>modules/ivr/ivr-voxeo-bundle</module>
+        <module>modules/ivr/asterisk-bundle</module>
+        <module>modules/ivr/kookoo-bundle</module>
+        <module>modules/ivr/verboice-bundle</module>
+        <module>modules/ivr/voxeo-bundle</module>
         <module>modules/message-campaign/message-campaign-bundle</module>
-        <module>modules/mobileforms/mobileforms-api-bundle</module>
-        <module>modules/mrs/mrs-api-bundle</module>
-        <module>modules/openmrs/openmrs-ws-bundle</module>
+        <module>modules/mobileforms/api-bundle</module>
+        <module>modules/mrs/api-bundle</module>
+        <module>modules/openmrs/ws-bundle</module>
         <module>modules/outbox/outbox-bundle</module>
-        <module>modules/pillreminder/pillreminder-api-bundle</module>
-        <module>modules/rules/rules-api-bundle</module>
+        <module>modules/pillreminder/api-bundle</module>
+        <module>modules/rules/api-bundle</module>
         <module>modules/scheduler/scheduler-bundle</module>
-        <module>modules/scheduletracking/scheduletracking-api-bundle</module>
-        <module>modules/sms/sms-api-bundle</module>
-        <module>modules/sms/sms-http-bundle</module>
-        <module>modules/sms/sms-smpp-bundle</module>
+        <module>modules/scheduletracking/api-bundle</module>
+        <module>modules/sms/api-bundle</module>
+        <module>modules/sms/http-bundle</module>
+        <module>modules/sms/smpp-bundle</module>
         <module>modules/web-security/web-security-bundle</module>
 
         <!-- Packaging modules -->
