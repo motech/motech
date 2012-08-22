@@ -10,10 +10,12 @@ package org.motechproject.openmrs.services;
 import org.openmrs.Concept;
 import org.openmrs.api.ConceptService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * Adapter class to get Concepts in OpenMRS
  */
+@Service
 public class OpenMRSConceptAdapter {
 
     @Autowired

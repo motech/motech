@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
         <version>0.12-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.motechproject</groupId>
     <artifactId>motech-openmrs-api</artifactId>
     <name>MoTeCH OpenMRS API</name>
     <description>Motech interface to OpenMRS</description>
@@ -45,6 +46,14 @@
                     <artifactId>spring-aop</artifactId>
                     <groupId>org.springframework</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>spring-tx</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-io</artifactId>
+                    <groupId>commons-io</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -79,6 +88,11 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aspects</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
             <version>${spring.version}</version>
         </dependency>
         <dependency>
@@ -120,35 +134,30 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <!--PROPERTIES READ-->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>properties-maven-plugin</artifactId>
-                <version>1.0-alpha-2</version>
-                <executions>
-                    <execution>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>read-project-properties</goal>
-                        </goals>
-                        <configuration>
-                            <files>
-                                <file>${modules.root.dir}/maven.properties</file>
-                            </files>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
     <profiles>
         <profile>
             <id>IT</id>
             <build>
                 <plugins>
+                    <!--PROPERTIES READ-->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>properties-maven-plugin</artifactId>
+                        <version>1.0-alpha-2</version>
+                        <executions>
+                            <execution>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>read-project-properties</goal>
+                                </goals>
+                                <configuration>
+                                    <files>
+                                        <file>${modules.root.dir}/maven.properties</file>
+                                    </files>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>sql-maven-plugin</artifactId>
@@ -177,7 +186,7 @@
                                 <configuration>
                                     <autocommit>true</autocommit>
                                     <sqlCommand>
-                                        drop database openmrs_api_test;
+                                        DROP DATABASE openmrs_api_test;
                                     </sqlCommand>
                                     <onError>continue</onError>
                                 </configuration>
@@ -191,17 +200,16 @@
                                 <configuration>
                                     <autocommit>true</autocommit>
                                     <sqlCommand>
-                                        create database openmrs_api_test default charset utf8;
-                                        grant all on openmrs_api_test.* to 'openmrs'@'localhost' identified by
-                                        'password';
-                                        grant all on openmrs_api_test.* to 'openmrs'@'%' identified by 'password';
-                                        flush privileges;
-                                        use openmrs_api_test;
+                                        CREATE DATABASE openmrs_api_test DEFAULT CHARSET utf8;
+                                        GRANT ALL ON openmrs_api_test.* TO 'openmrs'@'localhost' IDENTIFIED BY 'password';
+                                        GRANT ALL ON openmrs_api_test.* TO 'openmrs'@'%' IDENTIFIED BY 'password';
+                                        FLUSH PRIVILEGES;
+                                        USE openmrs_api_test;
                                     </sqlCommand>
                                     <srcFiles>
-                                        <srcFile>${project.basedir}/src/test/sql/openmrs-1.8.sql</srcFile>
-                                        <srcFile>${project.basedir}/src/test/sql/concept_cause_of_death.sql</srcFile>
-                                        <srcFile>${project.basedir}/src/test/sql/insert_email_person_attribute_type_table.sql</srcFile>
+                                        <srcFile>${modules.root.dir}/sql/openmrs-1.8.sql</srcFile>
+                                        <srcFile>${modules.root.dir}/sql/concept_cause_of_death.sql</srcFile>
+                                        <srcFile>${modules.root.dir}/sql/insert_email_person_attribute_type_table.sql</srcFile>
                                     </srcFiles>
                                 </configuration>
                             </execution>

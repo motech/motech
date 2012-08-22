@@ -10,6 +10,7 @@ import org.motechproject.mrs.services.MRSFacilityAdapter;
 import org.openmrs.Location;
 import org.openmrs.api.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ import static ch.lambdaj.Lambda.on;
 /**
  * Manages OpenMRS Facilities
  */
+@Service
 public class OpenMRSFacilityAdapter implements MRSFacilityAdapter {
 
     @Autowired

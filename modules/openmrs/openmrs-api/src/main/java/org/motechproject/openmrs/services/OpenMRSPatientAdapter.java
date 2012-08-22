@@ -22,6 +22,7 @@ import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +37,7 @@ import static ch.lambdaj.Lambda.convert;
 /**
  * Manages Patients in OpenMRS
  */
+@Service
 public class OpenMRSPatientAdapter implements MRSPatientAdapter {
 
     @Autowired
