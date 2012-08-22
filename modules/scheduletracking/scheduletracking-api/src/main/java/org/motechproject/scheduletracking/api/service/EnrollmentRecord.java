@@ -2,6 +2,9 @@ package org.motechproject.scheduletracking.api.service;
 
 import org.joda.time.DateTime;
 import org.motechproject.model.Time;
+
+import java.util.Map;
+
 /**
  * \ingroup sts
  *
@@ -12,14 +15,16 @@ import org.motechproject.model.Time;
 public class EnrollmentRecord {
     private String externalId;
     private String scheduleName;
-    private Time preferredAlertTime;
+    private String currentMilestoneName;
     private DateTime referenceDateTime;
     private DateTime enrollmentDateTime;
+    private Time preferredAlertTime;
     private DateTime earliestStart;
     private DateTime dueStart;
     private DateTime lateStart;
     private DateTime maxStart;
-    private String currentMilestoneName;
+    private String status;
+    private Map<String, String> metadata;
 
     public EnrollmentRecord() {
     }
@@ -105,6 +110,22 @@ public class EnrollmentRecord {
         return currentMilestoneName;
     }
 
+    /**
+     * This returns the status of the enrollment
+     * @return String
+     */
+    public String getStatus() {
+        return status;
+    }
+
+    /**
+     * This returns the metadata associated with the enrollment
+     * @return String
+     */
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
+
     public EnrollmentRecord setExternalId(String externalId) {
         this.externalId = externalId;
         return this;
@@ -152,6 +173,16 @@ public class EnrollmentRecord {
 
     public EnrollmentRecord setCurrentMilestoneName(String currentMilestoneName) {
         this.currentMilestoneName = currentMilestoneName;
+        return this;
+    }
+
+    public EnrollmentRecord setStatus(String status) {
+        this.status = status;
+        return this;
+    }
+
+    public EnrollmentRecord setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
         return this;
     }
 }
