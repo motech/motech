@@ -90,7 +90,7 @@ public class DecisionTreeControllerTest {
 
         when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
         when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
-        when(request.getParameter(TYPE_PARAM)).thenReturn("verboice");
+        when(request.getParameter(PROVIDER_NAME_PARAM)).thenReturn("verboice");
         when(request.getParameter(TRANSITION_KEY_PARAM)).thenReturn("1");
         when(request.getParameter(TRANSITION_PATH_PARAM)).thenReturn(Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
         when(request.getParameter(DecisionTreeController.FLOW_SESSION_ID_PARAM)).thenReturn("1234");
@@ -117,7 +117,7 @@ public class DecisionTreeControllerTest {
 
         when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
         when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
-        when(request.getParameter(TYPE_PARAM)).thenReturn("vxml");
+        when(request.getParameter(PROVIDER_NAME_PARAM)).thenReturn("vxml");
         when(request.getParameter(TRANSITION_KEY_PARAM)).thenReturn("1");
         when(request.getParameter(TRANSITION_PATH_PARAM)).thenReturn(Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
 
@@ -203,7 +203,7 @@ public class DecisionTreeControllerTest {
 
         when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
         when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
-        when(request.getParameter(TYPE_PARAM)).thenReturn("verboice");
+        when(request.getParameter(PROVIDER_NAME_PARAM)).thenReturn("verboice");
         when(request.getParameter(TRANSITION_KEY_PARAM)).thenReturn("");
         when(request.getParameter(TRANSITION_PATH_PARAM)).thenReturn(Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
         when(request.getParameter(DecisionTreeController.FLOW_SESSION_ID_PARAM)).thenReturn("1234");
@@ -256,7 +256,7 @@ public class DecisionTreeControllerTest {
 
         when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
         when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
-        when(request.getParameter(TYPE_PARAM)).thenReturn("vxml");
+        when(request.getParameter(PROVIDER_NAME_PARAM)).thenReturn("vxml");
         flowSession.setCurrentNode(node);
 
         ModelAndView modelAndView = decisionTreeController.node(request, response);
@@ -307,7 +307,7 @@ public class DecisionTreeControllerTest {
 
         when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
         when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
-        when(request.getParameter(TYPE_PARAM)).thenReturn("vxml");
+        when(request.getParameter(PROVIDER_NAME_PARAM)).thenReturn("vxml");
         when(decisionTreeService.getRootNode(eq(treeName), any(FlowSession.class))).thenReturn(rootNode);
 
         ModelAndView modelAndView = decisionTreeController.node(request, response);
@@ -387,7 +387,7 @@ public class DecisionTreeControllerTest {
 
         when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
         when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
-        when(request.getParameter(TYPE_PARAM)).thenReturn("vxml");
+        when(request.getParameter(PROVIDER_NAME_PARAM)).thenReturn("vxml");
         when(request.getParameter(TRANSITION_KEY_PARAM)).thenReturn("1");
         when(request.getParameter(TRANSITION_PATH_PARAM)).thenReturn(Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
 
@@ -408,7 +408,7 @@ public class DecisionTreeControllerTest {
 
         when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
         when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
-        when(request.getParameter(TYPE_PARAM)).thenReturn("vxml");
+        when(request.getParameter(PROVIDER_NAME_PARAM)).thenReturn("vxml");
         flowSession.setCurrentNode(node);
 
         //when(decisionTreeService.getNode(eq(treeName), eq(TreeNodeLocator.PATH_DELIMITER), any(FlowSession.class))).thenReturn(node);

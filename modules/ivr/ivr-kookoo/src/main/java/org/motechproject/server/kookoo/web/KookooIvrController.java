@@ -1,5 +1,6 @@
 package org.motechproject.server.kookoo.web;
 
+import org.motechproject.decisiontree.model.CallStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -21,16 +22,19 @@ public class KookooIvrController {
         String treeName = request.getParameter("tree");
         String event = request.getParameter("event");
         String sessionId = request.getParameter("sid");
-        String digits = null;
-        if ("GotDTMF".equals(event))
-            digits = request.getParameter("data");
+        String transitionKey = null;
+        if ("GotDTMF".equals(event)) {
+            transitionKey = request.getParameter("data");
+        } else if("Hangup".equals(event)) {
+            transitionKey = CallStatus.hangup.toString();
+        }
         String treePath = request.getParameter("trP");
         String language = request.getParameter("ln");
-        return redirectToDecisionTree(treeName, digits, treePath, language, sessionId, request.getServletPath());
+        return redirectToDecisionTree(treeName, transitionKey, treePath, language, sessionId, request.getServletPath());
     }
 
     private String redirectToDecisionTree(String treeName, String digits, String treePath, String language, String sessionId, String servletPath) {
         final String transitionKey = digits == null ? "" : "&trK=" + digits;
-        return format("forward:%s%s?type=kookoo&tree=%s&trP=%s&ln=%s&flowSessionId=%s%s", servletPath, DECISIONTREE_URL, treeName, treePath, language, sessionId, transitionKey).replaceAll("//", "/");
+        return format("forward:%s%s?provider=kookoo&tree=%s&trP=%s&ln=%s&flowSessionId=%s%s", servletPath, DECISIONTREE_URL, treeName, treePath, language, sessionId, transitionKey).replaceAll("//", "/");
     }
 }
