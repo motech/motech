@@ -48,14 +48,14 @@
         <div class="container">
             <a class="brand" href=""><h3> {{msg('title')}} </h3></a>
 
-            <ul class="nav nav-pills lead">
+            <ul class="nav nav-pills lead" role="navigation">
                 <li class="divider-vertical"></li>
                 <li class="dropdown">
-                    <a class="dropdown-toggle" href="#/modulePanels">
+                    <a class="dropdown-toggle" data-toggle="dropdown" role="button"  href="#/modulePanels">
                         {{msg('modules')}}
                         <b class="caret"></b>
                     </a>
-                    <ul class="dropdown-menu" ng-show="mappings.length > 0">
+                    <ul class="dropdown-menu" >
                         <li ng-repeat="(key, value) in mappings">
                             <a ng-href="{{value}}">{{key}}</a>
                         </li>
