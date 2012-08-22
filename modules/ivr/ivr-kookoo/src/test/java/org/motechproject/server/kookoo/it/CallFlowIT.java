@@ -184,6 +184,25 @@ public class CallFlowIT extends SpringIntegrationTest {
     }
 
     @Test
+    public void shouldEndTheCallWhenUserDisconnects() throws Exception {
+        Tree tree = new Tree();
+        tree.setName("someTree");
+        tree.setRootTransition(new Transition().setDestinationNode(
+            new Node().addPrompts(
+                new AudioPrompt().setAudioFileUrl("music.wav"))
+        ));
+        allTrees.addOrReplace(tree);
+
+        String response = kookooIvrController.execute(new HttpGet(format("%s?tree=someTree&trP=aGFuZ3Vw&ln=en&sid=noTransition&event=Disconnect", SERVER_URL)), new BasicResponseHandler());
+        String expectedResponse =
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<response>" +
+                "   <hangup></hangup>" +
+                "</response>";
+        assertXMLEqual(expectedResponse, response);
+    }
+
+    @Test
     public void shouldRequestMaxLengthDtmfForArbitraryInput() throws Exception {
         Tree tree = new Tree();
         tree.setName("someTree");

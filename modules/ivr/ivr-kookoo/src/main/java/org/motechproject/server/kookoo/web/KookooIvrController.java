@@ -25,7 +25,7 @@ public class KookooIvrController {
         String transitionKey = null;
         if ("GotDTMF".equals(event)) {
             transitionKey = request.getParameter("data");
-        } else if("Hangup".equals(event)) {
+        } else if("Hangup".equals(event) || "Disconnect".equals(event)) {
             transitionKey = CallStatus.hangup.toString();
         }
         String treePath = request.getParameter("trP");
