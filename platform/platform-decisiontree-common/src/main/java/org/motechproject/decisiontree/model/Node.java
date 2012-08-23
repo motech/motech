@@ -32,6 +32,8 @@ public class Node implements Serializable {
     private Integer maxTransitionInputDigit;
     @JsonProperty
     private Integer maxTransitionTimeout;
+    @JsonProperty
+    private String transitionKeyEndMarker;
 
     public List<Action> getActionsBefore() {
         return actionsBefore == null ? Collections.<Action>emptyList() : actionsBefore;
@@ -194,6 +196,15 @@ public class Node implements Serializable {
     @JsonIgnore
     public Node setMaxTransitionTimeout(Integer maxTransitionTimeout) {
         this.maxTransitionTimeout = maxTransitionTimeout;
+        return this;
+    }
+
+    public String getTransitionKeyEndMarker() {
+        return transitionKeyEndMarker;
+    }
+
+    public Node setTransitionKeyEndMarker(String transitionKeyEndMarker) {
+        this.transitionKeyEndMarker = transitionKeyEndMarker;
         return this;
     }
 

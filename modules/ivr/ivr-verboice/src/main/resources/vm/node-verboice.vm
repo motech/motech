@@ -20,7 +20,7 @@
     #if ($node.transitions.size() > 0 && !$dial)
         #set ($url = "$scheme://$host$contextPath$servletPath/verboice/ivr?provider=$provider&ln=$language&tree=$treeName&trP=$transitionPath")
         #set ($maxTimeoutInSeconds = $maxTimeout / 1000)
-        <Gather method="POST" action="$escape.escapeXml($url)" numDigits="$maxDigits" timeout="$maxTimeoutInSeconds">
+        <Gather method="POST" action="$escape.escapeXml($url)" numDigits="$maxDigits" timeout="$maxTimeoutInSeconds" finishOnKey="$transitionKeyEndMarker">
             #foreach( $prompt in $node.prompts )
                 #if($prompt.class.simpleName == "AudioPrompt")
                     <Play>$prompt.audioFileUrl</Play>

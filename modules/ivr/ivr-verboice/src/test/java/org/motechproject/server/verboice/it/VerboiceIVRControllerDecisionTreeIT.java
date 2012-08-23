@@ -75,6 +75,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
                 .setMaxTransitionInputDigit(10)
                 .setMaxTransitionTimeout(2000);
 
+
         tree.setRootTransition(new Transition().setDestinationNode(rootNode));
         allTrees.addOrReplace(tree);
         markForDeletion(tree);
@@ -92,7 +93,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         XMLUnit.setIgnoreWhitespace(true);
         String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<Response>\n" +
-                "  <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"10\" timeout=\"2\">" +
+                "  <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"10\" timeout=\"2\" finishOnKey=\"#\">" +
                 "    <Say>Hello Welcome to motech</Say>\n" +
                 "  </Gather>\n" +
                 "</Response>";
@@ -155,7 +156,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
 
         String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<Response>\n" +
-                "  <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=treeWithTimeoutRedirect&amp;trP=Lw\" numDigits=\"50\" timeout=\"5\">\n" +
+                "  <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=treeWithTimeoutRedirect&amp;trP=Lw\" numDigits=\"50\" timeout=\"5\" finishOnKey=\"\">\n" +
                 "    <Say>Welcome to motech</Say>\n" +
                 "  </Gather>\n" +
                 "  <Redirect method=\"POST\">http://localhost:7080/motech/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=treeWithTimeoutRedirect&amp;trP=Lw&amp;Digits=timeout</Redirect>" +
@@ -174,7 +175,10 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         transitions.put(ITransition.TIMEOUT_KEY, new Transition().setDestinationNode(new Node().setPrompts(new TextToSpeechPrompt().setMessage("timed out"))));
 
         tree.setRootTransition(new Transition().setDestinationNode(
-                new Node().addPrompts(new TextToSpeechPrompt().setMessage("Welcome to motech")).setTransitions(transitions)
+                new Node()
+                        .addPrompts(new TextToSpeechPrompt().setMessage("Welcome to motech"))
+                        .setTransitions(transitions)
+                        .setTransitionKeyEndMarker("")
         ));
         allTrees.addOrReplace(tree);
         markForDeletion(tree);

@@ -96,10 +96,9 @@ public class CallFlowIT extends SpringIntegrationTest {
         tree.setName("someTree");
         tree.setRootTransition(new Transition().setDestinationNode(
             new Node()
-                .addPrompts(
-                    new TextToSpeechPrompt().setMessage("hello"))
-                .addTransition(
-                    "*", new Transition().setDestinationNode(new Node()))
+                .addPrompts(new TextToSpeechPrompt().setMessage("hello"))
+                .addTransition("1", new Transition().setDestinationNode(new Node()))
+                .setTransitionKeyEndMarker("*")
         ));
         allTrees.addOrReplace(tree);
 
@@ -108,7 +107,7 @@ public class CallFlowIT extends SpringIntegrationTest {
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                 "<response>" +
                 "   <playtext>hello</playtext>" +
-                "   <collectdtmf l=\"1\" t=\"#\" o=\"5000\"></collectdtmf>" +
+                "   <collectdtmf l=\"1\" t=\"*\" o=\"5000\"></collectdtmf>" +
                 "   <gotourl>http://localhost:7080/motech/kookoo/ivr?provider=kookoo&amp;ln=en&amp;tree=someTree&amp;trP=Lw</gotourl>" +
                 "</response>";
         assertXMLEqual(expectedResponse, response);
@@ -150,7 +149,7 @@ public class CallFlowIT extends SpringIntegrationTest {
         tree.setName("someTree");
         tree.setRootTransition(new Transition().setDestinationNode(
             new Node().addPrompts(
-                new AudioPrompt().setAudioFileUrl("music.wav"))
+                    new AudioPrompt().setAudioFileUrl("music.wav"))
         ));
         allTrees.addOrReplace(tree);
 

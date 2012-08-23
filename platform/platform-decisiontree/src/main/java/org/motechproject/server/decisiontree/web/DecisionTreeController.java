@@ -57,6 +57,7 @@ public class DecisionTreeController extends MultiActionController {
 
     public static final Integer MAX_INPUT_DIGITS = 50;
     public static final Integer MAX_INPUT_TIMEOUT = 5000;
+    public static final String DEFAULT_END_OF_KEY_MARKER = "#";
 
     @Autowired
     private DecisionTreeService decisionTreeService;
@@ -224,6 +225,7 @@ public class DecisionTreeController extends MultiActionController {
         mav.addObject("escape", new StringEscapeUtils());
         mav.addObject("maxDigits", maxDigits(node));
         mav.addObject("maxTimeout", maxTimeout(node));
+        mav.addObject("transitionKeyEndMarker", transitionKeyEndMarker(node));
         mav.addObject("host", request.getHeader("Host"));
         mav.addObject("scheme", request.getScheme());
         session.setCurrentNode(node);
@@ -326,6 +328,10 @@ public class DecisionTreeController extends MultiActionController {
 
     private Integer maxTimeout(Node node) {
         return node.getMaxTransitionTimeout() == null ? MAX_INPUT_TIMEOUT : node.getMaxTransitionTimeout();
+    }
+
+    private String transitionKeyEndMarker(Node node) {
+        return node.getTransitionKeyEndMarker() == null ? DEFAULT_END_OF_KEY_MARKER : node.getTransitionKeyEndMarker();
     }
 
     private String templateNameFor(String type, String templateName) {
