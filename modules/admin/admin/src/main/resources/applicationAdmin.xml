@@ -24,7 +24,6 @@
 
     <util:list id="bundleLoaders" value-type="org.motechproject.server.osgi.BundleLoader">
         <bean id="log4jBundleLoader" class="org.motechproject.server.osgi.Log4JBundleLoader"/>
-        <bean id="jspBundleLoader" class="org.motechproject.server.osgi.JspBundleLoader"/>
     </util:list>
 
     <mvc:annotation-driven/>

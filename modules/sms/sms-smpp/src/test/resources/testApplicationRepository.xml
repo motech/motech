@@ -15,6 +15,4 @@
         <constructor-arg value="motech-sms-audit-test"/>
         <constructor-arg ref="couchDbInstance"/>
     </bean>
-
-    <bean class="org.springframework.mock.web.MockServletContext"/>
 </beans>

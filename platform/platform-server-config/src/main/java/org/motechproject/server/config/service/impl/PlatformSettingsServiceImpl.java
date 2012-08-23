@@ -18,7 +18,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -44,9 +43,6 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
     @Autowired
     private ConfigFileMonitor configFileMonitor;
-
-    @Autowired(required = false)
-    private ServletContext servletContext;
 
     @PostConstruct
     public void configureCouchDBManager() throws DbConnectionException {
@@ -320,17 +316,6 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     public void evictMotechSettingsCache() {
         // Left blank.
         // Annotation will automatically remove all cached motech settings
-    }
-
-    @Override
-    public String getRealApplicationPath() {
-        return servletContext.getRealPath("/");
-    }
-
-    @Override
-    public String getTemporaryDirectoryPath() {
-        File tmpDir = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
-        return  tmpDir.getPath();
     }
 
     private String getConfigDir(String bundleSymbolicName) {

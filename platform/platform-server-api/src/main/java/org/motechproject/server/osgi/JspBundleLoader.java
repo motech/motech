@@ -10,32 +10,35 @@ import java.util.jar.JarFile;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.motechproject.server.config.service.PlatformSettingsService;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.ServletContextAware;
 
-public class JspBundleLoader implements BundleLoader {
+import javax.servlet.ServletContext;
+
+public class JspBundleLoader implements BundleLoader, ServletContextAware {
 
     private static Logger logger = LoggerFactory.getLogger(JspBundleLoader.class);
 
-    @Autowired
-    private PlatformSettingsService platformSettingsService;
+    private ServletContext servletContext;
 
     private File tempDir;
 
     private File destDir;
 
-    private static final int DEFAULT_BUFSIZE = 4096;
+    @Override
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
+    }
 
     @SuppressWarnings("unchecked")
     @Override
     public void loadBundle(Bundle bundle) throws Exception {
         //we want to build and unpack jar files in application temporary directory
         //if we found jsp file then we will copy it to destination directory
-        File tempRoot = new File(platformSettingsService.getTemporaryDirectoryPath());
-        File destRoot =  new File(platformSettingsService.getRealApplicationPath());
+        File tempRoot = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
+        File destRoot =  new File(servletContext.getRealPath("/"));
 
         if (tempRoot != null && destRoot != null) {
             tempDir = new File(tempRoot, String.valueOf(bundle.getBundleId()));

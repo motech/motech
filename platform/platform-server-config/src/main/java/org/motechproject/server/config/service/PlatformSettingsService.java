@@ -56,8 +56,4 @@ public interface PlatformSettingsService {
     CouchDbConnector getCouchConnector(String dbName);
 
     void evictMotechSettingsCache();
-
-    String getRealApplicationPath();
-
-    String getTemporaryDirectoryPath();
 }
