@@ -4,12 +4,12 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.12</version>
+        <version>0.13-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-ivr-kookoo-bundle</artifactId>
-    <version>0.12</version>
+    <version>0.13-SNAPSHOT</version>
     <name>MoTeCH IVR Kookoo Bundle</name>
     <packaging>bundle</packaging>
     <description>new kookoo module based on vm templates to return responses</description>
