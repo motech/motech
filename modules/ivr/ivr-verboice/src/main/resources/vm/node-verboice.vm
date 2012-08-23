@@ -1,20 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Response>
     #foreach( $prompt in $node.prompts )
-        #if($prompt.class.simpleName == "AudioPrompt")
-            <Play>$prompt.audioFileUrl</Play>
-        #elseif ($prompt.class.simpleName == "TextToSpeechPrompt")
-            <Say>$prompt.message</Say>
-        #elseif ($prompt.class.simpleName == "DialPrompt")
-            #set ($url = "$scheme://$host$contextPath$servletPath/verboice/ivr?provider=$provider&ln=$language&tree=$treeName&trP=$transitionPath")
+        #if ($prompt.class.simpleName == "DialPrompt")
             #set ($dial = true)
-            <Dial action="$escape.escapeXml($url)">$prompt.phoneNumber</Dial>
+        #end
+    #end
+    #if($node.transitions.size() ==  0 || $dial)
+        #foreach( $prompt in $node.prompts )
+            #if($prompt.class.simpleName == "AudioPrompt")
+                <Play>$prompt.audioFileUrl</Play>
+            #elseif ($prompt.class.simpleName == "TextToSpeechPrompt")
+                <Say>$prompt.message</Say>
+            #elseif ($prompt.class.simpleName == "DialPrompt")
+                #set ($url = "$scheme://$host$contextPath$servletPath/verboice/ivr?provider=$provider&ln=$language&tree=$treeName&trP=$transitionPath")
+                <Dial action="$escape.escapeXml($url)">$prompt.phoneNumber</Dial>
+            #end
         #end
     #end
     #if ($node.transitions.size() > 0 && !$dial)
-            #set ($url = "$scheme://$host$contextPath$servletPath/verboice/ivr?provider=$provider&ln=$language&tree=$treeName&trP=$transitionPath")
-            #set ($maxTimeoutInSeconds = $maxTimeout / 1000)
-            <Gather method="POST" action="$escape.escapeXml($url)" numDigits="$maxDigits" timeout="$maxTimeoutInSeconds"></Gather>
-     #else
+        #set ($url = "$scheme://$host$contextPath$servletPath/verboice/ivr?provider=$provider&ln=$language&tree=$treeName&trP=$transitionPath")
+        #set ($maxTimeoutInSeconds = $maxTimeout / 1000)
+        <Gather method="POST" action="$escape.escapeXml($url)" numDigits="$maxDigits" timeout="$maxTimeoutInSeconds">
+            #foreach( $prompt in $node.prompts )
+                #if($prompt.class.simpleName == "AudioPrompt")
+                    <Play>$prompt.audioFileUrl</Play>
+                #elseif ($prompt.class.simpleName == "TextToSpeechPrompt")
+                    <Say>$prompt.message</Say>
+                #end
+            #end
+        </Gather>
+        #foreach( $mapEntry in $node.transitions.entrySet() )
+            #if($mapEntry.key == 'timeout')
+                #set ($timeoutUrl = "$url&Digits=timeout")
+                <Redirect method="POST">$escape.escapeXml($timeoutUrl)</Redirect>
+            #end
+        #end
     #end
 </Response>

@@ -234,16 +234,7 @@ public class DecisionTreeController extends MultiActionController {
         for (Map.Entry<String, ITransition> transitionEntry : node.getTransitions().entrySet()) {
 
             final String key = transitionEntry.getKey();
-            if(noInput(key)){
-                return;
-            }
-            if (anyInput(key)) {
-                return;
-            }
-            if (dtmfKey(key)) {
-                return;
-            }
-            if (DialStatus.isValid(key)) {
+            if(noInput(key) ||  hasSpecialMeaning(key) || dtmfKey(key)) {
                 return;
             }
             if (CallStatus.isValid(key)) {
@@ -261,6 +252,14 @@ public class DecisionTreeController extends MultiActionController {
                 throw new DecisionTreeException(Errors.NULL_DESTINATION_NODE, "Invalid node: " + node + "\n Null Destination Node in the Transition: " + transition);
             }
         }
+    }
+
+    private boolean hasSpecialMeaning(String key) {
+        return (anyInput(key) || timeoutKey(key) || DialStatus.isValid(key));
+    }
+
+    private boolean timeoutKey(String key) {
+        return ITransition.TIMEOUT_KEY.equals(key);
     }
 
     private boolean noInput(String key) {
@@ -315,7 +314,7 @@ public class DecisionTreeController extends MultiActionController {
         Map<String, ITransition> transitions = node.getTransitions();
         int maxDigits = 1;
         for (String key : transitions.keySet()) {
-            if (anyInput(key)) {
+            if (hasSpecialMeaning(key)) {
                 return (node.getMaxTransitionInputDigit() == null) ? MAX_INPUT_DIGITS : node.getMaxTransitionInputDigit();
             }
             if (maxDigits < key.length()) {
