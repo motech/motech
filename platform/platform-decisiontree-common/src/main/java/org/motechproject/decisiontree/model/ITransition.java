@@ -8,5 +8,8 @@ import org.motechproject.decisiontree.FlowSession;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@type")
 public interface ITransition {
+
+    String TIMEOUT_KEY = "timeout";
+
     Node getDestinationNode(String input, FlowSession session);
 }
