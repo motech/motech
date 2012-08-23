@@ -45,7 +45,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     @Autowired
     private ConfigFileMonitor configFileMonitor;
 
-    @Autowired
+    @Autowired(required = false)
     private ServletContext servletContext;
 
     @PostConstruct
