@@ -129,10 +129,10 @@ public class DecisionTreeController extends MultiActionController {
 
             return getModelViewForNextNode(request, getParentTransitionPath(request), params);
         } catch (DecisionTreeException exception) {
-            logger.error(exception.getMessage());
+            logger.error(exception.getMessage(), exception);
             return getErrorModelAndView(exception.subject, language);
         } catch (Exception e) {
-            logger.error(format("Can not get node by Tree ID: %s and transition path %s\n%s", treeNameString, encodedTransitionPath, e));
+            logger.error(format("Can not get node by Tree ID: %s and transition path %s", treeNameString, encodedTransitionPath), e);
         }
         return getErrorModelAndView(Errors.GET_NODE_ERROR, language);
     }
