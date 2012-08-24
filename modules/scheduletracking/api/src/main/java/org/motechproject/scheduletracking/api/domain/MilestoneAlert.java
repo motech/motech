@@ -94,4 +94,15 @@ public final class MilestoneAlert implements Serializable {
         result = 31 * result + (defaultmentDateTime != null ? defaultmentDateTime.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "MilestoneAlert{" +
+                "milestoneName='" + milestoneName + '\'' +
+                ", earliestDateTime=" + earliestDateTime +
+                ", dueDateTime=" + dueDateTime +
+                ", lateDateTime=" + lateDateTime +
+                ", defaultmentDateTime=" + defaultmentDateTime +
+                '}';
+    }
 }
