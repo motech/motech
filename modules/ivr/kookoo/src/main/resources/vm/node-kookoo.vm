@@ -1,15 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <response>
-    #foreach( $prompt in $node.prompts )
+    #foreach( $prompt in $node.noticePrompts )
         #if($prompt.class.simpleName == "AudioPrompt")
             <playaudio>$prompt.audioFileUrl</playaudio>
-        #else
+        #elseif ($prompt.class.simpleName == "TextToSpeechPrompt")
             <playtext>$prompt.message</playtext>
+        #end
+    #end
+    #if($node.transitions.size() ==  0)
+        #foreach( $prompt in $node.prompts )
+            #if($prompt.class.simpleName == "AudioPrompt")
+                <playaudio>$prompt.audioFileUrl</playaudio>
+            #elseif ($prompt.class.simpleName == "TextToSpeechPrompt")
+                <playtext>$prompt.message</playtext>
+            #end
         #end
     #end
     #if ($node.transitions.size() > 0)
         #set ($url = "$scheme://$host$contextPath$servletPath/kookoo/ivr?provider=$provider&ln=$language&tree=$treeName&trP=$transitionPath")
-        <collectdtmf l="$maxDigits" t="#" o="$maxTimeout"></collectdtmf>
+        <collectdtmf l="$maxDigits" t="$transitionKeyEndMarker" o="$maxTimeout">
+            #foreach( $prompt in $node.prompts )
+                #if($prompt.class.simpleName == "AudioPrompt")
+                    <playaudio>$prompt.audioFileUrl</playaudio>
+                #elseif ($prompt.class.simpleName == "TextToSpeechPrompt")
+                    <playtext>$prompt.message</playtext>
+                #end
+            #end
+        </collectdtmf>
         <gotourl>$escape.escapeXml($url)</gotourl>
     #else
         <hangup></hangup>

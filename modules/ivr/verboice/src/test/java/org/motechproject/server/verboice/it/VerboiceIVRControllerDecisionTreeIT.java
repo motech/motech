@@ -22,6 +22,7 @@ import org.motechproject.decisiontree.model.Tree;
 import org.motechproject.decisiontree.repository.AllTrees;
 import org.motechproject.decisiontree.service.impl.AllFlowSessionRecords;
 import org.motechproject.ivr.service.CallRequest;
+import org.motechproject.server.decisiontree.TreeNodeLocator;
 import org.motechproject.server.verboice.VerboiceIVRService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -59,7 +60,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         XMLUnit.setIgnoreWhitespace(true);
     }
 
-    private void createTree() {
+    private Tree createTree() {
         Tree tree = new Tree();
         tree.setName("someTree");
         HashMap<String, ITransition> transitions = new HashMap<String, ITransition>();
@@ -75,9 +76,11 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
                 .setMaxTransitionInputDigit(10)
                 .setMaxTransitionTimeout(2000);
 
+
         tree.setRootTransition(new Transition().setDestinationNode(rootNode));
         allTrees.addOrReplace(tree);
         markForDeletion(tree);
+        return tree;
     }
 
     @Test
@@ -89,11 +92,11 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         CallRequest callRequest = new CallRequest("phonenumber", params, "someCallBackChannel");
         //verboiceIVRService.initiateCall(callRequest);
 
-        XMLUnit.setIgnoreWhitespace(true);
         String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<Response>\n" +
-                "  <Say>Hello Welcome to motech</Say>\n" +
-                "  <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"10\" timeout=\"2\"></Gather>\n" +
+                "  <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"10\" timeout=\"2\" finishOnKey=\"#\">" +
+                "    <Say>Hello Welcome to motech</Say>\n" +
+                "  </Gather>\n" +
                 "</Response>";
         HttpClient verboiceIvrController = new DefaultHttpClient();
         String rootUrl = SERVER_URL + "?tree=someTree&motech_call_id=" + callRequest.getCallId() + "&trP=Lw&ln=en";
@@ -133,9 +136,9 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
     public void shouldDialAndTestForDialStatus() throws Exception {
         createTreeWithDialPrompt();
 
-        XMLUnit.setIgnoreWhitespace(true);
         String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<Response>\n" +
+                "  <Say>Some Message</Say>\n" +
                 "  <Dial action=\"http://localhost:7080/motech/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=treeWithDial&amp;trP=Lw\">othernumber</Dial>\n" +
                 "</Response>";
         HttpClient client = new DefaultHttpClient();
@@ -148,7 +151,83 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         assertTrue("got " + response2, response2.contains("<Say>Successful Dial</Say>"));
     }
 
-    private void createTreeWithDialPrompt() {
+    @Test
+    public void shouldRedirectOnNoInputTransitionIfSuchTransitionExists() throws Exception {
+        createTreeWithNoInputRedirect();
+
+        String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<Response>\n" +
+                "  <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=treeWithNoInputRedirect&amp;trP=Lw\" numDigits=\"1\" timeout=\"5\" finishOnKey=\"\">\n" +
+                "    <Say>Welcome to motech</Say>\n" +
+                "  </Gather>\n" +
+                "  <Redirect method=\"POST\">http://localhost:7080/motech/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=treeWithNoInputRedirect&amp;trP=Lw&amp;Digits=</Redirect>" +
+                "</Response>";
+        HttpClient client = new DefaultHttpClient();
+        String rootUrl = SERVER_URL + "?tree=treeWithNoInputRedirect&trP=Lw&ln=en";
+        String response = client.execute(new HttpGet(rootUrl), new BasicResponseHandler());
+        assertXMLEqual(expectedResponse, response);
+
+        expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<Response>\n" +
+                "    <Say>timed out</Say>\n" +
+                "</Response>";
+
+        String noInputTransition = SERVER_URL + "?provider=verboice&ln=en&tree=treeWithNoInputRedirect&trP=Lw&Digits=";
+        response = client.execute(new HttpGet(noInputTransition), new BasicResponseHandler());
+        assertXMLEqual(expectedResponse, response);
+    }
+
+    @Test
+    public void shouldPlayNoticePromptsBeforeTransitionMenu() throws Exception {
+        createTreeWithNoticePrompts();
+
+        String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<Response>\n" +
+                "  <Say>Please listen carefully</Say>\n" +
+                "  <Say>You wont be able to give any input while this is playing</Say>\n" +
+                "  <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"10\" timeout=\"2\" finishOnKey=\"#\">" +
+                "    <Say>Hello Welcome to motech</Say>\n" +
+                "  </Gather>\n" +
+                "</Response>";
+
+        HttpClient verboiceIvrController = new DefaultHttpClient();
+        String rootUrl = SERVER_URL + "?tree=someTree" + "&trP=Lw&ln=en";
+        String response = verboiceIvrController.execute(new HttpGet(rootUrl), new BasicResponseHandler());
+        System.out.println(response);
+        assertXMLEqual(expectedResponse, response);
+
+    }
+
+    private Tree createTreeWithNoticePrompts() {
+        Tree tree = createTree();
+        tree.getRootTransition().getDestinationNode(null, null).addNoticePrompts(
+                new TextToSpeechPrompt().setMessage("Please listen carefully"),
+                new TextToSpeechPrompt().setMessage("You wont be able to give any input while this is playing")
+        );
+        allTrees.update(tree);
+        markForDeletion(tree);
+        return tree;
+    }
+
+    private Tree createTreeWithNoInputRedirect() {
+        Tree tree = new Tree();
+        tree.setName("treeWithNoInputRedirect");
+        HashMap<String, ITransition> transitions = new HashMap<String, ITransition>();
+        transitions.put("1", new Transition().setDestinationNode(new Node().setPrompts(new TextToSpeechPrompt().setMessage("Press One"))));
+        transitions.put(TreeNodeLocator.NO_INPUT, new Transition().setDestinationNode(new Node().setPrompts(new TextToSpeechPrompt().setMessage("timed out"))));
+
+        tree.setRootTransition(new Transition().setDestinationNode(
+                new Node()
+                        .addPrompts(new TextToSpeechPrompt().setMessage("Welcome to motech"))
+                        .setTransitions(transitions)
+                        .setTransitionKeyEndMarker("")
+        ));
+        allTrees.addOrReplace(tree);
+        markForDeletion(tree);
+        return tree;
+    }
+
+    private Tree createTreeWithDialPrompt() {
         Tree tree = new Tree();
         tree.setName("treeWithDial");
         HashMap<String, ITransition> transitions = new HashMap<String, ITransition>();
@@ -158,10 +237,14 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         transitions.put(DialStatus.failed.toString(), new Transition().setDestinationNode(failureTextNode));
 
         tree.setRootTransition(new Transition().setDestinationNode(
-                new Node().addPrompts(new DialPrompt("othernumber")).setTransitions(transitions)
+                new Node().addPrompts(
+                        new TextToSpeechPrompt().setMessage("Some Message"),
+                        new DialPrompt("othernumber")
+                ).setTransitions(transitions)
         ));
         allTrees.addOrReplace(tree);
         markForDeletion(tree);
+        return tree;
     }
 
     @Override

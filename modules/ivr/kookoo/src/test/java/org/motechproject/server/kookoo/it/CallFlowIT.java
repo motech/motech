@@ -13,6 +13,7 @@ import org.motechproject.decisiontree.FlowSession;
 import org.motechproject.decisiontree.model.*;
 import org.motechproject.decisiontree.repository.AllTrees;
 import org.motechproject.decisiontree.service.impl.AllFlowSessionRecords;
+import org.motechproject.server.decisiontree.TreeNodeLocator;
 import org.motechproject.testing.utils.SpringIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -96,10 +97,9 @@ public class CallFlowIT extends SpringIntegrationTest {
         tree.setName("someTree");
         tree.setRootTransition(new Transition().setDestinationNode(
             new Node()
-                .addPrompts(
-                    new TextToSpeechPrompt().setMessage("hello"))
-                .addTransition(
-                    "*", new Transition().setDestinationNode(new Node()))
+                .addPrompts(new TextToSpeechPrompt().setMessage("hello"))
+                .addTransition("1", new Transition().setDestinationNode(new Node()))
+                .setTransitionKeyEndMarker("*")
         ));
         allTrees.addOrReplace(tree);
 
@@ -107,8 +107,9 @@ public class CallFlowIT extends SpringIntegrationTest {
         String expectedResponse =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                 "<response>" +
-                "   <playtext>hello</playtext>" +
-                "   <collectdtmf l=\"1\" t=\"#\" o=\"5000\"></collectdtmf>" +
+                "   <collectdtmf l=\"1\" t=\"*\" o=\"5000\">" +
+                "       <playtext>hello</playtext>" +
+                "   </collectdtmf>" +
                 "   <gotourl>http://localhost:7080/motech/kookoo/ivr?provider=kookoo&amp;ln=en&amp;tree=someTree&amp;trP=Lw</gotourl>" +
                 "</response>";
         assertXMLEqual(expectedResponse, response);
@@ -123,13 +124,15 @@ public class CallFlowIT extends SpringIntegrationTest {
                 .addTransition(
                     "1", new Transition().setDestinationNode(new Node()
                     .addPrompts(
-                        new TextToSpeechPrompt().setMessage("pressed one"))))
+                            new TextToSpeechPrompt().setMessage("pressed one"))))
                 .addTransition(
                     "2", new Transition().setDestinationNode(new Node()
-                        .addPrompts(
+                        .addNoticePrompts(
                             new TextToSpeechPrompt().setMessage("pressed two"))
+                        .addPrompts(
+                                new TextToSpeechPrompt().setMessage("Press star key"))
                         .addTransition(
-                            "*", new Transition())))
+                                "*", new Transition())))
         ));
         allTrees.addOrReplace(tree);
 
@@ -138,7 +141,9 @@ public class CallFlowIT extends SpringIntegrationTest {
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                 "<response>" +
                 "   <playtext>pressed two</playtext>" +
-                "   <collectdtmf l=\"1\" t=\"#\"  o=\"5000\"></collectdtmf>" +
+                "   <collectdtmf l=\"1\" t=\"#\"  o=\"5000\">" +
+                "       <playtext>Press star key</playtext>" +
+                "   </collectdtmf>" +
                 "   <gotourl>http://localhost:7080/motech/kookoo/ivr?provider=kookoo&amp;ln=en&amp;tree=someTree&amp;trP=LzI</gotourl>" +
                 "</response>";
         assertXMLEqual(expectedResponse, response);
@@ -150,7 +155,7 @@ public class CallFlowIT extends SpringIntegrationTest {
         tree.setName("someTree");
         tree.setRootTransition(new Transition().setDestinationNode(
             new Node().addPrompts(
-                new AudioPrompt().setAudioFileUrl("music.wav"))
+                    new AudioPrompt().setAudioFileUrl("music.wav"))
         ));
         allTrees.addOrReplace(tree);
 
@@ -238,9 +243,38 @@ public class CallFlowIT extends SpringIntegrationTest {
         String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
             "<response>" +
             "   <playtext>you entered 31415</playtext>" +
-            "   <collectdtmf l=\"1\" t=\"#\" o=\"5000\"></collectdtmf>" +
+            "   <collectdtmf l=\"1\" t=\"#\" o=\"5000\">" +
+            "       <playtext>Press star</playtext>" +
+            "   </collectdtmf>" +
             "   <gotourl>http://localhost:7080/motech/kookoo/ivr?provider=kookoo&amp;ln=en&amp;tree=someTree&amp;trP=LzMxNDE1</gotourl>" +
             "</response>";
+        assertXMLEqual(expectedResponse, response);
+    }
+
+    @Test
+    public void shouldTransitionToNoInputTransition_IfPresent_WhenTransitionTimesOut() throws Exception {
+        Tree tree = new Tree();
+        tree.setName("someTree");
+        tree.setRootTransition(new Transition().setDestinationNode(
+                new Node()
+                        .addTransition("?", new CustomTransition())
+                        .addTransition(TreeNodeLocator.NO_INPUT,
+                                new Transition().setDestinationNode(
+                                        new Node().addPrompts(
+                                                new TextToSpeechPrompt().setMessage("No input was given")
+                                        )
+                                )
+                        )
+        ));
+        allTrees.addOrReplace(tree);
+
+        String response = kookooIvrController.execute(new HttpGet(format("%s?tree=someTree&trP=Lw&ln=en&event=GotDTMF&data=&sid="+ UUID.randomUUID().getMostSignificantBits() , SERVER_URL)), new BasicResponseHandler());
+        String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<response>" +
+                "   <playtext>No input was given</playtext>" +
+                "   <hangup></hangup>" +
+                "</response>";
+
         assertXMLEqual(expectedResponse, response);
     }
 
@@ -249,7 +283,8 @@ public class CallFlowIT extends SpringIntegrationTest {
         @Override
         public Node getDestinationNode(String input, FlowSession session) {
             return new Node()
-                .addPrompts(new TextToSpeechPrompt().setMessage(format("you entered %s", input)))
+                .addNoticePrompts(new TextToSpeechPrompt().setMessage(format("you entered %s", input)))
+                .addPrompts(new TextToSpeechPrompt().setMessage("Press star"))
                 .addTransition("*", new Transition().setDestinationNode(new Node().setPrompts(new AudioPrompt().setAudioFileUrl("You Pressed Star.wav"))));
         }
 

@@ -57,6 +57,7 @@ public class DecisionTreeController extends MultiActionController {
 
     public static final Integer MAX_INPUT_DIGITS = 50;
     public static final Integer MAX_INPUT_TIMEOUT = 5000;
+    public static final String DEFAULT_END_OF_KEY_MARKER = "#";
 
     @Autowired
     private DecisionTreeService decisionTreeService;
@@ -224,6 +225,7 @@ public class DecisionTreeController extends MultiActionController {
         mav.addObject("escape", new StringEscapeUtils());
         mav.addObject("maxDigits", maxDigits(node));
         mav.addObject("maxTimeout", maxTimeout(node));
+        mav.addObject("transitionKeyEndMarker", transitionKeyEndMarker(node));
         mav.addObject("host", request.getHeader("Host"));
         mav.addObject("scheme", request.getScheme());
         session.setCurrentNode(node);
@@ -234,19 +236,7 @@ public class DecisionTreeController extends MultiActionController {
         for (Map.Entry<String, ITransition> transitionEntry : node.getTransitions().entrySet()) {
 
             final String key = transitionEntry.getKey();
-            if(noInput(key)){
-                return;
-            }
-            if (anyInput(key)) {
-                return;
-            }
-            if (dtmfKey(key)) {
-                return;
-            }
-            if (DialStatus.isValid(key)) {
-                return;
-            }
-            if (CallStatus.isValid(key)) {
+            if(noInput(key) ||  hasSpecialMeaning(key) || dtmfKey(key)) {
                 return;
             }
             try {
@@ -261,6 +251,10 @@ public class DecisionTreeController extends MultiActionController {
                 throw new DecisionTreeException(Errors.NULL_DESTINATION_NODE, "Invalid node: " + node + "\n Null Destination Node in the Transition: " + transition);
             }
         }
+    }
+
+    private boolean hasSpecialMeaning(String key) {
+        return (anyInput(key) || DialStatus.isValid(key));
     }
 
     private boolean noInput(String key) {
@@ -315,7 +309,7 @@ public class DecisionTreeController extends MultiActionController {
         Map<String, ITransition> transitions = node.getTransitions();
         int maxDigits = 1;
         for (String key : transitions.keySet()) {
-            if (anyInput(key)) {
+            if (hasSpecialMeaning(key)) {
                 return (node.getMaxTransitionInputDigit() == null) ? MAX_INPUT_DIGITS : node.getMaxTransitionInputDigit();
             }
             if (maxDigits < key.length()) {
@@ -327,6 +321,10 @@ public class DecisionTreeController extends MultiActionController {
 
     private Integer maxTimeout(Node node) {
         return node.getMaxTransitionTimeout() == null ? MAX_INPUT_TIMEOUT : node.getMaxTransitionTimeout();
+    }
+
+    private String transitionKeyEndMarker(Node node) {
+        return node.getTransitionKeyEndMarker() == null ? DEFAULT_END_OF_KEY_MARKER : node.getTransitionKeyEndMarker();
     }
 
     private String templateNameFor(String type, String templateName) {
