@@ -145,7 +145,6 @@
     <modules>
         <!-- Non-OSGI modules -->
         <module>platform/common-api</module>
-        <module>platform/common</module>
         <module>platform/decisiontree-common</module>
         <module>platform/decisiontree</module>
         <module>platform/scheduler</module>
@@ -159,6 +158,7 @@
         <module>modules/cmslite/api</module>
         <module>modules/commcare/api</module>
         <module>modules/demo/demo</module>
+        <module>modules/event/event</module>
         <module>modules/event-logging/event-logging</module>
         <module>modules/ivr/api</module>
         <module>modules/ivr/asterisk</module>
@@ -184,7 +184,6 @@
         <module>modules/web-security/web-security</module>
 
         <!-- OSGI modules -->
-        <module>platform/common-bundle</module>
         <module>platform/decisiontree-bundle</module>
         <module>modules/admin/admin-bundle</module>
         <module>modules/alerts/api-bundle</module>
@@ -192,6 +191,7 @@
         <module>modules/cmslite/api-bundle</module>
         <module>modules/commcare/api-bundle</module>
         <module>modules/demo/demo-bundle</module>
+        <module>modules/event/event-bundle</module>
         <module>modules/event-logging/event-logging-bundle</module>
         <module>modules/ivr/asterisk-bundle</module>
         <module>modules/ivr/kookoo-bundle</module>

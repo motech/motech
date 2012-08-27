@@ -76,11 +76,12 @@
                             org.ektorp.impl,
                             org.ektorp.spring,
                             org.ektorp.impl.jackson,
-                            org.motechproject.event.annotations,
+                            org.motechproject.event,
+                            org.motechproject.event.listener,
+                            org.motechproject.event.listener.annotations,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.osgi.config,
-                            org.motechproject.scheduler.event,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-commcare-api</Embed-Dependency>

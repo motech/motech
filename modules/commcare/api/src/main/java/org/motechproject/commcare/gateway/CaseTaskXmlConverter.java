@@ -20,7 +20,7 @@ import org.motechproject.commcare.request.converter.CreateElementConverter;
 import org.motechproject.commcare.request.converter.IndexElementConverter;
 import org.motechproject.commcare.request.converter.UpdateElementConverter;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.EventRelay;
+import org.motechproject.event.listener.EventRelay;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

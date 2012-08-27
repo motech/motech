@@ -1,6 +1,6 @@
 package org.motechproject.scheduler.context;
 
-import org.motechproject.event.EventRelay;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.MotechEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

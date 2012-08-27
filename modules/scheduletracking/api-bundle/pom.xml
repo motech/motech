@@ -68,6 +68,7 @@
                         <Import-Package>
                             org.ektorp.impl,
                             org.ektorp.spring,
+                            org.motechproject.event,
                             org.motechproject.scheduler,
                             org.motechproject.scheduler.domain,
                             org.springframework.beans.factory.xml,

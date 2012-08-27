@@ -1,29 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:util="http://www.springframework.org/schema/util"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="location" value="classpath:activemq.properties"/>
-        <property name="ignoreUnresolvablePlaceholders" value="true"/>
-    </bean>
+    <import resource="applicationSchedulerContext.xml"/>
 
-    <context:component-scan base-package="org.motechproject.event"/>
-
-    <import resource="classpath*:applicationPlatformServerAPI.xml"/>
-    <import resource="classpath*:schedulerFiredEventChannelAdapter.xml"/>
-
-    <util:properties id="quartzProperties" location="classpath:quartz.properties"/>
-
-    <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-        <property name="configLocation" value="classpath:quartz.properties"/>
-        <property name="applicationContextSchedulerContextKey" value="applicationContext"/>
-    </bean>
-
-    <bean id="schedulerService" class="org.motechproject.scheduler.impl.MotechSchedulerServiceImpl"/>
-    <bean id="testJobHandler" class="org.motechproject.scheduler.TestJobHandler" />
+    <bean id="testJobHandler" class="org.motechproject.scheduler.TestJobHandler"/>
 </beans>

@@ -11,6 +11,6 @@
         interface="org.motechproject.eventlogging.service.EventLoggingServiceManager" />
 
     <osgi:reference id="eventListenerRegistryService" cardinality="0..1"
-        interface="org.motechproject.event.EventListenerRegistryService" />
+        interface="org.motechproject.event.listener.EventListenerRegistryService" />
 
 </beans>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:property-placeholder location="classpath:activemq.properties"/>
+
+    <bean id="eventQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="${queue.for.events}"/>
+    </bean>
+
+    <bean id="connectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+        <property name="targetConnectionFactory">
+            <bean class="org.apache.activemq.ActiveMQConnectionFactory">
+                <property name="brokerURL" value="${broker.url}"/>
+                <property name="redeliveryPolicy.maximumRedeliveries" value="${maximumRedeliveries}"/>
+                <property name="redeliveryPolicy.initialRedeliveryDelay" value="${redeliveryDelayInMillis}"/>
+                <property name="redeliveryPolicy.redeliveryDelay" value="${redeliveryDelayInMillis}"/>
+            </bean>
+        </property>
+        <property name="sessionCacheSize" value="${jms.session.cache.size}"/>
+        <property name="cacheProducers" value="${jms.cache.producers}"/>
+    </bean>
+
+</beans>

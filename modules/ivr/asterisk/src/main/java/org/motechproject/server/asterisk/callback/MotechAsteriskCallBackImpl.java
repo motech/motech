@@ -9,7 +9,7 @@ import org.motechproject.ivr.model.CallDetailRecord;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.scheduler.context.EventContext;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.EventRelay;
+import org.motechproject.event.listener.EventRelay;
 
 import java.util.Map;
 

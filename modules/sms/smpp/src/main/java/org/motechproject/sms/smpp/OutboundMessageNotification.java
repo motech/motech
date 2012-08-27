@@ -3,7 +3,8 @@ package org.motechproject.sms.smpp;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.EventRelay;
+import org.motechproject.event.listener.EventRelay;
+import org.motechproject.scheduler.context.EventContext;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.smpp.constants.EventSubjects;
 import org.motechproject.sms.smpp.constants.SmsProperties;
@@ -27,7 +28,7 @@ import static org.motechproject.util.DateUtil.newDateTime;
 public class OutboundMessageNotification implements IOutboundMessageNotification {
 
     private final Logger log = Logger.getLogger(OutboundMessageNotification.class);
-    private EventRelay eventRelay;
+    private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
     private final Integer maxRetries;
 
     @Autowired

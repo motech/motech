@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/integration"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:jms="http://www.springframework.org/schema/integration/jms"
+             xmlns:context="http://www.springframework.org/schema/context"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+             http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+             http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd">
+
+    <context:annotation-config/>
+    <context:component-scan base-package="org.motechproject.event"/>
+
+    <beans:import resource="activemqConnection.xml" />
+
+    <jms:message-driven-channel-adapter
+            id="jmsin"
+            connection-factory="connectionFactory"
+            destination="eventQueue"
+            channel="eventChannel"
+            acknowledge="transacted"
+            concurrent-consumers="${concurrentConsumers:1}"
+            max-concurrent-consumers="${maxConcurrentConsumers:10}"/>
+
+    <channel id="eventChannel"/>
+
+    <outbound-channel-adapter
+            id="outboundChannelAdapter"
+            channel="eventChannel"
+            ref="eventRelay"
+            method="relayEvent"/>
+
+
+    <beans:bean id="metricsAgent" class="org.motechproject.event.metrics.impl.MultipleMetricsAgentImpl" autowire="byType"/>
+    <beans:bean id="loggingAgent" class="org.motechproject.event.metrics.impl.LoggingAgentBackendImpl"/>
+
+</beans:beans>

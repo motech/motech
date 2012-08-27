@@ -12,7 +12,7 @@ import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.context.EventContext;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
-import org.motechproject.event.EventRelay;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.sms.api.MessageSplitter;
 import org.motechproject.sms.api.constants.EventDataKeys;
 import org.powermock.api.mockito.PowerMockito;

@@ -11,7 +11,7 @@ import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
-import org.motechproject.event.EventRelay;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.pillreminder.api.builder.SchedulerPayloadBuilder;
 import org.motechproject.server.pillreminder.api.builder.testbuilder.DosageBuilder;
 import org.motechproject.server.pillreminder.api.builder.testbuilder.PillRegimenBuilder;

@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.event.EventListenerRegistry;
+import org.motechproject.event.listener.EventListenerRegistry;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.contract.CampaignRequest;
 import org.motechproject.server.messagecampaign.dao.AllCampaignEnrollments;

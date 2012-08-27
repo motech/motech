@@ -17,7 +17,7 @@ import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.repository.AllOutboundVoiceMessages;
 import org.motechproject.outbox.api.service.impl.VoiceOutboxServiceImpl;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.EventRelay;
+import org.motechproject.event.listener.EventRelay;
 
 import java.util.ArrayList;
 import java.util.Arrays;

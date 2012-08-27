@@ -27,6 +27,6 @@
     </bean>
 
     <bean
-        class="org.motechproject.event.annotations.EventAnnotationBeanPostProcessor" />
+        class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor" />
 
 </beans>

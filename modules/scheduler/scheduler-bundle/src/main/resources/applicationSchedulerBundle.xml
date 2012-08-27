@@ -10,7 +10,5 @@
     <osgi:service id="schedulerServiceOsgi" auto-export="interfaces" ref="schedulerService"
                   interface="org.motechproject.scheduler.MotechSchedulerService"/>
 
-
-    <osgi:service id="outboundEventGatewayOsgi" ref="outboundEventGateway" interface="org.motechproject.event.OutboundEventGateway"/>
-
+    <osgi:reference id="outboundEventGatewayOsgi" cardinality="0..1" interface="org.motechproject.event.OutboundEventGateway" />
 </beans>

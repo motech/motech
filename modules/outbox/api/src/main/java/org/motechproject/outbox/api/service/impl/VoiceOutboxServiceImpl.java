@@ -12,7 +12,7 @@ import org.motechproject.outbox.api.repository.AllOutboundVoiceMessages;
 import org.motechproject.outbox.api.service.VoiceOutboxService;
 import org.motechproject.scheduler.context.EventContext;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.EventRelay;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

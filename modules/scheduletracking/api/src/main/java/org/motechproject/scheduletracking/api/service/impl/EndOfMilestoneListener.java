@@ -4,7 +4,7 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.events.DefaultmentCaptureEvent;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
-import org.motechproject.event.annotations.MotechListener;
+import org.motechproject.event.listener.annotations.MotechListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -28,6 +28,12 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.motechproject</groupId>
+            <artifactId>motech-event</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
             <version>4.2.0</version>

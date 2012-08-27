@@ -89,7 +89,7 @@
                             org.springframework.context.config,
                             org.springframework.osgi.config,
                             org.motechproject.server.config.service,
-                            org.motechproject.scheduler.event,
+                            org.motechproject.event,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-sms-smpp, smslib-patched, jsmpp-for-smslib</Embed-Dependency>

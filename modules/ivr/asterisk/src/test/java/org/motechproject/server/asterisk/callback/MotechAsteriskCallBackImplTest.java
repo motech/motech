@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.motechproject.event.EventRelay;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.ivr.service.CallRequest;
 

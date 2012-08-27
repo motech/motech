@@ -7,7 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.EventRelay;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.sms.smpp.constants.EventSubjects;
 import org.motechproject.sms.smpp.repository.AllInboundSMS;
 import org.motechproject.sms.smpp.repository.AllOutboundSMS;

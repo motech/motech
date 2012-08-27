@@ -3,7 +3,7 @@ package org.motechproject.scheduler;
 
 import org.joda.time.DateTime;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.annotations.MotechListener;
+import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.util.DateUtil;
 
 import java.util.ArrayList;

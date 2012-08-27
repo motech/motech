@@ -11,7 +11,7 @@ import org.motechproject.commcare.events.CaseEvent;
 import org.motechproject.commcare.exception.CaseParserException;
 import org.motechproject.commcare.parser.CaseParser;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.EventRelay;
+import org.motechproject.event.listener.EventRelay;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;

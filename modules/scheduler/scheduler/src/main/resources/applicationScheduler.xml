@@ -10,33 +10,11 @@
     <context:annotation-config/>
     <context:property-placeholder location="classpath:activemq.properties" system-properties-mode="OVERRIDE"/>
 
-    <import resource="schedulerFiredEventChannelAdapter.xml"/>
     <import resource="schedulerInboundChannelAdapter.xml"/>
 
     <context:component-scan base-package="org.motechproject.event"/>
 
     <util:properties id="quartzProperties" location="classpath:quartz.properties"/>
-
-    <bean id="connectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
-        <property name="targetConnectionFactory">
-            <bean class="org.apache.activemq.ActiveMQConnectionFactory">
-                <property name="brokerURL" value="${broker.url}"/>
-                <property name="redeliveryPolicy.maximumRedeliveries" value="${maximumRedeliveries}"/>
-                <property name="redeliveryPolicy.initialRedeliveryDelay" value="${redeliveryDelayInMillis}"/>
-                <property name="redeliveryPolicy.redeliveryDelay" value="${redeliveryDelayInMillis}"/>
-            </bean>
-        </property>
-        <property name="sessionCacheSize" value="10"/>
-        <property name="cacheProducers" value="false"/>
-    </bean>
-
-    <bean id="schedulerQueue" class="org.apache.activemq.command.ActiveMQQueue">
-        <constructor-arg value="${queue.for.scheduler}"/>
-    </bean>
-
-    <bean id="eventQueue" class="org.apache.activemq.command.ActiveMQQueue">
-        <constructor-arg value="${queue.for.events}"/>
-    </bean>
 
     <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="configLocation" value="classpath:quartz.properties"/>

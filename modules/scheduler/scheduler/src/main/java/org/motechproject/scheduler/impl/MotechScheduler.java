@@ -36,7 +36,7 @@ public final class MotechScheduler {
     }
 
     public static void main(final String[] args) {
-        AbstractApplicationContext ctx = new ClassPathXmlApplicationContext("/applicationScheduler.xml");
+        AbstractApplicationContext ctx = new ClassPathXmlApplicationContext("/applicationSchedulerContext.xml");
         schedulerService = ctx.getBean(MotechSchedulerService.class);
 
         // add a shutdown hook for the above context...

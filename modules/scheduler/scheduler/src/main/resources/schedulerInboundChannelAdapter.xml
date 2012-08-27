@@ -7,6 +7,25 @@
              http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
              http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd">
 
+    <beans:bean id="connectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+        <beans:property name="targetConnectionFactory">
+            <beans:bean class="org.apache.activemq.ActiveMQConnectionFactory">
+                <beans:property name="brokerURL" value="${broker.url}"/>
+                <beans:property name="redeliveryPolicy.maximumRedeliveries" value="${maximumRedeliveries}"/>
+                <beans:property name="redeliveryPolicy.initialRedeliveryDelay" value="${redeliveryDelayInMillis}"/>
+                <beans:property name="redeliveryPolicy.redeliveryDelay" value="${redeliveryDelayInMillis}"/>
+            </beans:bean>
+        </beans:property>
+        <beans:property name="sessionCacheSize" value="${jms.session.cache.size}"/>
+        <beans:property name="cacheProducers" value="${jms.cache.producers}"/>
+    </beans:bean>
+
+
+    <beans:bean id="schedulerQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <beans:constructor-arg value="${queue.for.scheduler}"/>
+    </beans:bean>
+
+
     <jms:message-driven-channel-adapter id="schedulerAdapter" destination="schedulerQueue" channel="jmsinToSchedulerChannel"/>
 
     <channel id="jmsinToSchedulerChannel"/>

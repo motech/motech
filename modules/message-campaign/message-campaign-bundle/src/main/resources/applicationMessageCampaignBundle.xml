@@ -6,7 +6,7 @@
 
     <import resource="classpath*:applicationMessageCampaign.xml" />
 
-    <bean class="org.motechproject.event.annotations.EventAnnotationBeanPostProcessor" />
+    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor" />
 
     <osgi:service id="messageCampaignServiceOsgi" auto-export="interfaces" ref="messageCampaignService"
                   interface="org.motechproject.server.messagecampaign.service.MessageCampaignService" />

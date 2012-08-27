@@ -8,7 +8,7 @@ import org.motechproject.scheduler.domain.CronJobId;
 import org.motechproject.scheduler.domain.CronSchedulableJob;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.gateway.MotechSchedulerGateway;
-import org.motechproject.event.annotations.MotechListener;
+import org.motechproject.event.listener.annotations.MotechListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

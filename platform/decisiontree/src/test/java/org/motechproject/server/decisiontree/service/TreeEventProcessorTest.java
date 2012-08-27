@@ -13,7 +13,7 @@ import org.motechproject.decisiontree.model.Node;
 import org.motechproject.decisiontree.model.Transition;
 import org.motechproject.scheduler.context.EventContext;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.EventRelay;
+import org.motechproject.event.listener.EventRelay;
 
 import java.util.Arrays;
 import java.util.HashMap;

@@ -13,6 +13,6 @@
                   interface="org.motechproject.commcare.service.CommcareCaseService"/>
 
     <osgi:reference id="eventRelayOsgi" cardinality="0..1"
-                    interface="org.motechproject.event.EventRelay" />
+                    interface="org.motechproject.event.listener.EventRelay" />
 
 </beans>

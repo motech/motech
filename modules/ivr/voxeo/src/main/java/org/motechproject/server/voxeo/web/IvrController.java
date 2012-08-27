@@ -7,7 +7,7 @@ import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
 import org.motechproject.scheduler.context.EventContext;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.EventRelay;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.voxeo.VoxeoIVRService;
 import org.motechproject.server.voxeo.dao.AllPhoneCalls;
 import org.motechproject.server.voxeo.domain.PhoneCall;

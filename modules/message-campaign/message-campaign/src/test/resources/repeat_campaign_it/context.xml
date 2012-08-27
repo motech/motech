@@ -5,10 +5,9 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-    <import resource="classpath:applicationMessageCampaign.xml"/>
+    <import resource="classpath:applicationMessageCampaignContext.xml"/>
 
-    <import resource="classpath*:integrationCommonAPI.xml"/>
-    <import resource="classpath:applicationScheduler.xml"/>
+    <import resource="classpath:applicationSchedulerContext.xml"/>
 
     <util:properties id="messageCampaignProperties" location="classpath:repeat_campaign_it/messageCampaign.properties"/>
 

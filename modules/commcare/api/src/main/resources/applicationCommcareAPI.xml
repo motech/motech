@@ -7,7 +7,6 @@
                http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 
     <context:annotation-config />
-
     <context:component-scan base-package="org.motechproject.commcare" />
 
     <util:properties id="commcareUserApi"
@@ -22,8 +21,5 @@
     <bean id="commonsHttpClient" class="org.apache.commons.httpclient.HttpClient">
         <constructor-arg ref="multiThreadedHttpConnectionManager" />
     </bean>
-
-    <bean
-        class="org.motechproject.event.annotations.EventAnnotationBeanPostProcessor" />
 
 </beans>

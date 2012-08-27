@@ -2,17 +2,15 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:util="http://www.springframework.org/schema/util"
-       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-    <import resource="classpath:applicationMessageCampaign.xml"/>
+    <import resource="classpath:applicationMessageCampaignContext.xml"/>
 
     <import resource="classpath:applicationPlatformServerAPI.xml"/>
-    <import resource="classpath:integrationCommonAPI.xml"/>
-    <import resource="classpath:applicationScheduler.xml"/>
+    <import resource="classpath:applicationSchedulerContext.xml"/>
 
-    <util:properties id="messageCampaignProperties" location="classpath:message_campaign_service_ft/messageCampaign.properties"/>
+    <util:properties id="messageCampaignProperties"
+                     location="classpath:message_campaign_service_ft/messageCampaign.properties"/>
 
 </beans>

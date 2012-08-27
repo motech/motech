@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.annotations.MotechListener;
+import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.sms.api.constants.EventDataKeys;
 import org.motechproject.sms.api.constants.EventSubjects;
 

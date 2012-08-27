@@ -1,6 +1,6 @@
 package org.motechproject.util;
 
-import junitx.framework.Assert;
+import junit.framework.Assert;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -46,7 +46,7 @@ public class DateUtilTest {
     }
 
     @Test
-    public void shouldReturnTheNumberOfYearsFromAGivenDate(){
+    public void shouldReturnTheNumberOfYearsFromAGivenDate() {
         mockCurrentDate(new DateTime(2011, 9, 9, 9, 30, 0, 0));
         assertEquals(2, getDifferenceOfDatesInYears(newDate(2008, 12, 12).toDate()));
     }
@@ -89,18 +89,18 @@ public class DateUtilTest {
     @Test
     public void shouldGetNextApplicableDateIncludingFromDateBasedOnApplicableWeekDays() {
 
-           DateTime oct1Sat2011 = new DateTime(2011, 10, 1, 0, 0);
-           DateTime oct2Sun2011 = new DateTime(2011, 10, 2, 2, 0);
-           DateTime oct3Mon2011 = new DateTime(2011, 10, 3, 0, 0);
-           DateTime oct4Tue2011 = new DateTime(2011, 10, 4, 5, 0);
-           DateTime oct6Thu2011 = new DateTime(2011, 10, 6, 3, 0);
+        DateTime oct1Sat2011 = new DateTime(2011, 10, 1, 0, 0);
+        DateTime oct2Sun2011 = new DateTime(2011, 10, 2, 2, 0);
+        DateTime oct3Mon2011 = new DateTime(2011, 10, 3, 0, 0);
+        DateTime oct4Tue2011 = new DateTime(2011, 10, 4, 5, 0);
+        DateTime oct6Thu2011 = new DateTime(2011, 10, 6, 3, 0);
 
-           List<DayOfWeek> applicableDays = asList(DayOfWeek.Monday, DayOfWeek.Wednesday, DayOfWeek.Friday);
-           assertThat(nextApplicableWeekDayIncludingFromDate(oct1Sat2011, applicableDays), is(oct1Sat2011.dayOfYear().addToCopy(2)));
-           assertThat(nextApplicableWeekDayIncludingFromDate(oct2Sun2011, applicableDays), is(oct2Sun2011.dayOfYear().addToCopy(1)));
-           assertThat(nextApplicableWeekDayIncludingFromDate(oct3Mon2011, applicableDays), is(oct3Mon2011));
-           assertThat(nextApplicableWeekDayIncludingFromDate(oct4Tue2011, applicableDays), is(oct4Tue2011.dayOfYear().addToCopy(1)));
-           assertThat(nextApplicableWeekDayIncludingFromDate(oct6Thu2011, applicableDays), is(oct6Thu2011.dayOfYear().addToCopy(1)));
+        List<DayOfWeek> applicableDays = asList(DayOfWeek.Monday, DayOfWeek.Wednesday, DayOfWeek.Friday);
+        assertThat(nextApplicableWeekDayIncludingFromDate(oct1Sat2011, applicableDays), is(oct1Sat2011.dayOfYear().addToCopy(2)));
+        assertThat(nextApplicableWeekDayIncludingFromDate(oct2Sun2011, applicableDays), is(oct2Sun2011.dayOfYear().addToCopy(1)));
+        assertThat(nextApplicableWeekDayIncludingFromDate(oct3Mon2011, applicableDays), is(oct3Mon2011));
+        assertThat(nextApplicableWeekDayIncludingFromDate(oct4Tue2011, applicableDays), is(oct4Tue2011.dayOfYear().addToCopy(1)));
+        assertThat(nextApplicableWeekDayIncludingFromDate(oct6Thu2011, applicableDays), is(oct6Thu2011.dayOfYear().addToCopy(1)));
     }
 
     @Test
@@ -132,12 +132,14 @@ public class DateUtilTest {
         try {
             nextApplicableWeekDayIncludingFromDate(new DateTime(2011, 10, 6, 3, 0), Collections.<DayOfWeek>emptyList());
             Assert.fail("expected invalid argument exception");
-        } catch (IllegalArgumentException iae) {}
+        } catch (IllegalArgumentException iae) {
+        }
 
         try {
             nextApplicableWeekDay(new DateTime(2011, 10, 6, 3, 0), Collections.<DayOfWeek>emptyList());
             Assert.fail("expected invalid argument exception");
-        } catch (IllegalArgumentException iae) {}
+        } catch (IllegalArgumentException iae) {
+        }
     }
 
     private void mockCurrentDate(final DateTime currentDate) {

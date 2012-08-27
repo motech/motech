@@ -70,7 +70,6 @@
                         <Import-Package>
                             *,
                             org.motechproject.event,
-                            org.motechproject.server.event,
                             org.springframework.context.config,
                             org.springframework.beans.factory.xml,
                             org.springframework.osgi.config,

@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.event.EventRelay;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.smpp.constants.SmppProperties;
 import org.motechproject.sms.smpp.constants.SmsProperties;

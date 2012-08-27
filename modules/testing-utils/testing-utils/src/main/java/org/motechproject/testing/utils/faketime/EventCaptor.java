@@ -5,7 +5,7 @@ import org.motechproject.event.MotechEvent;
 import org.quartz.Scheduler;
 import org.quartz.core.QuartzScheduler;
 import org.quartz.core.QuartzSchedulerThread;
-import org.motechproject.event.EventListener;
+import org.motechproject.event.listener.EventListener;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

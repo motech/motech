@@ -4,23 +4,7 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <bean
-        class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="location" value="classpath:activemq.properties" />
-        <property name="ignoreUnresolvablePlaceholders" value="true" />
-    </bean>
-
-    <import resource="classpath:applicationPillReminderAPI.xml" />
-    <import resource="classpath*:integrationCommonAPI.xml" />
-
-    <bean id="eventRelay" class="org.motechproject.event.ServerEventRelay" />
-
-    <bean id="metricsAgent"
-        class="org.motechproject.metrics.impl.MultipleMetricsAgentImpl" />
-
-    <bean id="loggingAgentBackEnd" class="org.motechproject.metrics.impl.LoggingAgentBackendImpl" />
-
-    <bean id="eventListenerRegistry" class="org.motechproject.event.EventListenerRegistry" />
+    <import resource="classpath:applicationPillReminderAPIContext.xml" />
 
     <util:properties id="quartzProperties" location="classpath:quartz.properties" />
 

@@ -16,7 +16,7 @@ import org.motechproject.commcare.events.constants.EventSubjects;
 import org.motechproject.commcare.exception.CaseParserException;
 import org.motechproject.commcare.request.IndexSubElement;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.event.EventRelay;
+import org.motechproject.event.listener.EventRelay;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
