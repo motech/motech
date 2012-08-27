@@ -18,6 +18,24 @@
 
     <tx:annotation-driven/>
 
+    <bean id="openmrsAPISettings" class="org.motechproject.server.config.SettingsFacade">
+        <property name="configFiles">
+            <list>
+                <value>classpath:openmrs.properties</value>
+            </list>
+        </property>
+        <property name="platformSettingsService" ref="platformSettingsServiceOsgi" />
+    </bean>
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="propertiesArray">
+            <list>
+                <bean factory-bean="openmrsAPISettings" factory-method="asProperties" />
+            </list>
+        </property>
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_NEVER" />
+    </bean>
+
     <bean id="context" class="org.motechproject.openmrs.Context" init-method="initialize" scope="singleton">
         <constructor-arg value="jdbc:mysql://${openmrs.host}:3306/${openmrs.database}?autoReconnect=true"/>
         <constructor-arg value="${openmrs.db.username}"/>
