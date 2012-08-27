@@ -10,4 +10,7 @@
           class="org.springframework.orm.hibernate3.HibernateTransactionManager"
           p:sessionFactory-ref="openMRSSessionFactory" />
 
+    <bean id="platformSettingsServiceOsgi"
+                    class="org.motechproject.server.config.service.impl.PlatformSettingsServiceImpl" />
+
 </beans>
