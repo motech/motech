@@ -15,6 +15,8 @@ import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.decisiontree.core.model.AudioPrompt;
+import org.motechproject.decisiontree.core.model.DialPrompt;
+import org.motechproject.decisiontree.core.model.DialStatus;
 import org.motechproject.decisiontree.core.model.ITransition;
 import org.motechproject.decisiontree.core.model.Node;
 import org.motechproject.decisiontree.core.model.TextToSpeechPrompt;
@@ -128,16 +130,12 @@ public class KookooIvrControllerCallFlowIT extends SpringIntegrationTest {
         tree.setName("someTree");
         tree.setRootTransition(new Transition().setDestinationNode(
             new Node()
-                .addTransition(
-                    "1", new Transition().setDestinationNode(new Node()
-                    .addPrompts(
-                        new TextToSpeechPrompt().setMessage("pressed one"))))
-                .addTransition(
-                    "2", new Transition().setDestinationNode(new Node()
-                    .addPrompts(
-                        new TextToSpeechPrompt().setMessage("pressed two"))
-                    .addTransition(
-                        "*", new Transition())))
+                .addTransition("1", new Transition().setDestinationNode(new Node()
+                        .addPrompts(new TextToSpeechPrompt().setMessage("pressed one"))))
+                .addTransition("2", new Transition().setDestinationNode(new Node()
+                        .addNoticePrompts(new TextToSpeechPrompt().setMessage("pressed two"))
+                        .addPrompts(new TextToSpeechPrompt().setMessage("Press star key"))
+                        .addTransition("*", new Transition())))
         ));
         allTrees.addOrReplace(tree);
 
@@ -145,8 +143,9 @@ public class KookooIvrControllerCallFlowIT extends SpringIntegrationTest {
         String expectedResponse =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                 "<response>" +
+                "   <playtext>pressed two</playtext>" +
                 "   <collectdtmf l=\"1\" t=\"#\"  o=\"5000\">" +
-                "       <playtext>pressed two</playtext>" +
+                "       <playtext>Press star key</playtext>" +
                 "   </collectdtmf>" +
                 "   <gotourl>http://localhost:7080/motech/kookoo/ivr?provider=kookoo&amp;ln=en&amp;tree=someTree</gotourl>" +
                 "</response>";
@@ -218,7 +217,7 @@ public class KookooIvrControllerCallFlowIT extends SpringIntegrationTest {
         tree.setRootTransition(new Transition().setDestinationNode(
             new Node()
                 .addTransition(
-                    "?", new Transition())
+                        "?", new Transition())
         ));
         allTrees.addOrReplace(tree);
 
@@ -239,7 +238,7 @@ public class KookooIvrControllerCallFlowIT extends SpringIntegrationTest {
         tree.setRootTransition(new Transition().setDestinationNode(
             new Node()
                 .addTransition(
-                    "?", new CustomTransition())
+                        "?", new CustomTransition())
         ));
         allTrees.addOrReplace(tree);
 
@@ -257,6 +256,50 @@ public class KookooIvrControllerCallFlowIT extends SpringIntegrationTest {
     @Override
     public CouchDbConnector getDBConnector() {
         return connector;
+    }
+
+    @Test
+    public void shouldDialToOtherNumber() throws Exception {
+        createTreeWithDial();
+
+        String response = kookooIvrController.execute(new HttpGet(format("%s?tree=someTree&trP=Lw&ln=en&sid=" + UUID.randomUUID().getMostSignificantBits(), SERVER_URL)), new BasicResponseHandler());
+        String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<response>" +
+                "   <playtext>I am dialing to other phone number. Please wait.</playtext>" +
+                "   <dial timeout=\"30\" moh=\"default\">otherPhoneNumber</dial>" +
+                "   <hangup></hangup>" +
+                "</response>";
+
+        assertXMLEqual(expectedResponse, response);
+    }
+
+    @Test
+    public void shouldTransitionToProperDialStatus() throws Exception {
+        createTreeWithDial();
+
+        String dialResponse = kookooIvrController.execute(new HttpGet(format("%s?tree=someTree&trP=Lw&ln=en&event=Dial&status=answered&sid=" + UUID.randomUUID().getMostSignificantBits(), SERVER_URL)), new BasicResponseHandler());
+        String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<response>" +
+                "   <playtext>Answered</playtext>" +
+                "   <hangup></hangup>" +
+                "</response>";
+
+        assertXMLEqual(expectedResponse, dialResponse);
+    }
+
+    private Tree createTreeWithDial() {
+        Tree tree = new Tree();
+        tree.setName("someTree");
+        tree.setRootTransition(new Transition().setDestinationNode(
+                new Node()
+                        .addPrompts(
+                                new TextToSpeechPrompt().setMessage("I am dialing to other phone number. Please wait."),
+                                new DialPrompt("otherPhoneNumber").setCallerId("callerId"))
+                        .addTransition(DialStatus.completed.toString(), new Transition().setDestinationNode(new Node().addPrompts(new TextToSpeechPrompt().setMessage("Answered"))))
+                        .addTransition(DialStatus.noAnswer.toString(), new Transition().setDestinationNode(new Node().addPrompts(new TextToSpeechPrompt().setMessage("Not Answered"))))
+        ));
+        allTrees.addOrReplace(tree);
+        return tree;
     }
 
     public static class CustomTransition implements ITransition {

@@ -1,10 +1,11 @@
-    package org.motechproject.server.kookoo.web;
+package org.motechproject.server.kookoo.web;
 
 import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.decisiontree.core.model.CallStatus;
 import org.motechproject.decisiontree.server.service.DecisionTreeServer;
 import org.motechproject.decisiontree.server.service.FlowSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.motechproject.decisiontree.core.model.DialStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -50,6 +51,8 @@ public class KookooIvrController {
             transitionKey = CallStatus.Hangup.toString();
         } else if("Disconnect".equals(event)) {
             transitionKey = CallStatus.Disconnect.toString();
+        } else if("Dial".equals(event)) {
+            transitionKey = getDialStatus(request);
         }
 
         String tree = request.getParameter("tree");
@@ -89,5 +92,15 @@ public class KookooIvrController {
     private FlowSession updateOutgoingCallSessionIdWithKookooSid(String callId, String kookooSid) {
         FlowSession flowSession = flowSessionService.getSession(callId);
         return flowSessionService.updateSessionId(flowSession.getSessionId(), kookooSid);
+    }
+
+    private String getDialStatus(HttpServletRequest request) {
+        String status = request.getParameter("status");
+        if ("answered".equals(status)) {
+            return DialStatus.completed.toString();
+        } else if("not_answered".equals(status)) {
+            return DialStatus.noAnswer.toString();
+        }
+        return status;
     }
 }
