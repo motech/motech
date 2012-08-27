@@ -7,24 +7,7 @@
             <Say>$prompt.message</Say>
         #end
     #end
-    #foreach( $prompt in $node.prompts )
-        #if ($prompt.class.simpleName == "DialPrompt")
-            #set ($dial = true)
-        #end
-    #end
-    #if($node.transitions.size() ==  0 || $dial)
-        #foreach( $prompt in $node.prompts )
-            #if($prompt.class.simpleName == "AudioPrompt")
-                <Play>$prompt.audioFileUrl</Play>
-            #elseif ($prompt.class.simpleName == "TextToSpeechPrompt")
-                <Say>$prompt.message</Say>
-            #elseif ($prompt.class.simpleName == "DialPrompt")
-                #set ($url = "$scheme://$host$contextPath$servletPath/verboice/ivr?provider=$provider&ln=$language&tree=$treeName&trP=$transitionPath")
-                <Dial action="$escape.escapeXml($url)">$prompt.phoneNumber</Dial>
-            #end
-        #end
-    #end
-    #if ($node.transitions.size() > 0 && !$dial)
+    #if($isUserInputNeeded)
         #set ($url = "$scheme://$host$contextPath$servletPath/verboice/ivr?provider=$provider&ln=$language&tree=$treeName&trP=$transitionPath")
         #set ($maxTimeoutInSeconds = $maxTimeout / 1000)
         <Gather method="POST" action="$escape.escapeXml($url)" numDigits="$maxDigits" timeout="$maxTimeoutInSeconds" finishOnKey="$transitionKeyEndMarker">
@@ -36,10 +19,23 @@
                 #end
             #end
         </Gather>
-        #foreach( $mapEntry in $node.transitions.entrySet() )
-            #if($mapEntry.key == '')
-                #set ($noInputUrl = "$url&Digits=")
-                <Redirect method="POST">$escape.escapeXml($noInputUrl)</Redirect>
+        #if($node.hasNoInputTransition())
+            #set ($noInputUrl = "$url&Digits=")
+            <Redirect method="POST">$escape.escapeXml($noInputUrl)</Redirect>
+        #end
+    #else
+        #foreach( $prompt in $node.prompts )
+            #if($prompt.class.simpleName == "AudioPrompt")
+                <Play>$prompt.audioFileUrl</Play>
+            #elseif ($prompt.class.simpleName == "TextToSpeechPrompt")
+                <Say>$prompt.message</Say>
+            #elseif ($prompt.class.simpleName == "DialPrompt")
+                #set ($url = "$scheme://$host$contextPath$servletPath/verboice/ivr?provider=$provider&ln=$language&tree=$treeName&trP=$transitionPath")
+                #set ($callerIdAttribute = "")
+                #if($prompt.callerId)
+                    #set ($callerIdAttribute = "callerId=""$prompt.callerId""")
+                #end
+                <Dial $callerIdAttribute action="$escape.escapeXml($url)">$prompt.phoneNumber</Dial>
             #end
         #end
     #end

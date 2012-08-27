@@ -4,6 +4,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.motechproject.server.decisiontree.TreeNodeLocator;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -189,6 +190,21 @@ public class Node implements Serializable {
     @JsonIgnore
     public boolean hasTransitions() {
         return transitions != null && !transitions.isEmpty();
+    }
+
+    @JsonIgnore
+    public boolean hasDialPrompts() {
+        for (Prompt prompt : prompts) {
+            if (prompt instanceof DialPrompt) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @JsonIgnore
+    public boolean hasNoInputTransition() {
+        return hasTransitions() && (transitions.get(TreeNodeLocator.NO_INPUT) != null);
     }
 
     public Integer getMaxTransitionInputDigit() {

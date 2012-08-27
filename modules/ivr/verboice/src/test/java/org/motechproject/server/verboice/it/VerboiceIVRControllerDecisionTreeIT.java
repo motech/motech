@@ -139,7 +139,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<Response>\n" +
                 "  <Say>Some Message</Say>\n" +
-                "  <Dial action=\"http://localhost:7080/motech/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=treeWithDial&amp;trP=Lw\">othernumber</Dial>\n" +
+                "  <Dial callerId=\"callerNumber\" action=\"http://localhost:7080/motech/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=treeWithDial&amp;trP=Lw\">othernumber</Dial>\n" +
                 "</Response>";
         HttpClient client = new DefaultHttpClient();
         String rootUrl = SERVER_URL + "?tree=treeWithDial&trP=Lw&ln=en";
@@ -239,7 +239,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         tree.setRootTransition(new Transition().setDestinationNode(
                 new Node().addPrompts(
                         new TextToSpeechPrompt().setMessage("Some Message"),
-                        new DialPrompt("othernumber")
+                        new DialPrompt("othernumber").setCallerId("callerNumber")
                 ).setTransitions(transitions)
         ));
         allTrees.addOrReplace(tree);

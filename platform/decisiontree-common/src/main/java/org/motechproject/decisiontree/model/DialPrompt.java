@@ -5,6 +5,7 @@ package org.motechproject.decisiontree.model;
  */
 public class DialPrompt extends Prompt {
     private String phoneNumber;
+    private String callerId;
 
     public String getPhoneNumber() {
         return phoneNumber;
@@ -19,5 +20,14 @@ public class DialPrompt extends Prompt {
 
     public DialPrompt(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getCallerId() {
+        return callerId;
+    }
+
+    public DialPrompt setCallerId(String callerId) {
+        this.callerId = callerId;
+        return this;
     }
 }

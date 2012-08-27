@@ -228,6 +228,7 @@ public class DecisionTreeController extends MultiActionController {
         mav.addObject("transitionKeyEndMarker", transitionKeyEndMarker(node));
         mav.addObject("host", request.getHeader("Host"));
         mav.addObject("scheme", request.getScheme());
+        mav.addObject("isUserInputNeeded", isUserInputNeeded(node));
         session.setCurrentNode(node);
         return mav;
     }
@@ -321,6 +322,10 @@ public class DecisionTreeController extends MultiActionController {
 
     private Integer maxTimeout(Node node) {
         return node.getMaxTransitionTimeout() == null ? MAX_INPUT_TIMEOUT : node.getMaxTransitionTimeout();
+    }
+
+    private boolean isUserInputNeeded(Node node) {
+        return node.hasTransitions() && !node.hasDialPrompts();
     }
 
     private String transitionKeyEndMarker(Node node) {
