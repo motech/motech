@@ -10,19 +10,19 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.decisiontree.FlowSession;
-import org.motechproject.decisiontree.model.AudioPrompt;
-import org.motechproject.decisiontree.model.DialPrompt;
-import org.motechproject.decisiontree.model.DialStatus;
-import org.motechproject.decisiontree.model.ITransition;
-import org.motechproject.decisiontree.model.Node;
-import org.motechproject.decisiontree.model.TextToSpeechPrompt;
-import org.motechproject.decisiontree.model.Transition;
-import org.motechproject.decisiontree.model.Tree;
-import org.motechproject.decisiontree.repository.AllTrees;
-import org.motechproject.decisiontree.service.impl.AllFlowSessionRecords;
+import org.motechproject.decisiontree.server.service.impl.AllFlowSessionRecords;
+import org.motechproject.decisiontree.core.FlowSession;
+import org.motechproject.decisiontree.core.TreeNodeLocator;
+import org.motechproject.decisiontree.core.model.AudioPrompt;
+import org.motechproject.decisiontree.core.model.DialPrompt;
+import org.motechproject.decisiontree.core.model.DialStatus;
+import org.motechproject.decisiontree.core.model.ITransition;
+import org.motechproject.decisiontree.core.model.Node;
+import org.motechproject.decisiontree.core.model.TextToSpeechPrompt;
+import org.motechproject.decisiontree.core.model.Transition;
+import org.motechproject.decisiontree.core.model.Tree;
+import org.motechproject.decisiontree.core.repository.AllTrees;
 import org.motechproject.ivr.service.CallRequest;
-import org.motechproject.server.decisiontree.TreeNodeLocator;
 import org.motechproject.server.verboice.VerboiceIVRService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -94,40 +94,39 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
 
         String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<Response>\n" +
-                "  <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"10\" timeout=\"2\" finishOnKey=\"#\">" +
+                "  <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=someTree\" numDigits=\"10\" timeout=\"2\" finishOnKey=\"#\">" +
                 "    <Say>Hello Welcome to motech</Say>\n" +
                 "  </Gather>\n" +
                 "</Response>";
         HttpClient verboiceIvrController = new DefaultHttpClient();
-        String rootUrl = SERVER_URL + "?tree=someTree&motech_call_id=" + callRequest.getCallId() + "&trP=Lw&ln=en";
+        String rootUrl = SERVER_URL + "?tree=someTree&ln=en&motech_call_id=" + callRequest.getCallId();
         String response = verboiceIvrController.execute(new HttpGet(rootUrl), new BasicResponseHandler());
         assertXMLEqual(expectedResponse, response);
 
         String sessionId = UUID.randomUUID().toString();
 
-        String transitionUrl = SERVER_URL + "?tree=someTree&CallSid=" + sessionId + "&trP=Lw&ln=en&Digits=1";
+        String transitionUrl = SERVER_URL + "?tree=someTree&CallSid=" + sessionId + "&ln=en&Digits=1";
         String response2 = verboiceIvrController.execute(new HttpGet(transitionUrl), new BasicResponseHandler());
         assertTrue("got " + response2, response2.contains("<Say>Say this</Say>"));
 
-        String transitionUrl2 = SERVER_URL + "?tree=someTree&CallSid=" + UUID.randomUUID().toString() + "&trP=Lw&ln=en&Digits=*";
+        String transitionUrl2 = SERVER_URL + "?tree=someTree&CallSid=" + UUID.randomUUID().toString() + "&ln=en&Digits=*";
         String response3 = verboiceIvrController.execute(new HttpGet(transitionUrl2), new BasicResponseHandler());
         assertTrue("got " + response3, response3.contains("<Play>you pressed star</Play>"));
 
         sessionId = UUID.randomUUID().toString();
 
-        String transitionUrl3 = SERVER_URL + "?tree=someTree&CallSid=" + sessionId + "&trP=Lw&ln=en&Digits=" + USER_INPUT;
+        String transitionUrl3 = SERVER_URL + "?tree=someTree&CallSid=" + sessionId + "&ln=en&Digits=" + USER_INPUT;
         String response4 = verboiceIvrController.execute(new HttpGet(transitionUrl3), new BasicResponseHandler());
 
-        assertTrue("got " + response4, response4.contains("trP=LzEzNDUyMzQ"));   //verify proceeding in tree Lz8 == /?
         assertTrue("got " + response4, response4.contains("<Say>custom transition try 1 with " + USER_INPUT + "</Say>"));
         assertTrue("got " + response4, response4.contains("   <Play>custom_1345234_Hello_from_org.motechproject.server.verboice.it.VerboiceIVRControllerDecisionTreeIT$TestComponent.wav</Play>"));
 
-        String transitionUrl4 = SERVER_URL + "?tree=someTree&CallSid=" + sessionId + "&trP=Lw&ln=en&Digits=" + USER_INPUT;
+        String transitionUrl4 = SERVER_URL + "?tree=someTree&CallSid=" + sessionId + "&ln=en&Digits=" + USER_INPUT;
         String response5 = verboiceIvrController.execute(new HttpGet(transitionUrl4), new BasicResponseHandler());
         assertTrue("got " + response5, response5.contains("<Say>custom transition try 2 with " + USER_INPUT + "</Say>"));
 
 
-        String transitionUrl5 = SERVER_URL + "?tree=someTree&CallSid=" + sessionId + "&trP=LzEzNDUyMzQ&ln=en&Digits=1";
+        String transitionUrl5 = SERVER_URL + "?tree=someTree&CallSid=" + sessionId + "&ln=en&Digits=1";
         String response6 = verboiceIvrController.execute(new HttpGet(transitionUrl5), new BasicResponseHandler());
         assertTrue("got " + response6, response6.contains(" <Play>option1_after_custom_transition.wav</Play>"));
     }
@@ -139,14 +138,14 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<Response>\n" +
                 "  <Say>Some Message</Say>\n" +
-                "  <Dial callerId=\"callerNumber\" action=\"http://localhost:7080/motech/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=treeWithDial&amp;trP=Lw\">othernumber</Dial>\n" +
+                "  <Dial callerId=\"callerNumber\" action=\"http://localhost:7080/motech/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=treeWithDial\">othernumber</Dial>\n" +
                 "</Response>";
         HttpClient client = new DefaultHttpClient();
-        String rootUrl = SERVER_URL + "?tree=treeWithDial&trP=Lw&ln=en";
+        String rootUrl = SERVER_URL + "?tree=treeWithDial&ln=en";
         String response = client.execute(new HttpGet(rootUrl), new BasicResponseHandler());
         assertXMLEqual(expectedResponse, response);
 
-        String transitionUrl = SERVER_URL + "?tree=treeWithDial&trP=Lw&ln=en&DialCallStatus=completed";
+        String transitionUrl = SERVER_URL + "?tree=treeWithDial&ln=en&DialCallStatus=completed";
         String response2 = client.execute(new HttpGet(transitionUrl), new BasicResponseHandler());
         assertTrue("got " + response2, response2.contains("<Say>Successful Dial</Say>"));
     }
@@ -157,13 +156,13 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
 
         String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<Response>\n" +
-                "  <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=treeWithNoInputRedirect&amp;trP=Lw\" numDigits=\"1\" timeout=\"5\" finishOnKey=\"\">\n" +
+                "  <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=treeWithNoInputRedirect\" numDigits=\"1\" timeout=\"5\" finishOnKey=\"\">\n" +
                 "    <Say>Welcome to motech</Say>\n" +
                 "  </Gather>\n" +
-                "  <Redirect method=\"POST\">http://localhost:7080/motech/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=treeWithNoInputRedirect&amp;trP=Lw&amp;Digits=</Redirect>" +
+                "  <Redirect method=\"POST\">http://localhost:7080/motech/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=treeWithNoInputRedirect&amp;Digits=</Redirect>" +
                 "</Response>";
         HttpClient client = new DefaultHttpClient();
-        String rootUrl = SERVER_URL + "?tree=treeWithNoInputRedirect&trP=Lw&ln=en";
+        String rootUrl = SERVER_URL + "?tree=treeWithNoInputRedirect&ln=en";
         String response = client.execute(new HttpGet(rootUrl), new BasicResponseHandler());
         assertXMLEqual(expectedResponse, response);
 
@@ -172,7 +171,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
                 "    <Say>timed out</Say>\n" +
                 "</Response>";
 
-        String noInputTransition = SERVER_URL + "?provider=verboice&ln=en&tree=treeWithNoInputRedirect&trP=Lw&Digits=";
+        String noInputTransition = SERVER_URL + "?provider=verboice&ln=en&tree=treeWithNoInputRedirect&Digits=";
         response = client.execute(new HttpGet(noInputTransition), new BasicResponseHandler());
         assertXMLEqual(expectedResponse, response);
     }
@@ -185,13 +184,13 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
                 "<Response>\n" +
                 "  <Say>Please listen carefully</Say>\n" +
                 "  <Say>You wont be able to give any input while this is playing</Say>\n" +
-                "  <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=someTree&amp;trP=Lw\" numDigits=\"10\" timeout=\"2\" finishOnKey=\"#\">" +
+                "  <Gather method=\"POST\" action=\"http://localhost:7080/motech/verboice/ivr?provider=verboice&amp;ln=en&amp;tree=someTree\" numDigits=\"10\" timeout=\"2\" finishOnKey=\"#\">" +
                 "    <Say>Hello Welcome to motech</Say>\n" +
                 "  </Gather>\n" +
                 "</Response>";
 
         HttpClient verboiceIvrController = new DefaultHttpClient();
-        String rootUrl = SERVER_URL + "?tree=someTree" + "&trP=Lw&ln=en";
+        String rootUrl = SERVER_URL + "?tree=someTree" + "&ln=en";
         String response = verboiceIvrController.execute(new HttpGet(rootUrl), new BasicResponseHandler());
         System.out.println(response);
         assertXMLEqual(expectedResponse, response);

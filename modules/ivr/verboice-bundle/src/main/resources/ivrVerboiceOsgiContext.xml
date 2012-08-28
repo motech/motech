@@ -16,6 +16,9 @@
     </osgi:service>
 
     <osgi:reference id="flowSessionServiceOsgi" cardinality="0..1"
-                    interface="org.motechproject.decisiontree.service.FlowSessionService"/>
+                    interface="org.motechproject.decisiontree.server.service.FlowSessionService"/>
+
+    <osgi:reference id="decisionTreeServerServiceOsgi" cardinality="0..1"
+                    interface="org.motechproject.decisiontree.server.service.DecisionTreeServer" />
 
 </beans>

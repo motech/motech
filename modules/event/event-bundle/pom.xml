@@ -86,13 +86,7 @@
                         <Bundle-Activator>
                             org.motechproject.event.osgi.Activator
                         </Bundle-Activator>
-                        <Export-Package>
-                            !org.motechproject.event.osgi,
-                            org.motechproject.event.*
-                        </Export-Package>
                         <Import-Package>
-                            !org.testng,
-                            !org.testng.annotations,
                             org.ektorp.impl,
                             org.ektorp.spring,
                             org.apache.activemq,

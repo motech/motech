@@ -10,8 +10,8 @@ import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.motechproject.ivr.service.CallRequest;
-import org.motechproject.decisiontree.FlowSession;
-import org.motechproject.decisiontree.service.FlowSessionService;
+import org.motechproject.decisiontree.core.FlowSession;
+import org.motechproject.decisiontree.server.service.FlowSessionService;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -47,7 +47,7 @@ public class VerboiceIVRServiceTest {
         VerboiceIVRService ivrService = new VerboiceIVRService(verboiceProperties, httpClient, flowSessionService);
 
         FlowSession flowSession = mock(FlowSession.class);
-        when(flowSessionService.getSession(anyString())).thenReturn(flowSession);
+        when(flowSessionService.createSession(anyString(), anyString())).thenReturn(flowSession);
 
         CallRequest callRequest = new CallRequest("1234567890", 1000, "foobar");
         callRequest.setPayload(new HashMap<String, String>() {{
@@ -76,11 +76,10 @@ public class VerboiceIVRServiceTest {
         }});
 
         FlowSession flowSession = mock(FlowSession.class);
-        when(flowSessionService.getSession(callRequest.getCallId())).thenReturn(flowSession);
+        when(flowSessionService.createSession(callRequest.getCallId(), "1234567890")).thenReturn(flowSession);
 
         ivrService.initiateCall(callRequest);
 
-        verify(flowSessionService).getSession(callRequest.getCallId());
         verify(flowSession).set("foo", "bar");
         verify(flowSessionService).updateSession(flowSession);
 

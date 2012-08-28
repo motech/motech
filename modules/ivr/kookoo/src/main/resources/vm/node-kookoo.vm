@@ -8,7 +8,7 @@
         #end
     #end
     #if($isUserInputNeeded)
-        #set ($url = "$scheme://$host$contextPath$servletPath/kookoo/ivr?provider=$provider&ln=$language&tree=$treeName&trP=$transitionPath")
+        #set ($url = "$scheme://$host$contextPath$servletPath/kookoo/ivr?provider=$provider&ln=$language&tree=$treeName")
         <collectdtmf l="$maxDigits" t="$transitionKeyEndMarker" o="$maxTimeout">
             #foreach( $prompt in $node.prompts )
                 #if($prompt.class.simpleName == "AudioPrompt")

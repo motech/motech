@@ -67,6 +67,8 @@
                             org.springframework.context.support,
                             org.springframework.osgi.config,
                             org.springframework.web.servlet.mvc,
+                            org.motechproject.decisiontree.core,
+                            org.motechproject.decisiontree.server.domain,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-ivr-asterisk</Embed-Dependency>

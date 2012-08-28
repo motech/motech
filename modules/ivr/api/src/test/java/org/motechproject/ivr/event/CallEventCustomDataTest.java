@@ -1,7 +1,7 @@
 package org.motechproject.ivr.event;
 
 import org.junit.Test;
-import org.motechproject.ivr.event.CallEventCustomData;
+import org.motechproject.decisiontree.server.domain.CallEventCustomData;
 
 import static junit.framework.Assert.assertEquals;
 

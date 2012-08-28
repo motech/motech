@@ -8,7 +8,7 @@
         #end
     #end
     #if($isUserInputNeeded)
-        #set ($url = "$scheme://$host$contextPath$servletPath/verboice/ivr?provider=$provider&ln=$language&tree=$treeName&trP=$transitionPath")
+        #set ($url = "$scheme://$host$contextPath$servletPath/verboice/ivr?provider=$provider&ln=$language&tree=$treeName")
         #set ($maxTimeoutInSeconds = $maxTimeout / 1000)
         <Gather method="POST" action="$escape.escapeXml($url)" numDigits="$maxDigits" timeout="$maxTimeoutInSeconds" finishOnKey="$transitionKeyEndMarker">
             #foreach( $prompt in $node.prompts )
@@ -30,7 +30,7 @@
             #elseif ($prompt.class.simpleName == "TextToSpeechPrompt")
                 <Say>$prompt.message</Say>
             #elseif ($prompt.class.simpleName == "DialPrompt")
-                #set ($url = "$scheme://$host$contextPath$servletPath/verboice/ivr?provider=$provider&ln=$language&tree=$treeName&trP=$transitionPath")
+                #set ($url = "$scheme://$host$contextPath$servletPath/verboice/ivr?provider=$provider&ln=$language&tree=$treeName")
                 #set ($callerIdAttribute = "")
                 #if($prompt.callerId)
                     #set ($callerIdAttribute = "callerId=""$prompt.callerId""")

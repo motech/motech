@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <context:annotation-config/>
+    <context:component-scan base-package="org.motechproject.decisiontree"/>
+
+    <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
+
+    <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean">
+        <property name="properties" ref="couchdbProperties"/>
+    </bean>
+
+    <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
+        <constructor-arg ref="httpClient"/>
+    </bean>
+
+    <bean id="treesDatabase" class="org.ektorp.impl.StdCouchDbConnector">
+        <constructor-arg value="trees"/>
+        <constructor-arg ref="couchDbInstance"/>
+    </bean>
+
+    <bean id="flowSession" class="org.ektorp.impl.StdCouchDbConnector">
+        <constructor-arg value="flowSession"/>
+        <constructor-arg ref="couchDbInstance"/>
+    </bean>
+
+    <bean id="callDetailRecord" class="org.ektorp.impl.StdCouchDbConnector">
+        <constructor-arg value="callDetailRecords"/>
+        <constructor-arg ref="couchDbInstance"/>
+    </bean>
+
+    <bean id="treeDao" class="org.motechproject.decisiontree.core.repository.AllTrees">
+        <constructor-arg ref="treesDatabase"/>
+    </bean>
+    <bean id="treeEventProcessor"
+          class="org.motechproject.decisiontree.server.service.TreeEventProcessor"/>
+
+    <bean class="org.motechproject.decisiontree.core.TreeNodeLocator"/>
+
+</beans>

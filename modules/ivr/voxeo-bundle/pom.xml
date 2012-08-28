@@ -70,6 +70,8 @@
                             org.springframework.web.servlet.config,
                             org.springframework.web.servlet.mvc,
                             org.springframework.web.servlet.support,
+                            org.motechproject.decisiontree.core,
+                            org.motechproject.decisiontree.server.domain,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-ivr-voxeo</Embed-Dependency>

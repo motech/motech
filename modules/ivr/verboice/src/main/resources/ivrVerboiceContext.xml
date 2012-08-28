@@ -15,6 +15,20 @@
 
     <context:annotation-config/>
     <mvc:annotation-driven/>
-
     <context:component-scan base-package="org.motechproject.server.verboice"/>
+
+
+    <bean id="simpleControllerHandlerAdapter" class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
+
+    <bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+        <property name="resourceLoaderPath" value="/" />
+    </bean>
+
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+        <property name="cache" value="true" />
+        <property name="prefix" value="" />
+        <property name="suffix" value=".vm" />
+        <property name="exposeSpringMacroHelpers" value="true" />
+    </bean>
+
 </beans>

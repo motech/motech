@@ -3,8 +3,8 @@ package org.motechproject.server.verboice;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.motechproject.decisiontree.FlowSession;
-import org.motechproject.decisiontree.service.FlowSessionService;
+import org.motechproject.decisiontree.core.FlowSession;
+import org.motechproject.decisiontree.server.service.FlowSessionService;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
 import org.motechproject.server.verboice.domain.VerboiceHandler;
@@ -63,7 +63,7 @@ public class VerboiceIVRService implements IVRService {
     }
 
     private void initSession(CallRequest callRequest) {
-        FlowSession flowSession = flowSessionService.getSession(callRequest.getCallId());
+        FlowSession flowSession = flowSessionService.createSession(callRequest.getCallId(), callRequest.getPhone());
         for (String key : callRequest.getPayload().keySet()) {
             if (!"callback_url".equals(key)) {
                 flowSession.set(key, callRequest.getPayload().get(key));

@@ -145,8 +145,6 @@
     <modules>
         <!-- Non-OSGI modules -->
         <module>platform/common-api</module>
-        <module>platform/decisiontree-common</module>
-        <module>platform/decisiontree</module>
         <module>platform/scheduler</module>
         <module>platform/server-api</module>
         <module>platform/server-config</module>
@@ -165,6 +163,8 @@
         <module>modules/ivr/kookoo</module>
         <module>modules/ivr/verboice</module>
         <module>modules/ivr/voxeo</module>
+        <module>modules/decisiontree/decisiontree-core</module>
+        <module>modules/decisiontree/decisiontree-server</module>
         <module>modules/message-campaign/message-campaign</module>
         <module>modules/mobileforms/api</module>
         <module>modules/mrs/api</module>
@@ -184,7 +184,6 @@
         <module>modules/web-security/web-security</module>
 
         <!-- OSGI modules -->
-        <module>platform/decisiontree-bundle</module>
         <module>modules/admin/admin-bundle</module>
         <module>modules/alerts/api-bundle</module>
         <module>modules/appointments/api-bundle</module>
@@ -197,6 +196,8 @@
         <module>modules/ivr/kookoo-bundle</module>
         <module>modules/ivr/verboice-bundle</module>
         <module>modules/ivr/voxeo-bundle</module>
+        <module>modules/decisiontree/decisiontree-core-bundle</module>
+        <module>modules/decisiontree/decisiontree-server-bundle</module>
         <module>modules/message-campaign/message-campaign-bundle</module>
         <module>modules/mobileforms/api-bundle</module>
         <module>modules/mrs/api-bundle</module>

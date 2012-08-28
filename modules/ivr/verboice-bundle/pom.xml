@@ -61,10 +61,19 @@
                             org.springframework.context.config,
                             org.springframework.context.support,
                             org.springframework.osgi.config,
+                            org.springframework.web.context.support,
                             org.springframework.web.servlet.config,
                             org.springframework.web.servlet.mvc,
+                            org.springframework.web.servlet.support,
+                            org.springframework.web.servlet.view.velocity,
+                            org.motechproject.decisiontree.core,
                             *
                         </Import-Package>
+                        <Include-Resource>
+                            {maven-resources},
+                            {maven-dependencies},
+                            vm=${project.basedir}/../../ivr/verboice/src/main/resources/vm
+                        </Include-Resource>
                         <Embed-Dependency>motech-ivr-verboice</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>

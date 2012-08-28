@@ -31,7 +31,8 @@ public class ServerEventRelayTransactionIT {
     @Autowired
     EventHandlerForServerEventRelayTransactionIT handler;
 
-    @Autowired @Qualifier("activeMQProperties")
+    @Autowired
+    @Qualifier("activeMQProperties")
     Properties activeMQProperties;
 
     ActiveMQQueueExplorer queueExplorer;
@@ -62,7 +63,7 @@ public class ServerEventRelayTransactionIT {
         MotechEvent motechEvent = new MotechEvent(EventHandlerForServerEventRelayTransactionIT.LONG_RUNNING_PROCESS);
         outboundEventGateway.sendEventMessage(motechEvent);
         outboundEventGateway.sendEventMessage(motechEvent);
-        Thread.sleep(EventHandlerForServerEventRelayTransactionIT.TASK_DURATION *1000 + 1000);
+        Thread.sleep(EventHandlerForServerEventRelayTransactionIT.TASK_DURATION * 1000 + 1000);
         assertEquals(0, queueExplorer.queueSize(eventQueue) - numberOfMessagesInQueue);
     }
 

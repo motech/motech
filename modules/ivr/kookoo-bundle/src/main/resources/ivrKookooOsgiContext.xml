@@ -15,4 +15,7 @@
         </osgi:service-properties>
     </osgi:service>
 
+    <osgi:reference id="decisionTreeServerServiceOsgi" cardinality="0..1"
+                    interface="org.motechproject.decisiontree.server.service.DecisionTreeServer" />
+
 </beans>

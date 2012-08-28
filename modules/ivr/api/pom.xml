@@ -76,7 +76,7 @@
         </dependency>
         <dependency>
             <groupId>org.motechproject</groupId>
-            <artifactId>motech-platform-decisiontree-common</artifactId>
+            <artifactId>motech-decisiontree-server</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

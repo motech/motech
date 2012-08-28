@@ -40,7 +40,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-decisiontree</artifactId>
+            <artifactId>motech-decisiontree-server</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
