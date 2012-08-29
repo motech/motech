@@ -28,6 +28,11 @@
 
     <repositories>
         <repository>
+            <id>1motech-repo</id>
+            <name>1MoTeCH Maven Repository</name>
+            <url>http://repo.springsource.org/libs-milestone/</url>
+        </repository>
+        <repository>
             <id>motech-repo</id>
             <name>MoTeCH Maven Repository</name>
             <url>http://nexus.motechproject.org/content/repositories/public</url>
@@ -163,8 +168,8 @@
         <module>modules/ivr/kookoo</module>
         <module>modules/ivr/verboice</module>
         <module>modules/ivr/voxeo</module>
-        <module>modules/decisiontree/decisiontree-core</module>
-        <module>modules/decisiontree/decisiontree-server</module>
+        <module>modules/decisiontree/core</module>
+        <module>modules/decisiontree/server</module>
         <module>modules/message-campaign/message-campaign</module>
         <module>modules/mobileforms/api</module>
         <module>modules/mrs/api</module>
@@ -196,8 +201,8 @@
         <module>modules/ivr/kookoo-bundle</module>
         <module>modules/ivr/verboice-bundle</module>
         <module>modules/ivr/voxeo-bundle</module>
-        <module>modules/decisiontree/decisiontree-core-bundle</module>
-        <module>modules/decisiontree/decisiontree-server-bundle</module>
+        <module>modules/decisiontree/core-bundle</module>
+        <module>modules/decisiontree/server-bundle</module>
         <module>modules/message-campaign/message-campaign-bundle</module>
         <module>modules/mobileforms/api-bundle</module>
         <module>modules/mrs/api-bundle</module>

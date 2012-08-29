@@ -12,14 +12,17 @@ import java.util.UUID;
  * <p></p>
  * This class is immutable
  */
-public final class MotechEvent implements Serializable {
+public class MotechEvent implements Serializable {
     public static final String EVENT_TYPE_KEY_NAME = "eventType";
 
     private UUID id;
     private String subject;
-    private Map<String, Object> parameters;
+    protected Map<String, Object> parameters;
     private Date endTime;
     private boolean isLastEvent;
+
+    public MotechEvent() {
+    }
 
     /**
      * Constructor with subject only (parameters can be added interactively)
@@ -83,6 +86,7 @@ public final class MotechEvent implements Serializable {
         return endTime;
     }
 
+    // TODO: this doesn't belong here
     public MotechEvent setEndTime(Date endDate) {
         this.endTime = endDate;
         return this;

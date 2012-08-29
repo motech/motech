@@ -47,7 +47,7 @@ public class VerboiceIVRServiceTest {
         VerboiceIVRService ivrService = new VerboiceIVRService(verboiceProperties, httpClient, flowSessionService);
 
         FlowSession flowSession = mock(FlowSession.class);
-        when(flowSessionService.createSession(anyString(), anyString())).thenReturn(flowSession);
+        when(flowSessionService.findOrCreate(anyString(), anyString())).thenReturn(flowSession);
 
         CallRequest callRequest = new CallRequest("1234567890", 1000, "foobar");
         callRequest.setPayload(new HashMap<String, String>() {{
@@ -76,7 +76,7 @@ public class VerboiceIVRServiceTest {
         }});
 
         FlowSession flowSession = mock(FlowSession.class);
-        when(flowSessionService.createSession(callRequest.getCallId(), "1234567890")).thenReturn(flowSession);
+        when(flowSessionService.findOrCreate(callRequest.getCallId(), "1234567890")).thenReturn(flowSession);
 
         ivrService.initiateCall(callRequest);
 

@@ -1,4 +1,4 @@
-package org.motechproject.server.kookoo.web;
+    package org.motechproject.server.kookoo.web;
 
 import org.motechproject.decisiontree.core.model.CallStatus;
 import org.motechproject.decisiontree.server.service.DecisionTreeServer;
@@ -30,8 +30,10 @@ public class KookooIvrController {
         String event = request.getParameter("event");
         if ("GotDTMF".equals(event)) {
             transitionKey = request.getParameter("data");
-        } else if("Hangup".equals(event) || "Disconnect".equals(event)) {
+        } else if("Hangup".equals(event)) {
             transitionKey = CallStatus.hangup.toString();
+        } else if("Disconnect".equals(event)) {
+            transitionKey = CallStatus.disconnect.toString();
         }
 
         String tree = request.getParameter("tree");

@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
-import org.motechproject.decisiontree.server.service.impl.AllFlowSessionRecords;
 import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.decisiontree.core.model.AudioPrompt;
 import org.motechproject.decisiontree.core.model.ITransition;
@@ -22,6 +21,8 @@ import org.motechproject.decisiontree.core.model.TextToSpeechPrompt;
 import org.motechproject.decisiontree.core.model.Transition;
 import org.motechproject.decisiontree.core.model.Tree;
 import org.motechproject.decisiontree.core.repository.AllTrees;
+import org.motechproject.decisiontree.server.service.impl.AllFlowSessionRecords;
+import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.testing.utils.SpringIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -53,6 +54,9 @@ public class KookooIvrControllerCallFlowIT extends SpringIntegrationTest {
     private AllFlowSessionRecords allFlowSessionRecords;
 
     @Autowired
+    EventListenerRegistryService eventListenerRegistry;
+
+    @Autowired
     @Qualifier("treesDatabase")
     CouchDbConnector connector;
 
@@ -70,7 +74,6 @@ public class KookooIvrControllerCallFlowIT extends SpringIntegrationTest {
         ServletHolder servletHolder = new ServletHolder(dispatcherServlet);
         context.addServlet(servletHolder, "/*");
 
-
         server.setHandler(context);
         server.start();
     }
@@ -78,11 +81,6 @@ public class KookooIvrControllerCallFlowIT extends SpringIntegrationTest {
     @AfterClass
     public static void stopServer() throws Exception {
         server.stop();
-    }
-
-    @Override
-    public CouchDbConnector getDBConnector() {
-        return connector;
     }
 
     @Before
@@ -136,10 +134,10 @@ public class KookooIvrControllerCallFlowIT extends SpringIntegrationTest {
                         new TextToSpeechPrompt().setMessage("pressed one"))))
                 .addTransition(
                     "2", new Transition().setDestinationNode(new Node()
-                        .addPrompts(
-                            new TextToSpeechPrompt().setMessage("pressed two"))
-                        .addTransition(
-                            "*", new Transition())))
+                    .addPrompts(
+                        new TextToSpeechPrompt().setMessage("pressed two"))
+                    .addTransition(
+                        "*", new Transition())))
         ));
         allTrees.addOrReplace(tree);
 
@@ -254,6 +252,11 @@ public class KookooIvrControllerCallFlowIT extends SpringIntegrationTest {
             "   <gotourl>http://localhost:7080/motech/kookoo/ivr?provider=kookoo&amp;ln=en&amp;tree=someTree</gotourl>" +
             "</response>";
         assertXMLEqual(expectedResponse, response);
+    }
+
+    @Override
+    public CouchDbConnector getDBConnector() {
+        return connector;
     }
 
     public static class CustomTransition implements ITransition {

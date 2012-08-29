@@ -19,21 +19,14 @@ import java.util.Set;
 public class ServerEventRelay implements EventRelay {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
     private EventListenerRegistry eventListenerRegistry;
-
-    @Autowired
     private OutboundEventGateway outboundEventGateway;
-
-    @Autowired
     private MetricsAgent metricsAgent;
 
     private static final String MESSAGE_DESTINATION = "message-destination";
     private static final String ORIGINAL_PARAMETERS = "original-parameters";
 
-    public ServerEventRelay() {
-    }
-
+    @Autowired
     public ServerEventRelay(OutboundEventGateway outboundEventGateway, EventListenerRegistry eventListenerRegistry, MetricsAgent metricsAgent) {
         this.outboundEventGateway = outboundEventGateway;
         this.eventListenerRegistry = eventListenerRegistry;

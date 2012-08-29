@@ -7,7 +7,7 @@
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
-    <import resource="applicationDecisionTree.xml"/>
+    <import resource="applicationDecisionTreeContext.xml"/>
     <import resource="applicationPlatformIVR.xml"/>
     <import resource="ivrVerboiceContext.xml"/>
     <mvc:annotation-driven/>

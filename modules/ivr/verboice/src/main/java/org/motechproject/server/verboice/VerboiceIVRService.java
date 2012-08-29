@@ -63,7 +63,7 @@ public class VerboiceIVRService implements IVRService {
     }
 
     private void initSession(CallRequest callRequest) {
-        FlowSession flowSession = flowSessionService.createSession(callRequest.getCallId(), callRequest.getPhone());
+        FlowSession flowSession = flowSessionService.findOrCreate(callRequest.getCallId(), callRequest.getPhone());
         for (String key : callRequest.getPayload().keySet()) {
             if (!"callback_url".equals(key)) {
                 flowSession.set(key, callRequest.getPayload().get(key));
