@@ -9,15 +9,15 @@
                 <form id="settingsForm" class="form-horizontal inside" action="api/settings/{{module.bundleId}}" method="post">
                     <fieldset>
                         <div ng-repeat="setting in mSettings.settings | orderBy:'key'" class="control-group">
-                            <label class="control-label span3" for="{{setting.key}}">{{setting.key}}</label>
+                            <label class="control-label span4" for="{{setting.key}}">{{setting.key}}</label>
                             <div class="controls span2">
                                 <input type="text" id="{{setting.key}}" name="{{setting.key}}" ng-model="setting.value" />
                             </div>
                         </div>
 
                         <div class="control-group">
-                            <div class="control-label span3"></div>
-                            <div class="controls span2">
+                            <div class="control-label span4"></div>
+                            <div class="controls inside5 span3">
                             <input type="hidden" name="section" value="{{mSettings.section}}" />
                             <input type="button" ng-click="saveSettings(mSettings)" value="{{msg('submit')}}"/>
                             <input type="button" ng-click="saveSettings(mSettings, true)" value="{{msg('submitAndRestart')}}"/>
@@ -33,7 +33,7 @@
                 <div class="control-group">
                     <form id="_raw_{{rawFile}}" action="api/settings/{{module.bundleId}}/raw" method="post"
                           enctype="multipart/form-data">
-                        <span class="span5">{{rawFile}}: <input type="file" name="file" />
+                        <span class="span4"><input type="file" name="file" />
                         <input type="hidden" value="{{rawFile}}" name="filename" /></span>
                         <span><input type="button"  ng-click="uploadRaw(rawFile)" value="{{msg('submit')}}"/></span>
                         <span><input type="button"  ng-click="uploadRaw(rawFile, true)" value="{{msg('submitAndRestart')}}"/></span>

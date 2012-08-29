@@ -64,6 +64,10 @@ body {
     padding: 8px 10px;
 }
 
+.inside5 {
+    padding: 5px;
+}
+
 .inside form {
     margin: 0;
 }
@@ -98,8 +102,13 @@ body {
 }
 
 .icon {
-    width: 20px;
-    height: 20px;
+    width: 25px;
+    height: 25px;
+}
+
+.large-icon {
+    width: 90px;
+    height: 90px;
 }
 
 .action {
@@ -148,6 +157,18 @@ input[type='button']:active, input[type='submit']:active {
     border-radius:4px 4px 4px 4px;
     padding: 0;
 
+}
+
+.table-bundles thead .sorting-asc {
+    background: url("../img/sort-asc.png")no-repeat center right;
+}
+
+.table-bundles thead .sorting-desc {
+    background: url("../img/sort-desc.png")no-repeat center right;
+}
+
+.table-bundles {
+    line-height: 20px;
 }
 
 .table-bundles a:link {
