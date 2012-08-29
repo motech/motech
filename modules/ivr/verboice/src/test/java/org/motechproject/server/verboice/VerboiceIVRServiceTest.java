@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.decisiontree.server.service.FlowSessionService;
+import org.motechproject.server.config.SettingsFacade;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -26,8 +27,7 @@ public class VerboiceIVRServiceTest {
 
     @Mock
     private HttpClient httpClient;
-    @Mock
-    private Properties verboiceProperties;
+
     @Mock
     private FlowSessionService flowSessionService;
 
@@ -38,13 +38,19 @@ public class VerboiceIVRServiceTest {
 
     @Test
     public void shouldInitiateCallOverVerboice() throws IOException {
-        when(verboiceProperties.getProperty("host")).thenReturn("verboice");
-        when(verboiceProperties.getProperty("port")).thenReturn("3000");
-        when(verboiceProperties.getProperty("username")).thenReturn("test@test.com");
-        when(verboiceProperties.getProperty("password")).thenReturn("password");
+        Properties verboiceProperties = new Properties() {{
+            setProperty("host", "verboice");
+            setProperty("port", "3000");
+            setProperty("username", "test@test.com");
+            setProperty("password", "password");
+        }};
+
         when(httpClient.getParams()).thenReturn(new HttpClientParams());
         when(httpClient.getState()).thenReturn(new HttpState());
-        VerboiceIVRService ivrService = new VerboiceIVRService(verboiceProperties, httpClient, flowSessionService);
+
+        SettingsFacade settings = new SettingsFacade();
+        settings.saveConfigProperties("verboice.properties", verboiceProperties);
+        VerboiceIVRService ivrService = new VerboiceIVRService(settings, httpClient, flowSessionService);
 
         FlowSession flowSession = mock(FlowSession.class);
         when(flowSessionService.findOrCreate(anyString(), anyString())).thenReturn(flowSession);
@@ -61,13 +67,18 @@ public class VerboiceIVRServiceTest {
 
     @Test
     public void shouldCreateSessionForOutgoingCall() throws IOException {
-        when(verboiceProperties.getProperty("host")).thenReturn("verboice");
-        when(verboiceProperties.getProperty("port")).thenReturn("3000");
-        when(verboiceProperties.getProperty("username")).thenReturn("test@test.com");
-        when(verboiceProperties.getProperty("password")).thenReturn("password");
+        Properties verboiceProperties = new Properties() {{
+            setProperty("host", "verboice");
+            setProperty("port", "3000");
+            setProperty("username", "test@test.com");
+            setProperty("password", "password");
+        }};
         when(httpClient.getParams()).thenReturn(new HttpClientParams());
         when(httpClient.getState()).thenReturn(new HttpState());
-        VerboiceIVRService ivrService = new VerboiceIVRService(verboiceProperties, httpClient, flowSessionService);
+
+        SettingsFacade settings = new SettingsFacade();
+        settings.saveConfigProperties("verboice.properties", verboiceProperties);
+        VerboiceIVRService ivrService = new VerboiceIVRService(settings, httpClient, flowSessionService);
 
         CallRequest callRequest = new CallRequest("1234567890", 1000, "foobar");
         callRequest.setPayload(new HashMap<String, String>() {{

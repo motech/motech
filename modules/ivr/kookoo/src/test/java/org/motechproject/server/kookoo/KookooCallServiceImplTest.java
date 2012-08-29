@@ -9,6 +9,7 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
+import org.motechproject.server.config.SettingsFacade;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -30,11 +31,16 @@ public class KookooCallServiceImplTest {
     public void setUp() {
         initMocks(this);
         phoneNumber = "9876543211";
-        Properties properties = new Properties();
-        properties.setProperty(KookooCallServiceImpl.OUTBOUND_URL, "http://kookoo/outbound.php");
-        properties.setProperty(KookooCallServiceImpl.API_KEY, "api_key_value");
 
-        ivrService = new KookooCallServiceImpl(properties, httpClient);
+        Properties ivrProperties = new Properties() {{
+            setProperty(KookooCallServiceImpl.OUTBOUND_URL, "http://kookoo/outbound.php");
+            setProperty(KookooCallServiceImpl.API_KEY, "api_key_value");
+        }};
+
+        SettingsFacade settings = new SettingsFacade();
+        settings.saveConfigProperties("ivr.properties", ivrProperties);
+
+        ivrService = new KookooCallServiceImpl(settings, httpClient);
     }
 
     @Test(expected = IllegalArgumentException.class)

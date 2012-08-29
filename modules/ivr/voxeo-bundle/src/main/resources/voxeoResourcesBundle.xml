@@ -15,4 +15,7 @@
         </osgi:service-properties>
     </osgi:service>
 
+    <osgi:reference id="platformSettingsServiceOsgi" cardinality="0..1"
+                    interface="org.motechproject.server.config.service.PlatformSettingsService" />
+
 </beans>

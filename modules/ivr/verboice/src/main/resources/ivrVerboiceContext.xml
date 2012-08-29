@@ -9,14 +9,19 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
         http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
-    <util:properties id="verboiceProperties" location="classpath:verboice.properties"/>
-
     <bean id="commonsHttpClient" class="org.apache.commons.httpclient.HttpClient" />
 
     <context:annotation-config/>
     <mvc:annotation-driven/>
     <context:component-scan base-package="org.motechproject.server.verboice"/>
 
+    <bean id="verboiceAPISettings" class="org.motechproject.server.config.SettingsFacade">
+        <property name="configFiles">
+            <list>
+                <value>classpath:verboice.properties</value>
+            </list>
+        </property>
+    </bean>
 
     <bean id="simpleControllerHandlerAdapter" class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
 

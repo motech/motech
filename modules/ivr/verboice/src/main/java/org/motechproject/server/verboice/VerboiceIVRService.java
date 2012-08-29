@@ -7,15 +7,14 @@ import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.decisiontree.server.service.FlowSessionService;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
+import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.verboice.domain.VerboiceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Properties;
 
 import static java.lang.String.format;
 
@@ -27,7 +26,7 @@ public class VerboiceIVRService implements IVRService {
 
     private static Logger log = LoggerFactory.getLogger(VerboiceIVRService.class);
 
-    private Properties verboiceProperties;
+    private SettingsFacade settings;
     private HttpClient commonsHttpClient;
     private FlowSessionService flowSessionService;
 
@@ -35,8 +34,8 @@ public class VerboiceIVRService implements IVRService {
     private VerboiceHandler handler;
 
     @Autowired
-    public VerboiceIVRService(@Qualifier("verboiceProperties") Properties verboiceProperties, HttpClient commonsHttpClient, FlowSessionService flowSessionService) {
-        this.verboiceProperties = verboiceProperties;
+    public VerboiceIVRService(SettingsFacade settings, HttpClient commonsHttpClient, FlowSessionService flowSessionService) {
+        this.settings = settings;
         this.commonsHttpClient = commonsHttpClient;
         this.flowSessionService = flowSessionService;
     }
@@ -59,7 +58,7 @@ public class VerboiceIVRService implements IVRService {
     }
 
     private String basicAuthValue() {
-        return new String(Base64.encodeBase64((verboiceProperties.getProperty("username") + ":" + verboiceProperties.getProperty("password")).getBytes()));
+        return new String(Base64.encodeBase64((settings.getProperty("username") + ":" + settings.getProperty("password")).getBytes()));
     }
 
     private void initSession(CallRequest callRequest) {
@@ -79,8 +78,8 @@ public class VerboiceIVRService implements IVRService {
         }
         return format(
                 "http://%s:%s/api/call?motech_call_id=%s&channel=%s&address=%s%s",
-                verboiceProperties.getProperty("host"),
-                verboiceProperties.getProperty("port"),
+                settings.getProperty("host"),
+                settings.getProperty("port"),
                 callRequest.getCallId(),
                 callRequest.getCallBackUrl(),
                 callRequest.getPhone(), callbackUrlParameter

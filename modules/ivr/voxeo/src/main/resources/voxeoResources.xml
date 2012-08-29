@@ -41,4 +41,11 @@
     <bean id="ccxmlController" class="org.motechproject.server.voxeo.web.CcxmlController"/>
     <bean id="ivrController" class="org.motechproject.server.voxeo.web.IvrController"/>
 
+    <bean id="voxeoSettings" class="org.motechproject.server.config.SettingsFacade">
+        <property name="rawConfigFiles">
+            <list>
+                <value>classpath:voxeo-config.json</value>
+            </list>
+        </property>
+    </bean>
 </beans>
