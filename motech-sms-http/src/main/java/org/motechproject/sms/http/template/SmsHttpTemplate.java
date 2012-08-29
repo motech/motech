@@ -24,8 +24,10 @@ public class SmsHttpTemplate {
             httpMethod = new PostMethod(outgoing.getRequest().getUrlPath());
             httpMethod.setRequestHeader("Content-Type", PostMethod.FORM_URL_ENCODED_CONTENT_TYPE);
             addBodyParameters((PostMethod) httpMethod, recipients, message);
-        } else
+        } else  {
             httpMethod = new GetMethod(outgoing.getRequest().getUrlPath());
+            httpMethod.setQueryString(addQueryParameters(recipients, message));
+        }
 
         httpMethod.setQueryString(addQueryParameters(recipients, message));
         return httpMethod;
