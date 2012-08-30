@@ -28,8 +28,6 @@ public class SmsHttpTemplate {
             httpMethod = new GetMethod(outgoing.getRequest().getUrlPath());
             httpMethod.setQueryString(addQueryParameters(recipients, message));
         }
-
-        httpMethod.setQueryString(addQueryParameters(recipients, message));
         return httpMethod;
     }
 
