@@ -99,13 +99,13 @@ public class DecisionTreeController extends MultiActionController {
      */
     @RequestMapping("/node")
     public ModelAndView node(HttpServletRequest request, HttpServletResponse response) {
-        logger.info(request.getParameterMap().toString());
         logger.info("Generating decision tree node xml");
 
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
 
         Map<String, Object> params = convertParams(request.getParameterMap());
+        logger.info(params.toString());
         String language = request.getParameter(LANGUAGE_PARAM);
         String treeNameString = request.getParameter(TREE_NAME_PARAM);
         String encodedTransitionPath = getParentTransitionPath(request);
