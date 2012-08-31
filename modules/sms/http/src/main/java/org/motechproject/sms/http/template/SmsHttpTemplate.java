@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 public class SmsHttpTemplate {
+
     public static final String MESSAGE_PLACEHOLDER = "$message";
     public static final String RECIPIENTS_PLACEHOLDER = "$recipients";
 
@@ -22,11 +23,11 @@ public class SmsHttpTemplate {
         HttpMethod httpMethod;
         if (HttpMethodType.POST.equals(outgoing.getRequest().getType())) {
             httpMethod = new PostMethod(outgoing.getRequest().getUrlPath());
+            httpMethod.setRequestHeader("Content-Type", PostMethod.FORM_URL_ENCODED_CONTENT_TYPE);
             addBodyParameters((PostMethod) httpMethod, recipients, message);
         } else {
             httpMethod = new GetMethod(outgoing.getRequest().getUrlPath());
         }
-
         httpMethod.setQueryString(addQueryParameters(recipients, message));
         return httpMethod;
     }
