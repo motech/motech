@@ -93,7 +93,6 @@ public class KookooCallServiceImplTest {
             GetMethod getMethod = (GetMethod) o;
             try {
                 String actualURL = getMethod.getURI().getURI();
-                System.out.println(actualURL);
                 return actualURL.equals(url);
             } catch (URIException e) {
                 return false;

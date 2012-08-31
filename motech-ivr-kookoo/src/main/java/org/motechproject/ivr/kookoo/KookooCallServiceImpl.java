@@ -29,19 +29,13 @@ public class KookooCallServiceImpl implements IVRService {
     public static final String IS_OUTBOUND_CALL = "is_outbound_call";
 
     private Properties properties;
-
     private HttpClient httpClient;
-    private Logger log = Logger.getLogger(this.getClass().getName());
-
     private KookooCallDetailRecordsService kookooCallDetailRecordsService;
 
+    private Logger log = Logger.getLogger(this.getClass().getName());
+
     @Autowired
-    public KookooCallServiceImpl(@Qualifier("ivrProperties") Properties properties, KookooCallDetailRecordsService kookooCallDetailRecordsService) {
-        this(properties, new HttpClient(), kookooCallDetailRecordsService);
-    }
-
-
-    KookooCallServiceImpl(Properties properties, HttpClient httpClient, KookooCallDetailRecordsService kookooCallDetailRecordsService) {
+    KookooCallServiceImpl(@Qualifier("ivrProperties") Properties properties, HttpClient httpClient, KookooCallDetailRecordsService kookooCallDetailRecordsService) {
         this.properties = properties;
         this.httpClient = httpClient;
         this.kookooCallDetailRecordsService = kookooCallDetailRecordsService;
@@ -51,6 +45,7 @@ public class KookooCallServiceImpl implements IVRService {
     public void initiateCall(CallRequest callRequest) {
         if (callRequest == null) throw new IllegalArgumentException("Missing call request");
 
+        GetMethod getMethod = null;
         try {
             String kooKooCallDetailRecordId = kookooCallDetailRecordsService.createOutgoing(callRequest.getPhone(), CallDetailRecord.Disposition.UNKNOWN);
 
@@ -64,7 +59,7 @@ public class KookooCallServiceImpl implements IVRService {
                     CALL_TYPE, callRequest.getPayload().get(CALL_TYPE), KooKooIVRContext.CALL_DETAIL_RECORD_ID, kooKooCallDetailRecordId);
             String applicationReplyUrl = String.format("%s?%s=%s", callRequest.getCallBackUrl(), CUSTOM_DATA_KEY, json.toString());
 
-            GetMethod getMethod = new GetMethod(properties.get(OUTBOUND_URL).toString());
+            getMethod = new GetMethod(properties.get(OUTBOUND_URL).toString());
             getMethod.setQueryString(new NameValuePair[]{
                     new NameValuePair(API_KEY_KEY, properties.get(API_KEY).toString()),
                     new NameValuePair(URL_KEY, URLEncoder.encode(applicationReplyUrl, "UTF-8")),
@@ -75,6 +70,11 @@ public class KookooCallServiceImpl implements IVRService {
             httpClient.executeMethod(getMethod);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            if (getMethod != null) {
+                getMethod.releaseConnection();
+            }
         }
+
     }
 }

@@ -9,5 +9,10 @@
     <context:component-scan base-package="org.motechproject.ivr.*"/>
     <context:component-scan base-package="org.motechproject.server.*"/>
 
+    <bean id="multiThreadedHttpConnectionManager" class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager"/>
+    <bean id="commonsHttpClient" class="org.apache.commons.httpclient.HttpClient">
+        <constructor-arg ref="multiThreadedHttpConnectionManager"/>
+    </bean>
+
     <import resource="ivrKookooRepositories.xml"/>
 </beans>
