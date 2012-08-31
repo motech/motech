@@ -159,6 +159,10 @@ input[type='button']:active, input[type='submit']:active {
 
 }
 
+.table-bundles thead .sorting-no {
+    background: url("../img/sort.png")no-repeat center right;
+}
+
 .table-bundles thead .sorting-asc {
     background: url("../img/sort-asc.png")no-repeat center right;
 }
@@ -185,6 +189,7 @@ input[type='button']:active, input[type='submit']:active {
 
 .table-bundles thead tr > th:first-child{
     text-align: center;
+    width: 35px;
 }
 
 .table-bundles tbody tr > td:nth-child(3){
