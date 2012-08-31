@@ -5,7 +5,7 @@
             http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <import resource="classpath:applicationPlatformServerAPI.xml"/>
-    <import resource="classpath:applicationSmsSmpp.xml"/>
+    <import resource="classpath:applicationSmsSmppContext.xml"/>
 
     <bean class="org.motechproject.sms.smpp.it.ReceiveSmsIT"/>
 

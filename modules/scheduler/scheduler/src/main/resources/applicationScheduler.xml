@@ -7,12 +7,9 @@
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-    <context:annotation-config/>
     <context:property-placeholder location="classpath:activemq.properties" system-properties-mode="OVERRIDE"/>
 
     <import resource="schedulerInboundChannelAdapter.xml"/>
-
-    <context:component-scan base-package="org.motechproject.event"/>
 
     <util:properties id="quartzProperties" location="classpath:quartz.properties"/>
 

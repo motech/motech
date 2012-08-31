@@ -1,23 +1,25 @@
 package org.motechproject.server.demo.service.impl;
 
-import org.motechproject.scheduler.context.EventContext;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.event.listener.EventRelay;
+import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.scheduler.gateway.MotechSchedulerGateway;
 import org.motechproject.server.demo.EventKeys;
 import org.motechproject.server.demo.service.DemoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
 public class DemoServiceImpl implements DemoService {
     @Autowired
     private MotechSchedulerGateway schedulerGateway;
 
-    private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
+    @Autowired
+    private EventRelay eventRelay;
 
     @Override
     public void schedulePhoneCall(String phoneNumber, Date callTime) {

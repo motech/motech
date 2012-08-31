@@ -8,6 +8,9 @@
 
     <import resource="classpath*:applicationAsterisk.xml"/>
 
+    <osgi:reference id="eventRelayOsgi" cardinality="0..1"
+                    interface="org.motechproject.event.listener.EventRelay" />
+
     <osgi:service id="ivrServiceOsgi" auto-export="interfaces" ref="ivrServiceAsterisk"
                   interface="org.motechproject.ivr.service.IVRService" >
         <osgi:service-properties>

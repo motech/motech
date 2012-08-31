@@ -1,7 +1,5 @@
 package org.motechproject.server.voxeo.osgi;
 
-import org.motechproject.scheduler.context.EventContext;
-import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -88,20 +86,11 @@ public class Activator implements BundleActivator {
 
             // register all annotated handlers
             EventAnnotationBeanPostProcessor.registerHandlers(BeanFactoryUtils.beansOfTypeIncludingAncestors(dispatcherServlet.getWebApplicationContext(), Object.class));
-            // create tree objects in the database
-            bootStrap();
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-    }
-
-    /**
-     * responsible for emitting by initialize event (a handler will populate patient and trees in the database for testing)
-     */
-    private void bootStrap() {
-        EventContext.getInstance().getEventRelay().sendEventMessage(new MotechEvent("voxeo.initialize", null));
     }
 
     private void serviceRemoved(HttpService service) {

@@ -2,11 +2,10 @@ package org.motechproject.sms.api.service;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.scheduler.context.EventContext;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.event.listener.EventRelay;
+import org.motechproject.scheduler.MotechSchedulerService;
+import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.sms.api.MessageSplitter;
 import org.motechproject.sms.api.constants.EventDataKeys;
 import org.motechproject.sms.api.constants.EventSubjects;
@@ -23,7 +22,7 @@ import java.util.Properties;
 public class SmsServiceImpl implements SmsService {
 
     private EventRelay eventRelay;
-    private MotechSchedulerService motechSchedulerService;
+    private MotechSchedulerService schedulerService;
     private MessageSplitter messageSplitter;
     private Properties smsApiProperties;
 
@@ -37,11 +36,11 @@ public class SmsServiceImpl implements SmsService {
     public static final String SMS_MAX_MESSAGE_SIZE = "sms.max.message.size";
 
     @Autowired
-    public SmsServiceImpl(MotechSchedulerService motechSchedulerService, MessageSplitter messageSplitter, Properties smsApiProperties) {
-        this.motechSchedulerService = motechSchedulerService;
+    public SmsServiceImpl(MotechSchedulerService schedulerService, MessageSplitter messageSplitter, Properties smsApiProperties, EventRelay eventRelay) {
+        this.schedulerService = schedulerService;
         this.messageSplitter = messageSplitter;
         this.smsApiProperties = smsApiProperties;
-        this.eventRelay = EventContext.getInstance().getEventRelay();
+        this.eventRelay = eventRelay;
     }
 
     @Override
@@ -111,7 +110,7 @@ public class SmsServiceImpl implements SmsService {
         MotechEvent sendSmsEvent = sendSmsEvent(recipients, message, deliveryTime);
         RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(sendSmsEvent, deliveryTime.toDate());
         log.info(String.format("Scheduling message [%s] to number %s at %s.", message, recipients, deliveryTime.toString()));
-        motechSchedulerService.safeScheduleRunOnceJob(schedulableJob);
+        schedulerService.safeScheduleRunOnceJob(schedulableJob);
     }
 
     private MotechEvent sendSmsEvent(List<String> recipients, String message, DateTime deliveryTime) {

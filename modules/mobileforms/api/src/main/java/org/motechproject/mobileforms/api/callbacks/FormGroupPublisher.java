@@ -1,11 +1,11 @@
 package org.motechproject.mobileforms.api.callbacks;
 
-import org.motechproject.mobileforms.api.domain.FormBeanGroup;
-import org.motechproject.scheduler.context.EventContext;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
+import org.motechproject.mobileforms.api.domain.FormBeanGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -19,10 +19,10 @@ public class FormGroupPublisher {
     public static final String FORM_BEAN_GROUP = "formBeanGroup";
     public static final String FORM_VALID_FROMS = "handle.valid.xforms.group";
 
+    @Autowired
     private EventRelay eventRelay;
 
     public FormGroupPublisher() {
-        this.eventRelay = EventContext.getInstance().getEventRelay();
     }
 
     public void publish(FormBeanGroup formBeanGroup) {

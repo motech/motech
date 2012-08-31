@@ -10,8 +10,7 @@
 
     <context:annotation-config/>
 
-    <import resource="classpath:eventQueuePublisher.xml"/>
-    <import resource="classpath:eventQueueConsumer.xml"/>
+    <import resource="classpath:motechEventContext.xml"/>
     <import resource="classpath:applicationPlatformScheduler.xml"/>
     <import resource="classpath:applicationPlatformCommonAPI.xml"/>
     <import resource="classpath:applicationPlatformStartup.xml"/>

@@ -5,6 +5,8 @@ import org.motechproject.decisiontree.core.model.Node;
 import org.motechproject.decisiontree.core.model.Transition;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.util.List;
@@ -13,8 +15,10 @@ import java.util.Map;
 /**
  * Responsible for emitting various tree events, e.g., before landing on to a node, after landing on to a node, whenever a transition happens, etc.
  */
+@Component
 public class TreeEventProcessor {
 
+    @Autowired
     private EventRelay eventRelay;
 
     private void sendActions(List<Action> actions, Map<String, Object> params) {

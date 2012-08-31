@@ -12,7 +12,4 @@
     <import resource="classpath:outboundScheduleJobChannelAdapter.xml"/>
     <import resource="classpath:motechEventContext.xml"/>
 
-
-    <bean id="eventContext" class="org.motechproject.scheduler.context.EventContext" factory-method="getInstance"/>
-
 </beans>

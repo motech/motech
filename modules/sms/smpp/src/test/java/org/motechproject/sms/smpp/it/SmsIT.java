@@ -4,11 +4,11 @@ import org.joda.time.DateTime;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.scheduler.context.EventContext;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.sms.api.constants.EventDataKeys;
 import org.motechproject.sms.api.constants.EventSubjects;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -16,10 +16,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:testApplicationSmsSmpp.xml"})
+@ContextConfiguration(locations = {"classpath:testApplicationSmsSmppContext.xml"})
 public class SmsIT {
 
-    private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
+    @Autowired
+    private EventRelay eventRelay;
 
     @Test
     @Ignore("run with smpp simulator; config in smpp.properties")

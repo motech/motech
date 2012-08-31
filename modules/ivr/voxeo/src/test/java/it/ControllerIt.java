@@ -6,7 +6,6 @@ import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
-import org.mortbay.jetty.webapp.WebAppContext;
 import org.motechproject.ivr.service.IVRService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,10 +13,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import java.io.File;
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:voxeoResources.xml"})
+@ContextConfiguration(locations = {"classpath:voxeoResourcesContext.xml"})
 public class ControllerIt {
 
     @Autowired
@@ -31,7 +28,7 @@ public class ControllerIt {
         Context context = new Context(server, "/", Context.SESSIONS);
 
         DispatcherServlet dispatcherServlet = new DispatcherServlet();
-        dispatcherServlet.setContextConfigLocation("classpath:/voxeoResources.xml");
+        dispatcherServlet.setContextConfigLocation("classpath:/voxeoResourcesContext.xml");
 
         ServletHolder servletHolder = new ServletHolder(dispatcherServlet);
         context.addServlet(servletHolder, "/*");

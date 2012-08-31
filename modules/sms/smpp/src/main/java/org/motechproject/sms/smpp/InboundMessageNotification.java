@@ -2,7 +2,6 @@ package org.motechproject.sms.smpp;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.motechproject.scheduler.context.EventContext;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.sms.smpp.constants.EventSubjects;
@@ -18,8 +17,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
-import static org.motechproject.sms.api.constants.EventDataKeys.SENDER;
 import static org.motechproject.sms.api.constants.EventDataKeys.INBOUND_MESSAGE;
+import static org.motechproject.sms.api.constants.EventDataKeys.SENDER;
 import static org.motechproject.sms.api.constants.EventDataKeys.TIMESTAMP;
 import static org.motechproject.sms.smpp.constants.EventDataKeys.STATUS_MESSAGE;
 import static org.motechproject.util.DateUtil.newDateTime;
@@ -27,16 +26,11 @@ import static org.motechproject.util.DateUtil.newDateTime;
 @Component
 public class InboundMessageNotification implements IInboundMessageNotification {
     private final Logger log = Logger.getLogger(InboundMessageNotification.class);
-    private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
+    private EventRelay eventRelay;
     private AllInboundSMS allInboundSMS;
     private AllOutboundSMS allOutboundSMS;
 
     @Autowired
-    public InboundMessageNotification(AllInboundSMS allInboundSMS, AllOutboundSMS allOutboundSMS) {
-        this.allInboundSMS = allInboundSMS;
-        this.allOutboundSMS = allOutboundSMS;
-    }
-
     public InboundMessageNotification(EventRelay eventRelay, AllInboundSMS allInboundSMS, AllOutboundSMS allOutboundSMS) {
         this.eventRelay = eventRelay;
         this.allInboundSMS = allInboundSMS;

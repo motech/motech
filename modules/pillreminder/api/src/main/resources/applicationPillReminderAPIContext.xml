@@ -4,6 +4,5 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <import resource="applicationPillReminderAPI.xml"/>
-    <import resource="classpath:eventQueueConsumer.xml"/>
-    <import resource="classpath:eventQueuePublisher.xml"/>
+    <import resource="classpath:motechEventContext.xml"/>
 </beans>

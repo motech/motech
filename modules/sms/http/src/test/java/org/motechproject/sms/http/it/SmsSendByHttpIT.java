@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/applicationSmsHttp.xml"})
+@ContextConfiguration(locations = {"/applicationSmsHttpContext.xml"})
 public class SmsSendByHttpIT {
     @Autowired
     private HttpClient commonsHttpClient;

@@ -20,8 +20,8 @@
                 <property name="redeliveryPolicy.redeliveryDelay" value="${redeliveryDelayInMillis}"/>
             </bean>
         </property>
-        <property name="sessionCacheSize" value="${jms.session.cache.size}"/>
-        <property name="cacheProducers" value="${jms.cache.producers}"/>
+        <property name="sessionCacheSize" value="${jms.session.cache.size:10}"/>
+        <property name="cacheProducers" value="${jms.cache.producers:false}"/>
     </bean>
 
 </beans>

@@ -7,6 +7,9 @@
 
     <import resource="classpath:voxeoResources.xml"/>
 
+    <osgi:reference id="eventRelayOsgi" cardinality="0..1"
+                    interface="org.motechproject.event.listener.EventRelay" />
+
     <osgi:service id="ivrServiceOsgi" auto-export="interfaces" ref="VoxeoIVRService"
                   interface="org.motechproject.ivr.service.IVRService" >
         <osgi:service-properties>

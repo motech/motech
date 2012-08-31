@@ -4,15 +4,14 @@ package org.motechproject.outbox.api.service.impl;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.motechproject.MotechObject;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.outbox.api.EventKeys;
 import org.motechproject.outbox.api.contract.SortKey;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.repository.AllOutboundVoiceMessages;
 import org.motechproject.outbox.api.service.VoiceOutboxService;
-import org.motechproject.scheduler.context.EventContext;
-import org.motechproject.event.MotechEvent;
-import org.motechproject.event.listener.EventRelay;
 import org.motechproject.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,8 +28,8 @@ public class VoiceOutboxServiceImpl extends MotechObject implements VoiceOutboxS
 
     private int maxNumberOfPendingMessages = Integer.MAX_VALUE;
 
-    @Autowired(required = false)
-    private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
+    @Autowired
+    private EventRelay eventRelay;
 
     @Autowired
     private AllOutboundVoiceMessages allOutboundVoiceMessages;

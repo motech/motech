@@ -12,6 +12,9 @@
     <osgi:reference cardinality="0..1" id="motechSchedulerGatewayOsgi"
                     interface="org.motechproject.scheduler.gateway.MotechSchedulerGateway"/>
 
+    <osgi:reference id="eventRelayOsgi" cardinality="0..1"
+                    interface="org.motechproject.event.listener.EventRelay" />
+
     <bean id="callMeController" class="org.motechproject.server.demo.web.CallMeController">
         <property name="ivrServices" ref="ivrServiceList"/>
     </bean>

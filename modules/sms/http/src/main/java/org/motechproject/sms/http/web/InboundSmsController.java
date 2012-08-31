@@ -1,6 +1,5 @@
 package org.motechproject.sms.http.web;
 
-import org.motechproject.scheduler.context.EventContext;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.sms.api.constants.EventDataKeys;
@@ -18,14 +17,10 @@ import java.util.HashMap;
 @RequestMapping("/sms")
 public class InboundSmsController {
 
-    private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
+    private EventRelay eventRelay;
     private SmsHttpTemplate template;
 
     @Autowired
-    public InboundSmsController(TemplateReader templateReader) {
-        this.template = templateReader.getTemplate();
-    }
-
     public InboundSmsController(TemplateReader templateReader, EventRelay eventRelay) {
         this.template = templateReader.getTemplate();
         this.eventRelay = eventRelay;

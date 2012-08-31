@@ -7,7 +7,6 @@ import org.motechproject.event.listener.EventRelay;
 import org.motechproject.ivr.event.IVREventDelegate;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
-import org.motechproject.scheduler.context.EventContext;
 import org.motechproject.server.voxeo.VoxeoIVRService;
 import org.motechproject.server.voxeo.dao.AllPhoneCalls;
 import org.motechproject.server.voxeo.domain.PhoneCall;
@@ -33,7 +32,9 @@ import java.util.Map;
 @Controller
 public class IvrController extends MultiActionController {
     private static final int DEFAULT_FLASH_SLEEP = 5000;
-    private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
+
+    @Autowired
+    private EventRelay eventRelay;
 
     private AllPhoneCalls allPhoneCalls;
 

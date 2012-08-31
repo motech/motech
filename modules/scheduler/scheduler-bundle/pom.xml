@@ -55,9 +55,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>
-                            !*
-                        </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.scheduler.osgi.Activator
                         </Bundle-Activator>
@@ -71,6 +68,7 @@
                             org.springframework.aop.support,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
+                            org.springframework.stereotype,
                             org.springframework.integration.config,
                             org.springframework.integration.config.xml,
                             org.springframework.integration.channel,

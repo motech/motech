@@ -9,7 +9,8 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.ivr.event.IVREventDelegate;
 import org.motechproject.ivr.service.CallRequest;
-import org.motechproject.scheduler.context.EventContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
@@ -17,11 +18,15 @@ import java.util.Map;
  * Motech specific implementation of the Asterisk-Java call-back interface
  * see org.asteriskjava.live.OriginateCallback.java for details
  */
+@Component
 public class MotechAsteriskCallBackImpl implements OriginateCallback {
 
-    private EventRelay eventRelay = EventContext.getInstance().getEventRelay();
+    @Autowired
+    private EventRelay eventRelay;
 
     private CallRequest callRequest;
+
+    public MotechAsteriskCallBackImpl(){}
 
     public MotechAsteriskCallBackImpl(CallRequest callRequest) {
         this.callRequest = callRequest;
