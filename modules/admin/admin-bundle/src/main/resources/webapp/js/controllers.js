@@ -14,7 +14,20 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams) {
             $scope.invert = !$scope.invert;
         } else {
             $scope.orderProp = prop;
+            $scope.invert = false;
         }
+    }
+
+    $scope.getSortClass = function(prop) {
+        var sortClass = "sorting-no";
+        if (prop == $scope.orderProp) {
+            if ($scope.invert) {
+                sortClass = "sorting-desc";
+            } else {
+                sortClass = "sorting-asc";
+            }
+        }
+        return sortClass;
     }
 
     $scope.bundles = Bundle.query();
