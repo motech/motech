@@ -78,7 +78,6 @@
                             org.springframework.beans.factory.xml,
                             org.springframework.osgi.config,
                             org.motechproject.event,
-                            org.motechproject.event.metrics.impl,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-message-campaign</Embed-Dependency>

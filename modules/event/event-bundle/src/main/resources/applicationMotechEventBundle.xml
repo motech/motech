@@ -12,7 +12,5 @@
     <osgi:service id="eventGatewayToEventJmsoutChannelOsgi" ref="eventGatewayToTransformerChannel"
                   interface="org.springframework.integration.core.SubscribableChannel"/>
 
-    <osgi:service id="eventQueueGatewayOsgi" ref="outboundEventGateway" interface="org.motechproject.event.OutboundEventGateway"/>
-
     <osgi:service id="eventRelayOsgi" ref="eventRelay" interface="org.motechproject.event.listener.EventRelay"/>
 </beans>

@@ -16,7 +16,7 @@
     <osgi:reference id="platformSettingsServiceOsgi" cardinality="0..1"
                     interface="org.motechproject.server.config.service.PlatformSettingsService"/>
 
-    <osgi:reference id="outboundEventGatewayOsgi" cardinality="0..1"
-                    interface="org.motechproject.event.OutboundEventGateway" />
+    <osgi:reference id="eventRelayOsgi" cardinality="0..1"
+                    interface="org.motechproject.event.listener.EventRelay" />
 
 </beans>

@@ -2,7 +2,7 @@ package org.motechproject.scheduletracking.api.service.impl;
 
 import org.joda.time.DateTime;
 import org.joda.time.Period;
-import org.motechproject.event.OutboundEventGateway;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
@@ -30,12 +30,12 @@ public class EnrollmentAlertService {
     public static final int MILLIS_IN_A_SEC = 1000;
     private MotechSchedulerService schedulerService;
 
-    private OutboundEventGateway outboundEventGateway;
+    private EventRelay eventRelay;
 
     @Autowired
-    public EnrollmentAlertService(MotechSchedulerService schedulerService, OutboundEventGateway outboundEventGateway) {
+    public EnrollmentAlertService(MotechSchedulerService schedulerService, EventRelay eventRelay) {
         this.schedulerService = schedulerService;
-        this.outboundEventGateway = outboundEventGateway;
+        this.eventRelay = eventRelay;
     }
 
     public void scheduleAlertsForCurrentMilestone(Enrollment enrollment) {
@@ -91,7 +91,7 @@ public class EnrollmentAlertService {
                 alertsStartTime = alertsStartTime.plus(repeatIntervalInMillis);
                 numberOfAlertsToFire = numberOfAlertsToFire - 1;
 
-                outboundEventGateway.sendEventMessage(event);
+                eventRelay.sendEventMessage(event);
             }
             RepeatingSchedulableJob job = new RepeatingSchedulableJob()
                 .setMotechEvent(event)

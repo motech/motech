@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.motechproject.event.OutboundEventGateway;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
@@ -58,7 +58,7 @@ public class EnrollmentAlertServiceTest {
     @Mock
     private MotechSchedulerService schedulerService;
     @Mock
-    private OutboundEventGateway outboundEventGateway;
+    private EventRelay eventRelay;
 
     @Before
     public void setup() {
