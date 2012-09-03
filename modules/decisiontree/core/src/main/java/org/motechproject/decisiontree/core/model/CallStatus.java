@@ -1,7 +1,7 @@
 package org.motechproject.decisiontree.core.model;
 
 public enum CallStatus {
-    disconnect, hangup;
+    Disconnect, Hangup;
 
     public static boolean isValid(String key) {
         for (CallStatus callStatus : values()) {

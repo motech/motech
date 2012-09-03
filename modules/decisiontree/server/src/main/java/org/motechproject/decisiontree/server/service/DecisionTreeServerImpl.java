@@ -12,7 +12,6 @@ import org.motechproject.decisiontree.core.model.Node;
 import org.motechproject.decisiontree.core.model.Transition;
 import org.motechproject.decisiontree.server.domain.CallDetailRecord;
 import org.motechproject.decisiontree.server.domain.FlowSessionRecord;
-import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +79,7 @@ public class DecisionTreeServerImpl implements org.motechproject.decisiontree.se
 
     private ModelAndView getModelViewForNextNode(FlowSession session, String provider, String tree, String transitionKey) {
 
-        if (CallStatus.hangup.toString().equals(transitionKey) || CallStatus.disconnect.toString().equals(transitionKey)) {
+        if (CallStatus.Hangup.toString().equals(transitionKey) || CallStatus.Disconnect.toString().equals(transitionKey)) {
             CallDetailRecord callDetailRecord = ((FlowSessionRecord) session).getCallDetailRecord().setEndDate(now());
             flowSessionService.updateSession(session);
             eventRelay.sendEventMessage(new EndOfCallEvent(callDetailRecord));

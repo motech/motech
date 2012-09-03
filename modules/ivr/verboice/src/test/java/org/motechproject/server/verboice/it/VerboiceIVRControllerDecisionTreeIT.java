@@ -10,7 +10,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.decisiontree.server.service.impl.AllFlowSessionRecords;
 import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.decisiontree.core.TreeNodeLocator;
 import org.motechproject.decisiontree.core.model.AudioPrompt;
@@ -22,6 +21,7 @@ import org.motechproject.decisiontree.core.model.TextToSpeechPrompt;
 import org.motechproject.decisiontree.core.model.Transition;
 import org.motechproject.decisiontree.core.model.Tree;
 import org.motechproject.decisiontree.core.repository.AllTrees;
+import org.motechproject.decisiontree.server.service.impl.AllFlowSessionRecords;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.server.verboice.VerboiceIVRService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,7 +90,6 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
         Map<String, String> params = new HashMap<String, String>();
         params.put("userId", "user123");
         CallRequest callRequest = new CallRequest("phonenumber", params, "someCallBackChannel");
-        //verboiceIVRService.initiateCall(callRequest);
 
         String expectedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<Response>\n" +
@@ -99,7 +98,7 @@ public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
                 "  </Gather>\n" +
                 "</Response>";
         HttpClient verboiceIvrController = new DefaultHttpClient();
-        String rootUrl = SERVER_URL + "?tree=someTree&ln=en&motech_call_id=" + callRequest.getCallId();
+        String rootUrl = SERVER_URL + "?tree=someTree&ln=en&CallSid=" + callRequest.getCallId();
         String response = verboiceIvrController.execute(new HttpGet(rootUrl), new BasicResponseHandler());
         assertXMLEqual(expectedResponse, response);
 

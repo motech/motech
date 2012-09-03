@@ -30,18 +30,11 @@ public class VerboiceIVRService implements IVRService {
     private HttpClient commonsHttpClient;
     private FlowSessionService flowSessionService;
 
-    @Autowired(required = false)
-    private VerboiceHandler handler;
-
     @Autowired
     public VerboiceIVRService(SettingsFacade settings, HttpClient commonsHttpClient, FlowSessionService flowSessionService) {
         this.settings = settings;
         this.commonsHttpClient = commonsHttpClient;
         this.flowSessionService = flowSessionService;
-    }
-
-    public void setHandler(VerboiceHandler handler) {
-        this.handler = handler;
     }
 
     @Override
@@ -53,7 +46,7 @@ public class VerboiceIVRService implements IVRService {
             int status = commonsHttpClient.executeMethod(getMethod);
             log.info(String.format("[%d]\n%s", status, getMethod.getResponseBodyAsString()));
         } catch (IOException e) {
-            log.error("Exception when initiating call : ", e);
+            log.error("Exception when initiating call: ", e);
         }
     }
 
@@ -77,16 +70,12 @@ public class VerboiceIVRService implements IVRService {
             callbackUrlParameter = "&" + "callback_url" + "=" + callRequest.getPayload().get("callback_url");
         }
         return format(
-                "http://%s:%s/api/call?motech_call_id=%s&channel=%s&address=%s%s",
-                settings.getProperty("host"),
-                settings.getProperty("port"),
-                callRequest.getCallId(),
-                callRequest.getCallBackUrl(),
-                callRequest.getPhone(), callbackUrlParameter
+            "http://%s:%s/api/call?motech_call_id=%s&channel=%s&address=%s%s",
+            settings.getProperty("host"),
+            settings.getProperty("port"),
+            callRequest.getCallId(),
+            callRequest.getCallBackUrl(),
+            callRequest.getPhone(), callbackUrlParameter
         );
-    }
-
-    public VerboiceHandler getHandler() {
-        return handler;
     }
 }

@@ -41,6 +41,7 @@ import static org.motechproject.util.DateUtil.newDate;
 import static org.motechproject.util.DateUtil.newDateTime;
 import static org.quartz.JobKey.jobKey;
 import static org.quartz.TriggerKey.triggerKey;
+import static org.quartz.impl.matchers.GroupMatcher.triggerGroupEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/testSchedulerApplicationContext.xml"})
@@ -212,24 +213,16 @@ public class MotechSchedulerIT {
     @Test
     // TODO: may fail randomly
     public void rescheduleJobHappyPathTest() throws Exception {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("JobID", uuidStr);
         MotechEvent motechEvent = new MotechEvent("testEvent", params);
         CronSchedulableJob cronSchedulableJob = new CronSchedulableJob(motechEvent, "0 0 12 * * ?");
-
         schedulerService.scheduleJob(cronSchedulableJob);
 
-        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size();
-
         String newCronExpression = "0 0 10 * * ?";
-
         schedulerService.rescheduleJob("testEvent", uuidStr, newCronExpression);
-        assertEquals(scheduledJobsNum, schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size());
-
         CronTrigger trigger = (CronTrigger) schedulerFactoryBean.getScheduler().getTrigger(triggerKey("testEvent-" + uuidStr, MotechSchedulerServiceImpl.JOB_GROUP_NAME));
-        String triggerCronExpression = trigger.getCronExpression();
-
-        assertEquals(newCronExpression, triggerCronExpression);
+        assertEquals(newCronExpression, trigger.getCronExpression());
     }
 
     @Test(expected = IllegalArgumentException.class)

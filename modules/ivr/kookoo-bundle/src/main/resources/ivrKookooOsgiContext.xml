@@ -20,4 +20,7 @@
 
     <osgi:reference id="platformSettingsServiceOsgi" cardinality="0..1"
                     interface="org.motechproject.server.config.service.PlatformSettingsService" />
+
+    <osgi:reference id="flowSessionServiceOsgi" cardinality="0..1"
+                    interface="org.motechproject.decisiontree.server.service.FlowSessionService" />
 </beans>

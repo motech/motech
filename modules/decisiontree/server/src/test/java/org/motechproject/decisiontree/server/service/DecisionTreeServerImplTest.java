@@ -4,15 +4,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.decisiontree.core.EndOfCallEvent;
-import org.motechproject.decisiontree.core.EventKeys;
 import org.motechproject.decisiontree.core.model.CallStatus;
 import org.motechproject.decisiontree.server.domain.FlowSessionRecord;
-import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.springframework.context.ApplicationContext;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -44,7 +39,7 @@ public class DecisionTreeServerImplTest {
         FlowSessionRecord flowSession = new FlowSessionRecord("123a", "1234567890");
         when(flowSessionService.findOrCreate("123a", "1234567890")).thenReturn(flowSession);
 
-        decisionTreeServer.getResponse("123a", "1234567890", "freeivr", "sometree", CallStatus.hangup.toString(), "en");
+        decisionTreeServer.getResponse("123a", "1234567890", "freeivr", "sometree", CallStatus.Hangup.toString(), "en");
 
         verify(eventRelay).sendEventMessage(new EndOfCallEvent(flowSession.getCallDetailRecord()));
     }
@@ -54,7 +49,7 @@ public class DecisionTreeServerImplTest {
         FlowSessionRecord flowSession = new FlowSessionRecord("123a", "1234567890");
         when(flowSessionService.findOrCreate("123a", "1234567890")).thenReturn(flowSession);
 
-        decisionTreeServer.getResponse("123a", "1234567890", "freeivr", "sometree", CallStatus.disconnect.toString(), "en");
+        decisionTreeServer.getResponse("123a", "1234567890", "freeivr", "sometree", CallStatus.Disconnect.toString(), "en");
 
         verify(eventRelay).sendEventMessage(new EndOfCallEvent(flowSession.getCallDetailRecord()));
     }
@@ -64,7 +59,7 @@ public class DecisionTreeServerImplTest {
         FlowSessionRecord flowSession = new FlowSessionRecord("123a", "1234567890");
         when(flowSessionService.findOrCreate("123a", "1234567890")).thenReturn(flowSession);
 
-        decisionTreeServer.getResponse("123a", "1234567890", "freeivr", "sometree", CallStatus.disconnect.toString(), "en");
+        decisionTreeServer.getResponse("123a", "1234567890", "freeivr", "sometree", CallStatus.Disconnect.toString(), "en");
 
         verify(eventRelay).sendEventMessage(new EndOfCallEvent(flowSession.getCallDetailRecord()));
     }
