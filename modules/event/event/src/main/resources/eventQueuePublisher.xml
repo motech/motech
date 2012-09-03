@@ -4,27 +4,29 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:int="http://www.springframework.org/schema/integration"
        xmlns:jms="http://www.springframework.org/schema/integration/jms"
-       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="
             http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
             http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.1.xsd
-            http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd
-       ">
+            http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd">
 
-    <import resource="activemqConnection.xml" />
+    <import resource="activemqConnection.xml"/>
 
-    <bean id="eventQueueTransformer" class="org.motechproject.event.MotechEventTransformer" />
+    <bean id="eventQueueTransformer" class="org.motechproject.event.MotechEventTransformer"/>
 
-    <int:gateway service-interface="org.motechproject.event.OutboundEventGateway" id="outboundEventGateway" default-request-channel="eventGatewayToTransformerChannel">
-            </int:gateway>
+    <int:gateway service-interface="org.motechproject.event.OutboundEventGateway" id="outboundEventGateway"
+                 default-request-channel="eventGatewayToTransformerChannel">
+    </int:gateway>
 
     <int:channel id="eventGatewayToTransformerChannel"/>
     <int:channel id="transformerToEventJmsoutChannel"/>
 
     <int:transformer input-channel="eventGatewayToTransformerChannel"
-                 output-channel="transformerToEventJmsoutChannel" ref="eventQueueTransformer" method="transform">
+                     output-channel="transformerToEventJmsoutChannel" ref="eventQueueTransformer" method="transform">
     </int:transformer>
 
-    <jms:outbound-channel-adapter id="eventjmsout" channel="transformerToEventJmsoutChannel" destination="eventQueue"/>
+    <bean id="motechEventHeaderMapper" class="org.motechproject.event.MotechEventHeaderMapper"/>
+
+    <jms:outbound-channel-adapter id="eventjmsout" channel="transformerToEventJmsoutChannel" destination="eventQueue"
+                                  header-mapper="motechEventHeaderMapper"/>
 
 </beans>

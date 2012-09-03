@@ -1,6 +1,8 @@
 package org.motechproject.event.listener;
 
+import org.motechproject.InvalidMotechEventException;
 import org.motechproject.event.MotechEvent;
+import org.motechproject.event.MotechEventConfig;
 import org.motechproject.event.OutboundEventGateway;
 import org.motechproject.event.metrics.MetricsAgent;
 import org.slf4j.Logger;
@@ -25,6 +27,9 @@ public class ServerEventRelay implements EventRelay {
 
     private static final String MESSAGE_DESTINATION = "message-destination";
     private static final String ORIGINAL_PARAMETERS = "original-parameters";
+
+    @Autowired
+    private MotechEventConfig motechEventConfig;
 
     @Autowired
     public ServerEventRelay(OutboundEventGateway outboundEventGateway, EventListenerRegistry eventListenerRegistry, MetricsAgent metricsAgent) {
@@ -79,12 +84,12 @@ public class ServerEventRelay implements EventRelay {
 
             for (EventListener listener : listeners) {
                 if (listener.getIdentifier().equals(messageDestination)) {
-                      MotechEvent e = event.copy(event.getSubject(),
-                                                         (Map<String, Object>) event.getParameters().get(ORIGINAL_PARAMETERS));
+                    MotechEvent e = event.copy(event.getSubject(),
+                            (Map<String, Object>) event.getParameters().get(ORIGINAL_PARAMETERS));
 
                     final long startTime = metricsAgent.startTimer();
                     metricsAgent.logEvent(e.getSubject());
-                    listener.handle(e);
+                    handleEvent(listener, e);
                     metricsAgent.stopTimer(listener.getIdentifier() + ".handler." + event.getSubject(), startTime);
 
                     break;
@@ -104,7 +109,7 @@ public class ServerEventRelay implements EventRelay {
                 for (EventListener listener : listeners) {
                     final long startTime = metricsAgent.startTimer();
                     metricsAgent.logEvent(event.getSubject());
-                    listener.handle(event);
+                    handleEvent(listener, event);
                     metricsAgent.stopTimer(listener.getIdentifier() + ".handler." + event.getSubject(), startTime);
                 }
             } // END IF/ELSE if (listeners.size() > 1)
@@ -115,12 +120,13 @@ public class ServerEventRelay implements EventRelay {
         parameters.put("listeners", String.format("%d", listeners.size()));
         metricsAgent.logEvent("motech.event-relay.relayEvent", parameters);
     }
-    
+
     /**
      * Split a given message into multiple messages with specific message destination
      * parameters. Message destinations will route the message to the specific message
      * listener.
-     * @param event Event message to be split
+     *
+     * @param event     Event message to be split
      * @param listeners A list of listeners for this given message that will be used as message destinations
      */
     private void splitEvent(MotechEvent event, Set<EventListener> listeners) {
@@ -137,4 +143,21 @@ public class ServerEventRelay implements EventRelay {
         }
     }
 
+    private void handleEvent(EventListener listener, MotechEvent event) {
+        try {
+            listener.handle(event);
+
+        } catch (InvalidMotechEventException e) {
+            log.debug("Handling error - " + e.getMessage());
+            event.getParameters().put(MotechEvent.PARAM_INVALID_MOTECH_EVENT, Boolean.TRUE);
+
+            if (event.getMessageRedeliveryCount() == motechEventConfig.getMessageMaxRedeliveryCount()) {
+                event.getParameters().put(MotechEvent.PARAM_DISCARDED_MOTECH_EVENT, Boolean.TRUE);
+                log.info("Discarding Motech event " + event + ". Max retry count reached.");
+                return;
+            }
+            event.incrementMessageRedeliveryCount();
+            sendEventMessage(event);
+        }
+    }
 }

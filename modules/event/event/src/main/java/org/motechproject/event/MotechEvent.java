@@ -14,6 +14,9 @@ import java.util.UUID;
  */
 public class MotechEvent implements Serializable {
     public static final String EVENT_TYPE_KEY_NAME = "eventType";
+    public static final String PARAM_REDELIVERY_COUNT = "motechEventRedeliveryCount";
+    public static final String PARAM_INVALID_MOTECH_EVENT = "invalidMotechEvent";
+    public static final String PARAM_DISCARDED_MOTECH_EVENT = "discardedMotechEvent";
 
     private UUID id;
     private String subject;
@@ -142,9 +145,30 @@ public class MotechEvent implements Serializable {
 
     @Override
     public String toString() {
-        return "MotechEvent{" +
-                "subject='" + subject + '\'' +
-                ", parameters=" + parameters +
-                '}';
+        final StringBuffer sb = new StringBuffer();
+        sb.append("MotechEvent");
+        sb.append("{id=").append(id);
+        sb.append(", subject='").append(subject).append('\'');
+        sb.append(", parameters=").append(parameters);
+        sb.append(", endTime=").append(endTime);
+        sb.append(", isLastEvent=").append(isLastEvent);
+        sb.append('}');
+        return sb.toString();
+    }
+
+    public int getMessageRedeliveryCount() {
+        Object redeliverCount = this.getParameters().get(MotechEvent.PARAM_REDELIVERY_COUNT);
+        if (redeliverCount != null && redeliverCount instanceof Integer) {
+            return ((Integer)redeliverCount).intValue();
+        }
+        return 0;
+    }
+
+    public void incrementMessageRedeliveryCount() {
+        Object redeliverCount = this.getParameters().get(MotechEvent.PARAM_REDELIVERY_COUNT);
+        if (redeliverCount == null) {
+            redeliverCount = 0;
+        }
+        this.getParameters().put(MotechEvent.PARAM_REDELIVERY_COUNT, ((Integer)redeliverCount).intValue()+1);
     }
 }

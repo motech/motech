@@ -1,153 +1,110 @@
 package org.motechproject.event.listener;
 
-import org.junit.Before;
+import org.joda.time.DateTime;
+import org.junit.After;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.motechproject.event.*;
-import org.motechproject.event.metrics.MetricsAgent;
-import org.motechproject.event.metrics.impl.MultipleMetricsAgentImpl;
+import org.junit.runner.RunWith;
+import org.motechproject.InvalidMotechEventException;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.MotechEventConfig;
+import org.motechproject.event.listener.annotations.MotechListener;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Date;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"/testEventContext.xml"})
 public class ServerEventRelayIT {
-    EventListenerRegistry registry;
 
-    @Mock
-    OutboundEventGateway outboundEventGateway;
+    private static final String MESSAGE_REDELIVERY_TEST = "MESSAGE_REDELIVERY_TEST";
 
-    ServerEventRelay eventRelay;
-    MotechEvent motechEvent;
+    @Autowired
+    private ServerEventRelay eventRelay;
 
-    @Before
-    public void setUp() throws Exception {
-        initMocks(this);
+    @Autowired
+    private EventListenerRegistry eventListenerRegistry;
 
-        MetricsAgent metricsAgent = new MultipleMetricsAgentImpl();
-        registry = new EventListenerRegistry(metricsAgent);
-        eventRelay = new ServerEventRelay(outboundEventGateway, registry, metricsAgent);
+    @Autowired
+    private MotechEventConfig motechEventConfig;
 
-        // Create the scheduled event message object
-        Map<String, Object> messageParameters = new HashMap<String, Object>();
-        messageParameters.put("test", "value");
-        motechEvent = new MotechEvent("org.motechproject.server.someevent", messageParameters);
-    }
 
+    /**
+     * For the test to work, set attribute schedulerSupport="true" in the broker element of the activemq.xml
+     * Ref: http://activemq.apache.org/delay-and-schedule-message-delivery.html
+     */
     @Test
-    public void testRelayToSingleListener() throws Exception {
-        // Register a single listener for an event
-        SampleEventListener sel = mock(SampleEventListener.class);
-        registry.registerListener(sel, "org.motechproject.server.someevent");
+    public void shouldRedeliverMessages_SpecifiedTimes_WithDelay() throws InterruptedException, NoSuchFieldException {
+        InvalidMessageEventListener eventListener = new InvalidMessageEventListener();
+        eventListenerRegistry.registerListener(eventListener, MESSAGE_REDELIVERY_TEST);
 
-        eventRelay.relayEvent(motechEvent);
+        MotechEvent testMessage = new MotechEvent(MESSAGE_REDELIVERY_TEST);
+        eventRelay.sendEventMessage(testMessage);
 
-        verify(sel).handle(motechEvent);
-    }
-
-    @Test
-    public void testSplittingRelay() throws Exception {
-        ArgumentCaptor<MotechEvent> argument = ArgumentCaptor.forClass(MotechEvent.class);
-        String firstListener;
-        String secondListener;
-
-        // Register a single listener for an event
-        SampleEventListener sel = mock(SampleEventListener.class);
-        stub(sel.getIdentifier()).toReturn("SampleEventListener");
-        registry.registerListener(sel, "org.motechproject.server.someevent");
-
-        FooEventListener fel = mock(FooEventListener.class);
-        stub(fel.getIdentifier()).toReturn("FooEventListener");
-        registry.registerListener(fel, "org.motechproject.server.someevent");
-
-        List<String> registeredListeners = asList(sel.getIdentifier(), fel.getIdentifier());
-
-        eventRelay.relayEvent(motechEvent);
-
-        verify(outboundEventGateway, times(2)).sendEventMessage(argument.capture());
-        MotechEvent event = argument.getAllValues().get(0);
-        firstListener = (String) event.getParameters().get("message-destination");
-        assertTrue(event.getParameters().containsKey("message-destination"));
-        assertTrue(registeredListeners.contains(firstListener));
-        assertEvent(createEvent(motechEvent, firstListener), event);
-
-        event = argument.getAllValues().get(1);
-        secondListener = (String) event.getParameters().get("message-destination");
-        assertTrue(event.getParameters().containsKey("message-destination"));
-        assertTrue(registeredListeners.contains(secondListener));
-        assertEvent(createEvent(motechEvent, secondListener), event);
-
-        assertFalse(firstListener.equals(secondListener));
-    }
-
-    private MotechEvent createEvent(MotechEvent motechEvent, String destination) {
-        Map<String, Object> params =  new HashMap<String, Object>();
-        params.put("message-destination", destination);
-        params.put("original-parameters", motechEvent.getParameters());
-        return motechEvent.copy(motechEvent.getSubject(), params);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testRelayNullEvent() throws Exception {
-        eventRelay.relayEvent(null);
-    }
-
-    @Test
-    public void testRelaySpecificDestinationEvent() throws Exception {
-        // Register a single listener for an event
-        SampleEventListener sel = mock(SampleEventListener.class);
-        stub(sel.getIdentifier()).toReturn("SampleEventListener");
-        registry.registerListener(sel, "org.motechproject.server.someevent");
-
-        FooEventListener fel = mock(FooEventListener.class);
-        stub(fel.getIdentifier()).toReturn("FooEventListener");
-        registry.registerListener(fel, "org.motechproject.server.someevent");
-
-        // Create my own event so I don't pollute the main one with a new param
-        // This event is the same as the one created in  setUp only it is augmented like a split relayed event
-        Map<String, Object> originalParameters = new HashMap<String, Object>();
-        originalParameters.put("test", "value");
-
-        Map<String, Object> messageParameters = new HashMap<String, Object>();
-        messageParameters.put("original-parameters", originalParameters);
-        messageParameters.put("message-destination", "FooEventListener");
-        MotechEvent _motechEvent = new MotechEvent("org.motechproject.server.someevent", messageParameters);
-
-        eventRelay.relayEvent(_motechEvent);
-
-        verify(fel).handle(motechEvent);
-        verify(sel, never()).handle(any(MotechEvent.class));
-    }
-
-    private void assertEvent(MotechEvent expected, MotechEvent copy) {
-        assertEquals(expected.getSubject(), copy.getSubject());
-        assertEquals(expected.getParameters(), copy.getParameters());
-        assertEquals(expected.isLastEvent(), copy.isLastEvent());
-        assertEventTime(copy, expected.getEndTime());
-    }
-
-    private void assertEventTime(MotechEvent copy, Date endDate) {
-        assertEquals(endDate, copy.getEndTime());
-        if (endDate != null)
-            assertNotSame(endDate, copy.getEndTime());
-    }
-
-    class FooEventListener implements EventListener {
-
-        @Override
-        public void handle(MotechEvent event) {
+        Boolean isDiscarded = null;
+        MotechEvent motechEvent = null;
+        for (int pollCount = 0; pollCount < 10; pollCount++) {
+            motechEvent = eventListener.getMotechEvent();
+            if (motechEvent != null) {
+                isDiscarded = (Boolean) motechEvent.getParameters().get(MotechEvent.PARAM_DISCARDED_MOTECH_EVENT);
+                if (isDiscarded != null && isDiscarded) {
+                    break;
+                }
+            }
+            Thread.sleep(3000);
         }
+        assertTrue(isDiscarded != null && isDiscarded);
+        assertEquals(motechEventConfig.getMessageMaxRedeliveryCount(), motechEvent.getMessageRedeliveryCount());
+        assertEventHandledTimes(eventListener);
+    }
+
+    private void assertEventHandledTimes(InvalidMessageEventListener eventListener) {
+        List<DateTime> handledTimes = eventListener.getHandledTimes();
+        int messageMaxRedeliveryCount = motechEventConfig.getMessageMaxRedeliveryCount();
+        long delay = motechEventConfig.getMessageRedeliveryDelay();
+
+        for (int i = 0; i < messageMaxRedeliveryCount; i++) {
+            long delta = delay * Double.valueOf(Math.pow(2, i)).intValue();
+            int diff = handledTimes.get(i + 1).getSecondOfMinute() - handledTimes.get(i).getSecondOfMinute();
+            diff = diff <= 0 ? diff + 60 : diff;
+            assertTrue(diff >= delta);
+        }
+    }
+
+    class InvalidMessageEventListener implements EventListener {
+
+        private MotechEvent motechEvent;
+        private List<DateTime> handledTimes = new ArrayList<>();
 
         @Override
         public String getIdentifier() {
-            return "FooEventListener";
+            return MESSAGE_REDELIVERY_TEST;
         }
+
+        @MotechListener(subjects = MESSAGE_REDELIVERY_TEST)
+        public synchronized void handle(MotechEvent motechEvent) {
+            this.motechEvent = motechEvent;
+            handledTimes.add(new DateTime());
+            throw new InvalidMotechEventException("Message redelivery test.");
+        }
+
+        public MotechEvent getMotechEvent() {
+            return motechEvent;
+        }
+
+        public List<DateTime> getHandledTimes() {
+            return handledTimes;
+        }
+    }
+
+
+    @After
+    public void teardown() {
+        eventListenerRegistry.clearListenersForBean(MESSAGE_REDELIVERY_TEST);
     }
 }

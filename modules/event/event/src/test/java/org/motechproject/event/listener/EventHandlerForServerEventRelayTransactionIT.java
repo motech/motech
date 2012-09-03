@@ -1,5 +1,6 @@
 package org.motechproject.event.listener;
 
+import org.motechproject.MotechException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.annotations.MotechListener;
 import org.springframework.stereotype.Component;
