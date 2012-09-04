@@ -12,6 +12,9 @@
     <osgi:service id="commcareCaseServiceOsgi" auto-export="interfaces" ref="commcareCaseServiceImpl"
                   interface="org.motechproject.commcare.service.CommcareCaseService"/>
 
+    <osgi:service id="commcareFormServiceOsgi" auto-export="interfaces" ref="commcareFormServiceImpl"
+                  interface="org.motechproject.commcare.service.CommcareFormService"/>
+
     <osgi:reference id="eventRelayOsgi" cardinality="0..1"
                     interface="org.motechproject.event.listener.EventRelay" />
 
