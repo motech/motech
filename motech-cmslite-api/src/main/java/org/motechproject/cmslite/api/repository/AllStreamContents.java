@@ -31,7 +31,7 @@ public class AllStreamContents extends BaseContentRepository<StreamContent> {
         if (result == null || result.isEmpty()) return null;
 
         StreamContent fetchedContent = result.get(0);
-        AttachmentInputStream attachmentInputStream = db.getAttachment(fetchedContent.getId(), fetchedContent.getRevision());
+        AttachmentInputStream attachmentInputStream = db.getAttachment(fetchedContent.getId(), fetchedContent.getId());
         fetchedContent.setInputStream(attachmentInputStream);
 
         return fetchedContent;

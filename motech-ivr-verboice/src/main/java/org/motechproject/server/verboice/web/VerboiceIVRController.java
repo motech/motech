@@ -32,7 +32,7 @@ public class VerboiceIVRController {
         if (callId != null) {
             FlowSession flowSession = flowSessionService.getSession(callId);
             flowSessionService.updateSessionId(flowSession.getSessionId(), verboiceCallId);
-        }else{
+        } else {
             FlowSession session = flowSessionService.getSession(verboiceCallId);
             session.set("From", request.getParameter("From"));
             flowSessionService.updateSession(session);
@@ -42,7 +42,7 @@ public class VerboiceIVRController {
             String digits = request.getParameter("DialCallStatus");
             if (StringUtils.isBlank(digits)) {
                 digits = request.getParameter("Digits");
-            }            
+            }
             String treePath = request.getParameter("trP");
             String language = request.getParameter("ln");
             return redirectToDecisionTree(treeName, digits, treePath, language, verboiceCallId);
@@ -53,7 +53,7 @@ public class VerboiceIVRController {
 
     private String redirectToDecisionTree(String treeName, String digits, String treePath, String language, String flowSessionId) {
         final String transitionKey = digits == null ? "" : "&trK=" + digits;
-        final String flowSessionParam = flowSessionId == null? "" :"&flowSessionId="+ flowSessionId;
+        final String flowSessionParam = flowSessionId == null ? "" : "&flowSessionId=" + flowSessionId;
         return String.format("forward:%s?type=verboice&tree=%s&trP=%s&ln=%s%s%s", DECISIONTREE_URL, treeName, treePath, language, flowSessionParam, transitionKey)
                 .replaceAll("//", "/");
     }
