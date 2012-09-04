@@ -1,7 +1,7 @@
 <div>
     <div class="top1">
             <ul class="breadcrumb">
-                <li><a href="#/welcome">Home</a> <span class="divider">/</span></li>
+                <li><a href="#/welcome">{{msg('home')}}</a> <span class="divider">/</span></li>
                 <li><a href="#/trees">{{msg('trees')}}</a> <span class="divider">/</span></li>
                 <li class="active">{{msg('trees.create')}}</li>
             </ul>
@@ -17,7 +17,7 @@
         </div>
         <form id="createTreeForm" name="createTreeForm" class="form-horizontal" novalidate>
             <div class="control-group">
-                <label for="tree.name" class="control-label">{{msg('trees.create.tree.name')}}<span>*</span></label>
+                <label for="tree.name" class="control-label">{{msg('trees.create.tree.name')}}<span class="requiredField">*</span></label>
                 <div class="controls">
                     <input type="text" ng-model="tree.name" id="tree.name" name="tree.name" class="span8" required/>
                 </div>
@@ -30,19 +30,19 @@
             </div>
             <div class="control-group">
                 <div class="controls">
-                    <a ng-click="addNode()" class="btn btn-inverse"><i class="icon-plus icon-white"></i>{{msg('trees.create.node.add')}}</a>
+                    <a ng-click="addNode()" class="btn btn-inverse"><i class="icon-plus icon-white"></i> {{msg('trees.create.node.add')}}</a>
                 </div>
             </div>
             <div ng-repeat="node in tree.nodes" class="control-group">
                 <div ng-show="node.id != 0" class="control-group">
-                    <label for="{{node.id}}.name" class="control-label">{{msg('trees.create.node.name')}}<span>*</span></label>
+                    <label for="{{node.id}}.name" class="control-label">{{msg('trees.create.node.name')}}<span class="requiredField">*</span></label>
                     <div class="controls">
                         <input type="text" ng-model="node.name" id="{{node.id}}.name" name="{{node.id}}.name" required class="span8" />
                     </div>
                 </div>
 
                 <div class="control-group">
-                    <label for="{{node.id}}.message" class="control-label">{{msg('trees.create.node.message')}}<span>*</span></label>
+                    <label for="{{node.id}}.message" class="control-label">{{msg('trees.create.node.message')}}<span class="requiredField">*</span></label>
                     <div class="controls">
                         <textarea id="{{node.id}}.message" name="{{node.id}}.message" rows="5" ng-model="node.message" required class="span8">{{node.message}}</textarea>
                     </div>

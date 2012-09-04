@@ -48,7 +48,24 @@
     margin: -5px 0 25px 10px;
 }
 
+.requiredField {
+    color:#ff0000;
+}
+
 /* ---- table ---- */
+.table-bordered {
+    border-radius: 5px;
+    vertical-align: middle;
+}
+
+.table-demo thead {
+    border: none;
+}
+
+.table-demo thead tr th {
+    background: #001e4f url("../img/headbg.png") repeat-x;
+    color: #c2eafe;
+}
 
 .table-demo tbody tr > td:first-child {
     min-width: 300px;

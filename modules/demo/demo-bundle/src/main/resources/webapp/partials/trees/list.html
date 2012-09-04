@@ -1,7 +1,7 @@
 <div>
     <div class="top1">
         <ul class="breadcrumb">
-            <li><a href="#/welcome">Home</a> <span class="divider">/</span></li>
+            <li><a href="#/welcome">{{msg('home')}}</a> <span class="divider">/</span></li>
             <li class="active">{{msg('trees')}}</li>
         </ul>
     </div>
@@ -12,7 +12,7 @@
     </p>
     <hr>
     <div ng-hide="trees.length == 0">
-        <table class="table table-striped table-hover table-demo">
+        <table class="table table-bordered table-striped table-hover table-demo">
             <thead>
             <tr>
                 <th>{{msg('trees.list.name')}}</th>
