@@ -31,7 +31,7 @@ public class CallMeController {
 
     private List<IVRService> ivrServices;
 
-    @RequestMapping(value = {"/", "/demo"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/home", method = RequestMethod.GET)
     public void home(HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("text/html");
         response.setCharacterEncoding("UTF-8");
@@ -65,7 +65,7 @@ public class CallMeController {
         }
     }
 
-    @RequestMapping(value = "/jsp", method = RequestMethod.GET)
+    @RequestMapping(value = "/homeJsp", method = RequestMethod.GET)
     public ModelAndView jspPage() {
         ModelAndView mav = new ModelAndView("service");
 
@@ -75,7 +75,7 @@ public class CallMeController {
         return mav;
     }
 
-    @RequestMapping(value = {"/", "/demo"}, method = RequestMethod.POST)
+    @RequestMapping(value = "/home", method = RequestMethod.POST)
     public void homeSubmitForm(HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("text/html");
         response.setCharacterEncoding("UTF-8");

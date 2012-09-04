@@ -2,6 +2,9 @@ package org.motechproject.decisiontree.server.service;
 
 import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.decisiontree.core.model.Node;
+import org.motechproject.decisiontree.core.model.Tree;
+
+import java.util.List;
 
 /**
  * \defgroup decisionTree Decision Tree
@@ -23,4 +26,9 @@ public interface DecisionTreeService {
      */
     Node getNode(String treeName, String transitionPath, FlowSession session);
     Node getRootNode(String treeName, FlowSession session);
+
+    List<Tree> getDecisionTrees();
+    Tree getDecisionTree(final String treeId);
+    void saveDecisionTree(final Tree tree);
+    void deleteDecisionTree(final String treeId);
 }

@@ -35,7 +35,7 @@ public class Tree extends MotechBaseDataObject {
     }
 
     /**
-     * @deprecated will be removed in 0.13 see {@link #getRootNode()}
+     * @deprecated will be removed in 0.13 see {@link #getRootTransition()}
      * @return
      */
     @Deprecated

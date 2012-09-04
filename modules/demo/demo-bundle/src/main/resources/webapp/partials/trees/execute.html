@@ -1,0 +1,60 @@
+<div>
+    <div class="top1">
+        <ul class="breadcrumb">
+            <li><a href="#/welcome">Home</a> <span class="divider">/</span></li>
+            <li><a href="#/welcome">{{msg('trees')}}</a> <span class="divider">/</span></li>
+            <li class="active">{{msg('execute')}}: {{tree.name}}</li>
+        </ul>
+    </div>
+    <h2>{{msg('execute')}}: {{tree.name}}</h2>
+
+    <p>
+        <a href="#/trees" class="btn btn-primary">{{msg('main.back')}}</a>
+    </p>
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="row-fluid">
+                <div class="span4">
+
+                    <div id="phone">
+                        <div id="phone-area">
+                            <p id="msg_counter">{{msg('execute.entered')}}: {{getEntered()}}</p>
+                            <p id="msg">{{tree.nodes[0].message}}</p>
+                        </div>
+                        <div id="keyboard">
+                            <div id="a1"></div>
+                            <div id="b01" ng-click="reset()" class="cellphone_button button_size1"><div class="button_size1"><span class="hidden-value">b</span></div></div>
+                            <div id="ba" ng-click="send()" class="cellphone_button button_size1"><div class="button_size1"><span class="hidden-value">a</span></div></div>
+                            <div id="a2"></div>
+                            <div id="b1" ng-click="addKey(1)" class="cellphone_button button_size2"><div class="button_size2"><span class="hidden-value">1</span></div></div>
+                            <div id="b2" ng-click="addKey(2)" class="cellphone_button button_size2"><div class="button_size2"><span class="hidden-value">2abc</span></div></div>
+                            <div id="b3" ng-click="addKey(3)" class="cellphone_button button_size2"><div class="button_size2"><span class="hidden-value">3def</span></div></div>
+                            <div id="b4" ng-click="addKey(4)" class="cellphone_button button_size2"><div class="button_size2"><span class="hidden-value">4ghi</span></div></div>
+                            <div id="b5" ng-click="addKey(5)" class="cellphone_button button_size2"><div class="button_size2"><span class="hidden-value">5jkl</span></div></div>
+                            <div id="b6" ng-click="addKey(6)" class="cellphone_button button_size2"><div class="button_size2"><span class="hidden-value">6mno</span></div></div>
+                            <div id="b7" ng-click="addKey(7)" class="cellphone_button button_size2"><div class="button_size2"><span class="hidden-value">7pqrs</span></div></div>
+                            <div id="b8" ng-click="addKey(8)" class="cellphone_button button_size2"><div class="button_size2"><span class="hidden-value">8tuv</span></div></div>
+                            <div id="b9" ng-click="addKey(9)" class="cellphone_button button_size2"><div class="button_size2"><span class="hidden-value">9wxyz</span></div></div>
+                            <div id="b0" ng-click="addKey(0)" class="cellphone_button button_size2"><div class="button_size2"><span class="hidden-value">0</span></div></div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="span8">
+                    <h2>{{msg('execute.history')}}</h2>
+
+                    <div ng-repeat="h in history | limitTo:5">
+                        <div ng-hide="h.response == null" class="alert alert-{{h.alert}}">
+                            <strong>{{msg('execute.history.response')}}:</strong> {{getMessage(h.response)}}
+                        </div>
+                        <div ng-hide="h.request == null" class="alert">
+                            <strong>{{msg('execute.history.request')}}:</strong> {{h.request}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -13,6 +13,9 @@
     <osgi:service id="flowSessionServiceOsgi" auto-export="interfaces" ref="flowSessionService"
                   interface="org.motechproject.decisiontree.server.service.FlowSessionService" />
 
+    <osgi:service id="decisionTreeServiceOsgi" auto-export="interfaces" ref="decisionTreeServiceImpl"
+                  interface="org.motechproject.decisiontree.server.service.DecisionTreeService"/>
+
     <osgi:reference id="eventRelayOsgi" cardinality="0..1"
                     interface="org.motechproject.event.listener.EventRelay" />
 

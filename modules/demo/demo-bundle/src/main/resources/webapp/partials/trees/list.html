@@ -1,0 +1,43 @@
+<div>
+    <div class="top1">
+        <ul class="breadcrumb">
+            <li><a href="#/welcome">Home</a> <span class="divider">/</span></li>
+            <li class="active">{{msg('trees')}}</li>
+        </ul>
+    </div>
+    <h2>{{msg('trees')}}</h2>
+    <p>
+        <a href="#/trees/create" class="btn btn-primary"><i class="icon-plus"></i> {{msg('trees.create')}}</a>
+        <a ng-click="createExample()" class="btn btn-inverse"><i class="icon-plus"></i> {{msg('trees.create.example')}}</a>
+    </p>
+    <hr>
+    <div ng-hide="trees.length == 0">
+        <table class="table table-striped table-hover table-demo">
+            <thead>
+            <tr>
+                <th>{{msg('trees.list.name')}}</th>
+                <th>{{msg('trees.list.description')}}</th>
+                <th>{{msg('trees.list.actions')}}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="tree in trees">
+                <td>{{tree.name}}</td>
+                <td>{{tree.description}}</td>
+                <td>
+                    <div id="commandLinks">
+                        <a href="#/trees/{{tree._id}}/execute" class="btn btn-info"><i class="icon-play"></i> {{msg('execute')}}</a>
+                        <a ng-click="removeTree(tree)" class="btn btn-danger"><i class="icon-remove"></i> {{msg('trees.list.remove')}}</a>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div ng-show="trees.length == 0">
+        <div class="alert">
+            <strong>{{msg('main.warning')}}:</strong>
+            {{msg('trees.warn.notFoundDecisionTreeInDatabase')}}
+        </div>
+    </div>
+</div>

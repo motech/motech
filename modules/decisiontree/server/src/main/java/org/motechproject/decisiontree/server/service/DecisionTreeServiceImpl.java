@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class DecisionTreeServiceImpl implements DecisionTreeService {
     private Logger logger = LoggerFactory.getLogger((this.getClass()));
@@ -43,5 +45,27 @@ public class DecisionTreeServiceImpl implements DecisionTreeService {
         logger.info("Looking for node by path: " + ", found: " + node.getPrompts());
 
         return node;
+    }
+
+    @Override
+    public List<Tree> getDecisionTrees() {
+        return allTrees.getAll();
+    }
+
+    @Override
+    public Tree getDecisionTree(String treeId) {
+        return allTrees.get(treeId);
+    }
+
+    @Override
+    public void saveDecisionTree(final Tree tree) {
+        allTrees.addOrReplace(tree);
+    }
+
+    @Override
+    public void deleteDecisionTree(final String treeId) {
+        Tree tree = allTrees.get(treeId);
+        logger.info(String.format("Removing tree with name: %s and id: %s", tree.getName(), tree.getId()));
+        allTrees.remove(tree);
     }
 }
