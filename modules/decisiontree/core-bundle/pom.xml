@@ -47,7 +47,12 @@
             <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
-    </dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>    </dependencies>
     <build>
         <plugins>
             <plugin>
@@ -57,11 +62,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>
-                            org.motechproject.decisiontree.core,
-                            org.motechproject.decisiontree.core.model,
-                            org.motechproject.decisiontree.core.repository,
-                        </Export-Package>
                         <Bundle-Activator>
                             org.motechproject.decisiontree.osgi.Activator
                         </Bundle-Activator>

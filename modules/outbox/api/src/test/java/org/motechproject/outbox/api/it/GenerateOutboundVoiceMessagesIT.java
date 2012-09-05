@@ -25,7 +25,7 @@ import java.util.Map;
  * @author Igor (iopushnyev@2paths.com)
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/applicationOutboxAPI.xml"})
+@ContextConfiguration(locations = {"classpath*:META-INF/motech/*.xml"})
 public class GenerateOutboundVoiceMessagesIT {
     @Autowired
     private AllOutboundVoiceMessages allOutboundVoiceMessages;

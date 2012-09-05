@@ -7,7 +7,7 @@
             http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
             http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
-    <import resource="motechEventContext.xml"/>
+    <import resource="classpath*:META-INF/motech/*.xml"/>
 
     <osgi:service id="eventGatewayToEventJmsoutChannelOsgi" ref="eventGatewayToTransformerChannel"
                   interface="org.springframework.integration.core.SubscribableChannel"/>

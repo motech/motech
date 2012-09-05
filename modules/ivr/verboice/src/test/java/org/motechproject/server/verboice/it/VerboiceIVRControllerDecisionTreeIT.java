@@ -38,7 +38,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testVerboiceContext.xml"})
+@ContextConfiguration(locations = {"classpath*:META-INF/motech/*.xml"})
 public class VerboiceIVRControllerDecisionTreeIT extends VerboiceTest {
     private static final String USER_INPUT = "1345234";
 

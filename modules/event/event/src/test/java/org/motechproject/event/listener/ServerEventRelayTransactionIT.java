@@ -8,19 +8,18 @@ import org.junit.runner.RunWith;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.OutboundEventGateway;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.jms.JMSException;
-import java.util.Properties;
 
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testEventContext.xml"})
+@ContextConfiguration(locations = {"classpath*:META-INF/motech/*.xml"})
 public class ServerEventRelayTransactionIT {
     @Autowired
     OutboundEventGateway outboundEventGateway;
@@ -31,13 +30,11 @@ public class ServerEventRelayTransactionIT {
     @Autowired
     EventHandlerForServerEventRelayTransactionIT handler;
 
-    @Autowired
-    @Qualifier("activeMQProperties")
-    Properties activeMQProperties;
+    @Value("${redeliveryDelayInMillis}")
+    private int redeliveryDelayInMillis;
 
     ActiveMQQueueExplorer queueExplorer;
     private ActiveMQQueue eventQueue;
-    private int redeliveryDelayInMillis;
 
     @Before
     public void setUp() throws JMSException {
@@ -45,7 +42,6 @@ public class ServerEventRelayTransactionIT {
         queueExplorer = new ActiveMQQueueExplorer(connectionFactory);
         eventQueue = (ActiveMQQueue) applicationContext.getBean("eventQueue");
         queueExplorer.clear(eventQueue);
-        redeliveryDelayInMillis = Integer.parseInt(activeMQProperties.getProperty("redeliveryDelayInMillis"));
     }
 
     @Test

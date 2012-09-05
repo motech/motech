@@ -18,7 +18,7 @@ import static java.util.Arrays.asList;
 import static junit.framework.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath*:applicationWebSecurityContext.xml")
+@ContextConfiguration(locations = "classpath*:META-INF/motech/applicationWebSecurityContext.xml")
 public class AllMotechWebUsersIT {
 
     @Autowired

@@ -21,11 +21,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.motechproject</groupId>
             <artifactId>motech-event</artifactId>
             <version>${project.version}</version>
@@ -55,7 +50,12 @@
             <artifactId>spring-webmvc</artifactId>
             <version>${spring.version}</version>
         </dependency>
-    </dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>    </dependencies>
     <build>
         <plugins>
             <plugin>

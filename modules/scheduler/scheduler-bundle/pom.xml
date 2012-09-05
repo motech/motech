@@ -22,6 +22,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-event</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
@@ -41,6 +46,11 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
             <version>${spring.version}</version>
@@ -63,6 +73,7 @@
                             org.apache.activemq.command,
                             org.aopalliance.aop,
                             org.motechproject.event,
+                            org.motechproject.event.listener.annotations,
                             org.springframework.aop,
                             org.springframework.aop.framework,
                             org.springframework.aop.support,
@@ -81,8 +92,10 @@
                             org.springframework.jms.listener,
                             org.springframework.scheduling.concurrent,
                             org.springframework.osgi.config,
+                            org.springframework.osgi.web.context.support,
                             org.quartz.simpl,
                             org.quartz.impl.triggers,
+
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-scheduler</Embed-Dependency>

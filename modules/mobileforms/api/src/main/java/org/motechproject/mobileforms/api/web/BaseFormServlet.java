@@ -44,7 +44,7 @@ public abstract class BaseFormServlet extends HttpServlet {
 
 
     protected BaseFormServlet() {
-        context = new ClassPathXmlApplicationContext("applicationMobileFormsAPIContext.xml");
+        context = new ClassPathXmlApplicationContext("classpath*:META-INF/motech/*.xml");
         mobileFormsService = context.getBean("mobileFormsServiceImpl", MobileFormsService.class);
         usersService = context.getBean("usersServiceImpl", UsersService.class);
         formGroupPublisher = context.getBean("formGroupPublisher", FormGroupPublisher.class);

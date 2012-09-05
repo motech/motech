@@ -15,7 +15,7 @@ import java.util.HashMap;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testEventContext.xml"})
+@ContextConfiguration(locations = {"classpath*:META-INF/motech/*.xml"})
 public class MetricsIT {
     @Autowired
     private MetricsAgent metricsAgent;

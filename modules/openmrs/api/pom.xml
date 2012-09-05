@@ -17,7 +17,13 @@
     <dependencies>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
-            <artifactId>motech-platform-common-api</artifactId>
+            <artifactId>motech-platform-server-api</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>motech-platform-server-config</artifactId>
             <version>${project.parent.version}</version>
             <scope>provided</scope>
         </dependency>

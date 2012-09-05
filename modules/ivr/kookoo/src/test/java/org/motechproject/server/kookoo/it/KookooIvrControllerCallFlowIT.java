@@ -38,7 +38,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.custommonkey.xmlunit.XMLUnit.setIgnoreWhitespace;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testKookooContext.xml"})
+@ContextConfiguration(locations = {"classpath*:META-INF/motech/*.xml"})
 public class KookooIvrControllerCallFlowIT extends SpringIntegrationTest {
 
     static Server server;
@@ -69,7 +69,7 @@ public class KookooIvrControllerCallFlowIT extends SpringIntegrationTest {
         Context context = new Context(server, CONTEXT_PATH);
 
         DispatcherServlet dispatcherServlet = new DispatcherServlet();
-        dispatcherServlet.setContextConfigLocation("classpath:testKookooContext.xml");
+        dispatcherServlet.setContextConfigLocation("classpath*:META-INF/motech/*.xml");
 
         ServletHolder servletHolder = new ServletHolder(dispatcherServlet);
         context.addServlet(servletHolder, "/*");

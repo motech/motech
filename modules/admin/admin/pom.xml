@@ -26,7 +26,6 @@
             <artifactId>motech-platform-server-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>

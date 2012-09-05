@@ -37,7 +37,7 @@ import static org.motechproject.util.DateUtil.newDateTime;
 import static org.quartz.TriggerKey.triggerKey;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:testApplicationSchedulerTrackingAPI.xml")
+@ContextConfiguration(locations = "classpath*:META-INF/motech/*.xml")
 public class SchedulingWithPreferredTimeIT {
 
     @Autowired

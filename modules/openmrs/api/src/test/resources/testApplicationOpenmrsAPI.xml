@@ -4,13 +4,12 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <import resource="applicationOpenmrsAPI.xml"/>
+    <import resource="classpath:META-INF/motech/applicationOpenmrsAPI.xml"/>
 
     <bean id="transactionManager"
           class="org.springframework.orm.hibernate3.HibernateTransactionManager"
           p:sessionFactory-ref="openMRSSessionFactory" />
 
-    <bean id="platformSettingsServiceOsgi"
-                    class="org.motechproject.server.config.service.impl.PlatformSettingsServiceImpl" />
+    <bean id="platformSettingsServiceOsgi" class="org.motechproject.server.config.service.impl.PlatformSettingsServiceImpl" />
 
 </beans>

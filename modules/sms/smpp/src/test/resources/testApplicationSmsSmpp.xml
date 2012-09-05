@@ -4,8 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
             http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <import resource="classpath:applicationPlatformServerAPI.xml"/>
-    <import resource="classpath:applicationSmsSmppContext.xml"/>
+    <import resource="classpath*:META-INF/motech/*.xml"/>
 
     <bean class="org.motechproject.sms.smpp.it.ReceiveSmsIT"/>
 

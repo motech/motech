@@ -19,7 +19,7 @@
     <packaging>bundle</packaging>
     <dependencies>
         <dependency>
-            <groupId>org.motechproject</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-event</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -46,33 +46,11 @@
             <version>4.2.0</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.osgi</groupId>
-            <artifactId>spring-osgi-web</artifactId>
-            <version>1.2.1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>org.springframework.aop</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>org.springframework.beans</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>org.springframework.context</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>org.springframework.core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>com.springsource.javax.servlet</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-    </dependencies>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>    </dependencies>
 
     <build>
         <plugins>

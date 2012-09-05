@@ -11,7 +11,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.servlet.DispatcherServlet;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:applicationSmsHttpContext.xml"})
+@ContextConfiguration(locations = {"classpath*:META-INF/motech/*.xml"})
 public class ControllerIT {
     @Test
     @Ignore("test with telecom provider and app context")
@@ -20,7 +20,7 @@ public class ControllerIT {
         Context context = new Context(server, "/", Context.SESSIONS);
 
         DispatcherServlet dispatcherServlet = new DispatcherServlet();
-        dispatcherServlet.setContextConfigLocation("classpath:/applicationSmsHttpContext.xml");
+        dispatcherServlet.setContextConfigLocation("classpath*:META-INF/motech/*.xml");
 
         ServletHolder servletHolder = new ServletHolder(dispatcherServlet);
         context.addServlet(servletHolder, "/*");

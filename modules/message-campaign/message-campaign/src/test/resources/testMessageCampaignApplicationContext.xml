@@ -3,21 +3,10 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="location" value="classpath:activemq.properties"/>
-        <property name="ignoreUnresolvablePlaceholders" value="true"/>
-    </bean>
-
-    <import resource="classpath:applicationMessageCampaignContext.xml"/>
-    <import resource="classpath:applicationSchedulerContext.xml"/>
+    <import resource="classpath*:META-INF/motech/*.xml"/>
 
     <bean id="messageCampaignDBConnector" class="org.ektorp.impl.StdCouchDbConnector">
         <constructor-arg value="test-motech-message-campaign"/>
         <constructor-arg ref="couchDbInstance"/>
-    </bean>
-
-    <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-        <property name="configLocation" value="classpath:quartz.properties"/>
-        <property name="applicationContextSchedulerContextKey" value="applicationContext"/>
     </bean>
 </beans>

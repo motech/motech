@@ -20,7 +20,7 @@ import static ch.lambdaj.Lambda.on;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/applicationContextAlert.xml"})
+@ContextConfiguration(locations = {"/META-INF/motech/applicationContextAlert.xml"})
 public class AllAlertsIT {
 
     @Autowired

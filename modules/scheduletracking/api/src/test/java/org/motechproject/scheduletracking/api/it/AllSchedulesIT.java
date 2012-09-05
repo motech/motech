@@ -20,7 +20,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:testApplicationSchedulerTrackingAPI.xml")
+@ContextConfiguration(locations = "classpath*:META-INF/motech/*.xml")
 public class AllSchedulesIT {
     @Autowired
     ScheduleFactory scheduleFactory;

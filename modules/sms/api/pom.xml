@@ -18,7 +18,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-api</artifactId>
+            <artifactId>motech-scheduler</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

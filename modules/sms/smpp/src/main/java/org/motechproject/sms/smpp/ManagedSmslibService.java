@@ -11,14 +11,12 @@ import org.smslib.SMSLibException;
 import org.smslib.Service;
 import org.smslib.smpp.jsmpp.JSMPPGateway;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.List;
-import java.util.Properties;
 
 import static org.motechproject.sms.smpp.constants.SmppProperties.DELIVERY_REPORTS;
 

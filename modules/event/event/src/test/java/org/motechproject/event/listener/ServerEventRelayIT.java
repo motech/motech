@@ -19,7 +19,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testEventContext.xml"})
+@ContextConfiguration(locations = {"classpath*:META-INF/motech/*.xml"})
 public class ServerEventRelayIT {
 
     private static final String MESSAGE_REDELIVERY_TEST = "MESSAGE_REDELIVERY_TEST";

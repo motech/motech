@@ -21,7 +21,7 @@ abstract public class VerboiceTest extends SpringIntegrationTest{
         Context context = new Context(server, CONTEXT_PATH);//new Context(server, "/", Context.SESSIONS);
 
         DispatcherServlet dispatcherServlet = new DispatcherServlet();
-        dispatcherServlet.setContextConfigLocation("classpath:testVerboiceContext.xml");
+        dispatcherServlet.setContextConfigLocation("classpath*:META-INF/motech/*.xml");
 
         ServletHolder servletHolder = new ServletHolder(dispatcherServlet);
         context.addServlet(servletHolder, "/*");

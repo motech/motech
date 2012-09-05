@@ -25,7 +25,7 @@ import static java.lang.System.currentTimeMillis;
 import static org.motechproject.util.DateUtil.newDateTime;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/testApplicationAppointmentsAPI.xml")
+@ContextConfiguration(locations = "classpath*:META-INF/motech/*.xml")
 public class VisitsQueryServicePerformanceTest {
     private static final int MAX_CALENDARS = 1000;
 

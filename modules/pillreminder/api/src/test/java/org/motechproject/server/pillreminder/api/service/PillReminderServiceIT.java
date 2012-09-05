@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/testPillReminderAPIApplicationContext.xml"})
+@ContextConfiguration(locations = {"classpath*:META-INF/motech/*.xml"})
 public class PillReminderServiceIT {
     @Autowired
     private org.motechproject.server.pillreminder.api.service.PillReminderService pillReminderService;

@@ -15,14 +15,13 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-api</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>motech-platform-common-api</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
-            <artifactId>motech-platform-common-api</artifactId>
+            <artifactId>motech-platform-server-config</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>

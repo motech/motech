@@ -25,9 +25,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.motechproject</groupId>
-            <artifactId>motech-platform-server-api</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>2.1.5</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

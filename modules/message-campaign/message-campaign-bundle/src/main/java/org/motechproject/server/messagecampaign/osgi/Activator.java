@@ -93,7 +93,6 @@ public class Activator implements BundleActivator {
             super();
             setBundleContext(Activator.bundleContext);
         }
-
     }
 
     private void serviceAdded(HttpService service) {

@@ -23,6 +23,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-event</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
             <version>1.2</version>
@@ -47,7 +52,12 @@
             <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
-    </dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>    </dependencies>
     <build>
         <plugins>
             <plugin>
@@ -61,7 +71,6 @@
                             org.motechproject.server.demo.osgi.Activator
                         </Bundle-Activator>
                         <Import-Package>
-                            org.motechproject.decisiontree.core.model,
                             org.springframework.context.config,
                             org.springframework.context.support,
                             org.springframework.osgi.config,

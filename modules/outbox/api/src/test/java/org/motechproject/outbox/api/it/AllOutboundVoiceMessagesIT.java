@@ -24,7 +24,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/applicationOutboxAPI.xml"})
+@ContextConfiguration(locations = {"classpath*:META-INF/motech/*.xml"})
 public class AllOutboundVoiceMessagesIT {
     @Autowired
     private AllOutboundVoiceMessages outboundVoiceMessageDao;

@@ -23,7 +23,7 @@ import static org.junit.Assert.*;
 import static org.motechproject.util.DateUtil.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:testApplicationSchedulerTrackingAPI.xml")
+@ContextConfiguration(locations = "classpath*:META-INF/motech/*.xml")
 public class ScheduleTrackingServiceIT {
 
     @Autowired

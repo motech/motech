@@ -19,7 +19,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-api</artifactId>
+            <artifactId>motech-platform-common-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

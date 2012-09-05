@@ -73,7 +73,6 @@
                             org.springframework.web.servlet.mvc,
                             org.springframework.web.servlet.support,
                             org.springframework.web.servlet.view.velocity,
-                            org.motechproject.decisiontree.core,
                             *
                         </Import-Package>
                         <Include-Resource>
