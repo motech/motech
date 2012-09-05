@@ -8,6 +8,10 @@ public final class EventSubjects {
     public static final String MALFORMED_CASE_EXCEPTION = BASE_SUBJECT
             + "exception";
 
+    public static final String FORM_STUB_EVENT = BASE_SUBJECT + "formstub";
+
+    public static final String FORM_STUB_FAIL_EVENT = FORM_STUB_EVENT + ".failed";
+
     private EventSubjects() {
     }
 }
