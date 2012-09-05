@@ -111,10 +111,6 @@ public class DecisionTreeController extends MultiActionController {
         String encodedTransitionPath = getParentTransitionPath(request);
         String transitionKey = request.getParameter(TRANSITION_KEY_PARAM);
 
-        if(transitionKey !=null && transitionKey.equals(CallStatus.hangup.toString())) {
-            return new ModelAndView(templateNameFor(request.getParameter(PROVIDER_NAME_PARAM), EXIT_TEMPLATE_NAME));
-        }
-
         logger.info(" Node HTTP  request parameters: "
                 + LANGUAGE_PARAM + ": " + language + ", "
                 + TREE_NAME_PARAM + ": " + treeNameString + ", "
@@ -156,6 +152,15 @@ public class DecisionTreeController extends MultiActionController {
             }
             if (transitionKey == null) {
                 return constructModelViewForNode(request, node, parentTransitionPath, treeNames, params, session);
+            } else if (transitionKey.equals(CallStatus.hangup.toString())) {
+                node = decisionTreeService.getRootNode(currentTree, session);
+                autowire(node);
+                ITransition hangupTransition = node.getTransitions().get(CallStatus.hangup.toString());
+                autowire(hangupTransition);
+                node = hangupTransition.getDestinationNode(transitionKey, session);
+                autowire(node);
+                executeOperations(transitionKey, session, node);
+                return new ModelAndView(templateNameFor(request.getParameter(PROVIDER_NAME_PARAM), EXIT_TEMPLATE_NAME));
             } else {
                 ITransition transition = sendTreeEventActions(params, transitionKey, parentTransitionPath, node);
                 autowire(transition);
@@ -172,7 +177,7 @@ public class DecisionTreeController extends MultiActionController {
                         treeNames = (String[]) ArrayUtils.remove(treeNames, 0);
                         return new ModelAndView(String.format("redirect:/decisiontree/node?%s=%s&%s=%s", TREE_NAME_PARAM, LANGUAGE_PARAM, StringUtils.join(treeNames, TREE_NAME_SEPARATOR), request.getParameter(LANGUAGE_PARAM)));
                     } else {
-                        return new ModelAndView(templateNameFor(request.getParameter(PROVIDER_NAME_PARAM),EXIT_TEMPLATE_NAME));
+                        return new ModelAndView(templateNameFor(request.getParameter(PROVIDER_NAME_PARAM), EXIT_TEMPLATE_NAME));
                     }
                 } else {
                     executeOperations(transitionKey, session, node);
@@ -183,7 +188,9 @@ public class DecisionTreeController extends MultiActionController {
                     return constructModelViewForNode(request, node, modifiedTransitionPath, treeNames, params, session);
                 }
             }
-        } finally {
+        } finally
+
+        {
             flowSessionService.updateSession(session);
         }
     }
@@ -247,7 +254,7 @@ public class DecisionTreeController extends MultiActionController {
                 return;
             }
             if (CallStatus.isValid(key)) {
-                return;
+            return;
             }
             try {
                 Integer.parseInt(key);
@@ -262,6 +269,7 @@ public class DecisionTreeController extends MultiActionController {
             }
         }
     }
+
 
     private boolean noInput(String key) {
         return TreeNodeLocator.NO_INPUT.equals(key);

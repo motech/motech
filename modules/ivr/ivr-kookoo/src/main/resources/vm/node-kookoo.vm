@@ -7,11 +7,13 @@
             <playtext>$prompt.message</playtext>
         #end
     #end
-    #if ($node.transitions.size() > 0)
+    #if ($node.transitions.size() == 0)
+        <hangup></hangup>
+    #elseif($node.transitions.size() == 1  && $node.transitions.get("hangup"))
+        <hangup></hangup>
+    #else
         #set ($url = "$scheme://$host$contextPath$servletPath/kookoo/ivr?provider=$provider&ln=$language&tree=$treeName&trP=$transitionPath")
         <collectdtmf l="$maxDigits" t="#" o="$maxTimeout"></collectdtmf>
         <gotourl>$escape.escapeXml($url)</gotourl>
-    #else
-        <hangup></hangup>
     #end
 </response>

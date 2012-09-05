@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -26,9 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.motechproject.server.decisiontree.web.DecisionTreeController.*;
@@ -188,6 +187,34 @@ public class DecisionTreeControllerTest {
     }
 
     @Test
+    public void nodeTestHangupTransitionKeyType() {
+        String transitionKey = "1";
+
+        Node destinationNode = new Node();
+        Transition transition1 = new Transition();
+        transition1.setDestinationNode(new Node());
+        destinationNode.addTransition("hangup", transition1);
+
+        Node node = new Node();
+        Transition transition = new Transition();
+        transition.setDestinationNode(destinationNode);
+        node.addTransition(transitionKey, transition);
+
+        when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
+        when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
+        when(request.getParameter(TRANSITION_KEY_PARAM)).thenReturn(transitionKey);
+        when(request.getParameter(TRANSITION_PATH_PARAM)).thenReturn(Base64.encodeBase64URLSafeString(transitionPath.getBytes()));
+
+        flowSession.setCurrentNode(node);
+
+        when(decisionTreeService.getNode(eq(treeName), eq(transitionPath), any(FlowSession.class))).thenReturn(node);
+
+        ModelAndView modelAndView = decisionTreeController.node(request, response);
+
+        assertNotNull(modelAndView);
+    }
+
+    @Test
     public void nodeTestNoInputGoesToBlankTransition() {
         Node childNode = new Node();
         Transition childTransition = new Transition();
@@ -263,6 +290,30 @@ public class DecisionTreeControllerTest {
 
         assertNotNull(modelAndView);
         assertEquals(NODE_TEMPLATE_NAME + "-" + "vxml", modelAndView.getViewName());
+    }
+
+    @Test
+    public void hangupTest() {
+        Node rootNode = new Node();
+        Transition hangupTransition = new Transition();
+        Node hangupNode = new Node();
+        INodeOperation hangupOperation = mock(INodeOperation.class);
+        hangupNode.addOperations(hangupOperation);
+        hangupTransition.setDestinationNode(hangupNode);
+        rootNode.addTransition("hangup", hangupTransition);
+
+        when(request.getParameter(TREE_NAME_PARAM)).thenReturn(treeName);
+        when(request.getParameter(LANGUAGE_PARAM)).thenReturn("en");
+        when(request.getParameter(PROVIDER_NAME_PARAM)).thenReturn("vxml");
+        when(request.getParameter(TRANSITION_KEY_PARAM)).thenReturn("hangup");
+        when(decisionTreeService.getRootNode(eq(treeName), any(FlowSession.class))).thenReturn(rootNode);
+        flowSession.setCurrentNode(rootNode);
+
+        ModelAndView modelAndView = decisionTreeController.node(request, response);
+        verify(hangupOperation).perform(eq("hangup"), Matchers.<FlowSession>any());
+
+        assertNotNull(modelAndView);
+        assertEquals(EXIT_TEMPLATE_NAME + "-" + "vxml", modelAndView.getViewName());
     }
 
     @Test
