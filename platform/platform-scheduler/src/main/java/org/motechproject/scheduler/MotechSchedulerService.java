@@ -135,4 +135,9 @@ public interface MotechSchedulerService {
     List<Date> getScheduledJobTimings(String subject, String externalJobId, Date startDate, Date endDate);
 
     List<Date> getScheduledJobTimingsWithPrefix(String subject, String externalJobIdPrefix, Date startDate, Date endDate);
+
+    /**
+     * shut's down scheduler instance after waiting for executing jobs to finish
+     */
+    void shutdownScheduler();    
 }

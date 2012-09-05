@@ -627,6 +627,15 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
         }
     }
 
+    @Override
+    public void shutdownScheduler() {
+        try {
+            scheduler.shutdown(true);
+        } catch (SchedulerException e) {
+            logError("scheduler did not shutdown.", e);
+        }
+    }    
+
     private void scheduleJob(JobDetail jobDetail, Trigger trigger) {
         try {
             scheduler.scheduleJob(jobDetail, trigger);
