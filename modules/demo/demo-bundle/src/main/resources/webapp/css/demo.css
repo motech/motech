@@ -52,7 +52,45 @@
     color:#ff0000;
 }
 
+.i-middle {
+    vertical-align:middle;
+}
+
+.message-group-tree {
+    background: #fbfbfb;
+    border-radius: 4px;
+    border: 1px solid #cccccc;
+
+}
+
+.message-group {
+    background: #fefefe;
+    border: 1px solid #e5e5e5;
+    margin: 0 25px 10px 25px;
+    border-radius: 4px;
+}
+
+div.message-header {
+    height: 18px;
+    margin: 0 0 10px 0;
+    border-radius: 4px;
+    color: #c2eafe;
+    font-weight: bold;
+    padding:5px 10px;
+    line-height: 21px;
+    font-size: 16px;
+    background: #001e4f url("../img/headbg.png") repeat-x left top;
+}
+
+.message-group-tree > div.message-group:nth-child(5)  {
+    margin: 0;
+    border: none;
+    padding: 0;
+    background: none;
+}
+
 /* ---- table ---- */
+
 .table-bordered {
     border-radius: 5px;
     vertical-align: middle;
