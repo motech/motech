@@ -25,24 +25,20 @@ public class KookooCallServiceImpl implements IVRService {
     public static final String IS_OUTBOUND_CALL = "is_outbound_call";
 
     private SettingsFacade settings;
+    private HttpClient commonsHttpClient;
 
-    private HttpClient httpClient;
     private Logger log = Logger.getLogger(this.getClass().getName());
 
     @Autowired
-    public KookooCallServiceImpl(SettingsFacade settings) {
-        this(settings, new HttpClient());
-    }
-
-    KookooCallServiceImpl(SettingsFacade settings, HttpClient httpClient) {
+    public KookooCallServiceImpl(SettingsFacade settings, HttpClient commonsHttpClient) {
         this.settings = settings;
-        this.httpClient = httpClient;
+        this.commonsHttpClient = commonsHttpClient;
     }
 
     @Override
     public void initiateCall(CallRequest callRequest) {
         if (callRequest == null) throw new IllegalArgumentException("Missing call request");
-
+        GetMethod getMethod = null;
         try {
             final String externalId = callRequest.getPayload().get(EXTERNAL_ID);
             callRequest.getPayload().put(IS_OUTBOUND_CALL, "true");
@@ -53,7 +49,7 @@ public class KookooCallServiceImpl implements IVRService {
             String applicationReplyUrl = String.format(
                 "%s?%s=%s", callRequest.getCallBackUrl(), CUSTOM_DATA_KEY, json.toString());
 
-            GetMethod getMethod = new GetMethod(settings.getProperty(OUTBOUND_URL));
+            getMethod = new GetMethod(settings.getProperty(OUTBOUND_URL));
             getMethod.setQueryString(new NameValuePair[]{
                 new NameValuePair(API_KEY_KEY, settings.getProperty(API_KEY)),
                 new NameValuePair(URL_KEY, applicationReplyUrl),
@@ -61,9 +57,13 @@ public class KookooCallServiceImpl implements IVRService {
                 new NameValuePair(CALLBACK_URL_KEY, applicationCallbackUrl)
             });
             log.info(String.format("Dialing %s", getMethod.getURI()));
-            httpClient.executeMethod(getMethod);
+            commonsHttpClient.executeMethod(getMethod);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            if(getMethod != null ) {
+                getMethod.releaseConnection();
+            }
         }
     }
 }
