@@ -3,12 +3,12 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.12.2</version>
+        <version>0.12.3-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
     <artifactId>motech-platform-ivr-api</artifactId>
     <name>MoTeCH Platform Server IVR API</name>
-    <version>0.12.2</version>
+    <version>0.12.3-SNAPSHOT</version>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>

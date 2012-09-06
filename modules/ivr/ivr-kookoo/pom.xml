@@ -3,12 +3,12 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.12.2</version>
+        <version>0.12.3-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-ivr-kookoo</artifactId>
-    <version>0.12.2</version>
+    <version>0.12.3-SNAPSHOT</version>
     <name>MoTeCH IVR Kookoo</name>
     <description>new kookoo module based on vm templates to return responses</description>
     <properties>

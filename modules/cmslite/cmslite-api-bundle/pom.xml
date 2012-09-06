@@ -3,14 +3,14 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.12.2</version>
+        <version>0.12.3-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-cmslite-api-bundle</artifactId>
     <name>MoTeCH CMS lite API Bundle</name>
-    <version>0.12.2</version>
+    <version>0.12.3-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
