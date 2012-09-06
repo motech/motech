@@ -4,12 +4,12 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.12.2-SNAPSHOT</version>
+        <version>0.12.2</version>
         <relativePath>../../../</relativePath>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-ivr-verboice-bundle</artifactId>
-    <version>0.12.2-SNAPSHOT</version>
+    <version>0.12.2</version>
     <name>MoTeCH IVR Verboice Bundle</name>
     <packaging>bundle</packaging>
     <description>IVR over Nuntium's Verboice</description>
