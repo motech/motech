@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -27,24 +26,20 @@ public class KookooCallServiceImpl implements IVRService {
     public static final String IS_OUTBOUND_CALL = "is_outbound_call";
 
     private Properties properties;
+    private HttpClient commonsHttpClient;
 
-    private HttpClient httpClient;
     private Logger log = Logger.getLogger(this.getClass().getName());
 
     @Autowired
-    public KookooCallServiceImpl(@Qualifier("ivrProperties") Properties properties) {
-        this(properties, new HttpClient());
-    }
-
-    KookooCallServiceImpl(Properties properties, HttpClient httpClient) {
+    public KookooCallServiceImpl(@Qualifier("ivrProperties") Properties properties, HttpClient commonsHttpClient) {
         this.properties = properties;
-        this.httpClient = httpClient;
+        this.commonsHttpClient = commonsHttpClient;
     }
 
     @Override
     public void initiateCall(CallRequest callRequest) {
         if (callRequest == null) throw new IllegalArgumentException("Missing call request");
-
+        GetMethod getMethod = null;
         try {
             final String externalId = callRequest.getPayload().get(EXTERNAL_ID);
             callRequest.getPayload().put(IS_OUTBOUND_CALL, "true");
@@ -55,16 +50,20 @@ public class KookooCallServiceImpl implements IVRService {
             String applicationReplyUrl = String.format(
                 "%s?%s=%s", callRequest.getCallBackUrl(), CUSTOM_DATA_KEY, json.toString());
 
-            GetMethod getMethod = new GetMethod(properties.get(OUTBOUND_URL).toString());
+            getMethod = new GetMethod(properties.get(OUTBOUND_URL).toString());
             getMethod.setQueryString(new NameValuePair[]{
                 new NameValuePair(API_KEY_KEY, properties.get(API_KEY).toString()),
                 new NameValuePair(URL_KEY, applicationReplyUrl),
                 new NameValuePair(PHONE_NUMBER_KEY, callRequest.getPhone())
             });
             log.info(String.format("Dialing %s", getMethod.getURI()));
-            httpClient.executeMethod(getMethod);
+            commonsHttpClient.executeMethod(getMethod);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            if(getMethod != null ) {
+                getMethod.releaseConnection();
+            }
         }
     }
 }

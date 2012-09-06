@@ -9,10 +9,14 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
         http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
-    <bean id="commonsHttpClient" class="org.apache.commons.httpclient.HttpClient" />
     <util:properties id="ivrProperties" location="classpath:/ivr.properties"/>
 
     <context:annotation-config/>
     <mvc:annotation-driven/>
     <context:component-scan base-package="org.motechproject.server.kookoo"/>
+
+    <bean id="multiThreadedHttpConnectionManager" class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager"/>
+    <bean id="commonsHttpClient" class="org.apache.commons.httpclient.HttpClient">
+        <constructor-arg ref="multiThreadedHttpConnectionManager"/>
+    </bean>
 </beans>
