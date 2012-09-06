@@ -114,6 +114,7 @@ public class OpenMRSUserAdapter implements MRSUserAdapter {
         List<org.openmrs.User> openMRSUsers = userService.getAllUsers();
         for (org.openmrs.User openMRSUser : openMRSUsers) {
             if (isSystemAdmin(openMRSUser.getSystemId())) continue;
+            if(openMRSUser.isRetired()) continue;
             mrsUsers.add(openMrsToMrsUser(openMRSUser));
         }
         return mrsUsers;
