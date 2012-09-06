@@ -5,18 +5,15 @@ import org.motechproject.server.demo.service.DemoEventHandler;
 import org.motechproject.server.demo.service.DemoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @Controller
 public class CallMeController {
@@ -90,33 +87,22 @@ public class CallMeController {
         response.getWriter().write("Selected IVR Service: " + service.toString().substring(dot + 1, at));
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/scheduleCall", method = RequestMethod.GET)
-    public void scheduleCall(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        response.setContentType("text/html");
-        response.setCharacterEncoding("UTF-8");
-
-        String phoneNumber = request.getParameter("phone");
-        int delay = Integer.parseInt(request.getParameter("callDelay"));
+    public void scheduleCall(@RequestParam String phone, @RequestParam String callDelay) throws Exception {
+        int delay = Integer.parseInt(callDelay);
 
         Calendar now = Calendar.getInstance();
         now.add(Calendar.MINUTE, delay);
         Date callTime = now.getTime();
 
-        demoService.schedulePhoneCall(phoneNumber, callTime);
-
-        response.getWriter().write("Scheduled a phone call to " + phoneNumber + " at " + callTime);
+        demoService.schedulePhoneCall(phone, callTime);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/initiateCall", method = RequestMethod.GET)
-    public void initiateCall(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        response.setContentType("text/html");
-        response.setCharacterEncoding("UTF-8");
-
-        String phoneNumber = request.getParameter("phone");
-
-        demoService.initiatePhoneCall(phoneNumber);
-
-        response.getWriter().write("Initiated a phone call to " + phoneNumber);
+    public void initiateCall(@RequestParam String phone) throws Exception {
+        demoService.initiatePhoneCall(phone);
     }
 
     public void setIvrServices(List<IVRService> ivrServices) {
@@ -124,4 +110,37 @@ public class CallMeController {
 
         demoEventHandler.setIvrService(ivrServices.isEmpty() ? null : ivrServices.get(0));
     }
+
+    @RequestMapping(value = "/ivrservices", method = RequestMethod.GET)
+    @ResponseBody
+    public List<ServiceContainer> getServices() {
+        List<ServiceContainer> serviceList = new ArrayList<ServiceContainer>();
+
+        int index = 0;
+        for(IVRService service : ivrServices) {
+            ServiceContainer serviceContainer = new ServiceContainer();
+
+            int dot = service.toString().lastIndexOf('.');
+            int at = service.toString().lastIndexOf('@');
+            String name = service.toString().substring(dot + 1, at);
+
+            serviceContainer.setName(name);
+            serviceContainer.setIndex(index);
+
+            serviceList.add(serviceContainer);
+            index++;
+        }
+        return serviceList;
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/changeservice", method = RequestMethod.GET)
+    public void changeService(@RequestParam String id) {
+        int index = Integer.parseInt(id);
+        IVRService service = ivrServices.get(index);
+
+        demoEventHandler.setIvrService(service);
+    }
+
 }
+

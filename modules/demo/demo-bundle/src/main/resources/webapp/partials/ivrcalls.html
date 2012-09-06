@@ -1,0 +1,33 @@
+
+<div>
+    <div>
+        <form class="form-horizontal">
+
+            <div class="control-group">
+                <label class="control-label" for="ivrSelect">IVR service</label>
+                <div class="controls">
+                    <select id="ivrSelect" ng-model="curservice" ng-options="service.name for service in ivrservices">
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="phoneNumber">Phone number</label>
+                <div class="controls">
+                    <input type="text" ng-model="phone" id="phoneNumber">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="delay">Delay</label>
+                <div class="controls">
+                    <input type="text" ng-model="delay" id="delay" placeholder="0">
+                </div>
+            </div>
+
+            <div class="controls">
+                <input type="submit" value="Call" ng-click="call()"/>
+            </div>
+        </form>
+    </div>
+</div>
