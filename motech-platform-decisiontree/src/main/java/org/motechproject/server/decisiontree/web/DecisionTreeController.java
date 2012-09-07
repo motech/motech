@@ -213,10 +213,10 @@ public class DecisionTreeController extends MultiActionController {
                         + "\n In order  to be used in VXML transition keys should be an Integer");
             }
 
-            ITransition transition = transitionEntry.getValue();
-            if (transition instanceof Transition && ((Transition) transition).getDestinationNode() == null) {
-                throw new DecisionTreeException(Errors.NULL_DESTINATION_NODE, "Invalid node: " + node + "\n Null Destination Node in the Transition: " + transition);
-            }
+//            ITransition transition = transitionEntry.getValue();
+//            if (transition instanceof Transition && ((Transition) transition).getDestinationNode() == null) {
+//                throw new DecisionTreeException(Errors.NULL_DESTINATION_NODE, "Invalid node: " + node + "\n Null Destination Node in the Transition: " + transition);
+//            }
         }
     }
 
