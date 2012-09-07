@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class CommcareFormServiceImpl implements CommcareFormService {
 
-    @Autowired
     private CommCareAPIHttpClient commcareHttpClient;
 
+    @Autowired
     public CommcareFormServiceImpl(CommCareAPIHttpClient commcareHttpClient) {
         this.commcareHttpClient = commcareHttpClient;
     }
