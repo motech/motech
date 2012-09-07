@@ -23,7 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
  * /commcare/cases.
  */
 @Controller
-public class CommcareController {
+public class CasesController {
     @Value("#{case_event_strategy['case.events.send.with.all.data']}")
     private String caseEventStrategy;
     private static final String FULL_DATA_EVENT = "full";
@@ -50,7 +50,7 @@ public class CommcareController {
     }
 
     @RequestMapping({ "/cases" })
-    public ModelAndView testCases(HttpServletRequest request,
+    public ModelAndView receiveCase(HttpServletRequest request,
             HttpServletResponse response) {
 
         String caseXml = "";

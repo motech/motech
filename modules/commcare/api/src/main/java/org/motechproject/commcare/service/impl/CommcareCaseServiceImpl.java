@@ -2,6 +2,7 @@ package org.motechproject.commcare.service.impl;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.httpclient.NameValuePair;
@@ -47,6 +48,9 @@ public class CommcareCaseServiceImpl implements CommcareCaseService {
         String response = commcareHttpClient.casesRequest(queryParams);
         List<CaseResponseJson> caseResponses = parseCasesFromResponse(response);
         List<CaseInfo> cases = generateCasesFromCaseResponse(caseResponses);
+        if (cases.size() == 0) {
+            return null;
+        }
         return cases.get(0);
     }
 
@@ -57,6 +61,9 @@ public class CommcareCaseServiceImpl implements CommcareCaseService {
         String response = commcareHttpClient.casesRequest(queryParams);
         List<CaseResponseJson> caseResponses = parseCasesFromResponse(response);
         List<CaseInfo> cases = generateCasesFromCaseResponse(caseResponses);
+        if (cases.size() == 0) {
+            return null;
+        }
         return cases.get(0);
     }
 
@@ -119,6 +126,10 @@ public class CommcareCaseServiceImpl implements CommcareCaseService {
             List<CaseResponseJson> caseResponses) {
         List<CaseInfo> caseList = new ArrayList<CaseInfo>();
 
+        if (caseResponses == null) {
+            return Collections.emptyList();
+        }
+
         for (CaseResponseJson caseResponse : caseResponses) {
             CaseInfo caseInfo = new CaseInfo();
 
@@ -174,5 +185,4 @@ public class CommcareCaseServiceImpl implements CommcareCaseService {
 
         return response;
     }
-
 }
