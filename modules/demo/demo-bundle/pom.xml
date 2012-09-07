@@ -68,6 +68,7 @@
                             org.springframework.web.servlet.config,
                             org.springframework.web.servlet.mvc,
                             org.springframework.web.servlet.view,
+                            org.motechproject.scheduler.gateway,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-demo</Embed-Dependency>

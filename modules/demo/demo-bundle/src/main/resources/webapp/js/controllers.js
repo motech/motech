@@ -288,3 +288,31 @@ function TreeExecuteCtrl($scope, Tree, $routeParams) {
 
     };
 }
+
+function IVRCallCtrl($scope, i18nService, $http) {
+
+    $http.get('api/ivrservices').success(function(data) {
+        $scope.ivrservices = data;
+        $scope.curservice = $scope.ivrservices[0];
+    });
+
+    $scope.call = function() {
+        $http.get('api/changeservice?id=' + $scope.curservice.index);
+
+        if ($scope.delay == '0' || $scope.delay == null) {
+            $http.get('api/initiateCall?phone=' + $scope.phone).success(function() {
+                alert("making a call now to " + $scope.phone);
+            });
+        }
+        else {
+            $http.get('api/scheduleCall?phone=' + $scope.phone + '&callDelay=' + $scope.delay).success(function() {
+
+                var oldDate = new Date();
+                var newDate = new Date(oldDate.getTime() + $scope.delay*60000);
+
+                alert("Scheduled a phone call to " + $scope.phone
+                 + " at " + newDate.getHours() + ":" + newDate.getMinutes());
+            });
+        }
+    };
+}
