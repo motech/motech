@@ -16,6 +16,11 @@
     </properties>
     <dependencies>
         <dependency>
+            <artifactId>motech-platform-server-config</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-decisiontree-server</artifactId>
             <version>${project.version}</version>
@@ -37,7 +42,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.motechproject</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-event</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>

@@ -1,45 +1,47 @@
 package org.motechproject.server.config;
 
 import org.apache.commons.io.IOUtils;
+import org.ektorp.CouchDbConnector;
+import org.ektorp.CouchDbInstance;
+import org.ektorp.impl.StdCouchDbInstance;
+import org.ektorp.spring.HttpClientFactoryBean;
 import org.motechproject.MotechException;
 import org.motechproject.server.config.service.PlatformSettingsService;
-import org.osgi.framework.BundleContext;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.osgi.context.BundleContextAware;
 
+import javax.annotation.PostConstruct;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public class SettingsFacade implements BundleContextAware, InitializingBean {
+public class SettingsFacade {
 
     private PlatformSettingsService platformSettingsService;
 
     private boolean rawConfigRegistered;
     private boolean propsRegistered;
 
-    private BundleContext bundleContext;
 
     private Map<String, Properties> config = new HashMap<>();
     private Map<String, Resource> rawConfig = new HashMap<>();
+
+    private String moduleName;
+    private String symbolicName;
 
     @Autowired(required = false)
     public void setPlatformSettingsService(PlatformSettingsService platformSettingsService) {
         this.platformSettingsService = platformSettingsService;
     }
 
-    @Override
-    public void setBundleContext(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
-    }
-
-    @Override
+    @PostConstruct
     public void afterPropertiesSet() {
         if (!propsRegistered) {
             registerAllProperties();
@@ -47,6 +49,14 @@ public class SettingsFacade implements BundleContextAware, InitializingBean {
         if (!rawConfigRegistered) {
             registerAllRawConfig();
         }
+    }
+
+    public String getModuleName() {
+        return moduleName;
+    }
+
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
     }
 
     public void setConfigFiles(List<Resource> resources) {
@@ -148,6 +158,52 @@ public class SettingsFacade implements BundleContextAware, InitializingBean {
         setProperty(filename, key, value);
     }
 
+    public CouchDbConnector getConnector(final String dbName, final String couchDbFileName) throws FileNotFoundException {
+        CouchDbConnector connector = null;
+
+        if (platformSettingsService != null) {
+            try {
+                connector = platformSettingsService.getCouchConnector(dbName);
+            } catch (Exception e) {
+                connector = null;
+            }
+        }
+
+        if (connector == null) {
+            URL couchDbURL = getClass().getClassLoader().getResource(couchDbFileName);
+
+            if (couchDbURL != null) {
+                InputStream couchDbStream = null;
+
+                try {
+                    URLConnection conn = couchDbURL.openConnection();
+                    couchDbStream = conn.getInputStream();
+
+                    Properties couchDb = new Properties();
+                    couchDb.load(couchDbStream);
+
+                    HttpClientFactoryBean httpClientFactoryBean = new HttpClientFactoryBean();
+                    httpClientFactoryBean.setProperties(couchDb);
+                    httpClientFactoryBean.setTestConnectionAtStartup(true);
+
+                    httpClientFactoryBean.afterPropertiesSet();
+
+                    CouchDbInstance instance = new StdCouchDbInstance(httpClientFactoryBean.getObject());
+
+                    connector = instance.createConnector(dbName, true);
+                } catch (Exception e) {
+                    throw new MotechException("Error during creation CouchDbConnector", e);
+                } finally {
+                    IOUtils.closeQuietly(couchDbStream);
+                }
+            } else {
+                throw new FileNotFoundException("Cant find file couchdb.properties");
+            }
+        }
+
+        return connector;
+    }
+
     public void saveConfigProperties(String filename, Properties properties) {
         config.put(filename, properties);
 
@@ -224,7 +280,7 @@ public class SettingsFacade implements BundleContextAware, InitializingBean {
     }
 
     protected void registerAllProperties() {
-        if (platformSettingsService != null && bundleContext != null) {
+        if (platformSettingsService != null) {
             for (Map.Entry<String, Properties> entry : config.entrySet()) {
                 String filename = entry.getKey();
                 Properties props = entry.getValue();
@@ -252,7 +308,7 @@ public class SettingsFacade implements BundleContextAware, InitializingBean {
     }
 
     protected void registerAllRawConfig() {
-        if (platformSettingsService != null && bundleContext != null) {
+        if (platformSettingsService != null) {
             for (Map.Entry<String, Resource> entry : rawConfig.entrySet()) {
                 String filename = entry.getKey();
                 Resource resource = entry.getValue();
@@ -271,7 +327,28 @@ public class SettingsFacade implements BundleContextAware, InitializingBean {
     }
 
     protected String getSymbolicName() {
-        return bundleContext.getBundle().getSymbolicName();
+        if (symbolicName == null && moduleName != null) {
+            symbolicName = constructSymbolicName();
+        }
+        return symbolicName;
+    }
+
+    protected String constructSymbolicName() {
+        StringBuilder sb = new StringBuilder();
+
+        if (moduleName.startsWith("motech-")) {
+            sb.append("org.motechproject");
+        } else if (!moduleName.startsWith("org.motechproject")) {
+            sb.append("org.motechproject.motech-");
+        }
+
+        sb.append(moduleName);
+
+        if (!moduleName.endsWith("-bundle")) {
+            sb.append("-bundle");
+        }
+
+        return sb.toString();
     }
 
     protected String findFilename(String key) {

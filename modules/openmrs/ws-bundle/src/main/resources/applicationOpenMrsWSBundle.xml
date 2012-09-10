@@ -13,6 +13,5 @@
     <osgi:service ref="userAdapter" interface="org.motechproject.mrs.services.MRSUserAdapter"/>
     <osgi:service ref="observationAdapter" interface="org.motechproject.mrs.services.MRSObservationAdapter"/>
 
-    <osgi:reference id="platformSettingsServiceOsgi" cardinality="0..1"
-                    interface="org.motechproject.server.config.service.PlatformSettingsService" />
+    <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService" />
 </beans>

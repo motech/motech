@@ -10,6 +10,8 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.launch.Framework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aop.framework.Advised;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -17,6 +19,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContext;
 import java.io.File;
+import java.io.FileFilter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -194,10 +197,15 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         return bundleClassLoaderLookup;
     }
 
-    private void registerPlatformServices(BundleContext bundleContext) {
+    private void registerPlatformServices(BundleContext bundleContext) throws Exception {
         bundleContext.registerService(EventRelay.class.getName(), eventRelay, null);
         bundleContext.registerService(EventListenerRegistryService.class.getName(), eventListenerRegistryService, null);
-        bundleContext.registerService(PlatformSettingsService.class.getName(), platformSettingsService, null);
+
+        if (AopUtils.isJdkDynamicProxy(platformSettingsService)) {
+            bundleContext.registerService(PlatformSettingsService.class.getName(), ((Advised) platformSettingsService).getTargetSource().getTarget(), null);
+        } else {
+            bundleContext.registerService(PlatformSettingsService.class.getName(), platformSettingsService, null);
+        }
     }
 
     private void storeClassCloader(Bundle bundle) throws Exception {
@@ -255,24 +263,33 @@ public class OsgiFrameworkService implements ApplicationContextAware {
      * @throws Exception
      */
     private List<URL> findExternalBundles() throws Exception {
-        List<URL> list = new ArrayList<URL>();
+        List<URL> list = new ArrayList<>();
         if (StringUtils.isNotBlank(externalBundleFolder)) {
             File folder = new File(externalBundleFolder);
+            boolean exists = folder.exists();
 
-            if (!folder.exists()) {
-                folder.mkdirs();
+            if (!exists) {
+                exists = folder.mkdirs();
             }
 
-            File[] files = folder.listFiles();
-            for (File file : files) {
-                if (file.getAbsolutePath().endsWith(".jar")) {
+            if (exists) {
+                File[] files = folder.listFiles(new FileFilter() {
+                    @Override
+                    public boolean accept(File path) {
+                        return path.isFile() && path.getAbsolutePath().endsWith(".jar");
+                    }
+                });
+
+                for (File file : files) {
                     URL url = file.toURI().toURL();
+
                     if (url != null) {
                         list.add(url);
                     }
                 }
             }
         }
+
         return list;
     }
 

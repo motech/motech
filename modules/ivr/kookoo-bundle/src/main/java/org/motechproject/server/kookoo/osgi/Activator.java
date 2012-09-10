@@ -42,11 +42,6 @@ public class Activator implements BundleActivator {
             }
         };
         this.tracker.open();
-        httpService = context.getServiceReference(HttpService.class.getName());
-        if (httpService != null) {
-            HttpService service = (HttpService) context.getService(httpService);
-            serviceAdded(service);
-        }
     }
 
     public void stop(BundleContext context) throws Exception {

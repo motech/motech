@@ -7,20 +7,15 @@
                 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
                 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-    <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
     <util:properties id="outboxProperties" location="classpath:outbox.properties"/>
 
-    <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean">
-        <property name="properties" ref="couchdbProperties"/>
+    <bean id="outboxSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
+        <property name="moduleName" value="outbox"/>
     </bean>
 
-    <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
-        <constructor-arg ref="httpClient"/>
-    </bean>
-
-    <bean id="outboxDatabase" class="org.ektorp.impl.StdCouchDbConnector">
+    <bean id="outboxDatabase" factory-bean="outboxSettings" factory-method="getConnector">
         <constructor-arg value="motech-outbox"/>
-        <constructor-arg ref="couchDbInstance"/>
+        <constructor-arg value="couchdb.properties"/>
     </bean>
 
     <context:annotation-config/>

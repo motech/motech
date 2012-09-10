@@ -65,7 +65,7 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.motechproject</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-event</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
@@ -76,7 +76,7 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.motechproject</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-outbox-api</artifactId>
             <version>${project.version}</version>
             <type>jar</type>

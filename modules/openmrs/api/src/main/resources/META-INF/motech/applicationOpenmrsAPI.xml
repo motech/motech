@@ -18,14 +18,13 @@
 
     <tx:annotation-driven/>
 
-
-    <bean id="openmrsAPISettings" class="org.motechproject.server.config.SettingsFacade">
+    <bean id="openmrsAPISettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="configFiles">
             <list>
                 <value>classpath:openmrs.properties</value>
             </list>
         </property>
-        <property name="platformSettingsService" ref="platformSettingsServiceOsgi" />
+        <property name="moduleName" value="openmrs-api"/>
     </bean>
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">

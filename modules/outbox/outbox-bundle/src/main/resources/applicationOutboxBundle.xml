@@ -10,8 +10,7 @@
     <osgi:service id="voiceOutboxServiceOsgi" auto-export="interfaces" ref="voiceOutboxService"
                   interface="org.motechproject.outbox.api.service.VoiceOutboxService"/>
 
-    <osgi:reference id="platformSettingsServiceOsgi" cardinality="0..1"
-                    interface="org.motechproject.server.config.service.PlatformSettingsService" />
+    <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService" />
 
     <osgi:reference id="eventRelayOsgi" cardinality="0..1"
                     interface="org.motechproject.event.listener.EventRelay" />

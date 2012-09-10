@@ -5,8 +5,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.server.config.service.PlatformSettingsService;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -24,21 +22,16 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class SettingsFacadeTest {
 
-    private static final String BUNDLE_NAME = "org.motechproject.bundle";
+    private static final String BUNDLE_NAME = "org.motechproject.motech-module-bundle";
     private static final String FILENAME = "settings.properties";
     private static final String LANGUAGE_PROP = "system.language";
     private static final String LANGUAGE_VALUE = "en";
     private static final String TEST_PROP = "test";
     private static final String TEST_VAL = "test-val";
     private static final String MOCK_FILENAME = "testfile";
+    private static final String MODULE_NAME = "module";
 
     SettingsFacade settingsFacade = new SettingsFacade();
-
-    @Mock
-    BundleContext bundleContext;
-
-    @Mock
-    Bundle bundle;
 
     @Mock
     Properties props;
@@ -54,7 +47,6 @@ public class SettingsFacadeTest {
     @Test
     public void testGetConfigNoService() {
         settingsFacade.setPlatformSettingsService(null);
-        settingsFacade.setBundleContext(null);
         setUpConfig();
 
         String result = settingsFacade.getProperty(LANGUAGE_PROP);
@@ -73,9 +65,6 @@ public class SettingsFacadeTest {
         String result = settingsFacade.getProperty(LANGUAGE_PROP);
 
         assertEquals(LANGUAGE_VALUE, result);
-
-        verify(bundleContext, times(2)).getBundle();
-        verify(bundle, times(2)).getSymbolicName();
         verify(platformSettingsService, times(2)).getBundleProperties(BUNDLE_NAME, FILENAME);
     }
 
@@ -89,8 +78,6 @@ public class SettingsFacadeTest {
 
         settingsFacade.afterPropertiesSet();
 
-        verify(bundleContext, times(2)).getBundle();
-        verify(bundle, times(2)).getSymbolicName();
         ArgumentCaptor<Properties> argument = ArgumentCaptor.forClass(Properties.class);
         verify(platformSettingsService).saveBundleProperties(eq(BUNDLE_NAME), eq(FILENAME), argument.capture());
         assertEquals(LANGUAGE_VALUE, argument.getValue().getProperty(LANGUAGE_PROP));
@@ -118,9 +105,7 @@ public class SettingsFacadeTest {
     }
 
     private void setUpOsgiEnv() {
+        settingsFacade.setModuleName(MODULE_NAME);
         settingsFacade.setPlatformSettingsService(platformSettingsService);
-        settingsFacade.setBundleContext(bundleContext);
-        when(bundleContext.getBundle()).thenReturn(bundle);
-        when(bundle.getSymbolicName()).thenReturn(BUNDLE_NAME);
     }
 }

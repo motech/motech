@@ -8,10 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
-@Repository
 public class AllTrees extends MotechBaseRepository<Tree> {
     @Autowired
-    protected AllTrees(@Qualifier("treesDatabase") CouchDbConnector db) {
+    public AllTrees(@Qualifier("treesDatabase") CouchDbConnector db) {
         super(Tree.class, db);
     }
 
