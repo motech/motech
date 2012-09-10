@@ -16,6 +16,11 @@ public final class EventDataKeys {
     //Malformed case xml exception event
     public static final String MESSAGE = "message";
 
+    //FormStubEvent
+    public static final String RECEIVED_ON = "receivedOn";
+    public static final String FORM_ID = "formId";
+    public static final String CASE_IDS = "caseIds";
+
     private EventDataKeys() {
     }
 }
