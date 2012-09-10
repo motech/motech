@@ -68,9 +68,9 @@ public class ServerEventRelayIT {
 
         for (int i = 0; i < messageMaxRedeliveryCount; i++) {
             long delta = delay * Double.valueOf(Math.pow(2, i)).intValue();
-            int diff = handledTimes.get(i + 1).getSecondOfMinute() - handledTimes.get(i).getSecondOfMinute();
-            diff = diff <= 0 ? diff + 60 : diff;
-            assertTrue(diff >= delta);
+            long diff = handledTimes.get(i + 1).getMillis() - handledTimes.get(i).getMillis();
+            diff = (long) Math.ceil(diff / 1000.0);
+            assertTrue(String.format("Expected at least %d, but actually %d", delta, diff), diff >= delta);
         }
     }
 
