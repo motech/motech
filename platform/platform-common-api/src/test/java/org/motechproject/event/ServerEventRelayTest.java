@@ -1,10 +1,9 @@
-package org.motechproject.server.event;
+package org.motechproject.event;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.event.*;
 import org.motechproject.metrics.MetricsAgent;
 import org.motechproject.metrics.impl.MultipleMetricsAgentImpl;
 
@@ -14,11 +13,19 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class ServerEventRelayIT {
+public class ServerEventRelayTest {
     EventListenerRegistry registry;
 
     @Mock

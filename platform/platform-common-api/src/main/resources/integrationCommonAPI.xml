@@ -28,6 +28,9 @@
         <constructor-arg value="${queue.for.events}"/>
     </bean>
 
+    <context:annotation-config/>
+    <context:component-scan base-package="org.motechproject.event"/>
+
     <import resource="outboundEventChannelAdapterAPI.xml"/>
 
 </beans>

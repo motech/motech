@@ -156,10 +156,12 @@ public class DecisionTreeController extends MultiActionController {
                 node = decisionTreeService.getRootNode(currentTree, session);
                 autowire(node);
                 ITransition hangupTransition = node.getTransitions().get(CallStatus.hangup.toString());
-                autowire(hangupTransition);
-                node = hangupTransition.getDestinationNode(transitionKey, session);
-                autowire(node);
-                executeOperations(transitionKey, session, node);
+                if (hangupTransition != null) {
+                    autowire(hangupTransition);
+                    node = hangupTransition.getDestinationNode(transitionKey, session);
+                    autowire(node);
+                    executeOperations(transitionKey, session, node);
+                }
                 return new ModelAndView(templateNameFor(request.getParameter(PROVIDER_NAME_PARAM), EXIT_TEMPLATE_NAME));
             } else {
                 ITransition transition = sendTreeEventActions(params, transitionKey, parentTransitionPath, node);
