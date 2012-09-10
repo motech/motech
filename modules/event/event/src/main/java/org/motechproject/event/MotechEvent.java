@@ -80,7 +80,7 @@ public class MotechEvent implements Serializable {
      */
     public Map<String, Object> getParameters() {
         if (parameters == null) {
-            parameters = new HashMap<String, Object>();
+            parameters = new HashMap<>();
         }
         return parameters;
     }

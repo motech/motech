@@ -1,6 +1,5 @@
 package org.motechproject.decisiontree.server.service;
 
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,11 +44,11 @@ public class TreeEventProcessorTest {
                     )}
             });
 
-    @InjectMocks
-    TreeEventProcessor treeEventProcessor = new TreeEventProcessor();
-
     @Mock
     EventRelay eventRelay;
+
+    @InjectMocks
+    TreeEventProcessor treeEventProcessor = new TreeEventProcessor();
 
     @Before
     public void setUp() throws Exception {
