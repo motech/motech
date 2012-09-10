@@ -65,6 +65,7 @@
                             org.apache.activemq,
                             org.apache.activemq.command,
                             org.aopalliance.aop,
+                            org.springframework.stereotype,
                             org.springframework.aop,
                             org.springframework.aop.framework,
                             org.springframework.aop.support,

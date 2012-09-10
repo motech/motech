@@ -9,6 +9,7 @@
 
     <beans:bean id="eventQueueTransformer" class="org.motechproject.event.MotechEventTransformer" />
     <beans:bean id="motechEventHeaderMapper" class="org.motechproject.event.MotechEventHeaderMapper" />
+    <beans:bean id="motechEventConfig" class="org.motechproject.event.MotechEventConfig" />
 
     <gateway service-interface="org.motechproject.event.OutboundEventGateway"
              id="outboundEventGateway"
