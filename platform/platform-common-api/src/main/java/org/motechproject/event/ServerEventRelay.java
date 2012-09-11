@@ -1,6 +1,8 @@
 package org.motechproject.event;
 
-import org.motechproject.InvalidMotechEventException;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.MotechEventConfig;
+import org.motechproject.event.OutboundEventGateway;
 import org.motechproject.metrics.MetricsAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,7 +153,7 @@ public class ServerEventRelay implements EventRelay {
         try {
             listener.handle(event);
 
-        } catch (InvalidMotechEventException e) {
+        } catch (Exception e) {
             log.debug("Handling error - " + e.getMessage());
             event.getParameters().put(MotechEvent.PARAM_INVALID_MOTECH_EVENT, Boolean.TRUE);
 

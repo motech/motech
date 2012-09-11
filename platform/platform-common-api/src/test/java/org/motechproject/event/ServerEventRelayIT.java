@@ -4,7 +4,8 @@ import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.InvalidMotechEventException;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.MotechEventConfig;
 import org.motechproject.event.annotations.MotechListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -13,6 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.String.format;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
@@ -88,7 +90,7 @@ public class ServerEventRelayIT {
         public synchronized void handle(MotechEvent motechEvent) {
             this.motechEvent = motechEvent;
             handledTimes.add(new DateTime());
-            throw new InvalidMotechEventException("Message redelivery test.");
+            throw new RuntimeException("Message redelivery test.");
         }
 
         public MotechEvent getMotechEvent() {
