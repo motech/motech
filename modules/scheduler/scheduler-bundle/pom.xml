@@ -55,6 +55,12 @@
             <artifactId>spring-webmvc</artifactId>
             <version>${spring.version}</version>
         </dependency>
+        <!-- OSGI dependencies -->
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>org.motechproject.org.quartz-scheduler</artifactId>
+            <version>2.1.5</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

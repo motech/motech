@@ -49,6 +49,12 @@
             <artifactId>spring-webmvc</artifactId>
             <version>${spring.version}</version>
         </dependency>
+        <!-- OSGI dependencies -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>org.motechproject.com.google.code.gson</artifactId>
+            <version>1.7.1</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

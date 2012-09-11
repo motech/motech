@@ -46,6 +46,17 @@
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
+        <!-- OSGI dependencies -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>org.motechproject.com.google.code.gson</artifactId>
+            <version>1.7.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
+            <version>1.9.7</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

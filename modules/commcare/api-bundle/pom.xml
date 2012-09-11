@@ -50,7 +50,19 @@
             <artifactId>motech-platform-server-api</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
-        </dependency>    </dependencies>
+        </dependency>
+        <!-- OSGI dependencies -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>org.motechproject.com.google.code.gson</artifactId>
+            <version>1.7.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>org.motechproject.com.thoughtworks.xstream</artifactId>
+            <version>1.4.2</version>
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
             <plugin>

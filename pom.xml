@@ -37,6 +37,16 @@
             <name>MoTeCH Maven Repository</name>
             <url>http://nexus.motechproject.org/content/repositories/public</url>
         </repository>
+        <repository>
+            <id>com.springsource.repository.bundles.release</id>
+            <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
+            <url>http://repository.springsource.com/maven/bundles/release</url>
+        </repository>
+        <repository>
+            <id>com.springsource.repository.bundles.external</id>
+            <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
+            <url>http://repository.springsource.com/maven/bundles/external</url>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -188,6 +198,17 @@
         <module>modules/testing-utils/testing-utils</module>
         <module>modules/web-security/web-security</module>
 
+        <!-- Internal OSGI bundles -->
+        <module>bundles/gson</module>
+        <module>bundles/lambdaj</module>
+        <module>bundles/stax</module>
+        <module>bundles/kxml2</module>
+        <module>bundles/xstream</module>
+        <module>bundles/jackson</module>
+        <module>bundles/quartz</module>
+        <module>bundles/jsmpp</module>
+        <module>bundles/smslib</module>
+
         <!-- OSGI modules -->
         <module>modules/admin/admin-bundle</module>
         <module>modules/alerts/api-bundle</module>
@@ -206,7 +227,7 @@
         <module>modules/message-campaign/message-campaign-bundle</module>
         <module>modules/mobileforms/api-bundle</module>
         <module>modules/mrs/api-bundle</module>
-        <module>modules/openmrs/api-bundle</module>
+        <!--<module>modules/openmrs/api-bundle</module>-->
         <module>modules/openmrs/ws-bundle</module>
         <module>modules/outbox/outbox-bundle</module>
         <module>modules/pillreminder/api-bundle</module>

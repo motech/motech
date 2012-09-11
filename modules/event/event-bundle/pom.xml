@@ -50,8 +50,8 @@
             <artifactId>motech-platform-server-api</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
-        </dependency>    </dependencies>
-
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
             <plugin>
