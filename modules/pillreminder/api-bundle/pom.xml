@@ -98,6 +98,12 @@
             <artifactId>aopalliance</artifactId>
             <version>1.0</version>
         </dependency>
+        <!-- OSGI dependencies -->
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
+            <version>1.9.7</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

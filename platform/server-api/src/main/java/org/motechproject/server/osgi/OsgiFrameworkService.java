@@ -82,7 +82,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             for (Bundle bundle : bundles) {
                 String bundleSymbolicName = bundle.getSymbolicName();
 
-                if (!bundleSymbolicName.startsWith("org.motechproject")) {
+                if (!bundleSymbolicName.startsWith("org.motechproject.motech-")) {
                     startBundle(bundleSymbolicName);
                 }
             }
@@ -105,7 +105,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
             for (Bundle bundle : bundles) {
                 String bundleSymbolicName = bundle.getSymbolicName();
 
-                if (bundleSymbolicName.startsWith("org.motechproject")) {
+                if (bundleSymbolicName.startsWith("org.motechproject.motech-")) {
                     startBundle(bundleSymbolicName);
                 }
             }

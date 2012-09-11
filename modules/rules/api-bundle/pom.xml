@@ -139,6 +139,17 @@
             <artifactId>drools-api</artifactId>
             <version>5.1.1</version>
         </dependency>
+        <!-- OSGI dependencies -->
+        <dependency>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>org.motechproject.com.thoughtworks.xstream</artifactId>
+            <version>1.4.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>org.motechproject.org.quartz-scheduler</artifactId>
+            <version>2.1.5</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

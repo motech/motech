@@ -59,9 +59,20 @@
             <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
+        <!-- OSGI dependencies -->
+        <dependency>
+            <groupId>com.googlecode.lambdaj</groupId>
+            <artifactId>org.motechproject.com.googlecode.lambdaj</artifactId>
+            <version>2.3.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
+            <version>1.9.7</version>
+        </dependency>
         <dependency>
             <groupId>org.smslib</groupId>
-            <artifactId>smslib-patched</artifactId>
+            <artifactId>org.motechproject.org.smslib</artifactId>
             <version>3.5.1</version>
         </dependency>
     </dependencies>
@@ -92,7 +103,7 @@
                             org.motechproject.event,
                             *
                         </Import-Package>
-                        <Embed-Dependency>motech-sms-smpp, smslib-patched, jsmpp-for-smslib</Embed-Dependency>
+                        <Embed-Dependency>motech-sms-smpp</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
