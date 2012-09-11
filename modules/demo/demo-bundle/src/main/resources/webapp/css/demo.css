@@ -48,7 +48,7 @@
     margin: -5px 0 25px 10px;
 }
 
-.requiredField {
+.required-field {
     color:#ff0000;
 }
 
@@ -85,16 +85,18 @@ select {
     border: 1px solid #e5e5e5;
     margin: 0 25px 10px 25px;
     border-radius: 4px;
+    -webkit-box-shadow: 0 0 6px #e5e5e5;
+    -moz-box-shadow: 0 0 6px #e5e5e5;
+    box-shadow: 0 0 6px #e5e5e5;
 }
 
 .message-header {
-    height: 18px;
+    height: 28px;
     margin: 0 0 10px 0;
     border-radius: 4px;
     color: #c2eafe;
     font-weight: bold;
-    padding:5px 10px;
-    line-height: 21px;
+    line-height: 28px;
     font-size: 16px;
     background: #001e4f url("../img/headbg.png") repeat-x left top;
 }
@@ -104,7 +106,70 @@ select {
     border: none;
     padding: 0;
     background: none;
+    -webkit-box-shadow: 0 0 0 #e5e5e5;
+    -moz-box-shadow: 0 0 0 #e5e5e5;
+    box-shadow: 0 0 0 #e5e5e5;
 }
+
+.event-label {
+    padding-top: 5px;
+    display: block;
+    margin-top: 10px;
+}
+.event-label-group {
+    padding-top: 5px;
+    display: block;
+}
+.event-label1 {
+    float: left;
+    padding-top: 5px;
+    text-align: left;
+    width: 75px;
+    border-bottom: 1px dashed #cccccc;
+}
+.event-label2 {
+    float: left;
+    padding-top: 5px;
+    text-align: left;
+    width: 150px;
+    border-bottom: 1px dashed #cccccc;
+}
+.event-label3 {
+    float: left;
+    padding-top: 0;
+    text-align: left;
+    width: 140px;
+    margin-left: 5px;
+}
+
+.form-hint:before {
+    color: #d45252;
+    content: "\25C0";
+    left: -6px;
+    position: absolute;
+    top: 1px;
+}
+
+.form-hint {
+    background: #d45252;
+    border-radius: 3px 3px 3px 3px;
+    color: white;
+    float:left;
+    display:inline-block;
+    margin-left: 8px;
+    padding: 1px 6px;
+    position: absolute;
+    z-index: 999;
+    font-size: 11px;
+}
+
+.message-group input[class*="span"],
+.message-group textarea[class*="span"],
+.hint-group input[class*="span"]{
+    float: left;
+    margin-left: 0;
+}
+
 
 /* ---- table ---- */
 

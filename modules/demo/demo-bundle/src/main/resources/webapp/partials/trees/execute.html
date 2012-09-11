@@ -6,11 +6,10 @@
             <li class="active">{{msg('execute')}}: {{tree.name}}</li>
         </ul>
     </div>
-    <h2>{{msg('execute')}}: {{tree.name}}</h2>
+    <div id="commandLinks">
+        <h2>{{msg('execute')}}: {{tree.name}}</h2>
+    </div>
 
-    <p>
-        <a href="#/trees" class="btn btn-primary">{{msg('main.back')}}</a>
-    </p>
     <hr>
     <div class="row-fluid">
         <div class="span12">
@@ -38,8 +37,14 @@
                             <div id="b9" ng-click="addKey(9)" class="cellphone_button button_size2"><div class="button_size2"><span class="hidden-value">9wxyz</span></div></div>
                             <div id="b0" ng-click="addKey(0)" class="cellphone_button button_size2"><div class="button_size2"><span class="hidden-value">0</span></div></div>
                         </div>
-                    </div>
 
+                    </div>
+                    <span class="btn btn-info" ng-click="restart()" ><i class="icon-refresh icon-white i-middle"></i> Restart</span>
+                    <div class="clearfix"></div>
+                    <hr>
+                    <p>
+                        <a href="#/trees" class="btn btn-primary">{{msg('main.back')}}</a>
+                    </p>
                 </div>
                 <div class="span8">
                     <h2>{{msg('execute.history')}}</h2>

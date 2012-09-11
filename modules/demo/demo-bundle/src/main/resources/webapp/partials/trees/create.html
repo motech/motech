@@ -17,11 +17,19 @@
         </div>
         <form id="createTreeForm" name="createTreeForm" class="form-horizontal message-group-tree" novalidate>
             <div class="message-header"></div>
-            <div class="control-group">
-                <label for="tree.name" class="control-label">{{msg('trees.create.tree.name')}}<span class="requiredField">*</span></label>
+            <div class="form-actions">
+                <input type="button" ng-click="sendTree()" value="{{msg('main.submit')}}" ng-disabled="createTreeForm.$invalid" class="btn btn-primary"/>
+                <a href="#/trees" class="btn">{{msg('main.cancel')}}</a>
+                <span ng-hide="acyclic" class="alert alert-error">
+                    <strong>{{msg('main.error')}}:</strong> {{msg('trees.error.treeCyclesFound')}}
+                </span>
+            </div>
+            <div class="control-group hint-group">
+                <label for="tree.name" class="control-label">{{msg('trees.create.tree.name')}}<span class="required-field">*</span></label>
                 <div class="controls">
                     <input type="text" ng-model="tree.name" id="tree.name" name="tree.name" class="span8" required/>
                 </div>
+                <div class="form-hint" ng-show="treeNameValidationMsg">{{treeNameValidationMsg}}</div>
             </div>
             <div class="control-group">
                 <label for="tree.description" class="control-label">{{msg('trees.create.tree.description')}}</label>
@@ -29,25 +37,25 @@
                     <input type="text" ng-model="tree.description" id="tree.description" name="tree.description" class="span8"/>
                 </div>
             </div>
-            <div class="control-group">
-                <div class="controls">
-                    <a ng-click="addNode()" class="btn btn-inverse"><i class="icon-plus icon-white i-middle"></i> {{msg('trees.create.node.add')}}</a>
-                </div>
-            </div>
+
             <div ng-repeat="node in tree.nodes" class="control-group message-group">
-                <div ng-show="node.id != 0" class="message-header"></div>
+                <div ng-show="node.id != 0" class="message-header">
+                    <a ng-click="removeNode(node)" class="btn btn-danger pull-right"><i class="icon-remove icon-white i-middle"></i> </a>
+                </div>
                 <div ng-show="node.id != 0" class="control-group">
-                    <label for="{{node.id}}.name" class="control-label">{{msg('trees.create.node.name')}}<span class="requiredField">*</span></label>
+                    <label for="{{node.id}}.name" class="control-label">{{msg('trees.create.node.name')}}<span class="required-field">*</span></label>
                     <div class="controls">
                         <input type="text" ng-model="node.name" id="{{node.id}}.name" name="{{node.id}}.name" required class="span8" />
                     </div>
+                    <div class="form-hint" ng-show="getValidationError(node.id, 'name')">{{getValidationError(node.id, 'name')}}</div>
                 </div>
 
                 <div class="control-group">
-                    <label for="{{node.id}}.message" class="control-label">{{msg('trees.create.node.message')}}<span class="requiredField">*</span></label>
+                    <label for="{{node.id}}.message" class="control-label">{{msg('trees.create.node.message')}}<span class="required-field">*</span></label>
                     <div class="controls">
                         <textarea id="{{node.id}}.message" name="{{node.id}}.message" rows="5" ng-model="node.message" required class="span8">{{node.message}}</textarea>
                     </div>
+                    <div class="form-hint" ng-show="getValidationError(node.id, 'message')">{{getValidationError(node.id, 'message')}}</div>
                 </div>
 
                 <div class="control-group">
@@ -60,17 +68,19 @@
                             <a ng-click="addAction(node, event, false)" class="btn btn-info">{{msg('main.after')}}</a>
                         </div>
                         <div class="form-inline">
-                            <span ng-hide="node.actionsBefore.length == 0">{{msg('trees.create.node.actions.before')}}</span>
-                            <div ng-repeat="before in node.actionsBefore">
-                                <span>{{msg('trees.create.node.actions.add.eventId')}}</span>: <span>{{before}}</span>
-                                <a ng-click="removeAction(node, before, true)" class="btn btn-small btn-danger"><i class="icon-remove icon-white i-middle"></i></a>
+                            <span class="event-label" ng-hide="node.actionsBefore.length == 0">{{msg('trees.create.node.actions.before')}}</span>
+                            <div class="event-label-group" ng-repeat="before in node.actionsBefore">
+                                <span class="event-label1">{{msg('trees.create.node.actions.add.eventId')}}: </span><span class="event-label2">{{before}}</span>
+                                <span class="event-label3"><a ng-click="removeAction(node, before, true)" class="btn btn-small btn-danger"><i class="icon-remove icon-white i-middle"></i></a></span>
+                                <div class="clearfix"></div>
                             </div>
                         </div>
                         <div class="form-inline">
-                            <span ng-hide="node.actionsAfter.length == 0">{{msg('trees.create.node.actions.after')}}</span>
-                            <div ng-repeat="after in node.actionsAfter">
-                                <span>{{msg('trees.create.node.actions.add.eventId')}}</span>: <span>{{after}}</span>
-                                <a ng-click="removeAction(node, after, false)" class="btn btn-small btn-danger"><i class="icon-remove icon-white i-middle"></i></a>
+                            <span class="event-label" ng-hide="node.actionsAfter.length == 0">{{msg('trees.create.node.actions.after')}}</span>
+                            <div class="event-label-group" ng-repeat="after in node.actionsAfter">
+                                <span class="event-label1">{{msg('trees.create.node.actions.add.eventId')}}: </span><span class="event-label2">{{after}}</span>
+                                <span class="event-label3"><a ng-click="removeAction(node, after, false)" class="btn btn-small btn-danger"><i class="icon-remove icon-white i-middle"></i></a></span>
+                                <div class="clearfix"></div>
                             </div>
                         </div>
                     </div>
@@ -85,25 +95,26 @@
                 <div ng-show="findTransitions(node, false).length != 0" class="form-inline">
                     <div class="control-group">
                         <div ng-repeat="transition in node.transitions" class="controls">
-                            <label for="{{transition.key}}">{{msg('trees.create.node.transition.key')}}<span>*</span></label>
+                            <label for="{{transition.key}}">{{msg('trees.create.node.transition.key')}}<span class="required-field">*</span></label>
                             <input type="text" ng-model="transition.key" id="{{transition.key}}" name="{{transition.name}}" required class="input-small"/>
                             <select ng-model="transition.node" ng-options="t.name for t in findTransitions(node, false)" required></select>
                             <a ng-click="removeTransition(node, transition)" class="btn btn-small btn-danger"><i class="icon-remove icon-white i-middle"></i></a>
+                            <div class="form-hint" ng-show="getValidationError(node.id, 'transition', transition.id)">{{getValidationError(node.id, 'transition', transition.id)}}</div>
                         </div>
                     </div>
                 </div>
-
-                <div ng-show="node.id != 0" class="control-group">
-                    <div class="controls">
-                        <a ng-click="removeNode(node)" class="btn btn-danger"><i class="icon-remove icon-white i-middle"></i> {{msg('main.remove')}}</a>
-                    </div>
+                <div class="form-actions" ng-show="node.id == 0">
+                    <a ng-click="addNode()" class="btn btn-inverse"><i class="icon-plus icon-white i-middle"></i> {{msg('trees.create.node.add')}}</a>
                 </div>
+            </div>
 
+            <div class="form-actions" ng-show="tree.nodes.length > 1">
+                <a ng-click="addNode()" class="btn btn-inverse"><i class="icon-plus icon-white i-middle"></i> {{msg('trees.create.node.add')}}</a>
             </div>
 
             <div class="form-actions">
-                <input type="button" ng-click="checkTreeCyclic()" value="{{msg('main.validate')}}" ng-disabled="createTreeForm.$invalid" class="btn btn-inverse"/>
-                <input type="button" ng-click="sendTree()" value="{{msg('main.submit')}}" ng-show="isChecked()" ng-disabled="createTreeForm.$invalid" class="btn btn-primary"/>
+
+                <input type="button" ng-click="sendTree()" value="{{msg('main.submit')}}" ng-disabled="createTreeForm.$invalid" class="btn btn-primary"/>
                 <a href="#/trees" class="btn">{{msg('main.cancel')}}</a>
                 <span ng-hide="acyclic" class="alert alert-error">
                     <strong>{{msg('main.error')}}:</strong> {{msg('trees.error.treeCyclesFound')}}

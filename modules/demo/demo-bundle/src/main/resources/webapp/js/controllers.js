@@ -56,6 +56,9 @@ function TreeCreateCtrl($scope, $http) {
     $scope.acyclic = true;
     $scope.checked = false;
 
+    $scope.validationMsgs = new Object();
+    $scope.treeNameValidationMsg = '';
+
     $scope.isChecked = function () {
         return $scope.checked && $scope.acyclic;
     }
@@ -67,32 +70,57 @@ function TreeCreateCtrl($scope, $http) {
 
     $scope.validation = function () {
         var errors = [], i, j, node, transition;
+        $scope.validationMsgs = new Object();
+        $scope.treeNameValidationMsg = '';
 
         if ($scope.tree.name == null || $scope.tree.name == '') {
-            errors.push(jQuery.i18n.prop('trees.error.treeNameRequired'));
+            var errMsg = jQuery.i18n.prop('trees.error.treeNameRequired')
+            $scope.treeNameValidationMsg = errMsg;
+            errors.push(errMsg);
         }
 
         for (i = 0; i < $scope.tree.nodes.length; i += 1) {
             node = $scope.tree.nodes[i];
 
-            if (node.name == null || node.name == '') {
-                errors.push(node.id + ': ' + jQuery.i18n.prop('trees.error.nodeNameRequired'));
+            if (!node.name) {
+                var errMsg = jQuery.i18n.prop('trees.error.nodeNameRequired');
+                var errId = node.id + '.name';
+
+                errors.push(node.id + ': ' + errMsg);
+                $scope.validationMsgs[errId] = errMsg;
             }
 
             if (node.message == null || node.message == '') {
-                errors.push(node.id + ': ' + jQuery.i18n.prop('trees.error.nodeMessageRequired'));
+                var errMsg = jQuery.i18n.prop('trees.error.nodeMessageRequired')
+                var errId = node.id + '.message';
+
+                errors.push(node.id + ': ' + errMsg);
+                $scope.validationMsgs[errId] = errMsg;
             }
 
             for (j = 0; j < node.transitions.length; j += 1) {
                 transition = node.transitions[j];
 
                 if (transition.key == null || transition.key == '') {
-                    errors.push(transition.id + ': ' + jQuery.i18n.prop('trees.error.transitionKeyRequired'));
+                    var errMsg =  jQuery.i18n.prop('trees.error.transitionKeyRequired');
+                    var errId = node.id + ".transition." + transition.id;
+
+                    errors.push(transition.id + ': ' + errMsg);
+                    $scope.validationMsgs[errId] = errMsg;
                 }
             }
         }
 
         return errors;
+    }
+
+    $scope.getValidationError = function(nodeId, fieldName, transitionId) {
+        var errId = nodeId + '.' + fieldName;
+        if (typeof(transitionId) != 'undefined') {
+            errId += '.' + transitionId;
+        }
+        var errMsg = $scope.validationMsgs[errId];
+        return (typeof errMsg == 'undefined') ? '' : errMsg;
     }
 
     $scope.checkTreeCyclic = function () {
@@ -280,6 +308,9 @@ function TreeExecuteCtrl($scope, Tree, $routeParams) {
             }
         }
 
+        if (0 == $scope.tree.nodes[0].transitions.length) {
+                        $scope.history.unshift({ response: 'Warning! Have reached the end of the tree.', alert: 'info' });
+                    }
         if (!found) {
             $scope.history.unshift({ request: entered, response: jQuery.i18n.prop('trees.error.transitionNofFound'), alert: 'error' });
         }
@@ -287,6 +318,15 @@ function TreeExecuteCtrl($scope, Tree, $routeParams) {
         $scope.reset();
 
     };
+
+    $scope.restart = function(){
+        $scope.entered = [];
+        $scope.history = [];
+
+        $scope.tree = Tree.get({ treeId: $routeParams.treeId }, function () {
+            $scope.history.unshift({ response: $scope.tree.nodes[0], alert: 'success' });
+        });
+    }
 }
 
 function IVRCallCtrl($scope, i18nService, $http) {
