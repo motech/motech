@@ -15,6 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.String.format;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
@@ -38,6 +39,7 @@ public class ServerEventRelayIT {
      * For the test to work, set attribute schedulerSupport="true" in the broker element of the activemq.xml
      * Ref: http://activemq.apache.org/delay-and-schedule-message-delivery.html
      */
+    // TODO: may fail randomly
     @Test
     public void shouldRedeliverMessages_SpecifiedTimes_WithDelay() throws InterruptedException, NoSuchFieldException {
         InvalidMessageEventListener eventListener = new InvalidMessageEventListener();
@@ -72,7 +74,7 @@ public class ServerEventRelayIT {
             long delta = delay * Double.valueOf(Math.pow(2, i)).intValue();
             int diff = handledTimes.get(i + 1).getSecondOfMinute() - handledTimes.get(i).getSecondOfMinute();
             diff = diff <= 0 ? diff + 60 : diff;
-            assertTrue(diff >= delta);
+            assertTrue(format("Expected retry after %d seconds, raised after %d seconds", delta, diff), diff >= delta);
         }
     }
 

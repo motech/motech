@@ -210,6 +210,7 @@ public class MotechSchedulerIT {
     }
 
     @Test
+    // TODO: may fail randomly
     public void rescheduleJobHappyPathTest() throws Exception {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("JobID", uuidStr);
