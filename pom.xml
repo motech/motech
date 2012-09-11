@@ -184,6 +184,7 @@
         <module>modules/mobileforms/api</module>
         <module>modules/mrs/api</module>
         <module>modules/openmrs/api</module>
+        <module>modules/openmrs/atomfeed</module>
         <module>modules/openmrs/omod</module>
         <module>modules/openmrs/ws</module>
         <module>modules/outbox/api</module>
@@ -228,6 +229,7 @@
         <module>modules/mobileforms/api-bundle</module>
         <module>modules/mrs/api-bundle</module>
         <!--<module>modules/openmrs/api-bundle</module>-->
+        <module>modules/openmrs/atomfeed-bundle</module>
         <module>modules/openmrs/ws-bundle</module>
         <module>modules/outbox/outbox-bundle</module>
         <module>modules/pillreminder/api-bundle</module>
