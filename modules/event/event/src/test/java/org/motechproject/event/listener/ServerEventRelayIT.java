@@ -4,7 +4,6 @@ import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.motechproject.InvalidMotechEventException;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.MotechEventConfig;
 import org.motechproject.event.listener.annotations.MotechListener;
@@ -39,7 +38,6 @@ public class ServerEventRelayIT {
      * For the test to work, set attribute schedulerSupport="true" in the broker element of the activemq.xml
      * Ref: http://activemq.apache.org/delay-and-schedule-message-delivery.html
      */
-    // TODO: may fail randomly
     @Test
     public void shouldRedeliverMessages_SpecifiedTimes_WithDelay() throws InterruptedException, NoSuchFieldException {
         InvalidMessageEventListener eventListener = new InvalidMessageEventListener();
@@ -67,13 +65,14 @@ public class ServerEventRelayIT {
 
     private void assertEventHandledTimes(InvalidMessageEventListener eventListener) {
         List<DateTime> handledTimes = eventListener.getHandledTimes();
+        System.out.println("Handled at times: " + handledTimes);
         int messageMaxRedeliveryCount = motechEventConfig.getMessageMaxRedeliveryCount();
         long delay = motechEventConfig.getMessageRedeliveryDelay();
 
         for (int i = 0; i < messageMaxRedeliveryCount; i++) {
             long delta = delay * Double.valueOf(Math.pow(2, i)).intValue();
-            int diff = handledTimes.get(i + 1).getSecondOfMinute() - handledTimes.get(i).getSecondOfMinute();
-            diff = diff <= 0 ? diff + 60 : diff;
+            long diff = handledTimes.get(i + 1).getMillis() - handledTimes.get(i).getMillis();
+            diff = (long) Math.ceil(diff/1000.0);
             assertTrue(format("Expected retry after %d seconds, raised after %d seconds", delta, diff), diff >= delta);
         }
     }
@@ -92,7 +91,7 @@ public class ServerEventRelayIT {
         public synchronized void handle(MotechEvent motechEvent) {
             this.motechEvent = motechEvent;
             handledTimes.add(new DateTime());
-            throw new InvalidMotechEventException("Message redelivery test.");
+            throw new RuntimeException("Message redelivery test.");
         }
 
         public MotechEvent getMotechEvent() {
