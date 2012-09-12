@@ -1,6 +1,5 @@
 package org.motechproject.decisiontree.server.service;
 
-import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
 /**

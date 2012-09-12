@@ -6,7 +6,6 @@ import org.motechproject.model.Time;
 import org.motechproject.util.DateUtil;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static ch.lambdaj.Lambda.filter;

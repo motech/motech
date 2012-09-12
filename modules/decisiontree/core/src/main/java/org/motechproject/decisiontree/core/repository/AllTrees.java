@@ -6,7 +6,6 @@ import org.motechproject.dao.MotechBaseRepository;
 import org.motechproject.decisiontree.core.model.Tree;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Repository;
 
 public class AllTrees extends MotechBaseRepository<Tree> {
     @Autowired

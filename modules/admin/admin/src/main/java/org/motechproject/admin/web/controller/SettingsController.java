@@ -1,6 +1,5 @@
 package org.motechproject.admin.web.controller;
 
-import org.apache.http.HttpRequest;
 import org.motechproject.admin.service.SettingsService;
 import org.motechproject.admin.service.StatusMessageService;
 import org.motechproject.admin.settings.Settings;

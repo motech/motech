@@ -4,7 +4,6 @@ import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.decisiontree.core.CallDetail;
 import org.motechproject.model.MotechBaseDataObject;
-import org.motechproject.util.DateUtil;
 
 import java.util.ArrayList;
 import java.util.Date;

@@ -236,7 +236,8 @@
             <property name="javaStyle" value="true"/>
         </module>
         <module name="UnusedImports">
-            <property name="severity" value="info"/>
+            <property name="severity" value="error"/>
+            <property name="processJavadoc" value="true"/>
         </module>
         <module name="WhitespaceAround">
             <property name="severity" value="info"/>

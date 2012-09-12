@@ -8,7 +8,6 @@ import org.motechproject.decisiontree.server.service.FlowSessionService;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
 import org.motechproject.server.config.SettingsFacade;
-import org.motechproject.server.verboice.domain.VerboiceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

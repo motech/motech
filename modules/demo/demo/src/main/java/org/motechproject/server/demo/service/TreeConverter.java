@@ -12,7 +12,6 @@ import org.motechproject.server.demo.model.TransitionRecord;
 import org.motechproject.server.demo.model.TreeRecord;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
