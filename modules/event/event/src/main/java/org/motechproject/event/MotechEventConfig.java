@@ -7,13 +7,13 @@ import org.springframework.stereotype.Component;
 public class MotechEventConfig {
 
     /**
-     * Maximum number of times a message would be re-delivered in case of InvalidMotechEventException
+     * Maximum number of times a message would be re-delivered in case of any exception
      */
     @Value("${motech.message.max.redelivery.count:3}")
     private int messageMaxRedeliveryCount;
 
     /**
-     * Delay (in seconds) between successive re-deliveries of messages in case of InvalidMotechEventException
+     * Delay (in seconds) between successive re-deliveries of messages in case of any exception
      * If delay=d and first exception was raised at time=t, then successive
      * redelivery times are t+d, t+(d*2), t+(d*4), t+(d*8), t+(d*16), t+(d*32),
      * and so on, till maximum redelivery count is reached.

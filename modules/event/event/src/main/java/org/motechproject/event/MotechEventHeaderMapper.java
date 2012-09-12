@@ -31,6 +31,7 @@ public class MotechEventHeaderMapper extends DefaultJmsHeaderMapper {
             if (isFailedMessage != null && isFailedMessage) {
                 long redeliveryCount = motechEvent.getMessageRedeliveryCount();
                 Double delay = motechEventConfig.getMessageRedeliveryDelay() * 1000L * ((Math.pow(2, redeliveryCount - 1)));
+                logger.debug("Redelivering " + motechEvent + " after " + delay + " millis.");
                 message.setLongProperty(ScheduledMessage.AMQ_SCHEDULED_DELAY, delay.longValue());
             }
         } catch (JMSException e) {

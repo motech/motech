@@ -101,34 +101,12 @@ public class AnnotationBasedHandlerIT {
         assertTrue(test);
     }
 
-    @Test (expected = MotechException.class)
-    public void testExeption() {
-        clear();
-        send("exception", 1, 3, null);
-        assertTrue(test);
-    }
-
     @Test
     public void testNamedParamsHappy() {
         clear();
         MotechEvent event = new MotechEvent("named");
         event.getParameters().put("id", "id0012");
         event.getParameters().put("key", "2354");
-        eventRelay.relayEvent(event);
-        assertTrue(test);
-    }
-
-    @Test (expected = MotechException.class)
-    public void testNamedParamsNotHappy() {
-        clear();
-        MotechEvent event = new MotechEvent("named");
-        event.getParameters().put("id", "id0012");
-        event.getParameters().put("key", 1);
-        eventRelay.relayEvent(event);
-        assertTrue(test);
-        clear();
-        event.getParameters().clear();
-        event.getParameters().put("id", "id0012");
         eventRelay.relayEvent(event);
         assertTrue(test);
     }
