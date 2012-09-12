@@ -12,6 +12,7 @@ import org.motechproject.server.verboice.domain.VerboiceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -31,7 +32,7 @@ public class VerboiceIVRService implements IVRService {
     private FlowSessionService flowSessionService;
 
     @Autowired
-    public VerboiceIVRService(SettingsFacade settings, HttpClient commonsHttpClient, FlowSessionService flowSessionService) {
+    public VerboiceIVRService(@Qualifier("verboiceAPISettings") SettingsFacade settings, HttpClient commonsHttpClient, FlowSessionService flowSessionService) {
         this.settings = settings;
         this.commonsHttpClient = commonsHttpClient;
         this.flowSessionService = flowSessionService;

@@ -1,25 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:util="http://www.springframework.org/schema/util"
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
-
-    <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean">
-        <property name="properties" ref="couchdbProperties"/>
+    <bean id="pillReminderSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
+        <property name="moduleName" value="pillremainder"/>
     </bean>
 
-    <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
-        <constructor-arg ref="httpClient"/>
-    </bean>
-
-    <bean id="pillReminderDbConnector" class="org.ektorp.impl.StdCouchDbConnector">
+    <bean id="pillReminderDbConnector" factory-bean="pillReminderSettings" factory-method="getConnector">
         <constructor-arg value="motech-pillreminder"/>
-        <constructor-arg ref="couchDbInstance"/>
+        <constructor-arg value="couchdb.properties"/>
     </bean>
 
     <context:annotation-config/>

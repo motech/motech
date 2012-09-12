@@ -8,21 +8,17 @@
             http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
     <util:properties id="messageCampaignProperties" location="classpath:messageCampaign.properties"/>
-    <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
 
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.server.messagecampaign"/>
 
-    <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean">
-        <property name="properties" ref="couchdbProperties"/>
+    <bean id="messageCampaignSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
+        <property name="moduleName" value="message-campaign"/>
     </bean>
 
-    <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
-        <constructor-arg ref="httpClient" />
-    </bean>
-
-    <bean id="messageCampaignDBConnector" class="org.ektorp.impl.StdCouchDbConnector">
+    <bean id="messageCampaignDBConnector" factory-bean="messageCampaignSettings" factory-method="getConnector">
         <constructor-arg value="motech-message-campaign"/>
-        <constructor-arg ref="couchDbInstance"/>
+        <constructor-arg value="couchdb.properties"/>
     </bean>
+
 </beans>

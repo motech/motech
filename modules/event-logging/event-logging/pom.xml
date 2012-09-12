@@ -17,12 +17,17 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>org.motechproject</groupId>
+            <artifactId>motech-platform-server-config</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-scheduler</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.motechproject</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-event</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
@@ -34,12 +39,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.motechproject</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-common-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.motechproject</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-testing-utils</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>

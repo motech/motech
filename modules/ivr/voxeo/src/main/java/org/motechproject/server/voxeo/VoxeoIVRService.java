@@ -48,7 +48,7 @@ public class VoxeoIVRService implements IVRService {
     public VoxeoIVRService(ConfigReader configReader, HttpClient commonsHttpClient) {
         this.configReader = configReader;
         this.commonsHttpClient = commonsHttpClient;
-        voxeoConfig = this.configReader.getConfig("/voxeo-config.json");
+        voxeoConfig = this.configReader.getConfig("voxeo-config.json");
     }
 
     /**

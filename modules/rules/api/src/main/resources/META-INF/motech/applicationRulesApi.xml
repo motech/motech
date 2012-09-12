@@ -1,28 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:util="http://www.springframework.org/schema/util"
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
-        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
-
-    <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.rules"/>
 
-    <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean">
-        <property name="properties" ref="couchdbProperties"/>
+    <bean id="rulesApiSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
+        <property name="moduleName" value="rules-api"/>
     </bean>
 
-    <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
-        <constructor-arg ref="httpClient"/>
-    </bean>
-
-    <bean id="rulesDatabase" class="org.ektorp.impl.StdCouchDbConnector">
+    <bean id="rulesDatabase" factory-bean="rulesApiSettings" factory-method="getConnector">
         <constructor-arg value="rules"/>
-        <constructor-arg ref="couchDbInstance"/>
+        <constructor-arg value="couchdb.properties"/>
     </bean>
 
     <bean id="filesystemRuleLoader" class="org.motechproject.rules.service.FilesystemRuleLoader" init-method="load">

@@ -2,38 +2,27 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
-                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
     <context:component-scan base-package="org.motechproject.sms.smpp"/>
     <context:annotation-config/>
 
-    <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
-
-    <bean id="smsSmppSettings" class="org.motechproject.server.config.SettingsFacade">
+    <bean id="smsSmppSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="configFiles">
             <list>
                 <value>classpath:sms.properties</value>
                 <value>classpath:smpp.properties</value>
             </list>
         </property>
+        <property name="moduleName" value="sms-smpp"/>
     </bean>
 
     <bean id="smslibService" class="org.smslib.Service" factory-method="getInstance"/>
 
-    <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean">
-        <property name="properties" ref="couchdbProperties"/>
-    </bean>
-
-    <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
-        <constructor-arg ref="httpClient"/>
-    </bean>
-
-    <bean id="smppDBConnector" class="org.ektorp.impl.StdCouchDbConnector">
+    <bean id="smppDBConnector" factory-bean="smsSmppSettings" factory-method="getConnector">
         <constructor-arg value="motech-sms-audit"/>
-        <constructor-arg ref="couchDbInstance"/>
+        <constructor-arg value="couchdb.properties"/>
     </bean>
 
 </beans>

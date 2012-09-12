@@ -17,6 +17,7 @@
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>
     <dependencies>
+        <!-- MOTECH dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>motech-mobileforms-api</artifactId>
@@ -28,30 +29,36 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- OSGI dependencies -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>com.springsource.javax.servlet</artifactId>
+            <version>2.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.osgi</groupId>
+            <artifactId>org.springframework.osgi.web</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
             <version>4.2.0</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <version>4.2.0</version>
-            <type>jar</type>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-aspects</artifactId>
+            <artifactId>org.springframework.web.servlet</artifactId>
             <version>${spring.version}</version>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-api</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- OSGI dependencies -->
         <dependency>
             <groupId>com.googlecode.lambdaj</groupId>
             <artifactId>org.motechproject.com.googlecode.lambdaj</artifactId>
@@ -61,6 +68,41 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>org.motechproject.com.google.code.gson</artifactId>
             <version>1.7.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.aspects</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jcraft.jzlib</groupId>
+            <artifactId>com.springsource.com.jcraft.jzlib</artifactId>
+            <version>1.0.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.codec</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jdom</groupId>
+            <artifactId>com.springsource.org.jdom</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.lang</artifactId>
+            <version>2.6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.beanutils</artifactId>
+            <version>1.8.3</version>
         </dependency>
     </dependencies>
     <build>
@@ -87,12 +129,13 @@
                             org.motechproject.mobileforms.api.osgi.Activator
                         </Bundle-Activator>
                         <Import-Package>
-                            *,
+                            org.springframework.beans.factory.aspectj,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
-                            org.springframework.osgi.config
+                            org.springframework.osgi.config,
+                            *
                         </Import-Package>
-                        <Embed-Dependency>motech-mobileforms-api,spring-aspects</Embed-Dependency>
+                        <Embed-Dependency>motech-mobileforms-api</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>

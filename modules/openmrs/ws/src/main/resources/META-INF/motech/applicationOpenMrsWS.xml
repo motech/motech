@@ -8,15 +8,15 @@
     <context:annotation-config />
     <context:component-scan base-package="org.motechproject.openmrs" />
 
-
-    <bean id="openmrsWsSettings" class="org.motechproject.server.config.SettingsFacade">
+    <bean id="openmrsWsSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType"
+          init-method="afterPropertiesSet">
         <property name="configFiles">
             <list>
                 <value>classpath:openmrs.properties</value>
                 <value>classpath:openmrs-urls.properties</value>
             </list>
         </property>
-        <property name="platformSettingsService" ref="platformSettingsServiceOsgi" />
+        <property name="moduleName" value="openmrs-ws"/>
     </bean>
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">

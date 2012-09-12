@@ -19,7 +19,7 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.motechproject</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-event</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
@@ -76,7 +76,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.motechproject</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-decisiontree-server</artifactId>
             <version>${project.version}</version>
         </dependency>

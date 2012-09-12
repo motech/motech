@@ -8,20 +8,15 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <util:properties id="schedule_tracking" location="classpath:schedule_tracking.properties"/>
-    <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
     <util:properties id="quartzProperties" location="classpath:quartz.properties"/>
 
-    <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean">
-        <property name="properties" ref="couchdbProperties"/>
+    <bean id="scheduleTrackingSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
+        <property name="moduleName" value="scheduletracking-api"/>
     </bean>
 
-    <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
-        <constructor-arg ref="httpClient"/>
-    </bean>
-
-    <bean id="scheduleTrackingDbConnector" class="org.ektorp.impl.StdCouchDbConnector">
+    <bean id="scheduleTrackingDbConnector" factory-bean="scheduleTrackingSettings" factory-method="getConnector">
         <constructor-arg value="motech-scheduletracking-api"/>
-        <constructor-arg ref="couchDbInstance"/>
+        <constructor-arg value="couchdb.properties"/>
     </bean>
 
     <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
@@ -30,7 +25,6 @@
     </bean>
 
     <context:annotation-config/>
-
     <context:component-scan base-package="org.motechproject.scheduletracking.api"/>
 
     <bean id="scheduleTrackingService"

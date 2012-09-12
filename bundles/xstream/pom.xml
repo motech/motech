@@ -103,7 +103,7 @@
                         </goals>
                         <configuration>
                             <includeArtifactIds>
-                                com.springsource.org.xmlpull,com.springsource.org.codehaus.jettison,com.springsource.nu.xom,com.springsource.org.iso_relax.verifier,com.springsource.com.sun.msv.datatype,com.springsource.org.relaxng.datatype,com.springsource.com.sun.msv,com.springsource.com.ctc.wstx
+                                com.springsource.org.xmlpull,com.springsource.org.codehaus.jettison,com.springsource.nu.xom,com.springsource.org.iso_relax.verifier,com.springsource.com.sun.msv.datatype,com.springsource.org.relaxng.datatype,com.springsource.com.sun.msv,com.springsource.com.ctc.wstx,com.springsource.org.dom4j,com.springsource.org.jdom
                             </includeArtifactIds>
                             <stripVersion>false</stripVersion>
                             <outputDirectory>

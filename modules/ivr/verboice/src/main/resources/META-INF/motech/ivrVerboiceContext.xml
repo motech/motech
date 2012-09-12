@@ -15,12 +15,13 @@
     <mvc:annotation-driven/>
     <context:component-scan base-package="org.motechproject.server.verboice"/>
 
-    <bean id="verboiceAPISettings" class="org.motechproject.server.config.SettingsFacade">
+    <bean id="verboiceAPISettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="configFiles">
             <list>
                 <value>classpath:verboice.properties</value>
             </list>
         </property>
+        <property name="moduleName" value="ivr-verboice"/>
     </bean>
 
     <bean id="simpleControllerHandlerAdapter" class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>

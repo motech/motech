@@ -17,11 +17,12 @@
 
     <bean id="smsAuditService" class="org.motechproject.sms.http.service.SmsAuditServiceImpl"/>
 
-    <bean id="smsHttpSettings" class="org.motechproject.server.config.SettingsFacade">
+    <bean id="smsHttpSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="rawConfigFiles">
             <list>
                 <value>classpath:sms-http-template.json</value>
             </list>
         </property>
+        <property name="moduleName" value="sms-http-bundle"/>
     </bean>
 </beans>

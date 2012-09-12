@@ -9,14 +9,10 @@
     <context:annotation-config />
     <context:component-scan base-package="org.motechproject.commcare" />
 
-    <util:properties id="commcareUserApi"
-        location="classpath:commcareUserApi.properties" />
+    <util:properties id="commcareUserApi" location="classpath:commcareUserApi.properties" />
+    <util:properties id="case_event_strategy" location="classpath:/caseEventStrategy.properties" />
 
-    <util:properties id="case_event_strategy"
-        location="classpath:/caseEventStrategy.properties" />
-
-    <bean id="multiThreadedHttpConnectionManager"
-        class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager" />
+    <bean id="multiThreadedHttpConnectionManager" class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager" />
 
     <bean id="commonsHttpClient" class="org.apache.commons.httpclient.HttpClient">
         <constructor-arg ref="multiThreadedHttpConnectionManager" />

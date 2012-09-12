@@ -10,6 +10,7 @@ import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -35,7 +36,7 @@ public class KookooCallServiceImpl implements IVRService {
     private Logger log = Logger.getLogger(this.getClass().getName());
 
     @Autowired
-    public KookooCallServiceImpl(SettingsFacade settings, HttpClient commonsHttpClient, FlowSessionService flowSessionService) {
+    public KookooCallServiceImpl(@Qualifier("kookooAPISettings") SettingsFacade settings, HttpClient commonsHttpClient, FlowSessionService flowSessionService) {
         this.settings = settings;
         this.commonsHttpClient = commonsHttpClient;
         this.flowSessionService = flowSessionService;

@@ -11,18 +11,12 @@
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.appointments.api"/>
 
-    <bean id="appointmentsDatabase" class="org.ektorp.impl.StdCouchDbConnector">
+    <bean id="appointmentsApiSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
+        <property name="moduleName" value="appointments-api"/>
+    </bean>
+
+    <bean id="appointmentsDatabase" factory-bean="appointmentsApiSettings" factory-method="getConnector">
         <constructor-arg value="motech-appointments"/>
-        <constructor-arg ref="couchDbInstance"/>
-    </bean>
-
-    <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
-
-    <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean">
-        <property name="properties" ref="couchdbProperties"/>
-    </bean>
-
-    <bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
-        <constructor-arg ref="httpClient"/>
+        <constructor-arg value="couchdb.properties"/>
     </bean>
 </beans>
