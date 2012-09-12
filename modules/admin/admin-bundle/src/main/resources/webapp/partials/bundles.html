@@ -46,7 +46,7 @@
         <th ng-click="setOrder('bundleId')" ng-class="getSortClass('bundleId')">{{msg('bundles.id')}}</th>
         <th>{{msg('bundles.icon')}}</th>
         <th ng-click="setOrder('name')" ng-class="getSortClass('name')">{{msg('bundles.name')}}</th>
-        <th ng-click="setOrder('version')" ng-class="getSortClass('version')">{{msg('bundles.version')}}</th>
+        <th ng-click="setOrder(versionOrder)" ng-class="getSortClass(versionOrder)">{{msg('bundles.version')}}</th>
         <th ng-click="setOrder('state')" ng-class="getSortClass('state')">{{msg('bundles.state')}}</th>
         <th>{{msg('bundles.actions')}}</th>
     </tr>

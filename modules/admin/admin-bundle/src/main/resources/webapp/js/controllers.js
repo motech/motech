@@ -8,6 +8,7 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams) {
 
     $scope.orderProp = 'name';
     $scope.invert = false;
+    $scope.versionOrder = new Array("version.major", "version.minor", "version.micro", "version.qualifier");
 
     $scope.setOrder = function(prop) {
         if (prop == $scope.orderProp) {
