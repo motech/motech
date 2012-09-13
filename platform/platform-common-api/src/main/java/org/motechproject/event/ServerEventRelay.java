@@ -1,8 +1,5 @@
 package org.motechproject.event;
 
-import org.motechproject.event.MotechEvent;
-import org.motechproject.event.MotechEventConfig;
-import org.motechproject.event.OutboundEventGateway;
 import org.motechproject.metrics.MetricsAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,7 +157,7 @@ public class ServerEventRelay implements EventRelay {
             if (event.getMessageRedeliveryCount() == motechEventConfig.getMessageMaxRedeliveryCount()) {
                 event.getParameters().put(MotechEvent.PARAM_DISCARDED_MOTECH_EVENT, Boolean.TRUE);
                 log.info("Discarding Motech event " + event + ". Max retry count reached.");
-                return;
+                throw e;
             }
             event.incrementMessageRedeliveryCount();
             sendEventMessage(event);
