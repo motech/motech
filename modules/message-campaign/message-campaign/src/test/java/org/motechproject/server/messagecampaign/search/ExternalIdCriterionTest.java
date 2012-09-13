@@ -3,7 +3,6 @@ package org.motechproject.server.messagecampaign.search;
 import org.junit.Test;
 import org.motechproject.server.messagecampaign.dao.AllCampaignEnrollments;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
-import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollmentStatus;
 
 import java.util.ArrayList;
 import java.util.List;

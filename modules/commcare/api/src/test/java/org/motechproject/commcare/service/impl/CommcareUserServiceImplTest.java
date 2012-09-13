@@ -1,15 +1,18 @@
 package org.motechproject.commcare.service.impl;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.commcare.domain.CommcareUser;
-import org.motechproject.commcare.service.impl.CommcareUserServiceImpl;
 import org.motechproject.commcare.util.CommCareAPIHttpClient;
+
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class CommcareUserServiceImplTest {
 

@@ -1,8 +1,6 @@
 package org.motechproject.commcare.parser;
 
-import java.io.IOException;
-import java.io.StringReader;
-
+import com.sun.org.apache.xerces.internal.parsers.DOMParser;
 import org.motechproject.commcare.exception.CaseParserException;
 import org.motechproject.commcare.response.OpenRosaResponse;
 import org.w3c.dom.Document;
@@ -10,7 +8,8 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.sun.org.apache.xerces.internal.parsers.DOMParser;
+import java.io.IOException;
+import java.io.StringReader;
 
 public class OpenRosaResponseParser {
 

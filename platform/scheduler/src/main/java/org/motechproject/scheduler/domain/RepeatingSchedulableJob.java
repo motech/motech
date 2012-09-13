@@ -1,11 +1,10 @@
 package org.motechproject.scheduler.domain;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.motechproject.event.MotechEvent;
 
 import java.io.Serializable;
 import java.util.Date;
-
-import org.apache.commons.lang.ObjectUtils;
 
 /**
  * Schedulable Job - a data carrier class for a scheduled job that can be fired set number of times

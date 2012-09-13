@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.admin.service.impl.SettingsServiceImpl;
-import org.motechproject.admin.settings.ParamParser;
 import org.motechproject.admin.settings.Settings;
 import org.motechproject.admin.settings.SettingsOption;
 import org.motechproject.server.config.service.PlatformSettingsService;
@@ -25,7 +24,10 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.server.config.settings.MotechSettings.*;
+import static org.motechproject.server.config.settings.MotechSettings.AMQ_REDELIVERY_DELAY_IN_MILLIS;
+import static org.motechproject.server.config.settings.MotechSettings.DB_HOST;
+import static org.motechproject.server.config.settings.MotechSettings.LANGUAGE;
+import static org.motechproject.server.config.settings.MotechSettings.QUARTZ_SCHEDULER_NAME;
 
 public class SettingsServiceTest {
     private static final Long BUNDLE_ID = 1L;

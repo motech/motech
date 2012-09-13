@@ -11,13 +11,13 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.outbox.api.contract.SortKey;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessage;
 import org.motechproject.outbox.api.domain.OutboundVoiceMessageStatus;
 import org.motechproject.outbox.api.repository.AllOutboundVoiceMessages;
 import org.motechproject.outbox.api.service.impl.VoiceOutboxServiceImpl;
-import org.motechproject.event.MotechEvent;
-import org.motechproject.event.listener.EventRelay;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,14 +1,10 @@
 package org.motechproject.commcare.service.impl;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import com.google.gson.reflect.TypeToken;
 import org.apache.commons.httpclient.NameValuePair;
 import org.motechproject.commcare.domain.CaseInfo;
-import org.motechproject.commcare.domain.CaseTask;
 import org.motechproject.commcare.domain.CaseResponseJson;
+import org.motechproject.commcare.domain.CaseTask;
 import org.motechproject.commcare.exception.CaseParserException;
 import org.motechproject.commcare.gateway.CaseTaskXmlConverter;
 import org.motechproject.commcare.response.OpenRosaResponse;
@@ -20,7 +16,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class CommcareCaseServiceImpl implements CommcareCaseService {

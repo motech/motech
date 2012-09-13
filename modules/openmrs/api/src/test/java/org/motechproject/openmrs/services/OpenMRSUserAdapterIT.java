@@ -13,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
-import static ch.lambdaj.Lambda.*;
+import static ch.lambdaj.Lambda.having;
+import static ch.lambdaj.Lambda.on;
+import static ch.lambdaj.Lambda.selectUnique;
 import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.CoreMatchers.equalTo;
 

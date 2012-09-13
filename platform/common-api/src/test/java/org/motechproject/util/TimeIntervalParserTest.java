@@ -2,7 +2,6 @@ package org.motechproject.util;
 
 import org.joda.time.Period;
 import org.junit.Test;
-import org.motechproject.util.TimeIntervalParser;
 import org.motechproject.valueobjects.ParseException;
 
 import static org.junit.Assert.assertEquals;

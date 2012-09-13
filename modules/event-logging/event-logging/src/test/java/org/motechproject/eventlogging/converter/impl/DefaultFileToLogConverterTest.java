@@ -1,13 +1,13 @@
 package org.motechproject.eventlogging.converter.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.motechproject.event.MotechEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-import org.motechproject.event.MotechEvent;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class DefaultFileToLogConverterTest {
 

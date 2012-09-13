@@ -16,10 +16,18 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.motechproject.model.DayOfWeek.Monday;
 import static org.motechproject.model.DayOfWeek.Wednesday;
-import static org.motechproject.util.DateUtil.*;
+import static org.motechproject.util.DateUtil.daysToCalendarWeekEnd;
+import static org.motechproject.util.DateUtil.getDifferenceOfDatesInYears;
+import static org.motechproject.util.DateUtil.newDate;
+import static org.motechproject.util.DateUtil.nextApplicableWeekDay;
+import static org.motechproject.util.DateUtil.nextApplicableWeekDayIncludingFromDate;
 
 public class DateUtilTest {
     @After

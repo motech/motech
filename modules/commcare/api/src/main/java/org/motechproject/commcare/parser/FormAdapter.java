@@ -1,13 +1,5 @@
 package org.motechproject.commcare.parser;
 
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import org.motechproject.commcare.domain.CommcareForm;
-import org.motechproject.commcare.domain.FormValueElement;
-import org.motechproject.dao.MotechJsonReader;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -15,6 +7,14 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
+import org.motechproject.commcare.domain.CommcareForm;
+import org.motechproject.commcare.domain.FormValueElement;
+import org.motechproject.dao.MotechJsonReader;
+
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public final class FormAdapter {
 

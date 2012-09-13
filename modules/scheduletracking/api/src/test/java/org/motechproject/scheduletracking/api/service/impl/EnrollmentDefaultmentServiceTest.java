@@ -5,10 +5,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.scheduletracking.api.domain.*;
+import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
+import org.motechproject.scheduletracking.api.domain.Alert;
+import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
+import org.motechproject.scheduletracking.api.domain.Milestone;
+import org.motechproject.scheduletracking.api.domain.Schedule;
+import org.motechproject.scheduletracking.api.domain.WindowName;
 import org.motechproject.scheduletracking.api.events.DefaultmentCaptureEvent;
 import org.motechproject.scheduletracking.api.events.constants.EventSubjects;
 

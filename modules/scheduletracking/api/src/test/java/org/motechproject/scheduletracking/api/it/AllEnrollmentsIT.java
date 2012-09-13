@@ -28,8 +28,12 @@ import java.util.List;
 
 import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
-import static org.motechproject.util.DateUtil.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.motechproject.util.DateUtil.newDateTime;
+import static org.motechproject.util.DateUtil.now;
+import static org.motechproject.util.DateUtil.today;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath*:META-INF/motech/*.xml")

@@ -1,10 +1,5 @@
 package org.motechproject.openmrs.atomfeed;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.MockitoAnnotations.initMocks;
-
 import org.joda.time.LocalTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +10,11 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.openmrs.atomfeed.events.EventSubjects;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class PollingConfigurationTest {
     private static final Long MILLISECONDS_IN_MINUTE = 1000 * 60L;

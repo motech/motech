@@ -1,12 +1,13 @@
 package org.motechproject.eventlogging.repository;
 
-import java.io.InputStream;
-import java.lang.reflect.Type;
-import java.util.List;
+import com.google.gson.reflect.TypeToken;
 import org.motechproject.dao.MotechJsonReader;
 import org.motechproject.eventlogging.domain.MappingsJson;
 import org.springframework.stereotype.Component;
-import com.google.gson.reflect.TypeToken;
+
+import java.io.InputStream;
+import java.lang.reflect.Type;
+import java.util.List;
 
 @Component
 public class AllEventMappings {

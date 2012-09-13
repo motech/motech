@@ -1,16 +1,5 @@
 package org.motechproject.openmrs.rest.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -22,6 +11,17 @@ import org.motechproject.openmrs.rest.RestClient;
 import org.motechproject.openmrs.rest.util.DateUtil;
 import org.motechproject.openmrs.rest.util.OpenMrsUrlHolder;
 import org.springframework.http.HttpStatus;
+
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class MRSObservationAdapterImplTest {
 

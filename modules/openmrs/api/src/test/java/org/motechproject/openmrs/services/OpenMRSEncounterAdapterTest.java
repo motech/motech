@@ -4,18 +4,39 @@ import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.mrs.model.*;
-import org.openmrs.*;
+import org.motechproject.mrs.model.MRSEncounter;
+import org.motechproject.mrs.model.MRSFacility;
+import org.motechproject.mrs.model.MRSObservation;
+import org.motechproject.mrs.model.MRSPatient;
+import org.motechproject.mrs.model.MRSPerson;
+import org.motechproject.mrs.model.MRSUser;
+import org.openmrs.Encounter;
+import org.openmrs.EncounterType;
+import org.openmrs.Location;
+import org.openmrs.Obs;
+import org.openmrs.Patient;
+import org.openmrs.Person;
+import org.openmrs.User;
 import org.openmrs.api.EncounterService;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 

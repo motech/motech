@@ -5,7 +5,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.WindowName;
-import org.motechproject.scheduletracking.api.domain.search.*;
+import org.motechproject.scheduletracking.api.domain.search.CompletedDuringCriterion;
+import org.motechproject.scheduletracking.api.domain.search.Criterion;
+import org.motechproject.scheduletracking.api.domain.search.EndOfWindowCriterion;
+import org.motechproject.scheduletracking.api.domain.search.ExternalIdCriterion;
+import org.motechproject.scheduletracking.api.domain.search.InWindowCriterion;
+import org.motechproject.scheduletracking.api.domain.search.MetadataCriterion;
+import org.motechproject.scheduletracking.api.domain.search.MilestoneCriterion;
+import org.motechproject.scheduletracking.api.domain.search.ScheduleCriterion;
+import org.motechproject.scheduletracking.api.domain.search.StartOfWindowCriterion;
+import org.motechproject.scheduletracking.api.domain.search.StatusCriterion;
 import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
 
 import java.util.List;

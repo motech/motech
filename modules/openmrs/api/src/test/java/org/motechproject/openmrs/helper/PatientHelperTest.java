@@ -7,7 +7,10 @@ import org.motechproject.mrs.model.Attribute;
 import org.motechproject.mrs.model.MRSFacility;
 import org.motechproject.mrs.model.MRSPatient;
 import org.motechproject.mrs.model.MRSPerson;
-import org.openmrs.*;
+import org.openmrs.Location;
+import org.openmrs.Patient;
+import org.openmrs.PatientIdentifierType;
+import org.openmrs.PersonAttributeType;
 
 import java.util.Arrays;
 import java.util.Date;

@@ -1,21 +1,16 @@
 package org.motechproject.sms.http.template;
 
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.http.TemplateReader;
 import org.motechproject.sms.http.domain.HttpMethodType;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import sun.misc.BASE64Encoder;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

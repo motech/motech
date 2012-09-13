@@ -1,12 +1,7 @@
 package org.motechproject.openmrs.rest.impl;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.commons.lang.Validate;
 import org.motechproject.mrs.exception.MRSException;
 import org.motechproject.mrs.model.MRSPerson;
@@ -29,8 +24,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class MRSPersonAdapterImpl {

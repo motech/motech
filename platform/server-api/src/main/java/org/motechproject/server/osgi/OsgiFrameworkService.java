@@ -1,9 +1,9 @@
 package org.motechproject.server.osgi;
 
 import org.apache.commons.lang.StringUtils;
+import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.service.PlatformSettingsService;
-import org.motechproject.event.listener.EventListenerRegistryService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;

@@ -1,8 +1,8 @@
 package org.motechproject.openmrs.rest.model;
 
-import java.util.List;
-
 import org.motechproject.openmrs.rest.model.Attribute.AttributeType;
+
+import java.util.List;
 
 public class AttributeTypeListResult {
     private List<AttributeType> results;

@@ -2,9 +2,9 @@ package org.motechproject.scheduletracking.api.service.impl;
 
 import org.joda.time.DateTime;
 import org.joda.time.Period;
+import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
 import org.motechproject.scheduletracking.api.domain.Alert;
 import org.motechproject.scheduletracking.api.domain.AlertWindow;

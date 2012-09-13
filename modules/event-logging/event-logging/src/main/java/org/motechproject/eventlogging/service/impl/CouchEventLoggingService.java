@@ -1,12 +1,6 @@
 package org.motechproject.eventlogging.service.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.annotation.PostConstruct;
+import org.motechproject.event.MotechEvent;
 import org.motechproject.eventlogging.converter.impl.DefaultCouchToLogConverter;
 import org.motechproject.eventlogging.domain.CouchLogMappings;
 import org.motechproject.eventlogging.domain.CouchLoggableEvent;
@@ -18,9 +12,16 @@ import org.motechproject.eventlogging.loggers.impl.CouchEventLogger;
 import org.motechproject.eventlogging.repository.AllCouchLogs;
 import org.motechproject.eventlogging.repository.AllEventMappings;
 import org.motechproject.eventlogging.service.EventLoggingService;
-import org.motechproject.event.MotechEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 public class CouchEventLoggingService implements EventLoggingService {

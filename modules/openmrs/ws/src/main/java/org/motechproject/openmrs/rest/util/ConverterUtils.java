@@ -1,8 +1,5 @@
 package org.motechproject.openmrs.rest.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang.ObjectUtils;
 import org.motechproject.mrs.model.MRSFacility;
 import org.motechproject.mrs.model.MRSObservation;
@@ -13,6 +10,9 @@ import org.motechproject.openmrs.rest.model.Observation;
 import org.motechproject.openmrs.rest.model.Person;
 import org.motechproject.openmrs.rest.model.Person.PreferredAddress;
 import org.motechproject.openmrs.rest.model.Person.PreferredName;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class ConverterUtils {
 

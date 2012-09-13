@@ -1,14 +1,5 @@
 package org.motechproject.server.osgi;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.net.URL;
-import java.net.URLConnection;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.log4j.xml.DOMConfigurator;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
@@ -17,6 +8,14 @@ import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.net.URL;
+import java.net.URLConnection;
 
 /**
  * Custom log4j configuration loader

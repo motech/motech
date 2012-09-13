@@ -1,14 +1,15 @@
 package org.motechproject.eventlogging.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.motechproject.event.MotechEvent;
 import org.motechproject.eventlogging.domain.LoggableEvent;
 import org.motechproject.eventlogging.loggers.EventLogger;
 import org.motechproject.eventlogging.loggers.impl.FileEventLogger;
 import org.motechproject.eventlogging.service.EventLoggingService;
-import org.motechproject.event.MotechEvent;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class FileEventLoggingService implements EventLoggingService {
 

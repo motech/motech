@@ -1,7 +1,5 @@
 package org.motechproject.openmrs.atomfeed;
 
-import java.io.IOException;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -15,6 +13,8 @@ import org.motechproject.MotechException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
 
 @Component
 public class OpenMrsHttpClientImpl implements OpenMrsHttpClient {

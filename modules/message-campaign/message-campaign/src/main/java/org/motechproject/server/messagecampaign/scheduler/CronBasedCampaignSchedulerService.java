@@ -1,9 +1,9 @@
 package org.motechproject.server.messagecampaign.scheduler;
 
 import org.joda.time.LocalDate;
+import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.CronSchedulableJob;
-import org.motechproject.event.MotechEvent;
 import org.motechproject.server.messagecampaign.EventKeys;
 import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;

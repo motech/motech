@@ -5,9 +5,9 @@ import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import java.util.Map;
-import java.util.Map.Entry;
 import org.motechproject.commcare.domain.UpdateTask;
+
+import java.util.Map;
 
 public class UpdateElementConverter implements Converter {
     public boolean canConvert(Class clazz) {

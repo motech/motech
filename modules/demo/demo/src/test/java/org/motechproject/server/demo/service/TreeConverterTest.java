@@ -1,6 +1,5 @@
 package org.motechproject.server.demo.service;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.motechproject.decisiontree.core.model.Action;
 import org.motechproject.decisiontree.core.model.Node;

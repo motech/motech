@@ -9,7 +9,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 import static org.motechproject.util.DateUtil.newDateTime;
 
 public class VisitTest {

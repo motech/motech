@@ -1,17 +1,18 @@
 package org.motechproject.eventlogging.converter.impl;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import org.joda.time.DateTime;
+import org.motechproject.event.MotechEvent;
 import org.motechproject.eventlogging.converter.EventToLogConverter;
 import org.motechproject.eventlogging.domain.CouchEventLog;
 import org.motechproject.eventlogging.domain.CouchLogMappings;
 import org.motechproject.eventlogging.domain.CouchLoggableEvent;
 import org.motechproject.eventlogging.domain.KeyValue;
 import org.motechproject.eventlogging.domain.LoggableEvent;
-import org.motechproject.event.MotechEvent;
 import org.springframework.stereotype.Component;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class DefaultCouchToLogConverter implements EventToLogConverter<CouchEventLog> {

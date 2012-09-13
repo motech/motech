@@ -1,9 +1,9 @@
 package org.motechproject.eventlogging.domain;
 
+import org.motechproject.event.MotechEvent;
+
 import java.util.Collections;
 import java.util.List;
-
-import org.motechproject.event.MotechEvent;
 
 public class LoggableEvent {
 

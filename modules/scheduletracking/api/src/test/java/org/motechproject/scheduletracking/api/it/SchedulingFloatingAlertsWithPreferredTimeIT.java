@@ -34,7 +34,6 @@ import static org.motechproject.testing.utils.TimeFaker.fakeNow;
 import static org.motechproject.testing.utils.TimeFaker.stopFakingTime;
 import static org.motechproject.util.DateUtil.newDate;
 import static org.motechproject.util.DateUtil.newDateTime;
-import static org.motechproject.util.DateUtil.now;
 import static org.quartz.TriggerKey.triggerKey;
 
 @RunWith(SpringJUnit4ClassRunner.class)

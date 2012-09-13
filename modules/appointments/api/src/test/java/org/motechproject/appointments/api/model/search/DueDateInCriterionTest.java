@@ -2,8 +2,8 @@ package org.motechproject.appointments.api.model.search;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
-import org.motechproject.appointments.api.service.contract.VisitResponse;
 import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
+import org.motechproject.appointments.api.service.contract.VisitResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,9 @@ import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.motechproject.util.DateUtil.newDateTime;
 
 public class DueDateInCriterionTest {

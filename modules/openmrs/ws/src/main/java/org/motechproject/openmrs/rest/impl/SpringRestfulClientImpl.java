@@ -1,7 +1,5 @@
 package org.motechproject.openmrs.rest.impl;
 
-import java.net.URI;
-
 import org.motechproject.openmrs.rest.HttpException;
 import org.motechproject.openmrs.rest.RestClient;
 import org.slf4j.Logger;
@@ -16,6 +14,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestOperations;
+
+import java.net.URI;
 
 /**
  * Implementation of {@link RestClient} based on Spring web client

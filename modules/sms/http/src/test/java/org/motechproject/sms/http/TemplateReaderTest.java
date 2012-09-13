@@ -1,6 +1,5 @@
 package org.motechproject.sms.http;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.http.template.Incoming;

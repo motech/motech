@@ -15,7 +15,11 @@ import static org.joda.time.Period.minutes;
 import static org.joda.time.Period.seconds;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.motechproject.scheduletracking.api.utility.PeriodUtil.*;
+import static org.motechproject.scheduletracking.api.utility.PeriodUtil.days;
+import static org.motechproject.scheduletracking.api.utility.PeriodUtil.hours;
+import static org.motechproject.scheduletracking.api.utility.PeriodUtil.months;
+import static org.motechproject.scheduletracking.api.utility.PeriodUtil.weeks;
+import static org.motechproject.scheduletracking.api.utility.PeriodUtil.years;
 
 public class ScheduleFactoryTest {
     @Test

@@ -2,7 +2,6 @@ package org.motechproject.commcare.util;
 
 import org.junit.Test;
 import org.motechproject.commcare.domain.CaseXml;
-import org.motechproject.commcare.util.CaseMapper;
 
 import java.util.HashMap;
 import java.util.Map;

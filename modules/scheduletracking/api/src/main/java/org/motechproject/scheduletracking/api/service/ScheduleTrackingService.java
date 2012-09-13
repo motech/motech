@@ -4,6 +4,7 @@ import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.Schedule;
 import org.motechproject.scheduletracking.api.service.contract.UpdateCriteria;
+
 import java.util.List;
 
 /**

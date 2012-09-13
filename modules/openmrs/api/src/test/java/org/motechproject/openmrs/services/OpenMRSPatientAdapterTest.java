@@ -16,7 +16,12 @@ import org.motechproject.mrs.model.MRSPerson;
 import org.motechproject.openmrs.IdentifierType;
 import org.motechproject.openmrs.helper.PatientHelper;
 import org.motechproject.openmrs.util.PatientTestUtil;
-import org.openmrs.*;
+import org.openmrs.Concept;
+import org.openmrs.Location;
+import org.openmrs.Patient;
+import org.openmrs.PatientIdentifierType;
+import org.openmrs.Person;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -32,7 +37,12 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class OpenMRSPatientAdapterTest {

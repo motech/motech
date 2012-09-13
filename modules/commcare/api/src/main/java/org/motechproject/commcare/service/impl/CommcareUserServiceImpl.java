@@ -1,7 +1,6 @@
 package org.motechproject.commcare.service.impl;
 
-import java.lang.reflect.Type;
-import java.util.List;
+import com.google.gson.reflect.TypeToken;
 import org.motechproject.commcare.domain.CommcareUser;
 import org.motechproject.commcare.domain.CommcareUsersJson;
 import org.motechproject.commcare.service.CommcareUserService;
@@ -9,7 +8,9 @@ import org.motechproject.commcare.util.CommCareAPIHttpClient;
 import org.motechproject.dao.MotechJsonReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.List;
 
 @Service
 public class CommcareUserServiceImpl implements CommcareUserService {

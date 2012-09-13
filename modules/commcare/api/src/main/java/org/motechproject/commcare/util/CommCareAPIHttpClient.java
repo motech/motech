@@ -1,8 +1,5 @@
 package org.motechproject.commcare.util;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.Properties;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
@@ -20,6 +17,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.Properties;
 
 @Component
 public class CommCareAPIHttpClient {

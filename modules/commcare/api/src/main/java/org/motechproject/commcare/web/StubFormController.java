@@ -1,6 +1,6 @@
 package org.motechproject.commcare.web;
 
-import javax.servlet.http.HttpServletResponse;
+import com.google.gson.JsonParseException;
 import org.motechproject.commcare.domain.FormStubJson;
 import org.motechproject.commcare.events.constants.EventDataKeys;
 import org.motechproject.commcare.events.constants.EventSubjects;
@@ -14,7 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import com.google.gson.JsonParseException;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Controller that handles the incoming stub form feed from CommCareHQ. Maps to

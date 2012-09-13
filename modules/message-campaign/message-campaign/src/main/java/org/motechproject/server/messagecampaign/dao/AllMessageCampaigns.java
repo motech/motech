@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import static ch.lambdaj.Lambda.select;
 import static ch.lambdaj.Lambda.having;
 import static ch.lambdaj.Lambda.on;
+import static ch.lambdaj.Lambda.select;
 import static org.hamcrest.Matchers.equalTo;
 
 @Component

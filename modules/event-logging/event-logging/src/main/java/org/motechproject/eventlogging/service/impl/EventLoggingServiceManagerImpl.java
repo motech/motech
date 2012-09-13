@@ -1,20 +1,21 @@
 package org.motechproject.eventlogging.service.impl;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import javax.annotation.PostConstruct;
-import org.motechproject.eventlogging.service.EventLoggingService;
-import org.motechproject.eventlogging.service.EventLoggingServiceManager;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
+import org.motechproject.eventlogging.service.EventLoggingService;
+import org.motechproject.eventlogging.service.EventLoggingServiceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Component
 public class EventLoggingServiceManagerImpl implements EventLoggingServiceManager {

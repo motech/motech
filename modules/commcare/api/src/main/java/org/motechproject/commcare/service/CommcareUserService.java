@@ -1,8 +1,8 @@
 package org.motechproject.commcare.service;
 
-import java.util.List;
-
 import org.motechproject.commcare.domain.CommcareUser;
+
+import java.util.List;
 
 /**
  * A service to perform queries against CommCareHQ's user APIs. CommCareHQ

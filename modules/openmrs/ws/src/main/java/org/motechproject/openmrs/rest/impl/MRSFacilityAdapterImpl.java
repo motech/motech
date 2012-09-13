@@ -1,8 +1,7 @@
 package org.motechproject.openmrs.rest.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.motechproject.mrs.exception.MRSException;
@@ -18,8 +17,8 @@ import org.motechproject.openmrs.rest.util.OpenMrsUrlHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component("facilityAdapter")
 public class MRSFacilityAdapterImpl implements MRSFacilityAdapter {

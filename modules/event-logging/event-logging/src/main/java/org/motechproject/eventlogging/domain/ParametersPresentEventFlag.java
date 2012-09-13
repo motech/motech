@@ -1,8 +1,9 @@
 package org.motechproject.eventlogging.domain;
 
+import org.motechproject.event.MotechEvent;
+
 import java.util.Collections;
 import java.util.Map;
-import org.motechproject.event.MotechEvent;
 
 public class ParametersPresentEventFlag implements EventFlag {
 

@@ -1,8 +1,8 @@
 package org.motechproject.commcare.domain;
 
-import java.util.Map;
-
 import com.google.gson.annotations.SerializedName;
+
+import java.util.Map;
 
 public class CommcareForm {
 

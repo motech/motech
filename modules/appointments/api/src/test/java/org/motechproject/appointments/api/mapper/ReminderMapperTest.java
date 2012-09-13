@@ -3,12 +3,11 @@ package org.motechproject.appointments.api.mapper;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
-import org.motechproject.appointments.api.service.contract.ReminderConfiguration;
 import org.motechproject.appointments.api.model.Reminder;
+import org.motechproject.appointments.api.service.contract.ReminderConfiguration;
 import org.motechproject.util.DateUtil;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 
 public class ReminderMapperTest {
 

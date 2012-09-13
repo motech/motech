@@ -1,13 +1,9 @@
 package org.motechproject.commcare.web;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.motechproject.commcare.domain.CaseXml;
+import org.motechproject.commcare.events.CaseEvent;
 import org.motechproject.commcare.events.constants.EventDataKeys;
 import org.motechproject.commcare.events.constants.EventSubjects;
-import org.motechproject.commcare.events.CaseEvent;
 import org.motechproject.commcare.exception.CaseParserException;
 import org.motechproject.commcare.parser.CaseParser;
 import org.motechproject.event.MotechEvent;
@@ -17,6 +13,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.IOException;
 
 /**
  * Controller that handles the incoming case feed from CommCareHQ. Maps to

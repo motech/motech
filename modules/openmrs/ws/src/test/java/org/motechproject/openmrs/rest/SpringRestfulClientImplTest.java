@@ -1,13 +1,5 @@
 package org.motechproject.openmrs.rest;
 
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -17,6 +9,14 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestOperations;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class SpringRestfulClientImplTest {
 

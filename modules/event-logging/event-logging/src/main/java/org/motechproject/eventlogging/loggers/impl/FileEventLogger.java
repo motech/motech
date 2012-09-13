@@ -1,17 +1,18 @@
 package org.motechproject.eventlogging.loggers.impl;
 
+import org.motechproject.event.MotechEvent;
+import org.motechproject.eventlogging.converter.impl.DefaultFileToLogConverter;
+import org.motechproject.eventlogging.domain.LoggableEvent;
+import org.motechproject.eventlogging.loggers.EventLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import org.motechproject.eventlogging.converter.impl.DefaultFileToLogConverter;
-import org.motechproject.eventlogging.domain.LoggableEvent;
-import org.motechproject.eventlogging.loggers.EventLogger;
-import org.motechproject.event.MotechEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class FileEventLogger extends EventLogger {
 

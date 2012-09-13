@@ -1,13 +1,13 @@
 package org.motechproject.openmrs.atomfeed.repository;
 
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.ektorp.CouchDbConnector;
 import org.motechproject.dao.MotechBaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public class AllAtomFeedUpdates extends MotechBaseRepository<AtomFeedUpdate> implements AtomFeedDao {

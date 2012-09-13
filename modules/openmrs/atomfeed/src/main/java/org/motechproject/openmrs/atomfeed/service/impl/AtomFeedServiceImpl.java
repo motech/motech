@@ -1,8 +1,6 @@
 package org.motechproject.openmrs.atomfeed.service.impl;
 
-import java.util.Collections;
-import java.util.List;
-
+import com.thoughtworks.xstream.XStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.motechproject.MotechException;
@@ -21,7 +19,8 @@ import org.motechproject.openmrs.atomfeed.service.AtomFeedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.thoughtworks.xstream.XStream;
+import java.util.Collections;
+import java.util.List;
 
 @Component("atomFeedService")
 public class AtomFeedServiceImpl implements AtomFeedService {

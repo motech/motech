@@ -9,13 +9,22 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.motechproject.model.Time;
 import org.motechproject.scheduler.MotechSchedulerService;
-import org.motechproject.scheduletracking.api.domain.*;
+import org.motechproject.scheduletracking.api.domain.Alert;
+import org.motechproject.scheduletracking.api.domain.Enrollment;
+import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
+import org.motechproject.scheduletracking.api.domain.Milestone;
+import org.motechproject.scheduletracking.api.domain.MilestoneFulfillment;
+import org.motechproject.scheduletracking.api.domain.Schedule;
+import org.motechproject.scheduletracking.api.domain.WindowName;
 import org.motechproject.scheduletracking.api.domain.exception.InvalidEnrollmentException;
 import org.motechproject.scheduletracking.api.domain.exception.ScheduleTrackingException;
 import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllSchedules;
-import org.motechproject.scheduletracking.api.service.*;
+import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
+import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
+import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
+import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
 import org.motechproject.scheduletracking.api.service.contract.UpdateCriteria;
 import org.motechproject.util.DateUtil;
 
@@ -29,12 +38,19 @@ import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
 import static org.motechproject.scheduletracking.api.utility.PeriodUtil.days;
 import static org.motechproject.scheduletracking.api.utility.PeriodUtil.weeks;
-import static org.motechproject.util.DateUtil.*;
+import static org.motechproject.util.DateUtil.newDate;
+import static org.motechproject.util.DateUtil.newDateTime;
+import static org.motechproject.util.DateUtil.now;
+import static org.motechproject.util.DateUtil.today;
 
 public class ScheduleTrackingServiceImplTest {
     private ScheduleTrackingService scheduleTrackingService;

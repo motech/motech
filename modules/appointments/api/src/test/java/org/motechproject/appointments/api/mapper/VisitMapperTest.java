@@ -3,9 +3,9 @@ package org.motechproject.appointments.api.mapper;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.motechproject.appointments.api.model.Visit;
 import org.motechproject.appointments.api.service.contract.CreateVisitRequest;
 import org.motechproject.appointments.api.service.contract.ReminderConfiguration;
-import org.motechproject.appointments.api.model.Visit;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;

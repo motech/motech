@@ -1,10 +1,11 @@
 package org.motechproject.eventlogging.domain;
 
-import java.util.Map;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.model.MotechBaseDataObject;
+
+import java.util.Map;
 
 @TypeDiscriminator("doc.type === 'CouchEventLog'")
 public class CouchEventLog extends MotechBaseDataObject {

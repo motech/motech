@@ -3,7 +3,12 @@ package org.motechproject.openmrs.util;
 import org.motechproject.mrs.model.MRSFacility;
 import org.motechproject.mrs.model.MRSPatient;
 import org.motechproject.mrs.model.MRSPerson;
-import org.openmrs.*;
+import org.openmrs.Location;
+import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.Person;
+import org.openmrs.PersonAddress;
+import org.openmrs.PersonName;
 
 import java.util.Date;
 import java.util.HashSet;

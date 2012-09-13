@@ -5,12 +5,12 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.EventRelay;
 import org.motechproject.mobileforms.api.domain.FormBean;
 import org.motechproject.mobileforms.api.domain.FormBeanGroup;
 import org.motechproject.mobileforms.api.domain.FormError;
 import org.motechproject.mobileforms.api.validator.TestFormBean;
-import org.motechproject.event.MotechEvent;
-import org.motechproject.event.listener.EventRelay;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;

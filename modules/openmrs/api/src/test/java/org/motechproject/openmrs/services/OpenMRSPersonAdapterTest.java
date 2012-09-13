@@ -6,7 +6,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.motechproject.mrs.model.MRSPerson;
-import org.openmrs.*;
+import org.openmrs.Person;
+import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
+import org.openmrs.PersonName;
 import org.openmrs.api.PersonService;
 
 import java.util.Date;

@@ -16,6 +16,7 @@ import org.smslib.Service;
 import org.smslib.Settings;
 import org.smslib.TimeoutException;
 import org.smslib.smpp.jsmpp.JSMPPGateway;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;

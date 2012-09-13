@@ -1,10 +1,10 @@
 package org.motechproject.decisiontree.server.service;
 
 import org.motechproject.decisiontree.core.FlowSession;
+import org.motechproject.decisiontree.core.TreeNodeLocator;
 import org.motechproject.decisiontree.core.model.Node;
 import org.motechproject.decisiontree.core.model.Tree;
 import org.motechproject.decisiontree.core.repository.AllTrees;
-import org.motechproject.decisiontree.core.TreeNodeLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,9 +1,5 @@
 package org.motechproject.eventlogging.repository;
 
-import static org.junit.Assert.assertEquals;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +8,12 @@ import org.motechproject.eventlogging.domain.CouchEventLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:testApplicationEventLogging.xml")

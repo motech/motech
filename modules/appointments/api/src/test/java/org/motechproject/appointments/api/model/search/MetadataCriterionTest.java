@@ -4,8 +4,8 @@ import ch.lambdaj.Lambda;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.motechproject.appointments.api.service.contract.VisitResponse;
 import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
+import org.motechproject.appointments.api.service.contract.VisitResponse;
 
 import java.util.ArrayList;
 import java.util.List;

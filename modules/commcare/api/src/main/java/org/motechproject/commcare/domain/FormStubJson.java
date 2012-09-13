@@ -1,7 +1,8 @@
 package org.motechproject.commcare.domain;
 
-import java.util.List;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 public class FormStubJson {
 

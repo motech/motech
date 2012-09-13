@@ -8,10 +8,16 @@ import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.daysAfter;
 import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.daysAgo;
-import static org.motechproject.scheduletracking.api.utility.PeriodUtil.*;
+import static org.motechproject.scheduletracking.api.utility.PeriodUtil.days;
+import static org.motechproject.scheduletracking.api.utility.PeriodUtil.hours;
+import static org.motechproject.scheduletracking.api.utility.PeriodUtil.months;
+import static org.motechproject.scheduletracking.api.utility.PeriodUtil.weeks;
+import static org.motechproject.scheduletracking.api.utility.PeriodUtil.years;
 
 public class MilestoneTest {
     @Test

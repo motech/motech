@@ -1,10 +1,10 @@
 package org.motechproject.commcare.service;
 
-import java.util.List;
-
 import org.motechproject.commcare.domain.CaseInfo;
 import org.motechproject.commcare.domain.CaseTask;
 import org.motechproject.commcare.response.OpenRosaResponse;
+
+import java.util.List;
 /**
  * This service provides two main features: Interacting with CommCareHQ's programmatic case APIs and uploading case XML wrapped in a form instance to CommCareHQ.
  *

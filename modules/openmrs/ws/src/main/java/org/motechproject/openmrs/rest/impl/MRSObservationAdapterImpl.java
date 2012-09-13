@@ -1,12 +1,5 @@
 package org.motechproject.openmrs.rest.impl;
 
-import java.lang.reflect.Type;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
@@ -28,6 +21,13 @@ import org.motechproject.openmrs.rest.util.OpenMrsUrlHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+
+import java.lang.reflect.Type;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component("observationAdapter")
 public class MRSObservationAdapterImpl implements MRSObservationAdapter {

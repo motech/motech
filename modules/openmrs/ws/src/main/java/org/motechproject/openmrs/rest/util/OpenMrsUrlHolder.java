@@ -1,12 +1,12 @@
 package org.motechproject.openmrs.rest.util;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriTemplate;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Stores all OpenMRS REST URLs that are configured through openmrs-urls.properties files

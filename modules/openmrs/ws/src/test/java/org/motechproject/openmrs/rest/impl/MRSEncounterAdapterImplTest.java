@@ -1,17 +1,7 @@
 package org.motechproject.openmrs.rest.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-
-import java.io.IOException;
-import java.net.URI;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -19,15 +9,28 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.motechproject.mrs.model.*;
+import org.motechproject.mrs.model.MRSEncounter;
+import org.motechproject.mrs.model.MRSFacility;
+import org.motechproject.mrs.model.MRSObservation;
+import org.motechproject.mrs.model.MRSPerson;
+import org.motechproject.mrs.model.MRSUser;
 import org.motechproject.mrs.services.MRSPatientAdapter;
 import org.motechproject.openmrs.rest.HttpException;
 import org.motechproject.openmrs.rest.RestClient;
 import org.motechproject.openmrs.rest.util.DateUtil;
 import org.motechproject.openmrs.rest.util.OpenMrsUrlHolder;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
+import java.io.IOException;
+import java.net.URI;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class MRSEncounterAdapterImplTest {
 

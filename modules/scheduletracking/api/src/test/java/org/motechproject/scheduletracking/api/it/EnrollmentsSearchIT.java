@@ -30,8 +30,12 @@ import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertThat;
-import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.*;
-import static org.motechproject.util.DateUtil.*;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.daysAgo;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.weeksAgo;
+import static org.motechproject.scheduletracking.api.utility.DateTimeUtil.yearsAgo;
+import static org.motechproject.util.DateUtil.newDate;
+import static org.motechproject.util.DateUtil.newDateTime;
+import static org.motechproject.util.DateUtil.now;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath*:META-INF/motech/*.xml")

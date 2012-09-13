@@ -1,12 +1,5 @@
 package org.motechproject.commcare.web;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.http.HttpServletResponse;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +12,15 @@ import org.motechproject.commcare.events.constants.EventDataKeys;
 import org.motechproject.commcare.events.constants.EventSubjects;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StubFormControllerTest {

@@ -3,8 +3,10 @@ package org.motechproject.eventlogging.repository;
 import org.junit.Test;
 import org.motechproject.eventlogging.domain.MappingsJson;
 import org.motechproject.eventlogging.domain.ParametersPresentEventFlag;
+
 import java.util.List;
 import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;

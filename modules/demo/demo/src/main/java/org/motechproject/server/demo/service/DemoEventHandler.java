@@ -1,11 +1,11 @@
 package org.motechproject.server.demo.service;
 
+import org.motechproject.event.MotechEvent;
+import org.motechproject.event.listener.annotations.MotechListener;
 import org.motechproject.ivr.model.CallInitiationException;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
-import org.motechproject.event.MotechEvent;
 import org.motechproject.server.demo.EventKeys;
-import org.motechproject.event.listener.annotations.MotechListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

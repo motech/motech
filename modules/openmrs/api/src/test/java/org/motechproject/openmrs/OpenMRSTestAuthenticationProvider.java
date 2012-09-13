@@ -1,7 +1,7 @@
 package org.motechproject.openmrs;
 
-import org.motechproject.openmrs.security.OpenMRSSession;
 import org.motechproject.openmrs.security.OpenMRSSecurityUser;
+import org.motechproject.openmrs.security.OpenMRSSession;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 

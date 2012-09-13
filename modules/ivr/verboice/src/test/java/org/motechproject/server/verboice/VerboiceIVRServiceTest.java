@@ -9,9 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
-import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.decisiontree.server.service.FlowSessionService;
+import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.server.config.SettingsFacade;
 
 import java.io.IOException;
@@ -20,7 +20,10 @@ import java.util.Properties;
 
 import static java.lang.String.format;
 import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class VerboiceIVRServiceTest {

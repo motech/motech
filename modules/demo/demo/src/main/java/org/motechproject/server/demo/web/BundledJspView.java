@@ -1,13 +1,12 @@
 package org.motechproject.server.demo.web;
 
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.osgi.framework.BundleContext;
 import org.springframework.osgi.context.BundleContextAware;
 import org.springframework.web.servlet.view.JstlView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 public class BundledJspView extends JstlView implements BundleContextAware {
 

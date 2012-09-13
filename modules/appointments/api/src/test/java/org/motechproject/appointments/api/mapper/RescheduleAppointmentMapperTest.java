@@ -3,9 +3,9 @@ package org.motechproject.appointments.api.mapper;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.appointments.api.service.contract.ReminderConfiguration;
 import org.motechproject.appointments.api.service.contract.RescheduleAppointmentRequest;
-import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.util.DateUtil;
 
 import java.util.List;

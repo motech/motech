@@ -3,9 +3,11 @@ package org.motechproject.commcare.domain;
 /**
  * A domain class to include in a case task in order to generate an index element with IndexSubElements as the indices.
  */
+
+import org.motechproject.commcare.request.IndexSubElement;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.motechproject.commcare.request.IndexSubElement;
 
 public class IndexTask {
     private List<IndexSubElement> indices;

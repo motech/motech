@@ -1,11 +1,11 @@
 package org.motechproject.openmrs.atomfeed.builder;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.motechproject.event.MotechEvent;
 import org.motechproject.openmrs.atomfeed.events.EventDataKeys;
 import org.motechproject.openmrs.atomfeed.model.Entry;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class EventBuilderTemplate {
 

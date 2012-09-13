@@ -2,18 +2,32 @@ package org.motechproject.scheduler;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.event.MotechEvent;
-import org.motechproject.model.DayOfWeek;
-import org.motechproject.model.Time;
-import org.motechproject.scheduler.domain.*;
-import org.motechproject.scheduler.exception.MotechSchedulerException;
-import org.motechproject.scheduler.impl.MotechSchedulerServiceImpl;
 import org.motechproject.event.listener.EventListenerRegistry;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
+import org.motechproject.model.DayOfWeek;
+import org.motechproject.model.Time;
+import org.motechproject.scheduler.domain.CronJobId;
+import org.motechproject.scheduler.domain.CronSchedulableJob;
+import org.motechproject.scheduler.domain.DayOfWeekSchedulableJob;
+import org.motechproject.scheduler.domain.RepeatingJobId;
+import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
+import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
+import org.motechproject.scheduler.exception.MotechSchedulerException;
+import org.motechproject.scheduler.impl.MotechSchedulerServiceImpl;
 import org.motechproject.util.DateUtil;
-import org.quartz.*;
+import org.quartz.CronTrigger;
+import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
+import org.quartz.JobKey;
+import org.quartz.Trigger;
+import org.quartz.TriggerKey;
+import org.quartz.TriggerUtils;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.OperableTrigger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +55,6 @@ import static org.motechproject.util.DateUtil.newDate;
 import static org.motechproject.util.DateUtil.newDateTime;
 import static org.quartz.JobKey.jobKey;
 import static org.quartz.TriggerKey.triggerKey;
-import static org.quartz.impl.matchers.GroupMatcher.triggerGroupEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/testSchedulerApplicationContext.xml"})

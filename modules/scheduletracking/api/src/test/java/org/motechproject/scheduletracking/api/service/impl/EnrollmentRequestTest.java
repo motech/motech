@@ -8,7 +8,9 @@ import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.motechproject.util.DateUtil.*;
+import static org.motechproject.util.DateUtil.newDate;
+import static org.motechproject.util.DateUtil.newDateTime;
+import static org.motechproject.util.DateUtil.today;
 
 public class EnrollmentRequestTest {
     

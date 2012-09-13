@@ -1,7 +1,8 @@
 package org.motechproject.eventlogging.service;
 
-import java.util.Set;
 import org.motechproject.event.MotechEvent;
+
+import java.util.Set;
 
 /**
  * Class that represents a logging service. A logging service can provide any

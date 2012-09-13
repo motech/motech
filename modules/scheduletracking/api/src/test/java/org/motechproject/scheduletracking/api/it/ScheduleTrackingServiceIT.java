@@ -12,15 +12,22 @@ import org.motechproject.scheduletracking.api.domain.json.ScheduleRecord;
 import org.motechproject.scheduletracking.api.repository.AllEnrollments;
 import org.motechproject.scheduletracking.api.repository.AllSchedules;
 import org.motechproject.scheduletracking.api.repository.TrackedSchedulesJsonReaderImpl;
-import org.motechproject.scheduletracking.api.service.*;
+import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
+import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
+import org.motechproject.scheduletracking.api.service.EnrollmentsQuery;
+import org.motechproject.scheduletracking.api.service.ScheduleTrackingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.motechproject.util.DateUtil.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.motechproject.util.DateUtil.newDate;
+import static org.motechproject.util.DateUtil.newDateTime;
+import static org.motechproject.util.DateUtil.now;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath*:META-INF/motech/*.xml")

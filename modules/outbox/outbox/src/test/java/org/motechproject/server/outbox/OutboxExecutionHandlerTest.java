@@ -8,12 +8,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.motechproject.event.MotechEvent;
 import org.motechproject.ivr.service.CallRequest;
 import org.motechproject.ivr.service.IVRService;
 import org.motechproject.outbox.api.EventKeys;
 import org.motechproject.scheduler.domain.CronSchedulableJob;
 import org.motechproject.scheduler.domain.JobId;
-import org.motechproject.event.MotechEvent;
 import org.motechproject.scheduler.gateway.MotechSchedulerGateway;
 
 import java.util.Properties;

@@ -6,13 +6,19 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.motechproject.appointments.api.service.contract.*;
-import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
-import org.motechproject.appointments.api.repository.AllReminderJobs;
 import org.motechproject.appointments.api.model.Appointment;
 import org.motechproject.appointments.api.model.AppointmentCalendar;
 import org.motechproject.appointments.api.model.Visit;
+import org.motechproject.appointments.api.repository.AllAppointmentCalendars;
+import org.motechproject.appointments.api.repository.AllReminderJobs;
 import org.motechproject.appointments.api.service.AppointmentService;
+import org.motechproject.appointments.api.service.contract.AppointmentCalendarRequest;
+import org.motechproject.appointments.api.service.contract.ConfirmAppointmentRequest;
+import org.motechproject.appointments.api.service.contract.CreateVisitRequest;
+import org.motechproject.appointments.api.service.contract.ReminderConfiguration;
+import org.motechproject.appointments.api.service.contract.RescheduleAppointmentRequest;
+import org.motechproject.appointments.api.service.contract.VisitResponse;
+import org.motechproject.appointments.api.service.contract.VisitsQuery;
 import org.motechproject.util.DateUtil;
 
 import java.util.HashMap;
@@ -22,7 +28,10 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class AppointmentServiceImplTest {

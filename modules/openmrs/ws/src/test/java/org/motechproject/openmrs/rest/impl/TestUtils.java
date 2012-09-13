@@ -1,15 +1,14 @@
 package org.motechproject.openmrs.rest.impl;
 
-import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
-
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import org.apache.commons.io.IOUtils;
 import org.motechproject.mrs.model.MRSPerson;
 import org.springframework.core.io.ClassPathResource;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 
 public final class TestUtils {
 

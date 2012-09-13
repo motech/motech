@@ -7,11 +7,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.motechproject.decisiontree.core.FlowSession;
+import org.motechproject.decisiontree.core.TreeNodeLocator;
 import org.motechproject.decisiontree.core.model.AudioPrompt;
 import org.motechproject.decisiontree.core.model.Node;
 import org.motechproject.decisiontree.core.model.Transition;
 import org.motechproject.decisiontree.core.model.Tree;
-import org.motechproject.decisiontree.core.TreeNodeLocator;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 

@@ -1,9 +1,9 @@
 package org.motechproject.appointments.api.mapper;
 
-import org.motechproject.appointments.api.service.contract.CreateVisitRequest;
-import org.motechproject.appointments.api.service.contract.ReminderConfiguration;
 import org.motechproject.appointments.api.model.Reminder;
 import org.motechproject.appointments.api.model.Visit;
+import org.motechproject.appointments.api.service.contract.CreateVisitRequest;
+import org.motechproject.appointments.api.service.contract.ReminderConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;

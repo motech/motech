@@ -1,7 +1,5 @@
 package org.motechproject.openmrs.atomfeed;
 
-import java.util.Date;
-
 import org.apache.commons.lang.ObjectUtils;
 import org.joda.time.LocalTime;
 import org.motechproject.MotechException;
@@ -11,6 +9,8 @@ import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+
+import java.util.Date;
 
 /**
  * This class is responsible for configuring the motech scheduler to fire events

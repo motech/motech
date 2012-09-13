@@ -7,12 +7,21 @@ import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.campaign.AbsoluteCampaign;
 import org.motechproject.server.messagecampaign.domain.campaign.CronBasedCampaign;
 import org.motechproject.server.messagecampaign.domain.campaign.OffsetCampaign;
-import org.motechproject.server.messagecampaign.domain.message.*;
+import org.motechproject.server.messagecampaign.domain.message.AbsoluteCampaignMessage;
+import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
+import org.motechproject.server.messagecampaign.domain.message.CronBasedCampaignMessage;
+import org.motechproject.server.messagecampaign.domain.message.OffsetCampaignMessage;
 import org.motechproject.util.TimeIntervalParser;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Properties;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
 public class AllMessageCampaignsTest {
 

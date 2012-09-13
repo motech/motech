@@ -1,7 +1,5 @@
 package org.motechproject.commcare.gateway;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.MockitoAnnotations.initMocks;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,11 +15,15 @@ import org.motechproject.commcare.exception.CaseParserException;
 import org.motechproject.commcare.request.IndexSubElement;
 import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
+
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class CaseTaskXmlConverterTest {
 

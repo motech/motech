@@ -1,12 +1,12 @@
 package org.motechproject.eventlogging.loggers.impl;
 
+import org.motechproject.event.MotechEvent;
 import org.motechproject.eventlogging.converter.impl.DefaultCouchToLogConverter;
 import org.motechproject.eventlogging.domain.CouchEventLog;
 import org.motechproject.eventlogging.domain.CouchLoggableEvent;
 import org.motechproject.eventlogging.domain.LoggableEvent;
 import org.motechproject.eventlogging.loggers.EventLogger;
 import org.motechproject.eventlogging.repository.AllCouchLogs;
-import org.motechproject.event.MotechEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

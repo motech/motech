@@ -1,7 +1,6 @@
 package org.motechproject.mrs.model;
 
 import org.junit.Test;
-import org.motechproject.mrs.model.Password;
 
 import static junit.framework.Assert.assertTrue;
 

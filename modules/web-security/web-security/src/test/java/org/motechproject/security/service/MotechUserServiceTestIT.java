@@ -18,7 +18,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import static java.util.Arrays.asList;
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)

@@ -1,10 +1,5 @@
 package org.motechproject.openmrs.rest.impl;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.motechproject.mrs.exception.MRSException;
 import org.motechproject.openmrs.rest.HttpException;
 import org.motechproject.openmrs.rest.RestClient;
@@ -16,6 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component("conceptAdapter")
 public class MRSConceptAdapterImpl {
