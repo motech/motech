@@ -7,12 +7,12 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public interface DecisionTreeServer {
 
-    public static final String CURRENT_NODE_PARAM = "CurrentNode";
+    String CURRENT_NODE_PARAM = "CurrentNode";
 
     /**
      * Generates an ivr markup document based on a velocity template defined by an ivr provider module (kookoo, verboice etc).
      */
-    public ModelAndView getResponse(String flowSessionId, String phoneNumber, String provider, String tree, String transitionKey, String language);
+    ModelAndView getResponse(String flowSessionId, String phoneNumber, String provider, String tree, String transitionKey, String language);
 
     enum Error {
         TREE_OR_LANGUAGE_MISSING("Tree or language missing, please check IVR URL."),
