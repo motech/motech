@@ -153,7 +153,7 @@ public class ServerEventRelay implements EventRelay {
             if (event.getMessageRedeliveryCount() == motechEventConfig.getMessageMaxRedeliveryCount()) {
                 event.getParameters().put(MotechEvent.PARAM_DISCARDED_MOTECH_EVENT, Boolean.TRUE);
                 log.info("Discarding Motech event " + event + ". Max retry count reached.");
-                return;
+                throw e;
             }
             event.incrementMessageRedeliveryCount();
             sendEventMessage(event);

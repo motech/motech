@@ -15,9 +15,9 @@
         <property name="targetConnectionFactory">
             <bean class="org.apache.activemq.ActiveMQConnectionFactory">
                 <property name="brokerURL" value="${broker.url}"/>
-                <property name="redeliveryPolicy.maximumRedeliveries" value="${maximumRedeliveries}"/>
-                <property name="redeliveryPolicy.initialRedeliveryDelay" value="${redeliveryDelayInMillis}"/>
-                <property name="redeliveryPolicy.redeliveryDelay" value="${redeliveryDelayInMillis}"/>
+                <property name="redeliveryPolicy.maximumRedeliveries" value="0"/>
+                <property name="redeliveryPolicy.initialRedeliveryDelay" value="0"/>
+                <property name="redeliveryPolicy.redeliveryDelay" value="0"/>
             </bean>
         </property>
         <property name="sessionCacheSize" value="${jms.session.cache.size:10}"/>
