@@ -86,7 +86,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                 String bundleSymbolicName = bundle.getSymbolicName();
 
                 if (!bundleSymbolicName.startsWith("org.motechproject.motech-")) {
-                    startBundle(bundleSymbolicName);
+                    startBundle(bundle);
                 }
             }
 
@@ -109,7 +109,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                 String bundleSymbolicName = bundle.getSymbolicName();
 
                 if (bundleSymbolicName.startsWith("org.motechproject.motech-")) {
-                    startBundle(bundleSymbolicName);
+                    startBundle(bundle);
                 }
             }
         } catch (Exception e) {
@@ -132,25 +132,16 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     /**
      * Find first bundle with given name and start it
      *
-     * @param bundleName bundle name which you want to launch
+     * @param bundleSymbolicName symbolic name of the bundle you want to launch
      * @return true if bundle was found and launched, otherwise false
      */
-    public boolean startBundle(final String bundleName) {
+    public boolean startBundle(final String bundleSymbolicName) {
         boolean found = false;
 
         try {
             for (Bundle bundle : bundles) {
-                if (bundle.getSymbolicName().contains(bundleName)) {
-                    logger.debug("Starting bundle [" + bundle + "]");
-                    storeClassCloader(bundle);
-                    // custom bundle loaders
-                    if (bundleLoaders != null) {
-                        for (BundleLoader loader : bundleLoaders) {
-                            loader.loadBundle(bundle);
-                        }
-                    }
-
-                    bundle.start();
+                if (bundle.getSymbolicName().equals(bundleSymbolicName)) {
+                    startBundle(bundle);
                     found = true;
                     break; // found bundle
                 }
@@ -195,6 +186,21 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     public Map<String, ClassLoader> getBundleClassLoaderLookup() {
         return bundleClassLoaderLookup;
+    }
+
+    private void startBundle(Bundle bundle) throws Exception {
+        logger.debug("Starting bundle [" + bundle + "]");
+
+        storeClassCloader(bundle);
+
+        // custom bundle loaders
+        if (bundleLoaders != null) {
+            for (BundleLoader loader : bundleLoaders) {
+                loader.loadBundle(bundle);
+            }
+        }
+
+        bundle.start();
     }
 
     private void registerPlatformServices(BundleContext bundleContext) throws Exception {
