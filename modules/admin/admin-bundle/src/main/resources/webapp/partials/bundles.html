@@ -15,7 +15,7 @@
     <div class="span7">
         <div class="inside inline">
             <span><b>{{msg('bundles.statistics')}}</b></span>
-            <span><b>{{msg('bundles.statistics.total')}}:</b> {{bundles.length}}.</span>
+            <span><b>{{msg('bundles.statistics.total')}}:</b> {{allBundlesCount()}}.</span>
             <span><b>{{msg('bundles.statistics.active')}}:</b> {{activeBundlesCount()}}.</span>
             <span><b>{{msg('bundles.statistics.installed')}}:</b> {{installedBundlesCount()}}.</span>
             <span><b>{{msg('bundles.statistics.resolved')}}:</b> {{resolvedBundlesCount()}}.</span>
@@ -52,7 +52,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr ng-repeat="bundle in bundles | orderBy:orderProp:invert | filter:filterProp">
+    <tr ng-repeat="bundle in bundles | orderBy:orderProp:invert | filter:FILTER_MOTECH_BUNDLES | filter:filterProp">
         <td>{{bundle.bundleId}}</td>
         <td>
             <div ng-class="getIconClass(bundle)">

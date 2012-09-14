@@ -10,6 +10,8 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams) {
     $scope.invert = false;
     $scope.versionOrder = new Array("version.major", "version.minor", "version.micro", "version.qualifier");
 
+    $scope.FILTER_MOTECH_BUNDLES = 'org.motechproject.motech-';
+
     $scope.setOrder = function(prop) {
         if (prop == $scope.orderProp) {
             $scope.invert = !$scope.invert;
@@ -37,10 +39,23 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams) {
         $scope.bundle = Bundle.get({ bundleId: $routeParams.bundleId });
     }
 
+    $scope.allBundlesCount = function() {
+        var count = 0;
+        angular.forEach($scope.bundles, function(bundle) {
+            if (bundle.symbolicName.search($scope.FILTER_MOTECH_BUNDLES) == 0) {
+                count ++;
+            }
+        });
+
+        return count;
+    }
+
     $scope.activeBundlesCount = function() {
         var count = 0;
         angular.forEach($scope.bundles, function(bundle) {
-            count += bundle.isActive() ? 1 : 0;
+            if (bundle.symbolicName.search($scope.FILTER_MOTECH_BUNDLES) == 0) {
+                count += bundle.isActive() ? 1 : 0;
+            }
         });
 
         return count;
@@ -49,7 +64,9 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams) {
     $scope.installedBundlesCount = function() {
         var count = 0;
         angular.forEach($scope.bundles, function(bundle) {
-            count += bundle.isInstalled() ? 1 : 0;
+            if (bundle.symbolicName.search($scope.FILTER_MOTECH_BUNDLES) == 0) {
+                count += bundle.isInstalled() ? 1 : 0;
+            }
         });
 
         return count;
@@ -58,7 +75,9 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams) {
     $scope.resolvedBundlesCount = function() {
         var count = 0;
         angular.forEach($scope.bundles, function(bundle) {
-            count += bundle.isResolved() ? 1 : 0;
+            if (bundle.symbolicName.search($scope.FILTER_MOTECH_BUNDLES) == 0) {
+                count += bundle.isResolved() ? 1 : 0;
+            }
         });
 
         return count;
