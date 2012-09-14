@@ -3,7 +3,7 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.12.3</version>
+        <version>0.12.4-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -11,7 +11,7 @@
     <artifactId>motech-sms-smpp</artifactId>
     <name>MoTeCH SMS SMPP</name>
     <description>MoTeCH SMS SMPP</description>
-    <version>0.12.3</version>
+    <version>0.12.4-SNAPSHOT</version>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>
