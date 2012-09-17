@@ -18,6 +18,7 @@ public class FormGroupPublisher {
 
     public static final String FORM_BEAN_GROUP = "formBeanGroup";
     public static final String FORM_VALID_FROMS = "handle.valid.xforms.group";
+    public static final String FORM_LOGGING = "handle.xforms.group.logging";
 
     @Autowired
     private EventRelay eventRelay;
@@ -34,6 +35,17 @@ public class FormGroupPublisher {
         } catch (Exception e) {
             formBeanGroup.markAllFormAsFailed("Server exception, contact your administrator");
             log.error("Encountered exception while validating form group, " + formBeanGroup.toString(), e);
+        }
+    }
+
+    public void publishFormsForLogging(FormBeanGroup formBeanGroup) {
+        try {
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put(FORM_BEAN_GROUP, formBeanGroup);
+            MotechEvent motechEvent = new MotechEvent(FORM_LOGGING, params);
+            eventRelay.sendEventMessage(motechEvent);
+        } catch (Exception e) {
+            log.error("Encountered exception while raising event to log the forms, " + formBeanGroup.toString(), e);
         }
     }
 }

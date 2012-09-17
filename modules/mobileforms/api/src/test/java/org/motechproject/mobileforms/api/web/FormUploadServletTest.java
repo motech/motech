@@ -126,8 +126,11 @@ public class FormUploadServletTest {
         verify(formOutput).writeFormErrors(any(DataOutputStream.class));
 
         ArgumentCaptor<FormBeanGroup> publishCaptor = ArgumentCaptor.forClass(FormBeanGroup.class);
+        ArgumentCaptor<FormBeanGroup> logCaptor = ArgumentCaptor.forClass(FormBeanGroup.class);
+        verify(formGroupPublisher,times(2)).publishFormsForLogging(logCaptor.capture());
         verify(formGroupPublisher, times(2)).publish(publishCaptor.capture());
         assertThat(publishCaptor.getAllValues(), is(equalTo(Arrays.asList(new FormBeanGroup(Arrays.asList(successForm)), new FormBeanGroup(Arrays.asList(formInDifferentGroup))))));
+        assertThat(logCaptor.getAllValues(), is(equalTo(Arrays.asList(new FormBeanGroup(Arrays.asList(successForm,failureForm)), new FormBeanGroup(Arrays.asList(formInDifferentGroup))))));
 
         verify(epihandySerializer).addDeserializationListener(formParser);
         verify(epihandySerializer).deserializeStudiesWithEvents(any(DataInputStream.class), eq(formIdMap));

@@ -100,6 +100,7 @@ public class FormUploadServletIT {
             assertFalse(true);
         }
 
+        verify(formGroupPublisher).publishFormsForLogging(new FormBeanGroup(Arrays.<FormBean>asList(formBeanWithError)));
         verify(formGroupPublisher).publish(new FormBeanGroup(Arrays.<FormBean>asList(formBeanWithOutError)));
     }
 
