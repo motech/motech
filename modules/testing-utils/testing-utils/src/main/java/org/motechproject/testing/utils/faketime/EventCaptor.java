@@ -81,11 +81,13 @@ public class EventCaptor implements EventListener {
     }
 
     private void assertEventTimes(List<DateTime> expectedTimes, List<DateTime> eventTimes) {
-        if (expectedTimes.size() != eventTimes.size())
+        if (expectedTimes.size() != eventTimes.size()) {
             fail(format("Expected %s events, got %s.\n%s", expectedTimes.size(), eventTimes.size(), eventLog(expectedTimes, eventTimes)));
+        }
         for (int i = 0; i < expectedTimes.size(); i++) {
-            if (expectedTimes.get(i).getMillis() - eventTimes.get(i).getMillis() > DELAY_THRESHOLD)
+            if (expectedTimes.get(i).getMillis() - eventTimes.get(i).getMillis() > DELAY_THRESHOLD) {
                 fail(format("No event raised at %s.\n%s", expectedTimes.get(i), eventLog(expectedTimes, eventTimes)));
+            }
         }
     }
 
@@ -112,8 +114,9 @@ public class EventCaptor implements EventListener {
         if (!isEmpty(times)) {
             for (int i = 0; i < times.size(); i++) {
                 s += times.get(i);
-                if (i < times.size() - 1)
+                if (i < times.size() - 1) {
                     s += ", ";
+                }
             }
         }
         return s;

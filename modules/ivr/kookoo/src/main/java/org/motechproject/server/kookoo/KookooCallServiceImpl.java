@@ -44,7 +44,9 @@ public class KookooCallServiceImpl implements IVRService {
 
     @Override
     public void initiateCall(CallRequest callRequest) {
-        if (callRequest == null) throw new IllegalArgumentException("Missing call request");
+        if (callRequest == null) {
+            throw new IllegalArgumentException("Missing call request");
+        }
         GetMethod getMethod = null;
         initSession(callRequest);
         try {

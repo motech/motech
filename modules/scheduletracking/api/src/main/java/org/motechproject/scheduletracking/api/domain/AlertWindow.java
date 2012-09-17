@@ -98,8 +98,9 @@ public class AlertWindow {
         DateTime start = earliestValidAlertDateTime();
 
         // In case of floating alerts with no preferred alert time, don't filter out today's alerts.
-        if (alert.isFloating() && preferredAlertTime == null)
+        if (alert.isFloating() && preferredAlertTime == null) {
             start = newDateTime(start.toLocalDate(), new Time(0, 0));
+        }
 
         return filter(greaterThanOrEqualTo(start), alertsWithInEndDate);
     }
