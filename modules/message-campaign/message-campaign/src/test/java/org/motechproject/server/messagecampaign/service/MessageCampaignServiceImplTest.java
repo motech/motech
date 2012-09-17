@@ -15,10 +15,12 @@ import org.motechproject.server.messagecampaign.dao.AllMessageCampaigns;
 import org.motechproject.server.messagecampaign.domain.campaign.AbsoluteCampaign;
 import org.motechproject.server.messagecampaign.domain.campaign.Campaign;
 import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollment;
+import org.motechproject.server.messagecampaign.domain.campaign.CampaignEnrollmentStatus;
 import org.motechproject.server.messagecampaign.scheduler.CampaignSchedulerFactory;
 import org.motechproject.server.messagecampaign.scheduler.CampaignSchedulerService;
 
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
@@ -143,5 +145,25 @@ public class MessageCampaignServiceImplTest {
         messageCampaignService.getCampaignTimings("entity_1", "campaign", startDate, endDate);
 
         verify(campaignScheduler).getCampaignTimings(startDate, endDate, enrollment);
+    }
+
+    @Test
+    public void shouldGetEmptyCampaignTimingsMapIfEnrollmentIsNotActive() {
+        AbsoluteCampaign campaign = mock(AbsoluteCampaign.class);
+
+        when(allMessageCampaigns.get("campaign")).thenReturn(campaign);
+
+        CampaignSchedulerService campaignScheduler = mock(CampaignSchedulerService.class);
+        when(campaignSchedulerFactory.getCampaignScheduler("campaign")).thenReturn(campaignScheduler);
+
+        CampaignEnrollment enrollment = new CampaignEnrollment("entity_1", "campaign");
+        enrollment.setStatus(CampaignEnrollmentStatus.INACTIVE);
+        when(allCampaignEnrollments.findByExternalIdAndCampaignName("entity_1", "campaign")).thenReturn(enrollment);
+
+        DateTime now = now();
+        DateTime startDate = now.plusDays(1);
+        DateTime endDate = now.plusDays(1).plusDays(5);
+        final Map<String,List<DateTime>> campaignTimings = messageCampaignService.getCampaignTimings("entity_1", "campaign", startDate, endDate);
+        assertEquals(0, campaignTimings.size());
     }
 }
