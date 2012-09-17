@@ -14,6 +14,8 @@
 
 .navbar-inner {
     box-shadow: none;
+    filter:none;
+    border-radius:none;
 }
 
 .navbar-inner-bg {

@@ -26,6 +26,12 @@ body {
 .navbar .dropdown-menu, .nav-pills .dropdown-menu {
     margin-top: 0;
 }
+
+.navbar-inner {
+    filter:none;
+    border-radius:none;
+}
+
 .navbar-inner-bg {
     background: url("../img/navbar.jpg") repeat-x;
 }
@@ -36,7 +42,6 @@ body {
 .navbar .nav > li > a {
     color: #c2eafe;
 }
-
 
 .well2 {
     margin-bottom: 20px;
