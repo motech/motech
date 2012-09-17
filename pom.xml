@@ -258,17 +258,6 @@
         <module>modules/testing-utils/testing-utils</module>
         <module>modules/web-security/web-security</module>
 
-        <!-- Internal OSGI bundles -->
-        <module>bundles/gson</module>
-        <module>bundles/lambdaj</module>
-        <module>bundles/stax</module>
-        <module>bundles/kxml2</module>
-        <module>bundles/xstream</module>
-        <module>bundles/jackson</module>
-        <module>bundles/quartz</module>
-        <module>bundles/jsmpp</module>
-        <module>bundles/smslib</module>
-
         <!-- OSGI modules -->
         <module>modules/admin/admin-bundle</module>
         <module>modules/alerts/api-bundle</module>
