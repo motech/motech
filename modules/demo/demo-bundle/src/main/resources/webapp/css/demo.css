@@ -131,7 +131,7 @@ select {
     float: left;
     padding-top: 5px;
     text-align: left;
-    width: 150px;
+    width: 148px;
     border-bottom: 1px dashed #cccccc;
 }
 .event-label3 {
@@ -157,17 +157,15 @@ select {
     float:left;
     display:inline-block;
     margin-left: 8px;
+    margin-right: 5%;
     padding: 1px 6px;
     position: absolute;
     z-index: 999;
     font-size: 11px;
 }
 
-.message-group input[class*="span"],
-.message-group textarea[class*="span"],
-.hint-group input[class*="span"]{
-    float: left;
-    margin-left: 0;
+.spn8 {
+    width:63.9%;
 }
 
 

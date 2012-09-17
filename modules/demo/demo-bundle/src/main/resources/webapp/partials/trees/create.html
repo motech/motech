@@ -24,17 +24,18 @@
                     <strong>{{msg('main.error')}}:</strong> {{msg('trees.error.treeCyclesFound')}}
                 </span>
             </div>
-            <div class="control-group hint-group">
+            <div class="control-group">
                 <label for="tree.name" class="control-label">{{msg('trees.create.tree.name')}}<span class="required-field">*</span></label>
                 <div class="controls">
-                    <input type="text" ng-model="tree.name" id="tree.name" name="tree.name" class="span8" required/>
+                    <input type="text" ng-model="tree.name" id="tree.name" name="tree.name" class="spn8" required/>
+                    <div class="form-hint" ng-show="treeNameValidationMsg">{{treeNameValidationMsg}}</div>
                 </div>
-                <div class="form-hint" ng-show="treeNameValidationMsg">{{treeNameValidationMsg}}</div>
+
             </div>
             <div class="control-group">
                 <label for="tree.description" class="control-label">{{msg('trees.create.tree.description')}}</label>
                 <div class="controls">
-                    <input type="text" ng-model="tree.description" id="tree.description" name="tree.description" class="span8"/>
+                    <input type="text" ng-model="tree.description" id="tree.description" name="tree.description" class="spn8"/>
                 </div>
             </div>
 
@@ -45,17 +46,19 @@
                 <div ng-show="node.id != 0" class="control-group">
                     <label for="{{node.id}}.name" class="control-label">{{msg('trees.create.node.name')}}<span class="required-field">*</span></label>
                     <div class="controls">
-                        <input type="text" ng-model="node.name" id="{{node.id}}.name" name="{{node.id}}.name" required class="span8" />
+                        <input type="text" ng-model="node.name" id="{{node.id}}.name" name="{{node.id}}.name" required class="spn8" />
+                        <div class="form-hint" ng-show="getValidationError(node.id, 'name')">{{getValidationError(node.id, 'name')}}</div>
                     </div>
-                    <div class="form-hint" ng-show="getValidationError(node.id, 'name')">{{getValidationError(node.id, 'name')}}</div>
+
                 </div>
 
                 <div class="control-group">
                     <label for="{{node.id}}.message" class="control-label">{{msg('trees.create.node.message')}}<span class="required-field">*</span></label>
                     <div class="controls">
-                        <textarea id="{{node.id}}.message" name="{{node.id}}.message" rows="5" ng-model="node.message" required class="span8">{{node.message}}</textarea>
+                        <textarea id="{{node.id}}.message" name="{{node.id}}.message" rows="5" ng-model="node.message" required class="spn8">{{node.message}}</textarea>
+                        <div class="form-hint" ng-show="getValidationError(node.id, 'message')">{{getValidationError(node.id, 'message')}}</div>
                     </div>
-                    <div class="form-hint" ng-show="getValidationError(node.id, 'message')">{{getValidationError(node.id, 'message')}}</div>
+
                 </div>
 
                 <div class="control-group">
