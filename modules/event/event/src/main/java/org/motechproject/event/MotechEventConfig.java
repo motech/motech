@@ -9,7 +9,7 @@ public class MotechEventConfig {
     /**
      * Maximum number of times a message would be re-delivered in case of any exception
      */
-    @Value("${motech.message.max.redelivery.count:3}")
+    @Value("${motech.message.max.redelivery.count}")
     private int messageMaxRedeliveryCount;
 
     /**
@@ -18,7 +18,7 @@ public class MotechEventConfig {
      * redelivery times are t+d, t+(d*2), t+(d*4), t+(d*8), t+(d*16), t+(d*32),
      * and so on, till maximum redelivery count is reached.
      */
-    @Value("${motech.message.redelivery.delay:1}")
+    @Value("${motech.message.redelivery.delay}")
     private long messageRedeliveryDelay;
 
     public int getMessageMaxRedeliveryCount() {
