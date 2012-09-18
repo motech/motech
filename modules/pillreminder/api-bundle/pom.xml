@@ -49,6 +49,11 @@
             <version>4.2.0</version>
         </dependency>
         <dependency>
+            <groupId>org.aopalliance</groupId>
+            <artifactId>com.springsource.org.aopalliance</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.web.servlet</artifactId>
             <version>${spring.version}</version>
@@ -93,6 +98,11 @@
             <artifactId>org.springframework.osgi.core</artifactId>
             <version>1.2.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
+            <version>1.9.7</version>
+        </dependency>
         <!-- Non-OSGI dependencies -->
         <dependency>
             <groupId>org.ektorp</groupId>
@@ -109,16 +119,6 @@
             <groupId>org.springframework.ws</groupId>
             <artifactId>spring-oxm-tiger</artifactId>
             <version>1.0-m2</version>
-        </dependency>
-        <dependency>
-            <groupId>aopalliance</groupId>
-            <artifactId>aopalliance</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
-            <version>1.9.7</version>
         </dependency>
     </dependencies>
     <build>

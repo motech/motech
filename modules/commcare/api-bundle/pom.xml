@@ -54,7 +54,6 @@
             <artifactId>org.springframework.web.servlet</artifactId>
             <version>${spring.version}</version>
         </dependency>
-        <!-- OSGI dependencies -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>org.motechproject.com.google.code.gson</artifactId>
