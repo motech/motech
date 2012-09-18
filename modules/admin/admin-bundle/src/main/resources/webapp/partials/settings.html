@@ -43,7 +43,7 @@
 
                 <form id="platformSettingsForm" class="form-horizontal inside">
                     <fieldset>
-                        <div ng-repeat="option in pSettings.settings" class="control-group">
+                        <div ng-repeat="option in pSettings.settings | orderBy:'key'" class="control-group">
                             <label class="control-label span3" for="{{option.key}}">{{option.key}}</label>
 
                             <div class="controls span2">

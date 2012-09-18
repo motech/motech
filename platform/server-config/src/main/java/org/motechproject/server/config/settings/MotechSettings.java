@@ -24,8 +24,9 @@ public interface MotechSettings {
     String QUARTZ_THREAD_POOL_THREAD_COUNT = "org.quartz.threadPool.threadCount";
     String QUARTZ_JOB_STORE_CLASS = "org.quartz.jobStore.class";
 
-    String LANGUAGE = "system.language";
+    String GRAPHITE_URL = "graphite.url";
 
+    String LANGUAGE = "system.language";
     String STATUS_MSG_TIMEOUT = "statusmsg.timeout";
 
     String getLanguage();
@@ -37,4 +38,6 @@ public interface MotechSettings {
     Properties getActivemqProperties();
 
     Properties getQuartzProperties();
+
+    Properties getMetricsProperties();
 }

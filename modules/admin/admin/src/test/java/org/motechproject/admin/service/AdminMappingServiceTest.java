@@ -8,11 +8,13 @@ import org.motechproject.admin.domain.AdminMapping;
 import org.motechproject.admin.repository.AllAdminMappings;
 import org.motechproject.admin.service.impl.AdminMappingServiceImpl;
 import org.motechproject.server.config.service.PlatformSettingsService;
+import org.motechproject.server.config.settings.MotechSettings;
 import org.osgi.framework.BundleContext;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
@@ -21,6 +23,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class AdminMappingServiceTest {
 
+    private static final String GRAPHITE_URL = "http://graphite.motechproject.org";
+
     @InjectMocks
     AdminMappingService adminMappingService = new AdminMappingServiceImpl();
 
@@ -28,7 +32,7 @@ public class AdminMappingServiceTest {
     AllAdminMappings allAdminMappings;
 
     @Mock
-    BundleContext bundleContext;
+    MotechSettings motechSettings;
 
     @Mock
     PlatformSettingsService platformSettingsService;
@@ -59,6 +63,18 @@ public class AdminMappingServiceTest {
     }
 
     @Test
+    public void testGetGraphiteUrl() {
+        when(platformSettingsService.getPlatformSettings()).thenReturn(motechSettings);
+        when(motechSettings.getMetricsProperties()).thenReturn(metricsProperties());
+
+        String result = adminMappingService.getGraphiteUrl();
+
+        assertEquals(GRAPHITE_URL, result);
+        verify(platformSettingsService).getPlatformSettings();
+        verify(motechSettings).getMetricsProperties();
+    }
+
+    @Test
     public void testUnRegisterMapping() {
         adminMappingService.unregisterMapping(firstMapping.getBundleName());
         verify(allAdminMappings).removeByBundleName(firstMapping.getBundleName());
@@ -72,5 +88,11 @@ public class AdminMappingServiceTest {
     @Test(expected = IllegalArgumentException.class)
     public void testNullUrlNameRegistration() {
         adminMappingService.registerMapping("test", null);
+    }
+
+    private Properties metricsProperties() {
+        Properties props = new Properties();
+        props.put(MotechSettings.GRAPHITE_URL, GRAPHITE_URL);
+        return  props;
     }
 }

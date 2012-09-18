@@ -10,7 +10,5 @@ public interface AdminMappingService {
 
     Map<String, String> getAllMappings();
 
-    void registerGraphiteUrl(String url);
-
     String getGraphiteUrl();
 }

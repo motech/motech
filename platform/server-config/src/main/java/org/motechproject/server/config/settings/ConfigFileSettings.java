@@ -84,6 +84,15 @@ public class ConfigFileSettings extends Properties implements MotechSettings {
         return quartzProperties;
     }
 
+    @Override
+    public Properties getMetricsProperties() {
+        Properties metricsProperties = new Properties();
+
+        putPropertyIfNotNull(metricsProperties, GRAPHITE_URL, getProperty(GRAPHITE_URL));
+
+        return metricsProperties;
+    }
+
     private static void putPropertyIfNotNull(Properties properties, String key, Object value) {
         if (value != null) {
             properties.put(key, value);

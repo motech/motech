@@ -131,7 +131,8 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
                 } else if (MotechSettings.STATUS_MSG_TIMEOUT.equals(key)) {
                     dbSettings.setStatusMsgTimeout(value);
                 } else {
-                    for (Properties p : Arrays.asList(dbSettings.getActivemqProperties(), dbSettings.getQuartzProperties())) {
+                    for (Properties p : Arrays.asList(dbSettings.getActivemqProperties(), dbSettings.getQuartzProperties(),
+                            dbSettings.getMetricsProperties())) {
                         if (p.containsKey(key)) {
                             p.put(key, value);
 
