@@ -258,10 +258,13 @@ function MasterCtrl($scope, i18nService, $http) {
 
 
     $scope.mappings = [];
-    $http({method: 'GET', url: 'api/mappings'}).
-          success(function(data) {
-              $scope.mappings = data;
-          });
+    $scope.getMappings = function() {
+        $http({method: 'GET', url: 'api/mappings'}).
+              success(function(data) {
+                  $scope.mappings = data;
+              });
+    }
+    $scope.getMappings();
 
     $scope.showSettings = function(bundle) {
         return $.inArray(bundle.symbolicName, $scope.bundlesWithSettings) >= 0;
