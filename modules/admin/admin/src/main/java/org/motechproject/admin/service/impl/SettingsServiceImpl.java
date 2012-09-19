@@ -54,6 +54,10 @@ public class SettingsServiceImpl implements SettingsService {
             Settings quartzSettings = new Settings("quartz", ParamParser.parseProperties(quartzProperties));
             settingsList.add(quartzSettings);
 
+            Properties metricsProperties = motechSettings.getMetricsProperties();
+            Settings metricsSettings = new Settings("metrics", ParamParser.parseProperties(metricsProperties));
+            settingsList.add(metricsSettings);
+
             List<SettingsOption> miscOptions = new ArrayList<>();
 
             SettingsOption languageOption = ParamParser.parseParam(MotechSettings.LANGUAGE, motechSettings.getLanguage());

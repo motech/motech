@@ -377,3 +377,14 @@ function BundleSettingsCtrl($scope, Bundle, ModuleSettings, $routeParams, $http)
         }, alertHandler('bundles.error.restart', 'error'));
     }
 }
+
+function OperationsCtrl($scope, $http) {
+    $http({method: 'GET', url: 'api/mappings/graphite'}).
+        success(function(data) {
+            $scope.graphiteUrl = data;
+            // prefix with http://
+            if ($scope.graphiteUrl && $scope.graphiteUrl.lastIndexOf("http://") !== 0) {
+                $scope.graphiteUrl = "http://" + $scope.graphiteUrl;
+            }
+        });
+}

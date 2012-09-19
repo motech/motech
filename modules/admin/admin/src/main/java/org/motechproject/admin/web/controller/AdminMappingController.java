@@ -19,4 +19,9 @@ public class AdminMappingController {
     @ResponseBody public Map<String, String> getMappings() {
         return adminMappingService.getAllMappings();
     }
+
+    @RequestMapping(value = "/mappings/graphite", method = RequestMethod.GET)
+    @ResponseBody public String getGraphiteMapping() {
+        return adminMappingService.getGraphiteUrl();
+    }
 }
