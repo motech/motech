@@ -69,7 +69,10 @@ public class AdminMappingServiceImpl implements AdminMappingService {
         if (getAllAdminMappings() != null) {
             List<String> bundlesWithSettings = platformSettingsService.retrieveRegisteredBundleNames();
             for (String bundleName : bundlesWithSettings) {
-                result.put(bundleName, String.format("#/bundleSettings/%s", getBundleId(bundleName)));
+                Long bundleId = getBundleId(bundleName);
+                if (bundleId != null) {
+                    result.put(bundleName, String.format("#/bundleSettings/%s", bundleId));
+                }
             }
 
             List<AdminMapping> mappings = allAdminMappings.getAll();
@@ -100,12 +103,12 @@ public class AdminMappingServiceImpl implements AdminMappingService {
         return allAdminMappings;
     }
 
-    private long getBundleId(String symbolicName) {
+    private Long getBundleId(String symbolicName) {
         for (Bundle bundle : bundleContext.getBundles()) {
             if (bundle.getSymbolicName().equals(symbolicName)) {
                 return bundle.getBundleId();
             }
         }
-        throw new IllegalArgumentException("Invalid symbolic name");
+        return null;
     }
 }
