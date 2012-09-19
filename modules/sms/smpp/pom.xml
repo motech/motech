@@ -36,7 +36,7 @@
         </dependency>
         <dependency>
             <groupId>org.motechproject</groupId>
-            <artifactId>motech-event</artifactId>
+            <artifactId>motech-platform-event</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

@@ -9,13 +9,13 @@
         <relativePath>../../../</relativePath>
     </parent>
     <groupId>org.motechproject</groupId>
-    <artifactId>motech-event</artifactId>
+    <artifactId>motech-platform-event</artifactId>
     <name>MoTeCH Event</name>
     <description>Motech Event</description>
     <version>0.13-SNAPSHOT</version>
     <properties>
         <powermock.version>1.4.11</powermock.version>
-        <modules.root.dir>${basedir}/../../..</modules.root.dir>
+        <modules.root.dir>${basedir}/../..</modules.root.dir>
     </properties>
     <dependencies>
         <dependency>
