@@ -95,7 +95,6 @@
             <artifactId>org.springframework.osgi.core</artifactId>
             <version>1.2.1</version>
         </dependency>
-        <!-- OSGI dependencies -->
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>org.motechproject.org.codehaus.jackson</artifactId>

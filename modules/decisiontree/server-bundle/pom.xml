@@ -92,7 +92,6 @@
             <artifactId>com.springsource.org.apache.commons.codec</artifactId>
             <version>1.4.0</version>
         </dependency>
-        <!-- OSGI dependencies -->
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
