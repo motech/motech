@@ -25,6 +25,8 @@
                 <playaudio>$prompt.audioFileUrl</playaudio>
             #elseif ($prompt.class.simpleName == "TextToSpeechPrompt")
                 <playtext>$prompt.message</playtext>
+            #elseif ($prompt.class.simpleName == "DialPrompt")
+                <dial timeout="30" moh="default">$prompt.phoneNumber</dial>
             #end
         #end
         <hangup></hangup>
