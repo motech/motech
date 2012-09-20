@@ -7,22 +7,11 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="location" value="classpath:activemq.properties"/>
-        <property name="ignoreUnresolvablePlaceholders" value="true"/>
-    </bean>
-
     <context:component-scan base-package="org.motechproject.event"/>
 
     <import resource="classpath*:applicationPlatformServerAPI.xml"/>
     <import resource="classpath*:schedulerFiredEventChannelAdapter.xml"/>
-
-    <util:properties id="quartzProperties" location="classpath:quartz.properties"/>
-
-    <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-        <property name="configLocation" value="classpath:quartz.properties"/>
-        <property name="applicationContextSchedulerContextKey" value="applicationContext"/>
-    </bean>
+    <import resource="classpath*:applicationScheduler.xml"/>
 
     <bean id="schedulerService" class="org.motechproject.scheduler.impl.MotechSchedulerServiceImpl"/>
     <bean id="testJobHandler" class="org.motechproject.scheduler.TestJobHandler" />

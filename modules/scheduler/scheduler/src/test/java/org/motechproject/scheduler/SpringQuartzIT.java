@@ -1,5 +1,6 @@
 package org.motechproject.scheduler;
 
+import junit.framework.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.motechproject.scheduler.impl.MotechScheduledJob;
@@ -14,18 +15,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import static junit.framework.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.JobKey.jobKey;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.TriggerKey.triggerKey;
+import static org.springframework.test.util.ReflectionTestUtils.getField;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/testSchedulerApplicationContext.xml")
@@ -80,6 +85,11 @@ public class SpringQuartzIT {
         triggerNames = extractTriggerNames(triggerKeys);
         assertEquals(0, triggerNames.size());
 
+    }
+
+    @Test
+    public void shouldWaitForJobsToCompleteBeforeShutdown() {
+        assertTrue((Boolean) getField(schedulerFactoryBean, "waitForJobsToCompleteOnShutdown"));
     }
 
     private List<String> extractJobNames(List<JobKey> jobKeys) {
