@@ -10,7 +10,21 @@
     <context:annotation-config/>
 
     <context:property-placeholder location="classpath:activemq.properties" system-properties-mode="OVERRIDE" ignore-unresolvable="true"/>
-    <context:property-placeholder location="classpath:quartz.properties" ignore-unresolvable="true"/>
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+        <property name="locations">
+            <list>
+                <value>classpath:quartz.properties</value>
+            </list>
+        </property>
+        <property name="properties">
+            <props>
+                <prop key="waitForJobsToCompleteOnShutdown">false</prop>
+            </props>
+        </property>
+    </bean>
 
     <import resource="schedulerFiredEventChannelAdapter.xml"/>
     <import resource="schedulerInboundChannelAdapter.xml"/>
