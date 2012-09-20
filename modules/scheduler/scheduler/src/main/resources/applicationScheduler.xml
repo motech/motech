@@ -21,7 +21,7 @@
         </property>
         <property name="properties">
             <props>
-                <prop key="waitForJobsToCompleteOnShutdown">false</prop>
+                <prop key="waitForJobsToCompleteOnShutdown">true</prop>
             </props>
         </property>
     </bean>
