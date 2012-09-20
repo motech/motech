@@ -22,6 +22,11 @@
         <property name="bundleDir" value="${user.home}/.motech/bundles" />
     </bean>
 
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+        <property name="cookieName" value="userLang"/>
+        <property name="cookieMaxAge" value="100000"/>
+    </bean>
+
     <util:list id="bundleLoaders" value-type="org.motechproject.server.osgi.BundleLoader">
         <bean id="log4jBundleLoader" class="org.motechproject.server.osgi.Log4JBundleLoader"/>
     </util:list>

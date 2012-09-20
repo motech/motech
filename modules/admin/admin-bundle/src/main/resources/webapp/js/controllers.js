@@ -249,6 +249,7 @@ function StatusMsgCtrl($scope, $timeout, StatusMessage, i18nService, $cookieStor
 }
 
 function MasterCtrl($scope, i18nService, $http) {
+    i18nService.init(jQuery.i18n.browserLang());
 
     $scope.bundlesWithSettings = [];
     $http({method: 'GET', url: 'api/settings/bundles/list'}).
@@ -282,6 +283,22 @@ function MasterCtrl($scope, i18nService, $http) {
         return date;
     }
 
+    $scope.languages = i18nService.languages;
+    $scope.userLang = null;
+    $http({method: 'GET', url: 'api/locale/lang/'}).
+        success(function(data) {
+            i18nService.init(data);
+            $scope.userLang = i18nService.getLanguage(toLocale(data));
+        });
+
+    $scope.setUserLang = function(lang) {
+        var locale = toLocale(lang);
+
+        $http({ method: "POST", url: "api/locale/lang/", params: locale }).success(function() {
+            i18nService.init(lang);
+            $scope.userLang = i18nService.getLanguage(locale);
+        });
+    }
 }
 
 function SettingsCtrl($scope, PlatformSettings, i18nService, $http) {
@@ -320,14 +337,14 @@ function SettingsCtrl($scope, PlatformSettings, i18nService, $http) {
 
     $scope.uploadFileLocation = function() {
         $http({method: 'POST', url: 'api/settings/platform/location', params: {location: this.location}}).
-            success(alertHandler('settings.saved')).
+            success(alertHandler('settings.saved', 'success')).
             error(alertHandler('settings.error.location'));
     }
 
     $scope.saveAll = function() {
         blockUI();
         $http.post('api/settings/platform/list', $scope.platformSettings).
-            success(alertHandler('settings.saved')).
+            success(alertHandler('settings.saved', 'success')).
             error(alertHandler('settings.error.location'));
     }
 }

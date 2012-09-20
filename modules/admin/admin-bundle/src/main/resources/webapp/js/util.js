@@ -19,3 +19,27 @@ function arraysEqual(arr1, arr2) {
 
     return true;
 }
+
+function toLocale(lang) {
+    var locale = lang.replace("-", "_").split("_");
+    return {
+        language : locale[0],
+        country : locale[1],
+        variant : locale[2],
+        withoutVariant : function() {
+            return this.language + "_" + this.country;
+        },
+        fullName : function() {
+            return this.language + "_" + this.country + "_" + this.variant;
+        },
+        toString : function() {
+            if (this.language && this.country && this.variant) {
+                return this.fullName();
+            } else if (this.language && this.country) {
+                return this.withoutVariant();
+            } else {
+                return this.language;
+            }
+        }
+    };
+}

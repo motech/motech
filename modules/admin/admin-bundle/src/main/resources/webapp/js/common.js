@@ -21,7 +21,7 @@ var alertHandler = function(msg, title) {
 var alertHandlerWithCallback = function(msg, callback) {
     return function() {
         unblockUI();
-        motechAlert(msg, "", callback);
+        motechAlert(msg, 'success', callback);
     }
 }
 

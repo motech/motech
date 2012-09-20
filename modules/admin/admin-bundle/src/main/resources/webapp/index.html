@@ -63,6 +63,19 @@
                         </li>
                     </ul>
                 </li>
+                <li><a>|</a></li>
+                <li class="dropdown" id="localization">
+                    <a class="menu-flag dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="flag flag-{{userLang.key}}" title="{{userLang.key}}" alt="{{userLang.key}}"></i>
+                        {{userLang.value}}
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="(key, value) in languages">
+                            <a ng-click="setUserLang(key)"><i class="flag flag-{{key}}"></i> {{value}}</a>
+                        </li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>
@@ -79,6 +92,7 @@
                 <li><a href="#/settings">{{msg('settings')}}</a></li>
                 <li><a href="#/operations">{{msg('operations')}}</a></li>
             </ul>
+
         </div>
 
         <div id="main-content" class="span10">

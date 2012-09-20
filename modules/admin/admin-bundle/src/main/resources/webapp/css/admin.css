@@ -135,26 +135,34 @@ input[type='text'] {
     margin: 5px;
     padding:3px;
 }
-/*
-input[type='button'], input[type='submit'] {
-    background: url('../img/button1.png') repeat-x;
-    background-color: #337fc3;
-    border-radius: 5px;
-    border: 1px solid #337fc3;
-    color: #ffffff;
-    padding: 4px 5px;
-    outline: none;
-}
 
-input[type='button']:hover, input[type='submit']:hover {
-    color: #fdb813;
-    background: url('../img/button1n.png') repeat-x;
-}
+/* -----flag ----- */
 
-input[type='button']:active, input[type='submit']:active {
-    color: #b8dff3;
-    background: url('../img/button1n.png') repeat-x;
-} */
+.flag {
+  display: inline-block;
+  width: 22px;
+  height: 14px;
+  *margin-right: .3em;
+  line-height: 14px;
+  margin-left:0;
+  background-position: 0 0;
+  background-repeat: no-repeat;
+}
+.flag-en {
+    background-image: url("../img/en.png");
+}
+.flag-pl {
+    background-image: url("../img/pl.png");
+}
+.flag-us {
+    background-image: url("../img/us.png");
+}
+.flag-fr {
+    background-image: url("../img/fr.png");
+}
+.flag-de {
+    background-image: url("../img/de.png");
+}
 
 /* ----- table ----- */
 
