@@ -1,5 +1,8 @@
 package org.motechproject.decisiontree.server.service.impl;
 
+import org.ektorp.CouchDbConnector;
+import org.ektorp.CouchDbInstance;
+import org.ektorp.DocumentNotFoundException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.springframework.test.util.ReflectionTestUtils.getField;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath*:META-INF/motech/*.xml")
@@ -128,11 +132,24 @@ public class AllFlowSessionIT {
 
     @Before
     public void setUp() {
-        allFlowSessionRecords.removeAll();
+        CouchDbConnector db = (CouchDbConnector) getField(allFlowSessionRecords, "db");
+        try {
+            deleteDb(db);
+        } catch (DocumentNotFoundException e) {
+            // db doesn't exist anyway
+        }
+        db.createDatabaseIfNotExists();
+        allFlowSessionRecords.initStandardDesignDocument();
     }
 
     @After
     public void tearDown() {
-        allFlowSessionRecords.removeAll();
+        deleteDb((CouchDbConnector) getField(allFlowSessionRecords, "db"));
+    }
+
+    private void deleteDb(CouchDbConnector db) {
+        CouchDbInstance dbInstance = (CouchDbInstance) getField(db, "dbInstance");
+        String dbName = (String) getField(db, "dbName");
+        dbInstance.deleteDatabase(dbName);
     }
 }

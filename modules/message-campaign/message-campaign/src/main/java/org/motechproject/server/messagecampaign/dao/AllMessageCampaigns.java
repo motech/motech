@@ -2,6 +2,7 @@ package org.motechproject.server.messagecampaign.dao;
 
 import com.google.gson.reflect.TypeToken;
 import org.motechproject.dao.MotechJsonReader;
+import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.server.messagecampaign.domain.campaign.Campaign;
 import org.motechproject.server.messagecampaign.domain.message.CampaignMessage;
 import org.motechproject.server.messagecampaign.userspecified.CampaignRecord;
@@ -12,7 +13,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import static ch.lambdaj.Lambda.having;
 import static ch.lambdaj.Lambda.on;
@@ -22,20 +22,19 @@ import static org.hamcrest.Matchers.equalTo;
 @Component
 public class AllMessageCampaigns {
 
-    public static final String MESSAGECAMPAIGN_DEFINITION_FILE = "messagecampaign.definition.file";
-
-    private Properties properties;
+    private SettingsFacade settings;
     private MotechJsonReader motechJsonReader;
+    public String messageCampaignsJsonFile = "message-campaigns.json";
     private static List<Campaign> campaigns = new ArrayList<Campaign>();
 
-    public AllMessageCampaigns(Properties properties, MotechJsonReader motechJsonReader) {
-        this.properties = properties;
+    public AllMessageCampaigns(@Qualifier("messageCampaignSettings") SettingsFacade settings, MotechJsonReader motechJsonReader) {
+        this.settings = settings;
         this.motechJsonReader = motechJsonReader;
     }
 
     @Autowired
-    public AllMessageCampaigns(@Qualifier("messageCampaignProperties") Properties properties) {
-        this(properties, new MotechJsonReader());
+    public AllMessageCampaigns(@Qualifier("messageCampaignSettings") SettingsFacade settings) {
+        this(settings, new MotechJsonReader());
     }
 
     public Campaign get(String campaignName) {
@@ -45,10 +44,10 @@ public class AllMessageCampaigns {
 
     private List<Campaign> readCampaignsFromJSON() {
         if (CollectionUtils.isEmpty(campaigns)) {
-            List<CampaignRecord> campaignRecords = (List<CampaignRecord>) motechJsonReader.readFromFile(definitionFile(),
-                    new TypeToken<List<CampaignRecord>>() {
-                    } .getType());
-
+            List<CampaignRecord> campaignRecords = (List<CampaignRecord>) motechJsonReader.readFromStream(
+                settings.getRawConfig(messageCampaignsJsonFile),
+                new TypeToken<List<CampaignRecord>>() { } .getType()
+            );
             for (CampaignRecord campaignRecord : campaignRecords) {
                 campaigns.add(campaignRecord.build());
             }
@@ -69,7 +68,11 @@ public class AllMessageCampaigns {
         return null;
     }
 
-    private String definitionFile() {
-        return this.properties.getProperty(MESSAGECAMPAIGN_DEFINITION_FILE);
+    public void setMessageCampaignsJsonFile(String messageCampaignsJsonFile) {
+        this.messageCampaignsJsonFile = messageCampaignsJsonFile;
+    }
+
+    public String getMessageCampaignsJsonFile() {
+        return messageCampaignsJsonFile;
     }
 }

@@ -7,40 +7,42 @@ import org.motechproject.dao.MotechJsonReader;
 import org.motechproject.mobileforms.api.domain.Form;
 import org.motechproject.mobileforms.api.domain.FormGroup;
 import org.motechproject.mobileforms.api.utils.IOUtils;
+import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Properties;
 
 import static ch.lambdaj.Lambda.convert;
 
 @Repository
 public class AllMobileForms {
-    public static final String FORMS_CONFIG_FILE = "forms.config.file";
-    private Properties properties;
+
+    public static final String FORMS_CONFIG_FILE = "forms-config.json";
+
+    private SettingsFacade settings;
     private MotechJsonReader motechJsonReader;
     private IOUtils ioUtils;
     private List<FormGroup> formGroups;
 
-    AllMobileForms(Properties properties, MotechJsonReader motechJsonReader, IOUtils ioUtils) {
-        this.properties = properties;
+    AllMobileForms(@Qualifier("mobileFormsSettings") SettingsFacade settings, MotechJsonReader motechJsonReader, IOUtils ioUtils) {
+        this.settings = settings;
         this.motechJsonReader = motechJsonReader;
         this.ioUtils = ioUtils;
         initialize();
     }
 
     @Autowired
-    public AllMobileForms(@Qualifier(value = "mobileFormsProperties") Properties properties) {
-        this(properties, new MotechJsonReader(), new IOUtils());
+    public AllMobileForms(@Qualifier("mobileFormsSettings") SettingsFacade settings) {
+        this(settings, new MotechJsonReader(), new IOUtils());
     }
 
     public void initialize() {
         List<FormGroup> formGroupsFromConfigFile = (List<FormGroup>) motechJsonReader.readFromStream(
-                getClass().getResourceAsStream(configFile()),
-                new TypeToken<List<FormGroup>>() {
-                } .getType());
+            settings.getRawConfig(FORMS_CONFIG_FILE),
+            new TypeToken<List<FormGroup>>() { } .getType()
+        );
 
         this.formGroups = convert(formGroupsFromConfigFile, new Converter<FormGroup, FormGroup>() {
             @Override
@@ -70,10 +72,6 @@ public class AllMobileForms {
 
     public FormGroup getFormGroup(Integer index) {
         return formGroups.get(index);
-    }
-
-    private String configFile() {
-        return this.properties.getProperty(FORMS_CONFIG_FILE);
     }
 
     public Form getFormByName(String formName) {

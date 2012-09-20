@@ -6,17 +6,18 @@ import org.motechproject.event.MotechEvent;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
+import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.sms.api.MessageSplitter;
 import org.motechproject.sms.api.constants.EventDataKeys;
 import org.motechproject.sms.api.constants.EventSubjects;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
 
 @Service
 public class SmsServiceImpl implements SmsService {
@@ -24,7 +25,7 @@ public class SmsServiceImpl implements SmsService {
     private EventRelay eventRelay;
     private MotechSchedulerService schedulerService;
     private MessageSplitter messageSplitter;
-    private Properties smsApiProperties;
+    private SettingsFacade settings;
 
     private final Logger log = Logger.getLogger(SmsServiceImpl.class);
 
@@ -36,10 +37,10 @@ public class SmsServiceImpl implements SmsService {
     public static final String SMS_MAX_MESSAGE_SIZE = "sms.max.message.size";
 
     @Autowired
-    public SmsServiceImpl(MotechSchedulerService schedulerService, MessageSplitter messageSplitter, Properties smsApiProperties, EventRelay eventRelay) {
+    public SmsServiceImpl(MotechSchedulerService schedulerService, MessageSplitter messageSplitter, @Qualifier("smsApiSettings") SettingsFacade settings, EventRelay eventRelay) {
         this.schedulerService = schedulerService;
         this.messageSplitter = messageSplitter;
-        this.smsApiProperties = smsApiProperties;
+        this.settings = settings;
         this.eventRelay = eventRelay;
     }
 
@@ -93,11 +94,11 @@ public class SmsServiceImpl implements SmsService {
     }
 
     private boolean getBooleanPropertyValue(String property) {
-        return Boolean.valueOf(smsApiProperties.getProperty(property));
+        return Boolean.valueOf(settings.getProperty(property));
     }
 
     private int getIntegerPropertyValue(String property) {
-        String value = smsApiProperties.getProperty(property);
+        String value = settings.getProperty(property);
         return value == null ? 0 : Integer.parseInt(value);
     }
 

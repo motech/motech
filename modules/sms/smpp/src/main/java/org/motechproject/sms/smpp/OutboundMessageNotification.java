@@ -12,6 +12,7 @@ import org.smslib.AGateway;
 import org.smslib.IOutboundMessageNotification;
 import org.smslib.OutboundMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -36,10 +37,11 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
     private SettingsFacade settings;
 
     @Autowired
-    public OutboundMessageNotification(EventRelay eventRelay, SettingsFacade settings) {
+    public OutboundMessageNotification(EventRelay eventRelay, @Qualifier("smsApiSettings") SettingsFacade settings) {
         this.settings = settings;
         this.eventRelay = eventRelay;
-        this.maxRetries = Integer.parseInt(settings.getProperty(SmsProperties.MAX_RETRIES));
+        String maxRetriesAsString = settings.getProperty(SmsProperties.MAX_RETRIES);
+        this.maxRetries = maxRetriesAsString != null? Integer.parseInt(maxRetriesAsString) : 0;
     }
 
     @Override

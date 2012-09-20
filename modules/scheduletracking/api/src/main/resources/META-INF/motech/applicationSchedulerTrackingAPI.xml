@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:util="http://www.springframework.org/schema/util"
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
-        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
-
-    <util:properties id="schedule_tracking" location="classpath:schedule_tracking.properties"/>
-    <util:properties id="quartzProperties" location="classpath:quartz.properties"/>
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       ">
 
     <bean id="scheduleTrackingSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
         <property name="moduleName" value="scheduletracking-api"/>
@@ -17,11 +14,6 @@
     <bean id="scheduleTrackingDbConnector" factory-bean="scheduleTrackingSettings" factory-method="getConnector">
         <constructor-arg value="motech-scheduletracking-api"/>
         <constructor-arg value="couchdb.properties"/>
-    </bean>
-
-    <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-        <property name="configLocation" value="classpath:quartz.properties"/>
-        <property name="applicationContextSchedulerContextKey" value="applicationContext"/>
     </bean>
 
     <context:annotation-config/>

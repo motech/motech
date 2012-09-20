@@ -19,6 +19,8 @@ import static org.motechproject.sms.smpp.constants.SmppProperties.SYSTEM_ID;
 
 public class JSMPPPropertiesMapper {
 
+    public static final int DEFAULT_PORT = 2772;
+    public static final String DEFAULT_HOST = "localhost";
     private Properties smppProperties;
 
     public JSMPPPropertiesMapper(Properties smppProperties) {
@@ -49,7 +51,7 @@ public class JSMPPPropertiesMapper {
                     BindAttributes.BindType.valueOf(smppProperties.getProperty(BINDTYPE)),
                     getBindAddress());
         }
-        return null;
+        return new BindAttributes("", "", "", BindAttributes.BindType.TRANSCEIVER);
     }
 
     private Address getBindAddress() {
@@ -61,10 +63,10 @@ public class JSMPPPropertiesMapper {
     }
 
     public String getHost() {
-        return smppProperties.getProperty(HOST);
+        return smppProperties.getProperty(HOST) != null? smppProperties.getProperty(HOST) : DEFAULT_HOST;
     }
 
     public int getPort() {
-        return Integer.parseInt(smppProperties.getProperty(PORT));
+        return smppProperties.getProperty(PORT) != null? Integer.parseInt(smppProperties.getProperty(PORT)) : DEFAULT_PORT;
     }
 }
