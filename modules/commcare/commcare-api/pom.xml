@@ -4,12 +4,12 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.12.5</version>
+        <version>0.12.6-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-commcare-api</artifactId>
-    <version>0.12.5</version>
+    <version>0.12.6-SNAPSHOT</version>
     <name>MoTeCH CommCare API</name>
     <url>http://maven.apache.org</url>
     <properties>
