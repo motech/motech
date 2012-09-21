@@ -3,13 +3,13 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.12.5-SNAPSHOT</version>
+        <version>0.12.5</version>
         <relativePath>../../</relativePath>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-platform-decisiontree-common</artifactId>
     <name>MoTeCH Platform Decision Tree Common</name>
-    <version>0.12.5-SNAPSHOT</version>
+    <version>0.12.5</version>
     <properties>
         <modules.root.dir>${basedir}/../..</modules.root.dir>
     </properties>
