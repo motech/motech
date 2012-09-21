@@ -4,13 +4,13 @@
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
-        <version>0.13-SNAPSHOT</version>
+        <version>0.14-SNAPSHOT</version>
         <relativePath>../../../</relativePath>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-alerts-api-bundle</artifactId>
     <name>MoTeCH Alerts API Bundle</name>
-    <version>0.13-SNAPSHOT</version>
+    <version>0.14-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
