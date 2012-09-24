@@ -1,0 +1,145 @@
+.header {
+    display:block;
+    margin: 0;
+}
+
+.logo {
+    width:320px;
+    height:70px;
+    display:block;
+    float:left;
+    margin: 0 5px 0 0;
+    background: #fff url('../img/motechlogo.jpg') no-repeat;
+}
+
+.top-menu {
+    width:auto;
+    height:24px;
+    display:block;
+    float:right;
+    margin: 0 0 0 55%;
+    background:#ddeeff;/*d9e7fa;*/
+    border-radius:0 0 7px 7px;
+    position:absolute;
+}
+
+.top-menu .nav, .top-menu .navbar .nav > li > a {
+    color: #224477;
+    text-decoration:none;
+    padding:0;
+    text-shadow:none;
+    cursor:pointer;
+}
+
+.top-menu .nav a:hover, .top-menu .navbar .nav > li > a:hover {
+    text-decoration:none;
+    color: #000;
+}
+
+.top-menu .navbar .nav > li {
+    margin:2px 0 0 10px;
+}
+
+.top-menu .navbar .nav li.dropdown .caret {
+    border-top-color: #224477;
+    border-bottom-color: #224477;
+    opacity: 0.75;
+    filter: alpha(opacity=75);
+}
+
+.top-menu .navbar .nav li.dropdown:hover .caret {
+    border-top-color: #000;
+    border-bottom-color: #000;
+}
+
+.header-title {
+    width:400px;
+    height:28px;
+    display:block;
+    float:left;
+    margin: 40px 2px 0 12px;
+    background: #fff;
+    color:#224477;
+    text-weight:400;
+    font-size: 18px;
+    line-height: 27px;
+    vertical-align:bottom;
+}
+
+.header-nav {
+    display:block;
+    margin: 0 0 10px 0;
+    padding: 0 0 0 0;
+    color: #fff;
+    line-height: 28px;
+    font-size: 16px;
+    background: #001e4f url("../img/navbar.jpg") repeat-x left top;
+    border-bottom:1px solid #ff9900;
+}
+
+.dropdown ul li a,.dropdown ul li {
+    font-size: 13px
+}
+
+.dropdown:hover .dropdown-menu,.dropdown:hover {
+    display: block;
+}
+
+.navbar .dropdown-menu, .nav-pills .dropdown-menu {
+    margin-top: 0;
+}
+
+.navbar-inner {
+    filter:none;
+    border-radius:none;
+    box-shadow:none;
+}
+
+.navbar-inner-bg {
+    background: url("../img/navbar.jpg") repeat-x;
+}
+
+.navbar .nav > li > a {
+    color: #c2eafe;
+}
+
+.nav-tabs.nav-stacked > li > a {
+    border-radius:6px;
+}
+
+.nav-tabs > .active > a, .nav-tabs > .active > a:hover {
+    color:#224477;
+}
+
+.nav .nav-header {
+    color: #224477;
+}
+
+/* -----flags ----- */
+
+.flag {
+  display: inline-block;
+  width: 22px;
+  height: 14px;
+  *margin-right: .3em;
+  line-height: 14px;
+  vertical-align: middle;
+  margin-left:0;
+  background-position: 0 0;
+  background-repeat: no-repeat;
+}
+.flag-en {
+    background-image: url("../img/en.png");
+}
+.flag-pl {
+    background-image: url("../img/pl.png");
+}
+.flag-us {
+    background-image: url("../img/us.png");
+}
+.flag-fr {
+    background-image: url("../img/fr.png");
+}
+.flag-de {
+    background-image: url("../img/de.png");
+}
