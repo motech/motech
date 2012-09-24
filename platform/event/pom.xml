@@ -5,7 +5,7 @@
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
         <version>0.14-SNAPSHOT</version>
-        <relativePath>../../../</relativePath>
+        <relativePath>../../</relativePath>
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-platform-event</artifactId>
