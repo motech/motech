@@ -12,22 +12,11 @@ import org.motechproject.event.listener.EventListenerRegistry;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
 import org.motechproject.model.DayOfWeek;
 import org.motechproject.model.Time;
-import org.motechproject.scheduler.domain.CronJobId;
-import org.motechproject.scheduler.domain.CronSchedulableJob;
-import org.motechproject.scheduler.domain.DayOfWeekSchedulableJob;
-import org.motechproject.scheduler.domain.RepeatingJobId;
-import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
-import org.motechproject.scheduler.domain.RunOnceSchedulableJob;
+import org.motechproject.scheduler.domain.*;
 import org.motechproject.scheduler.exception.MotechSchedulerException;
 import org.motechproject.scheduler.impl.MotechSchedulerServiceImpl;
 import org.motechproject.util.DateUtil;
-import org.quartz.CronTrigger;
-import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
-import org.quartz.Trigger;
-import org.quartz.TriggerKey;
-import org.quartz.TriggerUtils;
+import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.OperableTrigger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -267,6 +256,7 @@ public class MotechSchedulerIT {
 
     @Test
     public void scheduleRunOnceJobTest() throws Exception {
+        boolean jobSet = false;
 
         String uuidStr = UUID.randomUUID().toString();
 
@@ -275,11 +265,18 @@ public class MotechSchedulerIT {
         MotechEvent motechEvent = new MotechEvent("TestEvent", params);
         RunOnceSchedulableJob schedulableJob = new RunOnceSchedulableJob(motechEvent, new Date((new Date()).getTime() + 5000));
 
-        int scheduledJobsNum = schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size();
+        Scheduler scheduler = schedulerFactoryBean.getScheduler();
 
         schedulerService.scheduleRunOnceJob(schedulableJob);
 
-        assertEquals(scheduledJobsNum + 1, schedulerFactoryBean.getScheduler().getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME)).size());
+        Set<TriggerKey> triggerKeys = scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(MotechSchedulerServiceImpl.JOB_GROUP_NAME));
+        for (TriggerKey triggerKey : triggerKeys) {
+            if (triggerKey.getName().equals("TestEvent-" + uuidStr + "-runonce")) {
+                jobSet = true;
+            }
+        }
+
+        assertTrue("RunOnceJob not found", jobSet);
     }
 
     @Test(expected = IllegalArgumentException.class)
