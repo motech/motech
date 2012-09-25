@@ -44,7 +44,7 @@
     <xf:bind id="staffid" nodeset="/anc/staffid" required="true()" type="xsd:int" constraint=". &lt; 2147483647" message="Number too large. Keep under 2147483647"/>
     <xf:bind id="facilityId" nodeset="/anc/facilityId" required="true()" type="xsd:int" constraint=". &lt; 2147483647" message="Number too large. Keep under 2147483647"/>
     <xf:bind constraint=". &lt;= 'today()'" id="date" message="Invalid date: date specified is in the future" nodeset="/anc/date" required="true()" type="xsd:date"/>
-    <xf:bind id="motechid" nodeset="/anc/motechid" required="true()" type="xsd:int" constraint=". &gt; 999999 and . &lt; 10000000" message="MoTeCH ID must be 7 digits long"/>
+    <xf:bind id="motechid" nodeset="/anc/motechid" required="true()" type="xsd:int" constraint=". &gt; 999999 and . &lt; 10000000" message="MOTECH ID must be 7 digits long"/>
     <xf:bind id="serialNumber" nodeset="/anc/serialNumber"  type="xsd:string" required="true()"/>
     <xf:bind id="visitNumber" nodeset="/anc/visitNumber" required="true()" type="xsd:string"/>
     <xf:bind id="estDeliveryDate" nodeset="/anc/estDeliveryDate" type="xsd:date"/>
@@ -90,7 +90,7 @@
       <xf:label>Visit date</xf:label>
     </xf:input>
     <xf:input bind="motechid">
-      <xf:label>MoTeCH ID</xf:label>
+      <xf:label>MOTECH ID</xf:label>
     </xf:input>
     <xf:input bind="serialNumber">
       <xf:label>Serial Number</xf:label>

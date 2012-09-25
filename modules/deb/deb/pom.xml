@@ -10,7 +10,7 @@
 
     <artifactId>motech-deb</artifactId>
     <packaging>pom</packaging>
-    <name>MoTeCH Debian Packages</name>
+    <name>MOTECH Debian Packages</name>
 
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>

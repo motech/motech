@@ -9,8 +9,8 @@
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-platform-event</artifactId>
-    <name>MoTeCH Event</name>
-    <description>Motech Event</description>
+    <name>MOTECH Event</name>
+    <description>MOTECH Event</description>
     <version>0.14-SNAPSHOT</version>
     <properties>
         <powermock.version>1.4.11</powermock.version>

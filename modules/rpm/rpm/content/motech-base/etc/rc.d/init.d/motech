@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# motech      This shell script takes care of starting and stopping Tomcat for MoTeCH
+# motech      This shell script takes care of starting and stopping Tomcat for MOTECH
 #
 # chkconfig: - 80 20
 #

@@ -10,9 +10,9 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-decisiontree-core-bundle</artifactId>
     <version>0.14-SNAPSHOT</version>
-    <name>MoTeCH Decision Tree Core Bundle</name>
+    <name>MOTECH Decision Tree Core Bundle</name>
     <packaging>bundle</packaging>
-    <description>MoTeCH Decision Tree Core Bundle</description>
+    <description>MOTECH Decision Tree Core Bundle</description>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>

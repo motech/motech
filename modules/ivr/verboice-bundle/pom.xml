@@ -10,7 +10,7 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-ivr-verboice-bundle</artifactId>
     <version>0.14-SNAPSHOT</version>
-    <name>MoTeCH IVR Verboice Bundle</name>
+    <name>MOTECH IVR Verboice Bundle</name>
     <packaging>bundle</packaging>
     <description>IVR over Nuntium's Verboice</description>
     <properties>

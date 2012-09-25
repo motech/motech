@@ -8,8 +8,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>motech-openmrs-ws</artifactId>
-    <name>MoTeCH OpenMRS Web Services</name>
-    <description>Motech interface to OpenMRS Web Services</description>
+    <name>MOTECH OpenMRS Web Services</name>
+    <description>MOTECH interface to OpenMRS Web Services</description>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>

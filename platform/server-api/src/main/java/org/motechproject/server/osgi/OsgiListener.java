@@ -25,7 +25,7 @@ public class OsgiListener implements ServletContextListener {
         LOGGER.debug("Starting OSGi framework...");
         getOsgiService(servletContextEvent).start();
 
-        LOGGER.debug("Starting MoTeCH...");
+        LOGGER.debug("Starting MOTECH...");
         startupManager.startup();
 
         if (startupManager.canLaunchBundles()) {
@@ -35,7 +35,7 @@ public class OsgiListener implements ServletContextListener {
             LOGGER.info("Launching MOTECH bundles...");
             getOsgiService().startMotechBundles();
         } else {
-            LOGGER.warn("Problems with MoTeCH launch. Finding and launching Admin UI bundle to repair errors by user...");
+            LOGGER.warn("Problems with MOTECH launch. Finding and launching Admin UI bundle to repair errors by user...");
 
             if (!getOsgiService().startBundle(ADMIN_BUNDLE)) {
                 LOGGER.error("Admin UI bundle not found. Shutting down MOTECH platform...");

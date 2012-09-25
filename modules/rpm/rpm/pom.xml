@@ -17,7 +17,7 @@
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>
 
-    <name>MoTeCH Base RPM package</name>
+    <name>MOTECH Base RPM package</name>
     <version>0.14-SNAPSHOT</version>
     <organization>
         <name>Grameen Foundation</name>

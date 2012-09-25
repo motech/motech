@@ -9,9 +9,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>motech-admin-bundle</artifactId>
-    <name>MoTeCH Admin Bundle</name>
+    <name>MOTECH Admin Bundle</name>
     <packaging>bundle</packaging>
-    <description>Motech Admin User Interface</description>
+    <description>MOTECH Admin User Interface</description>
 
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>

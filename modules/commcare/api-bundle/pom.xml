@@ -11,7 +11,7 @@
     <artifactId>motech-commcare-api-bundle</artifactId>
     <version>0.14-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>MoTeCH CommCare API Bundle</name>
+    <name>MOTECH CommCare API Bundle</name>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>

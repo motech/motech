@@ -8,7 +8,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <name>MoTeCH Platform Server Startup</name>
+    <name>MOTECH Platform Server Startup</name>
     <artifactId>motech-platform-server-startup</artifactId>
 
     <properties>

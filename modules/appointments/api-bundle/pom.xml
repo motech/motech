@@ -9,9 +9,9 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-appointments-api-bundle</artifactId>
     <version>0.14-SNAPSHOT</version>
-    <name>MoTeCH Appointments API Bundle</name>
+    <name>MOTECH Appointments API Bundle</name>
     <packaging>bundle</packaging>
-    <description>Motech Appointments API Bundle</description>
+    <description>MOTECH Appointments API Bundle</description>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>

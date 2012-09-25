@@ -9,8 +9,8 @@
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-mobileforms-api-bundle</artifactId>
-    <name>MoTeCH Mobile Forms API Bundle</name>
-    <description>Motech Mobile Forms API</description>
+    <name>MOTECH Mobile Forms API Bundle</name>
+    <description>MOTECH Mobile Forms API</description>
     <version>0.14-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <properties>

@@ -9,7 +9,7 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-ivr-kookoo</artifactId>
     <version>0.14-SNAPSHOT</version>
-    <name>MoTeCH IVR Kookoo</name>
+    <name>MOTECH IVR Kookoo</name>
     <description>new kookoo module based on vm templates to return responses</description>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>

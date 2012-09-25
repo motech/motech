@@ -10,7 +10,7 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-scheduler</artifactId>
     <version>0.14-SNAPSHOT</version>
-    <name>MoTeCH Scheduler</name>
+    <name>MOTECH Scheduler</name>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>

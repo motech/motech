@@ -8,8 +8,8 @@
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-alerts-api</artifactId>
-    <name>MoTeCH Alerts API</name>
-    <description>Motech Alerts API</description>
+    <name>MOTECH Alerts API</name>
+    <description>MOTECH Alerts API</description>
     <version>0.14-SNAPSHOT</version>
     <properties>
         <roo.version>1.1.4.RELEASE</roo.version>

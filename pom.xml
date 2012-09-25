@@ -5,10 +5,10 @@
     <artifactId>motech</artifactId>
     <version>0.14-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>MoTeCH</name>
+    <name>MOTECH</name>
 
     <description>
-        MoTeCH is a software system from Grameen Foundation that harnesses the ubiquity
+        MOTECH is a software system from Grameen Foundation that harnesses the ubiquity
         of mobile phones to deliver and receive information from patient and caregivers.
     </description>
 
@@ -29,12 +29,12 @@
     <repositories>
         <repository>
             <id>1motech-repo</id>
-            <name>1MoTeCH Maven Repository</name>
+            <name>1MOTECH Maven Repository</name>
             <url>http://repo.springsource.org/libs-milestone/</url>
         </repository>
         <repository>
             <id>motech-repo</id>
-            <name>MoTeCH Maven Repository</name>
+            <name>MOTECH Maven Repository</name>
             <url>http://nexus.motechproject.org/content/repositories/public</url>
         </repository>
         <repository>
@@ -52,7 +52,7 @@
     <pluginRepositories>
         <pluginRepository>
             <id>motech-repo</id>
-            <name>MoTeCH Maven Repository</name>
+            <name>MOTECH Maven Repository</name>
             <url>http://nexus.motechproject.org/content/repositories/public</url>
             <snapshots>
                 <enabled>true</enabled>
@@ -63,13 +63,13 @@
     <distributionManagement>
         <repository>
             <id>motech.nexus</id>
-            <name>MoTeCH Releases Repository</name>
+            <name>MOTECH Releases Repository</name>
             <url>http://nexus.motechproject.org/content/repositories/releases</url>
             <uniqueVersion>false</uniqueVersion>
         </repository>
         <snapshotRepository>
             <id>motech.nexus</id>
-            <name>MoTeCH Snapshots Repository</name>
+            <name>MOTECH Snapshots Repository</name>
             <url>http://nexus.motechproject.org/content/repositories/snapshots</url>
             <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
@@ -661,7 +661,7 @@
 
     <mailingLists>
         <mailingList>
-            <name>MoTeCH Dev</name>
+            <name>MOTECH Dev</name>
             <subscribe>motech-dev+subscribe@googlegroups.com</subscribe>
             <unsubscribe>motech-dev+unsubscribe@googlegroups.com</unsubscribe>
             <post>motech-dev@googlegroups.com</post>

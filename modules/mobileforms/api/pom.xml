@@ -9,7 +9,7 @@
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-mobileforms-api</artifactId>
-    <name>MoTeCH Mobile Forms API</name>
+    <name>MOTECH Mobile Forms API</name>
     <description>Motech Mobile Forms API</description>
     <version>0.14-SNAPSHOT</version>
     <properties>

@@ -9,8 +9,8 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-sms-smpp-bundle</artifactId>
-    <name>MoTeCH SMS SMPP Bundle</name>
-    <description>MoTeCH SMS SMPP</description>
+    <name>MOTECH SMS SMPP Bundle</name>
+    <description>MOTECH SMS SMPP</description>
     <version>0.14-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <properties>

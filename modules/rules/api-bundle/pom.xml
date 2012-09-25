@@ -10,7 +10,7 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-rules-api-bundle</artifactId>
     <version>0.14-SNAPSHOT</version>
-    <name>MoTeCH Rules API Bundle</name>
+    <name>MOTECH Rules API Bundle</name>
     <packaging>bundle</packaging>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>

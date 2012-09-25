@@ -11,7 +11,7 @@
     <artifactId>motech-scheduler-bundle</artifactId>
     <packaging>bundle</packaging>
     <version>0.14-SNAPSHOT</version>
-    <name>MoTeCH Scheduler Bundle</name>
+    <name>MOTECH Scheduler Bundle</name>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>

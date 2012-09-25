@@ -10,8 +10,8 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-decisiontree-server</artifactId>
     <version>0.14-SNAPSHOT</version>
-    <name>MoTeCH Decision Tree Server</name>
-    <description>MoTeCH Decision Tree Server</description>
+    <name>MOTECH Decision Tree Server</name>
+    <description>MOTECH Decision Tree Server</description>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>

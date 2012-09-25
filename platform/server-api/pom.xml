@@ -7,7 +7,7 @@
         <relativePath>../../</relativePath>
     </parent>
     <artifactId>motech-platform-server-api</artifactId>
-    <name>MoTeCH Platform Server API</name>
+    <name>MOTECH Platform Server API</name>
     <properties>
         <modules.root.dir>${basedir}/../..</modules.root.dir>
     </properties>

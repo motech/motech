@@ -10,7 +10,7 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-ivr-kookoo-bundle</artifactId>
     <version>0.14-SNAPSHOT</version>
-    <name>MoTeCH IVR Kookoo Bundle</name>
+    <name>MOTECH IVR Kookoo Bundle</name>
     <packaging>bundle</packaging>
     <description>new kookoo module based on vm templates to return responses</description>
     <properties>

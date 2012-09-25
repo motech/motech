@@ -9,7 +9,7 @@
     </parent>
     <artifactId>motech-platform-server</artifactId>
     <packaging>war</packaging>
-    <name>MoTeCH Platform Server</name>
+    <name>MOTECH Platform Server</name>
     <properties>
         <modules.root.dir>${basedir}/../..</modules.root.dir>
     </properties>

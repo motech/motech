@@ -10,8 +10,8 @@
 
     <groupId>org.motechproject</groupId>
     <artifactId>motech-web-security-bundle</artifactId>
-    <name>MoTeCH Web Security Bundle</name>
-    <description>MoTeCH Web Security</description>
+    <name>MOTECH Web Security Bundle</name>
+    <description>MOTECH Web Security</description>
     <version>0.14-SNAPSHOT</version>
     <packaging>bundle</packaging>
 

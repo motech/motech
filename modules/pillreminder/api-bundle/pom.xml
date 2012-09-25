@@ -8,10 +8,10 @@
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-pillreminder-api-bundle</artifactId>
-    <name>MoTeCH Pill Reminder API Bundle</name>
+    <name>MOTECH Pill Reminder API Bundle</name>
     <version>0.14-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <description>Motech Pill Reminder API</description>
+    <description>MOTECH Pill Reminder API</description>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>

@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-openmrs-atomfeed</artifactId>
-    <name>MoTeCH OpenMRS Atom Feed Module</name>
+    <name>MOTECH OpenMRS Atom Feed Module</name>
     <description>Module that pulls updates that occur in the OpenMRS application</description>
 
     <properties>

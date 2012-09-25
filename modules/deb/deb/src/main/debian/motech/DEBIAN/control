@@ -6,6 +6,6 @@ Architecture: all
 Depends: motech-base, couchdb, activemq, mysql-server | postgresql
 Maintainer: Paweł Gesek <pgesek@soldevelo.com>
 Description: Mobile Technology for Community Health
- A metapackage for MoTeCH, software system from Grameen Foundation that
+ A metapackage for MOTECH, software system from Grameen Foundation that
  harnesses the ubiquity of mobile phones to deliver and receive
- information from patients, caregivers.
+ information from patients and caregivers.

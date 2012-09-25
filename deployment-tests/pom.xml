@@ -10,7 +10,7 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-deployment-tests</artifactId>
     <version>0.14-SNAPSHOT</version>
-    <name>MoTeCH Deployment Tests</name>
+    <name>MOTECH Deployment Tests</name>
 
     <dependencies>
         <dependency>

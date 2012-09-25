@@ -9,8 +9,8 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-demo</artifactId>
     <version>0.14-SNAPSHOT</version>
-    <name>MoTeCH Demo App</name>
-    <description>Motech Demo Application</description>
+    <name>MOTECH Demo App</name>
+    <description>MOTECH Demo Application</description>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>

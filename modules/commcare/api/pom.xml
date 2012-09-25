@@ -10,7 +10,7 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-commcare-api</artifactId>
     <version>0.14-SNAPSHOT</version>
-    <name>MoTeCH CommCare API</name>
+    <name>MOTECH CommCare API</name>
     <url>http://maven.apache.org</url>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>

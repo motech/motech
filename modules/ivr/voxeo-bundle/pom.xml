@@ -10,7 +10,7 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-ivr-voxeo-bundle</artifactId>
     <version>0.14-SNAPSHOT</version>
-    <name>MoTeCH IVR Voxeo Bundle</name>
+    <name>MOTECH IVR Voxeo Bundle</name>
     <packaging>bundle</packaging>
     <description>Voxeo IVR Provider</description>
     <properties>

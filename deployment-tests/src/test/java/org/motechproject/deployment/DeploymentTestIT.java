@@ -14,7 +14,7 @@ public class DeploymentTestIT {
         for(File log : getFileLogs()) {
             assertTrue(String.format("File not found: %s.", log.getAbsolutePath()), log.exists());
             assertTrue("File cannot be read", log.canRead());
-            assertTrue(String.format("Errors appeared during MoTeCH project startup. Please check %s", log.getPath()), log.length() == 0);
+            assertTrue(String.format("Errors appeared during MOTECH project startup. Please check %s", log.getPath()), log.length() == 0);
         }
     }
 

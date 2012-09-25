@@ -14,7 +14,7 @@
     <xf:bind id="staffId" nodeset="/death/staffId" required="true()" type="xsd:int" constraint=". &lt; 2147483647" message="Number too large. Keep under 2147483647"/>
     <xf:bind id="facilityId" nodeset="/death/facilityId" required="true()" type="xsd:int" constraint=". &lt; 2147483647" message="Number too large. Keep under 2147483647"/>
     <xf:bind constraint=". &lt;= 'today()'" id="date" message="Invalid date: date specified is in the future" nodeset="/death/date" required="true()" type="xsd:date"/>
-    <xf:bind id="motechId" nodeset="/death/motechId" required="true()" type="xsd:int" constraint=". &gt; 999999 and . &lt; 10000000" message="MoTeCH ID must be 7 digits long"/>
+    <xf:bind id="motechId" nodeset="/death/motechId" required="true()" type="xsd:int" constraint=". &gt; 999999 and . &lt; 10000000" message="MOTECH ID must be 7 digits long"/>
     <xf:bind id="formtype" nodeset="/death/formtype" required="true()" type="xsd:string" visible="false()"/>
     <xf:bind id="formname" nodeset="/death/formname" required="true()" type="xsd:string" visible="false()"/>
   </xf:model>
@@ -30,7 +30,7 @@
       <xf:label>Date of death</xf:label>
     </xf:input>
     <xf:input bind="motechId">
-      <xf:label>MoTeCH ID</xf:label>
+      <xf:label>MOTECH ID</xf:label>
     </xf:input>
     <xf:input bind="formtype">
       <xf:label>formType</xf:label>

@@ -10,7 +10,7 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-ivr-asterisk</artifactId>
     <version>0.14-SNAPSHOT</version>
-    <name>MoTeCH IVR Asterisk</name>
+    <name>MOTECH IVR Asterisk</name>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>

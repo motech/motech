@@ -8,9 +8,9 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>motech-openmrs-omod</artifactId>
     <packaging>omod</packaging>
-    <name>MoTeCH OpenMRS OMOD</name>
+    <name>MOTECH OpenMRS OMOD</name>
     <url>http://maven.apache.org</url>
-    <description>Motech Platform</description>
+    <description>MOTECH Platform</description>
 
     <properties>
         <moduleName>motech-platform</moduleName>

@@ -10,7 +10,7 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-outbox-bundle</artifactId>
     <version>0.14-SNAPSHOT</version>
-    <name>MoTeCH Outbox Bundle</name>
+    <name>MOTECH Outbox Bundle</name>
     <packaging>bundle</packaging>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>

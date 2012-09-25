@@ -4,7 +4,7 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-web-security</artifactId>
     <packaging>jar</packaging>
-    <name>MoTeCH Web Security</name>
+    <name>MOTECH Web Security</name>
     <version>0.14-SNAPSHOT</version>
 
     <properties>

@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-cmslite-api-bundle</artifactId>
-    <name>MoTeCH CMS lite API Bundle</name>
+    <name>MOTECH CMS lite API Bundle</name>
     <version>0.14-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <properties>

@@ -8,8 +8,8 @@
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-scheduletracking-api</artifactId>
-    <name>MoTeCH Schedule Tracking API</name>
-    <description>Motech Schedule Tracking API</description>
+    <name>MOTECH Schedule Tracking API</name>
+    <description>MOTECH Schedule Tracking API</description>
     <version>0.14-SNAPSHOT</version>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>

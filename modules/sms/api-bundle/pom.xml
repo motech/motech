@@ -10,9 +10,9 @@
     <groupId>org.motechproject</groupId>
     <artifactId>motech-sms-api-bundle</artifactId>
     <version>0.14-SNAPSHOT</version>
-    <name>MoTeCH SMS API Bundle</name>
+    <name>MOTECH SMS API Bundle</name>
     <packaging>bundle</packaging>
-    <description>Motech SMS API</description>
+    <description>MOTECH SMS API</description>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
     </properties>

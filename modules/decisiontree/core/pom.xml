@@ -8,7 +8,7 @@
     </parent>
     <groupId>org.motechproject</groupId>
     <artifactId>motech-decisiontree-core</artifactId>
-    <name>MoTeCH Decision Tree Core</name>
+    <name>MOTECH Decision Tree Core</name>
     <version>0.14-SNAPSHOT</version>
     <properties>
         <modules.root.dir>${basedir}/../../..</modules.root.dir>
