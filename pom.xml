@@ -256,6 +256,7 @@
         <module>modules/sms/smpp</module>
         <module>modules/testing-utils/testing-utils</module>
         <module>modules/web-security/web-security</module>
+        <module>utils/http-agent/http-agent</module>
 
         <!-- OSGI modules -->
         <module>platform/server-bundle</module>
@@ -288,6 +289,7 @@
         <module>modules/sms/http-bundle</module>
         <module>modules/sms/smpp-bundle</module>
         <module>modules/web-security/web-security-bundle</module>
+        <module>utils/http-agent/http-agent-bundle</module>
 
         <!-- Packaging modules -->
         <module>modules/deb/deb</module>
