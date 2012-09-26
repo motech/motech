@@ -47,6 +47,7 @@ public interface MotechSchedulerService {
      *
      * @param motechEvent
      */
+    @Deprecated // nobody's using it and can't imagine a case for this
     void updateScheduledJob(MotechEvent motechEvent);
 
     /**
