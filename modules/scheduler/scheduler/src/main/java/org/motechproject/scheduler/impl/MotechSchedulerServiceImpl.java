@@ -107,7 +107,7 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
                 .withIdentity(triggerKey(jobId.value(), JOB_GROUP_NAME))
                 .forJob(jobDetail)
                 .withSchedule(cronSchedule)
-                .startAt(cronSchedulableJob.getStartTime() != null ? cronSchedulableJob.getStartTime() : new Date())
+                .startAt(cronSchedulableJob.getStartTime() != null ? cronSchedulableJob.getStartTime() : now().toDate())
                 .endAt(cronSchedulableJob.getEndTime())
                 .build();
 
@@ -164,6 +164,7 @@ public class MotechSchedulerServiceImpl extends MotechObject implements MotechSc
     }
 
     @Override
+    @Deprecated // nobody's using it and can't imagine a case for this
     public void updateScheduledJob(MotechEvent motechEvent) {
         logInfo("Updating the scheduled job: %s", motechEvent);
         assertArgumentNotNull("MotechEvent", motechEvent);
