@@ -93,6 +93,15 @@ public class ConfigFileSettings extends Properties implements MotechSettings {
         return metricsProperties;
     }
 
+    @Override
+    public Properties getSchedulerProperties() {
+        Properties schedulerProperties = new Properties();
+
+        putPropertyIfNotNull(schedulerProperties, SCHEDULER_URL, getProperty(SCHEDULER_URL));
+
+        return schedulerProperties;
+    }
+
     private static void putPropertyIfNotNull(Properties properties, String key, Object value) {
         if (value != null) {
             properties.put(key, value);

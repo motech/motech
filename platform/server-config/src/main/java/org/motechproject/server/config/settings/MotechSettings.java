@@ -26,6 +26,8 @@ public interface MotechSettings {
 
     String GRAPHITE_URL = "graphite.url";
 
+    String SCHEDULER_URL = "scheduler.url";
+
     String LANGUAGE = "system.language";
     String STATUS_MSG_TIMEOUT = "statusmsg.timeout";
 
@@ -40,4 +42,6 @@ public interface MotechSettings {
     Properties getQuartzProperties();
 
     Properties getMetricsProperties();
+
+    Properties getSchedulerProperties();
 }

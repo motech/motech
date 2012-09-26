@@ -25,6 +25,7 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     private Properties activemqProperties;
     private Properties quartzProperties;
     private Properties metricsProperties;
+    private Properties schedulerProperties;
 
     @Override
     public String getLanguage() {
@@ -56,6 +57,10 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
         return metricsProperties;
     }
 
+    public Properties getSchedulerProperties() {
+        return schedulerProperties;
+    }
+
     public void setCouchDbProperties(final Properties couchDbProperties) {
         this.couchDbProperties = couchDbProperties;
     }
@@ -70,6 +75,10 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
 
     public void setMetricsProperties(final Properties metricsProperties) {
         this.metricsProperties = metricsProperties;
+    }
+
+    public void setSchedulerProperties(final Properties schedulerProperties) {
+        this.schedulerProperties = schedulerProperties;
     }
 
     public void setLanguage(final String language) {
@@ -110,6 +119,7 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
         setActivemqProperties(settings.getActivemqProperties());
         setQuartzProperties(settings.getQuartzProperties());
         setMetricsProperties(settings.getMetricsProperties());
+        setSchedulerProperties(settings.getSchedulerProperties());
     }
 
     public void updateFromProperties(final Properties props) {
@@ -121,6 +131,9 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
         }
         if (metricsProperties == null || metricsProperties.isEmpty()) {
             metricsProperties = emptyMetricsProperties();
+        }
+        if (schedulerProperties == null || schedulerProperties.isEmpty()) {
+            schedulerProperties = emptySchedulerProperties();
         }
 
         for (Map.Entry<Object, Object> entry : props.entrySet()) {
@@ -135,7 +148,7 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
                     setStatusMsgTimeout(value);
                     break;
                 default:
-                    for (Properties p : Arrays.asList(getActivemqProperties(), getQuartzProperties(), getMetricsProperties())) {
+                    for (Properties p : Arrays.asList(getActivemqProperties(), getQuartzProperties(), getMetricsProperties(), getSchedulerProperties())) {
                         if (p.containsKey(key)) {
                             p.put(key, value);
                             break;
@@ -170,6 +183,12 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     private Properties emptyMetricsProperties() {
         Properties props = new Properties();
         props.put(GRAPHITE_URL, "");
+        return props;
+    }
+
+    private Properties emptySchedulerProperties() {
+        Properties props = new Properties();
+        props.put(SCHEDULER_URL, "");
         return props;
     }
 }

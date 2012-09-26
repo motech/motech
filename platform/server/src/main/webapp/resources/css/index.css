@@ -1,6 +1,9 @@
+body {
+    background: #ffffff url('../img/bg.jpg') repeat-x 0 0;
+}
 .header {
     display:block;
-    margin: 0;
+    margin:auto;
 }
 
 .logo {
@@ -53,11 +56,11 @@
 }
 
 .header-title {
-    width:400px;
+    width:340px;
     height:28px;
     display:block;
     float:left;
-    margin: 40px 2px 0 12px;
+    margin: 40px 0 0 9%;
     background: #fff;
     color:#224477;
     text-weight:400;
@@ -78,7 +81,7 @@
 }
 
 .dropdown ul li a,.dropdown ul li {
-    font-size: 13px
+    font-size: 13px;
 }
 
 .dropdown:hover .dropdown-menu,.dropdown:hover {
@@ -113,6 +116,30 @@
 
 .nav .nav-header {
     color: #224477;
+}
+
+.form-panel {
+    width:480px;
+    min-height: 20px;
+    padding: 19px 100px;
+    margin: 20px auto 20px auto;
+    background:#dbedf7 url('../img/frame-bg.jpg') repeat-x 0 0;
+    border:1px #7bb5fc solid;
+    -webkit-border-radius: 4px;
+         -moz-border-radius: 4px;
+              border-radius: 4px;
+    -webkit-box-shadow: 0 2px 5px #89aedb;
+       -moz-box-shadow: 0 2px 5px #89aedb;
+            box-shadow: 0 2px 5px #89aedb;
+
+}
+
+.title {
+    color:#224477;
+    font-size: 22px;
+    line-height: 27px;
+    text-align:center;
+    margin:20px;
 }
 
 /* -----flags ----- */

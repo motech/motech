@@ -80,6 +80,21 @@ public class ConfigLoader {
         return configFileSettings;
     }
 
+    public ConfigFileSettings loadDefaultConfig() {
+        ConfigFileSettings configFileSettings = null;
+        Resource defaultSettings = resourceLoader.getResource("classpath:default-settings.conf");
+
+        if (defaultSettings != null) {
+            try {
+                configFileSettings = loadSettingsFromStream(defaultSettings.getInputStream());
+            } catch (IOException e) {
+                LOGGER.error("Error loading default config " + defaultSettings.getFilename(), e);
+            }
+        }
+
+        return configFileSettings;
+    }
+
     public void save() throws IOException {
         StringBuilder sb = new StringBuilder();
 

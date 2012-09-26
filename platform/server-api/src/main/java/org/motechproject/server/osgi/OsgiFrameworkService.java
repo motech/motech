@@ -104,16 +104,16 @@ public class OsgiFrameworkService implements ApplicationContextAware {
      * Start MOTECH bundles
      */
     public void startMotechBundles() {
-        try {
-            for (Bundle bundle : bundles) {
-                String bundleSymbolicName = bundle.getSymbolicName();
+        for (Bundle bundle : bundles) {
+            String bundleSymbolicName = bundle.getSymbolicName();
 
-                if (bundleSymbolicName.startsWith("org.motechproject.motech-")) {
+            if (bundleSymbolicName.startsWith("org.motechproject.motech-")) {
+                try {
                     startBundle(bundle);
+                } catch (Exception e) {
+                    logger.error("Failed to start Bundles", e);
                 }
             }
-        } catch (Exception e) {
-            logger.error("Failed to start Bundles", e);
         }
     }
 

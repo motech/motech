@@ -13,7 +13,6 @@ import javax.servlet.ServletContextListener;
 
 public class OsgiListener implements ServletContextListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgiListener.class);
-    public static final String ADMIN_BUNDLE = "org.motechproject.motech-admin-bundle";
 
     private static OsgiFrameworkService service;
 
@@ -34,13 +33,6 @@ public class OsgiListener implements ServletContextListener {
 
             LOGGER.info("Launching MOTECH bundles...");
             getOsgiService().startMotechBundles();
-        } else {
-            LOGGER.warn("Problems with MOTECH launch. Finding and launching Admin UI bundle to repair errors by user...");
-
-            if (!getOsgiService().startBundle(ADMIN_BUNDLE)) {
-                LOGGER.error("Admin UI bundle not found. Shutting down MOTECH platform...");
-                getOsgiService().stop();
-            }
         }
     }
 

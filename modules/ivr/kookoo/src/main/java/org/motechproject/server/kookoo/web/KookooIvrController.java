@@ -2,10 +2,10 @@ package org.motechproject.server.kookoo.web;
 
 import org.motechproject.decisiontree.core.FlowSession;
 import org.motechproject.decisiontree.core.model.CallStatus;
+import org.motechproject.decisiontree.core.model.DialStatus;
 import org.motechproject.decisiontree.server.service.DecisionTreeServer;
 import org.motechproject.decisiontree.server.service.FlowSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.motechproject.decisiontree.core.model.DialStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;

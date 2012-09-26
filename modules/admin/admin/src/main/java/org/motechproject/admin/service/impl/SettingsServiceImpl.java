@@ -58,6 +58,10 @@ public class SettingsServiceImpl implements SettingsService {
             Settings metricsSettings = new Settings("metrics", ParamParser.parseProperties(metricsProperties));
             settingsList.add(metricsSettings);
 
+            Properties schedulerProperties = motechSettings.getSchedulerProperties();
+            Settings schedulerSettings = new Settings("scheduler", ParamParser.parseProperties(schedulerProperties));
+            settingsList.add(schedulerSettings);
+
             List<SettingsOption> miscOptions = new ArrayList<>();
 
             SettingsOption languageOption = ParamParser.parseParam(MotechSettings.LANGUAGE, motechSettings.getLanguage());

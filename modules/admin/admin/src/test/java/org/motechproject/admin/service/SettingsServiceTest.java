@@ -75,9 +75,8 @@ public class SettingsServiceTest {
     @Test
     public void testGetSettings() {
         List<Settings> platformSettingsList = settingsService.getSettings();
-        List<SettingsOption> settingsOptionList = platformSettingsList.get(0).getSettings();
 
-        assertEquals(5, platformSettingsList.size());
+        assertEquals(6, platformSettingsList.size());
 
         SettingsOption option = platformSettingsList.get(0).getSettings().get(0);
         assertEquals(DB_HOST, option.getKey());
@@ -95,7 +94,9 @@ public class SettingsServiceTest {
         assertEquals(GRAPHITE_URL, option.getKey());
         assertEquals(GRAPHITE_URL_VALUE, option.getValue());
 
-        option = platformSettingsList.get(4).getSettings().get(0);
+        assertEquals(0, platformSettingsList.get(4).getSettings().size());
+
+        option = platformSettingsList.get(5).getSettings().get(0);
         assertEquals(LANGUAGE, option.getKey());
         assertEquals(LANGUAGE_VALUE, option.getValue());
 
@@ -151,11 +152,13 @@ public class SettingsServiceTest {
         couchDB.put(DB_HOST, DB_HOST_VALUE);
         Properties metrics = new Properties();
         metrics.put(GRAPHITE_URL, GRAPHITE_URL_VALUE);
+        Properties scheduler = new Properties();
 
         when(motechSettings.getActivemqProperties()).thenReturn(activemq);
         when(motechSettings.getQuartzProperties()).thenReturn(quartz);
         when(motechSettings.getCouchDBProperties()).thenReturn(couchDB);
         when(motechSettings.getMetricsProperties()).thenReturn(metrics);
+        when(motechSettings.getSchedulerProperties()).thenReturn(scheduler);
         when(motechSettings.getLanguage()).thenReturn(LANGUAGE_VALUE);
     }
 }

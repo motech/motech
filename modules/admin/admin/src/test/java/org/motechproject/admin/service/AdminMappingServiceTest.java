@@ -9,7 +9,6 @@ import org.motechproject.admin.repository.AllAdminMappings;
 import org.motechproject.admin.service.impl.AdminMappingServiceImpl;
 import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.MotechSettings;
-import org.osgi.framework.BundleContext;
 
 import java.util.ArrayList;
 import java.util.List;
