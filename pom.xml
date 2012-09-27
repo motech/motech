@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.motechproject</groupId>
     <artifactId>motech</artifactId>
-    <version>0.13</version>
+    <version>0.13.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>MoTeCH</name>
 
@@ -673,6 +673,6 @@
         <connection>${scm.connection}</connection>
         <developerConnection>${scm.developerConnection}</developerConnection>
         <url>${scm.url}</url>
-        <tag>motech-0.13</tag>
+        <tag>0.13.X</tag>
     </scm>
 </project>
