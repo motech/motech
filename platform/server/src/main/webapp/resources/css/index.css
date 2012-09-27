@@ -1,6 +1,19 @@
 body {
-    background: #ffffff url('../img/bg.jpg') repeat-x 0 0;
+    background: #ffffff url("../img/lightblue-bg.jpg") repeat-x 0 0;
 }
+
+.lightgrain-bg {
+    background: #E9E9E9 url("../img/lightgrain-bg.png") repeat 0 0;
+}
+
+.darkgrain-bg {
+    background: #E2E2E2 url("../img/darkgrain-bg.png") repeat 0 0;
+}
+
+.mediumgrain-bg {
+    background: #EEE url("../img/mediumgrain-bg.png") repeat 0 0;
+}
+
 .header {
     display:block;
     margin:auto;
@@ -12,7 +25,7 @@ body {
     display:block;
     float:left;
     margin: 0 5px 0 0;
-    background: #fff url('../img/motechlogo.jpg') no-repeat;
+    background: #fff url("../img/motech-logo.jpg") no-repeat;
 }
 
 .top-menu {
@@ -21,7 +34,7 @@ body {
     display:block;
     float:right;
     margin: 0 0 0 55%;
-    background:#ddeeff;/*d9e7fa;*/
+    background:#ddeeff;
     border-radius:0 0 7px 7px;
     position:absolute;
 }
@@ -76,7 +89,7 @@ body {
     color: #fff;
     line-height: 28px;
     font-size: 16px;
-    background: #001e4f url("../img/navbar.jpg") repeat-x left top;
+    background: #001e4f url("../img/navbar.jpg") repeat-x 0 0;
     border-bottom:1px solid #ff9900;
 }
 
@@ -99,7 +112,7 @@ body {
 }
 
 .navbar-inner-bg {
-    background: url("../img/navbar.jpg") repeat-x;
+    background: url("../img/navbar.jpg") repeat-x 0 0;
 }
 
 .navbar .nav > li > a {
@@ -123,7 +136,7 @@ body {
     min-height: 20px;
     padding: 19px 100px;
     margin: 20px auto 20px auto;
-    background:#dbedf7 url('../img/frame-bg.jpg') repeat-x 0 0;
+    background:#dbedf7 url("../img/frame-bg.jpg") repeat-x 0 0;
     border:1px #7bb5fc solid;
     -webkit-border-radius: 4px;
          -moz-border-radius: 4px;
@@ -140,6 +153,40 @@ body {
     line-height: 27px;
     text-align:center;
     margin:20px;
+}
+
+.required-field {
+    color:#ff0000;
+}
+
+.i-middle {
+    vertical-align:middle;
+}
+
+select {
+    background:#ffffff;
+}
+
+.box-header {
+    border-radius: 4px;
+    font-weight: bold;
+    line-height: 20px;
+    font-size: 15px;
+    padding:5px 10px;
+    color: #c2eafe;
+    background: url("../img/head-bg.jpg") repeat-x left top;
+}
+
+.box-content {
+    background: #fbfbfb;
+    border-radius: 4px;
+    border: 1px solid #cccccc;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
+    padding:0 0 10px 0;
+}
+
+.inside {
+    padding: 8px 10px;
 }
 
 /* -----flags ----- */
