@@ -11,3 +11,4 @@ angular.module('motech-demo', ['TreeServices', 'localization', 'ngCookies', 'boo
         when('/ivrservice', {templateUrl: 'partials/ivrcalls.html', controller: IVRCallCtrl}).
         otherwise({redirectTo: '/welcome'});
 }]);
+

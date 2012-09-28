@@ -19,6 +19,10 @@ public class Form {
 
     public static final String XF_XFORMS_ID = "<xf:xforms.*?id=\"(.*?)\"";
 
+    public Form() {
+        // needed by gson
+    }
+
     public Form(String name, String fileName) {
         this.name = name;
         this.fileName = fileName;

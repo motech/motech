@@ -16,17 +16,17 @@ import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.ConfigFileSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class ConfigFileMonitor implements FileListener, InitializingBean {
+public class ConfigFileMonitor implements FileListener {
     public static final String BASE_SUBJECT = "org.motechproject.server.config.file.";
     public static final String FILE_DELETED_EVENT_SUBJECT = BASE_SUBJECT + "deleted";
     public static final String FILE_CHANGED_EVENT_SUBJECT = BASE_SUBJECT + "changed";
@@ -53,7 +53,9 @@ public class ConfigFileMonitor implements FileListener, InitializingBean {
         super.finalize();
     }
 
-    public void monitor() {
+    @PostConstruct
+    public void monitor() throws Exception {
+        afterPropertiesSet();
         LOGGER.debug("Reading config file.");
         ConfigFileSettings configFileSettings = configLoader.loadConfig();
 
@@ -85,7 +87,7 @@ public class ConfigFileMonitor implements FileListener, InitializingBean {
         return currentSettings;
     }
 
-    public void changeConfigFileLocation(final String location, final boolean save) {
+    public void changeConfigFileLocation(final String location, final boolean save) throws Exception {
         if (location.startsWith("/")) {
             configLoader.addConfigLocation(String.format("file:%s", location));
         } else {
@@ -130,7 +132,6 @@ public class ConfigFileMonitor implements FileListener, InitializingBean {
         scheduleJob(FILE_CHANGED_EVENT_SUBJECT, fileChangeEvent);
     }
 
-    @Override
     public void afterPropertiesSet() throws Exception {
         if (schedulerGateway == null) {
             throw new Exception("schedulerGateway property is required.");

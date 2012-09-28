@@ -32,4 +32,6 @@
 
     <bean id="vxmlOutboxController" class="org.motechproject.server.outbox.web.VxmlOutboxController"/>
 
+    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
+
 </beans>

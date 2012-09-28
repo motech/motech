@@ -1,6 +1,7 @@
 package org.motechproject.server.config.service;
 
 import org.ektorp.CouchDbConnector;
+import org.motechproject.server.config.db.DbConnectionException;
 import org.motechproject.server.config.settings.MotechSettings;
 
 import java.io.IOException;
@@ -35,7 +36,7 @@ public interface PlatformSettingsService {
      * @param location file location
      * @param save     true if you always want to load the config file from given location, otherwise false
      */
-    void addConfigLocation(final String location, final boolean save);
+    void addConfigLocation(final String location, final boolean save) throws Exception;
 
     void saveBundleProperties(final String bundleSymbolicName, final String fileName, final Properties properties) throws IOException;
 
@@ -56,4 +57,6 @@ public interface PlatformSettingsService {
     CouchDbConnector getCouchConnector(String dbName);
 
     void evictMotechSettingsCache();
+
+    void configureCouchDBManager() throws DbConnectionException;
 }

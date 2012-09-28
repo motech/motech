@@ -1,7 +1,5 @@
 package org.motechproject.server.osgi;
 
-import org.motechproject.server.config.monitor.ConfigFileMonitor;
-import org.motechproject.server.startup.StartupManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -17,31 +15,10 @@ public class OsgiListener implements ServletContextListener {
 
     private static OsgiFrameworkService service;
 
-    private StartupManager startupManager = StartupManager.getInstance();
-    private ConfigFileMonitor configFileMonitor;
-
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         LOGGER.debug("Starting OSGi framework...");
         getOsgiService(servletContextEvent).start();
-
-        LOGGER.debug("Starting MoTeCH...");
-        startupManager.startup();
-
-        if (startupManager.canLaunchBundles()) {
-            LOGGER.info("Monitoring config file...");
-            getConfigFileMonitor(servletContextEvent).monitor();
-
-            LOGGER.info("Launching MOTECH bundles...");
-            getOsgiService().startMotechBundles();
-        } else {
-            LOGGER.warn("Problems with MoTeCH launch. Finding and launching Admin UI bundle to repair errors by user...");
-
-            if (!getOsgiService().startBundle(ADMIN_BUNDLE)) {
-                LOGGER.error("Admin UI bundle not found. Shutting down MOTECH platform...");
-                getOsgiService().stop();
-            }
-        }
     }
 
     @Override
@@ -57,16 +34,6 @@ public class OsgiListener implements ServletContextListener {
             service = applicationContext.getBean(OsgiFrameworkService.class);
         }
         return service;
-    }
-
-    private ConfigFileMonitor getConfigFileMonitor(ServletContextEvent servletContextEvent) {
-        if (configFileMonitor == null) {
-            LOGGER.debug("Finding ConfigFileMonitor instance in context...");
-            ServletContext servletContext = servletContextEvent.getServletContext();
-            ApplicationContext applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
-            configFileMonitor = applicationContext.getBean(ConfigFileMonitor.class);
-        }
-        return configFileMonitor;
     }
 
     public static OsgiFrameworkService getOsgiService() {

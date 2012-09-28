@@ -2,6 +2,7 @@ package org.motechproject.server.config.service.impl;
 
 import org.apache.commons.io.IOUtils;
 import org.ektorp.CouchDbConnector;
+import org.joda.time.DateTime;
 import org.motechproject.server.config.db.CouchDbManager;
 import org.motechproject.server.config.db.DbConnectionException;
 import org.motechproject.server.config.domain.SettingsRecord;
@@ -17,7 +18,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -44,7 +44,8 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
     @Autowired
     private ConfigFileMonitor configFileMonitor;
 
-    @PostConstruct
+    @Override
+    @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
     public void configureCouchDBManager() throws DbConnectionException {
         ConfigFileSettings configFileSettings = configFileMonitor.getCurrentSettings();
 
@@ -80,17 +81,22 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
         try (FileOutputStream fos = new FileOutputStream(file)) {
             settings.store(fos, null);
-            configFileMonitor.monitor();
 
             SettingsRecord dbSettings = getDBSettings();
             if (dbSettings == null) {
                 dbSettings = new SettingsRecord();
                 configureCouchDBManager();
             }
-            dbSettings.updateFromProperties(settings);
+
             if (allSettings != null) {
+                dbSettings.updateFromProperties(settings);
+                dbSettings.setConfigFileChecksum(configFileMonitor.getCurrentSettings().getMd5checkSum());
+                dbSettings.setLastRun(DateTime.now());
+
                 allSettings.addOrUpdateSettings(dbSettings);
             }
+
+            configFileMonitor.monitor();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -191,7 +197,7 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
     @Override
     @CacheEvict(value = SETTINGS_CACHE_NAME, allEntries = true)
-    public void addConfigLocation(final String location, final boolean save) {
+    public void addConfigLocation(final String location, final boolean save) throws Exception {
         configFileMonitor.changeConfigFileLocation(location, save);
     }
 

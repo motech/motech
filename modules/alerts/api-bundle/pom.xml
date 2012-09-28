@@ -117,8 +117,10 @@
                             org.motechproject.server.alerts.osgi.Activator
                         </Bundle-Activator>
                         <Import-Package>
-                            org.ektorp.spring,
                             org.ektorp.impl,
+                            org.ektorp.spring,
+                            org.motechproject.event.listener,
+                            org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
                             org.springframework.beans.factory.xml,

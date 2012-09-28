@@ -22,6 +22,7 @@
     <osgi:reference id="decisionTreeServerServiceOsgi" cardinality="0..1"
                     interface="org.motechproject.decisiontree.server.service.DecisionTreeServer" />
 
-    <osgi:reference id="platformSettingsServiceOsgi" cardinality="0..1"
-                    interface="org.motechproject.server.config.service.PlatformSettingsService" />
+    <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService" />
+
+    <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 </beans>

@@ -136,7 +136,7 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     @Override
-    public void addSettingsPath(String path) {
+    public void addSettingsPath(String path) throws Exception {
         platformSettingsService.addConfigLocation(path, true);
     }
 

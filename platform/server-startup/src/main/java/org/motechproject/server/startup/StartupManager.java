@@ -2,10 +2,10 @@ package org.motechproject.server.startup;
 
 import org.joda.time.DateTime;
 import org.motechproject.server.config.ConfigLoader;
-import org.motechproject.server.config.db.CouchDbManager;
 import org.motechproject.server.config.db.DbConnectionException;
 import org.motechproject.server.config.domain.SettingsRecord;
 import org.motechproject.server.config.service.AllSettings;
+import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.ConfigFileSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +24,10 @@ public final class StartupManager {
     private ConfigFileSettings configFileSettings;
 
     @Autowired
-    private CouchDbManager couchDbManager;
+    private ConfigLoader configLoader;
 
     @Autowired
-    private ConfigLoader configLoader;
+    private PlatformSettingsService platformSettingsService;
 
     private StartupManager() {
 
@@ -46,6 +46,10 @@ public final class StartupManager {
     }
 
     public void startup() {
+        if (configFileSettings != null) {
+            configFileSettings = null;
+        }
+
         configFileSettings = configLoader.loadConfig();
 
         // check if settings were loaded from config locations
@@ -68,7 +72,7 @@ public final class StartupManager {
     private void syncSettingsWithDb() {
         // test Database
         try {
-            couchDbManager.configureDb(configFileSettings.getCouchDBProperties());
+            platformSettingsService.configureCouchDBManager();
         } catch (DbConnectionException e) {
             LOGGER.error(e.getMessage(), e);
             platformState = MotechPlatformState.NO_DB;
@@ -77,7 +81,7 @@ public final class StartupManager {
         // load db settings
         if (platformState != MotechPlatformState.NO_DB) {
             try {
-                AllSettings allSettings = new AllSettings(couchDbManager.getConnector(SETTINGS_DB, true));
+                AllSettings allSettings = new AllSettings(platformSettingsService.getCouchConnector(SETTINGS_DB));
                 SettingsRecord dbSettings = allSettings.getSettings();
 
                 if (dbSettings.getLastRun() == null) {

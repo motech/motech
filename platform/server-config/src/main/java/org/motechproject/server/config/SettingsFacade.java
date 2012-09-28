@@ -197,7 +197,7 @@ public class SettingsFacade {
                     IOUtils.closeQuietly(couchDbStream);
                 }
             } else {
-                throw new FileNotFoundException("Cant find file couchdb.properties");
+                throw new FileNotFoundException(String.format("Cant find file: %s", couchDbFileName));
             }
         }
 

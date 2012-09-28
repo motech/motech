@@ -1,4 +1,4 @@
-package org.motechproject.server.demo.web;
+package org.motechproject.server.web;
 
 import org.osgi.framework.BundleContext;
 import org.springframework.osgi.context.BundleContextAware;

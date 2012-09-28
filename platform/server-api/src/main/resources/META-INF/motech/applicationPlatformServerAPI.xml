@@ -8,6 +8,8 @@
             http://www.springframework.org/schema/context
             http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
+    <context:annotation-config/>
+    <context:component-scan base-package="org.motechproject.server.osgi"/>
 
     <context:annotation-config/>
     <util:properties id="osgiConfig" location="classpath:osgi.properties"/>

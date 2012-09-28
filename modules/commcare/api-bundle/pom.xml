@@ -119,8 +119,8 @@
                         </Bundle-Activator>
                         <Import-Package>
                             org.ektorp.impl,
-                            org.ektorp.spring,
                             org.ektorp.impl.jackson,
+                            org.ektorp.spring,
                             org.motechproject.event,
                             org.motechproject.event.listener,
                             org.motechproject.event.listener.annotations,

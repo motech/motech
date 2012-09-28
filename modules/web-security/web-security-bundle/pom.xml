@@ -28,7 +28,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-api</artifactId>
+            <artifactId>motech-platform-event</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!-- OSGI dependencies -->
@@ -122,6 +122,8 @@
                             !org.testng.annotations,
                             org.ektorp.impl,
                             org.ektorp.spring,
+                            org.motechproject.event.listener,
+                            org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
                             org.springframework.beans.factory.xml,

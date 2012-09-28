@@ -27,4 +27,6 @@
 
     <bean class="org.motechproject.decisiontree.core.TreeNodeLocator"/>
 
+    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
+
 </beans>

@@ -139,15 +139,17 @@
                         <Import-Package>
                             org.ektorp.impl,
                             org.ektorp.spring,
-                            org.springframework.beans.factory.xml,
-                            org.springframework.context.config,
                             org.motechproject.event,
+                            org.motechproject.event.listener,
+                            org.motechproject.event.listener.annotations,
                             org.motechproject.scheduler,
                             org.motechproject.scheduler.domain,
-                            org.springframework.scheduling.quartz,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
+                            org.springframework.beans.factory.xml,
+                            org.springframework.context.config,
                             org.springframework.osgi.config,
+                            org.springframework.scheduling.quartz,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-appointments-api;inline=true</Embed-Dependency>

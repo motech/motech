@@ -8,8 +8,15 @@
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.ivr"/>
 
-    <bean id="platformIVRDbConnector" class="org.ektorp.impl.StdCouchDbConnector">
-        <constructor-arg value="motech-ivr"/>
-        <constructor-arg ref="couchDbInstance"/>
+    <bean id="ivrApiSettings" class="org.motechproject.server.config.SettingsFacade" autowire="byType">
+        <property name="moduleName" value="ivr-api" />
     </bean>
+
+    <bean id="platformIVRDbConnector" factory-bean="ivrApiSettings" factory-method="getConnector">
+        <constructor-arg value="motech-ivr"/>
+        <constructor-arg value="couchdb.properties"/>
+    </bean>
+
+    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
+
 </beans>

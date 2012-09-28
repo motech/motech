@@ -45,4 +45,6 @@
             </list>
         </property>
     </bean>
+
+    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
 </beans>

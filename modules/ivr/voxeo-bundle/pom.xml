@@ -163,8 +163,9 @@
                             org.motechproject.server.voxeo.osgi.Activator
                         </Bundle-Activator>
                         <Import-Package>
-                            org.ektorp.spring,
                             org.ektorp.impl,
+                            org.ektorp.spring,
+                            org.motechproject.event.listener.annotations,
                             org.motechproject.ivr.service,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,

@@ -229,6 +229,8 @@
         <module>modules/appointments/api</module>
         <module>modules/cmslite/api</module>
         <module>modules/commcare/api</module>
+        <module>modules/decisiontree/core</module>
+        <module>modules/decisiontree/server</module>
         <module>modules/demo/demo</module>
         <module>modules/event-logging/event-logging</module>
         <module>modules/ivr/api</module>
@@ -236,8 +238,6 @@
         <module>modules/ivr/kookoo</module>
         <module>modules/ivr/verboice</module>
         <module>modules/ivr/voxeo</module>
-        <module>modules/decisiontree/core</module>
-        <module>modules/decisiontree/server</module>
         <module>modules/message-campaign/message-campaign</module>
         <module>modules/mobileforms/api</module>
         <module>modules/mrs/api</module>
@@ -258,19 +258,21 @@
         <module>modules/web-security/web-security</module>
 
         <!-- OSGI modules -->
+        <module>platform/server-bundle</module>
         <module>modules/admin/admin-bundle</module>
         <module>modules/alerts/api-bundle</module>
         <module>modules/appointments/api-bundle</module>
         <module>modules/cmslite/api-bundle</module>
         <module>modules/commcare/api-bundle</module>
+        <module>modules/decisiontree/core-bundle</module>
+        <module>modules/decisiontree/server-bundle</module>
         <module>modules/demo/demo-bundle</module>
         <module>modules/event-logging/event-logging-bundle</module>
+        <module>modules/ivr/api-bundle</module>
         <module>modules/ivr/asterisk-bundle</module>
         <module>modules/ivr/kookoo-bundle</module>
         <module>modules/ivr/verboice-bundle</module>
         <module>modules/ivr/voxeo-bundle</module>
-        <module>modules/decisiontree/core-bundle</module>
-        <module>modules/decisiontree/server-bundle</module>
         <module>modules/message-campaign/message-campaign-bundle</module>
         <module>modules/mobileforms/api-bundle</module>
         <module>modules/mrs/api-bundle</module>

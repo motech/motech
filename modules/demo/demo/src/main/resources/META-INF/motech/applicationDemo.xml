@@ -17,9 +17,11 @@
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/webapp/"/>
         <property name="suffix" value=".jsp"/>
-        <property name="viewClass" value="org.motechproject.server.demo.web.BundledJspView"/>
+        <property name="viewClass" value="org.motechproject.server.web.BundledJspView"/>
     </bean>
 
     <mvc:annotation-driven/>
+
+    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
 
 </beans>

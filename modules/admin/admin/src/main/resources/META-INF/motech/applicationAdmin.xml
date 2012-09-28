@@ -22,6 +22,8 @@
         <property name="bundleDir" value="${user.home}/.motech/bundles" />
     </bean>
 
+    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
+
     <util:list id="bundleLoaders" value-type="org.motechproject.server.osgi.BundleLoader">
         <bean id="log4jBundleLoader" class="org.motechproject.server.osgi.Log4JBundleLoader"/>
     </util:list>

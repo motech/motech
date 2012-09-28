@@ -20,6 +20,8 @@
 
     <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService" />
 
+    <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
+
     <osgi:reference id="flowSessionServiceOsgi" cardinality="0..1"
                     interface="org.motechproject.decisiontree.server.service.FlowSessionService" />
 </beans>

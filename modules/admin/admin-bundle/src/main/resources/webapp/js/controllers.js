@@ -12,6 +12,14 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams) {
 
     $scope.FILTER_MOTECH_BUNDLES = 'org.motechproject.motech-';
 
+    $scope.filterBundles = function(bundle) {
+        if (bundle.symbolicName.search("motech-admin") != -1 || bundle.symbolicName.search("motech-platform-server") != -1) {
+            return false;
+        }
+
+        return bundle.symbolicName.search($scope.FILTER_MOTECH_BUNDLES) == 0;
+    }
+
     $scope.setOrder = function(prop) {
         if (prop == $scope.orderProp) {
             $scope.invert = !$scope.invert;
@@ -42,7 +50,7 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams) {
     $scope.allBundlesCount = function() {
         var count = 0;
         angular.forEach($scope.bundles, function(bundle) {
-            if (bundle.symbolicName.search($scope.FILTER_MOTECH_BUNDLES) == 0) {
+            if ($scope.filterBundles(bundle)) {
                 count ++;
             }
         });
@@ -53,7 +61,7 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams) {
     $scope.activeBundlesCount = function() {
         var count = 0;
         angular.forEach($scope.bundles, function(bundle) {
-            if (bundle.symbolicName.search($scope.FILTER_MOTECH_BUNDLES) == 0) {
+            if ($scope.filterBundles(bundle)) {
                 count += bundle.isActive() ? 1 : 0;
             }
         });
@@ -64,7 +72,7 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams) {
     $scope.installedBundlesCount = function() {
         var count = 0;
         angular.forEach($scope.bundles, function(bundle) {
-            if (bundle.symbolicName.search($scope.FILTER_MOTECH_BUNDLES) == 0) {
+            if ($scope.filterBundles(bundle)) {
                 count += bundle.isInstalled() ? 1 : 0;
             }
         });
@@ -75,7 +83,7 @@ function BundleListCtrl($scope, Bundle, i18nService, $routeParams) {
     $scope.resolvedBundlesCount = function() {
         var count = 0;
         angular.forEach($scope.bundles, function(bundle) {
-            if (bundle.symbolicName.search($scope.FILTER_MOTECH_BUNDLES) == 0) {
+            if ($scope.filterBundles(bundle)) {
                 count += bundle.isResolved() ? 1 : 0;
             }
         });

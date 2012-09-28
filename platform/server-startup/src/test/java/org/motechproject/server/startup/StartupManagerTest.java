@@ -19,7 +19,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -73,17 +72,17 @@ public class StartupManagerTest {
         when(configLoader.loadConfig()).thenReturn(configFileSettings);
         when(configFileMonitor.getCurrentSettings()).thenReturn(configFileSettings);
         when(configFileSettings.getCouchDBProperties()).thenReturn(couchDbProperties);
-        doThrow(new DbConnectionException("Failure")).when(couchDbManager).configureDb(couchDbProperties);
+        doThrow(new DbConnectionException("Failure")).when(platformSettingsService).configureCouchDBManager();
 
         startupManager.startup();
 
         verify(configLoader).loadConfig();
-        verify(couchDbManager).configureDb(couchDbProperties);
+        verify(platformSettingsService).configureCouchDBManager();
 
         assertEquals(startupManager.getPlatformState(), MotechPlatformState.NO_DB);
         assertEquals(platformSettingsService.getPlatformSettings(), configFileSettings);
         assertFalse(startupManager.canLaunchBundles());
 
-        verify(configFileMonitor, times(2)).getCurrentSettings();
+        verify(configFileMonitor).getCurrentSettings();
     }
 }
