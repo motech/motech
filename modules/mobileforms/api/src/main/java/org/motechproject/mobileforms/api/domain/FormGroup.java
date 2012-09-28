@@ -7,6 +7,10 @@ public class FormGroup {
     private String name;
     private List<Form> forms;
 
+    public FormGroup() {
+        // needed by gson
+    }
+
     public FormGroup(String name, List<Form> forms) {
         this.name = name;
         this.forms = forms;

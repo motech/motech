@@ -129,13 +129,14 @@
                             org.motechproject.mobileforms.api.osgi.Activator
                         </Bundle-Activator>
                         <Import-Package>
+                            org.motechproject.event.listener.annotations,
                             org.springframework.beans.factory.aspectj,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.osgi.config,
                             *
                         </Import-Package>
-                        <Embed-Dependency>motech-mobileforms-api</Embed-Dependency>
+                        <Embed-Dependency>motech-mobileforms-api;inline=true</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>

@@ -24,6 +24,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-event</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>motech-platform-server-api</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -94,13 +99,15 @@
                             !com.sun.*,
                             !org.eclipse.jdt.*,
                             !org.mvel2.*,
+                            org.ektorp.impl,
+                            org.ektorp.spring,
+                            org.motechproject.event.listener,
+                            org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.osgi.config,
-                            org.ektorp.spring,
-                            org.ektorp.impl,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-rules-api, drools-api</Embed-Dependency>

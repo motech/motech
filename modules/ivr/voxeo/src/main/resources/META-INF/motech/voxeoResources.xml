@@ -37,4 +37,7 @@
         </property>
         <property name="moduleName" value="ivr-voxeo" />
     </bean>
+
+    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
+
 </beans>

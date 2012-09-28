@@ -30,4 +30,6 @@
     <bean id="scheduleTrackingService"
           class="org.motechproject.scheduletracking.api.service.impl.ScheduleTrackingServiceImpl"/>
 
+    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
+
 </beans>

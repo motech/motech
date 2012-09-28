@@ -22,7 +22,7 @@ function TreeListCtrl($scope, Tree, $http) {
 
     $scope.createExample = function () {
         blockUI();
-        $http.post('module/demo/api/tree/example').
+        $http.post('../demo/api/tree/example').
             success(function () {
                 $scope.trees = Tree.query();
                 unblockUI();
@@ -128,7 +128,7 @@ function TreeCreateCtrl($scope, $http) {
             }
         }
 
-        $http.post('module/demo/api/trees/cycle', $scope.tree).
+        $http.post('../demo/api/trees/cycle', $scope.tree).
             success(function (data) {
                 $scope.acyclic = data === "false";
                 $scope.checked = true;
@@ -240,7 +240,7 @@ function TreeCreateCtrl($scope, $http) {
         }
 
         blockUI();
-        $http.post('module/demo/api/trees/create', $scope.tree).
+        $http.post('../demo/api/trees/create', $scope.tree).
             success(function () {
                 var loc = new String(window.location), indexOf = loc.indexOf('#');
 
@@ -323,21 +323,21 @@ function TreeExecuteCtrl($scope, Tree, $routeParams) {
 
 function IVRCallCtrl($scope, i18nService, $http) {
 
-    $http.get('module/demo/api/ivrservices').success(function(data) {
+    $http.get('../demo/api/ivrservices').success(function(data) {
         $scope.ivrservices = data;
         $scope.curservice = $scope.ivrservices[0];
     });
 
     $scope.call = function() {
-        $http.get('module/demo/api/changeservice?id=' + $scope.curservice.index);
+        $http.get('../demo/api/changeservice?id=' + $scope.curservice.index);
 
         if ($scope.delay == '0' || $scope.delay == null) {
-            $http.get('module/demo/api/initiateCall?phone=' + $scope.phone).success(function() {
+            $http.get('../demo/api/initiateCall?phone=' + $scope.phone).success(function() {
                 alert("making a call now to " + $scope.phone);
             });
         }
         else {
-            $http.get('module/demo/api/scheduleCall?phone=' + $scope.phone + '&callDelay=' + $scope.delay).success(function() {
+            $http.get('../demo/api/scheduleCall?phone=' + $scope.phone + '&callDelay=' + $scope.delay).success(function() {
 
                 var oldDate = new Date();
                 var newDate = new Date(oldDate.getTime() + $scope.delay*60000);

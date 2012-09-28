@@ -25,7 +25,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-api</artifactId>
+            <artifactId>motech-platform-event</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!-- OSGI dependencies -->
@@ -85,6 +85,7 @@
                             org.motechproject.sms.api.osgi.Activator
                         </Bundle-Activator>
                         <Import-Package>
+                            org.motechproject.event.listener.annotations,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.osgi.config,

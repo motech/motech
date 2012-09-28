@@ -17,4 +17,7 @@
         <constructor-arg value="motech-appointments"/>
         <constructor-arg value="couchdb.properties"/>
     </bean>
+
+    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
+
 </beans>

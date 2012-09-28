@@ -129,18 +129,19 @@
                             org.motechproject.server.outbox.osgi.Activator
                         </Bundle-Activator>
                         <Import-Package>
-                            org.ektorp.spring,
                             org.ektorp.impl,
+                            org.ektorp.spring,
+                            org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,
+                            org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.context.support,
                             org.springframework.osgi.config,
-                            org.springframework.beans.factory.xml,
+                            org.springframework.web.context.support,
                             org.springframework.web.servlet.config,
                             org.springframework.web.servlet.mvc,
-                            org.springframework.web.servlet.view,
                             org.springframework.web.servlet.support,
-                            org.springframework.web.context.support,
+                            org.springframework.web.servlet.view,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-outbox-api,motech-outbox</Embed-Dependency>

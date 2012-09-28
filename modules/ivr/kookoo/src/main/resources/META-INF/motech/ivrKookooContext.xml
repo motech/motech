@@ -38,4 +38,7 @@
     <bean id="commonsHttpClient" class="org.apache.commons.httpclient.HttpClient">
         <constructor-arg ref="multiThreadedHttpConnectionManager"/>
     </bean>
+
+    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
+
 </beans>

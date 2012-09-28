@@ -23,4 +23,7 @@
         <constructor-arg value="admin"/>
         <constructor-arg value="admin"/>
     </bean>
+
+    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
+
 </beans>

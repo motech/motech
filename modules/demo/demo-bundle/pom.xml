@@ -34,6 +34,12 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-bundle</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- OSGI dependencies -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -170,7 +176,11 @@
                         </Bundle-Activator>
                         <Import-Package>
                             org.motechproject.decisiontree.core.model,
-                            org.motechproject.server.osgi.ui,
+                            org.motechproject.event.listener.annotations,
+                            org.motechproject.scheduler.gateway,
+                            org.motechproject.server.ui,
+                            org.motechproject.server.web,
+                            org.springframework.beans.factory.config,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.context.support,
@@ -178,7 +188,6 @@
                             org.springframework.web.servlet.config,
                             org.springframework.web.servlet.mvc,
                             org.springframework.web.servlet.view,
-                            org.motechproject.scheduler.gateway,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-demo</Embed-Dependency>

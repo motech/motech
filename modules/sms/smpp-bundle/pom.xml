@@ -101,11 +101,12 @@
                             !org.testng.annotations,
                             org.ektorp.impl,
                             org.ektorp.spring,
+                            org.motechproject.event,
+                            org.motechproject.event.listener.annotations,
+                            org.motechproject.server.config.service,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.osgi.config,
-                            org.motechproject.server.config.service,
-                            org.motechproject.event,
                             *
                         </Import-Package>
                         <Embed-Dependency>motech-sms-smpp</Embed-Dependency>

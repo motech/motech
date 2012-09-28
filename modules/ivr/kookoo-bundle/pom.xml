@@ -120,6 +120,8 @@
                             org.ektorp.spring,
                             org.motechproject.decisiontree.core,
                             org.motechproject.decisiontree.server.service,
+                            org.motechproject.event.listener,
+                            org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
                             org.springframework.beans.factory.xml,

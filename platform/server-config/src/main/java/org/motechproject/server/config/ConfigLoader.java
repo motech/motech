@@ -102,7 +102,7 @@ public class ConfigLoader {
             sb.append(config.getURI()).append("\n");
         }
 
-        FileUtils.write(configLocationsFile, sb.toString());
+        FileUtils.writeStringToFile(configLocationsFile, sb.toString());
     }
 
     public static ConfigFileSettings loadSettingsFromStream(InputStream is) throws IOException {

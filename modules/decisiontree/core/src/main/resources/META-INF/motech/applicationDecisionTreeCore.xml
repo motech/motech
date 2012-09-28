@@ -21,4 +21,7 @@
     <bean id="treeDao" class="org.motechproject.decisiontree.core.repository.AllTrees">
         <constructor-arg ref="treesDatabase"/>
     </bean>
+
+    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
+
 </beans>

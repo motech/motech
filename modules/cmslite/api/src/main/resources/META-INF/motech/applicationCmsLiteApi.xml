@@ -29,4 +29,7 @@
         <constructor-arg ref="allStreamContents"/>
         <constructor-arg ref="allStringContents"/>
     </bean>
+
+    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
+
 </beans>

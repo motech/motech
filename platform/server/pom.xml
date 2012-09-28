@@ -20,21 +20,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-ivr-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-scheduler</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-config</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
@@ -104,40 +89,28 @@
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
+            <artifactId>spring-webmvc</artifactId>
             <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.thoughtworks.xstream</groupId>
-            <artifactId>xstream</artifactId>
-            <version>1.4.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.integration</groupId>
-            <artifactId>spring-integration-jms</artifactId>
-            <version>${spring.integration.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.integration</groupId>
-                    <artifactId>spring-integration-core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.integration</groupId>
-            <artifactId>spring-integration-core</artifactId>
-            <version>2.1.0.RELEASE</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
             <version>1.4.5</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-vfs</groupId>
+            <artifactId>commons-vfs</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient-cache</artifactId>
+            <version>4.1.2</version>
         </dependency>
 
         <!-- OSGI dependencies -->
@@ -161,11 +134,6 @@
             <version>5.4.2</version>
             <scope>provided</scope>
             <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -488,16 +456,57 @@
             <groupId>com.google.collections</groupId>
             <artifactId>google-collections</artifactId>
             <version>1.0</version>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
             <version>2.8.1</version>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.objenesis</groupId>
             <artifactId>com.springsource.org.objenesis</artifactId>
             <version>1.2.0</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-jms</artifactId>
+            <version>${spring.integration.version}</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-core</artifactId>
+            <version>2.1.0.RELEASE</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>com.springsource.javax.validation</artifactId>
+            <version>1.0.0.GA</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.validator</artifactId>
+            <version>1.3.1</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.oro</groupId>
+            <artifactId>com.springsource.org.apache.oro</artifactId>
+            <version>2.0.8</version>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
 
         <!-- Converted dependencies -->
@@ -505,62 +514,86 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>org.motechproject.com.google.code.gson</artifactId>
             <version>1.7.1</version>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>org.motechproject.org.codehaus.jackson</artifactId>
             <version>1.9.7</version>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.googlecode.jsmpp</groupId>
             <artifactId>org.motechproject.com.googlecode.jsmpp</artifactId>
             <version>2.1.0</version>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>net.sf.kxml</groupId>
             <artifactId>org.motechproject.net.sf.kxml</artifactId>
             <version>2.3.0</version>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.googlecode.lambdaj</groupId>
             <artifactId>org.motechproject.com.googlecode.lambdaj</artifactId>
             <version>2.3.3</version>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>org.motechproject.org.quartz-scheduler</artifactId>
             <version>2.1.5</version>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.smslib</groupId>
             <artifactId>org.motechproject.org.smslib</artifactId>
             <version>3.5.1</version>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.bea.xml.stream</groupId>
             <artifactId>org.motechproject.com.bea.xml.stream</artifactId>
             <version>1.2.0</version>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>org.motechproject.com.thoughtworks.xstream</artifactId>
             <version>1.4.2</version>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.mchange.c3p0</groupId>
             <artifactId>com.springsource.com.mchange.v2.c3p0</artifactId>
             <version>0.9.1</version>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <!-- Dependencies for Xstream -->
         <dependency>
             <groupId>org.dom4j</groupId>
             <artifactId>com.springsource.org.dom4j</artifactId>
             <version>1.6.1</version>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>com.springsource.com.ctc.wstx</artifactId>
             <version>3.2.7</version>
+            <scope>provided</scope>
+            <optional>true</optional>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.xerces</groupId>
@@ -572,11 +605,15 @@
             <groupId>org.xmlpull</groupId>
             <artifactId>com.springsource.org.xmlpull</artifactId>
             <version>1.1.3.4-O</version>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>nu.xom</groupId>
             <artifactId>com.springsource.nu.xom</artifactId>
             <version>1.1.0</version>
+            <scope>provided</scope>
+            <optional>true</optional>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.xerces</groupId>
@@ -588,6 +625,17 @@
             <groupId>org.codehaus.jettison</groupId>
             <artifactId>com.springsource.org.codehaus.jettison</artifactId>
             <version>1.0.1</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- server bundle -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-bundle</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
     </dependencies>
     <build>
@@ -604,7 +652,7 @@
                         </goals>
                         <configuration>
                             <includeArtifactIds>
-                                org.apache.felix.http.bridge,org.apache.felix.webconsole,org.apache.felix.scr,org.apache.felix.shell
+                                org.apache.felix.http.bridge,org.apache.felix.webconsole,org.apache.felix.scr,org.apache.felix.shell,motech-platform-server-bundle
                             </includeArtifactIds>
                             <stripVersion>true</stripVersion>
                             <outputDirectory>
@@ -619,7 +667,7 @@
                         </goals>
                         <configuration>
                             <includeArtifactIds>
-                                activemq-core,asterisk-java,com.springsource.com.jcraft.jzlib,com.springsource.net.sf.cglib,com.springsource.org.antlr.runtime,com.springsource.org.aopalliance,com.springsource.org.apache.commons.beanutils,com.springsource.org.apache.commons.codec,com.springsource.org.apache.commons.collections,com.springsource.org.apache.commons.dbcp,com.springsource.org.apache.commons.digester,com.springsource.org.apache.commons.fileupload,com.springsource.org.apache.commons.httpclient,com.springsource.org.apache.commons.lang,com.springsource.org.apache.commons.logging,com.springsource.org.apache.commons.pool,com.springsource.org.apache.velocity,com.springsource.org.aspectj.runtime,com.springsource.org.aspectj.weaver,com.springsource.org.codehaus.commons.compiler,com.springsource.org.codehaus.janino,com.springsource.org.jdom,com.springsource.org.json,commons-io,drools-api,kahadb,org.osgi.compendium,org.springframework.aop,org.springframework.asm,org.springframework.aspects,org.springframework.beans,org.springframework.context,org.springframework.context.support,org.springframework.core,org.springframework.expression,org.springframework.jdbc,org.springframework.jms,org.springframework.orm,org.springframework.osgi.core,org.springframework.osgi.extender,org.springframework.osgi.io,org.springframework.osgi.web,org.springframework.security.core,org.springframework.transaction,org.springframework.web,org.springframework.web.servlet,spring-integration-core,spring-integration-jms,com.springsource.org.objenesis,com.springsource.org.xmlpull,com.springsource.org.codehaus.jettison,com.springsource.nu.xom,com.springsource.org.iso_relax.verifier,com.springsource.com.sun.msv.datatype,com.springsource.org.relaxng.datatype,com.springsource.com.sun.msv,com.springsource.com.ctc.wstx,com.springsource.org.dom4j,org.motechproject.com.google.code.gson,org.motechproject.org.codehaus.jackson,org.motechproject.com.googlecode.jsmpp,org.motechproject.com.googlecode.lambdaj,org.motechproject.org.quartz-scheduler,org.motechproject.org.smslib,org.motechproject.com.bea.xml.stream,org.motechproject.com.thoughtworks.xstream,org.motechproject.net.sf.kxml,com.springsource.com.mchange.v2.c3p0,com.springsource.org.apache.commons.io
+                                com.springsource.org.apache.oro,com.springsource.javax.validation,com.springsource.org.apache.commons.validator,activemq-core,asterisk-java,com.springsource.com.jcraft.jzlib,com.springsource.net.sf.cglib,com.springsource.org.antlr.runtime,com.springsource.org.aopalliance,com.springsource.org.apache.commons.beanutils,com.springsource.org.apache.commons.codec,com.springsource.org.apache.commons.collections,com.springsource.org.apache.commons.dbcp,com.springsource.org.apache.commons.digester,com.springsource.org.apache.commons.fileupload,com.springsource.org.apache.commons.httpclient,com.springsource.org.apache.commons.lang,com.springsource.org.apache.commons.logging,com.springsource.org.apache.commons.pool,com.springsource.org.apache.velocity,com.springsource.org.aspectj.runtime,com.springsource.org.aspectj.weaver,com.springsource.org.codehaus.commons.compiler,com.springsource.org.codehaus.janino,com.springsource.org.jdom,com.springsource.org.json,drools-api,kahadb,org.osgi.compendium,org.springframework.aop,org.springframework.asm,org.springframework.aspects,org.springframework.beans,org.springframework.context,org.springframework.context.support,org.springframework.core,org.springframework.expression,org.springframework.jdbc,org.springframework.jms,org.springframework.orm,org.springframework.osgi.core,org.springframework.osgi.extender,org.springframework.osgi.io,org.springframework.osgi.web,org.springframework.security.core,org.springframework.transaction,org.springframework.web,org.springframework.web.servlet,spring-integration-core,spring-integration-jms,com.springsource.org.objenesis,com.springsource.org.xmlpull,com.springsource.org.codehaus.jettison,com.springsource.nu.xom,com.springsource.org.iso_relax.verifier,com.springsource.com.sun.msv.datatype,com.springsource.org.relaxng.datatype,com.springsource.com.sun.msv,com.springsource.com.ctc.wstx,com.springsource.org.dom4j,org.motechproject.com.google.code.gson,org.motechproject.org.codehaus.jackson,org.motechproject.com.googlecode.jsmpp,org.motechproject.com.googlecode.lambdaj,org.motechproject.org.quartz-scheduler,org.motechproject.org.smslib,org.motechproject.com.bea.xml.stream,org.motechproject.com.thoughtworks.xstream,org.motechproject.net.sf.kxml,com.springsource.com.mchange.v2.c3p0,com.springsource.org.apache.commons.io
                             </includeArtifactIds>
                             <overWriteIfNewer>true</overWriteIfNewer>
                             <outputDirectory>

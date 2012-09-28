@@ -100,6 +100,7 @@
                             org.ektorp.spring,
                             org.ektorp.support,
                             org.motechproject.event,
+                            org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,
                             org.motechproject.server.config.service,
                             org.springframework.beans.factory.xml,

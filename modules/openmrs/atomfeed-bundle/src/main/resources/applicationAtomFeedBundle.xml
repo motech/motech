@@ -14,13 +14,10 @@
 
     <osgi:reference id="eventRelayOsgi" cardinality="1..1" interface="org.motechproject.event.listener.EventRelay" />
 
-    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor" />
-
-    <osgi:reference id="eventRegistrationOsgi" cardinality="0..1"
-        interface="org.motechproject.event.listener.EventListenerRegistryService" />
-
     <osgi:reference id="platformSettingsServiceOsgi" cardinality="0..1"
         interface="org.motechproject.server.config.service.PlatformSettingsService" />
+
+    <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
     <bean id="atomFeedCouchDbConnector" factory-bean="platformSettingsServiceOsgi" factory-method="getCouchConnector">
         <constructor-arg value="motech-openmrs-atomfeed" />

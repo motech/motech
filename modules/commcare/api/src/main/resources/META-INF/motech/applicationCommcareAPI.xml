@@ -18,4 +18,6 @@
         <constructor-arg ref="multiThreadedHttpConnectionManager" />
     </bean>
 
+    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
+
 </beans>

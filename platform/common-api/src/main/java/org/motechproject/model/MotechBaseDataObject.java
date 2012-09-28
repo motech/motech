@@ -5,7 +5,7 @@ import org.ektorp.support.CouchDbDocument;
 
 public abstract class MotechBaseDataObject extends CouchDbDocument {
     @JsonProperty
-    private String type;
+    protected String type;
 
     protected MotechBaseDataObject() {
         this.type = this.getClass().getSimpleName();
@@ -13,6 +13,10 @@ public abstract class MotechBaseDataObject extends CouchDbDocument {
 
     protected MotechBaseDataObject(String type) {
         this.type = type;
+    }
+
+    public String getType() {
+        return type;
     }
 
     protected void setType(String type) {

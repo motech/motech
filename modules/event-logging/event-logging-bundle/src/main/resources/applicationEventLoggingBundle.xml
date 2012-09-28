@@ -9,9 +9,8 @@
     <osgi:service id="eventLoggingServiceManager" auto-export="interfaces" ref="eventLoggingServiceManagerImpl"
                   interface="org.motechproject.eventlogging.service.EventLoggingServiceManager"/>
 
-    <osgi:reference id="eventListenerRegistryService" cardinality="0..1"
-                    interface="org.motechproject.event.listener.EventListenerRegistryService"/>
-
     <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService" />
+
+    <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
 
 </beans>

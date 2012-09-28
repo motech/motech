@@ -11,4 +11,7 @@
                     interface="org.motechproject.event.listener.EventRelay" />
 
     <osgi:reference id="platformSettingsServiceOsgi" interface="org.motechproject.server.config.service.PlatformSettingsService" />
+
+    <osgi:reference id="eventListenerRegistryServiceOsgi" interface="org.motechproject.event.listener.EventListenerRegistryService"/>
+
 </beans>

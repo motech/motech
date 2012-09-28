@@ -15,4 +15,6 @@
 
     <bean id="motechJsonReader" class="org.motechproject.dao.MotechJsonReader"/>
 
+    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
+
 </beans>

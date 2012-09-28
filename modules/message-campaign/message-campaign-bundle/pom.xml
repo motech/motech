@@ -25,7 +25,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-server-api</artifactId>
+            <artifactId>motech-platform-event</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!-- OSGI dependencies -->
@@ -93,7 +93,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.0.1</version>
+            <version>1.4</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.osgi</groupId>
@@ -122,7 +122,9 @@
                             org.ektorp.impl,
                             org.ektorp.spring,
                             org.motechproject.event,
+                            org.motechproject.event.listener.annotations,
                             org.motechproject.server.config,
+                            org.motechproject.server.config.service,
                             org.quartz.simpl,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,

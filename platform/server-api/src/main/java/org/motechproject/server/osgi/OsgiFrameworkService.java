@@ -1,18 +1,11 @@
 package org.motechproject.server.osgi;
 
 import org.apache.commons.lang.StringUtils;
-import org.motechproject.event.listener.EventListenerRegistryService;
-import org.motechproject.event.listener.EventRelay;
-import org.motechproject.server.config.service.PlatformSettingsService;
-import org.motechproject.server.osgi.ui.UIFrameworkService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.launch.Framework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.aop.framework.Advised;
-import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -44,18 +37,6 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     @Autowired
     private Framework osgiFramework;
 
-    @Autowired
-    private PlatformSettingsService platformSettingsService;
-
-    @Autowired
-    private EventListenerRegistryService eventListenerRegistryService;
-
-    @Autowired
-    private UIFrameworkService uiFrameworkService;
-
-    @Autowired
-    private EventRelay eventRelay;
-
     private List<BundleLoader> bundleLoaders;
 
     private List<Bundle> bundles = new ArrayList<>();
@@ -86,15 +67,23 @@ public class OsgiFrameworkService implements ApplicationContextAware {
                 bundles.add(bundle);
             }
 
+            Bundle server = null;
+
             for (Bundle bundle : bundles) {
                 String bundleSymbolicName = bundle.getSymbolicName();
 
                 if (!bundleSymbolicName.startsWith("org.motechproject.motech-")) {
                     startBundle(bundle);
                 }
+
+                if (bundleSymbolicName.equalsIgnoreCase("org.motechproject.motech-platform-server-bundle")) {
+                    server = bundle;
+                }
             }
 
-            registerPlatformServices(bundleContext);
+            if (server != null) {
+                startBundle(server);
+            }
 
             osgiFramework.start();
             logger.info("OSGi framework started");
@@ -111,24 +100,12 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         for (Bundle bundle : bundles) {
             String bundleSymbolicName = bundle.getSymbolicName();
 
-            if (bundleSymbolicName.startsWith("org.motechproject.motech-")) {
+            if (bundleSymbolicName.startsWith("org.motechproject.motech-") && !bundleSymbolicName.contains("-platform-")) {
                 try {
                     startBundle(bundle);
                 } catch (Exception e) {
                     logger.error("Failed to start Bundles", e);
                 }
-            }
-        }
-    }
-
-    public void stopExternalBundles() {
-        for (Bundle bundle : bundles) {
-            try {
-                if (bundle.getLocation().startsWith("file:")) {
-                    bundle.stop();
-                }
-            } catch (BundleException e) {
-                logger.error(String.format("Failed to stop %s bundle", bundle.getSymbolicName()), e);
             }
         }
     }
@@ -205,18 +182,6 @@ public class OsgiFrameworkService implements ApplicationContextAware {
         }
 
         bundle.start();
-    }
-
-    private void registerPlatformServices(BundleContext bundleContext) throws Exception {
-        bundleContext.registerService(EventRelay.class.getName(), eventRelay, null);
-        bundleContext.registerService(EventListenerRegistryService.class.getName(), eventListenerRegistryService, null);
-        bundleContext.registerService(UIFrameworkService.class.getName(), uiFrameworkService, null);
-
-        if (AopUtils.isJdkDynamicProxy(platformSettingsService)) {
-            bundleContext.registerService(PlatformSettingsService.class.getName(), ((Advised) platformSettingsService).getTargetSource().getTarget(), null);
-        } else {
-            bundleContext.registerService(PlatformSettingsService.class.getName(), platformSettingsService, null);
-        }
     }
 
     private void storeClassCloader(Bundle bundle) throws Exception {

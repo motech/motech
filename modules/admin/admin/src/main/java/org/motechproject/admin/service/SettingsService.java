@@ -20,7 +20,7 @@ public interface SettingsService {
 
     void saveSettingsFile(MultipartFile configFile);
 
-    void addSettingsPath(String path);
+    void addSettingsPath(String path) throws Exception;
 
     List<String> retrieveRegisteredBundleNames();
 

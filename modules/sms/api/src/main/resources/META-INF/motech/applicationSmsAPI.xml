@@ -13,4 +13,6 @@
     <context:component-scan base-package="org.motechproject.sms.api"/>
 
     <bean id="smsService" class="org.motechproject.sms.api.service.SmsServiceImpl"/>
+
+    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
 </beans>

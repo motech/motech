@@ -22,7 +22,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>motech-platform-ivr-api</artifactId>
+            <artifactId>motech-ivr-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-config</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

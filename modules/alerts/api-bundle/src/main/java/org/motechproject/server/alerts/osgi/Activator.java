@@ -1,6 +1,5 @@
 package org.motechproject.server.alerts.osgi;
 
-import org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -8,7 +7,6 @@ import org.osgi.service.http.HttpService;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -74,9 +72,6 @@ public class Activator implements BundleActivator {
             } finally {
                 Thread.currentThread().setContextClassLoader(old);
             }
-
-            // register all annotated handlers
-            EventAnnotationBeanPostProcessor.registerHandlers(BeanFactoryUtils.beansOfTypeIncludingAncestors(dispatcherServlet.getWebApplicationContext(), Object.class));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

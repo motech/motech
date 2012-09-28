@@ -4,7 +4,6 @@ import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.impl.StdCouchDbInstance;
 import org.ektorp.spring.HttpClientFactoryBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -14,9 +13,7 @@ import java.util.Properties;
 @Component
 public class CouchDbManager {
 
-    @Autowired
-    private HttpClientFactoryBean httpClientFactoryBean;
-
+    private HttpClientFactoryBean httpClientFactoryBean = new HttpClientFactoryBean();
     private CouchDbInstance couchDbInstance;
     private Map<String, CouchDbConnector> couchDbConnectors = new HashMap<>();
 
@@ -50,6 +47,7 @@ public class CouchDbManager {
 
         try {
             httpClientFactoryBean.afterPropertiesSet();
+            couchDbConnectors.clear();
             couchDbInstance = new StdCouchDbInstance(httpClientFactoryBean.getObject());
         } catch (Exception e) {
             throw new DbConnectionException("Failed to connect to DB", e);

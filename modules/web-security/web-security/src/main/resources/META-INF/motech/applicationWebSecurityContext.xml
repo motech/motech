@@ -16,6 +16,8 @@
         <constructor-arg value="couchdb.properties"/>
     </bean>
 
+    <bean class="org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor"/>
+
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.security"/>
 </beans>

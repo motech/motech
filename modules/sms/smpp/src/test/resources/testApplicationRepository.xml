@@ -6,8 +6,8 @@
 
     <import resource="classpath*:/META-INF/motech/*.xml"/>
 
-    <bean id="smppDBConnector" class="org.ektorp.impl.StdCouchDbConnector">
+    <bean id="smppDBConnector" factory-bean="smsSmppSettings" factory-method="getConnector">
         <constructor-arg value="motech-sms-audit-test"/>
-        <constructor-arg ref="couchDbInstance"/>
+        <constructor-arg value="couchdb.properties"/>
     </bean>
 </beans>
