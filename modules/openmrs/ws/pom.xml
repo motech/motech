@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>motech</artifactId>
         <groupId>org.motechproject</groupId>
@@ -63,4 +64,118 @@
             <version>2.6</version>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>IT</id>
+            <build>
+                <plugins>
+                    <!-- Temporarily disabling IT until they can run successfully on build server -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/*IT.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>properties-maven-plugin</artifactId>
+                        <version>1.0-alpha-2</version>
+                        <executions>
+                            <execution>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>read-project-properties</goal>
+                                </goals>
+                                <configuration>
+                                    <files>
+                                        <file>${modules.root.dir}/maven.properties</file>
+                                    </files>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>sql-maven-plugin</artifactId>
+                        <version>1.5</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>mysql</groupId>
+                                <artifactId>mysql-connector-java</artifactId>
+                                <version>5.1.13</version>
+                            </dependency>
+                        </dependencies>
+
+                        <configuration>
+                            <driver>com.mysql.jdbc.Driver</driver>
+                            <username>${mysql.user}</username>
+                            <password>${mysql.password}</password>
+                            <url>jdbc:mysql://localhost:3306</url>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>drop-db</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>execute</goal>
+                                </goals>
+                                <configuration>
+                                    <autocommit>true</autocommit>
+                                    <sqlCommand>
+                                        DROP DATABASE IF EXISTS openmrs;
+                                        DROP DATABASE IF EXISTS openmrs190;
+                                    </sqlCommand>
+                                    <onError>continue</onError>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>create-db-18</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>execute</goal>
+                                </goals>
+                                <configuration>
+                                    <autocommit>true</autocommit>
+                                    <sqlCommand>
+                                        CREATE DATABASE openmrs DEFAULT CHARSET utf8;
+                                        GRANT ALL ON openmrs.* TO 'openmrs'@'localhost' IDENTIFIED BY 'password';
+                                        FLUSH PRIVILEGES;
+                                        USE openmrs;
+                                    </sqlCommand>
+                                    <srcFiles>
+                                        <srcFile>${modules.root.dir}/sql/openmrs_ws-1.8.3-schema.sql</srcFile>
+                                        <srcFile>${modules.root.dir}/sql/openmrs_ws-1.8.3-test_data.sql</srcFile>
+                                    </srcFiles>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>create-db-19</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>execute</goal>
+                                </goals>
+                                <configuration>
+                                    <autocommit>true</autocommit>
+                                    <sqlCommand>
+                                        CREATE DATABASE openmrs190 DEFAULT CHARSET utf8;
+                                        GRANT ALL ON openmrs190.* TO 'openmrs'@'localhost' IDENTIFIED BY 'password';
+                                        FLUSH PRIVILEGES;
+                                        USE openmrs190;
+                                    </sqlCommand>
+                                    <srcFiles>
+                                        <srcFile>${modules.root.dir}/sql/openmrs_ws-1.9.0-schema.sql</srcFile>
+                                        <srcFile>${modules.root.dir}/sql/openmrs_ws-1.9.0-test_data.sql</srcFile>
+                                    </srcFiles>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
