@@ -2,14 +2,6 @@
 
 /* Controllers */
 
-function MasterCtrl($scope, i18nService) {
-
-    $scope.msg = function (key) {
-        return i18nService.getMessage(key);
-    };
-
-}
-
 function TreeListCtrl($scope, Tree, $http) {
 
     $scope.trees = Tree.query();
@@ -20,6 +12,7 @@ function TreeListCtrl($scope, Tree, $http) {
                 tree.$remove(function () {
                     // remove tree from list
                     $scope.trees.removeObject(tree);
+                    $scope.trees.removeObject(tree);
                 }, function () {
                     motechAlert('trees.list.remove.error', 'main.error');
                 });
@@ -29,14 +22,13 @@ function TreeListCtrl($scope, Tree, $http) {
 
     $scope.createExample = function () {
         blockUI();
-        $http.post('api/tree/example').
+        $http.post('module/demo/api/tree/example').
             success(function () {
                 $scope.trees = Tree.query();
                 unblockUI();
                 motechAlert('trees.create.tree.saved', 'main.saved');
             }).error(alertHandler('trees.create.tree.error', 'main.error'));
     };
-
 }
 
 function TreeCreateCtrl($scope, $http) {
@@ -136,7 +128,7 @@ function TreeCreateCtrl($scope, $http) {
             }
         }
 
-        $http.post('api/trees/cycle', $scope.tree).
+        $http.post('module/demo/api/trees/cycle', $scope.tree).
             success(function (data) {
                 $scope.acyclic = data === "false";
                 $scope.checked = true;
@@ -248,7 +240,7 @@ function TreeCreateCtrl($scope, $http) {
         }
 
         blockUI();
-        $http.post('api/trees/create', $scope.tree).
+        $http.post('module/demo/api/trees/create', $scope.tree).
             success(function () {
                 var loc = new String(window.location), indexOf = loc.indexOf('#');
 
@@ -331,21 +323,21 @@ function TreeExecuteCtrl($scope, Tree, $routeParams) {
 
 function IVRCallCtrl($scope, i18nService, $http) {
 
-    $http.get('api/ivrservices').success(function(data) {
+    $http.get('module/demo/api/ivrservices').success(function(data) {
         $scope.ivrservices = data;
         $scope.curservice = $scope.ivrservices[0];
     });
 
     $scope.call = function() {
-        $http.get('api/changeservice?id=' + $scope.curservice.index);
+        $http.get('module/demo/api/changeservice?id=' + $scope.curservice.index);
 
         if ($scope.delay == '0' || $scope.delay == null) {
-            $http.get('api/initiateCall?phone=' + $scope.phone).success(function() {
+            $http.get('module/demo/api/initiateCall?phone=' + $scope.phone).success(function() {
                 alert("making a call now to " + $scope.phone);
             });
         }
         else {
-            $http.get('api/scheduleCall?phone=' + $scope.phone + '&callDelay=' + $scope.delay).success(function() {
+            $http.get('module/demo/api/scheduleCall?phone=' + $scope.phone + '&callDelay=' + $scope.delay).success(function() {
 
                 var oldDate = new Date();
                 var newDate = new Date(oldDate.getTime() + $scope.delay*60000);

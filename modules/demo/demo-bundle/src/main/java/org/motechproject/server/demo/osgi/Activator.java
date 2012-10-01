@@ -1,6 +1,9 @@
 package org.motechproject.server.demo.osgi;
 
+import org.apache.commons.io.IOUtils;
 import org.motechproject.event.listener.annotations.EventAnnotationBeanPostProcessor;
+import org.motechproject.server.osgi.ui.ModuleRegistrationData;
+import org.motechproject.server.osgi.ui.UIFrameworkService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -12,13 +15,21 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+
 public class Activator implements BundleActivator {
     private static Logger logger = LoggerFactory.getLogger(Activator.class);
+
     private static final String CONTEXT_CONFIG_LOCATION = "applicationDemoBundle.xml";
     private static final String SERVLET_URL_MAPPING = "/demo/api";
     private static final String RESOURCE_URL_MAPPING = "/demo";
-    private ServiceTracker tracker;
-    private ServiceReference httpService;
+
+    private static final String MODULE_NAME = "demo";
+
+    private ServiceTracker httpServiceTracker;
+    private ServiceTracker uiServiceTracker;
 
     private static BundleContext bundleContext;
 
@@ -26,7 +37,7 @@ public class Activator implements BundleActivator {
     public void start(BundleContext context) throws Exception {
         bundleContext = context;
 
-        this.tracker = new ServiceTracker(context,
+        this.httpServiceTracker = new ServiceTracker(context,
                 HttpService.class.getName(), null) {
 
             @Override
@@ -42,15 +53,30 @@ public class Activator implements BundleActivator {
                 super.removedService(ref, service);
             }
         };
-        this.tracker.open();
+        this.httpServiceTracker.open();
+
+        this.uiServiceTracker = new ServiceTracker(context,
+                UIFrameworkService.class.getName(), null) {
+
+            @Override
+            public Object addingService(ServiceReference ref) {
+                Object service = super.addingService(ref);
+                serviceAdded((UIFrameworkService) service);
+                return service;
+            }
+
+            @Override
+            public void removedService(ServiceReference ref, Object service) {
+                serviceRemoved((UIFrameworkService) service);
+                super.removedService(ref, service);
+            }
+        };
+        this.uiServiceTracker.open();
     }
 
     public void stop(BundleContext context) throws Exception {
-        this.tracker.close();
-        if (httpService != null) {
-            HttpService service = (HttpService) context.getService(httpService);
-            serviceRemoved(service);
-        }
+        this.httpServiceTracker.close();
+        this.uiServiceTracker.close();
     }
 
     public static class DemoApplicationContext extends OsgiBundleXmlWebApplicationContext {
@@ -91,5 +117,35 @@ public class Activator implements BundleActivator {
     private void serviceRemoved(HttpService service) {
         service.unregister(SERVLET_URL_MAPPING);
         logger.debug("Servlet unregistered");
+    }
+
+    private void serviceAdded(UIFrameworkService service) {
+        ModuleRegistrationData regData = new ModuleRegistrationData();
+        regData.setModuleName(MODULE_NAME);
+        regData.setUrl("module/demo/");
+        regData.addAngularModule("motech-demo");
+
+        InputStream is = null;
+        StringWriter writer = new StringWriter();
+        try {
+            is = this.getClass().getClassLoader().getResourceAsStream("header.html");
+            IOUtils.copy(is, writer);
+
+            regData.setHeader(writer.toString());
+        } catch (IOException e) {
+            logger.error("Cant read header.html", e);
+            throw new RuntimeException(e);
+        } finally {
+            IOUtils.closeQuietly(is);
+            IOUtils.closeQuietly(writer);
+        }
+
+        service.registerModule(regData);
+        logger.debug("Demo registered in UI framework");
+    }
+
+    private void serviceRemoved(UIFrameworkService service) {
+        service.unregisterModule(MODULE_NAME);
+        logger.debug("Demo unregistered from ui framework");
     }
 }

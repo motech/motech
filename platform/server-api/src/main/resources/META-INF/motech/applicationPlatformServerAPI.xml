@@ -10,6 +10,7 @@
     <context:annotation-config/>
     <context:component-scan base-package="org.motechproject.server.osgi"/>
     <context:component-scan base-package="org.motechproject.server.web"/>
+    <context:component-scan base-package="org.motechproject.server.ui"/>
 
     <util:properties id="osgiConfig" location="classpath:osgi.properties"/>
 

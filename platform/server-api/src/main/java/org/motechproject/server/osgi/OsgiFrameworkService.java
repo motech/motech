@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.server.config.service.PlatformSettingsService;
+import org.motechproject.server.osgi.ui.UIFrameworkService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -48,6 +49,9 @@ public class OsgiFrameworkService implements ApplicationContextAware {
 
     @Autowired
     private EventListenerRegistryService eventListenerRegistryService;
+
+    @Autowired
+    private UIFrameworkService uiFrameworkService;
 
     @Autowired
     private EventRelay eventRelay;
@@ -206,6 +210,7 @@ public class OsgiFrameworkService implements ApplicationContextAware {
     private void registerPlatformServices(BundleContext bundleContext) throws Exception {
         bundleContext.registerService(EventRelay.class.getName(), eventRelay, null);
         bundleContext.registerService(EventListenerRegistryService.class.getName(), eventListenerRegistryService, null);
+        bundleContext.registerService(UIFrameworkService.class.getName(), uiFrameworkService, null);
 
         if (AopUtils.isJdkDynamicProxy(platformSettingsService)) {
             bundleContext.registerService(PlatformSettingsService.class.getName(), ((Advised) platformSettingsService).getTargetSource().getTarget(), null);

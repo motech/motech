@@ -4,7 +4,7 @@
 /* Services */
 
 angular.module('TreeServices', ['ngResource']).factory('Tree', function ($resource) {
-    return $resource('api/trees/:treeId/:action', { treeId: '@id' }, {
+    return $resource('module/demo/api/trees/:treeId/:action', { treeId: '@id' }, {
         remove: { method: 'POST', params: { action: 'remove' } }
     });
 });

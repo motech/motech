@@ -170,6 +170,7 @@
                         </Bundle-Activator>
                         <Import-Package>
                             org.motechproject.decisiontree.core.model,
+                            org.motechproject.server.osgi.ui,
                             org.springframework.beans.factory.xml,
                             org.springframework.context.config,
                             org.springframework.context.support,

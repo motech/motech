@@ -1,41 +1,35 @@
 
 <div>
-    <div class="top1">
-        <ul class="breadcrumb">
-            <li><a href="#/welcome">{{msg('home')}}</a> <span class="divider">/</span></li>
-            <li class="active">{{msg('ivr')}}</li>
-        </ul>
-    </div>
     <div>
-            <form class="form-horizontal box-content span6">
-                <div class="box-header">
-                    {{msg('ivr')}}
-                </div>
-                <div class="control-group">
-                    <label class="control-label" for="ivrSelect">{{msg('ivr')}}</label>
-                    <div class="controls">
-                        <select id="ivrSelect" ng-model="curservice" ng-options="service.name for service in ivrservices">
-                        </select>
-                    </div>
-                </div>
-
-                <div class="control-group">
-                    <label class="control-label" for="phoneNumber">{{msg('ivr.phone.number')}}</label>
-                    <div class="controls">
-                        <input type="text" ng-model="phone" id="phoneNumber">
-                    </div>
-                </div>
-
-                <div class="control-group">
-                    <label class="control-label" for="delay">{{msg('ivr.delay')}}</label>
-                    <div class="controls">
-                        <input type="text" ng-model="delay" id="delay" placeholder="0">
-                    </div>
-                </div>
-
+        <form class="form-horizontal box-content span6">
+            <div class="box-header">
+                {{msg('ivr')}}
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="ivrSelect">{{msg('ivr')}}</label>
                 <div class="controls">
-                    <input class="btn btn-primary" type="submit" value="{{msg('ivr.call')}}" ng-click="call()"/>
+                    <select id="ivrSelect" ng-model="curservice" ng-options="service.name for service in ivrservices">
+                    </select>
                 </div>
-            </form>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="phoneNumber">{{msg('ivr.phone.number')}}</label>
+                <div class="controls">
+                    <input type="text" ng-model="phone" id="phoneNumber">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="delay">{{msg('ivr.delay')}}</label>
+                <div class="controls">
+                    <input type="text" ng-model="delay" id="delay" placeholder="0">
+                </div>
+            </div>
+
+            <div class="controls">
+                <input class="btn btn-primary" type="submit" value="{{msg('ivr.call')}}" ng-click="call()"/>
+            </div>
+        </form>
     </div>
 </div>
