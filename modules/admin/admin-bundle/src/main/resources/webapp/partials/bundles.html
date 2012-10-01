@@ -66,25 +66,27 @@
             <div id="commandLinks" ng-show="bundleStable(bundle)">
                 <span ng-hide="bundle.isActive()">
                     <a ng-click="startBundle(bundle)">
-                        <img src="img/start.png" onMouseOver="this.src='img/starth.png'" onMouseOut="src='img/start.png'" alt="{{msg('bundles.start')}}" class="action"/>
+                        <img src='img/trans.gif' alt="{{msg('bundles.start')}}" title="{{msg('bundles.start')}}"
+                            class="action action-start"/>
                     </a>
                 </span>
                 <span ng-show="bundle.isActive()">
                     <a ng-click="stopBundle(bundle)">
-                        <img src="img/stop.png" onMouseOver="this.src='img/stoph.png'" onMouseOut="src='img/stop.png'" alt="{{msg('bundles.stop')}}" title="{{msg('bundles.stop')}}"
-                             class="action" tool-tip/>
+                        <img src="img/trans.gif"  alt="{{msg('bundles.stop')}}" title="{{msg('bundles.stop')}}"
+                            class="action action-stop"/>
                     </a>
                     <a ng-click="restartBundle(bundle)">
-                        <img src="img/restart.png" onMouseOver="this.src='img/restarth.png'" onMouseOut="src='img/restart.png'" alt="{{msg('bundles.restart')}}" title="{{msg('bundles.restart')}}"
-                             class="action"/>
+                        <img src="img/trans.gif" alt="{{msg('bundles.restart')}}" title="{{msg('bundles.restart')}}"
+                            class="action action-restart"/>
                     </a>
                 </span>
                 <a ng-show="showSettings(bundle)" ng-href="#/bundleSettings/{{bundle.bundleId}}">
-                    <img src="img/settings.png" onMouseOver="this.src='img/settingsh.png'" onMouseOut="src='img/settings.png'" alt="{{msg('settings')}}" title="{{msg('settings')}}" class="action"/>
+                    <img src="img/trans.gif" alt="{{msg('settings')}}" title="{{msg('settings')}}"
+                         class="action action-settings"/>
                 </a>
                 <a ng-click="uninstallBundle(bundle)">
-                    <img src="img/remove.png" onMouseOver="this.src='img/removeh.png'" onMouseOut="src='img/remove.png'" alt="{{msg('bundles.uninstall')}}"
-                         title="{{msg('bundles.uninstall')}}" class="action"/>
+                    <img src="img/trans.gif" alt="{{msg('bundles.uninstall')}}" title="{{msg('bundles.uninstall')}}"
+                         class="action action-remove"/>
                 </a>
             </div>
             <div class="loader.wrapper" ng-hide="bundleStable(bundle)">

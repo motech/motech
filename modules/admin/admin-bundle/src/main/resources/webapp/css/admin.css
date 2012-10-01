@@ -53,6 +53,38 @@
 .action {
     width: 31px;
     height: 25px;
+    background:url("../img/action-btn-sprite.png") no-repeat;
+}
+
+.action-start {
+    background-position: 0 0;
+}
+.action-start:hover {
+    background-position: 0 -25px;
+}
+.action-stop {
+    background-position: -31px 0;
+}
+.action-stop:hover {
+    background-position: -31px -25px;
+}
+.action-restart {
+    background-position: -124px 0;
+}
+.action-restart:hover {
+    background-position: -124px -25px;
+}
+.action-settings {
+    background-position: -217px 0;
+}
+.action-settings:hover {
+    background-position: -217px -25px;
+}
+.action-remove {
+    background-position: -93px 0;
+}
+.action-remove:hover {
+    background-position: -93px -25px;
 }
 
 /* ----- table ----- */

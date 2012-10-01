@@ -141,7 +141,7 @@ div#phone {
     float:left;
     margin:5px 5px 10px 50px;
     padding:0;
-    background: url("../img/phone_1.png") no-repeat;
+    background: url("../img/phone.png") no-repeat;
     height:400px;
     width:195px;
 }
@@ -206,12 +206,13 @@ div#keyboard span.hidden-value {
     display:none;
 }
 .button_size1 {
-    width:39px;
+    width:38px;
     height:27px;
 }
 .button_size2 {
-    width:47px;
+    width:46px;
     height:27px;
+    background:url("../img/phone-btn-sprite.png") no-repeat;
 }
 div#a1 {
     width:122px;
@@ -222,28 +223,28 @@ div#a1 {
     visibility:hidden;
 }
 div#b01 {
-    margin:4px 0 7px 0;
+    margin:5px 0 7px 0;
 }
 div#b01 div{
-    background:url("../img/tr_1.png") no-repeat;
+    background:url("../img/phone-btn-sprite.png") no-repeat -628px 0;
 }
 div#b01 div:hover{
-    background:url("../img/tr_2.png") no-repeat;
+    background:url("../img/phone-btn-sprite.png") no-repeat -628px -30px;
 }
 div#b01 div:active{
-    background:url("../img/tr_3.png") no-repeat;
+    background:url("../img/phone-btn-sprite.png") no-repeat -628px -59px;
 }
 div#ba {
-    margin:0 0 11px 0;
+    margin:1 0 11px 0;
 }
 div#ba div{
-    background:url("../img/tlp_1.png") no-repeat;
+    background:url("../img/phone-btn-sprite.png") no-repeat -590px 0;
 }
 div#ba div:hover{
-    background:url("../img/tlp_2.png") no-repeat;
+    background:url("../img/phone-btn-sprite.png") no-repeat -590px -29px;
 }
 div#ba div:active{
-    background:url("../img/tlp_3.png") no-repeat;
+    background:url("../img/phone-btn-sprite.png") no-repeat -590px -58px;
 }
 div#a2 {
     width:122px;
@@ -256,109 +257,109 @@ div#b1 {
     margin:0 0 2px 0;
 }
 div#b1 div{
-    background:url("../img/t1_1.png") no-repeat;
+    background-position: 0 0;
 }
 div#b1 div:hover{
-    background:url("../img/t1_2.png") no-repeat;
+    background-position: 0 -29px;
 }
 div#b1 div:active{
-    background:url("../img/t1_3.png") no-repeat;
+    background-position: 0 -58px;
 }
 div#b2 {
-    margin:0 0 2px 10px;
+    margin:0 0 2px 11px;
 }
 div#b2 div{
-    background:url("../img/t2_1.png") no-repeat;
+   background-position: -46px 0;
 }
 div#b2 div:hover{
-    background:url("../img/t2_2.png") no-repeat;
+    background-position: -46px -29px;
 }
 div#b2 div:active{
-    background:url("../img/t2_3.png") no-repeat;
+    background-position: -46px -58px;
 }
 div#b3 {
-    margin:0 0 2px 10px;
+    margin:0 0 2px 11px;
 }
 div#b3 div{
-    background:url("../img/t3_1.png") no-repeat;
+    background-position: -92px 0;
 }
 div#b3 div:hover{
-    background:url("../img/t3_2.png") no-repeat;
+    background-position: -92px -29px;
 }
 div#b3 div:active{
-    background:url("../img/t3_3.png") no-repeat;
+    background-position: -92px -58px;
 }
 div#b4 {
-    margin:0 0 3px 0;
-}
-div#b4 div{
-    background:url("../img/t4_1.png") no-repeat;
-}
-div#b4 div:hover{
-    background:url("../img/t4_2.png") no-repeat;
-}
-div#b4 div:active{
-    background:url("../img/t4_3.png") no-repeat;
-}
-div#b5 {
-    margin: 0 0 3px 10px;
-}
-div#b5 div{
-    background:url("../img/t5_1.png") no-repeat;
-}
-div#b5 div:hover{
-    background:url("../img/t5_2.png") no-repeat;
-}
-div#b5 div:active{
-    background:url("../img/t5_3.png") no-repeat;
-}
-div#b6 {
-    margin:0 0 3px 10px;
-}
-div#b6 div{
-    background:url("../img/t6_1.png") no-repeat;
-}
-div#b6 div:hover{
-    background:url("../img/t6_2.png") no-repeat;
-}
-div#b6 div:active{
-    background:url("../img/t6_3.png") no-repeat;
-}
-div#b7 {
     margin:0 0 2px 0;
 }
+div#b4 div{
+    background-position: -138px 0;
+}
+div#b4 div:hover{
+    background-position: -138px -29px;
+}
+div#b4 div:active{
+    background-position: -138px -58px;
+}
+div#b5 {
+    margin: 0 0 2px 11px;
+}
+div#b5 div{
+    background-position: -184px 0;
+}
+div#b5 div:hover{
+    background-position: -184px -29px;
+}
+div#b5 div:active{
+    background-position: -184px -58px;
+}
+div#b6 {
+    margin:0 0 2px 11px;
+}
+div#b6 div{
+    background-position: -230px 0;
+}
+div#b6 div:hover{
+    background-position: -230px -29px;
+}
+div#b6 div:active{
+    background-position: -230px -58px;
+}
+div#b7 {
+    margin:0 0 3px 0;
+}
 div#b7 div{
-    background:url("../img/t7_1.png") no-repeat;
+    background-position: -276px 0;
 }
 div#b7 div:hover{
-    background:url("../img/t7_2.png") no-repeat;
+    background-position: -276px -29px;
 }
 div#b7 div:active{
-    background:url("../img/t7_3.png") no-repeat;
+    background-position: -276px -58px;
 }
 div#b8 {
-    margin:0 0 2px 10px;
+    margin:0 0 3px 11px;
 }
 div#b8 div{
-    background:url("../img/t8_1.png") no-repeat;
+    background-position: -322px 0;
 }
 div#b8 div:hover{
-    background:url("../img/t8_2.png") no-repeat;
+    background-position: -322px -29px;
 }
 div#b8 div:active{
-    background:url("../img/t8_3.png") no-repeat;
+    background-position: -322px -58px;
 }
 div#b9 {
-    margin:0 0 2px 10px;
+    margin:0 0 3px 11px;
 }
 div#b9 div{
-    background:url("../img/t9_1.png") no-repeat;
+    background-position: -368px 0;
 }
 div#b9 div:hover{
-    background:url("../img/t9_2.png") no-repeat;
+    background-position: -368px -29px;
 }
 div#b9 div:active{
-    background:url("../img/t9_3.png") no-repeat;
+    background-position: -368px -58px;
 }
 div#b0 {
     margin:0 0 0 57px;
@@ -366,13 +367,13 @@ div#b0 {
 div#b0 div{
     margin:0;
     padding:0;
-    background:url("../img/t11_1.png") no-repeat;
+    background-position: -460px 0;
 }
 div#b0 div:hover{
-    background:url("../img/t11_2.png") no-repeat;
+    background-position: -460px -29px;
 }
 div#b0 div:active{
-    background:url("../img/t11_3.png") no-repeat;
+    background-position: -460px -58px;
 }
 
 .alert-scroll{
