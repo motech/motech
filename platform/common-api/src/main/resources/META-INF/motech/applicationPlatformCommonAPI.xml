@@ -7,9 +7,9 @@
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
-
     <context:component-scan base-package="org.motechproject.dao"/>
+
+    <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
 
     <bean id="httpClient" class="org.ektorp.spring.HttpClientFactoryBean">
         <property name="properties" ref="couchdbProperties"/>
