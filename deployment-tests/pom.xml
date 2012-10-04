@@ -93,6 +93,7 @@
                                         SET property_value='${user.home}/.motech/config/org.motechproject.motech-openmrs-api-bundle/openmrs-data/modules'
                                         WHERE property LIKE 'module_repository_folder';
                                     </sqlCommand>
+                                    <onError>continue</onError>
                                 </configuration>
                             </execution>
                             <!-- Back to old value for module_repository_folder entry -->
@@ -111,6 +112,7 @@
                                         SET property_value='modules'
                                         WHERE property LIKE 'module_repository_folder';
                                     </sqlCommand>
+                                    <onError>continue</onError>
                                 </configuration>
                             </execution>
                         </executions>
