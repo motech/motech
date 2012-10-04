@@ -9,10 +9,6 @@ localizationModule.factory("i18nService", function() {
     var service = {
         ready : false,
         loading : false,
-        languages : {
-            "en": "English",
-            "pl": "Polski"
-        },
         name : '',
         path : '',
 
@@ -46,12 +42,6 @@ localizationModule.factory("i18nService", function() {
             });
         },
 
-        getLanguage : function(locale) {
-            return {
-                key: locale.toString() || "en",
-                value: this.languages[locale.fullName()] || this.languages[locale.withoutVariant()] || this.languages[locale.language] || "English"
-            }
-        }
     }
 
     return service;

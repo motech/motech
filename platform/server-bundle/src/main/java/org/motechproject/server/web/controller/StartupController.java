@@ -6,11 +6,11 @@ import org.motechproject.server.config.settings.ConfigFileSettings;
 import org.motechproject.server.config.settings.MotechSettings;
 import org.motechproject.server.osgi.OsgiListener;
 import org.motechproject.server.startup.StartupManager;
+import org.motechproject.server.ui.LocaleSettings;
 import org.motechproject.server.web.form.StartupForm;
 import org.motechproject.server.web.form.StartupSuggestionsForm;
 import org.motechproject.server.web.validator.StartupFormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -21,23 +21,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Properties;
 
 
 @Controller
 public class StartupController {
-    private static final String COUCH_DB_URL = "http://localhost:5984";
-    private static final String ACTIVE_MQ_URL = "tcp://localhost:61616";
-    private static final String SCHEDULER_URL = "";
-
     private static final String START_PARAM = "START";
 
     private static final String ADMIN_SYMBOLIC_NAME = "org.motechproject.motech-admin-bundle";
@@ -48,7 +41,7 @@ public class StartupController {
     private PlatformSettingsService platformSettingsService;
 
     @Autowired
-    private MessageSource messageSource;
+    private LocaleSettings localeSettings;
 
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
@@ -62,14 +55,13 @@ public class StartupController {
         if (startupManager.canLaunchBundles()) {
             view.setViewName("redirect:home");
         } else {
-            Locale locale = RequestContextUtils.getLocale(request);
 
             StartupForm startupSettings = new StartupForm();
-            startupSettings.setLanguage(locale.getLanguage());
+            startupSettings.setLanguage(localeSettings.getUserLanguage(request));
 
             view.addObject("suggestions", createSuggestions());
             view.addObject("startupSettings", startupSettings);
-            view.addObject("languages", getLanguages());
+            view.addObject("languages", localeSettings.getAvailableLanguages().keySet());
         }
 
         return view;
@@ -83,8 +75,8 @@ public class StartupController {
 
         if (result.hasErrors()) {
             view.addObject("suggestions", createSuggestions());
-            view.addObject("languages", getLanguages());
-            view.addObject("errors", getErrors(result, form.getLanguage()));
+            view.addObject("languages", localeSettings.getAvailableLanguages().keySet());
+            view.addObject("errors", getErrors(result));
 
             view.setViewName("startup");
         } else {
@@ -102,8 +94,7 @@ public class StartupController {
                 if (StringUtils.isNotBlank(start)) {
                     OsgiListener.getOsgiService().startMotechBundles();
                 } else {
-                    if (OsgiListener.getOsgiService().startBundle(ADMIN_SYMBOLIC_NAME)) {
-                    }
+                    OsgiListener.getOsgiService().startBundle(ADMIN_SYMBOLIC_NAME);
                 }
             }
         }
@@ -111,13 +102,12 @@ public class StartupController {
         return view;
     }
 
-    private List<String> getErrors(final BindingResult result, final String lang) {
+    private List<String> getErrors(final BindingResult result) {
         List<ObjectError> allErrors = result.getAllErrors();
         List<String> errors = new ArrayList<>(allErrors.size());
-        Locale errorLocale = lang != null ? new Locale(lang) : null;
 
         for (ObjectError error : allErrors) {
-            errors.add(messageSource.getMessage(error, errorLocale));
+            errors.add(error.getCode());
         }
 
         return errors;
@@ -128,27 +118,23 @@ public class StartupController {
         Properties couchDBProperties = settings.getCouchDBProperties();
         StartupSuggestionsForm suggestions = new StartupSuggestionsForm();
 
-        suggestions.addDatabaseSuggestion(String.format("http://%s:%s", couchDBProperties.getProperty("host"), couchDBProperties.getProperty("port")));
-        suggestions.addQueueSuggestion(settings.getActivemqProperties().getProperty(MotechSettings.AMQ_BROKER_URL));
-        suggestions.addSchedulerSuggestion(settings.getSchedulerProperties().getProperty(MotechSettings.SCHEDULER_URL));
+        String dbUrl = String.format("http://%s:%s", couchDBProperties.getProperty("host"), couchDBProperties.getProperty("port"));
+        String queueUrl = settings.getActivemqProperties().getProperty(MotechSettings.AMQ_BROKER_URL);
+        String schedulerUrl = settings.getSchedulerProperties().getProperty(MotechSettings.SCHEDULER_URL);
 
-        if (startupManager.findCouchDBInstance(COUCH_DB_URL)) {
-            suggestions.addDatabaseSuggestion(COUCH_DB_URL);
+        if (startupManager.findCouchDBInstance(dbUrl)) {
+            suggestions.addDatabaseSuggestion(dbUrl);
         }
 
-        if (startupManager.findActiveMQInstance(ACTIVE_MQ_URL)) {
-            suggestions.addQueueSuggestion(ACTIVE_MQ_URL);
+        if (startupManager.findActiveMQInstance(queueUrl)) {
+            suggestions.addQueueSuggestion(queueUrl);
         }
 
-        if (startupManager.findSchedulerInstance(SCHEDULER_URL)) {
-            suggestions.addSchedulerSuggestion(SCHEDULER_URL);
+        if (startupManager.findSchedulerInstance(schedulerUrl)) {
+            suggestions.addSchedulerSuggestion(schedulerUrl);
         }
 
         return suggestions;
-    }
-
-    private List<String> getLanguages() {
-        return Arrays.asList("en", "pl", "fr", "de");
     }
 
 }
