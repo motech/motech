@@ -27,6 +27,7 @@
     <script src="resources/lib/angular/angular-bootstrap.js" type="text/javascript"></script>
 
     <script src="resources/lib/bootstrap/bootstrap-modal.js"></script>
+    <script src="resources/lib/bootstrap/bootstrap-tabs.js"></script>
 
     <script src="resources/js/util.js" type="text/javascript"></script>
     <script src="resources/js/common.js" type="text/javascript"></script>
@@ -99,10 +100,10 @@
     <div id="content" class="container-fluid">
         <div class="row-fluid">
 
-            <div id="side-nav" class="span2 well">
+            <div id="side-nav" class="span2">
                 <ul class="nav nav-tabs nav-stacked">
                     <li class="nav-header">{{msg('view')}}</li>
-                    <li><a>{{msg('metrics')}}</a></li>
+                    <li><a >{{msg('metrics')}}</a></li>
                     <li><a>{{msg('dbViewer')}}</a></li>
                     <li><a>{{msg('batchTasks')}}</a></li>
                     <li><a>{{msg('settings')}}</a></li>
@@ -112,7 +113,14 @@
 
                     <li class="nav-header">{{msg('modules')}}</li>
                     <c:forEach var="module" items="${modules}">
-                        <li><a href="?moduleName=${module.moduleName}">${module.moduleName}</a></li>
+                        <c:choose>
+                            <c:when test="${module.moduleName == currentModule.moduleName}">
+                                <li class='active'><a href="?moduleName=${module.moduleName}">${module.moduleName}</a></li>
+                            </c:when>
+                            <c:otherwise>
+                                <li><a href="?moduleName=${module.moduleName}">${module.moduleName}</a></li>
+                            </c:otherwise>
+                        </c:choose>
                     </c:forEach>
                 </ul>
             </div>
@@ -120,13 +128,6 @@
             <div id="main-content" class="span10">
                 <c:if test="${! empty currentModule}">
                     <div>
-                        <div class="top1">
-                            <ul class="breadcrumb">
-                                <li><a>Modules</a> <span class="divider">/</span></li>
-                                <li class="active">${currentModule.moduleName}</li>
-                            </ul>
-                        </div>
-
                         <div id="module-content">
                             <script type="text/javascript">
                                 loadModule('${currentModule.url}', ${currentModule.angularModulesStr});
@@ -141,7 +142,6 @@
 
 </div>
 
-<hr/>
-<b>{{msg('generatedAt')}}:</b> <%= new java.util.Date() %>
+<footer class="inside"><strong>{{msg('generatedAt')}}:</strong> <%= new java.util.Date() %></footer>
 </body>
 </html>

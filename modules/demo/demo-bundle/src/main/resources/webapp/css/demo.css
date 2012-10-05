@@ -1,9 +1,14 @@
 .message-group-tree {
     background: #fbfbfb;
-    border-radius: 4px;
     border: 1px solid #cccccc;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
     padding:0 0 10px 0;
+    -webkit-border-radius: 4px;
+       -moz-border-radius: 4px;
+            border-radius: 4px;
+    -webkit-box-shadow: 0 0 6px #e5e5e5;
+       -moz-box-shadow: 0 0 6px #e5e5e5;
+            box-shadow: 0 0 6px #e5e5e5;
 }
 
 .message-group {
@@ -12,8 +17,8 @@
     margin: 0 25px 10px 25px;
     border-radius: 4px;
     -webkit-box-shadow: 0 0 6px #e5e5e5;
-    -moz-box-shadow: 0 0 6px #e5e5e5;
-    box-shadow: 0 0 6px #e5e5e5;
+       -moz-box-shadow: 0 0 6px #e5e5e5;
+            box-shadow: 0 0 6px #e5e5e5;
 }
 
 .message-header {
@@ -25,7 +30,7 @@
     font-weight: bold;
     line-height: 28px;
     font-size: 15px;
-    background: #001e4f url("../../../resources/img/head-bg.jpg") repeat-x left top;
+    background: #001e4f url("../../server/resources/img/head-bg.jpg") repeat-x left top;
 }
 
 .message-group-tree > div.message-group:nth-child(5)  {
@@ -34,8 +39,8 @@
     padding: 0;
     background: none;
     -webkit-box-shadow: 0 0 0 #e5e5e5;
-    -moz-box-shadow: 0 0 0 #e5e5e5;
-    box-shadow: 0 0 0 #e5e5e5;
+       -moz-box-shadow: 0 0 0 #e5e5e5;
+            box-shadow: 0 0 0 #e5e5e5;
 }
 
 .event-label {
@@ -79,7 +84,7 @@
 
 .form-hint {
     background: #d45252;
-    border-radius: 3px 3px 3px 3px;
+    border-radius: 3px;
     color: white;
     float:left;
     display:inline-block;
@@ -94,12 +99,29 @@
 .spn8 {
     width:63.9%;
 }
+.ivr-panel {
+    min-width: 460px;
+    width: 50%;
+}
 
+.alert-scroll{
+    max-height: 75px;
+    overflow: auto;
+}
+
+.welcome p {
+    font-size:15px;
+    font-weight:200;
+    line-height:20px;
+}
 
 /* ---- table ---- */
 
 .table-demo  {
     background:#ffffff;
+    -webkit-box-shadow: 0 0 3px #e5e5e5;
+       -moz-box-shadow: 0 0 3px #e5e5e5;
+            box-shadow: 0 0 3px #e5e5e5;
 }
 
 .table-demo td{
@@ -111,7 +133,7 @@
 }
 
 .table-demo thead tr th {
-    background: #001e4f url("../../../resources/img/head-bg.jpg") repeat-x;
+    background: #001e4f url("../../server/resources/img/head-bg.jpg") repeat-x;
     color: #c2eafe;
     font-size: 15px;
 }
@@ -374,9 +396,4 @@ div#b0 div:hover{
 }
 div#b0 div:active{
     background-position: -460px -58px;
-}
-
-.alert-scroll{
-    max-height: 75px;
-    overflow: auto;
 }

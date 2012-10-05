@@ -305,8 +305,8 @@ function TreeExecuteCtrl($scope, Tree, $routeParams) {
         }
 
         if (0 == $scope.tree.nodes[0].transitions.length) {
-                        $scope.history.unshift({ response: 'Warning! Have reached the end of the tree.', alert: 'info' });
-                    }
+            $scope.history.unshift({ response: jQuery.i18n.prop('trees.warn.endOfTree'), alert: 'info' });
+        }
         if (!found) {
             $scope.history.unshift({ request: entered, response: jQuery.i18n.prop('trees.error.transitionNofFound'), alert: 'error' });
         }

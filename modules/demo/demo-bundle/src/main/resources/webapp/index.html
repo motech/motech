@@ -1,15 +1,13 @@
 <div> <!-- Only required for left/right tabs -->
-    <ul class="nav nav-tabs">
-        <li><a href="#/welcome" data-toggle="tab">{{msg('home')}}</a></li>
-        <li><a href="#/trees" data-toggle="tab">{{msg('trees')}}</a></li>
-        <li><a href="#/ivrservice" data-toggle="tab">{{msg('ivr')}}</a></li>
+    <ul id="content-tabs" class="nav nav-tabs">
+        <li class="active"><a data-target="main-content" href="#/welcome" data-toggle="tab">{{msg('home')}}</a></li>
+        <li><a data-target="main-content" href="#/trees" data-toggle="tab">{{msg('trees')}}</a></li>
+        <li><a data-target="main-content" href="#/ivrservice" data-toggle="tab">{{msg('ivr')}}</a></li>
     </ul>
 
-    <div class="tab-content">
-        <div class="tab-content" id="tab-content">
-            <div id="main-content" class="span12">
-                <div ng-view></div>
-            </div>
+    <div class="tab-content"  id="tab-content">
+        <div id="main-content" class="tab-pane active">
+            <div ng-view></div>
         </div>
     </div>
 </div>

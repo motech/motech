@@ -1,6 +1,6 @@
 <div>
     <div id="commandLinks">
-        <h2>{{msg('execute')}}: {{tree.name}}</h2>
+        <h3>{{msg('execute')}}: {{tree.name}}</h3>
     </div>
 
     <hr>
@@ -40,7 +40,7 @@
                     </p>
                 </div>
                 <div class="span8">
-                    <h2>{{msg('execute.history')}}</h2>
+                    <h3>{{msg('execute.history')}}</h3>
 
                     <div ng-repeat="h in history | limitTo:5">
                         <div ng-hide="h.response == null" class="alert alert-{{h.alert}}">
