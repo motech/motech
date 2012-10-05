@@ -11,7 +11,7 @@
         <form id="createTreeForm" name="createTreeForm" class="form-horizontal message-group-tree" novalidate>
             <div class="message-header"></div>
             <div class="form-actions">
-                <input type="button" ng-click="sendTree()" value="{{msg('main.submit')}}" ng-disabled="createTreeForm.$invalid" class="btn btn-primary"/>
+                <input type="button" ng-click="sendTree()" value="{{msg('main.submit')}}" ng-disabled="isSaveDisabled()" class="btn btn-primary"/>
                 <a href="#/trees" class="btn">{{msg('main.cancel')}}</a>
                 <span ng-hide="acyclic" class="alert alert-error">
                     <strong>{{msg('main.error')}}:</strong> {{msg('trees.error.treeCyclesFound')}}
@@ -110,7 +110,7 @@
 
             <div class="form-actions">
 
-                <input type="button" ng-click="sendTree()" value="{{msg('main.submit')}}" ng-disabled="createTreeForm.$invalid" class="btn btn-primary"/>
+                <input type="button" ng-click="sendTree()" value="{{msg('main.submit')}}" ng-disabled="isSaveDisabled()" class="btn btn-primary"/>
                 <a href="#/trees" class="btn">{{msg('main.cancel')}}</a>
                 <span ng-hide="acyclic" class="alert alert-error">
                     <strong>{{msg('main.error')}}:</strong> {{msg('trees.error.treeCyclesFound')}}

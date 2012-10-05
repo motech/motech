@@ -249,6 +249,10 @@ function TreeCreateCtrl($scope, $http) {
                 motechAlert('trees.create.tree.saved', 'main.saved');
             }).error(alertHandler('trees.create.tree.error', 'main.error'));
     };
+
+    $scope.isSaveDisabled = function() {
+        return $scope.validation().length == 0 ? false : true;
+    };
 }
 
 function TreeExecuteCtrl($scope, Tree, $routeParams) {
