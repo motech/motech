@@ -142,3 +142,7 @@
     white-space: nowrap;
     cursor: pointer;
 }
+
+.admin-title-text {
+    color: #C2EAFE;
+}
