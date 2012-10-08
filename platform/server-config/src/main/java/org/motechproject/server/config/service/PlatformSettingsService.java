@@ -15,12 +15,20 @@ public interface PlatformSettingsService {
     String SETTINGS_DB = "motech-platform-startup";
     String SETTINGS_CACHE_NAME = "MotechSettings";
     String SETTINGS_FILE_NAME = "motech-settings.conf";
+    String ACTIVEMQ_FILE_NAME = "activemq.properties";
+    String ACTIVEMQ_CACHE_NAME = "ActiveMqSettings";
 
     MotechSettings getPlatformSettings();
 
     void savePlatformSettings(Properties settings);
 
     void setPlatformSetting(final String key, final String value);
+
+    void saveActiveMqSettings(Properties activemqProperties);
+
+    void setActiveMqSetting(String key, String valueOf);
+
+    Properties getActiveMqProperties();
 
     String getPlatformLanguage();
 

@@ -123,9 +123,6 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
     }
 
     public void updateFromProperties(final Properties props) {
-        if (activemqProperties == null || activemqProperties.isEmpty()) {
-            activemqProperties = emptyActivemqProperties();
-        }
         if (quartzProperties == null || quartzProperties.isEmpty()) {
             quartzProperties = emptyQuartzProperties();
         }
@@ -148,7 +145,7 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
                     setStatusMsgTimeout(value);
                     break;
                 default:
-                    for (Properties p : Arrays.asList(getActivemqProperties(), getQuartzProperties(), getMetricsProperties(), getSchedulerProperties())) {
+                    for (Properties p : Arrays.asList(getQuartzProperties(), getMetricsProperties(), getSchedulerProperties())) {
                         if (p.containsKey(key)) {
                             p.put(key, value);
                             break;
@@ -157,18 +154,6 @@ public class SettingsRecord extends MotechBaseDataObject implements MotechSettin
                     break;
             }
         }
-    }
-
-    private Properties emptyActivemqProperties() {
-        Properties props = new Properties();
-        props.put(AMQ_BROKER_URL, "");
-        props.put(AMQ_CONCURRENT_CONSUMERS, "");
-        props.put(AMQ_MAX_CONCURRENT_CONSUMERS, "");
-        props.put(AMQ_MAX_REDELIVERIES, "");
-        props.put(AMQ_QUEUE_EVENTS, "");
-        props.put(AMQ_QUEUE_SCHEDULER, "");
-        props.put(AMQ_REDELIVERY_DELAY_IN_MILLIS, "");
-        return props;
     }
 
     private Properties emptyQuartzProperties() {

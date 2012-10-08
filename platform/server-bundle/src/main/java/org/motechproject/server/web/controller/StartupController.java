@@ -81,13 +81,15 @@ public class StartupController {
             view.setViewName("startup");
         } else {
             ConfigFileSettings settings = startupManager.getLoadedConfig();
-            settings.setProperty(MotechSettings.LANGUAGE, form.getLanguage());
-            settings.setProperty(MotechSettings.AMQ_BROKER_URL, form.getQueueUrl());
-            settings.setProperty(MotechSettings.SCHEDULER_URL, form.getSchedulerUrl());
-            settings.setProperty(MotechSettings.DB_HOST, form.getDatabaseHost());
-            settings.setProperty(MotechSettings.DB_PORT, form.getDatabasePort());
+            settings.saveMotechSetting(MotechSettings.LANGUAGE, form.getLanguage());
+            settings.saveMotechSetting(MotechSettings.SCHEDULER_URL, form.getSchedulerUrl());
+            settings.saveMotechSetting(MotechSettings.DB_HOST, form.getDatabaseHost());
+            settings.saveMotechSetting(MotechSettings.DB_PORT, form.getDatabasePort());
+            
+            settings.saveActiveMqSetting(MotechSettings.AMQ_BROKER_URL, form.getQueueUrl());
 
-            platformSettingsService.savePlatformSettings(settings);
+            platformSettingsService.savePlatformSettings(settings.getMotechSettings());
+            platformSettingsService.saveActiveMqSettings(settings.getActivemqProperties());
             startupManager.startup();
 
             if (startupManager.canLaunchBundles()) {

@@ -144,7 +144,7 @@ public class StartupControllerTest {
 
         ModelAndView result = startupController.submitForm(null, startupForm, bindingResult);
 
-        verify(platformSettingsService).savePlatformSettings(any(ConfigFileSettings.class));
+        verify(platformSettingsService).savePlatformSettings(any(Properties.class));
         verify(startupManager).startup();
         verify(startupManager).canLaunchBundles();
         verify(osgiFrameworkService).startBundle(anyString());

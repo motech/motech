@@ -1,6 +1,7 @@
 package org.motechproject.server.config;
 
 import org.apache.commons.io.FileUtils;
+import org.motechproject.server.config.service.PlatformSettingsService;
 import org.motechproject.server.config.settings.ConfigFileSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -38,8 +38,8 @@ public class ConfigLoader {
             LOGGER.warn(String.format("%s not found. Using default locations for config file.", configLocationsFile.getAbsolutePath()));
 
             this.configLocations = new ArrayList<>(2);
-            this.configLocations.add(new UrlResource(String.format("file:%s/.motech/config/motech-settings.conf", System.getProperty("user.home"))));
-            this.configLocations.add(new UrlResource("file:/etc/motech/motech-settings.conf"));
+            this.configLocations.add(new UrlResource(String.format("file:%s/.motech/config/", System.getProperty("user.home"))));
+            this.configLocations.add(new UrlResource("file:/etc/motech/"));
         }
     }
 
@@ -65,14 +65,26 @@ public class ConfigLoader {
 
         if (configLocations != null) {
             for (Resource location : configLocations) {
-                if (location.isReadable()) {
-                    try {
-                        configFileSettings = loadSettingsFromStream(location.getInputStream());
-                        configFileSettings.setFileURL(location.getURL());
-                        break; // startup found
-                    } catch (IOException e) {
-                        LOGGER.error("Error loading config " + location.getFilename(), e);
+                try {
+                    Resource motechSettings = location.createRelative(PlatformSettingsService.SETTINGS_FILE_NAME);
+                    if (!motechSettings.isReadable()) {
+                        LOGGER.warn("Could not read motech-settings.conf from: " + location.toString());
+                        continue;
                     }
+
+                    Resource activemq = location.createRelative(PlatformSettingsService.ACTIVEMQ_FILE_NAME);
+                    if (!activemq.isReadable()) {
+                        LOGGER.warn("No activemq.properties file found at: " + location.toString());
+                        LOGGER.warn("Using default activemq.properties file");
+                        activemq = resourceLoader.getResource("classpath:default-activemq.properties");
+                    }
+
+                    configFileSettings = loadSettingsFromStream(motechSettings, activemq);
+                    configFileSettings.setFileURL(location.getURL());
+                    break;
+                } catch (IOException e) {
+                    LOGGER.warn("Problem reading motech-settings.conf from location: " + location.toString());
+                    continue;
                 }
             }
         }
@@ -83,10 +95,10 @@ public class ConfigLoader {
     public ConfigFileSettings loadDefaultConfig() {
         ConfigFileSettings configFileSettings = null;
         Resource defaultSettings = resourceLoader.getResource("classpath:default-settings.conf");
-
+        Resource defaultActivemq = resourceLoader.getResource("classpath:default-activemq.properties");
         if (defaultSettings != null) {
             try {
-                configFileSettings = loadSettingsFromStream(defaultSettings.getInputStream());
+                configFileSettings = loadSettingsFromStream(defaultSettings, defaultActivemq);
             } catch (IOException e) {
                 LOGGER.error("Error loading default config " + defaultSettings.getFilename(), e);
             }
@@ -105,15 +117,17 @@ public class ConfigLoader {
         FileUtils.writeStringToFile(configLocationsFile, sb.toString());
     }
 
-    public static ConfigFileSettings loadSettingsFromStream(InputStream is) throws IOException {
+    public static ConfigFileSettings loadSettingsFromStream(Resource motechSettings, Resource activemq) throws IOException {
         try {
             MessageDigest digest = MessageDigest.getInstance("MD5");
 
-            try (DigestInputStream dis = new DigestInputStream(is, digest)) {
+            try (DigestInputStream dis = new DigestInputStream(motechSettings.getInputStream(), digest);
+                    DigestInputStream dis2 = new DigestInputStream(activemq.getInputStream(), digest)) {
                 //load configFileSettings and calculate MD5 hash
                 ConfigFileSettings configFileSettings = new ConfigFileSettings();
                 configFileSettings.load(dis);
-
+                configFileSettings.loadActiveMq(dis2);
+                configFileSettings.setMd5checksum(digest.digest());
                 return configFileSettings; // startup loaded
             } catch (IOException e) {
                 LOGGER.error("Error loading configuration", e);
@@ -141,5 +155,9 @@ public class ConfigLoader {
                 }
             }
         }
+    }
+
+    public void setResourceLoader(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
     }
 }
