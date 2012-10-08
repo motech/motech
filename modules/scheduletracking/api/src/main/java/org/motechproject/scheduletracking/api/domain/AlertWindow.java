@@ -8,7 +8,6 @@ import org.motechproject.util.DateUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ch.lambdaj.Lambda.filter;
 import static org.motechproject.util.DateUtil.greaterThanOrEqualTo;
 import static org.motechproject.util.DateUtil.lessThan;
 import static org.motechproject.util.DateUtil.newDateTime;
@@ -102,11 +101,11 @@ public class AlertWindow {
             start = newDateTime(start.toLocalDate(), new Time(0, 0));
         }
 
-        return filter(greaterThanOrEqualTo(start), alertsWithInEndDate);
+        return greaterThanOrEqualTo(start, alertsWithInEndDate);
     }
 
     private List<DateTime> filterAlertsBeyondEndDate(List<DateTime> alertTimings) {
-        return filter(lessThan(alertWindowEnd), alertTimings);
+        return lessThan(alertWindowEnd, alertTimings);
     }
 
     private DateTime toPreferredTime(DateTime alertTime, Time preferredTime) {
